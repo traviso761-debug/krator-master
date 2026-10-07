@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1245,
+    1242
+   ],
+   "seam_after": [
+    0.693,
+    0.798
+   ],
+   "seam_before": [
+    1.806,
+    5.377
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "common/mosaic-star-lapis",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Turquoise Stars on Lapis Tiles.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Turquoise Stars on Lapis Tiles.png",
+  "prompt": "Prompt row patterns/xanadu/mosaic-star in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "glazed-tile walls, domes and fountains: Xanadu, Iziz, Scyvoi, Yuni court",
+  "sha1": "dbe5175ae298f11b5a577de61e36c578b9a49f5e"
+ }
+}

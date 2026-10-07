@@ -74,6 +74,11 @@ DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 OUT = 'ringsea'
+# the material library (core/materials/PLAN.md): the record code, and 45x-matlib-pack.js GENERATED from tex/
+# (tools/textures/matlib_pack.py, from materials.json by tools/textures/pack.py); src/45y-rs-matlib.js binds it onto RSMAT
+RECORD = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '45x-matlib-pack.js'
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED = re.compile(r'\breseed\(\s*(\d+)\s*\)')
@@ -120,10 +125,15 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(CORE, f) for f in CORE_FILES}
+    paths.update({f: os.path.join(RECORD, f) for f in RECORD_FILES})
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides
-    order = sorted(paths)
-    bodies = {}
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    order = sorted(list(paths) + [MATLIB_PACK])
+    bodies = {MATLIB_PACK: matlib_pack.fragment(HERE, 'ringsea')}
     for f in order:
+        if f == MATLIB_PACK:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
     if do_checks:

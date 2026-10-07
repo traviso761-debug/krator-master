@@ -81,6 +81,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `86-dish.js` | 2 |  |
 | `87-mega.js` | 5 |  |
 | `88-factory.js` | 6 |  |
+| `88y-screamers-matlib.js` | 1 |  |
 | `89-lab.js` | 6 |  |
 | `90-scene.js` | 17 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |

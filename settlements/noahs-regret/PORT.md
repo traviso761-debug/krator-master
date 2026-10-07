@@ -19,10 +19,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/27-mat.js` | 8.4 | [G shader] | 13 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
 | `src/30-geo.js` | 22.2 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/36-def.js` | 5.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/40-nr-hull.js` | 21.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/41-nr-piers.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 | builder: draws the piers from NR.PIERS |
+| `src/40-nr-hull.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/41-nr-piers.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-nr-decks.js` | 8.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | builder: draws the decks from the plan (NR); its geometry crosses over as meshes |
-| `src/43-nr-fore.js` | 14.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 | builder: draws the plaza, the terraces, the bridge house and the bridge from the plan |
+| `src/43-nr-fore.js` | 14.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/44-nr-atrium.js` | 7.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | builder: draws the atrium from NR.ATRIUM |
 | `src/46-nr-rooms.js` | 9.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/47-nr-holds.js` | 3.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |

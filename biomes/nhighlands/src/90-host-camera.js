@@ -62,7 +62,7 @@ const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
 // THE INSPECTOR: the plant's name, its class and its tags (climate, aridity, abyssal, riparian, harvest);
 // a tree's bole names itself through its registered volume, a small plant through its item's label
 function tagText(t){if(!t)return'';const g=t.tags,h=g.harvest||{};return '\n'+t.cls+'  ·  '+g.climate+' / '+g.aridity+' / '+(g.abyssal?'abyssal':'non-abyssal')+' / riparian: '+g.riparian+
- '\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.medicinal?' · medicinal':'')+(h.notes?'\n'+h.notes:'');}
+ '\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.medicinal?' · medicinal':'')+(h.fruit?' · catalog '+h.fruit:'')+(h.notes?'\n'+h.notes:'');}
 function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
  const hits=ray.intersectObjects(scene.children,true).filter(h=>h.object.visible&&(!h.object.userData.probeSkip||h.object.userData.inspectLabel));
  if(!hits.length){insp.textContent='(nothing)';return;}const p=hits[0].point,o=hits[0].object;

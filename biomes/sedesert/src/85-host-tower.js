@@ -1,4 +1,8 @@
 // ================================================================= HOST — one Girder tower
+// the tower's (or jetty's) concrete, iron and stone from the material library (materials.json towerConcrete, towerRust, jettyStone)
+// when this page carries the kit's pack; the UVs are world metres / 6, so one UV unit is 6 m of the set
+function hostTowerLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('sedesert',n):null;if(!L)return fb;
+ const t=KMAT.textures(L,{aniso:8}).map;t.repeat.set(6/L.scale[0],6/L.scale[1]);return t;}
 // A single ruined tower of Girder's four, standing on the canyon's north rim (back
 // from the edge, on the flat) so the desert dressing pass has soffits, ledges
 // and walls to work on, and the river has something for scale.
@@ -47,8 +51,8 @@ function buildTestTower(){
    for(let i=0;i<p.length;i+=3){uv.push((p[i]+p[i+2])/6,p[i+1]/6);}});   // triplanar-ish world uv
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   const m=new THREE.Mesh(geo,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return geo;};
- const gC=merge(conc,new THREE.MeshLambertMaterial({map:TEXC,color:0x8e8878}),'Girder tower — concrete');
- const gR=merge(rust,new THREE.MeshLambertMaterial({map:TEXR,color:0x6e4a36}),'Girder tower — iron');
+ const gC=merge(conc,new THREE.MeshLambertMaterial({map:hostTowerLib('towerConcrete',TEXC),color:0x8e8878}),'Girder tower — concrete');
+ const gR=merge(rust,new THREE.MeshLambertMaterial({map:hostTowerLib('towerRust',TEXR),color:0x6e4a36}),'Girder tower — iron');
  OBSTACLES.push({x:TX,z:TZ,r:HALF*1.5+6,y0:y0-5,y1:top+20});
  REGISTER({name:'Girder tower (test structure, ruined)',x:TX,z:TZ,y:y0,r:HALF*1.5,h:top-y0+16});
  return [gC,gR];}

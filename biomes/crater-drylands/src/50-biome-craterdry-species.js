@@ -48,6 +48,8 @@ const PAL=CRATERDRY.PAL={
  granite:[0xb0a49a,0xa09488,0xc0b4a8,0x988c84],rockRed:[0xa86048,0x9a5440,0xb87058],lichen:[0xd88a3a,0xe0a048,0xc0c0a0,0x9aa090,0xb8b088],
  deadwood:[0xb8b0a4,0xa8a094,0xc8c0b4,0x989084],
  pod:[0x6a5a3a,0x7a6a44],tuna:[0xd83a48,0xc82a3a],aloeSeed:[0x8a7a4a,0x9a8a52],
+ // the fruit, in the catalog piece's colours (kits/catalog/krator-master-furniture-generic-goods.js, fruit*)
+ fireseed:[0x40281e,0x4a3022],pineCone:[0x8a5230,0x7a4a2a,0x96603a],
 };
 
 // ---------------------------------------------------------------- the tree species
@@ -85,20 +87,22 @@ CRATERDRY.SPECIES=[
 CRATERDRY.byKey={};CRATERDRY.SPECIES.forEach((S,i)=>{S.i=i;CRATERDRY.byKey[S.key]=S;S.fire=S.tags.fire;});
 
 // ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
-// What each species yields (wood, edible parts, medicinal, a note) and `fruit`: a catalog piece when the kit draws a
-// fruit the catalog holds. None of these fruits is in the catalog yet (KNOWN_ISSUES), so `fruit` is null throughout.
+// What each species yields (wood, edible parts, medicinal, a note) and `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws: the frill-tree's fireseed
+// (in its pods, and spilled on the ash round a burst snag), the parasol pine's cones (in the crown and fallen under
+// it), the yucca and Joshua tree flowers (the roasted-stalk piece, shared with ebadlands).
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 CRATERDRY.HARVEST={
  prismmallee:HV('fuel, tool handles',['nectar'],true,'The lignotuber burns slow and hot: the Scyvoi dig dead ones for charcoal. The leaf oil is a salve.'),
  pillar:HV('none',['heart pith (famine)'],false,'The banded bark is fireproof; strips of it line Scyvoi hearths and quivers.'),
- frill:HV('fuel',['roasted seed'],false,'The seed is gathered from the ash after a fire, roasted and ground: the first harvest of a burn.'),
- parasolpine:HV('timber',['pine nuts'],false,'The nuts are knocked down from the umbrella crowns in the cool season.'),
+ frill:HV('fuel',['roasted seed'],false,'The seed is gathered from the ash after a fire, roasted and ground: the first harvest of a burn.','generic_fruit_fireseed'),
+ parasolpine:HV('timber',['pine nuts'],false,'The cones are knocked down from the umbrella crowns in the cool season and opened by the fire for their nuts.','generic_fruit_parasol_pine'),
  ghostgum:HV('timber, poles',[],true,'The white powder on the bark is a sunscreen; a gum crack yields a red resin for wounds.'),
  treealoe:HV('none',['nectar'],true,'The leaf gel dresses burns; riders carry a cut leaf for their mounts\' scorched feet.'),
- joshua:HV('fibre',['flower buds (roasted)'],false,'The fibres of the dead skirt make rope and saddle pads.'),
+ joshua:HV('fibre',['flower buds (roasted)','blossoms'],false,'The cream flower clusters are roasted in a pit like the yucca\'s; the fibres of the dead skirt make rope and saddle pads.','generic_fruit_yucca'),
  pincushion:HV('none',['nectar'],false,'The orange heads drip a thin sweet nectar at dawn.'),
  jade:HV('none',['young leaves (sour)'],false,'The leaves are eaten raw for their sour sap on long rides.'),
- yucca:HV('none',['flower stalk (roasted)','blossoms','seed pods'],false,'The young stalk is roasted in a pit; the fibres make cord.'),
+ yucca:HV('none',['flower stalk (roasted)','blossoms','seed pods'],false,'The young stalk is roasted in a pit; the fibres make cord.','generic_fruit_yucca'),
  swordspire:HV('none',[],false,'Flowers once, after a fire, then dies. Never picked: the Scyvoi count the years since a burn by the dead spikes.'),
 };
 CRATERDRY.SPECIES.forEach(S=>{S.tags.harvest=CRATERDRY.HARVEST[S.key]||HV('none');});
@@ -458,4 +462,6 @@ BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs'}
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Granite boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Seeds, pods and flower eyes'});
+BIO.def('seed',new T3.OctahedronGeometry(1,0),M.solid,{label:'Fruit: frill-tree fireseed'});
+BIO.def('pinecone',G.cone(),M.solid,{label:'Fruit: parasol-pine cones'});
 })();

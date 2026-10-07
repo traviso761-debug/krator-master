@@ -87,3 +87,4 @@ Read before changing anything here. `build.py` prints the open count.
       gained `BIO.kit` hooks, so `--vendor-check` reports the core and the hooked fragments as drift.
       The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
       `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.
+- [ ] (2026-10-06) The nomad kit takes the material library as colour maps (materials.json; src/78b-host-matlib.js swaps NOMAD.MAT's maps; the kit stays Lambert, so no normal maps). The sedesert flora is not wired yet. verify --assert passes.

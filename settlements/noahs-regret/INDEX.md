@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `27-mat.js` | 8 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
-| `40-nr-hull.js` | 21 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (126); the sterns: rounded, stepping back in terraces (142); the bow: the forecastle, the stem, the anchors (183) |
+| `40-nr-hull.js` | 22 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (126); the sterns: rounded, stepping back in terraces (142); the bow: the forecastle, the stem, the anchors (183) |
 | `41-nr-piers.js` | 6 |  |
 | `42-nr-decks.js` | 8 |  |
 | `43-nr-fore.js` | 14 |  |

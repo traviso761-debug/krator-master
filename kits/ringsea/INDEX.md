@@ -26,6 +26,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `42-rs-hull.js` | 6 | ring sea hull (1) |
 | `43-rs-rig.js` | 11 | ring sea rig: oars and paddles (1); sails (25); spars, rigging, flags (79) |
 | `44-rs-parts.js` | 5 | ring sea parts (shared by several vessels) (1) |
+| `45y-rs-matlib.js` | <1 | the material library (core/materials/PLAN.md) (1) |
 | `60-rs-hyk-trireme.js` | 6 | vessel: Hykkousoi Trireme (1) |
 | `61-rs-iziz-turtle.js` | 6 | vessel: Iziz Turtle Ship (1) |
 | `62-rs-xanadu-swan.js` | 5 | vessel: Xanadu Swan Barge (Hamsa royal barge) (1) |

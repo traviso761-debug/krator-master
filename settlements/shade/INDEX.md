@@ -19,13 +19,13 @@ From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 |---|---|---|
 | `00-head.html` | 4 |  |
 | `10-core-head.js` | 8 | PRNG (14); noise (24); host binding (41); accounting (107) |
-| `20-core-kit.js` | 15 | merged buckets (58); indexed buckets (133); bake (156); dynamic instances (179) |
+| `20-core-kit.js` | 17 | merged buckets (58); indexed buckets (152); bake (175); dynamic instances (198) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
 | `35-core-strata.js` | 9 |  |
 | `40-core-place.js` | 7 | surface sampling (59) |
 | `44-host-layout.js` | 28 | the plateau (26); the basin and the canyon (34); the water (61); the switchback (71); terrain (115); the places (138); the foot of the wall, traced (172); the carve patches (overhangs; BIO.carve, 36-core (206); the building plan (229) |
 | `45-host-stage.js` | 25 | the climate fields (26); the flora mask (reserve before you build) (58); the host binding (87); the ground (97); the carve patches (the rock put back above alcov (162); the water (178) |
-| `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (330) |
+| `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (333) |
 | `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
 | `65-biome-sedesert-dress.js` | 5 |  |
@@ -36,6 +36,7 @@ From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 | `77c-kit-nomad-pueblo.js` | 10 |  |
 | `77d-kit-nomad-khan.js` | 6 |  |
 | `77e-kit-nomad-camp.js` | 5 |  |
+| `78b-host-matlib.js` | 1 |  |
 | `80-host-buildings.js` | 7 |  |
 | `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `84-host-life.js` | 12 | the walkable grid (18); the world in SIM (64); Shade's own audits, added to SIM.audit() (86); the checks the probe reads (window._life) (111) |

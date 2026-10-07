@@ -27,7 +27,27 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// species that yield something edible the kit does not draw as a catalog fruit: named, not hidden. The umbrella
+// thorn's pods and the monkey-puzzle cones are not drawn (biomes/FRUIT.md); the tree fern's are fiddleheads.
+const FRUIT_NOT_DRAWN=['thorn','puzzle','treefern'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const HCHK={
+ // fruit: every fruiting species names a catalog piece (biomes/FRUIT.md), and fruit is drawn on the stage (the baobabs'
+ // gatepods are the 'pod' items, the parasol caps the 'parasol' items; the coral fungus is built into its bucket)
+ fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),np=P.filter(p=>/:pod$/.test(p[3])).length,nc=P.filter(p=>/:parasol$/.test(p[3])).length;
+  return{ok:!miss.length&&!untagged.length&&np>=20&&nc>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+np+' gatepods and '+nc+' parasol caps drawn; catalog keys: '+SWBAY.FRUIT_KEYS.join(', ')+'; not drawn: '+FRUIT_NOT_DRAWN.join(', ')};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(SWBAY.SPECIES,P));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(SWBAY.SPECIES.map(S=>S.key==='baobab'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
+ add('a species with no harvest tag',HCHK.fruit(SWBAY.SPECIES.map(S=>S.key==='coral'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
+ add('no gatepods drawn',HCHK.fruit(SWBAY.SPECIES,P.filter(p=>!/:pod$/.test(p[3]))));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

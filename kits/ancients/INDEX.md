@@ -86,6 +86,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
 | `88-plymouth.js` | 58 **big** |  |
+| `88y-ancients-matlib.js` | 1 |  |
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 7 |  |
 | `89b-arcoindian.js` | 81 **big** |  |

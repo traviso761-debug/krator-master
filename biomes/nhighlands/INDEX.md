@@ -17,17 +17,17 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
-| `50-biome-nhighlands-species.js` | 51 **big** | palettes (24); the tree species (69); leaf and frond textures (176); bark textures (285); geometries local to this biome (321); an iridescent bark (shared hook; the Rift kit's) (385); materials (398); instanced items (463) |
-| `55-biome-nhighlands-trees.js` | 44 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (126); impostors (the far canopy) (345); the pass (376) |
+| `50-biome-nhighlands-species.js` | 53 **big** | palettes (24); the tree species (70); leaf and frond textures (182); bark textures (291); geometries local to this biome (327); an iridescent bark (shared hook; the Rift kit's) (391); materials (404); instanced items (477) |
+| `55-biome-nhighlands-trees.js` | 45 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (131); impostors (the far canopy) (352); the pass (383) |
 | `60-biome-nhighlands-floor.js` | 19 | small plants (27); the zone planters (91); the pass (171) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 34 **big** | the fog (16); the dome (26); the gas giant (187); the far country (273); light modes (371) |
-| `84-host-ground.js` | 17 | the water (95); the mist (129) |
+| `84-host-ground.js` | 17 | the water (99); the mist (133) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
 | `88-host-build.js` | 2 |  |
 | `90-host-camera.js` | 12 |  |
-| `91-host-probe.js` | 6 |  |
+| `91-host-probe.js` | 8 |  |
 | `93-host-polytool.js` | 6 |  |
 | `99-tail.html` | <1 |  |

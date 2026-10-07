@@ -981,6 +981,8 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 `glow` needs no map.
 
 **Still needed**, most pieces first. G rows start with the base template and the muting sentence unless they say full colour.
+**Delivered 2026-10-06** (`tex.zip`, see "Delivered 2026-10-06: texturepalooza" below): every G row in this table. Only `metal.steel.brushed`
+(a scan) is still open here. The family splits below are still needed before the new sets can hang on `feather`, `rubber` and painted wood.
 
 | id | Src | Pieces | Material line |
 |---|---|---|---|
@@ -998,15 +1000,133 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 | `wood.endgrain` | G | 11, and the builders' yard log stock | Sawn end of a log seen straight on: concentric growth rings, darker heartwood, radial drying checks, saw marks across the face. The rings fill the frame edge to edge. Muted, so it tints. |
 | `paper.parchment` | G | 15 books, 11 more with `paper*` keys | Old parchment sheet: cream (#e8dcb8) with uneven thickness, faint fibres, light foxing spots and soft creases. Muted, so it tints. |
 
-**Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces), the Xanadu pattern sheets (Xanadu's 58 pieces
-draw their hangings with procedural decals), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
+**Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces; `roof.thatch.reed`, delivered 2026-10-06, may
+serve the reed family until then), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
 
 **No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
 Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
 
-**Family splits the list depends on** (code in `krator-furniture-core.js` and the culture files, not textures): `feather` out of `hide`,
-`rubber` out of `plastic`, a painted-wood family out of `wood`/`plank`, and pottery out of `stone` (the `clay*` keys on `stone`: 29 pieces
-of `clayBlack` alone would take a stone map, not `ceramic.*`). Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
+**Family splits, done 2026-10-06, as texture families** (`kits/catalog/krator-furniture-core.js`, `FAMILY_SPLITS`, `furnFamily()`):
+a part keeps its render family (its look, the batch's grouping, the declared `materials` and every check stay as they were) and gains
+`userData.texFamily` by its palette key, so no culture file changed. A host maps `f_<texFamily>` and falls back to `f_<family>`, so a
+host without the new row looks exactly as before. Splits: `feather*` (23 pieces), `tyre*` to `rubber` (17), `clay*` on `stone` to `clay`
+(113: pots, but also clay hearths, counters and brick stacks, hence not "pottery"), `obsidian*` on `lacquer` (17), `pewter`/`tin` to
+`pewter` (59), `paint*` on `wood`/`plank` to `paint` (14; the paint keys on `cloth` are painted cloth), the ash and coal keys on
+`stone`/`plaster` to `ash` (15), `paper*` (10), `tapa*` (16). A part splits only when every key sharing its colour matches. The batch
+(`krator-furniture-runtime.js`) buckets by family and texture family. Rows added: Girder `f_pewter`, `f_ash`, `f_clay`
+(`ceramic.terracotta`), `f_paper`, and `f_food` is now `food.crust`; Scyvoi `f_ash`, `f_food` on `food.crust`. Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
+
+#### Buildings, vehicles and biomes audit (2026-10-06): what is still missing
+
+*Update, same day:* **Jimjam is wired** (`settlements/jimjam/materials.json`: 17 families, full colour, every JMAT texture
+from the texturepalooza sets; README "Textures").
+
+A read-only sweep of every build's painters (`TEX.*`, FAMMAT) and every biome's species, bark, ground and fauna sections against the
+library, after the texturepalooza delivery. **The main finding: almost every building surface already has a set; what is missing is
+wiring.** Only Girder, Yuni, Ys (hyk), Scyvoi, motor-vehicles, mechs, crater-drylands and ebadlands read the library. Mav's Refuge,
+Locus, Voth, Iziz's vernacular, the shared vernacular (Highlands, Dalab, Reed Lake, Xanadu, Ys), Jimjam, Shade, Port, Ring Sea,
+post-apoc, the Ancients kit, the interiors kit and ten biomes (hyperjungle, nhighlands, nw/swlowlands, nw/swbay, sedesert, eastabyss,
+rift, xanadu) each need a `materials.json` pass; openworld/little-demo needs a terrain splat and the kits' packs.
+
+**Paste-ready versions of everything still owed are in `PROMPTS-ready.md` (section 1 buildings, 2 biomes).**
+
+**Buildings: prompted earlier and still owed** (rows above; most builds first): `cloth.canvas.striped` (the tinted awning: Iziz,
+Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge), `wood.log.carved` (round-log walls: Highlands, Dalab, Reed Lake, Ys), `concrete.ancient`
+(board-formed with tie holes: the whole Ancients lineage; `concrete.board` stands in), one rammed-earth set with lifts (merges
+`earth.rammed.dalab` and Xanadu's `stone.rammed`), `metal.container` (the neutral rib: Port, Ys, post-apoc), the reed set (`reed.bundle`,
+`reed.layers`, `ground.reedbed`, `reed.living`), `metal.worn`, `patterns/port/hazard` and `primer`, `plate.hex` (Ring Sea), `concrete.slab`,
+`wood.lash`, the stalk of `organic.fungus`, `stone.rendered.ruined`, and the culture sheets (Dalab banner, mosaic and two murals; Reed Lake
+band and awayo; Xanadu twig band and sun emblem; the three nacre sheets).
+
+**Buildings: new rows** (no set, no earlier prompt):
+
+| id | Builds | Material line |
+|---|---|---|
+| `metal.tin.patchwork` | Locus (Abyss `tinmirror`) | Flattened tin cans and foil nailed edge to edge, embossed rims and ribs, crimped seams, a few mirror shards, dents, light rust at the nails. Near-colourless grey, so it tints. |
+| `cloth.banner.hung` | Iziz and Dalab `vpBanner`, generic banners | Plain-woven banner cloth seen flat, a sewn hem at the top and a fringed foot, faded and creased. Neutral grey, so it tints. (Could absorb `cloth.banner.dalab`.) |
+| `patterns/common/sail-band` | Locus `pattern` | Flat, front-on woven band of zigzags and stepped triangles, the motif a darker shade of the ground, greyscale so it tints. The pattern repeats horizontally. |
+| `card.chainlink` | post-apoc, Port fences | Diamond chain-link mesh of galvanised wire, flat and front-on, on solid flat bright magenta (#ff00ff) so the gaps cut out. |
+
+**Biomes: new rows** (every one confirmed in a kit's `src/`; cards on magenta #ff00ff, nine per sheet, near-grey green so they tint):
+
+| id | Biomes | Material line |
+|---|---|---|
+| `card.reed` | crater, ebadlands, sedesert, eastabyss, rift, nw/swbay, nw/swlowlands, xanadu | Nine clumps of marsh reed, cattail and sedge: thin upright blades, two with brown cigar heads and two with feathery plumes, each standing from the bottom of its cell. (`card.crop` is broad strap leaves.) |
+| `card.acacia` | sedesert, eastabyss, rift, nw/swbay, nw/swlowlands, xanadu | Nine flat sprays of bipinnate leaves (mesquite, acacia, flame tree): a central stem with paired pinnae of tiny oval leaflets, seen from above. |
+| `card.beard` | eastabyss, rift, nhighlands, nw/swlowlands, nw/swbay, xanadu | Nine hanging tangles of beard lichen and Spanish moss, fine stringy grey-green strands, each hung from the top edge of its cell. |
+| `card.palm` | sedesert, eastabyss, rift, nw/swlowlands, xanadu | Five pinnate date-palm fronds laid diagonally and four pleated fan-palm (palmetto) fans. |
+| `card.sword` | sedesert, eastabyss, rift, nw/swbay, nw/swlowlands | Nine stiff sword-leaf rosettes seen from above (dragon tree, yucca, agave): rigid tapering blades radiating from a centre. (Try `card.screwpine` first.) |
+| `bark.smooth` | nhighlands, xanadu, eastabyss, rift, nw/swbay, nw/swlowlands | Smooth thin bark (beech, alder): pale grey with faint horizontal rings, short dark lenticel dashes, a few soft algae blotches. Tintable. |
+| `skin.cactus` | sedesert, ebadlands, xanadu | Cactus skin seen close: shallow vertical ribs, areoles in a lattice every few cm with pale wool tufts and fine spines, a matte waxy bloom. Neutral grey-green, tintable. |
+| `bark.treefern` | nwlowlands, eastabyss, rift, nw/swbay | Tree-fern trunk: dark fibrous matted roots over a lattice of oval frond-base scars. Tintable. |
+| `card.paddle` | nhighlands, nw/swlowlands, nw/swbay, xanadu | Nine big single leaves: banana with torn split edges, elephant-ear hearts; midrib and parallel veins. |
+| `card.blossom` | nw/swlowlands, xanadu | Nine twigs dense with small five-petalled blossoms (cherry), three with hanging wisteria-like racemes; petals pale cream so they tint. |
+| `card.araucaria`, `bark.araucaria` | swbay, rift, eastabyss | Monkey-puzzle branch ropes clothed in stiff overlapping triangular scale-leaves; the bark grey-brown with diamond scale scars. |
+| `bark.lepido` | eastabyss, rift | Lepidodendron trunk: a diamond lattice of raised leaf cushions, each with a small scar. Near-grey, tintable. |
+| `bark.birch` | nhighlands, nwlowlands | White birch bark with black horizontal lenticels, dark chevron scars at branch stubs, papery curls. |
+| `card.lichen` | sedesert, ebadlands, crater | Nine ragged lichen patches, crustose and foliose rosettes, orange, grey-green and yellow. Full colour. |
+| `card.lotus` | nwbay, xanadu | Lotus flowers and notched lily pads seen from above; pads near-grey green, petals pale so they tint. |
+| `ground.cinder` | nw/swbay | Black volcanic beach sand and cinder grit seen from above, a few vesicular clasts and grey ash drifts. Tintable. |
+
+Minor, one biome each: `bark.madrone`, `bark.paperbark`, `bark.cork`, `bark.strangler`, `bark.cherry`, `bark.kapok`, `card.samphire`, `card.ginkgo`,
+`card.heath`, `ground.shingle` (xanadu), `skin.marine`, `wood.petrified`. Still owed from earlier rows: `bark.desert` (sedesert, crater yucca and
+joshua), (the hyperjungle `FAUNATEX` hook is now full: `wing.butterfly` and `skin.sky-ray` were delivered 2026-10-06 and are in Iziz's pack). Fauna in every biome is vertex colour; `feather.plumage`,
+`hide.fur.brown`, `organic.scale.*` and `membrane.bat` cover them once a biome adopts the library.
+
+#### Wiring status and the sweep (2026-10-06, evening)
+
+**Connected today** (materials.json + pack + code): settlements girder, yuni, ys (hyk), jimjam, mavs-refuge, locus, voth, iziz
+(vernacular + fauna), xanadu, reedlake, highlands, dalab (the vernacular MAT keys through `core/materials/record/26-matlib-bind.js`,
+`KMAT.bindMat`), shade (nomad kit); every biome kit (`BIO.libSwap` in core/biome 20-core-kit.js; materials.json `cell` shows one plant of
+a nine-plant sheet); the vendored biome copies in iziz (city), dalab, highlands (roketstad), xanadu, ys, shade and locus (the code
+change vended by hand, since those copies already drift; the biome's pack inlined before the biome code). Brightness rule: every grey
+set's `tint.mean` is the measured mean of the procedural map it replaces, so palettes keep their tone.
+
+**Still unwired, sets exist** (a full sweep of src/ found these; most valuable first):
+**Wired 2026-10-06 (late): the shared Ancients MAT.** `KMAT.bindMat(build, MAT, {tile: KMAT.ANCIENT_TILES})` binds `white` ->
+   `metal.ancient.white`, `verdigris` -> `metal.bronze.verdigris`, `concrete`/`concreteR` -> `concrete.ancient`, `paving` -> `concrete.ancient.b`,
+   `brick` -> `brick.red`, `corrugate` -> `metal.corrugated_iron_02`, `timber` -> `wood.weathered_brown_planks`, `tarp` -> `cloth.tarp`,
+   `whiteWorn` -> `metal.worn`, `rubbleK` -> `rock.rocks013` in kits/ancients, port, screamers, iziz, dalab, highlands, reedlake, xanadu, ys and
+   jimjam (each its own rows in materials.json). `KMAT.ANCIENT_TILES` (26-matlib-bind.js) holds each key's procedural tile in metres for
+   meshes with no world UV. **`rust` stays procedural:** the kit's beams, tanks and spheres stretch their UVs, and both `metal.rust.plate`
+   and `metal.rusty_metal_04` smeared into stripes on the Rehabilitated factory. A rust set for stretched UVs (a fine, isotropic
+   rust with no plate or streak direction) would fix it: `metal.rust.fine` in PROMPTS-ready.md.
+2. Ring Sea is wired (2026-10-06, late: `wood.siding`, `cloth.canvas`, `roof.thatch.reed`, `roof.tile`, `plate.hex`, `organic.chitin.scale`,
+   the Ancient white and verdigris; its scale is in UV tiles, see kits/ringsea/materials.json). Post-Apoc is wired for planks, earth, concrete, timber and cloth (`wood.reclaimed`, `earth.floor.packed`,
+   `concrete.slab`, `wood.timber`, `cloth.weave.burlap`); its rusty metals stay procedural until a rust-streaked tintable corrugate comes
+   (`metal.corrugated.rusty`, prompted): `metal.container` and `metal.tin.patchwork` are too clean for it. Verge and Mungo take the packs of the builds they assemble (no materials.json of their own):
+   Verge Iziz's (not the fauna), Locus's and both biomes'; Mungo Locus's, Reed Lake's and the eastabyss biome's.
+   Interiors has nothing to wire: its shells are flat-colour debug views, and the worlds that host its rooms draw their own walls.
+**Sidecar packs (2026-10-06, late).** A page that carries several packs or nears the gallery's 16 MB a file keeps its maps beside it,
+   one `<page>.tex.<key>.js` per pack loaded by `<script src>` (`tools/textures/matlib_pack.py`: `fragment(..., side=)`,
+   `write_sidecar`); `gallery/build_gallery.py` copies them beside the page. Verge, Mungo and Ys do this.
+   `tint.colour` (pack.py): a grey set takes a hue at the same brightness, for builds whose procedural maps carry their colour.
+3. The vernacular's own families. Done 2026-10-06 (late): Highlands' logs (`wood.log.carved`), scale (`roof.scale.slate`), rubbleW
+   (`rock.old_stone_wall`), bamboo (`wood.bamboo_wall`), bmat (`fibre.reedmat`), in Highlands, Dalab, Reed Lake and Ys; Reed Lake's rlMat,
+   rlMatM (`fibre.reedmat`), rlThatch (`roof.thatch.reed`), rlIsland (`ground.reedbed`), rlLayer (`reed.layers`), rlBundleX (`reed.bundle`).
+   Xanadu: xEarth (`earth.adobe`), xWash (`plaster.white_stucco_02`), xTiles (`paving.tiles144`), xRubble, xRock (`rock.rock_face`).
+   Dalab: the four murals, relief-squares, relief-tile-teal, checker-harlequin, god-panel-a, mosaic, banner (patterns/dalab).
+   The Voth embassy (Iziz, Dalab, Ys): vpTile (`roof.tile`), vpBanco (`earth.banco`), vpMosaic (`patterns/dalab/mosaic`). The Port kit
+   (Port, Ys): pkCont (`metal.container`), pkPave (`concrete.slab`).
+   Pattern sheets: Highlands hTileD/S/T/W (`tile-*`, the Temple of the Pantheon), hHarlG (`harlequin`), hMaze (`maze-weathered`);
+   Reed Lake rlBand (`band`), rlShield (`chakana`), rlCloth (`chakana-textile-red`). Not used: the lattices, `fringe`, `chakana` cut-outs
+   (the sets are opaque), the friezes, `crane-floral`, `maze`, the Xanadu motifs (blue ground under cut-out motifs).
+   Still to do: Highlands (turf waits for `roof.turf`; rock,
+   meadow have mesh UVs, the h* pattern sheets), Reed Lake (rlBundle has separate u and v tiles; the band and chakana patterns), Xanadu (x* -> the Xanadu patterns,
+   `plaster.white_stucco_02`, `paving.tiles144`), vpBanner (keeps its device), pkContR and pkPaveR (rust and ruin).
+4. Biome slots. Done 2026-10-06 (late): flowers (`bloom` -> `card.flower.bloom`, grey, in the eight biomes that have it); the hosts' ground
+   detail and salt-pan cracks (`groundDetail` -> `ground.gravelly_sand`, `groundCrack` -> `ground.playa.red`, colour map only, through a local
+   `hostGroundLib` in each host, so pages without the pack keep the procedural layers); nhighlands' bark, fallen-wood and boulder buckets (now
+   built into `NHL.BKMAT` and swapped before the buckets: ponderosa, juniper, smooth, birch, ironbark, pine scale, char, `wood.gnarled`);
+   hyperjungle's limb (`bark.smooth`) and dead wood (`wood.gnarled`); the girder tower hosts' concrete and iron (`concrete.ancient`,
+   `metal.rust.plate`) and the bay jetties' stone (`stone.cut`). Left procedural: the iridescent trumpet and Rift barks (shader-coloured).
+5. Smaller: Voth's ship hulls and sails, the catalog's painted decals (a cloth or parchment detail under the paint), mechs' leather, wood and
+   rubber riding on the cloth bucket, motor-vehicles' null leather/rope/tin slots, Scyvoi's brass/bone/flag keys.
+
+**New images the sweep found** (PROMPTS-ready.md section 3): `roof.turf`, `tile.bath.lens`, `panel.solar`, `card.pods`, `card.litter`,
+`card.reef`, `bark.paperbark`, `bark.whorled`, `organic.fungus.gill`, `skin.alien.banded`. Owed from before: `earth.rammed`,
+`band.xanadu.twig`, `patterns/xanadu/sun-emblem`, the two nacre sheets, `wood.petrified`, `patterns/reedlake/awayo` (`wood.lash` is made, on
+claude/hexahedron-materials).
 
 #### The Fauna kit (`kits/fauna`, 2026-10-06)
 
@@ -1173,7 +1293,7 @@ Batches `chatgpt-2026-10d-beast-riders-rest.json` (13 surfaces) and `chatgpt-202
 | `card.crop` | `card.crop` | nine maize-like strap leaves (a card): maize, cane, reeds, canna, any crop or marsh plant (pasted into the chat, batch `chatgpt-2026-10e-crop.json`) |
 | `fruit.husk` | `fruit.husk` | velvet pod husk: baobab pods, felted hide, moss-bark and fuzzy fruit; a short-fur twin of `hide.strider` (pasted into the chat, batch `chatgpt-2026-10e-husk.json`) |
 
-Still not delivered: `wing.butterfly`, `skin.sky-ray`. Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
+All delivered now: `skin.sky-ray` (2026-10-06, batch `chatgpt-2026-10n-owed.json`; Iziz `fauna_ray`), `wing.butterfly` (2026-10-06: batch `chatgpt-2026-10m-butterfly.json`, a tight-cropped card like `wing.dragonfly`; Iziz `fauna_wing`). Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
 (`bark0`, `bark3` in materials.json; 2026-10-05); `wood.lamppost` is ready for the `timber` family or a lamp-post family of its own.
 
 **Known issues of this delivery:** `card.vine` is anchored at the top and its cut is clean but the stem colour is purple-brown; `wing.dragonfly` is stretched
@@ -1223,6 +1343,120 @@ Then the two gaps, both processed (same batch): `library/cloth.tent.black` (the 
 weave with stray hairs; the Scyvoi black tents; reuse for Shade's Eastern Nomads) and `patterns/scyvoi/applique-blue`,
 `applique-blue.b` (indigo felt flowers and leaf sprays hand-stitched on cream; the appliqué tent's panels; any steppe or
 Tibetan-style tent).
+
+#### Delivered 2026-10-06: texturepalooza (`tex.zip`, 48 images, 55 sets)
+
+Batch `chatgpt-2026-10k-texturepalooza.json`. The images keep ChatGPT's titles; each was matched to an open prompt row by eye (the second
+column). Two sheets came as several panels on one image and were cut apart before processing (the source names carry `__<panel>`):
+the scallop tiles (three colourways) and the Jimjam brick reliefs (3 x 2). Ids are generic where the surface is (per "Reuse"); Jimjam's
+`brick.jimjam.*` rows became `brick.*`. Tiling sheets are cropped to their own period and their `scale` follows the crop's aspect.
+Not yet in any build's `materials.json`; all 55 are on the demo wall (`core/materials/demo`, status new until judged).
+
+| Set | Prompt row | Reuse |
+|---|---|---|
+| `wood.softwood`, `wood.painted`, `plastic.moulded`, `rubber.tyre`, `metal.pewter`, `food.crust`, `feather.plumage`, `wood.endgrain`, `paper.parchment` (tintable) | the catalog audit rows of the same ids | catalog furniture per family (`f_<family>`); `rubber.tyre` is the motor-vehicles `rubber` slot |
+| `ash.hearth`, `stone.obsidian`, `patterns/islander/tapa` (full colour) | same | hearths and fire rings anywhere; Voth and volcanic biomes; Islander cloth |
+| `ground.salt`, `bark.mangrove` | Biomes rows | salt pans in any desert; mangroves and figs on any coast (tintable to the SW lowlands red) |
+| `wood.siding` | `wood.hull` (Ring Sea) | hull strakes, clapboard and plank walls anywhere (tintable) |
+| `patterns/common/container-red`, `hull-paint` | `patterns/port/livery`, `hull-paint` | Port, post-apoc, Ring Sea steel |
+| `patterns/xanadu/zigzag`, `lozenge`, `bird`, `deer`, `star` | the Xanadu rows | Xanadu's Palopo bands |
+| `patterns/common/jali-diamond`, `frieze-star-maroon`, `mosaic-star-lapis`, `mosaic-arabesque-lapis`, `valance-scallop` | `xanadu/jali`, `frieze`, `mosaic-star`, `mosaic-arabesque`, `valance` | screens, friezes and glazed tile in any court culture; the valance is greyscale and tinted |
+| `brick.red`, `brick.ochre`, `brick.oxblood`, `brick.dark`, `brick.red.band` | `brick.jimjam.red`, `yellow`, `deep`, `dark`, `band` | Jimjam; brick walls in Port, Highlands, post-apoc, city streets (full colour) |
+| `stone.marble.ashlar`, `plaster.ochre` | `stone.marble.trim`, `plaster.jimjam.ochre` | marble ashlar in Voth, Iziz, Xanadu, Ys; ochre wash in Dalab, Iziz, Yuni |
+| `roof.scale.terracotta`, `roof.scale.slate`, `roof.scale.gilt` | `roof.dome.tile` (three colourways) | fish-scale roofs and domes: Highlands, Xanadu (`roof.gilt`), Voth, Republic |
+| `patterns/common/medallion-sunray` | `inlay.jimjam.sunray` | plaza and floor medallions. A single panel: map once |
+| `patterns/jimjam/shaft-spiral`, `-chevron`, `-diamond`, `-ogee`, `-fleur`, `-tracery` | `patterns/jimjam/shaft-*` | carved brick for any brick culture |
+| `rock.sandstone`, `rock.sandstone.red` (full colour), `stone.chiselled`, `earth.adobe.pale`, `wood.timber` (tintable) | Shade's `rock.sandstone`, `.boulder`, `.carved`, `earth.pueblo`, `wood.timber.pueblo` | desert cliffs and boulders (sedesert, ebadlands, crater drylands); tooled stone; adobe in Yuni, Locus, Iziz, Dalab; plain timber anywhere |
+| `roof.thatch.reed`, `fibre.rattan`, `roof.shingle.cedar`, `fibre.rope.twist`, `metal.rust.plate` (tintable) | Mav's `thatch.reed.mavs`, `cane.woven`, `roof.shingle.shakes`, `rope.twist`, `metal.rust.plate` | thatch also for Ring Sea `thatch.reed` and Reed Lake reed roofs; the rest in any culture |
+| `patterns/common/frieze-palmette-red` | Mav's `trim.council` | lacquered friezes in Xanadu, Highlands, Iziz |
+
+**Look first:** `wood.endgrain` has one ring centre per tile (map it per log face, not across a wall); `plastic.moulded` reads as much like
+scuffed render as plastic; `wood.timber` came out grey-brown after muting (it is tinted in use); `roof.shingle.cedar` (seam score 2.3 across)
+and `brick.red` (2.9 down) have the highest seam scores, though neither seam showed on the contact sheet; `common/valance-scallop` and
+`common/jali-diamond` cut out on their black; `xanadu/bird` and `xanadu/deer` were cropped to their period (motifs whole, margins narrower).
+Nothing in this delivery has been judged in a render yet.
+
+#### Delivered 2026-10-06: texturepalooza 2 (`tex (2).zip`, 28 images: 21 surfaces, 7 cards)
+
+Batches `chatgpt-2026-10l-texturepalooza2.json` (process.py) and `chatgpt-2026-10l-texturepalooza2-cards.json` (cards.py). They answer the
+"Buildings, vehicles and biomes audit" rows above. Four card sheets came on flat grey, not magenta (`card.beard`, `card.reed`, `card.paddle`,
+`card.blossom`): each was keyed first by a flood from the sheet's border through background-grey pixels (so the grey-green moss and the
+cream petals survive), with the soft contact shadows under the reed clumps and leaves keyed too, then run through cards.py with no
+chroma key (the meta's `_source.note` says so). Ask for magenta next time: the grey key is a workaround.
+
+| Set | Prompt row | Reuse |
+|---|---|---|
+| `bark.birch`, `bark.birch.b` | `bark.birch` | nhighlands and nwlowlands birches; two variants for alternate trunks |
+| `bark.smooth` | `bark.smooth` | beech, alder, rowan: the "pale"/k2 smooth kind in nine biomes |
+| `bark.araucaria`, `bark.lepido` | same | monkey puzzles (swbay, rift); scale trees (eastabyss, rift k0) |
+| `bark.cork`, `bark.madrone`, `bark.kapok`, `bark.cherry`, `bark.mosaic` | the minor bark rows | swlowlands cork, madrone, ringbark, crimson ghost and ribbon gum (`bark.mosaic`), nwlowlands paperbark, hyperjungle kapok (thorn bosses stay geometry). Madrone, cherry and mosaic are full colour |
+| `bark.palm` | `bark.palm` (and `bark.treefern`) | wadi and water palms; the tree-fern trunks too (frond-base scars in fibre) |
+| `leaf.araucaria` | `card.araucaria` (came as a surface) | a surface for the monkey puzzle's rope branches, which are geometry, so a surface suits them better than a card |
+| `leaf.palm.thatch` | `card.palm` (came as a surface) | palm thatch and screens (Mav's design row `leaf.palm.thatch`); **`card.palm` is still owed** for frond cards |
+| `skin.cactus` | `skin.cactus` | columnar cactus, prickly pear, barrel, pitaya |
+| `ground.cinder` | `ground.cinder` | black sand and lava in the bays; volcanic ground in rift and eastabyss |
+| `ground.lilypond` | `card.lotus` (came as a surface) | a still-water pond surface (xanadu, nwbay); full colour. A lotus card is still owed if single floating pads are wanted |
+| `feather.plumage.b`, `organic.scale.olive.b` | extras | second plumage; lizard scales (sedesert, eastabyss) |
+| `metal.tin.patchwork` | `metal.tin.patchwork` | Locus tinmirror; scrap and shanty walls |
+| `patterns/common/sail-band` | same | Locus sail band; woven borders anywhere; greyscale, tinted |
+| `patterns/common/banner-hung` | `cloth.banner.hung` | banners; a single panel, fringe at the foot: map once |
+| `card.chainlink`, `card.acacia`, `card.sword`, `card.beard`, `card.reed`, `card.paddle`, `card.blossom` | same | fences; the biome cards of the audit |
+
+Still owed from the audit after this: `card.palm` (fronds as a card), `card.lichen`, `card.lotus` (single pads), `bark.strangler`, `card.samphire`,
+`card.ginkgo`, `card.heath`, `ground.shingle`, `skin.marine`, `wood.petrified`; and every building row in "prompted earlier and still owed".
+
+#### The biome fruit (2026-10-06, late)
+
+The catalog's fruit pieces (`krator-master-furniture-generic-fruit.js`, biomes/FRUIT.md) take texture families by palette key
+(FAMILY_SPLITS in kits/catalog/krator-furniture-core.js): fruitSkin (`fruit.skin.orange`), fruitHusk (`fruit.husk`), fruitShell
+(`fruit.capsule`), fruitScale (`fruit.scale`), fruitFlesh (`fruit.flesh`), fruitJelly (`fruit.jelly`), fruitSeed (`fruit.seeds`),
+fungus (`organic.fungus.cap`). A key splits by an explicit list or by its last word (…Husk, …Shell, …Flesh or Pulp, …Water or Jelly,
+…Seed or Kernel); shaded parts take the nearest fruit key's family. Hosts map `f_fruitSkin` and the rest (Girder, Scyvoi).
+`fruit.seeds`, `fruit.flesh`, `fruit.scale` and `fruit.jelly` were generated for this (batches `chatgpt-2026-10u-fruit`, `-10v-jelly`).
+
+#### Delivered 2026-10-06, late: the last nineteen prompts (Downloads)
+
+Batches `chatgpt-2026-10r-owed.json` and `-cards.json`. Tintable: `earth.rammed` (lifts), `band.xanadu.twig`, `roof.turf`, `bark.whorled`,
+`bark.paperbark`, `organic.fungus.gill` (the radiating gills meet in a soft band at the repeat), `skin.alien.banded`, `metal.corrugated.rusty`
+(rust streaks kept), `metal.rust.fine` (came out an even pale-grey grain). Full colour: `tile.bath.lens`, `panel.solar`, `wood.petrified`,
+`patterns/xanadu/sun-emblem`, `patterns/nacre/shell-inlay`, `patterns/nacre/pearl-mosaic`, `patterns/reedlake/awayo`. Cards (nine-cell
+sheets, magenta keyed): `card.pods`, `card.litter`, `card.reef`. Wired the same evening: `metal.corrugated.rusty` on Post-Apoc's corr and cont. `metal.rust.fine` was tried on the Ancients kit's
+rust and taken back out: it removes the stripes but reads as flat brown paint with no rust patches, and up close the stretched UVs still
+pull its grain into streaks; the Ancients rust stays procedural (the stretch, not the texture, is the problem).
+Also wired that evening: `earth.rammed` (Dalab dRammed; Xanadu xEarth, in place of earth.adobe), `roof.turf` (the vendored Highlands turf in
+Highlands, Dalab, Reed Lake, Ys; Dalab dTurf), `band.xanadu.twig` (xPenbey), `tile.bath.lens` (xBTile, full colour), `patterns/nacre/pearl-mosaic`
+(Ys hkMosaic, in place of paving.shell.terrazzo), `panel.solar` (motor-vehicles slot 10 `solar`: the Republic tractor's clam lid), and in the
+biomes `card.pods` (sedesert), `card.litter` (ebadlands), `card.reef` cells (rift frill, candle, anemone; xanadu anemone, frill; nhighlands
+fin; nwlowlands pen), `bark.whorled` and `wood.petrified` (xanadu bark0, bark1), `bark.paperbark` (nwlowlands bk.paper), `organic.fungus.gill`
+(swbay gill), `skin.alien.banded` (ebadlands bark.alien, LIBBARK slot 5). Not wired: `patterns/xanadu/sun-emblem` (its slot is a cut-out),
+`patterns/nacre/shell-inlay`, `patterns/reedlake/awayo` (the procedural stripe was kept by choice), crater drylands' litter (its own card
+loader has no litter entry), `card.lotus.bloom` and `card.palm.coconut` (added 2026-10-06 late; no slot asks for them yet).
+Voth (same evening): the owner's two Voth patterns, `patterns/voth/kilim-star` and `patterns/voth/kilim-tri`, as two new FAMMAT
+families, `tapestry` (hanging banners: the guild hall's door banners, the weavers' loom cloth, the bridges' drop banners, banner panels,
+the coastguard pennant) and `kilim` (canopies and stall awnings); full colour, the pieces drawn white over them (vothPatCol in
+47-texture.js), their banner colours without the pack; they sway like cloth. 76 draw calls, within budget.
+Two other sheets in Downloads (lotus blossoms, palm fronds) belong to another session and were left alone.
+
+#### Delivered 2026-10-06: an unprompted extra (pasted into the chat)
+
+Batch `chatgpt-2026-10p-gnarled.json`. `wood.gnarled`: weathered, wind-twisted wood with flowing grain and knots, full colour, 1 m tile.
+Not wired; it is there for driftwood, burl furniture (carved tabletops, bowls, handles), old posts and stumps.
+
+#### Delivered 2026-10-06: six owed prompts (pasted into the chat)
+
+Batch `chatgpt-2026-10n-owed.json`. `skin.sky-ray` (Iziz `fauna_ray`; the `FAUNATEX` hook is now full), `hide.fuzz.pterosaur` (Girder
+`fly_q_fuzz`, in place of the borrowed `hide.strider`), `cloth.canvas.striped` (the tinted awning stripe; not wired yet), `concrete.ancient`
+(board-formed with tie holes and weeps, 1.95 m tile; not wired yet: the Ancients kit has no materials.json), `concrete.ancient.b` (an extra:
+board marks without tie holes, a break-up partner), `wood.log.carved` (round-log walls; not wired yet). All tintable.
+
+#### Delivered 2026-10-06: fourteen owed building prompts (pasted into the chat)
+
+Batches `chatgpt-2026-10o-owed.json` and `-cards.json`. Reed Lake: `patterns/reedlake/band`, `ground.reedbed`, `reed.layers`, `reed.bundle`.
+Ancients: `metal.worn` (full colour). Port and Ring Sea: `patterns/port/hazard`, `patterns/port/primer`, `plate.hex`. Post-apoc: `concrete.slab`.
+Voth and Locus: `organic.fungus.stalk`. Highlands: `stone.rendered.ruined`. Dalab: `patterns/dalab/banner` (a single panel on flat grey, keyed
+tight; map once over the banner quad, tinted), `patterns/dalab/mural-god-hero`, `patterns/dalab/mosaic` (the sheet's diamond grid drifts:
+cropped by hand to its best two-period window first). Not wired to any build yet. **Look first:** `reed.layers` keeps a seam score of 3.0
+down (the bottom course is cut through); fine on a contact sheet, judge it on an island side.
 
 ## Built so far (2026-10-02)
 
@@ -1404,6 +1638,15 @@ For every generated image, write the exact prompt into the batch file's `_source
 - No new canvas painter without a `TEX.def` record or a PNG bake (GODOT-PLAN.md rule 6).
 - Every library and pattern image has a `meta.json` with its source and licence. Generated images record
   the prompt.
+- Every prompt handed to the owner is complete and paste-ready (`PROMPTS-ready.md`): the template, the material line and
+  the tint sentence written out in each block (near-colourless "so it can be tinted", or "full colour: not tinted"), never
+  "add the muting sentence". Tintable rows leave out the code's tint hexes, which only invite colour into a grey image.
+- `PROMPTS-ready.md` holds only what is still owed: when a delivery is processed, its blocks are deleted there and listed under
+  "Delivered and removed" (with the id it landed as). Before handing prompts to the owner, check them against the library and every
+  local worktree; never append without pruning.
+- Every cut-out (card, wing, sprite) is asked for on solid flat bright magenta (#ff00ff), and the prompt says so in full:
+  "no magenta, pink or purple anywhere in the subject; no grey or white background". (2026-10-06: four sheets came on grey and
+  had to be keyed by hand.)
 
 ## Open decisions
 

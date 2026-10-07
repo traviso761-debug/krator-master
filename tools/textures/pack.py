@@ -18,7 +18,9 @@ Processing, per family:
            (default 0.78, the brightness of the procedural greys the builds were tuned on); out = L*(1-keep) + C*keep.
            keep 0 is a pure grey detail map that the vertex or instance colour colours; keep 1 keeps the set's hue.
            tint.contrast (default 1) scales each pixel's distance from the mean first: a set that reads flat at a
-           distance gets its furrows and seams back.
+           distance gets its furrows and seams back. tint.colour ('#rrggbb', optional) gives the grey part a hue at the
+           same brightness: for builds whose procedural maps carry their colour (Reed Lake's straw), so a grey set
+           matches the map it replaces under the same instance tint.
   normal   resized and renormalised (OpenGL convention, as the library and Godot use)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
@@ -26,6 +28,8 @@ Processing, per family:
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
   optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
+  cell     `"cell": [x0, y0, x1, y1]` (fractions from the sheet's top left): the host shows one cell of a card sheet (a
+           single plant from a nine-plant sheet); passed through to the pack entry
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
@@ -94,6 +98,10 @@ def process(fam, cfg, size):
     con = float(t.get('contrast', 1.0))            # >1 deepens the set's own light and dark around its mean
     k = (m + (L - m) * con) / np.maximum(L, 1e-4)  # per-pixel factor that applies the contrast to L and to the colour
     grey = np.repeat((L * k / m * target)[..., None], 3, axis=2)
+    if t.get('colour'):   # a hue for the grey part: the procedural map's mean colour, at the same mean brightness
+        hx = t['colour'].lstrip('#')
+        c = np.array([int(hx[i:i + 2], 16) / 255.0 for i in (0, 2, 4)])
+        grey = grey * (c / max(float(c @ np.array([0.2126, 0.7152, 0.0722])), 1e-4))
     col = a * k[..., None] / m * target
     rgb = grey * (1 - keep) + col * keep
     if card:
@@ -119,11 +127,14 @@ def process(fam, cfg, size):
         'specular': cfg.get('specular', 0.5),
         'breakup': cfg.get('breakup'),
         'card': card,
-        'tint': {'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
+        'tint': dict({'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
+                     **({'colour': t['colour']} if t.get('colour') else {})),
         'roughLift': cfg.get('roughLift', 0.0),
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
         'files': {},
     }
+    if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
+        entry['cell'] = cfg['cell']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name

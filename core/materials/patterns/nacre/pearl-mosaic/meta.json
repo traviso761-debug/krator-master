@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1167,
+    1247
+   ],
+   "seam_after": [
+    0.893,
+    1.389
+   ],
+   "seam_before": [
+    5.478,
+    1.947
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.25,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "nacre/pearl-mosaic",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.25,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Iridescent Mermaid Scale Mosaic.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Iridescent Mermaid Scale Mosaic.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id nacre/pearl-mosaic).",
+  "reuse": "Ys nacre culture pearl scale mosaic",
+  "sha1": "bd702d96b2ef7d0e3b2e16de1863602f3a35dfe8"
+ }
+}

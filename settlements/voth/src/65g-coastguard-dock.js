@@ -620,7 +620,7 @@ function arenaDeckSquare(c, y, hw){
      side, from up near the pillar tops. */
   function hangBanner(ax,az, bx,bz){
     var mx=(ax+bx)/2, mz=(az+bz)/2, dh = pillarH*0.62;
-    BOX(mx, y+pillarH*0.88-dh, mz, 0.14, dh, 3.4, Math.atan2(bx-ax,bz-az), pick(BANNERC), 'cloth');
+    BOX(mx, y+pillarH*0.88-dh, mz, 0.14, dh, 3.4, Math.atan2(bx-ax,bz-az), vothPatCol('tapestry', pick(BANNERC)), 'tapestry');
   }
   [-1,1].forEach(function(sz){
     for(var k=0;k<perSide-1;k++){

@@ -86,6 +86,9 @@ KITS = [('54', 'sedesert', ['50-biome-sedesert-species.js', '55-biome-sedesert-t
 # a biome fragment must not reach into a host or a building engine
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'VG.', 'TRAIL', 'IZV', 'YKIT', 'VERGE']
 
+MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record
+SIDE = {}   # the library packs' maps, written to dist/verge.tex.js (tools/textures/matlib_pack.py write_sidecar)
+
 # the catalog's cultures Verge furnishes from (kits/catalog/furniture_bundle.py; names are file suffixes)
 FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs']
 INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the middle-class houses; yuni-town: civic, trade, poor, rich
@@ -118,7 +121,9 @@ def izv_bundle():
     return safe('/* IZV: the Iziz Vernacular kit and its Ancients core, one closure (settlements/verge/build.py). GENERATED: '
                 'edit settlements/iziz/src, core/materials or kits/ancients/src. */\n'
                 'var IZV = (function(){\n' + body +
-                '\nreturn { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
+                '\n/* the material library: the vernacular\'s own families from Iziz\'s pack (46-matlib-pack-iziz.js) */\n'
+                'if(typeof KMAT !== "undefined" && KMAT.bindMat) KMAT.bindMat("iziz", MAT, {tile: KMAT.ANCIENT_TILES});\n'
+                'return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
                 '  TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),\n'
                 '  FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),\n'
                 '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT) for f in fs]
@@ -197,6 +202,23 @@ def main():
         print('BIOME FRAGMENT DEPENDS ON A HOST:\n  ' + '\n  '.join(bad)); return 1
     cat, sets = catalog_bundle()
     frags['62-catalog-bundle.js'] = (cat, 'GENERATED: kits/catalog (%s) + kits/interiors (sets %s)' % (', '.join(FURN_CULTURES), ', '.join(sets)))
+    # the material library (core/materials/PLAN.md): the record code (KMAT), then the packs of the builds Verge assembles:
+    # Iziz's (IZV binds them; not its fauna sheets), Locus's (its 47-texture.js binds them inside YKIT) and the two biomes'
+    # (BIO.libSwap). The maps go in dist/verge.tex.js beside the page (SIDE), not in it: the gallery takes 16 MB a file.
+    for f in MATLIB_RECORD:
+        frags[f] = (rd(os.path.join(ROOT, 'core', 'materials', 'record', f)), 'core/materials/record/' + f)
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    izp = os.path.join(ROOT, 'settlements', 'iziz')
+    izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+    frags['46-matlib-pack-iziz.js'] = (matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith('fauna')], side=SIDE),
+                                       'GENERATED: settlements/iziz/tex (maps in verge.tex.js)')
+    frags['46-matlib-pack-locus.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus', side=SIDE),
+                                        'GENERATED: settlements/locus/tex (maps in verge.tex.js)')
+    frags['53z-bio-matlib-pack.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'sedesert'), 'sedesert', side=SIDE),
+                                       'GENERATED: biomes/sedesert/tex (maps in verge.tex.js)')
+    frags['55z-bio-matlib-pack.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss', side=SIDE),
+                                       'GENERATED: biomes/eastabyss/tex (maps in verge.tex.js)')
     izv, izf = izv_bundle()
     frags['64-izv-bundle.js'] = (izv, 'GENERATED: ' + ', '.join(izf))
     yk, ykf = ykit_bundle()
@@ -209,6 +231,7 @@ def main():
         out.append(frags[f][0])
     html = ''.join(out)
     os.makedirs(DIST, exist_ok=True)
+    html = matlib_pack.write_sidecar(SIDE, html, DIST, 'verge.tex.js')
     with open(os.path.join(DIST, OUT), 'w', encoding='utf-8') as fh:
         fh.write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)

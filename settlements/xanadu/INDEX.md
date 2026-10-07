@@ -21,13 +21,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-xa-tex.js` | 10 | the painted palette used inside colour maps (14); rammed earth: 2 m tile, lift lines every ~0.37 m (17); whitewash over rubble: 2 m tile (25); small glazed tiles: 2 m tile, 0.25 m tiles with  (32); the twig band (penbey): 1 m tile, bundled tamari (39); fieldstone (rubble): 4 m tile (46); valley rock (the hillsides): 8 m tile (56); the valley floor: dry grass over pale earth (64); jali (pierced stone screen): 1 m tile, alpha-cut (70); window valance: pleated cloth, scalloped hem (al (77) |
@@ -48,11 +48,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `85-xa-water.js` | 12 | the slope pieces (48) |
 | `85b-xa-garden.js` | 20 | the five tile maps (9) |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
-| `86-bio-20-core-kit.js` | 17 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); indexed buckets (145); bake (168) |
+| `86-bio-20-core-kit.js` | 19 | merged buckets (46); runtime LOD (xanadu-1, additive) (140); indexed buckets (164); bake (187) |
 | `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 1 |  |
-| `86-bio-50-biome-xanadu-species.js` | 52 **big** | THE LAKE COLOUR (20); the tree species (73); leaf and flower textures (182); an iridescent bark (shared hook; the Rift kit's) (330); bark textures (342); geometries local to this biome (391); materials (466); instanced items (523) |
+| `86-bio-50-biome-xanadu-species.js` | 53 **big** | THE LAKE COLOUR (20); the tree species (73); leaf and flower textures (182); an iridescent bark (shared hook; the Rift kit's) (330); bark textures (342); geometries local to this biome (391); materials (466); instanced items (526) |
 | `86-bio-55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (502); the pass (534); one tree at a point (additive, for a world's gar (622) |
 | `86-bio-60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
 | `86-bio-65-biome-xanadu-dress.js` | 5 |  |
@@ -63,6 +63,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87b-xa-andean.js` | 12 | POOR: the Palopó shop-house (28); MIDDLE: the cholet (51); RICH: the cholet palace (73) |
 | `87c-xa-erewhon.js` | 19 | a small boat and the pleasure barge (8); the quay, the boat shed, the warehouse (26); the lighthouse: an octagonal stone tower on a ro (60); the garden teahouse: on a double rill plot (16 m (80); the prison, cut into the cliff (96); the mouth of the Caves of Ice (110); the palace gate: a mosaic iwan between two gilt- (125); the Pleasure Dome of the Bay: the biome's ruin o (136) |
 | `88-xa-dress.js` | 12 | the palette and the painted motifs (colour-carry (13); the paint filter on kput (58); the twins (102) |
+| `88y-xanadu-matlib.js` | 1 |  |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |

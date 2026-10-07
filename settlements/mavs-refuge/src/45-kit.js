@@ -266,6 +266,24 @@ function nlMaterial(mat, key, extraHook, wpName){
   return mat;
 }
 
+/* one material for a FAMMAT family, as Girder's 45-kit.js: a library family (47-texture.js mtexLibrary) gets the set's
+   colour, normal and roughness maps on a MeshStandardMaterial; a procedural one keeps the MeshLambertMaterial it always
+   had, with the same parameters, so ?mat=proc is the old look. opt: vertexColors, alphaTest, side. */
+function famMaterial(fm, opt){
+  opt = opt || {};
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!opt.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:opt.alphaTest||0, side:opt.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  var p = { color:0xffffff, map: fm.tex || null, alphaTest: opt.alphaTest||0, side: opt.side||THREE.FrontSide };
+  if(opt.vertexColors) p.vertexColors = true; else p.transparent = false;
+  return new THREE.MeshLambertMaterial(p);
+}
+
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
 function emitBuckets(){
   var total=0, meshes=0;
@@ -275,14 +293,13 @@ function emitBuckets(){
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
-                  transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
+            : famMaterial(fm, { alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -519,9 +536,9 @@ function emitMerged(){
     g.setAttribute('color',    new THREE.Float32BufferAttribute(K.col,3));
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
-    var mat = new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
-                  alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    nlMaterial(mat, 'mb'+fam);
+    var mat = famMaterial(fm, { vertexColors:true, alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
+    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;

@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    447,
+    481
+   ],
+   "seam_after": [
+    1.241,
+    0.904
+   ],
+   "seam_before": [
+    3.36,
+    3.278
+   ],
+   "source_size": [
+    500,
+    500
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "brick",
+  "id": "jimjam/shaft-ogee",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1.08
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Ornamental Terracotta Brick Pattern Mosaic__ogee.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "cut from a multi-panel sheet (ogee), a few px inset from the panel edges",
+  "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+  "prompt": "Prompt row patterns/jimjam/shaft-* (ogee) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+  "sha1": "cec8ce214db210ad2521ae46fe90b607f752d0cf"
+ }
+}

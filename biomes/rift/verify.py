@@ -154,6 +154,11 @@ const R=[];
   if(B.rendered) R.push({name:'showcase-rendered-triangles', ok:renderer.info.render.triangles<=B.rendered, budget:true,
           detail:renderer.info.render.triangles+' / '+B.rendered+' triangles drawn at this camera'+(T.lodMeshes?' ('+(T.rendered||0)+' of them in '+T.lodMeshes+' lod chunk meshes)':'')}); }
 
+// the host's own checks (91-host-probe.js), and their NEGATIVE CONTROLS: each is fed a broken input and must fail.
+if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
+  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
+
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }

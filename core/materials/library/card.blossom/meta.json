@@ -1,0 +1,41 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.blossom",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Nine Cream Blossom Botanical Sprigs__keyed.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key",
+  "original_title": "Nine Cream Blossom Botanical Sprigs.png",
+  "prompt": "Prompt row card.blossom in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "cherry blossom twigs and wisteria racemes (lowlands, xanadu); petals pale so they tint",
+  "sha1": "96eb5b8f459e4a19cbae658d90c02b4d2bc57457"
+ }
+}

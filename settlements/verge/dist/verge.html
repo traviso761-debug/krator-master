@@ -23,6 +23,10 @@ canvas{display:block}
 <pre id="insp">inspector: hover the world</pre>
 <div id="hud"></div>
 <pre id="errs"></pre>
+<script src="verge.tex.eastabyss.js"></script>
+<script src="verge.tex.iziz.js"></script>
+<script src="verge.tex.locus.js"></script>
+<script src="verge.tex.sedesert.js"></script>
 <script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
 <script>
 
@@ -352,8 +356,28 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
 
 // ---------------------------------------------------------------- merged buckets
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,
+  uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};   /* a library map (BIO.libSwap) tiles at its own size */
  return BIO.buckets[fam];};
+// THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
+// family in the page's pack (KMAT.pack(kit), from the kit's materials.json) the library map in place of its procedural one:
+// a card with `cell` (materials.json) shows that cell of its sheet only. A slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
+// table's entry its key and name (MAT.bk.smooth -> 'bk.smooth'). A card (the
+// slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
+// its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured
+// brightness, so the species tints keep their tone. No pack (the open world): nothing changes. Returns {slot: lib}.
+BIO.libSwap=function(kit,MAT){const out={};
+ if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
+ const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
+  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+  else m.userData.libScale=L.scale;
+  m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
+ for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
+  else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
+  else one(v,k);}
+ return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
 // the shader untouched, and the renderer encodes its output to sRGB, so a raw
@@ -743,6 +767,77 @@ Object.assign(BIO.fn,{qEuler,qFacing,qUp});
   root.KWALK=W;
 })(typeof window!=='undefined'?window:globalThis);
 
+// ==================== 23-mat-record.js   (core/materials/record/23-mat-record.js)
+/* ============================== MATERIAL RECORDS (core/materials/record) ==============================
+   GODOT-PLAN.md Phase 3 and core/materials/PLAN.md "The record": every build material is one record in one
+   vocabulary, so the exporter writes a table a Godot importer applies without reading JS.
+
+     { id, family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest,
+       scale:[u,v] (world metres per tile), tint (true: the build's vertex or instance colour multiplies the map),
+       normalScale, pattern, hook, lib (library set id), tex (TEX.def id for a procedural map), bake }
+   specular is Godot's StandardMaterial3D `specular` (0..1, 0.5 = the physical default): how much direct light a
+   dielectric reflects. Palette-tinted surfaces under a strong sun want less, or grazing views wash them grey.
+   breakup {mix, macro, cell} hides the tiling of a big surface (a library shader, 'breakup'): a world-space noise of
+   `cell` metres blends the map with a shifted copy of itself (up to `mix`), and a slower one varies the brightness
+   by +-`macro`. Godot: one .gdshader with the same three parameters.
+
+   [G data]: no THREE, no DOM. A build declares an ADAPTER from its own material names (FAMMAT keys, MAT
+   names, catalog family strings) onto records; its old names stay valid (PLAN.md "Order of work" 5).
+
+     KMAT.record(o)                   a checked record (unknown fields throw; defaults filled)
+     KMAT.pack(build, {fam:{...}})    the build's library pack, written by tools/textures/pack.py into a generated
+                                      fragment: per family the library id, its processed maps (data URLs) and fields
+     KMAT.packed(build, fam)          that family's pack entry, or null
+     KMAT.adapter(build, {name:rec})  register a build's records; KMAT.table(build) returns them as one table
+     KMAT.mode                        'lib' (library maps where the pack has them) or 'proc' (the procedural maps
+                                      only: the look before the library); the host sets it from ?mat=proc
+*/
+var KMAT = (function(){
+  'use strict';
+  var FIELDS = ['id','family','colour','map','normalMap','roughnessMap','roughness','metal','specular','emissive','doubleSided',
+                'alphaTest','scale','tint','normalScale','breakup','pattern','hook','lib','tex','bake','note'];
+  var DEF = { colour:'#ffffff', roughness:1, metal:0, specular:0.5, emissive:null, doubleSided:false, alphaTest:0, scale:[1,1],
+              tint:true, normalScale:1, breakup:null, map:null, normalMap:null, roughnessMap:null, pattern:null, hook:null,
+              lib:null, tex:null, bake:false, note:'' };
+  var PACKS = {}, ADAPTERS = {};
+  function record(o){
+    if(!o || typeof o !== 'object') throw new Error('KMAT.record: an object, please');
+    Object.keys(o).forEach(function(k){ if(FIELDS.indexOf(k) < 0) throw new Error('KMAT.record '+(o.id||'?')+': unknown field '+k); });
+    if(!o.id) throw new Error('KMAT.record: every record needs an id');
+    if(!o.family) throw new Error('KMAT.record '+o.id+': every record needs a family');
+    var r = {};
+    FIELDS.forEach(function(k){ r[k] = (k in o) ? o[k] : (k in DEF ? DEF[k] : null); });
+    if(!Array.isArray(r.scale) || r.scale.length !== 2 || !(r.scale[0] > 0 && r.scale[1] > 0))
+      throw new Error('KMAT.record '+o.id+': scale is [u,v] metres per tile, both > 0');
+    if(r.roughness < 0 || r.roughness > 1 || r.metal < 0 || r.metal > 1 || r.specular < 0 || r.specular > 1) throw new Error('KMAT.record '+o.id+': roughness, metal and specular are 0..1');
+    if(r.alphaTest < 0 || r.alphaTest >= 1) throw new Error('KMAT.record '+o.id+': alphaTest is 0..1');
+    return r;
+  }
+  function pack(build, fams){ PACKS[build] = fams || {}; return PACKS[build]; }
+  function packed(build, fam){ var p = PACKS[build]; return (p && p[fam]) || null; }
+  function adapter(build, recs){
+    var out = {};
+    Object.keys(recs).forEach(function(name){ out[name] = record(recs[name]); });
+    ADAPTERS[build] = out; return out;
+  }
+  /* the table an exporter writes: maps are named by the library set or the TEX.def id, never as pixels */
+  function table(build){
+    var A = ADAPTERS[build] || {};
+    return { format:'krator-materials', version:1, build:build, mode:api.mode,
+      convention:{ units:'m', scale:'world metres per tile (u,v)', uv:'world-space planar or triplanar',
+        colour:'map colours sRGB; records with tint:true are multiplied by the vertex or instance colour (sRGB in the palette, linear on the GPU)',
+        normal:'OpenGL (+Y), as Godot expects', library:'core/materials/library/<lib>/ (albedo.jpg, normal.png, roughness.png); a pack holds processed copies' },
+      records:Object.keys(A).map(function(name){ var r = A[name], o = { name:name };
+        Object.keys(r).forEach(function(k){ if(r[k] !== null && k !== 'map' && k !== 'normalMap' && k !== 'roughnessMap') o[k] = r[k]; });
+        o.maps = r.lib ? { from:'library', lib:r.lib } : r.tex ? { from:'procedural', tex:r.tex, bake:true } : null;
+        return o; }) };
+  }
+  var api = { version:1, FIELDS:FIELDS, record:record, pack:pack, packed:packed, adapter:adapter, table:table, mode:'lib',
+              packs:PACKS, adapters:ADAPTERS };
+  return api;
+})();
+if(typeof window !== 'undefined') window.KMAT = KMAT;
+
 // ==================== 25-core-mask.js   (core/mask/25-core-mask.js)
 // ================================================================= CORE MASK — a city's placement raster ([G data])
 // GODOT-PLAN.md Phase 2 item 5. The four mask-placed cities (Iziz, Dalab, Erewhon, Roketstad) paint their buildable
@@ -907,6 +1002,157 @@ Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 
  if (typeof module !== 'undefined' && module.exports) module.exports = K;
  root.KMASK = K;
+})();
+
+// ==================== 25-matlib-host.js   (core/materials/record/25-matlib-host.js)
+/* ============================== MATERIAL LIBRARY HOST (core/materials/record) ==============================
+   [web]: the browser half of the material records. Sets KMAT.mode from the URL (?mat=proc shows the procedural
+   look the build had before the library), and turns a pack entry's data URLs into three.js textures. Moves into
+   core/host/ with Phase 1 of GODOT-PLAN.md. ?breakup=0 turns the tiling break-up off, to compare.
+
+     KMAT.textures(entry, {aniso})   {map, normalMap, roughnessMap} as THREE textures (repeat-wrapped; the colour
+                                     map sRGB, the others linear). Each loads asynchronously: window._texPending
+                                     counts the images still decoding, so a verifier waits for 0.
+*/
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('25-matlib-host: load 23-mat-record.js first');
+  var q = (typeof location !== 'undefined') ? (location.search + location.hash) : '';
+  KMAT.mode = /[?&#]mat=proc\b/.test(q) ? 'proc' : 'lib';
+  KMAT.breakupOn = !/[?&#]breakup=0\b/.test(q);   /* ?breakup=0: the library maps without the tiling break-up, to compare */
+  if(typeof window !== 'undefined') window._texPending = 0;
+  var cache = {};
+  function tex(url, srgb, aniso, flipY){
+    var key = url.length + ':' + url.slice(-48) + (srgb ? 's' : 'l') + (flipY === false ? 'f' : '');
+    if(cache[key]) return cache[key];
+    var t = new THREE.Texture();
+    if(flipY === false) t.flipY = false;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso || 1;
+    t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ t.image = img; t.needsUpdate = true; window._texPending--; };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed texture failed to decode'); };
+    img.src = url;
+    return (cache[key] = t);
+  }
+  /* Godot's `specular` in three.js r128: scale the direct specular term (0.5 leaves it as it is). A shader hook:
+     call it from the material's onBeforeCompile. */
+  KMAT.specularHook = function(sh, specular){
+    var k = (specular == null ? 0.5 : specular) / 0.5;
+    if(Math.abs(k - 1) < 1e-6) return;
+    sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
+      '#include <lights_fragment_end>\n  reflectedLight.directSpecular *= ' + k.toFixed(3) + ';');
+  };
+  /* 'breakup' (core/materials/PLAN.md "Repetition break-up"): a world-space value noise blends each map with a copy
+     shifted by a fixed offset (the same scale and direction, so planks stay planks), and a slower noise varies the
+     brightness. Colour, normal and roughness use the same mask, so they stay in register. b = {mix, macro, cell}. */
+  KMAT.breakupHook = function(sh, b){
+    if(!KMAT.breakupOn || !b || !(b.mix > 0 || b.macro > 0)) return;
+    var cell = (b.cell || 8).toFixed(3), mx = (b.mix || 0).toFixed(3), mc = (b.macro || 0).toFixed(3);
+    var noise = [
+      'varying vec3 vKmWP;',
+      'float kmH(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }',
+      'float kmN(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);',
+      '  return mix(mix(mix(kmH(i), kmH(i+vec3(1.,0.,0.)), f.x), mix(kmH(i+vec3(0.,1.,0.)), kmH(i+vec3(1.,1.,0.)), f.x), f.y),',
+      '             mix(mix(kmH(i+vec3(0.,0.,1.)), kmH(i+vec3(1.,0.,1.)), f.x), mix(kmH(i+vec3(0.,1.,1.)), kmH(i+vec3(1.,1.,1.)), f.x), f.y), f.z); }',
+      'const vec2 KM_OFF = vec2(0.371, 0.613);'].join('\n');
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vKmWP;')
+      .replace('#include <project_vertex>', '#ifdef USE_INSTANCING\n  vKmWP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;\n' +
+               '#else\n  vKmWP = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#endif\n#include <project_vertex>');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + noise)
+      .replace('#include <map_fragment>', [
+        'float kmM = smoothstep(0.3, 0.7, kmN(vKmWP / ' + cell + ')) * ' + mx + ';',
+        '#ifdef USE_MAP',
+        '  vec4 texelColor = mix(texture2D(map, vUv), texture2D(map, vUv + KM_OFF), kmM);',
+        '  texelColor = mapTexelToLinear(texelColor);',
+        '  diffuseColor *= texelColor;',
+        '#endif',
+        'diffuseColor.rgb *= 1.0 + ' + mc + ' * (kmN(vKmWP / (' + cell + ' * 2.7) + 19.1) * 2.0 - 1.0);'].join('\n'))
+      .replace('#include <roughnessmap_fragment>', THREE.ShaderChunk.roughnessmap_fragment
+        .split('texture2D( roughnessMap, vUv )').join('mix(texture2D( roughnessMap, vUv ), texture2D( roughnessMap, vUv + KM_OFF ), kmM)'))
+      .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps
+        .split('texture2D( normalMap, vUv ).xyz')   /* both branches (object and tangent space) */
+        .join('(normalize(mix(texture2D( normalMap, vUv ).xyz * 2.0 - 1.0, texture2D( normalMap, vUv + KM_OFF ).xyz * 2.0 - 1.0, kmM)) * 0.5 + 0.5)'));
+  };
+  /* every hook a library material takes, in order; and the matching part of its program cache key */
+  KMAT.libHooks = function(sh, L){ KMAT.specularHook(sh, L.specular); KMAT.breakupHook(sh, L.breakup); };
+  KMAT.libKey = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
+  /* opt.flipY false: row 0 of the image is v = 0, as in a DataTexture or canvas texture a card replaces */
+  KMAT.textures = function(entry, opt){
+    var a = (opt && opt.aniso) || 1, fy = opt && opt.flipY;
+    return { map: entry.map ? tex(entry.map, true, a, fy) : null,
+             normalMap: entry.normalMap ? tex(entry.normalMap, false, a, fy) : null,
+             roughnessMap: entry.roughnessMap ? tex(entry.roughnessMap, false, a, fy) : null };
+  };
+  /* a pack entry's colour map as a decoded Image, for a build that composes it into a canvas (an atlas):
+     cb(img) once it has loaded; counted in window._texPending like the textures */
+  KMAT.image = function(entry, cb){
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ window._texPending--; cb(img); };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed image failed to decode'); };
+    img.src = entry.map;
+  };
+})();
+
+// ==================== 26-matlib-bind.js   (core/materials/record/26-matlib-bind.js)
+/* ============================== MATERIAL LIBRARY BIND (core/materials/record) ==============================
+   [web]: for the builds whose materials already exist as a table of three.js MeshStandardMaterials (the Ancients
+   lineage's MAT, the shared vernacular 69b-vern-mat.js): bind the build's packed library families onto them IN PLACE,
+   before the first frame, as Ys's 79z-ys-matlib.js does by hand. Nothing is rebuilt; ?mat=proc binds nothing.
+
+     KMAT.bindMat(build, MAT, opt)   for every key of MAT that the build's pack has a family of the same name, swap in
+                                     the set's colour, normal and roughness maps, repeated so one tile of the old map
+                                     (1/K metres, K from vWorldUV's userData.uvK, or opt.tile[key] in metres) becomes
+                                     the set's own tile; add the library hooks (specular, tiling break-up) after the
+                                     material's own hook (vWorldUV). opt.alias = {matKey: packFamily} binds a key to
+                                     another key's family (woodV takes wood). opt.tile = KMAT.ANCIENT_TILES for the Ancients lineage.
+                                     A material bound already is skipped. Returns {key: lib} for the bound ones.
+
+   THE PROGRAM KEY. three.js keys a compiled program on onBeforeCompile.toString(), and kbake's Material.clone() keeps
+   onBeforeCompile but drops customProgramCacheKey (core/materials/opt/69a-world-uv.js). So the wrapper is built with
+   Function() and carries the material's id (build, key, world-UV K, library key) in its SOURCE TEXT; it reaches the
+   material's old hook and its pack entry through KMAT.bound[id], which a clone shares (userData would not keep a
+   function: clone() JSON-copies it). */
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('26-matlib-bind: load 23-mat-record.js and 25-matlib-host.js first');
+  var BOUND = KMAT.bound = KMAT.bound || {};
+  /* the Ancients lineage's MAT (core/materials 22-materials.js, kits/ancients 54, 69, 69w, 34): metres per UV unit, so a set
+     keeps the procedural map's feature size (the panel sheet is 4 x 8 panels of 2 x 1 m, the concrete 12 boards of 0.65 m).
+     A material with a world-UV K (vWorldUV) uses that instead. */
+  KMAT.ANCIENT_TILES = { white: 8, rust: 8, verdigris: 4, whiteWorn: 4.8, concrete: 7.8, concreteR: 7.8, paving: 7.8, ringPave: 7.8,
+    brick: 1.2, corrugate: 2, timber: 2, tarp: 2, rubbleK: 2 };
+  KMAT.bindMat = function(build, MAT, opt){
+    opt = opt || {};
+    var out = {};
+    if(KMAT.mode !== 'lib' || !MAT) return out;
+    Object.keys(MAT).forEach(function(key){
+      var m = MAT[key];
+      if(!m || !m.isMeshStandardMaterial || m.userData.lib) return;   /* bound already (a second call binds only what is new) */
+      var fam = (opt.alias && opt.alias[key]) || key, L = KMAT.packed(build, fam);
+      if(!L) return;
+      var tile = m.userData.uvK ? 1 / m.userData.uvK : (opt.tile && opt.tile[key]) || null;
+      var rep = tile ? [tile / L.scale[0], tile / L.scale[1]] : [1, 1];
+      var T = KMAT.textures(L, { aniso: opt.aniso || 8 });
+      [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(rep[0], rep[1]); });
+      m.map = T.map;
+      if(T.normalMap){ m.normalMap = T.normalMap; m.normalScale = new THREE.Vector2(L.normalScale || 1, L.normalScale || 1); }
+      if(T.roughnessMap){ m.roughnessMap = T.roughnessMap; m.roughness = 1; }
+      m.metalnessMap = null; m.metalness = L.metal || 0;
+      var id = build + '|' + key + '|' + (m.userData.uvK || 0).toFixed(4) + KMAT.libKey(L);
+      BOUND[id] = { prev: m.onBeforeCompile || null, lib: L };   /* by id, not on userData: clone() JSON-copies userData */
+      m.onBeforeCompile = new Function('sh', 'r', 'var b = KMAT.bound[' + JSON.stringify(id) + '];\n' +
+        'if(b.prev) b.prev.call(this, sh, r); KMAT.libHooks(sh, b.lib);');
+      var prevKey = m.customProgramCacheKey && m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? m.customProgramCacheKey() : '';
+      m.customProgramCacheKey = function(){ return prevKey + '|km|' + id; };
+      m.userData.lib = L.lib;
+      m.needsUpdate = true;
+      out[key] = L.lib;
+    });
+    return out;
+  };
 })();
 
 // ==================== 30-core-foliage.js   (core/biome/30-core-foliage.js)
@@ -2073,6 +2319,16 @@ const BIOME_ZONES={
  sedesert:{center:[-3000,-120],R:2300,windows:{water:[-6400,-700,-1300,300]}},
  eastabyss:{center:[1500,-120],R:2700,windows:{water:[-1000,-900,4600,700]}}};
 
+// ==================== 46-matlib-pack-iziz.js   (GENERATED: settlements/iziz/tex (maps in verge.tex.js))
+/* ============================== LIBRARY PACK (generated, sidecar) ==============================
+   The maps are in the page's .tex.<key>.js beside it (tools/textures/matlib_pack.py write_sidecar). Do not edit. */
+KMAT.pack('iziz', (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE["iziz"]) || (console.warn('KMAT: the iziz maps are missing (the page\'s .tex.iziz.js did not load): procedural maps'), {}));
+
+// ==================== 46-matlib-pack-locus.js   (GENERATED: settlements/locus/tex (maps in verge.tex.js))
+/* ============================== LIBRARY PACK (generated, sidecar) ==============================
+   The maps are in the page's .tex.<key>.js beside it (tools/textures/matlib_pack.py write_sidecar). Do not edit. */
+KMAT.pack('locus', (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE["locus"]) || (console.warn('KMAT: the locus maps are missing (the page\'s .tex.locus.js did not load): procedural maps'), {}));
+
 // ==================== 46-verge-ground.js   (settlements/verge/src/46-verge-ground.js)
 // ================================================================= VERGE — the ground ([draw])
 // The ground is cut into TILES so each part of a 30 km map gets the detail it needs and the camera culls the rest:
@@ -2693,10 +2949,10 @@ KFURN.linearColours = function(geo){
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 25 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -2708,13 +2964,13 @@ KFURN.linearColours = function(geo){
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 19 (Scyvoi added 2026-10-05) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
@@ -2848,6 +3104,11 @@ KFURN.flags = function(interiorsByDefault){
  };
 })();
 
+// ==================== 53z-bio-matlib-pack.js   (GENERATED: biomes/sedesert/tex (maps in verge.tex.js))
+/* ============================== LIBRARY PACK (generated, sidecar) ==============================
+   The maps are in the page's .tex.<key>.js beside it (tools/textures/matlib_pack.py write_sidecar). Do not edit. */
+KMAT.pack('sedesert', (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE["sedesert"]) || (console.warn('KMAT: the sedesert maps are missing (the page\'s .tex.sedesert.js did not load): procedural maps'), {}));
+
 // ==================== 54a-bio-biome-sedesert-species.js   (biomes\sedesert\src\50-biome-sedesert-species.js)
 // ================================================================= EASTERN HIGH DESERT — species (data + kit items)
 // The eastern high desert of Krator: red desert like the American south-west,
@@ -2916,6 +3177,7 @@ Object.assign(PAL,{
  rockGrey:[0x7a6a5e,0x8a7a6e,0x6a5a50],
  deadwood:[0x9a8a78,0x8a7a68,0xb0a090,0x7a6a5a],
  pod:[0xc8b850,0xd8c860,0xb8a840],
+ tuna:[0xe86a20,0xe0602a,0xd85a22],   // the catalog's fruitTuna (kits/catalog generic-goods), orange-red
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -2978,6 +3240,46 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. Ebadlands' HV().
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SEDESERT.HARVEST={
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound powder.'),
+ candelabra:HV('none',[],false,'The milky latex blinds and blisters: a fish poison, never food.'),
+ cardon:HV('ribs (light poles, roofing)',['fruit'],false,'Spiny fruit in early summer, eaten fresh or dried (not in the catalog yet).'),
+ bottle:HV('none',['stored water (famine)'],false,'The swollen trunk holds water; the bark fibre makes rope.'),
+ boojum:HV('none',[],false,''),
+ quiver:HV('hollowed branches (quivers)',[],false,'The soft branches are hollowed out for quivers.'),
+ mesquite:HV('fuel, posts, charcoal',['pods (ground into flour)'],true,'Sweet pods dried and ground for mesquite cakes; the gum is a salve.','generic_fruit_mesquite'),
+ palm:HV('trunks (beams), fronds (thatch)',['dates'],false,'A bunch of dates under the crown; the fronds thatch and weave.','generic_fruit_wadi_date'),
+ rose:HV('none',[],true,'The sap is an arrow poison; a little of it a heart medicine.'),
+ puya:HV('none',[],false,'The dry spike is kindling.'),
+ agave:HV('none',['heart (pit-roasted)','flower stalk'],true,'The heart is pit-roasted sweet; the leaves give fibre (not in the catalog yet).'),
+ yucca:HV('fuel',['flower buds (roasted)','seeds'],false,'The buds are roasted in spring; the leaf fibre makes sandals.'),
+ candle:HV('none',[],false,'Ornamental; the tips glow after dark.'),
+};
+SEDESERT.SPECIES.forEach(S=>{S.tags.harvest=SEDESERT.HARVEST[S.key]||HV('none');});
+// the small plants (the floor and the dressing), tagged: `items` names the instanced items that draw them, so the
+// inspector can name a plant from the item it clicked (the first plant naming an item wins)
+const PK=(name,climate,aridity,riparian,items,hv)=>({name,tags:{climate,aridity,abyssal:false,riparian,harvest:hv||HV('none')},items});
+SEDESERT.PLANTS={
+ pear:PK('Prickly pear','tropic','arid','no',['paddle','fruit'],HV('none',['tunas','young pads'],true,'Orange-red tunas along the pad rims, peeled; young pads fried.','generic_fruit_tuna')),
+ spinifex:PK('Spinifex','tropic','arid','no',['needle'],HV('thatch',[],true,'The resin is a glue for spear heads.')),
+ drygrass:PK('Dry grass','tropic','arid','both',['grass'],HV('thatch',['seed (ground)'],false,'')),
+ reed:PK('Reeds','tropic','humid','yes',['reed'],HV('thatch, mats',['young shoots'],false,'')),
+ creosote:PK('Creosote bush','tropic','arid','no',['small','rod'],HV('fuel',[],true,'A bitter tea for colds; it smells of rain.')),
+ saltbush:PK('Saltbush','tropic','arid','no',['lobe'],HV('fuel',['leaves (salty greens)'],false,'')),
+ echium:PK('Tower of jewels','tropic','semiarid','no',['spire'],HV('none',['nectar'],false,'Bees work the spires.')),
+ barrel:PK('Barrel cactus','tropic','arid','no',['barrel'],HV('none',['flesh (famine water)'],false,'')),
+ cholla:PK('Cholla','tropic','arid','no',['cone'],HV('none',['flower buds'],false,'')),
+ hoodia:PK('Hoodia','tropic','arid','no',['column'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
+ lichen:PK('Lichen','tropic','semiarid','both',['lichen'],HV('none',[],true,'A dye.')),
+};
+SEDESERT.plantOfItem=item=>{for(const k in SEDESERT.PLANTS)if(SEDESERT.PLANTS[k].items.indexOf(item)>=0)return SEDESERT.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SEDESERT.FRUIT_KEYS=[...new Set(SEDESERT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SEDESERT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -3174,6 +3476,9 @@ SEDESERT.MAT={
  candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'sedesert' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SEDESERT.LIB=BIO.libSwap('sedesert',SEDESERT.MAT);
 const M=SEDESERT.MAT;
 ['Dragon-tree bark','Fibrous bark','Pale peeling bark','Furrowed bark','Succulent stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===4?3:4,6]}));
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
@@ -3196,6 +3501,8 @@ BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
+BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
+BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Hanging growth'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
@@ -3294,7 +3601,7 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.co
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 const bloomsAt=blooms;SEDESERT.blooms=blooms;
 // the volume the world's inspector names a tree by
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
@@ -3433,7 +3740,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
  frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
  if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
   for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
-  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('dates',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
  st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
 // 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
 B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;
@@ -3662,7 +3969,12 @@ function barrel(x,y,z,lv,k){around(x,z,lv===2?ri(1,3):1,.8,1.6,(px,pz)=>{const R
  BIO.put('barrel',[px,y-.05,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.8,1.3),R],leafCol(PAL.barrel,1.15,.03,.08,.05));
  if(lv===2&&rng()<.3)blooms(px,y+R*.9,pz,R*.3,ri(2,4),[0xe8d040,0xf0a040],[.12,.22]);});}
 function pear(x,y,z,lv){const hc=vary(pick(PAL.pear),.03,.08,.05);
- around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4);card('paddle',px,y+h,pz,rr(1,1.8),rr(.9,1.4),bright(vary(hc,.02,.06,.05),1.3),.35);});
+ around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4),s=rr(1,1.8),sy=rr(.9,1.4);card('paddle',px,y+h,pz,s,sy,bright(vary(hc,.02,.06,.05),1.3),.35);
+  // tunas: orange-red fruit along the pad's upper rim (generic_fruit_tuna). Hashed, not drawn from rng(), so the
+  // floor's random stream (every plant after this one) is unchanged; near and mid bands only
+  if(lv>=1){const n=Math.floor(h3(px,h,pz)*(lv===2?4:3));
+   for(let k=0;k<n;k++){const u=h3(px+k*7.1,pz,h+k),v=h3(pz,px+k*3.3,s+k),a=u*TAU,d=s*(.22+.22*v),r=.065+.03*h3(px,pz+k*5.7,sy);
+    BIO.put('fruit',[px+Math.cos(a)*d,y+h+sy*(.3+.12*v),pz+Math.sin(a)*d],qEuler(.3*(v-.5),a,0),[r,r*1.3,r],bright(PAL.tuna[(u*97|0)%PAL.tuna.length],1.05));}}});
  if(lv===2&&rng()<.4)blooms(x,y+1.6,z,.8,ri(2,5),[0xe8c030,0xd8a030,0xe07070],[.14,.24]);}
 function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,2.6),n=lv===2?ri(5,9):3;
  BIO.beam('rod',[x,y-.1,z],[x,y+h*.5,z],.08,.06,rodCol(0x5a4a3a));
@@ -4151,6 +4463,11 @@ SEDESERT.buildFauna=function(R,q,keep){
 })();
 BIO.kitEnd(SEDESERT);   // its exports run in its registry; the default kit is current again
 
+// ==================== 55z-bio-matlib-pack.js   (GENERATED: biomes/eastabyss/tex (maps in verge.tex.js))
+/* ============================== LIBRARY PACK (generated, sidecar) ==============================
+   The maps are in the page's .tex.<key>.js beside it (tools/textures/matlib_pack.py write_sidecar). Do not edit. */
+KMAT.pack('eastabyss', (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE["eastabyss"]) || (console.warn('KMAT: the eastabyss maps are missing (the page\'s .tex.eastabyss.js did not load): procedural maps'), {}));
+
 // ==================== 56a-bio-biome-eastabyss-species.js   (biomes\eastabyss\src\50-biome-eastabyss-species.js)
 // ================================================================= EASTERN ABYSS — species (data + kit items)
 // The eastern abyss of Krator: a salt lake on the floor of the basin, salt
@@ -4291,6 +4608,38 @@ EASTABYSS.SPECIES=[
   leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},
   tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
 ];
+EASTABYSS.byKey={};EASTABYSS.SPECIES.forEach(S=>{EASTABYSS.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+EASTABYSS.HARVEST={
+ skyscale:HV('none (too big to fell)',['scalefruit'],false,'Red scale pods grow straight off the bole; the pink flesh is cut in wedges.','generic_fruit_scalefruit'),
+ forktree:HV('poles from fallen forks',['scalefruit'],false,'The same cauliflory pods as the sky scale-tree, lower down.','generic_fruit_scalefruit'),
+ bellbark:HV('timber',['scalefruit'],true,'Pods on the trunk and the boughs; the pale bark is a fever tea.','generic_fruit_scalefruit'),
+ treefern:HV('fibre (the trunk mat)',['pith (famine)'],false,'The starchy pith is baked in hard years; the fibrous trunk is cut for planters.'),
+ cycad:HV('none',['salt-cone kernels (steeped)'],false,'The cone in the crown. Poisonous raw: the kernels are steeped a week in the salt lake, then baked.','generic_fruit_salt_cone'),
+ horsetail:HV('none',[],false,'The silica-rough stems scour pots.'),
+ kneetree:HV('timber, knees for floats',[],false,'The knees are cut for fishing floats.'),
+ stiltwood:HV('poles',[],false,'Straight poles for platforms.'),
+ fanpalm:HV('thatch',['heart (palm cabbage)'],false,'The fans thatch huts; the heart is eaten, which kills the stem.'),
+ umbrella:HV('light timber, fuel',[],true,'A bark tea for the gut.'),
+ jade:HV('none',['leaves (pickled)'],false,'Salt-rich leaves pickled in brine.'),
+ tidelycopsid:HV('none',[],false,''),
+ calamophyton:HV('none',[],false,''),
+ sanfordacaulis:HV('none',[],false,'The fine twigs are tinder.'),
+ sigillaria:HV('poles (the fluted bole)',[],false,'The cones hang under the crown but nobody eats them.'),
+ cordaite:HV('timber',[],false,'The strap leaves are plaited into baskets.'),
+ seedfern:HV('none',['fern-eggs (roasted)'],false,'Seeds big as eggs under the fronds: roasted in the coals, mealy like chestnut.','generic_fruit_fern_egg'),
+ araucaria:HV('timber',['seeds in the cones'],false,'The cones at the crown shed edible seeds (not in the catalog yet).'),
+ beardoak:HV('fuel, boat ribs',[],true,'The beard moss stuffs mattresses and dresses wounds.'),
+ waterpalm:HV('thatch (the fronds)',['tideheart jelly'],false,'The fruit head at the water line: the jelly in its carpels is cut out and set in cubes.','generic_fruit_tideheart'),
+ matreed:HV('reed mats, thatch, cordage, reed boats',['rhizome, young shoots'],false,'The pale base of the reed is peeled and chewed.'),
+};
+EASTABYSS.SPECIES.forEach(S=>{S.tags.harvest=EASTABYSS.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+EASTABYSS.FRUIT_KEYS=[...new Set(EASTABYSS.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -4598,6 +4947,9 @@ EASTABYSS.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'eastabyss' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+EASTABYSS.LIB=BIO.libSwap('eastabyss',EASTABYSS.MAT);
 const M=EASTABYSS.MAT;
 ['Scale-tree bark','Fibrous bark','Pale bark','Knee-tree bark','Pipe-reed stems','Seal-tree bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:i===5?5:4,i===0?9:i===5?8:6]}));
 BIO.bucket('bark0i',M.barkIrid,{label:'Sky scale-tree bark (iridescent)',uvScale:[6,9]});
@@ -5765,9 +6117,13 @@ const MAT_FAMILY_LOOK = {
   nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
   plastic: [0.5, 0.0], bone: [0.6, 0.0]
 };
+/* `family` may carry a texture split, 'tex/base' (furnFamily below): the material keeps the base family's look and
+   userData.family, and adds userData.texFamily for a host's detail map */
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
+  let texFamily = null;
+  if (family && family.indexOf('/') > 0) { texFamily = family.slice(0, family.indexOf('/')); family = family.slice(family.indexOf('/') + 1); }
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
   const fam = MAT_FAMILY_LOOK[family];
   if (fam) { roughness = fam[0]; metalness = fam[1]; }
@@ -5777,6 +6133,7 @@ function mat(color, family) {
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
   m.userData.family = family || '';
+  if (texFamily) m.userData.texFamily = texFamily;
   _matCache.set(key, m);
   return m;
 }
@@ -5844,6 +6201,86 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
+}
+/* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
+   with an optional boxed side wall between them; its corners stay sharp and its mid-edges pinch in, as a stuffed
+   cloth does. CENTRED at (x, y, z), like blob and ball; w along x, h its thickness (y), d along z; turned ry, then
+   tipped rx about its own x (a back cushion stood up: rx = -PI/2 + lean). o: { side 0..1 (the boxed wall's share
+   of h), round (the plan's superellipse exponent, default 5), sag (how far the seam drops at the corners, a share of the wall, default 0.45), puff (the dome's exponent: 0.3 a flat-topped quilt or mattress, 0.85 a fat cushion, 1 a bed pillow; low values read as a box), pinch (mid-edge pull-in, a share of the half-width) }.
+   Returns top(lx, lz): the height of the top face above the centre at a point of the unturned pillow, so a builder
+   can lay appliqué on it; top.seamTop and top.seamBottom are the seams as closed loops of [x, y, z] (same frame), for piping. Its segments never drop below 8 a side whatever the detail level: a cushion
+   cut to a box is the defect this exists to fix. */
+function pillowTop(w, h, d, o) {
+  const side = Math.min(0.95, Math.max(0, o.side || 0)), puff = o.puff == null ? 0.35 : o.puff, hs = h * side / 2, hb = h / 2 - hs;
+  return function (lx, lz) {
+    const s = Math.min(1, Math.abs(lx) / (w / 2)), t = Math.min(1, Math.abs(lz) / (d / 2));
+    return hs + hb * Math.pow(Math.max(0, 1 - s * s), puff) * Math.pow(Math.max(0, 1 - t * t), puff);
+  };
+}
+function mkPillow(x, y, z, w, h, d, ry, color, family, o) {
+  o = o || {};
+  const n = _seg(12, 8), side = Math.min(0.95, Math.max(0, o.side || 0)), pinch = o.pinch == null ? 0.05 : o.pinch, hs = h * side / 2;
+  const top = pillowTop(w, h, d, o), pos = [], idx = [];
+  const q = o.round == null ? 5 : o.round, sag = o.sag == null ? 0.45 : o.sag;
+  const at = (i, j, sign) => {
+    const s = -1 + 2 * i / n, t = -1 + 2 * j / n, as = Math.abs(s), at2 = Math.abs(t), mx = Math.max(as, at2);
+    /* the plan: the square grid mapped onto a superellipse (corners rounded, o.round its exponent: 2 a circle, 8 nearly square),
+       then the mid-edges pinched in; the seam sags toward the corners (o.sag), as a stuffed cover does */
+    const k = mx > 0 ? mx / Math.pow(Math.pow(as, q) + Math.pow(at2, q), 1 / q) : 1;
+    const px = s * k * w / 2 * (1 - pinch * (1 - t * t)), pz = t * k * d / 2 * (1 - pinch * (1 - s * s));
+    const y = top(s * w / 2, t * d / 2) - hs * sag * s * s * t * t;
+    return [px, sign * Math.max(0.002, y), pz];
+  };
+  for (const sign of [1, -1]) {
+    const b = pos.length / 3;
+    for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) pos.push(...at(i, j, sign));
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const a = b + j * (n + 1) + i; idx.push(a, a + n + 1, a + 1, a + 1, a + n + 1, a + n + 2); }
+  }
+  if (hs > 0.001) {   // the boxed wall: the boundary of the grid, once round, from the top seam to the bottom seam
+    const ring = [];
+    for (let i = 0; i < n; i++) ring.push([i, 0]);
+    for (let j = 0; j < n; j++) ring.push([n, j]);
+    for (let i = n; i > 0; i--) ring.push([i, n]);
+    for (let j = n; j > 0; j--) ring.push([0, j]);
+    const b = pos.length / 3;
+    for (const [i, j] of ring) { pos.push(...at(i, j, 1)); pos.push(...at(i, j, -1)); }
+    const m = ring.length;
+    for (let k = 0; k < m; k++) { const a = b + 2 * k, c = b + 2 * ((k + 1) % m); idx.push(a, a + 1, c, c, a + 1, c + 1); }
+  }
+  // a pillow is star-shaped about its centre: turn every triangle to face away from it
+  for (let t = 0; t < idx.length; t += 3) {
+    const A = idx[t] * 3, B = idx[t + 1] * 3, C = idx[t + 2] * 3;
+    const ux = pos[B] - pos[A], uy = pos[B + 1] - pos[A + 1], uz = pos[B + 2] - pos[A + 2], vx = pos[C] - pos[A], vy = pos[C + 1] - pos[A + 1], vz = pos[C + 2] - pos[A + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const cx = pos[A] + pos[B] + pos[C], cy = pos[A + 1] + pos[B + 1] + pos[C + 1], cz = pos[A + 2] + pos[B + 2] + pos[C + 2];
+    if (nx * cx + ny * cy + nz * cz < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.set(o.rx || 0, ry || 0, 0, 'YXZ');
+  _add(m);
+  /* the two seams as closed loops of points in the pillow's own frame (centre at 0; untilted, unturned): piping follows them */
+  const loop = sign => { const L = []; for (let i = 0; i < n; i++) L.push(at(i, 0, sign)); for (let j = 0; j < n; j++) L.push(at(n, j, sign));
+    for (let i = n; i > 0; i--) L.push(at(i, n, sign)); for (let j = n; j > 0; j--) L.push(at(0, j, sign)); L.push(L[0]); return L; };
+  top.seamTop = loop(1); top.seamBottom = loop(-1);
+  return top;
+}
+/* A bolster: a round cushion along x, its ends gathered in and tied. CENTRED at (x, y, z), length len, radius r,
+   turned ry. o: { from, to } (0..1 along its length: a section of the same profile, for a coloured band; scale it a
+   hair larger with o.grow), gather (the end radius as a share of r, default 0.45). At least 12 segments round. */
+function mkBolster(x, y, z, len, r, ry, color, family, o) {
+  o = o || {};
+  const from = o.from == null ? 0 : o.from, to = o.to == null ? 1 : o.to, g = o.gather == null ? 0.45 : o.gather, R = r * (o.grow || 1), m = Math.max(1, Math.round(14 * (to - from))), pts = [];   // a band gets profile points for its own length only
+  const rad = u => { const e = Math.abs(2 * u - 1); return R * (g + (1 - g) * Math.pow(Math.max(0, 1 - Math.pow(e, 7)), 0.35)); };
+  if (from <= 0.0001) pts.push(new THREE.Vector2(0.001, -len / 2));
+  for (let k = 0; k <= m; k++) { const u = from + (to - from) * k / m; pts.push(new THREE.Vector2(rad(u), -len / 2 + u * len)); }
+  if (to >= 0.9999) pts.push(new THREE.Vector2(0.001, len / 2));
+  const geo = new THREE.LatheGeometry(pts, _seg(16, 12));
+  geo.rotateZ(-Math.PI / 2);   // the lathe's axis (y) laid along x
+  const mm = new THREE.Mesh(geo, mat(color, family));
+  mm.position.set(x, y, z); mm.rotation.y = ry || 0;
+  return _add(mm);
 }
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
    block spans 2*rBottom across at its base — r reads as a radius/half-width in every
@@ -5938,7 +6375,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -5954,7 +6391,7 @@ const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
 /* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
 function FURN_CULTURE(key, info) {
   if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
-  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  if (info && info.palette) { FPAL[key] = Object.assign(FPAL[key] || {}, info.palette); delete _famRev[key]; }
   FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
   return FURN_CULTURE_INFO[key];
 }
@@ -6325,6 +6762,67 @@ function furnCol(culture, key) {
   throw new Error('no palette key "' + key + '" for culture ' + culture);
 }
 
+/* texture splits by palette key (core/materials/PLAN.md, "Catalog furniture audit"): a part whose key wants a library
+   set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
+   falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
+   `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+const FAMILY_SPLITS = [
+  [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
+  [/^tyre/, ['plastic', 'metal'], 'rubber'],
+  [/^clay/, ['stone'], 'clay'],
+  [/^obsidian/, ['lacquer'], 'obsidian'],
+  [/^(pewter|tin|tinMirror)$/, ['metal'], 'pewter'],
+  [/^paint/, ['wood', 'plank'], 'paint'],
+  [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
+  [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
+];
+const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
+function furnFamily(culture, color, family) {
+  if (!family || typeof color !== 'number') return family;
+  let rev = _famRev[culture];
+  if (!rev) {
+    rev = _famRev[culture] = new Map();
+    const p = FPAL[culture] || {};
+    for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
+  }
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
+  if (!keys) return family;
+  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  return family;
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -6332,6 +6830,7 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
+  const ff = (c, fam) => furnFamily(F.asset ? F.asset.culture : '', c, fam);
   F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
   F.cols = (keys) => keys.map(F.col);
   F.pick = (arr) => {
@@ -6348,15 +6847,18 @@ function makeFrame(x, z, ry, opt) {
   /* move the frame origin to local (lx, lz). A piece authored off-centre calls
      F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
   F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
-  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
-  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
-  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, ff(color, family)); };
+  /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, ff(color, family), sides); };
+  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
   /* a beam's roll must come from the LOCAL frame, then turn with the building:
      setFromUnitVectors on the world direction picks the shortest rotation,
      whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
@@ -6364,7 +6866,7 @@ function makeFrame(x, z, ry, opt) {
   const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
   F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
     const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
-    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, ff(color, family));
     if (F.ry && m) {
       _bDir.set(bx - ax, by - ay, bz - az);
       if (_bDir.lengthSq() > 1e-12) {
@@ -6372,7 +6874,7 @@ function makeFrame(x, z, ry, opt) {
       }
     }
   };
-  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, ff(color, family)); };
   F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
   F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
@@ -14095,6 +14597,10 @@ FURN_CULTURE('generic', { palette: {
     fruitLanternViolet: 0xd040e0, fruitLanternTeal: 0x30d0c0, fruitBellDate: 0x857e32,
     fruitMesquite: 0xc8b850, fruitMesquiteCake: 0xb08a4a, fruitDate: 0x8a4a22, fruitDateStrand: 0xc88a3a,
     fruitTuna: 0xe86a20, fruitTunaFlesh: 0xd8402a,
+    fruitPinyonCone: 0x8a5a34, fruitPinyonNut: 0x7a4a2a, fruitPinyonKernel: 0xe8d8b0, fruitJuniper: 0x6a7a9a, fruitJuniperTwig: 0x5e7458,
+    fruitJuniperDry: 0x3e3e52, fruitYuccaStalk: 0xc89a4a, fruitYuccaRoast: 0x8a5a2a, fruitYuccaBloom: 0xf0ecd8, fruitGrape: 0x3a2a4a,
+    fruitGrapeLeaf: 0x5a8a3a, fruitRaisin: 0x4a2a2a, fruitStiltPod: 0x5a9a6a, fruitStiltFlesh: 0xf0e8c8, fruitStiltSeed: 0x3a2a1e,
+    fruitUmbelSeed: 0xa8946a, fruitUmbelStalk: 0x8a7a4a,
     fungusCoralOrange: 0xf08a3a, fungusCoralPink: 0xf090b0, fungusCoralViolet: 0x9a70c8, fungusParasol: 0xc8a882,
     fruitMadrone: 0xc82a1e, drinkCider: 0xd8a050, fruitRattlepod: 0x8a2a1c, fruitRattleBean: 0x4a2a1a,
     fruitTamarindShell: 0x4a3424, fruitTamarindPulp: 0x8a4a22, fruitFig: 0x5a3a5a, fruitFigFlesh: 0xd8586a,
@@ -14102,7 +14608,12 @@ FURN_CULTURE('generic', { palette: {
     fruitPitaya: 0xe0206a, fruitPitayaFlame: 0x7ab040, fruitPitayaFlesh: 0xf4f0ec,
     fruitPlantain: 0xf0d040, fruitPlantainBract: 0x6a2a8a, fruitPlantainFried: 0xd89a3a, fruitWingnut: 0x9ac060,
     fruitArbutusRed: 0xe02a20, fruitArbutusOrange: 0xf08a20, fruitWhorlOlive: 0x6a6a3a, fruitWhorlCream: 0xd8c8a0,
-    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0
+    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0,
+    fruitFireseedHusk: 0xc85a2c, fruitFireseedNut: 0x40281e, fruitFireseedMeal: 0x9a6a44,
+    fruitParasolCone: 0x8a5230, fruitParasolShell: 0x5e3c28, fruitParasolKernel: 0xeee2bc,
+    fruitCliffFig: 0xb4482c, fruitCliffFigRipe: 0x5a2a48, fruitCliffFigFlesh: 0xe07a6a,
+    fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
+    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0
 } });
 /* END PALETTE */
 
@@ -17747,8 +18258,10 @@ const KF_API = (function () {
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
-  Batch.prototype.bucket = function (family) {
-    return this.buckets[family] || (this.buckets[family] = { family: family, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+  /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
+  Batch.prototype.bucket = function (family, tex) {
+    const k = tex ? tex + '/' + family : family;
+    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -17764,7 +18277,7 @@ const KF_API = (function () {
         self.textured.push(m); self.tris += (idx ? idx.count : pos.count) / 3;
         return;
       }
-      const b = self.bucket(mt.userData.family || '');
+      const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
       for (let i = 0; i < n; i++) {
@@ -17790,8 +18303,8 @@ const KF_API = (function () {
   Batch.prototype.flush = function (parent) {
     const grp = new THREE.Group();
     grp.name = 'catalog-furniture';
-    for (const f in this.buckets) {
-      const b = this.buckets[f];
+    for (const bk in this.buckets) {
+      const b = this.buckets[bk], f = b.family;
       if (!b.pos.n) continue;
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
@@ -17805,8 +18318,9 @@ const KF_API = (function () {
           transparent: glass, opacity: glass ? 0.55 : 1 });
       }
       mt.userData.family = f;
+      if (b.tex) mt.userData.texFamily = b.tex;
       const m = new THREE.Mesh(geo, mt);
-      m.name = 'furniture:' + (f || 'plain');
+      m.name = 'furniture:' + (f || 'plain') + (b.tex ? '/' + b.tex : '');
       m.userData.furniture = true;
       grp.add(m);
     }
@@ -18315,7 +18829,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     'painted': ['rustic', 'generic'],
     'reedlake': ['islander', 'eastabyss', 'generic'],
     'post-apoc': ['scrap', 'ancients-salvage', 'generic'],
-    'hykkousoi': ['islander', 'generic']
+    'hykkousoi': ['islander', 'generic'],
+    'scyvoi': ['nomad', 'generic', 'scrap']
   };
 })(KratorInteriors);
 
@@ -21737,6 +22252,15 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 // being touched. Keep it cheap: it is called per tree and per rubble block.
 function terrainH(x,z){return 0;}
 
+// FRAME HOOK. The one route to animation in this kit: `tick(fn)` registers a
+// function that 92-camera.js calls every frame, after the camera moves and
+// before the render, as fn(dt, t) — dt in seconds (clamped to 0.1, so a slow
+// software-GL frame cannot jump a sweep), t wall-clock seconds. Same order as
+// Screamers' hook, which the biome binding (75-biome-45-bind.js) already
+// expects. Nothing is rebuilt; a tick only moves or shows what is built.
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}
+
 
 ;
 /* ---- settlements\iziz\src\12-stats.js ---- */
@@ -21990,7 +22514,14 @@ function lathe(o){const H=o.H,cut=o.cut!=null?o.cut:H,seed=o.seed||0,nu=o.nu||64
 // only part-eaten, and threading that through 33 builders would be 33 edits
 // and 33 chances to miss one. The scene loop sets it per decay level.
 let HOLES=1;
-function holeFn(d,seed,cut,scale){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+// FOOT (optional): {y,h,k}. A ruined shell that thins toward its foot: below
+// y+h the threshold rises linearly to k*d more at y (and below). Without it the
+// predicate is the original one, term for term, so existing callers are
+// unchanged to the vertex.
+function holeFn(d,seed,cut,scale,foot){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+ if(foot){const fy=foot.y||0,fh=foot.h||1,fk=foot.k!=null?foot.k:.4;
+  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;
+   return n<.34*d+.4*near*d+fk*clamp((fy+fh-y)/fh,0,1)*d;};}
  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;return n<.34*d+.4*near*d;};}
 function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undefined)m.position.set(x,y,z);if(parent)parent.add(m);
  const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}
@@ -22004,6 +22535,10 @@ function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undef
 //
 // Only for OPAQUE materials: transparent meshes are depth-sorted per mesh, so
 // merging glass would change the order things blend in.
+//
+// COLOUR. A `color` attribute survives the merge when every input carries one,
+// or when the material draws vertex colours (then a piece without one is
+// painted white, i.e. its texture unchanged). Otherwise it is dropped as before.
 function meshMerged(geos,mat,parent,x,y,z){
  const keep=geos.filter(g=>g&&g.attributes&&g.attributes.position&&g.attributes.position.count);
  if(!keep.length)return null;
@@ -22011,12 +22546,14 @@ function meshMerged(geos,mat,parent,x,y,z){
  let nv=0,ni=0;
  for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2);
+ const C=(mat&&mat.vertexColors)||keep.every(g=>g.attributes.color&&g.attributes.color.itemSize===3)?new Float32Array(nv*3).fill(1):null;
  const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
  let vo=0,io=0;
  for(const g of keep){const A=g.attributes,c=A.position.count;
   P.set(A.position.array,vo*3);
   if(A.normal)N.set(A.normal.array,vo*3);
   if(A.uv)U.set(A.uv.array,vo*2);
+  if(C&&A.color&&A.color.itemSize===3)C.set(A.color.array,vo*3);
   if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
   else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
   vo+=c;}
@@ -22024,6 +22561,7 @@ function meshMerged(geos,mat,parent,x,y,z){
  G.setAttribute('position',new THREE.BufferAttribute(P,3));
  G.setAttribute('normal',new THREE.BufferAttribute(N,3));
  G.setAttribute('uv',new THREE.BufferAttribute(U,2));
+ if(C)G.setAttribute('color',new THREE.BufferAttribute(C,3));
  G.setIndex(new THREE.BufferAttribute(I,1));
  return mesh(G,mat,parent,x,y,z);}
 // Bounding box of an object and its children, measured in its PARENT's frame.
@@ -22069,12 +22607,24 @@ function hyperGeo(r0,h,k){return lathe({rFn:y=>r0*Math.sqrt(1+k*Math.pow((y-h/2)
 ;
 /* ---- settlements\iziz\src\34-kitdefs.js ---- */
 // ---------------------------------------------------------------- kit definitions (shared geometry)
+// DARK OPENINGS (shared-code round). MAT.dark is what every opening, recess,
+// liner and void behind a hole is made of, and at 0x1a1d22 it read MID-GREY:
+// three.js r128 takes the hex as linear, so the albedo is ~.11, and a sunlit
+// reveal under the full sun plus the hemisphere came back at ~115/255. Openings
+// now take a near-black albedo (~.03 linear): ~50/255 facing the sun, ~20 away
+// from it, and with nothing emissive they follow setNight() to black.
+// The kit's few true SURFACES that were drawn in MAT.dark (conduit tubes, the
+// bunker fins, radar wings, dish backs) keep the old value as MAT.darkSurf, so
+// they stay a painted dark grey rather than going black. Kit-local: the
+// core/materials copy is untouched, other builds keep their MAT.dark.
+MAT.darkSurf=MAT.dark.clone();
+MAT.dark.color.setHex(0x0a0b0d);
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
 kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
 kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
 kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
-kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.dark);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.darkSurf);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);
 kdef('strip',new THREE.BoxGeometry(1,.18,.18),MAT.strip);
 kdef('colW',hyperGeo(1,1,1.6),MAT.white); kdef('colR',hyperGeo(1,1,1.6),MAT.rust);
@@ -22163,7 +22713,26 @@ function leafCardGeo(){
  return g;}
 kdef('leafCard',leafCardGeo(),MAT.leafCard);
 kdef('vine',new THREE.CylinderGeometry(.05,.16,1,5).translate(0,-.5,0),MAT.vine);
-kdef('rubble',new THREE.DodecahedronGeometry(1,0),MAT.rubble);
+// RUBBLE (shared-code round, QA arcB). Was a regular dodecahedron on untextured
+// white: twelve identical pentagons have no edge to read, and at any size over
+// ~10 m every talus in the kit was a heap of pale eggs. Now Arcoindian's block
+// (89b `aiBlock`): a hexahedron with its eight corners knocked about, hashed on
+// the corner so the faces stay welded, flat shaded, 12 triangles to the
+// dodecahedron's 36 and the same volume at scale 1. It takes a mottled stone
+// map (fine, non-directional: a bedded or boarded map made crates of it) under
+// the same per-instance tints, which now multiply stone rather than white.
+TEX.rubbleStone=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const v=168+(fbm(x/22,y/22,6.3,3)-.5)*70+(fbm(x/3,y/3,2.9,1)-.5)*34;
+  d[i]=v;d[i+1]=v-4;d[i+2]=v-11;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.rubbleK=new THREE.MeshStandardMaterial({map:TEX.rubbleStone,color:0xd6ccbe,roughness:1,metalness:0});
+function stoneBlockGeo(){const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
+   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
+  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
+ const n=g.toNonIndexed();n.computeVertexNormals();return n;}
+kdef('rubble',stoneBlockGeo(),MAT.rubbleK);
 kdef('trunk',new THREE.CylinderGeometry(.18,.4,1,6).translate(0,.5,0),MAT.vine);
 kdef('figB',new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),MAT.fig);
 kdef('figH',new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),MAT.fig);
@@ -22186,6 +22755,75 @@ kdef('cellD',new THREE.BoxGeometry(1,1,.5),MAT.winDead);
 kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
 function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
  const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
+// A beam with its ROLL fixed (from the Forest Ring, QA arcA). beam() leaves roll
+// to setFromUnitVectors, so a near-horizontal strut comes out with its section
+// at whatever angle the shortest arc gives and a 9 x 11 strut reads as a
+// twisted plank. Here local X (`w`, the DEPTH exactly as in beam()) is held in
+// the vertical plane through the beam and local Z (`dp`) is horizontal, so
+// every strut presents the same face to the same light. Same arguments as beam().
+const _rbX=new THREE.Vector3(),_rbY=new THREE.Vector3(),_rbZ=new THREE.Vector3(),_rbM=new THREE.Matrix4();
+function rbeam(name,a,b,w,dp,color){_rbY.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_rbY.length();
+ if(!(L>1e-6))return;_rbY.multiplyScalar(1/L);
+ _rbZ.set(-_rbY.z,0,_rbY.x);if(_rbZ.lengthSq()<1e-8)_rbZ.set(0,0,1);_rbZ.normalize();
+ _rbX.crossVectors(_rbY,_rbZ);_rbM.makeBasis(_rbX,_rbY,_rbZ);
+ kput(name,[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5],
+  new THREE.Quaternion().setFromRotationMatrix(_rbM),[w,L,dp],color||null);}
+// ---------------------------------------------------------------- mouldings
+// MOULDING: a profile swept along a path that lies in a wall. One helper for
+// every hood, sill, cornice, string course and bone roll in the kit (it replaced
+// three private ones: the civic hoods and cornices, the domestic `domMould`, the
+// towers' Hotel sills and Cultural bands).
+//   profile  [[n,u],...]: the section, walked CLOCKWISE with n out of the wall
+//            (along `wn`) and u across the path (along wn x tangent: "up" for a
+//            path running left to right on a wall you face). MOULD.* are stock.
+//   path     t -> [x,y,z], t in 0..1, in the frame of the mesh it will join.
+//   opt.wn   the wall's outward normal: [x,y,z], or t -> [x,y,z] on a curved wall.
+//   opt.nu   segments along the path (40). opt.scale: t -> size multiplier
+//            (knuckles, tapers). opt.hole(u,v): drop a quad (v runs round the
+//            section). opt.uS/vS: uv scale. opt.caps: close both ends.
+//   opt.up   [x,y,z]: if given, the section is turned so that u points this way
+//            whichever way the path runs (and the winding is kept outward).
+// Returns a BufferGeometry for the caller to merge or kdef: a moulding costs
+// no draw call of its own.
+const MOULD={
+ // a round roll, n sides (the bone roll's section)
+ round:(n,r)=>{n=n||8;r=r||1;const P=[];for(let j=0;j<=n;j++){const ph=j/n*TAU;P.push([r*Math.cos(ph),-r*Math.sin(ph)]);}return P;},
+ // a flat band w proud, h tall
+ band:(w,h)=>[[0,h],[w,h],[w,0],[0,0]],
+ // a sill: weathered (sloped) top, square nose, a drip under the nose
+ sill:(w,h)=>[[0,h],[w,h*.72],[w,h*.12],[w*.86,0],[0,0]],
+ // a hood (label) mould: flat top, chamfered nose, a throated drip underneath
+ hood:(w,h)=>[[0,h],[w*.7,h],[w,h*.45],[w*.8,0],[0,0]],
+ // a cornice: square crown, then an ogee curving back into the wall
+ cornice:(w,h)=>[[0,h],[w,h],[w,h*.8],[w*.86,h*.62],[w*.6,h*.46],[w*.38,h*.28],[w*.22,h*.08],[0,0]],
+};
+function moulding(profile,path,opt){opt=opt||{};const nu=opt.nu||40,np=profile.length-1;
+ const wnF=typeof opt.wn==='function'?opt.wn:null,W=new THREE.Vector3();
+ if(!wnF){const w=opt.wn||[0,0,1];W.set(w[0],w[1],w[2]).normalize();}
+ const wAt=u=>{if(wnF){const w=wnF(u);W.set(w[0],w[1],w[2]).normalize();}return W;};
+ const T=new THREE.Vector3(),B=new THREE.Vector3();
+ const frame=u=>{const q=path(Math.min(1,u+.002)),o=path(Math.max(0,u-.002));
+  T.set(q[0]-o[0],q[1]-o[1],q[2]-o[2]).normalize();B.crossVectors(T,wAt(u)).normalize();};
+ let sg=1;if(opt.up){frame(.5);sg=-Math.sign(B.x*opt.up[0]+B.y*opt.up[1]+B.z*opt.up[2])||1;}
+ const g=gridSurface((u,v)=>{const p=path(u);frame(u);const s=opt.scale?opt.scale(u):1,P=profile[Math.round(v*np)],pu=P[1]*sg;
+  return[p[0]+s*(P[0]*W.x-pu*B.x),p[1]+s*(P[0]*W.y-pu*B.y),p[2]+s*(P[0]*W.z-pu*B.z)];},nu,np,{hole:opt.hole,uS:opt.uS,vS:opt.vS});
+ if(sg<0){const ix=g.index.array;for(let i=0;i<ix.length;i+=3){const t=ix[i+1];ix[i+1]=ix[i+2];ix[i+2]=t;}g.computeVertexNormals();}
+ if(!opt.caps)return g;
+ // caps: a fan from the section's centroid at each end, on vertices of their own
+ const pos=g.attributes.position.array,cols=nu+1,P=[],N=[],U=[],I=[],nv0=pos.length/3;
+ const f0=profile[0],f1=profile[np],m=Math.hypot(f0[0]-f1[0],f0[1]-f1[1])<1e-9?np:np+1;   // a closed section repeats its first point
+ for(const[e,dir]of[[0,-1],[nu,1]]){const base=nv0+P.length/3;let cx=0,cy=0,cz=0;
+  const vs=[];for(let j=0;j<m;j++){const k=(j*cols+e)*3;vs.push([pos[k],pos[k+1],pos[k+2]]);cx+=pos[k];cy+=pos[k+1];cz+=pos[k+2];}
+  frame(e/nu);const n=T.clone().multiplyScalar(dir);
+  P.push(cx/m,cy/m,cz/m);N.push(n.x,n.y,n.z);U.push(.5,.5);
+  for(const v of vs){P.push(v[0],v[1],v[2]);N.push(n.x,n.y,n.z);U.push(0,0);}
+  for(let j=0;j<m;j++){const a=base+1+j,b=base+1+(j+1)%m;if(dir*sg>0)I.push(base,a,b);else I.push(base,b,a);}}
+ const M=new THREE.BufferGeometry(),A=g.attributes;
+ const cat=(x,y)=>{const o=new Float32Array(x.length+y.length);o.set(x);o.set(y,x.length);return o;};
+ M.setAttribute('position',new THREE.BufferAttribute(cat(A.position.array,P),3));
+ M.setAttribute('normal',new THREE.BufferAttribute(cat(A.normal.array,N),3));
+ M.setAttribute('uv',new THREE.BufferAttribute(cat(A.uv.array,U),2));
+ M.setIndex(Array.from(g.index.array).concat(I));return M;}
 function hexR(R,th){const a=R*Math.cos(Math.PI/6);const f=((th%(Math.PI/3))+Math.PI/3)%(Math.PI/3);return a/Math.cos(f-Math.PI/6);}
 // petal shell: base on +x at radius Rb, rises Hp, tip leans outward by `lean`, cupped by `curl`
 function petalGeo(Rb,Hp,W,lean,curl,hole){return gridSurface((u,v)=>{const s=u*2-1;const w=W*(.3+.7*Math.sin(Math.PI*Math.pow(v,.9)))*.5;
@@ -22206,7 +22844,7 @@ function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCu
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
 function endGroupXF(){KXF=null;}
-kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.dark);
+kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.darkSurf);
 kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
 kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
@@ -22440,6 +23078,48 @@ function firePit(key,x,y,z,s){
   new THREE.Color().setHSL(rr(.03,.065),1,.50));
  kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
   new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+// FLICKER (towers QA, round 2). The frame hook `tick` (10-core.js) drives one
+// shared time uniform; each fire instance takes its own phase from its own
+// position (instanceMatrix), so no two windows pulse together and nothing is
+// rebuilt. kbake re-attaches onBeforeCompile to its material clones, and the
+// uniform object is shared, so one write per frame reaches every clone.
+const FIRE_T={value:0};
+function fireFlickerOBC(sh){sh.uniforms.uFT=FIRE_T;
+ sh.vertexShader='uniform float uFT;\nvarying float vFl;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\n#ifdef USE_INSTANCING\n vec3 fP=instanceMatrix[3].xyz;\n#else\n vec3 fP=vec3(0.);\n#endif\n'+
+  ' float fPh=dot(fP,vec3(.131,.217,.173));\n vFl=.80+.13*sin(uFT*6.3+fPh)+.07*sin(uFT*15.7+fPh*2.3);');
+ sh.fragmentShader='varying float vFl;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=vFl;');}
+MAT.flame.onBeforeCompile=fireFlickerOBC;MAT.ember.onBeforeCompile=fireFlickerOBC;
+// FIRELIGHT THAT LIGHTS SOMETHING. One PointLight per territory was the
+// reason this was never done: every lit material recompiles per light. So a
+// Project gets a FEW lights (n, 3 by default), at the centroids of clusters
+// of its own fires — its burning windows and pits, taken from the kit items it
+// placed since `fireLightMark()` — set a few metres off the facade. They are
+// invisible by day, so day views pay nothing; at night the first switch
+// compiles one extra program variant per material and every later switch
+// reuses it. They flicker with the cards. No rng(): the clustering is
+// deterministic and nothing in any builder's stream moves.
+const FIRELIGHTS=[];
+function fireLightMark(){return[KIT.items.fireWin.length,KIT.items.emberB.length,KOFF.slice()];}
+function fireLights(M,n){n=n||3;const P=[];
+ for(let i=M[0];i<KIT.items.fireWin.length;i++)P.push(KIT.items.fireWin[i].p);
+ for(let i=M[1];i<KIT.items.emberB.length;i+=2)P.push(KIT.items.emberB[i].p);
+ if(P.length<n)return;
+ // farthest-point seeds, then a few Lloyd steps
+ const C=[P[0].slice()];while(C.length<n){let bi=0,bd=-1;for(let i=0;i<P.length;i++){let m=1e18;for(const c of C)m=Math.min(m,(P[i][0]-c[0])**2+(P[i][1]-c[1])**2+(P[i][2]-c[2])**2);if(m>bd){bd=m;bi=i;}}C.push(P[bi].slice());}
+ for(let it=0;it<6;it++){const S=C.map(()=>[0,0,0,0]);
+  for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});S[bi][0]+=p[0];S[bi][1]+=p[1];S[bi][2]+=p[2];S[bi][3]++;}
+  S.forEach((s,j)=>{if(s[3])C[j]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]];});}
+ // A cluster's centroid lies INSIDE a round tower (its windows wrap the
+ // shell), so each light goes out along the cluster's mean bearing to the
+ // cluster's mean radius, then 16 m beyond it: outside the skin it lights.
+ const O=M[2],RR=C.map(()=>[0,0]);
+ for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});RR[bi][0]+=Math.hypot(p[0]-O[0],p[2]-O[2]);RR[bi][1]++;}
+ C.forEach((c,j)=>{const dx=c[0]-O[0],dz=c[2]-O[2],l=Math.hypot(dx,dz)||1,rm=(RR[j][1]?RR[j][0]/RR[j][1]:l)+16;
+  const L=new THREE.PointLight(0xff7a32,0,190,2);L.position.set(O[0]+dx/l*rm,c[1]+4,O[2]+dz/l*rm);L.visible=false;scene.add(L);
+  FIRELIGHTS.push({l:L,ph:j*1.9+c[0]*.01});});}
+tick((dt,t)=>{FIRE_T.value=t%1000;const on=!!NIGHT;
+ for(const F of FIRELIGHTS){F.l.visible=on;if(on)F.l.intensity=1.7*(.84+.10*Math.sin(t*5.1+F.ph)+.06*Math.sin(t*13.3+F.ph*1.7));}});
 
 // THE REPAIRED PASS.
 //
@@ -24646,6 +25326,8 @@ const FUNICULAR=(function(){
 
 ;
 
+/* the material library: the vernacular's own families from Iziz's pack (46-matlib-pack-iziz.js) */
+if(typeof KMAT !== "undefined" && KMAT.bindMat) KMAT.bindMat("iziz", MAT, {tile: KMAT.ANCIENT_TILES});
 return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,
   TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),
   FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),
@@ -25357,8 +26039,19 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
-/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections) */
-function kitMaterial(fm, o){ if(!fm.phong) return new THREE.MeshLambertMaterial(o);
+/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections).
+   A library family (47-texture.js ltexLibrary) gets the set's colour, normal and roughness maps on a MeshStandardMaterial, as
+   Yuni's famMaterial(); ?mat=proc keeps the old Lambert or Phong look. */
+function kitMaterial(fm, o){
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!o.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:o.alphaTest||0, side:o.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  if(!fm.phong) return new THREE.MeshLambertMaterial(o);
   o.shininess = fm.phong.shininess; o.specular = new THREE.Color(fm.phong.specular); return new THREE.MeshPhongMaterial(o); }
 function emitBuckets(){
   var total=0, meshes=0;
@@ -25373,9 +26066,9 @@ function emitBuckets(){
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -25562,7 +26255,8 @@ function emitMerged(){
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
             : kitMaterial(fm, { color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic) nlMaterial(mat, 'mb'+fam);
+    if(!fm.basic) nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
@@ -25791,6 +26485,38 @@ function texFill(S, fn){
   (function(){ var n1=texNoise(S,48,291), n2=texNoise(S,6,292);
     FAMMAT.bark.tex = texFinish(texFill(S,function(x,y){ var g=0.5+0.5*Math.sin(x*TAU/S*14 + n1(x,y*0.2)*6);
       return 0.66 + 0.30*(g-0.5) + 0.2*(n2(x,y)-0.5); })); })();
+})();
+
+/* ---- the material library (core/materials/record, materials.json; Yuni's 47-texture.js is the model): where the
+   pack has a family (unless ?mat=proc), its maps replace the procedural one painted above, repeating at the set's own
+   tile size over UVs laid out in FAMMAT.scale metres. 45-kit.js kitMaterial() gives such a family a MeshStandardMaterial
+   with the set's normal and roughness maps. Families with no library row stay procedural. ---- */
+(function(){
+  if(typeof KMAT === 'undefined' || KMAT.mode !== 'lib') return;
+  Object.keys(FAMMAT).forEach(function(fam){
+    var L = KMAT.packed('locus', fam); if(!L) return;
+    ltexLibrary(FAMMAT[fam], L);
+  });
+})();
+function ltexLibrary(fm, L){
+  var T = KMAT.textures(L, { aniso: FAST ? 1 : 8 }), sc = fm.scale || [3,3];
+  [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(sc[0]/L.scale[0], sc[1]/L.scale[1]); });
+  fm.tex = T.map; fm.lib = L; fm.libTex = T;
+}
+/* the adapter: every family as a material record, for the export (window._materials) */
+(function(){
+  if(typeof KMAT === 'undefined') return;
+  var recs = {};
+  Object.keys(FAMMAT).forEach(function(fam){
+    var fm = FAMMAT[fam], L = fm.lib;
+    if(fam === 'glowmat'){ recs[fam] = { id:'locus.glowmat', family:fam, scale:fm.scale, tint:true, hook:'unlit', note:'unlit emissive bits' }; return; }
+    recs[fam] = { id:'locus.'+fam, family:fam, scale: L ? L.scale : fm.scale, tint:true, roughness:1,
+      metal: L ? (L.metal||0) : 0, specular: L ? L.specular : 0, normalScale: L ? L.normalScale : 1, breakup: L ? (L.breakup||null) : null,
+      lib: L ? L.lib : null, tex: L ? null : 'locus.'+fam, bake: !L && !!fm.tex, hook: fam === 'cloth' ? 'world-uv+cloth-sway' : 'world-uv',
+      note: L ? 'library set, tint keep '+L.tint : (fm.tex ? 'procedural map' : 'untextured') };
+  });
+  KMAT.adapter('locus', recs);
+  window._materials = KMAT.table('locus');
 })();
 
 ;
