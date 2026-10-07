@@ -61,7 +61,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `86b-xa-plants.js` | 2 |  |
 | `87-xa-spicer.js` | 9 |  |
 | `87b-xa-andean.js` | 12 | POOR: the Palopó shop-house (28); MIDDLE: the cholet (51); RICH: the cholet palace (73) |
-| `87c-xa-erewhon.js` | 24 | a small boat and the pleasure barge (8); the quay, the boat shed, the warehouse (26); the lighthouse: an octagonal stone tower on a ro (60); the garden teahouse: on a double rill plot (16 m (80); the prison, cut into the cliff (96); the Caves of Ice (round 9c): a small ice cavern (110); the palace gate: a mosaic iwan between two gilt- (147); the Pleasure Dome of the Bay: the biome's ruin o (158); a street bridge over the stream (round 9c): the  (178) |
+| `87c-xa-erewhon.js` | 19 | a small boat and the pleasure barge (8); the quay, the boat shed, the warehouse (26); the lighthouse: an octagonal stone tower on a ro (60); the garden teahouse: on a double rill plot (16 m (80); the prison, cut into the cliff (96); the mouth of the Caves of Ice (110); the palace gate: a mosaic iwan between two gilt- (125); the Pleasure Dome of the Bay: the biome's ruin o (136) |
 | `88-xa-dress.js` | 12 | the palette and the painted motifs (colour-carry (13); the paint filter on kput (58); the twins (102) |
 | `88y-xanadu-matlib.js` | 1 |  |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
@@ -76,5 +76,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 312 |
+| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 273 |
 | `xanadu` | `89z-rows.js`, `91z-views.js` | <1 |
