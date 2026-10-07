@@ -40,3 +40,22 @@ defBuilding({key:'zj_council',name:'The council: a hall cut from the rock in its
   for(const x of [-8,8]){zfColumn('tuffPol',x,Y,7,.95,16,c);cyl('copper',x,4,7,.7,.3,P('copper'),12);sph('glow',x,4.4,7,.4,P('flame'),1,12);haloAt(x,4.5,7,0xffb04a,true);}
   for(const [x,z] of [[-21.5,-46.5],[21.5,-46.5],[-21.5,16.5],[21.5,16.5],[-3.6,42],[3.6,42]])zcLantern(x,z,c);
   door(0,0,41,0,2.4);}});
+
+/* the cistern hall (its plan: the cistern's item): a round-headed portal under a glazed frieze, the still water below the
+   terraces, flights of steps down the back terraces' risers, the causeway's and the platform's parapets, the dipping frame and
+   lanterns on the platform, drip channels down the back wall */
+defBuilding({key:'zj_cistern',name:'The cistern hall: a stepwell under the rock',seed:4902,originFront:true,
+ tags:{types:['infrastructure'],wealth:'middle',style:'carved',rock:'tuff',finish:'plaster'},w:32,d:34,h:19,
+ note:'a vaulted hall 9 m deep: terraces of rock step down on three sides to the still water, pillars rise from the water to the vault, a causeway runs out to a platform where water is drawn',
+ build(o){const it=zjItem('zj_cistern');cvFromItem(it,{finish:'plaster'});zfFixtures(it);const c=P('white');
+  zfArch('tuffPol',0,0,.02,2.4,3.1,.42,c,{key:true,keyMk:'basaltPol'});box('tuffPol',0,0,.29,3.0,.12,.5,c);
+  box('tuffPol',0,3.8,.08,6.2,.8,.24,c);zfBand('patGlazedDfly',0,3.85,.21,6.0,.7,0,c);
+  for(const s of [-1,1]){zfNiche(s*2.6,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.6,1.4,.05,0,{setting:'outdoor'});}
+  box('water',0,-7.0,-17.6,23.8,.02,24.8,P('water'));
+  for(const s of [-1,1])box('tuffPol',s*1.25,0,-11.7,.3,.7,13,c);
+  for(const [x,z,w,d] of [[0,-22.35,7,.3],[-3.35,-20.15,.3,4.7],[3.35,-20.15,.3,4.7]])box('tuffPol',x,0,z,w,.7,d,c);
+  for(const s of [-1,1])zcLantern(s*2.6,-21.4,c);FURNISH('zeijani_dipping_frame',0,0,-19.6,0,{setting:'room'});
+  /* flights down the back terraces' risers (each 1.6 m: eight steps), and the drip channels on the back wall */
+  for(let k=2;k<=4;k++){const yTop=-1.6*(k-1),z0=-30+2*(k-1);for(let i=0;i<7;i++)box('tuffHewn',0,yTop-1.6,z0+.12+i*.24,1.6,1.6-(i+1)*.2,.24,c);}
+  for(const x of [-8,-4,4,8])box('basaltPol',x,0,-29.86,.16,4,.04,P('soot'));
+  door(0,0,0,0,2.4);}});

@@ -107,7 +107,8 @@ const PB={
    ['the west stair’s foot',-11.6,-18],['up into the chamber',-7.6,-23.6],['inside',-7,-24],['among the pillars',-4,-24],['the crossing',0,-24],['by the dais',0,-30.8],['the crossing again',0,-24],
    ['the chamber’s door',0,-14],['the bridge',0,-7],['the pavilion',0,-.5],['the front bridge',0,8],['the gatehouse’s gallery',0,16],['back over',0,8],['the pavilion again',0,-.5],
    ['the bridge again',0,-7],['the chamber',0,-14],['its middle',0,-24],['the east stair’s head',7,-24],['its top',7.6,-23.6],['down',11.6,-18],['the pit’s east side',13,10],['the pit again',0,10],
-   ['the tunnel’s foot',0,13.2],['up the tunnel',0,41.3],['the ground',0,44]]));return out;},
+   ['the tunnel’s foot',0,13.2],['up the tunnel',0,41.3],['the ground',0,44]]));
+  r('cistern',PB.siteRoute(W,'zj_cistern',[0,3],[['the portal',0,.5],['the landing',0,-3.5],['the causeway',0,-10],['the platform',0,-20.6],['by the frame',2.2,-21],['the platform again',0,-20.6],['the causeway again',0,-12],['the landing again',0,-3.5],['out',0,2]]));return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
  shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
@@ -142,7 +143,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===4&&cr.every(e=>PB.routeOk(e.log)),
+ const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===5&&cr.every(e=>PB.routeOk(e.log)),
   cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
   sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');

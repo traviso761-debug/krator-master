@@ -487,6 +487,35 @@
     return { rooms: rooms, voids: voids };
   }
   const COUNCIL = council();
+  /* THE CISTERN HALL (Chand Baori; Varanasi's ghats underground): a vaulted hall carved in the rock, its floor the basin 9 m
+     below the way in; terraces of rock left standing step down to the still water on three sides (a stepwell); pillars rise from
+     the water to the vault; a causeway of rock runs out to a platform where water is drawn. The landing inside the portal is
+     the interiors room (its program wants a way to draw water); the hall itself is a void room off the walk map (its floor is
+     under the water). The walk: the landing, the causeway and the platform */
+  function cisternHall() {
+    const rooms = [], voids = [], Y = -9;
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-16, 16, -34, 0), y0: -0.5, y1: 8, cap: 1.2, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 2.0, h: 3.4 });
+    voids.push({ kind: 'stair', id: 'way-in', joins: ['landing'], a: [0, 0, 1.3], b: [0, 0, -2.2], w: 2.6, h: 3.2 });
+    rooms.push({ id: 'landing', kind: 'cistern', carved: true, poly: rrect(-4, 4, -5.6, -1.6), round: 0.4, y: 0, h: 3.4, ceil: 'vault', rise: 0.4, finish: 'plaster',
+      doors: [{ at: [0, -1.6], w: 2.4, swing: 'none' }, { at: [0, -5.6], w: 2.4, swing: 'none' }] });
+    voids.push({ kind: 'room', id: 'hall', poly: rrect(-12, 12, -30, -5), y: Y, h: 13, ceil: 'vault', rise: 1.5, r: 0.8, finish: 'plaster', floor: false });
+    /* the terraces: four steps of rock down to the water, each a U of three strips (west, east, back), 2 m wider than the one above */
+    for (let k = 1; k <= 4; k++) {
+      const top = -1.6 * k, w = 2 * k;
+      voids.push({ kind: 'monolith', id: 'tierW' + k, poly: rrect(-12.2, -12 + w, -30.2, -5), y0: Y, y1: top, phase: 3, finish: 'hewn' });
+      voids.push({ kind: 'monolith', id: 'tierE' + k, poly: rrect(12 - w, 12.2, -30.2, -5), y0: Y, y1: top, phase: 3, finish: 'hewn' });
+      voids.push({ kind: 'monolith', id: 'tierB' + k, poly: rrect(-12.2, 12.2, -30.2, -30 + w), y0: Y, y1: top, phase: 3, finish: 'hewn' });
+    }
+    /* the causeway and the platform, rock left standing to the way in's level; the pillars from the water to the vault */
+    voids.push({ kind: 'monolith', id: 'causeway', poly: rrect(-1.4, 1.4, -18.2, -5.2), y0: Y, y1: 0, phase: 3, finish: 'polished', block: false });
+    voids.push({ kind: 'monolith', id: 'platform', poly: rrect(-3.5, 3.5, -22.5, -17.8), y0: Y, y1: 0, phase: 3, finish: 'polished', block: false });
+    [-2.9, 2.9].forEach(function (x) { [-8, -12, -16].forEach(function (z) { voids.push({ kind: 'monolith', id: 'pillar' + (x < 0 ? 'W' : 'E') + (-z), poly: circle(0.55, 12, x, z), y0: Y, y1: 5.6, phase: 3, finish: 'polished' }); }); });
+    voids.push({ kind: 'floor', id: 'causeway-top', poly: rrect(-1.1, 1.1, -18.2, -5.0), y: 0, tag: 'cavern:floor' });
+    voids.push({ kind: 'floor', id: 'platform-top', poly: rrect(-3.2, 3.2, -22.2, -18.1), y: 0, tag: 'cavern:floor' });
+    return { rooms: rooms, voids: voids };
+  }
+  const CISTERN = cisternHall();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -621,8 +650,8 @@
         { kind: 'stair', id: 'east', joins: ['chapel', 'ossE'], a: [2.5, -4.5, -12], b: [11.0, -4.5, -12], w: 1.4, h: 2.3 },
         { kind: 'stair', id: 'keeper-door', joins: ['keeper'], a: [-6.4, -4.5, -12.2], b: [-6.4, -4.5, -15.9], w: 1.0, h: 2.1 }],
       note: 'down 4.5 m to the mortuary chapel; the loculi corridors lined with bones; an ossuary chamber at each end; the Keeper\'s cell' },
-    { key: 'zj_cistern', name: 'Cistern hall: a landing', wealth: 0.4, types: ['infrastructure'], residence: false, lot: [12, 8],
-      rooms: [{ id: 'landing', kind: 'cistern', poly: rect(10, 5, 0, 0), y: 0, h: 4.5, doors: [{ at: [0, 2.5], w: 2.0, swing: 'none' }, { at: [0, -2.5], w: 2.0, swing: 'none' }] }],
-      note: 'PROVISIONAL (until the void plan, P3): one landing of the stepwell flights, where the water is drawn' }
+    { key: 'zj_cistern', name: 'The cistern hall: a stepwell under the rock', carved: true, wealth: 0.5, types: ['infrastructure'], residence: false, lot: [32, 34],
+      rooms: CISTERN.rooms, voids: CISTERN.voids,
+      note: 'a vaulted hall 9 m deep: terraces of rock step down on three sides to the still water, pillars rise from the water, a causeway to a platform; the landing inside the portal is where water is drawn' }
   ]) });
 })(KratorInteriors);
