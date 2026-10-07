@@ -91,6 +91,11 @@ ORIGIN = os.path.join(HERE, '.origin.html')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+# the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
+# clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
+# 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-reedlake-matlib.js binds it onto MAT (KMAT.bindMat)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '88x-matlib-pack.js'
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
@@ -115,6 +120,7 @@ TARGET_OUT = {
 }
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-reedlake-matlib.js',   # the material library (no rnd())
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '09-lod.js', '97-lod-auto.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
@@ -233,6 +239,7 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
@@ -245,6 +252,10 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'reedlake')
+    order = sorted(order + [MATLIB_PACK])
 
     if do_checks:
         errs = check(order, bodies)

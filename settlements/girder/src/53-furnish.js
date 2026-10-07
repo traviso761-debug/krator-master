@@ -62,9 +62,11 @@ emitBuckets = function(){ gfFlush(); return gfEmitKit(); };
 /* the catalog's colours are sRGB values; Girder's fabric is linear (45-kit converts every colour): the
    furniture meshes keep their 8-bit vertex colours and linearise them in the vertex shader */
 /* the furniture's render families take a library detail map (48-detail.js; materials.json f_<family>) by triplanar
-   projection of their world positions; gfMatHooks(mt, key) sets it up with the sRGB hook and the night glow */
+   projection of their world positions; gfMatHooks(mt, key) sets it up with the sRGB hook and the night glow. A part with a
+   texture family (the catalog's userData.texFamily: feather, clay, pewter ...) takes f_<texFamily>, else its family's set */
 function gfMatHooks(mt, key){
-  var fam = mt.userData.family || 'plain', dh = GDET.hook('f_' + fam, mt);
+  var fam = mt.userData.family || 'plain', tf = mt.userData.texFamily, dh = (tf && GDET.hook('f_' + tf, mt)) || GDET.hook('f_' + fam, mt);
+  if(tf) key += '/' + tf;
   if(mt.isMeshBasicMaterial){
     mt.onBeforeCompile = dh ? function(sh){ gfSRGBHook(sh); dh(sh); } : gfSRGBHook;
     if(dh) mt.customProgramCacheKey = function(){ return key + '|det'; };

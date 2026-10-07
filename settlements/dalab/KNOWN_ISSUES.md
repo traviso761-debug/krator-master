@@ -109,3 +109,11 @@ saying what fixed it.
       for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.
+- [ ] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). ?mat=proc shows the old look.
+- [ ] **Dalab's own patterns take the material library** (2026-10-06): the four murals (planes alias the box families), relief-squares,
+      relief-tile-teal, the harlequin checker, god-panel-a, the mosaic and the banner card (88y gives it its alpha test). The lizard mural
+      set stacks three lizard bands where the procedural frieze had one. dRammed, dTurf and dTile stay procedural. ?mat=proc shows the old look.
+- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+      vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.

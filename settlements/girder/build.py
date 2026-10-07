@@ -20,6 +20,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -77,7 +81,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '83-walk.js',         # the first-person walk mode
                  '48-detail.js',       # library detail maps on meshes without UVs (no rnd())
                  '64-cards.js',        # the library's extra plant and net cards (its own generator)
-                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js',   # core/materials/record (no rnd())
+                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js',   # core/materials/record (no rnd())
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
                  '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
                  '90-atmos-host.js'}   # binds core/atmos
@@ -107,7 +111,7 @@ def matlib_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return '/* no tex/pack.json: Girder runs on its procedural textures */\nKMAT.pack(\'girder\', {});\n'
-    pack = json.load(open(pj))
+    pack = json.load(open(pj, encoding='utf-8'))
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
@@ -221,7 +225,7 @@ def main():
     html = ''.join(bodies[f] for f in order)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
-    with open(MANIFEST, 'w') as fh:
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
@@ -252,7 +256,7 @@ if __name__ == '__main__':
 import os as _os
 _ki = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'KNOWN_ISSUES.md')
 if _os.path.exists(_ki):
-    _open = [l.rstrip() for l in open(_ki) if l.startswith('- [ ]')]
+    _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:
         print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md - tell the user before making changes:' % len(_open))
         for l in _open: print('  ' + l[6:])

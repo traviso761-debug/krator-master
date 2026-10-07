@@ -126,3 +126,30 @@ Version 56 (2026-10-06): `worlds/scyvoi.html` added (the Scyvoi kit, 11.8 MB: fi
 and carved vardo, the shaman's lodge, smithy and supply tents, all furnished with a cut-away; salamanders, chariots and carts,
 tethering; the Baelu fire redoubt) and `worlds/krator-catalog.html` replaced (1635 pieces: the Scyvoi furniture culture), from
 `main` at 34d77bca. The live index (version 55) was kept: the Scyvoi card was added and the Master catalog card updated. One publish call.
+Version 57 (2026-10-06): `worlds/crater-drylands.html` replaced with the crater drylands' live fire (F, then click, or the view
+"A wildfire running": the fire runs downwind through the old fuel, burns the scrub away and leaves char and smoke), 3.3 MB, from
+`main` at 843864e1. The live index (version 56) was kept: only the Crater drylands card changed (blurb, size). One publish call.
+Version 58 (2026-10-06): `worlds/fauna.html` added (the Fauna kit, 0.5 MB: 48 species, every animal of Krator gathered and
+tagged by biome, diet, temperament, traits, yields and life), `worlds/scyvoi.html` replaced (goats from the fauna kit, the
+hidemaker's tent) and `worlds/krator-catalog.html` replaced (the Scyvoi tanning pieces), from `main` at the fauna kit merge.
+The live index (version 57) was kept: the Fauna card was added and the Scyvoi card's blurb updated. One publish call.
+Version 59 (2026-10-06): `worlds/shighlands.html` added (the southern highlands biome kit, 0.2 MB: the spiral biome, a cloud forest
+above the cloud sea and a paramo of giant rosettes, every plant a spiral turning the same way), from `main` at the southern
+highlands merge (1a34da92). The live index (version 58) was kept: only the Southern highlands card was added. One publish call.
+Version 60 (2026-10-06): `worlds/fauna.html` (0.7 MB) and `worlds/scyvoi.html` (12.1 MB) replaced with the fauna quality pass
+(every species reviewed and refined, surfaces on their own material families, better fur and skin maps), from `main` at ec5eb622.
+The live index (version 59, the southern highlands) was kept: only the Fauna and Scyvoi cards' sizes changed. One publish call.
+Version 61 (2026-10-06): `worlds/ehighlands.html` added (the eastern highlands biome kit, 1.5 MB: the cushion plateau in thin air,
+everything growing toward the giant; poured cushions and the Mother Cushion, woolbacks, thorn cushions, vigil spikes, ragbark gullies, glass
+towers, a cushion bog, a frozen tarn and a geyser field; ten library textures), from `main` at 10e85603. The live index (version 60) was
+kept: only the Eastern highlands card was added. One publish call.
+Version 62 (2026-10-06): `worlds/noahs-regret.html` added (Noah's Regret, 5.8 MB: the Ancient floating harbour aground on the
+Ring Sea's south shore, Bloody Ruephus's pirate base; ring hull, flooded holds, four decks of cabins, the atrium, bridge, dining and engine
+rooms, the Ancient deck buildings, all furnished, with a deck cut-away), from `main` at the Noah's Regret merge. The live index (version 61)
+was kept: only the Noah's Regret card was added, after Ys. One publish call.
+Version 63 (2026-10-07): `worlds/noahs-regret.html` replaced (5.9 MB: the catamaran, two hulls joined at the bow with the harbour
+open astern, the liner mole and finger piers, terraced sterns, twin engine rooms, two crew messes, the greenhouse, fifteen ship's rooms;
+the forecourt plaza, terraces and grand stair up to the bridge house with the bridge on top) and `worlds/ancients-interiors.html` added
+(the Ancients interiors kit, 1.4 MB: fourteen ship's halls in two dresses, the ship's rooms and cabins, every room audited), from `main`
+at 29f93c3. The live index (version 62) was kept: the Noah's Regret card updated (blurb, size) and the Ancients interiors card added after
+the Interiors walk-through. The Master catalog card (now 1655 pieces) was not touched. One publish call.

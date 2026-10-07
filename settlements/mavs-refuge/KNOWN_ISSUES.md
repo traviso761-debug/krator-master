@@ -4,8 +4,12 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
 - [ ] (2026-10-05) Tree tints (60-trees.js, same change as Girder): roots take the trunk's tint at their height above the ground, limbs/boughs/twigs the trunk's tint where they leave it.
       Built, not run (`verify.py` not called) and not looked at.
-- [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment) but Mav's Refuge has no material-library machinery
-      (no materials.json, no KMAT, no tex/), so nothing sets it and the wings stay vertex-coloured. Adopting the library here is the larger job.
+- [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment); nothing sets it yet, so the wings
+      stay vertex-coloured. 2026-10-06: Mav's now has the library (materials.json: 13 families, Girder's rows; tex/; KMAT), so the wing can be
+      wired the way Girder does (`flywing`).
+- [ ] (2026-10-06) Library adoption, first pass: the architecture, rock, leafy and the four barks take Girder's library sets; web and glowmat stay
+      procedural; the catalog furniture, the flyers and the cards are not wired (Girder's f_*, fly_* and card rows). No ACES tone mapping
+      (Girder's library look adds it); judged in three views against the procedural page and read well.
 - [ ] (2026-10-05) This copy of 84-flyers.js and Girder's differ by about 9 KB (Girder has the roost traffic); the model block and FlyGeo are shared. Any
       model or UV change has to be made in both.
 - [x] Flyers: wingtips clip the gallery posts on landing (84-flyers; Girder's version lands on the beam outside the post line — port it)

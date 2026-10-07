@@ -68,7 +68,14 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS)}
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    vb = {'38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
+          '29x-matlib-pack.js': matlib_pack.fragment(HERE, 'postapoc')}   # GENERATED from tex/ (tools/textures/pack.py, materials.json)
+    for f in RECORD_FILES:   # the material records (core/materials/record): src/29y-pa-matlib.js binds the pack onto MAT
+        vb[f] = open(os.path.join(ROOT, 'core', 'materials', 'record', f), encoding='utf-8', newline='').read()
+    return vb
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 RE_DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_SEED = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)', re.S)
 RE_KEY = re.compile(r'defBuilding\(\{\s*key\s*:\s*[\'"]([^\'"]+)[\'"]')
@@ -115,7 +122,7 @@ def main():
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
-    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
+    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
     chk = os.path.join(HERE, '.syntax.js'); open(chk, 'w', encoding='utf-8').write(body)
     try:

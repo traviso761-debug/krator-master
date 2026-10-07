@@ -41,9 +41,13 @@ const MAT_FAMILY_LOOK = {
   nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
   plastic: [0.5, 0.0], bone: [0.6, 0.0]
 };
+/* `family` may carry a texture split, 'tex/base' (furnFamily below): the material keeps the base family's look and
+   userData.family, and adds userData.texFamily for a host's detail map */
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
+  let texFamily = null;
+  if (family && family.indexOf('/') > 0) { texFamily = family.slice(0, family.indexOf('/')); family = family.slice(family.indexOf('/') + 1); }
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
   const fam = MAT_FAMILY_LOOK[family];
   if (fam) { roughness = fam[0]; metalness = fam[1]; }
@@ -53,6 +57,7 @@ function mat(color, family) {
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
   m.userData.family = family || '';
+  if (texFamily) m.userData.texFamily = texFamily;
   _matCache.set(key, m);
   return m;
 }
@@ -310,7 +315,7 @@ const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
 /* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
 function FURN_CULTURE(key, info) {
   if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
-  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  if (info && info.palette) { FPAL[key] = Object.assign(FPAL[key] || {}, info.palette); delete _famRev[key]; }
   FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
   return FURN_CULTURE_INFO[key];
 }
@@ -501,7 +506,15 @@ const FPAL = {
     timberOak: 0x8a6a4e,
     unlit: 0x2a2f2e,
     verdigris: 0x6fe8e0,
-    whiteHot: 0xfff2c9
+    whiteHot: 0xfff2c9,
+    /* the arcology's fittings (Noah's Regret, 2026-10): a painted dark grey, the earth and the greens of its beds,
+       ripe fruit, still water */
+    paintGrey: 0x3a3c3e, soil: 0x4a3a2a, leafGreen: 0x4e7a34, leafLight: 0x6a9440, leafDark: 0x3f6a30,
+    fruitRed: 0xb83224, water: 0x4a6a72, rust: 0x5a3a28,
+    /* the intact buildings' interiors (2026-10): upholstery on the moulded seats and beds, the medical and server
+       status lamps, a sample vial's violet */
+    clothSlate: 0x5e6b78, clothDove: 0xd2d5d8, clothTeal: 0x3d7a80,
+    glowGreen: 0x7dffa0, glowRed: 0xff5a48, glowViolet: 0xb48cff
   },
   'ancients-salvage': {
     blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
@@ -681,6 +694,67 @@ function furnCol(culture, key) {
   throw new Error('no palette key "' + key + '" for culture ' + culture);
 }
 
+/* texture splits by palette key (core/materials/PLAN.md, "Catalog furniture audit"): a part whose key wants a library
+   set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
+   falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
+   `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+const FAMILY_SPLITS = [
+  [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
+  [/^tyre/, ['plastic', 'metal'], 'rubber'],
+  [/^clay/, ['stone'], 'clay'],
+  [/^obsidian/, ['lacquer'], 'obsidian'],
+  [/^(pewter|tin|tinMirror)$/, ['metal'], 'pewter'],
+  [/^paint/, ['wood', 'plank'], 'paint'],
+  [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
+  [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
+];
+const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
+function furnFamily(culture, color, family) {
+  if (!family || typeof color !== 'number') return family;
+  let rev = _famRev[culture];
+  if (!rev) {
+    rev = _famRev[culture] = new Map();
+    const p = FPAL[culture] || {};
+    for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
+  }
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
+  if (!keys) return family;
+  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  return family;
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -688,6 +762,7 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
+  const ff = (c, fam) => furnFamily(F.asset ? F.asset.culture : '', c, fam);
   F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
   F.cols = (keys) => keys.map(F.col);
   F.pick = (arr) => {
@@ -704,18 +779,18 @@ function makeFrame(x, z, ry, opt) {
   /* move the frame origin to local (lx, lz). A piece authored off-centre calls
      F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
   F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
-  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
+  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, ff(color, family)); };
   /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
-  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family, o); };
-  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, family, o); };
-  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
-  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, ff(color, family), sides); };
+  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
   /* a beam's roll must come from the LOCAL frame, then turn with the building:
      setFromUnitVectors on the world direction picks the shortest rotation,
      whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
@@ -723,7 +798,7 @@ function makeFrame(x, z, ry, opt) {
   const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
   F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
     const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
-    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, ff(color, family));
     if (F.ry && m) {
       _bDir.set(bx - ax, by - ay, bz - az);
       if (_bDir.lengthSq() > 1e-12) {
@@ -731,7 +806,7 @@ function makeFrame(x, z, ry, opt) {
       }
     }
   };
-  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, ff(color, family)); };
   F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
   F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };

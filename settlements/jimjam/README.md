@@ -26,6 +26,15 @@ front view and an eye-level view in the view menu, every row has an aerial, and 
 
 Dev tools (project rule): inspector (hover: name · class · tags), polygon tool, walk mode (F), labels.
 
+## Textures (the material library)
+
+Since 2026-10-06 Jimjam takes its surfaces from the shared material library (`core/materials/PLAN.md`, "How a build
+adopts the library"): `materials.json` maps each `JMAT` family (bricks, marble, ochre plaster, the three dome scales,
+the sunray, the six shaft reliefs) to a library set in full colour; `python3 tools/textures/pack.py settlements/jimjam`
+writes `tex/`, and `build.py` inlines it (generated fragment `46-matlib-pack.js`). The end of `src/60-jj-mat.js` swaps
+the maps in; `?mat=proc` shows the procedural canvases. `window._materials` is the material table for the export.
+Untextured materials (gold, iron, wood, canvas, glass, water) are unchanged.
+
 ## Level of detail
 
 The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and

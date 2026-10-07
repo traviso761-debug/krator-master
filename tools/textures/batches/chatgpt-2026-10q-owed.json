@@ -1,0 +1,156 @@
+[
+ {
+  "src": "Iridescent Nacre Stripe Inlay Pattern.png",
+  "out": "core/materials/patterns/nacre/banded-trim",
+  "record": {
+   "id": "nacre/banded-trim",
+   "family": "nacre",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id patterns/nacre/banded-trim).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Nacre Stripe Inlay Pattern.png",
+    "reuse": "Ys and the nacre culture: banded mother-of-pearl trim"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.25,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "Seamless Dragon Tree Bark Texture.png",
+  "out": "core/materials/library/bark.dragon",
+  "record": {
+   "id": "bark.dragon",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.dragon).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Dragon Tree Bark Texture.png",
+    "reuse": "sedesert dragon tree and quiver tree; any leaf-scar-banded trunk (yucca, joshua)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Gray Pebble and Shell Texture.png",
+  "out": "core/materials/library/ground.shingle",
+  "record": {
+   "id": "ground.shingle",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id ground.shingle).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Gray Pebble and Shell Texture.png",
+    "reuse": "pebble beaches and shores: xanadu, the bays; gravel paths"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Seamless Pale Gray Marine Skin Texture.png",
+  "out": "core/materials/library/skin.marine.b",
+  "record": {
+   "id": "skin.marine.b",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id skin.marine).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Pale Gray Marine Skin Texture.png",
+    "reuse": "a second, paler marine hide: alternate swimmers"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Weathered Corrugated Metal Texture (1).png",
+  "out": "core/materials/library/metal.container",
+  "record": {
+   "id": "metal.container",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.5,
+   "scale": [
+    1.2,
+    1.19
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.container).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Corrugated Metal Texture (1).png",
+    "reuse": "neutral container rib (tinted to the livery): Port, Ys, post-apoc"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.7,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ }
+]

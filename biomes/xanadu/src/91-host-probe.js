@@ -22,7 +22,31 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// ---------------------------------------------------------------- the host's own checks (verify.py runs them), each with a broken input that must fail
+// species and plants that yield something edible the kit does not draw as a catalog fruit (seeds, petals, nuts...): named, not hidden
+const FRUIT_NOT_DRAWN=['ginkgo','lotustrumpet','ringbeech','wisteria','hyrcanoak','travelers','cloudfern','maquis'];
+// the instanced items on the stage, by item name, counted
+const itemCounts=()=>{const n={};scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;const k=(M.name||'').replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;});return n;};
+const HCHK={
+ // fruit: every species and plant carries a harvest tag; every edible one names a catalog piece (or is listed as not
+ // drawn); every catalog fruit's item is on the stage, the olives and the lotus seed heads among them
+ fruit(SP,PL,N){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key)
+   .concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.edible.length&&!PL[k].tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(k)<0));
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  const fr=SP.filter(S=>S.tags.harvest&&S.tags.harvest.fruit).map(S=>S.key).concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.fruit));
+  const undrawn=fr.filter(k=>!(N[XANADU.FRUIT_ITEM[k]]>0));
+  return{ok:!miss.length&&!untagged.length&&!undrawn.length&&fr.length>=9,
+   detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(undrawn.length?'fruit not drawn: '+undrawn.join(', ')+'; ':'')+
+    fr.length+' fruiting species and plants, '+XANADU.FRUIT_KEYS.length+' catalog keys; whorl olives '+(N.whorlolive||0)+', lotus seed heads '+(N.lotuspod||0)+', pods '+(N.pod||0)+', fruit balls '+(N.ball||0)+', pitaya '+(N.pitayafruit||0)+', catkins '+(N.catkin||0)}}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,itemCounts()));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=itemCounts();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(XANADU.SPECIES.map(S=>S.key==='cacao'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),XANADU.PLANTS,N));
+ add('no whorl olives drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,Object.assign({},N,{whorlolive:0})));
+ add('a plant with no harvest tag',HCHK.fruit(XANADU.SPECIES,Object.assign({},XANADU.PLANTS,{lotus:{name:'Lotus',items:[],tags:{}}}),N));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,itemCounts,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

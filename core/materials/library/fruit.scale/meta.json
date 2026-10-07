@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1222
+   ],
+   "seam_after": [
+    0.916,
+    1.083
+   ],
+   "seam_before": [
+    1.088,
+    2.89
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "food",
+  "id": "fruit.scale",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   0.3,
+   0.3
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "fruit-scale.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.scale).",
+  "reuse": "the biome fruit: scalefruit, the salt cone, pinyon cones (f_fruitScale); any scaled cone or pod",
+  "sha1": "46e5a8ecdd68ff448758abcd450a85f8693fbf5d"
+ }
+}

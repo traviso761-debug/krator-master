@@ -39,7 +39,7 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
         lantern-horn on the glow, leaf.understorey, rock face, thatch, earth.floor.packed, terracotta, metal.iron.pitted, fruit.skin.amber on food, bone.skull,
         basket-coil on wicker, metal.gold), the gatepods (fruit.husk), the draught millipedes (chitin.millipede) and the lift cages (fibre.cane).
       - The mounts: FlyGeo.slots maps each colour to a quadrant of a per-species 2x2 atlas (vertex attribute aDetS), sampled by triplanar projection of the
-        BIND-POSE position, so the sheet rides on the flapping wing. Quetzal: hide.strider fuzz, membrane.pterosaur, the crest feathers, bone.horn; bat:
+        BIND-POSE position, so the sheet rides on the flapping wing. Quetzal: hide.fuzz.pterosaur fuzz (2026-10-06; was hide.strider), membrane.pterosaur, the crest feathers, bone.horn; bat:
         fur.bat, membrane.bat, bone.antler; archaeopteryx: the raptor feathers, organic.scale.terracotta; dragonfly: organic.chitin.iridescent, chitin.spider
         legs (wings: wing.dragonfly); rider: the saddle blanket, leather, wood.lamppost lance, rope. One draw call per species, as before.
       - Village dressing (new FAMMAT families; 05-palette.js): rawhides and big-cat pelts on the workshop frames, the clan emblem on the upper galleries'

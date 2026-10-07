@@ -1,6 +1,6 @@
 {
  "build": "iziz",
- "note": "Iziz's adapter for the biome fauna sheets (the city target's hyperjungle). Each family is a near-colourless sheet that the per-instance tint colours, or the wing's alpha cut-out. All are optional until the sheets are generated (core/materials/PROMPTS-ready.md). build.py's fauna_pack() turns the packed maps into HYPERJUNGLE.FAUNATEX.",
+ "note": "Iziz's adapter for the biome fauna sheets (the city target's hyperjungle). Each family is a near-colourless sheet that the per-instance tint colours, or the wing's alpha cut-out. All are optional until the sheets are generated (core/materials/PROMPTS-ready.md). build.py's fauna_pack() turns the packed maps into HYPERJUNGLE.FAUNATEX. Since 2026-10-06 also the vernacular: the MAT keys of 69b-vern-mat.js (wood, woodV, stone, plaster, thatch, shingle, cloth ) bound in place by src/69e-iziz-matlib.js (KMAT.bindMat); grey detail maps (keep 0) the instance colour tints, means estimated from the procedural painters (judge in a render). dirt stays procedural (its grass patches are the point; ground.redsoil read flat). cloth's contrast is raised so the awning stripes stay bold under the tint. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The Voth embassy (75-port-embassy.js, 2026-10-06): the pantile (vpTile, roof.tile), the mud plaster (vpBanco, earth.banco), both warm-tinted, and the blue-and-white mosaic (vpMosaic, patterns/dalab/mosaic, full colour). vpBanner stays procedural: banner-hung is plain cloth and the banner's device would go.",
  "size": 512,
  "families": {
   "fauna_wing": {
@@ -58,6 +58,393 @@
    },
    "roughLift": 0,
    "mapOnly": true
+  },
+  "wood": {
+   "lib": "wood.siding",
+   "scale": [
+    2.0,
+    1.7
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "woodV": {
+   "lib": "wood.lamppost",
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.57
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "shingle": {
+   "lib": "roof.shingle.neutral",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas.striped",
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.73,
+    "contrast": 2.2
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concreteR": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "paving": {
+   "lib": "concrete.ancient.b",
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.455
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "corrugate": {
+   "lib": "metal.corrugated_iron_02",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.527
+   },
+   "metal": 0.3,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.428
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "tarp": {
+   "lib": "cloth.tarp",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.524
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "whiteWorn": {
+   "lib": "metal.worn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.8
+   },
+   "metal": 0.3,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vpTile": {
+   "lib": "roof.tile",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.609,
+    "colour": "#a6998f"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vpBanco": {
+   "lib": "earth.banco",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.746,
+    "colour": "#c7bdaf"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vpMosaic": {
+   "lib": "patterns/dalab/mosaic",
+   "scale": [
+    1,
+    1.02
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
   }
  }
 }

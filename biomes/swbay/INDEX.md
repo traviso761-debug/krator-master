@@ -16,8 +16,8 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `45-host-stage.js` | 23 | the bay, the river, the rise (49); terrain (76); the host binding (96); the ground (107); the water (152); the far country (210) |
-| `50-biome-swbay-species.js` | 34 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); leaf textures (124); bark textures (223); geometries local to this biome (283); an iridescent foliage (335); materials (339); instanced items (379) |
+| `45-host-stage.js` | 23 | the bay, the river, the rise (53); terrain (80); the host binding (100); the ground (111); the water (156); the far country (214) |
+| `50-biome-swbay-species.js` | 37 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (125); leaf textures (149); bark textures (248); geometries local to this biome (308); an iridescent foliage (360); materials (364); instanced items (407) |
 | `55-biome-swbay-trees.js` | 48 **big** | zones from the fields (23); colour (35); polyline helpers (Girder's) (57); keep-clear between trees (66); epiphytes (73); foliage helpers (88); the builders (100); impostors (the far canopy) (367); the pass (409) |
 | `60-biome-swbay-floor.js` | 14 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127) |
 | `65-biome-swbay-dress.js` | 9 |  |
@@ -27,6 +27,6 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 7 |  |
-| `91-host-probe.js` | 3 |  |
+| `90-host-camera.js` | 8 |  |
+| `91-host-probe.js` | 5 |  |
 | `99-tail.html` | <1 |  |

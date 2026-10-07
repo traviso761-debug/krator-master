@@ -620,6 +620,165 @@ const SHELL=d=>d>0?MAT.rust:MAT.white;      // exterior skin by decay
 const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
 const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
 
+/* ============================== MATERIAL RECORDS (core/materials/record) ==============================
+   GODOT-PLAN.md Phase 3 and core/materials/PLAN.md "The record": every build material is one record in one
+   vocabulary, so the exporter writes a table a Godot importer applies without reading JS.
+
+     { id, family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest,
+       scale:[u,v] (world metres per tile), tint (true: the build's vertex or instance colour multiplies the map),
+       normalScale, pattern, hook, lib (library set id), tex (TEX.def id for a procedural map), bake }
+   specular is Godot's StandardMaterial3D `specular` (0..1, 0.5 = the physical default): how much direct light a
+   dielectric reflects. Palette-tinted surfaces under a strong sun want less, or grazing views wash them grey.
+   breakup {mix, macro, cell} hides the tiling of a big surface (a library shader, 'breakup'): a world-space noise of
+   `cell` metres blends the map with a shifted copy of itself (up to `mix`), and a slower one varies the brightness
+   by +-`macro`. Godot: one .gdshader with the same three parameters.
+
+   [G data]: no THREE, no DOM. A build declares an ADAPTER from its own material names (FAMMAT keys, MAT
+   names, catalog family strings) onto records; its old names stay valid (PLAN.md "Order of work" 5).
+
+     KMAT.record(o)                   a checked record (unknown fields throw; defaults filled)
+     KMAT.pack(build, {fam:{...}})    the build's library pack, written by tools/textures/pack.py into a generated
+                                      fragment: per family the library id, its processed maps (data URLs) and fields
+     KMAT.packed(build, fam)          that family's pack entry, or null
+     KMAT.adapter(build, {name:rec})  register a build's records; KMAT.table(build) returns them as one table
+     KMAT.mode                        'lib' (library maps where the pack has them) or 'proc' (the procedural maps
+                                      only: the look before the library); the host sets it from ?mat=proc
+*/
+var KMAT = (function(){
+  'use strict';
+  var FIELDS = ['id','family','colour','map','normalMap','roughnessMap','roughness','metal','specular','emissive','doubleSided',
+                'alphaTest','scale','tint','normalScale','breakup','pattern','hook','lib','tex','bake','note'];
+  var DEF = { colour:'#ffffff', roughness:1, metal:0, specular:0.5, emissive:null, doubleSided:false, alphaTest:0, scale:[1,1],
+              tint:true, normalScale:1, breakup:null, map:null, normalMap:null, roughnessMap:null, pattern:null, hook:null,
+              lib:null, tex:null, bake:false, note:'' };
+  var PACKS = {}, ADAPTERS = {};
+  function record(o){
+    if(!o || typeof o !== 'object') throw new Error('KMAT.record: an object, please');
+    Object.keys(o).forEach(function(k){ if(FIELDS.indexOf(k) < 0) throw new Error('KMAT.record '+(o.id||'?')+': unknown field '+k); });
+    if(!o.id) throw new Error('KMAT.record: every record needs an id');
+    if(!o.family) throw new Error('KMAT.record '+o.id+': every record needs a family');
+    var r = {};
+    FIELDS.forEach(function(k){ r[k] = (k in o) ? o[k] : (k in DEF ? DEF[k] : null); });
+    if(!Array.isArray(r.scale) || r.scale.length !== 2 || !(r.scale[0] > 0 && r.scale[1] > 0))
+      throw new Error('KMAT.record '+o.id+': scale is [u,v] metres per tile, both > 0');
+    if(r.roughness < 0 || r.roughness > 1 || r.metal < 0 || r.metal > 1 || r.specular < 0 || r.specular > 1) throw new Error('KMAT.record '+o.id+': roughness, metal and specular are 0..1');
+    if(r.alphaTest < 0 || r.alphaTest >= 1) throw new Error('KMAT.record '+o.id+': alphaTest is 0..1');
+    return r;
+  }
+  function pack(build, fams){ PACKS[build] = fams || {}; return PACKS[build]; }
+  function packed(build, fam){ var p = PACKS[build]; return (p && p[fam]) || null; }
+  function adapter(build, recs){
+    var out = {};
+    Object.keys(recs).forEach(function(name){ out[name] = record(recs[name]); });
+    ADAPTERS[build] = out; return out;
+  }
+  /* the table an exporter writes: maps are named by the library set or the TEX.def id, never as pixels */
+  function table(build){
+    var A = ADAPTERS[build] || {};
+    return { format:'krator-materials', version:1, build:build, mode:api.mode,
+      convention:{ units:'m', scale:'world metres per tile (u,v)', uv:'world-space planar or triplanar',
+        colour:'map colours sRGB; records with tint:true are multiplied by the vertex or instance colour (sRGB in the palette, linear on the GPU)',
+        normal:'OpenGL (+Y), as Godot expects', library:'core/materials/library/<lib>/ (albedo.jpg, normal.png, roughness.png); a pack holds processed copies' },
+      records:Object.keys(A).map(function(name){ var r = A[name], o = { name:name };
+        Object.keys(r).forEach(function(k){ if(r[k] !== null && k !== 'map' && k !== 'normalMap' && k !== 'roughnessMap') o[k] = r[k]; });
+        o.maps = r.lib ? { from:'library', lib:r.lib } : r.tex ? { from:'procedural', tex:r.tex, bake:true } : null;
+        return o; }) };
+  }
+  var api = { version:1, FIELDS:FIELDS, record:record, pack:pack, packed:packed, adapter:adapter, table:table, mode:'lib',
+              packs:PACKS, adapters:ADAPTERS };
+  return api;
+})();
+if(typeof window !== 'undefined') window.KMAT = KMAT;
+/* ============================== MATERIAL LIBRARY HOST (core/materials/record) ==============================
+   [web]: the browser half of the material records. Sets KMAT.mode from the URL (?mat=proc shows the procedural
+   look the build had before the library), and turns a pack entry's data URLs into three.js textures. Moves into
+   core/host/ with Phase 1 of GODOT-PLAN.md. ?breakup=0 turns the tiling break-up off, to compare.
+
+     KMAT.textures(entry, {aniso})   {map, normalMap, roughnessMap} as THREE textures (repeat-wrapped; the colour
+                                     map sRGB, the others linear). Each loads asynchronously: window._texPending
+                                     counts the images still decoding, so a verifier waits for 0.
+*/
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('25-matlib-host: load 23-mat-record.js first');
+  var q = (typeof location !== 'undefined') ? (location.search + location.hash) : '';
+  KMAT.mode = /[?&#]mat=proc\b/.test(q) ? 'proc' : 'lib';
+  KMAT.breakupOn = !/[?&#]breakup=0\b/.test(q);   /* ?breakup=0: the library maps without the tiling break-up, to compare */
+  if(typeof window !== 'undefined') window._texPending = 0;
+  var cache = {};
+  function tex(url, srgb, aniso, flipY){
+    var key = url.length + ':' + url.slice(-48) + (srgb ? 's' : 'l') + (flipY === false ? 'f' : '');
+    if(cache[key]) return cache[key];
+    var t = new THREE.Texture();
+    if(flipY === false) t.flipY = false;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso || 1;
+    t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ t.image = img; t.needsUpdate = true; window._texPending--; };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed texture failed to decode'); };
+    img.src = url;
+    return (cache[key] = t);
+  }
+  /* Godot's `specular` in three.js r128: scale the direct specular term (0.5 leaves it as it is). A shader hook:
+     call it from the material's onBeforeCompile. */
+  KMAT.specularHook = function(sh, specular){
+    var k = (specular == null ? 0.5 : specular) / 0.5;
+    if(Math.abs(k - 1) < 1e-6) return;
+    sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
+      '#include <lights_fragment_end>\n  reflectedLight.directSpecular *= ' + k.toFixed(3) + ';');
+  };
+  /* 'breakup' (core/materials/PLAN.md "Repetition break-up"): a world-space value noise blends each map with a copy
+     shifted by a fixed offset (the same scale and direction, so planks stay planks), and a slower noise varies the
+     brightness. Colour, normal and roughness use the same mask, so they stay in register. b = {mix, macro, cell}. */
+  KMAT.breakupHook = function(sh, b){
+    if(!KMAT.breakupOn || !b || !(b.mix > 0 || b.macro > 0)) return;
+    var cell = (b.cell || 8).toFixed(3), mx = (b.mix || 0).toFixed(3), mc = (b.macro || 0).toFixed(3);
+    var noise = [
+      'varying vec3 vKmWP;',
+      'float kmH(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }',
+      'float kmN(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);',
+      '  return mix(mix(mix(kmH(i), kmH(i+vec3(1.,0.,0.)), f.x), mix(kmH(i+vec3(0.,1.,0.)), kmH(i+vec3(1.,1.,0.)), f.x), f.y),',
+      '             mix(mix(kmH(i+vec3(0.,0.,1.)), kmH(i+vec3(1.,0.,1.)), f.x), mix(kmH(i+vec3(0.,1.,1.)), kmH(i+vec3(1.,1.,1.)), f.x), f.y), f.z); }',
+      'const vec2 KM_OFF = vec2(0.371, 0.613);'].join('\n');
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vKmWP;')
+      .replace('#include <project_vertex>', '#ifdef USE_INSTANCING\n  vKmWP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;\n' +
+               '#else\n  vKmWP = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#endif\n#include <project_vertex>');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + noise)
+      .replace('#include <map_fragment>', [
+        'float kmM = smoothstep(0.3, 0.7, kmN(vKmWP / ' + cell + ')) * ' + mx + ';',
+        '#ifdef USE_MAP',
+        '  vec4 texelColor = mix(texture2D(map, vUv), texture2D(map, vUv + KM_OFF), kmM);',
+        '  texelColor = mapTexelToLinear(texelColor);',
+        '  diffuseColor *= texelColor;',
+        '#endif',
+        'diffuseColor.rgb *= 1.0 + ' + mc + ' * (kmN(vKmWP / (' + cell + ' * 2.7) + 19.1) * 2.0 - 1.0);'].join('\n'))
+      .replace('#include <roughnessmap_fragment>', THREE.ShaderChunk.roughnessmap_fragment
+        .split('texture2D( roughnessMap, vUv )').join('mix(texture2D( roughnessMap, vUv ), texture2D( roughnessMap, vUv + KM_OFF ), kmM)'))
+      .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps
+        .split('texture2D( normalMap, vUv ).xyz')   /* both branches (object and tangent space) */
+        .join('(normalize(mix(texture2D( normalMap, vUv ).xyz * 2.0 - 1.0, texture2D( normalMap, vUv + KM_OFF ).xyz * 2.0 - 1.0, kmM)) * 0.5 + 0.5)'));
+  };
+  /* every hook a library material takes, in order; and the matching part of its program cache key */
+  KMAT.libHooks = function(sh, L){ KMAT.specularHook(sh, L.specular); KMAT.breakupHook(sh, L.breakup); };
+  KMAT.libKey = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
+  /* opt.flipY false: row 0 of the image is v = 0, as in a DataTexture or canvas texture a card replaces */
+  KMAT.textures = function(entry, opt){
+    var a = (opt && opt.aniso) || 1, fy = opt && opt.flipY;
+    return { map: entry.map ? tex(entry.map, true, a, fy) : null,
+             normalMap: entry.normalMap ? tex(entry.normalMap, false, a, fy) : null,
+             roughnessMap: entry.roughnessMap ? tex(entry.roughnessMap, false, a, fy) : null };
+  };
+  /* a pack entry's colour map as a decoded Image, for a build that composes it into a canvas (an atlas):
+     cb(img) once it has loaded; counted in window._texPending like the textures */
+  KMAT.image = function(entry, cb){
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ window._texPending--; cb(img); };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed image failed to decode'); };
+    img.src = entry.map;
+  };
+})();
 // ---------------------------------------------------------------- instancing kit
 const KIT={defs:{},items:{},order:[]};
 function kdef(name,geo,mat){KIT.defs[name]={geo,mat};KIT.items[name]=[];KIT.order.push(name);}
@@ -4306,6 +4465,9 @@ function buildVillage(scene,gx,gz,d){reseed(9470+d);KOFF=[gx,0,gz];
    else h=0;
    car.position.y=LO+(HI-LO)*h;});}
 
+ // ---- the salvage quarter: Post-Apoc homes round the smithies (71a-apoc-homes.js) --
+ apocHomes(G,{free:free,claim:claim,plateY:plateY,smithies:SCREAM.smithies||[],gx:gx,gz:gz});
+
  // ---- farms and livestock pens fill what is left ----------------------------
  // Every plot's long axis points at the foot of the tower. That is the way the
  // trails run and the way people walk to work, and it is what stops a field
@@ -4529,6 +4691,51 @@ function buildJungle(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  const b=BIO.bake();
  window._jungle={trees:out.trees,hyper:out.hyper,far:out.far,saplings:out.saplings,bakeCalls:b.calls,bakeInst:b.inst};
  KOFF=[0,0,0];return G;}
+// ---------------------------------------------------------------- the salvage quarter: Post-Apoc homes
+// Beside every smithy, where the salvaged sheet comes from, a few households live in what the smiths could not cut
+// up: a grain silo, an earth-filled tyre ring, a bottle-glass cottage, a manor of Ancient bulkhead slabs, a stack of
+// containers. They are the Post-Apoc set's own dwellings (kits/post-apoc, through the generated KratorPostApoc
+// bundle, 70e), dressed in the Screamer culture pack (core/sockets: ochre rag, the skull) and FURNISHED inside by the
+// interiors kit (kits/interiors, the 'post-apoc' set, 70d) with the catalog's Screamer furniture (culture 'screamer',
+// falling back to scrap, beast-rider, generic).
+//
+// buildVillage calls apocHomes() as tier 4, before the fields: the homes are sited round the smithies, which are
+// already claimed, and claim their own ground, so the farms fill what is left round them as they do round
+// everything else. Siting draws NOTHING from the village's rng -- the candidate spots are a fixed ring round each
+// smithy -- and the kit keeps its own seeded stream inside its closure, so every draw after this is the one it was.
+// The fields still move where a home now stands, and only there.
+//
+// SCREAM.homes: [{key, name, x, y, z, ry, door:[x,y,z,yaw]}] in the village's frame, for the views and the life layer.
+// window._apoc: the kit's counts (buildings, pieces of furniture, rooms, residence fails, missing catalog keys).
+const APOC_KEYS=['dw-silo','dw-tire','lg-bulkhead','dw-bottle','dw-box','lg-twinsilo','dw-tank','dw-stilt','dw-bus'];
+const APOC_PER_SMITHY=3;
+function apocHomes(G,V){
+ if(typeof KratorPostApoc==='undefined'||!V.smithies.length)return null;
+ const K=KratorPostApoc;K.setError(m=>reportErr(m));K.setInteriors(true);
+ // every home is furnished as a Screamer household: the set items name the catalog culture their rooms draw from
+ for(const k of APOC_KEYS){const it=KratorInteriors.sets.find(k);if(it)it.culture='screamer';}
+ const sites=[],homes=(SCREAM.homes=[]);let ki=0;
+ // a footprint is level enough when the graded ground under its corners agrees to half a metre
+ const level=(x,z,r)=>{const y0=V.plateY(x,z);for(let a=0;a<6;a++)if(Math.abs(V.plateY(x+Math.cos(a*1.047)*r,z+Math.sin(a*1.047)*r)-y0)>.5)return false;return true;};
+ V.smithies.forEach(S=>{const [sx,,sz,rot]=S;let n=0;
+  // the ring: behind the smithy first (away from the tower), then round its flanks; the spoil heaps lie at rot+2.0 and rot+3.3
+  for(const da of [Math.PI,Math.PI-.62,Math.PI+.62,-1.25,1.25,Math.PI-1.25,Math.PI+1.25,-.62,.62]){
+   if(n>=APOC_PER_SMITHY||ki>=APOC_KEYS.length)break;
+   const key=APOC_KEYS[ki],D=K.declOf(key,{}),r=Math.hypot(D.w,D.d)/2+1.5;
+   for(const dist of [52,66,80]){
+    const a=rot+da,x=sx+Math.cos(a)*(dist+r),z=sz+Math.sin(a)*(dist+r);
+    if(!V.free(x,z,r,5)||!level(x,z,r))continue;
+    V.claim(x,z,r,'built');
+    const y=V.plateY(x,z),f=K.frontOf(key),ry=Math.atan2(sx-x,sz-z)-f.yaw;   // the front door looks at the forge
+    sites.push({key,x,z,ry,o:{v:0,y}});n++;ki++;break;}}});
+ if(!sites.length)return null;
+ const W=K.build(sites,{culture:'screamer'});G.add(W);
+ W.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+ for(const R of K.REG()){const d=R.front&&R.front.world;
+  homes.push({key:R.key,name:R.name,x:R.x,y:R.y,z:R.z,ry:R.ry,door:d?[d.x,R.y+(R.front.local.y||0),d.z,d.yaw]:null});
+  REGISTER({name:'Screamer village — '+R.name.toLowerCase()+' (salvage home)',x:R.x+V.gx,z:R.z+V.gz,r:R.r,h:R.h});}
+ window._apoc=Object.assign({homes:homes.length,keys:homes.map(h=>h.key)},K.furniture());
+ return W;}
 // ================================================================= FLORA
 // The one vegetation module. Every builder in the kit that plants anything --
 // the hyperjungle, the Hexahedron's terraces and soffits, the orchards, the
@@ -5260,6 +5467,116 @@ windHook(MAT.hang,'(-position.y)',.055,'hang',1);
 windHook(MAT.frond,'(position.x)',.075,'frond');
 windHook(MAT.bloom,'1.0',.050,'bloom');
 tick(function(dt){WIND.t.value+=dt;});
+/* no tex/pack.json: the Hexahedron runs on its procedural textures */
+KMAT.pack('screamers', {});
+const SMLIB_FAMILIES = [];
+// ---------------------------------------------------------------- the material library (core/materials/record)
+// The packed library sets (materials.json -> tools/textures/pack.py -> tex/ -> the generated 72b-matlib-pack.js) go
+// onto the MAT entries each family names, in place: every kdef and builder already holds those objects, so nothing
+// else changes, and kbake() carries the hook and its cache key onto each InstancedMesh's clone (30-kit.js).
+//
+// WORLD-SPACE TRIPLANAR, not UVs. This lineage's UVs are in no one unit -- lathe tiles at 8 m, gridSurface at
+// whatever uS/vS its caller passed, a kit box at 0..1 over each face however far the instance stretched it -- which
+// is why the board-formed concrete ran at a different size on every surface. The hook samples colour, normal and
+// roughness three times, once per world axis plane, at the family's tile size in metres, blended by the surface
+// normal (instance transforms included). The normal map is reoriented per plane (whiteout blend), so the relief
+// faces the right way on every side of a box. A break-up mask (PLAN.md, "Repetition break-up") blends each sample
+// with a shifted copy and varies the brightness slowly, so a 300 m soffit does not show its 4 m tile.
+//
+// The pack normalises each set's mean brightness to the procedural canvas it replaces, so the palette tints set in
+// 54-mat-concrete, 69-mat-salvage (the Screamer retint) and 71-village keep their meaning. A family flagged
+// `detail` sits on a material that had no map; its mean is divided back out in the shader.
+// The procedural canvases are still made (the eager ones draw from rng(), and the seeded stream must not move);
+// they are only no longer sampled. ?mat=proc: nothing is attached (the old look). window._materials: the table.
+// Godot: StandardMaterial3D's triplanar mode, world-space, at the same tile size.
+const SMLIB=(function(){
+ const ON=typeof KMAT!=='undefined'&&KMAT.mode==='lib',fams={},stats={on:ON,families:[],materials:{},missing:[]};
+ if(!ON)return {on:false,fams,stats};
+ const P=KMAT.packed;
+ const tri=[
+  'vec4 smTri(sampler2D t,vec3 p,vec3 w,float m){',
+  ' vec4 a=texture2D(t,p.zy)*w.x+texture2D(t,p.xz)*w.y+texture2D(t,p.xy)*w.z;',
+  ' if(m>0.001){vec4 b=texture2D(t,p.zy+SM_OFF)*w.x+texture2D(t,p.xz+SM_OFF)*w.y+texture2D(t,p.xy+SM_OFF)*w.z;a=mix(a,b,m);}',
+  ' return a;}',
+  'vec3 smNs(sampler2D t,vec2 c,float m){vec3 n=texture2D(t,c).xyz;if(m>0.001)n=mix(n,texture2D(t,c+SM_OFF).xyz,m);',
+  ' n=n*2.0-1.0;n.xy*=uSmNs;return n;}'].join('\n');
+ const noise=[
+  'float smH(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}',
+  'float smN(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);',
+  ' return mix(mix(mix(smH(i),smH(i+vec3(1.,0.,0.)),f.x),mix(smH(i+vec3(0.,1.,0.)),smH(i+vec3(1.,1.,0.)),f.x),f.y),',
+  '            mix(mix(smH(i+vec3(0.,0.,1.)),smH(i+vec3(1.,0.,1.)),f.x),mix(smH(i+vec3(0.,1.,1.)),smH(i+vec3(1.,1.,1.)),f.x),f.y),f.z);}',
+  'const vec2 SM_OFF=vec2(0.371,0.613);'].join('\n');
+ const PARS=['varying vec3 vSmWP;','uniform sampler2D uSmMap;','uniform sampler2D uSmNrm;','uniform sampler2D uSmRgh;',
+  'uniform float uSmTile;','uniform float uSmGain;','uniform float uSmNs;','uniform float uSmHasN;','uniform float uSmHasR;',
+  'uniform float uSmMix;','uniform float uSmMacro;','uniform float uSmCell;',
+  'vec3 smWt;vec3 smP;float smM;vec4 smTexel;',noise,tri].join('\n');
+ function hook(F){return function(sh){
+  const L=F.L,b=L.breakup||{};
+  Object.assign(sh.uniforms,{uSmMap:{value:F.tex.map},uSmNrm:{value:F.tex.normalMap},uSmRgh:{value:F.tex.roughnessMap},
+   uSmTile:{value:1/((L.scale&&L.scale[0])||2)},uSmGain:{value:F.gain},uSmNs:{value:L.normalScale==null?1:L.normalScale},
+   uSmHasN:{value:F.tex.normalMap?1:0},uSmHasR:{value:F.tex.roughnessMap?1:0},
+   uSmMix:{value:KMAT.breakupOn?(b.mix||0):0},uSmMacro:{value:KMAT.breakupOn?(b.macro||0):0},uSmCell:{value:b.cell||8}});
+  sh.vertexShader=sh.vertexShader
+   .replace('#include <common>','#include <common>\nvarying vec3 vSmWP;')
+   .replace('#include <project_vertex>','#ifdef USE_INSTANCING\n vSmWP=(modelMatrix*instanceMatrix*vec4(transformed,1.0)).xyz;\n'+
+    '#else\n vSmWP=(modelMatrix*vec4(transformed,1.0)).xyz;\n#endif\n#include <project_vertex>');
+  sh.fragmentShader=sh.fragmentShader
+   .replace('#include <common>','#include <common>\n'+PARS)
+   .replace('#include <map_fragment>',[
+    '{',
+    '#ifdef FLAT_SHADED',
+    ' vec3 nW=normalize(cross(dFdx(vSmWP),dFdy(vSmWP)));',
+    '#else',
+    ' vec3 nW=inverseTransformDirection(normalize(vNormal),viewMatrix);',
+    '#endif',
+    ' smWt=pow(abs(nW)+1e-4,vec3(4.0));smWt/=(smWt.x+smWt.y+smWt.z);',
+    ' smP=vSmWP*uSmTile;',
+    ' smM=smoothstep(0.3,0.7,smN(vSmWP/uSmCell))*uSmMix;',
+    ' smTexel=sRGBToLinear(smTri(uSmMap,smP,smWt,smM));',
+    ' smTexel.rgb*=uSmGain*(1.0+uSmMacro*(smN(vSmWP/(uSmCell*2.7)+19.1)*2.0-1.0));',
+    ' diffuseColor.rgb*=smTexel.rgb;',
+    '}'].join('\n'))
+   .replace('#include <emissivemap_fragment>','#ifdef USE_EMISSIVEMAP\n totalEmissiveRadiance*=smTexel.rgb;\n#endif')
+   .replace('#include <roughnessmap_fragment>','float roughnessFactor=roughness;\nif(uSmHasR>0.5)roughnessFactor*=smTri(uSmRgh,smP,smWt,smM).g;')
+   .replace('#include <normal_fragment_maps>',[
+    'if(uSmHasN>0.5){',
+    ' vec3 nW=inverseTransformDirection(normal,viewMatrix),sg=sign(nW+1e-6);',
+    ' vec3 tx=smNs(uSmNrm,smP.zy,smM),ty=smNs(uSmNrm,smP.xz,smM),tz=smNs(uSmNrm,smP.xy,smM);',
+    ' tx.x*=sg.x;ty.x*=sg.y;tz.x*=-sg.z;',
+    ' tx=vec3(tx.xy+nW.zy,abs(tx.z)*nW.x);',
+    ' ty=vec3(ty.xy+nW.xz,abs(ty.z)*nW.y);',
+    ' tz=vec3(tz.xy+nW.xy,abs(tz.z)*nW.z);',
+    ' vec3 wn=normalize(tx.zyx*smWt.x+ty.xzy*smWt.y+tz.xyz*smWt.z);',
+    ' normal=normalize((viewMatrix*vec4(wn,0.0)).xyz);',
+    '}'].join('\n'));
+  if(F.prev)F.prev(sh);};}
+ return {on:true,fams,stats,hook,attach(fam){
+  const L=P('screamers',fam);if(!L||!L.map){stats.missing.push(fam);return null;}
+  const tex=KMAT.textures(L,{aniso:8});
+  // a detail family's material had no map: divide the set's mean back out (linear light, as the shader works)
+  const gain=L.detail?1/Math.max(.05,Math.pow(L.mean==null?.5:L.mean,2.2)):1;
+  const F=fams[fam]={L,tex,gain};stats.families.push(fam);
+  // table 'apoc': the Post-Apoc set's own materials (70e's closure), which the salvage homes are merged into
+  const T=L.table==='apoc'?(typeof KratorPostApoc!=='undefined'?KratorPostApoc.MAT:{}):MAT;
+  for(const k of L.mat||[]){const m=T[k];if(!m){stats.missing.push(fam+':'+k);continue;}
+   const f=Object.assign({},F,{prev:m.onBeforeCompile&&m.onBeforeCompile!==THREE.Material.prototype.onBeforeCompile?m.onBeforeCompile:null});
+   // the hook samples its own maps: drop the procedural ones so three neither uploads nor samples them (the emissive
+   // map stays, as a flag: the hook multiplies the library colour into the emission instead)
+   m.map=null;m.roughnessMap=null;m.metalnessMap=null;m.bumpMap=null;
+   // a family that carries its own colour (a set whose hues ARE the surface: laterite and moss) sets the
+   // material's tint instead of being multiplied by the palette's (materials.json "color")
+   if(L.color&&m.color)m.color.set(L.color);
+   m.extensions=Object.assign(m.extensions||{},{derivatives:true});
+   m.onBeforeCompile=hook(f);
+   const key0=m.customProgramCacheKey&&m.hasOwnProperty('customProgramCacheKey')?m.customProgramCacheKey.bind(m):null;
+   m.customProgramCacheKey=function(){return 'smlib1'+(key0?'|'+key0():'');};
+   m.userData.lib=L.lib;m.userData.family=fam;m.needsUpdate=true;
+   stats.materials[(L.table==='apoc'?'apoc.':'')+k]={family:fam,lib:L.lib,tile:L.scale,detail:!!L.detail};}
+  return F;}};
+})();
+// every family the generated pack carries (72b-matlib-pack.js declares the list with the pack)
+if(SMLIB.on)for(const fam of SMLIB_FAMILIES)SMLIB.attach(fam);
+window._materials=SMLIB.stats;
 // ================================================================= POLICE STATION — "the Watch"
 function buildPolice(scene,gx,gz,d){reseed(9230+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'Police station — the Watch ('+STATE(d)+')',x:0,z:0,r:90,h:60});

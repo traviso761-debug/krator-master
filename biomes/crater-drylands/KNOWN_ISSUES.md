@@ -9,20 +9,28 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
   `tools/scale-model/extract_region.py` before the kit goes into an open world.
 - [ ] **Not slotted into an open world.** `openworld/little-demo` is the eastern desert. A world that takes this kit
   calls `CRATERDRY.fireHistory` over its region once (a 20 m grid) or binds an age field of its own.
-- [ ] **No catalog fruit.** The kit names edible parts (frill-tree seed, parasol-pine nuts, yucca pods, nectar) but the
-  catalog (`kits/catalog/krator-master-furniture-generic-fruit.js`, `biomes/FRUIT.md`) has no drylands fruit yet, and the
-  kit draws none as fruit. Every `HARVEST` entry's `fruit` is null.
+- [x] **Catalog fruit (2026-10-06).** The frill-tree's fireseed (`generic_fruit_fireseed`: three seeds in every living
+  pod near the camera, and spilled on the ash round a snag burst in the last year) and the parasol pine's cones
+  (`generic_fruit_parasol_pine`: hanging under the branch-tip tufts and fallen under the crown) are drawn, placed by a
+  hash of the tree so no other tree moved; the yucca and the Joshua tree take the shared roasted-stalk piece
+  (`generic_fruit_yucca`, its flowers drawn as before). The probe checks it (`fruit tagged, catalogued and drawn`).
+  Nectar (mallee, tree aloe, pincushion), the pillar's pith and the jade's leaves are named in the tags, not catalogued.
 - [ ] **No fauna, no Scyvoi.** The owner's plan puts all fauna in one fauna kit (`biomes/README.md`); the Scyvoi's
   theropod mounts, fire-chasing birds and the beetles that breed in fresh char belong there. A Scyvoi camp on a kopje
   is a settlement, not part of a biome.
 
 ## The fire
 
-- The mosaic is static: the fires are history, computed at load. A live fire front (an atmosphere effect that leaves
-  char behind it) is planned, not built: `NOTES.md`, "A live fire".
+- **The live fire** (89, `NOTES.md`): one fire at a time; lighting another replaces it. The burnt plants stay burnt
+  only while the fire is lit ("Put it out" restores them): the trail is the shader reading the map, not a change to
+  the world. A live fire does not feed back into the history (`CRATERDRY.FIRE.last`), so the ground it burns does not
+  turn to bloom on a later visit, and a second fire can run through the first one's char.
+- The flames are camera-facing quads (cylindrical: upright); seen from straight above they are thin. The smoke is
+  sprites, not a volume. The fire's light is one point light at the head.
+- Not yet lifted into `core/atmos` (`NOTES.md`, "The live fire").
 - The fire model's grid is 20 m. A burn's edge is the cell edge warped by noise (sharp, not a staircase), but a
   plant within about 10 m of an edge may read the neighbour's age.
-- No smoke rises from the three-week-old burn yet (ATMOS smoke on smouldering logs would do it).
+- No smoke rises from the static three-week-old burn yet (the live fire's smoke pool could seed it).
 
 ## Textures
 
@@ -47,7 +55,7 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
 - The showcase is a 5.2 km disc; the regions are 53,000 and 8,000 km². The kopjes, washes and the seep are the
   showcase's own.
-- **Budget**: 17.0M triangles at q=1 (trees ~12.8M, floor ~4.0M), ~35k trees, 40 draw calls (`91-host-probe.js` BUDGET:
+- **Budget**: 17.9M triangles at q=1 (trees ~13.5M, floor ~4.4M; 17.0M before the frill-tree was rebuilt as a frill tree, 2026-10-06), ~35k trees, 40 draw calls (`91-host-probe.js` BUDGET:
   18.5M, measured, not a target). The first build measured 30.1M: the LOD spine covered the whole map, so 50k of 51k trees
   were heroes. The spine is now the kopjes, three points on wash A, the seep and the recent burns' real centres (84 adds
   them after the fire model runs). `?q=0.5` builds at half density; `?nobake=1` measures without drawing.

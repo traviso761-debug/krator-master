@@ -40,8 +40,14 @@ Read before changing anything here. `build.py` prints the open count.
       follow the hinge, so a flapping wing does not brighten and darken.
 - [ ] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
       and arctic biomes are to be written against the same core.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): gatepod, mahogany nut, silkpod, pandan keys (the screwpine). Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'hyperjungle'`). The pods are drawn. Add harvest tags. The screwpine's "hanging fruit head" is drawn as an upside-down fungus item (60-floor.js): give it the pandan-key head (orange keys, green tips).
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): gatepod (baobab pods), mahogany nut (capsules), silkpod
+      (the kapok's burst silk pods, 'bloom' items in the silk colour), pandan keys. Harvest tags on the six species
+      (`HYPERJUNGLE.HARVEST`) and four understorey plants (`HYPERJUNGLE.PLANTS`: screwpine, tree fern, ginger, bromeliad);
+      `FRUIT_KEYS`, `FRUIT_ITEMS`; the inspector shows the tag. The screwpine's fruit head is now the `pandankeys` item
+      (42 wedge keys, green tips, catalog palette fruitPandanKey / fruitPandanTip; 328 triangles) in place of the
+      upside-down fungus, with the same random draws. The probe's `fruit tagged, catalogued and drawn` check (verify.py
+      now runs `hostChecks` and its negatives). Still open: the head is drawn only in the hero ring (lv 2, 40% of heads),
+      and the silkpod has no item of its own (the check on 'bloom' cannot tell silk from flowers).
 
 ## Done
 
@@ -66,10 +72,6 @@ Read before changing anything here. `build.py` prints the open count.
       build time and split at the quantiles for the target shares (six species).
 - [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
       on the same contract, with 35-core-anim as the one core extension.
-
-- [ ] **Library barks are opt-in** (2026-10-06): `materials.json` and `tex/` hold each hypertree's library bark (Girder's
-      settings; the crimson kapok takes `bark.plates.glossy`). A page that inlines the pack (the Throne's kipuka station)
-      gets library boles and its roots, limbs and twigs on the same map (`HYPERJUNGLE.LIB`, buckets 'limb'+sp). This kit's own
-      page carries no material record, so it still draws the procedural barks and the shared pale limb texture.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
 - [x] The screwpine's second-head stem rendered nearly white (an untextured rod given the textured trunk's tint): fixed
       2026-10-06 (60, `screwpine`).

@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.ginkgo",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Nine Ginkgo Sprigs on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Nine Ginkgo Sprigs on Magenta.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.ginkgo).",
+  "reuse": "ginkgo twigs: nwlowlands, xanadu",
+  "sha1": "b3f77df8744df1b4c8bcf5276f6ad6c0c54922fd"
+ }
+}

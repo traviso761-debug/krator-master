@@ -21,7 +21,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
   [T.map,T.normalMap,T.roughnessMap].forEach(t=>{if(t)t.repeat.set(rep[0],rep[1]);});
   m.map=T.map;if(T.normalMap){m.normalMap=T.normalMap;m.normalScale=new THREE.Vector2(L.normalScale||1,L.normalScale||1);}
   if(T.roughnessMap){m.roughnessMap=T.roughnessMap;m.roughness=1;}m.metalnessMap=null;m.metalness=L.metal||0;
-  hook(m,fam,L);m.needsUpdate=true;YS_MATLIB.bound[fam]=L.lib;};
+  hook(m,fam,L);m.needsUpdate=true;m.userData.lib=L.lib;YS_MATLIB.bound[fam]=L.lib;};   /* userData.lib: KMAT.bindMat below skips it */
  for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkCrust','hkVerd','hkWet']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
  {const L=P('ground');if(L&&MAT.pkGround)bind(MAT.pkGround,'ground',L,18);}   /* no ground family yet: the karst wall's drips read as stripes on the flat (KNOWN_ISSUES) */
  {const L=P('sand');if(L&&typeof HAC_MAT!=='undefined'){bind(HAC_MAT.sand,'sand',L,null);bind(HAC_MAT.sandR,'sand',L,null);}}
@@ -39,3 +39,6 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
    breakup:L?(L.breakup||null):null,lib:L?L.lib:null,bake:!L,hook:fam==='hkNacre'?'nacre':fam==='ground'?'planar-uv':'metre-uv',note:L?'library set, tint keep '+L.tint:'procedural canvas map, vertex-coloured'};}
  for(const [kind,n] of [['kelp',3]])for(let i=0;i<n;i++){const L=YS_MATLIB.on?P(kind+i):null;if(L)recs[kind+i]={id:'ys.'+kind+i,family:'card',scale:[1,1],tint:false,roughness:.9,alphaTest:.42,doubleSided:true,lib:L.lib,note:'card'};}
  KMAT.adapter('ys',recs);window._materials=KMAT.table('ys');})();
+// the shared vernacular and Ancients MAT (69b, 22, 54, 69, 69w, 34): the generic in-place bind (core/materials/record/26-matlib-bind.js),
+// for every MAT key materials.json names that the hyk binder above did not take; KMAT.ANCIENT_TILES keeps the procedural feature size
+YS_MATLIB.shared=KMAT.bindMat('ys',MAT,{tile:Object.assign({},KMAT.ANCIENT_TILES,{pkCont:3,pkPave:16})});   // the Port kit's UVs: metres per unit (72-port-kit.js)

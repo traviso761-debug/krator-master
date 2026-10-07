@@ -23,6 +23,10 @@ The biome fragments never reference a host global except through BIO.host
 (see biomes/sedesert/BIOME-API.md); the grep below fails the build if one does.
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -38,6 +42,7 @@ CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain 
 CORE_T = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'terrain'))
 CORE_MODULES = ['clock', 'sched', 'simulation']   # core/<module>/[0-9]*.js, every fragment (a local copy wins)
 WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
+MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
 VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
             '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
             '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js',
@@ -87,10 +92,21 @@ def main():
         for f in sorted(os.listdir(d)):
             if f[0].isdigit() and f.endswith('.js') and f not in path: path[f] = os.path.join(d, f)
     path[WORLD_FRAG] = None
+    # the material library: core/materials/record (KMAT and the loader) and the GENERATED pack (tools/textures/matlib_pack.py
+    # from tex/, written by tools/textures/pack.py from materials.json); src/78b-host-matlib.js binds it onto NOMAD.MAT
+    REC = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'materials', 'record'))
+    for f in ('23-mat-record.js', '25-matlib-host.js'):
+        if f not in path: path[f] = os.path.join(REC, f)
+    path[MATLIB_FRAG] = None
+    path['44-host-biome-pack.js'] = None   # the vendored sedesert biome's library pack, before the biome code (50-...)
+    sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', 'tools', 'textures')))
+    import matlib_pack
     frags = sorted(path)
     out, bad = [], []
     for f in frags:
-        s = world_json() if f == WORLD_FRAG else open(path[f], encoding='utf8').read()
+        s = (world_json() if f == WORLD_FRAG else matlib_pack.fragment(HERE, 'shade') if f == MATLIB_FRAG
+             else matlib_pack.fragment(os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert')), 'sedesert') if f == '44-host-biome-pack.js'
+             else open(path[f], encoding='utf8').read())
         n = int(re.match(r'(\d+)', f).group(1))
         if 10 <= n < 80 and '-host-' not in f:
             for w in FORBID:
@@ -108,7 +124,7 @@ def main():
         print('node is not installed: the syntax check did NOT run'); return 2
     print('built dist/%s  (%d fragments, %d KB, sha %s)  %s' % (OUT, len(frags), len(html) // 1024,
           hashlib.sha1(html.encode('utf8')).hexdigest()[:12], 'syntax OK' if r.returncode == 0 else 'SYNTAX ERROR\n' + r.stderr[:800]))
-    json.dump({f: sha(os.path.join(SRC, f)) for f in VENDORED}, open(os.path.join(HERE, 'VENDOR.json'), 'w'), indent=1)
+    json.dump({f: sha(os.path.join(SRC, f)) for f in VENDORED}, open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8'), indent=1)
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         op = [l for l in open(ki, encoding='utf8') if l.startswith('- [ ]')]

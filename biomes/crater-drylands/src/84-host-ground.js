@@ -1,4 +1,8 @@
 // ================================================================= HOST — the fire history, the ground, the water
+// the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
+// carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('craterdry',n):null;if(!L)return fb;
+ const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // The kit's fire model runs first (CRATERDRY.fireHistory, 52-fire) with this showcase's recent fires; then one ground
 // mesh is painted by the mosaic it made, so the burns read from any distance: black char with grey ash, the bloom's
 // green flush and its drifts of pink, orange, violet, yellow and crimson, red soil under young scrub, straw and olive
@@ -64,11 +68,21 @@ TEX_CARPET.wrapS=TEX_CARPET.wrapT=THREE.RepeatWrapping;TEX_CARPET.encoding=THREE
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('craterdry',n);
  const b=P('ground.burn'),s=P('ground.redsoil');if(!b||!s)return null;
  return{burn:KMAT.textures(b,{aniso:8}).map,burnK:1/b.scale[0],soil:KMAT.textures(s,{aniso:8}).map,soilK:1/s.scale[0]};})();
+// THE LIVE FIRE's uniforms and shader text (89-host-fire.js lights the fire and drives them; the ground here and every
+// plant material 89 patches share them): the arrival-time map (R the arrival in seconds, G the ground's height: a
+// half-float texture, so it filters), the fire's clock (seconds since it was lit), on/off, the grid (x0, z0, cell, N).
+// fireCell(xz) -> (seconds since the fire reached xz, or very negative before it does or with no fire; the ground's
+// height there). The front is wobbled a few seconds by a smooth noise so it is not the grid's.
+const FIREU={uFireTex:{value:null},uFireT:{value:0},uFireOn:{value:0},uFireRT:{value:0},uFireGrid:{value:new THREE.Vector4(0,0,20,1)}};
+const FIRE_GLSL='uniform sampler2D uFireTex;uniform float uFireT,uFireOn,uFireRT;uniform vec4 uFireGrid;'+
+ 'vec2 fireCell(vec2 xz){vec2 uv=((xz-uFireGrid.xy)/uFireGrid.z+0.5)/uFireGrid.w;vec2 g=texture2D(uFireTex,uv).rg;'+
+ 'g.x+=5.0*sin(xz.x*0.19+2.0*sin(xz.y*0.13))+4.0*sin(xz.y*0.23+1.7*sin(xz.x*0.11));return vec2(uFireOn>0.5?uFireT-g.x:-1e5,g.y);}'+
+ 'float fireHash(vec3 p){return fract(sin(dot(floor(p),vec3(12.9898,78.233,37.719)))*43758.5453);}\n';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec2 aGL;varying vec2 vGL;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;':''))
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;':'')+FIRE_GLSL)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // the granite's speckle on the kopjes (a custom sampler is not decoded from sRGB: pow 2.2 by hand)
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+
@@ -91,7 +105,17 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'float fl=max(c1.r,c2.r*0.85),gb=max(c1.g,c2.g*0.8);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.32,0.6,0.14)*(0.8+0.5*c2.b),gb*vBloom*0.85);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vDrift*(1.3+0.6*c1.b),fl*vBloom);'+
-  'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.26)*(0.8+0.4*c2.b),gb*vOld*0.45);}');};
+  'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.26)*(0.8+0.4*c2.b),gb*vOld*0.45);'+
+  // THE LIVE FIRE behind its front: the ground goes to char over ten seconds (not on the bare granite)
+  '{vec2 fc=fireCell(vGWP.xz);float b=smoothstep(0.0,10.0,fc.x)*(1.0-vRock*0.85);if(b>0.0){vec3 ch='+
+  (GLAY?'pow(texture2D(uGBurn,vGWP.xz*'+GLAY.burnK.toFixed(4)+').rgb,vec3(2.2))*0.7':'vec3(0.03,0.028,0.025)')+';diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*ch,b);}}}')
+  // the flame line (a flickering orange band a few metres deep at the front) and embers smouldering for minutes behind it,
+  // added after the tone map so they glow
+  .replace('#include <dithering_fragment>','#include <dithering_fragment>\n{vec2 fc=fireCell(vGWP.xz);float tt=fc.x;if(tt>-6.0&&tt<260.0){'+
+   'float fr=smoothstep(-3.0,0.0,tt)*(1.0-smoothstep(1.0,12.0,tt))*pow(0.25+0.75*smoothstep(0.25,0.75,texture2D(uCarpet,vGWP.xz*0.031+vec2(0.71,0.23)).b),2.0);float fl=0.55+0.45*sin(uFireRT*11.0+vGWP.x*0.8+sin(vGWP.z*0.6))*sin(uFireRT*7.3+vGWP.z*0.9);'+
+   'float sm=step(0.0,tt)*(1.0-smoothstep(30.0,240.0,tt))*step(0.985,fireHash(vec3(vGWP.xz*1.6,0.0)));'+
+   'gl_FragColor.rgb+=vec3(1.0,0.38,0.06)*(fr*fl*0.9+sm*0.55*(0.55+0.45*sin(uFireRT*2.3+vGWP.x*3.0)))*(1.0-vRock);}}');
+ Object.assign(sh.uniforms,FIREU);};
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),bl=new Float32Array(nx*nx),old=new Float32Array(nx*nx),dr=new Float32Array(nx*nx*3);
  const gl=new Float32Array(nx*nx*2);

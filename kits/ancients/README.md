@@ -42,6 +42,11 @@ budget counter cannot see where a thing is. **Read the shots. Every round.**
 * **`KNOWN_ISSUES.md`** — what is broken and what is merely unfinished.
 * **`NOTES.md`** — what changed, round by round.
 
+**Interiors** (`--target interiors`, `dist/interiors.html`): the original kit's buildings with real rooms (plans in
+`kits/ancients-interiors`), intact ones furnished with Ancient furniture, ruins with broken partitions, every room a
+socket for any culture's furniture. Open a building with the "Interior" select; `[` `]` change the storey. API.md
+"Interiors".
+
 **Ancient hosts** (`src/8ap-host-*`, `--target hosts`): five types drawn as Hykkousoi hosts for Ys: Skyscrapers L
 (the Facet) and M (the Bastion), the Arcades, the Capsule Stalks and the Bell Hall. Each has a pure-data `HOSTSPEC_*`
 beside its builder, in the shape of Ys's `YS_HOST_TYPES`. Read the header of `src/8ap-host-0-lib.js`.

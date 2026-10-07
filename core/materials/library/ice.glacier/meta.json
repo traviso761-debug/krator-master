@@ -7,8 +7,8 @@
  "processing": {
   "log": {
    "seam_after": [
-    1.351,
-    1.277
+    1.352,
+    1.279
    ],
    "seam_before": [
     1.415,
@@ -22,16 +22,16 @@
   "options": {
    "band": 0.06,
    "dark_gloss": 0.0,
-   "delight": 0.6,
+   "delight": 0.2,
    "height_soften": 0.8,
    "invert_height": false,
    "keep_aspect": false,
-   "lift": 0.12,
-   "mute": 0,
+   "lift": 0.15,
+   "mute": 0.0,
    "normal_strength": 1.0,
    "pattern": false,
    "rough": 0.35,
-   "rough_var": 0.15,
+   "rough_var": 0.25,
    "size": 1024
   },
   "script": "tools/textures/process.py",
@@ -39,22 +39,22 @@
  },
  "record": {
   "colour": "#ffffff",
-  "family": "ground",
+  "family": "ice",
   "id": "ice.glacier",
   "metal": 0,
   "roughness": 0.35,
   "scale": [
-   4.0,
-   4.0
+   3.0,
+   3.0
   ],
-  "tint": true
+  "tint": false
  },
  "source": {
-  "file": "ice-glacier.webp",
-  "generator": "image generation by the owner, Oct 2026",
-  "licence": "generated for this project by its owner",
-  "prompt": "PROMPTS-ready.md section 9 (ice.glacier); pasted into the chat 2026-10-06 as a WebP",
-  "reuse": "bare glacier ice from above: milky bubbled white-blue ice in plates, clear blue veins, grey dust and grit along the cracks: a glacier's ablation zone (the Throne's glacier, in use), any old lake or river ice, an ice floe's top",
+  "file": "ice.glacier.webp",
+  "generator": "supplied by the owner, Oct 2026",
+  "licence": "supplied for this project by its owner",
+  "prompt": "prompt not recorded: supplied as a pasted image (milky glacier ice with grit seams)",
+  "reuse": "any cold build: ice-cave floors and crusts (Xanadu's Caves of Ice), frozen ground, glacier faces, the Highlands' snowfields, ice-shelf edges of the Ring Sea",
   "sha1": "1ed931b2a74128d836d0d5098aec296fc6e9455f"
  }
 }

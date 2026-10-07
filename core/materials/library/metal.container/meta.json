@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1232
+   ],
+   "seam_after": [
+    0.749,
+    1.572
+   ],
+   "seam_before": [
+    1.118,
+    4.889
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.7,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.container",
+  "metal": 0.5,
+  "roughness": 0.6,
+  "scale": [
+   1.2,
+   1.19
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Corrugated Metal Texture (1).png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Corrugated Metal Texture (1).png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.container).",
+  "reuse": "neutral container rib (tinted to the livery): Port, Ys, post-apoc",
+  "sha1": "64469ab90b81d25839286318691d1c27bdc1f103"
+ }
+}

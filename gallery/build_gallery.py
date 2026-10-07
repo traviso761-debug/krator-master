@@ -58,6 +58,8 @@ ENTRIES = [
      "The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.", 'new'),
     ('world', 'ys', 'settlements/ys/dist/ys.html', 'Ys',
      'The half-drowned capital of the Hykkousoi on the ruins of an Ancient city: grown shell houses on reclaimed and drowned skyscrapers, a bridge network over the bay, the Pharos, the Citadel on its karst stack, a river in travertine pools and the north-west bay jungle on the stacks.', 'new'),
+    ('world', 'noahs-regret', 'settlements/noahs-regret/dist/noahs-regret.html', "Noah's Regret",
+     "An Ancient floating harbour city that once sailed the Ring Sea, aground on the south shore: Bloody Ruephus's pirate base. A rounded catamaran of two hulls joined at the bow, the harbour open astern between them with the liner mole and finger piers, terraced sterns, holds half full of the sea, four decks of cabins with scalloped balconies, the grand atrium, the dining room, twin engine rooms, two crew messes, the greenhouse and fifteen ship's rooms; over the forward third of the harbour a plaza with a fountain, terraces and a grand stair up to the bridge house, the bridge on top. Every room furnished; pick a level to cut the decks open.", 'new'),
     ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
      'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
@@ -93,6 +95,8 @@ ENTRIES = [
      'Furniture for the interiors phase: 1635 pieces on five pages (indoor, outdoor, indoor and outdoor, rugs, and job items by trade), a row per culture and tier, with tapestries, banners, friezes, scrolls and painted hangings carrying each culture\'s emblem. Generic wood and scrap for the poor, regional materials for the middle class, bespoke court sets with tapestries and wall art for Voth, Iziz, the Beast Riders, Lizardmen, the East Abyss, the Eastern Nomads, Xanadu, Screamers, Islanders, Republicans, Rustic Highlanders, the Painted Men, Reed Lake, the salvage lords and the Scyvoi (cushions, toshaks, bolsters, pierced lanterns, glass chandeliers, samovars), beside the harvested Yuni and Ancients sets, and the furniture the Highlands, Post-Apoc, Beast Rider, Abyss and Locus kits used to draw for themselves. Plus the generic goods that sit on all of it (barrels, crates, sacks, jars, bread, cheese, roasts, pies, wine, tea, candles, medicines) and a fruit for every fruiting plant in the biomes: scalefruit, gatepods, lantern pods, frillpods, ballmelons, cacao, pinyon nuts, canyon grapes.', 'new'),
     ('objects', 'interiors', 'kits/interiors/dist/interiors.html', 'Interiors',
      'Buildings planned into rooms and furnished from the catalog: a townhouse, an inn, a three-storey tower, with a storey cut-away and people walking in from the street to sit, sleep and work.', 'new'),
+    ('objects', 'ancients-interiors', 'kits/ancients-interiors/dist/ancients-interiors.html', 'Ancients interiors',
+     "The Ancients' ship interiors as a kit, from Noah's Regret: fourteen halls laid out the way a ship would (crew mess, dining hall, greenhouse, engine room, bridge, officers' hall, chart deck, chain locker, store hall, drill hall, gallery, stern lounge, plaza, quay), each as the Ancients fitted it and as the pirates hold it, plus the ship's rooms (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) and cabins furnished by the placer. Every room audited; C cycles the cut-away.", 'new'),
     ('objects', 'interiors-walk', 'kits/interiors/dist/interiors-walk.html', 'Interiors walk-through',
      'The Highlands, Post-Apoc, Beast Rider, Locus and Abyss buildings with their rooms planned and furnished from the catalog: every residence with a bed, a food store and an item store. Walk in through the doors and up the stairs.', 'new'),
     ('objects', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),
@@ -113,7 +117,9 @@ ENTRIES = [
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
      "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
-     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders and goats, the hidemaker's tent, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+    ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
+     "Every animal of Krator in one kit, 48 species: farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
@@ -237,15 +243,19 @@ ENTRIES = [
     ('biome', 'ebadlands', 'biomes/ebadlands/dist/ebadlands.html', 'Eastern badlands', 'Sulphur flats and alien flora, painted badlands, a Zion canyon with a hanging-garden ruin, sagebrush and pinyon-juniper, pine and spruce-fir up to the ice of the outer rim; real textures, trees as variants.', 'new'),
     ('biome', 'nwbay', 'biomes/nwbay/dist/nwbay.html', 'North-west bay', "The bay of Ys: karst stacks, an igneous shore, travertine terraces, mangroves; up the dry slope a tsingy of knife-edged limestone fins with spinewands and rock bottles, a tiankeng with a rainforest of traveller's fans, cenotes to the water table, avenue baobabs; trees as variants.", 'new'),
     ('biome', 'crater-drylands', 'biomes/crater-drylands/dist/crater-drylands.html', 'Crater drylands', "The Throne's rain shadow at 1.9 atm, a mosaic of wildfires of every age from the kit's own fire model: fresh char and ash, the superbloom that follows (fireweed, poppies, lupine, flame plumes, fire lilies), regrowth and old scrub; prism mallees resprouting from their root crowns, pyre pillars, frill-trees burst over their seedlings, granite kopjes where the Scyvoi live; the dense air's light.", 'new'),
+    ('biome', 'shighlands', 'biomes/shighlands/dist/shighlands.html', 'Southern highlands', "The spiral biome: the Inner Wall's flank above the cloud sea, where the hyperjungle's air pools below the Wall and laps against the scarp. Every plant grows in a spiral (whorl, twist, coil or shell), and every spiral turns the same way, but for the rare mirror-handed tree. A cloud forest of coilbarks, spiral trumpets with fluted twisting funnels, volute trees whose limbs end in leafy scrolls, spiral frill trees, tree ferns and screw palms, over a sea of drifting cloud; above it a paramo of ruffle-crowns, giant groundsels, spiral lobelias and spiral aloes, bogs of sphagnum; the Whorl Stone, a tor whose ledge spirals to its top.", 'new'),
+    ('biome', 'ehighlands', 'biomes/ehighlands/dist/ehighlands.html', 'Eastern highlands', "The cushion plateau: a cold altiplano in thin air under a deep blue sky, snow-capped volcanoes on every horizon, where everything grows toward the giant. Poured cushions and the Mother Cushion, one plant over a whole hill; woolbacks, thorn cushions, a stand of vigil spikes in flower all leaning one way, dead torches, ragbark woods in the gullies, glass towers lit from within; a cushion bog and a frozen tarn, a geyser field; wormwick in the turf and tower honey under the cliffs.", 'new'),
 ]
 
 
 THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 
 
-def bundle(path, three=THREE_CDN):
+def bundle(path, three=THREE_CDN, worlds=None):
     """The page as one self-contained file: a page that loads local scripts (the Voth catalog) gets each one
-    inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is."""
+    inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is.
+    A library-pack sidecar (<page>.tex.<key>.js, tools/textures/matlib_pack.py) is NOT inlined: it is copied into
+    `worlds` beside the page and keeps its tag, so no gallery file passes the artifact's 16 MB a file."""
     html = open(path, encoding='utf-8').read()
     here = os.path.dirname(path)
     def inline(m):
@@ -254,6 +264,9 @@ def bundle(path, three=THREE_CDN):
             return m.group(0)
         if os.path.basename(src) == 'three.min.js':
             return '<script src="%s"></script>' % three
+        if worlds and re.search(r'\.tex\.[\w-]+\.js$', src):
+            shutil.copy(os.path.join(here, src), os.path.join(worlds, os.path.basename(src)))
+            return '<script src="%s"></script>' % os.path.basename(src)
         body = open(os.path.join(here, src.replace('%20', ' ')), encoding='utf-8').read()
         return '<script>\n' + body.replace('</script', '<\\/script') + '\n</script>'
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
@@ -313,7 +326,7 @@ def main():
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
-        page = bundle(src, three)
+        page = bundle(src, three, os.path.join(site, 'worlds'))
         if lod is not None:
             page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:

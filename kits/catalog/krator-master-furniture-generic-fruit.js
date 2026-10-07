@@ -138,7 +138,7 @@ FURN({
 FURN({
   key: 'generic_fruit_gatepod', name: 'Gatepod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
-  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab'],
+  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab', 'nwbay:baobab'],
   w: 0.37, d: 0.37, h: 0.11, variants: 2, variantNames: ['cut round of pod', 'gatepod chalk'],
   variantDims: [{ w: 0.37, d: 0.37, h: 0.11 }, { w: 0.37, d: 0.22, h: 0.07 }],
   build: function (F) {
@@ -198,7 +198,7 @@ FURN({
 FURN({
   key: 'generic_fruit_pandan_keys', name: 'Pandan Keys', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
-  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine'],
+  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine', 'nwbay:pandan'],
   w: 0.34, d: 0.28, h: 0.26, variants: 2, variantNames: ['fruit head', 'loose keys and paste'],
   variantDims: [{ w: 0.29, d: 0.28, h: 0.26 }, { w: 0.34, d: 0.23, h: 0.09 }],
   build: function (F) {
@@ -791,7 +791,7 @@ FURN({
 FURN({
   key: 'generic_fruit_yucca', name: 'Roasted Yucca Stalk', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'thatch'],
-  biome: 'ebadlands', source: ['yucca'],
+  biome: 'ebadlands', source: ['yucca', 'crater-drylands:yucca', 'crater-drylands:joshua'],
   w: 0.26, d: 0.26, h: 0.1, variants: 2, variantNames: ['pit-roasted stalk rounds', 'a basket of blossoms'],
   variantDims: [{ w: 0.26, d: 0.26, h: 0.06 }, { w: 0.22, d: 0.22, h: 0.1 }],
   build: function (F) {
@@ -893,6 +893,123 @@ FURN({
       /* the brown nut out of its husk, split: two shell cups with white meat, a third of a nut beside them */
       for (const [x, z] of [[-0.06, 0], [0.065, 0.02]]) KFRUIT.half(F, x, 0, z, 0.06, shell, flesh);
       F.cyl(-0.06, 0.022, 0, 0.04, 0.004, 0, F.col('fruitCocoWater'), 'food');
+    }
+  }
+});
+
+/* ================= Crater Drylands (2 pieces; the yucca stalk is shared with the Eastern Badlands) ================= */
+
+FURN({
+  key: 'generic_fruit_fireseed', name: 'Frill-tree Fireseed', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'crater-drylands', source: ['frill'],
+  w: 0.35, d: 0.26, h: 0.09, variants: 2, variantNames: ['a burst pod and its seed', 'roasted and ground'],
+  variantDims: [{ w: 0.35, d: 0.26, h: 0.085 }, { w: 0.31, d: 0.2, h: 0.08 }],
+  build: function (F) {
+    const husk = F.col('fruitFireseedHusk'), nut = F.col('fruitFireseedNut'), meal = F.col('fruitFireseedMeal');
+    if (F.variant === 0) {
+      /* the ruffled collar, burst open by the heat, its fireproof seed in the cup and spilled on the ash */
+      F.frustum(0, 0, 0, 0.03, 0.11, 0.07, 0, F.shade(husk, -0.3), 'food', 10);
+      for (let i = 0; i < 10; i++) { const a = i * F.TAU / 10; F.blob(Math.cos(a) * 0.1, 0.07, Math.sin(a) * 0.1, 0.03, 0.025, a, F.shade(husk, i % 2 ? -0.12 : 0.06), 'food'); }
+      for (let i = 0; i < 5; i++) { const a = i * 1.26; F.ball(Math.cos(a) * 0.035, 0.058, Math.sin(a) * 0.035, 0.018, F.shade(nut, (i % 2) * 0.08), 'food'); }
+      for (const [x, z] of [[-0.155, 0.03], [-0.15, -0.035], [0.155, -0.02], [0.15, 0.04]]) F.blob(x, 0.01, z, 0.016, 0.02, x * 20, nut, 'food');
+    } else {
+      F.shift(-0.055, 0);
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('stoneBuff'), 'stone', meal);
+      F.dome(0, 0.05, 0, 0.08, 0.03, 0, F.shade(meal, 0.06), 'food');
+      KFRUIT.leaf(F, 0.15, 0, 0.06, F.col('vegLeaf'));
+      for (const [x, z] of [[0.13, -0.015], [0.16, 0.02], [0.17, -0.02]]) F.ball(x, 0.035, z, 0.015, F.shade(nut, 0.1), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_parasol_pine', name: 'Parasol Pine Nuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
+  biome: 'crater-drylands', source: ['parasolpine'],
+  w: 0.26, d: 0.18, h: 0.12, variants: 2, variantNames: ['a cone and cracked nuts', 'shelled nuts in a bowl'],
+  variantDims: [{ w: 0.26, d: 0.16, h: 0.12 }, { w: 0.18, d: 0.18, h: 0.075 }],
+  build: function (F) {
+    const cone = F.col('fruitParasolCone'), shell = F.col('fruitParasolShell'), kern = F.col('fruitParasolKernel');
+    if (F.variant === 0) {
+      /* the big glossy cone, rounded like a stone pine's, its scales in rings; beside it the hard nuts and their kernels */
+      F.box(0, 0, 0, 0.26, 0.01, 0.16, 0, F.col('clothLinen'), 'cloth');
+      F.blob(-0.05, 0.065, 0, 0.065, 0.11, 0, F.shade(cone, -0.2), 'food');
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 8; i++) {
+        const y = 0.03 + j * 0.025, e = (y - 0.065) / 0.055, r = 0.065 * Math.sqrt(Math.max(0, 1 - e * e)) * 0.95, a = i * F.TAU / 8 + j * 0.39;
+        F.ball(-0.05 + Math.cos(a) * r, y, Math.sin(a) * r, 0.014, F.shade(cone, (i + j) % 2 ? -0.06 : 0.08), 'food');
+      }
+      for (let i = 0; i < 6; i++) F.blob(0.04 + (i % 3) * 0.035, 0.022, -0.045 + Math.floor(i / 3) * 0.05, 0.014, 0.024, i, F.shade(shell, (i % 2) * 0.08), 'food');
+      for (let i = 0; i < 3; i++) F.blob(0.06 + i * 0.03, 0.02, 0.05, 0.012, 0.02, i * 0.7, kern, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.045, F.col('stoneCream'), 'stone', kern);
+      KGEN.heap(F, 0, 0.03, 0, 0.075, 0.01, [kern, F.shade(kern, -0.06)], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.01, z, 0.01, 0.02, x * 30, c, 'food'));
+    }
+  }
+});
+
+/* ================= North-west Bay (3 pieces; the gatepod and the pandan keys are shared) ================= */
+
+FURN({
+  key: 'generic_fruit_cliff_fig', name: 'Cliff Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food'],
+  biome: 'nwbay', source: ['clifffig'],
+  w: 0.26, d: 0.2, h: 0.045, variants: 2, variantNames: ['a sprig with figs', 'halved on a leaf'],
+  variantDims: [{ w: 0.26, d: 0.14, h: 0.04 }, { w: 0.2, d: 0.2, h: 0.045 }],
+  build: function (F) {
+    const fig = F.col('fruitCliffFig'), ripe = F.col('fruitCliffFigRipe'), flesh = F.col('fruitCliffFigFlesh');
+    if (F.variant === 0) {
+      /* small strangler figs in the leaf axils, orange-red going purple as they ripen */
+      KFRUIT.leaf(F, -0.06, 0, 0.07, F.col('vegLeaf'));
+      F.rod(-0.12, 0.012, 0, 0.11, 0.012, 0, 0.006, F.col('timberWalnut'), 'food');
+      for (let i = 0; i < 7; i++) F.ball(-0.09 + i * 0.03, 0.02, i % 2 ? 0.024 : -0.024, 0.017, i % 3 ? fig : ripe, 'food');
+    } else {
+      KFRUIT.leaf(F, 0, 0, 0.1, F.col('vegLeaf'));
+      for (const [x, z, k] of [[-0.04, -0.035, 0], [0.04, -0.035, 1], [-0.04, 0.035, 1], [0.04, 0.035, 0]]) KFRUIT.half(F, x, 0.015, z, 0.03, k ? ripe : fig, flesh);
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_avenue_baobab', name: 'Avenue Baobab Fruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['avenuebaobab'],
+  w: 0.28, d: 0.28, h: 0.11, variants: 2, variantNames: ['whole fruit', 'cracked: pulp and seeds'],
+  variantDims: [{ w: 0.27, d: 0.11, h: 0.11 }, { w: 0.28, d: 0.28, h: 0.065 }],
+  build: function (F) {
+    const pod = F.col('fruitAvenuePod'), pulp = F.col('fruitAvenuePulp'), seed = F.col('fruitAvenueSeed');
+    if (F.variant === 0) {
+      /* the velvety ochre egg of the avenue baobab, on its stalk */
+      F.shift(-0.0265, 0);
+      KGEN.capsule(F, -0.05, 0.05, 0, 0, 0.055, pod);
+      F.rod(0.1, 0.06, 0, 0.15, 0.07, 0, 0.008, F.col('timberWalnut'), 'food');
+    } else {
+      /* the shell cracked open: dry cream pulp round dark kidney seeds (the pulp eaten, the seed pressed for oil) */
+      KGEN.plate(F, 0, 0, 0, 0.14, F.col('stoneCream'));
+      KFRUIT.half(F, -0.05, 0.02, 0, 0.06, pod, pulp);
+      for (let i = 0; i < 5; i++) F.box(0.04 + (i % 3) * 0.03, 0.02, -0.04 + Math.floor(i / 3) * 0.05, 0.028, 0.024, 0.028, i * 0.4, F.shade(pulp, -(i % 2) * 0.05), 'food');
+      for (let i = 0; i < 4; i++) F.blob(0.0 + i * 0.03, 0.03, 0.08, 0.012, 0.016, i, seed, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_traveller_aril', name: 'Traveller\'s Fan Arils', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['travellerfan'],
+  w: 0.17, d: 0.17, h: 0.09, variants: 2, variantNames: ['an open capsule', 'arils in a dish'],
+  variantDims: [{ w: 0.17, d: 0.17, h: 0.08 }, { w: 0.16, d: 0.16, h: 0.09 }],
+  build: function (F) {
+    const cap = F.col('fruitTravellerCapsule'), aril = F.col('fruitTravellerAril');
+    if (F.variant === 0) {
+      /* the woody capsule split in three valves, the seeds in their electric-blue arils packed inside */
+      F.frustum(0, 0, 0, 0.03, 0.045, 0.05, 0, F.shade(cap, -0.15), 'food', 6);
+      for (let k = 0; k < 3; k++) { const a = k * F.TAU / 3; F.blob(Math.cos(a) * 0.055, 0.04, Math.sin(a) * 0.055, 0.03, 0.07, a, F.shade(cap, k * 0.05), 'food'); }
+      for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6 + 0.5; F.ball(Math.cos(a) * 0.025, 0.06, Math.sin(a) * 0.025, 0.02, F.shade(aril, (i % 2) * 0.1), 'food'); }
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.08, 0.04, F.col('stoneCream'), 'stone', F.shade(aril, -0.2));
+      KGEN.heap(F, 0, 0.03, 0, 0.065, 0.012, [aril, F.shade(aril, 0.12)], 'food');
     }
   }
 });

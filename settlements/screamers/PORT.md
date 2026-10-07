@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 19 (3%) | 19 (3%) | 27 (5%) | 44 (8%) | 460 (81%) |
+| KB | 23 (4%) | 19 (3%) | 27 (5%) | 44 (8%) | 468 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -46,10 +46,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-sky-g.js` | 4.6 | [G native] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70c-furniture.js` | 6.6 | [draw] | 17 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-sky-h.js` | 2.6 | [G native] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/71-village.js` | 45.0 | [draw] | 40 | 3 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/71-village.js` | 45.1 | [draw] | 40 | 3 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/71a-apoc-homes.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71b-flora.js` | 39.3 | [draw] | 58 | 3 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-datacenter.js` | 3.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72a-wind.js` | 5.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |  |
+| `src/72c-matlib.js` | 7.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 10 | 1 | 0 | 0 | 0 |  |
 | `src/73-police.js` | 2.9 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-hospital.js` | 3.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-biome-10-core-head.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -87,7 +89,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/furniture/89z-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/furniture/91z-views.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/screamers/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/screamers/91z-views.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/screamers/91z-views.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
 

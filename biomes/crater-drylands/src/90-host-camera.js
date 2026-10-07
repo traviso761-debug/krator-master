@@ -44,10 +44,14 @@ const VIEWS={
  'Ghost gums in the wash':atTree(nearTree('ghostgum',P.wash[0],P.wash[1],20),40,1.3,3,.5),
  'The seep':[SEEP.x+SEEP.r*3.2,SEEPL+4,SEEP.z+SEEP.r*2.2,SEEP.x,SEEPL+1,SEEP.z],
  'From afar':look(-2300,-2200,120,600,600,30),
+ // the live fire (89): this view lights it, four minutes in, and frames its front from the side
+ 'A wildfire running':FIREFX.presetView(),
 };
-const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
+const VIEW_ACT={'A wildfire running':()=>FIREFX.preset()};
+const goView=k=>{setView(...VIEWS[k]);if(VIEW_ACT[k])VIEW_ACT[k]();};
+const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>goView(sel.value);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
-const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
+const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>goView(k);_hb.appendChild(b);}
 const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
 function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
  const hits=ray.intersectObjects(scene.children,true).filter(h=>!h.object.userData.probeSkip||h.object.userData.inspectLabel);
@@ -70,7 +74,7 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
-cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4)inspectAt(e.clientX,e.clientY);drag=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4){if(FIREFX.armed())FIREFX.click(e.clientX,e.clientY);else inspectAt(e.clientX,e.clientY);}drag=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
  if(drag.b===0){ctl.theta-=dx*.005;ctl.phi=clamp(ctl.phi-dy*.005,.05,Math.PI-.05);}
  else{const f=ctl.radius*.0015;const rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta));

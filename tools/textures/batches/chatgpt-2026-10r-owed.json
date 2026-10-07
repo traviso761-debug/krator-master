@@ -1,0 +1,486 @@
+[
+ {
+  "src": "Layered Rammed Concrete Texture.png",
+  "out": "core/materials/library/earth.rammed",
+  "record": {
+   "id": "earth.rammed",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id earth.rammed).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Layered Rammed Concrete Texture.png",
+    "reuse": "rammed earth with lifts: Dalab dRammed, Xanadu xEarth; pise and tapia walls anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.95,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Monochrome Woven Branch Fence Texture.png",
+  "out": "core/materials/library/band.xanadu.twig",
+  "record": {
+   "id": "band.xanadu.twig",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id band.xanadu.twig).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Woven Branch Fence Texture.png",
+    "reuse": "Xanadu penbey twig bands (xPenbey); wattle and twig fences anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Crackle-Glazed Sun and Crescent Tile.png",
+  "out": "core/materials/patterns/xanadu/sun-emblem",
+  "record": {
+   "id": "xanadu/sun-emblem",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id xanadu/sun-emblem).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Crackle-Glazed Sun and Crescent Tile.png",
+    "reuse": "Xanadu sun-and-moon roundel; map once over a disc or tile"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Seashell Mosaic in Sand and Teal.png",
+  "out": "core/materials/patterns/nacre/shell-inlay",
+  "record": {
+   "id": "nacre/shell-inlay",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id nacre/shell-inlay).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seashell Mosaic in Sand and Teal.png",
+    "reuse": "Ys nacre culture shell inlay panels"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Iridescent Mermaid Scale Mosaic.png",
+  "out": "core/materials/patterns/nacre/pearl-mosaic",
+  "record": {
+   "id": "nacre/pearl-mosaic",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id nacre/pearl-mosaic).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Mermaid Scale Mosaic.png",
+    "reuse": "Ys nacre culture pearl scale mosaic"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.25,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Andean Geometric Woven Textile.png",
+  "out": "core/materials/patterns/reedlake/awayo",
+  "record": {
+   "id": "reedlake/awayo",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id reedlake/awayo).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Andean Geometric Woven Textile.png",
+    "reuse": "Reed Lake awayo cloth (the striped hanging); any Andean striped textile"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Polished Petrified Wood Agate Texture(1).png",
+  "out": "core/materials/library/wood.petrified",
+  "record": {
+   "id": "wood.petrified",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wood.petrified).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Petrified Wood Agate Texture(1).png",
+    "reuse": "xanadu agate bark kind; petrified logs, agate slabs and tabletops (full colour)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.35
+  }
+ },
+ {
+  "src": "Monochrome Grass and Soil Texture.png",
+  "out": "core/materials/library/roof.turf",
+  "record": {
+   "id": "roof.turf",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.98,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id roof.turf).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Grass and Soil Texture.png",
+    "reuse": "Highlands sod roofs (turf), Dalab dTurf; any turf roof or mound"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.98,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Retro Orange Tiles with Red and Purple Circles.png",
+  "out": "core/materials/library/tile.bath.lens",
+  "record": {
+   "id": "tile.bath.lens",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.2,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id tile.bath.lens).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Retro Orange Tiles with Red and Purple Circles.png",
+    "reuse": "Xanadu grand bath tiles (xBTile), full colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.2,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Blue Solar Panel Grid.png",
+  "out": "core/materials/library/panel.solar",
+  "record": {
+   "id": "panel.solar",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0.3,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id panel.solar).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Blue Solar Panel Grid.png",
+    "reuse": "the Republic vehicle clam lid; post-apoc rooftops; any solar panel (full colour)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.3,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Monochrome Spiral Bark Texture.png",
+  "out": "core/materials/library/bark.whorled",
+  "record": {
+   "id": "bark.whorled",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.whorled).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Spiral Bark Texture.png",
+    "reuse": "xanadu whorled bark; twisted trunks anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Radiating Mushroom Gill Texture.png",
+  "out": "core/materials/library/organic.fungus.gill",
+  "record": {
+   "id": "organic.fungus.gill",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.fungus.gill).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Radiating Mushroom Gill Texture.png",
+    "reuse": "swbay cap-tree gills; any mushroom underside"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Seamless Peeling Birch Bark Texture.png",
+  "out": "core/materials/library/bark.paperbark",
+  "record": {
+   "id": "bark.paperbark",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.paperbark).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Peeling Birch Bark Texture.png",
+    "reuse": "nwlowlands pale paperbark; peeling birch and melaleuca"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Weathered Rusty Corrugated Steel Texture.png",
+  "out": "core/materials/library/metal.corrugated.rusty",
+  "record": {
+   "id": "metal.corrugated.rusty",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0.1,
+   "scale": [
+    1.1,
+    1.1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.corrugated.rusty).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Rusty Corrugated Steel Texture.png",
+    "reuse": "Post-Apoc corrugate, container walls and patch sheets; Screamers scrap; shanty walls"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Weathered Gray Concrete Texture.png",
+  "out": "core/materials/library/metal.rust.fine",
+  "record": {
+   "id": "metal.rust.fine",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0.15,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.rust.fine).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Weathered Gray Concrete Texture.png",
+    "reuse": "the Ancients MAT rust on stretched beams, tanks and spheres (came out grey: an even fine grain the build tints rust)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Seamless Gray Ridged Skin Texture.png",
+  "out": "core/materials/library/skin.alien.banded",
+  "record": {
+   "id": "skin.alien.banded",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id skin.alien.banded).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Gray Ridged Skin Texture.png",
+    "reuse": "ebadlands bark5 alien skin; banded alien stalks"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.6
+  }
+ }
+]

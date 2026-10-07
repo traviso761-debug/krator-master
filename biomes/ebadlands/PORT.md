@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 28 (13%) | 0 (0%) | 14 (6%) | 69 (31%) | 109 (50%) |
+| KB | 28 (13%) | 0 (0%) | 14 (6%) | 69 (31%) | 109 (49%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,8 +14,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/35-core-strata.js` | 8.7 | [draw] | 1 | 5 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/45-host-stage.js` | 25.6 | [web] | 22 | 3 | 3 | 1 | 0 | 2 | 10 | 0 | 0 | 0 | 0 |  |
-| `src/50-biome-ebadlands-species.js` | 51.9 | [draw] | 0 | 6 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/45-host-stage.js` | 26.1 | [web] | 22 | 3 | 3 | 1 | 0 | 2 | 10 | 0 | 0 | 0 | 0 |  |
+| `src/50-biome-ebadlands-species.js` | 52.0 | [draw] | 0 | 6 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-ebadlands-trees.js` | 43.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-ebadlands-floor.js` | 20.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/65-biome-ebadlands-dress.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

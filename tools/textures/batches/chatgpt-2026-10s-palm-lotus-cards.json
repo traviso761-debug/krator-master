@@ -1,0 +1,68 @@
+[
+ {
+  "src": "Nine Lotus Blossoms on Magenta.png",
+  "out": "core/materials/library/card.lotus.bloom",
+  "record": {
+   "id": "card.lotus.bloom",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "card.palm / card.lotus prompt (core/materials/PROMPTS-ready.md, the frond and flower cards)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Lotus Blossoms on Magenta.png",
+    "reuse": "lotus and water-lily flowers seen from the side (pink, red, blue, white): nwbay, xanadu ponds; any flowering water plant (full colour)",
+    "note": "a nine-cell sheet; card.lotus holds the pads and flat flowers seen from above"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Three Tropical Palm Fronds.png",
+  "out": "core/materials/library/card.palm.coconut",
+  "record": {
+   "id": "card.palm.coconut",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "card.palm / card.lotus prompt (core/materials/PROMPTS-ready.md, the frond and flower cards)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Three Tropical Palm Fronds.png",
+    "reuse": "long arching coconut-palm fronds: tropical palms in the bays, hyperjungle and xanadu (tintable)",
+    "note": "a three-frond sheet (1536 x 1024, squared on crop); card.palm holds date-palm fronds and palmetto fans"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

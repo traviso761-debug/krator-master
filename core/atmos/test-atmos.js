@@ -68,6 +68,26 @@ ok('the chunk carries every wave of the presets and the three calls a host uses'
  /float atmWaveHeight\(vec2 p,float chopW\)/.test(WG)&&/vec3 atmWaveSlope\(vec2 p,float d\)/.test(WG)&&/vec3 atmWaveNormal\(vec2 p,float d,float k\)/.test(WG),WG.includes('vec3(9.0,9.0,9.0)'));
 ok('the sky light leaves a build\'s tuned diffuse alone unless asked (PRESETS.skylight.diffuse 0)',typeof A.skylight==='function'&&A.PRESETS.skylight.diffuse===0,A.PRESETS.skylight.diffuse===1);
 
+// ---- the cloud deck (89-atmos-d-clouddeck.js): gradient noise on a repeating lattice with an integer hash. Its drift
+// whole lattice periods per clock period (a seamless wrap), the deck repeating exactly in space, the top inside its band,
+// the analytic slope (the shading normal) agreeing with the height's own finite difference past the detail's fade, and
+// the chunk carrying every octave of the presets
+const PD=A.PRESETS.clouddeck,DY=1120,LSPAN=PD.lattice*PD.cell;
+ok('drift and evolve are whole lattice periods per clock period, the lattice a power of two, every octave an integer division',
+ PD.drift.concat(PD.evolve).every(Number.isInteger)&&(PD.lattice&(PD.lattice-1))===0&&PD.billows.concat(PD.detail).every(o=>Number.isInteger(o[0])),Number.isInteger(.5));
+ok('the deck repeats every lattice span ('+LSPAN+' m) in x and in z',WP.every(p=>near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0]+LSPAN,p[1],77,DY),1e-9)&&near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0],p[1]-LSPAN,77,DY),1e-9)),
+ WP.every(p=>near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0]+LSPAN/2,p[1],77,DY),1e-9)));
+ok('the deck\'s wrap is seamless',WP.every(p=>near(A.deckHeight(p[0],p[1],0,DY),A.deckHeight(p[0],p[1],PD.period,DY),1e-9)),
+ WP.every(p=>near(A.deckHeight(p[0],p[1],0,DY),A.deckHeight(p[0],p[1],PD.period/2,DY),1e-9)));
+{let lo=1e9,hi=-1e9;for(let i=0;i<2000;i++){const v=A.deckHeight(-4000+(i%50)*163,-4000+Math.floor(i/50)*211,i*3.1,DY);lo=Math.min(lo,v);hi=Math.max(hi,v);}
+ ok('the top stays in its band [y-down, y+up] and fills most of it ('+lo.toFixed(1)+' .. '+hi.toFixed(1)+')',lo>=DY-PD.down&&hi<=DY+PD.up&&hi-lo>.6*(PD.up+PD.down),hi-lo<1);}
+ok('the slope is the height\'s own derivative (finite difference, 0.05 m, detail faded out)',WP.every(p=>{const t=57.5,e=.05,s=A.deckSlope(p[0],p[1],t,PD.fade[1]+1);
+ return near(s[0],(A.deckHeight(p[0]+e,p[1],t,DY)-A.deckHeight(p[0]-e,p[1],t,DY))/(2*e),2e-4)&&near(s[1],(A.deckHeight(p[0],p[1]+e,t,DY)-A.deckHeight(p[0],p[1]-e,t,DY))/(2*e),2e-4);}),
+ WP.every(p=>{const s=A.deckSlope(p[0],p[1],57.5,0);return near(s[0],0,1e-9);}));
+const DG=A.deckGLSL();
+ok('the deck chunk carries every octave of the presets and the calls a host uses',PD.billows.concat(PD.detail).every(o=>DG.includes('atmDeckOct'+(PD.puff?'Puff':'')+'(p,'+A.glf(PD.cell/o[0])+','))&&
+ /float atmDeckHeight\(vec2 p,float y\)/.test(DG)&&/vec4 atmDeckSlope\(vec2 p,float d\)/.test(DG)&&/vec3 atmDeckNormal\(vec4 s\)/.test(DG)&&!/TIME|gl_|#/.test(DG),DG.includes('vec3(9.0,9.0,9.0)'));
+
 // ---- placement and export (needs three.js r128)
 const T3=['../../settlements/iziz/three.min.js','../../biomes/sedesert/three.min.js'].map(p=>path.join(__dirname,p)).find(p=>fs.existsSync(p));
 if(!T3)console.log('skip  placement and export (no three.min.js found)');
@@ -84,7 +104,7 @@ else{const THREE=require(T3);
  ok('every record has an id and a type; the export says its colour space',E.fx.every(r=>r.id&&r.type)&&E.convention.colour==='srgb',false);
  ok('moths: one per lamp head times n',A.lamps.length>0&&E.fx.find(r=>r.type==='moths').lamps.length===A.lamps.length,false);
  ok('lamps follow the row: the evening running down it',E.lamps.length===A.lamps.length&&E.lamps[E.lamps.length-1].hours[0]>E.lamps[0].hours[0],E.lamps[0].hours[0]>E.lamps[E.lamps.length-1].hours[0]);
- const GOLD='ff4137190889c79d';   // 2026-10-06: the export gained presets.snow, the wind's snowfall/blizzard scales and the atm_snow uniform (the opt-in snow weather, biomes/throne station 9), after presets.ash and atm_ash (station 7); nothing placed or drawn changed for a host that asks for neither
+ const GOLD='c18fefc5a3b7005c';   // 2026-10-06 (merge): presets.clouddeck and the opt-in ash and snow (presets.ash, presets.snow, the wind's ashfall/ash/snowfall/blizzard scales, atm_ash, atm_snow; biomes/throne). Before: 2026-10-06: the export gained presets.clouddeck (89-atmos-d-clouddeck.js, gradient noise); without it the bytes are 7bffa080934e178c, as before. 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms (main), and each lamp's halo index and colour (the port spike); nothing placed changed
  ok('export fingerprint '+fp+(fp===GOLD?'':' (golden '+GOLD+'; if the change is meant, take a screenshot diff and update GOLD)'),fp===GOLD,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

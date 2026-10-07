@@ -120,6 +120,31 @@ SWBAY.SPECIES=[
   leaf:[0x5a7a34,0x6a8a3c,0x4e6e2e,0x7a9a48],boughs:[3,5],
   tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
+SWBAY.byKey={};SWBAY.SPECIES.forEach(S=>{SWBAY.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+// The gatepod is the hyperjungle's piece (its baobab and this one are the same tree).
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SWBAY.HARVEST={
+ prismgum:HV('timber (the shed strips for kindling)',[],true,'The leaf oil is a chest rub.'),
+ baobab:HV('none (bark fibre for rope)',['gatepod pulp','seeds'],true,'The orange pods hang metres long and are sawn into rounds; the pulp dries into gatepod chalk.','generic_fruit_gatepod'),
+ captree:HV('none (the stipe flesh)',[],false,'Too woody to eat; the caps are cut for roofing shells.'),
+ fancrown:HV('timber',[],false,'The fans are cut for screens.'),
+ puzzle:HV('timber',['seeds in the cones'],false,'The cones shed big starchy seeds, boiled (not drawn, not catalogued).'),
+ dragon:HV('none',[],true,'The red resin is a dye and a wound dressing.'),
+ parasol:HV('none',['caps (grilled)'],false,'Bay fungi: the caps are grilled whole in a pan.','generic_fruit_bay_fungi'),
+ treefern:HV('fibre (the trunk mat)',['fiddleheads'],false,'The young croziers are boiled.'),
+ splay:HV('none',[],false,''),
+ ironbark:HV('timber (the hardest)',[],true,'The bark is a tanning dye.'),
+ brackettree:HV('fuel',[],true,'The dried brackets are tinder and a styptic.'),
+ coral:HV('none',['the coral (cooked)'],false,'Bay fungi: the orange, pink and violet coral is picked as a clump.','generic_fruit_bay_fungi'),
+ thorn:HV('fuel, fencing (the thorny boughs)',['pods (fodder, famine)'],true,'The pods feed the herds; the gum is a sweet (not drawn, not catalogued).'),
+};
+SWBAY.SPECIES.forEach(S=>{S.tags.harvest=SWBAY.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+SWBAY.FRUIT_KEYS=[...new Set(SWBAY.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -367,6 +392,9 @@ SWBAY.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'swbay' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SWBAY.LIB=BIO.libSwap('swbay',SWBAY.MAT);
 const M=SWBAY.MAT;
 ['Prism gum bark','Fibrous bark','Pale bark','Baobab bark','Monkey-puzzle bark','Cap-tree stipes','Ironbark bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:4,i===0?9:6]}));
 BIO.bucket('cap',M.cap,{label:'Cap-tree caps',uvScale:[8,8]});

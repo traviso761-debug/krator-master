@@ -16,9 +16,9 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `45-host-stage.js` | 60 **big** | the bay, the river, the rise (57); the igneous shore (87); the karst (102); the sinkholes (132); the tsingy (157); terrain (199); the host binding (241); the ground (259); the karst stacks (meshes) (334); the tsingy (meshes) (376) |
-| `50-biome-nwbay-species.js` | 47 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (95); leaf textures (166); bark textures (290); geometries local to this biome (347); materials (413); instanced items (459) |
-| `55-biome-nwbay-trees.js` | 73 **big** | zones from the fields (15); colour (40); polyline helpers (Girder's) (62); keep-clear between trees (71); the karst's edge (78); epiphytes, lianas (90); foliage helpers (109); the builders (122); the Madagascarene flora (Bemaraha, the Spiny For (473); impostors (the far canopy) (548) |
+| `45-host-stage.js` | 61 **big** | the bay, the river, the rise (61); the igneous shore (91); the karst (106); the sinkholes (136); the tsingy (161); terrain (203); the host binding (245); the ground (263); the karst stacks (meshes) (338); the tsingy (meshes) (380) |
+| `50-biome-nwbay-species.js` | 50 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (96); harvest (biomes/FRUIT.md) (168); leaf textures (198); bark textures (322); geometries local to this biome (379); materials (445); instanced items (494) |
+| `55-biome-nwbay-trees.js` | 73 **big** | zones from the fields (15); colour (40); polyline helpers (Girder's) (62); keep-clear between trees (71); the karst's edge (78); epiphytes, lianas (90); foliage helpers (109); the builders (122); the Madagascarene flora (Bemaraha, the Spiny For (479); impostors (the far canopy) (554) |
 | `56-biome-nwbay-variants.js` | 10 | one tree alone (the open world's contract) (23); capture: what a grow wrote, taken out of the sto (31); the nursery (47); placement (70) |
 | `60-biome-nwbay-floor.js` | 19 | fields local to the floor (29); small plants (34); the zone planters (112); the pass (184) |
 | `65-biome-nwbay-dress.js` | 10 |  |
@@ -26,8 +26,8 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (67) |
 | `82-host-sky.js` | 10 |  |
 | `85-host-tower.js` | 5 |  |
-| `86-host-jetty.js` | 3 |  |
+| `86-host-jetty.js` | 4 |  |
 | `88-host-build.js` | 2 |  |
 | `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 5 |  |
+| `91-host-probe.js` | 7 |  |
 | `99-tail.html` | <1 |  |

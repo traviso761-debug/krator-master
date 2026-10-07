@@ -23,6 +23,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -77,6 +81,37 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '97t-voth-tags.js'}   # core/rand, core/tags, the adapter (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 PALETTE_FILE = '05-palette.js'
+# the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js) and the library pack
+# (materials.json -> tools/textures/pack.py -> tex/ -> the generated 46-matlib-pack.js, never written to src/)
+RECORD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+TEX_DIR = os.path.join(HERE, 'tex')
+PACK_FRAGMENT = '46-matlib-pack.js'
+DETERMINISTIC |= set(RECORD_FILES) | {PACK_FRAGMENT}
+CORE_FRAGS |= set(RECORD_FILES) | {PACK_FRAGMENT}
+
+
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py.
+    It reads the committed tex/ files only, so the build stays deterministic. With no tex/pack.json, Voth runs on its
+    procedural textures."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return "/* no tex/pack.json: Voth runs on its procedural textures */\nKMAT.pack('voth', {});\n"
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('voth', {\n" + ',\n'.join(out) + '\n});\n')
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -164,10 +199,16 @@ def main():
                 paths[f] = os.path.join(d, f)
                 if d in (RAND_DIR, TAGS_DIR):
                     CORE_FRAGS.add(f)
+    for f in RECORD_FILES:
+        paths.setdefault(f, os.path.join(RECORD_DIR, f))
+    paths[PACK_FRAGMENT] = None              # generated: matlib_pack()
     order = sorted(paths)
     bodies = {}
     for f in order:
-        with open(paths[f]) as fh:
+        if paths[f] is None:
+            bodies[f] = matlib_pack()
+            continue
+        with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
 
     if do_checks:
@@ -179,16 +220,16 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w') as fh:
+    with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
-    with open(MANIFEST, 'w') as fh:
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
     body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
     body = body.rsplit('}', 1)[0]
     chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w') as fh:
+    with open(chk, 'w', encoding='utf-8') as fh:
         fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
     try:
         r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)

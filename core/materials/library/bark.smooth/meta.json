@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.308,
+    1.114
+   ],
+   "seam_before": [
+    1.452,
+    1.241
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.smooth",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Pale Birch Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Pale Birch Bark Texture.png",
+  "prompt": "Prompt row bark.smooth in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "smooth thin bark (beech, alder, rowan) in nhighlands, xanadu, eastabyss, rift, the bays and lowlands (\"pale\" kind)",
+  "sha1": "28adc52861979c9ba517fa95175f756bb25cc0fc"
+ }
+}

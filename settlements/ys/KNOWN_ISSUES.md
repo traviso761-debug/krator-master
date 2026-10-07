@@ -125,8 +125,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The Capsule Stalks' sockets are not used: pods take the centre stalk's smooth band only (one plate,
       so one pod). Growing into a socket needs `HYK.placeOn` to frame a pod on an off-axis core (a socket's position and
       normal are in `HOSTSPEC_STALKS.sockets(d)`; drop the ones above the cut).
-- [ ] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine are the board-formed concrete map, tinted: the
-      material library has neither (kits/ancients/KNOWN_ISSUES.md has the prompts).
+- [x] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine were the board-formed concrete map, tinted. Done: the
+      library has `stone.sandstone.ashlar` and `stone.travertine`, wired here (see "The library on Ys" below; noted 2026-10-06).
 - [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
       their faces and ledges instead.
 - [x] (Oct 5 2026) The spans are not placed. The bridge graph (`88-city-spans.js`) joins every pair of neighbouring
@@ -275,3 +275,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       no owner (built with no frame) and are not selectable. A live placement reseeds the lineage's rng() (the builder's
       `reseed`), so a later live draw from it (none today) would differ from the build. Raycasting a click against the
       merged city meshes has no BVH: a selection can take a second.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). The maps are in dist/ys.tex.<key>.js beside the pages (the city page would pass 16 MB). ?mat=proc shows the old look.
+- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+      vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
+- [ ] **The Port kit takes the material library** (2026-10-06): containers (pkCont, metal.container) and paving (pkPave, concrete.slab), at
+      their metre UVs (tiles 3 and 16 in the bind). The paving set's joints read fainter than the procedural 4 m grid; pkContR and pkPaveR stay procedural.
