@@ -15,6 +15,10 @@ const INSP={on:true,last:0};const insp=document.getElementById('insp');const ray
 function regAt(p){let best=null,bv=1e18;for(const r of REG){const b=r.bbox;if(p.x>=b.mn[0]-.3&&p.x<=b.mx[0]+.3&&p.z>=b.mn[2]-.3&&p.z<=b.mx[2]+.3&&p.y>=b.mn[1]-.4&&p.y<=b.mx[1]+.4){const v=(b.mx[0]-b.mn[0]+.5)*(b.mx[2]-b.mn[2]+.5)*(b.mx[1]-b.mn[1]+1);if(v<bv){bv=v;best=r;}}}return best;}
 function furnAt(p){let best=null,bd=1e9;for(const f of ZJF.placed){const A=KratorFurniture.FURN_BY_KEY[f.key];if(!A)continue;const dm=KratorFurniture.entryDims(A,f.variant|0);
  const dx=p.x-f.x,dz=p.z-f.z,c=Math.cos(f.ry),s=Math.sin(f.ry),lx=dx*c-dz*s,lz=dx*s+dz*c;if(Math.abs(lx)>dm.w/2+.12||Math.abs(lz)>dm.d/2+.12||p.y<f.y-.1||p.y>f.y+dm.h+.15)continue;const d=lx*lx+lz*lz;if(d<bd){bd=d;best=f;}}return best;}
+/* an interior piece (the interiors kit's, registered in core/tags with its place and turn): the nearest whose box holds the point */
+function furnRecAt(p){let q=ZJTAGS.query({});q=Array.isArray(q)?q:Object.values(q);let best=null,bd=1e9;const F=KratorFurniture.FURN_BY_KEY;
+ for(const r of q){if(r.class!=='furniture'||!r.at)continue;const A=F[r.key];if(!A)continue;const dm=KratorFurniture.entryDims(A,0),dx=p.x-r.at[0],dz=p.z-r.at[2],c=Math.cos(r.ry||0),s=Math.sin(r.ry||0),lx=dx*c-dz*s,lz=dx*s+dz*c;
+  if(Math.abs(lx)>dm.w/2+.12||Math.abs(lz)>dm.d/2+.12||p.y<r.at[1]-.1||p.y>r.at[1]+dm.h+.15)continue;const d=lx*lx+lz*lz;if(d<bd){bd=d;best=r;}}return best;}
 /* the cut-away discards fragments in the shader; a ray still meets them. Skip a hit the shader would discard (27-mat.js) */
 function cutHidden(h){if(!ANIMU.uCut.value||!h.face)return false;const A=h.object.geometry&&h.object.geometry.attributes.aCut;if(!A)return false;const i=h.face.a,cx=A.getX(i),cz=A.getY(i),by=A.getZ(i),on=A.getW(i);
  if(on<.5||h.point.y<=by+.3)return false;const c=camera.position;return (h.point.x-cx)*(c.x-cx)+(h.point.z-cz)*(c.z-cz)>0;}
@@ -24,7 +28,7 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  const hits=ray.intersectObjects(WORLD.children,true).filter(h=>!(h.object.userData&&h.object.userData.probeSkip)&&!cutHidden(h));
  if(!hits.length){insp.style.display='none';return;}const p=hits[0].point;let html=null;
  let inF=false;for(let o=hits[0].object;o;o=o.parent)if(o.userData&&o.userData.furniture)inF=true;
- if(inF){const f=furnAt(p);if(f&&ZJTAGS.get(f.id))html=labelHtml(ZJTAGS.get(f.id),f.key);}
+ if(inF){const f=furnAt(p);if(f&&ZJTAGS.get(f.id))html=labelHtml(ZJTAGS.get(f.id),f.key);else{const r=furnRecAt(p);if(r)html=labelHtml(r,r.key);}}
  if(!html){const r=regAt(p);if(r&&r.tid&&ZJTAGS.get(r.tid)){const life=ZJ_LIFE.find(l=>l.id===r.tid);html=labelHtml(ZJTAGS.get(r.tid),r.key+(life?'  ·  '+life.faction+' / '+life.subFaction+' · job '+life.job+' · '+life.activity:''));}
   else if(r)html='<b>'+esc(r.name)+'</b>\n<span class="cls">'+esc(r.cls)+'</span>  ·  '+esc(r.key);}
  if(!html)html='<b>unregistered mesh</b>';

@@ -282,8 +282,8 @@ const FK = (function () {
     const legH = Math.min(0.38, H * (head ? 0.42 : 0.62)), r = 0.045;
     const L = K.legs(F, P, S, W - 0.02, D - 0.02, legH, { r: r });
     for (const s of [-1, 1]) {
-      F.box(s * (W / 2 - 0.06), legH - 0.1, 0, 0.07, 0.1, D - 0.1, 0, P.wood, P.wf);
-      F.box(0, legH - 0.1, s * (D / 2 - 0.06), W - 0.1, 0.1, 0.07, 0, P.wood, P.wf);
+      F.box(s * (W / 2 - 0.06), legH - 0.11, 0, 0.07, 0.1, D - 0.1, 0, P.wood, P.wf);              /* tops 1 cm under the legs' */
+      F.box(0, legH - 0.115, s * (D / 2 - 0.06), W - 0.1, 0.1, 0.07, 0, P.wood, P.wf);             /* and 5 mm under the side rails' */
     }
     const base = S.bedBase || 'plank';
     if (base === 'rope') {
@@ -294,7 +294,7 @@ const FK = (function () {
     } else if (base === 'slab') {
       F.box(0, 0, 0, W - 0.02, legH, D - 0.02, 0, P.stone, P.sf);
     } else {
-      for (let i = 0; i < 6; i++) F.box(0, legH - 0.04, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
+      for (let i = 0; i < 6; i++) F.box(0, legH - 0.05, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
     }
     const matt = P.pick();
     F.box(0, legH, 0.02, W - 0.16, 0.1, D - 0.16, 0, matt, P.cf);
@@ -302,7 +302,7 @@ const FK = (function () {
     if (v === 1) {
       const b = P.pick();
       F.box(0, legH + 0.1, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);
-      for (const s of [-1, 1]) F.box(s * (W / 2 - 0.03), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);
+      for (const s of [-1, 1]) F.box(s * (W / 2 + 0.005), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);   /* clear of the rail's face */
       F.box(0, legH + 0.15, -D * 0.2, W - 0.06, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
     }
     if (head) {
@@ -1522,7 +1522,7 @@ const FK = (function () {
       F.box(x, 0, 0, cw - 0.03, H - 0.06, D, 0, F.shade(P.wood, i % 2 ? -0.06 : 0.04), P.wf);
       if (i === 0) F.blob(x, H - 0.1, 0.02, Math.min(cw, D) * 0.4, 0.12, 0, F.shade(P.rope, 0.25), 'plant');   /* an open bin, grain heaped */
       else F.box(x, H - 0.06, 0.01, cw - 0.02, 0.05, D - 0.02, 0, P.woodL, P.wf);
-      F.box(x, H * 0.55, D / 2 - 0.01, 0.1, 0.03, 0.02, 0, P.metal, P.mf);
+      F.box(x, H * 0.55, D / 2 + 0.008, 0.1, 0.03, 0.02, 0, P.metal, P.mf);   /* proud of the front (was flush: a z-fight) */
     }
   };
   /* a tall food cupboard: a screened door, crocks on top, a string of onions */
@@ -1657,7 +1657,7 @@ const FK = (function () {
       { role: 'table', type: 'table', rooms: ['hall', 'tavern', 'kitchen'], setting: 'both', clear: { front: 0.6, back: 0.6, left: 0.6, right: 0.6 }, w: 1.6, d: 0.8, h: 0.76, variants: 2, variantNames: ['bare', 'with a runner'], uses: ['wood', 'cloth', 'accent'], build: 'table' },
       { role: 'chest', type: 'storage', rooms: ['bedroom', 'store', 'hall'], clear: { front: 0.6 }, w: 0.95, d: 0.5, h: 0.55, variants: 2, variantNames: ['plain', 'banded'], uses: ['wood', 'metal', 'accent'], build: 'chest' },
       { role: 'wall_shelves', type: 'shelf', rooms: ['kitchen', 'store', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.1, d: 0.3, h: 1.4, uses: ['wood', 'clay', 'cloth', 'rope'], build: 'wallShelves' },
-      { role: 'store', type: 'storage', rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.75, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], build: 'store' },
+      { role: 'store', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.75, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], build: 'store' },
       { role: 'hearth', type: 'stove', rooms: ['kitchen', 'hall'], anchor: 'wall', clear: { front: 0.9 }, w: 1.3, d: 0.75, h: 1.7, uses: ['stone', 'clay', 'metal', 'accent', 'wood'], fire: true, build: 'hearth' },
       { role: 'fire', type: 'brazier', rooms: ['hall', 'tavern', 'yard', 'court'], setting: 'both', clear: { front: 0.5, back: 0.5, left: 0.5, right: 0.5 }, w: 0.7, d: 0.7, h: 0.9, uses: ['metal', 'stone', 'wood', 'accent', 'rope'], fire: true, build: 'fire' },
       { role: 'lamp', type: 'lamp', rooms: ['hall', 'bedroom', 'tavern', 'study', 'shrine', 'antechamber'], clear: {}, w: 0.3, d: 0.3, h: 1.4, uses: ['accent', 'metal', 'clay', 'stone', 'wood', 'rope'], fire: true, glass: true, plaster: true, build: 'lamp' },
@@ -1681,7 +1681,7 @@ const FK = (function () {
       { role: 'chest', type: 'storage', rooms: ['bedroom', 'store', 'hall'], clear: { front: 0.7 }, w: 1.1, d: 0.6, h: 0.65, variants: 2, variantNames: ['plain', 'banded'], uses: ['wood', 'metal', 'accent'], build: 'chest' },
       { role: 'bookcase', type: 'shelf', rooms: ['library', 'study', 'hall', 'store', 'shrine'], anchor: 'wall', clear: { front: 0.7 }, w: 1.4, d: 0.4, h: 2.0, uses: ['wood', 'cloth', 'clay', 'stone', 'metal', 'accent'], plaster: true, build: 'bookcase' },
       { role: 'wall_shelves', type: 'shelf', rooms: ['kitchen', 'store', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.2, d: 0.32, h: 1.5, uses: ['wood', 'clay', 'cloth', 'rope'], plant: true, build: 'wallShelves' },
-      { role: 'store', type: 'storage', rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.85, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], plant: true, build: 'store' },
+      { role: 'store', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.85, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], plant: true, build: 'store' },
       { role: 'hearth', type: 'stove', rooms: ['kitchen', 'hall', 'tavern'], anchor: 'wall', clear: { front: 0.9 }, w: 1.5, d: 0.8, h: 1.9, uses: ['stone', 'clay', 'metal', 'accent', 'wood'], fire: true, build: 'hearth' },
       { role: 'fire', type: 'brazier', rooms: ['hall', 'tavern', 'yard', 'court', 'shrine'], setting: 'both', clear: { front: 0.5, back: 0.5, left: 0.5, right: 0.5 }, w: 0.7, d: 0.7, h: 1.0, uses: ['metal', 'stone', 'wood', 'accent', 'rope'], fire: true, build: 'fire' },
       { role: 'lamp', type: 'lamp', rooms: ['hall', 'bedroom', 'tavern', 'study', 'shrine', 'antechamber', 'library'], clear: {}, w: 0.34, d: 0.34, h: 1.6, uses: ['accent', 'metal', 'clay', 'stone', 'wood', 'rope'], fire: true, glass: true, plaster: true, build: 'lamp' },
@@ -1746,10 +1746,10 @@ const FK = (function () {
       { role: 'armour_stand', type: 'rack', rooms: ['shop', 'smithy', 'barracks', 'dormitory', 'hall', 'antechamber'], clear: { front: 0.6 }, w: 0.6, d: 0.5, h: 1.85, variants: 2, variantNames: ['plate', 'leather'],
         uses: ['wood', 'metal', 'cloth', 'accent'], build: 'armourStand' },
       { role: 'weapon_rack', type: 'weapon', rooms: ['shop', 'smithy', 'barracks', 'dormitory', 'hall', 'antechamber'], anchor: 'wall', clear: { front: 0.6 }, w: 1.2, d: 0.35, h: 1.8, uses: ['wood', 'metal', 'accent', 'cloth'], build: 'weaponRack' },
-      { role: 'vat', type: 'storage', rooms: ['workshop', 'store', 'tavern', 'kitchen'], clear: { front: 0.7 }, w: 1.2, d: 1.2, h: 1.3, uses: ['wood', 'metal', 'cloth'], glass: true, build: 'vat' },
+      { role: 'vat', type: 'storage', surface: false, rooms: ['workshop', 'store', 'tavern', 'kitchen'], clear: { front: 0.7 }, w: 1.2, d: 1.2, h: 1.3, uses: ['wood', 'metal', 'cloth'], glass: true, build: 'vat' },
       { role: 'still', type: 'workstation', rooms: ['workshop', 'shop', 'study'], anchor: 'wall', clear: { front: 0.9 }, w: 1.3, d: 0.6, h: 1.7, uses: ['wood', 'metal', 'stone', 'clay', 'accent'], fire: true, glass: true, build: 'still' },
       { role: 'bin', type: 'storage', rooms: ['store', 'kitchen', 'shop', 'stable', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.6, d: 0.6, h: 0.95, uses: ['wood', 'metal', 'rope'], plant: true, build: 'bin' },
-      { role: 'larder', type: 'storage', rooms: ['kitchen', 'store', 'hall'], anchor: 'wall', clear: { front: 0.7 }, w: 1.0, d: 0.5, h: 1.9, uses: ['wood', 'rope', 'accent', 'clay'], plant: true, build: 'larder' },
+      { role: 'larder', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall'], anchor: 'wall', clear: { front: 0.7 }, w: 1.0, d: 0.5, h: 1.9, uses: ['wood', 'rope', 'accent', 'clay'], plant: true, build: 'larder' },
       { role: 'bunk', type: 'bed', rooms: ['dormitory', 'barracks'], clear: { front: 0.6 }, w: 1.0, d: 2.0, h: 1.75, uses: ['wood', 'cloth'], build: 'bunk' },
       { role: 'locker', type: 'storage', rooms: ['dormitory', 'barracks', 'bedroom', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 0.9, d: 0.5, h: 1.85, uses: ['wood', 'metal'], build: 'locker' },
       { role: 'lathe', type: 'workstation', rooms: ['workshop'], anchor: 'wall', clear: { front: 0.9 }, w: 1.7, d: 0.7, h: 1.3, uses: ['wood', 'metal'], build: 'lathe' },
@@ -1757,7 +1757,7 @@ const FK = (function () {
       { role: 'kiln', type: 'stove', rooms: ['workshop', 'smithy'], clear: { front: 0.9 }, w: 1.4, d: 1.4, h: 2.0, uses: ['clay', 'stone'], fire: true, build: 'kiln' },
       { role: 'grindstone', type: 'workstation', rooms: ['smithy', 'workshop', 'yard'], setting: 'both', clear: { front: 0.7 }, w: 0.9, d: 0.6, h: 1.0, uses: ['wood', 'metal', 'stone'], build: 'grindstone' },
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
-      { role: 'barrel', type: 'storage', rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
+      { role: 'barrel', type: 'storage', surface: false, rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
     ]
   };
 
@@ -1780,7 +1780,7 @@ const FK = (function () {
     if (S.tile && (R.build === 'hearth' || R.build === 'art')) fams.add('ceramic');
     if ((R.uses || []).indexOf('wood') >= 0 && (S.woodFam === 'bamboo' || S.legs === 'lashed' || S.motif === 'lash')) fams.add('rope');
     const out = new Set();
-    for (const f of fams) out.add(FAMILY_TO_MATERIAL[f] || 'unassigned');
+    for (const f0 of fams) { const f = f0 && f0.indexOf('/') > 0 ? f0.slice(f0.indexOf('/') + 1) : f0; out.add(FAMILY_TO_MATERIAL[f] || 'unassigned'); }   /* 'tex/base': the base names the material */
     return [...out].sort();
   };
 
@@ -1817,6 +1817,7 @@ const FK = (function () {
         build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
+      if (o.surface === false || R.surface === false) entry.surface = false;   /* no flat top: nothing is set on it (SPEC: surface) */
       const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
       if (job) entry.job = job;
       FURN(entry);

@@ -101,7 +101,8 @@ const PB={
    ['the sanctum’s door',0,-24.2],['the sanctum',0,-27],['by its altar',1.5,-31],['out of the sanctum',0,-26.6],['the terrace again',0,-22.6],['the terrace’s west side',-7.6,-23.5],
    ['behind the drum',-7.6,-33],['into the shrine',-6.6,-37,false],['the west side again',-7.6,-24],['the stair’s head',0,-22.4],['down the stair',0,-15.2],
    ['along the podium',-14,-15.2],['the west cloister',-19.6,-15.2],['along it',-19.6,-43.4],['the back of the pit',-14,-44],['across',14,-44],['the east cloister',19.6,-43.4],
-   ['along it',19.6,-15.2],['the pit again',14,-15.2],['the gate again',0,-9],['out',0,2]]));
+   ['along it',19.6,-15.2],['the pit again',15.5,-15.2],['past the kiva’s vent',15.5,-30],['the kiva’s hatch',13.2,-30],['its ladder’s head',13.2,-29.15],
+   ['down into the kiva',13.2,-27.45],['off the ladder',13.9,-27.5],['back to the ladder',13.2,-27.45],['up again',13.2,-29.15],['out past the vent',15.5,-30],['the pit’s front',15.5,-15.2],['the gate again',0,-9],['out',0,2]]));
   r('council',PB.siteRoute(W,'zj_council',[0,21],[['the stair’s head',0,19.6],['down the tunnel',0,3.8],['the trench',-10.5,2],['the west door',-10.4,-8],
    ['the council hall',-6,-8],['the crossing',0,-8],['by the dais',5.8,-8],['the crossing again',0,-8],['the west arm',-6,-8],['out',-10.4,-8],['the trench again',-10.5,2],
    ['the tunnel’s foot',0,3.8],['up the tunnel',0,19.6],['the ground',0,21]]));return out;},

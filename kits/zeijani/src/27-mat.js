@@ -43,9 +43,19 @@ function zjLibMat(key,o){o=o||{};const fam=ZJ_LIB[key],L=fam&&KMAT.mode==='lib'?
   m.userData.lib=L;matHook(m,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
  MAT[key]=m;return m;}
 for(const k in ZJ_LIB)zjLibMat(k,{rough:1});
+/* the jali (pierced stone: a cut-out): alpha-tested, both faces, its sheet projected in world space (a dome's lathe UVs crowd
+   toward its crown and smear the pattern), the axis picked by the face's normal */
+(function(){const L=KMAT.mode==='lib'?KMAT.packed('zeijani','jali'):null;if(!L||!L.map)return;const T=KMAT.textures(L,{aniso:TEXANISO}),tile=1/((L.scale&&L.scale[0])||2.2);
+ const m=new THREE.MeshStandardMaterial({vertexColors:true,map:T.map,alphaTest:.5,side:THREE.DoubleSide,roughness:.85,metalness:0});TILE.jali=1;
+ matHook(m,'jaliTri',sh=>{sh.uniforms.uJT={value:tile};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vJP;varying vec3 vJN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvJP=(modelMatrix*vec4(transformed,1.)).xyz;vJN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vJP;varying vec3 vJN;uniform float uJT;')
+   .replace('#include <map_fragment>','{vec3 w=pow(abs(normalize(vJN))+1e-4,vec3(8.));w/=(w.x+w.y+w.z);vec3 p=vJP*uJT;vec4 t=texture2D(map,p.zy)*w.x+texture2D(map,p.xz)*w.y+texture2D(map,p.xy)*w.z;diffuseColor*=mapTexelToLinear(t);}');});
+ MAT.jali=m;})();
 /* untextured keys: painted and small things (cords, tassels, copper, bone), flags and ribbons (flutter), lamp glass, glow */
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});TILE.plain=1;
-MAT.copper=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,metalness:.75});TILE.copper=1;
+/* copper (burners, finials, lamp pans): the library's hammered bronze (the furniture's f_bronze), tinted by the vertex colour */
+ZJ_LIB.copper='f_bronze';zjLibMat('copper',{rough:.45});if(!MAT.copper.map){MAT.copper.roughness=.4;MAT.copper.metalness=.75;TILE.copper=1;}
 MAT.bronze=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.35,metalness:.8});TILE.bronze=1;
 MAT.bone=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6});TILE.bone=1;
 MAT.obsidian=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.2});TILE.obsidian=1;

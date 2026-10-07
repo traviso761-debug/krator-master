@@ -28,7 +28,8 @@ function zfStilts(mk,cx,cz,rx,rz,y,n,col,rad){for(let i=0;i<n;i++){const a=i*TAU
 function zfStepLintel(mk,x,y,z,w,col,o){o=o||{};const n=o.n||3,th=o.h||.3,d=o.d||.3;for(let i=0;i<n;i++)box(mk,x,y+i*th,z-d/2+i*.02,w+.6*(n-i),th,d+i*.04,col);}
 /* a pattern band: a sheet (pat* key) mapped once across its height and repeated along its width, on a face */
 function zfBand(mk,x,y,z,w,h,ry,col){const L=KMAT.mode==='lib'?KMAT.packed('zeijani',ZJ_LIB[mk]):null,sx=L?L.scale[0]:(TILE[mk]||1),sy=L?(L.scale[1]||L.scale[0]):h;
- const m=TF(x,y+h/2,z,ry||0);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,col===undefined?WHITE:col,{su:w/sx,sv:h/sy});}
+ /* once across the height (the whole sheet shows: a mural's figures keep their heads), repeated along the width at the sheet's aspect */
+ const m=TF(x,y+h/2,z,ry||0);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,col===undefined?WHITE:col,{su:w/(h*sx/sy),sv:1});}
 /* a round ribbed door (the earth-mound house): a disc of planks with radial ribs and an iron ring, facing +z, its centre at (x,y,z) */
 function zfRoundDoor(x,y,z,r,col){const m=TF(x,y,z,0,PI/2,0);m.scale(new THREE.Vector3(r,.08,r));emit('carved',gcyl(20),m,col);
  for(let i=0;i<8;i++){const a=i*TAU/8;beam('wood',[x+Math.cos(a)*r*.15,y+Math.sin(a)*r*.15,z+.06],[x+Math.cos(a)*r*.95,y+Math.sin(a)*r*.95,z+.06],.06,P('woodD'));}
@@ -59,12 +60,18 @@ function zfDovecote(x,y,z,cols,rows,o){o=o||{};const dx=o.dx||.55,dy=o.dy||.6;fo
 function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;const y=r.y||0,fin=zfFinish(r.finish||'hewn'),c=P('white');
  for(const f of r.fixtures||[]){const w=f.w,d=f.d,h=f.h||.5,x=f.x,z=f.z,ry=f.ry||0;
   if(f.kind==='bedshelf'){box(fin,x,y,z,w,h,d,c,ry);FURNISH('zeijani_fleece_bed',x,y+h,z,ry+(w>d?PI/2:0),{v:0,setting:'room'});}
-  else if(f.kind==='hearth'){box(fin,x,y,z,w,.22,d,c,ry);box(fin,x,y+.22,z-d*.35,w,h-.22,d*.3,c,ry);sph('glow',x,y+.3,z,.12,P('ember'),.5,8);smokeAt(x,y+h,z,{r:.1});haloAt(x,y+.4,z,0xff8a40,false);}
+  else if(f.kind==='hearth'){/* a stone hearth: its sill, its sooted back, the embers and flames that light the room (its halo) */
+   box(fin,x,y,z,w,.22,d,c,ry);box(fin,x,y+.22,z-d*.35,w,h-.22,d*.3,c,ry);box('basaltPol',x,y+.22,z-d*.2+.005,w*.8,h-.32,.02,P('soot'),ry);
+   box('glow',x,y+.22,z+d*.05,w*.6,.03,d*.45,P('ember'),ry);for(const t of [-.18,0,.18])cone('glow',x+t*w,y+.24,z+d*.05,.05,.18+(t?0:.08),P('flame'),6);
+   smokeAt(x,y+h,z,{r:.1});haloAt(x,y+.4,z+d*.1,0xff8a40,false);}
   else if(f.kind==='bench'||f.kind==='deflector')box(fin,x,y,z,w,h,d,c,ry);
   else if(f.kind==='ventilator'){box('basaltPol',x,y,z,w,h,d*.4,P('soot'),ry);box(fin,x,y+h,z,w+.2,.15,d,c,ry);}
   else if(f.kind==='sipapu')cyl('basaltPol',x,y+.004,z,Math.min(w,d)/2,.01,P('soot'),12);
   else if(f.kind==='incense-burner'){const R=Math.min(w,d)/2;cyl('tuffPol',x,y,z,R,.25,c,14);cyl('tuffPol',x,y+.25,z,R*.55,h-.55,c,12);cyl('copper',x,y+h-.3,z,R*.8,.3,P('copper'),14);
-   cyl('glow',x,y+h-.02,z,R*.62,.03,P('ember'),12);cone('copper',x,y+h+.9,z,R*.7,.6,P('copper'),12);smokeAt(x,y+h+.2,z,{r:.25,kind:'incense'});haloAt(x,y+h+.1,z,0xd04a2a,true);}
+   cyl('glow',x,y+h-.02,z,R*.62,.03,P('ember'),12);
+   /* the flames: tongues of the unlit, flickering glow over the embers */
+   for(let i=0;i<7;i++){const a=i*2.4,rr=i?R*.38:0;cone('glow',x+Math.cos(a)*rr,y+h-.01,z+Math.sin(a)*rr,R*(i?.13:.2),R*(i?.45:.8)*(.8+.25*Math.sin(i*1.7)),P(i%2?'ember':'flame'),6);}
+   cone('copper',x,y+h+.9,z,R*.7,.6,P('copper'),12);smokeAt(x,y+h+.2,z,{r:.25,kind:'incense'});haloAt(x,y+h+.1,z,0xd04a2a,true);}
   else if(f.kind==='pool'){/* a basin: its floor, a rim 0.15 m thick round dark water (fixtures are square to the room: ry 0 or a quarter) */
    const q=Math.abs(Math.round(ry/(PI/2)))%2===1,W2=(q?d:w)+.3,D2=(q?w:d)+.3;box(fin,x,y,z,W2,.12,D2,c);
    for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}

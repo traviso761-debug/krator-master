@@ -640,9 +640,19 @@ function zjLibMat(key,o){o=o||{};const fam=ZJ_LIB[key],L=fam&&KMAT.mode==='lib'?
   m.userData.lib=L;matHook(m,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
  MAT[key]=m;return m;}
 for(const k in ZJ_LIB)zjLibMat(k,{rough:1});
+/* the jali (pierced stone: a cut-out): alpha-tested, both faces, its sheet projected in world space (a dome's lathe UVs crowd
+   toward its crown and smear the pattern), the axis picked by the face's normal */
+(function(){const L=KMAT.mode==='lib'?KMAT.packed('zeijani','jali'):null;if(!L||!L.map)return;const T=KMAT.textures(L,{aniso:TEXANISO}),tile=1/((L.scale&&L.scale[0])||2.2);
+ const m=new THREE.MeshStandardMaterial({vertexColors:true,map:T.map,alphaTest:.5,side:THREE.DoubleSide,roughness:.85,metalness:0});TILE.jali=1;
+ matHook(m,'jaliTri',sh=>{sh.uniforms.uJT={value:tile};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vJP;varying vec3 vJN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvJP=(modelMatrix*vec4(transformed,1.)).xyz;vJN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vJP;varying vec3 vJN;uniform float uJT;')
+   .replace('#include <map_fragment>','{vec3 w=pow(abs(normalize(vJN))+1e-4,vec3(8.));w/=(w.x+w.y+w.z);vec3 p=vJP*uJT;vec4 t=texture2D(map,p.zy)*w.x+texture2D(map,p.xz)*w.y+texture2D(map,p.xy)*w.z;diffuseColor*=mapTexelToLinear(t);}');});
+ MAT.jali=m;})();
 /* untextured keys: painted and small things (cords, tassels, copper, bone), flags and ribbons (flutter), lamp glass, glow */
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});TILE.plain=1;
-MAT.copper=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,metalness:.75});TILE.copper=1;
+/* copper (burners, finials, lamp pans): the library's hammered bronze (the furniture's f_bronze), tinted by the vertex colour */
+ZJ_LIB.copper='f_bronze';zjLibMat('copper',{rough:.45});if(!MAT.copper.map){MAT.copper.roughness=.4;MAT.copper.metalness=.75;TILE.copper=1;}
 MAT.bronze=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.35,metalness:.8});TILE.bronze=1;
 MAT.bone=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6});TILE.bone=1;
 MAT.obsidian=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.2});TILE.obsidian=1;
@@ -1443,6 +1453,7 @@ const CATALOG_MATERIALS = {
   bronze:    { tags: ['metal'], families: ['bronze'] },
   lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
   ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  terracotta: { tags: ['stone'], families: ['terracotta'] },   /* unglazed fired clay: matte (ceramic is glazed); textured as ceramic ('ceramic/terracotta') */
   obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
   jade:      { tags: ['stone'], families: ['jade'] },
   bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },
@@ -2429,8 +2440,8 @@ const FK = (function () {
     const legH = Math.min(0.38, H * (head ? 0.42 : 0.62)), r = 0.045;
     const L = K.legs(F, P, S, W - 0.02, D - 0.02, legH, { r: r });
     for (const s of [-1, 1]) {
-      F.box(s * (W / 2 - 0.06), legH - 0.1, 0, 0.07, 0.1, D - 0.1, 0, P.wood, P.wf);
-      F.box(0, legH - 0.1, s * (D / 2 - 0.06), W - 0.1, 0.1, 0.07, 0, P.wood, P.wf);
+      F.box(s * (W / 2 - 0.06), legH - 0.11, 0, 0.07, 0.1, D - 0.1, 0, P.wood, P.wf);              /* tops 1 cm under the legs' */
+      F.box(0, legH - 0.115, s * (D / 2 - 0.06), W - 0.1, 0.1, 0.07, 0, P.wood, P.wf);             /* and 5 mm under the side rails' */
     }
     const base = S.bedBase || 'plank';
     if (base === 'rope') {
@@ -2441,7 +2452,7 @@ const FK = (function () {
     } else if (base === 'slab') {
       F.box(0, 0, 0, W - 0.02, legH, D - 0.02, 0, P.stone, P.sf);
     } else {
-      for (let i = 0; i < 6; i++) F.box(0, legH - 0.04, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
+      for (let i = 0; i < 6; i++) F.box(0, legH - 0.05, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
     }
     const matt = P.pick();
     F.box(0, legH, 0.02, W - 0.16, 0.1, D - 0.16, 0, matt, P.cf);
@@ -2449,7 +2460,7 @@ const FK = (function () {
     if (v === 1) {
       const b = P.pick();
       F.box(0, legH + 0.1, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);
-      for (const s of [-1, 1]) F.box(s * (W / 2 - 0.03), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);
+      for (const s of [-1, 1]) F.box(s * (W / 2 + 0.005), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);   /* clear of the rail's face */
       F.box(0, legH + 0.15, -D * 0.2, W - 0.06, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
     }
     if (head) {
@@ -3669,7 +3680,7 @@ const FK = (function () {
       F.box(x, 0, 0, cw - 0.03, H - 0.06, D, 0, F.shade(P.wood, i % 2 ? -0.06 : 0.04), P.wf);
       if (i === 0) F.blob(x, H - 0.1, 0.02, Math.min(cw, D) * 0.4, 0.12, 0, F.shade(P.rope, 0.25), 'plant');   /* an open bin, grain heaped */
       else F.box(x, H - 0.06, 0.01, cw - 0.02, 0.05, D - 0.02, 0, P.woodL, P.wf);
-      F.box(x, H * 0.55, D / 2 - 0.01, 0.1, 0.03, 0.02, 0, P.metal, P.mf);
+      F.box(x, H * 0.55, D / 2 + 0.008, 0.1, 0.03, 0.02, 0, P.metal, P.mf);   /* proud of the front (was flush: a z-fight) */
     }
   };
   /* a tall food cupboard: a screened door, crocks on top, a string of onions */
@@ -3804,7 +3815,7 @@ const FK = (function () {
       { role: 'table', type: 'table', rooms: ['hall', 'tavern', 'kitchen'], setting: 'both', clear: { front: 0.6, back: 0.6, left: 0.6, right: 0.6 }, w: 1.6, d: 0.8, h: 0.76, variants: 2, variantNames: ['bare', 'with a runner'], uses: ['wood', 'cloth', 'accent'], build: 'table' },
       { role: 'chest', type: 'storage', rooms: ['bedroom', 'store', 'hall'], clear: { front: 0.6 }, w: 0.95, d: 0.5, h: 0.55, variants: 2, variantNames: ['plain', 'banded'], uses: ['wood', 'metal', 'accent'], build: 'chest' },
       { role: 'wall_shelves', type: 'shelf', rooms: ['kitchen', 'store', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.1, d: 0.3, h: 1.4, uses: ['wood', 'clay', 'cloth', 'rope'], build: 'wallShelves' },
-      { role: 'store', type: 'storage', rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.75, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], build: 'store' },
+      { role: 'store', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.75, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], build: 'store' },
       { role: 'hearth', type: 'stove', rooms: ['kitchen', 'hall'], anchor: 'wall', clear: { front: 0.9 }, w: 1.3, d: 0.75, h: 1.7, uses: ['stone', 'clay', 'metal', 'accent', 'wood'], fire: true, build: 'hearth' },
       { role: 'fire', type: 'brazier', rooms: ['hall', 'tavern', 'yard', 'court'], setting: 'both', clear: { front: 0.5, back: 0.5, left: 0.5, right: 0.5 }, w: 0.7, d: 0.7, h: 0.9, uses: ['metal', 'stone', 'wood', 'accent', 'rope'], fire: true, build: 'fire' },
       { role: 'lamp', type: 'lamp', rooms: ['hall', 'bedroom', 'tavern', 'study', 'shrine', 'antechamber'], clear: {}, w: 0.3, d: 0.3, h: 1.4, uses: ['accent', 'metal', 'clay', 'stone', 'wood', 'rope'], fire: true, glass: true, plaster: true, build: 'lamp' },
@@ -3828,7 +3839,7 @@ const FK = (function () {
       { role: 'chest', type: 'storage', rooms: ['bedroom', 'store', 'hall'], clear: { front: 0.7 }, w: 1.1, d: 0.6, h: 0.65, variants: 2, variantNames: ['plain', 'banded'], uses: ['wood', 'metal', 'accent'], build: 'chest' },
       { role: 'bookcase', type: 'shelf', rooms: ['library', 'study', 'hall', 'store', 'shrine'], anchor: 'wall', clear: { front: 0.7 }, w: 1.4, d: 0.4, h: 2.0, uses: ['wood', 'cloth', 'clay', 'stone', 'metal', 'accent'], plaster: true, build: 'bookcase' },
       { role: 'wall_shelves', type: 'shelf', rooms: ['kitchen', 'store', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.2, d: 0.32, h: 1.5, uses: ['wood', 'clay', 'cloth', 'rope'], plant: true, build: 'wallShelves' },
-      { role: 'store', type: 'storage', rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.85, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], plant: true, build: 'store' },
+      { role: 'store', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 1.0, d: 0.55, h: 0.85, uses: ['clay', 'cloth', 'rope', 'wood', 'metal', 'accent'], plant: true, build: 'store' },
       { role: 'hearth', type: 'stove', rooms: ['kitchen', 'hall', 'tavern'], anchor: 'wall', clear: { front: 0.9 }, w: 1.5, d: 0.8, h: 1.9, uses: ['stone', 'clay', 'metal', 'accent', 'wood'], fire: true, build: 'hearth' },
       { role: 'fire', type: 'brazier', rooms: ['hall', 'tavern', 'yard', 'court', 'shrine'], setting: 'both', clear: { front: 0.5, back: 0.5, left: 0.5, right: 0.5 }, w: 0.7, d: 0.7, h: 1.0, uses: ['metal', 'stone', 'wood', 'accent', 'rope'], fire: true, build: 'fire' },
       { role: 'lamp', type: 'lamp', rooms: ['hall', 'bedroom', 'tavern', 'study', 'shrine', 'antechamber', 'library'], clear: {}, w: 0.34, d: 0.34, h: 1.6, uses: ['accent', 'metal', 'clay', 'stone', 'wood', 'rope'], fire: true, glass: true, plaster: true, build: 'lamp' },
@@ -3893,10 +3904,10 @@ const FK = (function () {
       { role: 'armour_stand', type: 'rack', rooms: ['shop', 'smithy', 'barracks', 'dormitory', 'hall', 'antechamber'], clear: { front: 0.6 }, w: 0.6, d: 0.5, h: 1.85, variants: 2, variantNames: ['plate', 'leather'],
         uses: ['wood', 'metal', 'cloth', 'accent'], build: 'armourStand' },
       { role: 'weapon_rack', type: 'weapon', rooms: ['shop', 'smithy', 'barracks', 'dormitory', 'hall', 'antechamber'], anchor: 'wall', clear: { front: 0.6 }, w: 1.2, d: 0.35, h: 1.8, uses: ['wood', 'metal', 'accent', 'cloth'], build: 'weaponRack' },
-      { role: 'vat', type: 'storage', rooms: ['workshop', 'store', 'tavern', 'kitchen'], clear: { front: 0.7 }, w: 1.2, d: 1.2, h: 1.3, uses: ['wood', 'metal', 'cloth'], glass: true, build: 'vat' },
+      { role: 'vat', type: 'storage', surface: false, rooms: ['workshop', 'store', 'tavern', 'kitchen'], clear: { front: 0.7 }, w: 1.2, d: 1.2, h: 1.3, uses: ['wood', 'metal', 'cloth'], glass: true, build: 'vat' },
       { role: 'still', type: 'workstation', rooms: ['workshop', 'shop', 'study'], anchor: 'wall', clear: { front: 0.9 }, w: 1.3, d: 0.6, h: 1.7, uses: ['wood', 'metal', 'stone', 'clay', 'accent'], fire: true, glass: true, build: 'still' },
       { role: 'bin', type: 'storage', rooms: ['store', 'kitchen', 'shop', 'stable', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 1.6, d: 0.6, h: 0.95, uses: ['wood', 'metal', 'rope'], plant: true, build: 'bin' },
-      { role: 'larder', type: 'storage', rooms: ['kitchen', 'store', 'hall'], anchor: 'wall', clear: { front: 0.7 }, w: 1.0, d: 0.5, h: 1.9, uses: ['wood', 'rope', 'accent', 'clay'], plant: true, build: 'larder' },
+      { role: 'larder', type: 'storage', surface: false, rooms: ['kitchen', 'store', 'hall'], anchor: 'wall', clear: { front: 0.7 }, w: 1.0, d: 0.5, h: 1.9, uses: ['wood', 'rope', 'accent', 'clay'], plant: true, build: 'larder' },
       { role: 'bunk', type: 'bed', rooms: ['dormitory', 'barracks'], clear: { front: 0.6 }, w: 1.0, d: 2.0, h: 1.75, uses: ['wood', 'cloth'], build: 'bunk' },
       { role: 'locker', type: 'storage', rooms: ['dormitory', 'barracks', 'bedroom', 'workshop'], anchor: 'wall', clear: { front: 0.6 }, w: 0.9, d: 0.5, h: 1.85, uses: ['wood', 'metal'], build: 'locker' },
       { role: 'lathe', type: 'workstation', rooms: ['workshop'], anchor: 'wall', clear: { front: 0.9 }, w: 1.7, d: 0.7, h: 1.3, uses: ['wood', 'metal'], build: 'lathe' },
@@ -3904,7 +3915,7 @@ const FK = (function () {
       { role: 'kiln', type: 'stove', rooms: ['workshop', 'smithy'], clear: { front: 0.9 }, w: 1.4, d: 1.4, h: 2.0, uses: ['clay', 'stone'], fire: true, build: 'kiln' },
       { role: 'grindstone', type: 'workstation', rooms: ['smithy', 'workshop', 'yard'], setting: 'both', clear: { front: 0.7 }, w: 0.9, d: 0.6, h: 1.0, uses: ['wood', 'metal', 'stone'], build: 'grindstone' },
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
-      { role: 'barrel', type: 'storage', rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
+      { role: 'barrel', type: 'storage', surface: false, rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
     ]
   };
 
@@ -3927,7 +3938,7 @@ const FK = (function () {
     if (S.tile && (R.build === 'hearth' || R.build === 'art')) fams.add('ceramic');
     if ((R.uses || []).indexOf('wood') >= 0 && (S.woodFam === 'bamboo' || S.legs === 'lashed' || S.motif === 'lash')) fams.add('rope');
     const out = new Set();
-    for (const f of fams) out.add(FAMILY_TO_MATERIAL[f] || 'unassigned');
+    for (const f0 of fams) { const f = f0 && f0.indexOf('/') > 0 ? f0.slice(f0.indexOf('/') + 1) : f0; out.add(FAMILY_TO_MATERIAL[f] || 'unassigned'); }   /* 'tex/base': the base names the material */
     return [...out].sort();
   };
 
@@ -3964,6 +3975,7 @@ const FK = (function () {
         build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
+      if (o.surface === false || R.surface === false) entry.surface = false;   /* no flat top: nothing is set on it (SPEC: surface) */
       const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
       if (job) entry.job = job;
       FURN(entry);
@@ -5693,7 +5705,7 @@ const ZJ_COMMON = {
   wood: 'timber', woodDark: 'timberDark', woodLight: 'timberLight', woodFam: 'wood',
   cloth: ['alecap', 'cinnabar', 'ochre', 'fleece'], clothFam: 'cloth',
   accent: 'copper', accentFam: 'bronze', metal: 'copperDark', metalFam: 'metal',
-  clay: 'clay', clayFam: 'ceramic', stone: 'tuff', stoneFam: 'stone', rope: 'ropeHemp',
+  clay: 'clay', clayFam: 'ceramic/terracotta', stone: 'tuff', stoneFam: 'stone', rope: 'ropeHemp',
   flame: 'flame', ember: 'ember', lampCol: 'flame',
   legs: 'block', motif: 'step', bedBase: 'slab', seat: 'hide', finial: 'knob',
   hearth: 'stone', fire: 'bowl', lamp: 'oil', rug: 'woven', screen: 'carved', store: 'jars',
@@ -5706,14 +5718,14 @@ const ZJ_COURT = Object.assign({}, ZJ_COMMON, {
   accent: 'bronze', accentFam: 'bronze', finial: 'disc', rug: 'knotted', screen: 'lattice',
   art: 'relief', statue: 'guardian', tapestry: 'figure'
 });
-FK.set({ culture: 'zeijani', tier: 'common', S: ZJ_COMMON, names: {
+FK.set({ culture: 'zeijani', tier: 'common', S: ZJ_COMMON, skip: ['screen'], names: {
   bed: 'Timber bed with fleeces', bench: 'Plank bench with hides', chair: 'Hide-seated chair', stool: 'Three-legged stool', table: 'Kipuka plank table',
   low_table: 'Low hearth table', desk: 'Scribe\'s slate desk', chest: 'Copper-cornered chest', bookcase: 'Jar and tablet shelves', wall_shelves: 'Hanging shelves',
   store: 'Storage jars', hearth: 'Tuff hearth with smoke hood', fire: 'Copper fire-bowl', lamp: 'Oil lamp on a stand', candle: 'Clay lamp',
   hanging: 'Hanging copper lamp', rug: 'Woven rug', screen: 'Carved timber screen', counter: 'Stone-topped counter', workbench: 'Workbench',
   loom: 'Upright loom', rack: 'Spear rack', ladder: 'Ladder', board: 'Hide map board', art: 'Spirit mask', banner: 'Alecap-purple banner',
   scroll: 'Painted hide scroll', pennants: 'Felt pennants', bowl: 'Terracotta bowl', jug: 'Beer jug and cups', books: 'Tablets and hide rolls' } });
-FK.set({ culture: 'zeijani', tier: 'court', S: ZJ_COURT, names: {
+FK.set({ culture: 'zeijani', tier: 'court', S: ZJ_COURT, skip: ['screen'], names: {
   bed: 'Fleece-piled dais bed', throne: 'Clan elder\'s seat', divan: 'Cushioned stone divan', table: 'Polished stone feast table', low_table: 'Inlaid low table',
   desk: 'Elder\'s writing desk', cabinet: 'Bronze-bound cabinet', bookcase: 'Record shelves', hearth: 'Red-stone hearth', fire: 'Bronze fire-bowl',
   lamp: 'Bronze lamp tree', candelabra: 'Branched clay lamp', hanging: 'Hanging bronze lamp', carpet: 'Knotted carpet', screen: 'Pierced lattice screen',
@@ -5784,30 +5796,30 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'both',
+  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'store', setting: 'both',
   rooms: ['kitchen', 'cell', 'cottage', 'living', 'store', 'cistern', 'hall', 'brewery', 'yard'], anchor: 'floor', clearance: { front: 0.4 },
-  materials: ['ceramic', 'timber', 'stone'],
+  materials: ['terracotta', 'timber', 'stone'],
   w: 0.6, d: 0.6, h: 0.86, variants: 2, variantNames: ['one jar on a ring', 'three jars'], variantDims: [{ w: 0.6, d: 0.6, h: 0.86 }, { w: 0.62, d: 0.6, h: 0.62 }],
   build: function (F) {
     if (F.variant === 0) {
       F.cyl(0, 0, 0, 0.2, 0.08, 0, F.col('tuffDark'), 'stone');
-      ZJ_FX.jar(F, 0, 0, 0.29, 0.86, F.col('clay'), 'ceramic', F.col('timberDark'));
+      ZJ_FX.jar(F, 0, 0, 0.29, 0.86, F.col('clay'), 'ceramic/terracotta', F.col('timberDark'));
     } else {
-      [[-0.16, -0.12, 0.62], [0.16, -0.12, 0.54], [0, 0.15, 0.48]].forEach(function (p) { ZJ_FX.jar(F, p[0], p[1], 0.145, p[2], F.pick(['clay', 'clayLight', 'clayDark']), 'ceramic'); });
+      [[-0.16, -0.12, 0.62], [0.16, -0.12, 0.54], [0, 0.15, 0.48]].forEach(function (p) { ZJ_FX.jar(F, p[0], p[1], 0.145, p[2], F.pick(['clay', 'clayLight', 'clayDark']), 'ceramic/terracotta'); });
     }
   }
 });
 FURN({
-  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'indoor',
+  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'store', setting: 'indoor',
   rooms: ['cistern', 'kitchen', 'store', 'brewery', 'tavern'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['ceramic', 'timber'],
+  materials: ['terracotta', 'timber'],
   w: 1.6, d: 0.55, h: 1.0, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     F.box(0, 0, -0.25, 1.6, 0.9, 0.05, 0, wd, 'wood');
     for (const x of [-0.76, 0.76]) F.box(x, 0, 0, 0.08, 0.5, 0.5, 0, wd, 'wood');
     for (const z of [-0.18, 0.18]) F.rod(-0.72, 0.3, z, 0.72, 0.3, z, 0.03, F.col('timber'), 'wood');
-    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.54 + i * 0.36, 0.0, 0.16, 0.56, F.pick(['clay', 'clayLight']), 'ceramic', F.col('timberDark'), 0.06);
+    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.54 + i * 0.36, 0.0, 0.16, 0.56, F.pick(['clay', 'clayLight']), 'ceramic/terracotta', F.col('timberDark'), 0.06);
     F.box(0, 0, 0, 1.5, 0.06, 0.48, 0, F.col('timberDark'), 'wood');
   }
 });
@@ -5835,7 +5847,7 @@ FURN({
 
 /* ====================================================================== brewing and fungi */
 FURN({
-  key: 'zeijani_mash_tun', name: 'Stone mash tun', culture: 'zeijani', tier: 'common', type: 'storage', role: 'mash_tun', job: 'brewing', setting: 'indoor',
+  key: 'zeijani_mash_tun', name: 'Stone mash tun', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'mash_tun', job: 'brewing', setting: 'indoor',
   rooms: ['brewery', 'workshop', 'store', 'kitchen'], anchor: 'floor', clearance: { front: 0.8, left: 0.4, right: 0.4 },
   materials: ['stone', 'metal', 'timber', 'food'],
   w: 1.3, d: 1.3, h: 1.25, variants: 1,
@@ -5850,19 +5862,19 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_ferment_crocks', name: 'Fermenting crocks', culture: 'zeijani', tier: 'common', type: 'storage', role: 'crock', job: 'brewing', setting: 'indoor',
+  key: 'zeijani_ferment_crocks', name: 'Fermenting crocks', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'crock', job: 'brewing', setting: 'indoor',
   rooms: ['brewery', 'store', 'tavern', 'kitchen'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['ceramic', 'stone', 'timber', 'cloth'],
+  materials: ['terracotta', 'stone', 'timber', 'cloth'],
   w: 1.6, d: 0.6, h: 0.92, variants: 2, variantNames: ['three crocks', 'two crocks and jugs'],
   build: function (F) {
     F.box(0, 0, 0, 1.6, 0.12, 0.6, 0, F.col('tuff'), 'stone');
     F.box(0, 0, -0.27, 1.6, 0.5, 0.06, 0, F.shade('tuff', -0.06), 'stone');
     const xs = F.variant === 0 ? [-0.5, 0, 0.5] : [-0.45, 0.25];
     for (const x of xs) {
-      ZJ_FX.jar(F, x, 0.02, 0.24, 0.8, F.pick(['clay', 'clayDark']), 'ceramic', null, 0.12);
+      ZJ_FX.jar(F, x, 0.02, 0.24, 0.8, F.pick(['clay', 'clayDark']), 'ceramic/terracotta', null, 0.12);
       F.cyl(x, 0.86, 0.02, 0.12, 0.05, 0, F.pick(['alecap', 'linen']), 'cloth');
     }
-    if (F.variant === 1) [[0.62, 0.12], [0.72, -0.1]].forEach(function (q) { ZJ_FX.jar(F, q[0], q[1], 0.06, 0.24, F.col('glaze'), 'ceramic', null, 0.12); });
+    if (F.variant === 1) [[0.62, 0.12], [0.72, -0.1]].forEach(function (q) { ZJ_FX.jar(F, q[0], q[1], 0.06, 0.24, F.col('glaze'), 'ceramic/terracotta', null, 0.12); });
   }
 });
 FURN({
@@ -5897,7 +5909,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'basket', job: 'fungiculture', setting: 'both',
+  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'basket', job: 'fungiculture', setting: 'both',
   rooms: ['kitchen', 'store', 'shop', 'market', 'brewery', 'farm', 'yard', 'cottage', 'cell'], anchor: 'floor', clearance: { front: 0.4 },
   materials: ['wicker', 'food'],
   w: 0.55, d: 0.55, h: 0.48, variants: 1,
@@ -5912,7 +5924,7 @@ FURN({
 FURN({
   key: 'zeijani_retort_bench', name: 'Retort bench', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'retort', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'workshop', 'study', 'shop'], anchor: 'wall', clearance: { front: 0.9 },
-  materials: ['stone', 'ceramic', 'glass', 'metal', 'emissive', 'timber'],
+  materials: ['stone', 'terracotta', 'glass', 'metal', 'emissive', 'timber'],
   w: 1.6, d: 0.7, h: 1.6, variants: 1,
   build: function (F) {
     const t = F.col('tuff');
@@ -5922,20 +5934,20 @@ FURN({
     /* the charcoal brazier and the retort over it, its neck running to a receiver */
     F.cyl(-0.45, 0.86, 0.05, 0.16, 0.14, 0, F.col('copperDark'), 'metal');
     F.blob(-0.45, 1.0, 0.05, 0.13, 0.04, 0, F.col('ember'), 'glow');
-    F.blob(-0.45, 1.13, 0.05, 0.12, 0.2, 0, F.col('clayDark'), 'ceramic');
-    F.rod(-0.4, 1.2, 0.05, 0.12, 1.02, 0.12, 0.018, F.col('clayDark'), 'ceramic');
+    F.blob(-0.45, 1.13, 0.05, 0.12, 0.2, 0, F.col('clayDark'), 'ceramic/terracotta');
+    F.rod(-0.4, 1.2, 0.05, 0.12, 1.02, 0.12, 0.018, F.col('clayDark'), 'ceramic/terracotta');
     F.blob(0.17, 0.95, 0.12, 0.08, 0.15, 0, F.col('lining'), 'glass');
     F.lamp(-0.45, 1.05, 0.15, 0.6, 4);
     /* jars on the back board's shelf */
     F.box(0, 1.3, -0.24, 1.5, 0.03, 0.14, 0, F.col('timber'), 'wood');
-    for (let i = 0; i < 7; i++) F.cyl(-0.63 + i * 0.21, 1.33, -0.24, 0.045, F.rr(0.08, 0.16), 0, F.pick(['glaze', 'clay', 'lining', 'alecap']), 'ceramic');
+    for (let i = 0; i < 7; i++) F.cyl(-0.63 + i * 0.21, 1.33, -0.24, 0.045, F.rr(0.08, 0.16), 0, F.pick(['glaze', 'clay', 'lining', 'alecap']), 'ceramic/terracotta');
     F.cyl(0.55, 0.86, 0.12, 0.08, 0.1, 0, F.col('tuffDark'), 'stone');
   }
 });
 FURN({
   key: 'zeijani_specimen_shelf', name: 'Shelf of specimen jars', culture: 'zeijani', tier: 'common', type: 'shelf', role: 'shelf', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'study', 'shop', 'store'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['timber', 'ceramic', 'glass', 'emissive', 'food'],
+  materials: ['timber', 'terracotta', 'glass', 'emissive', 'food'],
   w: 1.3, d: 0.35, h: 1.9, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
@@ -5948,7 +5960,7 @@ FURN({
       for (let i = 0; i < 6; i++) {
         const x = -0.48 + i * 0.19, hj = F.rr(0.14, 0.26), glow = (i + k) % 5 === 0;
         F.cyl(x, y + 0.03, 0.02, 0.06, hj, 0, glow ? F.col('glowDeep') : F.pick(['lining', 'glaze', 'clayLight']), glow ? 'glow' : 'glass');
-        F.cyl(x, y + 0.03 + hj, 0.02, 0.045, 0.03, 0, F.col('wax'), 'ceramic');
+        F.cyl(x, y + 0.03 + hj, 0.02, 0.045, 0.03, 0, F.col('wax'), 'ceramic/terracotta');
         if (!glow && F.chance(0.5)) F.ball(x, y + 0.03 + hj * 0.4, 0.02, 0.035, F.pick(['alecap', 'resin', 'sulphur', 'leaf']), 'food');
       }
     }
@@ -5969,13 +5981,13 @@ FURN({
 FURN({
   key: 'zeijani_glow_jar', name: 'Glow-culture jar', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'glow_jar', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'cell', 'hall', 'shop', 'kiva', 'ossuary', 'bedroom', 'cottage', 'study'], anchor: 'surface', clearance: {},
-  materials: ['glass', 'emissive', 'ceramic'],
+  materials: ['glass', 'emissive', 'terracotta'],
   w: 0.24, d: 0.24, h: 0.34, variants: 1,
   build: function (F) {
-    F.cyl(0, 0, 0, 0.1, 0.04, 0, F.col('clayDark'), 'ceramic');
+    F.cyl(0, 0, 0, 0.1, 0.04, 0, F.col('clayDark'), 'ceramic/terracotta');
     F.cyl(0, 0.04, 0, 0.095, 0.24, 0, F.col('lining'), 'glass');
     ZJ_FX.glowCaps(F, 0, 0.05, 0, 0.9, 5);
-    F.cyl(0, 0.28, 0, 0.07, 0.06, 0, F.col('wax'), 'ceramic');
+    F.cyl(0, 0.28, 0, 0.07, 0.06, 0, F.col('wax'), 'ceramic/terracotta');
     F.lamp(0, 0.16, 0, 0.25, 3);
   }
 });
@@ -5997,11 +6009,11 @@ FURN({
 FURN({
   key: 'zeijani_slipper_lamp', name: 'Clay slipper lamp', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'candle', setting: 'indoor',
   rooms: ['hall', 'cell', 'bedroom', 'cottage', 'living', 'kiva', 'shrine', 'ossuary', 'study', 'tavern'], anchor: 'surface', clearance: {},
-  materials: ['ceramic', 'emissive'],
+  materials: ['terracotta', 'emissive'],
   w: 0.22, d: 0.12, h: 0.14, variants: 1,
   build: function (F) {
-    F.blob(-0.02, 0.03, 0, 0.07, 0.06, 0, F.col('clay'), 'ceramic');
-    F.beam(0.03, 0.03, 0, 0.1, 0.035, 0, 0.04, 0.05, F.col('clay'), 'ceramic');
+    F.blob(-0.02, 0.03, 0, 0.07, 0.06, 0, F.col('clay'), 'ceramic/terracotta');
+    F.beam(0.03, 0.03, 0, 0.1, 0.035, 0, 0.04, 0.05, F.col('clay'), 'ceramic/terracotta');
     ZJ_FX.flame(F, 0.09, 0.05, 0, 1.2, 0.3);
   }
 });
@@ -6039,13 +6051,13 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_dye_vat', name: 'Alecap dye vat', culture: 'zeijani', tier: 'common', type: 'storage', role: 'vat', job: 'dyeing', setting: 'both',
+  key: 'zeijani_dye_vat', name: 'Alecap dye vat', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'vat', job: 'dyeing', setting: 'both',
   rooms: ['workshop', 'yard', 'shop'], anchor: 'floor', clearance: { front: 0.7, left: 0.3, right: 0.3 },
   materials: ['stone', 'timber', 'cloth', 'food'],
   w: 1.2, d: 1.2, h: 1.5, variants: 2, variantNames: ['alecap purple', 'cinnabar red'],
   build: function (F) {
     F.frustum(0, 0, 0, 0.58, 0.55, 0.7, 0, F.col('tuffDark'), 'stone', 14);
-    F.cyl(0, 0.66, 0, 0.5, 0.04, 0, F.col(F.variant ? 'cinnabar' : 'alecap'), 'food');
+    F.cyl(0, 0.66, 0, 0.5, 0.055, 0, F.col(F.variant ? 'cinnabar' : 'alecap'), 'food');   /* the dye 1.5 cm proud of the rim (flush: a z-fight) */
     for (const x of [-0.5, 0.5]) F.box(x, 0.7, 0, 0.06, 0.8, 0.06, 0, F.col('timberDark'), 'wood');
     F.rod(-0.53, 1.45, 0, 0.53, 1.45, 0, 0.025, F.col('timber'), 'wood');
     for (let i = 0; i < 4; i++) F.box(-0.3 + i * 0.2, 0.95, 0, 0.1, 0.5, 0.05, 0, F.col(F.variant ? (i % 2 ? 'cinnabar' : 'oxideRed') : (i % 2 ? 'alecap' : 'magenta')), 'cloth');
@@ -6070,13 +6082,13 @@ FURN({
 FURN({
   key: 'zeijani_potters_wheel', name: 'Potter\'s kick wheel', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'wheel', job: 'pottery', setting: 'both',
   rooms: ['workshop', 'yard', 'shop'], anchor: 'floor', clearance: { front: 0.6, back: 0.4 },
-  materials: ['timber', 'stone', 'ceramic'],
+  materials: ['timber', 'stone', 'terracotta'],
   w: 0.9, d: 1.0, h: 0.9, variants: 1,
   build: function (F) {
     F.cyl(0, 0.02, 0.1, 0.36, 0.1, 0, F.col('basalt'), 'stone');
     F.cyl(0, 0.12, 0.1, 0.03, 0.55, 0, F.col('timberDark'), 'wood');
     F.cyl(0, 0.66, 0.1, 0.2, 0.05, 0, F.col('timber'), 'wood');
-    F.blob(0, 0.78, 0.1, 0.1, 0.16, 0, F.col('clayLight'), 'ceramic');
+    F.blob(0, 0.78, 0.1, 0.1, 0.16, 0, F.col('clayLight'), 'ceramic/terracotta');
     F.box(0, 0, -0.38, 0.8, 0.5, 0.24, 0, F.col('timber'), 'wood');
     F.box(0, 0.5, -0.38, 0.8, 0.05, 0.24, 0, F.col('timberLight'), 'wood');
   }
@@ -6084,15 +6096,15 @@ FURN({
 FURN({
   key: 'zeijani_pot_stack', name: 'Finished pots on planks', culture: 'zeijani', tier: 'common', type: 'stack', role: 'pots', job: 'pottery', setting: 'both',
   rooms: ['shop', 'store', 'workshop', 'market', 'kitchen', 'yard'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['timber', 'ceramic'],
+  materials: ['timber', 'terracotta'],
   w: 1.2, d: 0.6, h: 1.0, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     F.box(0, 0, -0.28, 1.2, 1.0, 0.04, 0, wd, 'wood');
     for (const x of [-0.57, 0.57]) F.box(x, 0, 0, 0.06, 0.62, 0.56, 0, wd, 'wood');
     F.box(0, 0.5, 0, 1.14, 0.04, 0.56, 0, F.col('timber'), 'wood');
-    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.4 + i * 0.27, 0.04, 0.12, F.rr(0.3, 0.42), F.pick(['clay', 'clayLight', 'glaze']), 'ceramic');
-    for (let i = 0; i < 3; i++) F.blob(-0.3 + i * 0.3, 0.6, 0.02, 0.13, 0.18, 0, F.pick(['clay', 'clayDark', 'glaze']), 'ceramic');
+    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.4 + i * 0.27, 0.04, 0.12, F.rr(0.3, 0.42), F.pick(['clay', 'clayLight', 'glaze']), 'ceramic/terracotta');
+    for (let i = 0; i < 3; i++) F.blob(-0.3 + i * 0.3, 0.6, 0.02, 0.13, 0.18, 0, F.pick(['clay', 'clayDark', 'glaze']), 'ceramic/terracotta');
   }
 });
 FURN({
@@ -6168,15 +6180,15 @@ FURN({
 FURN({
   key: 'zeijani_lampwright_bench', name: 'Lampwright\'s bench', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'lampwright', job: 'lampmaking', setting: 'indoor',
   rooms: ['workshop', 'shop'], anchor: 'wall', clearance: { front: 0.9 },
-  materials: ['timber', 'ceramic', 'emissive', 'rope', 'food', 'metal'],
+  materials: ['timber', 'terracotta', 'emissive', 'rope', 'food', 'metal'],
   w: 1.5, d: 0.6, h: 1.3, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     for (const x of [-0.68, 0.68]) F.box(x, 0, 0, 0.08, 0.82, 0.55, 0, wd, 'wood');
     F.box(0, 0.82, 0, 1.5, 0.06, 0.6, 0, F.col('timber'), 'wood');
     F.box(0, 0.88, -0.28, 1.5, 0.42, 0.04, 0, wd, 'wood');
-    for (let i = 0; i < 5; i++) { F.blob(-0.5 + i * 0.18, 0.92, 0.05, 0.05, 0.05, 0, F.col('clay'), 'ceramic'); }
-    F.blob(0.48, 0.98, -0.05, 0.1, 0.2, 0, F.col('clayDark'), 'ceramic');
+    for (let i = 0; i < 5; i++) { F.blob(-0.5 + i * 0.18, 0.92, 0.05, 0.05, 0.05, 0, F.col('clay'), 'ceramic/terracotta'); }
+    F.blob(0.48, 0.98, -0.05, 0.1, 0.2, 0, F.col('clayDark'), 'ceramic/terracotta');
     for (let i = 0; i < 6; i++) F.rod(0.1 + i * 0.03, 0.88, -0.18, 0.1 + i * 0.03, 1.2, -0.24, 0.006, F.col('linen'), 'rope');
     F.cyl(-0.25, 0.85, -0.12, 0.08, 0.1, 0, F.col('compost'), 'food');
     ZJ_FX.glowCaps(F, -0.25, 0.95, -0.12, 1.5, 5);
@@ -6374,13 +6386,13 @@ FURN({
 FURN({
   key: 'zeijani_funerary_lamp', name: 'Funerary lamp stand', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'lamp', setting: 'indoor',
   rooms: ['ossuary', 'kiva', 'shrine', 'antechamber'], anchor: 'floor', clearance: {},
-  materials: ['stone', 'ceramic', 'emissive'],
+  materials: ['stone', 'terracotta', 'emissive'],
   w: 0.4, d: 0.4, h: 1.3, variants: 1,
   build: function (F) {
     F.frustum(0, 0, 0, 0.17, 0.14, 0.12, 0, F.col('basaltDark'), 'stone', 8);
     F.frustum(0, 0.12, 0, 0.07, 0.06, 1.0, 0, F.col('basalt'), 'stone', 8);
     F.frustum(0, 1.12, 0, 0.07, 0.17, 0.1, 0, F.col('basaltDark'), 'stone', 8);
-    F.cyl(0, 1.22, 0, 0.14, 0.03, 0, F.col('clay'), 'ceramic');
+    F.cyl(0, 1.22, 0, 0.14, 0.03, 0, F.col('clay'), 'ceramic/terracotta');
     for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3; ZJ_FX.flame(F, Math.cos(a) * 0.09, 1.24, Math.sin(a) * 0.09, 0.9, i ? 0 : 0.4); }
   }
 });
@@ -6389,7 +6401,7 @@ FURN({
 FURN({
   key: 'zeijani_map_table', name: 'Scouts\' map table', culture: 'zeijani', tier: 'common', type: 'table', role: 'table', setting: 'indoor',
   rooms: ['hall', 'study', 'guardroom', 'court', 'barracks'], anchor: 'floor', clearance: { front: 0.7, back: 0.7, left: 0.6, right: 0.6 },
-  materials: ['stone', 'hide', 'rope', 'ceramic', 'emissive'],
+  materials: ['stone', 'hide', 'rope', 'terracotta', 'emissive'],
   w: 1.8, d: 1.1, h: 0.95, variants: 1,
   build: function (F) {
     const t = F.col('tuff');
@@ -6400,7 +6412,7 @@ FURN({
     for (const p of [[-0.68, 0.35], [0.38, 0.38], [-0.62, -0.28]]) F.blob(p[0], 0.84, p[1], 0.05, 0.06, 0, F.col('basalt'), 'stone');
     F.cyl(0.7, 0.8, 0.35, 0.1, 0.05, 0, F.col('ropeHemp'), 'rope');
     ZJ_FX.flame(F, 0.7, 0.86, -0.4, 1.2, 0.4);
-    F.blob(0.7, 0.82, -0.42, 0.06, 0.05, 0, F.col('clay'), 'ceramic');
+    F.blob(0.7, 0.82, -0.42, 0.06, 0.05, 0, F.col('clay'), 'ceramic/terracotta');
   }
 });
 FURN({
@@ -8122,6 +8134,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const out = [];
       for (const H of placed) {
         if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.P.desc && H.P.desc.surface === false) continue;   /* no flat top (a jar, a vat, a basket): nothing is set on it */
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
           out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
@@ -8233,7 +8246,11 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
             });
             if (list.length && (Q = attempt(list, null))) break;
           }
-          if (Q) { counts[gi]++; added++; } else dead[gi] = true;
+          if (Q) {
+            counts[gi]++; added++;
+            /* a desk is used from a chair: one is tried at once (a seat stands at a placed desk, IX.ROLES) */
+            if (Q.P.type === 'desk') for (const lv of own) { const chairs = lv.list.filter(function (d) { return d.type === 'chair'; }); if (chairs.length && attempt(chairs, null)) break; }
+          } else dead[gi] = true;
         }
         if (!any) break;
       }
@@ -9931,6 +9948,33 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const EB = estateB();
+  /* THE KIVA, sunk below a floor (the sheet's ground, or a temple's pit): a round room with a flat back wall (the altar's), a bench
+     terrace carved round it at bench height (a void room off the walk map), the roof hatch over the hearth with the ladder leaning
+     out of it (its walk strip from 5 cm outside the hatch's rim, where the floor stops, 3.6 m down in 1.55 m: as steep as a walker
+     climbs; a walker keeps to the higher floor across the overlap, so on a ladder it stays this small), the deflector and the
+     ventilator (a low tunnel to a shaft up to the floor above), the sipapu, and the great incense burner where Ranj is burned.
+     0.9 m of earth or rock over its dome. (cx, cz): the hatch; y0: the floor it is sunk in; wells: its hatch and vent open through
+     the sheet's ground (a kiva in a pit opens into the pit's air: no wells) */
+  function kivaPlan(cx, cz, y0, wells) {
+    const P = function (x, z) { return [cx + x, cz + z]; }, Y = y0 - 3.6;
+    const room = { id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16, cx, cz), y: Y, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
+      fixtures: [
+        fx('ladder', 'ladder', cx, cz + 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
+        fx('hearth', 'hearth', cx, cz + 1.5, 0.9, 0.9, { h: 0.3 }),
+        fx('deflector', 'deflector', cx, cz + 2.15, 1.2, 0.25, { h: 1.1 }),
+        fx('ventilator', 'ventilator', cx, cz + 2.6, 0.7, 0.45, { h: 1.4 }),
+        fx('burner', 'incense-burner', cx - 1.9, cz + 0.6, 1.1, 1.1, { h: 1.3 }),
+        fx('sipapu', 'sipapu', cx + 1.0, cz - 0.9, 0.3, 0.3, { h: 0.02 })] };
+    const voids = [
+      { kind: 'room', id: 'bench', poly: dee(3.4, 4.28, 18, cx, cz), y: y0 - 3.15, h: 1.7, ceil: 'dome', rise: 0.4, r: 0, finish: 'plaster', floor: false },
+      { kind: 'shaft', id: 'hatch', joins: ['kiva'], c: P(0, 0), y0: y0 - 1.6, y1: y0 + 0.6, r0: 0.9, r1: 0.9 },
+      { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [cx, Y + 0.2, cz + 2.6], b: [cx, Y + 0.2, cz + 3.9], w: 0.5, h: 0.6, floor: false },
+      { kind: 'shaft', id: 'vent', joins: ['kiva'], c: P(0, 3.9), y0: Y + 0.2, y1: y0 + 0.6, r0: 0.28, r1: 0.3 },
+      { kind: 'walk', id: 'ladder', a: [cx, y0, cz - 0.95], b: [cx, Y, cz + 0.6], w: 0.8 }];
+    if (wells) voids.push({ kind: 'well', id: 'hatch-top', c: P(0, 0), r: 0.9, rim: 0.3 }, { kind: 'well', id: 'vent-top', c: P(0, 3.9), r: 0.3, rim: 0.2 });
+    return { rooms: [room], voids: voids };
+  }
+  const KIVA = kivaPlan(0, 0, 0, true);
   /* THE TEMPLE, cut from one rock (Ellora's Kailasa; the board's temple_massing and temple-body): a gateway tunnel through the
      face into a pit cut down from the top of the rock; in the pit the rock left standing: a podium (its stair cut into its
      front), on it the sanctum's drum and four corner shrines, and two lamp pillars before it; the pit's side walls cut into
@@ -9952,6 +9996,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     rooms.push({ id: 'sanctum', kind: 'shrine', carved: true, poly: circle(5.0, 24, 0, -30), y: 6, h: 6.5, ceil: 'flat', finish: 'polished',
       doors: [{ at: [0, -25], w: 1.8, swing: 'none' }] });
     voids.push({ kind: 'stair', id: 'sanctum-door', joins: ['sanctum'], a: [0, 6, -23.0], b: [0, 6, -25.8], w: 1.8, h: 3.4 });
+    /* a kiva sunk in the pit's floor on its east side, between the podium and the cloister */
+    const K = kivaPlan(13.2, -28, 0, false);
+    K.rooms.forEach(function (r) { rooms.push(r); });
+    K.voids.forEach(function (v) { voids.push(v); });
     /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
     [-1, 1].forEach(function (s) {
       const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
@@ -9962,7 +10010,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms.push(R);
     });
     /* the walk: the pit's floor less the podium and the lamp pillars; the terrace less the stair's slot and the drum; the podium's sides */
-    voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
+    voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12), rrect(12.3, 14.1, -28.9, -27.1), circle(0.45, 10, 13.2, -24.1)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
     voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -22.0), circle(6.25, 28, 0, -30)] });
     [[-9, -1.5, -16.3, -16], [1.5, 9, -16.3, -16], [-9, 9, -40, -39.7], [-9, -8.7, -40, -16], [8.7, 9, -40, -16]].forEach(function (b, i) { voids.push({ kind: 'block', id: 'podium-side' + i, box: [b[0], b[1], b[2], b[3], 0, 5.9] }); });
     return { rooms: rooms, voids: voids };
@@ -10075,22 +10123,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
        deflector and the ventilator (a low tunnel to a shaft up to the ground), the sipapu, and the great incense burner where
        Ranj is burned. The roof is 0.9 m of earth over the dome */
     { key: 'zj_kiva', name: 'Kiva', carved: true, wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
-      rooms: [{ id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16), y: -3.6, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
-        fixtures: [
-          fx('ladder', 'ladder', 0, 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
-          fx('hearth', 'hearth', 0, 1.5, 0.9, 0.9, { h: 0.3 }),
-          fx('deflector', 'deflector', 0, 2.15, 1.2, 0.25, { h: 1.1 }),
-          fx('ventilator', 'ventilator', 0, 2.6, 0.7, 0.45, { h: 1.4 }),
-          fx('burner', 'incense-burner', -1.9, 0.6, 1.1, 1.1, { h: 1.3 }),
-          fx('sipapu', 'sipapu', 1.0, -0.9, 0.3, 0.3, { h: 0.02 })] }],
-      voids: [
-        { kind: 'room', id: 'bench', poly: dee(3.4, 4.28, 18), y: -3.15, h: 1.7, ceil: 'dome', rise: 0.4, r: 0, finish: 'plaster', floor: false },
-        { kind: 'shaft', id: 'hatch', joins: ['kiva'], c: [0, 0], y0: -1.6, y1: 0.6, r0: 0.9, r1: 0.9 },
-        { kind: 'well', id: 'hatch-top', c: [0, 0], r: 0.9, rim: 0.3 },
-        { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [0, -3.4, 2.6], b: [0, -3.4, 3.9], w: 0.5, h: 0.6, floor: false },
-        { kind: 'shaft', id: 'vent', joins: ['kiva'], c: [0, 3.9], y0: -3.4, y1: 0.6, r0: 0.28, r1: 0.3 },
-        { kind: 'well', id: 'vent-top', c: [0, 3.9], r: 0.3, rim: 0.2 },
-        { kind: 'walk', id: 'ladder', a: [0, 0, -0.95], b: [0, -3.6, 0.6], w: 0.8 }],
+      rooms: KIVA.rooms, voids: KIVA.voids,
       note: 'sunk 3.6 m in the ground under an earth roof; down the ladder through the hatch over the hearth; the bench terrace ' +
         'round the round wall, the altar against the flat back wall under the murals; the deflector, the ventilator, the sipapu, ' +
         'the great incense burner on the west side, where Ranj is burned' },
@@ -10353,7 +10386,8 @@ function zfStilts(mk,cx,cz,rx,rz,y,n,col,rad){for(let i=0;i<n;i++){const a=i*TAU
 function zfStepLintel(mk,x,y,z,w,col,o){o=o||{};const n=o.n||3,th=o.h||.3,d=o.d||.3;for(let i=0;i<n;i++)box(mk,x,y+i*th,z-d/2+i*.02,w+.6*(n-i),th,d+i*.04,col);}
 /* a pattern band: a sheet (pat* key) mapped once across its height and repeated along its width, on a face */
 function zfBand(mk,x,y,z,w,h,ry,col){const L=KMAT.mode==='lib'?KMAT.packed('zeijani',ZJ_LIB[mk]):null,sx=L?L.scale[0]:(TILE[mk]||1),sy=L?(L.scale[1]||L.scale[0]):h;
- const m=TF(x,y+h/2,z,ry||0);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,col===undefined?WHITE:col,{su:w/sx,sv:h/sy});}
+ /* once across the height (the whole sheet shows: a mural's figures keep their heads), repeated along the width at the sheet's aspect */
+ const m=TF(x,y+h/2,z,ry||0);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,col===undefined?WHITE:col,{su:w/(h*sx/sy),sv:1});}
 /* a round ribbed door (the earth-mound house): a disc of planks with radial ribs and an iron ring, facing +z, its centre at (x,y,z) */
 function zfRoundDoor(x,y,z,r,col){const m=TF(x,y,z,0,PI/2,0);m.scale(new THREE.Vector3(r,.08,r));emit('carved',gcyl(20),m,col);
  for(let i=0;i<8;i++){const a=i*TAU/8;beam('wood',[x+Math.cos(a)*r*.15,y+Math.sin(a)*r*.15,z+.06],[x+Math.cos(a)*r*.95,y+Math.sin(a)*r*.95,z+.06],.06,P('woodD'));}
@@ -10384,12 +10418,18 @@ function zfDovecote(x,y,z,cols,rows,o){o=o||{};const dx=o.dx||.55,dy=o.dy||.6;fo
 function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;const y=r.y||0,fin=zfFinish(r.finish||'hewn'),c=P('white');
  for(const f of r.fixtures||[]){const w=f.w,d=f.d,h=f.h||.5,x=f.x,z=f.z,ry=f.ry||0;
   if(f.kind==='bedshelf'){box(fin,x,y,z,w,h,d,c,ry);FURNISH('zeijani_fleece_bed',x,y+h,z,ry+(w>d?PI/2:0),{v:0,setting:'room'});}
-  else if(f.kind==='hearth'){box(fin,x,y,z,w,.22,d,c,ry);box(fin,x,y+.22,z-d*.35,w,h-.22,d*.3,c,ry);sph('glow',x,y+.3,z,.12,P('ember'),.5,8);smokeAt(x,y+h,z,{r:.1});haloAt(x,y+.4,z,0xff8a40,false);}
+  else if(f.kind==='hearth'){/* a stone hearth: its sill, its sooted back, the embers and flames that light the room (its halo) */
+   box(fin,x,y,z,w,.22,d,c,ry);box(fin,x,y+.22,z-d*.35,w,h-.22,d*.3,c,ry);box('basaltPol',x,y+.22,z-d*.2+.005,w*.8,h-.32,.02,P('soot'),ry);
+   box('glow',x,y+.22,z+d*.05,w*.6,.03,d*.45,P('ember'),ry);for(const t of [-.18,0,.18])cone('glow',x+t*w,y+.24,z+d*.05,.05,.18+(t?0:.08),P('flame'),6);
+   smokeAt(x,y+h,z,{r:.1});haloAt(x,y+.4,z+d*.1,0xff8a40,false);}
   else if(f.kind==='bench'||f.kind==='deflector')box(fin,x,y,z,w,h,d,c,ry);
   else if(f.kind==='ventilator'){box('basaltPol',x,y,z,w,h,d*.4,P('soot'),ry);box(fin,x,y+h,z,w+.2,.15,d,c,ry);}
   else if(f.kind==='sipapu')cyl('basaltPol',x,y+.004,z,Math.min(w,d)/2,.01,P('soot'),12);
   else if(f.kind==='incense-burner'){const R=Math.min(w,d)/2;cyl('tuffPol',x,y,z,R,.25,c,14);cyl('tuffPol',x,y+.25,z,R*.55,h-.55,c,12);cyl('copper',x,y+h-.3,z,R*.8,.3,P('copper'),14);
-   cyl('glow',x,y+h-.02,z,R*.62,.03,P('ember'),12);cone('copper',x,y+h+.9,z,R*.7,.6,P('copper'),12);smokeAt(x,y+h+.2,z,{r:.25,kind:'incense'});haloAt(x,y+h+.1,z,0xd04a2a,true);}
+   cyl('glow',x,y+h-.02,z,R*.62,.03,P('ember'),12);
+   /* the flames: tongues of the unlit, flickering glow over the embers */
+   for(let i=0;i<7;i++){const a=i*2.4,rr=i?R*.38:0;cone('glow',x+Math.cos(a)*rr,y+h-.01,z+Math.sin(a)*rr,R*(i?.13:.2),R*(i?.45:.8)*(.8+.25*Math.sin(i*1.7)),P(i%2?'ember':'flame'),6);}
+   cone('copper',x,y+h+.9,z,R*.7,.6,P('copper'),12);smokeAt(x,y+h+.2,z,{r:.25,kind:'incense'});haloAt(x,y+h+.1,z,0xd04a2a,true);}
   else if(f.kind==='pool'){/* a basin: its floor, a rim 0.15 m thick round dark water (fixtures are square to the room: ry 0 or a quarter) */
    const q=Math.abs(Math.round(ry/(PI/2)))%2===1,W2=(q?d:w)+.3,D2=(q?w:d)+.3;box(fin,x,y,z,W2,.12,D2,c);
    for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}
@@ -10481,7 +10521,10 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
   FURNISH('zeijani_stone_bench',-4.2,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',3.6,0,.55,0,{v:1,setting:'outdoor'});}});
 
 /* gallery B, the well: the stair is drawn here from the item's `well` (its walk strips are the item's `walk` entries) */
-function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/2)/(PI/16));
+function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/2)/(PI/16)),ri=W.rs-W.w/2;
+ /* the head landing where the tunnel meets the well: its floor either side of the mouth, a parapet round its inner edge and across its open end */
+ sector('tuffHewn',W.c[0],W.c[1],ri-.05,W.r+.05,PI/2-.42,PI/2+.02,-.32,0,c,4);sector('tuffHewn',W.c[0],W.c[1],ri-.22,ri-.05,PI/2-.42,PI/2+.02,-.32,.78,c,4);
+ sector('tuffHewn',W.c[0],W.c[1],ri-.22,W.r+.05,PI/2-.46,PI/2-.42,-.32,.78,c,1);
  for(let i=0;i<n;i++){const a0=PI/2+(A1-PI/2)*i/n,a1=PI/2+(A1-PI/2)*(i+1)/n,y=W.y0-W.drop*((a0+a1)/2-PI/2)/PI;
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.05,W.r+.05,a0,a1,y-.32,y,c,2);
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.22,W.rs-W.w/2-.05,a0,a1,y-.32,y+.78,c,2);}}
@@ -10600,7 +10643,7 @@ defBuilding({key:'zj_house_built_mid',name:'Three domes round a yard',seed:4502,
   seg(-2.8,5.3,-.7,5.3);seg(.7,5.3,2.8,5.3);seg(-2.8,-.3,-.45,-.3);seg(.45,-.3,2.8,-.3);
   for(const s of [-1,1]){seg(s*2.8,-.3,s*2.8,2.05);seg(s*2.8,2.95,s*2.8,5.3);}
   for(const s of [-1,1])box('tuffPol',s*.72,0,5.3,.24,2.3,.42,P('white'));zfStepLintel('tuffPol',0,2.3,5.3,1.5,P('white'),{n:2,h:.22,d:.42});
-  box('plain',0,1.5,5.46,4.0,.08,.02,P('turquoise'));zfLeaf(0,.02,5.15,1.2,2.2,P('wood'),.9);door(0,0,5.3,0,1.2);
+  for(const s of [-1,1])box('plain',s*1.82,1.5,5.46,1.96,.08,.02,P('turquoise'));zfLeaf(0,.02,5.15,1.2,2.2,P('wood'),1.45);   /* the band stops at the gate; the leaf stands open against the yard's wall */door(0,0,5.3,0,1.2);
   FURNISH('zeijani_olla',3.6,0,6.0,0,{v:1,setting:'outdoor'});FURNISH('zeijani_stone_bench',-4.2,0,6.0,0,{setting:'outdoor'});}});
 
 /* 3 wealthy: two storeys of tuff ashlar (the interiors planner's plan), a frieze at the floor line, a stepped doorway; a flat
@@ -10609,7 +10652,7 @@ defBuilding({key:'zj_house_built_rich',name:'Two-storey house with a roof terrac
  build(o){const c=P('tuff'),wt=P('white'),inst=zbBody('zj_house_built_rich',{wall:'ashlar',wallCol:c});const B=inst&&inst.buildings[0],RY=B?B.roof.y:6.35;
   box('ashlar',0,0,0,10.4,.3,8.4,P('tuffDark'));box('paving',0,.3,0,9.1,.02,7.1,P('tuffDark'));zfSteps('ashlar',0,.3,4.2,1.6,2,P('tuffDark'),.15,.32);
   /* the doorway (the planner's street door: 1.2 wide, 2.1 high), the frieze band at the floor line, corner pilasters */
-  for(const s of [-1,1])box('tuffPol',s*.74,.3,4.06,.26,2.1,.16,wt);zfStepLintel('tuffPol',0,2.4,4.1,1.6,wt,{n:3,h:.22,d:.24});zfLeaf(0,.3,3.85,1.2,2.1,P('wood'),-.4);
+  for(const s of [-1,1])box('tuffPol',s*.74,.3,4.06,.26,2.1,.16,wt);zfStepLintel('tuffPol',0,2.4,4.1,1.6,wt,{n:3,h:.22,d:.24});zfLeaf(0,.3,3.85,1.2,2.1,P('wood'),1.3);
   for(const [x,z,ry,L] of [[0,4.04,0,10.16],[0,-4.04,PI,10.16],[5.04,0,PI/2,8.16],[-5.04,0,-PI/2,8.16]]){W(x,0,z,ry,()=>{box('tuffPol',0,3.0,0,L,.62,.1,wt);});}
   zfBand('patFrieze',0,3.04,4.1,10.0,.54,0,wt);zfBand('patFrieze',0,3.04,-4.1,10.0,.54,PI,wt);
   for(const sx of [-1,1])for(const sz of [-1,1])box('tuffPol',sx*4.9,.3,sz*3.9,.44,RY-.3,.44,wt);
@@ -10680,13 +10723,14 @@ ZS_ITEMS.filter(it=>/_built$/.test(it.key)).forEach(zsBuilt);
 defBuilding({key:'zj_kiva',name:'Kiva',seed:4801,sunk:true,
  tags:{types:['religious'],wealth:'middle',style:'carved',rock:'tuff',finish:'plaster'},w:10,d:10,h:5.5,
  note:'sunk 3.6 m under an earth roof: down the ladder through the hatch; the bench terrace, the altar under the murals, the hearth, deflector, ventilator and sipapu, the great incense burner where Ranj is burned',
- build(o){const it=zjItem('zj_kiva');cvFromItem(it,{finish:'plaster'});zfFixtures(it);const wd=P('woodD'),c=P('white'),Y=-3.6;
-  for(const s of [-1,1]){box('log',0,0,s*1.0,2.2,.18,.2,wd);box('log',s*1.0,0,0,.2,.18,1.8,wd);}
-  const A=[0,Y,.6],B=[0,1.3,-1.51];for(const s of [-1,1])beam('log',[s*.28,A[1],A[2]],[s*.28,B[1],B[2]],.06,wd,true,6);
-  for(let i=1;i<15;i++){const t=i/15;box('log',0,A[1]+t*(B[1]-A[1]),A[2]+t*(B[2]-A[2]),.62,.05,.06,wd);}
-  zfRingWall('ashlar',0,3.9,.32,.52,0,.45,P('tuffDark'));
-  box('plaster',0,Y+1.15,-2.62,2.2,1.0,.12,P('plaster'));zfBand('patMural',0,Y+1.2,-2.555,2.0,.9,0,c);
-  door(0,0,-1.0,PI,.8);}});
+ build(o){const it=zjItem('zj_kiva');cvFromItem(it,{finish:'plaster'});zfFixtures(it);zkKivaDress(0,0,0);door(0,0,-1.0,PI,.8);}});
+/* a kiva's dressing at its hatch (cx, cz) sunk in a floor at y0 (the plan: kivaPlan in the interiors set) */
+function zkKivaDress(cx,cz,y0){const wd=P('woodD'),c=P('white'),Y=y0-3.6;
+  for(const s of [-1,1]){box('log',cx,y0,cz+s*1.0,2.2,.18,.2,wd);box('log',cx+s*1.0,y0,cz,.2,.18,1.8,wd);}
+  const A=[0,Y,.6],B=[0,y0+1.3,-1.51];for(const s of [-1,1])beam('log',[cx+s*.28,A[1],cz+A[2]],[cx+s*.28,B[1],cz+B[2]],.06,wd,true,6);
+  for(let i=1;i<15;i++){const t=i/15;box('log',cx,A[1]+t*(B[1]-A[1]),cz+A[2]+t*(B[2]-A[2]),.62,.05,.06,wd);}
+  zfRingWall('ashlar',cx,cz+3.9,.32,.52,y0,y0+.45,P('tuffDark'));
+  box('plaster',cx,Y+1.15,cz-2.62,2.2,1.0,.12,P('plaster'));zfBand('patMural',cx,Y+1.2,cz-2.555,2.0,.9,0,c);}
 
 /* the catacombs: a round-headed portal under a frieze of the dead, funerary lamps either side; inside, the loculi corridors
    lined with bones (panels of the ossuary sheet on both walls) and the chapel's frieze over its altar */
@@ -10697,7 +10741,9 @@ defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:tr
   zfArch('tuffHewn',0,0,.02,1.5,2.5,.42,c,{key:true,keyMk:'basaltPol'});box('tuffHewn',0,0,.29,2.1,.12,.5,c);
   box('tuffPol',0,3.0,.08,4.2,.8,.24,c);zfBand('patSkel',0,3.05,.21,4.0,.7,0,c);
   for(const s of [-1,1]){zfNiche(s*1.7,1.4,.02,.34,.44);FURNISH('zeijani_funerary_lamp',s*1.7,1.4,.05,0,{setting:'outdoor'});}
-  for(const s of [-1,1])for(const zs of [-1,1]){const x0=s*3.3,x1=s*10.2;box('ossuary',(x0+x1)/2,Y+.25,-12+zs*.6,Math.abs(x1-x0),1.9,.06,c);}
+  /* (the west corridor's south wall stops either side of the Keeper's doorway, x -6.4) */
+  const bones=(x0,x1,z)=>box('ossuary',(x0+x1)/2,Y+.25,z,Math.abs(x1-x0),1.9,.06,c);
+  for(const s of [-1,1])bones(s*3.3,s*10.2,-11.4);bones(3.3,10.2,-12.6);bones(-3.3,-5.75,-12.6);bones(-7.05,-10.2,-12.6);
   box('plaster',0,Y+1.45,-14.66,2.4,.9,.12,P('plaster'));zfBand('patSkel',0,Y+1.5,-14.595,2.2,.8,0,c);
   door(0,0,0,0,1.4);}});
 
@@ -10707,7 +10753,7 @@ defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:tr
 function zkBand(mk,x0,x1,z,y,h,ry,c){/* a frieze on a face at z (local, facing ry): a backing slab straddling the face and the sheet on it */
  const w=Math.abs(x1-x0),cx=(x0+x1)/2;W(0,0,0,ry,()=>{box('tuffPol',cx,y-.05,z,w+.1,h+.1,.16,c);zfBand(mk,cx,y,z+.085,w,h,0,c);});}
 defBuilding({key:'zj_temple',name:'The temple: cut from one rock',seed:4803,originFront:true,
- tags:{types:['religious'],wealth:'rich',style:'carved',rock:'tuff',finish:'polished'},w:48,d:52,h:19,
+ tags:{types:['religious'],wealth:'rich',style:'carved',rock:'tuff',finish:'polished'},w:48,d:52,h:22,
  note:'a gateway into a pit cut from the top of the rock; the podium left standing with its stair, the sanctum under a pierced lattice dome lit from inside, four shrines, two lamp pillars, cloisters in the pit\'s walls',
  build(o){const it=zjItem('zj_temple');cvFromItem(it,{finish:'polished'});zfFixtures(it);const c=P('white');
   /* the gateway: jambs inside the cut, a stepped lintel, three receding tiers with friezes, a crown and a finial */
@@ -10730,6 +10776,7 @@ defBuilding({key:'zj_temple',name:'The temple: cut from one rock',seed:4803,orig
   zfDome('glow',0,11.2,-30,5.95,4.95,0xb8682e,{seg:40,rows:12});
   cyl('copper',0,16.3,-30,.3,.4,P('copper'),12);cone('copper',0,16.7,-30,.3,1.1,P('copper'),12);
   sph('glow',0,9.2,-30,.55,P('flame'),1,16);haloAt(0,9.2,-30,0xffb04a,true);for(let i=0;i<6;i++){const a=i*TAU/6;sph('glow',Math.cos(a)*3.2,8.6,-30+Math.sin(a)*3.2,.18,P('flame'),1,10);}
+  zkKivaDress(13.2,-28,0);   /* the kiva in the pit's east side (its plan: the temple's item) */
   door(0,0,0,0,3.6);}});
 // prefix: zc
 // ================================================================= CIVIC (PLAN.md 6.4): the council, the cistern hall, the portal, the caravanserai, the town hall
@@ -12575,7 +12622,8 @@ const PB={
    ['the sanctum’s door',0,-24.2],['the sanctum',0,-27],['by its altar',1.5,-31],['out of the sanctum',0,-26.6],['the terrace again',0,-22.6],['the terrace’s west side',-7.6,-23.5],
    ['behind the drum',-7.6,-33],['into the shrine',-6.6,-37,false],['the west side again',-7.6,-24],['the stair’s head',0,-22.4],['down the stair',0,-15.2],
    ['along the podium',-14,-15.2],['the west cloister',-19.6,-15.2],['along it',-19.6,-43.4],['the back of the pit',-14,-44],['across',14,-44],['the east cloister',19.6,-43.4],
-   ['along it',19.6,-15.2],['the pit again',14,-15.2],['the gate again',0,-9],['out',0,2]]));
+   ['along it',19.6,-15.2],['the pit again',15.5,-15.2],['past the kiva’s vent',15.5,-30],['the kiva’s hatch',13.2,-30],['its ladder’s head',13.2,-29.15],
+   ['down into the kiva',13.2,-27.45],['off the ladder',13.9,-27.5],['back to the ladder',13.2,-27.45],['up again',13.2,-29.15],['out past the vent',15.5,-30],['the pit’s front',15.5,-15.2],['the gate again',0,-9],['out',0,2]]));
   r('council',PB.siteRoute(W,'zj_council',[0,21],[['the stair’s head',0,19.6],['down the tunnel',0,3.8],['the trench',-10.5,2],['the west door',-10.4,-8],
    ['the council hall',-6,-8],['the crossing',0,-8],['by the dais',5.8,-8],['the crossing again',0,-8],['the west arm',-6,-8],['out',-10.4,-8],['the trench again',-10.5,2],
    ['the tunnel’s foot',0,3.8],['up the tunnel',0,19.6],['the ground',0,21]]));return out;},
@@ -12691,7 +12739,16 @@ function zjTagAdapter(base,rec){const roomTid={};
    if(ZJTAGS)ZJTAGS.child(parent,{'class':'furniture',kind:A?A.type:'piece',key:p.key,name:A?A.name:p.key,at:[p.x,p.y,p.z],ry:p.ry,
      tags:{culture:A&&A.culture||'zeijani',setting:'room',room:room?room.kind:null,job:A&&A.job||undefined},frag:'kits/catalog'});
    ZJF.interiorPieces++;return base.build(p,room);}});}
-function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it=zjItem(rec.key);if(!it)continue;
+/* a carved room is furnished in its outline drawn in 0.25 m: the cavern's walls round its corners and bulge at the floor (the fillet,
+   a cell's wander), so a piece set against the straight outline would stand in the rock */
+const ZJ_FURNITEM={};
+function zjFurnishItem(it){if(ZJ_FURNITEM[it.key])return ZJ_FURNITEM[it.key];const cv=r=>r.carved===true||(it.carved&&r.carved!==false);
+ if(!(it.rooms||[]).some(cv))return ZJ_FURNITEM[it.key]=it;
+ /* each door moves to the nearest point of the inset outline (a door must lie within 0.6 m of a wall) */
+ const near=(P,q)=>{let b=null,bd=1e9;for(let i=0;i<P.length;i++){const a=P[i],c=P[(i+1)%P.length],dx=c[0]-a[0],dz=c[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/L2)),x=a[0]+dx*t,z=a[1]+dz*t,d=(x-q[0])**2+(z-q[1])**2;if(d<bd){bd=d;b=[x,z];}}return b;};
+ return ZJ_FURNITEM[it.key]=Object.assign({},it,{rooms:it.rooms.map(r=>{if(!cv(r))return r;const P=KCAVERN.insetPoly(r.poly,.25);
+  return Object.assign({},r,{poly:P,doors:(r.doors||[]).map(d=>Object.assign({},d,{at:near(P,d.at)}))});})});}
+function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it0=zjItem(rec.key);if(!it0)continue;const it=zjFurnishItem(it0);
   try{const fi=ZJF.interior(it,rec.x,rec.z,rec.ry,zjTagAdapter(ZJF.adapter,rec),{baseY:rec.y,prefix:(rec.tid||rec.key)+'.'});rec.interior=fi.summary;
    fi.result.inst.rooms.forEach(R=>{const P=fi.result.plans[R.id];(P&&P.lights||[]).forEach(l=>{const k=Math.round(l.x/.6)+','+Math.round(l.y/.6)+','+Math.round(l.z/.6);
     if(!HALOKEY.has(k)){HALOKEY.add(k);const c=hc(0xffc878);HALOS.push({x:l.x,y:l.y,z:l.z,r:c.r,g:c.g,b:c.b,big:false});}});});}
@@ -12722,11 +12779,33 @@ function svfDetail(mt){const tf=mt.userData.texFamily,Lt=KMAT.mode==='lib'&&tf?K
     'vec4 texelColor=texture2D(map,dP.zy)*dW.x+texture2D(map,dP.xz)*dW.y+texture2D(map,dP.xy)*dW.z;texelColor=mapTexelToLinear(texelColor);',
     'diffuseColor.rgb*=texelColor.rgb*uDetGain;','#endif'].join('\n'));});
  return true;}
+/* a painted hanging (F.decal: its own canvas map) gets the cloth's weave from the library (f_cloth), projected in world space as
+   the detail maps are, so a banner reads as cloth and not paint on glass */
+function svfWeave(mt){const L=KMAT.mode==='lib'?KMAT.packed('zeijani','f_cloth'):null;if(!L||!L.map||mt.userData.weave)return;mt.userData.weave=true;
+ const T=KMAT.textures(L,{aniso:TEXANISO}),gain=1/Math.max(.05,Math.pow(L.mean==null?.5:L.mean,2.2)),tile=1/((L.scale&&L.scale[0])||1);
+ matHook(mt,'weave',sh=>{sh.uniforms.uWv={value:T.map};sh.uniforms.uWvT={value:tile};sh.uniforms.uWvG={value:gain};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWvP;varying vec3 vWvN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvWvP=(modelMatrix*vec4(transformed,1.)).xyz;vWvN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWvP;varying vec3 vWvN;uniform sampler2D uWv;uniform float uWvT;uniform float uWvG;')
+   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 w=pow(abs(normalize(vWvN))+1e-4,vec3(4.));w/=(w.x+w.y+w.z);vec3 p=vWvP*uWvT;vec3 t=texture2D(uWv,p.zy).rgb*w.x+texture2D(uWv,p.xz).rgb*w.y+texture2D(uWv,p.xy).rgb*w.z;diffuseColor.rgb*=mix(vec3(1.),mapTexelToLinear(vec4(t,1.)).rgb*uWvG,.8);}');});}
+/* contact shadows: underground the sun casts none, so a piece on a carved floor reads as floating. A soft dark patch under every
+   piece that stands on a floor (not on a surface, a wall or the ceiling; not a rug or a hanging), one merged mesh */
+let ZJ_SHTEX=null;
+function zjContactShadows(parent){if(!ZJ_SHTEX){ZJ_SHTEX=canvasTex(64,64,(g,w,h)=>{const r=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);r.addColorStop(0,'rgba(0,0,0,.62)');r.addColorStop(.55,'rgba(0,0,0,.4)');r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,w,h);});ZJ_SHTEX.wrapS=ZJ_SHTEX.wrapT=THREE.ClampToEdgeWrapping;}
+ let q=ZJTAGS.query({});q=Array.isArray(q)?q:Object.values(q);const pos=[],uv=[],F=KratorFurniture.FURN_BY_KEY;
+ for(const r of q){if(r.class!=='furniture'||!r.at)continue;const A=F[r.key];if(!A)continue;const an=A.anchor||'floor',t=A.type;
+  if(an==='surface'||an==='ceiling'||t==='rug'||t==='banner'||t==='art'||t==='lamp'&&an==='wall')continue;
+  const dm=KratorFurniture.entryDims(A,0),hw=dm.w/2+.16,hd=dm.d/2+.16,c=Math.cos(r.ry||0),s=Math.sin(r.ry||0),y=r.at[1]+.012;
+  const P=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(([x,z])=>[r.at[0]+x*c+z*s,y,r.at[2]-x*s+z*c]);
+  for(const k of [0,1,2,0,2,3]){pos.push(...P[k]);uv.push(k===0||k===3?0:1,k<2?0:1);}}
+ if(!pos.length)return;const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:ZJ_SHTEX,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,side:THREE.DoubleSide}));
+ m.userData.probeSkip=true;m.raycast=()=>{};m.renderOrder=1;parent.add(m);ZJF.shadowPatches=pos.length/18;}
 // ---- the batch becomes meshes once per world build, after every def is placed
 const svfBuildWorld=buildWorld;
 buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();zjInteriors();
  const g=ZJF.group=ZJF.batch.flush(WORLD);g.userData.furniture=true;
- ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);}});
+ ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);else if(m.material.map&&m.name==='furniture:decal')svfWeave(m.material);}});
+ zjContactShadows(g);
  if(window._build)window._build.furniture={placed:ZJF.placed.length,interiorPieces:ZJF.interiorPieces,rooms:ZJF.rooms.length,tris:Math.round(ZJF.batch.tris),missing:Object.assign({},ZJF.missing),ms:Math.round(performance.now()-t0)};
  if(typeof nightRebuild==='function')nightRebuild();
  return W0;};
@@ -12768,6 +12847,10 @@ const INSP={on:true,last:0};const insp=document.getElementById('insp');const ray
 function regAt(p){let best=null,bv=1e18;for(const r of REG){const b=r.bbox;if(p.x>=b.mn[0]-.3&&p.x<=b.mx[0]+.3&&p.z>=b.mn[2]-.3&&p.z<=b.mx[2]+.3&&p.y>=b.mn[1]-.4&&p.y<=b.mx[1]+.4){const v=(b.mx[0]-b.mn[0]+.5)*(b.mx[2]-b.mn[2]+.5)*(b.mx[1]-b.mn[1]+1);if(v<bv){bv=v;best=r;}}}return best;}
 function furnAt(p){let best=null,bd=1e9;for(const f of ZJF.placed){const A=KratorFurniture.FURN_BY_KEY[f.key];if(!A)continue;const dm=KratorFurniture.entryDims(A,f.variant|0);
  const dx=p.x-f.x,dz=p.z-f.z,c=Math.cos(f.ry),s=Math.sin(f.ry),lx=dx*c-dz*s,lz=dx*s+dz*c;if(Math.abs(lx)>dm.w/2+.12||Math.abs(lz)>dm.d/2+.12||p.y<f.y-.1||p.y>f.y+dm.h+.15)continue;const d=lx*lx+lz*lz;if(d<bd){bd=d;best=f;}}return best;}
+/* an interior piece (the interiors kit's, registered in core/tags with its place and turn): the nearest whose box holds the point */
+function furnRecAt(p){let q=ZJTAGS.query({});q=Array.isArray(q)?q:Object.values(q);let best=null,bd=1e9;const F=KratorFurniture.FURN_BY_KEY;
+ for(const r of q){if(r.class!=='furniture'||!r.at)continue;const A=F[r.key];if(!A)continue;const dm=KratorFurniture.entryDims(A,0),dx=p.x-r.at[0],dz=p.z-r.at[2],c=Math.cos(r.ry||0),s=Math.sin(r.ry||0),lx=dx*c-dz*s,lz=dx*s+dz*c;
+  if(Math.abs(lx)>dm.w/2+.12||Math.abs(lz)>dm.d/2+.12||p.y<r.at[1]-.1||p.y>r.at[1]+dm.h+.15)continue;const d=lx*lx+lz*lz;if(d<bd){bd=d;best=r;}}return best;}
 /* the cut-away discards fragments in the shader; a ray still meets them. Skip a hit the shader would discard (27-mat.js) */
 function cutHidden(h){if(!ANIMU.uCut.value||!h.face)return false;const A=h.object.geometry&&h.object.geometry.attributes.aCut;if(!A)return false;const i=h.face.a,cx=A.getX(i),cz=A.getY(i),by=A.getZ(i),on=A.getW(i);
  if(on<.5||h.point.y<=by+.3)return false;const c=camera.position;return (h.point.x-cx)*(c.x-cx)+(h.point.z-cz)*(c.z-cz)>0;}
@@ -12777,7 +12860,7 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  const hits=ray.intersectObjects(WORLD.children,true).filter(h=>!(h.object.userData&&h.object.userData.probeSkip)&&!cutHidden(h));
  if(!hits.length){insp.style.display='none';return;}const p=hits[0].point;let html=null;
  let inF=false;for(let o=hits[0].object;o;o=o.parent)if(o.userData&&o.userData.furniture)inF=true;
- if(inF){const f=furnAt(p);if(f&&ZJTAGS.get(f.id))html=labelHtml(ZJTAGS.get(f.id),f.key);}
+ if(inF){const f=furnAt(p);if(f&&ZJTAGS.get(f.id))html=labelHtml(ZJTAGS.get(f.id),f.key);else{const r=furnRecAt(p);if(r)html=labelHtml(r,r.key);}}
  if(!html){const r=regAt(p);if(r&&r.tid&&ZJTAGS.get(r.tid)){const life=ZJ_LIFE.find(l=>l.id===r.tid);html=labelHtml(ZJTAGS.get(r.tid),r.key+(life?'  ·  '+life.faction+' / '+life.subFaction+' · job '+life.job+' · '+life.activity:''));}
   else if(r)html='<b>'+esc(r.name)+'</b>\n<span class="cls">'+esc(r.cls)+'</span>  ·  '+esc(r.key);}
  if(!html)html='<b>unregistered mesh</b>';

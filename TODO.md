@@ -90,6 +90,26 @@ loads each build's `tex/` pack, which is WebP. What is left:
   - Optional: a one-time overhead orthographic bake to a texture as the background, for the painted look.
     Hide the sky, fog and inspector helpers during the bake.
 
+## Viewers, interaction and effects *(the owner, 2026-10-07; raised during the Zeijani kit, not started)*
+
+- **Doors that open.** Doors, hatches, gates, shutters and every door-like object open and close with an interact
+  button (in walk mode: look at it, press the key). The door records already exist (`door()`, the interiors kit's
+  door leaves, `core/walk` gaps); a closed leaf is a walk block, an open one is not. **[G data]** for the state and
+  the block, **[G native]** for the animation.
+- **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
+  floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
+  builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).
+  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference. **[web]**
+- **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
+  furniture placer through `core/furnish`) into every building kit whose buildings have a corresponding interior
+  set, each with a cut-away that opens them. **[G data]** for the plans.
+- **One flame and heat-haze effect.** Look at `biomes/crater-drylands` and `biomes/throne` (the caldera) and make a
+  standard flame plus heat-shimmer effect shared by every build (fires, braziers, burners, lamps, lava). **[G shader]**
+- **Water: an audit and one best solution.** Audit the water effects across the builds and settle on the
+  best-looking one that appears to run downhill under gravity, leaves no gaps, fills where it should (basins,
+  channels, pools) and stays out of where it should not (no water through floors, walls or banks). **[G shader]**
+  for the surface, **[G data]** for where it fills.
+
 ## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
 
 The nine biome kits are next in the audit order (`GODOT-PLAN.md` 3.3, step 2) and are what milestone M4 (a

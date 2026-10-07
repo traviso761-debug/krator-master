@@ -46,6 +46,8 @@ FURN({
   variants: 2, variantNames: ['plain', 'backed'],
   anchor: 'floor',              // floor | wall | ceiling | surface (on a table/shelf)
   clearance: { front: 0.8 },    // metres kept free for use (seating, doors, drawers): front back left right
+  surface: false,               // optional: no flat top (a jar, a vat, a basket), so no piece is set on it
+                                //   (tables, counters, shelves, desks and storage are surface hosts otherwise)
   materials: ['timber'],        // canonical names from the material registry (core/README.md)
   build(F) { … }                // origin = footprint centre on the anchor plane, +z = front
 });

@@ -54,7 +54,7 @@ defBuilding({key:'zj_house_built_mid',name:'Three domes round a yard',seed:4502,
   seg(-2.8,5.3,-.7,5.3);seg(.7,5.3,2.8,5.3);seg(-2.8,-.3,-.45,-.3);seg(.45,-.3,2.8,-.3);
   for(const s of [-1,1]){seg(s*2.8,-.3,s*2.8,2.05);seg(s*2.8,2.95,s*2.8,5.3);}
   for(const s of [-1,1])box('tuffPol',s*.72,0,5.3,.24,2.3,.42,P('white'));zfStepLintel('tuffPol',0,2.3,5.3,1.5,P('white'),{n:2,h:.22,d:.42});
-  box('plain',0,1.5,5.46,4.0,.08,.02,P('turquoise'));zfLeaf(0,.02,5.15,1.2,2.2,P('wood'),.9);door(0,0,5.3,0,1.2);
+  for(const s of [-1,1])box('plain',s*1.82,1.5,5.46,1.96,.08,.02,P('turquoise'));zfLeaf(0,.02,5.15,1.2,2.2,P('wood'),1.45);   /* the band stops at the gate; the leaf stands open against the yard's wall */door(0,0,5.3,0,1.2);
   FURNISH('zeijani_olla',3.6,0,6.0,0,{v:1,setting:'outdoor'});FURNISH('zeijani_stone_bench',-4.2,0,6.0,0,{setting:'outdoor'});}});
 
 /* 3 wealthy: two storeys of tuff ashlar (the interiors planner's plan), a frieze at the floor line, a stepped doorway; a flat
@@ -63,7 +63,7 @@ defBuilding({key:'zj_house_built_rich',name:'Two-storey house with a roof terrac
  build(o){const c=P('tuff'),wt=P('white'),inst=zbBody('zj_house_built_rich',{wall:'ashlar',wallCol:c});const B=inst&&inst.buildings[0],RY=B?B.roof.y:6.35;
   box('ashlar',0,0,0,10.4,.3,8.4,P('tuffDark'));box('paving',0,.3,0,9.1,.02,7.1,P('tuffDark'));zfSteps('ashlar',0,.3,4.2,1.6,2,P('tuffDark'),.15,.32);
   /* the doorway (the planner's street door: 1.2 wide, 2.1 high), the frieze band at the floor line, corner pilasters */
-  for(const s of [-1,1])box('tuffPol',s*.74,.3,4.06,.26,2.1,.16,wt);zfStepLintel('tuffPol',0,2.4,4.1,1.6,wt,{n:3,h:.22,d:.24});zfLeaf(0,.3,3.85,1.2,2.1,P('wood'),-.4);
+  for(const s of [-1,1])box('tuffPol',s*.74,.3,4.06,.26,2.1,.16,wt);zfStepLintel('tuffPol',0,2.4,4.1,1.6,wt,{n:3,h:.22,d:.24});zfLeaf(0,.3,3.85,1.2,2.1,P('wood'),1.3);
   for(const [x,z,ry,L] of [[0,4.04,0,10.16],[0,-4.04,PI,10.16],[5.04,0,PI/2,8.16],[-5.04,0,-PI/2,8.16]]){W(x,0,z,ry,()=>{box('tuffPol',0,3.0,0,L,.62,.1,wt);});}
   zfBand('patFrieze',0,3.04,4.1,10.0,.54,0,wt);zfBand('patFrieze',0,3.04,-4.1,10.0,.54,PI,wt);
   for(const sx of [-1,1])for(const sz of [-1,1])box('tuffPol',sx*4.9,.3,sz*3.9,.44,RY-.3,.44,wt);

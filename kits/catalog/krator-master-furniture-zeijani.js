@@ -40,7 +40,7 @@ const ZJ_COMMON = {
   wood: 'timber', woodDark: 'timberDark', woodLight: 'timberLight', woodFam: 'wood',
   cloth: ['alecap', 'cinnabar', 'ochre', 'fleece'], clothFam: 'cloth',
   accent: 'copper', accentFam: 'bronze', metal: 'copperDark', metalFam: 'metal',
-  clay: 'clay', clayFam: 'ceramic', stone: 'tuff', stoneFam: 'stone', rope: 'ropeHemp',
+  clay: 'clay', clayFam: 'ceramic/terracotta', stone: 'tuff', stoneFam: 'stone', rope: 'ropeHemp',
   flame: 'flame', ember: 'ember', lampCol: 'flame',
   legs: 'block', motif: 'step', bedBase: 'slab', seat: 'hide', finial: 'knob',
   hearth: 'stone', fire: 'bowl', lamp: 'oil', rug: 'woven', screen: 'carved', store: 'jars',
@@ -53,14 +53,14 @@ const ZJ_COURT = Object.assign({}, ZJ_COMMON, {
   accent: 'bronze', accentFam: 'bronze', finial: 'disc', rug: 'knotted', screen: 'lattice',
   art: 'relief', statue: 'guardian', tapestry: 'figure'
 });
-FK.set({ culture: 'zeijani', tier: 'common', S: ZJ_COMMON, names: {
+FK.set({ culture: 'zeijani', tier: 'common', S: ZJ_COMMON, skip: ['screen'], names: {
   bed: 'Timber bed with fleeces', bench: 'Plank bench with hides', chair: 'Hide-seated chair', stool: 'Three-legged stool', table: 'Kipuka plank table',
   low_table: 'Low hearth table', desk: 'Scribe\'s slate desk', chest: 'Copper-cornered chest', bookcase: 'Jar and tablet shelves', wall_shelves: 'Hanging shelves',
   store: 'Storage jars', hearth: 'Tuff hearth with smoke hood', fire: 'Copper fire-bowl', lamp: 'Oil lamp on a stand', candle: 'Clay lamp',
   hanging: 'Hanging copper lamp', rug: 'Woven rug', screen: 'Carved timber screen', counter: 'Stone-topped counter', workbench: 'Workbench',
   loom: 'Upright loom', rack: 'Spear rack', ladder: 'Ladder', board: 'Hide map board', art: 'Spirit mask', banner: 'Alecap-purple banner',
   scroll: 'Painted hide scroll', pennants: 'Felt pennants', bowl: 'Terracotta bowl', jug: 'Beer jug and cups', books: 'Tablets and hide rolls' } });
-FK.set({ culture: 'zeijani', tier: 'court', S: ZJ_COURT, names: {
+FK.set({ culture: 'zeijani', tier: 'court', S: ZJ_COURT, skip: ['screen'], names: {
   bed: 'Fleece-piled dais bed', throne: 'Clan elder\'s seat', divan: 'Cushioned stone divan', table: 'Polished stone feast table', low_table: 'Inlaid low table',
   desk: 'Elder\'s writing desk', cabinet: 'Bronze-bound cabinet', bookcase: 'Record shelves', hearth: 'Red-stone hearth', fire: 'Bronze fire-bowl',
   lamp: 'Bronze lamp tree', candelabra: 'Branched clay lamp', hanging: 'Hanging bronze lamp', carpet: 'Knotted carpet', screen: 'Pierced lattice screen',
@@ -131,30 +131,30 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'both',
+  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'store', setting: 'both',
   rooms: ['kitchen', 'cell', 'cottage', 'living', 'store', 'cistern', 'hall', 'brewery', 'yard'], anchor: 'floor', clearance: { front: 0.4 },
-  materials: ['ceramic', 'timber', 'stone'],
+  materials: ['terracotta', 'timber', 'stone'],
   w: 0.6, d: 0.6, h: 0.86, variants: 2, variantNames: ['one jar on a ring', 'three jars'], variantDims: [{ w: 0.6, d: 0.6, h: 0.86 }, { w: 0.62, d: 0.6, h: 0.62 }],
   build: function (F) {
     if (F.variant === 0) {
       F.cyl(0, 0, 0, 0.2, 0.08, 0, F.col('tuffDark'), 'stone');
-      ZJ_FX.jar(F, 0, 0, 0.29, 0.86, F.col('clay'), 'ceramic', F.col('timberDark'));
+      ZJ_FX.jar(F, 0, 0, 0.29, 0.86, F.col('clay'), 'ceramic/terracotta', F.col('timberDark'));
     } else {
-      [[-0.16, -0.12, 0.62], [0.16, -0.12, 0.54], [0, 0.15, 0.48]].forEach(function (p) { ZJ_FX.jar(F, p[0], p[1], 0.145, p[2], F.pick(['clay', 'clayLight', 'clayDark']), 'ceramic'); });
+      [[-0.16, -0.12, 0.62], [0.16, -0.12, 0.54], [0, 0.15, 0.48]].forEach(function (p) { ZJ_FX.jar(F, p[0], p[1], 0.145, p[2], F.pick(['clay', 'clayLight', 'clayDark']), 'ceramic/terracotta'); });
     }
   }
 });
 FURN({
-  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'indoor',
+  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'store', setting: 'indoor',
   rooms: ['cistern', 'kitchen', 'store', 'brewery', 'tavern'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['ceramic', 'timber'],
+  materials: ['terracotta', 'timber'],
   w: 1.6, d: 0.55, h: 1.0, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     F.box(0, 0, -0.25, 1.6, 0.9, 0.05, 0, wd, 'wood');
     for (const x of [-0.76, 0.76]) F.box(x, 0, 0, 0.08, 0.5, 0.5, 0, wd, 'wood');
     for (const z of [-0.18, 0.18]) F.rod(-0.72, 0.3, z, 0.72, 0.3, z, 0.03, F.col('timber'), 'wood');
-    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.54 + i * 0.36, 0.0, 0.16, 0.56, F.pick(['clay', 'clayLight']), 'ceramic', F.col('timberDark'), 0.06);
+    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.54 + i * 0.36, 0.0, 0.16, 0.56, F.pick(['clay', 'clayLight']), 'ceramic/terracotta', F.col('timberDark'), 0.06);
     F.box(0, 0, 0, 1.5, 0.06, 0.48, 0, F.col('timberDark'), 'wood');
   }
 });
@@ -182,7 +182,7 @@ FURN({
 
 /* ====================================================================== brewing and fungi */
 FURN({
-  key: 'zeijani_mash_tun', name: 'Stone mash tun', culture: 'zeijani', tier: 'common', type: 'storage', role: 'mash_tun', job: 'brewing', setting: 'indoor',
+  key: 'zeijani_mash_tun', name: 'Stone mash tun', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'mash_tun', job: 'brewing', setting: 'indoor',
   rooms: ['brewery', 'workshop', 'store', 'kitchen'], anchor: 'floor', clearance: { front: 0.8, left: 0.4, right: 0.4 },
   materials: ['stone', 'metal', 'timber', 'food'],
   w: 1.3, d: 1.3, h: 1.25, variants: 1,
@@ -197,19 +197,19 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_ferment_crocks', name: 'Fermenting crocks', culture: 'zeijani', tier: 'common', type: 'storage', role: 'crock', job: 'brewing', setting: 'indoor',
+  key: 'zeijani_ferment_crocks', name: 'Fermenting crocks', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'crock', job: 'brewing', setting: 'indoor',
   rooms: ['brewery', 'store', 'tavern', 'kitchen'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['ceramic', 'stone', 'timber', 'cloth'],
+  materials: ['terracotta', 'stone', 'timber', 'cloth'],
   w: 1.6, d: 0.6, h: 0.92, variants: 2, variantNames: ['three crocks', 'two crocks and jugs'],
   build: function (F) {
     F.box(0, 0, 0, 1.6, 0.12, 0.6, 0, F.col('tuff'), 'stone');
     F.box(0, 0, -0.27, 1.6, 0.5, 0.06, 0, F.shade('tuff', -0.06), 'stone');
     const xs = F.variant === 0 ? [-0.5, 0, 0.5] : [-0.45, 0.25];
     for (const x of xs) {
-      ZJ_FX.jar(F, x, 0.02, 0.24, 0.8, F.pick(['clay', 'clayDark']), 'ceramic', null, 0.12);
+      ZJ_FX.jar(F, x, 0.02, 0.24, 0.8, F.pick(['clay', 'clayDark']), 'ceramic/terracotta', null, 0.12);
       F.cyl(x, 0.86, 0.02, 0.12, 0.05, 0, F.pick(['alecap', 'linen']), 'cloth');
     }
-    if (F.variant === 1) [[0.62, 0.12], [0.72, -0.1]].forEach(function (q) { ZJ_FX.jar(F, q[0], q[1], 0.06, 0.24, F.col('glaze'), 'ceramic', null, 0.12); });
+    if (F.variant === 1) [[0.62, 0.12], [0.72, -0.1]].forEach(function (q) { ZJ_FX.jar(F, q[0], q[1], 0.06, 0.24, F.col('glaze'), 'ceramic/terracotta', null, 0.12); });
   }
 });
 FURN({
@@ -244,7 +244,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'basket', job: 'fungiculture', setting: 'both',
+  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', surface: false, role: 'basket', job: 'fungiculture', setting: 'both',
   rooms: ['kitchen', 'store', 'shop', 'market', 'brewery', 'farm', 'yard', 'cottage', 'cell'], anchor: 'floor', clearance: { front: 0.4 },
   materials: ['wicker', 'food'],
   w: 0.55, d: 0.55, h: 0.48, variants: 1,
@@ -259,7 +259,7 @@ FURN({
 FURN({
   key: 'zeijani_retort_bench', name: 'Retort bench', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'retort', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'workshop', 'study', 'shop'], anchor: 'wall', clearance: { front: 0.9 },
-  materials: ['stone', 'ceramic', 'glass', 'metal', 'emissive', 'timber'],
+  materials: ['stone', 'terracotta', 'glass', 'metal', 'emissive', 'timber'],
   w: 1.6, d: 0.7, h: 1.6, variants: 1,
   build: function (F) {
     const t = F.col('tuff');
@@ -269,20 +269,20 @@ FURN({
     /* the charcoal brazier and the retort over it, its neck running to a receiver */
     F.cyl(-0.45, 0.86, 0.05, 0.16, 0.14, 0, F.col('copperDark'), 'metal');
     F.blob(-0.45, 1.0, 0.05, 0.13, 0.04, 0, F.col('ember'), 'glow');
-    F.blob(-0.45, 1.13, 0.05, 0.12, 0.2, 0, F.col('clayDark'), 'ceramic');
-    F.rod(-0.4, 1.2, 0.05, 0.12, 1.02, 0.12, 0.018, F.col('clayDark'), 'ceramic');
+    F.blob(-0.45, 1.13, 0.05, 0.12, 0.2, 0, F.col('clayDark'), 'ceramic/terracotta');
+    F.rod(-0.4, 1.2, 0.05, 0.12, 1.02, 0.12, 0.018, F.col('clayDark'), 'ceramic/terracotta');
     F.blob(0.17, 0.95, 0.12, 0.08, 0.15, 0, F.col('lining'), 'glass');
     F.lamp(-0.45, 1.05, 0.15, 0.6, 4);
     /* jars on the back board's shelf */
     F.box(0, 1.3, -0.24, 1.5, 0.03, 0.14, 0, F.col('timber'), 'wood');
-    for (let i = 0; i < 7; i++) F.cyl(-0.63 + i * 0.21, 1.33, -0.24, 0.045, F.rr(0.08, 0.16), 0, F.pick(['glaze', 'clay', 'lining', 'alecap']), 'ceramic');
+    for (let i = 0; i < 7; i++) F.cyl(-0.63 + i * 0.21, 1.33, -0.24, 0.045, F.rr(0.08, 0.16), 0, F.pick(['glaze', 'clay', 'lining', 'alecap']), 'ceramic/terracotta');
     F.cyl(0.55, 0.86, 0.12, 0.08, 0.1, 0, F.col('tuffDark'), 'stone');
   }
 });
 FURN({
   key: 'zeijani_specimen_shelf', name: 'Shelf of specimen jars', culture: 'zeijani', tier: 'common', type: 'shelf', role: 'shelf', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'study', 'shop', 'store'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['timber', 'ceramic', 'glass', 'emissive', 'food'],
+  materials: ['timber', 'terracotta', 'glass', 'emissive', 'food'],
   w: 1.3, d: 0.35, h: 1.9, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
@@ -295,7 +295,7 @@ FURN({
       for (let i = 0; i < 6; i++) {
         const x = -0.48 + i * 0.19, hj = F.rr(0.14, 0.26), glow = (i + k) % 5 === 0;
         F.cyl(x, y + 0.03, 0.02, 0.06, hj, 0, glow ? F.col('glowDeep') : F.pick(['lining', 'glaze', 'clayLight']), glow ? 'glow' : 'glass');
-        F.cyl(x, y + 0.03 + hj, 0.02, 0.045, 0.03, 0, F.col('wax'), 'ceramic');
+        F.cyl(x, y + 0.03 + hj, 0.02, 0.045, 0.03, 0, F.col('wax'), 'ceramic/terracotta');
         if (!glow && F.chance(0.5)) F.ball(x, y + 0.03 + hj * 0.4, 0.02, 0.035, F.pick(['alecap', 'resin', 'sulphur', 'leaf']), 'food');
       }
     }
@@ -316,13 +316,13 @@ FURN({
 FURN({
   key: 'zeijani_glow_jar', name: 'Glow-culture jar', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'glow_jar', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'cell', 'hall', 'shop', 'kiva', 'ossuary', 'bedroom', 'cottage', 'study'], anchor: 'surface', clearance: {},
-  materials: ['glass', 'emissive', 'ceramic'],
+  materials: ['glass', 'emissive', 'terracotta'],
   w: 0.24, d: 0.24, h: 0.34, variants: 1,
   build: function (F) {
-    F.cyl(0, 0, 0, 0.1, 0.04, 0, F.col('clayDark'), 'ceramic');
+    F.cyl(0, 0, 0, 0.1, 0.04, 0, F.col('clayDark'), 'ceramic/terracotta');
     F.cyl(0, 0.04, 0, 0.095, 0.24, 0, F.col('lining'), 'glass');
     ZJ_FX.glowCaps(F, 0, 0.05, 0, 0.9, 5);
-    F.cyl(0, 0.28, 0, 0.07, 0.06, 0, F.col('wax'), 'ceramic');
+    F.cyl(0, 0.28, 0, 0.07, 0.06, 0, F.col('wax'), 'ceramic/terracotta');
     F.lamp(0, 0.16, 0, 0.25, 3);
   }
 });
@@ -344,11 +344,11 @@ FURN({
 FURN({
   key: 'zeijani_slipper_lamp', name: 'Clay slipper lamp', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'candle', setting: 'indoor',
   rooms: ['hall', 'cell', 'bedroom', 'cottage', 'living', 'kiva', 'shrine', 'ossuary', 'study', 'tavern'], anchor: 'surface', clearance: {},
-  materials: ['ceramic', 'emissive'],
+  materials: ['terracotta', 'emissive'],
   w: 0.22, d: 0.12, h: 0.14, variants: 1,
   build: function (F) {
-    F.blob(-0.02, 0.03, 0, 0.07, 0.06, 0, F.col('clay'), 'ceramic');
-    F.beam(0.03, 0.03, 0, 0.1, 0.035, 0, 0.04, 0.05, F.col('clay'), 'ceramic');
+    F.blob(-0.02, 0.03, 0, 0.07, 0.06, 0, F.col('clay'), 'ceramic/terracotta');
+    F.beam(0.03, 0.03, 0, 0.1, 0.035, 0, 0.04, 0.05, F.col('clay'), 'ceramic/terracotta');
     ZJ_FX.flame(F, 0.09, 0.05, 0, 1.2, 0.3);
   }
 });
@@ -386,13 +386,13 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_dye_vat', name: 'Alecap dye vat', culture: 'zeijani', tier: 'common', type: 'storage', role: 'vat', job: 'dyeing', setting: 'both',
+  key: 'zeijani_dye_vat', name: 'Alecap dye vat', culture: 'zeijani', tier: 'common', type: 'storage', surface: false, role: 'vat', job: 'dyeing', setting: 'both',
   rooms: ['workshop', 'yard', 'shop'], anchor: 'floor', clearance: { front: 0.7, left: 0.3, right: 0.3 },
   materials: ['stone', 'timber', 'cloth', 'food'],
   w: 1.2, d: 1.2, h: 1.5, variants: 2, variantNames: ['alecap purple', 'cinnabar red'],
   build: function (F) {
     F.frustum(0, 0, 0, 0.58, 0.55, 0.7, 0, F.col('tuffDark'), 'stone', 14);
-    F.cyl(0, 0.66, 0, 0.5, 0.04, 0, F.col(F.variant ? 'cinnabar' : 'alecap'), 'food');
+    F.cyl(0, 0.66, 0, 0.5, 0.055, 0, F.col(F.variant ? 'cinnabar' : 'alecap'), 'food');   /* the dye 1.5 cm proud of the rim (flush: a z-fight) */
     for (const x of [-0.5, 0.5]) F.box(x, 0.7, 0, 0.06, 0.8, 0.06, 0, F.col('timberDark'), 'wood');
     F.rod(-0.53, 1.45, 0, 0.53, 1.45, 0, 0.025, F.col('timber'), 'wood');
     for (let i = 0; i < 4; i++) F.box(-0.3 + i * 0.2, 0.95, 0, 0.1, 0.5, 0.05, 0, F.col(F.variant ? (i % 2 ? 'cinnabar' : 'oxideRed') : (i % 2 ? 'alecap' : 'magenta')), 'cloth');
@@ -417,13 +417,13 @@ FURN({
 FURN({
   key: 'zeijani_potters_wheel', name: 'Potter\'s kick wheel', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'wheel', job: 'pottery', setting: 'both',
   rooms: ['workshop', 'yard', 'shop'], anchor: 'floor', clearance: { front: 0.6, back: 0.4 },
-  materials: ['timber', 'stone', 'ceramic'],
+  materials: ['timber', 'stone', 'terracotta'],
   w: 0.9, d: 1.0, h: 0.9, variants: 1,
   build: function (F) {
     F.cyl(0, 0.02, 0.1, 0.36, 0.1, 0, F.col('basalt'), 'stone');
     F.cyl(0, 0.12, 0.1, 0.03, 0.55, 0, F.col('timberDark'), 'wood');
     F.cyl(0, 0.66, 0.1, 0.2, 0.05, 0, F.col('timber'), 'wood');
-    F.blob(0, 0.78, 0.1, 0.1, 0.16, 0, F.col('clayLight'), 'ceramic');
+    F.blob(0, 0.78, 0.1, 0.1, 0.16, 0, F.col('clayLight'), 'ceramic/terracotta');
     F.box(0, 0, -0.38, 0.8, 0.5, 0.24, 0, F.col('timber'), 'wood');
     F.box(0, 0.5, -0.38, 0.8, 0.05, 0.24, 0, F.col('timberLight'), 'wood');
   }
@@ -431,15 +431,15 @@ FURN({
 FURN({
   key: 'zeijani_pot_stack', name: 'Finished pots on planks', culture: 'zeijani', tier: 'common', type: 'stack', role: 'pots', job: 'pottery', setting: 'both',
   rooms: ['shop', 'store', 'workshop', 'market', 'kitchen', 'yard'], anchor: 'wall', clearance: { front: 0.6 },
-  materials: ['timber', 'ceramic'],
+  materials: ['timber', 'terracotta'],
   w: 1.2, d: 0.6, h: 1.0, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     F.box(0, 0, -0.28, 1.2, 1.0, 0.04, 0, wd, 'wood');
     for (const x of [-0.57, 0.57]) F.box(x, 0, 0, 0.06, 0.62, 0.56, 0, wd, 'wood');
     F.box(0, 0.5, 0, 1.14, 0.04, 0.56, 0, F.col('timber'), 'wood');
-    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.4 + i * 0.27, 0.04, 0.12, F.rr(0.3, 0.42), F.pick(['clay', 'clayLight', 'glaze']), 'ceramic');
-    for (let i = 0; i < 3; i++) F.blob(-0.3 + i * 0.3, 0.6, 0.02, 0.13, 0.18, 0, F.pick(['clay', 'clayDark', 'glaze']), 'ceramic');
+    for (let i = 0; i < 4; i++) ZJ_FX.jar(F, -0.4 + i * 0.27, 0.04, 0.12, F.rr(0.3, 0.42), F.pick(['clay', 'clayLight', 'glaze']), 'ceramic/terracotta');
+    for (let i = 0; i < 3; i++) F.blob(-0.3 + i * 0.3, 0.6, 0.02, 0.13, 0.18, 0, F.pick(['clay', 'clayDark', 'glaze']), 'ceramic/terracotta');
   }
 });
 FURN({
@@ -515,15 +515,15 @@ FURN({
 FURN({
   key: 'zeijani_lampwright_bench', name: 'Lampwright\'s bench', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'lampwright', job: 'lampmaking', setting: 'indoor',
   rooms: ['workshop', 'shop'], anchor: 'wall', clearance: { front: 0.9 },
-  materials: ['timber', 'ceramic', 'emissive', 'rope', 'food', 'metal'],
+  materials: ['timber', 'terracotta', 'emissive', 'rope', 'food', 'metal'],
   w: 1.5, d: 0.6, h: 1.3, variants: 1,
   build: function (F) {
     const wd = F.col('timberDark');
     for (const x of [-0.68, 0.68]) F.box(x, 0, 0, 0.08, 0.82, 0.55, 0, wd, 'wood');
     F.box(0, 0.82, 0, 1.5, 0.06, 0.6, 0, F.col('timber'), 'wood');
     F.box(0, 0.88, -0.28, 1.5, 0.42, 0.04, 0, wd, 'wood');
-    for (let i = 0; i < 5; i++) { F.blob(-0.5 + i * 0.18, 0.92, 0.05, 0.05, 0.05, 0, F.col('clay'), 'ceramic'); }
-    F.blob(0.48, 0.98, -0.05, 0.1, 0.2, 0, F.col('clayDark'), 'ceramic');
+    for (let i = 0; i < 5; i++) { F.blob(-0.5 + i * 0.18, 0.92, 0.05, 0.05, 0.05, 0, F.col('clay'), 'ceramic/terracotta'); }
+    F.blob(0.48, 0.98, -0.05, 0.1, 0.2, 0, F.col('clayDark'), 'ceramic/terracotta');
     for (let i = 0; i < 6; i++) F.rod(0.1 + i * 0.03, 0.88, -0.18, 0.1 + i * 0.03, 1.2, -0.24, 0.006, F.col('linen'), 'rope');
     F.cyl(-0.25, 0.85, -0.12, 0.08, 0.1, 0, F.col('compost'), 'food');
     ZJ_FX.glowCaps(F, -0.25, 0.95, -0.12, 1.5, 5);
@@ -721,13 +721,13 @@ FURN({
 FURN({
   key: 'zeijani_funerary_lamp', name: 'Funerary lamp stand', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'lamp', setting: 'indoor',
   rooms: ['ossuary', 'kiva', 'shrine', 'antechamber'], anchor: 'floor', clearance: {},
-  materials: ['stone', 'ceramic', 'emissive'],
+  materials: ['stone', 'terracotta', 'emissive'],
   w: 0.4, d: 0.4, h: 1.3, variants: 1,
   build: function (F) {
     F.frustum(0, 0, 0, 0.17, 0.14, 0.12, 0, F.col('basaltDark'), 'stone', 8);
     F.frustum(0, 0.12, 0, 0.07, 0.06, 1.0, 0, F.col('basalt'), 'stone', 8);
     F.frustum(0, 1.12, 0, 0.07, 0.17, 0.1, 0, F.col('basaltDark'), 'stone', 8);
-    F.cyl(0, 1.22, 0, 0.14, 0.03, 0, F.col('clay'), 'ceramic');
+    F.cyl(0, 1.22, 0, 0.14, 0.03, 0, F.col('clay'), 'ceramic/terracotta');
     for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3; ZJ_FX.flame(F, Math.cos(a) * 0.09, 1.24, Math.sin(a) * 0.09, 0.9, i ? 0 : 0.4); }
   }
 });
@@ -736,7 +736,7 @@ FURN({
 FURN({
   key: 'zeijani_map_table', name: 'Scouts\' map table', culture: 'zeijani', tier: 'common', type: 'table', role: 'table', setting: 'indoor',
   rooms: ['hall', 'study', 'guardroom', 'court', 'barracks'], anchor: 'floor', clearance: { front: 0.7, back: 0.7, left: 0.6, right: 0.6 },
-  materials: ['stone', 'hide', 'rope', 'ceramic', 'emissive'],
+  materials: ['stone', 'hide', 'rope', 'terracotta', 'emissive'],
   w: 1.8, d: 1.1, h: 0.95, variants: 1,
   build: function (F) {
     const t = F.col('tuff');
@@ -747,7 +747,7 @@ FURN({
     for (const p of [[-0.68, 0.35], [0.38, 0.38], [-0.62, -0.28]]) F.blob(p[0], 0.84, p[1], 0.05, 0.06, 0, F.col('basalt'), 'stone');
     F.cyl(0.7, 0.8, 0.35, 0.1, 0.05, 0, F.col('ropeHemp'), 'rope');
     ZJ_FX.flame(F, 0.7, 0.86, -0.4, 1.2, 0.4);
-    F.blob(0.7, 0.82, -0.42, 0.06, 0.05, 0, F.col('clay'), 'ceramic');
+    F.blob(0.7, 0.82, -0.42, 0.06, 0.05, 0, F.col('clay'), 'ceramic/terracotta');
   }
 });
 FURN({

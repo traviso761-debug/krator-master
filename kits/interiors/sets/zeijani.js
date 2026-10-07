@@ -361,6 +361,33 @@
     return { rooms: rooms, voids: voids };
   }
   const EB = estateB();
+  /* THE KIVA, sunk below a floor (the sheet's ground, or a temple's pit): a round room with a flat back wall (the altar's), a bench
+     terrace carved round it at bench height (a void room off the walk map), the roof hatch over the hearth with the ladder leaning
+     out of it (its walk strip from 5 cm outside the hatch's rim, where the floor stops, 3.6 m down in 1.55 m: as steep as a walker
+     climbs; a walker keeps to the higher floor across the overlap, so on a ladder it stays this small), the deflector and the
+     ventilator (a low tunnel to a shaft up to the floor above), the sipapu, and the great incense burner where Ranj is burned.
+     0.9 m of earth or rock over its dome. (cx, cz): the hatch; y0: the floor it is sunk in; wells: its hatch and vent open through
+     the sheet's ground (a kiva in a pit opens into the pit's air: no wells) */
+  function kivaPlan(cx, cz, y0, wells) {
+    const P = function (x, z) { return [cx + x, cz + z]; }, Y = y0 - 3.6;
+    const room = { id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16, cx, cz), y: Y, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
+      fixtures: [
+        fx('ladder', 'ladder', cx, cz + 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
+        fx('hearth', 'hearth', cx, cz + 1.5, 0.9, 0.9, { h: 0.3 }),
+        fx('deflector', 'deflector', cx, cz + 2.15, 1.2, 0.25, { h: 1.1 }),
+        fx('ventilator', 'ventilator', cx, cz + 2.6, 0.7, 0.45, { h: 1.4 }),
+        fx('burner', 'incense-burner', cx - 1.9, cz + 0.6, 1.1, 1.1, { h: 1.3 }),
+        fx('sipapu', 'sipapu', cx + 1.0, cz - 0.9, 0.3, 0.3, { h: 0.02 })] };
+    const voids = [
+      { kind: 'room', id: 'bench', poly: dee(3.4, 4.28, 18, cx, cz), y: y0 - 3.15, h: 1.7, ceil: 'dome', rise: 0.4, r: 0, finish: 'plaster', floor: false },
+      { kind: 'shaft', id: 'hatch', joins: ['kiva'], c: P(0, 0), y0: y0 - 1.6, y1: y0 + 0.6, r0: 0.9, r1: 0.9 },
+      { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [cx, Y + 0.2, cz + 2.6], b: [cx, Y + 0.2, cz + 3.9], w: 0.5, h: 0.6, floor: false },
+      { kind: 'shaft', id: 'vent', joins: ['kiva'], c: P(0, 3.9), y0: Y + 0.2, y1: y0 + 0.6, r0: 0.28, r1: 0.3 },
+      { kind: 'walk', id: 'ladder', a: [cx, y0, cz - 0.95], b: [cx, Y, cz + 0.6], w: 0.8 }];
+    if (wells) voids.push({ kind: 'well', id: 'hatch-top', c: P(0, 0), r: 0.9, rim: 0.3 }, { kind: 'well', id: 'vent-top', c: P(0, 3.9), r: 0.3, rim: 0.2 });
+    return { rooms: [room], voids: voids };
+  }
+  const KIVA = kivaPlan(0, 0, 0, true);
   /* THE TEMPLE, cut from one rock (Ellora's Kailasa; the board's temple_massing and temple-body): a gateway tunnel through the
      face into a pit cut down from the top of the rock; in the pit the rock left standing: a podium (its stair cut into its
      front), on it the sanctum's drum and four corner shrines, and two lamp pillars before it; the pit's side walls cut into
@@ -382,6 +409,10 @@
     rooms.push({ id: 'sanctum', kind: 'shrine', carved: true, poly: circle(5.0, 24, 0, -30), y: 6, h: 6.5, ceil: 'flat', finish: 'polished',
       doors: [{ at: [0, -25], w: 1.8, swing: 'none' }] });
     voids.push({ kind: 'stair', id: 'sanctum-door', joins: ['sanctum'], a: [0, 6, -23.0], b: [0, 6, -25.8], w: 1.8, h: 3.4 });
+    /* a kiva sunk in the pit's floor on its east side, between the podium and the cloister */
+    const K = kivaPlan(13.2, -28, 0, false);
+    K.rooms.forEach(function (r) { rooms.push(r); });
+    K.voids.forEach(function (v) { voids.push(v); });
     /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
     [-1, 1].forEach(function (s) {
       const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
@@ -392,7 +423,7 @@
       rooms.push(R);
     });
     /* the walk: the pit's floor less the podium and the lamp pillars; the terrace less the stair's slot and the drum; the podium's sides */
-    voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
+    voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12), rrect(12.3, 14.1, -28.9, -27.1), circle(0.45, 10, 13.2, -24.1)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
     voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -22.0), circle(6.25, 28, 0, -30)] });
     [[-9, -1.5, -16.3, -16], [1.5, 9, -16.3, -16], [-9, 9, -40, -39.7], [-9, -8.7, -40, -16], [8.7, 9, -40, -16]].forEach(function (b, i) { voids.push({ kind: 'block', id: 'podium-side' + i, box: [b[0], b[1], b[2], b[3], 0, 5.9] }); });
     return { rooms: rooms, voids: voids };
@@ -505,22 +536,7 @@
        deflector and the ventilator (a low tunnel to a shaft up to the ground), the sipapu, and the great incense burner where
        Ranj is burned. The roof is 0.9 m of earth over the dome */
     { key: 'zj_kiva', name: 'Kiva', carved: true, wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
-      rooms: [{ id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16), y: -3.6, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
-        fixtures: [
-          fx('ladder', 'ladder', 0, 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
-          fx('hearth', 'hearth', 0, 1.5, 0.9, 0.9, { h: 0.3 }),
-          fx('deflector', 'deflector', 0, 2.15, 1.2, 0.25, { h: 1.1 }),
-          fx('ventilator', 'ventilator', 0, 2.6, 0.7, 0.45, { h: 1.4 }),
-          fx('burner', 'incense-burner', -1.9, 0.6, 1.1, 1.1, { h: 1.3 }),
-          fx('sipapu', 'sipapu', 1.0, -0.9, 0.3, 0.3, { h: 0.02 })] }],
-      voids: [
-        { kind: 'room', id: 'bench', poly: dee(3.4, 4.28, 18), y: -3.15, h: 1.7, ceil: 'dome', rise: 0.4, r: 0, finish: 'plaster', floor: false },
-        { kind: 'shaft', id: 'hatch', joins: ['kiva'], c: [0, 0], y0: -1.6, y1: 0.6, r0: 0.9, r1: 0.9 },
-        { kind: 'well', id: 'hatch-top', c: [0, 0], r: 0.9, rim: 0.3 },
-        { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [0, -3.4, 2.6], b: [0, -3.4, 3.9], w: 0.5, h: 0.6, floor: false },
-        { kind: 'shaft', id: 'vent', joins: ['kiva'], c: [0, 3.9], y0: -3.4, y1: 0.6, r0: 0.28, r1: 0.3 },
-        { kind: 'well', id: 'vent-top', c: [0, 3.9], r: 0.3, rim: 0.2 },
-        { kind: 'walk', id: 'ladder', a: [0, 0, -0.95], b: [0, -3.6, 0.6], w: 0.8 }],
+      rooms: KIVA.rooms, voids: KIVA.voids,
       note: 'sunk 3.6 m in the ground under an earth roof; down the ladder through the hatch over the hearth; the bench terrace ' +
         'round the round wall, the altar against the flat back wall under the murals; the deflector, the ventilator, the sipapu, ' +
         'the great incense burner on the west side, where Ranj is burned' },

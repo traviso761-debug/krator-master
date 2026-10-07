@@ -33,7 +33,16 @@ function zjTagAdapter(base,rec){const roomTid={};
    if(ZJTAGS)ZJTAGS.child(parent,{'class':'furniture',kind:A?A.type:'piece',key:p.key,name:A?A.name:p.key,at:[p.x,p.y,p.z],ry:p.ry,
      tags:{culture:A&&A.culture||'zeijani',setting:'room',room:room?room.kind:null,job:A&&A.job||undefined},frag:'kits/catalog'});
    ZJF.interiorPieces++;return base.build(p,room);}});}
-function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it=zjItem(rec.key);if(!it)continue;
+/* a carved room is furnished in its outline drawn in 0.25 m: the cavern's walls round its corners and bulge at the floor (the fillet,
+   a cell's wander), so a piece set against the straight outline would stand in the rock */
+const ZJ_FURNITEM={};
+function zjFurnishItem(it){if(ZJ_FURNITEM[it.key])return ZJ_FURNITEM[it.key];const cv=r=>r.carved===true||(it.carved&&r.carved!==false);
+ if(!(it.rooms||[]).some(cv))return ZJ_FURNITEM[it.key]=it;
+ /* each door moves to the nearest point of the inset outline (a door must lie within 0.6 m of a wall) */
+ const near=(P,q)=>{let b=null,bd=1e9;for(let i=0;i<P.length;i++){const a=P[i],c=P[(i+1)%P.length],dx=c[0]-a[0],dz=c[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/L2)),x=a[0]+dx*t,z=a[1]+dz*t,d=(x-q[0])**2+(z-q[1])**2;if(d<bd){bd=d;b=[x,z];}}return b;};
+ return ZJ_FURNITEM[it.key]=Object.assign({},it,{rooms:it.rooms.map(r=>{if(!cv(r))return r;const P=KCAVERN.insetPoly(r.poly,.25);
+  return Object.assign({},r,{poly:P,doors:(r.doors||[]).map(d=>Object.assign({},d,{at:near(P,d.at)}))});})});}
+function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it0=zjItem(rec.key);if(!it0)continue;const it=zjFurnishItem(it0);
   try{const fi=ZJF.interior(it,rec.x,rec.z,rec.ry,zjTagAdapter(ZJF.adapter,rec),{baseY:rec.y,prefix:(rec.tid||rec.key)+'.'});rec.interior=fi.summary;
    fi.result.inst.rooms.forEach(R=>{const P=fi.result.plans[R.id];(P&&P.lights||[]).forEach(l=>{const k=Math.round(l.x/.6)+','+Math.round(l.y/.6)+','+Math.round(l.z/.6);
     if(!HALOKEY.has(k)){HALOKEY.add(k);const c=hc(0xffc878);HALOS.push({x:l.x,y:l.y,z:l.z,r:c.r,g:c.g,b:c.b,big:false});}});});}
@@ -64,11 +73,33 @@ function svfDetail(mt){const tf=mt.userData.texFamily,Lt=KMAT.mode==='lib'&&tf?K
     'vec4 texelColor=texture2D(map,dP.zy)*dW.x+texture2D(map,dP.xz)*dW.y+texture2D(map,dP.xy)*dW.z;texelColor=mapTexelToLinear(texelColor);',
     'diffuseColor.rgb*=texelColor.rgb*uDetGain;','#endif'].join('\n'));});
  return true;}
+/* a painted hanging (F.decal: its own canvas map) gets the cloth's weave from the library (f_cloth), projected in world space as
+   the detail maps are, so a banner reads as cloth and not paint on glass */
+function svfWeave(mt){const L=KMAT.mode==='lib'?KMAT.packed('zeijani','f_cloth'):null;if(!L||!L.map||mt.userData.weave)return;mt.userData.weave=true;
+ const T=KMAT.textures(L,{aniso:TEXANISO}),gain=1/Math.max(.05,Math.pow(L.mean==null?.5:L.mean,2.2)),tile=1/((L.scale&&L.scale[0])||1);
+ matHook(mt,'weave',sh=>{sh.uniforms.uWv={value:T.map};sh.uniforms.uWvT={value:tile};sh.uniforms.uWvG={value:gain};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWvP;varying vec3 vWvN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvWvP=(modelMatrix*vec4(transformed,1.)).xyz;vWvN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWvP;varying vec3 vWvN;uniform sampler2D uWv;uniform float uWvT;uniform float uWvG;')
+   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 w=pow(abs(normalize(vWvN))+1e-4,vec3(4.));w/=(w.x+w.y+w.z);vec3 p=vWvP*uWvT;vec3 t=texture2D(uWv,p.zy).rgb*w.x+texture2D(uWv,p.xz).rgb*w.y+texture2D(uWv,p.xy).rgb*w.z;diffuseColor.rgb*=mix(vec3(1.),mapTexelToLinear(vec4(t,1.)).rgb*uWvG,.8);}');});}
+/* contact shadows: underground the sun casts none, so a piece on a carved floor reads as floating. A soft dark patch under every
+   piece that stands on a floor (not on a surface, a wall or the ceiling; not a rug or a hanging), one merged mesh */
+let ZJ_SHTEX=null;
+function zjContactShadows(parent){if(!ZJ_SHTEX){ZJ_SHTEX=canvasTex(64,64,(g,w,h)=>{const r=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);r.addColorStop(0,'rgba(0,0,0,.62)');r.addColorStop(.55,'rgba(0,0,0,.4)');r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,w,h);});ZJ_SHTEX.wrapS=ZJ_SHTEX.wrapT=THREE.ClampToEdgeWrapping;}
+ let q=ZJTAGS.query({});q=Array.isArray(q)?q:Object.values(q);const pos=[],uv=[],F=KratorFurniture.FURN_BY_KEY;
+ for(const r of q){if(r.class!=='furniture'||!r.at)continue;const A=F[r.key];if(!A)continue;const an=A.anchor||'floor',t=A.type;
+  if(an==='surface'||an==='ceiling'||t==='rug'||t==='banner'||t==='art'||t==='lamp'&&an==='wall')continue;
+  const dm=KratorFurniture.entryDims(A,0),hw=dm.w/2+.16,hd=dm.d/2+.16,c=Math.cos(r.ry||0),s=Math.sin(r.ry||0),y=r.at[1]+.012;
+  const P=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(([x,z])=>[r.at[0]+x*c+z*s,y,r.at[2]-x*s+z*c]);
+  for(const k of [0,1,2,0,2,3]){pos.push(...P[k]);uv.push(k===0||k===3?0:1,k<2?0:1);}}
+ if(!pos.length)return;const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:ZJ_SHTEX,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,side:THREE.DoubleSide}));
+ m.userData.probeSkip=true;m.raycast=()=>{};m.renderOrder=1;parent.add(m);ZJF.shadowPatches=pos.length/18;}
 // ---- the batch becomes meshes once per world build, after every def is placed
 const svfBuildWorld=buildWorld;
 buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();zjInteriors();
  const g=ZJF.group=ZJF.batch.flush(WORLD);g.userData.furniture=true;
- ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);}});
+ ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);else if(m.material.map&&m.name==='furniture:decal')svfWeave(m.material);}});
+ zjContactShadows(g);
  if(window._build)window._build.furniture={placed:ZJF.placed.length,interiorPieces:ZJF.interiorPieces,rooms:ZJF.rooms.length,tris:Math.round(ZJF.batch.tris),missing:Object.assign({},ZJF.missing),ms:Math.round(performance.now()-t0)};
  if(typeof nightRebuild==='function')nightRebuild();
  return W0;};

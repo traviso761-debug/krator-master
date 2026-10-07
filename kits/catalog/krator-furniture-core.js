@@ -424,6 +424,7 @@ const CATALOG_MATERIALS = {
   bronze:    { tags: ['metal'], families: ['bronze'] },
   lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
   ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  terracotta: { tags: ['stone'], families: ['terracotta'] },   /* unglazed fired clay: matte (ceramic is glazed); textured as ceramic ('ceramic/terracotta') */
   obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
   jade:      { tags: ['stone'], families: ['jade'] },
   bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },

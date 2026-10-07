@@ -1165,6 +1165,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const out = [];
       for (const H of placed) {
         if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.P.desc && H.P.desc.surface === false) continue;   /* no flat top (a jar, a vat, a basket): nothing is set on it */
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
           out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
@@ -1276,7 +1277,11 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
             });
             if (list.length && (Q = attempt(list, null))) break;
           }
-          if (Q) { counts[gi]++; added++; } else dead[gi] = true;
+          if (Q) {
+            counts[gi]++; added++;
+            /* a desk is used from a chair: one is tried at once (a seat stands at a placed desk, IX.ROLES) */
+            if (Q.P.type === 'desk') for (const lv of own) { const chairs = lv.list.filter(function (d) { return d.type === 'chair'; }); if (chairs.length && attempt(chairs, null)) break; }
+          } else dead[gi] = true;
         }
         if (!any) break;
       }

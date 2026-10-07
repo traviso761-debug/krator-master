@@ -16,7 +16,10 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
   FURNISH('zeijani_stone_bench',-4.2,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',3.6,0,.55,0,{v:1,setting:'outdoor'});}});
 
 /* gallery B, the well: the stair is drawn here from the item's `well` (its walk strips are the item's `walk` entries) */
-function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/2)/(PI/16));
+function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/2)/(PI/16)),ri=W.rs-W.w/2;
+ /* the head landing where the tunnel meets the well: its floor either side of the mouth, a parapet round its inner edge and across its open end */
+ sector('tuffHewn',W.c[0],W.c[1],ri-.05,W.r+.05,PI/2-.42,PI/2+.02,-.32,0,c,4);sector('tuffHewn',W.c[0],W.c[1],ri-.22,ri-.05,PI/2-.42,PI/2+.02,-.32,.78,c,4);
+ sector('tuffHewn',W.c[0],W.c[1],ri-.22,W.r+.05,PI/2-.46,PI/2-.42,-.32,.78,c,1);
  for(let i=0;i<n;i++){const a0=PI/2+(A1-PI/2)*i/n,a1=PI/2+(A1-PI/2)*(i+1)/n,y=W.y0-W.drop*((a0+a1)/2-PI/2)/PI;
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.05,W.r+.05,a0,a1,y-.32,y,c,2);
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.22,W.rs-W.w/2-.05,a0,a1,y-.32,y+.78,c,2);}}
