@@ -1,7 +1,7 @@
 // ================================================================= HOST — build (the isle)
 // The isle's layout came first (86: the cones, the snags, the camp, the canoes, each an obstacle). Then the Throne kit
 // alone (an island's forest is its own smaller one: no hyperjungle here), with its shallows pass (the kelp, the wrack, the
-// lagoon's hyper-mangroves); then the camp's tapping on the spice trees it grew; then one bake.
+// lagoon's hyper-mangroves); then the camp's tapping on the Ranj trees it grew; then one bake.
 window._biome=null;
 (function(){
  const t0=performance.now();

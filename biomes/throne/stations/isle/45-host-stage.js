@@ -1,6 +1,6 @@
 // ================================================================= HOST — stage (station 4: the geyser isle)
 // The ideal-type host for one of THE THRONE's inner isles (NOTES.md, "Volcanic features": the geysers are on the isles;
-// "the spice": wild spice bears reliably on the isles' geyser ground). The scale model's isles are 20-35 km domes; this
+// "the spice: Ranj": wild Ranj bears reliably on the isles' geyser ground). The scale model's isles are 20-35 km domes; this
 // is one of the small ones, ~4 km across, so the whole isle and its shores fit the page (the owner: "we're gonna be on the
 // beach"). Renderer, lights, haze, the isle's shape and the basin's layout as DATA; 47 cuts the land and binds the kit.
 //
@@ -8,7 +8,7 @@
 // mountain stands on the eastern horizon, 4 degrees up). The wind is from the north-west.
 //   THE CROWN    the geyser basin in a shallow hollow on the crown: two geysers, the banded hot springs, the mud pots, the
 //                fumaroles along the rift that feeds it, white sinter flats; the drowned trees at its edge
-//   THE GROVE    the warm ground round the basin, where the spice's fungus takes: wild spice, the natives' resin camp
+//   THE GROVE    the warm ground round the basin, where Ranj's fungus takes: wild Ranj, the natives' resin camp
 //   THE WOODS    an island's smaller forest down the slopes, cut by gullies with streams
 //   THE SHORES   black-sand beaches under coconut palms (south and west), sea cliffs on the windward north-west, the warm
 //                lagoon in the lee (south-east) where the basin's creek comes out, with the hyper-mangroves

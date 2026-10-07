@@ -26,7 +26,7 @@
 - [ ] **No fauna.** The ember urchins (ref 14), the rats and roaches, the sky rays on the plume's thermals: the fauna kit.
 - [ ] **The ash field is unused.** The kit reads `ash` but zones nothing by it; ash dunes are only painted.
 - [ ] **No life layer.** The natives, the colonists' plantations, Zey'danin: none yet.
-- [ ] **Lore not in LORE.md.** The breathable heights, the spice, the Chichani's origin and Zey'danin's founding are in
+- [ ] **Lore not in LORE.md.** The breathable heights, Ranj (the spice), the Chichani's origin and Zey'danin's founding are in
   `NOTES.md`; LORE.md had an unresolved merge in the main checkout when this was written.
 - [x] **Station 2's floor needs stochastic dithering** (the owner, 2026-10-06): done the same day. The kit's
   `THRONE.GLSL_LAY` (70) reads each library ground layer through virtual tiles with random offsets (stochastic tiling);

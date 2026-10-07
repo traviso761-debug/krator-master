@@ -35,15 +35,15 @@ const HCHK={
  // nothing grows in a spring, or on a geyser's cone
  springs(P){const bad=P.filter(p=>!WET_ITEMS.test(p[3])&&(POOLS.some(S=>Math.hypot(p[0]-S.x,p[2]-S.z)<S.r*.95)||Math.hypot(p[0]-GEYSERS[0].x,p[2]-GEYSERS[0].z)<GEYSERS[0].cone*1.2));
   return{ok:!bad.length,detail:bad.length?bad.length+' instances in a spring or on the cone (first '+bad[0][3]+')':'the springs and the cone are bare'};},
- // the wild spice bears on the warm ground: most of the near spice trees there have resin drops in their crowns
+ // the wild Ranj bears on the warm ground: most of the near Ranj trees there have resin drops in their crowns
  spice(T,resin){const sp=SPK('spice'),W=T.filter(t=>t.sp===sp&&t.lv===2&&!t.planted&&FIELD.grove(t.x,t.z)>.4),bearing=W.filter(t=>resin.some(p=>Math.hypot(p[0]-t.x,p[2]-t.z)<t.crownR+1.5));
-  return{ok:W.length>=8&&bearing.length>=W.length*.6,detail:bearing.length+' of '+W.length+' near wild spice trees on the warm ground bear resin'};},
+  return{ok:W.length>=8&&bearing.length>=W.length*.6,detail:bearing.length+' of '+W.length+' near wild Ranj trees on the warm ground bear resin'};},
  // the coconut palm names its catalog fruit, and its nuts are drawn
  coconut(SP,P){const S=SP.find(s=>s.key==='coconut'),n=P.filter(p=>p[3]==='biome:coconut').length;const ok=!!S&&S.tags.harvest&&S.tags.harvest.fruit==='generic_fruit_coconut'&&n>=40;
   return{ok,detail:(S&&S.tags.harvest&&S.tags.harvest.fruit?'catalog '+S.tags.harvest.fruit:'no catalog fruit')+'; '+n+' coconuts drawn'};},
- // the camp is the natives', and what it taps is spice
+ // the camp is the natives', and what it taps is Ranj trees
  camp(C,tapped,T){const sp=SPK('spice'),bad=tapped.filter(r=>!T.some(t=>t.sp===sp&&Math.hypot(t.x-r.x,t.z-r.z)<.5));
-  return{ok:C.culture==='throne-natives'&&C.shelters.length>=3&&tapped.length>=4&&!bad.length,detail:(bad.length?bad.length+' tapped trees that are not spice; ':'')+C.shelters.length+' shelters, '+tapped.length+' spice trees tapped, '+C.pots+' pots'};},
+  return{ok:C.culture==='throne-natives'&&C.shelters.length>=3&&tapped.length>=4&&!bad.length,detail:(bad.length?bad.length+' tapped trees that are not Ranj trees; ':'')+C.shelters.length+' shelters, '+tapped.length+' Ranj trees tapped, '+C.pots+' pots'};},
  // kelp only under the water, 3-15 m down at its foot
  kelp(P){const K=P.filter(p=>/^biome:kelp\d$/.test(p[3])),bad=K.filter(p=>{const w=waterH(p[0],p[2]);return w<-1e8||w-p[1]<2.5||w-p[1]>16;});
   return{ok:K.length>=200&&!bad.length,detail:bad.length?bad.length+' kelp out of its depth':K.length+' kelp cards, all 3-15 m down'};},
@@ -68,9 +68,9 @@ const resinPts=P=>P.filter(p=>p[3]==='biome:resin');
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the geysers keep their schedules, on the sinter',HCHK.geysers(GEYSERS));
  add('nothing grows in a spring or on the cone',HCHK.springs(P));
- add('the wild spice bears resin on the warm ground',HCHK.spice(THRONE.TREES,resinPts(P)));
+ add('the wild Ranj bears resin on the warm ground',HCHK.spice(THRONE.TREES,resinPts(P)));
  add('the coconut palm bears its catalog fruit',HCHK.coconut(THRONE.SPECIES,P));
- add('the camp is the natives\', and it taps spice',HCHK.camp(ISLE.camp,ISLE.tapped,THRONE.TREES));
+ add('the camp is the natives\', and it taps Ranj trees',HCHK.camp(ISLE.camp,ISLE.tapped,THRONE.TREES));
  add('the kelp stands 3-15 m down',HCHK.kelp(P));
  add('the hyper-mangroves stand in the lagoon',HCHK.mangroves(THRONE.TREES));
  add('nothing grows on the trail',HCHK.paths(THRONE.TREES));
@@ -82,9 +82,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});const P=instPoints(),sp=SPK('spice');
  add('a geyser in the forest',HCHK.geysers(GEYSERS.concat([Object.assign({},GEYSERS[0],{x:DOME.cx+isleR(0)*.7,z:DOME.cz})])));
  add('a plant in the Prismatic Spring',HCHK.springs([[POOLS[0].x,POOLL[0],POOLS[0].z,'biome:fern']]));
- add('wild spice with no resin',HCHK.spice(THRONE.TREES,[]));
+ add('wild Ranj with no resin',HCHK.spice(THRONE.TREES,[]));
  add('a coconut palm with no catalog fruit',HCHK.coconut(THRONE.SPECIES.map(S=>S.key==='coconut'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
- {const c=THRONE.TREES.find(t=>t.sp!==sp)||{x:0,z:0};add('a tapped tree that is not spice',HCHK.camp(ISLE.camp,ISLE.tapped.concat([{x:c.x,z:c.z}]),THRONE.TREES));}
+ {const c=THRONE.TREES.find(t=>t.sp!==sp)||{x:0,z:0};add('a tapped tree that is not a Ranj tree',HCHK.camp(ISLE.camp,ISLE.tapped.concat([{x:c.x,z:c.z}]),THRONE.TREES));}
  add('kelp on the beach',HCHK.kelp(P.concat([[LANDING.x,terrainH(LANDING.x,LANDING.z),LANDING.z,'biome:kelp0']])));
  add('a mangrove on the crown',HCHK.mangroves(THRONE.TREES.concat([{sp:SPK('mangrove'),x:BASIN.x,z:BASIN.z}])));
  {const C=THRONE.SPECIES.map(()=>1);C[SPK('coconut')]=0;add('a species of the isle never placed',HCHK.placed(C));}

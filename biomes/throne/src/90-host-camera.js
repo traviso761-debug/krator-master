@@ -29,7 +29,7 @@ const VIEWS={
  'The acid lake':(function(){const x=PIT.x+DN[0]*PIT.r*1.35+PERP[0]*PIT.r*.3,z=PIT.z+DN[1]*PIT.r*1.35+PERP[1]*PIT.r*.3;return[x,gh(x,z,22),z,PIT.x-DN[0]*PIT.r*.2,PIT.lake,PIT.z-DN[1]*PIT.r*.2];})(),
  'The hot pools':[POOLS[0].x-40,POOLL[0]+9,POOLS[0].z-30,POOLS[1].x,POOLL[1]+1,POOLS[1].z],
  'Bone bells in the steam':atTree(nearTree('bonebell',NC.x,NC.z),30,2.6,4,.5),
- 'A wild spice tree':atTree(nearTree('spice',s0,0,9),11,2.2,2.5,.45),
+ 'A wild Ranj tree':atTree(nearTree('spice',s0,0,9),11,2.2,2.5,.45),
  'Gill-parasols on the seam':atTree(nearTree('gillparasol',s0,200,14),40,3.0,4,.6),
  'Under the plume: pagoda caps':atTree(nearTree('pagoda',1700,300,14),38,2.8,3,.55),
  'Drizzle trumpets':atTree(nearTree('drizzle',1500,600),16,2.4,2.5,.6),

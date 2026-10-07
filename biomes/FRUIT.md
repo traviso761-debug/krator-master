@@ -191,7 +191,7 @@ The bay laurel's berries, the skirt palm's fruit and the oaks' acorns are not dr
 |---|---|---|---|
 | Coconut | `coconut` (the bunches under the crown, and the nuts fallen at its foot: drawn, `55` B[20]) | Earth's coconut, on every shore of the Ring Sea; on the geyser isle (station 4) it leans out over the black sand. Picked green for its water, or husked, split and the white meat eaten or dried. | `generic_fruit_coconut` |
 
-The spice tree's resin is not food (NOTES.md: a medicine and a stimulant) and has no entry. The hyper-mangrove's
+The Ranj tree's resin (Ranj, the spice) is not food (NOTES.md: a medicine and a stimulant) and has no entry. The hyper-mangrove's
 boiled propagules and the palm frill tree's bitter bud are famine food, not drawn as fruit.
 
 ## Xanadu

@@ -14,11 +14,11 @@ The scale model's biome region is 'Throne/Volcano' (about 150 to 190 km out from
   least as alien as the Rift. Krator's familiar species (frill-trees, trumpet trees) appear on the way. Beyond a point
   little of the life is familiar from Earth, or is even plant life. Perhaps killer slime molds.
 - **Down there it is an alien world.** Only the hardiest Earth life holds on: rats, roaches and lichen are everywhere.
-- **Zey'danin faces Voth, on the south-west.** That side is the bleeding edge: Vothic colonists try to establish spice
+- **Zey'danin faces Voth, on the south-west.** That side is the bleeding edge: Vothic colonists try to establish Ranj
   plantations, and the natives fight back with poison-tipped arrows.
 - **People.** Voth is gaining on the disunited Hykkousoi colonies and has taken Zey'danin. The natives hate both and
   want them gone. Some tribes are related to the Ring Sea Islanders; there are stranger tribes on the mountain too.
-- **The spice tree is symbiotic with a fungus that thrives only in limited and frustratingly enigmatic conditions**
+- **The spice tree (its spice is **Ranj**) is symbiotic with a fungus that thrives only in limited and frustratingly enigmatic conditions**
   (the owner, 2026-10-06, replacing "only on the Throne and the inner isles": there is a canonical **Spice Coast**
   farther away). The Throne's vent country is the richest and surest ground for it, which is why Voth and the Hykkousoi
   fight over the mountain; but it is not the only place. It is **psychoactive, a stimulant extract or resin**, perhaps fond of acid
@@ -108,7 +108,8 @@ under a volcano, and a colonial company that took them by force (1621).
 **The poison.** The natives' arrow poison could come from the lee: the slime mat, the acid-marsh rosettes. The alien
 side is their armoury and their refuge, where colonists cannot follow.
 
-**The spice.** Canon (the owner, 2026-10-06): the tree is **symbiotic with a certain fungus that thrives only in limited
+**The spice: Ranj.** Canon (the owner, 2026-10-06; the name 2026-10-07): the spice is called **Ranj**, and its tree the
+**Ranj tree**. The tree is **symbiotic with a certain fungus that thrives only in limited
 and frustratingly enigmatic conditions**. Where the fungus takes, the tree bears; where it does not, the tree grows and
 bears nothing, and nobody can say why. The Throne is the best-known ground for it, not the only one: there is a
 canonical **Spice Coast** farther away. It is one particular spice, apart from the cacao and other spices of Xanadu. A candidate, built on two real resins:
@@ -131,8 +132,8 @@ canonical **Spice Coast** farther away. It is one particular spice, apart from t
   That drives the raids, and the arrows.
 - **One tree, two uses (a candidate):** the same tree's sap, prepared another way, is the natives' arrow poison.
 
-**A hook for Tzintzun**, who does not seem to age: the rumour that it is the spice. The Monks of History suspect the
-life-transfer devices (LORE.md §6.12). The spice is the cover story, or part of the truth.
+**A hook for Tzintzun**, who does not seem to age: the rumour that it is Ranj. The Monks of History suspect the
+life-transfer devices (LORE.md §6.12). Ranj is the cover story, or part of the truth.
 
 ## Around the mountain
 
@@ -200,7 +201,7 @@ shoulder at ~1.9 km. A rift radial to the summit with five vents (the old wooded
 the pit crater with its acid lake, the steaming two-year cone, the Lower cone), eight lava flows from 2 to 5,200 years old
 laid by the kit's flow model, a lava tube with skylights, two gullies, hot pools, fumaroles. The plume's edge crosses the
 map from north to south: ash pines, frill-trees, trumpet trees and star aloes in the west; gill-parasols, stilt parasols
-and the wild spice trees on the seam; pagoda caps, drizzle trumpets, rope-trees and lamp caps under the plume; bone bells
+and the wild Ranj trees on the seam; pagoda caps, drizzle trumpets, rope-trees and lamp caps under the plume; bone bells
 in the steam. Day and night (N): at night Krator's own life glows. The owner's 32 textures of the same day are in the
 library and the kit (`core/materials/PLAN.md`, The Throne).
 
@@ -220,7 +221,7 @@ ground and sink where a flow has buried their beds.
 the wet south-west shore at Zey'danin. The scale model's cells cannot hold a harbour, and the lore makes Zey'danin a port,
 so its **footprint** (kept empty for a settlement build) stands on a spur over a **harbour bay**; two **lahar valleys**
 flank the spur, a **basalt headland** where an old flow met the sea, black and olivine sand. Above the city the colonists'
-**terraced spice plantations** are cut out of the hyperjungle: rows of planted spice trees, thin and yellowing, that bear
+**terraced Ranj plantations** are cut out of the hyperjungle: rows of planted Ranj trees, thin and yellowing, that bear
 **no resin** (the fungus has not taken in them: the plantations fail, NOTES above), stone-faced terrace risers, a cart **road**
 up the spur, two **fresh clearings** of burnt slash and sawn hypertree stumps. The natives' **foot trails** come out of the
 forest to the fields' edges, where they set **snares** and **punji pits** (records: `FRONTIER.traps`, culture
@@ -235,8 +236,8 @@ feeds it: the **Great Geyser** (a cone geyser, 38 m every 75 s) and **the Founta
 **hot springs** banded by temperature (deep blue where they boil, the mats reaching in where they cool: green, yellow,
 orange; one milky with acid), **mud pots**, **fumaroles** along the rift on out under the forest, white **sinter** with the
 runoff's orange mats and low terraces, and the **drowned trees** at its edge, bleached white to where the silica climbed
-them. Round it the **warm ground**, where the spice's fungus takes and the wild spice bears; the natives' **resin camp**
-(lean-tos, a hearth, resin cakes curing on a rack, the nearest spice trees tapped into gourds: `ISLE`, culture
+them. Round it the **warm ground**, where Ranj's fungus takes and the wild Ranj trees bear; the natives' **resin camp**
+(lean-tos, a hearth, resin cakes curing on a rack, the nearest Ranj trees tapped into gourds: `ISLE`, culture
 `throne-natives`), their **canoes** at the landing on the west beach, a trail between. Down the slopes **an island's
 forest**, smaller than the flank's: lehua over tree ferns, palm frill trees; gullies with streams, one falling over the
 **sea cliffs** on the windward north-west. **Black-sand beaches** under **coconut palms** (the owner: an actual coconut,
@@ -417,7 +418,7 @@ They know the lava tunnels better than anyone, so their scouts and raiding parti
 **3. The islanders** live on the coasts and the isles and make their living on the water (station 4): fishing, kelp and
 seaweed, the coconut and its coir, the reef. Some are related to the Ring Sea Islanders (the brief); they are not kin to the other two. The board's *islander port*
 (`kits/zeijani/refs/islander port.jpg`) is theirs: platforms and sail-roofed halls over the water. They trade between
-the mountain and the sea, and know the spice's wild groves on the isles' geyser ground; their canoes land on the beaches.
+the mountain and the sea, and know Ranj's wild groves on the isles' geyser ground; their canoes land on the beaches.
 
 *Next (the owner's):* a kit for the Zeijani first: their carved architecture in tuff and tube, then a settlement and a
 station for it (a tuff valley with a carved city, a tube opening in its cliff, a cavern deep inside).
@@ -434,7 +435,7 @@ after Raufarhólshellir (the owner's photographs).
   the crater in the Cataclysm, and have always had a prophecy of their return. Then Voth's war for the Throne is a homecoming in its own eyes, and the natives it fights
   are its cousins, the ones who stayed. Tzintzun's expansion "to the North" would be fulfilling the prophecy, which
   suits a ruler who claims the Sun's favour.
-- **The spice**: its name, and whether the candidate above (a wound resin made with a native fungus) holds.
+- **The spice**: named **Ranj** (the owner, 2026-10-07); still open: whether the candidate above (a wound resin made with a native fungus) holds.
 - **Zey'danin's founding.** The owner: founded by natives, passed back and forth for centuries. LORE.md §6.12 says
   Tzintzun founded Zey-Danin; that line becomes "refounded" (Voth's newest claim on an old city). The name and its
   spelling (Zey-Danin, Zey'danin) are not settled. A layered city: a native core, a Hykkousoi harbour, a Vothic fort.

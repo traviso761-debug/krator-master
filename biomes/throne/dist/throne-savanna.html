@@ -1364,7 +1364,7 @@ BIO.setSun(SUN_POS);
 // ================================================================= THE THRONE — species (data + kit items)
 // The volcano at the crater's centre (biomes/throne/NOTES.md). This first station is its south-east shoulder at the
 // plume's edge: the shoulder's familiar life (Earth's descendants and Krator's standbys: ash pines, ruff trees,
-// trumpet trees, star aloes, the spice tree) gives way, under the plume, to KRATOR'S OWN LIFE: fungiform, often
+// trumpet trees, star aloes, the Ranj tree) gives way, under the plume, to KRATOR'S OWN LIFE: fungiform, often
 // glowing, living on the vents and the plume's acid drizzle as much as on the light (the owner, 2026-10-06: "an alien
 // world down there except the hardiest of Earth life"). Everything here is DATA and kit definitions; no placement.
 // Tags follow the project rule (climate / aridity / abyssal / riparian / Koppen) plus `origin` (earth: Earth's
@@ -1435,7 +1435,7 @@ const PAL=THRONE.PAL={
 // ry of H, colour A, colour B, options]); alien: Krator's own life (drawn from the plume's palette).
 const K=(c,a,r,kp,origin,plume)=>({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp,origin,plume});
 THRONE.SPECIES=[
- /*0*/{key:'spice',name:'Spice tree',H:[8,15],rb:[.22,.4],crownR:[3.2,5.2],barkK:10,bark:PAL.spiceBark,leaf:PAL.spiceLeaf,
+ /*0*/{key:'spice',name:'Ranj tree',H:[8,15],rb:[.22,.4],crownR:[3.2,5.2],barkK:10,bark:PAL.spiceBark,leaf:PAL.spiceLeaf,
   far:{poleU:.4,blobs:[[.66,1.0,.32,'L0','L2']]},tags:K('temperate','semiarid','no',['BSk','Csa'],'earth','seam')},
  /*1*/{key:'trumpet',name:'Trumpet tree',H:[9,18],rb:[.25,.45],crownR:[3,5],barkK:0,bark:PAL.trumpetBark,leaf:PAL.trumpet,
   far:{poleU:.55,blobs:[[.8,.9,.2,'L0','L1']]},tags:K('temperate','subhumid','both',['Csa','Csb','BSk'],'krator','shoulder')},
@@ -1499,7 +1499,7 @@ THRONE.byKey={};THRONE.SPECIES.forEach((S,i)=>{S.i=i;THRONE.byKey[S.key]=S;});
 // ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 THRONE.HARVEST={
- spice:HV('none',['bark (chewed: a stimulant)'],true,'THE SPICE (NOTES.md): symbiotic with a fungus that thrives only in limited and enigmatic conditions; where the fungus has got into a wound the tree bleeds a red resin that seals and regrows it. In people it closes wounds and knits bone in days; too much and the body heals too much. The Throne\'s vent country is its surest ground; the Spice Coast farther away is another.'),
+ spice:HV('none',['bark (chewed: a stimulant)'],true,'RANJ, THE SPICE (NOTES.md): symbiotic with a fungus that thrives only in limited and enigmatic conditions; where the fungus has got into a wound the tree bleeds a red resin that seals and regrows it. In people it closes wounds and knits bone in days; too much and the body heals too much. The Throne\'s vent country is its surest ground; the Spice Coast farther away is another.'),
  trumpet:HV('fuel',['funnel water'],false,'The funnels hold rain; the plume\'s drizzle makes it sour.'),
  ruff:HV('fuel',['roasted seed'],false,'Its collars of spiked fronds burst in the heat of a flow and throw their seed over the fresh lava.'),
  gillparasol:HV('none',['young caps (cooked)'],false,'Edible young, bitter old. The pale wood is light and rots fast.'),
@@ -1589,7 +1589,7 @@ TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,8,.55);
  for(let i=0;i<70;i++){const p=BIO.tex.clPt(S,.09,.62),lum=lerp(105,232,i/70)+rr(-18,18),n=ri(14,22),a0=rr(0,TAU);
   for(let k=0;k<n;k++){const a=a0+k/n*TAU*.8+rr(-.12,.12),L=rr(40,70);g.strokeStyle=G2(lum*rr(.85,1.08));g.lineWidth=rr(1.4,2.4);
    g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}}},[120,120,120]);
-/* glossy leaves in dense clusters (the spice tree: clove-like) */
+/* glossy leaves in dense clusters (the Ranj tree: clove-like) */
 TX.glossy=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,10,.62);
  for(let i=0;i<150;i++){const c=BIO.tex.clPt(S,.11,.88),lum=lerp(100,235,i/150);
   for(let k=0;k<3;k++)BIO.tex.leaf(g,c[0],c[1],rr(30,48),rr(9,13),rr(0,TAU),lum+rr(-20,15),true);
@@ -1673,7 +1673,7 @@ THRONE.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
   for(let i=0;i<500;i++){g.fillStyle='rgba('+(rng()<.7?'110,110,110':'240,240,240')+',.35)';g.beginPath();g.arc(rng()*w,rng()*h,rr(1,3.2),0,TAU);g.fill();}
   for(let k=0;k<30;k++){const x=rng()*w;g.strokeStyle='rgba(120,120,120,.25)';g.lineWidth=rr(1,3);g.beginPath();g.moveTo(x,0);g.lineTo(x+rr(-10,10),h);g.stroke();}}
 });};
-THRONE.BARKTEX=[0,1,2,3,4,5,6,7,8,9,2,0].map(k=>THRONE.barkTex(k));   // 10: the spice tree's (pale smooth), 11: the frill tree's column (furrowed), procedurally
+THRONE.BARKTEX=[0,1,2,3,4,5,6,7,8,9,2,0].map(k=>THRONE.barkTex(k));   // 10: the Ranj tree's (pale smooth), 11: the frill tree's column (furrowed), procedurally
 THRONE.WOODTEX=THRONE.BARKTEX[4];
 // basalt: a dark fine grain with vesicles (the boulders, the spatter, the stones)
 THRONE.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -1774,7 +1774,7 @@ G.bracket=()=>L([[0,.05,.5],[.25,.35,.8],[.5,.75,1.0],[.6,1.0,1.15],[.55,1.05,.7
 G.lamp=()=>L([[-.12,.05,.6],[-.08,.5,.8],[0,.95,1.0],[.06,1.0,1.05],[.08,.6,.95],[.09,0,.9]],24,{wavN:6,wavA:.05});
 // a SCALE CONE (ref 18): a tall pink finger, scaled
 G.scalecone=()=>L([[0,.42,.7],[.15,.5,.85],[.4,.48,.95],[.65,.4,1.0],[.85,.26,1.05],[.97,.1,1.1],[1,0,1.1]],12,{checker:true});
-// RESIN: a drip, a teardrop hanging from a wound (the spice)
+// RESIN: a drip, a teardrop hanging from a wound (Ranj, the spice)
 G.resin=()=>L([[-1,0,.7],[-.7,.35,.8],[-.2,.5,1.0],[.3,.35,1.1],[.7,.15,1.15],[1,0,1.2]],8,{});
 // the RUFF POD (the ruff tree's collar without the library: a ruffled cup flaring from a stalk)
 G.frill=function(){const pos=[],nor=[],uv=[],col=[];const seg=20,rings=[[0,.12,.06],[.35,.25,.42],[.7,.32,.78],[1,.36,1.0]];
@@ -1945,7 +1945,7 @@ THRONE.setNight=function(k){k=clamp(+k||0,0,1);THRONE._night=k;
 const LIBBARK={0:'bark.charred',1:'bark.charcoal',3:'bark.armored',6:'bark.palm',7:'bark.mangrove',8:'bark.twisted',10:'bark.honeycomb',11:'bark.frillcol'};
 THRONE.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;THRONE.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
-['Furrowed bark','Plated bark','Pale bark','Scaly bark','Deadwood','Banded','Palm rings (the palm frill tree)','Mangrove bark','Rope strands','Fungal flesh','Spice-tree bark','Frill-tree column'].forEach((lab,i)=>{
+['Furrowed bark','Plated bark','Pale bark','Scaly bark','Deadwood','Banded','Palm rings (the palm frill tree)','Mangrove bark','Rope strands','Fungal flesh','Ranj-tree bark','Frill-tree column'].forEach((lab,i)=>{
  const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L)M.bark[i].map=L.t;
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===2||i===9?3:4,i===1?4:6]});});
 // the elfin tree's bark: the owner's moss-grown bark in its own colour (B[21] gives its vertices near white)
@@ -1969,7 +1969,7 @@ BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
-BIO.def('glossy',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Spice-tree leaves'});
+BIO.def('glossy',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Ranj-tree leaves'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 BIO.def('feather',G.tuft(),M.feather,{label:'Plume-bush feathers and anemone tufts'});
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Tufts'});
@@ -2011,7 +2011,7 @@ BIO.def('ventcone',G.ventcone(),M.ventcone,{label:'The mat\'s vent cones'});
 BIO.def('bracket',G.bracket(),M.bracket,{label:'Lantern brackets'});
 BIO.def('lamp',G.lamp(),M.lamp,{label:'Lamp caps'});
 BIO.def('scalecone',G.scalecone(),M.vsway,{label:'Scale cones'});
-BIO.def('resin',G.resin(),M.resin,{label:'Spice resin'});
+BIO.def('resin',G.resin(),M.resin,{label:'Ranj resin'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub masses'});
 BIO.def('rod',G.rod(),M.solid,{label:'Stems and runners'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Basalt boulders'});
@@ -2058,7 +2058,7 @@ BIO.def('bladder',(function(){const g=new T3.IcosahedronGeometry(1,1),p=g.attrib
 // ================================================================= THE THRONE — trees
 // The twelve tree-scale species, each with its own builder, placed by zone from the host's fields and the age of the
 // ground's last flow (46). The plume field turns the mix: the shoulder's ash pines, ruff trees, trumpet trees and star
-// aloes on the clear side; gill-parasols and the wild spice trees on the seam; pagoda caps, drizzle trumpets,
+// aloes on the clear side; gill-parasols and the wild Ranj trees on the seam; pagoda caps, drizzle trumpets,
 // rope-trees and lamp caps under the plume; bone bells in the vents' steam. Beyond the LOD spine a tree becomes an
 // impostor in the 'far' bucket. Every count scales with q.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
@@ -2069,7 +2069,7 @@ THRONE.TREES=[];
 // ---------------------------------------------------------------- zones from the fields
 // The world's fields (wet, flow, rock, slope) and the Throne's own (plume, vent, acid, cinder, skylight, ash: BIOME-API),
 // and the flow age (46). Each 0..1:
-//   vent      steaming ground round a fumarole; halo its edge (where the spice trees stand)
+//   vent      steaming ground round a fumarole; halo its edge (where the Ranj trees stand)
 //   marsh     the acid lake's and the hot pools' shores
 //   sky       a skylight into the tube: its floor and walls
 //   cinder    a cinder cone's loose flanks
@@ -2082,8 +2082,8 @@ THRONE.TREES=[];
 //   owned     ground another kit plants (the windward station's kipuka: the hyperjungle's); every open zone x 1-owned
 //   kedge     the rim just inside a kipuka (the great ruffs, the frill trees); knear the young lava just outside one (its seedlings,
 //             the lava casts of the trees the flow swallowed)
-//   grove     the geyser isle's warm ground round its basin (stations/isle): where the spice's fungus takes (NOTES.md:
-//             "the isles' geyser ground"), so wild spice bears there, with tree ferns and arch palms
+//   grove     the geyser isle's warm ground round its basin (stations/isle): where Ranj's fungus takes (NOTES.md:
+//             "the isles' geyser ground"), so wild Ranj bears there, with tree ferns and arch palms
 //   iwood     the isle's own forest (an island's: smaller trees, lehua, tree ferns, a few palms)
 //   beach     the strip behind the isle's beaches (coconut palms, palm frill trees, leaning out to the sea)
 //   cforest   the cloud forest's (stations/cloudforest): the elfin woods in the cloud belt
@@ -2196,11 +2196,11 @@ function cap(p,s,flat,col,st){const q=qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,age} and lv 2 near / 1 mid
 const B=[];
 
-// 0 the SPICE TREE: a short stout trunk, a few rising limbs, a dense round crown of glossy dark leaves (clove-like).
-// Its wounds, where the native vent fungus got in, weep red resin -- the spice -- and the fungus's small brackets
+// 0 the RANJ TREE (its spice is Ranj): a short stout trunk, a few rising limbs, a dense round crown of glossy dark leaves (clove-like).
+// Its wounds, where the native vent fungus got in, weep red resin -- Ranj, the spice -- and the fungus's small brackets
 // crowd round them (and glow at night). Wild here, on the seam and at the edge of the steaming ground.
 // T.planted (the frontier's plantations, NOTES.md): set out in rows where its fungus has not taken (its conditions are
-// narrow and not understood), it grows thin and yellowing and never bleeds: no fungus, so no resin, so no spice
+// narrow and not understood), it grows thin and yellowing and never bleeds: no fungus, so no resin, so no Ranj
 B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR*(T.planted?.8:1),sick=!!T.planted;
  const pts=bole(T,S,'bark10',T.x,T.z,H*.42,T.rb,T.rb*.7,rr(.02,.08),rr(0,TAU),.05,lv===2?4:2,st,lv===2?7:5);
  const e=tip(pts),hc=sick?C(pick(S.leaf)).lerp(C(pick([0xa8a040,0x988a3a,0xb0a050])),rr(.35,.6)):C(pick(S.leaf)),cy=T.y0+H*.66;let top=e.y;
@@ -2213,7 +2213,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR*(T.planted?.8:1),sick=!
    const SH=THRONE.LIB.cardsOf('shelf');
    for(let k=0,m=ri(2,4);k<m;k++){const s=rr(.12,.22),y=p.y+rr(-.4,.5),q=qEuler(0,Math.PI/2-a+rr(-.4,.4),0);
     if(SH.length)BIO.put(pick(SH),[p.x+ox,y-s,p.z+oz],q,s*3,null);else BIO.put('bracket',[p.x+ox,y,p.z+oz],q,[s,s*.6,s],C(pick(PAL.spiceFungus)));}}}
- BIO.register({name:sick?'Spice tree (planted: no resin)':S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:R+1,h:top-T.y0+R*.6,age:T.age,planted:sick});};
+ BIO.register({name:sick?'Ranj tree (planted: no resin)':S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:R+1,h:top-T.y0+R*.6,age:T.age,planted:sick});};
 
 // 1 the TRUMPET TREE (the Rift's, here on the shoulder): a twisted trunk, crooked rising limbs each ending in a
 // ribbed funnel with a frilled rim, held up to the rain; small funnels sprouting from the trunk itself

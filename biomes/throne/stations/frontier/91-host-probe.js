@@ -30,7 +30,7 @@ const fieldOf=(x,z)=>{const u=uOf(x,z),p=pOf(x,z);for(const F of FIELDS)if(field
 const HCHK={
  // the plantations are planted: every planted (non-clear) field has rows, every row tree stands in its field
  rows(R){const planted=FIELDS.filter(F=>F.kind!=='clear'),empty=planted.filter(F=>!R.some(r=>r.field===F.i)),out=R.filter(r=>{const F=fieldOf(r.x,r.z);return !F||F.i!==r.field;});
-  return{ok:R.length>200&&!empty.length&&!out.length,detail:(empty.length?empty.length+' planted fields with no rows; ':'')+(out.length?out.length+' row trees outside their field; ':'')+R.length+' planted spice trees in '+planted.length+' fields'};},
+  return{ok:R.length>200&&!empty.length&&!out.length,detail:(empty.length?empty.length+' planted fields with no rows; ':'')+(out.length?out.length+' row trees outside their field; ':'')+R.length+' planted Ranj trees in '+planted.length+' fields'};},
  // and they bear no resin (the tree's fungus has not taken in them): no resin drop within a planted row tree's crown
  noResin(R,resin){const bad=resin.filter(p=>R.some(r=>Math.hypot(p[0]-r.x,p[2]-r.z)<2.5));
   return{ok:!bad.length,detail:bad.length?bad.length+' resin drops on planted trees':'no resin on any planted tree ('+resin.length+' drops elsewhere)'};},
@@ -61,7 +61,7 @@ const JT=()=>(typeof HYPERJUNGLE!=='undefined'&&HYPERJUNGLE.TREES)||[];
 const resinPts=()=>instPoints().filter(p=>p[3]==='biome:resin');
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the plantations are planted in rows',HCHK.rows(FRONTIER.rows));
- add('the planted spice trees bear no resin',HCHK.noResin(FRONTIER.rows,resinPts()));
+ add('the planted Ranj trees bear no resin',HCHK.noResin(FRONTIER.rows,resinPts()));
  add('the clearings are cleared (stumps, no standing trees)',HCHK.clearings(FRONTIER.stumps,THRONE.TREES,JT()));
  add('the traps are on the natives\' trails',HCHK.traps(FRONTIER.traps));
  add('Zey\'danin\'s footprint is empty',HCHK.city(THRONE.TREES,JT()));
