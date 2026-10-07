@@ -92,8 +92,8 @@ const PB={
     foot who turns climbs it: the strip is the higher floor), round its floor, up again; into the
     catacombs, down to the chapel, the Keeper's cell, both ossuaries */
  sacredRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
-  r('kiva',PB.siteRoute(W,'zj_kiva',[0,-2.5],[['the ladder’s head',0,-1.1],['down the ladder',0,.45],['off the ladder',.7,.4],['the floor',1.4,-1.2],['by the altar',0,-2.0],
-   ['beside the ladder',.7,.4],['back to the ladder',0,.45],['up the ladder',0,-1.05],['out',0,-2.5]]));
+  r('kiva',PB.siteRoute(W,'zj_kiva',[0,-2.5],[['the ladder’s head',0,-1.2],['down the ladder',0,.55],['off the ladder',.7,.5],['the floor',1.4,-1.2],['by the altar',0,-2.0],
+   ['beside the ladder',.7,.5],['back to the ladder',0,.55],['up the ladder',0,-1.05],['out',0,-2.5]]));
   r('catacombs',PB.siteRoute(W,'zj_catacomb',[0,3],[['the portal',0,.5],['the stair head',0,-2.0],['the chapel',0,-10.5],['the west corridor',-3.5,-12],
    ['the Keeper’s door',-6.4,-12],['the Keeper’s cell',-6.4,-16.4],['back',-6.4,-12],['the west ossuary',-11.6,-12],['the corridor',-3.5,-12],['the chapel again',0,-11],
    ['the east corridor',3.5,-12],['the east ossuary',11.6,-12],['the east corridor again',3.5,-12],['the chapel once more',0,-11],['up the stair',0,-2.0],['out',0,2]]));
@@ -101,7 +101,10 @@ const PB={
    ['the sanctum’s door',0,-24.2],['the sanctum',0,-27],['by its altar',1.5,-31],['out of the sanctum',0,-26.6],['the terrace again',0,-22.6],['the terrace’s west side',-7.6,-23.5],
    ['behind the drum',-7.6,-33],['into the shrine',-6.6,-37,false],['the west side again',-7.6,-24],['the stair’s head',0,-22.4],['down the stair',0,-15.2],
    ['along the podium',-14,-15.2],['the west cloister',-19.6,-15.2],['along it',-19.6,-43.4],['the back of the pit',-14,-44],['across',14,-44],['the east cloister',19.6,-43.4],
-   ['along it',19.6,-15.2],['the pit again',14,-15.2],['the gate again',0,-9],['out',0,2]]));return out;},
+   ['along it',19.6,-15.2],['the pit again',14,-15.2],['the gate again',0,-9],['out',0,2]]));
+  r('council',PB.siteRoute(W,'zj_council',[0,21],[['the stair’s head',0,19.6],['down the tunnel',0,3.8],['the trench',-10.5,2],['the west door',-10.4,-8],
+   ['the council hall',-6,-8],['the crossing',0,-8],['by the dais',5.8,-8],['the crossing again',0,-8],['the west arm',-6,-8],['out',-10.4,-8],['the trench again',-10.5,2],
+   ['the tunnel’s foot',0,3.8],['up the tunnel',0,19.6],['the ground',0,21]]));return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
  shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
@@ -136,7 +139,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===3&&cr.every(e=>PB.routeOk(e.log)),
+ const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===4&&cr.every(e=>PB.routeOk(e.log)),
   cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
   sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');

@@ -398,6 +398,30 @@
     return { rooms: rooms, voids: voids };
   }
   const TEMPLE = temple();
+  /* THE COUNCIL (Lalibela's Bete Giyorgis; the board's 066f9f): a cross of rock left standing in a trench cut down into the
+     ground, its roof at the ground's level; a stair-tunnel down from a sunken head to the trench's floor; the council hall
+     carved inside the cross (a cross-shaped room: the dais in the east arm, benches along the north and south arms), its door
+     at the west arm's end. SUNK (no rock block). The trench's floor is a walk floor less the cross (no blocks needed: the
+     cross's top is 9 m up) */
+  function council() {
+    const C = [0, -8], plus = function (a, b, cx, cz) { return [[cx - a, cz - b], [cx - b, cz - b], [cx - b, cz - a], [cx + b, cz - a], [cx + b, cz - b], [cx + a, cz - b], [cx + a, cz + b], [cx + b, cz + b], [cx + b, cz + a], [cx - b, cz + a], [cx - b, cz + b], [cx - a, cz + b]]; };
+    const voids = [
+      { kind: 'trench', id: 'trench', poly: rrect(-12, 12, -20, 4), y0: -9, y1: 1, finish: 'hewn', floor: false },
+      { kind: 'well', id: 'trench-top', c: C, r: 17, rim: 1.0 },
+      { kind: 'monolith', id: 'cross', poly: plus(9, 3, C[0], C[1]), y0: -9, y1: 0.3, block: false, finish: 'polished' },
+      { kind: 'stair', id: 'door', joins: ['council'], a: [-10.6, -9, C[1]], b: [-7.4, -9, C[1]], w: 1.6, h: 3.0 },
+      { kind: 'well', id: 'stair-head', c: [0, 15.5], r: 3.8, rim: 0.5 },
+      { kind: 'stair', id: 'descent', a: [0, 0, 19.2], b: [0, -9, 3.5], w: 2.0, h: 2.8, floor: false },
+      /* its walk strip runs 0.15 m past the opening's edge onto the ground (an exact abutment leaves a hairline a step can land in) */
+      { kind: 'walk', id: 'descent-walk', a: [0, 0.02, 19.45], b: [0, -9, 3.5], w: 1.4 },
+      { kind: 'floor', id: 'trench-floor', poly: rrect(-11.7, 11.7, -19.7, 3.7), y: -9, holes: [rrect(-9.3, 9.3, C[1] - 3.3, C[1] + 3.3), rrect(-3.3, 3.3, C[1] - 9.3, C[1] + 9.3)], tag: 'cavern:floor' }];
+    const rooms = [{ id: 'council', kind: 'hall', carved: true, poly: plus(8, 2, C[0], C[1]), y: -9, h: 4.5, ceil: 'vault', rise: 0.8, finish: 'polished',
+      doors: [{ at: [-8, C[1]], w: 1.6, swing: 'none' }],
+      fixtures: [fx('dais', 'dais', 7.2, C[1], 1.5, 3.6, { h: 0.35 }),
+        fx('benchN', 'bench', 0, C[1] - 7.4, 3.6, 0.6, { h: 0.45 }), fx('benchS', 'bench', 0, C[1] + 7.4, 3.6, 0.6, { h: 0.45 })] }];
+    return { rooms: rooms, voids: voids };
+  }
+  const COUNCIL = council();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -466,6 +490,10 @@
         'a court under a light shaft, the kitchen and store, the shrine, two servants\' cells and the cistern' },
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
+    /* ---------------- civic */
+    { key: 'zj_council', name: 'The council: a cross cut in a trench', carved: true, wealth: 0.75, types: ['civic'], residence: false, lot: [30, 44],
+      rooms: COUNCIL.rooms, voids: COUNCIL.voids,
+      note: 'a cross of rock left standing in a trench 9 m deep, its roof at the ground; down a stair-tunnel; the council hall inside the cross, the dais in its east arm' },
     /* ---------------- sacred */
     { key: 'zj_temple', name: 'The temple: cut from one rock', carved: true, wealth: 0.8, types: ['religious'], residence: false, lot: [48, 52],
       rooms: TEMPLE.rooms, voids: TEMPLE.voids,
@@ -473,14 +501,14 @@
         '(open to the sky under a drawn lattice dome) and four corner shrines on it; two lamp pillars; cloisters behind pillars in the pit\'s side walls' },
     /* the kiva, sunk in the ground (no rock block: the cavern carves under the sheet's ground): a round room with a flat back
        wall (the altar's), a bench terrace carved round it at bench height (a void room off the walk map), the roof hatch over the
-       hearth with the ladder leaning out of it (its walk strip from the hatch's rim, where the ground stops, 3.6 m down in 1.4 m: as steep as a walker climbs), the
+       hearth with the ladder leaning out of it (its walk strip from 5 cm outside the hatch's rim, where the ground stops, 3.6 m down in 1.55 m: as steep as a walker climbs; a walker keeps to the ground, the higher floor, across the overlap, so on a ladder it stays this small), the
        deflector and the ventilator (a low tunnel to a shaft up to the ground), the sipapu, and the great incense burner where
        Ranj is burned. The roof is 0.9 m of earth over the dome */
     { key: 'zj_kiva', name: 'Kiva', carved: true, wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16), y: -3.6, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
         fixtures: [
           fx('ladder', 'ladder', 0, 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
-          fx('hearth', 'hearth', 0, 1.3, 0.9, 0.9, { h: 0.3 }),
+          fx('hearth', 'hearth', 0, 1.5, 0.9, 0.9, { h: 0.3 }),
           fx('deflector', 'deflector', 0, 2.15, 1.2, 0.25, { h: 1.1 }),
           fx('ventilator', 'ventilator', 0, 2.6, 0.7, 0.45, { h: 1.4 }),
           fx('burner', 'incense-burner', -1.9, 0.6, 1.1, 1.1, { h: 1.3 }),
@@ -492,7 +520,7 @@
         { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [0, -3.4, 2.6], b: [0, -3.4, 3.9], w: 0.5, h: 0.6, floor: false },
         { kind: 'shaft', id: 'vent', joins: ['kiva'], c: [0, 3.9], y0: -3.4, y1: 0.6, r0: 0.28, r1: 0.3 },
         { kind: 'well', id: 'vent-top', c: [0, 3.9], r: 0.3, rim: 0.2 },
-        { kind: 'walk', id: 'ladder', a: [0, 0, -0.9], b: [0, -3.6, 0.5], w: 0.8 }],
+        { kind: 'walk', id: 'ladder', a: [0, 0, -0.95], b: [0, -3.6, 0.6], w: 0.8 }],
       note: 'sunk 3.6 m in the ground under an earth roof; down the ladder through the hatch over the hearth; the bench terrace ' +
         'round the round wall, the altar against the flat back wall under the murals; the deflector, the ventilator, the sipapu, ' +
         'the great incense burner on the west side, where Ranj is burned' },

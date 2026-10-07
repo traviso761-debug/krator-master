@@ -11,7 +11,7 @@ defBuilding({key:'zj_kiva',name:'Kiva',seed:4801,sunk:true,
  note:'sunk 3.6 m under an earth roof: down the ladder through the hatch; the bench terrace, the altar under the murals, the hearth, deflector, ventilator and sipapu, the great incense burner where Ranj is burned',
  build(o){const it=zjItem('zj_kiva');cvFromItem(it,{finish:'plaster'});zfFixtures(it);const wd=P('woodD'),c=P('white'),Y=-3.6;
   for(const s of [-1,1]){box('log',0,0,s*1.0,2.2,.18,.2,wd);box('log',s*1.0,0,0,.2,.18,1.8,wd);}
-  const A=[0,Y,.5],B=[0,1.3,-1.41];for(const s of [-1,1])beam('log',[s*.28,A[1],A[2]],[s*.28,B[1],B[2]],.06,wd,true,6);
+  const A=[0,Y,.6],B=[0,1.3,-1.51];for(const s of [-1,1])beam('log',[s*.28,A[1],A[2]],[s*.28,B[1],B[2]],.06,wd,true,6);
   for(let i=1;i<15;i++){const t=i/15;box('log',0,A[1]+t*(B[1]-A[1]),A[2]+t*(B[2]-A[2]),.62,.05,.06,wd);}
   zfRingWall('ashlar',0,3.9,.32,.52,0,.45,P('tuffDark'));
   box('plaster',0,Y+1.15,-2.62,2.2,1.0,.12,P('plaster'));zfBand('patMural',0,Y+1.2,-2.555,2.0,.9,0,c);
