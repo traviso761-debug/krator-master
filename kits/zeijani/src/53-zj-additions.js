@@ -19,9 +19,13 @@ defBuilding({key:'zj_stonedoor',name:'Rolling stone door',seed:5302,cls:'infrast
  note:'a passage through the rock, the round stone door rolled into its side slot (closed on a schedule), its lever',
  build(o){zfRockBlock(-4.5,4.5,-8,0,6);cvDoor({id:'front',c:[0,0],y:0,r:1.8,h:2.6});cvDoor({id:'back',c:[0,-8],y:0,r:1.8,h:2.6});
   cvStair({id:'pass',a:[0,0,1.0],b:[0,0,-9.0],w:1.6,h:2.3,finish:'hewn'});
-  cvStair({id:'slot',joins:['pass'],a:[-.5,0,-4],b:[-1.85,0,-4],w:1.9,h:1.85,floor:false,finish:'hewn'});const c=P('tuffDark');
-  const m=TF(-1.25,.86,-4,0,0,PI/2);m.scale(new THREE.Vector3(.85,.36,.85));emit('tuffHewn',gcyl(22),m,c);
-beam('log',[1.0,.2,-3.2],[.6,1.6,-4.6],.07,P('woodD'),true,6);
+  /* the millstone (Derinkuyu's): a disc 2.5 m across facing down the passage, so it covers it, rolled along a slit cut into
+     the passage's side; open, it stands in the slit. A world that rolls it (Dhelv: o.liveStone) draws it itself from the
+     record's `stone` (its open and shut centres, its radius, the way it faces) */
+  cvStair({id:'slot',joins:['pass'],a:[-.6,0,-4],b:[-3.55,0,-4],w:.6,h:2.62,floor:false,finish:'hewn'});const c=P('tuffDark');
+  if(o.liveStone&&CURREC)CURREC.stone={open:cvW(-2.15,1.26,-4),shut:cvW(0,1.26,-4),r:1.25,t:.42,colour:c};
+  else{const m=TF(-2.15,1.26,-4,0,PI/2,0);m.scale(new THREE.Vector3(1.25,.42,1.25));emit('tuffHewn',gcyl(28),m,c);}
+beam('log',[1.0,.2,-3.5],[.6,1.6,-4.4],.07,P('woodD'),true,6);
   for(const s of [-1,1])box('tuffHewn',s*.95,0,.1,.26,2.3,.3,P('white'));zfStepLintel('tuffHewn',0,2.3,.1,1.9,P('white'),{n:1,h:.26,d:.3});
   /* in a world whose tunnels meet the door (Dhelv: o.walls {front:[w,h], back:[w,h]}), masonry walls seal each tunnel's end
      round the passage, so the stone door's passage is the only way through */

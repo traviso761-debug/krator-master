@@ -24,7 +24,7 @@ Processing, per family:
   normal   resized and renormalised (OpenGL convention, as the library and Godot use)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
-  size     per family: overrides the build's map size
+  size     per family: overrides the build's map size; [w, h] keeps a sheet's shape (a dome's sky, not a tile)
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
   optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
@@ -55,13 +55,14 @@ def sha1(path):
 
 def load(path, size, mode):
     im = Image.open(path).convert(mode)
-    if im.size != (size, size):
+    wh = tuple(size) if isinstance(size, (list, tuple)) else (size, size)
+    if im.size != wh:
         if mode == 'RGBA':      # Pillow resizes RGBA premultiplied, which blanks the colour under alpha 0 (a card's bleed)
-            rgb = im.convert('RGB').resize((size, size), Image.LANCZOS)
-            al = im.getchannel('A').resize((size, size), Image.LANCZOS)
+            rgb = im.convert('RGB').resize(wh, Image.LANCZOS)
+            al = im.getchannel('A').resize(wh, Image.LANCZOS)
             im = Image.merge('RGBA', rgb.split() + (al,))
         else:
-            im = im.resize((size, size), Image.LANCZOS)
+            im = im.resize(wh, Image.LANCZOS)
     return np.asarray(im).astype(np.float64) / 255.0
 
 
@@ -76,7 +77,8 @@ def webp(arr, quality, mode):
 def process(fam, cfg, size):
     lib = cfg['lib']
     d = set_dir(lib)
-    size = int(cfg.get('size', size))      # a family may ask for a smaller map (a detail map on small furniture)
+    sz = cfg.get('size', size)                # a family may ask for a smaller map (a detail map on small furniture), or [w, h]
+    size = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
     meta = json.load(open(os.path.join(d, 'meta.json')))
     rec = meta.get('record', {})
     # map paths come from meta.json 'maps' (a neutral copy points at its sibling's normal and roughness)

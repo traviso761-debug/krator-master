@@ -51,7 +51,7 @@ function dhGroundMesh(){const g=DH_GROUND,xs=[];for(let x=g.x0;x<=g.x1+1e-6;x+=g
 const groundM=new THREE.Mesh(dhGroundMesh(),groundMat);groundM.receiveShadow=true;groundM.userData.isGround=true;scene.add(groundM);
 
 // ---------------------------------------------------------------- the sites: the layout's, each the kit's def
-const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls},district:s.district,at:s.at}));
+const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor'},district:s.district,at:s.at}));
 const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
 const ROWS=[];
 
@@ -301,3 +301,21 @@ const ATMOS_GROUND=new THREE.Color();
 ATMOS.skylight({renderer,sky:skyScene,scene,ground:()=>ATMOS_GROUND.copy(hemi.groundColor).multiplyScalar(hemi.intensity),key:()=>SKY.night?'n':'d'});
 /* where the cavern's ground and the page's overlap (a ring at each opening's rim), the rock wins the depth test: no fight */
 cvRockMat.polygonOffset=true;cvRockMat.polygonOffsetFactor=-1;cvRockMat.polygonOffsetUnits=-2;
+
+// ---------------------------------------------------------------- the rolling stone door (the owner: it rolls back to let the guard in)
+/* The stone door's millstone is drawn here, not by the kit (o.liveStone: the record's `stone`). It stands across the passage
+   through the shut hours (the life layer's DHS.DOOR_SHUT, by its clock or the sky's hour) and rolls back into its slit when
+   it is open, or at night when one of the guard or the scouts comes within DH_STONE.reach of it (their way passes it: the
+   door is theirs); it rolls in DH_STONE.secs, turning as it goes */
+const DH_STONE={mesh:null,rec:null,k:0,secs:4,reach:14,want:0};
+function dhStoneBuild(){const R=REG.find(r=>!r.parent&&r.stone);DH_STONE.rec=R||null;if(DH_STONE.mesh){scene.remove(DH_STONE.mesh);DH_STONE.mesh.geometry.dispose();DH_STONE.mesh=null;}if(!R)return;
+ const S=R.stone,g=new THREE.CylinderGeometry(S.r,S.r,S.t,40,1);g.rotateX(PI/2);const col=new Float32Array(g.attributes.position.count*3),cc=new THREE.Color(S.colour);
+ for(let i=0;i<col.length;i+=3){col[i]=cc.r;col[i+1]=cc.g;col[i+2]=cc.b;}g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const m=new THREE.Mesh(g,MAT.tuffHewn);m.rotation.order='YXZ';m.rotation.y=R.ry||0;m.castShadow=m.receiveShadow=true;m.userData.mk='tuffHewn';scene.add(m);DH_STONE.mesh=m;DH_STONE.k=0;}
+FRAME_HOOKS.push(dt=>{const D=DH_STONE;if(!D.mesh||REG.indexOf(D.rec)<0)dhStoneBuild();if(!D.mesh)return;const S=D.rec.stone;
+ let L0=null;try{L0=DHL;}catch(e){}   /* 95 declares the life layer after this runs its first frames */
+ const life=!!(L0&&L0.on),h=life?L0.clock.hour:SKY.hour,w=typeof DHS!=='undefined'?DHS.DOOR_SHUT:[22,5],shut=w[0]>w[1]?(h>=w[0]||h<w[1]):(h>=w[0]&&h<w[1]);
+ let near=false;if(shut&&life){const t=SIM.time(),c=S.shut;for(const a of SIM.all('actor')){if(!a.present||(a.role!=='guard'&&a.role!=='scout'))continue;const p=SIM.pose(a,t);if(!p.hidden&&Math.hypot(p.x-c[0],p.y-c[1],p.z-c[2])<D.reach){near=true;break;}}}
+ D.want=shut&&!near?1:0;const step=Math.min(.1,dt||.016)/D.secs;D.k+=Math.max(-step,Math.min(step,D.want-D.k));
+ const k=D.k*D.k*(3-2*D.k),x=S.open[0]+(S.shut[0]-S.open[0])*k,y=S.open[1]+(S.shut[1]-S.open[1])*k,z=S.open[2]+(S.shut[2]-S.open[2])*k;D.mesh.position.set(x,y,z);
+ const L=Math.hypot(S.shut[0]-S.open[0],S.shut[2]-S.open[2]);D.mesh.rotation.z=-k*L/S.r;});

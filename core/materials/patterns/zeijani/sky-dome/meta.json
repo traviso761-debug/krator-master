@@ -7,20 +7,20 @@
  "processing": {
   "log": {
    "pattern_crop": [
-    1759,
-    887
+    3541,
+    1304
    ],
    "seam_after": [
-    0.933,
-    16.428
+    0.65,
+    23.768
    ],
    "seam_before": [
-    2.119,
-    19.533
+    0.928,
+    33.236
    ],
    "source_size": [
-    1774,
-    887
+    3548,
+    1304
    ]
   },
   "options": {
@@ -37,7 +37,7 @@
    "rough": 0.8,
    "rough_var": 0.08,
    "seam_axes": "x",
-   "size": 2048
+   "size": 4096
   },
   "script": "tools/textures/process.py",
   "version": 1
@@ -56,11 +56,11 @@
   "tint": false
  },
  "source": {
-  "file": "zeijani-sky-dome.webp",
-  "generator": "supplied by the owner (pasted in the session, 2026-10-07), generated from the prompt in kits/zeijani/KNOWN_ISSUES.md (the temple's sky dome)",
+  "file": "zeijani-sky-dome-wrapped.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-07, as zeijani-sky-dome.webp), generated from the prompt in kits/zeijani/KNOWN_ISSUES.md (the temple's sky dome); reworked for a hemisphere by tools/textures/dome_sheet.py --widen 2 --raise 0.47 --band-row 785 (its own sky continued round the back, sky added above so the motifs sit in the dome's lower half, the crown starless)",
   "licence": "generated for this project by its owner",
   "prompt": "kits/zeijani/KNOWN_ISSUES.md, \"The temple's sky dome\" (a painted equirectangular sky for the inside of a dome: sun, ringed gas giant, four moons, stars, a gilt zigzag band at the rim)",
   "reuse": "the painted sky inside a dome or a ceiling: the Zeijani temple's sanctum dome; any sky-motif ceiling",
-  "sha1": "f4166ff3f1f16a372b58d23ce8053441071993a6"
+  "sha1": "694ffab5f643cf5e9259340d2bb3a9ac05cd65ce"
  }
 }

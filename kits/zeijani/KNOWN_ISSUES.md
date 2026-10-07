@@ -23,6 +23,8 @@
       sheet's distance, flat close up. Fine for P5's terraces seen from the wells' rims.
 - [x] **The temple's sky dome was a canvas stand-in.** The owner's painting arrived (2026-10-07): the library's
       `patterns/zeijani/sky-dome` (`patSkyDome`; processed with `--seam-axes x`, so it wraps round and keeps its gilt band
-      at the rim). The canvas in `ZK_SKY` is the procedural fallback.
+      at the rim). Wrapped once round a hemisphere a 2:1 sheet looked warped (2x wide at the rim, pinched at the crown), so
+      `tools/textures/dome_sheet.py` reworks it: its own sky continued to twice the width, sky added above so the sun and the
+      planet sit in the dome's lower half, the crown starless. The canvas in `ZK_SKY` is the procedural fallback.
 - [ ] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.
