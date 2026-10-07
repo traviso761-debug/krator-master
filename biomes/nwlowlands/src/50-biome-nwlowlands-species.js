@@ -131,6 +131,41 @@ NWLOW.SPECIES=[
  /*22*/{key:'coilcane',name:'Coil cane',habit:'bamboo',H:[6,11],rb:[.06,.1],crownR:[1.5,2.2],bark:PAL.culm,leaf:PAL.bamboo,
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
+NWLOW.byKey={};NWLOW.SPECIES.forEach(S=>{NWLOW.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+// The wattle pods, ginkgo seeds and kauri cones are edible but not drawn and not catalogued: fruit null.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+NWLOW.HARVEST={
+ meranti:HV('timber',[],false,'Light, straight-grained boards.'),
+ mistpalm:HV('posts, thatch',['heart (palm cabbage)'],false,'The heart is eaten, which kills the stem.'),
+ treefern:HV('fibre (the trunk mat)',['fiddleheads'],false,'The young croziers are boiled.'),
+ pandan:HV('none',['pandan keys'],false,'The orange head under the leaf tufts: the sweet base of each key is chewed, or boiled to a paste; the leaves are woven.','generic_fruit_pandan_keys'),
+ ghostgum:HV('fuel, posts',[],true,'The leaf oil is a chest rub.'),
+ bluegum:HV('timber',[],true,'The leaf oil is a chest rub; the shed ribbons are tinder.'),
+ birch:HV('poles, bark sheets',['sap'],false,'The spring sap is drunk fresh.'),
+ spire:HV('timber',[],false,'Scented, rot-proof boards.'),
+ glowwillow:HV('basketry',[],true,'A bark tea for pain.'),
+ ginkgo:HV('timber',['seeds (roasted)'],true,'The seeds are roasted and shelled; the flesh round them stinks (not drawn, not catalogued).'),
+ paperbark:HV('bark sheets (roofs, wrapping)',[],true,'The bark wraps food for the earth oven; the leaf oil is an antiseptic.'),
+ poplar:HV('light timber',[],false,''),
+ kauri:HV('timber, gum',['seeds in the cones'],false,'The gum is dug for varnish; the round cones shed winged seeds (not drawn, not catalogued).'),
+ towerash:HV('timber',[],false,''),
+ needlecypress:HV('timber',[],false,''),
+ sheoak:HV('fuel',[],false,'The hardest burning wood in the hills.'),
+ cragpine:HV('timber, pitch',[],true,'The pitch is a salve.'),
+ grasstree:HV('none',['flower spike nectar'],false,'The resin at the base glues spear heads.'),
+ banksia:HV('none',['candle nectar'],false,'The upright flower candles are steeped in water until it turns sweet and gold.','generic_fruit_candle_nectar'),
+ wattle:HV('fuel, posts',['seed (ground)'],true,'The pod seed is roasted and ground to flour; the gum is a sweet (not drawn, not catalogued).'),
+ skybamboo:HV('culms (building)',['shoots'],false,'The spring shoots are boiled.'),
+ bellybamboo:HV('culms (craft)',[],false,''),
+ coilcane:HV('canes',[],false,''),
+};
+NWLOW.SPECIES.forEach(S=>{S.tags.harvest=NWLOW.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+NWLOW.FRUIT_KEYS=[...new Set(NWLOW.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.

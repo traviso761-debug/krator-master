@@ -10900,9 +10900,38 @@ const FAMILY_SPLITS = [
   [/^paint/, ['wood', 'plank'], 'paint'],
   [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
   [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
-  [/^tapa/, ['cloth'], 'tapa']
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
 ];
 const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
 function furnFamily(culture, color, family) {
   if (!family || typeof color !== 'number') return family;
   let rev = _famRev[culture];
@@ -10911,7 +10940,8 @@ function furnFamily(culture, color, family) {
     const p = FPAL[culture] || {};
     for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
   }
-  const keys = rev.get(color);
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
   for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
@@ -12973,9 +13003,38 @@ const FAMILY_SPLITS = [
   [/^paint/, ['wood', 'plank'], 'paint'],
   [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
   [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
-  [/^tapa/, ['cloth'], 'tapa']
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
 ];
 const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
 function furnFamily(culture, color, family) {
   if (!family || typeof color !== 'number') return family;
   let rev = _famRev[culture];
@@ -12984,7 +13043,8 @@ function furnFamily(culture, color, family) {
     const p = FPAL[culture] || {};
     for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
   }
-  const keys = rev.get(color);
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
   for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
@@ -27411,6 +27471,38 @@ EASTABYSS.SPECIES=[
   leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},
   tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
 ];
+EASTABYSS.byKey={};EASTABYSS.SPECIES.forEach(S=>{EASTABYSS.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+EASTABYSS.HARVEST={
+ skyscale:HV('none (too big to fell)',['scalefruit'],false,'Red scale pods grow straight off the bole; the pink flesh is cut in wedges.','generic_fruit_scalefruit'),
+ forktree:HV('poles from fallen forks',['scalefruit'],false,'The same cauliflory pods as the sky scale-tree, lower down.','generic_fruit_scalefruit'),
+ bellbark:HV('timber',['scalefruit'],true,'Pods on the trunk and the boughs; the pale bark is a fever tea.','generic_fruit_scalefruit'),
+ treefern:HV('fibre (the trunk mat)',['pith (famine)'],false,'The starchy pith is baked in hard years; the fibrous trunk is cut for planters.'),
+ cycad:HV('none',['salt-cone kernels (steeped)'],false,'The cone in the crown. Poisonous raw: the kernels are steeped a week in the salt lake, then baked.','generic_fruit_salt_cone'),
+ horsetail:HV('none',[],false,'The silica-rough stems scour pots.'),
+ kneetree:HV('timber, knees for floats',[],false,'The knees are cut for fishing floats.'),
+ stiltwood:HV('poles',[],false,'Straight poles for platforms.'),
+ fanpalm:HV('thatch',['heart (palm cabbage)'],false,'The fans thatch huts; the heart is eaten, which kills the stem.'),
+ umbrella:HV('light timber, fuel',[],true,'A bark tea for the gut.'),
+ jade:HV('none',['leaves (pickled)'],false,'Salt-rich leaves pickled in brine.'),
+ tidelycopsid:HV('none',[],false,''),
+ calamophyton:HV('none',[],false,''),
+ sanfordacaulis:HV('none',[],false,'The fine twigs are tinder.'),
+ sigillaria:HV('poles (the fluted bole)',[],false,'The cones hang under the crown but nobody eats them.'),
+ cordaite:HV('timber',[],false,'The strap leaves are plaited into baskets.'),
+ seedfern:HV('none',['fern-eggs (roasted)'],false,'Seeds big as eggs under the fronds: roasted in the coals, mealy like chestnut.','generic_fruit_fern_egg'),
+ araucaria:HV('timber',['seeds in the cones'],false,'The cones at the crown shed edible seeds (not in the catalog yet).'),
+ beardoak:HV('fuel, boat ribs',[],true,'The beard moss stuffs mattresses and dresses wounds.'),
+ waterpalm:HV('thatch (the fronds)',['tideheart jelly'],false,'The fruit head at the water line: the jelly in its carpels is cut out and set in cubes.','generic_fruit_tideheart'),
+ matreed:HV('reed mats, thatch, cordage, reed boats',['rhizome, young shoots'],false,'The pale base of the reed is peeled and chewed.'),
+};
+EASTABYSS.SPECIES.forEach(S=>{S.tags.harvest=EASTABYSS.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+EASTABYSS.FRUIT_KEYS=[...new Set(EASTABYSS.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour

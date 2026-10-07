@@ -179,6 +179,70 @@ XANADU.SPECIES=[
   leaf:[0x2e5a2a,0x3a6a30,0x2a5028],irid:null,boughs:[4,6],
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
+XANADU.byKey={};XANADU.SPECIES.forEach((S,i)=>{S.i=i;XANADU.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. As biomes/ebadlands has it.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+XANADU.HARVEST={
+ dawnredwood:HV('timber',[],false,'Rot-proof red heartwood; the copper feathers drop in autumn.'),
+ ginkgo:HV('carving boards',['seed kernels (roasted, a few)'],true,'The fleshy seed coats stink; the kernels are roasted a handful at a time. The leaves make a memory tea.'),
+ lotustrumpet:HV('none',['fringe petals (steeped)'],false,'The trumpets hold rainwater; the fringe petals are steeped for a rose-scented tea.'),
+ cloudpine:HV('carving, fuel',[],true,'The resin is a salve.'),
+ topiary:HV('none',[],false,'Grows as if clipped; never cut.'),
+ whorlolive:HV('carving (the striped wood)',['olives (cured)','oil'],true,'Olives banded like the bole, cured in brine or pressed for oil; the leaf tea lowers a fever.','generic_fruit_whorl_olive'),
+ agatetree:HV('timber (banded like agate)',[],false,'Cut, the wood shows agate bands; it is sold as stone.'),
+ ringbeech:HV('timber, fuel',['beechnuts'],false,'The nuts are roasted; they fall inside the rings.'),
+ archhornbeam:HV('tool handles, cogs',[],false,'The hardest wood in the Vale: mallets and cogs.'),
+ wisteria:HV('none',['flowers (fritters)'],false,'The racemes are battered and fried; the pods and seeds are poison.'),
+ parrotia:HV('tool handles',[],false,'Ironwood: it sinks in water.'),
+ hyrcanoak:HV('timber',['acorns (leached)'],true,'Acorns leached and ground for meal; the bark tans hides.'),
+ wingnut:HV('light timber',['nuts (shelled, roasted)'],false,'Long green chains of winged nuts; shelled and roasted.','generic_fruit_wingnut'),
+ cacao:HV('none',['pulp','beans (a dark drink)'],true,'Pods straight off the trunk; the white pulp is eaten fresh and the beans brewed dark.','generic_fruit_cacao'),
+ pitaya:HV('none',['fruit'],false,'Magenta fruit with green flames; white flesh, black seeds.','generic_fruit_pitaya'),
+ opuntia:HV('none',['tunas','young pads'],true,'Orange-red tunas along the pad edges, peeled; young pads fried.','generic_fruit_tuna'),
+ ponytail:HV('none',[],false,'The swollen base stores water.'),
+ adenium:HV('none',[],true,'The sap is a poison: arrow tips, never food.'),
+ hazeblossom:HV('carving',[],false,'Ornamental: blossom only.'),
+ frostwillow:HV('basketry, withies',[],true,'The bark is a pain tea.'),
+ travelers:HV('thatch',['rainwater in the leaf bases'],false,'The leaf bases hold water for a traveller.'),
+ violetplantain:HV('none',['plantains (cooked)'],false,'Hands of yellow plantains under a purple bract; fried in slices.','generic_fruit_plantain'),
+ wollemi:HV('timber',[],false,'The cones are not food.'),
+ cloudfern:HV('none',['fiddleheads (cooked)'],false,'The trunk fibre is potted orchid bedding.'),
+ lanterntree:HV('none',['the berry in each lantern'],false,'A papery lantern round one berry, in every colour the tree hangs.','generic_fruit_lantern_fruit'),
+ silverfan:HV('thatch, fibre',[],false,'The silver fans thatch roofs.'),
+ barrelfrill:HV('none',[],false,'Ornamental.'),
+ silverscrub:HV('fuel',[],true,'A bitter wormwood tea.'),
+ cloudfrill:HV('none',[],false,'Ornamental.'),
+ beardtree:HV('none',[],true,'The beard moss dresses wounds.'),
+ anemonestalk:HV('none',[],false,'The red tufts sting.'),
+ flamecypress:HV('timber, incense',[],true,'The wood is burned as incense.'),
+ arbutus:HV('fuel, turnery',['berries (jam)'],false,'Bumpy berries ripening red through orange; cooked into jam, heady when overripe.','generic_fruit_arbutus'),
+};
+XANADU.SPECIES.forEach(S=>{S.tags.harvest=XANADU.HARVEST[S.key]||HV('none');});
+// the small plants (60-floor places them): tagged too. `items` names the instanced items that draw them, so the
+// inspector can name a plant from the item it clicked.
+const PK=(name,items,hv)=>({name,tags:Object.assign({},XANADU.TAGS,{harvest:hv||HV('none')}),items});
+XANADU.PLANTS={
+ lotus:PK('Lotus',['lilypad','cup','lotuspod'],HV('none',['seeds (fresh)','root'],false,'Green seed heads stand on the pads after the flowers; the fresh seeds are sweet.','generic_fruit_lotus_seed')),
+ baneberry:PK('Baneberry',['baneberry'],HV('none',[],false,"Poison: the doll's eyes are never eaten.")),
+ cobra:PK('Cobra lily',['cobra'],HV('none',[],false,'')),
+ mushroom:PK('Ring mushrooms',['mushroom'],HV('none',[],false,'Fairy-ring mushrooms: not for eating.')),
+ reed:PK('Reeds and iris',['reed'],HV('thatch',[],false,'')),
+ fern:PK('Ferns',['frond','bigfrond'],HV('none',[],false,'')),
+ moss:PK('Moss',['mossmat'],HV('none',[],true,'')),
+ grass:PK('Meadow and blood grass',['grass','blade'],HV('thatch',[],false,'')),
+ flowers:PK('Painted flowers',['orchid','swirl','ruffle','bloom','star'],HV('none',[],false,'Every colour at once.')),
+ plume:PK('Pampas plumes',['plume'],HV('none',[],false,'')),
+ box:PK('Box domes',['cushion'],HV('none',[],false,'')),
+ maquis:PK('Maquis (lavender, broom, cistus, rosemary, thyme)',['candle','clubmoss','lobe'],HV('fuel',['herbs (lavender, thyme, rosemary)'],true,'Pot herbs, and cistus resin for incense.')),
+};
+XANADU.plantOfItem=item=>{for(const k in XANADU.PLANTS)if(XANADU.PLANTS[k].items.indexOf(item)>=0)return XANADU.PLANTS[k];return null;};
+// what the catalog must hold for this kit: every fruit key a species or a plant names
+XANADU.FRUIT_KEYS=[...new Set(XANADU.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(XANADU.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
+// the instanced item that draws each fruit, by species or plant key (the probe checks every one is on the stage)
+XANADU.FRUIT_ITEM={whorlolive:'whorlolive',wingnut:'catkin',cacao:'pod',pitaya:'pitayafruit',opuntia:'ball',violetplantain:'ball',lanterntree:'pod',arbutus:'ball',lotus:'lotuspod'};
 
 // ---------------------------------------------------------------- leaf and flower textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
@@ -461,6 +525,24 @@ G.pitayafruit=function(){const pos=[],nor=[],uv=[],col=[];const g=new T3.SphereG
   const b0=[cx-Math.sin(a2)*.18,y-.12,cz+Math.cos(a2)*.18],b1=[cx+Math.sin(a2)*.18,y-.12,cz-Math.cos(a2)*.18],tp=[cx*1.35,y+.38,cz*1.35];
   [b0,b1,tp].forEach((p,j)=>{pos.push(p[0],p[1],p[2]);nor.push(cx,.3,cz);uv.push(0,0);const c=j===2?[.45,1.1,.35]:[1,1,1];col.push(c[0],c[1],c[2]);});}
  return BIO.geo._make(pos,nor,uv,col);};
+// The fruit's colours are the catalog piece's (kits/catalog/krator-master-furniture-generic-goods.js): vertex-coloured in
+// full, instance colour near white.
+const FRUITCOL={whorlOlive:0x6a6a3a,whorlCream:0xd8c8a0,lotusPod:0x8a9a5a,lotusSeed:0xe8e0c0};
+const shade=(c,f)=>c.clone().lerp(C(f>=0?0xffffff:0x120f0a),Math.abs(f));
+const vadd=(o,g,c)=>{g=g.toNonIndexed();const a=g.attributes.position.array,n=g.attributes.normal.array;for(let i=0;i<a.length;i+=3){o.pos.push(a[i],a[i+1],a[i+2]);o.nor.push(n[i],n[i+1],n[i+2]);o.uv.push(0,0);o.col.push(c.r,c.g,c.b);}};
+// a WHORL OLIVE: an ovoid olive with a pale band twisted round it, as the tree's striped bole (30 triangles); unit length, centred
+G.whorlolive=function(){const o={pos:[],nor:[],uv:[],col:[]};
+ vadd(o,new T3.SphereGeometry(.5,5,3).scale(.72,1,.72),C(FRUITCOL.whorlOlive));
+ vadd(o,new T3.CylinderGeometry(.375,.375,.16,5,1,true).rotateZ(.55).rotateX(.2),C(FRUITCOL.whorlCream));
+ return BIO.geo._make(o.pos,o.nor,o.uv,o.col);};
+// a LOTUS SEED HEAD: the spent flower's green receptacle on its stalk, flat face up with the seeds set in it
+// (dark sockets and pale seeds), as the catalog's seed head; origin at the stalk's foot, 1 high (68 triangles)
+G.lotuspod=function(){const o={pos:[],nor:[],uv:[],col:[]},pod=C(FRUITCOL.lotusPod);
+ vadd(o,new T3.CylinderGeometry(.018,.024,.82,4,1,true).translate(0,.41,0),shade(pod,-.15));
+ vadd(o,new T3.CylinderGeometry(.2,.07,.18,8,1,false).translate(0,.91,0),pod);
+ for(let i=0;i<7;i++){const a=i*2.4,r=i?.11:0,s=new T3.CircleGeometry(.032,4).rotateX(-Math.PI/2).translate(Math.cos(a)*r,1.002,Math.sin(a)*r);
+  vadd(o,s,i%2?shade(pod,-.35):C(FRUITCOL.lotusSeed));}
+ return BIO.geo._make(o.pos,o.nor,o.uv,o.col);};
 // a CACTUS ARM: a three-winged stem (pitaya), unit length along y, centred (for BIO.beam)
 G.wing=function(){const g=new T3.CylinderGeometry(.5,.5,1,3,1,true);return g;};
 XANADU.G=G;
@@ -566,6 +648,8 @@ BIO.def('cobra',G.cobra(),M.vsway,{label:'Cobra lilies'});
 BIO.def('baneberry',G.baneberry(),M.vsway,{label:'Baneberry spikes'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Ring mushrooms'});
 BIO.def('pitayafruit',G.pitayafruit(),M.vcol,{label:'Pitaya fruit'});
+BIO.def('whorlolive',G.whorlolive(),M.vcol,{label:'Whorl olives'});
+BIO.def('lotuspod',G.lotuspod(),M.vsway,{label:'Lotus seed heads'});
 BIO.def('opad',G.opad(),M.cactus,{label:'Prickly pear pads'});
 BIO.def('wing',G.wing(),M.cactus,{label:'Pitaya stems'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Pods (cacao, lanterns)'});

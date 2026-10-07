@@ -50,7 +50,42 @@ HYPERJUNGLE.PAL={
  bract:[0xd8402a,0xe8742a,0xf0b02a,0xc82a48,0xe05a2a],
  bromeliad:[0x4a8a4a,0x5a9a52,0x8a6a3a,0x3f7a44],
  bromCentre:[0xd8342a,0xe86a2a,0xc83a6a,0xf0a02a],
+ // the screwpine's pandan-key head: the catalog piece's own palette (generic-goods fruitPandanKey / fruitPandanTip)
+ pandanKey:0xd87a2a,pandanTip:0x5a6a2a,
 };
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. As ebadlands' HV().
+{// a block: HV and PK stay local (a world may bundle another kit's HV)
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+HYPERJUNGLE.HARVEST={
+ ironbark:HV('posts, beams (from fallen limbs)',[],false,'Too hard for an axe above the buttresses: the wind-felled limbs are the timber.'),
+ ghostwood:HV('light timber, carving',[],true,'The pale bark is scraped for a fever tea; the violet racemes feed the sky rays.'),
+ prismgum:HV('timber',[],true,'The iridescent gum seals hulls and dresses cuts.'),
+ baobab:HV('none (the hollow boles are lived in)',['gatepod pulp','seeds (roasted)','leaves (cooked)'],true,'The orange velvet pods are sawn into rounds; the chalky pulp dries into gatepod chalk that keeps a year.','generic_fruit_gatepod'),
+ mahogany:HV('timber (the finest red wood)',['seeds (roasted)'],true,'The woody capsules split for winged seeds, roasted and eaten wing and all; the bark is a fever tea.','generic_fruit_mahogany_nut'),
+ kapok:HV('light timber, dugouts',['young pods (cooked)','seed oil'],false,'Ripe pods burst into cream floss for stuffing; the black seeds are pressed for oil.','generic_fruit_silkpod'),
+};
+HYPERJUNGLE.SPECIES.forEach(S=>{S.tags.harvest=HYPERJUNGLE.HARVEST[S.key]||HV('none');});
+HYPERJUNGLE.byKey={};HYPERJUNGLE.SPECIES.forEach(S=>{HYPERJUNGLE.byKey[S.key]=S;});
+// the instanced items that draw a species' parts, so the inspector can name a tree from an item it clicked
+HYPERJUNGLE.speciesOfItem=item=>{const m=/^clump(\d)$/.exec(item||'');if(m)return HYPERJUNGLE.SPECIES[+m[1]]||null;
+ return item==='pod'?HYPERJUNGLE.byKey.baobab:item==='capsule'?HYPERJUNGLE.byKey.mahogany:null;};
+// the belt's own understorey (60-floor places it), tagged as flora; `items` names the items only that plant draws
+const PK=(name,items,hv)=>({name,tags:Object.assign({},HYPERJUNGLE.TAGS,{harvest:hv||HV('none')}),items});
+HYPERJUNGLE.PLANTS={
+ screwpine:PK('Screwpine',['pandankeys'],HV('none',['pandan keys (the fibrous base)'],false,'The orange keys of the hanging head are chewed, or boiled down to an orange paste; the strap leaves are woven into mats.','generic_fruit_pandan_keys')),
+ treefern:PK('Giant tree fern',[],HV('trunk fibre (planting pots)',['croziers (cooked)'],false,'The young croziers are boiled; the trunk fibre is cut into pots for orchids.')),
+ ginger:PK('Heliconia and ginger',['bract'],HV('none',['ginger rhizome'],true,'The rhizome spices food and settles the stomach; the bracts hold rain water.')),
+ bromeliad:PK('Bromeliad',[],HV('none',['rain water in the tanks'],false,'The tanks hold water and frogs.')),
+};
+HYPERJUNGLE.plantOfItem=item=>{for(const k in HYPERJUNGLE.PLANTS)if(HYPERJUNGLE.PLANTS[k].items.indexOf(item)>=0)return HYPERJUNGLE.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+HYPERJUNGLE.FRUIT_KEYS=[...new Set(HYPERJUNGLE.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(HYPERJUNGLE.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
+// the item that draws each catalog fruit on its plant (the kapok's burst silk pods are 'bloom' items in the silk colour)
+HYPERJUNGLE.FRUIT_ITEMS={generic_fruit_gatepod:'pod',generic_fruit_mahogany_nut:'capsule',generic_fruit_silkpod:'bloom',generic_fruit_pandan_keys:'pandankeys'};
+HYPERJUNGLE.HV=HV;}
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale leaf clusters on transparent canvases (BIO.alphaTex); the
@@ -240,3 +275,22 @@ BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});
 BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
+// the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a
+// short stalk, local y 0 (hung) .. -1.15. Vertex-coloured in linear (the instance colour only shades it): each key's tip
+// stands proud and green (fruitPandanTip), its body orange (fruitPandanKey), the seams between keys sunk. 328 triangles.
+HYPERJUNGLE.pandanGeo=function(){const tipDirs=[],tip=new THREE.Vector3(),v=new THREE.Vector3();
+ const b=new THREE.IcosahedronGeometry(1,1).attributes.position.array;
+ for(let i=0;i<b.length;i+=3){v.set(b[i],b[i+1],b[i+2]).normalize();if(!tipDirs.some(d=>d.dot(v)>.9999))tipDirs.push(v.clone());}
+ const K=new THREE.Color(HYPERJUNGLE.PAL.pandanKey).convertSRGBToLinear(),Tp=new THREE.Color(HYPERJUNGLE.PAL.pandanTip).convertSRGBToLinear();
+ const h0=new THREE.IcosahedronGeometry(1,3),h=h0.index?h0.toNonIndexed():h0,a=h.attributes.position.array,col=[];
+ for(let i=0;i<a.length;i+=3){v.set(a[i],a[i+1],a[i+2]).normalize();let best=-1;for(const d of tipDirs)best=Math.max(best,d.dot(v));
+  const isTip=best>.9999,r=isTip?1.1:.93;tip.copy(v).multiplyScalar(r);
+  a[i]=tip.x*.45;a[i+1]=tip.y*.5-.65;a[i+2]=tip.z*.45;const c=isTip?Tp:K;col.push(c.r,c.g,c.b);}
+ h.setAttribute('color',new THREE.Float32BufferAttribute(col,3));h.computeVertexNormals();   // faceted: each key reads
+ const s=new THREE.CylinderGeometry(.035,.05,.2,4,1,true).translate(0,-.1,0).toNonIndexed(),sc=[];
+ for(let i=0;i<s.attributes.position.count;i++)sc.push(Tp.r*.6,Tp.g*.6,Tp.b*.6);
+ const pos=[],nor=[],uv=[],cc=[];
+ [[h,col],[s,sc]].forEach(([g,c])=>{const p=g.attributes.position.array,n=g.attributes.normal.array;
+  for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(n[i]);}for(let i=0;i<p.length/3;i++)uv.push(0,0);for(const x of c)cc.push(x);});
+ return BIO.geo._make(pos,nor,uv,cc);};
+BIO.def('pandankeys',HYPERJUNGLE.pandanGeo(),HYPERJUNGLE.MAT.pod,{label:'Screwpine fruit (pandan keys)'});

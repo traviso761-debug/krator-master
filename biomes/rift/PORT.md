@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 0 (0%) | 16 (8%) | 29 (14%) | 160 (78%) |
+| KB | 1 (0%) | 0 (0%) | 16 (7%) | 32 (15%) | 166 (77%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,16 +14,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 17.6 | [web] | 26 | 3 | 3 | 1 | 0 | 2 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-rift-species.js` | 55.9 | [draw] | 0 | 5 | 0 | 0 | 0 | 9 | 12 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-rift-species.js` | 60.7 | [draw] | 0 | 5 | 0 | 0 | 0 | 11 | 12 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-rift-trees.js` | 68.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | placement pass: `RIFT.buildTrees` (line 536); `mk` (line 540) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 605) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop |
-| `src/60-biome-rift-floor.js` | 23.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
+| `src/60-biome-rift-floor.js` | 24.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-rift-dress.js` | 6.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-rift.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 15.8 | [G native] | 21 | 2 | 0 | 0 | 0 | 4 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
 | `src/85-host-tower.js` | 5.2 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/90-host-camera.js` | 5.9 | [web] | 5 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
-| `src/91-host-probe.js` | 2.6 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/90-host-camera.js` | 6.3 | [web] | 5 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
+| `src/91-host-probe.js` | 5.0 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

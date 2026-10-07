@@ -1631,6 +1631,41 @@ NWLOW.SPECIES=[
  /*22*/{key:'coilcane',name:'Coil cane',habit:'bamboo',H:[6,11],rb:[.06,.1],crownR:[1.5,2.2],bark:PAL.culm,leaf:PAL.bamboo,
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
+NWLOW.byKey={};NWLOW.SPECIES.forEach(S=>{NWLOW.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+// The wattle pods, ginkgo seeds and kauri cones are edible but not drawn and not catalogued: fruit null.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+NWLOW.HARVEST={
+ meranti:HV('timber',[],false,'Light, straight-grained boards.'),
+ mistpalm:HV('posts, thatch',['heart (palm cabbage)'],false,'The heart is eaten, which kills the stem.'),
+ treefern:HV('fibre (the trunk mat)',['fiddleheads'],false,'The young croziers are boiled.'),
+ pandan:HV('none',['pandan keys'],false,'The orange head under the leaf tufts: the sweet base of each key is chewed, or boiled to a paste; the leaves are woven.','generic_fruit_pandan_keys'),
+ ghostgum:HV('fuel, posts',[],true,'The leaf oil is a chest rub.'),
+ bluegum:HV('timber',[],true,'The leaf oil is a chest rub; the shed ribbons are tinder.'),
+ birch:HV('poles, bark sheets',['sap'],false,'The spring sap is drunk fresh.'),
+ spire:HV('timber',[],false,'Scented, rot-proof boards.'),
+ glowwillow:HV('basketry',[],true,'A bark tea for pain.'),
+ ginkgo:HV('timber',['seeds (roasted)'],true,'The seeds are roasted and shelled; the flesh round them stinks (not drawn, not catalogued).'),
+ paperbark:HV('bark sheets (roofs, wrapping)',[],true,'The bark wraps food for the earth oven; the leaf oil is an antiseptic.'),
+ poplar:HV('light timber',[],false,''),
+ kauri:HV('timber, gum',['seeds in the cones'],false,'The gum is dug for varnish; the round cones shed winged seeds (not drawn, not catalogued).'),
+ towerash:HV('timber',[],false,''),
+ needlecypress:HV('timber',[],false,''),
+ sheoak:HV('fuel',[],false,'The hardest burning wood in the hills.'),
+ cragpine:HV('timber, pitch',[],true,'The pitch is a salve.'),
+ grasstree:HV('none',['flower spike nectar'],false,'The resin at the base glues spear heads.'),
+ banksia:HV('none',['candle nectar'],false,'The upright flower candles are steeped in water until it turns sweet and gold.','generic_fruit_candle_nectar'),
+ wattle:HV('fuel, posts',['seed (ground)'],true,'The pod seed is roasted and ground to flour; the gum is a sweet (not drawn, not catalogued).'),
+ skybamboo:HV('culms (building)',['shoots'],false,'The spring shoots are boiled.'),
+ bellybamboo:HV('culms (craft)',[],false,''),
+ coilcane:HV('canes',[],false,''),
+};
+NWLOW.SPECIES.forEach(S=>{S.tags.harvest=NWLOW.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+NWLOW.FRUIT_KEYS=[...new Set(NWLOW.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
@@ -3115,7 +3150,9 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // a tree's volume names its species: show what it yields (biomes/FRUIT.md)
+ const S=best&&NWLOW.SPECIES.find(s=>s.name===best.name),hv=S&&S.tags.harvest;
+ insp.textContent=name+(hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
@@ -3169,7 +3206,28 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// species that yield something edible the kit does not draw as a catalog fruit: named, not hidden. The wattle pods,
+// ginkgo seeds and kauri cones are not drawn and have no catalog piece (biomes/FRUIT.md); the rest are hearts,
+// shoots, fiddleheads, sap and nectar.
+const FRUIT_NOT_DRAWN=['wattle','ginkgo','kauri','mistpalm','treefern','birch','grasstree','skybamboo'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const HCHK={
+ // fruit: every fruiting species names a catalog piece (biomes/FRUIT.md), and fruit is drawn on the stage (the 'pompom'
+ // items: the pandan key heads and the banksia candles, with the floor's ginger heads)
+ fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),n=P.filter(p=>/:pompom$/.test(p[3])).length;
+  return{ok:!miss.length&&!untagged.length&&n>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' pompom instances drawn; catalog keys: '+NWLOW.FRUIT_KEYS.join(', ')+'; not drawn: '+FRUIT_NOT_DRAWN.join(', ')};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(NWLOW.SPECIES,P));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='pandan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
+ add('a species with no harvest tag',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='banksia'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
+ add('no fruit drawn',HCHK.fruit(NWLOW.SPECIES,P.filter(p=>!/:pompom$/.test(p[3]))));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

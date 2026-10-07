@@ -52,8 +52,13 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] No fauna yet.
 - [ ] verify.py: under `--assert` a page that never initialised raises in the per-type
       table instead of reporting (inherited). The error panel line above it says why.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): madrone berries, rattlepods, ember tamarind, pillar figs. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'swlowlands'`). The berries and pods are drawn. Draw figs on `pillarfig` (purple, clustered on the limbs and the fused bole). Add harvest tags. Bay laurel berries, skirt-palm fruit and acorns are not drawn.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): madrone berries, rattlepods, ember tamarind, pillar figs, each a
+      catalog piece in `kits/catalog/krator-master-furniture-generic-fruit.js`. Every species carries `tags.harvest` (`SWLOW.HARVEST`,
+      `HV()` as nhighlands'), the toyon is tagged in `SWLOW.PLANTS`, `SWLOW.FRUIT_KEYS` lists the four keys; the inspector shows the tag.
+      Figs are drawn on `pillarfig` near trees (item `fig`, 20 tris, palette `PAL.figFruit` from the catalog's `fruitFig`): clusters under
+      and beside the limbs and on the bole (`bo.rS`), on their own h3 stream so nothing else moved; 1984 figs, ~40k tris. The probe's
+      `fruit tagged, catalogued and drawn` check (and three negatives) runs in verify. Still not drawn: bay laurel berries, skirt-palm
+      fruit, acorns (listed in the probe's `FRUIT_NOT_DRAWN`). `settlements/dalab` vendors this kit: it needs a re-vendor and rebuild.
 
 ## Done
 

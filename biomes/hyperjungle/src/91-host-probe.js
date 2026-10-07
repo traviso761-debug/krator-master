@@ -24,7 +24,32 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// ---------------------------------------------------------------- the host's own checks (verify.py runs them when present)
+// species and plants that yield something edible the kit does not draw as a catalog fruit: named, not hidden
+const FRUIT_NOT_DRAWN=['treefern','ginger','bromeliad'];
+const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)n[M.name.replace(/^biome:/,'')]=(n[M.name.replace(/^biome:/,'')]||0)+M.count;});return n;};
+const HCHK={
+ // fruit: every species and plant carries a harvest tag; every edible one names a catalog piece (or is listed as not
+ // drawn); every catalog fruit the kit names is drawn by its item; the screwpines bear pandan-key heads
+ fruit(SP,PL,N){const all=SP.map(S=>[S.key,S.tags]).concat(Object.keys(PL).map(k=>[k,PL[k].tags]));
+  const untagged=all.filter(e=>!e[1].harvest).map(e=>e[0]);
+  const miss=all.filter(e=>e[1].harvest&&e[1].harvest.edible.length&&!e[1].harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(e[0])<0).map(e=>e[0]);
+  const keys=[...new Set(all.map(e=>e[1].harvest&&e[1].harvest.fruit).filter(Boolean))];
+  const undrawn=keys.filter(k=>!(N[HYPERJUNGLE.FRUIT_ITEMS[k]]>0));
+  const ok=!untagged.length&&!miss.length&&!undrawn.length&&keys.length>=4&&(N.pandankeys||0)>=20;
+  return{ok,detail:(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+
+   (undrawn.length?'catalogued but not drawn: '+undrawn.join(', ')+'; ':'')+all.length+' tagged, '+keys.length+' catalog keys ('+keys.join(', ')+'); drawn: '+
+   ['pod','capsule','bloom','pandankeys'].map(k=>k+' '+(N[k]||0)).join(', ')};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,_itemCounts()));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts();
+ const noFruit=(S,k)=>S.key===k?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S;
+ add('a fruiting species with no catalog fruit',HCHK.fruit(HYPERJUNGLE.SPECIES.map(S=>noFruit(S,'mahogany')),HYPERJUNGLE.PLANTS,N));
+ add('screwpines with no pandan-key heads drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,Object.assign({},N,{pandankeys:0})));
+ add('a plant with no harvest tag',HCHK.fruit(HYPERJUNGLE.SPECIES,Object.assign({},HYPERJUNGLE.PLANTS,{test:{name:'test',tags:{},items:[]}}),N));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

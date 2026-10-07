@@ -48,7 +48,9 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // a tree's volume names its species: show what it yields (biomes/FRUIT.md)
+ const S=best&&SWBAY.SPECIES.find(s=>s.name===best.name),hv=S&&S.tags.harvest;
+ insp.textContent=name+(hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});

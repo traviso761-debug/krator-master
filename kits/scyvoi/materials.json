@@ -1,6 +1,6 @@
 {
  "build": "scyvoi",
- "note": "The Scyvoi kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/22-mat.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/scyvoi after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling.",
+ "note": "The Scyvoi kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/22-mat.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/scyvoi after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling. The biome fruit's surfaces (2026-10-06, late; FAMILY_SPLITS in kits/catalog/krator-furniture-core.js): f_fruitSkin, f_fruitHusk, f_fruitShell, f_fungus on the library's fruit sets; f_fruitScale, f_fruitFlesh, f_fruitJelly, f_fruitSeed wait (optional) for the sets prompted in PROMPTS-ready.md.",
  "size": 512,
  "families": {
   "felt": {
@@ -714,6 +714,134 @@
    },
    "roughLift": 0.3,
    "specular": 0.3
+  },
+  "f_fruitSkin": {
+   "lib": "fruit.skin.orange",
+   "optional": true,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitHusk": {
+   "lib": "fruit.husk",
+   "optional": true,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitShell": {
+   "lib": "fruit.capsule",
+   "optional": true,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fungus": {
+   "lib": "organic.fungus.cap",
+   "optional": true,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitScale": {
+   "lib": "fruit.scale",
+   "optional": true,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitFlesh": {
+   "lib": "fruit.flesh",
+   "optional": true,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitJelly": {
+   "lib": "fruit.jelly",
+   "optional": true,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
+  "f_fruitSeed": {
+   "lib": "fruit.seeds",
+   "optional": true,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
   }
  }
 }

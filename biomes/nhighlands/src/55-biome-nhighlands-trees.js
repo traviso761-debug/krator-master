@@ -101,6 +101,11 @@ function glowCluster(x,y,z,n,st,podK){const pods=rng()<(podK==null?.25:podK),r0=
  BIO.range=r0;
  if(rng()<.5)BIO.put(pods?'haloV':'halo',[x,y-1.6,z],qEuler(0,rr(0,TAU),0),rr(2.4,3.6),null);
  st.glow+=n;}
+// MAST under a hero crown: beechmast (three-sided husks, the blue beech) or acorns (longer, the gnarled oak), a few
+// three-nut clusters at the leaf spots. A tetrahedron each (4 triangles); drawn at the hero level only
+function mastOn(spots,kind,st){const acorn=kind==='acorn',set=acorn?PAL.acorn:PAL.mast;
+ spots.forEach(p=>{if(rng()>.3)return;for(let b=0;b<3;b++){const s=rr(.07,.1);
+  BIO.put('mast',[p.x+rr(-1.1,1.1),p.y+rr(-.7,.2),p.z+rr(-1.1,1.1)],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),acorn?[s*.8,s*1.4,s*.8]:[s,s,s],bright(vary(pick(set),.01,.04,.04),1.05));st.mast=(st.mast||0)+1;}});}
 function mossOn(p,st,R){BIO.put('mossmat',[p.x,p.y+p.r*.85,p.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[R,1,R],bright(vary(pick(PAL.moss),.03,.08,.05),.95));st.moss++;}
 const reg=(S,T,r)=>{if(typeof BIO.register==='function')BIO.register({name:S.name,kind:'tree',key:S.key,x:T.x,z:T.z,y:T.y0,r:r||T.spread||T.crownR,h:T.H});};
 // a BOLE: a lathe up to `top` metres, radius rAt(u), fluting, buttresses, lean and wobble, closed in a dome;
@@ -197,6 +202,7 @@ B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.ste
  spots.forEach(p=>{for(let c=0;c<cnt;c++){const sz=rr(f.clump[0],f.clump[1]);clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hc,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
   if(f.berries&&lv>=1&&rng()<.6)for(let b=0,m=lv===2?ri(5,10):3;b<m;b++)BIO.put('berry',[p.x+rr(-1,1),p.y+rr(-.6,.4),p.z+rr(-1,1)],null,rr(.06,.09),bright(C(pick(PAL.berry)),1.1));}});
  // SUCKERS: the old lime's skirt of leafy shoots round its foot
+ if(f.mast&&lv===2)mastOn(spots,f.mast,st);
  if(f.suckers&&lv===2)for(let k=0,m=ri(5,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.1,1.7);clumpAt(S.item,T.x+Math.cos(a)*d,T.y0+rr(.6,2.6),T.z+Math.sin(a)*d,rr(1.1,1.9),.7,shade(hc,.05),T.x,T.y0+1.5,T.z,rb*2,2);st.clumps++;}
  T.spread=T.crownR;reg(S,T);};
 
@@ -219,6 +225,7 @@ B.gnarl=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,ns=ri(f.stems[
   spots.push(top);}
  const cnt=lv===2?2:1,cy=T.y0+H*.7;
  spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt(S.item,p.x+rr(-1,1),p.y+rr(-.2,1),p.z+rr(-1,1),rr(2,3.4),.55,hc,T.x,cy,T.z,T.crownR,H*.3);st.clumps++;}});
+ if(f.mast&&lv===2)mastOn(spots,f.mast,st);
  T.spread=T.crownR;reg(S,T);};
 
 // YEW: a short, enormous, fluted and hollowed bole (purple-red), a low wide dome of near-black needles,

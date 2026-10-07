@@ -159,7 +159,7 @@ var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000,
      the world's (verify.py subtracts the userData.furniture meshes): measured 2026-10 at 39 draw calls (29 render
      families + 10 painted-panel materials) and 1.47 M triangles with every interior furnished, + ~15 % headroom.
      The heavy pieces: KNOWN_ISSUES.md */
-  furniture: { drawCalls: 45, triangles: 1690000 } };
+  furniture: { drawCalls: 51, triangles: 1690000 } };   // 51: the stall fruit draws in six library texture families (fruitSkin, husk, shell, flesh, seed, scale; 2026-10-06), +6 on 45
 
 /* aliases */
 var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.wallDark,

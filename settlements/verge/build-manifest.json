@@ -121,15 +121,15 @@
  ],
  "54a-bio-biome-sedesert-species.js": [
   "biomes\\sedesert\\src\\50-biome-sedesert-species.js",
-  "d180c712c833"
+  "abf724370876"
  ],
  "54b-bio-biome-sedesert-trees.js": [
   "biomes\\sedesert\\src\\55-biome-sedesert-trees.js",
-  "7eb79d3f312c"
+  "f6131305dfb5"
  ],
  "54c-bio-biome-sedesert-floor.js": [
   "biomes\\sedesert\\src\\60-biome-sedesert-floor.js",
-  "fe54ce855874"
+  "363ffc0abbfc"
  ],
  "54d-bio-biome-sedesert-dress.js": [
   "biomes\\sedesert\\src\\65-biome-sedesert-dress.js",
@@ -149,7 +149,7 @@
  ],
  "56a-bio-biome-eastabyss-species.js": [
   "biomes\\eastabyss\\src\\50-biome-eastabyss-species.js",
-  "92cd8a65ac43"
+  "06712e9e527a"
  ],
  "56b-bio-biome-eastabyss-trees.js": [
   "biomes\\eastabyss\\src\\55-biome-eastabyss-trees.js",
@@ -173,7 +173,7 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "9f31c3b2e7e8"
+  "2a0bcf3a37fb"
  ],
  "64-izv-bundle.js": [
   "GENERATED: settlements\\iziz\\src\\10-core.js, settlements\\iziz\\src\\12-stats.js, core\\materials\\20-textures.js, core\\materials\\22-materials.js, settlements\\iziz\\src\\30-kit.js, settlements\\iziz\\src\\32-surfaces.js, settlements\\iziz\\src\\34-kitdefs.js, settlements\\iziz\\src\\38-helpers2.js, settlements\\iziz\\src\\50-registry.js, settlements\\iziz\\src\\54-mat-concrete.js, core\\materials\\68-mat-v5.js, settlements\\iziz\\src\\69-mat-salvage.js, core\\materials\\opt\\69a-world-uv.js, settlements\\iziz\\src\\69b-vern-mat.js, settlements\\iziz\\src\\69c-vern-helpers.js, settlements\\iziz\\src\\70-vern-dwellings.js, settlements\\iziz\\src\\71-vern-trade.js, settlements\\iziz\\src\\72-vern-civic.js, settlements\\iziz\\src\\73-vern-infra.js, settlements\\iziz\\src\\74-vern-guilds.js, settlements\\iziz\\src\\74b-vern-frontier.js, kits\\ancients\\src\\8ap-funicular.js",

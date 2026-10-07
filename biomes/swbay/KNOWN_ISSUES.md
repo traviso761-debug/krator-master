@@ -52,8 +52,11 @@ Read before changing anything here. `build.py` prints the open count.
       skips them.
 - [ ] Verified only under SwiftShader (headless); the iridescent prism-gum leaves and the
       gill texture at grazing angles are untested on real hardware.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): gatepod (savannah baobabs), bay fungi (coral fungus, parasol). Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'swbay'`). Everything is drawn. Add harvest tags. The umbrella thorn's pods and the monkey-puzzle cones are not drawn.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), 2026-10-06: every species carries a harvest tag (`SWBAY.HARVEST`,
+      `S.tags.harvest`; the inspector shows it for a tree's volume): gatepod (baobab, the hyperjungle's catalog piece), bay
+      fungi (coral, parasol). All drawn. The probe's `fruit tagged, catalogued and drawn` check (with three negatives) holds it.
+- [ ] The umbrella thorn's pods and the monkey-puzzle cones: tagged as edible with `fruit: null`, named in the probe's
+      not-drawn list. Not drawn and no catalog piece yet.
 
 ## Done
 

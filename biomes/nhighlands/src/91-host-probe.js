@@ -53,7 +53,26 @@ function biomeChecks(){const R={};
  // the night raises the glow
  const was=NHL._night,nk=NHL.setNight(1);R.night={bulb:+nk.bulb.toFixed(2),pod:+nk.pod.toFixed(2)};NHL.setNight(was);R.day=NHL.setNight(was);
  return R;}
-window._api={BUDGET,REG,
+// THE HOST'S OWN CHECKS (verify.py runs them when present), each with a broken input that must fail
+// species and plants that yield something edible the kit does not draw as a catalog fruit (tips, sap, shoots...): named, not hidden
+const FRUIT_NOT_DRAWN=['greatspruce','shadowhemlock','mossmaple','greattrumpet','trumpet','normanspruce','mountainmaple','larch','birch','cragpine','frosttrumpet','forestlime',
+ 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms'];
+const HCHK={
+ // fruit: every fruiting species and plant names a catalog piece, and each kind of fruit is drawn on the stage
+ // (N: instances of 'berry' = arils, rowan, bilberries; 'lantern' = lantern pods; 'mast' = beechmast and acorns)
+ fruit(SP,PL,N){const id=x=>x.key||x.label,miss=SP.concat(PL).filter(x=>x.tags.harvest&&x.tags.harvest.edible.length&&!x.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(id(x))<0).map(id);
+  const untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id),thin=['berry','lantern','mast'].filter(k=>!(N[k]>=20));
+  return{ok:!miss.length&&!untagged.length&&!thin.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+
+   (thin.length?'too few drawn: '+thin.join(', ')+'; ':'')+N.berry+' berries and arils, '+N.lantern+' lantern pods, '+N.mast+' mast drawn; catalog keys: '+NHL.FRUIT_KEYS.length+' ('+NHL.FRUIT_KEYS.join(', ')+')'};}};
+const fruitN=()=>({berry:itemPositions('berry').length,lantern:itemPositions('lantern').length,mast:itemPositions('mast').length});
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,fruitN()));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=fruitN();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(NHL.SPECIES.map(S=>S.key==='rowan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),NHL.PLANTS,N));
+ add('no mast drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{mast:0})));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,biomeChecks,itemPositions,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

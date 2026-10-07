@@ -75,6 +75,14 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] FRUIT (2026-10-06): every species carries a harvest tag (`NWBAY.HARVEST`; the inspector shows it under a
+      tree); the cliff figs bear figs (`fig` items, clusters under the crown's spots, placed by a hash of the tree so
+      nothing else moved), the gate and avenue baobabs their pods, the pandans their orange heads and the traveller's
+      fans their blue arils (all drawn before). Catalog: `generic_fruit_cliff_fig`, `generic_fruit_avenue_baobab`,
+      `generic_fruit_traveller_aril`, and the shared `generic_fruit_gatepod` and `generic_fruit_pandan_keys`. The probe
+      checks it (`fruit-tagged-catalogued-drawn`, with two negatives). Not drawn as fruit, named in the tags: prism-gum
+      nectar, fern fiddleheads, thorn gum, mangrove propagules, lotus petals, mat-reed shoots; the sea-grape on the
+      shore has no tag yet (the kit tags no floor plants).
 - [x] INVERTED POLYGONS (2026-10-05). The twelve karst stacks (faces and domes) were wound clockwise from
       outside, so their near walls were culled and each drew as its own hollow back wall; dress() read
       their domes as ceilings. The travertine reach's fine ground strip faced down (culled from above).

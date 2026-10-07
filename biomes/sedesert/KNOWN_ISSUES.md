@@ -66,8 +66,13 @@ Read before changing anything here. `build.py` prints the open count.
       (up to 0.43 m) and 164 end under it (none over 2 m tall: the mint feet and short side
       columns). The far spires carry a 1.5 m skirt for it. A finer strip of ground along the
       river would fix both (the lip's window shows the cost of doing it by refining the grid).
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): mesquite pods, wadi dates, desert tunas. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'sedesert'`). The mesquite pods and dates are drawn. The prickly pear scrub has only flat blooms: draw the tunas, orange-red fruit along the pad edges (as xanadu's `opuntia` does). Add harvest tags.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): mesquite pods (`pods`), wadi dates (now their own
+      item `dates`, same clump and material as the plumes), desert tunas (`fruit`: orange-red icosahedra on the prickly pear
+      pads' upper rims, `PAL.tuna` from the catalog's `fruitTuna`, near and mid bands, hashed so the floor's rng stream is
+      unchanged). Harvest tags on all 13 species (`SEDESERT.HARVEST`) and 11 floor plants (`SEDESERT.PLANTS`); the inspector
+      shows them; probe check 'fruit tagged, catalogued and drawn' with two negatives. Left: the cardon's fruit, the agave
+      heart and the Joshua-tree buds are edible but have no catalog piece (listed in the probe's `FRUIT_NOT_DRAWN`); the
+      dates are tinted `fruitDateStrand` (0xc88a3a), not `fruitDate`.
 
 ## Done
 

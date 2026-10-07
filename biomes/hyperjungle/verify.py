@@ -151,7 +151,13 @@ const R=[];
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
           detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
 
-// 5. the registry and the instance bake both ran.
+// 5. the host's own checks (hostChecks), and their NEGATIVE CONTROLS
+//    (hostNegatives): each is fed a broken input and must fail.
+if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
+  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
+
+// 6. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 return R;}"""

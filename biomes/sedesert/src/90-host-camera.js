@@ -78,6 +78,11 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the tags and the harvest: a tree from its registered volume, a floor plant from the item it clicked
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&SEDESERT.plantOfItem(item),S=best&&best.key&&SEDESERT.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ if(tg)name+='\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+
+  (tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'');
  insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};

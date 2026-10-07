@@ -1662,6 +1662,59 @@ RIFT.SPECIES=[
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
 
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as ebadlands' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+RIFT.HV=HV;
+RIFT.HARVEST={
+ frilltree:HV('none (too great to fell)',[],false,'The fins are leather-tough; nothing eats them.'),
+ bellpalm:HV('fibre, thatch',['bell dates'],false,'Sticky olive-gold dates hang in strands inside each fan bell.','generic_fruit_bell_date'),
+ lobetree:HV('fuel',[],false,'The hanging pods are bitter: left to the bats.'),
+ trumpet:HV('pipes (the hollow stems)',[],false,'The ribbed stems are cut for water pipes and flutes.'),
+ pagoda:HV('timber',[],false,'Straight tiered timber; the fibre bark twists into rope.'),
+ curly:HV('none',[],true,'The sap soothes burns.'),
+ prismbush:HV('none',[],false,'Ornamental: the sprays change colour as you walk past.'),
+ candle:HV('none',[],false,'The lavender brushes are dried for tinder.'),
+ baobab:HV('cord (the bark)',['fruit pulp','leaves'],true,'The pale pods hold a dry, tart pulp (not in the catalog yet); the bark is stripped for cord without killing the tree.'),
+ araucaria:HV('timber',['seeds (roasted)'],false,'The heavy cones break apart on the ground for their nuts (not drawn).'),
+ purplefan:HV('none',[],false,'A purple dye from the leaves.'),
+ dragon:HV('none',[],true,'The red resin is a dye, a varnish and a wound dressing.'),
+ aloetree:HV('none',[],true,'The gel dresses burns.'),
+ acacia:HV('fuel, thorn fences',['pods (famine)','gum'],true,'The pods and the gum are not drawn.'),
+ groundsel:HV('fuel (the dead leaves)',[],false,'The dead leaves cloak the stem and burn hot.'),
+ cycad:HV('none',['starch (leached)'],false,'The pith is poison until leached for days; famine food (not drawn).'),
+ pine:HV('timber, fuel',[],true,'The pitch seals pots and dresses cuts.'),
+ parasol:HV('timber',[],false,'The wide crowns shade the camps.'),
+ croton:HV('none',[],false,'Ornamental; the sap stings.'),
+ anemonestalk:HV('none',[],false,'The red heads sting like their namesakes.'),
+ pinesucculent:HV('none',[],false,''),
+ carrotfrill:HV('none',['frillpods'],false,'Hot-pink pods under the flower head, eaten raw: they fizz on the tongue.','generic_fruit_frillpod'),
+ violetdome:HV('timber',[],false,''),
+ cloudfrill:HV('none',[],false,''),
+ cloudbell:HV('fibre, thatch',['bell dates'],false,'The cloud form of the bell palm: the same dates in its bells.','generic_fruit_bell_date'),
+ cloudlobe:HV('fuel',[],false,''),
+ cloudparasol:HV('timber',[],false,''),
+ beardtree:HV('fuel',[],true,'The beard moss is bedding, tinder and a wound pad.'),
+ cloudfern:HV('none',['fiddleheads'],false,'The young fronds are boiled (not drawn).'),
+ lanterntree:HV('light timber',['lantern fruit'],false,'A papery husk round one berry, in every colour of the tree.','generic_fruit_lantern_fruit'),
+ barrelfrill:HV('none',[],false,'The pores hold rain water after a storm.'),
+ fantree:HV('none',[],false,''),
+ stonepine:HV('timber, fuel',['pine nuts'],false,'Nuts from the cones (not drawn).'),
+ silverscrub:HV('fuel',[],true,'A bitter aromatic tea.'),
+};
+RIFT.SPECIES.forEach(S=>{S.tags.harvest=RIFT.HARVEST[S.key]||HV('none');});
+// the small plants that bear catalog fruit (the floor places them; `items` names the instanced items that draw them)
+RIFT.PLANTS={
+ ballvine:{name:'Ball vine',items:['ball','melonhalf','melonflesh'],
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both',
+   harvest:HV('none',['ballmelons'],false,'Ribbed green melons over the rocks, yellow-fleshed; a few lie split open on the vine.','generic_fruit_ballmelon')}},
+};
+RIFT.plantOfItem=item=>{for(const k in RIFT.PLANTS)if(RIFT.PLANTS[k].items.indexOf(item)>=0)return RIFT.PLANTS[k];return null;};
+RIFT.speciesByName=name=>RIFT.SPECIES.find(S=>S.name===name)||null;
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+RIFT.FRUIT_KEYS=[...new Set(RIFT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(RIFT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
+
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
 // tints them. Names say the habit.
@@ -1951,6 +2004,10 @@ G.curl=function(){const pos=[],nor=[],uv=[],col=[];const NS=20,SEG=4,turns=2.3;
 G.barrel=function(){const g=new T3.SphereGeometry(1,8,5);g.scale(1,1.5,1);g.translate(0,1.4,0);return g;};
 // a BALL: the green ball vine's fruit
 G.ball=function(){return new T3.SphereGeometry(1,5,4);};
+// a split ballmelon: an open rind cup (the dome down, the cut at y=0, 18 tris) and its flesh face (6 tris, facing up);
+// both six-sided from the same start angle, so the flesh's rim sits on the rind's
+G.melonhalf=function(){const g=new T3.SphereGeometry(1,6,2,0,TAU,0,Math.PI*.5);g.rotateX(Math.PI);return g;};
+G.melonflesh=function(){const g=new T3.CircleGeometry(1,6);g.rotateX(-Math.PI*.5);return g;};
 // the same rosette with uvs along each leaf (u base..tip, v across) for a skinned bromeliad
 G.rosetteUV=function(){const pos=[],nor=[],uv=[],col=[];
  const tiers=[[10,1.0,.30,.55],[8,.70,.55,.40],[6,.42,.85,.28]];
@@ -2052,6 +2109,8 @@ BIO.def('curl',G.curl(),M.curl,{attrs:['aN','aC2'],label:'Curl succulents'});
 BIO.def('irosette',G.rosette(),M.irosette,{attrs:['aN','aC2'],label:'Iridescent rosettes'});
 BIO.def('barrel',G.barrel(),M.barrel,{label:'Honeycomb barrels'});
 BIO.def('ball',G.ball(),M.solid,{label:'Ball vine fruit'});
+BIO.def('melonhalf',G.melonhalf(),M.solid,{label:'Split ballmelon (rind)'});
+BIO.def('melonflesh',G.melonflesh(),M.solid,{label:'Split ballmelon (flesh)'});
 BIO.def('bigfrond',BIO.geo.frond(4),M.bigfrond,{label:'Tree-fern fronds'});
 BIO.def('cycfrond',BIO.geo.frond(2),M.cycfrond,{label:'Cycad fronds'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Fern fronds'});
@@ -2774,7 +2833,13 @@ function barrels(x,y,z,lv,st){const n=lv===2?ri(1,3):lv===1?2:1,hc=vary(pick(PAL
   BIO.put('barrel',[bx,Y(bx,bz)-.1,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r,r*rr(.8,1.2),r],bright(vary(hc,.02,.06,.05),1.05));st.barrels++;}}
 function ballvine(x,y,z,lv,st){const n=lv===2?ri(4,7):lv===1?3:3,a=rr(0,TAU),hc=vary(pick(PAL.ball),.02,.08,.05),rc=rodCol(0x6a7a3a);let px=x,pz=z,py=y;
  for(let k=0;k<n;k++){const r=rr(.25,.55),aa=a+rr(-.7,.7),nx=px+Math.cos(aa)*rr(.5,1.1),nz=pz+Math.sin(aa)*rr(.5,1.1),ny=Y(nx,nz)+r*.7;
-  if(lv>=1)BIO.beam('rod',[px,py,pz],[nx,ny,nz],.035,.03,rc);BIO.put('ball',[nx,ny,nz],qEuler(0,rr(0,TAU),0),r,bright(vary(hc,.02,.05,.05),rr(1.0,1.2)));px=nx;pz=nz;py=ny;st.balls++;}}
+  if(lv>=1)BIO.beam('rod',[px,py,pz],[nx,ny,nz],.035,.03,rc);BIO.put('ball',[nx,ny,nz],qEuler(0,rr(0,TAU),0),r,bright(vary(hc,.02,.05,.05),rr(1.0,1.2)));px=nx;pz=nz;py=ny;st.balls++;}
+ // a few near vines end in a big melon split in two, the halves fallen apart with their yellow flesh up (FRUIT.md:
+ // fruitBallmelonFlesh). Drawn from the spot's hash, not rng(), so the rest of the floor keeps its layout. 48 tris each.
+ if(lv===2&&h3(x,z,7.31)<.14){const r=.42+.13*h3(z,x,1.7),a2=h3(x,z,2.9)*TAU,d=r*.62,ex=px+Math.cos(a)*(r+.35),ez=pz+Math.sin(a)*(r+.35);
+  for(const s of [1,-1]){const hx=ex+Math.cos(a2)*d*s,hz=ez-Math.sin(a2)*d*s,hy=Y(hx,hz)+r*.78,q=qEuler(0,a2,-.42*s);
+   BIO.put('melonhalf',[hx,hy,hz],q,r,bright(hc,1.1));BIO.put('melonflesh',[hx,hy,hz],q,r,bright(C(0xf0d850),1.0+.12*h3(hx,hz,.5)));}
+  st.splits++;}}
 function reed(x,y,z,lv,set){const h=rr(1.6,3.2)*(lv===0?1.6:1),n=lv===2?ri(3,5):lv===1?2:1;
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)-BIO.waterH(hx,hz)<-.4)continue;
   tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(set||PAL.tealGreen,1.3,.025));}}
@@ -2914,7 +2979,7 @@ function plantSlope(x,y,z,Z,lv,st){const t=rng();
 // ---------------------------------------------------------------- the pass
 RIFT.buildFloor=function(R,q){
  reseed(600011);q=q==null?1:q;R=R||3000;means();
- const st={scalemoss:0,zebras:0,tongues:0,vain:0,rosettes:0,curls:0,barrels:0,balls:0,ferns:0,shrubs:0,reeds:0,tufts:0,glasswort:0,domes:0,purple:0,candles:0,spikes:0,blooms:0,moss:0,boulders:0,spires:0,scum:0,logs:0};
+ const st={scalemoss:0,zebras:0,tongues:0,vain:0,rosettes:0,curls:0,barrels:0,balls:0,splits:0,ferns:0,shrubs:0,reeds:0,tufts:0,glasswort:0,domes:0,purple:0,candles:0,spikes:0,blooms:0,moss:0,boulders:0,spires:0,scum:0,logs:0};
  // one plant of the right zone's mix at (x,z); density by zone
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
   const w=[Z.jung*1.5,Z.shore*.9,Z.sav*1.2,Z.cloud*1.5,Z.peak*1.1,Z.slope*.9],tot=w[0]+w[1]+w[2]+w[3]+w[4]+w[5];if(tot<=0)return;
@@ -3369,7 +3434,11 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // the harvest tag (biomes/FRUIT.md): a fruiting plant's item names its plant; otherwise the species of the volume round it
+ const PLT=isItem?RIFT.plantOfItem((o.name||'').replace(/^biome:/,'')):null,S=!PLT&&best?RIFT.speciesByName(best.name):null,hv=PLT?PLT.tags.harvest:S?S.tags.harvest:null;
+ if(PLT)name=PLT.name+'  ·  '+lab;
+ const hvl=hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'';
+ insp.textContent=name+hvl+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
@@ -3419,7 +3488,29 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// ---------------------------------------------------------------- fruit (biomes/FRUIT.md)
+// species that yield something edible the kit does not draw as a catalog fruit (nuts, pods, pith...): named, not hidden
+const FRUIT_NOT_DRAWN=['baobab','araucaria','acacia','cycad','cloudfern','stonepine'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const HCHK={
+ // every fruiting species and plant names a catalog piece, every one is tagged, and the fruit is drawn on the stage:
+ // ballmelons (a few split, rind and flesh in pairs) and the hanging pods (frillpods, lantern fruit, bell dates)
+ fruit(SP,PL,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  const cnt=k=>P.filter(p=>p[3]==='biome:'+k).length,balls=cnt('ball'),pods=cnt('pod'),halves=cnt('melonhalf'),flesh=cnt('melonflesh');
+  const ok=!miss.length&&!untagged.length&&balls>=200&&pods>=50&&halves>=2&&flesh===halves;
+  return{ok,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+
+   balls+' ballmelons, '+(halves/2)+' split ('+flesh+' flesh faces), '+pods+' hanging pods; catalog keys: '+RIFT.FRUIT_KEYS.length+' ('+RIFT.FRUIT_KEYS.join(', ')+')'};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(RIFT.SPECIES,RIFT.PLANTS,P));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(RIFT.SPECIES.map(S=>S.key==='carrotfrill'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),RIFT.PLANTS,P));
+ add('no ballmelon split open',HCHK.fruit(RIFT.SPECIES,RIFT.PLANTS,P.filter(p=>p[3]!=='biome:melonhalf'&&p[3]!=='biome:melonflesh')));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

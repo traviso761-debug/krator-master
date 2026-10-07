@@ -93,6 +93,9 @@ const ringCol=(T,S,y,col)=>y-T.y0<charH(T)?charCol(S):col;
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,age} and lv 2 near / 1 mid
 const B=[];
+// the fruit (biomes/FRUIT.md) is placed by a hash of the tree, never by rng(): drawing it leaves every other tree as it was
+const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
+const seedCol=(T,i)=>bright(C(PAL.fireseed[fruitH(T,i,7)<.5?0:1]),.9+fruitH(T,i,8)*.3);
 
 // 0 the PRISM MALLEE: three to seven thin stems from a swollen root crown (the lignotuber), bark shedding in strips of
 // green, orange, red and cream (the prism gum's colours in small), lance leaves green to the sun and orange-red away
@@ -163,6 +166,10 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<
  if(dead){
   // the burst pods: blackened collars torn open wide at the limb ends
   for(const s of spots){const q=qUp([s.d[0]*.7,.7,s.d[2]*.7]);BIO.put('frill',[s.p.x,s.p.y,s.p.z],q,[rr(.5,.75),rr(.18,.28),rr(.5,.75)],shade(C(pick(PAL.frill)),-.62));st.pods++;}
+  // the fireseed thrown out over the fresh ash, before the first rains bring it up (the Scyvoi's first harvest of a burn)
+  if(lv===2&&a<1){const n=10+Math.floor(fruitH(T,0,1)*9);
+   for(let i=0;i<n;i++){const q=fruitH(T,i,2)*TAU,d=1.5+fruitH(T,i,3)*9,x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
+    BIO.put('seed',[x,Y(x,z)+.03,z],qEuler(fruitH(T,i,4)*3,fruitH(T,i,5)*TAU,0),[.06,.04,.06],seedCol(T,i));st.fruit++;}}
   // the thrown seed, come up as seedlings in a ring round the snag (after the first rains, a third of a year on)
   if(a>.3){const n=lv===2?ri(8,16):4,hs=clamp(.15+a*.32,.15,1.4);
    for(let i=0;i<n;i++){const q=rr(0,TAU),d=rr(4,18),x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
@@ -173,7 +180,11 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<
  for(const s of spots){for(let c=0,n=lv===2?3:1;c<n;c++){const q=rr(0,TAU),d=s.L*.3*Math.sqrt(rng());
    clumpAt('round',s.p.x+Math.cos(q)*d,s.p.y+rr(-.2,.5),s.p.z+Math.sin(q)*d,R*.42*(lv===2?1:1.5),.7,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
   // a pod at most limb ends, opening outward and up
-  if(rng()<.8){const q=qUp([s.d[0]*.6,.8,s.d[2]*.6]);BIO.put('frill',[s.p.x+s.d[0]*.4,s.p.y+.35,s.p.z+s.d[2]*.4],q,rr(.35,.55),bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;}}
+  if(rng()<.8){const q=qUp([s.d[0]*.6,.8,s.d[2]*.6]),px=s.p.x+s.d[0]*.4,py=s.p.y+.35,pz=s.p.z+s.d[2]*.4,ps=rr(.35,.55);BIO.put('frill',[px,py,pz],q,ps,bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;
+   // the fireseed sitting in the pod's cup
+   if(lv===2){const u=new T3.Vector3(0,1,0).applyQuaternion(q),k0=spots.indexOf(s)*3;
+    for(let i=0;i<3;i++){const j=k0+i,ox=(fruitH(T,j,2)-.5)*ps*.3,oz=(fruitH(T,j,3)-.5)*ps*.3;
+     BIO.put('seed',[px+u.x*ps*.3+ox,py+u.y*ps*.3,pz+u.z*ps*.3+oz],qEuler(fruitH(T,j,4)*3,fruitH(T,j,5)*TAU,0),[.07,.05,.07],seedCol(T,j));st.fruit++;}}}}
  regTree(T,S,reach,topY-T.y0+R*.4+1);};
 
 // 3 the PARASOL PINE and the long trunks: a clear straight bole with an umbrella of near-level limbs at the top, so the
@@ -192,8 +203,14 @@ function pineTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=C(pi
  for(const s of spots){const n=lv===2?(s.tip?2:1):(s.tip?1:0);
   for(let c=0;c<n;c++){const a=rr(0,TAU),d=s.s*.45*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.05,.3)*s.s;
    clumpAt(cfg.item,x,y,z,sz0*rr(.85,1.2),cfg.flat,scorched(T,y)?leafCol(PAL.scorch,1.1,.02,.06,.05):hc,T.x,cy,T.z,R,ey);st.clumps++;}}
+ // the parasol pine's cones (the catalog's pine nuts): one or two under a branch tip's tuft, and fallen under the crown
+ if(cfg.cones&&lv===2){let j=0;for(const s of spots){if(!s.tip)continue;j++;if(fruitH(T,j,1)>.45)continue;
+   for(let c=0,m=fruitH(T,j,2)<.4?2:1;c<m;c++){const sc=.85+fruitH(T,j*2+c,3)*.4;
+    BIO.put('pinecone',[s.p.x+(fruitH(T,j*2+c,4)-.5)*.6,s.p.y-.25*sc,s.p.z+(fruitH(T,j*2+c,5)-.5)*.6],qEuler(Math.PI+(fruitH(T,j,6)-.5)*.6,fruitH(T,j,7)*TAU,0),[.24*sc,.2*sc,.24*sc],bright(C(PAL.pineCone[(j+c)%3]),1.05));st.fruit++;}}
+  for(let i=0,n=3+Math.floor(fruitH(T,0,8)*5);i<n;i++){const q=fruitH(T,i,9)*TAU,d=1+fruitH(T,i,10)*R*.8,x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
+   BIO.put('pinecone',[x,Y(x,z)+.08,z],qEuler(Math.PI/2,fruitH(T,i,11)*TAU,0),[.22,.18,.22],bright(C(PAL.pineCone[i%3]),T.age<1?.55:.95));st.fruit++;}}
  regTree(T,S,R*1.15,topY-T.y0+R*.3+1);}
-B[3]=function(T,st,lv){pineTree(T,st,lv,{fam:'bark1',item:'needle',cb:rr(.68,.78),step:.028,el:.1,elU:.15,curve:.05,wig:.03,tuftK:.56,flat:.42,
+B[3]=function(T,st,lv){pineTree(T,st,lv,{cones:true,fam:'bark1',item:'needle',cb:rr(.68,.78),step:.028,el:.1,elU:.15,curve:.05,wig:.03,tuftK:.56,flat:.42,
  shape:u=>.55+.45*Math.sin(Math.PI*Math.min(1,u*1.05+.1))});};
 
 // 4 the GHOST GUM: a tall powder-white trunk, a sparse drooping crown of grey-green lance leaves high above the flames.
@@ -341,7 +358,7 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('craterdry: no builder for species '+i+' '+S.key);});
-const newStats=()=>({trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,heroes:0,fars:0,byS:SP.map(()=>0)});
+const newStats=()=>({trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,fruit:0,heroes:0,fars:0,byS:SP.map(()=>0)});
 CRATERDRY.buildTrees=function(R,q){
  reseed(550031);q=q==null?1:q;R=R||2500;means();
  const st=newStats();
@@ -361,7 +378,7 @@ CRATERDRY.buildTrees=function(R,q){
  TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  CRATERDRY.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,spikes:st.spikes,
-  shoots:st.shoots,seedlings:st.seedlings,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
+  shoots:st.shoots,seedlings:st.seedlings,fruit:st.fruit,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
 CRATERDRY._canopyH=function(x,z){let h=0;for(const T of CRATERDRY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||6;};
 // the nearest built hero of a species to a point; o.age:[lo,hi] picks one by the age of its burn
 CRATERDRY.nearestTree=function(sp,x,z,minH,o){let b=null,bd=1e9;for(const T of CRATERDRY.TREES){if(T.sp!==sp||T.lv<2||(minH&&T.H<minH))continue;

@@ -38,8 +38,13 @@ Read before changing anything here. `build.py` prints the open count.
       full sun a painted orchid shows mostly its first colour.
 - [ ] Only one test structure dresses (the dome ruin). `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
 - [ ] No fauna yet.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): cacao, pitaya, violet plantains, wingnut chains, strawberry-tree berries, whorl olives, lotus seeds, tunas, lantern fruit. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'xanadu'`). Most are drawn. Draw the striped olives on `whorlolive`, and the lotus seed head on the shore flowers after they bloom. Add harvest tags.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): every species carries `tags.harvest`
+      (`XANADU.HARVEST`, `HV()` as ebadlands), the floor's small plants too (`XANADU.PLANTS`); nine fruit name their
+      catalog piece (`XANADU.FRUIT_KEYS`, drawn by `XANADU.FRUIT_ITEM`). New: striped olives on `whorlolive` (item
+      `whorlolive`, 30 tris, near trees only, ~16k, ~0.49M tris) and lotus seed heads on the pads (`lotuspod`, 68 tris,
+      ~200). The probe's "fruit tagged, catalogued and drawn" check and three negatives; the inspector shows the tag.
+      `settlements/xanadu` vendors this kit and needs re-vendoring. The trees pass was already over its 19M class
+      budget (soft) before this; the showcase total is now 29.8M of 30M, so further fruit needs a cut elsewhere.
 
 ## Done
 

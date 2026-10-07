@@ -1881,6 +1881,7 @@ Object.assign(PAL,{
  rockGrey:[0x7a6a5e,0x8a7a6e,0x6a5a50],
  deadwood:[0x9a8a78,0x8a7a68,0xb0a090,0x7a6a5a],
  pod:[0xc8b850,0xd8c860,0xb8a840],
+ tuna:[0xe86a20,0xe0602a,0xd85a22],   // the catalog's fruitTuna (kits/catalog generic-goods), orange-red
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -1943,6 +1944,46 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. Ebadlands' HV().
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SEDESERT.HARVEST={
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound powder.'),
+ candelabra:HV('none',[],false,'The milky latex blinds and blisters: a fish poison, never food.'),
+ cardon:HV('ribs (light poles, roofing)',['fruit'],false,'Spiny fruit in early summer, eaten fresh or dried (not in the catalog yet).'),
+ bottle:HV('none',['stored water (famine)'],false,'The swollen trunk holds water; the bark fibre makes rope.'),
+ boojum:HV('none',[],false,''),
+ quiver:HV('hollowed branches (quivers)',[],false,'The soft branches are hollowed out for quivers.'),
+ mesquite:HV('fuel, posts, charcoal',['pods (ground into flour)'],true,'Sweet pods dried and ground for mesquite cakes; the gum is a salve.','generic_fruit_mesquite'),
+ palm:HV('trunks (beams), fronds (thatch)',['dates'],false,'A bunch of dates under the crown; the fronds thatch and weave.','generic_fruit_wadi_date'),
+ rose:HV('none',[],true,'The sap is an arrow poison; a little of it a heart medicine.'),
+ puya:HV('none',[],false,'The dry spike is kindling.'),
+ agave:HV('none',['heart (pit-roasted)','flower stalk'],true,'The heart is pit-roasted sweet; the leaves give fibre (not in the catalog yet).'),
+ yucca:HV('fuel',['flower buds (roasted)','seeds'],false,'The buds are roasted in spring; the leaf fibre makes sandals.'),
+ candle:HV('none',[],false,'Ornamental; the tips glow after dark.'),
+};
+SEDESERT.SPECIES.forEach(S=>{S.tags.harvest=SEDESERT.HARVEST[S.key]||HV('none');});
+// the small plants (the floor and the dressing), tagged: `items` names the instanced items that draw them, so the
+// inspector can name a plant from the item it clicked (the first plant naming an item wins)
+const PK=(name,climate,aridity,riparian,items,hv)=>({name,tags:{climate,aridity,abyssal:false,riparian,harvest:hv||HV('none')},items});
+SEDESERT.PLANTS={
+ pear:PK('Prickly pear','tropic','arid','no',['paddle','fruit'],HV('none',['tunas','young pads'],true,'Orange-red tunas along the pad rims, peeled; young pads fried.','generic_fruit_tuna')),
+ spinifex:PK('Spinifex','tropic','arid','no',['needle'],HV('thatch',[],true,'The resin is a glue for spear heads.')),
+ drygrass:PK('Dry grass','tropic','arid','both',['grass'],HV('thatch',['seed (ground)'],false,'')),
+ reed:PK('Reeds','tropic','humid','yes',['reed'],HV('thatch, mats',['young shoots'],false,'')),
+ creosote:PK('Creosote bush','tropic','arid','no',['small','rod'],HV('fuel',[],true,'A bitter tea for colds; it smells of rain.')),
+ saltbush:PK('Saltbush','tropic','arid','no',['lobe'],HV('fuel',['leaves (salty greens)'],false,'')),
+ echium:PK('Tower of jewels','tropic','semiarid','no',['spire'],HV('none',['nectar'],false,'Bees work the spires.')),
+ barrel:PK('Barrel cactus','tropic','arid','no',['barrel'],HV('none',['flesh (famine water)'],false,'')),
+ cholla:PK('Cholla','tropic','arid','no',['cone'],HV('none',['flower buds'],false,'')),
+ hoodia:PK('Hoodia','tropic','arid','no',['column'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
+ lichen:PK('Lichen','tropic','semiarid','both',['lichen'],HV('none',[],true,'A dye.')),
+};
+SEDESERT.plantOfItem=item=>{for(const k in SEDESERT.PLANTS)if(SEDESERT.PLANTS[k].items.indexOf(item)>=0)return SEDESERT.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SEDESERT.FRUIT_KEYS=[...new Set(SEDESERT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SEDESERT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -2164,6 +2205,8 @@ BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
+BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
+BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Hanging growth'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
@@ -2262,7 +2305,7 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.co
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 const bloomsAt=blooms;SEDESERT.blooms=blooms;
 // the volume the world's inspector names a tree by
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
@@ -2401,7 +2444,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
  frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
  if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
   for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
-  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('dates',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
  st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
 // 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
 B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;
@@ -2630,7 +2673,12 @@ function barrel(x,y,z,lv,k){around(x,z,lv===2?ri(1,3):1,.8,1.6,(px,pz)=>{const R
  BIO.put('barrel',[px,y-.05,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.8,1.3),R],leafCol(PAL.barrel,1.15,.03,.08,.05));
  if(lv===2&&rng()<.3)blooms(px,y+R*.9,pz,R*.3,ri(2,4),[0xe8d040,0xf0a040],[.12,.22]);});}
 function pear(x,y,z,lv){const hc=vary(pick(PAL.pear),.03,.08,.05);
- around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4);card('paddle',px,y+h,pz,rr(1,1.8),rr(.9,1.4),bright(vary(hc,.02,.06,.05),1.3),.35);});
+ around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4),s=rr(1,1.8),sy=rr(.9,1.4);card('paddle',px,y+h,pz,s,sy,bright(vary(hc,.02,.06,.05),1.3),.35);
+  // tunas: orange-red fruit along the pad's upper rim (generic_fruit_tuna). Hashed, not drawn from rng(), so the
+  // floor's random stream (every plant after this one) is unchanged; near and mid bands only
+  if(lv>=1){const n=Math.floor(h3(px,h,pz)*(lv===2?4:3));
+   for(let k=0;k<n;k++){const u=h3(px+k*7.1,pz,h+k),v=h3(pz,px+k*3.3,s+k),a=u*TAU,d=s*(.22+.22*v),r=.065+.03*h3(px,pz+k*5.7,sy);
+    BIO.put('fruit',[px+Math.cos(a)*d,y+h+sy*(.3+.12*v),pz+Math.sin(a)*d],qEuler(.3*(v-.5),a,0),[r,r*1.3,r],bright(PAL.tuna[(u*97|0)%PAL.tuna.length],1.05));}}});
  if(lv===2&&rng()<.4)blooms(x,y+1.6,z,.8,ri(2,5),[0xe8c030,0xd8a030,0xe07070],[.14,.24]);}
 function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,2.6),n=lv===2?ri(5,9):3;
  BIO.beam('rod',[x,y-.1,z],[x,y+h*.5,z],.08,.06,rodCol(0x5a4a3a));
@@ -3482,6 +3530,11 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the tags and the harvest: a tree from its registered volume, a floor plant from the item it clicked
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&SEDESERT.plantOfItem(item),S=best&&best.key&&SEDESERT.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ if(tg)name+='\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+
+  (tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'');
  insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
@@ -3553,7 +3606,20 @@ const drawnH=(function(){let P=null,X,Z,nx;const at=(A,v)=>{let lo=0,hi=A.length
   return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};})();
 // the twist-candles' far spires, laid out for every clump (SEDESERT.spiresOf: this spine keeps all of them heroes)
 const candleSpires=()=>{const sp=SEDESERT.SPECIES.indexOf(SEDESERT.byKey.candle);return SEDESERT.TREES.filter(T=>T.sp===sp).flatMap(T=>SEDESERT.spiresOf(T));};
+// species that yield something edible the kit does not draw as a catalog fruit (the cardon's fruit, the agave's heart,
+// the Joshua tree's buds, the bottle tree's water): named, not hidden. And the item that draws each catalog fruit.
+const FRUIT_NOT_DRAWN=['cardon','bottle','agave','yucca'];
+const FRUIT_ITEM={generic_fruit_tuna:'fruit',generic_fruit_mesquite:'pods',generic_fruit_wadi_date:'dates'};
+const itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)n[M.name.replace(/^biome:/,'')]=(n[M.name.replace(/^biome:/,'')]||0)+M.count;});return n;};
 const HCHK={
+ // fruit: every species and floor plant carries a harvest tag; every edible species names a catalog piece (or is
+ // listed as not drawn); every catalog fruit the kit names is drawn by its item (the tunas at least 200 times)
+ fruit(SP,PL,N){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  const keys=[...new Set(SP.map(S=>S.tags.harvest&&S.tags.harvest.fruit).concat(Object.values(PL).map(P=>P.tags.harvest&&P.tags.harvest.fruit)).filter(Boolean))];
+  const undrawn=keys.filter(k=>!FRUIT_ITEM[k]||!(N[FRUIT_ITEM[k]]>=(k==='generic_fruit_tuna'?200:1)));
+  return{ok:!miss.length&&!untagged.length&&!undrawn.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+
+   (undrawn.length?'not drawn: '+undrawn.join(', ')+'; ':'')+keys.map(k=>k.replace('generic_fruit_','')+' '+(N[FRUIT_ITEM[k]]||0)).join(', ')+' instances; '+SP.length+' species and '+Object.keys(PL).length+' plants tagged'};},
  // the curtain: no vertex buried in rock, and its top row stands on rock (the river does not run out over air)
  curtain(V,name){const inRock=V.filter(v=>buried(v[0],v[1],v[2],.3)).length,top=Math.max(...V.map(v=>v[1])),T=V.filter(v=>v[1]>top-.01);
   const air=T.filter(v=>rockTop(v[0]-4,v[2])<v[1]-3).length;
@@ -3575,6 +3641,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('carve: nothing grows under the cap',HCHK.noHoodFlora(instPoints().filter(p=>Math.abs(p[0]-LIP.x)<80&&Math.abs(p[2]-LIP.z)<80)));
  add('preset-cameras-out-of-the-rock',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('candles: far spires neither float nor sink',HCHK.spires(candleSpires(),'the twist-candles'));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,itemCounts()));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  const V=worldV(FALL.mesh);add('the cataract pushed 12 m back into the promontory',HCHK.curtain(V.map(v=>[v[0]-12,v[1],v[2]]),'curtain-12'));
@@ -3584,6 +3651,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera inside the cap',HCHK.camerasOut([{view:'in-cap',x:Q.c[0]-12,y:BIO.carve.covered(Q.c[0]-12,Q.c[1])+4,z:Q.c[1]}]));
  const S=candleSpires();add('the candle spires footed on the water, not the bed',HCHK.spires(S.map(s=>Object.assign({},s,{foot:Math.max(waterH(s.x,s.z),terrainH(s.x,s.z))})),'spires on the water'));
  add('the candle spires sunk to their tips',HCHK.spires(S.map(s=>Object.assign({},s,{foot:2*s.foot-s.top,top:s.foot})),'spires sunk'));
+ add('a fruiting species with no catalog fruit',HCHK.fruit(SEDESERT.SPECIES.map(S=>S.key==='mesquite'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SEDESERT.PLANTS,itemCounts()));
+ add('the tunas never drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,Object.assign(itemCounts(),{fruit:0})));
  return R;}
 window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

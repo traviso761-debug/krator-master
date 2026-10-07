@@ -30,8 +30,10 @@
       cold-air pooling (`45-host-stage.js:155`) and snow is gated on `cold>.94*alpine` (`84-host-ground.js`, the snow lerp), so the
       default SE-crest overview shows a continuous white band on the valley floor. (The near trees there no longer read
       as bare poles: the bushy conifers, Oct 2026.)
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): yew-lantern arils, frost rowan, wall bilberries, lantern pods, beechmast and acorns. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'nhighlands'`). The arils, rowan berries, bilberries and lantern pods are drawn and tagged. Draw beechmast on `bluebeech` and acorns on `gnarloak` (both tagged, neither drawn), and point the `HV()` notes at the catalog keys.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`; 2026-10-06): yew-lantern arils, frost rowan, wall bilberries, lantern pods, beechmast and acorns.
+      `HV()` carries `fruit` (the catalog key) on `elderyew`, `rowan`, `bluebeech`, `gnarloak` and the bilberry and lantern-pod plants; `NHL.FRUIT_KEYS` lists them.
+      Beechmast (`bluebeech`) and acorns (`gnarloak`) are now drawn: the `mast` item, a tetrahedron (4 triangles) in three-nut clusters at hero-level leaf
+      spots (17,064 instances, about 68k triangles). The probe's host check `fruit tagged, catalogued and drawn` (with two negatives) guards it.
 - [ ] (Travis, Oct 2 2026) **Floating forest: lime foliage.** The floating forest's foliage reads lime green against
       the rest of the kit; retune it to the kit's palette.
 

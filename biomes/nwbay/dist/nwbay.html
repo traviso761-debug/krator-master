@@ -2012,6 +2012,7 @@ Object.assign(PAL,{
  ravenala:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],                 // the traveller's fan's paddles
  ravenalaOld:[0x8a7a40,0x7a6a3a,0x9a8a4a],                       // its torn, yellowing outer leaves
  ravenalaSeed:[0x2a6ad0,0x3a7ae0,0x2050b0],                      // the blue arils (canon: iridescence and odd blues in the dolines)
+ fig:[0xb4482c,0x5a2a48],                                        // the cliff fig's figs, orange-red and ripe purple (the catalog's fruitCliffFig*)
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -2084,6 +2085,37 @@ NWBAY.SPECIES=[
   leaf:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],leaves:[14,24],zone:'the floors of the dolines, the rainforest, the banks',source:'new (Madagascar)',
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'both'}},
 ];
+NWBAY.byKey={};NWBAY.SPECIES.forEach((S,i)=>{NWBAY.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as the other kits' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+NWBAY.HARVEST={
+ prismgum:HV('timber',['nectar'],true,'The bark sheds in rainbow strips; a red gum from its cracks dresses wounds.'),
+ baobab:HV('fibre (the inner bark)',['pod pulp','seeds','young leaves'],true,'The hanging pods are sawn into rounds; the dry pulp is a sour chalk.','generic_fruit_gatepod'),
+ fancrown:HV('poles, thatch',[],false,'The fans thatch the lowland roofs.'),
+ ironbark:HV('timber',[],true,'The hardest wood of the bay: the jetties stand on it; the bark is a tannin dye.'),
+ treefern:HV('fibre',['fiddleheads','pith (famine)'],false,'The trunk fibre lines hearths and grows orchids.'),
+ splay:HV('none',[],false,''),
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound balm.'),
+ thorn:HV('fuel',['gum'],true,'The gum is chewed; the pods are fodder.'),
+ clifffig:HV('none',['figs'],true,'Small figs in the leaf axils the year round, orange-red going purple; the latex is a glue.','generic_fruit_cliff_fig'),
+ flamecrown:HV('light timber, shade',[],false,'The farm and street tree, planted for its shade and its scarlet flush.'),
+ cinderpine:HV('timber, pitch',[],true,'The pitch caulks the boats; the smoke of the needles keeps flies off.'),
+ mangrove:HV('poles, charcoal',['propagules (leached, famine)'],true,'The bark tans the nets.'),
+ pandan:HV('thatch, mats',['fruit keys','leaves (a flavouring)'],false,'The orange fruit heads break into keys, chewed or cooked down to a paste.','generic_fruit_pandan_keys'),
+ lotustrumpet:HV('none',['fringe petals (steeped)'],false,'The trumpets hold rainwater; the fringe petals are steeped for a rose-scented tea.'),
+ pipereed:HV('none',[],true,'The silica-rough stems scour pots.'),
+ matreed:HV('mats, thatch, cordage, reed boats',['young shoots'],false,'Cut for mats and boats; the white heart of a young shoot is eaten.'),
+ spinewand:HV('none',[],false,'Planted as a living fence.'),
+ rockbottle:HV('none',[],true,'The sap poisons fish and arrows: never eaten.'),
+ avenuebaobab:HV('fibre (the inner bark)',['fruit pulp','seed oil'],true,'The velvet fruit is cracked for its dry cream pulp; the seeds are pressed for oil.','generic_fruit_avenue_baobab'),
+ travellerfan:HV('thatch (the leaves), walls (the stalks)',['seed arils','water from the leaf bases'],false,'The blue arils are oily: eaten, or pressed; the leaf bases hold water for a thirsty traveller.','generic_fruit_traveller_aril'),
+};
+NWBAY.SPECIES.forEach(S=>{S.tags.harvest=NWBAY.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md)
+NWBAY.FRUIT_KEYS=[...new Set(NWBAY.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -2416,6 +2448,7 @@ BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosette succulents'});
 BIO.def('shroom',G.shroom(),M.shroom,{label:'Mushrooms'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones, stubs and pneumatophores'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Baobab pods'});
+BIO.def('fig',new T3.OctahedronGeometry(1,0),M.solid,{label:'Fruit: cliff figs'});
 // rods and small trunks are OPEN cylinders: their ends sit inside joints, crowns and the ground, and the caps were a third of the scene
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,7,1,true),M.solid,{label:'Stems'});
 BIO.def('trunk',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(NWBAY.BARKTEX[1]),{label:'Small trunks (fibrous)'});
@@ -2549,6 +2582,8 @@ const reg=(T,S,r)=>{if(typeof REGISTER==='function')REGISTER({name:S.name,kind:'
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,wet} and lv 2 near / 1 mid / 0 far
 const B=[];
+// the fruit (biomes/FRUIT.md) is placed by a hash of the tree, never by rng(): drawing it leaves every other tree as it was
+const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
 // 0 the prism gum: a fluted bole in shed strips of six colours, long near-level boughs, iridescent lance-leaf fans
 B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  const rAt=u=>rb*(1-.45*u)*(1+.9*Math.exp(-u*H/6));
@@ -2750,6 +2785,10 @@ B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3,ha
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.4,.3)*s.s;
    if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('glossy',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}});
  if(!mine){clumpAt('glossy',T.x,T.y0+H*.62,T.z,sz0,.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}
+ // the FIGS (the catalog's cliff figs): clusters in the leaf axils under the crown's spots, orange-red and ripe purple
+ if(lv===2)spots.forEach((s,j)=>{if(fruitH(T,j,1)>.35)return;
+  for(let c=0,m=3+Math.floor(fruitH(T,j,2)*4);c<m;c++){const i=j*8+c,a=fruitH(T,i,3)*TAU,d=s.s*.35*fruitH(T,i,4),r=.09+fruitH(T,i,5)*.05;
+   BIO.put('fig',[s.p.x+Math.cos(a)*d,s.p.y-s.s*.25-fruitH(T,i,6)*.6,s.p.z+Math.sin(a)*d],qEuler(fruitH(T,i,7),fruitH(T,i,8)*TAU,0),[r,r*1.15,r],bright(C(PAL.fig[fruitH(T,i,9)<.35?1:0]),1.05+fruitH(T,i,10)*.2));st.pods++;}});
  // the AERIAL ROOTS: from an outward bough to the rim, then straight down the face to the water. A variant grown in
  // the nursery (T.nursery) has no rim: it keeps where its curtains would hang from, and each placed fig drops its own
  // to its own stack's waterline (56-variants)
@@ -4050,7 +4089,9 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // the species' harvest tag (biomes/FRUIT.md), when the point is under a registered tree
+ const S=best&&NWBAY.SPECIES.find(s=>s.name===best.name),hv=S&&S.tags.harvest;
+ insp.textContent=name+(hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
@@ -4101,6 +4142,16 @@ function nanSweep(){const bad=[];let badInst=0;
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // the biome's own invariants: the height ceiling (nothing Girder-sized), the
 // karst mask (nothing rooted on a cliff face), the figs on the karst
+// species that yield something edible the kit does not draw as a catalog fruit (nectar, fiddleheads, gum, propagules,
+// petals, shoots): named in the tags, not hidden
+const FRUIT_NOT_DRAWN=['prismgum','treefern','thorn','mangrove','lotustrumpet','matreed'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// fruit: every fruiting species names a catalog piece and every species carries a harvest tag, and the fruit is drawn
+// (the figs on the cliff figs, the pods of both baobabs; the pandan heads and the traveller's-fan arils as before)
+function fruitCheck(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+ const figs=P.filter(p=>/:fig$/.test(p[3])).length,pods=P.filter(p=>/:pod$/.test(p[3])).length,untagged=SP.filter(S=>!S.tags||!S.tags.harvest).map(S=>S.key);
+ return{ok:!miss.length&&!untagged.length&&figs>=100&&pods>=20,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+figs+' figs and '+pods+' baobab pods drawn; catalog keys: '+NWBAY.FRUIT_KEYS.join(', ')};}
 function extra(){const R=[];const T=NWBAY.TREES||[];
  let tallest=0,tallSp='';T.forEach(t=>{if(t.H>tallest){tallest=t.H;tallSp=NWBAY.SPECIES[t.sp].key;}});
  R.push({name:'height-ceiling',ok:tallest<=NWBAY.TEMPLE_H*1.01+.5,detail:'tallest tree '+tallest.toFixed(1)+' m ('+tallSp+') against a ceiling of '+NWBAY.TEMPLE_H+' m'});
@@ -4123,6 +4174,12 @@ function extra(){const R=[];const T=NWBAY.TREES||[];
  {const heroes=T.filter(t=>t.lv>0),byV={};heroes.forEach(t=>{const k=t.sp;(byV[k]=byV[k]||new Set()).add(t.variant);});
   const most=Math.max(0,...Object.values(byV).map(s=>s.size)),nov=heroes.filter(t=>t.variant==null).length;
   R.push({name:'heroes-are-variants',ok:nov===0&&most<=NWBAY.VARIANTS,detail:heroes.length+' heroes drawn from '+(NWBAY.PROTOS?NWBAY.PROTOS.size:0)+' prototypes; at most '+most+' variants a species; '+nov+' without one'});}
+ // fruit, and its negative controls (a broken input that must fail)
+ {const P=instPoints(),f=fruitCheck(NWBAY.SPECIES,P);R.push({name:'fruit-tagged-catalogued-drawn',ok:f.ok,detail:f.detail});
+  const n1=fruitCheck(NWBAY.SPECIES.map(S=>S.key==='clifffig'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P);
+  R.push({name:'negative: a fruiting species with no catalog fruit',ok:!n1.ok,detail:n1.detail});
+  const n2=fruitCheck(NWBAY.SPECIES,P.filter(p=>!/:fig$/.test(p[3])));
+  R.push({name:'negative: no figs drawn',ok:!n2.ok,detail:n2.detail});}
  return R;}
 window._api={BUDGET,REG,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

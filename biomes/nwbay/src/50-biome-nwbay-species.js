@@ -90,6 +90,7 @@ Object.assign(PAL,{
  ravenala:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],                 // the traveller's fan's paddles
  ravenalaOld:[0x8a7a40,0x7a6a3a,0x9a8a4a],                       // its torn, yellowing outer leaves
  ravenalaSeed:[0x2a6ad0,0x3a7ae0,0x2050b0],                      // the blue arils (canon: iridescence and odd blues in the dolines)
+ fig:[0xb4482c,0x5a2a48],                                        // the cliff fig's figs, orange-red and ripe purple (the catalog's fruitCliffFig*)
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -162,6 +163,37 @@ NWBAY.SPECIES=[
   leaf:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],leaves:[14,24],zone:'the floors of the dolines, the rainforest, the banks',source:'new (Madagascar)',
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'both'}},
 ];
+NWBAY.byKey={};NWBAY.SPECIES.forEach((S,i)=>{NWBAY.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as the other kits' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+NWBAY.HARVEST={
+ prismgum:HV('timber',['nectar'],true,'The bark sheds in rainbow strips; a red gum from its cracks dresses wounds.'),
+ baobab:HV('fibre (the inner bark)',['pod pulp','seeds','young leaves'],true,'The hanging pods are sawn into rounds; the dry pulp is a sour chalk.','generic_fruit_gatepod'),
+ fancrown:HV('poles, thatch',[],false,'The fans thatch the lowland roofs.'),
+ ironbark:HV('timber',[],true,'The hardest wood of the bay: the jetties stand on it; the bark is a tannin dye.'),
+ treefern:HV('fibre',['fiddleheads','pith (famine)'],false,'The trunk fibre lines hearths and grows orchids.'),
+ splay:HV('none',[],false,''),
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound balm.'),
+ thorn:HV('fuel',['gum'],true,'The gum is chewed; the pods are fodder.'),
+ clifffig:HV('none',['figs'],true,'Small figs in the leaf axils the year round, orange-red going purple; the latex is a glue.','generic_fruit_cliff_fig'),
+ flamecrown:HV('light timber, shade',[],false,'The farm and street tree, planted for its shade and its scarlet flush.'),
+ cinderpine:HV('timber, pitch',[],true,'The pitch caulks the boats; the smoke of the needles keeps flies off.'),
+ mangrove:HV('poles, charcoal',['propagules (leached, famine)'],true,'The bark tans the nets.'),
+ pandan:HV('thatch, mats',['fruit keys','leaves (a flavouring)'],false,'The orange fruit heads break into keys, chewed or cooked down to a paste.','generic_fruit_pandan_keys'),
+ lotustrumpet:HV('none',['fringe petals (steeped)'],false,'The trumpets hold rainwater; the fringe petals are steeped for a rose-scented tea.'),
+ pipereed:HV('none',[],true,'The silica-rough stems scour pots.'),
+ matreed:HV('mats, thatch, cordage, reed boats',['young shoots'],false,'Cut for mats and boats; the white heart of a young shoot is eaten.'),
+ spinewand:HV('none',[],false,'Planted as a living fence.'),
+ rockbottle:HV('none',[],true,'The sap poisons fish and arrows: never eaten.'),
+ avenuebaobab:HV('fibre (the inner bark)',['fruit pulp','seed oil'],true,'The velvet fruit is cracked for its dry cream pulp; the seeds are pressed for oil.','generic_fruit_avenue_baobab'),
+ travellerfan:HV('thatch (the leaves), walls (the stalks)',['seed arils','water from the leaf bases'],false,'The blue arils are oily: eaten, or pressed; the leaf bases hold water for a thirsty traveller.','generic_fruit_traveller_aril'),
+};
+NWBAY.SPECIES.forEach(S=>{S.tags.harvest=NWBAY.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md)
+NWBAY.FRUIT_KEYS=[...new Set(NWBAY.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -494,6 +526,7 @@ BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosette succulents'});
 BIO.def('shroom',G.shroom(),M.shroom,{label:'Mushrooms'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones, stubs and pneumatophores'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Baobab pods'});
+BIO.def('fig',new T3.OctahedronGeometry(1,0),M.solid,{label:'Fruit: cliff figs'});
 // rods and small trunks are OPEN cylinders: their ends sit inside joints, crowns and the ground, and the caps were a third of the scene
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,7,1,true),M.solid,{label:'Stems'});
 BIO.def('trunk',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(NWBAY.BARKTEX[1]),{label:'Small trunks (fibrous)'});

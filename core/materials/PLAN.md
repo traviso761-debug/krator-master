@@ -1339,6 +1339,15 @@ chroma key (the meta's `_source.note` says so). Ask for magenta next time: the g
 Still owed from the audit after this: `card.palm` (fronds as a card), `card.lichen`, `card.lotus` (single pads), `bark.strangler`, `card.samphire`,
 `card.ginkgo`, `card.heath`, `ground.shingle`, `skin.marine`, `wood.petrified`; and every building row in "prompted earlier and still owed".
 
+#### The biome fruit (2026-10-06, late)
+
+The catalog's fruit pieces (`krator-master-furniture-generic-fruit.js`, biomes/FRUIT.md) take texture families by palette key
+(FAMILY_SPLITS in kits/catalog/krator-furniture-core.js): fruitSkin (`fruit.skin.orange`), fruitHusk (`fruit.husk`), fruitShell
+(`fruit.capsule`), fruitScale (`fruit.scale`), fruitFlesh (`fruit.flesh`), fruitJelly (`fruit.jelly`), fruitSeed (`fruit.seeds`),
+fungus (`organic.fungus.cap`). A key splits by an explicit list or by its last word (…Husk, …Shell, …Flesh or Pulp, …Water or Jelly,
+…Seed or Kernel); shaded parts take the nearest fruit key's family. Hosts map `f_fruitSkin` and the rest (Girder, Scyvoi).
+`fruit.seeds`, `fruit.flesh`, `fruit.scale` and `fruit.jelly` were generated for this (batches `chatgpt-2026-10u-fruit`, `-10v-jelly`).
+
 #### Delivered 2026-10-06, late: the last nineteen prompts (Downloads)
 
 Batches `chatgpt-2026-10r-owed.json` and `-cards.json`. Tintable: `earth.rammed` (lifts), `band.xanadu.twig`, `roof.turf`, `bark.whorled`,

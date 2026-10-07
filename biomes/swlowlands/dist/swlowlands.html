@@ -1595,6 +1595,7 @@ const PAL=SWLOW.PAL={
  hyacinth:[0x9a7ae0,0xaa8ae8,0x8a6ad0],
  cream:[0xf4ecd4,0xf0e4c4,0xe8dcb8],
  berry:[0xc82a1e,0xd8401e,0xb01c18],
+ figFruit:[0x5a3a5a,0x64406a,0x4e3250,0x6e4a5e],   // the catalog's fruitFig (generic_fruit_pillar_fig), ripe to dusky
  // everything else
  moss:[0x4f6a2c,0x5a7a30,0x3f5a26,0x6a8a3a,0x557a3c],
  mossPale:[0x8a9a7a,0x9aa888,0x7a8a6e,0xa4ae92],       // Spanish moss: grey-green
@@ -1670,6 +1671,49 @@ SWLOW.SPECIES=[
  /*26*/{key:'baylaurel',name:'Bay laurel',H:[14,22],rb:[.8,1.3],crownR:[12,20],bk:'bk_pale',bark:[0x8e948a,0x82887e,0x9aa094],
   leaf:PAL.bay,moss:.1,touch:.08,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'both'}},
 ];
+SWLOW.byKey={};SWLOW.SPECIES.forEach(S=>{SWLOW.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as nhighlands' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SWLOW.HARVEST={
+ mangrove:HV('poles, fuel',[],true,'The lacquered red bark tans hides and dyes nets.'),
+ cypress:HV('timber (rot-proof)',[],false,'Shingles and boat planks; the knees are carved.'),
+ kapok:HV('light timber, canoes',['seeds (pressed)'],false,'The pod floss stuffs pillows and floats.'),
+ gum:HV('timber',[],true,'The leaves are steamed against chest colds.'),
+ canepalm:HV('canes, furniture',['palm heart (famine)'],false,'The lacquered stems are split for cane-work.'),
+ sprawloak:HV('ship knees, fuel',['acorns (leached)'],true,'Acorns leached and ground (not drawn); the bark tans leather.'),
+ pillarfig:HV('none (one tree is a grove)',['figs'],true,'Purple figs on the limbs and the fused bole, pink inside; the latex is a wart salve.','generic_fruit_pillar_fig'),
+ willow:HV('basketry, withies',[],true,'The bark is a fever and pain tea.'),
+ ringbark:HV('tool handles',[],false,'The copper bark peels in rings for tinder.'),
+ sycamore:HV('furniture, fuel',[],false,'The pale mottled timber turns well.'),
+ manzanita:HV('carving, fuel',['berries','cider'],true,'Red berries pressed into a cider; the leaves a tea.','generic_fruit_madrone'),
+ madrone:HV('fuel, turnery',['berries'],true,'Bumpy red berries, mealy and sweet; the bark a tea for sore throats.','generic_fruit_madrone'),
+ corkoak:HV('cork, fuel',['acorns (leached)'],false,'Stripped for cork every ninth year; acorns not drawn.'),
+ skirtpalm:HV('thatch, fibre',['fruit'],false,'Small hard fruit (not drawn); the skirt fibre makes rope.'),
+ coastoak:HV('fuel, tool handles',['acorns (leached)'],true,'Acorns leached and ground (not drawn).'),
+ pompom:HV('none',[],false,'The red cones are poisonous.'),
+ cedar:HV('timber, chests',[],true,'The scented wood keeps moths from cloth.'),
+ pine:HV('timber, pitch',['pine nuts (small)'],true,'The pitch is tapped for tar and salve.'),
+ crimson:HV('none',[],false,'Ornamental: the crimson crown over a ghost-white bole.'),
+ rattlepod:HV('fuel',['seeds (roasted)'],false,'The pods rattle when ripe; the seeds are roasted dark for "rattle coffee".','generic_fruit_rattlepod'),
+ eyed:HV('furniture',[],false,'The eyed bark is cut for veneer.'),
+ flame:HV('fuel',['pod pulp'],true,'Dark pods round sour-sweet pulp, pressed into cakes.','generic_fruit_ember_tamarind'),
+ jacaranda:HV('turnery',[],false,'Grown for its violet bloom.'),
+ magnolia:HV('light timber',[],true,'The bark is a bitter tonic.'),
+ sunburn:HV('fuel',[],true,'The resin dresses sunburn, hence the name.'),
+ stargum:HV('timber',[],true,'The resin is a cough syrup.'),
+ baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (not drawn) are roasted.'),
+};
+SWLOW.SPECIES.forEach(S=>{S.tags.harvest=SWLOW.HARVEST[S.key]||HV('none');});
+// the small plants that bear catalogued fruit (60-floor places them); `items` names the instanced items that draw them
+SWLOW.PLANTS={
+ toyon:{name:'Toyon',tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no',
+  harvest:HV('none',['berries (cooked)'],true,'Red berries at the tips, as the madrone has them.','generic_fruit_madrone')},items:['lobe','bloom']},
+};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SWLOW.FRUIT_KEYS=[...new Set(SWLOW.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SWLOW.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
@@ -2040,6 +2084,7 @@ BIO.def('forkfern',BIO.geo.frond(3),M.forkfern,{label:'Forking ferns'});
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Seed pods'});
 BIO.def('pompom',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Pompom cones'});
+BIO.def('fig',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Pillar figs'});   // generic_fruit_pillar_fig: 20 triangles a fig
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN'],label:'Blossom'});
 BIO.def('veil',BIO.geo.ribbon(6,.45,.10),M.veil,{label:'Willow veils'});
 BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Palm fronds'});
@@ -2220,7 +2265,8 @@ function bole(fam,T,S,top,rb,flare,fh,lobes,seg,vs,lean){const nl=lobes||0,L=[],
  const r1=rAt(1);rings.push({x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top,r:r1,yy:top,col:barkC(S,1)},{x:T.x+lx*top,y:T.y0+top+r1*.8,z:T.z+lz*top,r:.05,yy:top+1,col:barkC(S,1)});
  const tris=BIO.lathe(fam,rings,seg,Math.max(1,Math.round(TAU*rb/3)),vs,(R,ang)=>R.r*(1+(nl?flare*.9*Math.exp(-R.yy/fh)*lobeSum(ang):0)+.03*Math.sin(5*ang+R.yy*.2)),
   nl?(R,ang)=>mix(1,.6+.4*clamp(lobeSum(ang),0,1),Math.exp(-R.yy/fh)):null);
- return{tris,top:{x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top},rAt,lx,lz};}
+ // rS: the drawn surface's radius at height yy and angle ang (the lathe's own formula), for things set ON the bole
+ return{tris,top:{x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top},rAt,lx,lz,rS:(yy,ang)=>rAt(yy/top)*(1+(nl?flare*.9*Math.exp(-yy/fh)*lobeSum(ang):0)+.03*Math.sin(5*ang+yy*.2))};}
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,wet} and lv 2 near / 1 mid
@@ -2260,13 +2306,14 @@ B[5]=B[14]=B[26]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb,coast
  if(lv===2&&!coast&&T.wet>.6&&rng()<.6){const a=rr(0,TAU);staghorn(T.x,T.y0+hc*.7,T.z,a,bo.rAt(.7),rr(1.2,2),st);}
  T.spread=spread(T,all);reg(T,S);};
 // 6 the PILLAR FIG: a fused, fluted bole, level limbs, and roots dropping from the
-// limbs to the ground to become new trunks -- one tree that is a grove
+// limbs to the ground to become new trunks -- one tree that is a grove. Its FIGS
+// (generic_fruit_pillar_fig) grow straight off the wood, as a cluster fig's do: see figs().
 B[6]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  const hc=H*rr(.3,.42),bo=bole(fam,T,S,hc,rb,1.1,2.2,ri(6,9),lv===2?14:9,3.6,0);st.trunk+=bo.tris;
- const nL=lv===2?ri(7,10):ri(5,6),a0=rr(0,TAU),spots=[],all=[];
+ const nL=lv===2?ri(7,10):ri(5,6),a0=rr(0,TAU),spots=[],all=[],LF=[];
  for(let k=0;k<nL;k++){const a=a0+k*GOLD+rr(-.25,.25),el=rr(.05,.32),len=T.crownR*rr(.7,1.0),r0=rb*rr(.35,.5);
   const o={x:T.x+Math.cos(a)*rb*.5,y:T.y0+hc*rr(.75,1),z:T.z+Math.sin(a)*rb*.5},pts=limbPts(o,a,el,len,r0,.14,lv===2?9:6,-rr(.1,.3),.1,rr(.05,.2));
-  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:lv===2?7:5,cap:true});all.push(...pts);st.limbs++;
+  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:lv===2?7:5,cap:true});all.push(...pts);st.limbs++;LF.push(pts);
   for(let i=2;i<pts.length;i++){const p=pts[i],t=i/(pts.length-1);
    // the pillars: some thick, most thin, all straight down to the ground
    if(lv>=1&&t>.3&&rng()<(lv===2?.55:.3)){const gy=Y(p.x,p.z);if(p.y-gy>2&&BIO.clearOf(p.x,p.z,.5)){
@@ -2281,7 +2328,22 @@ B[6]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  const cy=T.y0+H*.72,ex=T.crownR,ey=H*.3,sz0=rr(7.5,10),dens=lv===2?1.7:1;
  crownOn('glossy',spots,sz0,.6,()=>crownCol(S,.05),T,cy,ex,ey,dens,st);
  if(lv===2){for(let k=0,m=ri(1,3);k<m;k++)staghorn(T.x,T.y0+rr(3,hc*.9),T.z,rr(0,TAU),bo.rAt(.5),rr(1.2,2.2),st);}
+ if(lv===2)figs(T,bo,hc,LF,st);
  T.spread=spread(T,all);reg(T,S);};
+// the FIGS: purple, in clusters hugging the limbs (under and beside them) and on the fused bole above the
+// flutes. Near trees only. They draw on their own hash stream (h3 of the tree), never the kit's rng, so adding
+// them moved nothing else in the stand. ~45-70 figs a tree at 20 triangles each.
+function figs(T,bo,hc,LF,st){let fk=0;const fq=()=>{fk++;return h3(T.x*.0137+fk*1.31,T.z*.0171-fk*.71,T.seed*.0113+fk*.29);};
+ const one=(x,y,z,r)=>{const c=C(PAL.figFruit[Math.floor(fq()*PAL.figFruit.length)]);c.offsetHSL((fq()-.5)*.04,(fq()-.5)*.12,(fq()-.5)*.08);
+  BIO.put('fig',[x,y,z],qEuler((fq()-.5)*.6,fq()*TAU,(fq()-.5)*.6),[r,r*1.3,r],bright(c,1.05));st.figs=(st.figs||0)+1;};
+ // on the limbs: round the limb's axis, mostly under and beside it, a little along it
+ for(const pts of LF)for(let i=2;i<pts.length;i++){if(fq()>.3)continue;const p=pts[i],d=limbDir(pts,i),px=-Math.sin(d),pz=Math.cos(d),ux=Math.cos(d),uz=Math.sin(d);
+  for(let j=0,n=3+Math.floor(fq()*4);j<n;j++){const r=.05+.025*fq(),ph=-Math.PI*1.1+fq()*Math.PI*1.2,R=p.r+r*.85,s=(fq()-.5)*1.2;
+   one(p.x+ux*s+px*Math.cos(ph)*R,p.y+Math.sin(ph)*R,p.z+uz*s+pz*Math.cos(ph)*R,r);}}
+ // on the bole: at the lathe's own angles, ON its surface (bo.rS), clear of the flared foot
+ for(let k=0,m=4+Math.floor(fq()*5);k<m;k++){const a=Math.floor(fq()*14)/14*TAU,yy=Math.min(hc*.95,3.5+fq()*(hc-3.5)),r=.055+.025*fq(),R=bo.rS(yy,a)+r*.85;
+  for(let j=0,n=3+Math.floor(fq()*4);j<n;j++){const da=(fq()-.5)*.5/Math.max(1,R),dy=(fq()-.5)*.7,aa=a+da;
+   one(T.x+Math.cos(aa)*(R+.02),T.y0+yy+dy,T.z+Math.sin(aa)*(R+.02),r);}}}
 // 2 the PARASOL KAPOK: a pale plank-buttressed column, spines, and at two thirds of its
 // height a flat parasol of level boughs in two tiers, bromeliads along them
 B[2]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
@@ -2664,7 +2726,7 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
   if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
- return{trees:TREES.length,avenue:st.avenue||0,grove:st.grove||0,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,moss:st.moss,pillars:st.pillars,veils:st.veils,
+ return{trees:TREES.length,avenue:st.avenue||0,grove:st.grove||0,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,moss:st.moss,pillars:st.pillars,figs:st.figs||0,veils:st.veils,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,lite:st.lite}};};
 // ONE TREE AT A POINT. A world that plants a garden, a courtyard or a sacred grove asks for a
 // species by key at an explicit (x,y,z): no zone, no mask, no LOD (always the hero build).
@@ -3339,6 +3401,7 @@ const VIEWS={
  'A sprawl oak':viewTree('sprawloak',-300,0,1.75,4,.3,.4),
  'The plain from above':viewAxis(-900,-500,140,-200,300,0),
  'Pillar fig':viewTree('pillarfig',-900,0,1.0,3,.4,.3),
+ 'Figs on the pillar fig':viewTree('pillarfig',-900,0,.32,6,.3,.3),
  'Parasol kapok':viewTree('kapok',-1500,0,1.1,4,.62,.2),
  'Mangrove shore':viewTree('mangrove',-1950,-150,2.2,4,.3,.5),
  'The bayou':viewTree('cypress',-1400,-100,2.2,3,.5,.3),
@@ -3374,7 +3437,10 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // the tree's harvest tag (biomes/FRUIT.md): what it yields and the catalog piece its fruit is
+ const S=best&&SWLOW.SPECIES.find(s=>s.name===best.name),hv=S?S.tags.harvest:null;
+ const hl=hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'';
+ insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hl;}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
@@ -3428,7 +3494,30 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// ---------------------------------------------------------------- the host's own checks (verify.py runs them when present)
+// species that yield something edible the kit does not draw as a catalog fruit (acorns, palm fruit, bay berries,
+// seeds, palm heart): named, not hidden (biomes/FRUIT.md)
+const FRUIT_NOT_DRAWN=['kapok','canepalm','sprawloak','corkoak','coastoak','skirtpalm','pine','baylaurel'];
+function _instNames(){const o=[];scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)o.push([M.name,M.count]);});return o;}
+const HCHK={
+ // fruit: every species and fruiting plant carries a harvest tag, every edible one names a catalog piece (or is listed
+ // as not drawn), the kit names the four catalog keys of FRUIT.md, and the figs and pods are drawn on the stage
+ fruit(SP,PL,N){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  const cnt=re=>N.filter(n=>re.test(n[0])).reduce((a,n)=>a+n[1],0),figs=cnt(/^biome:fig$/),pods=cnt(/^biome:pod$/);
+  const keys=SWLOW.FRUIT_KEYS,want=['generic_fruit_madrone','generic_fruit_rattlepod','generic_fruit_ember_tamarind','generic_fruit_pillar_fig'],lost=want.filter(k=>keys.indexOf(k)<0);
+  return{ok:!miss.length&&!untagged.length&&!lost.length&&figs>=500&&pods>=500,
+   detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(lost.length?'catalog keys missing: '+lost.join(', ')+'; ':'')
+    +figs+' figs and '+pods+' pods drawn; '+SP.length+' species and '+Object.keys(PL).length+' plant tagged; catalog keys: '+keys.length};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_instNames();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='rattlepod'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SWLOW.PLANTS,N));
+ add('a species with no harvest tag',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='madrone'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),SWLOW.PLANTS,N));
+ add('the figs never drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N.filter(n=>n[0]!=='biome:fig')));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

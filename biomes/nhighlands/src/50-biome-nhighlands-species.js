@@ -60,6 +60,7 @@ const PAL=NHL.PAL={
  fireweed:[0xc0407a,0xd0508a,0xb03868],
  berry:[0xc8282a,0xd83a2a,0xb81e24],
  bilberry:[0x2a3a6a,0x34406e],
+ mast:[0x8a6a4a,0x6a5a3a],acorn:[0x9a7a3a,0x8a6a34],   // the catalog's fruitMast, fruitMastHusk, fruitAcorn
  snow:[0xeef2f6,0xe4eaf0,0xf6f8fa],
  mush:[0xc8281e,0xd8a040,0xe8dcc8,0x8a4a2a],
 };
@@ -70,7 +71,9 @@ PAL.irid={TV:[0x8a62b8,0x7a58a8,0x9a70c8],LG:[0xb8f070,0xc8f880]};
 // H height band (m), rb bole radius, crownR crown radius, bk bark texture kind,
 // bark colours (sRGB, tinted onto a near-grey texture), leaf colours, item (the
 // foliage card), habit (the builder) and its parameters.
-const HV=(wood,edible,medicinal,notes)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||''});
+// harvest: wood, edible parts, medicinal, a note, and `fruit`: the catalog piece its fruit is (biomes/FRUIT.md;
+// kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 const TG=(climate,aridity,riparian,harvest)=>({climate,aridity,abyssal:false,riparian,harvest});
 NHL.SPECIES=[
  /*0*/{key:'greatspruce',name:'Great spruce',habit:'conifer',H:[62,92],rb:[1.7,2.6],crownR:[9,13],bk:0,bark:[0x8a5a40,0x7a5a4a,0x6a6a5e],leaf:PAL.conifer,item:'needle',
@@ -86,8 +89,8 @@ NHL.SPECIES=[
   form:{hB:.32,boughs:[6,9],el:[.15,.55],L:[.9,1.25],wig:.22,curve:-.08,moss:1,drape:1,bulbs:.35,clump:[4.4,6.4]},
   tags:TG('temperate','humid','both',HV('timber',['sap'],false,'Sap boiled to syrup; the moss it carries is gathered for bedding.'))},
  /*4*/{key:'bluebeech',name:'Blue beech',habit:'broad',H:[30,44],rb:[.8,1.3],crownR:[9,13],bk:2,bark:[0x7a8a9a,0x6e8090,0x8a98a8],leaf:PAL.beech,item:'broad',
-  form:{hB:.48,boughs:[5,7],el:[.6,1.05],L:[.75,1.05],wig:.12,curve:-.1,moss:.4,drape:0,bulbs:.12,clump:[4.6,6.8],roots:true},
-  tags:TG('temperate','humid','no',HV('timber',['nuts'],false,'Beechmast: small oily nuts, roasted.'))},
+  form:{hB:.48,boughs:[5,7],el:[.6,1.05],L:[.75,1.05],wig:.12,curve:-.1,moss:.4,drape:0,bulbs:.12,clump:[4.6,6.8],roots:true,mast:'beech'},
+  tags:TG('temperate','humid','no',HV('timber',['nuts'],false,'Beechmast: three-sided oily nuts in spiny husks, roasted.','generic_fruit_mast'))},
  /*5*/{key:'silverfir',name:'Silver fir',habit:'conifer',H:[40,60],rb:[.9,1.5],crownR:[5,8],bk:0,bark:[0x8a8e8a,0x7a807c,0x969a94],leaf:PAL.coniferBlue.map(c=>C(c).lerp(C(0x2e5238),.5).getHex()),item:'needle',
   form:{clear:.24,crown:'cone',step:2.2,droop:.1,L:.9,buttress:.3,flutes:0,fluteA:0,top:'flat',moss:.6,drape:.25},
   tags:TG('temperate','humid','no',HV('timber',[],true,'Resin from the bark blisters, for wounds.'))},
@@ -96,8 +99,8 @@ NHL.SPECIES=[
  /*7*/{key:'trumpet',name:'Understory trumpet',habit:'trumpet',H:[4,14],rb:[.22,.55],crownR:[1.6,3.6],bk:5,bark:[0x6a7a44,0x5e6e3c,0x76864e],leaf:PAL.trumpet,ribs:10,
   tags:TG('temperate','humid','both',HV('none',['young funnel'],false,'The furled young funnel is cooked like a green.'))},
  /*8*/{key:'gnarloak',name:'Gnarled oak',habit:'gnarl',H:[8,16],rb:[.7,1.3],crownR:[7,11],bk:4,bark:[0x5a5448,0x4e4a40,0x666054],leaf:PAL.oak,item:'small',
-  form:{stems:[1,2],limbs:[4,7],wig:.45,el:[-.05,.45],moss:1,drape:.7,bulbs:.25},
-  tags:TG('temperate','subhumid','no',HV('fuel',['acorns'],true,'Acorns leached and ground; galls for ink; the bark for tanning.'))},
+  form:{stems:[1,2],limbs:[4,7],wig:.45,el:[-.05,.45],moss:1,drape:.7,bulbs:.25,mast:'acorn'},
+  tags:TG('temperate','subhumid','no',HV('fuel',['acorns'],true,'Acorns leached and ground into meal; galls for ink; the bark for tanning.','generic_fruit_mast'))},
  /*9*/{key:'foglaurel',name:'Fog laurel',habit:'gnarl',H:[10,20],rb:[.35,.6],crownR:[5,8],bk:4,bark:[0x5a5040,0x4e463a,0x665c48],leaf:PAL.laurel,item:'small',
   form:{stems:[4,7],limbs:[2,3],wig:.55,el:[.5,1.05],moss:1,drape:.45,bulbs:.15},
   tags:TG('temperate','humid','both',HV('fuel',[],true,'Leaves for seasoning and for a steam against colds.'))},
@@ -108,7 +111,7 @@ NHL.SPECIES=[
   form:{hB:.4,boughs:[5,7],el:[.45,.9],L:[.8,1.1],wig:.12,curve:-.06,moss:.6,drape:.3,bulbs:.12,clump:[3.6,5.2]},
   tags:TG('temperate','subhumid','no',HV('timber',['sap'],false,''))},
  /*12*/{key:'elderyew',name:'Elder yew',habit:'yew',H:[9,16],rb:[1.3,2.2],crownR:[7,10],bk:4,bark:[0x6a3a3a,0x5a3040,0x7a4446],leaf:PAL.yew,item:'needle',
-  tags:TG('temperate','humid','no',HV('timber',['arils (not the seed)'],true,'Every part poisonous but the red aril; bows from the heartwood.'))},
+  tags:TG('temperate','humid','no',HV('timber',['arils (not the seed)'],true,'Every part poisonous but the red aril: eat the cup, spit the stone. Bows from the heartwood.','generic_fruit_yew_lantern'))},
  /*13*/{key:'spirespruce',name:'Spire spruce',habit:'conifer',H:[24,40],rb:[.4,.7],crownR:[1.8,3.0],bk:0,bark:[0x5a5048,0x4e463e,0x665c52],leaf:PAL.conifer.map(c=>C(c).multiplyScalar(.82).getHex()),item:'needle',
   form:{clear:.08,crown:'spire',step:1.3,droop:.55,L:1,buttress:0,flutes:0,fluteA:0,top:'spire',moss:.2,drape:0,lichen:.6},
   tags:TG('cold','subhumid','no',HV('timber',[],false,'The straight poles of every boreal lodge.'))},
@@ -135,7 +138,7 @@ NHL.SPECIES=[
   tags:TG('temperate','humid','yes',HV('fuel',[],true,'Withies for baskets; the bark chewed for pain.'))},
  /*23*/{key:'rowan',name:'Rowan',habit:'broad',H:[6,12],rb:[.15,.3],crownR:[3,5],bk:2,bark:[0x8a8478,0x7e786c,0x969084],leaf:[0x5a8a34,0x6a9a3a,0x4e7a2e],item:'pinnate',
   form:{hB:.4,boughs:[4,6],el:[.75,1.1],L:[.7,1],wig:.1,curve:-.05,moss:.3,drape:0,bulbs:0,clump:[1.8,2.6],berries:true,stems:[1,3]},
-  tags:TG('temperate','subhumid','no',HV('fuel',['berries (cooked)'],true,'Bitter raw; jelly and wine when cooked.'))},
+  tags:TG('temperate','subhumid','no',HV('fuel',['berries (cooked)'],true,'Bitter raw; after a frost, cooked to an orange-red jelly, or wine.','generic_fruit_rowan'))},
  // the low band's broadleaf canopy (Bialowieza's lime): a tall clean bole into a high dome, a skirt of suckers at the foot
  /*24*/{key:'forestlime',name:'Forest lime',habit:'broad',H:[34,50],rb:[1.1,1.8],crownR:[10,14],bk:4,bark:[0x6a665a,0x5e5a50,0x76726a],leaf:[0x5a8e34,0x689c3a,0x4e8030,0x74a640],item:'broad',
   form:{hB:.5,boughs:[6,8],el:[.6,1.0],L:[.75,1.0],wig:.14,curve:-.07,moss:.5,drape:.15,bulbs:.08,clump:[5,7.2],roots:true,suckers:true},
@@ -153,7 +156,7 @@ NHL.PLANTS=[
  {label:'Hanging moss',name:'Hanging moss',tags:TG('temperate','humid','both',HV('none',[],false,'Bedding, tinder, padding.'))},
  {label:'Beard lichen',name:'Beard lichen',tags:TG('cold','subhumid','no',HV('none',[],true,'An old wound dressing.'))},
  {label:'Bell-bulbs',name:'Bell-bulb epiphyte',tags:TG('temperate','humid','both',HV('none',[],false,'Alien: glows faintly at night. Not edible.'))},
- {label:'Lantern pods',name:'Lantern pod epiphyte',tags:TG('temperate','humid','both',HV('none',[],false,'Alien: violet, glows at night.'))},
+ {label:'Lantern pods',name:'Lantern pod epiphyte',tags:TG('temperate','humid','both',HV('none',['pods (sliced thin)'],false,'Alien: violet, glows at night and for a day after picking; tastes of anise and pepper.','generic_fruit_lantern_pod'))},
  {label:'Disc stalks',name:'Disc stalk',tags:TG('temperate','subhumid','both',HV('none',['disc pith'],false,'Alien: gold discs on tall stalks.'))},
  {label:'Red-stem fans',name:'Red-stem fan',tags:TG('temperate','humid','yes',HV('none',[],false,'Alien: pleated round fans on red stems, by the water.'))},
  {label:'Trumpet saplings',name:'Trumpet sapling',tags:TG('temperate','humid','both',HV('none',['young funnel'],false,''))},
@@ -166,12 +169,15 @@ NHL.PLANTS=[
  {label:'Teal aroids',name:'Teal aroid',tags:TG('temperate','humid','both',HV('none',[],false,''))},
  {label:'Zebra rosettes',name:'Zebra rosette',tags:TG('temperate','humid','no',HV('none',[],false,'Alien, rare.'))},
  {label:'Mountain cane',name:'Mountain cane',tags:TG('temperate','humid','both',HV('fuel',['shoots'],false,'Canes for arrows and frames.'))},
- {label:'Heath and bilberry',name:'Heath and bilberry',tags:TG('cold','subhumid','no',HV('none',['bilberries'],true,'Berries in late summer.'))},
+ {label:'Heath and bilberry',name:'Heath and bilberry',tags:TG('cold','subhumid','no',HV('none',['bilberries'],true,'Blue berries in late summer, gathered in birch-bark punnets.','generic_fruit_bilberry'))},
  {label:'Reindeer lichen',name:'Reindeer lichen',tags:TG('cold','subhumid','no',HV('none',['(boiled, in famine)'],false,'Fodder.'))},
  {label:'Mushrooms',name:'Mushrooms',tags:TG('temperate','humid','no',HV('none',['some'],false,'Fly agaric among them: do not.'))},
  {label:'Grass',name:'Grass and sedge',tags:TG('temperate','subhumid','both',HV('none',[],false,''))},
  {label:'Wood shrubs',name:'Understorey shrubs',tags:TG('temperate','humid','no',HV('none',[],false,''))},
 ];
+
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+NHL.FRUIT_KEYS=[...new Set(NHL.SPECIES.map(S=>S.tags.harvest.fruit).concat(NHL.PLANTS.map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf and frond textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
@@ -508,6 +514,7 @@ BIO.def('boulderA',G.boulder(1.3),M.rock,{label:'Boulders'});
 BIO.def('boulderB',G.boulder(4.7),M.rock,{label:'Boulders'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Mushrooms'});
 BIO.def('berry',G.berry(),M.solid,{label:'Berries'});
+BIO.def('mast',new T3.TetrahedronGeometry(1,0),M.solid,{label:'Beechmast and acorns'});   // 4 triangles: hero trees only
 BIO.def('rod',G.rod(),M.solid,{label:'Twigs and stems'});
 BIO.def('trunk',BIO.geo.trunk(7),BIO.solidMat(NHL.BARKTEX[0]),{label:'Saplings'});
 BIO.def('cane',G.rod(),M.solid,{label:'Mountain cane'});

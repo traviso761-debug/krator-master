@@ -18,7 +18,7 @@
    "size": 512,
    "source": {
     "albedo": "ee30b65ad0faa98a8624967ea690fee170d54346",
-    "normal": "2fafa5b758993e2b0ebb4ae4f420516b7c4b1e1b",
+    "normal": "0ded800bd53f981e4cf447ae9c61e1f53d550c70",
     "roughness": "338e223c49933a1c1fb2ca5c245f5f367d76e68e"
    },
    "specular": 0.2,
@@ -46,7 +46,7 @@
    "size": 512,
    "source": {
     "albedo": "a5ae88c79515bee0d520762ef640cc9d60b6c6e8",
-    "normal": "5116c5e7635aae3d39c63710954d7c8abc48c2b8",
+    "normal": "97536a3c799509c00f6edd36ff81aeb84e5da66a",
     "roughness": "9dc2013db3e3155e55e1204eb76c0029189d4313"
    },
    "specular": 0.2,
@@ -80,7 +80,7 @@
    "size": 512,
    "source": {
     "albedo": "65367c4ddef9720b658f702535b9c7b18d459936",
-    "normal": "04f37a3b5078ace530ad0df753f86c306806e143",
+    "normal": "9201dea8af07a6ad618d5275db1692d0519fd67e",
     "roughness": "75cfdf3c08a1ee1e9a1d25f3d2ff3785f5b09f38"
    },
    "specular": 0.25,
@@ -114,7 +114,7 @@
    "size": 512,
    "source": {
     "albedo": "961bf086ae4afede561aa9eed0378ca7505852bd",
-    "normal": "f6808e6b181ab6aee977d19974121b11143d638e",
+    "normal": "613c7d436b7d2d2db02872544a7f167806c96a3f",
     "roughness": "6c511dd52b8de70763bf68e4e2727123f89b096f"
    },
    "specular": 0.25,
@@ -148,7 +148,7 @@
    "size": 512,
    "source": {
     "albedo": "d6528fa8d196d51d5c5b63aca3f9a7f095f1bd34",
-    "normal": "0df46f18f93fc1e385db3b7ae601a3bc02360f22",
+    "normal": "48b0097118c895009478d5fe495ab1b05a0c30ac",
     "roughness": "462a93802efe0029f79abb944c0ea7d05fb2c3c8"
    },
    "specular": 0.25,
@@ -182,7 +182,7 @@
    "size": 512,
    "source": {
     "albedo": "ef0e7c1d5d65fade99feed4934507e34b89aabbe",
-    "normal": "aeabc7a624ea0f61230dae57dfe8c508a02495a8",
+    "normal": "b6efdd95762c61b177db9c9aa4f2d32c107cbb91",
     "roughness": "67b15916c172d76192b272d44eefc38004621290"
    },
    "specular": 0.25,
@@ -210,7 +210,7 @@
    "size": 512,
    "source": {
     "albedo": "efa63ee37aab3d8e5e0bb55b4eb48196b581cda0",
-    "normal": "68a3c82a281d522585c95e78a7fcbdd237393e5c",
+    "normal": "f162260ede2590ca71f90b7b74b3ceaec9798743",
     "roughness": "56d6aee56d08301253f3bf68d8b1b4323b46745e"
    },
    "specular": 0.2,
@@ -446,7 +446,7 @@
    "size": 512,
    "source": {
     "albedo": "768ddc3dcd2e81bf751f2d95e6de73031e460daa",
-    "normal": "a0c71d8edd6389b26d59c47d8485750a701755a5",
+    "normal": "d16394f851d98a5cf0bc1e1c551b4a36f9b581eb",
     "roughness": "271a03ed137ae71d40e9d435b428c737208e0230"
    },
    "specular": 0.2,
@@ -480,7 +480,7 @@
    "size": 512,
    "source": {
     "albedo": "0a80a75afdf12b04cdbd28826295fe5c8937b5c2",
-    "normal": "893af9c7c84187a468970edf92cd52dc556dc840",
+    "normal": "9d98c1d941e1eaa0c53edeb9749215fb3fa58617",
     "roughness": "6f700fa8c1afff2e93fd93c8798d36a30d160ca3"
    },
    "specular": 0.15,
@@ -514,7 +514,7 @@
    "size": 512,
    "source": {
     "albedo": "4848624db62969f7bb8acd8c2050c08fba019e36",
-    "normal": "309c958ee7fe4f2acce13f402fa4277328f1f2d9",
+    "normal": "44d3cc7ca7715c0709844ec0e67148d8ca71a500",
     "roughness": "7dc768bd34259dec74b100aacc72be819fe8b8da"
    },
    "specular": 0.3,
@@ -570,7 +570,7 @@
    "size": 256,
    "source": {
     "albedo": "7ec6f945205cf6e1cc269d548399fd720f745657",
-    "normal": "8fca8c9fc18ee94df4d97db3ab28af424861ef3c",
+    "normal": "61e42eccb270f8e5d7d361c7e2d977303c3d3cb9",
     "roughness": "4072445a67d510a0cbc274644f9f3cdc2e33e5dc"
    },
    "specular": 0.2,
@@ -598,7 +598,7 @@
    "size": 256,
    "source": {
     "albedo": "72493812ee2cccc914689cfb3ae48291c8e1388d",
-    "normal": "9e90a125b42aefa98eeca55c6ca208cfc7a9d336",
+    "normal": "b70a5722e6b6e4cde5bfe27d5e46f7eb581e542a",
     "roughness": "e07a0d965cadc8aaf0a75188c8c721928b4815c0"
    },
    "specular": 0.2,
@@ -654,7 +654,7 @@
    "size": 256,
    "source": {
     "albedo": "b256e5a401d6c08a00f80bef2dc6380e91a46b0a",
-    "normal": "3c7316415a45ae4a1c13b9f9fd3d49bb599038d2",
+    "normal": "9e533f43956e7324a358000108a3b91449c76172",
     "roughness": "3ea9f40edd1ec64f28cf14439d35d032b213463f"
    },
    "specular": 0.2,
@@ -693,6 +693,230 @@
     "sourceMean": 0.5691
    }
   },
+  "f_fruitFlesh": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitFlesh.albedo.webp"
+   },
+   "lib": "fruit.flesh",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "7e0585a13802a39a54a8ed12219d7cb5fd4c3a41",
+    "normal": "7ccc862b658bb4c00c48777bd13bf428388a606c",
+    "roughness": "c21fec867e224f907826c624f046732b9b42e8e9"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.6456
+   }
+  },
+  "f_fruitHusk": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitHusk.albedo.webp"
+   },
+   "lib": "fruit.husk",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "f118ed9011ecdc02ebc60104ecf134c00c5b6820",
+    "normal": "21dcb9a98c520168cdee02e1ee59a523dbffc594",
+    "roughness": "773c7fe77e2696b36fae835e26db25cac836f392"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.4497
+   }
+  },
+  "f_fruitJelly": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitJelly.albedo.webp"
+   },
+   "lib": "fruit.jelly",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "83f3e329fa2571a52fc5bf2f6eed1a33bc1afbc1",
+    "normal": "34d9e1c82caf64e86010603f9e0275b13d1aa8b0",
+    "roughness": "63eb2ad5246c8046635ed8d8cbbaa96b69bf80b6"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.6549
+   }
+  },
+  "f_fruitScale": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitScale.albedo.webp"
+   },
+   "lib": "fruit.scale",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "7ee2a1528b35644b2e22fc17989e23ac36a48463",
+    "normal": "fdf6c6d5a37dcb7bc1a3b2f51759bedd9b4abc80",
+    "roughness": "a3670b086a87bda50197049ac4b1cc391bd908ce"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5528
+   }
+  },
+  "f_fruitSeed": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitSeed.albedo.webp"
+   },
+   "lib": "fruit.seeds",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "7a0bd10d4d8b1c490110f6b4328ec9777025b0e9",
+    "normal": "9021ab30b9401e93e2df224bb9ffa09f5486263f",
+    "roughness": "560282a075ac80ee41f101e565bce6d26fd46eb1"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.536
+   }
+  },
+  "f_fruitShell": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitShell.albedo.webp"
+   },
+   "lib": "fruit.capsule",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "768ddc3dcd2e81bf751f2d95e6de73031e460daa",
+    "normal": "d16394f851d98a5cf0bc1e1c551b4a36f9b581eb",
+    "roughness": "271a03ed137ae71d40e9d435b428c737208e0230"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.354
+   }
+  },
+  "f_fruitSkin": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitSkin.albedo.webp"
+   },
+   "lib": "fruit.skin.orange",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "1cfe48f9f2406a1d4925664b7644c1deef24b5d4",
+    "normal": "0d8323409a9b4462ec4c59df3263c578780022b4",
+    "roughness": "591d4540fcf1f2ad8220a8df3d63c3b6988b85cb"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5883
+   }
+  },
+  "f_fungus": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fungus.albedo.webp"
+   },
+   "lib": "organic.fungus.cap",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "e1bf66b21c11bf9d258eb16d7620bdddee6dd7b7",
+    "normal": "0ce25b8fc058518af6fc6ae6b9c04b2d3650acc1",
+    "roughness": "27cdfaabef9ed6b887ade6dde09bbde98ec36caf"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5674
+   }
+  },
   "f_glow": {
    "breakup": null,
    "card": false,
@@ -710,7 +934,7 @@
    "size": 256,
    "source": {
     "albedo": "49f8d9b35ae5d712be0b15f71189038416bfc55f",
-    "normal": "31dbdfa47c5271a2d8d4376dcbd816a56d5d629e",
+    "normal": "b3ba95d474041311c43590e8225a877132de1c56",
     "roughness": "55c45d051334ad8141e651b0e284e1c5b3fa49f0"
    },
    "specular": 0.2,
@@ -738,7 +962,7 @@
    "size": 256,
    "source": {
     "albedo": "d3a5017f533685d869831a27b56771d350f233be",
-    "normal": "f0b611219ac4ef7023d49f684c04c6890d087d20",
+    "normal": "660d78bd0baaf87903d7317c9da582e2b2785719",
     "roughness": "8d1da247889f8a0cc55f0297881452c84be67e4a"
    },
    "specular": 0.2,
@@ -766,7 +990,7 @@
    "size": 256,
    "source": {
     "albedo": "1a971400fc0ceef4303238cbee5222f0f4c554e0",
-    "normal": "e2aede53048a9ad051abc1c740edf869946499c4",
+    "normal": "efd190cfa0ac209d924afeab792da19e0e895586",
     "roughness": "ade05088e5e94802a5eeda1dbe3e911d9bb2937a"
    },
    "specular": 0.2,
@@ -794,7 +1018,7 @@
    "size": 256,
    "source": {
     "albedo": "6ca706a25f450f1fc7ea10f74d8ec0e44985da4a",
-    "normal": "d509936df6e588e1d1710b8dcf5c9ed55af40bde",
+    "normal": "cfb84157615fb9a336260512d5662fa1e6053068",
     "roughness": "0d06c58e55e91452991561c612ca70ebd77d9fde"
    },
    "specular": 0.2,
@@ -822,7 +1046,7 @@
    "size": 256,
    "source": {
     "albedo": "c2756bd176803e6d06e2d633144bb19474e645d7",
-    "normal": "808ece46c3854db50bab7760aa75c5345582fa89",
+    "normal": "50f8c5bdb2aef5172843877b16f83980b9752ff4",
     "roughness": "a6a5e068ce454eec460c271cdd1b1d6743644186"
    },
    "specular": 0.2,
@@ -906,7 +1130,7 @@
    "size": 256,
    "source": {
     "albedo": "de652ed3f980cd1afa56b936ae578f6a2acdbd74",
-    "normal": "980fb4407f1f858b1a00aeaa5618827b79b752a3",
+    "normal": "87a59e62c27da3d8eaaa6b7d7bb12bafd7baa1f4",
     "roughness": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
    },
    "specular": 0.2,
@@ -934,7 +1158,7 @@
    "size": 256,
    "source": {
     "albedo": "83e1ec5888e7d04ca91bb4276dc62069f495723f",
-    "normal": "e1535f9394f01db95a1a69e2e06f414931796d1b",
+    "normal": "829d9e640512efb3d000b64dbb9857b3fdb1358e",
     "roughness": "b337dd473cab5e2eac8a8c15244863fbf6497565"
    },
    "specular": 0.2,
@@ -962,7 +1186,7 @@
    "size": 256,
    "source": {
     "albedo": "cf433f064d1417a2dfab5f2c6b8fc20f9188b8d2",
-    "normal": "d5883f79d9a8ab414d615e8f2fcb251b0ce1467e",
+    "normal": "b61fda3e0c821596931b5d0a76953874f4348258",
     "roughness": "97fe22b65cf3a4c8bcae091a5170fe3c86999cec"
    },
    "specular": 0.2,
@@ -990,7 +1214,7 @@
    "size": 256,
    "source": {
     "albedo": "efdde049e5be60e19085a467f8ac80eb17b0efd2",
-    "normal": "32ba89367c836d61075b940a989cc6154aadbc45",
+    "normal": "18c1a04a02ca26928800fc56ace34309cf9ef8f6",
     "roughness": "6567d9bf5777749e7fb4a965158714d072fd1fec"
    },
    "specular": 0.2,
@@ -1018,7 +1242,7 @@
    "size": 256,
    "source": {
     "albedo": "a34bace7db1794889da4af27d0a3a6213f1df66f",
-    "normal": "6e4f3d272019898cc9dd16fa4cb3bd5594d90797",
+    "normal": "39f14df4dfa9bcdf658bd155f428388df63c743b",
     "roughness": "6a79e0bad6f9ef8efa542edfce608e5701576391"
    },
    "specular": 0.2,
@@ -1046,7 +1270,7 @@
    "size": 256,
    "source": {
     "albedo": "2721ee6301f36974904b8082338f7ee9c7dfaed1",
-    "normal": "47fc320b427a240771dd68232e308761718eefa0",
+    "normal": "6336f84e237ba893260d215736b74126e83b2ab5",
     "roughness": "2d40eab458010148d59f91e054cbb5874204dd76"
    },
    "specular": 0.2,
@@ -1074,7 +1298,7 @@
    "size": 256,
    "source": {
     "albedo": "d7f1bbd431f70583861ca986dfbb57d2ef2787a9",
-    "normal": "c373914bf80bb4a40bb903e57eeffe424d1fb904",
+    "normal": "728e291ae2180e4189e47fd566f7cc5f97479081",
     "roughness": "9ad90510bd7c050920ef7d7f3833303b9f28ab4d"
    },
    "specular": 0.2,
@@ -1102,7 +1326,7 @@
    "size": 256,
    "source": {
     "albedo": "5ee32fe6bf31d2c630c250bb38753cca8590ec5b",
-    "normal": "06088f470532a7be4ca8c797758f11310d216935",
+    "normal": "adf5f78db28c77205d8947b82808164233cf8c0b",
     "roughness": "1ffda3ab7d989b1c02a5ef18cbd3d104b43502a9"
    },
    "specular": 0.2,
@@ -1130,7 +1354,7 @@
    "size": 512,
    "source": {
     "albedo": "45ca826981746eb98d784c0c02c8592c8c75a0f8",
-    "normal": "16ae3c4bb79d1cc5f6488c3408b428a757bb3002",
+    "normal": "ec955c2f8ccbe1227ba48538dbb29f26f3620d4c",
     "roughness": "7e8947a77416db450d56d8acfbfcf09e0effb0d5"
    },
    "specular": 0.2,
@@ -1210,7 +1434,7 @@
    "size": 512,
    "source": {
     "albedo": "486ab6ea2abe90dbb2613eaadcbedf981b7ff746",
-    "normal": "c351f8c090271882f4989b10ee29f117f33caf81",
+    "normal": "07d08cda99218e9e7b9f30793c919a7ee8388090",
     "roughness": "990ed761e410bf22cfe20d5f20d2824ce1706767"
    },
    "specular": 0.2,
@@ -1238,7 +1462,7 @@
    "size": 512,
    "source": {
     "albedo": "af17fb4e5cd57094be1ae0e6bed97241c6f6673e",
-    "normal": "364392d423b42dd87e9cf579324c6d8f7d5681db",
+    "normal": "074a345573c0bfd024b7d7c2887a8e270c98f340",
     "roughness": "9e059858239d4aa6465f39b18c74f2167e31afcd"
    },
    "specular": 0.2,
@@ -1266,7 +1490,7 @@
    "size": 512,
    "source": {
     "albedo": "5aa2fae69af7cad12339cae7972fc47aaf8894cc",
-    "normal": "712c7e0cb3314271140c71f007114b349461efa3",
+    "normal": "5551e50dd4c0619889f541bcb83277dc6b3aa583",
     "roughness": "d085c4fbb4ebfe1fe68beb66df75520ffe8c6d26"
    },
    "specular": 0.2,
@@ -1294,7 +1518,7 @@
    "size": 512,
    "source": {
     "albedo": "0871930b9ba0289a968b4423283478d58cc2e02e",
-    "normal": "2544158a1c226e7f2abb9d603d1e92fb3fbfd41f",
+    "normal": "58d75c32d85b858db512840905f15b44665fa2f2",
     "roughness": "1a1cbb0e7955cc249873581102eba7d94be4db31"
    },
    "specular": 0.2,
@@ -1322,7 +1546,7 @@
    "size": 512,
    "source": {
     "albedo": "cb1314948762c39a40f941b7650866a37d1ec272",
-    "normal": "f749b7f91d03f13a0f2e1670c554bef2f0a3e4b4",
+    "normal": "c76c554b192fc20c183572988e716ea82afef717",
     "roughness": "5bd1de6affcab86e14a03c55d7281ae0dd6a2a49"
    },
    "specular": 0.2,
@@ -1350,7 +1574,7 @@
    "size": 512,
    "source": {
     "albedo": "660ea5c1fe2763bc9d40aedcb9a76b37d9f66b65",
-    "normal": "8f7374e4bffe9068c59c937e5541f06583807929",
+    "normal": "45a7451f51863ec811aca89d85bfbff007e211e5",
     "roughness": "2880a496d99a4a9157a7040e0a190bdbe5d1fa0f"
    },
    "specular": 0.2,
@@ -1432,7 +1656,7 @@
    "size": 512,
    "source": {
     "albedo": "025ee534d64bb7d3648a12138bbb982b08cd0242",
-    "normal": "e1a6ea9ff5317efd5e5cf59de00ca5ce3e2d1bb0",
+    "normal": "325f3a4409de272fcae2cb06cd8d325ed5b3783f",
     "roughness": "69609279a5491234c2b50bb35c1bf5426a88cf35"
    },
    "specular": 0.2,
@@ -1460,7 +1684,7 @@
    "size": 512,
    "source": {
     "albedo": "fd22240272e97152c6dbcd31cc30e1a5278fcfe6",
-    "normal": "94b303a2c3b73d1fb2cd9157ca54e635a46e4a44",
+    "normal": "01b10ee53264486289cc3afb1c5e67fa40d1f73a",
     "roughness": "2091fcd86e228ee00ce28bdd4ee7735d79befb53"
    },
    "specular": 0.2,
@@ -1488,7 +1712,7 @@
    "size": 512,
    "source": {
     "albedo": "efa63ee37aab3d8e5e0bb55b4eb48196b581cda0",
-    "normal": "68a3c82a281d522585c95e78a7fcbdd237393e5c",
+    "normal": "f162260ede2590ca71f90b7b74b3ceaec9798743",
     "roughness": "56d6aee56d08301253f3bf68d8b1b4323b46745e"
    },
    "specular": 0.2,
@@ -1516,7 +1740,7 @@
    "size": 512,
    "source": {
     "albedo": "6200ef062de1cc180d7f69e1f6a348de1e04f74a",
-    "normal": "9a881f43fe0287d6ee2e5bb2dc56dad656e2f748",
+    "normal": "a160ab76879938d916e7f38886f91bff30b28d99",
     "roughness": "1b2a38ff0ba619f553859d9fc650ec2d8e98c06a"
    },
    "specular": 0.2,
@@ -1544,7 +1768,7 @@
    "size": 512,
    "source": {
     "albedo": "efdde049e5be60e19085a467f8ac80eb17b0efd2",
-    "normal": "32ba89367c836d61075b940a989cc6154aadbc45",
+    "normal": "18c1a04a02ca26928800fc56ace34309cf9ef8f6",
     "roughness": "6567d9bf5777749e7fb4a965158714d072fd1fec"
    },
    "specular": 0.2,
@@ -1572,7 +1796,7 @@
    "size": 512,
    "source": {
     "albedo": "de652ed3f980cd1afa56b936ae578f6a2acdbd74",
-    "normal": "980fb4407f1f858b1a00aeaa5618827b79b752a3",
+    "normal": "87a59e62c27da3d8eaaa6b7d7bb12bafd7baa1f4",
     "roughness": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
    },
    "specular": 0.2,
@@ -1626,7 +1850,7 @@
    "size": 512,
    "source": {
     "albedo": "1cfe48f9f2406a1d4925664b7644c1deef24b5d4",
-    "normal": "20dcb6e3325414c2cf084da4feeaaf806e33e74e",
+    "normal": "0d8323409a9b4462ec4c59df3263c578780022b4",
     "roughness": "591d4540fcf1f2ad8220a8df3d63c3b6988b85cb"
    },
    "specular": 0.2,
@@ -1654,7 +1878,7 @@
    "size": 512,
    "source": {
     "albedo": "015b344e0ee23ada8da430e16eccac609c27953b",
-    "normal": "041aaaa169037cb9f88d8cb9461b16517f7a9873",
+    "normal": "28ebeebc793485683a832092a8621c8abf971840",
     "roughness": "261403807bc2bac0712bf3bd2dcefa82bde59339"
    },
    "specular": 0.2,
@@ -1688,7 +1912,7 @@
    "size": 512,
    "source": {
     "albedo": "0acce2f3f5af8f620eae8e11be418a6478461d89",
-    "normal": "b7fc90467028e967b7ea60a5eca1d08e59979b8f",
+    "normal": "d9aa224fd2d9b70e90aad7bdca9aea47cc07235b",
     "roughness": "f9a1aa86ef0302c6601cf8e2276a5a84a1bd62a8"
    },
    "specular": 0.15,
@@ -1716,7 +1940,7 @@
    "size": 512,
    "source": {
     "albedo": "c1b22f4342e1ea5a84fe30399dfd8900f41dada6",
-    "normal": "2f059fcac865ed019b6ea0e5e29088add3f0f13d",
+    "normal": "eebfe85702cb9f820baf76acab06f8ba0a42e3c8",
     "roughness": "dd824ed21504a6778c14aed1f97d263e8ccf4f28"
    },
    "specular": 0.2,
@@ -1744,7 +1968,7 @@
    "size": 512,
    "source": {
     "albedo": "e435e8b2d73c26426e510c15e1c0bee5abd21315",
-    "normal": "b6fff960dc1660d9726056d6983859741f10aeaa",
+    "normal": "ea472e032451af0bfbbecda980e6316564bc7f7b",
     "roughness": "c15a1d6858d5921ef6759070070d63408e3e0b13"
    },
    "specular": 0.35,
@@ -1772,7 +1996,7 @@
    "size": 512,
    "source": {
     "albedo": "495ea46fb37a175fa19966edbaa56065f4896785",
-    "normal": "5de00219f6c34f8b8fa2b27774c7605c3c1ad860",
+    "normal": "491fc5f046fb32f3e9b6284f3bc07b92c4e4f627",
     "roughness": "9dff3d434dacdda3f8566ae593981adf93ca7dcd"
    },
    "specular": 0.2,
@@ -1878,7 +2102,7 @@
    "size": 512,
    "source": {
     "albedo": "b5c868796764a6a24445a16494491c301cddfd28",
-    "normal": "a876676f5c6220bb1706079f289fb90ebb2fd720",
+    "normal": "5a1922bb239dbcfe2585e7024c48ab9f8b0f8856",
     "roughness": "adb42238109d5c177218eea38c4b6128541fc7c8"
    },
    "specular": 0.4,
@@ -1906,7 +2130,7 @@
    "size": 512,
    "source": {
     "albedo": "ce4a6d4d206d021094b73a1badf7ad76d79ce22e",
-    "normal": "5632dfbb7db7b403a2d993da091c105cfea0a6d5",
+    "normal": "ad5c8e5a132c77e9863dd0c837c65a9663cdaadd",
     "roughness": "be2b97a70ea347310513581f6fadfb5df1f00d7c"
    },
    "specular": 0.2,
@@ -2044,7 +2268,7 @@
    "size": 512,
    "source": {
     "albedo": "83e1ec5888e7d04ca91bb4276dc62069f495723f",
-    "normal": "e1535f9394f01db95a1a69e2e06f414931796d1b",
+    "normal": "829d9e640512efb3d000b64dbb9857b3fdb1358e",
     "roughness": "b337dd473cab5e2eac8a8c15244863fbf6497565"
    },
    "specular": 0.2,
@@ -2072,7 +2296,7 @@
    "size": 512,
    "source": {
     "albedo": "e026e993f355807773db73a3133ac6e68ea6768c",
-    "normal": "0effe37deba6e40a9a35962e60bdcff070e2e050",
+    "normal": "66ae7e3e783a9b0abe2d8c968fdc1cdba3233d85",
     "roughness": "d4883cea5ad3f7f3e854af363a1fa81205d25cd2"
    },
    "specular": 0.2,
@@ -2100,7 +2324,7 @@
    "size": 512,
    "source": {
     "albedo": "499683a9b463a86c2aef9712a7a0d016ce934f12",
-    "normal": "c29556c6e53718fd46994bf90b5b6aee9c02f4cc",
+    "normal": "b75bba349fe66f991c34b144bdc50fa1f4a71965",
     "roughness": "25527b59f8d0b7a5efbf122d8d8f3df295e31539"
    },
    "specular": 0.2,
@@ -2128,7 +2352,7 @@
    "size": 512,
    "source": {
     "albedo": "8bcf80d214994767ac6786dea59ea367c229fa23",
-    "normal": "e3deb8f14050c35d088466d3ce3a1862ec7b5eea",
+    "normal": "dd1b130e12943e3243fb44273ebfd183e1d0fb42",
     "roughness": "51dcc3b8b5572cc230443dd26be92cbf46032857"
    },
    "specular": 0.2,
@@ -2156,7 +2380,7 @@
    "size": 512,
    "source": {
     "albedo": "c0c1ea5d76889ab5d0dbf7ee654b1c92dbb98e18",
-    "normal": "0fe5eeaa56acc3901e4d61f10277ebc86307ee56",
+    "normal": "d4508929501299d23855d04dd653ab25d5161524",
     "roughness": "dc4166f696a7cb3e9753e28e4346263da23389b8"
    },
    "specular": 0.2,
@@ -2184,7 +2408,7 @@
    "size": 512,
    "source": {
     "albedo": "49ea07bfddc491eed401312d855cf8343b0faf2b",
-    "normal": "2be500a0f5e4ab8a6baa4a1b5046e6741b91442e",
+    "normal": "3aa0f0cf35737ea26f207d1f3b535b81244155d8",
     "roughness": "8f998f5af4b1c7bc37fb51b725ee496162c250dc"
    },
    "specular": 0.2,
@@ -2218,7 +2442,7 @@
    "size": 512,
    "source": {
     "albedo": "6e19e1672d2c547d9bd3f41c6d477ded91f76bf2",
-    "normal": "785c60a38572c3b3c66986276c12a0db8db633a3",
+    "normal": "408eecf4ba1f27f1fbf1bd160fa88d5842e8a626",
     "roughness": "5c384eb918f588bae25fca9d573cf415b59cbc62"
    },
    "specular": 0.3,
@@ -2246,7 +2470,7 @@
    "size": 512,
    "source": {
     "albedo": "0ddd5bd5157566a4a37891f1dd6a7afb1446e382",
-    "normal": "c0c4b0f31db4a5ffac2be7587e7001f456f78e48",
+    "normal": "4e2148704e0ae9502164e4409dadafb6b3df53c2",
     "roughness": "cd03503dbcab3a14e054d06f9347559e4e947915"
    },
    "specular": 0.35,
@@ -2274,7 +2498,7 @@
    "size": 512,
    "source": {
     "albedo": "f118ed9011ecdc02ebc60104ecf134c00c5b6820",
-    "normal": "8bc8d2a76a112f3bc35733af718b4501c5458525",
+    "normal": "21dcb9a98c520168cdee02e1ee59a523dbffc594",
     "roughness": "773c7fe77e2696b36fae835e26db25cac836f392"
    },
    "specular": 0.2,
@@ -2302,7 +2526,7 @@
    "size": 512,
    "source": {
     "albedo": "de652ed3f980cd1afa56b936ae578f6a2acdbd74",
-    "normal": "980fb4407f1f858b1a00aeaa5618827b79b752a3",
+    "normal": "87a59e62c27da3d8eaaa6b7d7bb12bafd7baa1f4",
     "roughness": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
    },
    "specular": 0.2,
@@ -2336,7 +2560,7 @@
    "size": 512,
    "source": {
     "albedo": "a34bace7db1794889da4af27d0a3a6213f1df66f",
-    "normal": "6e4f3d272019898cc9dd16fa4cb3bd5594d90797",
+    "normal": "39f14df4dfa9bcdf658bd155f428388df63c743b",
     "roughness": "6a79e0bad6f9ef8efa542edfce608e5701576391"
    },
    "specular": 0.3,
@@ -2370,7 +2594,7 @@
    "size": 512,
    "source": {
     "albedo": "efdde049e5be60e19085a467f8ac80eb17b0efd2",
-    "normal": "32ba89367c836d61075b940a989cc6154aadbc45",
+    "normal": "18c1a04a02ca26928800fc56ace34309cf9ef8f6",
     "roughness": "6567d9bf5777749e7fb4a965158714d072fd1fec"
    },
    "specular": 0.2,
@@ -2404,7 +2628,7 @@
    "size": 512,
    "source": {
     "albedo": "2b0c99df23c12979c6fc333791d61885d75cdf8f",
-    "normal": "6aff6c92275e99507c2d256bfd9b2dabfc69a1e5",
+    "normal": "20f0aaa5279c25e849dda80c5980443d4c95c8f2",
     "roughness": "68e3830fab99ded97293d7ddaf9dbaa5e3fb0009"
    },
    "specular": 0.4,
@@ -2438,7 +2662,7 @@
    "size": 512,
    "source": {
     "albedo": "2e4595107e0ed58e8929be54384dd77342a86ca7",
-    "normal": "e72b5a3f40e04be61245d06b2af7afba54b34a19",
+    "normal": "41d3aae75ede8f6b9f20f5f7655928fa322c8f5d",
     "roughness": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
    },
    "specular": 0.3,
@@ -2466,7 +2690,7 @@
    "size": 512,
    "source": {
     "albedo": "790803d2b75c37a7695331b70e148867ba350f35",
-    "normal": "d1ef9f86398d349f2b22299155b152d0a89ff16f",
+    "normal": "1b94e3a05f27754cdd1c7d86b29e60c8ef19e8a3",
     "roughness": "94da63c4d0d4f9ef7a1147b28ae01c4f858bce0c"
    },
    "specular": 0.2,
@@ -2494,7 +2718,7 @@
    "size": 512,
    "source": {
     "albedo": "8d679809d88bc6f5d8944765c209565b49837e80",
-    "normal": "ea6cd612fa37db29d047ad846010e0b49816fb8b",
+    "normal": "dcb1019deb6947ed128c46a97698af2cfae86c80",
     "roughness": "ae9916f1e7193b311f45b3d8efab1ea0d224b6ec"
    },
    "specular": 0.2,
@@ -2528,7 +2752,7 @@
    "size": 512,
    "source": {
     "albedo": "50fa72f28676aa2622550cf3dcb65cc41c5f6067",
-    "normal": "47fc320b427a240771dd68232e308761718eefa0",
+    "normal": "6336f84e237ba893260d215736b74126e83b2ab5",
     "roughness": "2d40eab458010148d59f91e054cbb5874204dd76"
    },
    "specular": 0.2,
@@ -2562,7 +2786,7 @@
    "size": 512,
    "source": {
     "albedo": "f85fbf9b4abec9c72f4b9ee1a58477837533bad8",
-    "normal": "1fcd173ed1a7d5a33eda006b7a00971fcd87716e",
+    "normal": "d1c7340193a2afb984766a67db7a3ec0ec9e7ea6",
     "roughness": "6e3411a2ab34b6f328637d3554e5934dc156f8d5"
    },
    "specular": 0.3,
@@ -2590,7 +2814,7 @@
    "size": 512,
    "source": {
     "albedo": "e4300623ea7ac234bc312fcb9f00abdfbd750695",
-    "normal": "c99e4dcf043359d7f8d526552a9de22f1e86e382",
+    "normal": "66fd456d301439cd8adda52d1463f19f6b884273",
     "roughness": "887d39784d6c2b4d2e6a38adf56bcefb60692bb3"
    },
    "specular": 0.2,
@@ -2618,7 +2842,7 @@
    "size": 512,
    "source": {
     "albedo": "c6299fa776b0ebffa7d7fceee2b37adfb4137fba",
-    "normal": "f7035501c14b27f0302921f3286a8246d26229c2",
+    "normal": "efb1427cebd81aafd0a82dc0218aa1f860230d12",
     "roughness": "5a2da5b454f2b858147be0e7b56c99f0ad199a9a"
    },
    "specular": 0.4,
@@ -2652,7 +2876,7 @@
    "size": 512,
    "source": {
     "albedo": "e026e993f355807773db73a3133ac6e68ea6768c",
-    "normal": "0effe37deba6e40a9a35962e60bdcff070e2e050",
+    "normal": "66ae7e3e783a9b0abe2d8c968fdc1cdba3233d85",
     "roughness": "d4883cea5ad3f7f3e854af363a1fa81205d25cd2"
    },
    "specular": 0.25,
