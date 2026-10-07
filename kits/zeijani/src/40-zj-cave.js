@@ -35,6 +35,10 @@ function cvStair(o){return cvAdd('stair',o,Object.assign(cvCopy(o,['id','a','b',
 function cvShaft(o){const c=cvW(o.c[0],0,o.c[1]);return cvAdd('shaft',o,Object.assign(cvCopy(o,['id','c','y0','y1','joins']),{c:[c[0],c[2]],y0:cvY(o.y0),y1:cvY(o.y1)}));}
 function cvDoor(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'door',c:[c[0],c[2]],y:cvY(o.y||0),r:o.r||1.4,h:o.h});}
 function cvWell(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'well',c:[c[0],c[2]],r:o.r,rim:o.rim});}
+/* the floor a vertex's void stands on (the cut-away opens each void 2 m above it: a dollhouse at every level); the rock's own
+   faces (a mass, a monolith) take the site's ground */
+function cvFloorOf(P,r){if(!P)return r.y;const k=P.kind;return k==='room'?P.y:k==='stair'?Math.min(P.a[1],P.b[1]):k==='hall'?P.c[1]:k==='shaft'||k==='trench'?P.y0:
+ k==='tube'&&P.pts?Math.min(...P.pts.map(p=>p[1])):r.y;}
 function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,x1,z0,z1,y0,y1] to a world box (quarter turns exact) */
  const b=o.box,P=[[b[0],b[2]],[b[1],b[2]],[b[0],b[3]],[b[1],b[3]]].map(p=>cvW(p[0],0,p[1]));
  return CVC.fixture({id:cvId(o.id),owner:cvSite(),tag:o.tag||'carved:'+(o.kind||'fixture'),
@@ -70,7 +74,7 @@ const cvMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalne
    /* the library sets are normalised to a mean near 0.75 (tuff) or darker (basalt): lift the basalt, keep the tuff */
    'diffuseColor.rgb*=c*'+(CV_HAS_LIB?'(m<1.5?1.7:1.05)':'1.0')+';';
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
-   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+.3&&dot(vCWP.xz-vCut.xy,uCam.xz-vCut.xy)>0.)discard;')
+   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;')
    .replace('#include <map_fragment>','#include <map_fragment>\n{'+body+'}')
    /* the polished finishes are smooth; the occlusion darkens the indirect light */
    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nif(vM.x>4.5||(vM.x>0.5&&vM.x<1.5))roughnessFactor=0.42;')
@@ -85,7 +89,7 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
   g.setAttribute('aW',new THREE.BufferAttribute(ch.w,4));
   const aM=new Float32Array(nv*3),aCut=new Float32Array(nv*4);
   for(let i=0;i<nv;i++){aM[i*3]=ch.mat[i];aM[i*3+1]=ch.hue[i];aM[i*3+2]=ch.occ[i];
-   const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=r.y;aCut[i*4+3]=1;}}
+   const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=cvFloorOf(CVC.prims[ch.prim[i]],r);aCut[i*4+3]=1;}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
   const mesh=new THREE.Mesh(g,cvMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}

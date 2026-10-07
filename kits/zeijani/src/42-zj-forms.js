@@ -65,7 +65,9 @@ function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.
   else if(f.kind==='sipapu')cyl('basaltPol',x,y+.004,z,Math.min(w,d)/2,.01,P('soot'),12);
   else if(f.kind==='incense-burner'){const R=Math.min(w,d)/2;cyl('tuffPol',x,y,z,R,.25,c,14);cyl('tuffPol',x,y+.25,z,R*.55,h-.55,c,12);cyl('copper',x,y+h-.3,z,R*.8,.3,P('copper'),14);
    cyl('glow',x,y+h-.02,z,R*.62,.03,P('ember'),12);cone('copper',x,y+h+.9,z,R*.7,.6,P('copper'),12);smokeAt(x,y+h+.2,z,{r:.25,kind:'incense'});haloAt(x,y+h+.1,z,0xd04a2a,true);}
-  else if(f.kind==='pool'){box(fin,x,y,z,w+.3,h,d+.3,c,ry);box('water',x,y+h-.08,z,w,.02,d,P('white'),ry);}
+  else if(f.kind==='pool'){/* a basin: its floor, a rim 0.15 m thick round dark water (fixtures are square to the room: ry 0 or a quarter) */
+   const q=Math.abs(Math.round(ry/(PI/2)))%2===1,W2=(q?d:w)+.3,D2=(q?w:d)+.3;box(fin,x,y,z,W2,.12,D2,c);
+   for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}
   else if(f.kind==='pillar'||f.kind==='column')zfColumn(fin,x,y,z,Math.min(w,d)/2,f.h||r.h||3,c,{square:f.square});
   else if(f.kind==='niche')zfNiche(x,y+(f.y0||1.2),z,w,h);
   else box(fin,x,y,z,w,h,d,c,ry);}}}

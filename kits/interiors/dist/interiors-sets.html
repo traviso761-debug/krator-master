@@ -5909,6 +5909,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      ossuary    a catacomb chamber: the dead (ossuary boxes, mummy bundles, stacked bones), funerary lamps
      cistern    a cistern hall's landing: a way to draw water (a dipping sweep, jars)
      guardroom  a guard post's room: a weapon rack and seats; a watch bunk if there is room
+     court      an estate's court under its light shaft: seats, jars and pots, a statue or shrine; its basin is a fixture
    sets/README.md says how an item is written.
    ====================================================================== */
 (function (IX) {
@@ -5955,6 +5956,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       optional: [{ types: ['table'], max: 1 }, { types: ['bed'], max: 2 }, { types: ['storage'], roles: ITEM, max: 1 }, { types: ['lamp'], max: 1 },
                  { types: ['banner', 'art'], max: 1 }, SURFACE],
       extra: 5 };
+    IX.PROGRAMS.court = { require: [{ need: 'seats', types: SEATS, n: 1 }],
+      optional: [{ types: ['planter', 'vessel', 'storage'], max: 4 }, { types: ['statue', 'shrine', 'art'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 },
+                 { types: SEATS, max: 3 }, { types: ['table'], max: 1 }, { types: ['rug'], max: 1 }],
+      extra: 8 };
+    IX.KIND_ALIAS.court = ['yard', 'hall', 'living'];
     IX.KIND_ALIAS.kiva = ['shrine'];
     IX.KIND_ALIAS.brewery = ['workshop', 'store', 'kitchen', 'tavern'];
     IX.KIND_ALIAS.lab = ['workshop', 'study', 'store'];
@@ -5962,7 +5968,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     IX.KIND_ALIAS.ossuary = ['shrine'];
     IX.KIND_ALIAS.cistern = ['store', 'yard'];
     IX.KIND_ALIAS.guardroom = ['barracks', 'hall'];
-    Object.assign(IX.KIND_WEIGHT, { kiva: 1.6, brewery: 2.0, lab: 1.6, cell: 1.2, ossuary: 1.4, cistern: 2.0, guardroom: 1.2 });
+    Object.assign(IX.KIND_WEIGHT, { court: 1.4, kiva: 1.6, brewery: 2.0, lab: 1.6, cell: 1.2, ossuary: 1.4, cistern: 2.0, guardroom: 1.2 });
   }
   if (!IX.CULTURE_FAMILY.zeijani) IX.CULTURE_FAMILY.zeijani = ['nomad', 'generic', 'scrap'];
 
@@ -6071,6 +6077,117 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids, units: n + 2, well: { c: W, r: R, rs: RS, y0: Y0, drop: DROP, turns: TURNS, w: 1.2 } };
   }
   const GB = galleryB();
+  /* a room off a corridor running along z at x = xc (its walk 0.8 m wide: a 1.4 m passage), on side +1 (east) or -1 (west),
+     0.9 m of rock between; w across x, d along z, centred on cz. A servant's cell (kind 'cell') gets a carved bed shelf and hearth */
+  function sroom(id, kind, xc, side, cz, y, w, d, o) {
+    o = o || {};
+    const x0 = side > 0 ? xc + 1.6 : xc - 1.6 - w, x1 = x0 + w, z0 = cz - d / 2, z1 = cz + d / 2, dx = side > 0 ? x0 : x1, fin = o.finish || 'polished';
+    const fixtures = kind === 'cell' ? [fx('bed', 'bedshelf', side > 0 ? x1 - 0.45 : x0 + 0.45, cz - 0.2, 0.8, 1.9, { bed: 1, h: 0.45 }),
+      fx('hearth', 'hearth', (x0 + x1) / 2, z0 + 0.3, 0.7, 0.5, { h: 0.9 })] : (o.fixtures || []);
+    return { room: { id: id, kind: kind, carved: true, poly: rrect(x0, x1, z0, z1), round: 0.5, y: y, h: o.h || 2.7, ceil: o.ceil || 'vault', rise: o.rise || 0.5,
+        finish: kind === 'cell' || kind === 'store' ? 'hewn' : fin, doors: [{ at: [dx, cz], w: 1.0, swing: 'none' }], fixtures: fixtures },
+      pass: { kind: 'stair', id: id + '-door', joins: [id], a: [xc + side * 0.1, y, cz], b: [dx + side * 0.7, y, cz], w: 1.0, h: 2.2 } };
+  }
+  const put = function (rooms, voids, s) { rooms.push(s.room); voids.push(s.pass); };
+  /* a window cut through the face into a room (no walk floor: its sill is a wall), x on the face, y its sill, `to` how deep */
+  const win = function (voids, id, x, y, to, w, h) {
+    voids.push({ kind: 'stair', id: id, a: [x, y, 0.5], b: [x, y, to], w: w, h: h, floor: false });
+    voids.push({ kind: 'door', id: id + '-face', c: [x, 0], y: y - 0.4, r: w / 2 + 0.3, h: h + 0.5 });   /* the sill and head with it */
+  };
+  /* ESTATE A, the columned hall (refs 6159, d117, Petra): a relief front of engaged columns; a pillared reception hall; behind
+     it a court under its own light shaft (a basin in its floor); west of the hall the family's corridor (a living room at the
+     front, three bedrooms, the household shrine at its end); east the service corridor (the kitchen at the front, two stores,
+     two servants' cells, the cistern at its end). Two windows in the face light the living room and the kitchen. 13 rooms. */
+  function estateA() {
+    const rooms = [], voids = [], P = 'polished';
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-18, 18, -40, 0), y0: -0.5, y1: 11, cap: 1.5, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 2.2, h: 3.8 });
+    voids.push({ kind: 'stair', id: 'way-in', a: [0, 0, 1.3], b: [0, 0, -2.4], w: 2.6, h: 3.4 });
+    const pil = [];
+    [-3, 3].forEach(function (x) { [-5.6, -9.4].forEach(function (z, i) { pil.push(fx('pillar' + pil.length, 'pillar', x, z, 0.8, 0.8, { h: 3.9 })); }); });
+    rooms.push({ id: 'hall', kind: 'hall', carved: true, poly: rrect(-6, 6, -13, -2), round: 0.6, y: 0, h: 3.8, ceil: 'flat', finish: P,
+      doors: [{ at: [0, -2], w: 2.4, swing: 'none' }, { at: [0, -13], w: 1.8, swing: 'none' }, { at: [-6, -10.5], w: 1.2, swing: 'none' }, { at: [6, -10.5], w: 1.2, swing: 'none' }],
+      fixtures: pil });
+    voids.push({ kind: 'stair', id: 'court-door', joins: ['hall', 'court'], a: [0, 0, -12.6], b: [0, 0, -15.4], w: 1.8, h: 3.0 });
+    rooms.push({ id: 'court', kind: 'court', carved: true, poly: rrect(-4.6, 4.6, -24, -15), round: 0.8, y: 0, h: 3.2, ceil: 'vault', rise: 0.4, finish: 'plaster',
+      doors: [{ at: [0, -15], w: 1.8, swing: 'none' }], fixtures: [fx('basin', 'pool', 0, -19.5, 2.2, 2.2, { h: 0.45 })] });
+    voids.push({ kind: 'shaft', id: 'light', joins: ['court'], c: [0, -19.5], y0: 0, y1: 13.5, r0: 3.4, r1: 3.9 });
+    voids.push({ kind: 'door', id: 'sky', c: [0, -19.5], y: 10.4, r: 5.0, h: 4 });
+    /* the family's corridor (west) and the service corridor (east), each entered from the hall's side door */
+    [-1, 1].forEach(function (s) {
+      const xc = s * 9.6;
+      voids.push({ kind: 'stair', id: (s < 0 ? 'w' : 'e') + 'door', joins: ['hall'], a: [s * 5.5, 0, -10.5], b: [s * 9.8, 0, -10.5], w: 1.2, h: 2.5 });
+      voids.push({ kind: 'stair', id: (s < 0 ? 'w' : 'e') + 'corr', a: [xc, 0, -4.4], b: [xc, 0, s < 0 ? -26.4 : -31.0], w: 1.4, h: 2.7 });
+    });
+    rooms.push({ id: 'living', kind: 'living', carved: true, poly: rrect(-14.6, -7.4, -5.6, -1.6), round: 0.5, y: 0, h: 3.0, ceil: 'vault', rise: 0.5, finish: P,
+      doors: [{ at: [-9.6, -5.6], w: 1.4, swing: 'none' }] });
+    put(rooms, voids, sroom('bed1', 'bedroom', -9.6, -1, -9.3, 0, 4.0, 3.8));
+    put(rooms, voids, sroom('bed2', 'bedroom', -9.6, -1, -14.5, 0, 4.0, 3.8));
+    put(rooms, voids, sroom('bed3', 'bedroom', -9.6, -1, -19.7, 0, 4.0, 3.8));
+    rooms.push({ id: 'shrine', kind: 'shrine', carved: true, poly: rrect(-12.8, -6.8, -31.0, -26.0), round: 0.6, y: 0, h: 2.8, ceil: 'dome', rise: 0.8, finish: 'plaster',
+      doors: [{ at: [-9.6, -26.0], w: 1.4, swing: 'none' }] });
+    rooms.push({ id: 'kitchen', kind: 'kitchen', carved: true, poly: rrect(7.4, 14.6, -5.6, -1.6), round: 0.5, y: 0, h: 3.0, ceil: 'vault', rise: 0.5, finish: 'hewn',
+      doors: [{ at: [9.6, -5.6], w: 1.4, swing: 'none' }], fixtures: [fx('hearth', 'hearth', 14.15, -3.6, 0.6, 1.6, { h: 1.0 })] });
+    put(rooms, voids, sroom('store1', 'store', 9.6, 1, -9.3, 0, 4.0, 3.8));
+    put(rooms, voids, sroom('store2', 'store', 9.6, 1, -14.5, 0, 4.0, 3.8));
+    put(rooms, voids, sroom('serv1', 'cell', 9.6, 1, -19.7, 0, 4.0, 3.8));
+    put(rooms, voids, sroom('serv2', 'cell', 9.6, 1, -24.9, 0, 4.0, 3.8));
+    rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(6.6, 12.6, -35.4, -30.6), round: 0.6, y: 0, h: 3.0, ceil: 'vault', rise: 0.8, finish: 'plaster',
+      doors: [{ at: [9.6, -30.6], w: 1.4, swing: 'none' }], fixtures: [fx('pool', 'pool', 9.6, -34.4, 4.2, 1.4, { h: 0.5 })] });
+    win(voids, 'win-w', -11, 1.3, -2.2, 0.9, 1.2);
+    win(voids, 'win-e', 11, 1.3, -2.2, 0.9, 1.2);
+    return { rooms: rooms, voids: voids };
+  }
+  const EA = estateA();
+  /* ESTATE B, the loggia (refs cliff.jpg, d117): two storeys. A round domed hall with a basin under the dome; a stair up from
+     its west door to the family's floor (4.6 m): a loggia along the face behind five arched windows, a living room and a
+     bedroom at each end, a bedroom behind each. From the hall's back a flight down to a court under a light shaft (-2.4 m):
+     the kitchen and a store west of it; east, a corridor from the household shrine past two servants' cells to the cistern. 12 rooms. */
+  function estateB() {
+    const rooms = [], voids = [], P = 'polished', U = 4.6, D = -2.4;
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-17, 17, -36, 0), y0: -0.5, y1: 12, cap: 1.4, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.9, h: 3.3 });
+    voids.push({ kind: 'stair', id: 'way-in', a: [0, 0, 1.3], b: [0, 0, -4.8], w: 2.2, h: 3.1 });
+    rooms.push({ id: 'hall', kind: 'hall', carved: true, poly: circle(5.2, 20, 0, -9.6), y: 0, h: 3.4, ceil: 'dome', rise: 1.6, finish: P,
+      doors: [{ at: [0, -4.4], w: 2.0, swing: 'none' }, { at: [0, -14.8], w: 1.8, swing: 'none' }, { at: [-5.2, -9.6], w: 1.4, swing: 'none' }],
+      fixtures: [fx('basin', 'pool', 0, -9.6, 1.8, 1.8, { h: 0.4 })] });
+    /* up: the stair from the hall's west door, a landing across its head (the family room north, a bedroom south) */
+    voids.push({ kind: 'stair', id: 'up', joins: ['hall'], a: [-4.7, 0, -9.6], b: [-12.2, U, -9.6], w: 1.4, h: 2.6 });
+    voids.push({ kind: 'stair', id: 'landing', a: [-12.2, U, -12.0], b: [-12.2, U, -7.4], w: 1.2, h: 2.4 });
+    rooms.push({ id: 'living', kind: 'living', carved: true, poly: rrect(-15.4, -9.0, -8.0, -1.6), round: 0.5, y: U, h: 2.9, ceil: 'vault', rise: 0.5, finish: P,
+      doors: [{ at: [-12.2, -8.0], w: 1.2, swing: 'none' }, { at: [-9.0, -2.6], w: 2.0, swing: 'none' }] });
+    rooms.push({ id: 'bed1', kind: 'bedroom', carved: true, poly: rrect(-15.6, -10.0, -16.4, -11.6), round: 0.5, y: U, h: 2.7, ceil: 'vault', rise: 0.5, finish: P,
+      doors: [{ at: [-12.2, -11.6], w: 1.2, swing: 'none' }] });
+    voids.push({ kind: 'stair', id: 'loggia', a: [-9.6, U, -2.6], b: [9.6, U, -2.6], w: 2.2, h: 2.7 });
+    [-7, -3.5, 0, 3.5, 7].forEach(function (x, i) { win(voids, 'arch' + i, x, U + 0.6, -1.9, 1.2, 2.0); });
+    rooms.push({ id: 'master', kind: 'bedroom', carved: true, poly: rrect(9.0, 15.4, -8.0, -1.6), round: 0.5, y: U, h: 2.9, ceil: 'vault', rise: 0.5, finish: P,
+      doors: [{ at: [9.0, -2.6], w: 2.0, swing: 'none' }, { at: [12.2, -8.0], w: 1.0, swing: 'none' }] });
+    voids.push({ kind: 'stair', id: 'master-pass', a: [12.2, U, -7.6], b: [12.2, U, -12.0], w: 1.0, h: 2.2 });
+    rooms.push({ id: 'bed2', kind: 'bedroom', carved: true, poly: rrect(10.0, 15.6, -16.4, -11.6), round: 0.5, y: U, h: 2.7, ceil: 'vault', rise: 0.5, finish: P,
+      doors: [{ at: [12.2, -11.6], w: 1.0, swing: 'none' }] });
+    /* down: the court under its shaft, the kitchen and store west, the servants' corridor east */
+    voids.push({ kind: 'stair', id: 'down', joins: ['hall', 'court'], a: [0, 0, -14.4], b: [0, D, -18.6], w: 1.8, h: 2.8 });
+    rooms.push({ id: 'court', kind: 'court', carved: true, poly: rrect(-5, 5, -28, -18.2), round: 0.8, y: D, h: 3.2, ceil: 'vault', rise: 0.4, finish: 'plaster',
+      doors: [{ at: [0, -18.2], w: 1.8, swing: 'none' }, { at: [-5, -23], w: 1.2, swing: 'none' }, { at: [5, -23], w: 1.2, swing: 'none' }] });
+    voids.push({ kind: 'shaft', id: 'light', joins: ['court'], c: [0, -23.1], y0: D, y1: 14.5, r0: 3.6, r1: 4.0 });
+    voids.push({ kind: 'door', id: 'sky', c: [0, -23.1], y: 11.4, r: 5.2, h: 4 });
+    voids.push({ kind: 'stair', id: 'kitchen-door', joins: ['court', 'kitchen'], a: [-4.5, D, -23], b: [-9.4, D, -23], w: 1.2, h: 2.4 });
+    rooms.push({ id: 'kitchen', kind: 'kitchen', carved: true, poly: rrect(-14.6, -8.8, -26.0, -20.0), round: 0.5, y: D, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'hewn',
+      doors: [{ at: [-8.8, -23], w: 1.2, swing: 'none' }, { at: [-11.7, -26.0], w: 1.0, swing: 'none' }], fixtures: [fx('hearth', 'hearth', -14.15, -23, 0.6, 1.6, { h: 1.0 })] });
+    voids.push({ kind: 'stair', id: 'store-door', joins: ['kitchen', 'store'], a: [-11.7, D, -25.6], b: [-11.7, D, -29.0], w: 1.0, h: 2.2 });
+    rooms.push({ id: 'store', kind: 'store', carved: true, poly: rrect(-14.6, -8.8, -33.0, -28.4), round: 0.5, y: D, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'hewn',
+      doors: [{ at: [-11.7, -28.4], w: 1.0, swing: 'none' }] });
+    voids.push({ kind: 'stair', id: 'east-door', joins: ['court'], a: [4.5, D, -23], b: [10.6, D, -23], w: 1.2, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'ecorr', a: [10.2, D, -16.0], b: [10.2, D, -32.4], w: 1.4, h: 2.6 });
+    rooms.push({ id: 'shrine', kind: 'shrine', carved: true, poly: rrect(7.4, 13.4, -18.0, -14.0), round: 0.5, y: D, h: 2.7, ceil: 'dome', rise: 0.7, finish: 'plaster',
+      doors: [{ at: [10.2, -18.0], w: 1.4, swing: 'none' }] });
+    put(rooms, voids, sroom('serv1', 'cell', 10.2, 1, -21.2, D, 3.6, 3.6));
+    put(rooms, voids, sroom('serv2', 'cell', 10.2, 1, -26.2, D, 3.6, 3.6));
+    rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(7.0, 13.4, -34.6, -31.4), round: 0.6, y: D, h: 2.8, ceil: 'vault', rise: 0.7, finish: 'plaster',
+      doors: [{ at: [10.2, -31.4], w: 1.4, swing: 'none' }], fixtures: [fx('pool', 'pool', 10.2, -33.8, 4.4, 1.0, { h: 0.5 })] });
+    return { rooms: rooms, voids: voids };
+  }
+  const EB = estateB();
 
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
@@ -6106,6 +6223,15 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms: GB.rooms, voids: GB.voids, well: GB.well,
       note: 'a round shaft open to the sky, a spiral stair down its wall (1.5 turns, 9 m), ten cells off five landings and two off ' +
         'the entrance tunnel; a hearth hall and a cistern at the bottom' },
+    /* ---------------- the wealthy estates carved in the hall's walls */
+    { key: 'zj_estate_a', name: 'Carved estate: the columned hall', carved: true, wealth: 0.85, types: HOME, lot: [36, 40],
+      rooms: EA.rooms, voids: EA.voids,
+      note: 'a pillared reception hall behind a front of engaged columns; a court under its own light shaft; the family\'s corridor ' +
+        '(living room, three bedrooms, the household shrine) and the service corridor (kitchen, two stores, two servants\' cells, the cistern)' },
+    { key: 'zj_estate_b', name: 'Carved estate: the loggia', carved: true, wealth: 0.9, types: HOME, lot: [34, 36],
+      rooms: EB.rooms, voids: EB.voids,
+      note: 'two storeys: a round domed hall; upstairs a loggia behind five arched windows between the family\'s rooms; down a flight ' +
+        'a court under a light shaft, the kitchen and store, the shrine, two servants\' cells and the cistern' },
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],

@@ -53,6 +53,24 @@ const PB={
    if(i===12)way.push(['the east landing',W[0]+7.4,W[1]],['into a cell',W[0]+7.4,W[1]+3.3],['back to the landing',W[0]+7.4,W[1]],['the spiral again',W[0]+3.8,W[1]]);}
   way.push(['the well floor',W[0],W[1]-1],['the cistern',W[0],W[1]-8]);return PB.route(W0,[S.x,S.z+3,0],way);},
  routeOk(log){return !!log&&log.every(s=>s.ok===s.expect);},
+ /* a route in a def's own frame (the sheet places defs unturned): start [x, z], way [[name, x, z, expect]] */
+ siteRoute(W0,key,start,way){const S=SITES.find(s=>s.key===key);if(!S)return null;return PB.route(W0,[S.x+start[0],S.z+start[1],0],way.map(w=>[w[0],S.x+w[1],S.z+w[2],w[3]]));},
+ /* the estates: A every wing (refused at a pillar), B upstairs (the stair, the landing, the loggia, both bedrooms) and B downstairs */
+ estateRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
+  r('estate A',PB.siteRoute(W,'zj_estate_a',[0,3],[['the door',0,1],['the hall',0,-4],['into a pillar',3,-5.6,false],['the hall again',0,-7.5],['the west side',-5,-7.5],
+   ['the west door',-5,-10.5],['the family corridor',-9.6,-10.5],['the living room',-9.6,-4.8],['the corridor',-9.6,-9.3],['a bedroom',-12.2,-9.3],['the corridor again',-9.6,-9.3],
+   ['down the corridor',-9.6,-24],['the shrine',-9.6,-27.5],['back up',-9.6,-10.5],['the hall’s west door',-5,-10.5],['the hall’s back',0,-11],['the court',0,-16.5],
+   ['beside the basin',2.5,-17.5],['past the basin',2.5,-21.5],['the far court',0,-22.8],['past the basin again',2.5,-21.5],['beside it again',2.5,-17.5],['back to the court door',0,-16.5],['the hall',0,-11],['the east door',5,-10.5],
+   ['the service corridor',9.6,-10.5],['the kitchen',9.6,-4.8],['the corridor',9.6,-10.5],['down the corridor',9.6,-24.9],['a servant’s cell',12.2,-24.9],
+   ['the corridor again',9.6,-24.9],['the cistern',9.6,-31.6]]));
+  r('estate B upstairs',PB.siteRoute(W,'zj_estate_b',[0,3],[['the door',0,1],['the hall',0,-6],['the west door',-4.4,-9.6],['up the stair',-12.2,-9.6],
+   ['a bedroom',-12.2,-12.5],['the landing',-12.2,-9.6],['the living room',-12.2,-7.0],['the loggia',-9.6,-2.6],['along the loggia',9.6,-2.6],
+   ['the master bedroom',12.2,-4.0],['the passage',12.2,-9.8],['the second bedroom',12.2,-12.5]]));
+  r('estate B downstairs',PB.siteRoute(W,'zj_estate_b',[0,3],[['the door',0,1],['the hall',0,-6],['beside the basin',2,-8],['past the basin',2,-12],
+   ['the back door',0,-14.2],['down the flight',0,-18.9],['the court',0,-23],['the kitchen',-10,-23],['to the store',-11.7,-25.0],['the store',-11.7,-29.4],
+   ['the kitchen again',-11.7,-25.0],['the kitchen door',-10,-23],['the court again',-4,-23],['the east door',4,-23],['the corridor',10.2,-23],['the shrine',10.2,-16.8],
+   ['the corridor again',10.2,-21.2],['a servant’s cell',12.6,-21.2],['back',10.2,-21.2],['the cistern',10.2,-32.2]]));
+  return out;},
  /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
     passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
  joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
@@ -71,6 +89,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  add('walk-on-mesh',gaps.length>0&&worst.gap<=.15,gaps.length+' samples on the carved floors; the worst '+(worst.gap>1e8?'has no mesh under it':worst.gap.toFixed(3)+' m')+' ('+worst.name+')');
  const rt=PB.blockRoute(KWALK);if(rt)add('walk-route',PB.routeOk(rt),rt.map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
  const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
+ const er=PB.estateRoutes(KWALK);if(er.length)add('walk-route-estates',er.length===3&&er.every(e=>PB.routeOk(e.log)),
+  er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
@@ -91,10 +111,13 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const W=PB.copyWalk();const rt=PB.blockRoute(W);if(rt)add('walk-route: the bed shelf not a block',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
  /* the well's route with its spiral's middle chord missing */
  {const W=PB.copyWalk(f=>/\.spiral7$/.test(f.name));const wr=PB.wellRoute(W);if(wr)add('walk-route-well: a spiral step missing',!PB.routeOk(wr),wr.filter(s=>!s.ok).map(s=>s.name).slice(0,3).join(', '));}
- /* joins: one cell's doorway strip shortened by 0.8 m at its room end (it overlaps the room's floor by 0.4) */
+ /* the estates' routes with estate B's stair up left out of the walk map */
+ {const W=PB.copyWalk(f=>/\.up$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const er=PB.estateRoutes(W),up=er.find(e=>/upstairs/.test(e.name));
+  if(up)add('walk-route-estates: the stair up missing',!PB.routeOk(up.log),up.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
-  const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-.8)/L;
+  const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;
    W.strip({a:f.a,b:[f.a[0]+dx*k,f.a[1]+dz*k,f.b[2]],w:f.w,name:f.name,tag:f.tag});}
-  const jn=PB.joins(W);add('walk-joins: a doorway 0.8 m short',jn.length>0,jn.join(', ')||'none found');}
+  const jn=PB.joins(W);add('walk-joins: a doorway 1 m short',jn.length>0,jn.join(', ')||'none found');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

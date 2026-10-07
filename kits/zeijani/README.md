@@ -23,7 +23,7 @@ python3 tools/textures/pack.py kits/zeijani                    # after editing m
 python3 tools/node_in_chromium.py core/terrain/test-cavern.js  # the cavern module's node test (no node here)
 ```
 
-On the page: **T** inspector, **C** cut-away (a carved def's rock opens on the camera's side, showing its plan), **N**
+On the page: **T** inspector, **C** cut-away (a carved def's rock is cut 2 m above each void's own floor, a dollhouse at every level; a built def opens on the camera's side), **N**
 night, **P** polygon tool, **F** walk: the walker stands on the `core/walk` floors the plans wrote (the sheet's ground, the
 carved rooms, the stairs, the tubes) and is refused where no floor lies within a step or a block stands. `?only=key,key`,
 `?mat=proc` (vertex colours only), `?t=` (pin the clock).
@@ -36,8 +36,13 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `27-mat.js` | the material keys over the library families (`materials.json` -> `tex/`): the carving rocks and their finishes, constructed and wooden surfaces, the culture's sheets; the palette (PLAN.md section 10); cloth, cut-away and flicker hooks |
 | `30-geo.js` | the geometry engine (forked from Scyvoi's, from Post-Apoc's): buckets per material in world space |
 | `36-def.js` | `defBuilding`, `place()`: every placement is a `core/tags` record before it is drawn |
+| `37-zj-walk.js` | `zwItem`: a built def's interiors item to `core/walk` (each room's floor, its walls as blocks with gaps at its doors; a planned body's floors, walls and stairs) |
 | `40-zj-cave.js` | the cavern host: a carved def declares its VOID PLAN in its own frame (`cvMass cvRoom cvTube cvHall cvStair cvShaft cvTrench cvMonolith cvDoor cvWell cvFixture`); `core/terrain/39-core-cavern.js` carves it, writes its floors to `core/walk`, and is meshed by chunk; the rock material blends the finishes and the tubes' Raufarholshellir colours |
 | `41-zj-block.js` | the cavern test block (P2): a tuff block, a carved front, rooms, a skylight, a stair down to a lava tube |
+| `42-zj-forms.js` | the forms (domes, drums, cones, ovals, stilts, stepped lintels, arches, columns, bands of the culture's sheets, niches, dovecote holes) and `zfFixtures`, which draws a carved plan's fixtures (bed shelves, hearths, benches, pillars, basins, the kiva's burner) |
+| `43-zj-wood.js` | the wooden dwellings: three huts (one with a carved back room) and the round timber house |
+| `44-zj-gallery.js` | the galleries of the poor: A the spine (three levels of cells, a hearth hall, a kiva, a cistern), B the well (a spiral stair down a light shaft) |
+| `45-zj-estate.js` | the wealthy estates: A the columned hall (13 rooms off a pillared hall, a court under a light shaft), B the loggia (two storeys and a lower court, 12 rooms) |
 | `81-sky.js` | the standard Krator sky, vendored (`--vendor-check`) |
 | `89-rows.js` | the sheet's rows by family |
 | `90-scene.js` | renderer, sky, ground, layout, `buildWorld()` |
@@ -47,5 +52,5 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 
 The Zeijani's vocabulary lives in the shared modules (P1): the `zeijani` culture and its seven trades in `core/tags`, the
 `zeijani` socket pack and its `spiralarch` emblem in `core/sockets`, the furniture in
-`kits/catalog/krator-master-furniture-zeijani.js`, the room kinds (`kiva brewery lab cell ossuary cistern guardroom`) in
+`kits/catalog/krator-master-furniture-zeijani.js`, the room kinds (`kiva brewery lab cell ossuary cistern guardroom court`) in
 `kits/interiors/sets/zeijani.js`.
