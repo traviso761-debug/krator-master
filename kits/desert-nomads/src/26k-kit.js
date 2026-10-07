@@ -18,11 +18,11 @@ const SV_TILE0={felt:.8,canvas:2.4,goat:.5,hair:.6,hide:.7,wood:1.6,carved:1.2,l
 const SV_CLOTH={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patSadu2:1,patLining:1,patLining2:1,flag:1};
 const SV_CUT={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patSadu2:1,patLining:1,patLining2:1,patZellige:1,lacq:1,wood:1,carved:1,flag:1,plain:1,rope:1,brass:1,bone:1,iron:1,glass:1};
 /* the sadu band and the lining came on 2026-10-07, each with a green alternate (patSadu2, patLining2: the sheikh's tent, the
-   hookah tent); the brown hair cloth is still owed (core/materials/PROMPTS-nomads.md) and draws as the canvas dyed brown */
+   hookah tent); the brown hair cloth (cloth.tent.brown) the same day */
 const KIT_FALLBACK=[['hair','canvas'],['patSadu','patKilim'],['patLining','patKilim'],['patSadu2','patSadu'],['patLining2','patLining']];
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */
 const SVPAL={
- hair:[0x6a4a32,0x5e402a,0x74523a],                     // brown goat-and-camel hair cloth (Bedouin, Berber)
+ hair:[0xffffff,0xf2eee8,0xe6e2dc],                     // brown goat-and-camel hair cloth: the library set (cloth.tent.brown) carries the colour; this only varies it
  hairD:[0x3e2c20,0x4a3424],                             // the dark stripes in it
  cream:[0xe8dcc4,0xf0e6d2,0xe2d4b8],                    // undyed wool, the white caidal canvas
  canvas:[0xe6dcc8,0xddd0b8,0xeee6d6],                   // white tent canvas

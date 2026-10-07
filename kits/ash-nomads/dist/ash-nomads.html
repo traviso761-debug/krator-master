@@ -8818,7 +8818,7 @@ function akBanner(x,z,h,o){o=o||{};pole('wood',[x,0,z],[x,h,z],.07,P('woodD'),8)
 /* ---------------------------------------------------------------- the gas giant (the Ash Nomads' emblem: the ringed giant in their sky)
    standing in the current frame at height y, facing +z, radius R: a black disc in a ring of frets, the banded planet, its
    tilted ring passing behind and in front, four moons. The owner's sheet (medAshGiant) replaces the drawing when it is packed. */
-const AK_GIANT=[0xc08a22,0xa8281c,0xe0b02a,0x8e3e1e,0xd49a24,0x6a1a12,0xe0b02a,0xa8281c];
+const AK_GIANT=[0x7d8fb0,0xc7c2b6,0x8a98b8,0xdcd4c2,0x6f80a6,0xd8cfbb,0x8896b6,0xc4bdb0,0x7688aa];   /* the giant's own bands, as the Krator sky draws it (81-sky.js) */
 function akGiant(y,z,R){W(0,y,z,0,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('plain',0,-.08,0,R,.08,akC(AK_K),48));
  ring('brass',0,0,.02,R,.05*Math.min(1,R),0xc89a3a,0,PI/2,0,48);
  if(KIT_HAS('medAshGiant')){WX(0,0,.03,0,PI/2,0,()=>medallion('medAshGiant',0,0,0,R*2,{round:true}));return;}
@@ -8828,7 +8828,7 @@ function akGiant(y,z,R){W(0,y,z,0,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('plain',0,-.08,
   for(let k=6;k>=0;k--){const yy=lerp(y0,y1,k/6);pts.push([cw(yy),yy,.04]);}poly('plain',pts,akC(AK_GIANT[b]),true);}
  const ra=R*.84,rb=R*.2,tilt=-.32,th=R*.1,E=(t,rr2)=>{const x=Math.cos(t)*rr2,yy=Math.sin(t)*rr2*rb/ra;return [x*Math.cos(tilt)-yy*Math.sin(tilt),x*Math.sin(tilt)+yy*Math.cos(tilt)];};
  for(const half of [0,1])for(let k=0;k<24;k++){const t0=PI*(half+k/24),t1=PI*(half+(k+1)/24),zz=half?.02:.065;   /* the far half (upper) behind the planet, the near half in front */
-  const a=E(t0,ra),b=E(t1,ra),c=E(t1,ra-th),d=E(t0,ra-th);poly('plain',[[a[0],a[1],zz],[b[0],b[1],zz],[c[0],c[1],zz],[d[0],d[1],zz]],akC(k%3?AK_Y:AK_O),true);}
+  const a=E(t0,ra),b=E(t1,ra),c=E(t1,ra-th),d=E(t0,ra-th);poly('plain',[[a[0],a[1],zz],[b[0],b[1],zz],[c[0],c[1],zz],[d[0],d[1],zz]],akC(k%3?0xd9d1c7:0xbcb4a8),true);}
  for(const [mx,my,mr] of [[-.7,.5,.07],[.64,.56,.05],[.72,-.46,.06],[-.58,-.6,.045]]){const pts=[];for(let k=0;k<12;k++){const a=k/12*TAU;pts.push([R*mx+Math.cos(a)*R*mr,R*my+Math.sin(a)*R*mr,.04]);}poly('plain',pts,akC(0xe2d6bc),true);}});}
 /* ---------------------------------------------------------------- the great sun disc on its frame (the assembly's emblem)
    standing in the current frame at height y, facing +z, radius R: rays, rings, the medallion at its heart */

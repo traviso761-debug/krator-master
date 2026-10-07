@@ -42,7 +42,7 @@ identity and look are `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBA
 (`KratorFauna`: dromedary, horse, sheep, cattle, goat, riding and pack lizards, marsh emu); the tack is fitted to its anchors.
 
 **Textures.** The library's black goat hair, tent canvas, hides and woods, and the owner's sadu band and muted lining (each with
-a green alternate for the sheikh and the hookah tent). The brown hair cloth (`hair`) is owed (`core/materials/PROMPTS-nomads.md`)
-and draws as canvas dyed brown meanwhile (`KIT_FALLBACK`).
+a green alternate for the sheikh and the hookah tent). The brown hair cloth (`hair`) is the owner's
+`cloth.tent.brown`.
 
 See `API.md` for the fragments and `KNOWN_ISSUES.md` for what is open.

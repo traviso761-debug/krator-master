@@ -6,7 +6,7 @@
 
 - [x] The sadu band and the muted lining came on 2026-10-07, each with a green alternate (the sheikh's tent and guest pavilion, the
       hookah tent); the floors are the sadu weave now (the star kilim was too bright).
-- [ ] Owed: `cloth.tent.brown` (family `hair`, `core/materials/PROMPTS-nomads.md`); the hair cloth is canvas dyed brown meanwhile.
+- [x] `cloth.tent.brown` (family `hair`) came on 2026-10-07: the khaimas, square tents, smithy, supply tent and the sheikh's awning.
 - [ ] The ground is `ground.gravelly_sand`, picked unseen for the kit sheet; a world places the biome's own ground.
 
 ## Geometry

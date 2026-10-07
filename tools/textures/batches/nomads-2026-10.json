@@ -415,5 +415,36 @@
    "mute": 0,
    "band": 0.0
   }
+ },
+ {
+  "src": "cloth.tent.brown.png",
+  "out": "core/materials/library/cloth.tent.brown",
+  "record": {
+   "id": "cloth.tent.brown",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row cloth.tent.brown: Bedouin and Berber goat-and-camel hair tent cloth in sewn strips, warm brown with cream and dark brown stripes, a darned patch (core/materials/PROMPTS-nomads.md)",
+    "reuse": "any desert or steppe tent: the desert nomads, Shade, Verge caravans, Xanadu herders"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "delight": 0.4,
+   "lift": 0.05,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "normal_strength": 0.7,
+   "mute": 0
+  }
  }
 ]
