@@ -5,6 +5,9 @@ Open items are `- [ ]` lines; build.py prints them.
 - [x] Vendored fragments are copied from `../highlands/src`, which itself carries the Iziz/Ancients drift noted in the Highlands KNOWN_ISSUES; re-vendor all three kits together. — 2026-10-01: re-vendored together. Highlands took `69b 69c 91-probe 93-labels` from Iziz (its showcase budget moved to `targets/highlands/91z-views.js`); Xanadu took `30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b 69c 91-probe 93-labels` from Highlands. `build.py --vendor-check` now compares `81-sky.js` with `../iziz/src` (Highlands has no src copy of it) and reports all 19 identical.
 - [x] `vnStairs` (vendored) centres its run at `run/2` while treads span `steps*.32`; the kit uses its own solid `xnFlight` everywhere instead. — 2026-10-01: not a fault. As Highlands found (its round 10), `vnStairs` is self-consistent: `run` IS `steps*.32` and the treads sit at `run/2-run*t`, so the flight is centred on its z and spans exactly `run`. The Highlands bug was `hnKryltso` sizing its run from `rise`; Xanadu's one caller (`74-xa-dwell.js`) is unaffected.
 - [ ] Windows placed on a battered face sit on the base plane of the block, so on tall single blocks (the fortress tower, the strong room) the surround boards can be a few centimetres inside the lean; builders offset them by hand (`hw-.05`).
+- [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-xanadu-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
+- [ ] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed
+      earth (earth.adobe) has no lift lines, which the procedural map drew; a rammed-earth set would bring them back. ?mat=proc shows the old look.
 
 ## Upstream: world-UV materials share one program (highlands, iziz, ancients) — fixed 2026-10-01
 2026-10-01: fixed upstream. `vWorldUV` is one shared copy in `core/materials/opt/69a-world-uv.js` (built with
@@ -37,11 +40,27 @@ the clone in `kbake`).
   *2026-10-05:* not the soft edge. The mask is core/mask now (hard-edged, `core/mask/README.md`): placement rose from
   2794 to 2912 records and is the same on GPU and CPU canvas loads, but `_infill` is still 0. The cause is elsewhere in
   the plot test.
-* Building count is down to 973 + 0 infill (was 1109) after the street thinning; expect ~2000 once the plots pass.
-* Verify the door orientation with the Doors overlay from the overhead views; the walker sets the plot's front
-  toward the road by construction, the infill pass passes the road's outward normal.
+  *2026-10-06: fixed (round 9c).* Three faults. (1) `planFront` read its normal as plot → road, but both callers pass
+  the road's outward normal, so on a real street the plot was set back onto the road stroke and the mask refused it;
+  every genuine frontage and every infill try failed. (2) The frontage walker's arc length counted `acc` twice
+  (`next=t;acc+=L;next-=L`), so after the first segment `t` ran negative and plots were laid along the segments'
+  backward extensions, 10–70 m off any road: those were the 1017 that did stand. (3) A street's bench reached 10 m
+  from its centre line, so a deep plot's back stood on the blend, climbing 8–20 m in 4 m; avenues and contour streets
+  now bench to their edge plus a 13 m lot (`benchReach`), and overlapping benches blend across their midline.
+  Now 1995 street buildings (277 by the infill), 1157 of them on the slopes; every front on its road's edge.
+* ~~Building count is down to 973 + 0 infill~~ 1995 after round 9c.
+* Door orientation: checked numerically in round 9c (every street building's front faces its nearest road); a look
+  with the Doors overlay from overhead is still worth doing.
+* The "Wealthy homes — the avenue" view (camera 232,165,661) stands on a stretch of the avenue outside `CITY_POLY`, on
+  scree, so it shows no homes since round 9b's bounds. *Fixed in 9c:* the view now finds the in-bounds avenue
+  stretch with the most rich frontage (the east district's centre lies outside the bounds).
 * Alleys/stairs are painted and mask-blocked but not built (no treads, no kerbs).
-* The public-bath blocks in the garden show a bare batter under their pad on the downhill side.
+* ~~The public-bath blocks in the garden show a bare batter under their pad on the downhill side.~~ Round 9c: the
+  baths and the teahouse stand at their cells' mean on the re-levelled garden, no disc of their own. Still open:
+  14 cell steps beside the blocks exceed the 3 m a cascade piece is drawn for; the garden's uphill edge is cut up to
+  35 m into the hill (was 47).
+* Travis, round 9c, not yet traced: "a lot of empty plots and misaligned buildings" in the garden overhead (the
+  parterres, 150 of the 364 tiles, read bare from above?).
 * The prison's pad floats a little off the cliff face.
 * Run the full view set once the placement is fixed; republish.
 
@@ -50,6 +69,3 @@ thinning to ~34 m with alleys every ~40 m, the garden's stepped ground with reta
 standing the right way (verified: the garden renders as hanging terraces, the water falls), the stream into the
 Caves of Ice (verified), a third Palopó, quays facing the lake (verified), the lake at −0.5 m (verified, no
 z-fight), the Doors overlay.
-- [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-xanadu-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
-- [ ] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed
-      earth (earth.adobe) has no lift lines, which the procedural map drew; a rammed-earth set would bring them back. ?mat=proc shows the old look.

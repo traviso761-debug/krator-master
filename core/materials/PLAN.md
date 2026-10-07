@@ -1541,6 +1541,15 @@ What the first delivery taught:
   2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray
   filling the middle 70% of the frame. Leaves: ..." (each card's meta.json holds its exact line).
 
+#### Delivered 2026-10-06 and processed: ice (2 images)
+
+Batch `tools/textures/batches/xanadu-ice-2026-10.json` (sources: two images the owner pasted, 1254 px). Xanadu takes
+both through its first `materials.json` (families `icewall`, `icefloor`), for the Caves of Ice.
+| Set | Options | Reuse |
+|---|---|---|
+| `ice.glacier` | delight 0.2, rough 0.35 | milky glacier ice with grit seams: ice-cave floors and crusts, frozen ground, glacier faces, snowfield edges (the Highlands, the Ring Sea's ice shelf) |
+| `ice.clear` | delight 0.2, rough 0.2 | deep blue cracked clear ice: ice-cave walls and vaults, frozen lakes and falls, ice blocks and crystal props |
+
 ## Next steps
 
 0. **Scan libraries:** catalogued (see "Available, not committed"). Nothing is reduced or committed until the demo texture

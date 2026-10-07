@@ -22,6 +22,18 @@
         "settlements/mungo"
       ],
       "port": 8791
+    },
+    {
+      "name": "xanadu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8807",
+        "--directory",
+        "settlements/xanadu"
+      ],
+      "port": 8807
     }
   ]
 }
