@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (2%) | 29 (12%) | 10 (4%) | 72 (29%) | 132 (53%) |
+| KB | 5 (2%) | 30 (12%) | 10 (4%) | 75 (30%) | 134 (53%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -18,27 +18,27 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/30-geo.js` | 22.9 | [draw] | 46 | 1 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/36-def.js` | 6.0 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/37-zj-walk.js` | 4.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/40-zj-cave.js` | 16.8 | [G shader] | 9 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | the cave material (per-vertex weights over triplanar library sets) is the .gdshader; the rest is glue (local plans to world through CM; chunk arrays to BufferGeometry: Godot imports the exported meshes) |
+| `src/40-zj-cave.js` | 17.5 | [G shader] | 9 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | the cave material (per-vertex weights over triplanar library sets) is the .gdshader; the rest is glue (local plans to world through CM; chunk arrays to BufferGeometry: Godot imports the exported meshes) |
 | `src/41-zj-block.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the void plan is data (the cavern carves it, core/walk takes its floors); three box() calls draw the lintel |
 | `src/42-zj-forms.js` | 9.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 29 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/43-zj-wood.js` | 7.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/44-zj-gallery.js` | 3.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | the galleries' fronts and the well's stair; their plans are data in `kits/interiors/sets/zeijani.js` |
 | `src/45-zj-estate.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/46-zj-built.js` | 8.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/46-zj-built.js` | 8.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-zj-shops.js` | 4.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-zj-sacred.js` | 6.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/49-zj-civic.js` | 14.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 45 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/49-zj-civic.js` | 15.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 45 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-zj-works.js` | 13.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/51-zj-guard.js` | 11.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/52-zj-trade.js` | 5.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/53-zj-additions.js` | 7.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/51-zj-guard.js` | 12.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/52-zj-trade.js` | 6.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/53-zj-additions.js` | 8.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/89-rows.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 8.4 | [web] | 18 | 0 | 1 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 25.8 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91f-furnish.js` | 12.5 | [web] | 4 | 1 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91n-night.js` | 2.6 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 14.6 | [web] | 12 | 0 | 21 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |
+| `src/92-camera.js` | 16.8 | [web] | 16 | 0 | 22 | 15 | 4 | 4 | 0 | 0 | 4 | 0 | 0 |  |
 | `src/93-anim.js` | 2.5 | [draw] | 5 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

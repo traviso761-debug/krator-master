@@ -81,7 +81,7 @@ const DH=(function(){
  /* the braid: from the stone door to the hall's west mouth, two strands that part and rejoin, climbing 35 m; an upper way from the
     hall's ledge crosses over it, and a drip-channel tube to the cistern crosses under the ledge's north tunnel */
  const BY=byId['t.door'].y;
- N('b0',-545,0,BY+.3);E('t.door','b0','door',4,{door:'stonedoor',note:'the rolling stone door: the outer zone ends here'});
+ N('b0',byId['t.door'].x+9,0,BY+.3);   /* the stone door's passage (9 m) runs from the outer tube's end to the braid's start */E('t.door','b0','door',4,{door:'stonedoor',note:'the rolling stone door: the outer zone ends here'});
  N('a1',-450,-40,BY+7);N('a2',-320,-50,-18);N('b1',-450,45,BY+4);N('b2',-310,55,-26);N('j1',-240,-25,-12);
  chain(['b0','a1','a2','j1'],'braid',7);chain(['b0','b1','b2','j1'],'braid',5);
  N('h.w',-HALL.rx,0,0,{place:'the west mouth'});E('j1','h.w','ramp',8);
@@ -103,12 +103,19 @@ const DH=(function(){
  /* the satellites: a node at each pit's floor where its way comes in, its floor's middle */
  const pitNode=(P,id,th,y)=>{const p=onPit(P,th);return N(id,p[0],p[1],y===undefined?P.floor:y);};
  const S1=PITS[0],S2=PITS[1],S3=PITS[2];
- pitNode(S1,'s1.in',PI/2);N('s1.c',S1.c[0],S1.c[1],S1.floor,{place:'the west well'});E('a2','s1.in','ramp',6);E('s1.in','s1.c','street',4);
- pitNode(S1,'s1.up',-.3,12);E('n.w','s1.up','braid',4);N('s1.mid',-270,-206,(12+S1.floor)/2);N('s1.upf',-300,-208,S1.floor);chain(['s1.up','s1.mid','s1.upf'],'stair',2);E('s1.upf','s1.c','street',4);
- N('bs1',20,200,3);pitNode(S2,'s2.in',-PI/2);N('s2.c',S2.c[0],S2.c[1],S2.floor,{place:'the south well'});chain(['h.s','bs1','s2.in'],'braid',6);E('s2.in','s2.c','street',4);
- N('e1',250,40,9);pitNode(S3,'s3.in',PI+.25);N('s3.c',S3.c[0],S3.c[1],S3.floor,{place:'the east well'});chain(['h.e','e1','s3.in'],'ramp',6);E('s3.in','s3.c','street',4);
+ /* each well's floor is laid out on the axis of its main way in (PIT_IN: the angle from the middle to that entrance): a point
+    a along it and b across it (see the sites below) */
+ const PIT_IN={s1:PI/2,s2:-PI/2,s3:PI+.25};
+ const pitAt=(P,a,b)=>{const th=PIT_IN[P.id],u=[Math.cos(th),Math.sin(th)],v=[-u[1],u[0]];return [P.c[0]+u[0]*a+v[0]*b,P.c[1]+u[1]*a+v[1]*b];};
+ const pitWay=(P,id,a,b)=>{const q=pitAt(P,a,b);return N(id,q[0],q[1],P.floor);};
+ pitNode(S1,'s1.in',PIT_IN.s1);N('s1.c',S1.c[0],S1.c[1],S1.floor,{place:'the west well'});E('a2','s1.in','ramp',6);E('s1.in','s1.c','street',4);
+ /* the ledge's north tunnel comes down to the west well's floor by one long stair, clear of the wall's carved fronts */
+ pitNode(S1,'s1.up',-40*PI/180);E('n.w','s1.up','stair',3);
+ pitWay(S1,'s1.k',-11,-17);pitWay(S1,'s1.m',-11,0);chain(['s1.up','s1.k','s1.m','s1.c'],'street',4);   /* round the fields, between them and the homes */
+ N('bs1',20,200,3);pitNode(S2,'s2.in',PIT_IN.s2);N('s2.c',S2.c[0],S2.c[1],S2.floor,{place:'the south well'});chain(['h.s','bs1','s2.in'],'braid',6);E('s2.in','s2.c','street',4);
+ N('e1',250,40,9);pitNode(S3,'s3.in',PIT_IN.s3);N('s3.c',S3.c[0],S3.c[1],S3.floor,{place:'the east well'});chain(['h.e','e1','s3.in'],'ramp',6);E('s3.in','s3.c','street',4);
  /* the catacombs: down a processional way from the south well, far and deep; the Keepers' rooms at their head */
- pitNode(S2,'s2.e',0);E('s2.c','s2.e','street',4);
+ pitNode(S2,'s2.e',PI/4);pitWay(S2,'s2.m',-11,0);pitWay(S2,'s2.k',-11,17);chain(['s2.c','s2.m','s2.k','s2.e'],'street',4);
  N('k1',300,420,-22);N('k2',480,560,-46);N('k.head',560,640,-58,{place:'the catacombs'});chain(['s2.e','k1','k2','k.head'],'ramp',4,{note:'the processional way'});
  /* the secret ways: scout exits to the surface, in the lava field and in the forest (scouts only) */
  N('x.lava',-200,-262,surfaceY(-200,-262),{place:'a scout exit',exit:'lava'});E('n.w','x.lava','secret',1.5,{zone:'secret'});
@@ -129,7 +136,9 @@ const DH=(function(){
  /* ---- the sites */
  const SITES=[];
  const S=(key,district,x,z,ry,y,at,o)=>{const s=Object.assign({key,district,x:+x.toFixed(2),z:+z.toFixed(2),ry:+(ry||0).toFixed(4),y:+(y||0).toFixed(2),at:at||'floor'},o||{});SITES.push(s);return s;};
- const hallWall=(key,deg)=>{const th=deg*PI/180,p=onHall(th);return S(key,'hub',p[0],p[1],faceIn(p[0],p[1],HALL.c[0],HALL.c[1]),HALL.y,'wall');};
+ /* a site in the hall's wall faces square to it (the ellipse's normal, not its centre: off the axes the two part by up to 20 degrees) */
+ const hallNormal=(x,z)=>{const nx=-(x-HALL.c[0])/(HALL.rx*HALL.rx),nz=-(z-HALL.c[1])/(HALL.rz*HALL.rz),L=Math.hypot(nx,nz);return [nx/L,nz/L];};
+ const hallWall=(key,deg)=>{const th=deg*PI/180,p=onHall(th),n=hallNormal(p[0],p[1]);return S(key,'hub',p[0],p[1],Math.atan2(n[0],n[1]),HALL.y,'wall');};
  const pitWall=(key,P,deg,o)=>{const th=deg*PI/180,p=onPit(P,th);return S(key,P.id,p[0],p[1],faceIn(p[0],p[1],P.c[0],P.c[1]),P.floor,'wall',o);};
  /* the hub's square: the council in its trench, the scouts' tower, the shops and the tavern along the south side (a lane left
     open to the south mouth), the guard headquarters, the muster ground, stalls in the pool of daylight, a kiva */
@@ -142,32 +151,35 @@ const DH=(function(){
  hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-115);hallWall('zj_estate_b',-138);
  hallWall('zj_brewery',115);hallWall('zj_lab',128);hallWall('zj_shop_weapons_carved',155);hallWall('zj_shop_knapper_carved',168);
  /* the rolling stone door, at the outer tube's inner end, facing the outer zone (west) */
- S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground');
+ S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground',{walls:{front:[10.4,10.2],back:[9,7.5]}});
  /* the cistern hall; the catacombs */
- S('zj_cistern','cistern',40,-165,0,-6,'ground');S('zj_catacomb','catacombs',560,640,PI/4,-58+4.5,'ground');
- /* the satellites: fields on the floor round its middle, a granary and homes on the floor; galleries, the stores, the alecap
-    beds, shops, a tavern and a smithy cut in the wall */
- const sat=(P,o)=>{const c=P.c,y=P.floor;
-  S('zj_farm_yam',P.id,c[0]-9,c[1]-8,0,y);S('zj_farm_veg',P.id,c[0]+9,c[1]-8,0,y);S('zj_farm_yam',P.id,c[0]-9,c[1]+8,PI,y);
-  S('zj_granary',P.id,c[0]+8,c[1]+10,PI,y);S('zj_house_built_mid',P.id,c[0]+(P.r-14)*Math.cos(o.home),c[1]+(P.r-14)*Math.sin(o.home),faceIn(c[0]+(P.r-14)*Math.cos(o.home),c[1]+(P.r-14)*Math.sin(o.home),c[0],c[1]),y);
+ /* (each faces the way that comes to it: its front is where the tunnel ends) */
+ S('zj_cistern','cistern',40,-165,faceIn(40,-165,0,-HALL.rz),-6,'ground');S('zj_catacomb','catacombs',560,640,faceIn(560,640,480,560),byId['k.head'].y,'ground');
+ /* the satellites. The floor is laid out on the axis of the way in (u, from the middle to the entrance; v across it): the street
+    from the entrance runs to the middle between two fields; the homes stand beyond the middle, the smithy and the granary
+    either side; galleries, the stores, the alecap beds, a shop, a tavern or inn and a kiva are cut in the wall, clear of the ways */
+ const sat=(P,o)=>{const c=P.c,y=P.floor,th=PIT_IN[P.id],u=[Math.cos(th),Math.sin(th)],at=(a,b)=>pitAt(P,a,b);
+  S('zj_farm_yam',P.id,...at(0,-8.5),-th,y);S('zj_farm_veg',P.id,...at(0,8.5),PI-th,y);
+  S('zj_house_built_mid',P.id,...at(-20,0),Math.atan2(u[0],u[1]),y);
+  const sm=at(0,22*o.side),gr=at(0,-22*o.side);S('zj_smithy',P.id,sm[0],sm[1],faceIn(sm[0],sm[1],c[0],c[1]),y);S('zj_granary',P.id,gr[0],gr[1],faceIn(gr[0],gr[1],c[0],c[1]),y);
   o.wall.forEach(([k,deg])=>pitWall(k,P,deg));};
- sat(S1,{home:200*PI/180,wall:[['zj_gallery_a',-120],['zj_store_tunnel',-60],['zj_farm_alecap',-15],['zj_shop_dyer_carved',140],['zj_tavern_carved',175],['zj_kiva',35]]});
- sat(S2,{home:-30*PI/180,wall:[['zj_gallery_b',200],['zj_store_tunnel',150],['zj_farm_alecap',115],['zj_shop_rope_carved',60],['zj_inn_carved',-145],['zj_kiva',-60]]});
- sat(S3,{home:60*PI/180,wall:[['zj_gallery_a',-50],['zj_store_tunnel',125],['zj_farm_alecap',155],['zj_shop_stonecutter_carved',95],['zj_tavern_carved',-100],['zj_kiva',30]]});
- /* the smithies stand on the floors (constructed: a smoke shaft up the pit) */
- for(const P of PITS){const a=(P.id==='s1'?-150:P.id==='s2'?20:-150)*PI/180,x=P.c[0]+(P.r-12)*Math.cos(a),z=P.c[1]+(P.r-12)*Math.sin(a);S('zj_smithy',P.id,x,z,faceIn(x,z,P.c[0],P.c[1]),P.floor);}
+ sat(S1,{side:1,wall:[['zj_gallery_a',-120],['zj_store_tunnel',-70],['zj_farm_alecap',15],['zj_kiva',50],['zj_shop_dyer_carved',140],['zj_tavern_carved',175]]});
+ sat(S2,{side:1,wall:[['zj_shop_rope_carved',-55],['zj_kiva',-20],['zj_farm_alecap',10],['zj_store_tunnel',80],['zj_inn_carved',125],['zj_gallery_b',180]]});
+ sat(S3,{side:1,wall:[['zj_gallery_a',-50],['zj_kiva',30],['zj_shop_stonecutter_carved',95],['zj_store_tunnel',125],['zj_farm_alecap',155],['zj_tavern_carved',-100]]});
  /* the outpost: the portal and its galleries in the cliff (facing west), the caravanserai on the stream, the barracks, the gate
     and a palisade round the clearing's west half, watchtowers on the cliff's shoulders and at the forest's edge, dwellings */
  S('zj_portal','outpost',-2505,0,-PI/2,OY,'wall');S('zj_gallery_a','outpost',-2505,-45,-PI/2,OY,'wall');S('zj_gallery_b','outpost',-2505,45,-PI/2,OY,'wall');
  S('zj_caravanserai','outpost',-2600,62,0,OY);S('zj_barracks_outpost','outpost',-2620,-48,0,OY);S('zj_gate','outpost',-2700,0,-PI/2,OY);
  S('zj_watchtower','outpost',-2498,-85,-PI/2,byId['o.tw1'].y);S('zj_watchtower','outpost',-2498,85,-PI/2,byId['o.tw2'].y);S('zj_watchtower','outpost',-2758,-58,-PI/2,OY);
  const PAL={c:[-2600,0],r:100};
- for(let i=0;i<26;i++){const a=PI/2+.06+i*(PI-.12)/25;if(Math.abs(a-PI)<.07)continue;const x=PAL.c[0]+Math.cos(a)*PAL.r,z=PAL.c[1]+Math.sin(a)*PAL.r;S('zj_palisade','outpost',x,z,a+PI/2,OY);}
+ for(let i=0;i<26;i++){const a=PI/2+.06+i*(PI-.12)/25;if(Math.abs(a-PI)<.07)continue;const x=PAL.c[0]+Math.cos(a)*PAL.r,z=PAL.c[1]+Math.sin(a)*PAL.r;S('zj_palisade','outpost',x,z,PI/2-a,OY);}   /* tangent, the bank (its front) outward */
+ /* and from the ring's two ends straight on east to the cliff, so the clearing is closed: the last run reaches into the rock */
+ for(const sz of [-1,1])for(let i=0;i<8;i++)S('zj_palisade','outpost',PAL.c[0]+6+12*i,sz*PAL.r,sz>0?0:PI,OY,'floor',{line:true});
  S('zj_hut_a','outpost',-2662,32,PI/2,OY);S('zj_hut_a','outpost',-2652,46,PI,OY);S('zj_hut_b','outpost',-2640,28,PI/2,OY);S('zj_hut_b','outpost',-2665,-30,PI/2,OY);
- S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-112,-PI/2,OY,'wall');
+ S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-72,-PI/2,OY,'wall');
  S('zj_farm_veg','outpost',-2560,40,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
  /* the stores and the stables in the outer tube's side caves */
- S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,0,byId['t.stores'].y,'ground');
+ S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,faceIn(byId['t.stores'].x,byId['t.stores'].z,byId.t1.x,byId.t1.z),byId['t.stores'].y,'ground');
  const PASTURE=[[-2760,60],[-2700,60],[-2690,130],[-2770,140]];
  const STREAM=[[-2700,140],[-2640,95],[-2600,80],[-2540,70],[-2500,90]];
 
@@ -193,6 +205,6 @@ const DH=(function(){
  const fromSquare=dist('h.sq',e=>e.zone!=='secret');
  DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
 
- return {PI,surfaceY,groundY,coneY,cliffX,KIPUKA,CONE,hallK,onLedge,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
+ return {PI,surfaceY,groundY,coneY,cliffX,KIPUKA,CONE,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
 })();
 if(typeof module!=='undefined')module.exports=DH;

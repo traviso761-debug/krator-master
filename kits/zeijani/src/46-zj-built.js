@@ -10,19 +10,19 @@ function zbBody(key,o){o=o||{};const it=zjItem(key);if(!it||!it.bodies)return nu
  const wm=o.wall||'ashlar',wc=o.wallCol||P('tuff'),sm=o.slab||'plank',stc=P('white');
  for(const B of inst.buildings){
   for(const Wl of B.walls){if(Wl.kind!=='exterior')continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<.1)continue;
+   const wm=o.wallAt?o.wallAt(Wl)||o.wall||'ashlar':(o.wall||'ashlar');   /* o.wallAt(wall): a storey's own material (the scouts' lattice) */
    const ux=dx/L,uz=dz/L,ry=Math.atan2(dx,dz),t=Wl.thick||.4,n=Wl.out||[0,0],ox=-n[0]*t/2,oz=-n[1]*t/2,h=Wl.h,cuts=[[0,L]];
    const at=(u,off)=>[Wl.a[0]+ux*u+ox+n[0]*(off||0),Wl.a[1]+uz*u+oz+n[1]*(off||0)];
    for(const q of Wl.openings||[]){const a=q.u-q.w/2,b=q.u+q.w/2;for(let i=cuts.length-1;i>=0;i--){const c=cuts[i];if(b<=c[0]||a>=c[1])continue;cuts.splice(i,1,...[[c[0],a],[b,c[1]]].filter(s=>s[1]-s[0]>.05));}
     const m=at(q.u);if(q.y0>.02)box(wm,m[0],Wl.y,m[1],t,q.y0,q.w,wc,ry);box(wm,m[0],Wl.y+q.y1,m[1],t,h-q.y1,q.w,wc,ry);
     if(q.window){const s_=at(q.u,t/2+.06);box('tuffPol',s_[0],Wl.y+q.y0-.1,s_[1],.22,.1,q.w+.3,stc,ry);box('tuffPol',s_[0],Wl.y+q.y1,s_[1],.2,.22,q.w+.4,stc,ry);}}
    for(const c of cuts){const m=at((c[0]+c[1])/2);box(wm,m[0],Wl.y,m[1],t,h,c[1]-c[0],wc,ry);}}
-  /* the upper floors: a slab 0.25 thick, 5 cm inside the footprint, round each stairwell (rectangular plans) */
-  for(const F of B.floors){if(!F.level)continue;const xs=F.poly.map(p=>p[0]),zs=F.poly.map(p=>p[1]);let R=[[Math.min(...xs)+.05,Math.max(...xs)-.05,Math.min(...zs)+.05,Math.max(...zs)-.05]];
-   for(const H of F.holes||[]){const hx=H.map(p=>p[0]),hz=H.map(p=>p[1]),h0=Math.min(...hx),h1=Math.max(...hx),k0=Math.min(...hz),k1=Math.max(...hz),out=[];
-    for(const r of R){if(h1<=r[0]||h0>=r[1]||k1<=r[2]||k0>=r[3]){out.push(r);continue;}
-     out.push([r[0],r[1],r[2],Math.max(r[2],k0)],[r[0],r[1],Math.min(r[3],k1),r[3]],[r[0],Math.max(r[0],h0),Math.max(r[2],k0),Math.min(r[3],k1)],[Math.min(r[1],h1),r[1],Math.max(r[2],k0),Math.min(r[3],k1)]);}
-    R=out.filter(r=>r[1]-r[0]>.02&&r[3]-r[2]>.02);}
-   for(const r of R)box(sm,(r[0]+r[1])/2,F.y-.25,(r[2]+r[3])/2,r[1]-r[0],.25,r[3]-r[2],P('wood'));}
+  /* the upper floors: a slab 0.25 thick, 5 cm inside the footprint's own outline (round or square), less each stairwell */
+  for(const F of B.floors){if(!F.level)continue;for(const part of zwMinusHoles(zwInset(F.poly,.05),F.holes||[]))prism(sm,part,F.y-.25,F.y,P('wood'));}
+  /* a ladder (the planner's where a stair will not fit): two rails from its foot up its run, a rung every 0.3 m */
+  for(const S of B.stairs){if(S.kind!=='ladder')continue;const px=-S.dir[1]*(S.w||.6)/2,pz=S.dir[0]*(S.w||.6)/2,tx=S.foot[0]+S.dir[0]*S.run,tz=S.foot[1]+S.dir[1]*S.run,wd=P('woodD');
+   for(const s of [-1,1])beam('log',[S.foot[0]+s*px,S.y0,S.foot[1]+s*pz],[tx+s*px,S.y1+.9,tz+s*pz],.05,wd,true,6);
+   const n=Math.round((S.y1-S.y0)/.3);for(let i=1;i<=n;i++){const t=i/(n+1),cx=S.foot[0]+(tx-S.foot[0])*t,cz=S.foot[1]+(tz-S.foot[1])*t;beam('log',[cx-px,S.y0+(S.y1-S.y0)*t,cz-pz],[cx+px,S.y0+(S.y1-S.y0)*t,cz+pz],.03,wd,true,5);}}
   for(const S of B.stairs){if(S.kind!=='stair')continue;const n=S.risers||Math.round((S.y1-S.y0)/.18),tr=S.run/n,rs=(S.y1-S.y0)/n,ry=Math.atan2(S.dir[0],S.dir[1]);
    for(let i=0;i<n;i++)box(o.stair||'ashlar',S.foot[0]+S.dir[0]*(i+.5)*tr,S.y0,S.foot[1]+S.dir[1]*(i+.5)*tr,S.w,(i+1)*rs,tr+.01,P('tuffDark'),ry);}
   zwPartitions(key,o.part||'plaster',o.partCol||P('plaster'));}

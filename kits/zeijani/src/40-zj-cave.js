@@ -92,8 +92,13 @@ function cvChunkMesh(key){const ch=CVC.meshChunk(key);if(!ch.idx.length)return n
    /* the ground the cavern meshes inside a well's rim opens with the well's site */
    else if(ch.ground&&ch.ground[i]){const x=ch.pos[i*3],z=ch.pos[i*3+2],q=CV_WELLSITE.find(q=>Math.hypot(x-q.c[0],z-q.c[1])<q.r);if(q&&q.rec){aCut[i*4]=q.rec.x;aCut[i*4+1]=q.rec.z;aCut[i*4+2]=q.rec.y-3;aCut[i*4+3]=1;}}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
-  g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
-  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=ch.idx.length/3;return mesh;}
+  /* a world that draws its own ground (CV_OPTS.groundKeep(x, z): Dhelv's heightfield) keeps the cavern's ground only where that
+     says (inside the openings' rims): the chunks mesh the ground all over them, and two surfaces at one height fight */
+  let idx=ch.idx;if(CV_OPTS.groundKeep){const G=65535,P_=ch.prim,Q=ch.pos,keep=[];for(let t=0;t<idx.length;t+=3){const a=idx[t],b=idx[t+1],c=idx[t+2];
+    if(P_[a]===G&&P_[b]===G&&P_[c]===G&&!CV_OPTS.groundKeep((Q[a*3]+Q[b*3]+Q[c*3])/3,(Q[a*3+2]+Q[b*3+2]+Q[c*3+2])/3))continue;keep.push(a,b,c);}
+   if(!keep.length)return null;idx=new Uint32Array(keep);}
+  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeBoundingSphere();
+  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=idx.length/3;return mesh;}
 function cvFinish(parent){const t0=performance.now();CVC.build();
  while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}
  let tris=0;
@@ -125,8 +130,9 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
    { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well'|'room'|'walk'|'floor'|'block', id, ... } in the def's frame. Carving
    from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
 /* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
-   wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground) */
-const CV_OPTS={skipMass:false,wellDoor:null};
+   wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground),
+   groundKeep(x, z) (cvChunkMesh: the cavern's ground kept only where true; the world draws the rest) */
+const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
     the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left

@@ -75,7 +75,7 @@ function square(D){const H=D.HALL,S=D.SITES.filter(s=>s.district==='hub'),F=S.fi
  for(const m of ['h.w','h.e','h.n','h.s']){const a=[D.byId['h.sq'].x,D.byId['h.sq'].z],b=[D.byId[m].x,D.byId[m].z];
   for(const s of F){const q=quad(D,s);const d=Math.min(...q.map(p=>segD(p,a,b)));if(d<3||overlap(q,[a,b,[b[0]+.01,b[1]+.01],[a[0]+.01,a[1]+.01]]))bad.push(s.key+' in the lane to '+m);}}
  for(const s of W){const th=Math.atan2((s.z-H.c[1])/H.rz,(s.x-H.c[0])/H.rx),p=[H.c[0]+Math.cos(th)*H.rx,H.c[1]+Math.sin(th)*H.rz];
-  if(Math.hypot(s.x-p[0],s.z-p[1])>R.wallFit.off)bad.push(s.key+' off the wall');const f=D.faceIn(s.x,s.z,H.c[0],H.c[1]);if(Math.abs(Math.atan2(Math.sin(s.ry-f),Math.cos(s.ry-f)))>R.wallFit.face)bad.push(s.key+' not facing in');
+  if(Math.hypot(s.x-p[0],s.z-p[1])>R.wallFit.off)bad.push(s.key+' off the wall');const nn=D.hallNormal(s.x,s.z),f=Math.atan2(nn[0],nn[1]);   /* square to the wall */if(Math.abs(Math.atan2(Math.sin(s.ry-f),Math.cos(s.ry-f)))>R.wallFit.face)bad.push(s.key+' not facing in');
   for(const m of ['h.w','h.e','h.n','h.s']){const n=D.byId[m];if(Math.hypot(s.x-n.x,s.z-n.z)<D.FOOT[s.key][0]/2+10+R.wallFit.gap)bad.push(s.key+' in the mouth '+m);}}
  return {bad,free,n:S.length};}
 {const q=square(DH);ok(!q.bad.length,'the square holds its list with room to walk',q.bad.join(', ')||q.n+' sites, '+(q.free*100).toFixed(0)+'% of the square free');
@@ -133,6 +133,24 @@ function outpost(D){const S=D.SITES.filter(s=>s.district==='outpost'),bad=[];
  for(const s of S.filter(s=>s.at==='wall'))if(s.x<-2512||s.x>-2504||Math.abs(s.ry+PI/2)>R.wallFit.face)bad.push(s.key+' off the cliff');return bad;}
 {const b=outpost(DH);ok(!b.length,'the outpost\'s sites apart, the cliff\'s on the cliff',b.join(', ')||DH.SITES.filter(s=>s.district==='outpost').length+' sites');
  const D=fresh();Object.assign(D.SITES.find(s=>s.key==='zj_barracks_outpost'),{x:-2648,z:-34});neg(!outpost(D).length,'the barracks moved onto the timber house',outpost(D).slice(0,2).join(', '));}
+/* ---- 11. the palisade's runs lie tangent to their ring with the bank (each run's front) facing out */
+function palisade(D){const P=D.PAL,bad=[];
+ /* the straight runs from the ring's ends to the cliff: their last one reaches the cliff, and they face out of the clearing */
+ for(const sz of [-1,1]){const L=D.SITES.filter(s=>s.line&&Math.sign(s.z)===sz);if(!L.length||Math.max(...L.map(s=>s.x))+6.5<D.CONE.cliffX)bad.push('the '+(sz<0?'north':'south')+' run stops short of the cliff');
+  for(const s of L)if(Math.cos(s.ry)*sz<.98)bad.push('a straight run facing in');}for(const s of D.SITES.filter(s=>s.key==='zj_palisade'&&!s.line)){const r=Math.hypot(s.x-P.c[0],s.z-P.c[1]),ox=(s.x-P.c[0])/r,oz=(s.z-P.c[1])/r;
+  if(Math.sin(s.ry)*ox+Math.cos(s.ry)*oz<.98)bad.push(s.x.toFixed(0)+','+s.z.toFixed(0));}return bad;}
+{const b=palisade(DH);ok(!b.length,'the palisade\'s runs tangent, their bank outward',b.length?b.length+' turned wrong, first at '+b[0]:DH.SITES.filter(s=>s.key==='zj_palisade').length+' runs');
+ const D=fresh();D.SITES.filter(s=>s.key==='zj_palisade').forEach(s=>s.ry+=PI/2);neg(!palisade(D).length,'every run turned a quarter',palisade(D).length+' turned wrong');}
+/* ---- 12. each well's sites apart and inside it, and its ways (the street from each entrance to its middle) clear of them */
+function wells(D){const bad=[];for(const P of D.PITS){const S=D.SITES.filter(s=>s.district===P.id);
+  for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const g=gap(quad(D,S[i]),quad(D,S[j]));if(g<2)bad.push(P.id+' '+S[i].key+'/'+S[j].key+' '+g.toFixed(1)+' m');}
+  const F=S.filter(s=>s.at!=='wall');for(const s of F)if(quad(D,s).some(p=>Math.hypot(p[0]-P.c[0],p[1]-P.c[1])>P.r-3))bad.push(P.id+' '+s.key+' against the wall');
+  for(const e of D.EDGES){const a=D.byId[e.a],b=D.byId[e.b];if(e.kind!=='street'||Math.hypot(a.x-P.c[0],a.z-P.c[1])>P.r+1||Math.hypot(b.x-P.c[0],b.z-P.c[1])>P.r+1)continue;
+   for(const s of F){const q=quad(D,s),d=Math.min(...q.map(p=>segD(p,[a.x,a.z],[b.x,b.z])));if(d<2||overlap(q,[[a.x,a.z],[b.x,b.z],[b.x+.01,b.z+.01],[a.x+.01,a.z+.01]]))bad.push(P.id+' '+s.key+' on the way '+e.a+'-'+e.b);}}}
+ return bad;}
+{const b=wells(DH);ok(!b.length,'each well\'s sites apart and inside it, its ways clear',b.join(', ')||DH.PITS.map(P=>P.id+' '+DH.SITES.filter(s=>s.district===P.id).length+' sites').join(', '));
+ const D=fresh();const h=D.SITES.find(s=>s.key==='zj_house_built_mid'&&s.district==='s2'),f=D.SITES.find(s=>s.key==='zj_farm_veg'&&s.district==='s2');Object.assign(h,{x:f.x+3,z:f.z});
+ neg(!wells(D).length,'the south well\'s homes moved onto its field',wells(D).slice(0,2).join(', '));}
 
 /* ---- the layout's digest: a change that moves a node or a site is seen (rewrite: --write; through tools/node_in_chromium.py pass
    it twice, `--write --write`: the shim takes the first to allow the file write, the test reads the second) */

@@ -70,17 +70,33 @@ function walkTry(nx,nz){const f=walkFloor(nx,nz,WALK.feet);if(!f||WALK.feet-f[0]
  if(KWALK.blocked(nx,f[0],nz,.3,1.7)){const q=KWALK.push(nx,f[0],nz,.3,1.7),g=walkFloor(q[0],q[1],WALK.feet);if(!g||KWALK.blocked(q[0],g[0],q[1],.3,1.7)){WALK.refused++;return false;}nx=q[0];nz=q[1];WALK.feet=g[0];}
  else WALK.feet=f[0];WALK.x=nx;WALK.z=nz;return true;}
 uiButton('Walk (F)',false,()=>{toggleWalk();return WALK.on;});
+uiButton('Run (R)',false,()=>{WALK.run=!WALK.run;return WALK.run;},'walk faster (Shift runs while held)');
+/* the floor a walk starts on: the highest at or below p; else the nearest within 30 m at about p's height (a view's centre in
+   the air over a pit, or in the rock beside a tunnel); never the surface over an underground view */
+function walkStart(p){let f=KWALK.floorBelow(p[0],p[2],p[1],.6);if(f)return [p[0],f[0],p[2]];
+ for(let r=1;r<=30;r+=1)for(let i=0;i<Math.max(8,r*3);i++){const a=i/Math.max(8,r*3)*TAU,x=p[0]+Math.cos(a)*r,z=p[2]+Math.sin(a)*r;f=KWALK.floorBelow(x,z,p[1]+1,3);if(f&&p[1]-f[0]<6)return [x,f[0],z];}
+ f=KWALK.floorsAt(p[0],p[2]).slice(-1)[0];return [p[0],f?f[0]:terrainH(p[0],p[2]),p[2]];}
 function toggleWalk(at){WALK.on=!WALK.on;if(WALK.on){const d=new THREE.Vector3();camera.getWorldDirection(d);WALK.yaw=Math.atan2(-d.x,-d.z);WALK.pitch=0;
-  /* start at the given point, or under the orbit target: on the highest floor at or below it */
-  const p=at||[ctl.target.x,ctl.target.y+.5,ctl.target.z];WALK.x=p[0];WALK.z=p[2];const f=KWALK.floorBelow(p[0],p[2],p[1],.6)||KWALK.floorsAt(p[0],p[2]).slice(-1)[0];WALK.feet=f?f[0]:terrainH(p[0],p[2]);WALK.y=WALK.feet+1.7;}
+  /* start at the given point, else at the marker (double-click), else under the orbit target */
+  const p=at||(MARK.at?[MARK.at.x,MARK.at.y+.5,MARK.at.z]:[ctl.target.x,ctl.target.y+.5,ctl.target.z]),q=walkStart(p);WALK.x=q[0];WALK.z=q[2];WALK.feet=q[1];WALK.y=WALK.feet+1.7;}
  else{const fx=-Math.sin(WALK.yaw),fz=-Math.cos(WALK.yaw);setView(WALK.x-fx*12,8,WALK.z-fz*12,WALK.x+fx*4,1.5,WALK.z+fz*4);}
  for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Walk'))b.classList.toggle('on',WALK.on);}
 
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 document.title=TITLE;
-document.getElementById('cap').textContent=TITLE+' - hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · C cut-away · N night · F walk · P polygon';
+document.getElementById('cap').textContent=TITLE+' - hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · C cut-away · N night · F walk (R run) · double-click marks, G goes to the mark · P polygon';
+// ---- the marker: a double-click drops a pin where it hits; G brings the orbit to it; Walk starts on it
+const MARK={at:null,grp:new THREE.Group()};MARK.grp.userData.probeSkip=true;MARK.grp.visible=false;scene.add(MARK.grp);
+{const m=new THREE.MeshBasicMaterial({color:0xff4060,depthTest:false,transparent:true,opacity:.9});const pin=new THREE.Mesh(new THREE.SphereGeometry(.35,12,8),m);pin.position.y=2.2;
+ const stem=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.2,6),m);stem.position.y=1.1;const ring=new THREE.Mesh(new THREE.RingGeometry(.6,.85,24),m);ring.rotation.x=-PI/2;ring.position.y=.03;
+ for(const o of [pin,stem,ring]){o.renderOrder=9;MARK.grp.add(o);}}
+function markAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
+ const hits=ray.intersectObjects(scene.children,true).filter(h=>h.object.visible&&!h.object.userData.probeSkip&&!(h.object.parent&&h.object.parent.userData.probeSkip)&&!cutHidden(h));
+ if(!hits.length)return;MARK.at=hits[0].point.clone();MARK.grp.position.copy(MARK.at);MARK.grp.visible=true;}
+function markGo(){if(!MARK.at)return;if(WALK.on)toggleWalk();ctl.target.copy(MARK.at);ctl.radius=Math.min(ctl.radius,30);}
 // input
 const cv=renderer.domElement;let drag=null;const keys={};
+cv.addEventListener('dblclick',e=>markAt(e.clientX,e.clientY));
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointerup',e=>{if(drag&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4){if(drag.b===0&&POLY.on)polyAdd(e.clientX,e.clientY);else if(drag.b===2&&POLY.on){POLY.pts.pop();polyRedraw();}else if(drag.b===0)inspectAt(e.clientX,e.clientY);}drag=null;});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -92,12 +108,13 @@ cv.addEventListener('pointermove',e=>{if(!drag){if(INSP.on&&performance.now()-IN
 cv.addEventListener('wheel',e=>{if(WALK.on)WALK.speed=clamp(WALK.speed*(e.deltaY>0?.85:1.18),1,40);else ctl.radius=clamp(ctl.radius*(e.deltaY>0?1.1:.9),1,2500);e.preventDefault();},{passive:false});
 addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;const k=e.key.toLowerCase();keys[k]=true;
  if(k==='f')toggleWalk();else if(k==='c')cutSet(!ANIMU.uCut.value);else if(k==='n'){nightSet(!NIGHT.on);for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Night'))b.classList.toggle('on',NIGHT.on);}
- else if(k==='p'){POLY.on=!POLY.on;polyEl.style.display=POLY.on?'block':'none';}else if(k==='t'){INSP.on=!INSP.on;if(!INSP.on)insp.style.display='none';}});
+ else if(k==='p'){POLY.on=!POLY.on;polyEl.style.display=POLY.on?'block':'none';}else if(k==='t'){INSP.on=!INSP.on;if(!INSP.on)insp.style.display='none';}
+ else if(k==='g')markGo();else if(k==='r'){WALK.run=!WALK.run;for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Run'))b.classList.toggle('on',WALK.run);}});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 addEventListener('resize',()=>{camera.aspect=skyCam.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();skyCam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 const hud=document.getElementById('hud');let last=performance.now(),renderErr=false;
 function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
- if(WALK.on){const sp=WALK.speed*(keys.shift?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
+ if(WALK.on){const sp=WALK.speed*(keys.shift?2.5:1)*(WALK.run?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
   let mx=0,mz=0;if(keys.w){mx+=fw.x;mz+=fw.z;}if(keys.s){mx-=fw.x;mz-=fw.z;}if(keys.d){mx+=rt.x;mz+=rt.z;}if(keys.a){mx-=rt.x;mz-=rt.z;}
   if(keys.e||keys.q){WALK.x+=mx*sp;WALK.z+=mz*sp;WALK.y+=(keys.e?sp:0)-(keys.q?sp:0);WALK.feet=WALK.y-1.7;}
   else{if(mx||mz){/* in steps of 0.25 m, so a fast walker cannot jump a wall's thickness */const n=Math.ceil(sp/.25);for(let i=0;i<n;i++)if(!walkTry(WALK.x+mx*sp/n,WALK.z+mz*sp/n)){/* slide along the wall */if(!walkTry(WALK.x+mx*sp/n,WALK.z))walkTry(WALK.x,WALK.z+mz*sp/n);}}

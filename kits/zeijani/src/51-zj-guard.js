@@ -71,20 +71,24 @@ defBuilding({key:'zj_watchtower',name:'Watchtower',seed:5105,cut:true,tags:{type
   beam('bone',[-1.6,H+1.1,1.6],[-2.2,H+1.4,2.4],.1,P('bone'),true,8);cyl('log',1.8,H,1.8,.06,1.2,wd,6);sph('glow',1.8,H+1.32,1.8,.14,P('flame'),1,8);haloAt(1.8,H+1.3,1.8,0xffb04a,false);
   zdPole(-2.8,H+2.4,-2.8,1.6);door(0,.2,2.2,0,.9);}});
 
-/* the scouts' headquarters (the board's temple tower): a round room of maps (the planned room) under a tall pierced tower lit
-   from inside, so the jali glows; a copper cap and a lantern at its top; rope coils at the door */
-defBuilding({key:'zj_scout_hq',name:'The scouts\' headquarters',seed:5106,cut:true,tags:{types:['civic'],wealth:'rich',style:'constructed',rock:'tuff'},w:12,d:12,h:16,
- build(o){const g=zwGap(3.6,1.0),c=P('tuff'),wt=P('white');
-  cyl('ashlar',0,0,0,4.0,.3,P('tuffDark'),28);
-  zfDrum('ashlar',0,.3,0,3.75,3.3,c,{a0:ZF_FRONT+g,a1:ZF_FRONT+TAU-g,seg:28});zfDrum('plaster',0,.3,0,3.42,3.3,P('plaster'),{a0:ZF_FRONT+g,a1:ZF_FRONT+TAU-g,seg:28,inward:true});
-  sector('ashlar',0,0,3.42,3.75,ZF_FRONT+g-.03,ZF_FRONT+g,.3,3.6,c);sector('ashlar',0,0,3.42,3.75,ZF_FRONT-g,ZF_FRONT-g+.03,.3,3.6,c);
-  cyl('ashlar',0,3.6,0,3.9,.35,wt,28);
-  /* the tower: a pierced drum on a solid ring, banded every 2.6 m, the glow standing inside it */
-  zfDrum('jali',0,3.95,0,2.6,8.2,wt,{seg:24});for(let i=0;i<=3;i++)cyl('tuffPol',0,3.95+i*2.7,0,2.72,.16,wt,24);
-  cyl('glow',0,4.2,0,1.0,7.6,P('glow'),12);for(const y of [5.5,8.5,11.2])haloAt(0,y,0,0x8fe8c8,true);
-  zfDome('tuffPol',0,12.3,0,2.8,1.9,wt,{seg:24,rows:7});cyl('copper',0,14.2,0,.12,1.2,P('copper'),8);sph('glow',0,15.5,0,.2,P('glow'),1,10);
-  zvDoorway(0,.3,3.72,1.0,{n:2,leaf:false});
-  FURNISH('zeijani_rope_coils',2.2,0,4.4,0,{setting:'outdoor'});FURNISH('zeijani_rope_coils',-2.3,0,4.3,.6,{v:1,setting:'outdoor'});}});
+/* the scouts' headquarters (the board's temple tower): an octagonal tower of three storeys (the interiors planner's: the map room
+   at the door, the store of rope and kit above, the watch's room at the top, ladders between), its ground storey tuff ashlar, its
+   upper two walled in pierced lattice so the lamps inside make it glow; a band at each floor, a parapet, a small domed lantern
+   room on the roof, rope coils at the door */
+defBuilding({key:'zj_scout_hq',name:'The scouts\' headquarters',seed:5106,cut:true,tags:{types:['civic'],wealth:'rich',style:'constructed',rock:'tuff'},w:12,d:12,h:15,
+ build(o){const c=P('tuff'),wt=P('white'),inst=zbBody('zj_scout_hq',{wall:'ashlar',wallCol:c,wallAt:Wl=>Wl.y>1?'jali':'ashlar'}),B=inst&&inst.buildings[0],RY=B?B.roof.y:9.5;
+  /* octagonal rings (vertex radius r, flats on the axes, as the plan) */
+  const oct=r=>[0,1,2,3,4,5,6,7].map(k=>{const a=(22.5+45*k)*PI/180;return [r*Math.cos(a),r*Math.sin(a)];});
+  const ring=(y,r0,r1,h,mk)=>{const A=oct(r0),Bo=oct(r1);for(let k=0;k<8;k++){const q=[A[k],Bo[k],Bo[(k+1)%8],A[(k+1)%8]];prism(mk||'tuffPol',q,y,y+h,wt);}};
+  prism('ashlar',oct(5.45),0,.3,P('tuffDark'));
+  for(const F of (B?B.floors:[]))if(F.level)ring(F.y-.25,4.95,5.3,.3);
+  /* the roof: a slab, a parapet, the lantern room's drum and dome, a finial; the lamps that light the lattice from inside */
+  prism('ashlar',oct(5.2),RY,RY+.25,c);ring(RY+.25,4.7,5.2,.7,'ashlar');ring(RY+.95,4.65,5.3,.12);
+  zfDrum('ashlar',0,RY+.25,0,1.9,1.6,c,{seg:20});zfDome('tuffPol',0,RY+1.85,0,1.9,1.5,wt,{seg:20,rows:7});cyl('copper',0,RY+3.3,0,.08,1.0,P('copper'),8);
+  sph('glow',0,RY+4.4,0,.16,P('flame'),1,10);haloAt(0,RY+4.4,0,0xffb04a,false);
+  for(const F of (B?B.floors:[]))if(F.level)haloAt(0,F.y+1.9,0,0xffb060,true);
+  zvDoorway(0,.3,4.62,1.1,{n:2,leaf:false});sock('emblem',0,2.85,4.7,0,{w:.8,h:.8});
+  FURNISH('zeijani_rope_coils',2.4,0,5.2,0,{setting:'outdoor'});FURNISH('zeijani_rope_coils',-2.5,0,5.1,.6,{v:1,setting:'outdoor'});}});
 
 /* the muster ground: a levelled floor of paving with a kerb, a dais at the back (steps, the standard, a lamp pillar each side),
    weapon racks along one side, benches along the other */

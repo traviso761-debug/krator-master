@@ -9761,6 +9761,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 
   const HOME = ['dwelling-single'], MULTI = ['dwelling-multi'];
   /* carved fixtures: structure the placer keeps off; reach false unless it is a way in */
+  /* an octagon of vertex radius 5, its flats on the axes (the scouts' tower: apothem 4.62) */
+  const OCT5 = [0, 1, 2, 3, 4, 5, 6, 7].map(function (k) { const a = (22.5 + 45 * k) * Math.PI / 180; return [5 * Math.cos(a), 5 * Math.sin(a)]; });
   const fx = function (id, kind, x, z, w, d, o) { return Object.assign({ id: id, kind: kind, x: x, z: z, ry: 0, w: w, d: d, reach: false }, o || {}); };
 
   /* ---------------- CARVED PLANS (kits/zeijani carves them: the void plan is this data). A carved def's frame: the front's foot at
@@ -10529,9 +10531,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_watchtower', name: 'Watchtower', wealth: 0.3, types: ['civic'], residence: false, lot: [7, 7],
       rooms: [{ id: 'base', kind: 'guardroom', poly: rect(4.4, 4.4), y: 0.2, h: 2.6, doors: [{ at: [0, 2.2], w: 0.9 }] }],
       note: 'a square tower of tuff to a timber lookout 9 m up (a ladder inside: the lookout is drawn, not planned); the watch\'s room at its foot' },
-    { key: 'zj_scout_hq', name: 'The scouts\' headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [12, 12],
-      rooms: [{ id: 'maps', kind: 'study', poly: circle(3.4, 16), y: 0.3, h: 3.0, doors: [{ at: [0, 3.4], w: 1.0 }] }],
-      note: 'the temple tower of the board: a round room of maps at the foot of a tall pierced tower lit from inside (the tower is drawn, not planned)' },
+    { key: 'zj_scout_hq', name: 'The scouts\' headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [12, 12], route: 'planned',
+      bodies: [{ id: 'tower', poly: OCT5, y: 0.3, levels: [{ h: 3.2 }, { h: 3.0 }, { h: 3.0 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [0, 4.62], w: 1.1 }], program: [['study'], ['store'], ['guardroom']] }],
+      note: 'the temple tower of the board: three octagonal storeys (the map room, the store of rope and kit, the watch\'s room), ladders between; the upper two walled in lattice, lit from inside (an octagon, flat on the axes: a round plan leaves the planner no wall for a stair or ladder)' },
     /* ---------------- trade */
     { key: 'zj_tavern_carved', name: 'Tavern (carved)', carved: true, wealth: 0.45, types: ['tavern'], residence: false, lot: [24, 24],
       rooms: P3C.tavern.rooms, voids: P3C.tavern.voids, route: P3C.tavern.route,
@@ -10649,8 +10652,13 @@ function cvChunkMesh(key){const ch=CVC.meshChunk(key);if(!ch.idx.length)return n
    /* the ground the cavern meshes inside a well's rim opens with the well's site */
    else if(ch.ground&&ch.ground[i]){const x=ch.pos[i*3],z=ch.pos[i*3+2],q=CV_WELLSITE.find(q=>Math.hypot(x-q.c[0],z-q.c[1])<q.r);if(q&&q.rec){aCut[i*4]=q.rec.x;aCut[i*4+1]=q.rec.z;aCut[i*4+2]=q.rec.y-3;aCut[i*4+3]=1;}}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
-  g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
-  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=ch.idx.length/3;return mesh;}
+  /* a world that draws its own ground (CV_OPTS.groundKeep(x, z): Dhelv's heightfield) keeps the cavern's ground only where that
+     says (inside the openings' rims): the chunks mesh the ground all over them, and two surfaces at one height fight */
+  let idx=ch.idx;if(CV_OPTS.groundKeep){const G=65535,P_=ch.prim,Q=ch.pos,keep=[];for(let t=0;t<idx.length;t+=3){const a=idx[t],b=idx[t+1],c=idx[t+2];
+    if(P_[a]===G&&P_[b]===G&&P_[c]===G&&!CV_OPTS.groundKeep((Q[a*3]+Q[b*3]+Q[c*3])/3,(Q[a*3+2]+Q[b*3+2]+Q[c*3+2])/3))continue;keep.push(a,b,c);}
+   if(!keep.length)return null;idx=new Uint32Array(keep);}
+  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeBoundingSphere();
+  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=idx.length/3;return mesh;}
 function cvFinish(parent){const t0=performance.now();CVC.build();
  while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}
  let tris=0;
@@ -10682,8 +10690,9 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
    { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well'|'room'|'walk'|'floor'|'block', id, ... } in the def's frame. Carving
    from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
 /* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
-   wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground) */
-const CV_OPTS={skipMass:false,wellDoor:null};
+   wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground),
+   groundKeep(x, z) (cvChunkMesh: the cavern's ground kept only where true; the world draws the rest) */
+const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
     the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left
@@ -10991,19 +11000,19 @@ function zbBody(key,o){o=o||{};const it=zjItem(key);if(!it||!it.bodies)return nu
  const wm=o.wall||'ashlar',wc=o.wallCol||P('tuff'),sm=o.slab||'plank',stc=P('white');
  for(const B of inst.buildings){
   for(const Wl of B.walls){if(Wl.kind!=='exterior')continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<.1)continue;
+   const wm=o.wallAt?o.wallAt(Wl)||o.wall||'ashlar':(o.wall||'ashlar');   /* o.wallAt(wall): a storey's own material (the scouts' lattice) */
    const ux=dx/L,uz=dz/L,ry=Math.atan2(dx,dz),t=Wl.thick||.4,n=Wl.out||[0,0],ox=-n[0]*t/2,oz=-n[1]*t/2,h=Wl.h,cuts=[[0,L]];
    const at=(u,off)=>[Wl.a[0]+ux*u+ox+n[0]*(off||0),Wl.a[1]+uz*u+oz+n[1]*(off||0)];
    for(const q of Wl.openings||[]){const a=q.u-q.w/2,b=q.u+q.w/2;for(let i=cuts.length-1;i>=0;i--){const c=cuts[i];if(b<=c[0]||a>=c[1])continue;cuts.splice(i,1,...[[c[0],a],[b,c[1]]].filter(s=>s[1]-s[0]>.05));}
     const m=at(q.u);if(q.y0>.02)box(wm,m[0],Wl.y,m[1],t,q.y0,q.w,wc,ry);box(wm,m[0],Wl.y+q.y1,m[1],t,h-q.y1,q.w,wc,ry);
     if(q.window){const s_=at(q.u,t/2+.06);box('tuffPol',s_[0],Wl.y+q.y0-.1,s_[1],.22,.1,q.w+.3,stc,ry);box('tuffPol',s_[0],Wl.y+q.y1,s_[1],.2,.22,q.w+.4,stc,ry);}}
    for(const c of cuts){const m=at((c[0]+c[1])/2);box(wm,m[0],Wl.y,m[1],t,h,c[1]-c[0],wc,ry);}}
-  /* the upper floors: a slab 0.25 thick, 5 cm inside the footprint, round each stairwell (rectangular plans) */
-  for(const F of B.floors){if(!F.level)continue;const xs=F.poly.map(p=>p[0]),zs=F.poly.map(p=>p[1]);let R=[[Math.min(...xs)+.05,Math.max(...xs)-.05,Math.min(...zs)+.05,Math.max(...zs)-.05]];
-   for(const H of F.holes||[]){const hx=H.map(p=>p[0]),hz=H.map(p=>p[1]),h0=Math.min(...hx),h1=Math.max(...hx),k0=Math.min(...hz),k1=Math.max(...hz),out=[];
-    for(const r of R){if(h1<=r[0]||h0>=r[1]||k1<=r[2]||k0>=r[3]){out.push(r);continue;}
-     out.push([r[0],r[1],r[2],Math.max(r[2],k0)],[r[0],r[1],Math.min(r[3],k1),r[3]],[r[0],Math.max(r[0],h0),Math.max(r[2],k0),Math.min(r[3],k1)],[Math.min(r[1],h1),r[1],Math.max(r[2],k0),Math.min(r[3],k1)]);}
-    R=out.filter(r=>r[1]-r[0]>.02&&r[3]-r[2]>.02);}
-   for(const r of R)box(sm,(r[0]+r[1])/2,F.y-.25,(r[2]+r[3])/2,r[1]-r[0],.25,r[3]-r[2],P('wood'));}
+  /* the upper floors: a slab 0.25 thick, 5 cm inside the footprint's own outline (round or square), less each stairwell */
+  for(const F of B.floors){if(!F.level)continue;for(const part of zwMinusHoles(zwInset(F.poly,.05),F.holes||[]))prism(sm,part,F.y-.25,F.y,P('wood'));}
+  /* a ladder (the planner's where a stair will not fit): two rails from its foot up its run, a rung every 0.3 m */
+  for(const S of B.stairs){if(S.kind!=='ladder')continue;const px=-S.dir[1]*(S.w||.6)/2,pz=S.dir[0]*(S.w||.6)/2,tx=S.foot[0]+S.dir[0]*S.run,tz=S.foot[1]+S.dir[1]*S.run,wd=P('woodD');
+   for(const s of [-1,1])beam('log',[S.foot[0]+s*px,S.y0,S.foot[1]+s*pz],[tx+s*px,S.y1+.9,tz+s*pz],.05,wd,true,6);
+   const n=Math.round((S.y1-S.y0)/.3);for(let i=1;i<=n;i++){const t=i/(n+1),cx=S.foot[0]+(tx-S.foot[0])*t,cz=S.foot[1]+(tz-S.foot[1])*t;beam('log',[cx-px,S.y0+(S.y1-S.y0)*t,cz-pz],[cx+px,S.y0+(S.y1-S.y0)*t,cz+pz],.03,wd,true,5);}}
   for(const S of B.stairs){if(S.kind!=='stair')continue;const n=S.risers||Math.round((S.y1-S.y0)/.18),tr=S.run/n,rs=(S.y1-S.y0)/n,ry=Math.atan2(S.dir[0],S.dir[1]);
    for(let i=0;i<n;i++)box(o.stair||'ashlar',S.foot[0]+S.dir[0]*(i+.5)*tr,S.y0,S.foot[1]+S.dir[1]*(i+.5)*tr,S.w,(i+1)*rs,tr+.01,P('tuffDark'),ry);}
   zwPartitions(key,o.part||'plaster',o.partCol||P('plaster'));}
@@ -11224,8 +11233,9 @@ defBuilding({key:'zj_cistern',name:'The cistern hall: a stepwell under the rock'
   box('tuffPol',0,3.8,.08,6.2,.8,.24,c);zfBand('patGlazedDfly',0,3.85,.21,6.0,.7,0,c);
   for(const s of [-1,1]){zfNiche(s*2.6,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.6,1.4,.05,0,{setting:'outdoor'});}
   box('water',0,-7.0,-17.6,23.8,.02,24.8,P('water'));
-  for(const s of [-1,1])box('tuffPol',s*1.25,0,-11.7,.3,.7,13,c);
-  for(const [x,z,w,d] of [[0,-22.35,7,.3],[-3.35,-20.15,.3,4.7],[3.35,-20.15,.3,4.7]])box('tuffPol',x,0,z,w,.7,d,c);
+  /* the causeway's and the platform's parapets: set in from the rock's rounded edges and sunk 0.3 m into it, so none floats */
+  for(const s of [-1,1])box('tuffPol',s*1.0,-.3,-11.7,.28,1.0,12.6,c);
+  for(const [x,z,w,d] of [[0,-22.05,6.4,.28],[-3.05,-20.0,.28,4.3],[3.05,-20.0,.28,4.3]])box('tuffPol',x,-.3,z,w,1.0,d,c);
   for(const s of [-1,1])zcLantern(s*2.6,-21.4,c);FURNISH('zeijani_dipping_frame',0,0,-19.6,0,{setting:'room'});
   /* flights down the back terraces' risers (each 1.6 m: eight steps), and the drip channels on the back wall */
   for(let k=2;k<=4;k++){const yTop=-1.6*(k-1),z0=-30+2*(k-1);for(let i=0;i<7;i++)box('tuffHewn',0,yTop-1.6,z0+.12+i*.24,1.6,1.6-(i+1)*.2,.24,c);}
@@ -11292,6 +11302,8 @@ defBuilding({key:'zj_caravanserai',name:'The caravanserai: a tower over a half-r
   /* the tower over the taproom: its wall, a band of windows, a corbelled crown, a dome; the spout and the waterfall */
   zfDrum('ashlar',0,0,TZ,3.65,17,c,{a0:PI/2+.2,a1:PI/2+TAU-.2,seg:28});zfDrum('plaster',0,.25,TZ,3.3,3.15,P('plaster'),{a0:PI/2+.19,a1:PI/2+TAU-.19,seg:28,inward:true});
   cyl('ashlar',0,3.4,TZ,3.62,.3,c,28);box('tuffPol',0,3.0,TZ+3.6,1.5,.4,.4,wt);
+  /* the drum's opening is the taproom's door only: closed over the lintel to the crown */
+  sector('ashlar',0,TZ,3.3,3.65,PI/2-.21,PI/2+.21,3.0,16.7,c,3);
   for(let i=0;i<8;i++){const a=i*TAU/8+.2;box('basaltPol',Math.cos(a)*3.67,8+(i%2)*3,TZ+Math.sin(a)*3.67,.7,1.2,.04,P('soot'),PI/2-a);}
   lathe('tuffPol',0,TZ,[[3.6,16.6],[4.1,17],[4.1,17.6],[3.6,17.7]],28,wt);zfDome('plaster',0,17.6,TZ,3.3,2.6,P('plaster'),{seg:24,rows:8});cone('copper',0,20.1,TZ,.25,1.0,P('copper'),10);
   box('tuffPol',0,7.7,TZ+4.6,1.0,.3,2.2,wt);box('water',0,8.0,TZ+4.6,.7,.05,2.0,P('water'));
@@ -11864,20 +11876,24 @@ defBuilding({key:'zj_watchtower',name:'Watchtower',seed:5105,cut:true,tags:{type
   beam('bone',[-1.6,H+1.1,1.6],[-2.2,H+1.4,2.4],.1,P('bone'),true,8);cyl('log',1.8,H,1.8,.06,1.2,wd,6);sph('glow',1.8,H+1.32,1.8,.14,P('flame'),1,8);haloAt(1.8,H+1.3,1.8,0xffb04a,false);
   zdPole(-2.8,H+2.4,-2.8,1.6);door(0,.2,2.2,0,.9);}});
 
-/* the scouts' headquarters (the board's temple tower): a round room of maps (the planned room) under a tall pierced tower lit
-   from inside, so the jali glows; a copper cap and a lantern at its top; rope coils at the door */
-defBuilding({key:'zj_scout_hq',name:'The scouts\' headquarters',seed:5106,cut:true,tags:{types:['civic'],wealth:'rich',style:'constructed',rock:'tuff'},w:12,d:12,h:16,
- build(o){const g=zwGap(3.6,1.0),c=P('tuff'),wt=P('white');
-  cyl('ashlar',0,0,0,4.0,.3,P('tuffDark'),28);
-  zfDrum('ashlar',0,.3,0,3.75,3.3,c,{a0:ZF_FRONT+g,a1:ZF_FRONT+TAU-g,seg:28});zfDrum('plaster',0,.3,0,3.42,3.3,P('plaster'),{a0:ZF_FRONT+g,a1:ZF_FRONT+TAU-g,seg:28,inward:true});
-  sector('ashlar',0,0,3.42,3.75,ZF_FRONT+g-.03,ZF_FRONT+g,.3,3.6,c);sector('ashlar',0,0,3.42,3.75,ZF_FRONT-g,ZF_FRONT-g+.03,.3,3.6,c);
-  cyl('ashlar',0,3.6,0,3.9,.35,wt,28);
-  /* the tower: a pierced drum on a solid ring, banded every 2.6 m, the glow standing inside it */
-  zfDrum('jali',0,3.95,0,2.6,8.2,wt,{seg:24});for(let i=0;i<=3;i++)cyl('tuffPol',0,3.95+i*2.7,0,2.72,.16,wt,24);
-  cyl('glow',0,4.2,0,1.0,7.6,P('glow'),12);for(const y of [5.5,8.5,11.2])haloAt(0,y,0,0x8fe8c8,true);
-  zfDome('tuffPol',0,12.3,0,2.8,1.9,wt,{seg:24,rows:7});cyl('copper',0,14.2,0,.12,1.2,P('copper'),8);sph('glow',0,15.5,0,.2,P('glow'),1,10);
-  zvDoorway(0,.3,3.72,1.0,{n:2,leaf:false});
-  FURNISH('zeijani_rope_coils',2.2,0,4.4,0,{setting:'outdoor'});FURNISH('zeijani_rope_coils',-2.3,0,4.3,.6,{v:1,setting:'outdoor'});}});
+/* the scouts' headquarters (the board's temple tower): an octagonal tower of three storeys (the interiors planner's: the map room
+   at the door, the store of rope and kit above, the watch's room at the top, ladders between), its ground storey tuff ashlar, its
+   upper two walled in pierced lattice so the lamps inside make it glow; a band at each floor, a parapet, a small domed lantern
+   room on the roof, rope coils at the door */
+defBuilding({key:'zj_scout_hq',name:'The scouts\' headquarters',seed:5106,cut:true,tags:{types:['civic'],wealth:'rich',style:'constructed',rock:'tuff'},w:12,d:12,h:15,
+ build(o){const c=P('tuff'),wt=P('white'),inst=zbBody('zj_scout_hq',{wall:'ashlar',wallCol:c,wallAt:Wl=>Wl.y>1?'jali':'ashlar'}),B=inst&&inst.buildings[0],RY=B?B.roof.y:9.5;
+  /* octagonal rings (vertex radius r, flats on the axes, as the plan) */
+  const oct=r=>[0,1,2,3,4,5,6,7].map(k=>{const a=(22.5+45*k)*PI/180;return [r*Math.cos(a),r*Math.sin(a)];});
+  const ring=(y,r0,r1,h,mk)=>{const A=oct(r0),Bo=oct(r1);for(let k=0;k<8;k++){const q=[A[k],Bo[k],Bo[(k+1)%8],A[(k+1)%8]];prism(mk||'tuffPol',q,y,y+h,wt);}};
+  prism('ashlar',oct(5.45),0,.3,P('tuffDark'));
+  for(const F of (B?B.floors:[]))if(F.level)ring(F.y-.25,4.95,5.3,.3);
+  /* the roof: a slab, a parapet, the lantern room's drum and dome, a finial; the lamps that light the lattice from inside */
+  prism('ashlar',oct(5.2),RY,RY+.25,c);ring(RY+.25,4.7,5.2,.7,'ashlar');ring(RY+.95,4.65,5.3,.12);
+  zfDrum('ashlar',0,RY+.25,0,1.9,1.6,c,{seg:20});zfDome('tuffPol',0,RY+1.85,0,1.9,1.5,wt,{seg:20,rows:7});cyl('copper',0,RY+3.3,0,.08,1.0,P('copper'),8);
+  sph('glow',0,RY+4.4,0,.16,P('flame'),1,10);haloAt(0,RY+4.4,0,0xffb04a,false);
+  for(const F of (B?B.floors:[]))if(F.level)haloAt(0,F.y+1.9,0,0xffb060,true);
+  zvDoorway(0,.3,4.62,1.1,{n:2,leaf:false});sock('emblem',0,2.85,4.7,0,{w:.8,h:.8});
+  FURNISH('zeijani_rope_coils',2.4,0,5.2,0,{setting:'outdoor'});FURNISH('zeijani_rope_coils',-2.5,0,5.1,.6,{v:1,setting:'outdoor'});}});
 
 /* the muster ground: a levelled floor of paving with a kerb, a dais at the back (steps, the standard, a lamp pillar each side),
    weapon racks along one side, benches along the other */
@@ -12104,9 +12120,13 @@ defBuilding({key:'zj_stall_a',name:'Market stall in a wall niche',seed:5205,tags
   FURNISH('zeijani_pot_stack',-.6,1.0,.0,0,{setting:'outdoor'});FURNISH('zeijani_slipper_lamp',.9,1.0,.05,0,{setting:'outdoor'});door(0,0,.4,0,2.6);}});
 defBuilding({key:'zj_stall_b',name:'Market stall under an awning',seed:5206,tags:{types:['market'],wealth:'poor',style:'wooden'},w:4.4,d:3.6,h:3.2,
  build(o){const wd=P('woodD'),cap=(o.v|0)===1;
-  for(const [x,z] of [[-1.6,-1.2],[1.6,-1.2],[-1.6,1.2],[1.6,1.2]])cyl('log',x,0,z,.06,cap?2.2:2.5,wd,6);
+  if(!cap)for(const [x,z] of [[-1.6,-1.2],[1.6,-1.2],[-1.6,1.2],[1.6,1.2]])cyl('log',x,0,z,.06,2.5,wd,6);
   box('plank',0,.85,.9,3.4,.08,.7,P('wood'));box('plank',0,0,1.18,3.4,.85,.06,P('wood'));
-  if(cap){for(const [x,z,r] of [[-.9,0,1.3],[1.0,-.2,1.2],[0,.5,1.0]]){cyl('carved',x,0,z,.08,2.3+r*.2,P('lilac'),6);ellip('plain',x,2.3+r*.2,z,r,.38,r,P('alecap'),0,14);}}
+  /* v 1: two great alecap caps on their own stems (the stall's frame), the stems running up into the caps, the gills under them
+     paler, the caps' tops spotted; felt and hide give the flesh a grain */
+  if(cap){for(const [x,r,y] of [[-1.15,1.75,2.55],[1.25,1.6,2.35]]){cyl('hide',x,0,0,.16,y-.05,P('lilac'),10);cyl('hide',x,y-.6,0,.24,.5,P('lilac'),10);
+    ellip('felt',x,y,0,r,.5,r,P('alecap'),0,18);cyl('felt',x,y-.12,0,r*.93,.06,P('lilac'),18);
+    for(let i=0;i<7;i++){const a=i*2.4+r,d=r*(.25+.45*((i*.37)%1));sph('plain',x+Math.cos(a)*d,y+.5*Math.sqrt(Math.max(0,1-(d/r)**2))-.03,Math.sin(a)*d,.09,P('bone'),.5,8);}}}
   else{plane4('felt',[-1.9,2.6,-1.5],[1.9,2.6,-1.5],[-1.9,2.3,1.6],.04,P('alecap'));box('felt',0,2.3,1.6,3.8,.3,.02,P('ochre'));}
   FURNISH('zeijani_trade_display',0,0,-.5,0,{setting:'outdoor'});FURNISH('zeijani_alecap_basket',-1.0,.89,.9,.2,{setting:'outdoor'});door(0,0,1.4,0,3.0);}});
 // ================================================================= CORE FURNISH — the page's switches ([web])
@@ -12194,7 +12214,7 @@ defBuilding({key:'zj_vent',name:'Air-shaft head',seed:5301,cls:'infrastructure',
 /* the rolling stone door (Derinkuyu's millstones) between districts: a passage through a block of rock, the stone (a disc
    1.6 m across) rolled into its slot in the passage's side, a lever beam; the passage is walkable */
 defBuilding({key:'zj_stonedoor',name:'Rolling stone door',seed:5302,cls:'infrastructure',originFront:true,
- tags:{types:['infrastructure'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:10,d:9,h:6.5,
+ tags:{types:['infrastructure'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:10,d:9,h:10.5,
  note:'a passage through the rock, the round stone door rolled into its side slot (closed on a schedule), its lever',
  build(o){zfRockBlock(-4.5,4.5,-8,0,6);cvDoor({id:'front',c:[0,0],y:0,r:1.8,h:2.6});cvDoor({id:'back',c:[0,-8],y:0,r:1.8,h:2.6});
   cvStair({id:'pass',a:[0,0,1.0],b:[0,0,-9.0],w:1.6,h:2.3,finish:'hewn'});
@@ -12202,6 +12222,11 @@ defBuilding({key:'zj_stonedoor',name:'Rolling stone door',seed:5302,cls:'infrast
   const m=TF(-1.25,.86,-4,0,0,PI/2);m.scale(new THREE.Vector3(.85,.36,.85));emit('tuffHewn',gcyl(22),m,c);
 beam('log',[1.0,.2,-3.2],[.6,1.6,-4.6],.07,P('woodD'),true,6);
   for(const s of [-1,1])box('tuffHewn',s*.95,0,.1,.26,2.3,.3,P('white'));zfStepLintel('tuffHewn',0,2.3,.1,1.9,P('white'),{n:1,h:.26,d:.3});
+  /* in a world whose tunnels meet the door (Dhelv: o.walls {front:[w,h], back:[w,h]}), masonry walls seal each tunnel's end
+     round the passage, so the stone door's passage is the only way through */
+  if(o.walls){const wall=(zc,W,H)=>{const c2=P('tuff');for(const s of [-1,1])box('ashlar',s*(W/2+.8)/2,0,zc,W/2-.8,H,.4,c2);box('ashlar',0,2.3,zc,1.6,H-2.3,.4,c2);
+    box('tuffPol',0,0,zc,W,.18,.5,P('white'));};
+   if(o.walls.front)wall(-.1,o.walls.front[0],o.walls.front[1]);if(o.walls.back)wall(-9.2,o.walls.back[0],o.walls.back[1]);}
   door(0,0,0,0,1.6);}});
 
 /* the bat roost: a ragged cave mouth, guano baskets at its foot */
@@ -13832,17 +13857,33 @@ function walkTry(nx,nz){const f=walkFloor(nx,nz,WALK.feet);if(!f||WALK.feet-f[0]
  if(KWALK.blocked(nx,f[0],nz,.3,1.7)){const q=KWALK.push(nx,f[0],nz,.3,1.7),g=walkFloor(q[0],q[1],WALK.feet);if(!g||KWALK.blocked(q[0],g[0],q[1],.3,1.7)){WALK.refused++;return false;}nx=q[0];nz=q[1];WALK.feet=g[0];}
  else WALK.feet=f[0];WALK.x=nx;WALK.z=nz;return true;}
 uiButton('Walk (F)',false,()=>{toggleWalk();return WALK.on;});
+uiButton('Run (R)',false,()=>{WALK.run=!WALK.run;return WALK.run;},'walk faster (Shift runs while held)');
+/* the floor a walk starts on: the highest at or below p; else the nearest within 30 m at about p's height (a view's centre in
+   the air over a pit, or in the rock beside a tunnel); never the surface over an underground view */
+function walkStart(p){let f=KWALK.floorBelow(p[0],p[2],p[1],.6);if(f)return [p[0],f[0],p[2]];
+ for(let r=1;r<=30;r+=1)for(let i=0;i<Math.max(8,r*3);i++){const a=i/Math.max(8,r*3)*TAU,x=p[0]+Math.cos(a)*r,z=p[2]+Math.sin(a)*r;f=KWALK.floorBelow(x,z,p[1]+1,3);if(f&&p[1]-f[0]<6)return [x,f[0],z];}
+ f=KWALK.floorsAt(p[0],p[2]).slice(-1)[0];return [p[0],f?f[0]:terrainH(p[0],p[2]),p[2]];}
 function toggleWalk(at){WALK.on=!WALK.on;if(WALK.on){const d=new THREE.Vector3();camera.getWorldDirection(d);WALK.yaw=Math.atan2(-d.x,-d.z);WALK.pitch=0;
-  /* start at the given point, or under the orbit target: on the highest floor at or below it */
-  const p=at||[ctl.target.x,ctl.target.y+.5,ctl.target.z];WALK.x=p[0];WALK.z=p[2];const f=KWALK.floorBelow(p[0],p[2],p[1],.6)||KWALK.floorsAt(p[0],p[2]).slice(-1)[0];WALK.feet=f?f[0]:terrainH(p[0],p[2]);WALK.y=WALK.feet+1.7;}
+  /* start at the given point, else at the marker (double-click), else under the orbit target */
+  const p=at||(MARK.at?[MARK.at.x,MARK.at.y+.5,MARK.at.z]:[ctl.target.x,ctl.target.y+.5,ctl.target.z]),q=walkStart(p);WALK.x=q[0];WALK.z=q[2];WALK.feet=q[1];WALK.y=WALK.feet+1.7;}
  else{const fx=-Math.sin(WALK.yaw),fz=-Math.cos(WALK.yaw);setView(WALK.x-fx*12,8,WALK.z-fz*12,WALK.x+fx*4,1.5,WALK.z+fz*4);}
  for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Walk'))b.classList.toggle('on',WALK.on);}
 
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 document.title=TITLE;
-document.getElementById('cap').textContent=TITLE+' - hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · C cut-away · N night · F walk · P polygon';
+document.getElementById('cap').textContent=TITLE+' - hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · C cut-away · N night · F walk (R run) · double-click marks, G goes to the mark · P polygon';
+// ---- the marker: a double-click drops a pin where it hits; G brings the orbit to it; Walk starts on it
+const MARK={at:null,grp:new THREE.Group()};MARK.grp.userData.probeSkip=true;MARK.grp.visible=false;scene.add(MARK.grp);
+{const m=new THREE.MeshBasicMaterial({color:0xff4060,depthTest:false,transparent:true,opacity:.9});const pin=new THREE.Mesh(new THREE.SphereGeometry(.35,12,8),m);pin.position.y=2.2;
+ const stem=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.2,6),m);stem.position.y=1.1;const ring=new THREE.Mesh(new THREE.RingGeometry(.6,.85,24),m);ring.rotation.x=-PI/2;ring.position.y=.03;
+ for(const o of [pin,stem,ring]){o.renderOrder=9;MARK.grp.add(o);}}
+function markAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
+ const hits=ray.intersectObjects(scene.children,true).filter(h=>h.object.visible&&!h.object.userData.probeSkip&&!(h.object.parent&&h.object.parent.userData.probeSkip)&&!cutHidden(h));
+ if(!hits.length)return;MARK.at=hits[0].point.clone();MARK.grp.position.copy(MARK.at);MARK.grp.visible=true;}
+function markGo(){if(!MARK.at)return;if(WALK.on)toggleWalk();ctl.target.copy(MARK.at);ctl.radius=Math.min(ctl.radius,30);}
 // input
 const cv=renderer.domElement;let drag=null;const keys={};
+cv.addEventListener('dblclick',e=>markAt(e.clientX,e.clientY));
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointerup',e=>{if(drag&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4){if(drag.b===0&&POLY.on)polyAdd(e.clientX,e.clientY);else if(drag.b===2&&POLY.on){POLY.pts.pop();polyRedraw();}else if(drag.b===0)inspectAt(e.clientX,e.clientY);}drag=null;});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -13854,12 +13895,13 @@ cv.addEventListener('pointermove',e=>{if(!drag){if(INSP.on&&performance.now()-IN
 cv.addEventListener('wheel',e=>{if(WALK.on)WALK.speed=clamp(WALK.speed*(e.deltaY>0?.85:1.18),1,40);else ctl.radius=clamp(ctl.radius*(e.deltaY>0?1.1:.9),1,2500);e.preventDefault();},{passive:false});
 addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;const k=e.key.toLowerCase();keys[k]=true;
  if(k==='f')toggleWalk();else if(k==='c')cutSet(!ANIMU.uCut.value);else if(k==='n'){nightSet(!NIGHT.on);for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Night'))b.classList.toggle('on',NIGHT.on);}
- else if(k==='p'){POLY.on=!POLY.on;polyEl.style.display=POLY.on?'block':'none';}else if(k==='t'){INSP.on=!INSP.on;if(!INSP.on)insp.style.display='none';}});
+ else if(k==='p'){POLY.on=!POLY.on;polyEl.style.display=POLY.on?'block':'none';}else if(k==='t'){INSP.on=!INSP.on;if(!INSP.on)insp.style.display='none';}
+ else if(k==='g')markGo();else if(k==='r'){WALK.run=!WALK.run;for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Run'))b.classList.toggle('on',WALK.run);}});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 addEventListener('resize',()=>{camera.aspect=skyCam.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();skyCam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 const hud=document.getElementById('hud');let last=performance.now(),renderErr=false;
 function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
- if(WALK.on){const sp=WALK.speed*(keys.shift?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
+ if(WALK.on){const sp=WALK.speed*(keys.shift?2.5:1)*(WALK.run?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
   let mx=0,mz=0;if(keys.w){mx+=fw.x;mz+=fw.z;}if(keys.s){mx-=fw.x;mz-=fw.z;}if(keys.d){mx+=rt.x;mz+=rt.z;}if(keys.a){mx-=rt.x;mz-=rt.z;}
   if(keys.e||keys.q){WALK.x+=mx*sp;WALK.z+=mz*sp;WALK.y+=(keys.e?sp:0)-(keys.q?sp:0);WALK.feet=WALK.y-1.7;}
   else{if(mx||mz){/* in steps of 0.25 m, so a fast walker cannot jump a wall's thickness */const n=Math.ceil(sp/.25);for(let i=0;i<n;i++)if(!walkTry(WALK.x+mx*sp/n,WALK.z+mz*sp/n)){/* slide along the wall */if(!walkTry(WALK.x+mx*sp/n,WALK.z))walkTry(WALK.x,WALK.z+mz*sp/n);}}

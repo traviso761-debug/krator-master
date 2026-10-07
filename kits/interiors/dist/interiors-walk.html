@@ -28193,6 +28193,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 
   const HOME = ['dwelling-single'], MULTI = ['dwelling-multi'];
   /* carved fixtures: structure the placer keeps off; reach false unless it is a way in */
+  /* an octagon of vertex radius 5, its flats on the axes (the scouts' tower: apothem 4.62) */
+  const OCT5 = [0, 1, 2, 3, 4, 5, 6, 7].map(function (k) { const a = (22.5 + 45 * k) * Math.PI / 180; return [5 * Math.cos(a), 5 * Math.sin(a)]; });
   const fx = function (id, kind, x, z, w, d, o) { return Object.assign({ id: id, kind: kind, x: x, z: z, ry: 0, w: w, d: d, reach: false }, o || {}); };
 
   /* ---------------- CARVED PLANS (kits/zeijani carves them: the void plan is this data). A carved def's frame: the front's foot at
@@ -28961,9 +28963,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_watchtower', name: 'Watchtower', wealth: 0.3, types: ['civic'], residence: false, lot: [7, 7],
       rooms: [{ id: 'base', kind: 'guardroom', poly: rect(4.4, 4.4), y: 0.2, h: 2.6, doors: [{ at: [0, 2.2], w: 0.9 }] }],
       note: 'a square tower of tuff to a timber lookout 9 m up (a ladder inside: the lookout is drawn, not planned); the watch\'s room at its foot' },
-    { key: 'zj_scout_hq', name: 'The scouts\' headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [12, 12],
-      rooms: [{ id: 'maps', kind: 'study', poly: circle(3.4, 16), y: 0.3, h: 3.0, doors: [{ at: [0, 3.4], w: 1.0 }] }],
-      note: 'the temple tower of the board: a round room of maps at the foot of a tall pierced tower lit from inside (the tower is drawn, not planned)' },
+    { key: 'zj_scout_hq', name: 'The scouts\' headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [12, 12], route: 'planned',
+      bodies: [{ id: 'tower', poly: OCT5, y: 0.3, levels: [{ h: 3.2 }, { h: 3.0 }, { h: 3.0 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [0, 4.62], w: 1.1 }], program: [['study'], ['store'], ['guardroom']] }],
+      note: 'the temple tower of the board: three octagonal storeys (the map room, the store of rope and kit, the watch\'s room), ladders between; the upper two walled in lattice, lit from inside (an octagon, flat on the axes: a round plan leaves the planner no wall for a stair or ladder)' },
     /* ---------------- trade */
     { key: 'zj_tavern_carved', name: 'Tavern (carved)', carved: true, wealth: 0.45, types: ['tavern'], residence: false, lot: [24, 24],
       rooms: P3C.tavern.rooms, voids: P3C.tavern.voids, route: P3C.tavern.route,

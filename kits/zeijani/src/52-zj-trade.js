@@ -54,8 +54,12 @@ defBuilding({key:'zj_stall_a',name:'Market stall in a wall niche',seed:5205,tags
   FURNISH('zeijani_pot_stack',-.6,1.0,.0,0,{setting:'outdoor'});FURNISH('zeijani_slipper_lamp',.9,1.0,.05,0,{setting:'outdoor'});door(0,0,.4,0,2.6);}});
 defBuilding({key:'zj_stall_b',name:'Market stall under an awning',seed:5206,tags:{types:['market'],wealth:'poor',style:'wooden'},w:4.4,d:3.6,h:3.2,
  build(o){const wd=P('woodD'),cap=(o.v|0)===1;
-  for(const [x,z] of [[-1.6,-1.2],[1.6,-1.2],[-1.6,1.2],[1.6,1.2]])cyl('log',x,0,z,.06,cap?2.2:2.5,wd,6);
+  if(!cap)for(const [x,z] of [[-1.6,-1.2],[1.6,-1.2],[-1.6,1.2],[1.6,1.2]])cyl('log',x,0,z,.06,2.5,wd,6);
   box('plank',0,.85,.9,3.4,.08,.7,P('wood'));box('plank',0,0,1.18,3.4,.85,.06,P('wood'));
-  if(cap){for(const [x,z,r] of [[-.9,0,1.3],[1.0,-.2,1.2],[0,.5,1.0]]){cyl('carved',x,0,z,.08,2.3+r*.2,P('lilac'),6);ellip('plain',x,2.3+r*.2,z,r,.38,r,P('alecap'),0,14);}}
+  /* v 1: two great alecap caps on their own stems (the stall's frame), the stems running up into the caps, the gills under them
+     paler, the caps' tops spotted; felt and hide give the flesh a grain */
+  if(cap){for(const [x,r,y] of [[-1.15,1.75,2.55],[1.25,1.6,2.35]]){cyl('hide',x,0,0,.16,y-.05,P('lilac'),10);cyl('hide',x,y-.6,0,.24,.5,P('lilac'),10);
+    ellip('felt',x,y,0,r,.5,r,P('alecap'),0,18);cyl('felt',x,y-.12,0,r*.93,.06,P('lilac'),18);
+    for(let i=0;i<7;i++){const a=i*2.4+r,d=r*(.25+.45*((i*.37)%1));sph('plain',x+Math.cos(a)*d,y+.5*Math.sqrt(Math.max(0,1-(d/r)**2))-.03,Math.sin(a)*d,.09,P('bone'),.5,8);}}}
   else{plane4('felt',[-1.9,2.6,-1.5],[1.9,2.6,-1.5],[-1.9,2.3,1.6],.04,P('alecap'));box('felt',0,2.3,1.6,3.8,.3,.02,P('ochre'));}
   FURNISH('zeijani_trade_display',0,0,-.5,0,{setting:'outdoor'});FURNISH('zeijani_alecap_basket',-1.0,.89,.9,.2,{setting:'outdoor'});door(0,0,1.4,0,3.0);}});

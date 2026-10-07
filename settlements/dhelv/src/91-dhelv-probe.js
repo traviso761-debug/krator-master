@@ -43,6 +43,6 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* sky: the hall's light well forgotten */
  {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
- {const W=DHP.copyWalk(f=>/t\.door-b0/.test(f.name));const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
+ {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

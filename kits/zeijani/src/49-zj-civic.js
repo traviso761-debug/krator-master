@@ -52,8 +52,9 @@ defBuilding({key:'zj_cistern',name:'The cistern hall: a stepwell under the rock'
   box('tuffPol',0,3.8,.08,6.2,.8,.24,c);zfBand('patGlazedDfly',0,3.85,.21,6.0,.7,0,c);
   for(const s of [-1,1]){zfNiche(s*2.6,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.6,1.4,.05,0,{setting:'outdoor'});}
   box('water',0,-7.0,-17.6,23.8,.02,24.8,P('water'));
-  for(const s of [-1,1])box('tuffPol',s*1.25,0,-11.7,.3,.7,13,c);
-  for(const [x,z,w,d] of [[0,-22.35,7,.3],[-3.35,-20.15,.3,4.7],[3.35,-20.15,.3,4.7]])box('tuffPol',x,0,z,w,.7,d,c);
+  /* the causeway's and the platform's parapets: set in from the rock's rounded edges and sunk 0.3 m into it, so none floats */
+  for(const s of [-1,1])box('tuffPol',s*1.0,-.3,-11.7,.28,1.0,12.6,c);
+  for(const [x,z,w,d] of [[0,-22.05,6.4,.28],[-3.05,-20.0,.28,4.3],[3.05,-20.0,.28,4.3]])box('tuffPol',x,-.3,z,w,1.0,d,c);
   for(const s of [-1,1])zcLantern(s*2.6,-21.4,c);FURNISH('zeijani_dipping_frame',0,0,-19.6,0,{setting:'room'});
   /* flights down the back terraces' risers (each 1.6 m: eight steps), and the drip channels on the back wall */
   for(let k=2;k<=4;k++){const yTop=-1.6*(k-1),z0=-30+2*(k-1);for(let i=0;i<7;i++)box('tuffHewn',0,yTop-1.6,z0+.12+i*.24,1.6,1.6-(i+1)*.2,.24,c);}
@@ -120,6 +121,8 @@ defBuilding({key:'zj_caravanserai',name:'The caravanserai: a tower over a half-r
   /* the tower over the taproom: its wall, a band of windows, a corbelled crown, a dome; the spout and the waterfall */
   zfDrum('ashlar',0,0,TZ,3.65,17,c,{a0:PI/2+.2,a1:PI/2+TAU-.2,seg:28});zfDrum('plaster',0,.25,TZ,3.3,3.15,P('plaster'),{a0:PI/2+.19,a1:PI/2+TAU-.19,seg:28,inward:true});
   cyl('ashlar',0,3.4,TZ,3.62,.3,c,28);box('tuffPol',0,3.0,TZ+3.6,1.5,.4,.4,wt);
+  /* the drum's opening is the taproom's door only: closed over the lintel to the crown */
+  sector('ashlar',0,TZ,3.3,3.65,PI/2-.21,PI/2+.21,3.0,16.7,c,3);
   for(let i=0;i<8;i++){const a=i*TAU/8+.2;box('basaltPol',Math.cos(a)*3.67,8+(i%2)*3,TZ+Math.sin(a)*3.67,.7,1.2,.04,P('soot'),PI/2-a);}
   lathe('tuffPol',0,TZ,[[3.6,16.6],[4.1,17],[4.1,17.6],[3.6,17.7]],28,wt);zfDome('plaster',0,17.6,TZ,3.3,2.6,P('plaster'),{seg:24,rows:8});cone('copper',0,20.1,TZ,.25,1.0,P('copper'),10);
   box('tuffPol',0,7.7,TZ+4.6,1.0,.3,2.2,wt);box('water',0,8.0,TZ+4.6,.7,.05,2.0,P('water'));

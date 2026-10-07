@@ -15,7 +15,7 @@ defBuilding({key:'zj_vent',name:'Air-shaft head',seed:5301,cls:'infrastructure',
 /* the rolling stone door (Derinkuyu's millstones) between districts: a passage through a block of rock, the stone (a disc
    1.6 m across) rolled into its slot in the passage's side, a lever beam; the passage is walkable */
 defBuilding({key:'zj_stonedoor',name:'Rolling stone door',seed:5302,cls:'infrastructure',originFront:true,
- tags:{types:['infrastructure'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:10,d:9,h:6.5,
+ tags:{types:['infrastructure'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:10,d:9,h:10.5,
  note:'a passage through the rock, the round stone door rolled into its side slot (closed on a schedule), its lever',
  build(o){zfRockBlock(-4.5,4.5,-8,0,6);cvDoor({id:'front',c:[0,0],y:0,r:1.8,h:2.6});cvDoor({id:'back',c:[0,-8],y:0,r:1.8,h:2.6});
   cvStair({id:'pass',a:[0,0,1.0],b:[0,0,-9.0],w:1.6,h:2.3,finish:'hewn'});
@@ -23,6 +23,11 @@ defBuilding({key:'zj_stonedoor',name:'Rolling stone door',seed:5302,cls:'infrast
   const m=TF(-1.25,.86,-4,0,0,PI/2);m.scale(new THREE.Vector3(.85,.36,.85));emit('tuffHewn',gcyl(22),m,c);
 beam('log',[1.0,.2,-3.2],[.6,1.6,-4.6],.07,P('woodD'),true,6);
   for(const s of [-1,1])box('tuffHewn',s*.95,0,.1,.26,2.3,.3,P('white'));zfStepLintel('tuffHewn',0,2.3,.1,1.9,P('white'),{n:1,h:.26,d:.3});
+  /* in a world whose tunnels meet the door (Dhelv: o.walls {front:[w,h], back:[w,h]}), masonry walls seal each tunnel's end
+     round the passage, so the stone door's passage is the only way through */
+  if(o.walls){const wall=(zc,W,H)=>{const c2=P('tuff');for(const s of [-1,1])box('ashlar',s*(W/2+.8)/2,0,zc,W/2-.8,H,.4,c2);box('ashlar',0,2.3,zc,1.6,H-2.3,.4,c2);
+    box('tuffPol',0,0,zc,W,.18,.5,P('white'));};
+   if(o.walls.front)wall(-.1,o.walls.front[0],o.walls.front[1]);if(o.walls.back)wall(-9.2,o.walls.back[0],o.walls.back[1]);}
   door(0,0,0,0,1.6);}});
 
 /* the bat roost: a ragged cave mouth, guano baskets at its foot */
