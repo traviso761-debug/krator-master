@@ -564,7 +564,11 @@ const FPAL = {
     timberOak: 0x8a6a4e,
     unlit: 0x2a2f2e,
     verdigris: 0x6fe8e0,
-    whiteHot: 0xfff2c9
+    whiteHot: 0xfff2c9,
+    /* the arcology's fittings (Noah's Regret, 2026-10): a painted dark grey, the earth and the greens of its beds,
+       ripe fruit, still water */
+    paintGrey: 0x3a3c3e, soil: 0x4a3a2a, leafGreen: 0x4e7a34, leafLight: 0x6a9440, leafDark: 0x3f6a30,
+    fruitRed: 0xb83224, water: 0x4a6a72, rust: 0x5a3a28
   },
   'ancients-salvage': {
     blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
@@ -7617,7 +7621,7 @@ FURN({
   }
 });
 
-/* ================= Ancients kit extras (4 pieces) ================= */
+/* ================= Ancients kit extras (13 pieces) ================= */
 
 FURN({
   key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', type: 'lamp', setting: 'indoor',
@@ -7802,6 +7806,229 @@ FURN({
       F.lamp(0, 1.15, 0, 0.5, 4);
     }
     F.rod(0.62, 0.0, -0.4, 0.62, 0.8, -0.4, 0.03, F.shade(tarn, -0.2), 'metal');   /* cable trunk */
+  }
+});
+
+/* ---------- the arcology's fittings (Noah's Regret, 2026-10) ----------
+   Deck and harbour gear, the greenhouse's beds and the engine rooms' stand, as the ship carries them. Colours are
+   the 'ancient' palette's arcology keys (paintGrey, soil, the leaf greens, fruitRed, water, rust). Mooring and deck
+   gear is type 'tool'. */
+
+FURN({
+  key: 'ancients_bollard', name: 'Mooring bollard', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 0.9, d: 0.9, h: 0.84, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), RUST = F.col('rust');
+    /* a bolted foot, the waisted post a line is thrown over, its cap */
+    F.cyl(0, 0, 0, 0.42, 0.06, 0, F.shade(PAINT, -0.15), 'metal');
+    for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6; F.cyl(Math.cos(a) * 0.36, 0.06, Math.sin(a) * 0.36, 0.035, 0.03, 0, F.shade(PAINT, 0.1), 'metal'); }
+    F.frustum(0, 0.06, 0, 0.3, 0.25, 0.32, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.38, 0, 0.25, 0.3, 0.32, 0, PAINT, 'metal', 16);
+    F.cyl(0, 0.7, 0, 0.4, 0.12, 0, PAINT, 'metal');
+    /* paint worn to rust where the lines run */
+    F.cyl(0, 0.36, 0, 0.255, 0.05, 0, RUST, 'rust');
+    F.blob(F.rr(-0.2, 0.2), 0.8, F.rr(-0.2, 0.2), 0.12, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_capstan', name: 'Deck capstan', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 },
+  materials: ['metal', 'rustSteel'],
+  w: 1.5, d: 1.5, h: 1.06, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), DARK = F.col('blackIron'), RUST = F.col('rust');
+    F.cyl(0, 0, 0, 0.72, 0.1, 0, F.shade(PAINT, -0.12), 'metal');
+    /* the waisted drum, its whelps (the ribs the warp grips on) and the cap with bar sockets */
+    F.frustum(0, 0.1, 0, 0.5, 0.4, 0.4, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.5, 0, 0.4, 0.46, 0.4, 0, PAINT, 'metal', 16);
+    for (let i = 0; i < 8; i++) {
+      const a = i * F.TAU / 8;
+      F.beam(Math.cos(a) * 0.5, 0.12, Math.sin(a) * 0.5, Math.cos(a) * 0.43, 0.88, Math.sin(a) * 0.43, 0.08, 0.06, F.shade(PAINT, 0.08), 'metal');
+    }
+    F.cyl(0, 0.9, 0, 0.62, 0.14, 0, PAINT, 'metal');
+    for (let i = 0; i < 4; i++) { const a = i * F.TAU / 4 + 0.4; F.box(Math.cos(a) * 0.5, 0.94, Math.sin(a) * 0.5, 0.14, 0.1, 0.14, -a, DARK, 'metal'); }
+    F.cyl(0, 1.04, 0, 0.16, 0.02, 0, F.shade(PAINT, 0.15), 'metal');
+    F.blob(F.rr(-0.4, 0.4), 0.12, 0.62, 0.14, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_lamp_standard', name: 'Quay lamp standard', culture: 'ancient', tier: 'common', type: 'lamp', setting: 'outdoor',
+  rooms: ['quay', 'pier', 'plaza', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'glass', 'emissive'],
+  w: 0.7, d: 0.7, h: 4.8, variants: 2, variantNames: ['dead', 'lit'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), lit = F.variant === 1;
+    /* a white stem on a flared foot, a collar, the round head */
+    F.frustum(0, 0, 0, 0.3, 0.15, 0.5, 0, WHITE, 'metal', 16);
+    F.cyl(0, 0.5, 0, 0.11, 3.7, 0, WHITE, 'metal');
+    F.cyl(0, 4.1, 0, 0.17, 0.08, 0, F.shade(WHITE, -0.12), 'metal');
+    F.ball(0, 4.47, 0, 0.32, lit ? F.col('whiteHot') : F.shade(F.col('glassSky'), -0.3), lit ? 'glow' : 'glass');
+    F.cyl(0, 4.76, 0, 0.08, 0.03, 0, WHITE, 'metal');
+    if (lit) F.lamp(0, 4.47, 0, 0.8, 12);
+  }
+});
+
+FURN({
+  key: 'ancients_deck_vent', name: 'Mushroom deck ventilator', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['deck', 'rooftop', 'plaza'], anchor: 'floor', clearance: {},
+  materials: ['metal'],
+  w: 1.1, d: 1.1, h: 1.28, variants: 1,
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel');
+    /* a coaming on the deck, the trunk, a louvred band under the cap, the mushroom cap */
+    F.cyl(0, 0, 0, 0.36, 0.12, 0, F.shade(WHITE, -0.1), 'metal');
+    F.cyl(0, 0.12, 0, 0.28, 0.72, 0, WHITE, 'metal');
+    F.cyl(0, 0.84, 0, 0.3, 0.1, 0, DARK, 'metal');
+    for (let i = 0; i < 12; i++) { const a = i * F.TAU / 12; F.box(Math.cos(a) * 0.3, 0.84, Math.sin(a) * 0.3, 0.03, 0.1, 0.04, -a, WHITE, 'metal'); }
+    F.cyl(0, 0.94, 0, 0.53, 0.04, 0, F.shade(WHITE, -0.15), 'metal');
+    F.dome(0, 0.98, 0, 0.53, 0.28, 0, WHITE, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_planting_bed', name: 'Greenhouse planting bed', culture: 'ancient', tier: 'common', type: 'planter', setting: 'both',
+  rooms: ['greenhouse', 'garden', 'plaza'], anchor: 'floor', clearance: { front: 0.7, back: 0.7 },
+  materials: ['concrete', 'stone', 'foliage', 'food', 'timber'],
+  w: 2.4, d: 1.2, h: 1.5, variants: 3, variantNames: ['greens', 'staked vines', 'leeks'],
+  build: function (F) {
+    const KERB = F.col('alloy'), SOIL = F.col('soil');
+    const greens = F.cols(['leafGreen', 'leafLight', 'leafDark']);
+    /* a white moulded kerb round a raised bed of earth */
+    F.box(0, 0, 0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    F.box(0, 0, -0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    for (const s of [-1, 1]) F.box(s * 1.16, 0, 0, 0.08, 0.42, 1.04, 0, KERB, 'concrete');
+    F.box(0, 0, 0, 2.24, 0.36, 1.04, 0, SOIL, 'stone');
+    if (F.variant === 0) {
+      /* low leafy greens, two rows */
+      for (let i = 0; i < 7; i++) for (const z of [-0.26, 0.26]) {
+        const r = F.rr(0.13, 0.18);
+        F.blob(-0.9 + i * 0.3 + F.rr(-0.04, 0.04), 0.4, z + F.rr(-0.04, 0.04), r, F.rr(0.18, 0.28), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    } else if (F.variant === 1) {
+      /* staked vines: a stake per plant, leaves up it, ripe fruit hanging */
+      for (let i = 0; i < 5; i++) for (const z of [-0.25, 0.25]) {
+        const x = -0.88 + i * 0.44;
+        F.rod(x, 0.36, z, x, 1.4, z, 0.015, F.col('timberOak'), 'wood');
+        for (let k = 0; k < 4; k++) F.blob(x + F.rr(-0.06, 0.06), 0.55 + k * 0.24, z + F.rr(-0.06, 0.06), F.rr(0.1, 0.14), F.rr(0.14, 0.2), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+        for (let k = 0; k < 2; k++) F.ball(x + F.rr(-0.1, 0.1), F.rr(0.6, 1.1), z + F.rr(-0.1, 0.1), 0.04, F.col('fruitRed'), 'food');
+      }
+    } else {
+      /* leeks: close rows of upright blades */
+      for (let i = 0; i < 9; i++) for (const z of [-0.32, 0, 0.32]) {
+        const x = -0.96 + i * 0.24 + F.rr(-0.03, 0.03);
+        F.cyl(x, 0.36, z, 0.025, 0.2, 0, F.col('clothBone'), 'leafy');
+        F.cone(x, 0.56, z, 0.05, F.rr(0.3, 0.42), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_plaza_fountain', name: 'Plaza fountain', culture: 'ancient', tier: 'common', type: 'fountain', setting: 'outdoor',
+  rooms: ['plaza', 'garden', 'atrium'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['concrete', 'glass', 'stone'],
+  w: 3.2, d: 3.2, h: 1.95, variants: 2, variantNames: ['water', 'dry'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), WATER = F.col('water'), wet = F.variant === 0;
+    /* a round basin: its floor, a rim of moulded segments, the pool or a dry silted bottom */
+    F.cyl(0, 0, 0, 1.56, 0.26, 0, F.shade(WHITE, -0.1), 'concrete');
+    const n = 18;
+    for (let i = 0; i < n; i++) {
+      const a0 = i / n * F.TAU, a1 = (i + 1) / n * F.TAU;
+      F.box((Math.cos(a0) + Math.cos(a1)) * 0.74, 0.26, (Math.sin(a0) + Math.sin(a1)) * 0.74, 0.54, 0.26, 0.18, -(a0 + a1) / 2 + Math.PI / 2, WHITE, 'concrete');
+    }
+    if (wet) F.cyl(0, 0.26, 0, 1.4, 0.18, 0, WATER, 'glass');
+    else for (let i = 0; i < 4; i++) { const a = F.rnd() * F.TAU, r = F.rr(0.4, 1.1); F.blob(Math.cos(a) * r, 0.27, Math.sin(a) * r, F.rr(0.2, 0.4), 0.04, F.rnd() * F.TAU, F.col('stoneTaupe'), 'stone'); }
+    /* the column, an upper bowl and a finial */
+    F.frustum(0, 0.26, 0, 0.32, 0.18, 0.95, 0, WHITE, 'concrete', 16);
+    F.frustum(0, 1.21, 0, 0.2, 0.72, 0.26, 0, WHITE, 'concrete', 20);
+    if (wet) F.cyl(0, 1.4, 0, 0.66, 0.04, 0, WATER, 'glass');
+    F.cyl(0, 1.47, 0, 0.1, 0.24, 0, WHITE, 'concrete');
+    F.ball(0, 1.8, 0, 0.13, WHITE, 'concrete');
+    /* water falling from the bowl's lip into the pool */
+    if (wet) for (let i = 0; i < 8; i++) { const a = i * F.TAU / 8; F.rod(Math.cos(a) * 0.72, 1.44, Math.sin(a) * 0.72, Math.cos(a) * 0.86, 0.46, Math.sin(a) * 0.86, 0.025, F.shade(WATER, 0.25), 'glass'); }
+  }
+});
+
+FURN({
+  key: 'ancients_control_stand', name: 'Engine-room control stand', culture: 'ancient', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['engine', 'bridge', 'workshop'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['metal', 'glass', 'emissive'],
+  w: 1.4, d: 0.9, h: 1.42, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel'), lit = F.variant === 0;
+    const GLOW = F.cols(['electric', 'amber', 'verdigris']);
+    /* a plinth, the cabinet, a raked instrument face toward the front (+z) */
+    F.box(0, 0, -0.05, 1.2, 0.1, 0.7, 0, DARK, 'metal');
+    F.box(0, 0.1, -0.08, 1.16, 0.84, 0.6, 0, WHITE, 'metal');
+    F.beam(0, 0.94, 0.2, 0, 1.24, -0.36, 1.16, 0.06, F.shade(WHITE, -0.08), 'metal');
+    F.beam(0, 0.97, 0.18, 0, 1.25, -0.34, 1.0, 0.02, F.col('glassBlack'), 'glass');
+    /* dials and lamps along the face */
+    for (let i = 0; i < 5; i++) {
+      const x = -0.4 + i * 0.2, t = (i % 2) * 0.4 + 0.25;
+      F.ball(x, 0.98 + t * 0.3 * 0.9, 0.18 - t * 0.56 * 0.9, 0.045, lit ? F.pick(GLOW) : F.col('unlit'), lit ? 'glow' : 'glass');
+    }
+    /* the two telegraph levers and their quadrants, and a hand rail along the front */
+    for (const s of [-1, 1]) {
+      F.cyl(s * 0.42, 0.94, 0.28, 0.06, 0.06, 0, DARK, 'metal');
+      F.rod(s * 0.42, 1.0, 0.28, s * 0.42, 1.3, 0.3 + F.rr(-0.08, 0.08), 0.02, F.col('pewter'), 'metal');
+      F.ball(s * 0.42, 1.33, 0.3, 0.045, F.col('blackIron'), 'metal');
+    }
+    for (const s of [-1, 1]) F.rod(s * 0.62, 0.1, 0.4, s * 0.62, 0.92, 0.4, 0.02, DARK, 'metal');
+    F.rod(-0.62, 0.92, 0.4, 0.62, 0.92, 0.4, 0.022, F.col('pewter'), 'metal');
+    if (lit) F.lamp(0, 1.2, 0.2, 0.25, 3);
+  }
+});
+
+FURN({
+  key: 'ancients_chain_heap', name: 'Anchor chain heap', culture: 'ancient', tier: 'common', type: 'stack', setting: 'both',
+  rooms: ['chainlocker', 'hold', 'quay', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 1.7, d: 1.7, h: 0.52, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust');
+    /* chain flaked down in a settling coil: alternate links lie flat and stand on edge */
+    let a = F.rnd() * F.TAU, k = 0;
+    for (let layer = 0; layer < 4; layer++) {
+      const r = 0.68 - layer * 0.14, y = 0.06 + layer * 0.11, steps = Math.max(6, Math.round(r * F.TAU / 0.17));
+      for (let i = 0; i < steps; i++, k++) {
+        const a1 = a + F.TAU / steps;
+        const x0 = Math.cos(a) * r, z0 = Math.sin(a) * r, x1 = Math.cos(a1) * r, z1 = Math.sin(a1) * r;
+        const col = F.chance(0.3) ? RUST : F.shade(IRON, F.rr(-0.05, 0.12)), fam = col === RUST ? 'rust' : 'metal';
+        if (k % 2) F.beam(x0, y, z0, x1, y, z1, 0.12, 0.04, col, fam);
+        else F.beam(x0, y - 0.04, z0, x1, y + 0.04, z1, 0.04, 0.12, col, fam);
+        a = a1;
+      }
+    }
+    /* the bitter end trailing off the heap */
+    F.beam(0.66, 0.06, 0, 0.78, 0.03, 0.1, 0.11, 0.04, IRON, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_stowed_anchor', name: 'Stowed bower anchor', culture: 'ancient', tier: 'common', type: 'monument', setting: 'both',
+  rooms: ['plaza', 'quay', 'chainlocker', 'deck'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['metal', 'rustSteel', 'concrete'],
+  w: 2.3, d: 0.9, h: 2.5, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust'), WHITE = F.col('alloy');
+    /* a stockless anchor stood on its crown in a white chock, the shackle at the top */
+    F.box(0, 0, 0, 1.7, 0.3, 0.8, 0, WHITE, 'concrete');
+    F.beam(0, 0.3, 0, 0, 2.2, 0, 0.22, 0.18, IRON, 'metal');
+    F.box(0, 0.3, 0, 0.6, 0.3, 0.3, 0, F.shade(IRON, 0.08), 'metal');
+    for (const s of [-1, 1]) {
+      F.beam(s * 0.2, 0.42, 0, s * 0.82, 0.95, 0, 0.18, 0.16, IRON, 'metal');
+      F.beam(s * 0.78, 0.82, 0, s * 0.98, 1.45, 0, 0.36, 0.1, F.shade(IRON, 0.06), 'metal');
+    }
+    /* the shackle: a rough square of bar */
+    F.rod(-0.16, 2.2, 0, -0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(0.16, 2.2, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(-0.16, 2.44, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    for (let i = 0; i < 3; i++) F.blob(F.rr(-0.6, 0.6), F.rr(0.5, 1.8) * (i ? 1 : 0.6), 0.1, F.rr(0.08, 0.14), 0.05, F.rnd() * F.TAU, RUST, 'rust');
   }
 });
 /* ---------- krator-master-furniture-beast-rider.js ---------- */
