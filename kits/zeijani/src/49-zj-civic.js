@@ -97,3 +97,38 @@ defBuilding({key:'zj_townhall',name:'The town hall in a rock spire',seed:4904,or
   for(const [dx,dz] of [[0,1],[1,0],[0,-1],[-1,0]]){const x=dx*5.9,z=-8.4+dz*5.9,ry=Math.atan2(dx,dz);box('tuffPol',x,11.48,z,1.2,.12,.5,c,ry);box('tuffPol',x,13.05,z,1.2,.2,.5,c,ry);}
   ellip('basalt',0,19.8,-8.4,5.4,1.7,5.0,P('basaltDark'),0,18);
   door(0,0,0,0,1.6);}});
+
+/* the caravanserai (its plan: the caravanserai's item, constructed): the rooms' walls round the arc with their doors, the
+   colonnade and the roof over it all, a parapet; the front wall and gate; the tower over the taproom with a spout from which the
+   waterfall drops into the round pool; the long pools' kerbs; the stable's fence and lean-to */
+defBuilding({key:'zj_caravanserai',name:'The caravanserai: a tower over a half-round court',seed:4905,cut:true,
+ tags:{types:['tavern','civic'],wealth:'middle',style:'constructed',rock:'tuff'},w:46,d:36,h:20,
+ note:'a half-round court under a colonnade, six rooms round it, a tall tower over the taproom with a waterfall into the court\'s pool, long pools, a stable yard',
+ build(o){const it=zjItem('zj_caravanserai');const c=P('tuff'),wt=P('white'),wd=P('woodD'),CZ=6,R0=12.6,R1=17,TZ=-9.2,step=PI/7;
+  /* the plinth, the outer wall, the rooms' inner walls with their doors, the walls between them */
+  sector('ashlar',0,CZ,R0-.3,R1+.5,PI,PI+3*step,0,.25,P('tuffDark'),10);sector('ashlar',0,CZ,R0-.3,R1+.5,PI+4*step,2*PI,0,.25,P('tuffDark'),10);
+  sector('ashlar',0,CZ,R1,R1+.45,PI,PI+3*step,.25,3.4,c,10);sector('ashlar',0,CZ,R1,R1+.45,PI+4*step,2*PI,.25,3.4,c,10);
+  for(let i=0;i<7;i++){if(i===3)continue;const a0=PI+i*step,a1=a0+step,am=(a0+a1)/2,g=.55/R0;
+   sector('ashlar',0,CZ,R0,R0+.3,a0,am-g,.25,3.4,c,3);sector('ashlar',0,CZ,R0,R0+.3,am+g,a1,.25,3.4,c,3);sector('ashlar',0,CZ,R0,R0+.3,am-g,am+g,2.35,3.4,c,1);}
+  for(let i=0;i<=7;i++){const a=PI+i*step;W(Math.cos(a)*(R0+R1)/2,0,CZ+Math.sin(a)*(R0+R1)/2,PI/2-a,()=>box('ashlar',0,.25,0,.35,3.15,R1-R0+.4,c));}
+  /* the colonnade on the court's edge (open where the tower stands), the roof over gallery and rooms, its parapet */
+  for(let i=0;i<=14;i++){const a=PI+i*PI/14;if(Math.abs(a-1.5*PI)<.26)continue;zfColumn('tuffPol',Math.cos(a)*11.9,0,CZ+Math.sin(a)*11.9,.22,3.4,wt);}
+  for(const [a0,a1] of [[PI,PI+3*step],[PI+4*step,2*PI]]){sector('plank',0,CZ,11.55,R1+.45,a0,a1,3.4,3.6,P('wood'),10);sector('ashlar',0,CZ,R1+.05,R1+.45,a0,a1,3.6,4.2,c,10);sector('tuffPol',0,CZ,11.55,11.8,a0,a1,3.25,3.6,wt,10);}
+  /* the front wall and the gate */
+  for(const s of [-1,1]){box('ashlar',s*7.05,0,CZ,10.7,3.2,.45,c);box('tuffPol',s*7.05,3.2,CZ,10.8,.12,.55,wt);box('tuffPol',s*1.66,0,CZ,.32,3.8,.6,wt);zcLantern(s*2.6,CZ+1.6,wt);}
+  zfStepLintel('tuffPol',0,3.8,CZ,3.0,wt,{n:3,h:.3,d:.6});zfLeaf(-.75,0,CZ-.1,1.45,3.0,P('wood'),1.4);box('plank',1.377,0,CZ-.814,1.45,3.0,.06,P('wood'),1.74);   /* the leaves stand open into the court */
+  /* the tower over the taproom: its wall, a band of windows, a corbelled crown, a dome; the spout and the waterfall */
+  zfDrum('ashlar',0,0,TZ,3.65,17,c,{a0:PI/2+.2,a1:PI/2+TAU-.2,seg:28});zfDrum('plaster',0,.25,TZ,3.3,3.15,P('plaster'),{a0:PI/2+.19,a1:PI/2+TAU-.19,seg:28,inward:true});
+  cyl('ashlar',0,3.4,TZ,3.62,.3,c,28);box('tuffPol',0,3.0,TZ+3.6,1.5,.4,.4,wt);
+  for(let i=0;i<8;i++){const a=i*TAU/8+.2;box('basaltPol',Math.cos(a)*3.67,8+(i%2)*3,TZ+Math.sin(a)*3.67,.7,1.2,.04,P('soot'),PI/2-a);}
+  lathe('tuffPol',0,TZ,[[3.6,16.6],[4.1,17],[4.1,17.6],[3.6,17.7]],28,wt);zfDome('plaster',0,17.6,TZ,3.3,2.6,P('plaster'),{seg:24,rows:8});cone('copper',0,20.1,TZ,.25,1.0,P('copper'),10);
+  box('tuffPol',0,7.7,TZ+4.6,1.0,.3,2.2,wt);box('water',0,8.0,TZ+4.6,.7,.05,2.0,P('water'));
+  box('water',0,.35,TZ+5.55,1.1,7.65,.05,P('water'));sph('plain',0,.45,TZ+5.55,.45,P('white'),.4,10);
+  /* the pools: kerbs round still water (their plan: the court's pool fixtures) */
+  for(const [x,z,w,d] of [[0,CZ-8.6,4.6,3.0],[-5.6,CZ-3.6,2.4,5.2],[5.6,CZ-3.6,2.4,5.2]]){for(const s of [-1,1]){box('tuffPol',x+s*(w/2+.1),0,z,.2,.42,d+.4,wt);box('tuffPol',x,0,z+s*(d/2+.1),w,.42,.2,wt);}
+   box('water',x,.3,z,w,.02,d,P('water'));}
+  /* the stable: a log fence (open on its west side for the door), a thatched lean-to along its back */
+  for(const [x0,z0,x1,z1] of [[4.5,6.4,16,6.4],[16,6.4,16,14],[4.5,14,16,14],[4.5,6.4,4.5,8.8],[4.5,11.2,4.5,14]]){const L=Math.hypot(x1-x0,z1-z0),ry=Math.atan2(x1-x0,z1-z0);
+   for(const y of [.5,1.0])W((x0+x1)/2,y,(z0+z1)/2,ry,()=>box('log',0,0,0,.1,.12,L,wd));for(let t=0;t<=L;t+=2)cyl('log',x0+(x1-x0)*t/L,0,z0+(z1-z0)*t/L,.07,1.3,wd,6);}
+  for(const x of [5,10.25,15.5])cyl('log',x,0,11,.09,2.3,wd,6);plane4('thatch',[4.3,2.3,11],[16.2,2.3,11],[4.3,2.9,14.2],.14,P('thatch'));
+  door(0,0,CZ,0,3.0);}});

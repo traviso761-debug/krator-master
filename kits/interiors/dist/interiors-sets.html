@@ -6483,6 +6483,38 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const TOWNHALL = townHall();
+  /* THE CARAVANSERAI (the board's 12235061; at the outpost, on the kipuka's stream): a half-round court (its straight side the
+     front wall with the gate) under a colonnade round its arc; six rooms behind the colonnade (four guest rooms, a kitchen, a
+     store), a tall round tower at the back of the arc (the taproom at its foot), a waterfall from the tower into a round pool,
+     two long pools in the court; the stable yard to the east of the gate, its own fenced room. Constructed (tuff ashlar); the
+     rooms' walls and floors come from this item (zwItem), the court is a room of its own (its pools are fixtures) */
+  function caravanserai() {
+    const Z = function (v) { return v + 2; }, CZ = Z(4), R0 = 12.6, R1 = 17, rooms = [];
+    const arc = function (r, a0, a1, n) { const out = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; out.push([Math.cos(a) * r, CZ + Math.sin(a) * r]); } return out; };
+    const kinds = ['bedroom', 'bedroom', 'kitchen', null, 'store', 'bedroom', 'bedroom'];
+    const doors = [];
+    kinds.forEach(function (k, i) {
+      if (!k) return;
+      const a0 = Math.PI + i * Math.PI / 7 + 0.012, a1 = Math.PI + (i + 1) * Math.PI / 7 - 0.012, am = (a0 + a1) / 2, id = 'room' + i;
+      const poly = arc(R0, a0, a1, 3).concat(arc(R1, a1, a0, 3));
+      const d = [Math.cos(am) * R0, CZ + Math.sin(am) * R0];
+      doors.push({ id: id, at: d, w: 1.0, to: '.' + id, swing: 'none' });
+      rooms.push({ id: id, kind: k, poly: poly, y: 0.25, h: 2.9, doors: [{ id: id, at: d, w: 1.0, to: '.court', swing: 'in' }],
+        fixtures: k === 'kitchen' ? [fx('hearth', 'hearth', Math.cos(am) * (R1 - 0.45), CZ + Math.sin(am) * (R1 - 0.45), 0.9, 0.9, { h: 1.0 })] : [] });
+    });
+    /* the tower's taproom (round, at the arc's back middle: its front wall stands in the court) */
+    const T = [0, CZ - 15.2];
+    rooms.push({ id: 'tower', kind: 'tavern', poly: circle(3.3, 16, T[0], T[1]), y: 0.25, h: 3.4, doors: [{ id: 'tower', at: [0, T[1] + 3.3], w: 1.2, to: '.court', swing: 'in' }] });
+    doors.push({ id: 'tower', at: [0, T[1] + 3.3], w: 1.2, to: '.tower', swing: 'none' });
+    /* the court: the half disc inside the colonnade's line, its gate in the front wall; the pools are fixtures */
+    const court = arc(R0 - 0.2, Math.PI, 2 * Math.PI, 16);
+    rooms.push({ id: 'court', kind: 'court', poly: court, y: 0.02, h: 3.0, doors: [{ at: [0, CZ], w: 3.0, swing: 'none' }].concat(doors),
+      fixtures: [fx('pool', 'pool', 0, CZ - 8.6, 4.6, 3.0, { h: 0.4 }), fx('poolW', 'pool', -5.6, CZ - 3.6, 2.4, 5.2, { h: 0.4 }), fx('poolE', 'pool', 5.6, CZ - 3.6, 2.4, 5.2, { h: 0.4 })] });
+    /* the stable yard, east of the gate */
+    rooms.push({ id: 'stable', kind: 'stable', poly: rrect(4.5, 16, Z(4.4), Z(12)), y: 0.05, h: 3.2, doors: [{ at: [4.5, Z(8)], w: 2.4, swing: 'none' }] });
+    return { rooms: rooms, T: T, CZ: CZ, R0: R0, R1: R1 };
+  }
+  const CARAV = caravanserai();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -6552,6 +6584,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- civic */
+    { key: 'zj_caravanserai', name: 'The caravanserai: a tower over a half-round court', wealth: 0.55, types: ['tavern', 'civic'], residence: false, lot: [46, 36],
+      rooms: CARAV.rooms,
+      note: 'a half-round court under a colonnade, six rooms round it (four guest rooms, a kitchen, a store), the taproom at the foot of a tall tower, the court with its pools, a stable yard by the gate' },
     { key: 'zj_townhall', name: 'The town hall in a rock spire', carved: true, wealth: 0.7, types: ['civic'], residence: false, lot: [18, 18],
       rooms: TOWNHALL.rooms, voids: TOWNHALL.voids,
       note: 'a fairy chimney: the council room at the ground, the records above, the lookout at the top with four windows; steep stairs cut through the rock' },

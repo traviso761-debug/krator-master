@@ -35,7 +35,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 38 | 230 | 1 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 25 | 182 | 1 | 11 | 10 | 33 | 128 | 2 | atmos | yes | yes |
-| [`kits/zeijani`](kits/zeijani/PORT.md) | 25 | 200 | 4 | 28 | 10 | 70 | 88 | 3 | atmos | yes | yes |
+| [`kits/zeijani`](kits/zeijani/PORT.md) | 25 | 204 | 4 | 28 | 10 | 71 | 92 | 3 | atmos | yes | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 15 | 195 | 27 | 17 | 13 | 55 | 84 | 3 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 206 | 1 | 0 | 14 | 34 | 157 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 221 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
@@ -52,7 +52,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1754 | 23367 | 3531 (15%) | 501 (2%) | 1023 (4%) | 2804 (12%) | 15507 (66%) | 247 | | | |
+| **all** | 1754 | 23371 | 3531 (15%) | 501 (2%) | 1023 (4%) | 2804 (12%) | 15512 (66%) | 247 | | | |
 
 ## Host-shell copies
 

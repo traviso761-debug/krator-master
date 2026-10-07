@@ -117,6 +117,9 @@ const PB={
    leg('the council’s spiral',A[0].a);A.forEach((v,i)=>leg('council spiral '+i,v.b));if(B.length)leg('the records’ spiral',B[0].a);B.forEach((v,i)=>leg('records spiral '+i,v.b));
    const down=up.slice(0,-1).reverse().map(w=>['down: '+w[0],w[1],w[2]]);
    r('town hall',PB.siteRoute(W,'zj_townhall',[0,3],[['the door',0,.5],['the council room',0,-5]].concat(up,[['the lookout’s middle',0,-8.4]],[up[up.length-1]],down,[['the council room again',0,-5],['out',0,2]])));}}
+  r('caravanserai',PB.siteRoute(W,'zj_caravanserai',[0,10],[['the gate',0,6.5],['the court',3,3],['round the pool',3,-4.8],['the tower’s door',0,-5.3],['the taproom',0,-8.5],
+   ['back to the court',0,-5.3],['round the pool again',3,-4.8],['across the court',-4,2.8],['the west rooms’ gallery',-7.8,4.22],['a guest room',-14.43,2.71],['the gallery again',-7.8,4.22],
+   ['the gate again',0,5.4],['out',0,8],['to the stable',3.5,10],['the stable',8,10],['out of the stable',3.5,10]]));
   return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
@@ -152,7 +155,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===7&&cr.every(e=>PB.routeOk(e.log)),
+ const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===8&&cr.every(e=>PB.routeOk(e.log)),
   cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
   sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');
