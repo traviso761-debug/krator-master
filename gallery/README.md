@@ -230,3 +230,10 @@ removed, and a link section under the Throne added (`index.template.html` too). 
 buildings replaced with their current builds (13.1 MB each: Locus on the material library). The index was edited from
 the live version 65. Version 67: Mungo replaced (3.0 MB and its three sidecars, `mungo.tex.*.js`, 21.8 MB in all; a card's
 size now counts the sidecars a page loads). The artifact is about 208 MB.
+Version 68 (2026-10-07): `worlds/desert-nomads.html` (8.4 MB) and `worlds/ash-nomads.html` (8.9 MB) added (the nomad split:
+the Desert Nomads' goat-hair, caidal, square and Tuareg tents, sheikh, seer and hookah tents, camels, horses and lizards; the Ash
+Nomads' blue-led spire and dome tents, the chieftain's five-spired tent, the assembly under the gas giant emblem, beetles and
+millipedes), `worlds/scyvoi.html` replaced (13.3 MB: Tibetan appliqué tents and halls, the shaman's ger, the cartwright's tent, bison
+and cattle), `worlds/fauna.html` (0.8 MB: 51 species) and `worlds/krator-catalog.html` (1.6 MB: 1932 pieces, the Ash Nomads, the
+desert nomads' pieces, training furniture) replaced, from `main` at b5badc0c. The live index (version 67) was kept: the two cards
+added after Scyvoi, the Scyvoi, Fauna and Master catalog cards updated. One publish call; about 228 MB.
