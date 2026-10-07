@@ -16,15 +16,15 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `45-host-stage.js` | 17 | the lake, the ridge, the streams (40); terrain (69); the field cache (96); the host binding (108); the ground (117); the water (173) |
-| `50-biome-rift-species.js` | 56 **big** | THE LAKE COLOUR (17); the tree species (81); leaf textures (191); an iridescent bark (344); bark textures (384); geometries local to this biome (420); materials (507); instanced items (564) |
+| `45-host-stage.js` | 18 | the lake, the ridge, the streams (44); terrain (73); the field cache (100); the host binding (112); the ground (121); the water (177) |
+| `50-biome-rift-species.js` | 61 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (191); leaf textures (244); an iridescent bark (397); bark textures (437); geometries local to this biome (473); materials (564); instanced items (624) |
 | `55-biome-rift-trees.js` | 68 **big** | zones from the fields (20); colour (35); polyline helpers (Girder's) (65); keep-clear between trees (73); foliage helpers (80); the builders (97); impostors (the far canopy) (456); the pass (535) |
-| `60-biome-rift-floor.js` | 24 | fields local to the floor (32); small plants (37); the zone planters (135); the pass (205) |
+| `60-biome-rift-floor.js` | 24 | fields local to the floor (32); small plants (37); the zone planters (141); the pass (211) |
 | `65-biome-rift-dress.js` | 7 |  |
 | `70-biome-rift.js` | <1 |  |
 | `82-host-sky.js` | 16 | the Rift painter (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
 | `90-host-camera.js` | 6 |  |
-| `91-host-probe.js` | 3 |  |
+| `91-host-probe.js` | 5 | fruit (biomes/FRUIT.md) (25) |
 | `99-tail.html` | <1 |  |

@@ -18,15 +18,15 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 2 |  |
 | `41-hyperjungle-globals.js` | <1 |  |
 | `45-host-stage.js` | 5 | terrain (23); the host binding (33) |
-| `50-biome-hyperjungle-species.js` | 20 | leaf textures (55); bark textures (126); materials (182); instanced items (206) |
+| `50-biome-hyperjungle-species.js` | 27 | harvest (biomes/FRUIT.md) (57); leaf textures (90); bark textures (161); materials (217); the material library (core/materials/PLAN.md) (235); instanced items (258) |
 | `55-biome-hyperjungle-trees.js` | 30 | trunk profile (20); colour (29); polyline helpers (Girder) (64); one hero hypertree (93); an immature hypertree (238); the far forest: impostors (271); the pass (305); one tree alone (biomes/WORLD.md: trees as varian (338) |
 | `58-biome-hyperjungle-fauna.js` | 15 | bodies (25); textures, materials, items (67); placement helpers (94); the herds (CPU) (103); the pass (128) |
-| `60-biome-hyperjungle-floor.js` | 33 **big** | colour (22); keep-clear (58); bole profiles (72); fields (92); the plants (98); the belt's own understorey (165); fallen hypertrees (210); lianas (261); the pass (269) |
+| `60-biome-hyperjungle-floor.js` | 33 **big** | colour (22); keep-clear (58); bole profiles (72); fields (92); the plants (98); the belt's own understorey (165); fallen hypertrees (211); lianas (262); the pass (270) |
 | `65-biome-hyperjungle-dress.js` | 7 |  |
 | `70-biome-hyperjungle.js` | 1 |  |
 | `82-host-sky.js` | 12 |  |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 6 |  |
-| `91-host-probe.js` | 3 |  |
+| `90-host-camera.js` | 7 |  |
+| `91-host-probe.js` | 5 | the host's own checks (verify.py runs them when  (27) |
 | `99-tail.html` | <1 |  |

@@ -19,15 +19,15 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `inspector.js` | 19 |  |
 | `krator-asset-engine.js` | 11 |  |
-| `krator-furniture-core.js` | 58 **big** |  |
+| `krator-furniture-core.js` | 61 **big** |  |
 | `krator-furniture-kit.js` | 135 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
 | `krator-furniture-runtime.js` | 8 |  |
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
 | `krator-master-furniture-eastabyss.js` | 57 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767); The builders' yard (2026-10): building stock for (811) |
-| `krator-master-furniture-generic-fruit.js` | 48 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
-| `krator-master-furniture-generic-goods.js` | 90 **big** | Storage containers (17 pieces) (180); Food (21 pieces) (578); Drink (6 pieces) (1120); Supplies (11 pieces) (1286) |
+| `krator-master-furniture-generic-fruit.js` | 56 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
+| `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (185); Food (21 pieces) (583); Drink (6 pieces) (1125); Supplies (11 pieces) (1291) |
 | `krator-master-furniture-generic.js` | 4 |  |
 | `krator-master-furniture-hykkousoi.js` | 1 |  |
 | `krator-master-furniture-islander.js` | 4 |  |
