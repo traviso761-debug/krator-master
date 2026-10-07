@@ -135,9 +135,11 @@ function nrFurnishBerths(arc){const L=NR.L,B=NR.BRIDGEHOUSE,S=B.storeys[2],out={
  for(const C of B.berths.cabins){const o=C.mid,dx=S.xc-o[0],dz=-o[1],ry=Math.atan2(dx,dz),c=Math.cos(ry),sn=Math.sin(ry);
   const loc=p=>{const ex=p[0]-o[0],ez=p[1]-o[1];return [ex*c-ez*sn,ex*sn+ez*c];};
   const poly=C.poly.map(loc).sort((a,b)=>Math.atan2(a[1],a[0])-Math.atan2(b[1],b[0]));
-  const d=loc(C.door),w=loc(C.win),y=C.y+.02;
+  /* the door at the middle of the corridor edge (the two corners nearest the corridor, +z), the window at the glass edge's */
+  const byZ=poly.slice().sort((a,b)=>b[1]-a[1]),mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2],d=mid(byZ[0],byZ[1]),w=mid(byZ[2],byZ[3]),y=C.y+.02;
+  const ow=Math.hypot(byZ[2][0]-byZ[3][0],byZ[2][1]-byZ[3][1]);
   const T=nrTemplate('berth|'+C.id,{kind:'bedroom',culture:'post-apoc',wealth:.6,y:0,h:L.DH-L.SLAB-.04,poly,
-   doors:[{at:[clamp(d[0],-1,1),Math.max(...poly.map(p=>p[1]))],w:1.0,swing:'in',hinge:'left'}],windows:[{at:[clamp(w[0],-1,1),Math.min(...poly.map(p=>p[1]))],w:2.0,sill:.55,h:2.3}]});
+   doors:[{at:d,w:1.0,swing:'in',hinge:'left'}],windows:[{at:w,w:Math.max(.8,Math.min(2.4,ow-1.2)),sill:.55,h:2.3}]});
   const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:.6,seed:nrHash(C.id)},C.id);
   T.inst.push({m:nrInstMatrix(o[0],y,o[1],ry),p:[o[0],y,o[1]],deck:null,id:C.id});
   out.rooms.push({id:C.id,name:"an officer's berth",kind:'bedroom',deck:'bridge house 3',poly:C.poly.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:C.y,h:L.DH-L.SLAB,
@@ -324,7 +326,10 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
  for(const k in NR_TPL)delete NR_TPL[k];NR_INST.length=0;
  if(NR_FURNG){NR_FURNG.parent&&NR_FURNG.parent.remove(NR_FURNG);}
  NR_FURNG=new THREE.Group();NR_FURNG.name='furniture:instanced';NR_FURNG.matrixAutoUpdate=false;NR_FURNG.matrix.fromArray(NR_HULL.m16);NR_FURNG.userData.furniture=true;HULLG.add(NR_FURNG);
- const cab=nrFurnishCabins(arc),shp=nrFurnishShipRooms(arc),brt=nrFurnishBerths(arc),bld=nrFurnishBuildings(),pub=nrFurnishPublic(arc);
+ /* each part on its own: one that throws is reported (the error panel) and the rest still furnish */
+ const part=(nm,fn,empty)=>{try{return fn();}catch(e){reportErr('interiors '+nm+': '+(e.stack||e));return empty;}};
+ const cab=part('cabins',()=>nrFurnishCabins(arc),{furnished:0,bare:0,empty:0,rooms:[]}),shp=part("ship's rooms",()=>nrFurnishShipRooms(arc),{rooms:[]}),
+  brt=part('berths',()=>nrFurnishBerths(arc),{rooms:[]}),bld=part('buildings',()=>nrFurnishBuildings(),{rooms:[],residences:0,residenceFails:[],items:{}}),pub=part('halls',()=>nrFurnishPublic(arc),{});
  for(const k in NR_TPL)nrTemplateDraw(NR_TPL[k]);
  /* the report the verifier reads */
  const missingRequired=[],auditFails=[],byKind={};let audited=0;
