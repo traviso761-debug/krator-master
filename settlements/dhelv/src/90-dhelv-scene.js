@@ -78,14 +78,25 @@ function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
  for(const P of DH.PITS){const top=DH.groundY(P.c[0],P.c[1])+2;C.shaft({id:'dh.'+P.id+'.pit',owner:'dhelv',c:P.c.slice(),y0:P.floor,y1:top,r0:P.r,r1:P.r+2,floor:true,rock:'basalt',finish:'raw'});
   C.opening({id:'dh.'+P.id+'.well',c:P.c.slice(),r:P.r+2,rim:.5,kind:'well'});}
  const inPit=n=>DH.PITS.some(P=>Math.hypot(n.x-P.c[0],n.z-P.c[1])<P.r-.5);
+ const stairTop=new Set(DH.EDGES.filter(e=>e.kind==='stair').map(e=>B[e.a].y>B[e.b].y?e.a:e.b));
  for(const e of DH.EDGES){const a=B[e.a],b=B[e.b];if(e.kind==='square'||e.kind==='street'||e.door==='stonedoor')continue;if(inPit(a)&&inPit(b))continue;   /* the stone door's own passage is the way through it */
   const id='dh.'+e.a+'-'+e.b;if(a.x<-2440&&b.x<-2440&&e.kind!=='tube')continue;   /* the kipuka's paths up the cliff are on the ground */
-  if(e.kind==='stair')C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w:Math.max(1.2,e.w),h:3.2,rock:'basalt',finish:'hewn'});
+  /* a stair up to a node other ways leave (the ledge's l1, l4) ends short of it on a level landing at the node's height, long
+     enough that no way leaving near the stair's line lays its floor beside and over the stair (half a metre above it: a lip a
+     walker coming down drops off; P6's edge check): the half widths over the sine of the angle between them, 4.5 to 12 m */
+  if(e.kind==='stair'){const lo=a.y<b.y?a:b,hi=a.y<b.y?b:a,w=Math.max(1.2,e.w),L=Math.hypot(hi.x-lo.x,hi.z-lo.z),u=[(hi.x-lo.x)/L,(hi.z-lo.z)/L];
+   let land=0;for(const q of DH.EDGES){if(q===e||(q.a!==hi.id&&q.b!==hi.id))continue;const o=B[q.a===hi.id?q.b:q.a],ol=Math.hypot(o.x-hi.x,o.z-hi.z)||1,c=-(u[0]*(o.x-hi.x)+u[1]*(o.z-hi.z))/ol,sn=Math.sqrt(Math.max(0,1-c*c));
+    if(c>0)land=Math.max(land,Math.min(12,Math.max(4.5,(w/2+Math.max(.8,(q.w||2)-.8)/2)/Math.max(sn,.05)+.5)));}
+   if(land>0&&land<L-3){const P=[hi.x-u[0]*land,hi.y,hi.z-u[1]*land];
+    C.stair({id,owner:'dhelv',a:[lo.x,lo.y,lo.z],b:P,w,h:3.2,rock:'basalt',finish:'hewn'});
+    C.tube({id:id+'.landing',owner:'dhelv',pts:[[P[0]-u[0]*.3,hi.y,P[2]-u[1]*.3],[hi.x+u[0]*.3,hi.y,hi.z+u[1]*.3]],w,h:3.4,blend:.5,rock:'basalt',finish:'hewn',walkW:w});}
+   else C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w,h:3.2,rock:'basalt',finish:'hewn'});}
   else{const w=e.kind==='secret'?1.6:e.w,h=e.kind==='ledge'?3.4:e.kind==='secret'?2.4:Math.max(3,Math.min(10,w*.9+1.5));
    /* each way runs on past its ends into what it meets, so its floor overlaps the next one's (an exact abutment leaves a hairline
       a step lands in): 1.2 m into the hall or a pit (their floors stand 0.3 m in from their walls), else 0.3 m (a stair not at all:
-      a walker keeps to the higher floor across an overlap) */
-   const ext=id=>dhOpens(id)?1.2:dhFace(id)?-1:.3,A=dhRun(b,a,ext(e.a)),Bp=dhRun(a,b,ext(e.b));
+      a walker keeps to the higher floor across an overlap). Where a stair comes up to a node, 0.3 m: run on 1.2 m, a way's floor
+      roofs the stair's head at the node's height and a walker coming down drops off its end (P6's edge check) */
+   const ext=id=>stairTop.has(id)?.3:dhOpens(id)?1.2:dhFace(id)?-1:.3,A=dhRun(b,a,ext(e.a)),Bp=dhRun(a,b,ext(e.b));
    C.tube({id,owner:'dhelv',pts:[A,Bp],w,h,blend:e.kind==='ledge'?.5:2,rock:'basalt',finish:e.kind==='door'?'hewn':'raw',walkW:Math.max(.8,w-.8)});}}
  /* the outpost's carved fronts open in the cliff, which is the page's ground: a hole in it at each mouth (the portal's tunnel,
     the galleries' and the lean-to's doorways), inside which the cavern meshes the cliff round the opening */
@@ -97,11 +108,32 @@ const dhOpens=id=>/^h\.[wens]$|^s\d\.(in|up|e)$/.test(id);
 const dhFace=id=>/^(cis|k\.head|t\.stores)$/.test(id);   /* a carved front's foot: its forecourt takes the tunnel's end */
 function dhRun(p,q,ext){const dx=q.x-p.x,dy=q.y-p.y,dz=q.z-p.z,L=Math.hypot(dx,dz)||1;return [q.x+dx/L*ext,q.y+dy/L*ext,q.z+dz/L*ext];}
 /* the kipuka's floor and the cliff paths, for the walker (the rest of the surface is not walked in P5a) */
+/* the stairs up the old cone's cliff to its two watchtowers (the layout's o.galN-o.tw1, o.galS-o.tw2): a straight flight from
+   the gallery would run into the cliff, and the face beside each tower is taken (a gallery's front, a lean-to), so each is a
+   built switchback of tuff ashlar against the cliff between the lean-to and the palisade: the lower flight on the outer lane
+   from the clearing, a landing, the upper flight against the cliff to the cone's top, then a paved path to the tower's door.
+   Drawn, put on the walk map, and handed to the nav as the way's real shape (DH_REAL: its points and kinds) */
+const DH_REAL={};
+function dhCliffStairs(){for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind!=='stair'||a.x>-2440||b.x>-2440)continue;
+  const s=Math.sign(b.z)||1,zt=b.z,x0=DH.cliffX(zt),xi=x0-1.3,xo=x0-3.6,yb=DH.KIPUKA.floor,yt=b.y,ym=(yb+yt)/2,zTop=zt-6.5*s,zLand=zt+11.5*s,n=Math.ceil((ym-yb)/.2),rise=(ym-yb)/n,run=Math.abs(zLand-zTop)/n,col=P('tuff');
+  for(let k=0;k<n;k++){const zl=zTop+s*(k+.5)*run,zu=zLand-s*(k+.5)*run,tl=yb+(k+1)*rise,tu=ym+(k+1)*rise;
+   box('ashlar',xo,yb,zl,2,tl-yb,run+.01,col);box('ashlar',xi,yb,zu,2,tu-yb,run+.01,col);
+   if(k%3===0){box('ashlar',xo-1.12,tl,zl+s*run,.24,.9,run*3,col);box('ashlar',xi-1.12,tu,zu-s*run,.24,.9,run*3,col);}}   /* the parapets, over the drop */
+  box('ashlar',(xo+xi)/2,yb,zLand+s*.3,4.6,ym-yb,1.4,col);box('ashlar',xo-1.12,ym,zLand+s*.88,.24,.9,.24,col);   /* the landing: past the flights' ends, lapping them 0.4 m */
+  const R=REG.find(r=>!r.parent&&r.key==='zj_watchtower'&&Math.hypot(r.x-b.x,r.z-b.z)<4),F=R&&R.front&&R.front.world,D=F?[F.x+Math.sin(F.yaw),F.z+Math.cos(F.yaw)]:[b.x-3.2,b.z];
+  const pv=P('tuffDark');box('paving',(xi+x0+1.2)/2,yt-.06,zTop,x0+1.2-xi+2,.08,2,pv);
+  {const dx=D[0]-(x0+1.2),dz=D[1]-zTop,L=Math.hypot(dx,dz);box('paving',(x0+1.2+D[0])/2,yt-.06,(zTop+D[1])/2,1.6,.08,L+1.6,pv,Math.atan2(dx,dz));}
+  KWALK.strip({a:[xo,zTop,yb],b:[xo,zLand,ym],w:2,name:'dh.'+e.a+'-'+e.b+'.lower',tag:'built:stair'});
+  KWALK.floor({rect:[xo-1,xi+1,Math.min(zLand-.4*s,zLand+s),Math.max(zLand-.4*s,zLand+s)],y:ym,name:'dh.'+e.a+'-'+e.b+'.landing',tag:'built:stair'});
+  KWALK.strip({a:[xi,zLand,ym],b:[xi,zTop,yt],w:2,name:'dh.'+e.a+'-'+e.b+'.upper',tag:'built:stair'});
+  KWALK.strip({a:[xi-.6,zTop,yt],b:[x0+1.2,zTop,yt],w:1.2,name:'dh.'+e.a+'-'+e.b+'.top',tag:'built:path'});
+  KWALK.strip({a:[x0+1.2,zTop,yt],b:[D[0],D[1],yt],w:1.6,name:'dh.'+e.a+'-'+e.b+'.path',tag:'built:path'});
+  DH_REAL[e.a+'-'+e.b]={end:false,pts:[[xo,yb,zTop],[xo,ym,zLand],[xi,ym,zLand],[xi,yt,zTop],[x0+1.2,yt,zTop],[D[0],yt,D[1]]],kinds:['street','stair','landing','stair','path','path']};}}
 function dhSurfaceWalk(){const K=DH.KIPUKA,rx=K.r*.97,rz=rx/1.3,cx=DH.CONE.cliffX,t0=Math.acos(Math.max(-1,Math.min(1,(cx-K.c[0])/rx))),pts=[];
  /* the hollow's floor west of the cliff: the kipuka's ellipse cut by a chord at the cliff's foot (convex; the portal's tunnel starts 1.5 m in front of it) */
  for(let i=0;i<=40;i++){const a=t0+(TAU-2*t0)*i/40;pts.push([K.c[0]+Math.cos(a)*rx,K.c[1]+Math.sin(a)*rz,K.floor]);}
  KWALK.poly({pts,name:'the kipuka\'s floor',tag:'ground'});
- for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440)KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
+ for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440&&!DH_REAL[e.a+'-'+e.b])KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
 
 // ---------------------------------------------------------------- the rock, meshed near the camera only (PLAN.md 7: about 2M triangles in all)
 const DH_STREAM={R:120,drop:170,budget:10,on:true,meshes:new Map(),keys:[],cen:null,near:[],tick:0,meshed:0,tris:0};
@@ -206,7 +238,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
  for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;const k=dhCellKey(S);GB=GTARGET=cells[k]||(cells[k]={});place(S.key,S.x,S.z,S.ry||0,S.o);}
- GB=GTARGET=base;
+ GB=GTARGET=base;dhCliffStairs();
  for(const k in cells){const g=new THREE.Group();g.userData.cell=k;flushBuckets(cells[k],g,true);if(!g.children.length)continue;WORLD.add(g);
   const bx=new THREE.Box3();g.children.forEach(m=>{m.geometry.computeBoundingBox();bx.union(m.geometry.boundingBox);});const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:k[0]==='u',tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}

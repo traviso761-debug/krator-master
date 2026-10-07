@@ -11547,7 +11547,9 @@ const DH=(function(){
     north mouth) and l4 are where ways leave it */
  const L=[];for(let deg=-150;deg<=30;deg+=10){const p=onLedge(deg*PI/180),id=deg===-150?'l1':deg===-90?'l2':deg===30?'l4':'l.'+deg;N(id,p[0],p[1],HALL.ledgeY,{level:'ledge'});L.push(id);}
  chain(L,'ledge',3);
- N('h.stA',-133,-25,0);N('h.stB',133,25,0);E('h.w','h.stA','square',6);E('h.e','h.stB','square',6);E('h.stA','l1','stair',2.5);E('h.stB','l4','stair',2.5);
+ /* the two stairs up to the ledge's ends, each from 15 degrees past its end along the wall (h.stB at 15 degrees ran up under the
+    ledge's last 20 degrees: P6's edge check) */
+ N('h.stA',-133,-25,0);N('h.stB',96.7,69.8,0);E('h.w','h.stA','square',6);E('h.e','h.stB','square',6);E('h.stA','l1','stair',2.5);E('h.stB','l4','stair',2.5);
  /* the ledge's west tunnel: over the braid (crossing 1) to an upper junction, down a stair to strand A */
  N('u.w',-280,-10,6);E('l1','u.w','braid',4);
  /* the stair down to strand A stands beside the junction (a stair whose foot is in a junction lifts a walker passing through) */
@@ -16525,6 +16527,100 @@ defBuilding({key:'zj_fountain',name:'Public fountain',seed:5404,cls:'infrastruct
   zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.8,.18,c,16);cyl('water',0,2.97,0,.65,.02,P('water'),16);
   for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.78,.78,Math.sin(a)*.78,.06,2.2,.06,P('water'));}
   FURNISH('zeijani_olla',2.0,0,1.9,0,{setting:'outdoor'});FURNISH('zeijani_olla',-2.1,0,1.7,0,{v:1,setting:'outdoor'});}});
+// prefix: dhn
+// ================================================================= DHELV: THE NAV GRAPH (kits/zeijani/PLAN.md 8.1, 8.3; P6). [G data]
+// One graph the ramblers walk (core/simulation's 'pedestrian' layer), written from what was built, never read off a mesh:
+//   the LAYOUT's ways (DH.NODES and DH.EDGES: tubes, the braid, stairs, ramps, the ledge, the streets, with their width
+//   and zone: outer, where a foreigner may go; inner; secret, the scouts' own);
+//   a GRID on each open floor (the hall's floor and its bays, each well's pit floor, the kipuka's floor), its nodes where
+//   the walk map (core/walk) has that floor and no block, its edges between neighbours a walker can walk;
+//   a DOOR node a metre out from each building's front, linked to the nearest nodes it can walk to.
+// Every lookup takes y: a point finds the floor under it, then a node on that floor (DHN.nearest), never the nearest in
+// plan, which in the braid or under the ledge is a way on another level. Built on first use (DHN.get) after the world.
+const DHN={R:.3,H:1.7,STEP:.6,HEAD:2,built:null,NOPLACE:{zj_palisade:1}};   /* NOPLACE: a wall, no door */
+/* a walker can go straight from a to b: every 0.5 m a floor within a step of its feet and no block in its way; the feet end
+   within a step of b. head: also 2 m clear under the rock (the carved ways; the cavern's ceilingAt is slow, every 2 m) */
+DHN.segOk=function(a,b,o){o=o||{};const W=o.walk||KWALK,dx=b.x-a.x,dz=b.z-a.z,L=Math.hypot(dx,dz),n=Math.max(1,Math.ceil(L/.5)),R=o.r||DHN.R,H=o.h||DHN.H;let feet=a.y,lastC=-9;
+ for(let i=1;i<=n;i++){const x=a.x+dx*i/n,z=a.z+dz*i/n,f=W.floorBelow(x,z,feet,DHN.STEP);if(!f||feet-f[0]>DHN.STEP)return {ok:false,why:'no floor',at:[x,feet,z]};
+  feet=f[0];if(W.blocked(x,feet,z,R,H))return {ok:false,why:'blocked',at:[x,feet,z]};
+  if(o.head&&typeof CVC!=='undefined'&&CVC&&(i*L/n-lastC>=2||i===n)){lastC=i*L/n;const c=CVC.ceilingAt(x,z,feet+.1);if(c!==null&&c-feet<(o.headroom||DHN.HEAD))return {ok:false,why:'headroom '+(c-feet).toFixed(2)+' m',at:[x,feet,z]};}}
+ return Math.abs(feet-b.y)<=DHN.STEP?{ok:true}:{ok:false,why:'ends off its node',at:[b.x,feet,b.z]};};
+/* the open floors: a grid of cell metres where the walk map has the named floor */
+DHN.areas=function(){const H=DH.HALL,K=DH.KIPUKA,A=[{id:'hall',zone:'inner',cell:3,y:H.y,x0:H.c[0]-H.rx-6,x1:H.c[0]+H.rx+6,z0:H.c[1]-H.rz-6,z1:H.c[1]+H.rz+6,floor:/^dh\.hall\.foot|^dh\.bay/}];
+ for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit')});
+ A.push({id:'kipuka',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:K.c[0]+K.r,z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/kipuka's floor/});
+ return A;};
+DHN.build=function(){const t0=performance.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
+ /* the layout's ways (each node set on the floor built under it: a building's plinth stands a hand over the layout's height) */
+ for(const n of DH.NODES){const f=KWALK.floorBelow(n.x,n.z,n.y+.6,1.2);add({id:n.id,x:n.x,y:f&&Math.abs(f[0]-n.y)<.6?f[0]:n.y,z:n.z,tag:'way',area:null});}
+ /* a way the scene built to its own shape (DH_REAL: the cliff's switchbacks) is its points, each a node */
+ const REAL=typeof DH_REAL!=='undefined'?DH_REAL:{},realIds=[];
+ for(const k in REAL)REAL[k].pts.forEach((p,i)=>{const id=k+':'+i;realIds.push(id);add({id,x:p[0],y:p[1],z:p[2],tag:'way',area:null});});
+ /* the grids */
+ const G={};
+ for(const A of DHN.areas()){const ids={},c=A.cell,ni=Math.floor((A.x1-A.x0)/c),nj=Math.floor((A.z1-A.z0)/c);A.n=0;
+  for(let j=0;j<=nj;j++)for(let i=0;i<=ni;i++){const x=A.x0+i*c,z=A.z0+j*c,y0=A.y==null?DH.groundY(x,z):A.y,f=KWALK.floorBelow(x,z,y0+.5,1.2);
+   if(!f||!A.floor.test(f[1].name||'')||KWALK.blocked(x,f[0],z,.4,DHN.H))continue;ids[i+','+j]=add({id:A.id+':'+i+','+j,x,y:f[0],z,tag:'floor',area:A.id});A.n++;}
+  for(const k in ids){const [i,j]=k.split(',').map(Number),a=ids[k];
+   for(const [di,dj] of [[1,0],[0,1],[1,1],[1,-1]]){const b=ids[(i+di)+','+(j+dj)];if(b&&DHN.segOk(a,b).ok&&DHN.segOk(b,a).ok)link(a,b,'floor',A.zone,c);}}
+  G[A.id]={A,ids};}
+ /* the layout's nodes onto the grid under them: the three nearest a walker reaches, both ways */
+ const near=(p,R,dy,f)=>N.filter(q=>q!==p&&(!f||f(q))&&Math.abs(q.y-p.y)<dy&&Math.hypot(q.x-p.x,q.z-p.z)<R).sort((u,v)=>Math.hypot(u.x-p.x,u.z-p.z)-Math.hypot(v.x-p.x,v.z-p.z));
+ const onGrid=new Set();
+ for(const id of DH.NODES.map(n=>n.id).concat(realIds)){const p=byId[id];let k=0;for(const q of near(p,9,.9,q=>q.tag==='floor')){if(DHN.segOk(p,q).ok&&DHN.segOk(q,p).ok){link(p,q,'floor',G[q.area].A.zone,2);onGrid.add(id);if(++k>=3)break;}}}
+ /* the layout's edges. A street or a square's lane between two nodes on one open floor is a line on a plan, not a way built
+    (nothing is carved or registered for it): the floor's grid carries it, round what stands in the way (a gate's posts) */
+ let realized=0;
+ /* an end on the grid, or a node in a building on an open floor (a street ends at its place's middle; its door joins the grid) */
+ const onFloor=id=>onGrid.has(id)||N.some(q=>q.tag==='floor'&&Math.abs(q.y-byId[id].y)<1.2&&Math.hypot(q.x-byId[id].x,q.z-byId[id].z)<12);
+ const way=(a,b,kind,zone,w,len)=>{if((kind==='street'||kind==='square')&&onFloor(a)&&onFloor(b)){realized++;return;}
+  E.push({id:E.length,a,b,kind,zone,w,len:len!=null?len:Math.hypot(byId[b].x-byId[a].x,byId[b].z-byId[a].z),layout:true});};
+ for(const e of DH.EDGES){const k=e.a+'-'+e.b,R=REAL[k],zone=e.zone||'inner',w=e.w||2;
+  if(R){const ids=[e.a].concat(R.pts.map((p,i)=>k+':'+i)).concat(R.end===false?[]:[e.b]);for(let i=1;i<ids.length;i++)way(ids[i-1],ids[i],R.kinds[i-1]||e.kind,zone,w);continue;}
+  way(e.a,e.b,e.kind,zone,w,DH.len?DH.len(e):null);}
+ /* the doors: a node a metre out from each front (or 1.5, 2: out of the door's own frame), linked to the two nearest
+    nodes a walker reaches both ways (the grid's, the layout's, within 40 m along a carved way) */
+ const doors=[];
+ /* a node's zone: the most open of its edges' (a door off an outer way is outer) */
+ const zoneOf=id=>{let z='secret';for(const e of E){if(e.a!==id&&e.b!==id)continue;if(e.zone==='outer')return 'outer';if(e.zone==='inner')z='inner';}return z;};
+ for(const r of REG){if(r.parent||!r.front||!r.front.world)continue;const F=r.front.world,ox=Math.sin(F.yaw),oz=Math.cos(F.yaw);let D=null;
+  /* out before the front, else behind or beside it (a kiva's hatch is reached from the side its ladder stands on) */
+  for(const [out,turn] of [[1,0],[1.5,0],[2,0],[3,0],[3,PI],[3,PI/2],[3,-PI/2],[4.5,PI],[4.5,PI/2],[4.5,-PI/2]]){const c=Math.cos(turn),s=Math.sin(turn),x=F.x+(ox*c+oz*s)*out,z=F.z+(oz*c-ox*s)*out,f=KWALK.floorBelow(x,z,F.y+.6,1.2);if(f&&f[0]>F.y-1.2&&!KWALK.blocked(x,f[0],z,DHN.R,DHN.H)){D={x,y:f[0],z};break;}}   /* not a floor under it (a kiva's own, under its hatch) */
+  if(DHN.NOPLACE[r.key])continue;const d={rec:r,key:r.key,tid:r.tid,node:null};doors.push(d);
+  /* no floor before it (a tower on the cone's top, at the head of its cliff stair): the layout's node there is its door */
+  if(!D){const deg={};E.forEach(e=>{deg[e.a]=1;deg[e.b]=1;});const L=N.filter(q=>q.tag==='way'&&deg[q.id]&&Math.hypot(q.x-F.x,q.z-F.z)<6&&Math.abs(q.y-F.y)<1.5).sort((u,v)=>Math.hypot(u.x-F.x,u.z-F.z)-Math.hypot(v.x-F.x,v.z-F.z))[0];if(L)d.node=L.id;continue;}
+  const n=add({id:'door:'+r.tid,x:D.x,y:D.y,z:D.z,tag:'door',area:null,site:r.key});d.node=n.id;let k=0;
+  for(const q of near(n,40,1.2,q=>q.tag!=='door')){if(DHN.segOk(n,q).ok&&DHN.segOk(q,n).ok){link(n,q,'door',q.area?G[q.area].A.zone:zoneOf(q.id),2);if(++k>=2)break;}}}
+ DHN.built={nodes:N,edges:E,byId,doors,grids:G,realized,ms:Math.round(performance.now()-t0)};return DHN.built;};
+DHN.get=function(){return DHN.built||DHN.build();};
+/* the node for a point, with its height: the floor under it, then the nearest node on that floor's level a walker can
+   reach from it in a straight line (else the nearest on the level) */
+DHN.nearest=function(x,y,z,o){const B=DHN.get(),f=KWALK.floorBelow(x,z,y+.5,1.2),fy=f?f[0]:y,P={x,y:fy,z};
+ /* on a carved way (a long tube has nodes only at its ends): the way passing under the point at its floor's height */
+ let best=null,bd=1e9;for(const e of B.edges){if(!e.layout)continue;const a=B.byId[e.a],b=B.byId[e.b],dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));
+  const d=Math.hypot(a.x+dx*t-x,a.z+dz*t-z),ey=a.y+(b.y-a.y)*t;if(d<Math.max(1.5,e.w/2+.5)&&Math.abs(ey-fy)<1&&d<bd){bd=d;best=t<.5?a:b;}}
+ if(best)return best;
+ const C=B.nodes.filter(n=>Math.abs(n.y-fy)<1.5&&Math.abs(n.x-x)<60&&Math.abs(n.z-z)<60).sort((u,v)=>Math.hypot(u.x-x,u.z-z)-Math.hypot(v.x-x,v.z-z));
+ for(let i=0;i<Math.min(6,C.length);i++)if(DHN.segOk(P,C[i]).ok)return C[i];return C[0]||null;};
+/* ---------------------------------------------------------------- the checks (PLAN.md 8.3, 1 to 4), data only: the probe runs them */
+/* 1: every node stands on a walk floor (within 0.1 m) */
+DHN.chkNodes=function(B,W){W=W||KWALK;const bad=[];for(const n of B.nodes){const f=W.floorBelow(n.x,n.z,n.y+.1,.2);if(!f||Math.abs(f[0]-n.y)>.1)bad.push(n.id+(f?' '+(f[0]-n.y).toFixed(2)+' m':' no floor'));}return bad;};
+/* 2: every edge walkable both ways, with headroom on the carved ways and the door links */
+DHN.chkEdges=function(B,o){o=o||{};const bad=[];for(const e of B.edges){const a=B.byId[e.a],b=B.byId[e.b],head=e.layout||e.kind==='door',r1=DHN.segOk(a,b,Object.assign({head},o)),r2=r1.ok?DHN.segOk(b,a,Object.assign({head},o)):r1;
+  if(!r1.ok||!r2.ok){const r=r1.ok?r2:r1;bad.push({e,why:r.why,at:r.at});}}return bad;};
+/* 3: every door reachable from the outpost's gate, the secret ways apart (the scouts' own) */
+DHN.reach=function(B,from,ok){const adj={};for(const e of B.edges){if(ok&&!ok(e))continue;(adj[e.a]||(adj[e.a]=[])).push(e.b);(adj[e.b]||(adj[e.b]=[])).push(e.a);}
+ const seen=new Set([from]),q=[from];while(q.length){const u=q.pop();for(const v of adj[u]||[])if(!seen.has(v)){seen.add(v);q.push(v);}}return seen;};
+DHN.chkReach=function(B,ok){const S=DHN.reach(B,'o.gate',ok||(e=>e.zone!=='secret'));return B.doors.filter(d=>!d.node||!S.has(d.node)).map(d=>d.key+(d.node?'':' (no door node)'));};
+/* 4: stacked lookups: where two ways cross in plan more than 2.5 m apart in height, a point on each finds its own */
+DHN.crossings=function(B){const L=B.edges.filter(e=>e.layout),out=[];
+ for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=B.byId[L[i].a],b=B.byId[L[i].b],c=B.byId[L[j].a],d=B.byId[L[j].b];
+  const r=(b.x-a.x)*(d.z-c.z)-(b.z-a.z)*(d.x-c.x);if(Math.abs(r)<1e-9)continue;const t=((c.x-a.x)*(d.z-c.z)-(c.z-a.z)*(d.x-c.x))/r,u=((c.x-a.x)*(b.z-a.z)-(c.z-a.z)*(b.x-a.x))/r;
+  if(t<.15||t>.85||u<.15||u>.85)continue;const y1=a.y+(b.y-a.y)*t,y2=c.y+(d.y-c.y)*u;if(Math.abs(y1-y2)<2.5)continue;
+  out.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,ways:[[L[i],y1],[L[j],y2]]});}return out;};
+DHN.chkStacked=function(B,swap){const X=DHN.crossings(B),bad=[];
+ for(const c of X)c.ways.forEach(([e,y],k)=>{const qy=swap?c.ways[1-k][1]:y,n=DHN.nearest(c.x,qy,c.z);if(!n||(n.id!==e.a&&n.id!==e.b&&Math.abs(n.y-y)>1.5))bad.push(e.a+'-'+e.b+' at y '+y.toFixed(1)+' found '+(n?n.id+' (y '+n.y.toFixed(1)+')':'nothing'));});
+ return {n:X.length,bad};};
 // ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
 // A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
@@ -17685,14 +17781,25 @@ function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
  for(const P of DH.PITS){const top=DH.groundY(P.c[0],P.c[1])+2;C.shaft({id:'dh.'+P.id+'.pit',owner:'dhelv',c:P.c.slice(),y0:P.floor,y1:top,r0:P.r,r1:P.r+2,floor:true,rock:'basalt',finish:'raw'});
   C.opening({id:'dh.'+P.id+'.well',c:P.c.slice(),r:P.r+2,rim:.5,kind:'well'});}
  const inPit=n=>DH.PITS.some(P=>Math.hypot(n.x-P.c[0],n.z-P.c[1])<P.r-.5);
+ const stairTop=new Set(DH.EDGES.filter(e=>e.kind==='stair').map(e=>B[e.a].y>B[e.b].y?e.a:e.b));
  for(const e of DH.EDGES){const a=B[e.a],b=B[e.b];if(e.kind==='square'||e.kind==='street'||e.door==='stonedoor')continue;if(inPit(a)&&inPit(b))continue;   /* the stone door's own passage is the way through it */
   const id='dh.'+e.a+'-'+e.b;if(a.x<-2440&&b.x<-2440&&e.kind!=='tube')continue;   /* the kipuka's paths up the cliff are on the ground */
-  if(e.kind==='stair')C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w:Math.max(1.2,e.w),h:3.2,rock:'basalt',finish:'hewn'});
+  /* a stair up to a node other ways leave (the ledge's l1, l4) ends short of it on a level landing at the node's height, long
+     enough that no way leaving near the stair's line lays its floor beside and over the stair (half a metre above it: a lip a
+     walker coming down drops off; P6's edge check): the half widths over the sine of the angle between them, 4.5 to 12 m */
+  if(e.kind==='stair'){const lo=a.y<b.y?a:b,hi=a.y<b.y?b:a,w=Math.max(1.2,e.w),L=Math.hypot(hi.x-lo.x,hi.z-lo.z),u=[(hi.x-lo.x)/L,(hi.z-lo.z)/L];
+   let land=0;for(const q of DH.EDGES){if(q===e||(q.a!==hi.id&&q.b!==hi.id))continue;const o=B[q.a===hi.id?q.b:q.a],ol=Math.hypot(o.x-hi.x,o.z-hi.z)||1,c=-(u[0]*(o.x-hi.x)+u[1]*(o.z-hi.z))/ol,sn=Math.sqrt(Math.max(0,1-c*c));
+    if(c>0)land=Math.max(land,Math.min(12,Math.max(4.5,(w/2+Math.max(.8,(q.w||2)-.8)/2)/Math.max(sn,.05)+.5)));}
+   if(land>0&&land<L-3){const P=[hi.x-u[0]*land,hi.y,hi.z-u[1]*land];
+    C.stair({id,owner:'dhelv',a:[lo.x,lo.y,lo.z],b:P,w,h:3.2,rock:'basalt',finish:'hewn'});
+    C.tube({id:id+'.landing',owner:'dhelv',pts:[[P[0]-u[0]*.3,hi.y,P[2]-u[1]*.3],[hi.x+u[0]*.3,hi.y,hi.z+u[1]*.3]],w,h:3.4,blend:.5,rock:'basalt',finish:'hewn',walkW:w});}
+   else C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w,h:3.2,rock:'basalt',finish:'hewn'});}
   else{const w=e.kind==='secret'?1.6:e.w,h=e.kind==='ledge'?3.4:e.kind==='secret'?2.4:Math.max(3,Math.min(10,w*.9+1.5));
    /* each way runs on past its ends into what it meets, so its floor overlaps the next one's (an exact abutment leaves a hairline
       a step lands in): 1.2 m into the hall or a pit (their floors stand 0.3 m in from their walls), else 0.3 m (a stair not at all:
-      a walker keeps to the higher floor across an overlap) */
-   const ext=id=>dhOpens(id)?1.2:dhFace(id)?-1:.3,A=dhRun(b,a,ext(e.a)),Bp=dhRun(a,b,ext(e.b));
+      a walker keeps to the higher floor across an overlap). Where a stair comes up to a node, 0.3 m: run on 1.2 m, a way's floor
+      roofs the stair's head at the node's height and a walker coming down drops off its end (P6's edge check) */
+   const ext=id=>stairTop.has(id)?.3:dhOpens(id)?1.2:dhFace(id)?-1:.3,A=dhRun(b,a,ext(e.a)),Bp=dhRun(a,b,ext(e.b));
    C.tube({id,owner:'dhelv',pts:[A,Bp],w,h,blend:e.kind==='ledge'?.5:2,rock:'basalt',finish:e.kind==='door'?'hewn':'raw',walkW:Math.max(.8,w-.8)});}}
  /* the outpost's carved fronts open in the cliff, which is the page's ground: a hole in it at each mouth (the portal's tunnel,
     the galleries' and the lean-to's doorways), inside which the cavern meshes the cliff round the opening */
@@ -17704,11 +17811,32 @@ const dhOpens=id=>/^h\.[wens]$|^s\d\.(in|up|e)$/.test(id);
 const dhFace=id=>/^(cis|k\.head|t\.stores)$/.test(id);   /* a carved front's foot: its forecourt takes the tunnel's end */
 function dhRun(p,q,ext){const dx=q.x-p.x,dy=q.y-p.y,dz=q.z-p.z,L=Math.hypot(dx,dz)||1;return [q.x+dx/L*ext,q.y+dy/L*ext,q.z+dz/L*ext];}
 /* the kipuka's floor and the cliff paths, for the walker (the rest of the surface is not walked in P5a) */
+/* the stairs up the old cone's cliff to its two watchtowers (the layout's o.galN-o.tw1, o.galS-o.tw2): a straight flight from
+   the gallery would run into the cliff, and the face beside each tower is taken (a gallery's front, a lean-to), so each is a
+   built switchback of tuff ashlar against the cliff between the lean-to and the palisade: the lower flight on the outer lane
+   from the clearing, a landing, the upper flight against the cliff to the cone's top, then a paved path to the tower's door.
+   Drawn, put on the walk map, and handed to the nav as the way's real shape (DH_REAL: its points and kinds) */
+const DH_REAL={};
+function dhCliffStairs(){for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind!=='stair'||a.x>-2440||b.x>-2440)continue;
+  const s=Math.sign(b.z)||1,zt=b.z,x0=DH.cliffX(zt),xi=x0-1.3,xo=x0-3.6,yb=DH.KIPUKA.floor,yt=b.y,ym=(yb+yt)/2,zTop=zt-6.5*s,zLand=zt+11.5*s,n=Math.ceil((ym-yb)/.2),rise=(ym-yb)/n,run=Math.abs(zLand-zTop)/n,col=P('tuff');
+  for(let k=0;k<n;k++){const zl=zTop+s*(k+.5)*run,zu=zLand-s*(k+.5)*run,tl=yb+(k+1)*rise,tu=ym+(k+1)*rise;
+   box('ashlar',xo,yb,zl,2,tl-yb,run+.01,col);box('ashlar',xi,yb,zu,2,tu-yb,run+.01,col);
+   if(k%3===0){box('ashlar',xo-1.12,tl,zl+s*run,.24,.9,run*3,col);box('ashlar',xi-1.12,tu,zu-s*run,.24,.9,run*3,col);}}   /* the parapets, over the drop */
+  box('ashlar',(xo+xi)/2,yb,zLand+s*.3,4.6,ym-yb,1.4,col);box('ashlar',xo-1.12,ym,zLand+s*.88,.24,.9,.24,col);   /* the landing: past the flights' ends, lapping them 0.4 m */
+  const R=REG.find(r=>!r.parent&&r.key==='zj_watchtower'&&Math.hypot(r.x-b.x,r.z-b.z)<4),F=R&&R.front&&R.front.world,D=F?[F.x+Math.sin(F.yaw),F.z+Math.cos(F.yaw)]:[b.x-3.2,b.z];
+  const pv=P('tuffDark');box('paving',(xi+x0+1.2)/2,yt-.06,zTop,x0+1.2-xi+2,.08,2,pv);
+  {const dx=D[0]-(x0+1.2),dz=D[1]-zTop,L=Math.hypot(dx,dz);box('paving',(x0+1.2+D[0])/2,yt-.06,(zTop+D[1])/2,1.6,.08,L+1.6,pv,Math.atan2(dx,dz));}
+  KWALK.strip({a:[xo,zTop,yb],b:[xo,zLand,ym],w:2,name:'dh.'+e.a+'-'+e.b+'.lower',tag:'built:stair'});
+  KWALK.floor({rect:[xo-1,xi+1,Math.min(zLand-.4*s,zLand+s),Math.max(zLand-.4*s,zLand+s)],y:ym,name:'dh.'+e.a+'-'+e.b+'.landing',tag:'built:stair'});
+  KWALK.strip({a:[xi,zLand,ym],b:[xi,zTop,yt],w:2,name:'dh.'+e.a+'-'+e.b+'.upper',tag:'built:stair'});
+  KWALK.strip({a:[xi-.6,zTop,yt],b:[x0+1.2,zTop,yt],w:1.2,name:'dh.'+e.a+'-'+e.b+'.top',tag:'built:path'});
+  KWALK.strip({a:[x0+1.2,zTop,yt],b:[D[0],D[1],yt],w:1.6,name:'dh.'+e.a+'-'+e.b+'.path',tag:'built:path'});
+  DH_REAL[e.a+'-'+e.b]={end:false,pts:[[xo,yb,zTop],[xo,ym,zLand],[xi,ym,zLand],[xi,yt,zTop],[x0+1.2,yt,zTop],[D[0],yt,D[1]]],kinds:['street','stair','landing','stair','path','path']};}}
 function dhSurfaceWalk(){const K=DH.KIPUKA,rx=K.r*.97,rz=rx/1.3,cx=DH.CONE.cliffX,t0=Math.acos(Math.max(-1,Math.min(1,(cx-K.c[0])/rx))),pts=[];
  /* the hollow's floor west of the cliff: the kipuka's ellipse cut by a chord at the cliff's foot (convex; the portal's tunnel starts 1.5 m in front of it) */
  for(let i=0;i<=40;i++){const a=t0+(TAU-2*t0)*i/40;pts.push([K.c[0]+Math.cos(a)*rx,K.c[1]+Math.sin(a)*rz,K.floor]);}
  KWALK.poly({pts,name:'the kipuka\'s floor',tag:'ground'});
- for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440)KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
+ for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440&&!DH_REAL[e.a+'-'+e.b])KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
 
 // ---------------------------------------------------------------- the rock, meshed near the camera only (PLAN.md 7: about 2M triangles in all)
 const DH_STREAM={R:120,drop:170,budget:10,on:true,meshes:new Map(),keys:[],cen:null,near:[],tick:0,meshed:0,tris:0};
@@ -17813,7 +17941,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
  for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;const k=dhCellKey(S);GB=GTARGET=cells[k]||(cells[k]={});place(S.key,S.x,S.z,S.ry||0,S.o);}
- GB=GTARGET=base;
+ GB=GTARGET=base;dhCliffStairs();
  for(const k in cells){const g=new THREE.Group();g.userData.cell=k;flushBuckets(cells[k],g,true);if(!g.children.length)continue;WORLD.add(g);
   const bx=new THREE.Box3();g.children.forEach(m=>{m.geometry.computeBoundingBox();bx.union(m.geometry.boundingBox);});const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:k[0]==='u',tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}
@@ -17947,6 +18075,11 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  {const w=DHP.budgets();add('view-budgets',w.ok,w.detail);}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
  add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
+ /* the nav graph (PLAN.md 8.3, 1 to 4: 72-dhelv-nav.js) */
+ {const B=DHN.get(),c1=DHN.chkNodes(B);add('nav-nodes-on-floors',B.nodes.length>0&&!c1.length,c1.length?c1.length+' off their floor, first '+c1.slice(0,4).join(', '):B.nodes.length+' nodes within 0.1 m of a walk floor (built in '+B.ms+' ms)');
+  const t0=performance.now(),c2=DHN.chkEdges(B);add('nav-edges-walkable',!c2.length,c2.length?c2.length+' not walkable, first '+c2.slice(0,4).map(b=>b.e.a+'-'+b.e.b+' ('+b.e.kind+'): '+b.why).join(', '):B.edges.length+' edges walked both ways every 0.5 m, 2 m headroom on the carved ways and the doors ('+Math.round(performance.now()-t0)+' ms)');
+  const c3=DHN.chkReach(B);add('nav-places-reachable',B.doors.length>0&&!c3.length,c3.length?c3.length+' unreachable from the gate: '+c3.slice(0,6).join(', '):B.doors.length+' doors reachable from the outpost\'s gate (the secret ways apart)');
+  const c4=DHN.chkStacked(B);add('nav-stacked-lookups',c4.n>0&&!c4.bad.length,c4.bad.length?c4.bad.join('; '):c4.n+' crossings of ways a level apart: a point on each finds its own');}
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  /* sky: the hall's light well forgotten */
@@ -17962,6 +18095,20 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {DH_CELLS.on=false;const w=DHP.budgets();DH_CELLS.on=true;add('view-budgets: everything drawn',!w.ok,w.detail);}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
  {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
+ /* the nav graph's: broken copies of its parts (the graph itself is left as it is) */
+ {const B=DHN.get(),T=B.edges.filter(e=>e.layout&&e.kind==='tube').sort((u,v)=>u.w-v.w)[0],a=B.byId[T.a],b=B.byId[T.b],L=Math.hypot(b.x-a.x,b.z-a.z),m={id:'probe:moved',x:(a.x+b.x)/2-(b.z-a.z)/L*(T.w/2+2),y:(a.y+b.y)/2,z:(a.z+b.z)/2+(b.x-a.x)/L*(T.w/2+2)};
+  const c1=DHN.chkNodes({nodes:[m]});add('nav-nodes-on-floors: a node moved 2 m into the rock',c1.length===1,c1.join(', '));
+  /* a pillar: the narrowest block standing on the hall's floor; an edge from 3 m one side of it to 3 m the other */
+  const H=DH.HALL,pil=KWALK.blocks.filter(q=>{const k=q.box;return k[0]>H.c[0]-H.rx&&k[1]<H.c[0]+H.rx&&k[4]<H.y+.5&&k[5]>H.y+2&&k[1]-k[0]<1.6&&k[3]-k[2]<1.6;}).find(q=>{const k=q.box,cx=(k[0]+k[1])/2,cz=(k[2]+k[3])/2;return [cx-3,cx+3].every(x=>{const f=KWALK.floorBelow(x,cz,H.y+.3,.6);return f&&Math.abs(f[0]-H.y)<.1&&!KWALK.blocked(x,f[0],cz,DHN.R,DHN.H);});});
+  if(pil){const k=pil.box,cx=(k[0]+k[1])/2,cz=(k[2]+k[3])/2,p={id:'p:a',x:cx-3,y:H.y,z:cz},q={id:'p:b',x:cx+3,y:H.y,z:cz},c2=DHN.chkEdges({edges:[{a:'p:a',b:'p:b',kind:'floor'}],byId:{'p:a':p,'p:b':q}});
+   add('nav-edges-walkable: an edge through a pillar',c2.length===1&&/blocked/.test(c2[0].why),c2.length?c2[0].why+' at '+c2[0].at.map(v=>v.toFixed(1)).join(' '):'walked');}
+  else add('nav-edges-walkable: an edge through a pillar',false,'no pillar on the hall floor to try');
+  /* a low lintel: a carved tube walked by someone 6 m tall (its headroom is less) */
+  const c2b=DHN.chkEdges({edges:[T],byId:B.byId},{headroom:6});add('nav-edges-walkable: a tube under a 6 m headroom (a low lintel)',c2b.length===1&&/headroom/.test(c2b[0].why),c2b.length?c2b[0].why:'passed');
+  /* one tunnel cut: the south well's ways in (every carved way to its pit) */
+  const cut=new Set(B.edges.filter(e=>e.layout&&(e.a==='s2.in'||e.b==='s2.in')).map(e=>e.id)),c3=DHN.chkReach(B,e=>e.zone!=='secret'&&!cut.has(e.id));
+  add('nav-places-reachable: the south well\'s tunnel cut',c3.length>0,c3.length+' unreachable: '+c3.slice(0,4).join(', '));
+  const c4=DHN.chkStacked(B,true);add('nav-stacked-lookups: the y swapped',c4.bad.length>0,c4.bad.length+' of '+c4.n*2+' found the other level');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;
 // ================================================================= FURNITURE: placed from the catalog (core/furnish), not drawn by the kit

@@ -14,6 +14,10 @@
       up the openings; a coarser grid away from the kipuka and the openings (or chunks) would take most of it off.
 - [ ] **What is drawn is decided by distance and the site's frame, not by occlusion.** A carved interior seen through a long
       window from more than 32 m out shows empty; the inspector's ray still meets furniture that is not drawn.
+- [ ] **Headroom is checked on the carved ways and the doors only** (the cavern's `ceilingAt` costs about 1 ms, every 2 m);
+      the open floors' grids (the hall, the pits, the kipuka) are under the hall's dome or the sky.
+- [ ] **The stacked-lookup check has one crossing to try** (the cistern's way under the braid); the ledge stands back in
+      the wall, not over the square.
 - [ ] **Only the kipuka's floor is walked on the surface** (and the cliff paths); the flows are not. The forest's plants are
       not walk blocks (a walker passes through a trunk).
 - [x] **The cut-away is not wired** for Dhelv's carved sites. Done (P5c): the 32 carved sites nearest the camera, refreshed

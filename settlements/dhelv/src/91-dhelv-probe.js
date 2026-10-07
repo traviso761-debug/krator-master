@@ -70,6 +70,11 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  {const w=DHP.budgets();add('view-budgets',w.ok,w.detail);}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
  add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
+ /* the nav graph (PLAN.md 8.3, 1 to 4: 72-dhelv-nav.js) */
+ {const B=DHN.get(),c1=DHN.chkNodes(B);add('nav-nodes-on-floors',B.nodes.length>0&&!c1.length,c1.length?c1.length+' off their floor, first '+c1.slice(0,4).join(', '):B.nodes.length+' nodes within 0.1 m of a walk floor (built in '+B.ms+' ms)');
+  const t0=performance.now(),c2=DHN.chkEdges(B);add('nav-edges-walkable',!c2.length,c2.length?c2.length+' not walkable, first '+c2.slice(0,4).map(b=>b.e.a+'-'+b.e.b+' ('+b.e.kind+'): '+b.why).join(', '):B.edges.length+' edges walked both ways every 0.5 m, 2 m headroom on the carved ways and the doors ('+Math.round(performance.now()-t0)+' ms)');
+  const c3=DHN.chkReach(B);add('nav-places-reachable',B.doors.length>0&&!c3.length,c3.length?c3.length+' unreachable from the gate: '+c3.slice(0,6).join(', '):B.doors.length+' doors reachable from the outpost\'s gate (the secret ways apart)');
+  const c4=DHN.chkStacked(B);add('nav-stacked-lookups',c4.n>0&&!c4.bad.length,c4.bad.length?c4.bad.join('; '):c4.n+' crossings of ways a level apart: a point on each finds its own');}
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  /* sky: the hall's light well forgotten */
@@ -85,5 +90,19 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {DH_CELLS.on=false;const w=DHP.budgets();DH_CELLS.on=true;add('view-budgets: everything drawn',!w.ok,w.detail);}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
  {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
+ /* the nav graph's: broken copies of its parts (the graph itself is left as it is) */
+ {const B=DHN.get(),T=B.edges.filter(e=>e.layout&&e.kind==='tube').sort((u,v)=>u.w-v.w)[0],a=B.byId[T.a],b=B.byId[T.b],L=Math.hypot(b.x-a.x,b.z-a.z),m={id:'probe:moved',x:(a.x+b.x)/2-(b.z-a.z)/L*(T.w/2+2),y:(a.y+b.y)/2,z:(a.z+b.z)/2+(b.x-a.x)/L*(T.w/2+2)};
+  const c1=DHN.chkNodes({nodes:[m]});add('nav-nodes-on-floors: a node moved 2 m into the rock',c1.length===1,c1.join(', '));
+  /* a pillar: the narrowest block standing on the hall's floor; an edge from 3 m one side of it to 3 m the other */
+  const H=DH.HALL,pil=KWALK.blocks.filter(q=>{const k=q.box;return k[0]>H.c[0]-H.rx&&k[1]<H.c[0]+H.rx&&k[4]<H.y+.5&&k[5]>H.y+2&&k[1]-k[0]<1.6&&k[3]-k[2]<1.6;}).find(q=>{const k=q.box,cx=(k[0]+k[1])/2,cz=(k[2]+k[3])/2;return [cx-3,cx+3].every(x=>{const f=KWALK.floorBelow(x,cz,H.y+.3,.6);return f&&Math.abs(f[0]-H.y)<.1&&!KWALK.blocked(x,f[0],cz,DHN.R,DHN.H);});});
+  if(pil){const k=pil.box,cx=(k[0]+k[1])/2,cz=(k[2]+k[3])/2,p={id:'p:a',x:cx-3,y:H.y,z:cz},q={id:'p:b',x:cx+3,y:H.y,z:cz},c2=DHN.chkEdges({edges:[{a:'p:a',b:'p:b',kind:'floor'}],byId:{'p:a':p,'p:b':q}});
+   add('nav-edges-walkable: an edge through a pillar',c2.length===1&&/blocked/.test(c2[0].why),c2.length?c2[0].why+' at '+c2[0].at.map(v=>v.toFixed(1)).join(' '):'walked');}
+  else add('nav-edges-walkable: an edge through a pillar',false,'no pillar on the hall floor to try');
+  /* a low lintel: a carved tube walked by someone 6 m tall (its headroom is less) */
+  const c2b=DHN.chkEdges({edges:[T],byId:B.byId},{headroom:6});add('nav-edges-walkable: a tube under a 6 m headroom (a low lintel)',c2b.length===1&&/headroom/.test(c2b[0].why),c2b.length?c2b[0].why:'passed');
+  /* one tunnel cut: the south well's ways in (every carved way to its pit) */
+  const cut=new Set(B.edges.filter(e=>e.layout&&(e.a==='s2.in'||e.b==='s2.in')).map(e=>e.id)),c3=DHN.chkReach(B,e=>e.zone!=='secret'&&!cut.has(e.id));
+  add('nav-places-reachable: the south well\'s tunnel cut',c3.length>0,c3.length+' unreachable: '+c3.slice(0,4).join(', '));
+  const c4=DHN.chkStacked(B,true);add('nav-stacked-lookups: the y swapped',c4.bad.length>0,c4.bad.length+' of '+c4.n*2+' found the other level');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

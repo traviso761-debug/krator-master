@@ -73,6 +73,10 @@ under the ground opens into its void as a doorway, not through the surface). The
 | the cut-away: every carved site, the camera at it, has a box among the 32 that holds the hall's rock 1.5 m before its front and its own back room | every box's turn mirrored |
 | the budgets: at every view, what is drawn (visible and in the frustum, the streamed rock apart) is at most 450 draws and 1.1M triangles underground, 650 and 1.6M on the surface | everything drawn (the switch off, as `?seeall`) |
 | the page's files each under 16 MB (verify.py: the gallery's limit a file) | the same files against 1 MB |
+| the nav graph's nodes each within 0.1 m of a walk floor | a node moved 2 m into the rock |
+| the nav graph's edges walked both ways every 0.5 m: a floor within a step, no block, 2 m headroom on the carved ways and the doors | an edge through a pillar; a tube walked under a 6 m headroom (a low lintel) |
+| every door reachable from the outpost's gate, the secret ways apart | the south well's tunnel cut |
+| stacked lookups: where two ways cross a level apart, a point on each finds its own | the y swapped |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
 ## The checks (`tests/test-layout.js`)
@@ -153,3 +157,21 @@ growth, up to 1.5M and 585 (3.7M and 2,423 with everything drawn). `?seeall` dra
 The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
 hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its
 floor; the ground over them opens on the camera's side.
+
+## The nav graph (P6)
+
+`src/72-dhelv-nav.js` (`DHN`, data only) builds the one graph the ramblers walk, from what was built (built on first use,
+after the world, in about 0.8 s): the layout's ways (`DH.NODES`, `DH.EDGES`, each node set on the floor built under it);
+a grid on each open floor (the hall's floor and bays at 3 m, each well's pit floor at 3 m, the kipuka's floor at 5 m), its
+nodes where the walk map has that floor and no block, its edges where a walker walks; and a door node a metre out from
+each building's front (else behind or beside it: a kiva's hatch is reached from its ladder's side; else the way's node at
+the door: the cone's towers), linked to the two nearest nodes a walker reaches. A street or a square's lane between two
+nodes on one open floor is a line on a plan, not a way built, so the grid carries it. A way the scene builds to its own
+shape hands the nav its points (`DH_REAL`: the cliff's switchbacks). Every lookup takes y (`DHN.nearest`: the floor under
+the point, then the way or node on that floor's level), never the nearest in plan. About 11,150 nodes and 41,700 edges.
+
+What the edge check found in the walk map, fixed: the braid's tube at the ledge's west end laid its floor over the stair's
+head (a 0.7 m lip coming down), so a stair up to a node other ways leave now ends on a level landing as long as they need
+to clear it; the east stair to the ledge ran up under the ledge's last 20 degrees (now from 15 degrees past its end, as
+the west one); the stairs up the old cone's cliff to its towers were walk strips with nothing drawn, through the rock (now
+built switchbacks of tuff ashlar against the cliff: `dhCliffStairs`).

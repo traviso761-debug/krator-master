@@ -92,7 +92,9 @@ const DH=(function(){
     north mouth) and l4 are where ways leave it */
  const L=[];for(let deg=-150;deg<=30;deg+=10){const p=onLedge(deg*PI/180),id=deg===-150?'l1':deg===-90?'l2':deg===30?'l4':'l.'+deg;N(id,p[0],p[1],HALL.ledgeY,{level:'ledge'});L.push(id);}
  chain(L,'ledge',3);
- N('h.stA',-133,-25,0);N('h.stB',133,25,0);E('h.w','h.stA','square',6);E('h.e','h.stB','square',6);E('h.stA','l1','stair',2.5);E('h.stB','l4','stair',2.5);
+ /* the two stairs up to the ledge's ends, each from 15 degrees past its end along the wall (h.stB at 15 degrees ran up under the
+    ledge's last 20 degrees: P6's edge check) */
+ N('h.stA',-133,-25,0);N('h.stB',96.7,69.8,0);E('h.w','h.stA','square',6);E('h.e','h.stB','square',6);E('h.stA','l1','stair',2.5);E('h.stB','l4','stair',2.5);
  /* the ledge's west tunnel: over the braid (crossing 1) to an upper junction, down a stair to strand A */
  N('u.w',-280,-10,6);E('l1','u.w','braid',4);
  /* the stair down to strand A stands beside the junction (a stair whose foot is in a junction lifts a walker passing through) */
