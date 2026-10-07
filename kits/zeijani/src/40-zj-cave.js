@@ -115,5 +115,8 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
    const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
  for(const v of item.voids||[]){const k=v.kind,q=Object.assign({},v);delete q.kind;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
   if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
-  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
+  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);
+  else if(k==='walk'){/* a built stair inside a void (the well's spiral): a floor strip only; the def draws its steps */
+   const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}
+  else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
  return n;}

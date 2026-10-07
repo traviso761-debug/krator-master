@@ -9582,6 +9582,57 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const GA = galleryA();
+  /* GALLERY B, the well (refs 2da8, 75f7): a round shaft open to the sky through the top of the rock, a spiral stair down its
+     wall (1.5 turns, 9 m: drawn structure; its walk strips are `walk` entries), and wherever the stair meets a quarter, a short
+     side passage with a cell either side; two cells off the entrance tunnel; at the bottom a hearth hall and a cistern. Twelve
+     households. The quarters are the axes, so every room is square to the frame. */
+  function galleryB() {
+    const rooms = [], voids = [], W = [0, -15], R = 4.5, RS = 3.8, Y0 = 0, DROP = 3, TURNS = 1.5;
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-15, 15, -34, 0), y0: -0.5, y1: 10, cap: 1.2, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.6, h: 2.9 });
+    voids.push({ kind: 'stair', id: 'way-in', a: [0, 0, 1.3], b: [0, 0, W[1] + RS - 0.4], w: 1.8, h: 2.7 });
+    voids.push({ kind: 'shaft', id: 'well', c: W, y0: Y0 - DROP * TURNS * 2, y1: 12.5, r0: R, r1: R + 0.4, floor: true });
+    voids.push({ kind: 'door', id: 'sky', c: W, y: 9.4, r: R + 1.2, h: 4 });
+    /* the entrance tunnel's two cells */
+    [-1, 1].forEach(function (s, i) { const c = cell('t' + i, s, -6.2, 0, 0.9, 3.4, 3.4); rooms.push(c.room); voids.push(c.pass); });
+    /* the spiral: angle a from PI/2 (+z, under the tunnel) growing, y falling DROP per half turn */
+    const yAt = function (a) { return Y0 - DROP * (a - Math.PI / 2) / Math.PI; }, N = 24, A1 = Math.PI / 2 + TURNS * 2 * Math.PI;
+    for (let i = 0; i < N; i++) {
+      const a0 = Math.PI / 2 + (A1 - Math.PI / 2) * i / N, a1 = Math.PI / 2 + (A1 - Math.PI / 2) * (i + 1) / N;
+      /* each chord runs a little past its neighbours' ends (the outside of every bend would otherwise leave a wedge) */
+      const e = 0.06, c0 = a0 - e, c1 = a1 + e;
+      voids.push({ kind: 'walk', id: 'spiral' + i, a: [W[0] + Math.cos(c0) * RS, yAt(c0), W[1] + Math.sin(c0) * RS], b: [W[0] + Math.cos(c1) * RS, yAt(c1), W[1] + Math.sin(c1) * RS], w: 1.2 });
+    }
+    /* the landings: each quarter the stair passes (but the last, the bottom) leads to a side passage and two cells */
+    let n = 0;
+    for (let q = 1; q < TURNS * 4; q++) {
+      const a = Math.PI / 2 + q * Math.PI / 2, y = yAt(a), u = [Math.round(Math.cos(a)), Math.round(Math.sin(a))], t = [-u[1], u[0]];
+      voids.push({ kind: 'stair', id: 'side' + q, a: [W[0] + u[0] * 4.3, y, W[1] + u[1] * 4.3], b: [W[0] + u[0] * 7.5, y, W[1] + u[1] * 7.5], w: 1.6, h: 2.5 });
+      [-1, 1].forEach(function (s) {
+        const id = 'w' + q + (s < 0 ? 'a' : 'b'), cx = W[0] + u[0] * 7.4 + t[0] * s * 3.3, cz = W[1] + u[1] * 7.4 + t[1] * s * 3.3;
+        const hx = u[0] ? 1.7 : 1.6, hz = u[1] ? 1.7 : 1.6, poly = rrect(cx - hx, cx + hx, cz - hz, cz + hz);
+        const dx = cx - t[0] * s * hx, dz = cz - t[1] * s * hz;   /* the cell's wall toward the side passage */
+        const far = [cx + t[0] * s * (hx - 0.45), cz + t[1] * s * (hz - 0.45)];
+        rooms.push({ id: id, kind: 'cell', carved: true, poly: poly, round: 0.4, y: y, h: 2.3, ceil: 'vault', rise: 0.45, finish: 'hewn',
+          doors: [{ at: [dx, dz], w: 1.0, swing: 'none' }],
+          fixtures: [fx('bed', 'bedshelf', far[0], far[1], t[0] ? 0.8 : 1.9, t[0] ? 1.9 : 0.8, { bed: 1, h: 0.45 }),
+                     fx('hearth', 'hearth', cx + u[0] * (hx - 0.3), cz + u[1] * (hz - 0.3), u[0] ? 0.5 : 0.7, u[0] ? 0.7 : 0.5, { h: 0.9 })] });
+        voids.push({ kind: 'stair', id: id + '-door', joins: [id], a: [cx - t[0] * s * (hx + 1.75), y, cz - t[1] * s * (hz + 1.75)], b: [cx - t[0] * s * (hx - 0.7), y, cz - t[1] * s * (hz - 0.7)], w: 1.0, h: 2.05 });
+        n++;
+      });
+    }
+    /* the bottom: the well's floor, a hearth hall east of it and a cistern south of it, where the stair comes down */
+    const yb = yAt(A1);
+    rooms.push({ id: 'hearth', kind: 'hall', carved: true, poly: rrect(W[0] + 5.6, W[0] + 11.4, W[1] - 3, W[1] + 3), round: 0.6, y: yb, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'hewn',
+      doors: [{ at: [W[0] + 5.6, W[1]], w: 1.3, swing: 'none' }],
+      fixtures: [fx('hearth', 'hearth', W[0] + 11.05, W[1], 0.7, 1.6, { h: 1.0 }), fx('bench', 'bench', W[0] + 8.5, W[1] - 2.65, 4.5, 0.6, { h: 0.45 })] });
+    voids.push({ kind: 'stair', id: 'hearth-door', joins: ['hearth'], a: [W[0] + 3.6, yb, W[1]], b: [W[0] + 6.3, yb, W[1]], w: 1.3, h: 2.4 });
+    rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(W[0] - 2.6, W[0] + 2.6, W[1] - 10.6, W[1] - 5.6), round: 0.6, y: yb, h: 3.0, ceil: 'vault', rise: 0.8, finish: 'plaster',
+      doors: [{ at: [W[0], W[1] - 5.6], w: 1.3, swing: 'none' }], fixtures: [fx('pool', 'pool', W[0], W[1] - 9.7, 4.2, 1.4, { h: 0.5 })] });
+    voids.push({ kind: 'stair', id: 'cistern-door', joins: ['cistern'], a: [W[0], yb, W[1] - 3.6], b: [W[0], yb, W[1] - 6.3], w: 1.3, h: 2.4 });
+    return { rooms: rooms, voids: voids, units: n + 2, well: { c: W, r: R, rs: RS, y0: Y0, drop: DROP, turns: TURNS, w: 1.2 } };
+  }
+  const GB = galleryB();
 
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
@@ -9613,6 +9664,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms: GA.rooms, voids: GA.voids,
       note: 'a corridor descending in three levels (0, -3, -6 m) with twelve one-room cells (carved bed shelf and hearth niche); ' +
         'a hearth hall, a kiva sunk a metre with its great incense burner, a cistern at the bottom under an air shaft' },
+    { key: 'zj_gallery_b', name: 'Gallery of cells: the well', carved: true, wealth: 0.18, types: MULTI, units: GB.units, lot: [32, 36],
+      rooms: GB.rooms, voids: GB.voids, well: GB.well,
+      note: 'a round shaft open to the sky, a spiral stair down its wall (1.5 turns, 9 m), ten cells off five landings and two off ' +
+        'the entrance tunnel; a hearth hall and a cistern at the bottom' },
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],
@@ -9781,7 +9836,10 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
    const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
  for(const v of item.voids||[]){const k=v.kind,q=Object.assign({},v);delete q.kind;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
   if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
-  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
+  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);
+  else if(k==='walk'){/* a built stair inside a void (the well's spiral): a floor strip only; the def draws its steps */
+   const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}
+  else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
  return n;}
 // prefix: tb
 // ================================================================= THE CAVERN TEST BLOCK (P2): the cavern module's first consumer
@@ -9969,6 +10027,24 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
   zfDovecote(0,4.8,.02,9,3,{paint:'cinnabar'});
   door(0,0,0,0,2.0);
   FURNISH('zeijani_stone_bench',-4.2,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',3.6,0,.55,0,{v:1,setting:'outdoor'});}});
+
+/* gallery B, the well: the stair is drawn here from the item's `well` (its walk strips are the item's `walk` entries) */
+function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/2)/(PI/16));
+ for(let i=0;i<n;i++){const a0=PI/2+(A1-PI/2)*i/n,a1=PI/2+(A1-PI/2)*(i+1)/n,y=W.y0-W.drop*((a0+a1)/2-PI/2)/PI;
+  sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.05,W.r+.05,a0,a1,y-.32,y,c,2);
+  sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.22,W.rs-W.w/2-.05,a0,a1,y-.32,y+.78,c,2);}}
+defBuilding({key:'zj_gallery_b',name:'Gallery of cells: the well',seed:4302,originFront:true,
+ tags:{types:['dwelling-multi'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:30,d:34,h:12,
+ note:'a round shaft open to the sky with a spiral stair down its wall, twelve cells off its landings and the entrance tunnel, a hearth hall and a cistern at the bottom',
+ build(o){const it=zjItem('zj_gallery_b');cvFromItem(it,{finish:'hewn'});zfFixtures(it);zgSpiral(it.well);const c=P('white');
+  /* the front: a square door under a stepped lintel, a carved hood over it (the board's mushroom-rock houses), two lamp niches,
+     a painted ring and two columns of dovecote holes */
+  for(const s of [-1,1])box('tuffHewn',s*1.02,0,.06,.28,2.9,.24,c);zfStepLintel('tuffHewn',0,2.9,.08,2.3,c,{n:3,h:.26,d:.28});
+  zfDome('tuffPol',0,3.85,-.05,2.2,1.3,c,{a0:0,a1:PI,seg:16,rows:6});box('tuffPol',0,3.75,.55,4.6,.14,1.2,c);
+  for(const s of [-1,1]){zfNiche(s*1.7,1.35,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*1.7,1.14,-.06,PI,{setting:'outdoor'});zfDovecote(s*4.2,2.0,.02,2,5,{paint:'ochre',dx:.6,dy:.75});}
+  box('plain',0,5.5,.01,6.4,.12,.03,P('turquoise'));box('plain',0,5.65,.01,6.4,.06,.03,P('cinnabar'));
+  door(0,0,0,0,1.8);
+  FURNISH('zeijani_olla',-3.0,0,.6,0,{v:1,setting:'outdoor'});FURNISH('zeijani_drying_trays',3.2,0,.9,0,{setting:'outdoor'});}});
 // ================================================================= CORE FURNISH — the placement pass ([G data])
 // One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
 // A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
@@ -11482,7 +11558,7 @@ ATMOS.PRESETS={
 const TITLE='Zeijani Kit';
 const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
- {name:'Galleries and estates',keys:['zj_gallery_a']},
+ {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b']},
  {name:'The cavern test block',keys:['zj_testblock']}
 ];
 // ================================================================= SCENE: renderer, the standard Krator sky, ground, layout, (re)building the world
@@ -11605,14 +11681,19 @@ const PB={
    ['into the bed shelf',...P(8.4,-7.5),false],['the side room again',...P(6.5,-6.2)],['the passage mouth',...P(5.2,-5)],['back to the antechamber',...P(0,-5)],
    ['the domed hall',...P(0,-10.5)],['the stair head',...P(-3,-10.5)],['the stair foot',...P(-12.6,-10.5)],['the tube',...P(-13.6,-10)],
    ['the tube\'s bend',...P(-13.6,4)],['the tube\'s second bend',...P(0,12)],['the tube\'s far end',...P(14,13.8)]]);},
+ /* gallery B's route: in, down the spiral to the east landing, into a cell and out, on down to the well's floor and the cistern */
+ wellRoute(W0){const S=SITES.find(s=>s.key==='zj_gallery_b');if(!S)return null;const W=[S.x,S.z-15],way=[['the tunnel',S.x,S.z-11.2]];
+  for(let i=1;i<=24;i++){const a=PI/2+i*(3*PI)/24;way.push(['the spiral '+i,W[0]+Math.cos(a)*3.8,W[1]+Math.sin(a)*3.8]);
+   if(i===12)way.push(['the east landing',W[0]+7.4,W[1]],['into a cell',W[0]+7.4,W[1]+3.3],['back to the landing',W[0]+7.4,W[1]],['the spiral again',W[0]+3.8,W[1]]);}
+  way.push(['the well floor',W[0],W[1]-1],['the cistern',W[0],W[1]-8]);return PB.route(W0,[S.x,S.z+3,0],way);},
  routeOk(log){return !!log&&log.every(s=>s.ok===s.expect);},
- /* every carved passage joins the floors at both its ends: its line, from 0.6 m before its start to 0.6 m past its end, in
-    0.1 m steps, has a floor within a step of the last all the way (a doorway whose strip stops short of a room: impassable) */
- joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^cavern:stair/.test(f.tag))continue;
+ /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
+    passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
+ joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
    const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz);if(L<.05)continue;const ux=dx/L,uz=dz/L;
-   let y=null,gap=null;for(let s=-.6;s<=L+.6+1e-9;s+=.1){const x=f.a[0]+ux*s,z=f.a[1]+uz*s,yt=y===null?f.a[2]+.3:y;const q=W.floorBelow(x,z,yt,.6);
-    if(!q||(y!==null&&Math.abs(q[0]-y)>.6)){gap=s;break;}y=q[0];}
-   if(gap!==null)bad.push(f.name+' @'+gap.toFixed(1)+'/'+L.toFixed(1));}return bad;},
+   for(const [e,sg] of [[f.a,-1],[f.b,1]]){let ok=false;
+    for(let s=0;s<=.4+1e-9&&!ok;s+=.1){const x=e[0]+ux*sg*s,z=e[1]+uz*sg*s;ok=W.floorsAt(x,z).some(q=>q[1]!==f&&Math.abs(q[0]-e[2])<=.6);}
+    if(!ok)bad.push(f.name+(sg<0?' (start)':' (end)'));}}return bad;},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}return W;}
 };
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
@@ -11623,7 +11704,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const gaps=PB.floorGaps(KWALK,CV_GROUP),worst=gaps.reduce((a,b)=>b.gap>a.gap?b:a,{gap:0,name:'-'});
  add('walk-on-mesh',gaps.length>0&&worst.gap<=.15,gaps.length+' samples on the carved floors; the worst '+(worst.gap>1e8?'has no mesh under it':worst.gap.toFixed(3)+' m')+' ('+worst.name+')');
  const rt=PB.blockRoute(KWALK);if(rt)add('walk-route',PB.routeOk(rt),rt.map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
- const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^cavern:stair/.test(f.tag)).length;
+ const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
+ const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
@@ -11641,6 +11723,8 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const W=PB.copyWalk(f=>/\.down$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const rt=PB.blockRoute(W);
   if(rt)add('walk-route: the stair down missing',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
  {const W=PB.copyWalk();const rt=PB.blockRoute(W);if(rt)add('walk-route: the bed shelf not a block',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
+ /* the well's route with its spiral's middle chord missing */
+ {const W=PB.copyWalk(f=>/\.spiral7$/.test(f.name));const wr=PB.wellRoute(W);if(wr)add('walk-route-well: a spiral step missing',!PB.routeOk(wr),wr.filter(s=>!s.ok).map(s=>s.name).slice(0,3).join(', '));}
  /* joins: one cell's doorway strip shortened by 0.8 m at its room end (it overlaps the room's floor by 0.4) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-.8)/L;

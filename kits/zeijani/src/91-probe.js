@@ -47,14 +47,19 @@ const PB={
    ['into the bed shelf',...P(8.4,-7.5),false],['the side room again',...P(6.5,-6.2)],['the passage mouth',...P(5.2,-5)],['back to the antechamber',...P(0,-5)],
    ['the domed hall',...P(0,-10.5)],['the stair head',...P(-3,-10.5)],['the stair foot',...P(-12.6,-10.5)],['the tube',...P(-13.6,-10)],
    ['the tube\'s bend',...P(-13.6,4)],['the tube\'s second bend',...P(0,12)],['the tube\'s far end',...P(14,13.8)]]);},
+ /* gallery B's route: in, down the spiral to the east landing, into a cell and out, on down to the well's floor and the cistern */
+ wellRoute(W0){const S=SITES.find(s=>s.key==='zj_gallery_b');if(!S)return null;const W=[S.x,S.z-15],way=[['the tunnel',S.x,S.z-11.2]];
+  for(let i=1;i<=24;i++){const a=PI/2+i*(3*PI)/24;way.push(['the spiral '+i,W[0]+Math.cos(a)*3.8,W[1]+Math.sin(a)*3.8]);
+   if(i===12)way.push(['the east landing',W[0]+7.4,W[1]],['into a cell',W[0]+7.4,W[1]+3.3],['back to the landing',W[0]+7.4,W[1]],['the spiral again',W[0]+3.8,W[1]]);}
+  way.push(['the well floor',W[0],W[1]-1],['the cistern',W[0],W[1]-8]);return PB.route(W0,[S.x,S.z+3,0],way);},
  routeOk(log){return !!log&&log.every(s=>s.ok===s.expect);},
- /* every carved passage joins the floors at both its ends: its line, from 0.6 m before its start to 0.6 m past its end, in
-    0.1 m steps, has a floor within a step of the last all the way (a doorway whose strip stops short of a room: impassable) */
- joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^cavern:stair/.test(f.tag))continue;
+ /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
+    passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
+ joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
    const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz);if(L<.05)continue;const ux=dx/L,uz=dz/L;
-   let y=null,gap=null;for(let s=-.6;s<=L+.6+1e-9;s+=.1){const x=f.a[0]+ux*s,z=f.a[1]+uz*s,yt=y===null?f.a[2]+.3:y;const q=W.floorBelow(x,z,yt,.6);
-    if(!q||(y!==null&&Math.abs(q[0]-y)>.6)){gap=s;break;}y=q[0];}
-   if(gap!==null)bad.push(f.name+' @'+gap.toFixed(1)+'/'+L.toFixed(1));}return bad;},
+   for(const [e,sg] of [[f.a,-1],[f.b,1]]){let ok=false;
+    for(let s=0;s<=.4+1e-9&&!ok;s+=.1){const x=e[0]+ux*sg*s,z=e[1]+uz*sg*s;ok=W.floorsAt(x,z).some(q=>q[1]!==f&&Math.abs(q[0]-e[2])<=.6);}
+    if(!ok)bad.push(f.name+(sg<0?' (start)':' (end)'));}}return bad;},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}return W;}
 };
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
@@ -65,7 +70,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const gaps=PB.floorGaps(KWALK,CV_GROUP),worst=gaps.reduce((a,b)=>b.gap>a.gap?b:a,{gap:0,name:'-'});
  add('walk-on-mesh',gaps.length>0&&worst.gap<=.15,gaps.length+' samples on the carved floors; the worst '+(worst.gap>1e8?'has no mesh under it':worst.gap.toFixed(3)+' m')+' ('+worst.name+')');
  const rt=PB.blockRoute(KWALK);if(rt)add('walk-route',PB.routeOk(rt),rt.map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
- const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^cavern:stair/.test(f.tag)).length;
+ const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
+ const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
@@ -83,6 +89,8 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const W=PB.copyWalk(f=>/\.down$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const rt=PB.blockRoute(W);
   if(rt)add('walk-route: the stair down missing',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
  {const W=PB.copyWalk();const rt=PB.blockRoute(W);if(rt)add('walk-route: the bed shelf not a block',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
+ /* the well's route with its spiral's middle chord missing */
+ {const W=PB.copyWalk(f=>/\.spiral7$/.test(f.name));const wr=PB.wellRoute(W);if(wr)add('walk-route-well: a spiral step missing',!PB.routeOk(wr),wr.filter(s=>!s.ok).map(s=>s.name).slice(0,3).join(', '));}
  /* joins: one cell's doorway strip shortened by 0.8 m at its room end (it overlaps the room's floor by 0.4) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-.8)/L;

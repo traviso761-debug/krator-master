@@ -3,6 +3,6 @@
 const TITLE='Zeijani Kit';
 const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
- {name:'Galleries and estates',keys:['zj_gallery_a']},
+ {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b']},
  {name:'The cavern test block',keys:['zj_testblock']}
 ];

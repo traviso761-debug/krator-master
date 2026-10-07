@@ -28151,6 +28151,57 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const GA = galleryA();
+  /* GALLERY B, the well (refs 2da8, 75f7): a round shaft open to the sky through the top of the rock, a spiral stair down its
+     wall (1.5 turns, 9 m: drawn structure; its walk strips are `walk` entries), and wherever the stair meets a quarter, a short
+     side passage with a cell either side; two cells off the entrance tunnel; at the bottom a hearth hall and a cistern. Twelve
+     households. The quarters are the axes, so every room is square to the frame. */
+  function galleryB() {
+    const rooms = [], voids = [], W = [0, -15], R = 4.5, RS = 3.8, Y0 = 0, DROP = 3, TURNS = 1.5;
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-15, 15, -34, 0), y0: -0.5, y1: 10, cap: 1.2, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.6, h: 2.9 });
+    voids.push({ kind: 'stair', id: 'way-in', a: [0, 0, 1.3], b: [0, 0, W[1] + RS - 0.4], w: 1.8, h: 2.7 });
+    voids.push({ kind: 'shaft', id: 'well', c: W, y0: Y0 - DROP * TURNS * 2, y1: 12.5, r0: R, r1: R + 0.4, floor: true });
+    voids.push({ kind: 'door', id: 'sky', c: W, y: 9.4, r: R + 1.2, h: 4 });
+    /* the entrance tunnel's two cells */
+    [-1, 1].forEach(function (s, i) { const c = cell('t' + i, s, -6.2, 0, 0.9, 3.4, 3.4); rooms.push(c.room); voids.push(c.pass); });
+    /* the spiral: angle a from PI/2 (+z, under the tunnel) growing, y falling DROP per half turn */
+    const yAt = function (a) { return Y0 - DROP * (a - Math.PI / 2) / Math.PI; }, N = 24, A1 = Math.PI / 2 + TURNS * 2 * Math.PI;
+    for (let i = 0; i < N; i++) {
+      const a0 = Math.PI / 2 + (A1 - Math.PI / 2) * i / N, a1 = Math.PI / 2 + (A1 - Math.PI / 2) * (i + 1) / N;
+      /* each chord runs a little past its neighbours' ends (the outside of every bend would otherwise leave a wedge) */
+      const e = 0.06, c0 = a0 - e, c1 = a1 + e;
+      voids.push({ kind: 'walk', id: 'spiral' + i, a: [W[0] + Math.cos(c0) * RS, yAt(c0), W[1] + Math.sin(c0) * RS], b: [W[0] + Math.cos(c1) * RS, yAt(c1), W[1] + Math.sin(c1) * RS], w: 1.2 });
+    }
+    /* the landings: each quarter the stair passes (but the last, the bottom) leads to a side passage and two cells */
+    let n = 0;
+    for (let q = 1; q < TURNS * 4; q++) {
+      const a = Math.PI / 2 + q * Math.PI / 2, y = yAt(a), u = [Math.round(Math.cos(a)), Math.round(Math.sin(a))], t = [-u[1], u[0]];
+      voids.push({ kind: 'stair', id: 'side' + q, a: [W[0] + u[0] * 4.3, y, W[1] + u[1] * 4.3], b: [W[0] + u[0] * 7.5, y, W[1] + u[1] * 7.5], w: 1.6, h: 2.5 });
+      [-1, 1].forEach(function (s) {
+        const id = 'w' + q + (s < 0 ? 'a' : 'b'), cx = W[0] + u[0] * 7.4 + t[0] * s * 3.3, cz = W[1] + u[1] * 7.4 + t[1] * s * 3.3;
+        const hx = u[0] ? 1.7 : 1.6, hz = u[1] ? 1.7 : 1.6, poly = rrect(cx - hx, cx + hx, cz - hz, cz + hz);
+        const dx = cx - t[0] * s * hx, dz = cz - t[1] * s * hz;   /* the cell's wall toward the side passage */
+        const far = [cx + t[0] * s * (hx - 0.45), cz + t[1] * s * (hz - 0.45)];
+        rooms.push({ id: id, kind: 'cell', carved: true, poly: poly, round: 0.4, y: y, h: 2.3, ceil: 'vault', rise: 0.45, finish: 'hewn',
+          doors: [{ at: [dx, dz], w: 1.0, swing: 'none' }],
+          fixtures: [fx('bed', 'bedshelf', far[0], far[1], t[0] ? 0.8 : 1.9, t[0] ? 1.9 : 0.8, { bed: 1, h: 0.45 }),
+                     fx('hearth', 'hearth', cx + u[0] * (hx - 0.3), cz + u[1] * (hz - 0.3), u[0] ? 0.5 : 0.7, u[0] ? 0.7 : 0.5, { h: 0.9 })] });
+        voids.push({ kind: 'stair', id: id + '-door', joins: [id], a: [cx - t[0] * s * (hx + 1.75), y, cz - t[1] * s * (hz + 1.75)], b: [cx - t[0] * s * (hx - 0.7), y, cz - t[1] * s * (hz - 0.7)], w: 1.0, h: 2.05 });
+        n++;
+      });
+    }
+    /* the bottom: the well's floor, a hearth hall east of it and a cistern south of it, where the stair comes down */
+    const yb = yAt(A1);
+    rooms.push({ id: 'hearth', kind: 'hall', carved: true, poly: rrect(W[0] + 5.6, W[0] + 11.4, W[1] - 3, W[1] + 3), round: 0.6, y: yb, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'hewn',
+      doors: [{ at: [W[0] + 5.6, W[1]], w: 1.3, swing: 'none' }],
+      fixtures: [fx('hearth', 'hearth', W[0] + 11.05, W[1], 0.7, 1.6, { h: 1.0 }), fx('bench', 'bench', W[0] + 8.5, W[1] - 2.65, 4.5, 0.6, { h: 0.45 })] });
+    voids.push({ kind: 'stair', id: 'hearth-door', joins: ['hearth'], a: [W[0] + 3.6, yb, W[1]], b: [W[0] + 6.3, yb, W[1]], w: 1.3, h: 2.4 });
+    rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(W[0] - 2.6, W[0] + 2.6, W[1] - 10.6, W[1] - 5.6), round: 0.6, y: yb, h: 3.0, ceil: 'vault', rise: 0.8, finish: 'plaster',
+      doors: [{ at: [W[0], W[1] - 5.6], w: 1.3, swing: 'none' }], fixtures: [fx('pool', 'pool', W[0], W[1] - 9.7, 4.2, 1.4, { h: 0.5 })] });
+    voids.push({ kind: 'stair', id: 'cistern-door', joins: ['cistern'], a: [W[0], yb, W[1] - 3.6], b: [W[0], yb, W[1] - 6.3], w: 1.3, h: 2.4 });
+    return { rooms: rooms, voids: voids, units: n + 2, well: { c: W, r: R, rs: RS, y0: Y0, drop: DROP, turns: TURNS, w: 1.2 } };
+  }
+  const GB = galleryB();
 
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
@@ -28182,6 +28233,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms: GA.rooms, voids: GA.voids,
       note: 'a corridor descending in three levels (0, -3, -6 m) with twelve one-room cells (carved bed shelf and hearth niche); ' +
         'a hearth hall, a kiva sunk a metre with its great incense burner, a cistern at the bottom under an air shaft' },
+    { key: 'zj_gallery_b', name: 'Gallery of cells: the well', carved: true, wealth: 0.18, types: MULTI, units: GB.units, lot: [32, 36],
+      rooms: GB.rooms, voids: GB.voids, well: GB.well,
+      note: 'a round shaft open to the sky, a spiral stair down its wall (1.5 turns, 9 m), ten cells off five landings and two off ' +
+        'the entrance tunnel; a hearth hall and a cistern at the bottom' },
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],
