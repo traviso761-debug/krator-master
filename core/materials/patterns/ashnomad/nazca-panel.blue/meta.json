@@ -7,16 +7,16 @@
  "processing": {
   "log": {
    "pattern_crop": [
-    1240,
-    1230
+    1247,
+    1186
    ],
    "seam_after": [
-    0.631,
-    4.132
+    0.928,
+    0.707
    ],
    "seam_before": [
-    1.984,
-    0.503
+    1.843,
+    0.5
    ],
    "source_size": [
     1254,
@@ -56,10 +56,10 @@
  },
  "source": {
   "file": "ashnomad_nazca-panel.blue.png",
-  "generator": "INTERIM (2026-10-07): patterns/ashnomad/nazca-panel with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
   "licence": "generated for this project by its owner",
-  "prompt": "row patterns/ashnomad/nazca-panel: Nazca figures (hummingbird, monkey with a spiral tail, spider, stag beetle) in yellow and red on black between stepped frets (core/materials/PROMPTS-nomads.md)",
+  "prompt": "row patterns/ashnomad/nazca-panel.blue: the blue-led version of nazca-panel (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
   "reuse": "the Ash Nomads outside (blue leads, red trims)",
-  "sha1": "594813eb0662593cffedbc4b92fe3a1a5ddc06cd"
+  "sha1": "b81220d246e4de985e09b803f348df86ceca5b7a"
  }
 }

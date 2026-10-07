@@ -496,9 +496,9 @@
    "tint": false,
    "pattern": true,
    "_source": {
-    "generator": "INTERIM (2026-10-07): patterns/ashnomad/fret-band with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
     "licence": "generated for this project by its owner",
-    "prompt": "row patterns/ashnomad/fret-band: an appliqu\u00e9 felt band, stepped frets with a hummingbird, a spiral and a stag beetle in yellow and red on black (core/materials/PROMPTS-nomads.md)",
+    "prompt": "row patterns/ashnomad/fret-band.blue: the blue-led version of fret-band (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
     "reuse": "the Ash Nomads outside (blue leads, red trims)"
    }
   },
@@ -528,9 +528,9 @@
    "tint": false,
    "pattern": true,
    "_source": {
-    "generator": "INTERIM (2026-10-07): patterns/ashnomad/nazca-panel with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
     "licence": "generated for this project by its owner",
-    "prompt": "row patterns/ashnomad/nazca-panel: Nazca figures (hummingbird, monkey with a spiral tail, spider, stag beetle) in yellow and red on black between stepped frets (core/materials/PROMPTS-nomads.md)",
+    "prompt": "row patterns/ashnomad/nazca-panel.blue: the blue-led version of nazca-panel (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
     "reuse": "the Ash Nomads outside (blue leads, red trims)"
    }
   },

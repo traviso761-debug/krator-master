@@ -897,16 +897,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "2b54e2d2ed955ddd80eaffd2e32673e3ab30552c",
-    "normal": "c8c238fc6c0141911594fa7f137159eec9d723e1",
-    "roughness": "de4efb3217d3810e6f6897f8d4b74525816d98a3"
+    "albedo": "21582bcf4b7fa74c51a39c02769733a951fbc1cf",
+    "normal": "b288e14c503b3ea721e4d24b09c125b28e7ec47c",
+    "roughness": "3853d1ed6e62e4c9289323f00bdb48549f937b91"
    },
    "specular": 0.15,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.3295998535425523,
-    "sourceMean": 0.3296
+    "mean": 0.37161327041925163,
+    "sourceMean": 0.3716
    }
   },
   "patKilim": {
@@ -957,16 +957,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "fc8029d595b519633c552c93ab7591cf74150ae4",
-    "normal": "78a5767d4a0d6e6d8515d40eb51aaf2ba3b28ec8",
-    "roughness": "b11c76a85e8d8de6279f8d1b3b2c1bc5c491d8ca"
+    "albedo": "5157e4d323950798af8f027ba5105dc1b37b44cb",
+    "normal": "989d7efb56f5c6fc2674e529db7a6479679fa017",
+    "roughness": "9d0df98eddc8f78c3f4764e9455a5b83c417993b"
    },
    "specular": 0.15,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.24920986535764206,
-    "sourceMean": 0.2492
+    "mean": 0.24694217107735428,
+    "sourceMean": 0.2469
    }
   },
   "plates": {
