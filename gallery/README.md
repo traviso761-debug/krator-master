@@ -190,3 +190,12 @@ Version 64 (2026-10-07): the index gained a "The Throne" link under the scale mo
 (https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX, version 1: the eleven stations and their shared library maps, 20.3 MB,
 from `main` at 3b5eec20 with the sidecar build). The index was edited from the live version 63, so its sections and
 cards are as they were. No world page changed. One publish call.
+Version 65 (2026-10-07): `worlds/motor-vehicles.html` replaced (0.7 MB: five vehicles of five cultures, the Geomancer
+buggy, the Republic salvage crawler, the Izani six-wheeler, the abyssal caravan truck and the Post-Apoc tracked hab,
+textured from the library, tracks that run), packaged with `build_gallery.bundle()`, from `main` at d6c83a43 rebuilt
+(the committed page was stale against the catalog core). The live index (version 64) was kept: only the Motor
+Vehicles card changed (blurb, size). One publish call. **Not replaced, for the artifact's 256 MiB a version (about
+245 MB used before this):** Locus, Locus buildings and Eastern Abyssal buildings (now 13.7 MB each: Locus inlines its
+library maps, about 35 MB more for the three) and Mungo (3.2 MB plus 19.7 MB of sidecars, about 20 MB more). The
+live copies are the version-46 builds (untextured; their buggy is the first one). Room for them needs pages
+dropped or slimmed, or Locus on sidecars (its three pages would share one set of maps).

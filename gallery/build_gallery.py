@@ -119,7 +119,7 @@ ENTRIES = [
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
     ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
     ('kit', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
-     "The first motor vehicle: the Geomancers' dune buggy in its three fits (Scout, Crew, Drill rig), wheels that roll and steer, lamps that switch.", 'new'),
+     "Five motor vehicles of five cultures: the Geomancers' dune buggy, the Iron Republic's eight-wheeled salvage crawler with its solar lid, the Izani armoured six-wheeler, the abyssal caravan truck under its tarps and the Post-Apoc tracked hab. Textured from the material library; wheels that roll and steer, tracks that run, lamps that switch (Drive R, Lights L, Night N).", 'new'),
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
      "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
