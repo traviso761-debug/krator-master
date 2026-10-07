@@ -23,11 +23,11 @@ const ZJ_LIB={tuff:'tuff',tuffHewn:'tuffHewn',tuffPol:'tuffPol',plaster:'plaster
  ashlar:'ashlar',earth:'earth',paving:'paving',wood:'wood',log:'log',plank:'plank',carved:'carved',thatch:'thatch',hide:'hide',felt:'felt',
  ceramic:'ceramic',glaze:'glaze',ossuary:'ossuary',patLabyrinth:'patLabyrinth',patFrieze:'patFrieze',patFriezeB:'patFriezeB',patFriezeC:'patFriezeC',
  patSkel:'patSkel',patMural:'patMural',patMuralB:'patMuralB',patMuralC:'patMuralC',patTextile:'patTextile',patTextileB:'patTextileB',
- patGlazed:'patGlazed',patGlazedDfly:'patGlazedDfly',patGlazedBeetle:'patGlazedBeetle'};
+ patGlazed:'patGlazed',patGlazedDfly:'patGlazedDfly',patGlazedBeetle:'patGlazedBeetle',jali:'jali'};
 /* metres per tile when there is no pack (?mat=proc), so the UVs a later pass might use still mean something */
 const ZJ_TILE0={tuff:3,tuffHewn:1.5,tuffPol:2,plaster:2,basalt:1.3,basaltPol:1.5,lining:2,oxide:3,ashlar:2,earth:2.5,paving:2.5,wood:1.6,log:1.5,plank:2,
  carved:1.2,thatch:2,hide:.7,felt:.8,ceramic:1,glaze:1,ossuary:1.5,patLabyrinth:1.2,patFrieze:.9,patFriezeB:1.8,patFriezeC:1.8,patSkel:.8,patMural:3,
- patMuralB:3,patMuralC:3,patTextile:1,patTextileB:1,patGlazed:1.2,patGlazedDfly:1.2,patGlazedBeetle:1.2};
+ patMuralB:3,patMuralC:3,patTextile:1,patTextileB:1,patGlazed:1.2,patGlazedDfly:1.2,patGlazedBeetle:1.2,jali:1};
 const ZJ_CLOTH={felt:1,hide:1,patTextile:1,patTextileB:1,flag:1};   /* thin sheets: double-sided; the flutter attribute (aFlut) */
 const ZJ_CUT={tuff:1,tuffHewn:1,tuffPol:1,plaster:1,basalt:1,basaltPol:1,ashlar:1,earth:1,wood:1,log:1,plank:1,carved:1,thatch:1,felt:1,hide:1,
  ceramic:1,glaze:1,patLabyrinth:1,patFrieze:1,patFriezeB:1,patFriezeC:1,patSkel:1,patMural:1,patMuralB:1,patMuralC:1,patTextile:1,patGlazed:1,
@@ -39,6 +39,7 @@ function zjLibMat(key,o){o=o||{};const fam=ZJ_LIB[key],L=fam&&KMAT.mode==='lib'?
  TILE[key]=L?L.scale[0]:(ZJ_TILE0[key]||1);
  if(L){const T=KMAT.textures(L,{aniso:TEXANISO});ZJ_LIBTEX[key]=T;m.map=T.map;m.normalMap=T.normalMap;m.roughnessMap=T.roughnessMap;
   if(m.normalMap){const ns=(L.normalScale||1)*(o.normal===undefined?1:o.normal);m.normalScale.set(ns,ns);}
+  if(L.card){m.alphaTest=.5;m.side=THREE.DoubleSide;}   /* a cut-out (the jali: pierced stone) */
   m.userData.lib=L;matHook(m,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
  MAT[key]=m;return m;}
 for(const k in ZJ_LIB)zjLibMat(k,{rough:1});

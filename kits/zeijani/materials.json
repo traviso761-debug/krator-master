@@ -463,8 +463,8 @@
   "jali": {
    "lib": "patterns/zeijani/jali",
    "scale": [
-    1.0,
-    1.0
+    2.2,
+    2.2
    ],
    "tint": {
     "keep": 1.0,

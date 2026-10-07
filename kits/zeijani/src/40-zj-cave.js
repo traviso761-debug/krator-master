@@ -116,17 +116,27 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
 /* ---------------------------------------------------------------- a carved def's void plan from its interiors item
    kits/interiors/sets/zeijani.js holds, per carved def, its rooms (ROOM() data: poly, y, h, doors, fixtures; the cavern's own
    fields ceil, rise, round, finish, rock ride along, ignored by the interiors kit) and a `voids` list the interiors kit ignores:
-   { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well', id, ... } in the def's frame. Carving
+   { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well'|'room'|'walk'|'floor'|'block', id, ... } in the def's frame. Carving
    from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
- for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;cvRoom({id:r.id,poly:r.poly,y:r.y||0,h:r.h||2.6,ceil:r.ceil||'flat',rise:r.rise||0,r:r.round||0,finish:r.finish||fin,rock:r.rock||o.rock||'tuff',joins:r.joins});n++;
-  for(const f of r.fixtures||[]){if(f.kind==='ladder'||f.kind==='sipapu'||f.kind==='stair')continue;const hw=f.w/2,hd=f.d/2,q=Math.abs(Math.round((f.ry||0)/(PI/2)))%2===1;
-   const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
- for(const v of item.voids||[]){const k=v.kind,q=Object.assign({},v);delete q.kind;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
+ /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
+    the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left
+    standing in a cloister after it is cut: a monolith with phase 3) */
+ const PH={mass:0,trench:0,monolith:1},list=(item.voids||[]).map((v,i)=>({v,i,ph:v.phase!==undefined?v.phase:(PH[v.kind]!==undefined?PH[v.kind]:3)}));
+ const doVoid=v=>{const k=v.kind,q=Object.assign({},v);delete q.kind;delete q.phase;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
   if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
   else if(k==='room')cvRoom(q);   /* a void room that is no interiors room (a kiva's bench terrace: floor:false keeps it off the walk map) */
   else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);
   else if(k==='walk'){/* a built stair inside a void (the well's spiral): a floor strip only; the def draws its steps */
    const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}
-  else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
+  else if(k==='floor'){/* a walk floor on rock left standing (a monolith's top: Kailasa's terrace), less its holes */
+   const pts=q.poly.map(p=>cvXZ([p])[0]),holes=(q.holes||[]).map(h=>h.map(p=>cvXZ([p])[0]));zwMinusHoles(pts,holes).forEach((P2,j)=>KWALK.poly({pts:P2.map(p=>[p[0],p[1],cvY(q.y)]),name:cvId(q.id)+(j?'.'+j:''),tag:q.tag||'built:terrace'}));}   /* tag 'cavern:floor': on carved rock (the probe's walk-on-mesh samples it) */
+  else if(k==='block'){/* a walk block (a monolith's edge the walker must not step off or walk into) */
+   const c=[[q.box[0],q.box[2]],[q.box[1],q.box[3]]].map(p=>cvXZ([p])[0]);KWALK.block([Math.min(c[0][0],c[1][0]),Math.max(c[0][0],c[1][0]),Math.min(c[0][1],c[1][1]),Math.max(c[0][1],c[1][1]),cvY(q.box[4]),cvY(q.box[5])],'carved:edge');}
+  else{reportErr('cvFromItem '+item.key+': no void kind '+k);return;}n++;};
+ list.filter(e=>e.ph<2).sort((a,b)=>a.ph-b.ph||a.i-b.i).forEach(e=>doVoid(e.v));
+ for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;cvRoom({id:r.id,poly:r.poly,y:r.y||0,h:r.h||2.6,ceil:r.ceil||'flat',rise:r.rise||0,r:r.round||0,finish:r.finish||fin,rock:r.rock||o.rock||'tuff',joins:r.joins});n++;
+  for(const f of r.fixtures||[]){if(f.kind==='ladder'||f.kind==='sipapu'||f.kind==='stair')continue;const hw=f.w/2,hd=f.d/2,q=Math.abs(Math.round((f.ry||0)/(PI/2)))%2===1;
+   const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
+ list.filter(e=>e.ph>=2).sort((a,b)=>a.ph-b.ph||a.i-b.i).forEach(e=>doVoid(e.v));
  return n;}

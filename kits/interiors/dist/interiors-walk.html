@@ -28383,6 +28383,43 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const EB = estateB();
+  /* THE TEMPLE, cut from one rock (Ellora's Kailasa; the board's temple_massing and temple-body): a gateway tunnel through the
+     face into a pit cut down from the top of the rock; in the pit the rock left standing: a podium (its stair cut into its
+     front), on it the sanctum's drum and four corner shrines, and two lamp pillars before it; the pit's side walls cut into
+     cloisters behind rows of pillars left standing. The sanctum is open to the sky: the def draws a pierced lattice dome over
+     it, lit from inside. The pit's floor and the podium's terrace are walk floors less the rock that stands on them; blocks
+     keep a walker off the podium's sides at the pit's floor (it is no walk block itself: its stair is cut into it) */
+  function temple() {
+    const rooms = [], voids = [];
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-24, 24, -52, 0), y0: -0.5, y1: 15, cap: 1.5, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'trench', id: 'pit', poly: rrect(-18, 18, -48, -8), y0: 0, y1: 18, finish: 'hewn', floor: false });
+    voids.push({ kind: 'door', id: 'sky', c: [0, -28], y: 13, r: 30, h: 8 });
+    voids.push({ kind: 'door', id: 'gate', c: [0, 0], y: 0, r: 2.4, h: 5.2 });
+    voids.push({ kind: 'stair', id: 'gate-way', a: [0, 0, 1.4], b: [0, 0, -8.6], w: 3.6, h: 5.0 });
+    voids.push({ kind: 'monolith', id: 'podium', poly: rrect(-9, 9, -40, -16), y0: 0, y1: 6, block: false, finish: 'polished' });
+    voids.push({ kind: 'monolith', id: 'drum', poly: circle(6.2, 28, 0, -30), y0: 6, y1: 11, block: false, finish: 'polished' });
+    [[-6.6, -19], [6.6, -19], [-6.6, -37], [6.6, -37]].forEach(function (p, i) { voids.push({ kind: 'monolith', id: 'shrine' + i, poly: circle(1.6, 16, p[0], p[1]), y0: 6, y1: 9, finish: 'polished' }); });
+    [-11, 11].forEach(function (x, i) { voids.push({ kind: 'monolith', id: 'stambha' + i, poly: circle(0.6, 12, x, -12), y0: 0, y1: 12, finish: 'polished' }); });
+    voids.push({ kind: 'stair', id: 'steps', a: [0, 0, -15.4], b: [0, 6, -22.0], w: 3.0, h: 6.5 });
+    rooms.push({ id: 'sanctum', kind: 'shrine', carved: true, poly: circle(5.0, 24, 0, -30), y: 6, h: 6.5, ceil: 'flat', finish: 'polished',
+      doors: [{ at: [0, -25], w: 1.8, swing: 'none' }] });
+    voids.push({ kind: 'stair', id: 'sanctum-door', joins: ['sanctum'], a: [0, 6, -23.0], b: [0, 6, -25.8], w: 1.8, h: 3.4 });
+    /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
+    [-1, 1].forEach(function (s) {
+      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      for (let z = -14; z >= -42; z -= 4) {
+        voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (-z), poly: circle(0.45, 10, s * 17.9, z), y0: 0, y1: 4.4, phase: 3, finish: 'hewn' });
+        R.fixtures.push(fx('pillar' + (-z), 'pillar', s * 17.9, z, 0.9, 0.9, { h: 4.2 }));
+      }
+      rooms.push(R);
+    });
+    /* the walk: the pit's floor less the podium and the lamp pillars; the terrace less the stair's slot and the drum; the podium's sides */
+    voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
+    voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -22.0), circle(6.25, 28, 0, -30)] });
+    [[-9, -1.5, -16.3, -16], [1.5, 9, -16.3, -16], [-9, 9, -40, -39.7], [-9, -8.7, -40, -16], [8.7, 9, -40, -16]].forEach(function (b, i) { voids.push({ kind: 'block', id: 'podium-side' + i, box: [b[0], b[1], b[2], b[3], 0, 5.9] }); });
+    return { rooms: rooms, voids: voids };
+  }
+  const TEMPLE = temple();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -28452,6 +28489,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- sacred */
+    { key: 'zj_temple', name: 'The temple: cut from one rock', carved: true, wealth: 0.8, types: ['religious'], residence: false, lot: [48, 52],
+      rooms: TEMPLE.rooms, voids: TEMPLE.voids,
+      note: 'a gateway into a pit cut from the top of the rock; the podium left standing in it with its stair, the sanctum\'s drum ' +
+        '(open to the sky under a drawn lattice dome) and four corner shrines on it; two lamp pillars; cloisters behind pillars in the pit\'s side walls' },
     /* the kiva, sunk in the ground (no rock block: the cavern carves under the sheet's ground): a round room with a flat back
        wall (the altar's), a bench terrace carved round it at bench height (a void room off the walk map), the roof hatch over the
        hearth with the ladder leaning out of it (its walk strip from the hatch's rim, where the ground stops, 3.6 m down in 1.4 m: as steep as a walker climbs), the

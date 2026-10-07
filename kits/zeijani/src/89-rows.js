@@ -5,7 +5,7 @@ const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
  {name:'Dwellings: constructed',keys:['zj_house_built_poor','zj_house_built_mid','zj_house_built_rich']},
  {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b','zj_estate_a','zj_estate_b']},
- {name:'Sacred and civic',keys:['zj_kiva','zj_catacomb']},
+ {name:'Sacred and civic',keys:['zj_kiva','zj_catacomb','zj_temple']},
  {name:'Shops: carved fronts',keys:ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).map(it=>it.key)},
  {name:'Shops: constructed',keys:ZS_ITEMS.filter(it=>/_built$/.test(it.key)).map(it=>it.key)},
  {name:'The cavern test block',keys:['zj_testblock']}
