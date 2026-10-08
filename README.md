@@ -82,7 +82,8 @@ There is an included skill file, painting-to-3d-world. Read before starting a ne
 
 `GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
 browser-native code and porting the rest to Godot; read it before adding a core module or
-starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
+starting a build. `ROADMAP.md` (2026-10-08) is the synthesis of three evaluations of the repo (ChatGPT's and Gemini's are
+in `evals/`): which of their claims hold, what they missed, and the order of work; its section 6 amends `TODO.md`'s "Port: next". `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
 holds the working rules for agents. `VISUAL-BAR.md` is the look every world is judged against:
 the pillars, the banned outcomes, the measured gates, the delta loop and which engine carries
 each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
