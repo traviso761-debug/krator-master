@@ -21,7 +21,7 @@ Processing, per family:
            distance gets its furrows and seams back. tint.colour ('#rrggbb', optional) gives the grey part a hue at the
            same brightness: for builds whose procedural maps carry their colour (Reed Lake's straw), so a grey set
            matches the map it replaces under the same instance tint.
-  normal   resized and renormalised (OpenGL convention, as the library and Godot use)
+  normal   resized and renormalised (OpenGL convention, as the library and Godot use); written as LOSSLESS WebP
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
   size     per family: overrides the build's map size
@@ -65,11 +65,14 @@ def load(path, size, mode):
     return np.asarray(im).astype(np.float64) / 255.0
 
 
-def webp(arr, quality, mode):
+def webp(arr, quality, mode, lossless=False):
     a = np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8)
     im = Image.fromarray(a, mode)
     buf = io.BytesIO()
-    im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
+    if lossless:
+        im.save(buf, 'WEBP', lossless=True, quality=100, method=6)
+    else:
+        im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
     return buf.getvalue()
 
 
@@ -112,7 +115,9 @@ def process(fam, cfg, size):
     if os.path.isfile(pn) and not card and not cfg.get('mapOnly'):
         n = load(pn, size, 'RGB') * 2 - 1
         n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
-        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB')
+        # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
+        # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08)
+        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True)
     # roughness
     if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
         r = load(pr, size, 'L')
