@@ -8,7 +8,7 @@
 //   a DOOR node a metre out from each building's front, linked to the nearest nodes it can walk to.
 // Every lookup takes y: a point finds the floor under it, then a node on that floor (DHN.nearest), never the nearest in
 // plan, which in the braid or under the ledge is a way on another level. Built on first use (DHN.get) after the world.
-const DHN={R:.3,H:1.7,STEP:.6,HEAD:2,built:null,NOPLACE:{zj_palisade:1}};   /* NOPLACE: a wall, no door */
+const DHN={R:.3,H:1.7,STEP:.6,HEAD:2,built:null,NOPLACE:{zj_palisade:1,zj_vent:1,zj_dovecote:1}};   /* NOPLACE: no walker's place (a wall; a vent's head in the forest; a dovecote, its door up its ladder) */
 /* a walker can go straight from a to b: every 0.5 m a floor within a step of its feet and no block in its way; the feet end
    within a step of b. head: also 2 m clear under the rock (the carved ways; the cavern's ceilingAt is slow, every 2 m) */
 DHN.segOk=function(a,b,o){o=o||{};const W=o.walk||KWALK,dx=b.x-a.x,dz=b.z-a.z,L=Math.hypot(dx,dz),n=Math.max(1,Math.ceil(L/.5)),R=o.r||DHN.R,H=o.h||DHN.H;let feet=a.y,lastC=-9;
@@ -17,8 +17,9 @@ DHN.segOk=function(a,b,o){o=o||{};const W=o.walk||KWALK,dx=b.x-a.x,dz=b.z-a.z,L=
   if(o.head&&typeof CVC!=='undefined'&&CVC&&(i*L/n-lastC>=2||i===n)){lastC=i*L/n;const c=CVC.ceilingAt(x,z,feet+.1);if(c!==null&&c-feet<(o.headroom||DHN.HEAD))return {ok:false,why:'headroom '+(c-feet).toFixed(2)+' m',at:[x,feet,z]};}}
  return Math.abs(feet-b.y)<=DHN.STEP?{ok:true}:{ok:false,why:'ends off its node',at:[b.x,feet,b.z]};};
 /* the open floors: a grid of cell metres where the walk map has the named floor */
-DHN.areas=function(){const H=DH.HALL,K=DH.APRON,A=[{id:'hall',zone:'inner',cell:3,y:H.y,x0:H.c[0]-H.rx-6,x1:H.c[0]+H.rx+6,z0:H.c[1]-H.rz-6,z1:H.c[1]+H.rz+6,floor:/^dh\.hall\.foot|^dh\.bay/}];
- for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit')});
+DHN.areas=function(){const H=DH.HALL,K=DH.APRON,yAt=(x,z,y)=>{const q=DH.hillAt(x,z);return q?q.y:y;};   /* (on a well's hill (41): its height) */
+ const A=[{id:'hall',zone:'inner',cell:3,y:H.y,yAt,x0:H.c[0]-H.rx-6,x1:H.c[0]+H.rx+6,z0:H.c[1]-H.rz-6,z1:H.c[1]+H.rz+6,floor:/^dh\.hall\.foot|^dh\.bay|^dh\.hill\.hall$/}];
+ for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,yAt,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit|^dh\\.hill\\.'+P.id+'$')});
  A.push({id:'apron',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:Math.min(K.c[0]+K.r,DH.PLAT.cliffX),z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/apron's floor/});
  return A;};
 DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
@@ -30,7 +31,7 @@ DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;
  /* the grids */
  const G={};
  for(const A of DHN.areas()){const ids={},c=A.cell,ni=Math.floor((A.x1-A.x0)/c),nj=Math.floor((A.z1-A.z0)/c);A.n=0;
-  for(let j=0;j<=nj;j++)for(let i=0;i<=ni;i++){const x=A.x0+i*c,z=A.z0+j*c,y0=A.y==null?DH.groundY(x,z):A.y,f=KWALK.floorBelow(x,z,y0+.5,1.2);
+  for(let j=0;j<=nj;j++)for(let i=0;i<=ni;i++){const x=A.x0+i*c,z=A.z0+j*c,y0=A.y==null?DH.groundY(x,z):A.yAt?A.yAt(x,z,A.y):A.y,f=KWALK.floorBelow(x,z,y0+.5,1.2);
    if(!f||!A.floor.test(f[1].name||'')||KWALK.blocked(x,f[0],z,.4,DHN.H))continue;ids[i+','+j]=add({id:A.id+':'+i+','+j,x,y:f[0],z,tag:'floor',area:A.id});A.n++;}
   for(const k in ids){const [i,j]=k.split(',').map(Number),a=ids[k];
    for(const [di,dj] of [[1,0],[0,1],[1,1],[1,-1]]){const b=ids[(i+di)+','+(j+dj)];if(b&&DHN.segOk(a,b).ok&&DHN.segOk(b,a).ok)link(a,b,'floor',A.zone,c);}}

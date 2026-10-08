@@ -356,7 +356,9 @@
    "roughLift": 0.3,
    "specular": 0.15
   },
-  "patSkyDome": {"lib": "patterns/zeijani/sky-dome", "size": [2048, 768], "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.12},
+  "patSkyDome": {"lib": "patterns/zeijani/sky-dome", "size": 1024, "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.12},
+  "turf": {"lib": "ground.grass_ground", "scale": [4, 4], "tint": {"keep": 0.85, "mean": null}, "roughLift": 0.2, "specular": 0.1, "_note": "Dhelv: the grassy hills on the wells' floors (89-dhelv-knolls.js)"},
+  "turfPath": {"lib": "ground.grass_path_3", "scale": [3, 3], "tint": {"keep": 0.85, "mean": null}, "roughLift": 0.2, "specular": 0.1, "_note": "Dhelv: the paths over the hills"},
   "patMural": {
    "lib": "patterns/zeijani/kiva-mural",
    "scale": [

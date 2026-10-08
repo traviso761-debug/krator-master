@@ -443,7 +443,7 @@
     });
     /* the walk: the pit's floor less the podium and the lamp pillars; the terrace less the stair's slot and the drum; the podium's sides */
     voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12), rrect(12.3, 14.1, -28.9, -27.1), circle(0.45, 10, 13.2, -24.1)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
-    voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -22.0), circle(6.25, 28, 0, -30)] });
+    voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -21.85), circle(6.25, 28, 0, -30)] });   /* the slot overlaps the stair's head by 0.15 m: an exact abutment left a hairline with no floor */
     [[-9, -1.5, -16.3, -16], [1.5, 9, -16.3, -16], [-9, 9, -40, -39.7], [-9, -8.7, -40, -16], [8.7, 9, -40, -16]].forEach(function (b, i) { voids.push({ kind: 'block', id: 'podium-side' + i, box: [b[0], b[1], b[2], b[3], 0, 5.9] }); });
     return { rooms: rooms, voids: voids };
   }

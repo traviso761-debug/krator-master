@@ -1,17 +1,19 @@
 # Dhelv, the capital of the Zeijani
 
 The Zeijani's underground city inside an old spur on the Throne's flank: a shelf standing 40 to 83 m out of the slope on sheer
-walls, old growth on top, a narrow ridge behind it up the volcano, the young flows parting round it. The outpost stands at its
+walls with a weathered lip, old growth on top, its back merging into the slope where the volcano rises sharply behind it, the
+young flows parting round it. The outpost stands at its
 west foot in the apron (the lee no flow reached); a short outer tube (about 120 m) runs from its portal in the west face to a rolling
 stone door, a braid of tubes climbing to the hub (a bottle-shaped great hall under a light well), three satellite wells, the cistern
 hall and the funeral catacombs. Its buildings are the Zeijani kit's (`kits/zeijani`); the plan is `kits/zeijani/PLAN.md` (section 12
 is this layout; section 14 the phases).
 
-**State (2026-10-07): P6 and the owner's second review.** The layout carved and placed, both kits' flora, the cave's light,
-what is drawn, the nav graph and the ramblers (P6); then the owner's review: the shelf re-laid (the spur, the ridge, the
-apron, the flows by the model), the standardized grove, the stone door, the council's windows, the sky dome. Next: the light
-wells' floors (a breakdown hill with skylight flora, as the Throne's tube station), the tunnels' fungal flora, PLAN.md
-section 13's extras; the Godot case (P7) waits for a Godot binary.
+**State (2026-10-08): P6 and the owner's third review.** The layout carved and placed, both kits' flora, the cave's light,
+what is drawn, the nav graph and the ramblers (P6); the owner's second review (the shelf, the flows by the model, the
+standardized grove, the stone door, the council's windows, the sky dome) and third (the spur's back merging into a steep
+slope, the weathered lip, the land to the horizon, the outpost's face solid with its mouths always open, the stream's fall and
+sink, the wells' floors as grassy hills, denser fungi, more dithering on the rock and the ground, the temple's round sky and
+its stair, and PLAN.md section 13's extras). The Godot case (P7) waits for a Godot binary.
 
 | Path | What |
 |---|---|
@@ -20,12 +22,13 @@ section 13's extras; the Godot case (P7) waits for a Godot binary.
 | `tests/plan-svg.js` | draws the layout as a plan: `layout-plan.svg` |
 | `layout-plan.svg` | the plan, for tuning by eye (hover a line or a footprint for its id, height and grade) |
 | `src/00-head.html` | the page shell (the kit's, titled) |
-| `src/45-dhelv-bio.js` | the biome host: BIO bound before the kits load; the hyperjungle's mask (the shelf's top 10 m back from its edge, off the openings and the ridge's foot), the Throne's (the flank and the ridge's crest, off the walls), the outpost's buildings as obstacles; `dhbForest` plants both with the world |
+| `src/45-dhelv-bio.js` | the biome host: BIO bound before the kits load; the hyperjungle's mask (the shelf's top 14 m back from its edge, off the openings), the Throne's (the flank, off the walls), the outpost's buildings as obstacles; `dhbForest` plants both with the world, then the underground's plants |
 | `src/48-dhelv-flows.js` | the young lava as it ran `[G data]`: the Throne kit's flow model (`THRONE.flowHistory`) from seven vents up the flank over the layout's land; `DH.groundY` becomes the land plus the lava laid |
+| `src/86-dhelv-extras.js` | PLAN.md section 13's extras the defs do not draw: the air shafts and their sentinels, the buried light well, the decoy entrance, the mirrors' light |
 | `src/88-dhelv-fungi.js` | the tunnels' fungi: the Throne kit's cave pass along every carved way, in a band at each wall's foot |
-| `src/89-dhelv-knolls.js` | the wells' floors: the breakdown piles drawn (their blocks, their walk blocks) and the Throne kit's skylight flora planted on them in a pass of its own |
+| `src/89-dhelv-hills.js` | the wells' floors: the grassy hills drawn (turf, paths over them, their walk floors) and planted by the Throne kit in a pass of its own |
 | `src/49-dhelv-grove.js` | the shelf's old growth, standardized: three hypertrees and three saplings grown once alone and drawn as instances in cells, each with a far level |
-| `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield in tiles (`terrainH = DH.groundY`), the spur's walls (`dhWalls`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
+| `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield in tiles (`terrainH = DH.groundY`) and the far land, the spur's walls (`dhWalls`) and the west face (`dhWestFace`), the ways carved (`dhCarve`), the sites placed, the stream, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
 | `src/72-dhelv-nav.js` | the nav graph (`DHN`) and its checks: data |
 | `src/74-dhelv-sim.js` | the ramblers' world declared into core/simulation (`DHS`) and their checks: data |
@@ -45,10 +48,11 @@ python3 tools/node_in_chromium.py settlements/dhelv/tests/plan-svg.js --write   
 
 x east, z south, y up, metres; the hub's square is y 0, and the flank rises east (`DH.surfaceY`).
 
-- The land: `FLANK` (the volcano's slope, rising east at 3.5%), `PLAT` (the shelf: an organic outline, `plateauD` its signed
-  distance, its top 53 m tilting up east; its west face straight and plumb at `cliffX` for the outpost's mouths), `RIDGE`
-  (a band 72 m wide from the shelf's east end up the flank, `ridgeD`; its back wall where it rises off the shelf) and `APRON`
-  (the lee at the west foot, levelled for the outpost). `groundY` is the land; `48-dhelv-flows.js` lays the lava on it.
+- The land: `FLANK` (the volcano's slope: 3.5% from the outpost, then sharply up, about 30%, round the shelf's back, easing to
+  10% higher up; a low crest carries the spur's line on up it), `PLAT` (the shelf: an organic outline, `plateauD` its signed
+  distance, its top 53 m tilting up east, its back merging into the slope; its west face straight and plumb at `cliffX` for
+  the outpost's mouths), `LIP` (its top edge weathered round: `shelfY`, `lipR`) and `APRON` (the lee at the west foot,
+  levelled for the outpost). `groundY` is the land; `48-dhelv-flows.js` lays the lava on it.
 
 - `HALL`: the hub. Its square is an ellipse 280 by 200 m; the light well's pool (18 m) at its middle; a ledge 10 m up round the
   north and east walls; four mouths (the braid comes in at the west).
@@ -63,8 +67,10 @@ x east, z south, y up, metres; the hub's square is y 0, and the flank rises east
   reads the kit's sources and fails if one differs.
 - `DISTRICTS`: the hub, the three wells, the cistern, the catacombs and the outpost, each with its anchor node, its graph distance
   from the square, its wealth (`wealthAt(distance)`: 0.9 at the square falling to 0.15 at the outpost) and the list it must hold.
-- `KNOLLS`: the breakdown piles on the wells' floors (`{id, well, c, y, r, h}`), each the largest disc in the well's daylight
-  clear of its floor's sites and ways; `knollAt(x, z)` the floor and the pile's height there.
+- `HILLS`: the wells' floors' hills (`{id, well, c, y, r, h, pads}`): a dome under each opening, a level pad under each
+  building on a pit's floor (the building stands on it); `hillAt(x, z)` the floor and the hill there. The nodes on a hill's
+  floor stand on it.
+- `MIRRORS`, `SHAFTS`, `DECOY`: section 13's extras the page carves and lights (86).
 - `RULES`: the numbers the checks hold the layout to (PLAN.md section 12's ranges).
 
 ## The page
@@ -82,7 +88,7 @@ under the ground opens into its void as a doorway, not through the surface). The
 | Page check (`91-dhelv-probe.js`) | Its negative control |
 |---|---|
 | every layout site placed | |
-| the wells' floors' trees each on its pile, on no way, in no site | a tree in the lane across the square, one past the foot of a pile |
+| the wells' floors' trees each on its hill, on no path, on no pad | a tree on the lane over the square's hill, one past the hill's foot |
 | the tunnels' fungi each on a carved floor (within 0.6 m of the walk map's floor under it) | every one lifted 3 m |
 | the cavern built | |
 | no void meets the open air but at its openings (sampled every 2 m) | the hall's light well undeclared |
@@ -115,7 +121,7 @@ under the ground opens into its void as a doorway, not through the surface). The
 | wealth falls with the distance from the square: the districts' wealth by the rule, and their homes' mean wealth never rising outward | an estate in the east well |
 | the foreigners' zone ends at the stone door: the outer ways reach it and nothing past it, and the door is the only way on | a side passage round the stone door |
 | the outpost's sites apart (the palisade's runs join end to end); the cliff's sites on the cliff, facing west | the barracks moved onto the timber house |
-| the wells' floors: a breakdown pile in each one's daylight, 2 m clear of its floor's sites, off its ways, the piles apart | the east well's smithy moved onto a pile |
+| the wells' floors: a hill under each opening, every building on a pit's floor on its level pad, every node on a hill's floor on the hill | the east well's smithy lifted a metre off its pad |
 | the layout matches its golden digest | |
 
 ## Getting about
@@ -128,29 +134,42 @@ under the ground opens into its void as a doorway, not through the surface). The
 
 ## The wells' floors
 
-Under every opening (the owner: "a low hill", "a skirt of greenery", at the bottom of the well, as the Throne's lava tube
-station has under its skylights) the fallen roof lies in low piles grown over: four in the park's quarters under the light
-well (6 to 7 m across the radius, 2 m high), two on each satellite well's floor (8 to 10 m, up to 3 m). The layout places them
-(`KNOLLS`: the largest discs in the daylight clear of the floor's sites and ways); `89-dhelv-knolls.js` draws each (a heap on
-the ground's basalt, moss on its top, its blocks strewn on it), makes it a walk block (the walkers go round it), and plants
-the Throne kit's skylight zone on it in a pass of its own after the world's forests (its host swapped for the wells' floors:
-the ground the floor and the piles, the trees on the piles themselves, the ferns, moss and tufts of its floor and understory
-on a skirt 5 m round them, off the ways): a few siphon trees, some 2,400 plants, in about 20 ms. They are drawn as the
-underground is (within 420 m of the camera, wherever it is).
+Under every opening (the owner: "the square is one low hill, no rocks, with the park lanes on top of it ... ferns and small
+trees there rather than the siphon tree"; each well's bottom "a low grassy hill, place farms and other structures on top of
+it, and infill with flora") the floor is a grassy hill: under the light well one 20 m across the radius and 1.8 m high (the
+park: `zj_park` with `hill` draws nothing of its own), on each pit's floor one filling it to 4 m short of its wall, 3 m high,
+a level pad under each building on it. The layout makes them (`HILLS`, `hillAt`) and puts the buildings and the nodes on
+them; `89-dhelv-hills.js` draws each in the library's turf (`ground.grass_ground`, the kit's `turf`), the ways over it as
+paths (`turfPath`), writes its walk floor (quads of 2.5 m: the walkers and the nav's grids climb it) and plants it: the
+Throne kit again, its host swapped for the hills (its island forest's ground: tree ferns and lehua, its passes filtered to the
+small trees; its floor and understory's ferns, moss and tufts), off the paths and the pads. About 60 small trees and 8,500
+plants in all. They are drawn as the underground is (within 420 m of the camera, wherever it is).
 
 ## The tunnels' fungi
 
 Along every carved way (the tubes, the braid, the ramps; 27 ways, 3 km) the Throne kit's own cave pass (its lava tube
-station's dark floor) plants glow mushrooms, specimen and alien mushroom cards, scale cones and lichen in a band 1.3 to 2.4 m
+station's dark floor) plants glow mushrooms, specimen and alien mushroom cards, scale cones and lichen in a band 1.4 to 3.4 m
 in from each side of the floor (past the reach of a clump's spread into the wall's fillet; the middle left to the walkers),
 off each way's last 6 m (its junctions) and out of the hall and the pits. One pass a way, the kit's host swapped for it (its
-ground the way's floor, its 'cave' field the band), at three times the kit's density; baked with the wells' floors and drawn
+ground the way's floor, its 'cave' field the band), at six times the kit's density (the owner: denser); baked with the wells' floors and drawn
 as the underground is. They add to the glow fungus (`94-dhelv-light.js`).
+
+## Section 13's extras
+
+PLAN.md section 13, placed (the owner: "work on remaining extras"): **a hot-spring bath** (`zj_bath`) in the hall's
+south-east wall; **a bat roost** (`zj_roost`) in its north-east wall; **signal stations** (`zj_signal`, horns and lamps) by the
+hall's west mouth and by each well's way in; **dovecotes** (`zj_dovecote`) out by the pasture; **light-well mirrors**
+(`zj_mirror`) on each well's floor by its way in, each throwing its well's daylight down the way (a spot light as strong as
+the sun is high, while the camera is underground near it); **air shafts** from three deep ways (the processional way, the
+braid's junction, a tube under the square's west) up through the shelf to vent heads (`zj_vent`) in the forest, a caged bird
+kept on a bracket under each (the sentinel that sickens before a person does); **the buried light well**: a dead-end tube off
+the processional way under an old skylight sealed by a young flow (a glassy black plug, frozen drips, votive lamps); **a decoy
+entrance**: a mouth in the shelf's north wall over the lava trough, its passage 30 m in to a rubble choke, in no graph. The
+glow fungus (13.5) and the stone door (13.2) were already there, and the scouts' secret exits (13.3).
 
 ## The square
 
-The park under the light well (`zj_park` with `knoll`: its kerb, the paths along the lanes, the pool and fountain and the
-benches; its quarters are the breakdown's piles, the kit's own trees, beds and alecaps left out) with the stalls round its edge; then a deterministic pass in the layout (`41-dhelv-layout.js`,
+The park under the light well (a grassy hill, the lanes over it: the wells' floors, above) with the stalls round its edge; then a deterministic pass in the layout (`41-dhelv-layout.js`,
 "the square filled") lays in the market hall, three more shops, seven houses and 22 row houses (`zj_rowhouse`, a narrow
 three-storey home), and two fountains: the homes take the outer ring first, so they line the square in a street facing in,
 5 m in from the wall (6 m clear of a carved front), clear of the lanes, the ledge's stairs and the park.
@@ -166,18 +185,30 @@ negative: the light well's throat plugged with rock).
 
 ## The shelf and its lava
 
-The city is inside an old spur (the owner: "a shelf sticking out of the slope of the volcano"; "think about how the lava would
-actually travel"). **The young lava is laid by the Throne kit's own flow model** (`48-dhelv-flows.js`, `THRONE.flowHistory`):
-seven flows from vents up the flank, oldest first (seven centuries to three years), each running down the fall line of the
-ground as it then stood, widening into lobes with steep fronts. The ridge parts them; they bank against the shelf's north and
-south walls and spread across the plain below its tip, leaving the apron (the lee under the west face) bare. The spur's
-ground is 2,600 years old, the apron 400; `THRONE.ageAt` answers the model's ages elsewhere. It lays the flows in about 0.7 s.
+The city is inside an old spur (the owner: "a shelf sticking out of the slope of the volcano"; review 3: its back "fully
+continuous with the slope", the land taking "a sharp rise around where the end of this plateau is"). The flank rises gently
+from the outpost, then sharply round the shelf's back: there the slope climbs past the shelf's top and the shelf merges into
+it (the ground is the smooth maximum of the two), its walls dying away; a low crest carries the spur's line on up the slope.
+**The young lava is laid by the Throne kit's own flow model** (`48-dhelv-flows.js`, `THRONE.flowHistory`): seven flows from
+vents up the flank, outside the crest's line, oldest first (seven centuries to three years), each running down the fall line
+of the ground as it then stood, widening into lobes with steep fronts. They part at the spur, bank against its north and
+south walls and spread across the plain below its tip, leaving the apron (the lee under the west face) bare. The spur's ground
+is 2,600 years old, the apron 400; `THRONE.ageAt` answers the model's ages elsewhere. It lays the flows in about 0.5 s.
 
 The ground is drawn in 50 m tiles: at 5 m where a sheer step, the outpost or an opening passes, 10 m elsewhere on the spur,
-25 m out on the flank (about 125k triangles); a skirt hangs under an edge that meets a coarser tile, and the normals come
-from the height. **The spur's walls** are their own mesh (`dhWalls`): jointed columns 4 m out on each step's low side and a
-caprock 8 m deep along its top, on the cave's rock shader; the west face is the ground's own plumb step (the outpost's
-mouths open through it, their holes in the ground opening only with the camera near enough for the rock to be meshed).
+25 m out on the flank (about 125k triangles); a skirt hangs under an edge that meets a coarser tile (40 m deep at the drawn
+ground's outer edge), and the normals come from the height. Past it, the far land: squares of about 100 m out to 5 km on the
+same land, so a high view sees the land to the horizon. **The spur's walls** are their own mesh (`dhWalls`): jointed columns
+4 m out on each step's low side up to the lip's foot, then the **weathered lip** (review 3: "round off the upper edge a bit"):
+a quarter circle 10 to 15 m in radius curving up and in onto the top (`DH.shelfY`, the same function the ground draws more
+coarsely under it). The west face has its columns too, but for the outpost's carved fronts: there it is dressed in the
+cliff's rock 8 cm before the ground's plumb step (`dhWestFace`), open at each mouth. **The mouths** (the portal, the galleries,
+the lean-to, the decoy) cut the ground only up to their own top, always, and the rock round each is kept meshed (`DH_STREAM.pin`),
+so a mouth reads from anywhere (review 3: the face went transparent at some angles, the portal invisible at others).
+
+**The stream** (review 3: it "comes from and goes to nowhere"): the shelf's forest's water spills over the lip down the west
+face in front of the columns into a plunge pool at the foot, runs across the apron and sinks into the porous young lava in a
+swallow pool at the apron's edge.
 
 ## The forests
 
@@ -195,7 +226,7 @@ grown within 300 m and beyond it a stand-in (a bole and a crown in its leaves' c
 pass lays the understory round them. `?noforest` leaves the forests out, `?q=` scales the floor.
 
 **The Throne kit's flora** (biomes/throne/src 46, 50, 55, 60, 70, wrapped the same way; its pack less the host's ground, roof
-and sea sets in `dist/dhelv.tex.throne.js`, 8.6 MB) plants the flows by their ages and the ridge's crest, first, and its big
+and sea sets in `dist/dhelv.tex.throne.js`, 8.6 MB) plants the flows by their ages, first, and its big
 trees become obstacles to the hyperjungle's. Its fields are cached on an 8 m grid; its mask is the flank less the spur's
 walls, their foot and lip, the light well, the wells' pits and any scarp. It plants in about 3.4 s. `?nothrone` leaves it
 out, `?tq=` scales it (0.7). Checked: no tree on a wall, a slope or in a building at its own level (its negative: one planted
@@ -210,9 +241,9 @@ The plants (both kits' baked meshes, each one for the whole map) are cut into ce
 Every quarter second the camera decides what is drawn (`dhSeen`): a carved cell within 420 m; a surface cell above ground, or
 within 220 m from below (out of the portal, up a well); a carved site's furniture only with the camera inside it or before its
 front (32 m out, at its floor's height), a sunk site's within 45 m, a built site's within 90 m (150 m on the surface), all of
-them in the cut-away; the plants within 1,300 m above ground, underground only up an opening or out of the cliff's mouths.
+them in the cut-away; the plants within 1,150 m above ground (the fog is four fifths there), underground only up an opening or out of the cliff's mouths.
 The textured furniture (the batch's decals: each its own mesh) goes into its site's cell too. On the surface the views draw at
-most 1.51M triangles and 540 draws (the outpost's view; 2,783 draws with everything drawn). `?seeall` draws everything.
+most 1.47M triangles (over the shelf, the city below) and 568 draws (the outpost's view). `?seeall` draws everything.
 
 The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
 hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its

@@ -105,16 +105,17 @@ def process(src, out_dir, opt):
 
     # 1. seamless
     # seam_axes 'x': a sheet that wraps across only (a dome's sky, its rim at the bottom edge), its height left whole
-    ys = 'y' in opt['seam_axes']
+    # seam_axes 'none': a picture that does not repeat (a disc painted for a dome, mapped round its zenith): left whole
+    ys, xs = 'y' in opt['seam_axes'], 'x' in opt['seam_axes']
     if opt['pattern']:
-        Lx, ex = best_period(a, 1); Ly, ey = best_period(a, 0) if ys else (a.shape[0], 0.0)
+        Lx, ex = best_period(a, 1) if xs else (a.shape[1], 0.0); Ly, ey = best_period(a, 0) if ys else (a.shape[0], 0.0)
         a = a[:Ly, :Lx]
         log['pattern_crop'] = [Lx, Ly]
         # a short cross-fade cleans up the last pixel of mismatch without visible ghosting
-        a = crossfade(a, 1, 0.015)
+        if xs: a = crossfade(a, 1, 0.015)
         if ys: a = crossfade(a, 0, 0.015)
     else:
-        a = crossfade(a, 1, opt['band'])
+        if xs: a = crossfade(a, 1, opt['band'])
         if ys: a = crossfade(a, 0, opt['band'])
 
     # 2. delight

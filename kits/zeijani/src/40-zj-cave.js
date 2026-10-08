@@ -71,21 +71,26 @@ const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,met
     /* stochastic tiling (the owner: no repeat on the floors and walls): each sample is two, at offsets hashed from a smooth
        value noise's band, blended across it (after Inigo Quilez's "texture repetition", technique 3); the gradients are the
        unshifted coordinates', so the offsets' jumps leave no mip seam. WebGL1 keeps the plain sample */
-    (renderer.capabilities.isWebGL2?'float cvH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}'+
+    'float cvH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}'+
     'float cvN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(cvH(i),cvH(i+vec2(1.0,0.0)),f.x),mix(cvH(i+vec2(0.0,1.0)),cvH(i+vec2(1.0,1.0)),f.x),f.y);}'+
-    'vec3 cvS(sampler2D t,vec2 uv){float l=cvN(uv*0.37)*8.0,i=floor(l),f=fract(l);vec2 oa=sin(vec2(3.0,7.0)*i),ob=sin(vec2(3.0,7.0)*(i+1.0)),dx=dFdx(uv),dy=dFdy(uv);'+
+    (renderer.capabilities.isWebGL2?'vec3 cvS(sampler2D t,vec2 uv){float l=cvN(uv*0.37)*8.0,i=floor(l),f=fract(l);vec2 oa=sin(vec2(3.0,7.0)*i),ob=sin(vec2(3.0,7.0)*(i+1.0)),dx=dFdx(uv),dy=dFdy(uv);'+
     'vec3 a=textureGrad(t,uv+oa,dx,dy).rgb,b=textureGrad(t,uv+ob,dx,dy).rgb;return mix(a,b,smoothstep(0.2,0.8,f-0.1*dot(a-b,vec3(1.0))));}'
     :'vec3 cvS(sampler2D t,vec2 uv){return texture2D(t,uv).rgb;}')+
-    'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(cvS(t,p.zy*k)*w.x+cvS(t,p.xz*k)*w.y+cvS(t,p.xy*k)*w.z,vec3(2.2));}';
+    'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(cvS(t,p.zy*k)*w.x+cvS(t,p.xz*k)*w.y+cvS(t,p.xy*k)*w.z,vec3(2.2));}'+
+    /* the base rocks read twice, the second at about three and a half times the size (review 3: still repeating from afar) */
+    'vec3 cvTri2(sampler2D t,vec3 p,vec3 n,float k){return mix(cvTri(t,p,n,k),cvTri(t,p+vec3(17.3,5.1,-9.7),n,k*0.29),0.38);}';
    body='vec3 n=normalize(vCWN),p=vCWP;float m=vM.x;vec3 c;'+
-    'if(m<1.5){vec3 bs=m<0.5?cvTri(uT_basalt,p,n,'+K('basalt')+'):cvTri(uT_basaltPol,p,n,'+K('basaltPol')+');'+
+    'if(m<1.5){vec3 bs=m<0.5?cvTri2(uT_basalt,p,n,'+K('basalt')+'):cvTri(uT_basaltPol,p,n,'+K('basaltPol')+');'+
      'c=mix(bs,cvTri(uT_lining,p,n,'+K('lining')+'),vW.x*(m<0.5?1.0:0.4));c=mix(c,cvTri(uT_oxide,p,n,'+K('oxide')+'),vW.y*(m<0.5?1.0:0.0));}'+
-    'else if(m<2.5)c=cvTri(uT_tuff,p,n,'+K('tuff')+');else if(m<3.5)c=cvTri(uT_tuffHewn,p,n,'+K('tuffHewn')+');'+
+    'else if(m<2.5)c=cvTri2(uT_tuff,p,n,'+K('tuff')+');else if(m<3.5)c=cvTri2(uT_tuffHewn,p,n,'+K('tuffHewn')+');'+
     'else if(m<4.5)c=cvTri(uT_plaster,p,n,'+K('plaster')+');else c=cvTri(uT_tuffPol,p,n,'+K('tuffPol')+');';}
   else body='vec3 n=normalize(vCWN);float m=vM.x;vec3 c=m<0.5?mix(mix('+v3(C.basalt)+','+v3(C.lining)+',vW.x),'+v3(C.oxide)+',vW.y):m<1.5?'+v3(C.basPol)+':m<2.5?'+v3(C.tuff)+':m<3.5?'+v3(C.hewn)+':m<4.5?'+v3(C.plaster)+':'+v3(C.pol)+';';
   body+='{float h=vM.y;vec3 rc=h<0.5?mix('+v3(C.mag)+','+v3(C.vio)+',h*2.0):mix('+v3(C.vio)+','+v3(C.teal)+',h*2.0-1.0);'+
    'float L=dot(c,vec3(0.2126,0.7152,0.0722));c=mix(c,rc*(0.55+L*1.6),vW.z*0.75);c=mix(c,'+v3(C.mineral)+'*(0.6+L),vW.w*0.6);}'+
    /* the library sets are normalised to a mean near 0.75 (tuff) or darker (basalt): lift the basalt, keep the tuff */
+   /* a broad variation over the world (tens of metres): brightness and a warm-cool drift, so a long wall or floor does not read
+      as one tile */
+   (CV_HAS_LIB?'{vec3 q=vCWP;c*=0.8+0.4*cvN(q.xz*0.021+vec2(q.y*0.017,-q.y*0.011));c*=mix(vec3(1.05,0.99,0.93),vec3(0.94,1.0,1.06),cvN(q.zx*0.009+vec2(3.7,q.y*0.006)));}':'')+
    'diffuseColor.rgb*=c*'+(CV_HAS_LIB?'(m<1.5?1.7:1.05)':'1.0')+';';
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
    .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;'+(CV_OPTS.cutBoxes?CV_BOXCUT:''))
@@ -108,7 +113,7 @@ function cvChunkMesh(key){const ch=CVC.meshChunk(key);if(!ch.idx.length)return n
   /* a world that draws its own ground (CV_OPTS.groundKeep(x, z): Dhelv's heightfield) keeps the cavern's ground only where that
      says (inside the openings' rims): the chunks mesh the ground all over them, and two surfaces at one height fight */
   let idx=ch.idx;if(CV_OPTS.groundKeep){const G=65535,P_=ch.prim,Q=ch.pos,keep=[];for(let t=0;t<idx.length;t+=3){const a=idx[t],b=idx[t+1],c=idx[t+2];
-    if(P_[a]===G&&P_[b]===G&&P_[c]===G&&!CV_OPTS.groundKeep((Q[a*3]+Q[b*3]+Q[c*3])/3,(Q[a*3+2]+Q[b*3+2]+Q[c*3+2])/3))continue;keep.push(a,b,c);}
+    if(P_[a]===G&&P_[b]===G&&P_[c]===G&&!CV_OPTS.groundKeep((Q[a*3]+Q[b*3]+Q[c*3])/3,(Q[a*3+2]+Q[b*3+2]+Q[c*3+2])/3,(Q[a*3+1]+Q[b*3+1]+Q[c*3+1])/3))continue;keep.push(a,b,c);}
    if(!keep.length)return null;idx=new Uint32Array(keep);}
   g.setIndex(new THREE.BufferAttribute(idx,1));g.computeBoundingSphere();
   const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=idx.length/3;return mesh;}
@@ -144,7 +149,7 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
    from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
 /* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
    wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground),
-   groundKeep(x, z) (cvChunkMesh: the cavern's ground kept only where true; the world draws the rest) */
+   groundKeep(x, z, y) (cvChunkMesh: the cavern's ground kept only where true, by a triangle's middle; the world draws the rest) */
 const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null,cutBoxes:false};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
@@ -160,8 +165,12 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
    const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}
   else if(k==='floor'){/* a walk floor on rock left standing (a monolith's top: Kailasa's terrace), less its holes */
    const pts=q.poly.map(p=>cvXZ([p])[0]),holes=(q.holes||[]).map(h=>h.map(p=>cvXZ([p])[0]));zwMinusHoles(pts,holes).forEach((P2,j)=>KWALK.poly({pts:P2.map(p=>[p[0],p[1],cvY(q.y)]),name:cvId(q.id)+(j?'.'+j:''),tag:q.tag||'built:terrace'}));}   /* tag 'cavern:floor': on carved rock (the probe's walk-on-mesh samples it) */
-  else if(k==='block'){/* a walk block (a monolith's edge the walker must not step off or walk into) */
-   const c=[[q.box[0],q.box[2]],[q.box[1],q.box[3]]].map(p=>cvXZ([p])[0]);KWALK.block([Math.min(c[0][0],c[1][0]),Math.max(c[0][0],c[1][0]),Math.min(c[0][1],c[1][1]),Math.max(c[0][1],c[1][1]),cvY(q.box[4]),cvY(q.box[5])],'carved:edge');}
+  else if(k==='block'){/* a walk block (a monolith's edge the walker must not step off or walk into). The walk map's blocks are
+     upright boxes on the world's axes: a turned site's block is cut along its length into pieces of 0.8 m, each the box round
+     its four turned corners (the box round two corners of the whole, at Dhelv's temple turned 60 degrees, lay across its stair) */
+   const [x0,x1,z0,z1]=q.box,lx=x1-x0>=z1-z0,n=Math.max(1,Math.ceil((lx?x1-x0:z1-z0)/.8));
+   for(let i=0;i<n;i++){const a=lx?[x0+(x1-x0)*i/n,x0+(x1-x0)*(i+1)/n,z0,z1]:[x0,x1,z0+(z1-z0)*i/n,z0+(z1-z0)*(i+1)/n],c=cvXZ([[a[0],a[2]],[a[1],a[2]],[a[0],a[3]],[a[1],a[3]]]);
+    KWALK.block([Math.min(...c.map(p=>p[0])),Math.max(...c.map(p=>p[0])),Math.min(...c.map(p=>p[1])),Math.max(...c.map(p=>p[1])),cvY(q.box[4]),cvY(q.box[5])],'carved:edge');}}
   else{reportErr('cvFromItem '+item.key+': no void kind '+k);return;}n++;};
  list.filter(e=>e.ph<2).sort((a,b)=>a.ph-b.ph||a.i-b.i).forEach(e=>doVoid(e.v));
  for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;cvRoom({id:r.id,poly:r.poly,y:r.y||0,h:r.h||2.6,ceil:r.ceil||'flat',rise:r.rise||0,r:r.round||0,finish:r.finish||fin,rock:r.rock||o.rock||'tuff',joins:r.joins});n++;

@@ -1235,21 +1235,18 @@
     1,
     1
    ],
-   "size": [
-    2048,
-    768
-   ],
+   "size": 1024,
    "source": {
-    "albedo": "0313c74ee63861cefe33e3a169a97cadd61e8006",
-    "normal": "29b732f893aa03b2794f19ad4b79e651240b9d9d",
-    "roughness": "9a98a8121fad37faf003de2b653078c520cb040f"
+    "albedo": "ea546450936d315970554612e0c4b6b77c3e8867",
+    "normal": "05d2bd1bc664a8238bf0fa0aff14fb687fe293c7",
+    "roughness": "89f0b385bb867eba274f5ee01f406353b3c03081"
    },
    "specular": 0.12,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.17626414559358083,
-    "sourceMean": 0.1763
+    "mean": 0.23221181808322083,
+    "sourceMean": 0.2322
    }
   },
   "patTextile": {
@@ -1528,6 +1525,66 @@
     "keep": 0.8,
     "mean": 0.76,
     "sourceMean": 0.6942
+   }
+  },
+  "turf": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "turf.albedo.webp",
+    "normalMap": "turf.normal.webp",
+    "roughnessMap": "turf.rough.webp"
+   },
+   "lib": "ground.grass_ground",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9dbff918a2de84d51f1677516c87c1e0fe6429d0",
+    "normal": "c24b61b9c8059b74a5712fbe3c348464b8933e8e",
+    "roughness": "705b4f92076304fd8b3c73b6e49d2123456014a9"
+   },
+   "specular": 0.1,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.85,
+    "mean": 0.37881497102026845,
+    "sourceMean": 0.3788
+   }
+  },
+  "turfPath": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "turfPath.albedo.webp",
+    "normalMap": "turfPath.normal.webp",
+    "roughnessMap": "turfPath.rough.webp"
+   },
+   "lib": "ground.grass_path_3",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8b1ad5588fc0b6bfbab5799b682c4b64fdb57820",
+    "normal": "261e292afdca3e23f7f9c479aae832adda229003",
+    "roughness": "a366d91802eb252ed2da8453c81319cde0dbe569"
+   },
+   "specular": 0.1,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.85,
+    "mean": 0.4071258003384459,
+    "sourceMean": 0.4071
    }
   },
   "wood": {

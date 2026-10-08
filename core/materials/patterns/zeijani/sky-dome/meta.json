@@ -7,20 +7,20 @@
  "processing": {
   "log": {
    "pattern_crop": [
-    3541,
-    1304
+    1254,
+    1254
    ],
    "seam_after": [
-    0.65,
-    23.768
+    0.096,
+    0.073
    ],
    "seam_before": [
-    0.928,
-    33.236
+    0.138,
+    0.118
    ],
    "source_size": [
-    3548,
-    1304
+    1254,
+    1254
    ]
   },
   "options": {
@@ -32,12 +32,12 @@
    "keep_aspect": true,
    "lift": 0.0,
    "mute": 0.0,
-   "normal_strength": 0.25,
+   "normal_strength": 0.2,
    "pattern": true,
    "rough": 0.8,
    "rough_var": 0.08,
-   "seam_axes": "x",
-   "size": 4096
+   "seam_axes": "none",
+   "size": 2048
   },
   "script": "tools/textures/process.py",
   "version": 1
@@ -56,11 +56,11 @@
   "tint": false
  },
  "source": {
-  "file": "zeijani-sky-dome-wrapped.png",
-  "generator": "supplied by the owner (pasted in the session, 2026-10-07, as zeijani-sky-dome.webp), generated from the prompt in kits/zeijani/KNOWN_ISSUES.md (the temple's sky dome); reworked for a hemisphere by tools/textures/dome_sheet.py --widen 2 --raise 0.47 --band-row 785 (its own sky continued round the back, sky added above so the motifs sit in the dome's lower half, the crown starless)",
+  "file": "zeijani-sky-dome-disc.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-08): a round painting for the dome, the zenith at its centre and the gilt zigzag band at its rim; it replaces the 2026-10-07 equirectangular sheet (reworked by dome_sheet.py), which looked warped on the hemisphere",
   "licence": "generated for this project by its owner",
-  "prompt": "kits/zeijani/KNOWN_ISSUES.md, \"The temple's sky dome\" (a painted equirectangular sky for the inside of a dome: sun, ringed gas giant, four moons, stars, a gilt zigzag band at the rim)",
-  "reuse": "the painted sky inside a dome or a ceiling: the Zeijani temple's sanctum dome; any sky-motif ceiling",
-  "sha1": "694ffab5f643cf5e9259340d2bb3a9ac05cd65ce"
+  "prompt": "kits/zeijani/KNOWN_ISSUES.md, \"The temple's sky dome\" (the sky over the Throne: sun, ringed gas giant, moons, stars, a gilt zigzag band at the rim), drawn as a disc to be mapped round a dome's zenith",
+  "reuse": "the painted sky inside a dome, mapped polar (the disc's centre at the zenith, its rim at the dome's spring): the Zeijani temple's sanctum dome; any round sky-motif ceiling",
+  "sha1": "9a3cc94dfc96ce3aaaea1aa2b1537b80467aeb02"
  }
 }

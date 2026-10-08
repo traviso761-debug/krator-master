@@ -152,22 +152,19 @@ function wells(D){const bad=[];for(const P of D.PITS){const S=D.SITES.filter(s=>
  const D=fresh();const h=D.SITES.find(s=>s.key==='zj_house_built_mid'&&s.district==='s2'),f=D.SITES.find(s=>s.key==='zj_farm_veg'&&s.district==='s2');Object.assign(h,{x:f.x+3,z:f.z});
  neg(!wells(D).length,'the south well\'s homes moved onto its field',wells(D).slice(0,2).join(', '));}
 
-/* ---- the wells' floors: each breakdown pile in its well's daylight, 2 m clear of every site of its floor (the park apart), off
-   every way on that floor (3 m off a lane's line across the square, else 1 m past the way's half width), the piles apart */
-function knolls(D){const bad=[],B=D.byId,inQ=(q,p)=>{let c=false;for(let i=0,j=q.length-1;i<q.length;j=i++)if((q[i][1]>p[1])!==(q[j][1]>p[1])&&p[0]<(q[j][0]-q[i][0])*(p[1]-q[i][1])/(q[j][1]-q[i][1])+q[i][0])c=!c;return c;};
- if(D.KNOLLS.filter(k=>k.well==='hall').length<1)bad.push('no pile under the light well');
- for(const P of D.PITS)if(!D.KNOLLS.some(k=>k.well===P.id))bad.push('no pile in '+P.id);
- for(const K of D.KNOLLS){const P=D.PITS.find(q=>q.id===K.well),c=P?P.c:D.HALL.c,light=P?P.r-5:D.HALL.pool+4;
-  if(Math.hypot(K.c[0]-c[0],K.c[1]-c[1])+K.r>light+1e-6)bad.push(K.id+' out of the daylight');
-  for(const st of D.SITES){if(st.park||(P?st.district!==P.id:!(st.district==='hub'&&st.at==='floor')))continue;const q=quad(D,st);if(!q)continue;
-   const d=inQ(q,K.c)?-1:Math.min(...q.map((a,i)=>segD(K.c,a,q[(i+1)%q.length])));if(d<K.r+2-1e-6)bad.push(K.id+'/'+st.key+' '+(d-K.r).toFixed(1)+' m');}
-  for(const e of D.EDGES){const a=B[e.a],b=B[e.b];if(Math.abs(a.y-K.y)>=2||Math.abs(b.y-K.y)>=2)continue;const hw=e.kind==='square'?3:(e.w||4)/2+1;
-   if(segD(K.c,[a.x,a.z],[b.x,b.z])<K.r+hw-1e-6)bad.push(K.id+' on the way '+e.a+'-'+e.b);}
-  for(const L of D.KNOLLS)if(L!==K&&L.well===K.well&&Math.hypot(L.c[0]-K.c[0],L.c[1]-K.c[1])<L.r+K.r+2-1e-6&&L.id>K.id)bad.push(K.id+'/'+L.id+' touch');}
+/* ---- the wells' floors: a hill under each opening (the hall's, each pit's); every building on a pit's floor stands on its level
+   pad (its y the hill's at its middle, the hill level under its footprint's corners); every node on a hill's floor on the hill */
+function hills(D){const bad=[],T=.05;
+ if(!D.HILLS.some(h=>h.well==='hall'))bad.push('no hill under the light well');for(const P of D.PITS)if(!D.HILLS.some(h=>h.well===P.id))bad.push('no hill in '+P.id);
+ for(const H of D.HILLS){if(H.well==='hall')continue;
+  for(const st of D.SITES){if(st.district!==H.well||st.at==='wall')continue;const q=D.hillAt(st.x,st.z);if(!q)continue;
+   if(Math.abs(q.y-st.y)>T){bad.push(st.key+' in '+H.well+' '+(st.y-q.y).toFixed(2)+' m off its pad');continue;}
+   const Q=quad(D,st);for(const c of Q||[]){const h=D.hillAt(c[0],c[1]);if(h&&Math.abs(h.y-st.y)>T){bad.push(st.key+' in '+H.well+': its pad not level ('+(h.y-st.y).toFixed(2)+' m at a corner)');break;}}}}
+ for(const n of D.NODES){const q=D.hillAt(n.x,n.z);if(q&&Math.abs(n.y-q.H.y)<q.H.h+.5&&Math.abs(n.y-q.y)>T)bad.push(n.id+' '+(n.y-q.y).toFixed(2)+' m off the hill');}
  return bad;}
-{const b=knolls(DH);ok(!b.length,'the wells\' floors: a breakdown pile in each one\'s daylight, clear of its sites and ways',b.slice(0,4).join(', ')||DH.KNOLLS.length+' piles, '+DH.KNOLLS.map(k=>k.id+' r '+k.r).join(', '));
- const D=fresh(),K=D.KNOLLS.find(k=>k.well==='s3'),h=D.SITES.find(s=>s.district==='s3'&&s.key==='zj_smithy');Object.assign(h,{x:K.c[0]+K.r,z:K.c[1]});
- neg(!knolls(D).length,'the east well\'s smithy moved onto a pile',knolls(D).slice(0,2).join(', '));}
+{const b=hills(DH);ok(!b.length,'the wells\' floors: a hill under each opening, its buildings on level pads, its nodes on it',b.slice(0,4).join(', ')||DH.HILLS.map(h=>h.id+' r '+h.r+' h '+h.h+' ('+h.pads.length+' pads)').join(', '));
+ const D=fresh(),h=D.SITES.find(s=>s.district==='s3'&&s.key==='zj_smithy');h.y+=1;
+ neg(!hills(D).length,'the east well\'s smithy lifted a metre off its pad',hills(D).slice(0,2).join(', '));}
 
 /* ---- the layout's digest: a change that moves a node or a site is seen (rewrite: --write; through tools/node_in_chromium.py pass
    it twice, `--write --write`: the shim takes the first to allow the file write, the test reads the second) */

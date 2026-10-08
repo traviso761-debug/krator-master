@@ -12,14 +12,21 @@
       up the flank over the layout's land (`48-dhelv-flows.js`), and the ground is the land plus the lava laid.
 - [x] **The ground is one heightfield of 5 m squares, drawn from every view.** Done (the shelf): 50 m tiles at 5, 10 or
       25 m by what passes through them, about 125k triangles. It is still one mesh, drawn from every view.
-- [ ] **The spur's walls are one material, darker than the cave's rock.** Columns and a caprock on the cave's shader; no
-      texture of their own yet (a jointed basalt colonnade would suit; ask the owner for one before painting it in).
+- [ ] **The spur's walls are one material, darker than the cave's rock.** Columns and a weathered lip on the cave's shader;
+      no texture of their own yet (a jointed basalt colonnade would suit; ask the owner for one before painting it in). Where
+      a run of columns meets the west face's dressing or the decoy's, a thin dark seam shows between them.
 - [ ] **The shelf's three hypertrees and three saplings are the same few trees.** Each is tinted a little and turned; up
       close the saplings read as a plantation. More variants cost load time (about 50 ms each).
-- [ ] **The wells' piles are walk blocks of three boxes**, not their round outline: a walker keeps a metre or so off a
-      pile's foot between the boxes' corners. The piles' plants are not walk blocks (as the forests').
-- [ ] **The wells' floors' flora is the Throne's skylight zone at its stations' density**: on these small floors it is
-      ferns, tufts and moss with a few siphon trees; the hall's quarters get one or two trees between them.
+- [ ] **The hills' walk floors are quads of 2.5 m** under a finer drawn hill: a walker's feet can sit a few centimetres
+      in or over the turf, most near a pad's edge. Their plants are not walk blocks (as the forests').
+- [ ] **The mirrors' light is a spot light down each way at the sun's strength**, fixed: the mirror does not turn with the
+      hour (PLAN.md 13.5 says "by the hour"); and like the wells' beams it switches on and off with the camera's distance.
+- [ ] **The decoy entrance is in no graph**: no walker goes there, and the scouts' patrol does not use it. Its passage is
+      walkable (its floor is written) but the nav does not know it.
+- [ ] **The rock round the outpost's mouths is kept meshed** (DH_STREAM.pin: about 20 chunks, some 150 ms at the start),
+      so the mouths read from anywhere.
+- [ ] **The far land has no young lava past the flow model's reach** (1.8 km round the city): from very high the flows end there,
+      in lines across the land.
 - [ ] **What is drawn is decided by distance and the site's frame, not by occlusion.** A carved interior seen through a long
       window from more than 32 m out shows empty; the inspector's ray still meets furniture that is not drawn.
 - [ ] **Headroom is checked on the carved ways and the doors only** (the cavern's `ceilingAt` costs about 1 ms, every 2 m);

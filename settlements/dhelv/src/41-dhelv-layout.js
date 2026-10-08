@@ -3,9 +3,10 @@
 // The capital of the Zeijani as data: no THREE, no DOM. x east, z south, y up, metres; the hub's square is y 0 and the flank rises
 // east toward the summit. P5's page builds from this; settlements/dhelv/tests/test-layout.js checks it (each check with a negative).
 //
-//   DH.groundY(x, z)    the ground the page draws: the PLATEAU over the city (the kipuka: old ground the young flows went round,
-//                       its top at y 45, sheer 75 m walls; DH.PLAT, DH.plateauD the signed distance to its edge), the young
-//                       lava's plain round it, and the APRON at its straight west face, the outpost's level ground
+//   DH.groundY(x, z)    the land: the FLANK (gentle, then steep round the shelf's back), the SHELF over the city (the kipuka: old
+//                       ground the young flows went round, its top 53 m up at its tip, sheer walls with a weathered lip, its back
+//                       merging into the slope; DH.PLAT, DH.plateauD the signed distance to its edge), and the APRON at its
+//                       straight west face, the outpost's level ground (the page lays the young lava on it: 48-dhelv-flows.js)
 //   DH.surfaceY(x, z)   the same (the hall's throat and the wells open at it)
 //   DH.HALL             the hub: a bottle-shaped hall (its square an ellipse), the light well its throat, a ledge round it
 //   DH.PITS             the three satellites: open pits (centre, radius, floor y)
@@ -20,24 +21,27 @@ const DH=(function(){
  'use strict';
  const PI=Math.PI,TAU=2*PI;
  const sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
- /* ---- the land (the owner, review 2: the city in a SHELF sticking out of the volcano's slope; the young lava laid as it would
-    run). The FLANK rises east toward the summit (3.5%). Down it runs an old SPUR (the kipuka: older rock the young flows went
-    round): a narrow RIDGE from upslope that ends in a broad SHELF, the city under it, its top tilted gently west, sheer on
-    every side: its north, south and west walls (the flows banked against them) 40 m high at its upper end and 83 m at its tip,
-    and at its back a sheer step up to the ridge's crest (45 m), which climbs on toward the summit with flows on either side.
-    The young lava comes down the flank, parts at the ridge, runs down the troughs either side and spreads across the plain
-    below the tip: the PAGE lays it with the Throne kit's own flow model (48-dhelv-flows.js: groundY there is this land plus
-    the lava it lays). Here is the land alone (what the flows ran over). The APRON: the lee under the shelf's tip, which no
-    flow reached: older soil, level, the outpost's clearing, pasture and stream. The shelf's west face is cut straight at
-    x -680 where the outpost's portal and galleries stand; elsewhere its outline wanders */
- const FLANK={x0:-825,y0:-34,slope:.035};
+ /* ---- the land (the owner, reviews 2 and 3: the city in a SHELF sticking out of the volcano's slope, its back end "fully
+    continuous with the slope", the land taking "a sharp rise around where the end of this plateau is"; the young lava laid as
+    it would run). The FLANK rises gently east from the outpost (3.5%), then sharply (to about 30%) round the shelf's east end,
+    easing to about 10% higher up toward the summit. Down it runs an old SPUR (the kipuka: older rock the young flows went
+    round): the SHELF, the city under it, its top tilted gently west and sheer on its north, south and west walls (the flows
+    banked against them: 40 to 83 m), its back end merging into the slope where the slope climbs past its top (a smooth maximum
+    of the two), so its walls die away into the slope there; up the slope above it a low crest carries the spur's line on, so the
+    flows from above part round it. The shelf's top edge is weathered round: its lip falls away in a quarter circle (LIP: its
+    radius 10 to 15 m along the edge, measured from the walls' columns, which stand LIP.out m outside the outline). The young lava
+    comes down the flank, parts at the spur, runs down the troughs either side and spreads across the plain below its tip: the
+    PAGE lays it with the Throne kit's own flow model (48-dhelv-flows.js: groundY there is this land plus the lava it lays).
+    Here is the land alone (what the flows ran over). The APRON: the lee under the shelf's tip, which no flow reached: older
+    soil, level, the outpost's clearing, pasture and stream. The shelf's west face is cut straight at x -680 where the outpost's
+    portal and galleries stand; elsewhere its outline wanders */
+ const FLANK={x0:-825,y0:-34,slope:.035,steep:{x0:560,k0:45,s0:.265,x1:940,k1:70,s1:.2},crest:{z:200,w:320,h:18,x0:480,x1:820}};
  const PLAT={top:53,tilt:.0095,plain:-30,cliffX:-680,cliffZ:110,   /* top: at the tip (x -680), rising east by tilt; plain: the apron's level */
   poly:[[-680,-110],[-680,110],[-690,175],[-650,240],[-600,300],[-560,380],[-470,420],[-420,500],[-330,530],[-250,500],[-170,560],[-60,590],[40,560],[130,610],
-   [250,620],[330,590],[420,640],[520,650],[590,600],[640,520],[700,440],[690,350],[730,260],[710,160],[740,60],[690,-30],[650,-110],[660,-190],[590,-260],
+   [250,620],[330,590],[420,640],[520,650],[610,610],[720,590],[850,575],[980,560],[1040,420],[1060,220],[1040,20],[1000,-160],[880,-230],[740,-260],[620,-275],
    [500,-300],[420,-370],[320,-380],[220,-420],[120,-390],[20,-430],[-80,-410],[-180,-440],[-280,-400],[-380,-390],[-450,-340],[-530,-330],[-590,-270],
    [-650,-230],[-700,-170],[-690,-140]]};
- /* the ridge behind the shelf: a band from its back wall (x 640 on the shelf's top) up the flank, its crest 45 m over the shelf there */
- const RIDGE={a:[640,90],b:[1750,150],w:72,top:111,tilt:.02};
+ const LIP={r0:10,r1:15,out:4};
  const APRON={c:[-825,20],r:260,floor:PLAT.plain,edge:.15};   /* the outpost's ground: an ellipse (its z squashed 1.3) cut by the west face */
  /* the outlines wander: each point but the west face's pushed out or in by a smooth noise along it */
  const wob=(x,z)=>9*Math.sin(x/83+z/97)+5*Math.sin(x/37-z/43)+2*Math.sin(x/13+z/17);
@@ -47,20 +51,24 @@ const DH=(function(){
    d=Math.min(d,Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z));if(((a[1]>z)!==(b[1]>z))&&(x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0]))inside=!inside;}
   const s=inside?d:-d,w=1-(1-sm(0,60,x-PLAT.cliffX))*(1-sm(0,50,Math.abs(z)-PLAT.cliffZ));   /* none on the west face, full 60 m off it */
   return s+wob(x,z)*w;}
- /* signed distance to the ridge (positive inside): its sides along the band, its west end a straight face across it (the back wall) */
- function ridgeD(x,z){const A=RIDGE.a,B=RIDGE.b,dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),t=((x-A[0])*dx+(z-A[1])*dz)/L,c=Math.abs(((x-A[0])*dz-(z-A[1])*dx)/L);
-  return Math.min(RIDGE.w-c+wob(x+300,z-200)*.6,t+wob(x,z+500)*.25);}
- const flankY=(x,z)=>FLANK.y0+FLANK.slope*(x-FLANK.x0)+1.4*Math.sin(x/61+z/83)+.6*Math.sin(x/19-z/27);
+ const spl=(t,k)=>t/k>30?t:k*Math.log1p(Math.exp(t/k));   /* a smooth ramp: 0 before, t after, rounded over k */
+ const flankY=(x,z)=>{const S=FLANK.steep,C=FLANK.crest;return FLANK.y0+FLANK.slope*(x-FLANK.x0)+S.s0*spl(x-S.x0,S.k0)-S.s1*spl(x-S.x1,S.k1)
+  +C.h*sm(C.x0,C.x1,x)*Math.exp(-Math.pow((z-C.z)/C.w,2))+1.4*Math.sin(x/61+z/83)+.6*Math.sin(x/19-z/27);};
  const topY=(x,z)=>PLAT.top+PLAT.tilt*(x-PLAT.cliffX)+1.6*Math.sin(x/97)*Math.cos(z/131)+.8*Math.sin(x/37+z/29);
- const crestY=(x,z)=>RIDGE.top+RIDGE.tilt*(x-RIDGE.a[0])+1.2*Math.sin(x/71+z/53);
  const plainY=flankY;
  const cliffX=z=>PLAT.cliffX;   /* straight: the outpost's carved fronts stand on it */
- /* the land: the flank, the shelf's top inside its edge, the ridge's crest inside its band (over the shelf at the back wall);
-    each step sheer (a metre either side of its edge); the apron's floor level where it lies */
- function groundY(x,z){const d=plateauD(x,z),r=ridgeD(x,z);if(r>1)return crestY(x,z);if(d>1&&r<-1)return topY(x,z);
-  let y=flankY(x,z);const dk=Math.hypot(x-APRON.c[0],(z-APRON.c[1])*1.3)/APRON.r+.03*Math.sin(x/41+z/37);
+ /* the lip's radius here (weathered: it wanders along the edge) */
+ const lipR=(x,z)=>LIP.r0+(LIP.r1-LIP.r0)*(.5+.3*Math.sin(x/53+z/71)+.2*Math.sin(x/17-z/23));
+ /* the shelf's own height at d inside its edge: its top, the lip falling away in a quarter circle from e = d + LIP.out (the
+    walls' columns' line) to the top at e = R; where the step is low (the back, merging into the slope) the lip is lower too */
+ function shelfY(x,z,d){const t=topY(x,z),R=lipR(x,z)*sm(4,24,t-flankY(x,z)),e=d+LIP.out;if(R<.5||e>=R)return t;const u=R-Math.max(0,e);return t-(R-Math.sqrt(Math.max(0,R*R-u*u)));}
+ const smax=(a,b,k)=>{const h=Math.max(k-Math.abs(a-b),0)/k;return Math.max(a,b)+h*h*k*.25;};
+ /* the land: the flank, the shelf inside its edge (where it stands over the flank; past that the slope, smoothly), each step sheer
+    (a metre either side of its edge); the apron's floor level where it lies */
+ function groundY(x,z){const d=plateauD(x,z);let y=flankY(x,z);
+  const dk=Math.hypot(x-APRON.c[0],(z-APRON.c[1])*1.3)/APRON.r+.03*Math.sin(x/41+z/37);
   if(dk<1+APRON.edge)y=APRON.floor+(y-APRON.floor)*sm(1,1+APRON.edge,dk);   /* the apron's floor is level: the walker's */
-  if(d>-1)y+=(topY(x,z)-y)*sm(-1,1,d);if(r>-1)y+=(crestY(x,z)-y)*sm(-1,1,r);return y;}
+  if(d>-1)y+=(smax(y,shelfY(x,z,d),8)-y)*sm(-1,1,d);return y;}
  const surfaceY=groundY;
  /* the wealth rule: falls with the graph distance from the square (a district's anchor), from the hub's .9 to the outpost's .15 */
  const wealthAt=d=>+(.15+.75*Math.exp(-d/350)).toFixed(3);
@@ -154,6 +162,9 @@ const DH=(function(){
  /* the catacombs: down a processional way from the south well, far and deep; the Keepers' rooms at their head */
  pitNode(S2,'s2.e',PI/4);pitWay(S2,'s2.m',-11,0);pitWay(S2,'s2.k',-11,17);chain(['s2.c','s2.m','s2.k','s2.e'],'street',4);
  N('k1',300,420,-22);N('k2',480,560,-46);N('k.head',560,640,-58,{place:'the catacombs'});chain(['s2.e','k1','k2','k.head'],'ramp',4,{note:'the processional way'});
+ /* the buried light well (PLAN.md 13.11: "a skylight plugged by a young flow, their fear made visible; a landmark at a dead end"):
+    a short tube off the processional way, ending under an old shaft whose top a flow sealed (the page draws the plug) */
+ N('x.buried',452,598,-46,{place:'the buried light well'});E('k2','x.buried','tube',4,{zone:'inner',note:'a dead end under a plugged skylight'});
  /* the secret ways (scouts only): an exit up into the forest on the plateau's top, and one out at the west face's foot */
  N('x.lava',-200,-262,surfaceY(-200,-262),{place:'a scout exit (the forest on top)',exit:'top'});E('n.w','x.lava','secret',1.5,{zone:'secret'});
  N('x.forest',-689,158,OY+2,{place:'a scout exit (the west face\'s foot)',exit:'foot'});E('t1','x.forest','secret',1.5,{zone:'secret',note:'out by a back passage from the outer tube, past the stores'});
@@ -183,12 +194,14 @@ const DH=(function(){
  S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
  S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
  /* the park under the light well (its paths run along the lanes, so it is not in their way), the stalls round its edge */
- S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true,knoll:true});   /* knoll: its quarters are the breakdown's piles (below) */
+ S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true,hill:true});   /* hill: the park is the hill under the light well (below), its lanes over it */
  for(const deg of [30,60,120,150]){const a=deg*PI/180,x=Math.cos(a)*23.5,z=Math.sin(a)*23.5;S('zj_stall_b','hub',x,z,faceIn(x,z,0,0),0,'floor',{v:deg>90?1:0});}
  S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-80);
  /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
  hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-105);hallWall('zj_estate_b',-125);
  hallWall('zj_brewery',115);hallWall('zj_lab',128);hallWall('zj_shop_weapons_carved',155);hallWall('zj_shop_knapper_carved',168);
+ /* the hot-spring bath (PLAN.md 13.7: geothermal, the Throne's heat), in the hall's south-east wall */
+ hallWall('zj_bath',75);hallWall('zj_roost',-42);   /* a bat roost (13.4: their guano for the alecap beds), in the hall's north-east wall */
  /* the rolling stone door, at the outer tube's inner end, facing the outer zone (west) */
  S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground',{walls:{front:[10.4,10.2],back:[9,7.5]}});
  /* the cistern hall; the catacombs */
@@ -209,6 +222,8 @@ const DH=(function(){
     gate and a palisade round the clearing's west half, two watchtowers outside it, dwellings */
  S('zj_portal','outpost',-680,0,-PI/2,OY,'wall');S('zj_gallery_a','outpost',-680,-45,-PI/2,OY,'wall');S('zj_gallery_b','outpost',-680,45,-PI/2,OY,'wall');
  S('zj_caravanserai','outpost',-775,62,0,OY);S('zj_barracks_outpost','outpost',-795,-48,0,OY);S('zj_gate','outpost',-875,0,-PI/2,OY);
+ /* dovecotes (PLAN.md 13.4: their guano for the fields), out by the pasture */
+ S('zj_dovecote','outpost',-905,32,PI/2,OY);S('zj_dovecote','outpost',-850,-150,PI/2,OY);
  S('zj_watchtower','outpost',-933,-58,-PI/2,OY);S('zj_watchtower','outpost',-885,-112,-PI/2,OY);
  const PAL={c:[-775,0],r:100};
  for(let i=0;i<26;i++){const a=PI/2+.06+i*(PI-.12)/25;if(Math.abs(a-PI)<.07)continue;const x=PAL.c[0]+Math.cos(a)*PAL.r,z=PAL.c[1]+Math.sin(a)*PAL.r;S('zj_palisade','outpost',x,z,PI/2-a,OY);}   /* tangent, the bank (its front) outward */
@@ -222,12 +237,14 @@ const DH=(function(){
  /* the stores and the stables in the outer tube's side caves */
  S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,faceIn(byId['t.stores'].x,byId['t.stores'].z,byId.t1.x,byId.t1.z),byId['t.stores'].y,'ground');
  const PASTURE=[[-935,60],[-875,60],[-865,130],[-945,140]];
- /* the stream: a spring at the west face's foot, west across the apron */
- const STREAM=[[-875,140],[-815,95],[-775,80],[-715,70],[-678,90]];
+ /* the stream (the owner: it "comes from and goes to nowhere"): the shelf's forest's water spills off its lip down the west face
+    into a plunge pool at its foot (the first point), runs west across the apron and sinks into the porous young lava at the apron's
+    edge (the last: a swallow pool) */
+ const STREAM=[[-950,222],[-905,180],[-875,140],[-815,95],[-775,80],[-715,70],[-690,90]];
 
  /* ---- each key's footprint, as the kit declares it (kits/zeijani/src: w, d; carved defs stand on the foot of their front) */
  const FOOT={zj_council:[46,92,'centre'],zj_temple:[48,52,'front'],zj_scout_hq:[12,12,'centre'],zj_tavern_built:[15,12,'centre'],zj_guard_hq:[16,12,'centre'],
-  zj_muster:[22,16,'centre'],zj_stall_b:[4.4,3.6,'centre'],zj_stall_a:[5,2.2,'centre'],zj_kiva:[10,10,'centre'],zj_niche:[3.6,2,'centre'],
+  zj_muster:[22,16,'centre'],zj_stall_b:[4.4,3.6,'centre'],zj_stall_a:[5,2.2,'centre'],zj_kiva:[10,10,'centre'],zj_niche:[3.6,2,'centre'],zj_vent:[3.4,3.4,'centre'],zj_bath:[17,19,'front'],zj_roost:[14,14,'front'],zj_dovecote:[5,5,'centre'],zj_mirror:[3,2.4,'centre'],zj_signal:[5,5,'centre'],
   zj_barracks_carved:[26,25,'front'],zj_estate_a:[36,40,'front'],zj_estate_b:[34,36,'front'],zj_brewery:[25,29,'front'],zj_lab:[21,25,'front'],
   zj_cistern:[32,34,'front'],zj_catacomb:[32,24,'front'],zj_farm_yam:[16,12,'centre'],zj_farm_veg:[16,12,'centre'],zj_granary:[8,8,'centre'],
   zj_house_built_mid:[16,11,'centre'],zj_gallery_a:[30,56,'front'],zj_gallery_b:[30,34,'front'],zj_store_tunnel:[20,27,'front'],zj_farm_alecap:[18,30,'front'],
@@ -262,29 +279,37 @@ const DH=(function(){
   lay('zj_rowhouse',22,outer,k=>({v:k%4}));
   lay('zj_fountain',2,ring(.3));}
 
- /* ---- the wells' floors: the breakdown under each opening (the owner: "a low hill", "a skirt of greenery", at the BOTTOM of
-    the well, as the Throne's lava tube station has under its skylights): low piles of the fallen roof, grown over. Each pile is
-    the largest disc (to rMax) in the daylight that keeps 2 m off every site of its floor (the park's beds apart: the hall's piles
-    are the park's quarters) and 1 m past the half width of every way on that floor (3 m off a lane's line across the square, as its sites); taken greedily, best first, n to a floor.
-    A pile's height is a third of its radius (1.5 to 3 m); knollAt(x, z) is the floor and the pile over it there, or null */
- const KNOLLS=[];
- {const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
-  /* a point's distance to a site's footprint (its rectangle, turned; a round one a disc), negative inside */
-  const footD=(s,x,z)=>{const [w,d,o]=FOOT[s.key]||[4,4,'centre'];if(o==='round')return Math.hypot(x-s.x,z-s.z)-w/2;const c=Math.cos(s.ry),sn=Math.sin(s.ry),dx=x-s.x,dz=z-s.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;
-   const z0=o==='front'?-d:-d/2,z1=o==='front'?3.5:d/2,qx=Math.abs(lx)-w/2,qz=Math.max(z0-lz,lz-z1);return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0);};
-  const wells=[{id:'hall',c:HALL.c,y:HALL.y,light:HALL.pool+4,rMax:7.5,n:4,sites:SITES.filter(s=>s.district==='hub'&&s.at==='floor'&&!s.park)}]
-   .concat(PITS.map(P=>({id:P.id,c:P.c,y:P.floor,light:P.r-5,rMax:10,n:2,sites:SITES.filter(s=>s.district===P.id)})));
-  for(const W of wells){const ways=EDGES.filter(e=>{const a=byId[e.a],b=byId[e.b];return Math.abs(a.y-W.y)<2&&Math.abs(b.y-W.y)<2&&
-     sd(W.c,[a.x,a.z],[b.x,b.z])<W.light+40;}).map(e=>({a:[byId[e.a].x,byId[e.a].z],b:[byId[e.b].x,byId[e.b].z],hw:e.kind==='square'?3:(e.w||4)/2+1}));   /* a lane across the square: 3 m off its line, as the sites keep */
-   const room=(x,z,got)=>{let r=Math.min(W.rMax,W.light-Math.hypot(x-W.c[0],z-W.c[1]));
-    for(const s of W.sites)r=Math.min(r,footD(s,x,z)-2);for(const w of ways)r=Math.min(r,sd([x,z],w.a,w.b)-w.hw);for(const k of got)r=Math.min(r,Math.hypot(x-k.c[0],z-k.c[1])-k.r-2);return r;};
-   const got=[];for(let i=0;i<W.n;i++){let best=null;
-    for(let x=W.c[0]-W.light;x<=W.c[0]+W.light;x+=1)for(let z=W.c[1]-W.light;z<=W.c[1]+W.light;z+=1){const r=room(x,z,got);if(r>4.5&&(!best||r>best.r+1e-9))best={c:[x,z],r};}
-    if(!best)break;got.push(best);}
-   got.forEach((k,i)=>KNOLLS.push({id:W.id+'.k'+i,well:W.id,c:k.c,y:W.y,r:Math.floor(k.r*100)/100,h:+Math.max(1.5,Math.min(3,k.r/3)).toFixed(2)}));}}
- /* the pile's height over its floor at (x, z): a heap (steeper at its foot), its top broken by two waves of noise */
- const knollAt=(x,z)=>{for(const K of KNOLLS){const d=Math.hypot(x-K.c[0],z-K.c[1]);if(d>=K.r)continue;const u=1-d/K.r,s=u*u*(3-2*u);
-   const n=.85+.15*Math.sin(x*.9+z*.4)+.1*Math.sin(x*.31-z*.77+K.r);return {K,y:K.y+K.h*Math.pow(s,1.25)*n};}return null;};
+ /* ---- PLAN.md section 13's extras on the wells' floors and over the ways. Signal stations (13.9: horns and lamps down the
+    braid): one by the hall's west mouth, one by each well's way in. Light-well mirrors (13.5): one on each well's floor by its way
+    in, its front to the way, throwing the well's daylight down it (MIRRORS: the site and the way's nodes, outward; the page drives
+    a spot light). Air shafts (13.1: Derinkuyu's, their heads hidden in the forest; a caged bird kept under each, which sickens
+    before a person does): from three deep ways up through the shelf (SHAFTS: the way's node; a vent head over it on the top) */
+ const MIRRORS=[],SHAFTS=[];
+ /* the decoy entrance (13.3): a mouth in the shelf's north wall over the lava trough, its passage 30 m in to a rubble choke, no
+    way of the city's near it (it is in no graph: nothing routes there) */
+ const DECOY=(()=>{const x=-300;let lo=-300,hi=-560;for(let i=0;i<34;i++){const m=(lo+hi)/2;if(plateauD(x,m)>0)lo=m;else hi=m;}return {c:[x,+((lo+hi)/2).toFixed(2)],out:[0,-1],len:30,w:4.4,h:5,r:2.6,top:5.6};})();
+ S('zj_signal','hub',-112,13,faceIn(-112,13,HALL.c[0],HALL.c[1]),HALL.y,'floor');
+ for(const [P,out] of [[S1,'a2'],[S2,'bs1'],[S3,'e1']]){const sg=pitAt(P,24,8),mr=pitAt(P,27,-7),inN=byId[P.id+'.in'];
+  S('zj_signal',P.id,sg[0],sg[1],faceIn(sg[0],sg[1],P.c[0],P.c[1]),P.floor);
+  MIRRORS.push({site:S('zj_mirror',P.id,mr[0],mr[1],faceIn(mr[0],mr[1],inN.x,inN.z),P.floor),aim:[P.id+'.in',out]});}
+ for(const id of ['k1','j1','b2']){const n=byId[id];SHAFTS.push({id:'x.shaft.'+id,node:id,x:n.x,z:n.z,y:n.y});S('zj_vent','hub',n.x,n.z,0,+surfaceY(n.x,n.z).toFixed(2),'ground',{shaft:id});}
+
+ /* ---- the wells' floors (the owner, review 3: "the square is one low hill ... with the park lanes on top of it"; each well's
+    bottom "a low grassy hill, place farms and other structures on top of it"). HILLS: under the light well a hill 20 m across
+    the radius and 1.8 m high (the park's ground, the lanes over it); on each pit's floor one filling it to 4 m short of its wall
+    (1.5 m high): a cosine dome, flattened into a level PAD under each building on it (its footprint and half a metre round,
+    blending back to the dome, and between near pads, over 2.5 m), the building standing on its pad. hillAt(x, z): {H, y} the floor and the hill there, or null;
+    after this every node on a hill's floor stands on the hill */
+ const HILLS=[{id:'hall',well:'hall',c:HALL.c,y:HALL.y,r:20,h:1.8,pads:[]}].concat(PITS.map(P=>({id:P.id,well:P.id,c:P.c,y:P.floor,r:P.r-4,h:1.5,pads:[]})));
+ const dome=(H,x,z)=>{const d=Math.hypot(x-H.c[0],z-H.c[1]);return d>=H.r?0:H.h*.5*(1+Math.cos(PI*d/H.r));};
+ const footD=(s,x,z)=>{const [w,d,o]=FOOT[s.key]||[4,4,'centre'];if(o==='round')return Math.hypot(x-s.x,z-s.z)-w/2;const c=Math.cos(s.ry),sn=Math.sin(s.ry),dx=x-s.x,dz=z-s.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;
+  const z0=o==='front'?-d:-d/2,z1=o==='front'?.5:d/2,qx=Math.abs(lx)-w/2,qz=Math.max(z0-lz,lz-z1);return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0);};
+ for(const H of HILLS){if(H.well==='hall')continue;
+  for(const st of SITES){if(st.district!==H.well||st.at==='wall')continue;const py=+(H.y+dome(H,st.x,st.z)).toFixed(2);st.y=py;H.pads.push({s:st,y:py});}}
+ const hillAt=(x,z)=>{for(const H of HILLS){const d=Math.hypot(x-H.c[0],z-H.c[1]);if(d>=H.r)continue;let a=0,ws=0,W=0;
+   for(const P of H.pads){const w=1-sm(.5,3,footD(P.s,x,z));if(w>0){a+=w*(P.y-H.y);ws+=w;W=Math.max(W,w);}}   /* the pads near, weighted, and the dome as much as none is full */
+   const k=1-W;return {H,y:H.y+(a+k*dome(H,x,z))/(ws+k)};}return null;};
+ for(const n of NODES){const q=hillAt(n.x,n.z);if(q&&Math.abs(n.y-q.H.y)<.5)n.y=+q.y.toFixed(2);}
 
  /* ---- the graph's helpers */
  const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});
@@ -297,6 +322,6 @@ const DH=(function(){
  const fromSquare=dist('h.sq',e=>e.zone!=='secret');
  DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
 
- return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,KNOLLS,knollAt,len,grade,dist,onHall,onPit,faceIn};
+ return {PI,surfaceY,groundY,topY,plainY,flankY,shelfY,lipR,plateauD,cliffX,PLAT,LIP,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,HILLS,hillAt,MIRRORS,SHAFTS,DECOY,len,grade,dist,onHall,onPit,faceIn};
 })();
 if(typeof module!=='undefined')module.exports=DH;

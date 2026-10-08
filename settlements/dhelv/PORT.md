@@ -6,22 +6,23 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 68 (34%) | 0 (0%) | 0 (0%) | 129 (66%) | 0 (0%) |
+| KB | 71 (33%) | 0 (0%) | 0 (0%) | 136 (64%) | 6 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 3.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/41-dhelv-layout.js` | 31.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45-dhelv-bio.js` | 9.7 | [web] | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/48-dhelv-flows.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the vents and THRONE.flowHistory over the layout's land: data |
+| `src/41-dhelv-layout.js` | 34.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45-dhelv-bio.js` | 9.5 | [web] | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/48-dhelv-flows.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the vents and THRONE.flowHistory over the layout's land: data |
 | `src/49-dhelv-grove.js` | 15.1 | [web] | 18 | 0 | 0 | 0 | 2 | 4 | 10 | 1 | 0 | 0 | 0 | the variants' growing and instancing (a port grows them in its own nursery); the placement (a seeded stream on the shelf's mask) is data |
-| `src/72-dhelv-nav.js` | 11.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the nav graph and its checks (core/walk, the cavern): data |
+| `src/72-dhelv-nav.js` | 11.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the nav graph and its checks (core/walk, the cavern): data |
 | `src/74-dhelv-sim.js` | 21.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the ramblers' world into core/simulation, its checks: data |
-| `src/88-dhelv-fungi.js` | 3.4 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | the fungi pass (a port plants its own along the layout's ways) |
-| `src/89-dhelv-knolls.js` | 9.2 | [web] | 10 | 0 | 0 | 0 | 2 | 2 | 0 | 1 | 0 | 0 | 0 | the piles' drawing and the flora pass (a port plants its own); where the piles lie is the layout's (41, data) |
-| `src/90-dhelv-scene.js` | 47.3 | [web] | 50 | 0 | 1 | 0 | 10 | 16 | 2 | 5 | 0 | 0 | 0 |  |
+| `src/86-dhelv-extras.js` | 6.4 | [draw] | 5 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 || section 13's extras the defs do not draw (the shafts, the sentinels, the buried well, the decoy, the mirrors' light); where they are is the layout's (41, data) |
+| `src/88-dhelv-fungi.js` | 3.5 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | the fungi pass (a port plants its own along the layout's ways) |
+| `src/89-dhelv-hills.js` | 8.8 | [web] | 9 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 || the hills' drawing, walk floors and flora pass (a port plants its own); the hills and their pads are the layout's (41, data) |
+| `src/90-dhelv-scene.js` | 54.7 | [web] | 55 | 0 | 1 | 0 | 10 | 21 | 3 | 5 | 0 | 0 | 0 |  |
 | `src/91-dhelv-probe.js` | 18.4 | [web] | 3 | 0 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/93-dhelv-map.js` | 5.6 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |

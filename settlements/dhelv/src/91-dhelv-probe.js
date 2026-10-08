@@ -66,7 +66,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling on the plateau's top, every Throne tree on the plain or the apron */
  {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],U=typeof THRONE!=='undefined'?THRONE.TREES:[],bad=dhbTreesOk(T).concat(dhbTreesOk(U,DHB.throneMask));
   add('no-trees-on-cliffs-or-in-buildings',T.length>0&&U.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor, '+U.length+' of the Throne kit\'s on the flows');}
- {const W=DHK.trees,bad=dhkTreesOk(W);add('wells-floor-flora',DH.KNOLLS.length>0&&W.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):DH.KNOLLS.length+' piles under the openings, '+W.length+' trees on them');}
+ {const W=DHK.trees,bad=dhkTreesOk(W);add('wells-floor-flora',DH.HILLS.length>0&&W.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):DH.HILLS.length+' hills under the openings, '+W.length+' small trees on them');}
  {const u=dhuOnFloors(0);add('tunnels-fungi',u.n>200&&!u.bad.length,(u.bad.length?u.bad.length+' off the floor, first '+u.bad.slice(0,3).join('; ')+'; ':'')+u.n+' fungi along '+(DHU.out?DHU.out.ways+' ways ('+DHU.out.m+' m)':'no way'));}
  {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
  {const w=DHP.budgets();add('view-budgets',w.ok,w.detail);}
@@ -93,7 +93,7 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
  /* trees: one planted at the cliff's foot, one in the caravanserai */
  {const C=DH.SITES.find(q=>q.key==='zj_caravanserai'),bad=dhbTreesOk([{x:DH.PLAT.cliffX+2,z:0},{x:C.x,z:C.z}]);add('no-trees-on-cliffs-or-in-buildings: a tree on the cliff, one in a building',bad.length===2,bad.join(', '));}
- {const K=DH.KNOLLS[0],bad=dhkTreesOk([{x:DH.HALL.c[0]+.5,z:DH.HALL.c[1]+30},{x:K.c[0]+K.r+3,z:K.c[1]}]);add('wells-floor-flora: a tree in the lane across the square, one past the foot of a pile',bad.length===2,bad.join(', '));}
+ {const K=DH.HILLS[0],bad=dhkTreesOk([{x:DH.HALL.c[0]+.5,z:DH.HALL.c[1]-10},{x:K.c[0]+K.r+3,z:K.c[1]}]);add('wells-floor-flora: a tree on the lane over the square\'s hill, one past the hill\'s foot',bad.length===2,bad.join(', '));}
  {const u=dhuOnFloors(3);add('tunnels-fungi: every fungus lifted 3 m',u.n>0&&u.bad.length===u.n,u.bad.length+' of '+u.n+' off the floor');}
  /* light: a plug of rock left in the light well's throat */
  {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});

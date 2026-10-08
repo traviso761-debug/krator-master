@@ -19,7 +19,7 @@ const DHL={clock:null,on:false,MAX:700,R:170,LAST:0,shown:0,moving:0,follow:null
  for(const m of [DHL.bodies,DHL.heads]){m.count=0;m.frustumCulled=false;m.castShadow=true;m.userData.probeSkip=true;m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(m);}
  DHL.bodies.raycast=THREE.InstancedMesh.prototype.raycast.bind(DHL.bodies);DHL.heads.raycast=()=>{};
  const c=new THREE.Color();for(let i=0;i<Math.max(1,DHL.MAX);i++){DHL.bodies.setColorAt(i,c.set(0xffffff));DHL.heads.setColorAt(i,c.set(0xb07a58));}
- DHL.hud=document.createElement('div');DHL.hud.style.cssText='position:fixed;left:10px;top:84px;padding:6px 9px;font:11px ui-monospace,monospace;color:#e8dcc8;background:rgba(20,16,12,.72);border-radius:6px;pointer-events:none;white-space:pre;z-index:5';
+ DHL.hud=document.createElement('div');DHL.hud.style.cssText='position:fixed;left:10px;bottom:12px;padding:6px 9px;font:11px ui-monospace,monospace;color:#e8dcc8;background:rgba(20,16,12,.72);border-radius:6px;pointer-events:none;white-space:pre;z-index:5';
  document.body.appendChild(DHL.hud);})();
 /* a role's robe (the guilds' colours; the guard in dark red, the scouts in teal, foreigners in ash grey) */
 DHL.COL={brewer:0xc8902a,alecap_farmer:0x8a6aa8,yam_farmer:0x9a8a40,forager:0x5a8a4a,herder:0x7a6a3a,stonecutter:0xb8b0a0,smith:0x5a4a40,alchemist:0x3a6a8a,shopkeeper:0xd8b878,

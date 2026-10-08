@@ -28472,7 +28472,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     });
     /* the walk: the pit's floor less the podium and the lamp pillars; the terrace less the stair's slot and the drum; the podium's sides */
     voids.push({ kind: 'floor', id: 'pit-floor', poly: rrect(-17.7, 17.7, -47.7, -8.3), y: 0, holes: [rrect(-9.3, 9.3, -40.3, -15.7), circle(1.0, 12, -11, -12), circle(1.0, 12, 11, -12), rrect(12.3, 14.1, -28.9, -27.1), circle(0.45, 10, 13.2, -24.1)], tag: 'cavern:floor' });   /* the holes a margin wider: the mesh rounds a pillar fatter at its foot */
-    voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -22.0), circle(6.25, 28, 0, -30)] });
+    voids.push({ kind: 'floor', id: 'terrace', poly: rrect(-8.7, 8.7, -39.7, -16.3), y: 6, holes: [rrect(-1.5, 1.5, -16.3, -21.85), circle(6.25, 28, 0, -30)] });   /* the slot overlaps the stair's head by 0.15 m: an exact abutment left a hairline with no floor */
     [[-9, -1.5, -16.3, -16], [1.5, 9, -16.3, -16], [-9, 9, -40, -39.7], [-9, -8.7, -40, -16], [8.7, 9, -40, -16]].forEach(function (b, i) { voids.push({ kind: 'block', id: 'podium-side' + i, box: [b[0], b[1], b[2], b[3], 0, 5.9] }); });
     return { rooms: rooms, voids: voids };
   }
@@ -28541,8 +28541,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       for (let x = -L / 2 + 3.25; x <= L / 2 - 3; x += 3.5) {
         if (ry === 0 && Math.abs(x) < 1.8) continue;
         const wx = cx + x * c, wz = cz - x * sn, ax = wx - nx * D, az = wz - nz * D;
-        if (ax < -7.3 || ax > 7.3 || az < Z(-21.3) || az > Z(-1.7)) continue;      /* the chamber behind it, clear of its corners */
-        if (Math.abs(ry) > 1 && Math.abs(ry) < 2.2 && Math.abs(wz - Z(-12)) < 1.6) continue;   /* a flank's door */
+        const flank = Math.abs(Math.sin(ry)) > 0.5;
+        if (flank ? (az < Z(-21.3) || az > Z(-1.7)) : (ax < -7.3 || ax > 7.3)) continue;      /* the chamber behind it (along the face), clear of its corners */
+        if (flank && Math.abs(wz - Z(-12)) < 1.6) continue;   /* a flank's door */
         const k = windows.length;
         windows.push({ x: wx, z: wz, ry: ry, nx: nx, nz: nz, y: U + 0.6 });
         voids.push({ kind: 'stair', id: 'window' + k, a: [ax, U + 0.6, az], b: [wx + nx * 0.4, U + 0.6, wz + nz * 0.4], w: 1.0, h: 1.8, floor: false });

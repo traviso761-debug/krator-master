@@ -51,9 +51,12 @@ defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:tr
 /* the temple (Kailasa): the gateway's tiers on the face; in the pit the lamp pillars (columns over the rock left standing, a
    lamp on each), the podium's base moulding, friezes of the spirits and cornice round its four faces, the corner shrines'
    domes, the drum's cornice and the pierced lattice dome over the open sanctum, lit from inside */
-/* the sky dome: a hemisphere painted with the heavens over the Throne (the sun, the ringed gas giant, its moons, the stars) on both
-   faces, a little self-lit so the sanctum's lamps are not all it has. The painting is the owner's (`patSkyDome`, the library's
-   patterns/zeijani/sky-dome: wrapping round, its gilt band the rim); the canvas below is the procedural fallback (?mat=proc); spherical UVs: u round the sky, v from the rim (0) to the zenith (1) */
+/* the sky dome: a hemisphere painted inside with the heavens over the Throne (the sun, the ringed gas giant, its moons, the
+   stars), a little self-lit so the sanctum's lamps are not all it has; outside it is stone (the temple's own, zfDome). The painting
+   is the owner's (`patSkyDome`, the library's patterns/zeijani/sky-dome: a disc, its centre the zenith, its gilt band the rim),
+   mapped polar: a point's uv is its azimuth round the disc's centre at a radius in proportion to its angle from the zenith (so
+   the circle is drawn as painted, nothing stretched). The canvas below is the procedural fallback (?mat=proc, an older wrapped
+   sheet: it reads stretched on the polar map) */
 const ZK_SKY=(function(){const L=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('zeijani','patSkyDome'):null,T=L?KMAT.textures(L,{aniso:8}).map:canvasTex(2048,1024,(g,w,h)=>{
  const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#0b1030');sky.addColorStop(.55,'#1d2a66');sky.addColorStop(.86,'#3d4f8c');sky.addColorStop(1,'#6a5a7a');g.fillStyle=sky;g.fillRect(0,0,w,h);
  let s=7;const R=()=>{s=(s*16807)%2147483647;return s/2147483647;};
@@ -71,9 +74,12 @@ const ZK_SKY=(function(){const L=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('zei
   const mg=g.createRadialGradient(w*u-r*.3,h*v-r*.3,1,w*u,h*v,r);mg.addColorStop(0,cA);mg.addColorStop(1,cB);g.fillStyle=mg;g.beginPath();g.arc(w*u,h*v,r,0,TAU);g.fill();}
  /* a gilt band at the rim (the bottom of the sheet) */
  g.fillStyle='#b8862e';g.fillRect(0,h*.93,w,h*.07);g.fillStyle='#e8c060';for(let x=0;x<w;x+=64){g.beginPath();g.moveTo(x,h*.93);g.lineTo(x+32,h*.965);g.lineTo(x+64,h*.93);g.fill();}});
- T.wrapS=THREE.RepeatWrapping;T.wrapT=THREE.ClampToEdgeWrapping;T.encoding=THREE.sRGBEncoding;T.anisotropy=8;
- const m=new THREE.MeshStandardMaterial({map:T,emissive:0xffffff,emissiveMap:T,emissiveIntensity:.35,roughness:.55,metalness:.05,side:THREE.DoubleSide});MAT.skyDome=m;TILE.skyDome=1;
- return {geo:new THREE.SphereGeometry(1,48,16,0,TAU,0,PI/2)};})();
+ T.wrapS=T.wrapT=THREE.ClampToEdgeWrapping;T.encoding=THREE.sRGBEncoding;T.anisotropy=8;
+ const m=new THREE.MeshStandardMaterial({map:T,emissive:0xffffff,emissiveMap:T,emissiveIntensity:.35,roughness:.55,metalness:.05,side:THREE.BackSide});MAT.skyDome=m;TILE.skyDome=1;
+ /* the polar uv (the disc's rim at .488 of the sheet from its centre: its gilt band's outer edge) */
+ const geo=new THREE.SphereGeometry(1,64,24,0,TAU,0,PI/2),P=geo.attributes.position,U=geo.attributes.uv;
+ for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),r=.488*Math.acos(Math.max(-1,Math.min(1,y)))/(PI/2),a=Math.atan2(z,x);U.setXY(i,.5+r*Math.cos(a),.5-r*Math.sin(a));}
+ U.needsUpdate=true;return {geo};})();
 function zkSkyDome(x,y,z,r,h){const m=TF(x,y,z,0);m.scale(new THREE.Vector3(r,h,r));emit('skyDome',ZK_SKY.geo,m,WHITE,{su:1,sv:1});}
 function zkBand(mk,x0,x1,z,y,h,ry,c){/* a frieze on a face at z (local, facing ry): a backing slab straddling the face and the sheet on it */
  const w=Math.abs(x1-x0),cx=(x0+x1)/2;W(0,0,0,ry,()=>{box('tuffPol',cx,y-.05,z,w+.1,h+.1,.16,c);zfBand(mk,cx,y,z+.085,w,h,0,c);});}
@@ -94,11 +100,11 @@ defBuilding({key:'zj_temple',name:'The temple: cut from one rock',seed:4803,orig
   for(const [cx,cz,L,ry] of [[0,-40,18,PI],[-9,-28,24,-PI/2],[9,-28,24,PI/2]]){W(cx,0,cz,ry,()=>{box('tuffPol',0,0,.05,L,.45,.5,c);box('tuffPol',0,5.5,.1,L+.3,.45,.6,c);zkBand('patFrieze',-L/2+.4,L/2-.4,0,1.2,1.5,0,c);});}
   /* the shrines' domes and finials */
   for(const [x,z] of [[-6.6,-19],[6.6,-19],[-6.6,-37],[6.6,-37]]){lathe('tuffPol',x,z,[[1.55,8.85],[1.8,8.95],[1.8,9.1],[1.6,9.15]],20,c);zfDome('tuffPol',x,9.1,z,1.7,1.3,c,{seg:20,rows:7});cone('copper',x,10.4,z,.14,.5,P('copper'),8);}
-  /* the drum's cornice, the sky dome on it (the heavens painted inside and out: underground, a pierced dome showed only rock),
+  /* the drum's cornice, the sky dome on it (the heavens painted inside, stone outside),
      the light inside, the finial */
   lathe('tuffPol',0,-30,[[6.15,10.75],[6.55,10.9],[6.55,11.1],[6.2,11.2]],40,c);
-  zkSkyDome(0,11.2,-30,6.2,5.2);
+  zkSkyDome(0,11.2,-30,6.2,5.2);zfDome('tuffPol',0,11.2,-30,6.27,5.27,c,{seg:40,rows:10});   /* the painted sky inside, stone over it */
   cyl('copper',0,16.3,-30,.3,.4,P('copper'),12);cone('copper',0,16.7,-30,.3,1.1,P('copper'),12);
-  sph('glow',0,9.2,-30,.55,P('flame'),1,16);haloAt(0,9.2,-30,0xffb04a,true);for(let i=0;i<6;i++){const a=i*TAU/6;sph('glow',Math.cos(a)*3.2,8.6,-30+Math.sin(a)*3.2,.18,P('flame'),1,10);}
+  sph('glow',0,9.2,-30,.55,P('flame'),1,16);haloAt(0,9.2,-30,0xffb04a,false);   /* (a small halo: the big one filled the view from the podium's top) */for(let i=0;i<6;i++){const a=i*TAU/6;sph('glow',Math.cos(a)*3.2,8.6,-30+Math.sin(a)*3.2,.18,P('flame'),1,10);}
   zkKivaDress(13.2,-28,0);   /* the kiva in the pit's east side (its plan: the temple's item) */
   door(0,0,0,0,3.6);}});

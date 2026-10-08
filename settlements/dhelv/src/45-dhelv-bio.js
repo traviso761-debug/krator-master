@@ -17,12 +17,11 @@ DHB.off=function(x,z){const P=DH.PAL;if(Math.hypot(x-P.c[0],z-P.c[1])<P.r+10||(x
  return inside;};
 /* the openings on the plateau's top: the light well's throat and the three wells (a tree here would hang over a city) */
 DHB.overOpening=(x,z,pad)=>{const H=DH.HALL;if(Math.hypot(x-H.c[0],z-H.c[1])<H.throat.r1+pad)return true;return DH.PITS.some(P=>Math.hypot(x-P.c[0],z-P.c[1])<P.r+pad);};
-DHB.mask=function(x,z){const d=DH.plateauD(x,z);if(d<10||DH.ridgeD(x,z)>-6)return 0;   /* 10 m back from the edge: the caprock and the wall's lip stay bare; and off the foot of the ridge's back wall */
+DHB.mask=function(x,z){const d=DH.plateauD(x,z);if(d<14)return 0;   /* 14 m back from the edge: the wall's weathered lip stays bare */
  if(DHB.overOpening(x,z,8))return 0;
- return Math.min(1,(d-10)/12);};
+ return Math.min(1,(d-14)/12);};
 DHB.throneMask=function(x,z){const G=DHB.G;if(x<G.x0+10||x>G.x1-10||z<G.z0+10||z>G.z1-10)return 0;
  if(DH.plateauD(x,z)>-9)return 0;   /* the shelf and its wall's foot (the wall stands 4 m out from the outline) */
- const r=DH.ridgeD(x,z);if(r>-9&&r<10)return 0;   /* the ridge's walls, their foot and their lip (its crest is old ground: the kit's old woods) */
  if(DHB.off(x,z))return 0;
  /* no tree on a scarp: over 1 m, where the 8 m field shows any slope */
  if(dhbFields().at('slope',x,z)>.3){const g=DH.groundY;if(Math.max(Math.abs(g(x+1,z)-g(x-1,z)),Math.abs(g(x,z+1)-g(x,z-1)))/2>.5)return 0;}
@@ -77,7 +76,7 @@ function dhbForest(){if(typeof HYPERJUNGLE==='undefined'||new URLSearchParams(lo
  try{BIO.cur='jungle/trees';DHB.out={grove:dhgGrove()};BIO.cur='jungle/floor';Object.assign(DHB.out,HYPERJUNGLE.buildFloor(DHB.HJR,q));BIO.cur=null;}
  catch(e){BIO.cur=null;reportErr('hyperjungle: '+(e.stack||e));return null;}
  const b=BIO.bake();DHB.out.instances=b.inst;DHB.out.calls=b.calls;/* the underground's plants, baked apart (drawn as the underground is: 90's dhSplitBiome): the wells' floors (89), the tunnels' fungi (88) */
- DHB.out.wells=dhKnollFlora(tq);DHB.out.fungi=dhFungi(tq);{const n0=BIO.baked.length,u=BIO.bake();for(let i=n0;i<BIO.baked.length;i++)BIO.baked[i].userData.under=true;DHB.out.under={calls:u.calls,instances:u.inst};}DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
+ DHB.out.wells=dhHillFlora(tq);DHB.out.fungi=dhFungi(tq);{const n0=BIO.baked.length,u=BIO.bake();for(let i=n0;i<BIO.baked.length;i++)BIO.baked[i].userData.under=true;DHB.out.under={calls:u.calls,instances:u.inst};}DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
  DHB.out.throne=th?{trees:THRONE.TREES.length,shares:THRONE.FLOWS.shares()}:null;return DHB.out;}
 /* every tree's foot: where its kit's mask lets it root, not on the wall or a slope, not in a building */
 function dhbTreesOk(trees,mask){mask=mask||DHB.mask;const bad=[];for(const T of trees){const m=mask(T.x,T.z),g=DH.groundY,sl=Math.max(Math.abs(g(T.x+1,T.z)-g(T.x-1,T.z)),Math.abs(g(T.x,T.z+1)-g(T.x,T.z-1)))/2;

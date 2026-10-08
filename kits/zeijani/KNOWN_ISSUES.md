@@ -26,5 +26,15 @@
       at the rim). Wrapped once round a hemisphere a 2:1 sheet looked warped (2x wide at the rim, pinched at the crown), so
       `tools/textures/dome_sheet.py` reworks it: its own sky continued to twice the width, sky added above so the sun and the
       planet sit in the dome's lower half, the crown starless. The canvas in `ZK_SKY` is the procedural fallback.
+      **Review 3 (2026-10-08):** it still looked distorted, so the owner painted the sky as a disc: the dome now maps it polar
+      (the disc's centre at the zenith, its gilt band at the rim: nothing stretched; batch `zeijani-skydome-disc-2026-10.json`,
+      `process.py --seam-axes none`), painted inside only, with stone (`zfDome`) over it outside. The sanctum lamp's halo is a
+      small one (the big one filled the view from the podium's top, a pink disc). The procedural fallback is still the old wrapped
+      canvas and reads stretched on the polar map.
+- [x] **The temple's podium stair stopped a walker at its head** (the owner: trouble on the ramp in walk mode). The walk map's
+      blocks are upright boxes on the world's axes; a carved site's block was the box round two of its corners, so at Dhelv's
+      temple (turned 60 degrees) a podium side's 24 m block lay across the stair. A turned block is now cut into 0.8 m pieces,
+      each the box round its four corners (`40-zj-cave.js`, `cvFromItem`'s blocks); and the terrace's slot for the stair now
+      overlaps its head by 0.15 m (an exact abutment had left a hairline with no floor).
 - [ ] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.

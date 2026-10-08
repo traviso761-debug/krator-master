@@ -29,7 +29,8 @@ beam('log',[1.0,.2,-3.5],[.6,1.6,-4.4],.07,P('woodD'),true,6);
   for(const s of [-1,1])box('tuffHewn',s*.95,0,.1,.26,2.3,.3,P('white'));zfStepLintel('tuffHewn',0,2.3,.1,1.9,P('white'),{n:1,h:.26,d:.3});
   /* in a world whose tunnels meet the door (Dhelv: o.walls {front:[w,h], back:[w,h]}), masonry walls seal each tunnel's end
      round the passage, so the stone door's passage is the only way through */
-  if(o.walls){const wall=(zc,W,H)=>{const c2=P('tuff');for(const s of [-1,1])box('ashlar',s*(W/2+.8)/2,0,zc,W/2-.8,H,.4,c2);box('ashlar',0,2.3,zc,1.6,H-2.3,.4,c2);
+  /* (clear of the jambs and over the lintel's top, not at its soffit: coplanar faces fought there) */
+  if(o.walls){const wall=(zc,W,H)=>{const c2=P('tuff');for(const s of [-1,1])box('ashlar',s*(W/2+1.08)/2,0,zc,W/2-1.08,H,.4,c2);box('ashlar',0,2.56,zc,2.16,H-2.56,.4,c2);
     box('tuffPol',0,0,zc,W,.18,.5,P('white'));};
    if(o.walls.front)wall(-.1,o.walls.front[0],o.walls.front[1]);if(o.walls.back)wall(-9.2,o.walls.back[0],o.walls.back[1]);}
   door(0,0,0,0,1.6);}});
