@@ -29,7 +29,7 @@ What already crosses over, or is scaffolded to:
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
 | `core/rand/` (2026-10-02) | one stream (the lineages' mulberry32, proven equal), an integer hash and noise; golden vectors; node test; GDScript twin `krand.gd`, its arithmetic proven by a Python transliteration, passing in Godot 4.5 headless since 2026-10-05 (`godot/tests/rand/`) | Ys's city takes it for its placement pass |
 | `core/clock/` (2026-10-02) | the world clock (Phase 1's contract); node test | Iziz's city runs on it; becomes `WorldClock.gd` |
-| `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
+| `core/simulation/` | `SIM` (Phase 1 built 2026-10-05: nine fragments, `test-sim.js`; Mungo and Shade run on it), plans in `ROADMAP.md`, `PLAN.md`, `SCHEMA.md` | `SIM.export()` (`krator-sim`); Verge keeps its own `SIM` with a Godot twin (`ROADMAP.md`, stage 5) |
 | `settlements/ys` (the Hykkousoi capital; phases 0–2 built, the city not yet placed) | the layout, the land–sea lattice, the NAV grids and the ground stamps are records and Float32 grids with no three.js in them; every placed thing leaves a record (volumes, doors, windows, lights, rooms, spots, furniture) | no exporter yet. `settlements/ys/GODOT.md` reads the build against this plan: it takes `core/rand` and the terrain bake before its city pass, writes sim data instead of a life layer, and exports on the `KRATOR_EXPORT` shape |
 
 **Field report (Travis, 2026-10-02).** A friend of Travis's imported the Voth city kit models into Godot. That

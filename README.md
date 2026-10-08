@@ -75,8 +75,20 @@ Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tri
 
 ## Where things are
 **Building on Windows:** a `build.py` must name `encoding='utf-8'` on every `open()` (and `newline='\n'`); without it
-Python writes the local code page and the page's em dashes become byte 0x97 (Locus shipped so once, Oct 2026). Girder,
-Mav's Refuge, Voth and Yuni's `build.py` still write without it.
+Python writes the local code page and the page's em dashes become byte 0x97 (Locus shipped so once, Oct 2026). Every
+`build.py` names it since 2026-10-08, and `tools/check_encoding.py` (run by `tools/test_all.py` and CI) fails on one that does not.
+
+**Checks and CI.** `python3 tools/test_all.py` runs every check the repo has (the port lint, the insulation check, the
+encoding lint, every node test, a rebuild of every build and the hash baseline); `--nightly` adds the furniture
+fingerprint, `verify.py --assert` on the critical-path builds and the Godot tests. GitHub Actions runs the first on every
+push (`.github/workflows/checks.yml`, which also fails if a committed page is not what its sources build) and the second
+nightly (`nightly.yml`). A verify.py takes its harness from `tools/harness.py`; `python3 tools/harness.py smoke <pages>`
+loads any pages headless and reports their error panels.
+
+**Built pages and texture packs are in Git LFS** (2026-10-08, like the texture library): every `dist/*.html` and
+`dist/*.js`, the pages the Voth lineage writes beside `build.py`, and every packed `tex/*.webp`. A clone needs `git lfs`
+to open a page; `GIT_LFS_SKIP_SMUDGE=1` plus `git lfs pull --include='*/*/tex/*'` is enough to build. LFS stores a
+file once by content, so the same packed set in twenty builds costs one copy.
 
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 

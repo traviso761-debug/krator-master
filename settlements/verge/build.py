@@ -243,7 +243,7 @@ def main():
     print('built dist/%s  (%d fragments, %d KB, sha %s)  %s' % (OUT, len(order), len(html) // 1024,
           hashlib.sha1(html.encode('utf-8')).hexdigest()[:12],
           'syntax NOT CHECKED (no node)' if r is None else 'syntax OK' if r.returncode == 0 else 'SYNTAX ERROR\n' + r.stderr[:1200]))
-    with open(os.path.join(HERE, 'build-manifest.json'), 'w') as fh:
+    with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n') as fh:
         json.dump({f: [frags[f][1], hashlib.sha1(frags[f][0].encode('utf-8')).hexdigest()[:12]] for f in order}, fh, indent=1)
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):

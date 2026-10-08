@@ -85,7 +85,7 @@ def matlib_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return "/* no tex/pack.json: the kit runs on vertex colours only */\nKMAT.pack('ash-nomads', {});\n"
-    pack = json.load(open(pj))
+    pack = json.load(open(pj, encoding='utf-8'))
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
@@ -162,7 +162,7 @@ def main():
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
-    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
+    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
     node = find_node()
     if node:

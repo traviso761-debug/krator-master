@@ -270,7 +270,7 @@ and the Godot importer would each need an LFS client, and a clone without one si
 - never reprocess a committed set in place without a reason (each rewrite adds its size to history);
 - sources and Poly Haven downloads stay outside the repo;
 - trigger to revisit: the library and patterns together passing **250 MB**, or a need to reprocess many sets.
-  The answer then is a separate texture repository carried as a subtree (as `host/WorldMenagerie/` is), not LFS.
+  The answer then is a separate texture repository carried as a subtree (as the World Menagerie is under `host/`), not LFS.
 
 ## Cloth (procedural base weaves, and the ChatGPT deliveries)
 

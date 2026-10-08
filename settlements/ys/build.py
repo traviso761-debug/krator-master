@@ -75,7 +75,7 @@ def matlib_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return '/* no tex/pack.json: Ys runs on its procedural textures */\nKMAT.pack(\'ys\', {});\n'
-    pack = json.load(open(pj))
+    pack = json.load(open(pj, encoding='utf-8'))
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]

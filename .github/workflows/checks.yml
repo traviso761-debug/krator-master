@@ -1,0 +1,39 @@
+# Every push: the lints, the node tests, a rebuild of every build, the hash baseline, and a clean tree after it
+# (every committed page is what its sources build). tools/test_all.py is the whole job; run it locally the same way.
+name: checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GIT_LFS_SKIP_SMUDGE: '1'   # pages and the texture library stay pointers; only the packs the builds read are pulled
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Key the packed textures
+        id: tex
+        run: echo "key=lfs-tex-$(git lfs ls-files -l --include='*/*/tex/*' | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: ${{ steps.tex.outputs.key }}
+          restore-keys: lfs-tex-
+      - name: Pull the packed textures (the builds embed them)
+        run: git lfs pull --include='settlements/*/tex/*,kits/*/tex/*,biomes/*/tex/*,openworld/*/tex/*'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: tools/test_all.py
+        run: python3 tools/test_all.py
+      - name: The tree is clean after the rebuild
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)" || { echo "::error::a committed page or manifest is not what its sources build: rebuild it and commit"; exit 1; }
