@@ -547,7 +547,7 @@ FURN({
   key: 'abyss_bookshelf', name: 'Bookshelf of codices and scroll tins', culture: 'eastabyss', tier: 'common', type: 'shelf', setting: 'indoor',
   rooms: ['library', 'study', 'school', 'hall'], anchor: 'wall', clearance: { front: 0.8 },
   materials: ['timber', 'cloth', 'metal'], source: EAB.src + 'abyss_bookshelf',
-  w: 2.4, d: 0.45, h: 2.4, variants: 1,
+  w: 2.4, d: 0.45, h: 2.4, variants: 1, task: ['storage', 'reading'],
   build: function (F) {
     const tc = F.pick(EAB.wood);
     [-1.15, 1.15].forEach(function (x) { F.box(x, 0, 0, 0.08, 2.35, 0.45, 0, tc, 'wood'); });
@@ -891,3 +891,7 @@ FURN({
     }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed eastabyss_training_<role> */
+FK.set({ culture: 'eastabyss', tier: 'common', roles: 'training', prefix: 'eastabyss_training_', S: EA_COMMON, names: {
+  training_dummy: 'Lacquered practice post', archery_butt: 'Reed-bundle archery target' } });

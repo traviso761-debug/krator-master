@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1096
+   ],
+   "seam_after": [
+    0.711,
+    0.578
+   ],
+   "seam_before": [
+    2.042,
+    1.26
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "nomad/sadu-band",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "nomad_sadu-band.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/nomad/sadu-band: Bedouin sadu weaving, bands of triangles, stepped diamonds and checker in rust, black, cream, ochre and indigo (core/materials/PROMPTS-nomads.md)",
+  "reuse": "every desert-nomad valance, divider and saddle cloth; eastabyss and Yuni nomad weaving",
+  "sha1": "a6d3b8989dbe6481b49039da041e8e5ca7fc6468"
+ }
+}

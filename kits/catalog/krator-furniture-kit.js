@@ -1489,6 +1489,29 @@ const FK = (function () {
   };
   /* a weapon rack: the rack builder with weapons on it */
   B.weaponRack = function (F, S, o) { B.rack(F, Object.assign({}, S, { rack: S.rackWeapons || 'weapons' }), o); };
+  /* melee practice post: a planted post with a crossbar, a straw-wrapped body and head, a shield on one arm, a practice sword leaning */
+  B.trainingDummy = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.9, 0.08, D * 0.8, 0, P.woodD, P.wf);                                  /* base boards */
+    F.box(0, 0.08, 0, 0.12, H * 0.78, 0.12, 0, P.wood, P.wf);                                 /* the post */
+    F.blob(0, H * 0.5, 0, 0.19, H * 0.34, 0, hay, 'plant');                                   /* straw-wrapped body */
+    F.rod(-W * 0.4, H * 0.72, 0, W * 0.4, H * 0.72, 0, 0.035, P.wood, P.wf);                 /* crossbar arms */
+    F.ball(0, H * 0.9, 0, 0.12, hay, 'plant');                                                 /* head */
+    F.box(-W * 0.28, H * 0.48, D * 0.12, 0.26, 0.38, 0.04, 0, P.pick(), P.cf);                /* shield on the left arm */
+    F.rod(W * 0.34, 0.08, D * 0.3, W * 0.26, H * 0.5, D * 0.12, 0.015, P.woodL, P.wf);        /* practice sword against the post */
+    F.rod(W * 0.28, H * 0.6, D * 0.1, W * 0.4, H * 0.58, D * 0.1, 0.012, P.rope, 'rope');    /* strap on the crossbar */
+  };
+  /* ranged practice butt: a straw backstop between two posts, painted rings on its face, an arrow stuck in */
+  B.archeryButt = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.95, 0.06, D * 0.9, 0, P.woodD, P.wf);                                 /* base boards */
+    for (const s of [-1, 1]) F.box(s * (W / 2 - 0.1), 0.06, -0.05, 0.1, H - 0.06, 0.1, 0, P.wood, P.wf);   /* the two posts */
+    F.box(0, H - 0.08, -0.05, W - 0.1, 0.08, 0.1, 0, P.woodD, P.wf);                          /* top beam */
+    F.box(0, 0.5, 0, W - 0.3, 0.9, 0.36, 0, hay, 'plant');                                     /* straw backstop */
+    const rings = [[0.76, P.woodL, P.wf], [0.58, P.pick(), P.cf], [0.4, P.woodL, P.wf], [0.22, P.pick(), P.cf]];
+    rings.forEach(function (r, i) { F.box(0, 0.95 - r[0] / 2, 0.18 + i * 0.008, r[0], r[0], 0.01, 0, r[1], r[2]); });   /* the target face */
+    F.rod(0.1, 0.8, 0.2, 0.1, 0.78, 0.38, 0.01, P.wood, P.wf);                                  /* an arrow in the face */
+  };
   /* a staved vat (brewing, dyeing, tanning) with its paddle */
   B.vat = function (F, S, o) {
     const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, R = Math.min(W, D) / 2 - 0.02;
@@ -1758,6 +1781,12 @@ const FK = (function () {
       { role: 'grindstone', type: 'workstation', rooms: ['smithy', 'workshop', 'yard'], setting: 'both', clear: { front: 0.7 }, w: 0.9, d: 0.6, h: 1.0, uses: ['wood', 'metal', 'stone'], build: 'grindstone' },
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
       { role: 'barrel', type: 'storage', surface: false, rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
+    ],
+    /* training furniture (2026-10): a melee and a ranged practice piece for every culture, registered with
+       FK.set({ roles: 'training' }) as <culture>_training_<role>; their tasks are melee-training and ranged-training */
+    training: [
+      { role: 'training_dummy', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 1.2, back: 1.0, left: 1.0, right: 1.0 }, w: 0.9, d: 0.7, h: 1.8, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'trainingDummy' },
+      { role: 'archery_butt', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 3.0 }, w: 1.3, d: 0.8, h: 1.6, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'archeryButt' }
     ]
   };
 

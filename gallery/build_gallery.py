@@ -53,6 +53,9 @@ ENTRIES = [
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
+    ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
+     'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
+     'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea: every apartment, workshop, storehouse, house '
      'and hut planned into rooms and furnished from the catalog, real windows, and lamps and hearths lit at night.'),
@@ -119,13 +122,17 @@ ENTRIES = [
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
     ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
     ('kit', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
-     "The first motor vehicle: the Geomancers' dune buggy in its three fits (Scout, Crew, Drill rig), wheels that roll and steer, lamps that switch.", 'new'),
+     "Five motor vehicles of five cultures: the Geomancers' dune buggy, the Iron Republic's eight-wheeled salvage crawler with its solar lid, the Izani armoured six-wheeler, the abyssal caravan truck under its tarps and the Post-Apoc tracked hab. Textured from the material library; wheels that roll and steer, tracks that run, lamps that switch (Drive R, Lights L, Night N).", 'new'),
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
      "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
-     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders and goats, the hidemaker's tent, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+     "The salamander riders of the crater drylands, in polychrome and appliqué: gers, a bell tent, goat-hair tents, Tibetan white appliqué tents and halls under prayer flags, the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished (C opens them); salamanders, goats, bison and cattle with their pens; chariots and carts; the Baelu, a fitted-stone fire redoubt."),
+    ('kit', 'desert-nomads', 'kits/desert-nomads/dist/desert-nomads.html', 'Desert Nomads',
+     "The camel nomads of the eastern desert and the abyss: black goat-hair tents with sadu valances, khaimas and square hair-cloth tents, white caidal tents, a Tuareg leather tent, the sheikh's tent and guest pavilion, the seer's and hookah tents, all austere outside and muted Moroccan within (C opens them); camels, horses and lizards under their saddles, a camel cart and litter, zaribas and folds.", 'new'),
+    ('kit', 'ash-nomads', 'kits/ash-nomads/dist/ash-nomads.html', 'Ash Nomads',
+     "The beetle riders of the ash plains: black peaked tents of every kind under blue and saffron Nazca and Dunmer bands, the chieftain's five-spired tent, the assembly and mess hall under the gas giant emblem, the shaman's hut, smithy, chitin worker and supply tents, all furnished in chitin, banners and lanterns (C opens them); staghorn beetles, pack millipedes, millipede and runner pens.", 'new'),
     ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
-     "Every animal of Krator in one kit, 48 species: farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
+     "Every animal of Krator in one kit, 51 species (now with the bison, the rideable staghorn beetle and the six-legged ash runner): farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
@@ -261,6 +268,17 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
 UNLISTED = set()   # build folders ('kits/furniture') never to list, though they have pages
+# Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
+# artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
+# (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
+ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
+             # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
+             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py'}
+# Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
+# copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
+# gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
+MADE = {'settlements/girder/hero/dist/girder-hero.html':
+        ['build_hero.py', '--slim', '--out', 'hero/dist/girder-hero.html']}
 
 
 def build_dir(path):
@@ -312,15 +330,16 @@ def cap(s):
     return s[:1].upper() + s[1:]
 
 
-def discover(build=False):
-    """Entries and sections for the builds no ENTRIES line names. build: make the pages of one that has none."""
+def discover(build=False, skip=()):
+    """Entries and sections for the builds no ENTRIES line names. build: make the pages of one that has none.
+    skip: build folders to leave out (ELSEWHERE, for the artifact's site)."""
     listed = {build_dir(e[2]) for e in ENTRIES}
     used = {e[1] for e in ENTRIES}
     found, sections = [], []
     for top, kind in KINDS.items():
         for script in sorted(glob.glob(os.path.join(ROOT, top, '*', 'build.py'))):
             d = os.path.relpath(os.path.dirname(script), ROOT).replace(os.sep, '/')
-            if d in listed or d in UNLISTED:
+            if d in listed or d in UNLISTED or d in skip:
                 continue
             pages = built_pages(d)
             if not pages and build:
@@ -409,8 +428,15 @@ def main():
     if '--no-build' not in sys.argv:
         missing = '--build-missing' in sys.argv
         dirs = []
+        skip_built = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()
+        made = []
         for _, _, path, _, _, *_ in ENTRIES:
             if missing and os.path.exists(os.path.join(ROOT, path)):
+                continue
+            if build_dir(path) in skip_built:
+                continue
+            if path in MADE:
+                made.append(path)
                 continue
             d = os.path.dirname(path)
             while not os.path.exists(os.path.join(ROOT, d, 'build.py')):   # dist/, or a page beside its build (the Voth catalog)
@@ -423,8 +449,17 @@ def main():
             print('built' if r.returncode == 0 else 'BUILD FAILED', d)
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
-    found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv)
-    entries = sorted(ENTRIES + found, key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
+        for path in made:
+            os.makedirs(os.path.join(ROOT, os.path.dirname(path)), exist_ok=True)
+            r = subprocess.run([sys.executable] + MADE[path], cwd=os.path.join(ROOT, build_dir(path)),
+                               capture_output=True, text=True)
+            print('made' if r.returncode == 0 else 'MAKE FAILED', path)
+            if r.returncode:
+                sys.exit(r.stdout + r.stderr)
+    skip = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()   # their own artifacts; the LAN site keeps them
+    found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv, skip=skip)
+    entries = sorted([e for e in ENTRIES if build_dir(e[2]) not in skip] + found,
+                     key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
     if os.path.isdir(site):
         shutil.rmtree(site)
     os.makedirs(os.path.join(site, 'worlds'))
@@ -446,8 +481,10 @@ def main():
             page = page.replace('<head>', '<head>\n' + bar_head(lod, slug, entries, sections), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
             fh.write(page)
+        side = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', page)   # its library-pack sidecars
+        size = os.path.getsize(src) + sum(os.path.getsize(os.path.join(site, 'worlds', f)) for f in side)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
-                      'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
+                      'mb': round(size / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = (tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))

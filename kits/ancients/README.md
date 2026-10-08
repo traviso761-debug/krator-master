@@ -59,6 +59,13 @@ load-bearing. `.origin.html` is the single-file kit this repo was split out of,
 kept so `build.py --assert-origin` can prove a refactor is output-neutral.
 `three.min.js` is a pinned r128 copy that `verify.py` serves in place of the CDN.
 
+**The library maps are one shared file (2026-10-07).** Every target loads the pack's maps from
+`dist/ancients.tex.ancients.js` by a `<script src>` ahead of its code (tools/textures/matlib_pack.py, sidecar
+packs), so a page is its code alone (about 2.4 MB) instead of its code plus a copy of the same 2.5 MB of maps:
+`dist/` went from 196 to 101 MB. Keep the file beside the pages (a page opened from disk loads it too). Without it
+a page says so on the console and runs on its procedural maps. `python3 build.py --inline-packs` puts the maps back
+in every page. The gallery's Ancients pages are their own artifact (gallery/build_ancients.py).
+
 ## Level of detail (core/lod)
 
 The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and

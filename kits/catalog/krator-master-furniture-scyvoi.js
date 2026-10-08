@@ -25,7 +25,8 @@ FURN_CULTURE('scyvoi', { name: 'Scyvoi', pack: null, influences: 'Kazakh, Kyrgyz
     fruitFire: 0xe2461c, fruitDeep: 0xb02a14, fruitGold: 0xf0b42a, leafGreen: 0x3a5a2a,
     herbGreen: 0x5e7034, herbSage: 0x8a9670, herbDry: 0xa8985a, herbRed: 0x9a3020,
     ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc,
-    hideRaw: 0xcaa88a, hideFat: 0xe0cdb0, hideTanned: 0x8e5a30, hideSmoked: 0x6a4024, liquor: 0x2e1c10, barkChip: 0x7a5434, goatBlack: 0x221e1a
+    hideRaw: 0xcaa88a, hideFat: 0xe0cdb0, hideTanned: 0x8e5a30, hideSmoked: 0x6a4024, liquor: 0x2e1c10, barkChip: 0x7a5434, goatBlack: 0x221e1a,
+    ironHot: 0xc4421a, grease: 0x2e2618, shaving: 0xdcc49a
   } });
 /* END PALETTE */
 
@@ -1324,3 +1325,301 @@ FURN({
     F.lamp(0, 0.2, 0, 0.5, 4);
   }
 });
+/* ====================================================================== Carpentry: the cartwright's tent (2026-10-07)
+   The Scyvoi drive carts and chariots behind salamanders. The cartwright turns spokes, shaves them on the horse, drives
+   them into the hub on the wheel jig, fits the felloes, shrinks a hot iron tyre on from the ring fire, hews the axle
+   tree and builds the bed and shafts on trestles. Wheels match the kit's chariot wheels: 1.5 m across, 10 spokes, an
+   iron tyre. Finished work is painted, as everything Scyvoi is. job 'carpentry'. */
+const SCYVOI_CART = {
+  /* a circle's frame: centre c, unit vectors u and v in its plane; pt(r, a, t) is the point at radius r and angle a,
+     t along the axis (u x v) */
+  frame: function (c, u, v) {
+    const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+    return function (r, a, t) {
+      const ca = Math.cos(a || 0) * r, sa = Math.sin(a || 0) * r; t = t || 0;
+      return [c[0] + u[0] * ca + v[0] * sa + n[0] * t, c[1] + u[1] * ca + v[1] * sa + n[1] * t, c[2] + u[2] * ca + v[2] * sa + n[2] * t];
+    };
+  },
+  /* an arc of square beams (section s) at radius r from angle a0 to a1, in segs pieces */
+  arc: function (F, pt, r, a0, a1, segs, s, col, fam) {
+    for (let i = 0; i < segs; i++) {
+      const p = pt(r, a0 + (a1 - a0) * i / segs), q = pt(r, a0 + (a1 - a0) * (i + 1) / segs);
+      F.beam(p[0], p[1], p[2], q[0], q[1], q[2], s, s, col, fam);
+    }
+  },
+  /* a ten-spoke wheel, radius R, in the plane (u, v) about c. o: felloes (0-5 fitted), spokes (0-10 driven), tyre,
+     wood + fam (felloes and spokes), hub + hubFam, band + bandFam (the hub's two rings) */
+  wheel: function (F, c, u, v, R, o) {
+    o = o || {};
+    const pt = SCYVOI_CART.frame(c, u, v), N = 10, hl = 0.15;
+    const wood = o.wood || F.col('timberWalnut'), fam = o.fam || 'wood';
+    const felloes = o.felloes === undefined ? 5 : o.felloes, spokes = o.spokes === undefined ? N : o.spokes;
+    for (let k = 0; k < felloes; k++) SCYVOI_CART.arc(F, pt, R - 0.08, k * F.TAU / 5 + 0.012, (k + 1) * F.TAU / 5 - 0.012, 4, 0.08, wood, fam);
+    if (o.tyre) SCYVOI_CART.arc(F, pt, R - 0.02, 0, F.TAU, 20, 0.04, F.col('ironBlack'), 'metal');
+    for (let k = 0; k < spokes; k++) {   /* a turned spoke: stout at the hub, slimmer to the felloe */
+      const a = (k + 0.5) * F.TAU / N, p = pt(0.08, a), m = pt(0.34, a), q = pt(R - 0.1, a);
+      F.beam(p[0], p[1], p[2], m[0], m[1], m[2], 0.05, 0.05, wood, fam);
+      F.beam(m[0], m[1], m[2], q[0], q[1], q[2], 0.038, 0.038, wood, fam);
+    }
+    const hub = o.hub || F.col('timberWalnutDark'), hubFam = o.hubFam || 'wood', band = o.band || F.col('ironBlack'), bandFam = o.bandFam || 'metal';
+    const h0 = pt(0, 0, -hl), h1 = pt(0, 0, hl);
+    F.rod(h0[0], h0[1], h0[2], h1[0], h1[1], h1[2], 0.1, hub, hubFam);
+    for (const s of [-1, 1]) {
+      const a = pt(0, 0, s * (hl - 0.05)), b = pt(0, 0, s * (hl - 0.02)), e = pt(0, 0, s * (hl + 0.015)), f = pt(0, 0, s * hl);
+      F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.108, band, bandFam);
+      F.rod(f[0], f[1], f[2], e[0], e[1], e[2], 0.055, band, bandFam);   /* the nave's end */
+    }
+  },
+  /* a loose felloe lying flat: its arc (radius r, 72 degrees) bulging toward -z, its ends at z = z0, at height y */
+  felloeFlat: function (F, x0, y, z0, r, s, col, fam) {
+    const pt = SCYVOI_CART.frame([x0, y, z0 + r * Math.cos(Math.PI / 5)], [1, 0, 0], [0, 0, 1]);
+    SCYVOI_CART.arc(F, pt, r, -Math.PI / 2 - Math.PI / 5, -Math.PI / 2 + Math.PI / 5, 4, s, col, fam);
+  },
+  /* a mallet lying on its side: the head along z at (x, y, z), the handle running off toward (hx, hz) */
+  mallet: function (F, x, y, z, hx, hz) {
+    F.rod(x, y + 0.065, z - 0.1, x, y + 0.065, z + 0.1, 0.065, F.col('timberWalnutDark'), 'wood');
+    F.rod(x, y + 0.065, z, hx, y + 0.02, hz, 0.018, F.col('timberPoplar'), 'wood');
+  },
+  /* finished work: red-lacquered wheel with a brass-ringed hub */
+  painted: function (F, key) {
+    return { wood: F.col(key || 'timberRed'), fam: 'lacquer', hub: F.col('timberRedDark'), hubFam: 'lacquer', band: F.col('brass'), bandFam: 'bronze', tyre: true };
+  }
+};
+FURN({
+  key: 'scyvoi_wheel_jig', name: 'Wheelwright\'s jig', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8, left: 0.5, right: 0.5 }, materials: ['timber', 'metal', 'lacquer', 'bronze'],
+  w: 1.6, d: 1.6, h: 0.8, variants: 2, variantNames: ['spokes going into the hub', 'felloes going on'],
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), wood = F.col('timberWalnut'), raw = F.col('timberPoplar'), v = F.variant;
+    /* the stand: two crossed sleepers, a red post under the hub, four short posts under the rim */
+    F.box(0, 0, 0, 1.5, 0.12, 0.16, Math.PI / 4, dark, 'wood');
+    F.box(0, 0, 0, 1.5, 0.118, 0.16, -Math.PI / 4, dark, 'wood');
+    F.cyl(0, 0.12, 0, 0.11, 0.27, 0, F.col('timberRed'), 'lacquer');
+    F.cyl(0, 0.33, 0, 0.116, 0.035, 0, F.col('brass'), 'bronze');
+    for (let k = 0; k < 4; k++) {
+      const a = Math.PI / 4 + k * Math.PI / 2, x = Math.cos(a) * 0.67, z = Math.sin(a) * 0.67;
+      F.cyl(x, 0.12, z, 0.045, 0.38, 0, wood, 'wood');
+      F.cyl(x, 0.46, z, 0.05, 0.04, 0, F.col('timberRed'), 'lacquer');
+    }
+    /* the wheel lying flat on it, its hub on the post: raw poplar, not yet painted */
+    SCYVOI_CART.wheel(F, [0, 0.54, 0], [1, 0, 0], [0, 0, 1], 0.75, { wood: raw, felloes: v ? 3 : 0, spokes: v ? 10 : 6 });
+    if (!v) {   /* the spokes still to drive, laid out on the ground */
+      for (let i = 0; i < 4; i++) F.beam(-0.1 + i * 0.065, 0.022, 0.3, -0.1 + i * 0.065, 0.022, 0.74, 0.04, 0.04, raw, 'wood');
+    } else {   /* the last two felloes on the ground */
+      for (let i = 0; i < 2; i++) SCYVOI_CART.felloeFlat(F, 0.05, 0.04 + i * 0.08, 0.74, 0.67, 0.08, raw, 'wood');
+    }
+    SCYVOI_CART.mallet(F, 0.55, 0, 0, 0.62, -0.36);
+  }
+});
+FURN({
+  key: 'scyvoi_wheel_stack', name: 'Wheels on the rack', culture: 'scyvoi', tier: 'common', type: 'stack', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'yard', 'store'], anchor: 'floor', clearance: { front: 0.7 }, materials: ['timber', 'metal', 'lacquer', 'bronze'],
+  w: 1.8, d: 0.8, h: 1.6, variants: 2, variantNames: ['a finished wheel and a half-made one', 'two finished wheels'],
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), red = F.col('timberRed');
+    /* the rack: two posts on feet, a top rail the wheels lean on, a low rail */
+    for (const s of [-1, 1]) {
+      F.box(s * 0.84, 0, -0.06, 0.1, 0.08, 0.64, 0, dark, 'wood');
+      F.box(s * 0.84, 0.08, -0.33, 0.09, 1.44, 0.09, 0, dark, 'wood');
+      F.box(s * 0.84, 1.52, -0.33, 0.11, 0.04, 0.11, 0, red, 'lacquer');
+      F.cone(s * 0.84, 1.56, -0.33, 0.04, 0.04, 0, F.col('brass'), 'bronze');
+      F.beam(s * 0.84, 0.08, 0.1, s * 0.84, 0.7, -0.29, 0.05, 0.05, dark, 'wood');   /* the strut */
+    }
+    F.box(0, 1.24, -0.33, 1.78, 0.09, 0.08, 0, red, 'lacquer');
+    F.box(0, 0.32, -0.33, 1.6, 0.07, 0.06, 0, dark, 'wood');
+    /* the wheels lean back 0.2 rad, hub against hub */
+    const th = 0.2, cv = Math.cos(th), sv = Math.sin(th), R = 0.75, u = [1, 0, 0], vv = [0, cv, -sv];
+    SCYVOI_CART.wheel(F, [0, R * cv, -0.12], u, vv, R, SCYVOI_CART.painted(F, 'timberRed'));
+    if (F.variant) SCYVOI_CART.wheel(F, [0.02, R * cv, 0.18], u, vv, R, SCYVOI_CART.painted(F, 'teal'));
+    else SCYVOI_CART.wheel(F, [0.02, R * cv, 0.18], u, vv, R, { wood: F.col('timberPoplar'), felloes: 3 });
+  }
+});
+FURN({
+  key: 'scyvoi_spoke_rack', name: 'Spokes and felloes drying', culture: 'scyvoi', tier: 'common', type: 'rack', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'store', 'yard'], anchor: 'floor', clearance: { front: 0.5 }, materials: ['timber', 'metal', 'lacquer', 'rope'],
+  w: 1.4, d: 0.5, h: 1.4, variants: 2, variantNames: ['raw spokes', 'spokes painted'],
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), raw = F.col('timberPoplar'), red = F.col('timberRed'), v = F.variant;
+    /* the frame: four posts with red caps, a low floor, a shelf, rails */
+    for (const s of [-1, 1]) for (const t of [-1, 1]) {
+      F.box(s * 0.66, 0, t * 0.2, 0.06, 1.32, 0.06, 0, dark, 'wood');
+      F.cone(s * 0.66, 1.32, t * 0.2, 0.045, 0.07, 0, red, 'lacquer');
+    }
+    for (const s of [-1, 1]) for (const y of [0.02, 0.72, 1.24]) F.box(s * 0.66, y, 0, 0.05, 0.05, 0.36, 0, dark, 'wood');
+    F.box(0, 0.04, 0, 1.26, 0.04, 0.42, 0, dark, 'wood');
+    for (const z of [0.05, -0.15]) F.box(0, 0.54, z, 1.28, 0.04, 0.035, 0, dark, 'wood');
+    for (const t of [-1, 1]) F.box(0, 1.24, t * 0.2, 1.28, 0.05, 0.05, 0, red, 'lacquer');
+    for (const z of [-0.16, -0.05, 0.06, 0.17]) F.box(0, 0.76, z, 1.26, 0.03, 0.09, 0, dark, 'wood');
+    /* the spokes standing between the rails to season */
+    for (let i = 0; i < 15; i++) {
+      const x = -0.56 + i * 0.08 + F.rr(-0.01, 0.01), p = v && i % 3 !== 1;
+      F.frustum(x, 0.08, -0.05, 0.026, 0.018, 0.58, F.rr(0, 1), p ? red : F.shade('timberPoplar', F.rr(-0.06, 0.06)), p ? 'lacquer' : 'wood', 8);
+      F.box(x, 0.66, -0.05, 0.03, 0.04, 0.022, 0, p ? red : raw, p ? 'lacquer' : 'wood');   /* the tenon */
+    }
+    /* the felloes stacked flat on the shelf, and spokes laid behind them */
+    for (let i = 0; i < 4; i++) SCYVOI_CART.felloeFlat(F, -0.18 + F.rr(-0.02, 0.02), 0.825 + i * 0.072, 0.14, 0.67, 0.07, v && i === 3 ? red : F.shade('timberPoplar', -0.04 * i), v && i === 3 ? 'lacquer' : 'wood');
+    for (let i = 0; i < 5; i++) {
+      const top = i > 2, z = top ? -0.133 - (i - 3) * 0.045 : -0.11 - i * 0.045, y = 0.81 + (top ? 0.04 : 0);
+      F.rod(0.0, y, z, 0.58, y, z, 0.022, v ? red : raw, v ? 'lacquer' : 'wood');
+    }
+    for (const x of [0.12, 0.46]) F.rod(x, 0.83, -0.21, x, 0.83, -0.08, 0.05, F.col('ropeHemp'), 'rope');   /* the bundle's ties */
+    /* a spokeshave hung from the top rail */
+    F.rod(0.32, 1.24, 0.22, 0.34, 1.1, 0.22, 0.005, F.col('ropeHemp'), 'rope');
+    F.rod(0.2, 1.08, 0.22, 0.5, 1.08, 0.22, 0.016, red, 'lacquer');
+    F.box(0.35, 1.06, 0.22, 0.12, 0.03, 0.02, 0, F.col('ironBlack'), 'metal');
+  }
+});
+FURN({
+  key: 'scyvoi_cart_frame', name: 'Cart bed on trestles', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.6, left: 0.6, right: 0.6 }, materials: ['timber', 'metal', 'lacquer', 'bronze'],
+  w: 3.2, d: 1.6, h: 1.1, variants: 2, variantNames: ['the bed half-planked', 'planked, its sides painted'],
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), wood = F.col('timberWalnut'), raw = F.col('timberPoplar'), red = F.col('timberRed'), iron = F.col('ironBlack'), v = F.variant;
+    /* three trestles: two under the bed, a low one under the shafts */
+    for (const [xt, half, ty] of [[-1.15, 0.62, 0.52], [-0.05, 0.62, 0.52], [1.2, 0.46, 0.58]]) {
+      F.box(xt, ty, 0, 0.12, 0.1, half * 2, 0, dark, 'wood');
+      for (const s of [-1, 1]) for (const t of [-1, 1]) F.rod(xt + s * 0.2, 0, t * (half - 0.04), xt + s * 0.03, ty + 0.02, t * (half - 0.14), 0.032, dark, 'wood');
+    }
+    /* the sills run on as the shafts, narrowing and lifting to the tips; iron ferrules at the tips */
+    for (const s of [-1, 1]) {
+      SCYVOI_FX.chain(F, [[-1.55, 0.68, s * 0.5], [0.3, 0.68, s * 0.5], [1.05, 0.69, s * 0.4], [1.5, 0.76, s * 0.34]], 0.12, 0.07, wood, 'wood');
+      F.rod(1.47, 0.755, s * 0.342, 1.56, 0.78, s * 0.335, 0.042, iron, 'metal');
+    }
+    F.box(0.9, 0.66, 0, 0.07, 0.07, 0.86, 0, wood, 'wood');   /* the shafts' crossbar */
+    F.box(-0.6, 0.5, 0, 0.14, 0.12, 1.1, 0, dark, 'wood');   /* the axle bed, its axle not yet hung */
+    /* the cross-bearers, the floor planks, the side stakes */
+    for (const x of [-1.5, -1.05, -0.6, -0.15, 0.2]) {
+      F.box(x, 0.74, 0, 0.09, 0.08, 1.24, 0, wood, 'wood');
+      for (const s of [-1, 1]) F.box(x, 0.74, s * 0.5, 0.11, 0.012, 0.13, 0, iron, 'metal');   /* an iron cleat */
+    }
+    const nPl = v ? 8 : 5;
+    for (let i = 0; i < nPl; i++) F.box(-0.65, 0.82, -0.545 + i * 0.156, 1.8, 0.03, 0.15, 0, F.shade('timberPoplar', F.rr(-0.08, 0.04)), 'wood');
+    if (!v) {   /* the rest of the planks waiting: one laid loose on the bearers, one on the ground */
+      F.box(-0.7, 0.82, 0.4, 1.8, 0.03, 0.15, 0.06, raw, 'wood');
+      F.box(-0.6, 0, 0.7, 1.4, 0.03, 0.15, 0.05, raw, 'wood');
+      SCYVOI_CART.mallet(F, -1.2, 0.85, -0.3, -0.85, -0.2);
+    }
+    for (const x of [-1.5, -1.05, -0.6, -0.15, 0.19]) for (const s of [-1, 1]) F.box(x, 0.74, s * 0.6, 0.06, 0.3, 0.06, 0, dark, 'wood');
+    for (const s of (v ? [-1, 1] : [-1])) {
+      F.box(-0.65, 0.86, s * 0.645, 1.84, 0.16, 0.03, 0, v ? red : raw, v ? 'lacquer' : 'wood');
+      if (v) for (const x of [-1.275, -0.825, -0.375]) F.ball(x, 0.94, s * 0.665, 0.022, F.col('brass'), 'bronze');
+    }
+    /* the headboard is already painted: red, a saffron ram's-horn pair, brass studs */
+    F.box(0.255, 0.82, 0, 0.04, 0.24, 1.22, 0, red, 'lacquer');
+    const fg = F.css(F.col('saffron')), ln = F.css(F.col('madderDark')), bg = F.css(F.col('timberRed'));
+    F.decal(0.278, 0.84, 0, 0.5, 0.2, Math.PI / 2, 'scyvoi-cart-horns', function (g, W, H) {
+      g.fillStyle = bg; g.fillRect(0, 0, W, H);
+      SCYVOI_FX.hornPair(g, W / 2, H * 0.48, H * 0.62, 0, fg, ln);
+    }, 'lacquer');
+    for (const z of [-0.5, -0.36, 0.36, 0.5]) F.ball(0.278, 0.94, z, 0.02, F.col('brass'), 'bronze');
+  }
+});
+FURN({
+  key: 'scyvoi_shaving_horse', name: 'Shaving horse', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { left: 0.6, front: 0.4, back: 0.4 }, materials: ['timber', 'metal', 'lacquer', 'bronze', 'cloth'],
+  w: 1.6, d: 0.5, h: 0.9, variants: 1,
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), wood = F.col('timberWalnut'), raw = F.col('timberPoplar'), red = F.col('timberRed');
+    /* the bench: a split log on four splayed legs; the rider sits at the -x end */
+    F.box(0, 0.42, 0, 1.5, 0.1, 0.26, 0, wood, 'wood');
+    for (const s of [-1, 1]) for (const t of [-1, 1]) F.rod(s * 0.6, 0.44, t * 0.07, s * 0.72, 0, t * 0.2, 0.033, dark, 'wood');
+    F.pillow(-0.55, 0.545, 0, 0.36, 0.05, 0.24, 0, F.col('madder'), 'cloth', { round: 4, puff: 0.4 });   /* a felt pad on the seat */
+    /* the bridge: a board rising toward the far end on a block */
+    F.box(0.55, 0.52, 0, 0.1, 0.16, 0.18, 0, dark, 'wood');
+    F.beam(-0.05, 0.53, 0, 0.62, 0.72, 0, 0.05, 0.22, wood, 'wood');
+    /* the clamp: two red arms pivoting on a brass pin, the head over the bridge, the foot bar below */
+    for (const s of [-1, 1]) {
+      F.beam(0.44, 0.84, s * 0.16, 0.14, 0.08, s * 0.16, 0.045, 0.035, red, 'lacquer');
+      F.rod(0.3, 0.47, s * 0.12, 0.3, 0.47, s * 0.2, 0.02, F.col('brass'), 'bronze');
+    }
+    F.box(0.43, 0.74, 0, 0.1, 0.09, 0.36, 0, F.col('timberRedDark'), 'lacquer');
+    F.rod(0.13, 0.1, -0.23, 0.13, 0.1, 0.23, 0.028, dark, 'wood');
+    /* a spoke blank clamped on the bridge, half shaved */
+    F.beam(0.0, 0.59, 0, 0.6, 0.765, 0, 0.042, 0.046, F.shade('timberPoplar', 0.08), 'wood');
+    /* the drawknife on the seat, its handles red */
+    F.box(-0.21, 0.52, 0.02, 0.3, 0.012, 0.045, 0, F.col('ironBlack'), 'metal');
+    for (const s of [-1, 1]) F.rod(-0.21 + s * 0.15, 0.53, 0.02, -0.21 + s * 0.17, 0.53, 0.15, 0.016, red, 'lacquer');
+    /* shavings on the bridge and on the ground below it */
+    for (let i = 0; i < 3; i++) F.box(0.1 + i * 0.14, 0.6 + i * 0.04, F.rr(-0.06, 0.06), 0.12, 0.01, 0.04, F.rr(-0.4, 0.4), F.col('shaving'), 'wood');
+    for (let i = 0; i < 18; i++) {
+      const x = F.rr(-0.15, 0.74), z = F.rr(-0.21, 0.21), r = F.rr(0.025, 0.05);
+      F.blob(x, 0.012, z, r, 0.024, F.rr(0, 3), F.shade('shaving', F.rr(-0.1, 0.05)), 'wood');
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_tyre_fire', name: 'Tyre fire', culture: 'scyvoi', tier: 'common', type: 'brazier', setting: 'outdoor', job: 'carpentry',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 }, materials: ['timber', 'metal', 'stone', 'emissive'],
+  w: 1.8, d: 1.8, h: 0.4, variants: 1,
+  build: function (F) {
+    const char = F.shade('timberWalnutDark', -0.35);
+    F.cyl(0, 0, 0, 0.88, 0.014, 0, F.col('ash'), 'stone');
+    /* the fuel: billets laid round the ring, sticks across them */
+    for (let i = 0; i < 16; i++) {
+      const a = i * F.TAU / 16 + F.rr(-0.05, 0.05), r = 0.76 + F.rr(-0.05, 0.05), a0 = a - 0.16, a1 = a + 0.16;
+      F.beam(Math.cos(a0) * r, 0.05, Math.sin(a0) * r, Math.cos(a1) * r, 0.05, Math.sin(a1) * r, 0.07, 0.07, char, 'wood');
+    }
+    for (let i = 0; i < 12; i++) {
+      const a = (i + 0.5) * F.TAU / 12;
+      F.rod(Math.cos(a) * 0.6, 0.1, Math.sin(a) * 0.6, Math.cos(a) * 0.86, 0.1, Math.sin(a) * 0.86, 0.028, char, 'wood');
+    }
+    /* embers along the ring and flames licking up */
+    for (let i = 0; i < 24; i++) {
+      const a = i * F.TAU / 24 + F.rr(-0.1, 0.1), r = F.rr(0.68, 0.84);
+      F.blob(Math.cos(a) * r, 0.04, Math.sin(a) * r, F.rr(0.06, 0.09), 0.05, F.rr(0, 3), F.col('ember'), 'glow');
+    }
+    for (let i = 0; i < 14; i++) {
+      const a = i * F.TAU / 14 + F.rr(-0.12, 0.12), r = F.rr(0.68, 0.82);
+      F.cone(Math.cos(a) * r, 0.07, Math.sin(a) * r, F.rr(0.05, 0.08), F.rr(0.14, 0.3), 0, F.col(i % 2 ? 'flame' : 'ember'), 'glow');
+    }
+    /* the tyre lying on the fire: black iron, glowing where the flames are thickest */
+    const pt = SCYVOI_CART.frame([0, 0.15, 0], [1, 0, 0], [0, 0, 1]);
+    for (let i = 0; i < 24; i++) {
+      const p = pt(0.74, i * F.TAU / 24), q = pt(0.74, (i + 1) * F.TAU / 24), hot = i % 6 < 3;
+      F.beam(p[0], p[1], p[2], q[0], q[1], q[2], 0.04, 0.04, F.col(hot ? 'ironHot' : 'ironBlack'), hot ? 'glow' : 'metal');
+    }
+    F.lamp(0, 0.25, 0, 1.0, 8);
+  }
+});
+FURN({
+  key: 'scyvoi_axle_bench', name: 'Axle bench', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'carpentry',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8 }, materials: ['timber', 'metal', 'lacquer', 'bronze', 'stone'],
+  w: 2.4, d: 0.7, h: 0.9, variants: 2, variantNames: ['one arm still square', 'finished, painted and strapped'],
+  build: function (F) {
+    const dark = F.col('timberWalnutDark'), wood = F.col('timberWalnut'), raw = F.col('timberPoplar'), red = F.col('timberRed'), iron = F.col('ironBlack'), v = F.variant;
+    /* the bench: a thick top on red legs, stretchers low down */
+    F.box(0, 0.56, 0, 2.3, 0.12, 0.6, 0, wood, 'wood');
+    for (const s of [-1, 1]) for (const t of [-1, 1]) F.box(s * 1.0, 0, t * 0.22, 0.12, 0.56, 0.12, 0, red, 'lacquer');
+    for (const t of [-1, 1]) F.box(0, 0.12, t * 0.22, 1.9, 0.07, 0.06, 0, dark, 'wood');
+    for (const s of [-1, 1]) F.box(s * 1.0, 0.12, 0, 0.06, 0.07, 0.34, 0, dark, 'wood');
+    /* the axle tree on two chocks: a squared middle, arms tapering round toward the wheels */
+    for (const s of [-1, 1]) F.box(s * 0.55, 0.68, 0, 0.14, 0.06, 0.22, 0, dark, 'wood');
+    F.box(0, 0.74, 0, 1.3, 0.13, 0.13, 0, v ? red : raw, v ? 'lacquer' : 'wood');
+    for (const s of [-1, 1]) {
+      if (s < 0 && !v) {   /* still square, the hewing marks along it */
+        F.box(-0.875, 0.74, 0, 0.45, 0.13, 0.13, 0, raw, 'wood');
+        for (let i = 0; i < 4; i++) F.box(-0.72 - i * 0.1, 0.87, 0, 0.05, 0.004, 0.12, 0.3, F.shade('timberPoplar', -0.15), 'wood');
+        continue;
+      }
+      F.rod(s * 0.65, 0.805, 0, s * 0.9, 0.805, 0, 0.06, raw, 'wood');
+      F.rod(s * 0.9, 0.805, 0, s * 1.12, 0.805, 0, 0.045, raw, 'wood');
+      F.rod(s * 0.95, 0.805, 0, s * 1.08, 0.805, 0, 0.047, iron, 'metal');   /* the arm's iron skein */
+    }
+    if (v) for (const x of [-0.5, 0.5]) F.box(x, 0.735, 0, 0.05, 0.14, 0.14, 0, iron, 'metal');   /* the straps */
+    /* the adze and the mallet in front of it */
+    F.rod(-0.3, 0.697, 0.2, 0.12, 0.697, 0.2, 0.017, wood, 'wood');
+    F.box(0.14, 0.68, 0.2, 0.06, 0.05, 0.05, 0, iron, 'metal');
+    F.box(0.15, 0.68, 0.27, 0.08, 0.012, 0.12, 0, iron, 'metal');
+    SCYVOI_CART.mallet(F, -0.75, 0.68, 0.2, -0.4, 0.24);
+    /* the grease pot behind the right arm, a stick in it */
+    F.frustum(0.85, 0.68, -0.2, 0.08, 0.1, 0.14, 0, F.col('copper'), 'bronze', 12);
+    F.cyl(0.85, 0.8, -0.2, 0.094, 0.015, 0, F.col('grease'), 'stone');
+    F.rod(0.84, 0.76, -0.2, 0.92, 0.89, -0.16, 0.01, raw, 'wood');
+    /* chips on the ground */
+    for (let i = 0; i < 14; i++) F.blob(F.rr(-1.0, 1.0), 0.012, F.rr(-0.1, 0.32), F.rr(0.025, 0.05), 0.024, F.rr(0, 3), F.shade('shaving', F.rr(-0.12, 0.04)), 'wood');
+  }
+});
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scyvoi_training_<role> */
+FK.set({ culture: 'scyvoi', tier: 'common', roles: 'training', prefix: 'scyvoi_training_', S: SCYVOI_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Felt-ring target' } });

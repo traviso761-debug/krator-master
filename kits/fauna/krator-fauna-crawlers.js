@@ -17,28 +17,32 @@ function faCrLerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[
    paler tergite plate (1.42 m, the paranota), an ochre collar on its front face and one leg pair (an ochre femur angled down
    and out, a darker tibia to the ground at x 1.12); the first segment carries the antennae and mandibles, the fourth the
    harness blanket and the capstan-bar block. Mav's Refuge draws the same segment. The Screamers' ranch herd (94-life.js) is
-   a cruder chain of spheres, tapering to both ends, every third segment ochre: variant 1 keeps that taper and banding. */
+   a cruder chain of spheres, tapering to both ends, every third segment ochre: variant 1 keeps that taper and banding.
+   Variant 2 (2026-10-07): the Ash Nomads' herd, Girder's segment unharnessed, its rings ash-grey and black with ochre bands. */
 const FA_CR_MIL = { body: 0x4a2e22, accent: 0xb8683e, plate: faCrShade(0x4a2e22, 0.10), tibia: faCrShade(0xb8683e, -0.25),
   mand: faCrShade(0xb8683e, -0.15), leg2: 0x3a241c, cloth: 0x7a2028, timber: 0x4e3a28, eye: 0x120c08 };
 const FA_CR_MIL_N = 13, FA_CR_MIL_D = 0.56;
 ANIMAL({
   key: 'draught-millipede', name: 'Draught millipede', group: 'crawlers',
-  tags: { biomes: ['hyperjungle'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['beast-riders', 'screamers'], diet: 'herbivore', feeding: 'detritivore', activity: 'cathemeral', temperament: 'docile',
+  tags: { biomes: ['hyperjungle', 'crater-drylands'], koppen: ['Af', 'Am', 'BSk'], aridity: ['humid', 'semiarid'], climate: ['hypertropic', 'tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders', 'screamers', 'ashnomad'], diet: 'herbivore', feeding: 'detritivore', activity: 'cathemeral', temperament: 'docile',
     habitat: ['ground', 'trunks', 'pen'], locomotion: ['walks', 'climbs'] },
   size: { length: 7.3, height: 1.05 },
   source: [
     { build: 'settlements/girder', file: 'src/78-life.js', lines: '221-234', note: 'the segment (body, tergite, collar, leg pair; head and saddle bits): the richer model, ported here. Lines 480-498 and 553-558: one beast of 13 segments (0.56 m) per beast lift, walking the capstan round with a Millipede handler (the Beast Riders of Girder); src/55-arch.js 507-515: the millipede pen (shelter, trough, leaf-litter heaps, wallow)' },
     { build: 'settlements/mavs-refuge', file: 'src/78-life.js', lines: '188-203', note: 'the same segment (a saddle blanket on segment 4); lines 462-508: the beast lifts\' millipedes of the Refuge, each with a handler' },
-    { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' }],
+    { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' },
+    { build: 'kits/fauna', file: 'krator-fauna-crawlers.js', note: 'variant 2, the herd of the Ash Nomads (ash plains round the great volcano, 2026-10-07): first drawn here, the Girder segment in ash-grey, black and ochre; herded for chitin and grubs, never for carts' }],
   traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: false },
   yields: { meat: { amount: 900, note: 'the Screamers ranch them for it: the pale flesh inside the rings, smoked in strips' },
-    hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' } },
+    hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' },
+    chitin: { amount: 60, note: 'the cast rings of each moult, gathered from the pen (the Ash Nomads herd them for it, and for the grubs): their furniture, vessels and lanterns' } },
   life: { maturity: 3, lifespan: 30, litter: 60, gestation: 40, note: 'eggs in a nest of chewed litter; a young beast adds rings (and legs) at each moult' },
-  variants: 2, variantNames: ['Girder draught beast: harnessed for the capstan, ochre collars', 'Screamer ranch beast: tapering, every third ring ochre'],
+  variants: 3, variantNames: ['Girder draught beast: harnessed for the capstan, ochre collars', 'Screamer ranch beast: tapering, every third ring ochre',
+    'ash herd: ash-grey and black rings with ochre bands (herded by the Ash Nomads for chitin and grubs)'],
   w: 2.35, d: 8.3, h: 1.4,
-  variantDims: [{ w: 2.35, d: 8.3, h: 1.4 }, { w: 3.55, d: 12.4, h: 1.6 }],
-  data: { mass: [4000, 13000], legs: 26, segs: 12, speed: { walk: 1.0, run: 4.0 }, gait: { type: 'multipede', freq: 1.1, stride: 0.35 }, chain: { amp: 0.22, wave: 7 }, grazePitch: 0.25,
+  variantDims: [{ w: 2.35, d: 8.3, h: 1.4 }, { w: 3.55, d: 12.4, h: 1.6 }, { w: 2.35, d: 8.3, h: 1.4 }],
+  data: { mass: [4000, 13000, 4000], legs: 26, segs: 12, speed: { walk: 1.0, run: 4.0 }, gait: { type: 'multipede', freq: 1.1, stride: 0.35 }, chain: { amp: 0.22, wave: 7 }, grazePitch: 0.25,
     budget: 9000,
     herd: 'Girder and Mav\'s Refuge: one to a beast lift, walked round its capstan by a handler and penned at night; the Screamers ranch herds of eight behind a double stockade',
     fleeDistance: 0, aggression: 0.05,
@@ -50,8 +54,12 @@ ANIMAL({
       /* a point of segment k: x and y shrink with the Screamer taper, z (the ring's depth) does not */
       const P = (x, y, dz) => [x * f * K, y * f * K, (zk + dz) * K];
       const band = v === 1 && k % 3 === 0;
-      const bodyC = band ? C.accent : C.body, plateC = band ? faCrShade(C.accent, 0.08) : C.plate, collarC = band ? faCrShade(C.accent, -0.2) : C.accent;
-      const femC = v === 1 ? C.leg2 : C.accent, tibC = v === 1 ? faCrShade(C.leg2, -0.2) : C.tibia;
+      let bodyC = band ? C.accent : C.body, plateC = band ? faCrShade(C.accent, 0.08) : C.plate, collarC = band ? faCrShade(C.accent, -0.2) : C.accent;
+      let femC = v === 1 ? C.leg2 : C.accent, tibC = v === 1 ? faCrShade(C.leg2, -0.2) : C.tibia;
+      if (v === 2) {   /* the ash herd: rings alternately ash-grey and black, an ochre band every fourth */
+        const ash = k % 2 ? 0x6a6662 : 0x1c1a19, ob = k % 4 === 1;
+        bodyC = ob ? 0xa8742e : ash; plateC = ob ? 0xb07a32 : (k % 2 ? 0x76726c : 0x262422); collarC = ob ? 0x8a5a24 : 0x34322f;
+        femC = 0x232120; tibC = 0x5a5650; }
       const ring = () => {
         /* the barrel, slightly swollen at its middle; its rear tucks under the ring behind */
         A.tube('chitin', u => P(0, 0.62, -0.32 + 0.64 * u), u => { const s = 0.9 + 0.1 * Math.sin(Math.PI * u); return [0.625 * f * K * s, 0.31 * f * K * s]; }, 5, 14, bodyC,
@@ -67,7 +75,7 @@ ANIMAL({
         ring();
         if (k === 0) {
           /* the head capsule under the first ring, with its ocelli, and the antennae (Girder: 1.1 m, up, out and forward) */
-          A.ellip('chitin', 0, 0.54 * f * K, (zk + 0.33) * K, 0.44 * f * K, 0.26 * f * K, 0.2 * K, faCrShade(C.body, -0.15), { seg: 14 });
+          A.ellip('chitin', 0, 0.54 * f * K, (zk + 0.33) * K, 0.44 * f * K, 0.26 * f * K, 0.2 * K, v === 2 ? 0x181615 : faCrShade(C.body, -0.15), { seg: 14 });
           for (const s of [-1, 1]) {
             A.ellip('eye', s * 0.31 * f * K, 0.62 * f * K, (zk + 0.43) * K, 0.045 * f * K, 0.04 * f * K, 0.04 * K, C.eye, { seg: 6 });
             const a0 = P(s * 0.18, 0.74, 0.4), a1 = P(s * 0.3, 1.08, 0.72), a2 = P(s * 0.47, 1.34, 1.0);
@@ -100,7 +108,7 @@ ANIMAL({
       }
     }
     /* the ventral strip the rings ride on (the body part: what a port binds as the root) */
-    A.tube('chitin', u => [0, 0.36 * K, (-3.5 + 7.0 * u) * K], u => { const f = v === 1 ? 1 - 0.45 * Math.abs(u * 2 - 1) : 1; return [0.3 * f * K, 0.06 * f * K]; }, 12, 8, faCrShade(C.body, 0.15));
+    A.tube('chitin', u => [0, 0.36 * K, (-3.5 + 7.0 * u) * K], u => { const f = v === 1 ? 1 - 0.45 * Math.abs(u * 2 - 1) : 1; return [0.3 * f * K, 0.06 * f * K]; }, 12, 8, v === 2 ? 0x3a3836 : faCrShade(C.body, 0.15));
     A.anchor('headRoot', [0, 0.62 * K, 3.06 * K]);
   }
 });

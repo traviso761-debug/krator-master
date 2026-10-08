@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.164,
+    1.12
+   ],
+   "seam_before": [
+    1.025,
+    1.042
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.12,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.ash",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   4.0,
+   4.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground.ash.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row ground.ash: a plain of fine volcanic ash with wind ripples, black cinders, grey pumice, dry stems (near-colourless) (core/materials/PROMPTS-nomads.md)",
+  "reuse": "any volcanic plain: the Ash Nomads, Dhelv's surface, the Throne's slopes",
+  "sha1": "df92423998abd3a5bdabb83a765440364a193398"
+ }
+}

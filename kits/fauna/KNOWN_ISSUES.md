@@ -24,3 +24,7 @@
 - [ ] Yields, masses and life figures: the goat's and the farm animals' are plausible real-animal figures; those of the invented
       species are the porting agents' judgement (the sources carry none). The owner may want to set them. The hyperjungle sky
       ray is drawn at the biome's rendered size (span about 19 m), about twice LORE.md's "6-12 m soarers".
+- [ ] No ash-plain biome exists yet: the Ash Nomads' staghorn beetle and ash runner are tagged with the nearest keys,
+      `swbay` (the volcano) and `crater-drylands` (burnt steppe); the millipede adds `crater-drylands` for its ash herd. Retag
+      them when the biome exists. The Zeijani of Dhelv ride the staghorn beetle too, but are not a catalog culture yet, so
+      only `ashnomad` is in its `herdedBy` (a note in its `source` names them).

@@ -20,13 +20,61 @@ is `index.template.html`; the script fills in the entry list.
 
 A new build is listed even before it has a line (2026-10-07): a build in `settlements/`, `openworld/`, `biomes/` or
 `kits/` with no page in `ENTRIES` gets its pages listed, tagged new. One page joins its kind's section; several make
-a section of their own after it (the Throne's ten stations, after Biomes), named from the pages' `<title>`s and
+a section of their own after it, named from the pages' `<title>`s and
 described by the first paragraph of the build's `README.md` or `INDEX.md`. An `ENTRIES` line replaces all of that
 (section, name, blurb); `UNLISTED` keeps a build out; `--no-discover` lists `ENTRIES` only. Builds that already have
 a page listed are never extended, so pages left out of a listed build (Iziz's `w-a`, the Port's `lb*`) stay out.
 
 Each section is in alphabetical order by name, a leading "The" or "A" ignored, whatever the order of `ENTRIES`.
 The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the section `ancients`, "Ancient city kits".
+
+## The Throne: its own artifact (2026-10-07)
+
+The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne
+Stations"), which the Krator Worlds index links to under the scale model. Together they are too big for this one: an
+artifact version holds at most 256 MB, and Krator Worlds was about 230 MB.
+
+`build_gallery.py` lists the Throne in `ELSEWHERE`: it leaves it out of `gallery/site/` and keeps it in any other
+`--out` site (the LAN host's).
+
+To update it:
+
+```
+python3 gallery/build_throne.py --build     # rebuilds the eleven stations, writes gallery/throne-site/
+```
+
+Then publish to the URL above:
+- `gallery/throne-site/index.html` as the page;
+- every file in `gallery/throne-site/worlds/` attached: eleven pages of 0.35 to 0.52 MB, and the shared library maps
+  `throne.tex.throne.js` (13.7 MB) and `throne.tex.hyperjungle.js` (3.0 MB), about 20 MB in one call.
+
+The pages load the maps through `<script src>` tags. Without them a station runs on its procedural maps and says so on
+the console.
+
+## The Ancients and the Port: their own artifact (2026-10-07)
+
+The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`settlements/port`)
+are published as their own artifact, https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1 ("The Ancients and the Port":
+61 pages, 103 MB with their two shared library packs), which the Krator Worlds index links to under the Throne. With them
+Krator Worlds hit the artifact's 256 MiB a version once Locus and Mungo took the material library.
+
+`build_gallery.py` lists both builds in `ELSEWHERE`: it leaves their `ENTRIES` lines out of `gallery/site/` (and does not
+build them for it) and keeps them in any other `--out` site (the LAN host's). Their names, blurbs and sections stay in
+`ENTRIES`. To update:
+
+```
+python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and settlements/port, writes gallery/ancients-site/
+```
+
+Then publish `gallery/ancients-site/index.html` to the URL above with every file in `gallery/ancients-site/worlds/`, in
+two calls of under 64 MB (the shared packs `ancients.tex.ancients.js` and `port.tex.port.js` go in the first). The
+artifact is private until shared from its page's Share menu.
+
+## Girder Hero (MADE)
+
+`worlds/girder-hero.html` is in `ENTRIES` again (2026-10-07). Its page is not one a `build.py` writes: `MADE` in
+`build_gallery.py` names the command that makes it (`build_hero.py --slim --out hero/dist/girder-hero.html`, run in
+`settlements/girder`; `hero/dist/` is not committed). A full rebuild had dropped the card because the line was missing.
 
 ## Published (2026-10-02)
 
@@ -163,3 +211,29 @@ the forecourt plaza, terraces and grand stair up to the bridge house with the br
 (the Ancients interiors kit, 1.4 MB: fourteen ship's halls in two dresses, the ship's rooms and cabins, every room audited), from `main`
 at 29f93c3. The live index (version 62) was kept: the Noah's Regret card updated (blurb, size) and the Ancients interiors card added after
 the Interiors walk-through. The Master catalog card (now 1655 pieces) was not touched. One publish call.
+Version 64 (2026-10-07): the index gained a "The Throne" link under the scale model, to the Throne's own artifact
+(https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX, version 1: the eleven stations and their shared library maps, 20.3 MB,
+from `main` at 3b5eec20 with the sidecar build). The index was edited from the live version 63, so its sections and
+cards are as they were. No world page changed. One publish call.
+Version 65 (2026-10-07): `worlds/motor-vehicles.html` replaced (0.7 MB: five vehicles of five cultures, the Geomancer
+buggy, the Republic salvage crawler, the Izani six-wheeler, the abyssal caravan truck and the Post-Apoc tracked hab,
+textured from the library, tracks that run), packaged with `build_gallery.bundle()`, from `main` at d6c83a43 rebuilt
+(the committed page was stale against the catalog core). The live index (version 64) was kept: only the Motor
+Vehicles card changed (blurb, size). One publish call. **Not replaced, for the artifact's 256 MiB a version (about
+245 MB used before this):** Locus, Locus buildings and Eastern Abyssal buildings (now 13.7 MB each: Locus inlines its
+library maps, about 35 MB more for the three) and Mungo (3.2 MB plus 19.7 MB of sidecars, about 20 MB more). The
+live copies are the version-46 builds (untextured; their buggy is the first one). Room for them needs pages
+dropped or slimmed, or Locus on sidecars (its three pages would share one set of maps).
+Version 66 (2026-10-07): the Ancients and the Port moved out to their own artifact (above): their 61 cards and pages
+removed, and a link section under the Throne added (`index.template.html` too). Girder Hero's card is back (its page,
+16.0 MB, rebuilt with `build_hero.py --slim` from `main` at ec33b8dc), and Locus, Locus buildings and Eastern Abyssal
+buildings replaced with their current builds (13.1 MB each: Locus on the material library). The index was edited from
+the live version 65. Version 67: Mungo replaced (3.0 MB and its three sidecars, `mungo.tex.*.js`, 21.8 MB in all; a card's
+size now counts the sidecars a page loads). The artifact is about 208 MB.
+Version 68 (2026-10-07): `worlds/desert-nomads.html` (8.4 MB) and `worlds/ash-nomads.html` (8.9 MB) added (the nomad split:
+the Desert Nomads' goat-hair, caidal, square and Tuareg tents, sheikh, seer and hookah tents, camels, horses and lizards; the Ash
+Nomads' blue-led spire and dome tents, the chieftain's five-spired tent, the assembly under the gas giant emblem, beetles and
+millipedes), `worlds/scyvoi.html` replaced (13.3 MB: Tibetan appliqué tents and halls, the shaman's ger, the cartwright's tent, bison
+and cattle), `worlds/fauna.html` (0.8 MB: 51 species) and `worlds/krator-catalog.html` (1.6 MB: 1932 pieces, the Ash Nomads, the
+desert nomads' pieces, training furniture) replaced, from `main` at b5badc0c. The live index (version 67) was kept: the two cards
+added after Scyvoi, the Scyvoi, Fauna and Master catalog cards updated. One publish call; about 228 MB.

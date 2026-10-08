@@ -19,33 +19,35 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `inspector.js` | 19 |  |
 | `krator-asset-engine.js` | 11 |  |
-| `krator-furniture-core.js` | 62 **big** |  |
-| `krator-furniture-kit.js` | 135 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
-| `krator-furniture-runtime.js` | 8 |  |
+| `krator-furniture-core.js` | 70 **big** |  |
 | `krator-furniture-detail.js` | 4 |  |
+| `krator-furniture-kit.js` | 138 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
+| `krator-furniture-runtime.js` | 8 |  |
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
+| `krator-master-furniture-ashnomad.js` | 120 **big** | Seating (390); Tables and vessels (514); Storage (658); Light (840); Textiles and screens (934); Fire (1009); Riders and herders (1090); Work: the chitin-cutters (1226); Tanning: the hide and chitin worker (job tanning (1325); Smithy (1419) |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
 | `krator-master-furniture-eastabyss.js` | 57 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767); The builders' yard (2026-10): building stock for (811) |
 | `krator-master-furniture-generic-fruit.js` | 57 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
 | `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (186); Food (21 pieces) (584); Drink (6 pieces) (1126); Supplies (11 pieces) (1292) |
-| `krator-master-furniture-generic.js` | 4 |  |
-| `krator-master-furniture-hykkousoi.js` | 1 |  |
-| `krator-master-furniture-islander.js` | 4 |  |
+| `krator-master-furniture-generic.js` | 5 |  |
+| `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
+| `krator-master-furniture-islander.js` | 5 |  |
 | `krator-master-furniture-iziz.js` | 14 | Harvested from settlements/iziz/src/69c-vern-hel (89) |
 | `krator-master-furniture-jobs.js` | 20 | Harvested from settlements/locus (10 pieces): th (47); The builders' yard (2026-10): timber for the Eas (187) |
 | `krator-master-furniture-lizardmen.js` | 6 |  |
-| `krator-master-furniture-nomad.js` | 6 |  |
+| `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
 | `krator-master-furniture-painted.js` | 50 **big** | Harvested from settlements/highlands (tribal bra (79) |
 | `krator-master-furniture-post-apoc.js` | 9 | Harvested from kits/post-apoc (3 pieces) (75) |
-| `krator-master-furniture-reedlake.js` | 12 | Hospitality and households (2026-10: the Reed La (66) |
-| `krator-master-furniture-republican.js` | 74 **big** | Harvested from settlements/highlands (Republican (88) |
+| `krator-master-furniture-reedlake.js` | 13 | Hospitality and households (2026-10: the Reed La (66) |
+| `krator-master-furniture-republican.js` | 75 **big** | Harvested from settlements/highlands (Republican (88) |
 | `krator-master-furniture-rustic.js` | 37 **big** | Harvested from settlements/highlands (rustic bra (83) |
-| `krator-master-furniture-scrap.js` | 97 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
-| `krator-master-furniture-screamer.js` | 5 |  |
-| `krator-master-furniture-scyvoi.js` | 83 **big** | Seating (239); Tables and storage (349); Light (478); Vessels (555); Fire (617); Riders' gear (766); Felts and rugs (961); Work (1001); The shaman's things (1088); Tanning: the hidemaker's tent (2026-10-06) (1226) |
+| `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
+| `krator-master-furniture-screamer.js` | 6 |  |
+| `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
 | `krator-master-furniture-voth.js` | 6 |  |
-| `krator-master-furniture-xanadu.js` | 6 |  |
+| `krator-master-furniture-xanadu.js` | 7 |  |
+| `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture.js` | 275 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1372); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1867); Yuni (64 pieces) (2612); Ancients kit extras (32 pieces) (4435) |
 | `krator-master-plants.js` | 92 **big** | Voth (21 species) (10); Iziz (7 species) (870); Beast-Rider (Mav's Refuge / Girder) (11 species) (1188); Yuni (9 species) (1700) |
 | `krator-symbols.js` | 9 | CULTURE SYMBOLS (shared: core/sockets/38-symbols (1); symbols: each draws in the box (cx,cy,R) with tw (10) |

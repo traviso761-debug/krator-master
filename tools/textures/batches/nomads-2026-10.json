@@ -1,0 +1,547 @@
+[
+ {
+  "src": "ashnomad_lining-ember.png",
+  "out": "core/materials/patterns/ashnomad/lining-ember",
+  "record": {
+   "id": "ashnomad/lining-ember",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/lining-ember: a warm tent lining of stepped diamonds, spirals and zigzag bands in ochre, saffron, vermilion and madder (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ash Nomads' tent linings; any warm Andean or Southwestern weave"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "cloth.tent.ash.png",
+  "out": "core/materials/library/cloth.tent.ash",
+  "record": {
+   "id": "cloth.tent.ash",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row cloth.tent.ash: heavy felted wool tent cloth, a woven grid under the felt, coarse stitched seams, ash worked in, darned burn holes (near-colourless) (core/materials/PROMPTS-nomads.md)",
+    "reuse": "any dark or grey felt: the Ash Nomads' covers, a Scyvoi black ger, Zeijani hangings"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "delight": 0.4,
+   "lift": 0.05,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "normal_strength": 0.7,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_fret-band.png",
+  "out": "core/materials/patterns/ashnomad/fret-band",
+  "record": {
+   "id": "ashnomad/fret-band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/fret-band: an appliqu\u00e9 felt band, stepped frets with a hummingbird, a spiral and a stag beetle in yellow and red on black (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the band round every Ash Nomad tent; Zeijani textiles"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "nomad_lining-muted.png",
+  "out": "core/materials/patterns/nomad/lining-muted",
+  "record": {
+   "id": "nomad/lining-muted",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/nomad/lining-muted: a Moroccan caidal tent lining of keyhole arches and eight-pointed stars on madder-brown, faded (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the desert nomads' linings; eastabyss and Xanadu interiors"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "nomad_lining-muted.green.png",
+  "out": "core/materials/patterns/nomad/lining-muted.green",
+  "record": {
+   "id": "nomad/lining-muted.green",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "an alternate of patterns/nomad/lining-muted on a deep green ground (the owner's extra, 2026-10-07) (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the sheikh's guest pavilion and the hookah tent; any Moroccan interior"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "nomad_sadu-band.png",
+  "out": "core/materials/patterns/nomad/sadu-band",
+  "record": {
+   "id": "nomad/sadu-band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/nomad/sadu-band: Bedouin sadu weaving, bands of triangles, stepped diamonds and checker in rust, black, cream, ochre and indigo (core/materials/PROMPTS-nomads.md)",
+    "reuse": "every desert-nomad valance, divider and saddle cloth; eastabyss and Yuni nomad weaving"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "nomad_sadu-band.green.png",
+  "out": "core/materials/patterns/nomad/sadu-band.green",
+  "record": {
+   "id": "nomad/sadu-band.green",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "an alternate of patterns/nomad/sadu-band on green (the owner's extra, 2026-10-07) (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the sheikh's tent and the great goat-hair tent; any sadu weave"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_lining-crawlers.png",
+  "out": "core/materials/patterns/ashnomad/lining-crawlers",
+  "record": {
+   "id": "ashnomad/lining-crawlers",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "the owner's extra (2026-10-07): millipedes, lizards and mushrooms in red and yellow on black (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the chieftain's tent and the shaman's hut; the Zeijani (millipedes and the alecap mushroom)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_nazca-panel.png",
+  "out": "core/materials/patterns/ashnomad/nazca-panel",
+  "record": {
+   "id": "ashnomad/nazca-panel",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/nazca-panel: Nazca figures (hummingbird, monkey with a spiral tail, spider, stag beetle) in yellow and red on black between stepped frets (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the chieftain's lobes, the assembly's drum; Zeijani friezes"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.ash.png",
+  "out": "core/materials/library/ground.ash",
+  "record": {
+   "id": "ground.ash",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row ground.ash: a plain of fine volcanic ash with wind ripples, black cinders, grey pumice, dry stems (near-colourless) (core/materials/PROMPTS-nomads.md)",
+    "reuse": "any volcanic plain: the Ash Nomads, Dhelv's surface, the Throne's slopes"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "delight": 0.4,
+   "lift": 0.05,
+   "rough": 0.95,
+   "rough_var": 0.12,
+   "normal_strength": 0.8,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_medallion-sun.png",
+  "out": "core/materials/patterns/ashnomad/medallion-sun",
+  "record": {
+   "id": "ashnomad/medallion-sun",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/medallion-sun: a sun disc of appliqu\u00e9d felt, a sun-face in a fret ring, red and yellow rays (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the chieftain's dais (the assembly now wants a gas giant); any sun cult"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "normal_strength": 0.45,
+   "mute": 0,
+   "band": 0.0
+  }
+ },
+ {
+  "src": "common_medallion-moonface.png",
+  "out": "core/materials/patterns/common/medallion-moonface",
+  "record": {
+   "id": "common/medallion-moonface",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "the owner's extra (2026-10-07): a moon-face medallion of felt, a crescent and dots, a blue key-fret ring, blue and white on black (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ring Sea Islanders (their sign is the white island moon); a Scyvoi shaman; any moon cult"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "normal_strength": 0.45,
+   "mute": 0,
+   "band": 0.0
+  }
+ },
+ {
+  "src": "common_medallion-moonface.b.png",
+  "out": "core/materials/patterns/common/medallion-moonface.b",
+  "record": {
+   "id": "common/medallion-moonface.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "the owner's extra (2026-10-07): a second moon-face medallion, moon phases round a staring face in a blue fret ring (core/materials/PROMPTS-nomads.md)",
+    "reuse": "as patterns/common/medallion-moonface"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "normal_strength": 0.45,
+   "mute": 0,
+   "band": 0.0
+  }
+ },
+ {
+  "src": "cloth.tent.brown.png",
+  "out": "core/materials/library/cloth.tent.brown",
+  "record": {
+   "id": "cloth.tent.brown",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row cloth.tent.brown: Bedouin and Berber goat-and-camel hair tent cloth in sewn strips, warm brown with cream and dark brown stripes, a darned patch (core/materials/PROMPTS-nomads.md)",
+    "reuse": "any desert or steppe tent: the desert nomads, Shade, Verge caravans, Xanadu herders"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "delight": 0.4,
+   "lift": 0.05,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "normal_strength": 0.7,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_medallion-giant.png",
+  "out": "core/materials/patterns/ashnomad/medallion-giant",
+  "record": {
+   "id": "ashnomad/medallion-giant",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/medallion-giant: the Ash Nomads emblem, a ringed gas giant in the Krator sky giant colours (slate blue and cream bands, an ivory ring), four moons, in a blue and cream key-fret ring on black felt (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ash Nomads emblem: the assembly, the banners; any culture that honours the giant in the sky"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "normal_strength": 0.45,
+   "mute": 0,
+   "band": 0.0
+  }
+ },
+ {
+  "src": "ashnomad_fret-band.blue.png",
+  "out": "core/materials/patterns/ashnomad/fret-band.blue",
+  "record": {
+   "id": "ashnomad/fret-band.blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/fret-band.blue: the blue-led version of fret-band (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
+    "reuse": "the Ash Nomads outside (blue leads, red trims)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_nazca-panel.blue.png",
+  "out": "core/materials/patterns/ashnomad/nazca-panel.blue",
+  "record": {
+   "id": "ashnomad/nazca-panel.blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/nazca-panel.blue: the blue-led version of nazca-panel (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
+    "reuse": "the Ash Nomads outside (blue leads, red trims)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ }
+]

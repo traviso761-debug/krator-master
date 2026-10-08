@@ -482,7 +482,7 @@ FURN({
   key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', type: 'workstation', setting: 'both',
   rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1 },
   materials: ['timber', 'stone', 'metal', 'glass', 'cloth', 'emissive'],
-  w: 2.5, d: 1.2, h: 1.45, variants: 1,
+  w: 2.5, d: 1.2, h: 1.45, variants: 1, job: 'alchemy',
   build: function (F) {
     const stone = F.col('stoneGrey'), jade = F.col('stoneJade'), metal = F.col('steel'), glass = F.col('glassMist');
     /* bench: top slab, apron and four stub legs */

@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.217,
+    0.722
+   ],
+   "seam_before": [
+    1.35,
+    0.812
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0,
+   "normal_strength": 0.7,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.tent.brown",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "cloth.tent.brown.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row cloth.tent.brown: Bedouin and Berber goat-and-camel hair tent cloth in sewn strips, warm brown with cream and dark brown stripes, a darned patch (core/materials/PROMPTS-nomads.md)",
+  "reuse": "any desert or steppe tent: the desert nomads, Shade, Verge caravans, Xanadu herders",
+  "sha1": "8ee84cf07f3205edb33740bad68a4abaf9857d32"
+ }
+}

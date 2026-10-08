@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.258,
+    1.242
+   ],
+   "seam_before": [
+    1.099,
+    1.066
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0,
+   "normal_strength": 0.7,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.tent.ash",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   0.8,
+   0.8
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "cloth.tent.ash.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row cloth.tent.ash: heavy felted wool tent cloth, a woven grid under the felt, coarse stitched seams, ash worked in, darned burn holes (near-colourless) (core/materials/PROMPTS-nomads.md)",
+  "reuse": "any dark or grey felt: the Ash Nomads' covers, a Scyvoi black ger, Zeijani hangings",
+  "sha1": "71ba5a896429fc28a746af310ea93049587d9ea8"
+ }
+}

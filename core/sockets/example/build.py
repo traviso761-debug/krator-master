@@ -39,8 +39,10 @@ def find_node():
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(HERE, '..')
 # every post-apoc engine fragment, none of its buildings (4x-5x) or its showcase table (89): a hand-kept list
-# broke twice as the scene grew new dependencies
-FRAGS = [(KIT, f) for f in sorted(os.listdir(KIT)) if f[0].isdigit() and not re.match(r'(4\d|5\d|89)-', f)]
+# broke twice as the scene grew new dependencies. Nor the two that need what only the kit's build.py generates or reads
+# from core/: the material-library binding (29y: KMAT and the texture pack; the sheet keeps the procedural look, as the
+# kit's ?mat=proc) and the furniture glue (91f: the catalog bundle, KFURN, KTAGS; the demo wall places no furniture)
+FRAGS = [(KIT, f) for f in sorted(os.listdir(KIT)) if f[0].isdigit() and not re.match(r'(29y|4\d|5\d|89|91f)-', f)]
 FRAGS += [(CORE, '37-sockets.js'), (CORE, '38-symbols.js'), (CORE, '80-cultures.js'), (HERE, '40-demo.js'), (HERE, '89-rows.js')]
 FRAGS.sort(key=lambda t: t[1])
 html = ''.join(open(os.path.join(d, f), encoding='utf-8', newline='').read() for d, f in FRAGS)
