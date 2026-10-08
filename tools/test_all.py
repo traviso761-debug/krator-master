@@ -33,11 +33,28 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/verge/verge_sim_test.gd']
 
 
+# A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
+# dist/interiors-core.js in node (in CI that file is an LFS pointer until kits/interiors writes it).
+BUILD_FIRST = ['kits/interiors']
+
+
 def builds():
     out = []
     for top in TOPS:
         for d in sorted(glob.glob(os.path.join(ROOT, top, '*', 'build.py'))):
             out.append(os.path.relpath(os.path.dirname(d), ROOT).replace(os.sep, '/'))
+    return [b for b in BUILD_FIRST if b in out] + [b for b in out if b not in BUILD_FIRST]
+
+
+def extra_builds():
+    """Pages a build writes only when asked: the Throne's stations (build.py --station <name>) and Girder's hero
+    page (build_hero.py). The baseline hashes them, so they are rebuilt too."""
+    out = []
+    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
+        name = os.path.basename(os.path.dirname(st))
+        out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
+    if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
+        out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
     return out
 
 
@@ -64,6 +81,7 @@ def steps(nightly, build):
     if build:
         for b in builds():
             s.append(('build ' + b, [PY, 'build.py'], b))
+        s += extra_builds()
         s.append(('hash baseline (PORT-BASELINE.json)', [PY, 'tools/port_baseline.py']))
     if nightly:
         pw = importlib.util.find_spec('playwright') is not None
