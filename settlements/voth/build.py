@@ -65,7 +65,8 @@ MINIMAP_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mini
 ATMOS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos')   # shared atmosphere: the bay's wave field (core/atmos/README.md)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the registry PLACED is read into (src/97t-voth-tags.js; core/tags/README.md)
-CORE_FRAGS = set()   # core/rand and core/tags fragments: each a unit of its own, never grouped with a src/ prefix (50a-cantons.js keeps its reseed check)
+MASK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mask')   # KMASK: the placement mask as data (core/mask/README.md; src/40-ground.js)
+CORE_FRAGS = set()   # core/rand, core/tags and core/mask fragments: each a unit of its own, never grouped with a src/ prefix (50a-cantons.js keeps its reseed check)
 OUT = os.path.join(HERE, 'voth.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -75,6 +76,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-voth-minimap.js', '99-tail.html',
                  '90-atmos-host.js', '98-start.js'}
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '97t-voth-tags.js'}   # core/rand, core/tags, the adapter (no rnd())
+DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 PALETTE_FILE = '05-palette.js'
 
@@ -158,11 +160,11 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, MINIMAP_DIR, ATMOS_DIR, RAND_DIR, TAGS_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, MINIMAP_DIR, ATMOS_DIR, RAND_DIR, TAGS_DIR, MASK_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
-            if f[0].isdigit() and f not in paths and (d not in (RAND_DIR, TAGS_DIR) or f.endswith('.js')):
+            if f[0].isdigit() and f not in paths and (d not in (RAND_DIR, TAGS_DIR, MASK_DIR) or f.endswith('.js')):
                 paths[f] = os.path.join(d, f)
-                if d in (RAND_DIR, TAGS_DIR):
+                if d in (RAND_DIR, TAGS_DIR, MASK_DIR):
                     CORE_FRAGS.add(f)
     order = sorted(paths)
     bodies = {}

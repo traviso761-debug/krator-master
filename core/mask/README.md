@@ -48,6 +48,16 @@ changed. The albedo stays a real canvas. The build lists `mask` in `TARGET_CORE`
 | Dalab | 3349 → 3378 (hard road edges free plots the soft edges blocked); the far forest keeps off the fields by a list of field discs, not by reading the horizon canvas | same |
 | Erewhon | 2794 → 2912. Its infill pass still places nothing: the soft edge was not the cause (`settlements/xanadu/KNOWN_ISSUES.md`) | same |
 | Roketstad | 3348 → 3482; its furniture moved with its buildings (5513 → 5818 pieces), `core/furnish/fingerprint.json` re-recorded for it | same |
+| Voth | 3988 → 4090 (2026-10-08; graves 1734 → 1841, town 1001 → 986, fields 22 → 19) | same placement hash (`6303bde5`) and mask hash (`6b6bc4fd`) on a default, a `--disable-gpu` and a forced-GPU-raster headless load; a real GPU not yet checked |
+
+Voth (`settlements/voth/src/40-ground.js`) was the last city on a real canvas. Its mask is
+`KMASK.xform(KMASK.canvas(2080, 2080))` (its field rectangles are painted under translate and rotate); the 400-cell
+shore and low-ground grid that was a small canvas drawn up without smoothing is now one `fillRect` per run of shut cells.
+Voth reads the mask as `maskAt > 200`, so a pixel the soft-edged canvas covered by about a fifth was already shut: every
+mask shape is grown by `MASK_EDGE` (0.55 px across) to keep that buildable area. Without it the hard edge opened
+10462 pixels and placement moved far more (a tavern stood in the river, the central shrine found no site); with it
+1576 of 4.3 million pixels differ from the old canvas. Its build lists `core/mask` with its other core modules, and
+`src/85-probe.js` publishes `window._masks()`.
 
 Moving a city onto the mask moves its rubble once (GODOT-PLAN.md section 7): each move was checked with a screenshot
 pair from the same view and the hash baseline rewritten.

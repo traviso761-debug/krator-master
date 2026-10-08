@@ -102,3 +102,6 @@ window._api.sampleCityCanvas = function(x,z){       /* the canvas pixel actually
    itself. Lets a headless audit point the camera at an arbitrary world
    coordinate without driving synthetic mouse input. */
 window._debugSetView = setView;
+
+/* core/mask: the proof two loads painted the same placement mask (KMASK.hash of its bytes, and its op count) */
+window._masks = function(){ return { mask: KMASK.hash(mcv), ops: KMASK.ops(mcv).length }; };
