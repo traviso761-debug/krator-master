@@ -353,6 +353,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const t = [dx / len, dz / len], n = [-t[1] * sign, t[0] * sign];
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
+    /* open sides (o.open: [[x, z], ...], each a point on the side): no wall there (a cloister open to its court behind
+       pillars), so no piece stands or hangs on it */
+    (o.open || []).forEach(function (p, k) { snap(R, p, 'open side ' + k).W.open = true; });
     (o.doors || []).forEach(function (d, k) {
       const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
@@ -846,6 +849,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
      catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
      catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
 
+     catalog.top(key, variant)                    OPTIONAL: a host's surface height (what stands on it stands there),
+                                                  null when it has none (it then hosts nothing); else its h
      catalog.lights(key, variant, { seed, wealth })  OPTIONAL: the lights a piece carries, in its own
                                                   frame [{ lx, ly, lz, color, intensity, distance }]
 
@@ -889,7 +894,10 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   function describe(catalog, d, v, room) {
     const dm = catalog.dims(d.key, v);
     const type = d.type || 'other';
-    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, type: type, anchor: d.anchor || 'floor',
+    /* a host's surface: none when the catalog says so (surface: false: a jar, a vat) or when what is drawn has no flat top; else the
+       height of what is drawn (catalog.top), else its declared h */
+    const top = d.surface === false ? null : IX.SURFACE_HOSTS.indexOf(type) >= 0 && catalog.top ? catalog.top(d.key, v) : dm.h;
+    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, top: top, type: type, anchor: d.anchor || 'floor',
       culture: d.culture, clear: d.clearance || {},
       usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
   }
@@ -1075,7 +1083,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         grid.stamp(Q.fp, +1);
         if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
       }
-      Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
+      Q.top = Q.layer === 'surface' ? hostQ.top + P.h : P.top == null ? null : room.y + P.top;   /* a floor piece's: its surface (null: none) */
       placed.push(Q); nFurn++;
       return Q;
     }
@@ -1095,6 +1103,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function wallSlots(P, role) {
       const back = (P.clear.back || 0) + WALL_GAP, out = [];
       for (const W of room.walls) {
+        if (W.open) continue;   /* an open side: no wall to stand against (20-rooms.js) */
         const lo = P.w / 2 + 0.03, hi = W.len - P.w / 2 - 0.03;
         if (hi < lo) continue;
         const us = [];
@@ -1162,7 +1171,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function surfaceSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0 || H.top == null) continue;   /* no top to stand a thing on */
         if (H.P.desc && H.P.desc.surface === false) continue;   /* no flat top (a jar, a vat, a basket): nothing is set on it */
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
@@ -1296,6 +1305,17 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
         anchor: P.anchor, type: P.type, role: Q.role, catRole: P.desc.role || null, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+      /* a stretching piece (catalog stretch: a cord of pennants) runs the free length of its wall: the run between the wall's ends
+         and its doors that holds it, up to 8 m, about where it was placed (it hangs over the floor pieces, so it is placed as declared
+         and only drawn longer: its footprint, w, stays the declared one, so the checks see what the placer placed) */
+      if (P.desc.stretch && P.anchor === 'wall') {
+        let W = null, bd = 1e9;for (const V of room.walls) { if (V.open || Math.abs(normAng(V.ry - Q.ry)) > 0.05) continue;const dd = G.segDist(Q.x, Q.z, V.a, V.b);if (dd < bd) { bd = dd;W = V; } }
+        if (W) {
+          const u = (Q.x - W.a[0]) * W.t[0] + (Q.z - W.a[1]) * W.t[1];let lo = 0.15, hi = W.len - 0.15;
+          for (const D of room.doors) { if (D.wall !== W.i) continue;const a = D.u - D.w / 2 - 0.2, b = D.u + D.w / 2 + 0.2;if (b <= u) lo = Math.max(lo, b);else if (a >= u) hi = Math.min(hi, a); }
+          const sp = Math.min(8, 2 * Math.min(u - lo, hi - u));if (sp > P.w) p.span = R3(sp);
+        }
+      }
       const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
       if (L && L.length) {
         const c = Math.cos(p.ry), s = Math.sin(p.ry);
@@ -2615,7 +2635,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     opt = opt || {};
     const keep = opt.lights === 'keep';
     let cache = null;
-    const lightCache = {}, hasLights = {};
+    const lightCache = {}, hasLights = {}, tops = {};
     function probe(key, v, seed, wealth) {      /* build once at the origin, read its lights, throw it away */
       const g = buildFurn(key, 0, 0, 0, { variant: v, seed: seed, y: 0, wealth: wealth });
       if (!g) return [];
@@ -2636,11 +2656,20 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
             tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: roleOf(A),
-            variants: variantsOf(A) };
+            variants: variantsOf(A), surface: A.surface !== false, stretch: !!A.stretch };
         });
         return cache;
       },
       dims: function (key, v) { return entryDims(FURN_BY_KEY[key], v); },
+      /* a host's surface height (IX.measureTop, runtime-adapter.js; built once at the origin, thrown away), or null */
+      top: function (key, v) {
+        const k = key + '|' + (v | 0);if (k in tops) return tops[k];
+        if (!IX.measureTop) return tops[k] = entryDims(FURN_BY_KEY[key], v).h;
+        const g = buildFurn(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0, wealth: 0.5 });if (!g) return tops[k] = null;
+        stripLights(g);const t = IX.measureTop(g, entryDims(FURN_BY_KEY[key], v));
+        scene.remove(g);const i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); });
+        return tops[k] = t;
+      },
       anchorY: function (key, v, at) { return furnAnchorY(FURN_BY_KEY[key], v, at); },
       lights: function (key, v, o) {
         o = o || {};
@@ -2653,7 +2682,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         return lightCache[ck];
       },
       build: function (p, room) {
-        const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5 });
+        const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5, span: p.span || 0 });
         if (g) {
           g.userData.interior = { room: room ? room.id : null, placement: p.id, need: p.need, role: p.role };
           if (!keep) g.userData.interior.strippedLights = stripLights(g).length;
@@ -6330,7 +6359,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     K.voids.forEach(function (v) { voids.push(v); });
     /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
     [-1, 1].forEach(function (s) {
-      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, -28]] };   /* its pit side open behind the pillars */
       for (let z = -14; z >= -42; z -= 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (-z), poly: circle(0.45, 10, s * 17.9, z), y0: 0, y1: 4.4, phase: 3, finish: 'hewn' });
         R.fixtures.push(fx('pillar' + (-z), 'pillar', s * 17.9, z, 0.9, 0.9, { h: 4.2 }));
@@ -6387,7 +6416,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     voids.push({ kind: 'stair', id: 'gallery-door', joins: ['gallery'], a: [0, U, Z(25.6)], b: [0, U, Z(26.9)], w: 1.4, h: 2.6 });
     /* the cloisters, west and east, behind pillars left standing */
     [-1, 1].forEach(function (s) {
-      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, Z(-3)]] };   /* its pit side open behind the pillars */
       for (let z = -26; z <= 20; z += 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (z + 30), poly: circle(0.45, 10, s * 17.9, Z(z)), y0: Y, y1: Y + 4.4, phase: 3, finish: 'hewn' });
         C.fixtures.push(fx('pillar' + (z + 30), 'pillar', s * 17.9, Z(z), 0.9, 0.9, { h: 4.2 }));

@@ -760,7 +760,7 @@ function furnFamily(culture, color, family) {
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
-  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth };
+  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth, span: opt.span || 0 };   /* span: a stretching piece's length (a cord of pennants along its wall), else 0 */
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();

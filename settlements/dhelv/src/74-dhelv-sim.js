@@ -88,6 +88,13 @@ DHS.init=function(clock,o){if(DHS.inited)return DHS;DHS.inited=true;o=o||{};cons
  for(const d of B.doors){if(!d.node)continue;const K=DHS.kindOf(d.key);if(!K)continue;const n=B.byId[d.node],o=K[2]||{},acts={};
   for(const a in K[1])acts[a]=/^(SLEEP|EAT|REST)$/.test(a)&&/^home/.test(K[0])?Math.max(1,Math.round(K[1][a]*k)):K[1][a];
   const S=DH.SITES.find(s=>Math.abs(s.x-d.rec.x)<.01&&Math.abs(s.z-d.rec.z)<.01),kind=K[0]==='home'&&S&&S.district==='outpost'?'home_out':K[0];   /* the outpost's own homes: its folk live there */
+  /* the park is the hill under the light well (41: HILLS): its crowd spread over eight spots on the hill between the lanes, each
+     at the hill's own height (one door held 90 people in a clump at the hill's foot) */
+  if(d.key==='zj_park'){const H=DH.HILLS.find(h=>h.well==='hall'),G=B.nodes.filter(q=>q.area==='hall');
+   for(let j=0;j<8;j++){const a=PI/4+(j%4)*PI/2,r=j<4?7:13,x=H.c[0]+Math.cos(a)*r,z=H.c[1]+Math.sin(a)*r;let nb=null,bd=1e9;for(const q of G){const dd=Math.hypot(q.x-x,q.z-z);if(dd<bd){bd=dd;nb=q;}}
+    if(!nb||bd>3)continue;const pa={};for(const a2 in acts)pa[a2]=Math.max(1,Math.round(acts[a2]/8));
+    SIM.place({id:'park_'+(i++),name:d.rec.name||d.key,kind:'park',x:nb.x,y:nb.y,z:nb.z,ry:0,door:at(nb),activities:pa,indoor:{},wander:1.5,tags:{key:d.key,tid:d.tid,district:'hub'}});DHS.places++;}
+   continue;}
   SIM.place({id:kind+'_'+(i++),name:d.rec.name||d.key,kind,x:n.x,y:n.y,z:n.z,ry:d.rec.ry,door:at(n),activities:acts,open:o.open,indoor:o.out?{}:true,
    wander:o.out?1.2:0,tags:{key:d.key,tid:d.tid,district:S?S.district:null}});DHS.places++;}
  /* the open grounds no building stands on: the pasture and the forest's edge (their door the kipuka grid's nearest node) */

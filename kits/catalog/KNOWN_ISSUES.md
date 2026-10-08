@@ -150,3 +150,10 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
       Yuni keeps belongings in: items). The catalog has no `capacity` field; Yuni keeps its numbers. Yuni turns pots
       and baskets on a lathe: here a stack of frustum rings (`yuniLathe`). `yuni-common` gained `thatchStraw` and
       `thatchFlax` (the grain bin's lid).
+- [x] **The kit's beds shared faces** (the blanket on the mattress, the turned-down band on the blanket, the stone slab flush
+      with the corner legs): z-fighting. Each layer now stands a few millimetres clear (`krator-furniture-kit.js`, the bed).
+      Every culture's kit bed changes when its build is rebuilt.
+- [x] **The Zeijani mortar's resin shared the mortar's top face; the fleece bed's layers floated apart at their thin edges.**
+      Fixed in `krator-master-furniture-zeijani.js`.
+- [ ] **`stretch` and `F.span`**: a piece marked `stretch` (the kit's pennants) is drawn to the placer's span along its wall;
+      the catalog page draws it at its declared width.

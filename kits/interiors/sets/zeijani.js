@@ -434,7 +434,7 @@
     K.voids.forEach(function (v) { voids.push(v); });
     /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
     [-1, 1].forEach(function (s) {
-      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, -28]] };   /* its pit side open behind the pillars */
       for (let z = -14; z >= -42; z -= 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (-z), poly: circle(0.45, 10, s * 17.9, z), y0: 0, y1: 4.4, phase: 3, finish: 'hewn' });
         R.fixtures.push(fx('pillar' + (-z), 'pillar', s * 17.9, z, 0.9, 0.9, { h: 4.2 }));
@@ -491,7 +491,7 @@
     voids.push({ kind: 'stair', id: 'gallery-door', joins: ['gallery'], a: [0, U, Z(25.6)], b: [0, U, Z(26.9)], w: 1.4, h: 2.6 });
     /* the cloisters, west and east, behind pillars left standing */
     [-1, 1].forEach(function (s) {
-      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, Z(-3)]] };   /* its pit side open behind the pillars */
       for (let z = -26; z <= 20; z += 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (z + 30), poly: circle(0.45, 10, s * 17.9, Z(z)), y0: Y, y1: Y + 4.4, phase: 3, finish: 'hewn' });
         C.fixtures.push(fx('pillar' + (z + 30), 'pillar', s * 17.9, Z(z), 0.9, 0.9, { h: 4.2 }));

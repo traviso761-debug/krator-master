@@ -75,3 +75,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
 - [x] The screwpine's second-head stem rendered nearly white (an untextured rod given the textured trunk's tint): fixed
       2026-10-06 (60, `screwpine`).
+- [x] **The hypertrees' limbs and the dead wood kept their painted canvases** beside the library's bark (the owner, from Dhelv:
+      "branches not taking bark texture ... a recurring issue with biome imports"): their sets (`limb`, `wood`) were in
+      materials.json but never bound. `50-biome-hyperjungle-species.js` binds them (and the small trunks take the limbs' map).
+      Iziz vendors this kit (`settlements/iziz/targets/city/86-bio-*`): its copy still has the gap until it is re-vendored.

@@ -53,7 +53,7 @@ const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[
    site's own (the hall's wall before a front, a way's ceiling) opens too, inside a site's turned box above its floor + 2 m.
    uBoxA: centre x, z, half width, half depth; uBoxB: cos, sin of its turn, its floor, on */
 const CV_BOXCUT='\nif(uCut>.5&&vCut.w<.5){for(int i=0;i<32;i++){vec4 a=uBoxA[i],b=uBoxB[i];if(b.w<.5)continue;vec2 d=vCWP.xz-a.xy;'+
- 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.)discard;}}';
+ 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.&&(b.w<1.5||vCWP.y<b.w-10000.))discard;}}';   /* b.w over 1.5: a top (+10000) the cut stops at */
 const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */

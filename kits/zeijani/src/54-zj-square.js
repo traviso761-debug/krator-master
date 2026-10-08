@@ -63,7 +63,11 @@ defBuilding({key:'zj_market_hall',name:'Market hall',seed:5403,tags:{types:['mar
 
 /* the public fountain: a round basin on two steps, a column with a bowl, the water falling from it, jars at its rim */
 defBuilding({key:'zj_fountain',name:'Public fountain',seed:5404,cls:'infrastructure',tags:{types:['infrastructure'],wealth:'middle',style:'constructed',rock:'tuff'},w:6,d:6,h:4,front:{x:0,z:3},
- build(o){const c=P('white');cyl('ashlar',0,0,0,2.9,.2,P('tuffDark'),28);cyl('tuffPol',0,.2,0,2.5,.6,c,28);cyl('water',0,.75,0,2.25,.02,P('water'),28);
-  zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.8,.18,c,16);cyl('water',0,2.97,0,.65,.02,P('water'),16);
-  for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.78,.78,Math.sin(a)*.78,.06,2.2,.06,P('water'));}
+ build(o){const c=P('white'),fall=hc(0xc4e2e6);cyl('ashlar',0,0,0,2.9,.2,P('tuffDark'),28);
+  /* the basin and the bowl hollow (a rim round a floor), the water in them under the rim (the owner: no water showed: it was a
+     disc inside the solid basin) */
+  cyl('tuffPol',0,.2,0,2.3,.12,c,28);lathe('tuffPol',0,0,[[2.5,.2],[2.5,.8],[2.22,.8],[2.22,.32]],28,c);cyl('water',0,.62,0,2.24,.02,P('water'),28);
+  zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.66,.1,c,16);lathe('tuffPol',0,0,[[.8,2.8],[.8,3.02],[.66,3.02],[.66,2.9]],16,c);cyl('water',0,2.96,0,.67,.02,P('water'),16);
+  /* the streams falling from the bowl's lip into the basin, pale with their air */
+  for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.86,.64,Math.sin(a)*.86,.045,2.36,.045,fall);}
   FURNISH('zeijani_olla',2.0,0,1.9,0,{setting:'outdoor'});FURNISH('zeijani_olla',-2.1,0,1.7,0,{v:1,setting:'outdoor'});}});

@@ -143,7 +143,8 @@ them; `89-dhelv-hills.js` draws each in the library's turf (`ground.grass_ground
 paths (`turfPath`), writes its walk floor (quads of 2.5 m: the walkers and the nav's grids climb it) and plants it: the
 Throne kit again, its host swapped for the hills (its island forest's ground: tree ferns and lehua, its passes filtered to the
 small trees; its floor and understory's ferns, moss and tufts), off the paths and the pads. About 60 small trees and 8,500
-plants in all. They are drawn as the underground is (within 420 m of the camera, wherever it is).
+plants in all. They are drawn as the underground is (within 420 m of the camera, wherever it is). The park's crowd (its
+play and talk) is spread over eight spots on the square's hill between the lanes, each at the hill's height.
 
 ## The tunnels' fungi
 
@@ -196,19 +197,21 @@ south walls and spread across the plain below its tip, leaving the apron (the le
 is 2,600 years old, the apron 400; `THRONE.ageAt` answers the model's ages elsewhere. It lays the flows in about 0.5 s.
 
 The ground is drawn in 50 m tiles: at 5 m where a sheer step, the outpost or an opening passes, 10 m elsewhere on the spur,
-25 m out on the flank (about 125k triangles); a skirt hangs under an edge that meets a coarser tile (40 m deep at the drawn
-ground's outer edge), and the normals come from the height. Past it, the far land: squares of about 100 m out to 5 km on the
+25 m out on the flank (about 125k triangles); a fine tile's edge lies on its coarser neighbour's straight edge (no T-junction
+crack), and a skirt hangs under it as well (40 m deep at the drawn ground's outer edge), and the normals come from the height. Past it, the far land: squares of about 100 m out to 5 km on the
 same land, so a high view sees the land to the horizon. **The spur's walls** are their own mesh (`dhWalls`): jointed columns
 4 m out on each step's low side up to the lip's foot, then the **weathered lip** (review 3: "round off the upper edge a bit"):
 a quarter circle 10 to 15 m in radius curving up and in onto the top (`DH.shelfY`, the same function the ground draws more
-coarsely under it). The west face has its columns too, but for the outpost's carved fronts: there it is dressed in the
+coarsely under it), cut back in gullies; the columns weathered irregularly (facets of random widths at their own depths,
+some broken lower at their heads, blocky joints). The walls cast no shadow (a caster that large showed the shadow camera's box). The west face has its columns too, but for the outpost's carved fronts: there it is dressed in the
 cliff's rock 8 cm before the ground's plumb step (`dhWestFace`), open at each mouth. **The mouths** (the portal, the galleries,
 the lean-to, the decoy) cut the ground only up to their own top, always, and the rock round each is kept meshed (`DH_STREAM.pin`),
 so a mouth reads from anywhere (review 3: the face went transparent at some angles, the portal invisible at others).
 
 **The stream** (review 3: it "comes from and goes to nowhere"): the shelf's forest's water spills over the lip down the west
 face in front of the columns into a plunge pool at the foot, runs across the apron and sinks into the porous young lava in a
-swallow pool at the apron's edge.
+swallow pool at the apron's edge. Its water is laid in pieces of about 2 m, each a hand over the highest ground under it,
+so no rise of the ground covers it.
 
 ## The forests
 
@@ -247,7 +250,9 @@ most 1.47M triangles (over the shelf, the city below) and 568 draws (the outpost
 
 The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
 hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its
-floor; the ground over them opens on the camera's side.
+floor, and below the site's top + 1.5 m (a box no longer opens the rock or the ground over the site); the ground over them
+opens on the camera's side. The west face's dressing stands clear of each outpost front's whole width and height, and there the ground's slant up the
+step is not drawn: the cavern's rock face stands behind the front instead (`DH_FRONTS`).
 
 ## The nav graph (P6)
 

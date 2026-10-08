@@ -125,9 +125,9 @@ FURN({
       y = 0.12;
     }
     F.pillow(0, y + 0.06, 0, 0.9, 0.12, 1.84, 0, F.col('hide'), 'hide', { puff: 0.3, side: 0.4 });
-    F.pillow(0, y + 0.14, -0.1, 0.82, 0.08, 1.5, 0, F.pick(['fleece', 'fleece', 'fleeceDark']), 'cloth', { puff: 0.6, round: 3 });
-    F.pillow(0, y + 0.2, 0.42, 0.86, 0.05, 0.8, 0, F.pick(['alecap', 'cinnabar', 'ochre']), 'cloth', { puff: 0.4 });
-    F.bolster(0, y + 0.24, -0.72, 0.62, 0.06, 0, F.col('fleeceDark'), 'cloth');
+    F.pillow(0, y + 0.125, -0.1, 0.82, 0.08, 1.5, 0, F.pick(['fleece', 'fleece', 'fleeceDark']), 'cloth', { puff: 0.6, round: 3 });   /* each layer settled into the one under it (they read as floating) */
+    F.pillow(0, y + 0.17, 0.42, 0.86, 0.05, 0.8, 0, F.pick(['alecap', 'cinnabar', 'ochre']), 'cloth', { puff: 0.4 });
+    F.bolster(0, y + 0.215, -0.72, 0.62, 0.06, 0, F.col('fleeceDark'), 'cloth');
   }
 });
 FURN({
@@ -308,9 +308,9 @@ FURN({
   w: 0.32, d: 0.28, h: 0.3, variants: 1,
   build: function (F) {
     F.frustum(-0.05, 0, 0, 0.1, 0.12, 0.12, 0, F.col('basalt'), 'stone', 12);
-    F.cyl(-0.05, 0.1, 0, 0.09, 0.02, 0, F.col('resin'), 'food');
+    F.cyl(-0.05, 0.1, 0, 0.085, 0.026, 0, F.col('resin'), 'food');   /* its top 6 mm over the mortar's rim: they shared a plane */
     F.rod(-0.05, 0.08, 0, 0.02, 0.3, 0.03, 0.022, F.col('basaltDark'), 'stone');
-    for (let i = 0; i < 4; i++) F.blob(0.11 + F.rr(-0.02, 0.02), 0.012, F.rr(-0.08, 0.08), 0.02, 0.02, 0, F.col('resin'), 'food');
+    for (let i = 0; i < 4; i++) F.blob(0.11 + F.rr(-0.02, 0.02), 0.016, F.rr(-0.08, 0.08), 0.02, 0.026, 0, F.col('resin'), 'food');   /* drops standing proud of the surface */
   }
 });
 FURN({

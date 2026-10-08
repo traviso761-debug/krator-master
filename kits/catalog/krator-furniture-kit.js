@@ -292,7 +292,7 @@ const FK = (function () {
     } else if (base === 'woven') {
       F.box(0, legH - 0.04, 0, W - 0.14, 0.03, D - 0.14, 0, P.rope, 'rope');
     } else if (base === 'slab') {
-      F.box(0, 0, 0, W - 0.02, legH, D - 0.02, 0, P.stone, P.sf);
+      F.box(0, 0, 0, W - 0.05, legH - 0.004, D - 0.05, 0, P.stone, P.sf);   /* inside the corner legs, under the mattress: no face shared */
     } else {
       for (let i = 0; i < 6; i++) F.box(0, legH - 0.05, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
     }
@@ -301,9 +301,9 @@ const FK = (function () {
     F.blob(0, legH + 0.15, -D / 2 + 0.3, Math.min(0.3, W * 0.28), 0.12, 0, P.clothL, P.cf);
     if (v === 1) {
       const b = P.pick();
-      F.box(0, legH + 0.1, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);
+      F.box(0, legH + 0.104, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);   /* a hair over the mattress, the band a hair over it: no face shared */
       for (const s of [-1, 1]) F.box(s * (W / 2 + 0.005), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);   /* clear of the rail's face */
-      F.box(0, legH + 0.15, -D * 0.2, W - 0.06, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
+      F.box(0, legH + 0.158, -D * 0.2, W - 0.05, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
     }
     if (head) {
       F.box(0, 0, -D / 2 + 0.035, W - 0.02, H, 0.06, 0, P.wood, P.wf);
@@ -1223,7 +1223,7 @@ const FK = (function () {
 
   /* a string of pennants along a cord: alternating fields, the emblem on every second one */
   B.pennants = function (F, S, o) {
-    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const P = K.pal(F, S), W = F.span || o.w, D = o.d, H = o.h, v = o.variant || 0;   /* the placer's span when it stretches the cord along its wall */
     const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
     F.rod(-W / 2, H - 0.02, zb + 0.06, W / 2, H - 0.02, zb + 0.06, 0.006, P.rope, 'rope');
     for (const s of [-1, 1]) F.rod(s * (W / 2 - 0.01), H - 0.02, zb + 0.06, s * (W / 2 - 0.01), H - 0.01, zb + 0.012, 0.006, P.metal, P.mf);
@@ -1698,7 +1698,7 @@ const FK = (function () {
       { role: 'art', type: 'art', rooms: ['hall', 'bedroom', 'tavern', 'shrine', 'antechamber', 'study'], anchor: 'wall', clear: {}, w: 0.7, d: 0.3, h: 0.7, variants: 2, variantNames: ['first', 'second'], uses: ['wood', 'clay', 'cloth', 'accent', 'metal', 'stone'], bone: true, ceramic: true, build: 'art' },
       { role: 'banner', type: 'banner', rooms: ['hall', 'tavern', 'shrine', 'antechamber', 'barracks', 'market'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 2.0, variants: 2, variantNames: ['swallow-tail', 'fringed'], uses: ['wood', 'cloth', 'accent', 'metal'], build: 'banner' },
       { role: 'scroll', type: 'banner', rooms: ['hall', 'study', 'library', 'shrine', 'bedroom', 'school'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 1.6, variants: 2, variantNames: ['glyph columns', 'painted scene'], uses: ['wood', 'cloth', 'accent', 'rope'], plaster: true, build: 'scroll' },
-      { role: 'pennants', type: 'banner', rooms: ['hall', 'tavern', 'market', 'yard', 'antechamber'], setting: 'both', anchor: 'wall', clear: {}, w: 2.4, d: 0.12, h: 0.55, variants: 2, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'metal', 'rope'], build: 'pennants' },
+      { role: 'pennants', type: 'banner', rooms: ['hall', 'tavern', 'market', 'yard', 'antechamber'], setting: 'both', anchor: 'wall', clear: {}, w: 2.4, d: 0.12, h: 0.55, variants: 2, stretch: true, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'metal', 'rope'], build: 'pennants' },
       { role: 'bowl', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern'], anchor: 'surface', clear: {}, w: 0.34, d: 0.34, h: 0.2, variants: 2, variantNames: ['fruit', 'flatbread'], uses: ['clay', 'cloth', 'accent'], plant: true, build: 'bowl' },
       { role: 'jug', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern', 'bedroom'], anchor: 'surface', clear: {}, w: 0.44, d: 0.28, h: 0.34, uses: ['clay', 'accent'], build: 'jug' },
       { role: 'books', type: 'book', rooms: ['library', 'study', 'school', 'shrine', 'hall'], anchor: 'surface', clear: {}, w: 0.42, d: 0.32, h: 0.26, uses: ['cloth', 'accent', 'stone'], plaster: true, build: 'books' }
@@ -1818,6 +1818,7 @@ const FK = (function () {
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
       if (o.surface === false || R.surface === false) entry.surface = false;   /* no flat top: nothing is set on it (SPEC: surface) */
+      if (o.stretch || R.stretch) entry.stretch = true;   /* it may run the length of its wall (the placer's span: a cord of pennants) */
       const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
       if (job) entry.job = job;
       FURN(entry);

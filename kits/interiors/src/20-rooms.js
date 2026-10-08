@@ -69,6 +69,9 @@
       const t = [dx / len, dz / len], n = [-t[1] * sign, t[0] * sign];
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
+    /* open sides (o.open: [[x, z], ...], each a point on the side): no wall there (a cloister open to its court behind
+       pillars), so no piece stands or hangs on it */
+    (o.open || []).forEach(function (p, k) { snap(R, p, 'open side ' + k).W.open = true; });
     (o.doors || []).forEach(function (d, k) {
       const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',

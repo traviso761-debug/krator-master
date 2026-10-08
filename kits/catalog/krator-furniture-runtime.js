@@ -39,7 +39,7 @@ const KF_API = (function () {
     if (!A) return { error: 'no such furniture: ' + key };
     const g = new THREE.Group(), prev = _target;
     _target = g;
-    const F = makeFrame(x, z, ry || 0, { y: y || 0, seed: o.seed || 1, variant: o.variant || 0, wealth: o.wealth == null ? 0.5 : o.wealth });
+    const F = makeFrame(x, z, ry || 0, { y: y || 0, seed: o.seed || 1, variant: o.variant || 0, wealth: o.wealth == null ? 0.5 : o.wealth, span: o.span || 0 });
     F.asset = A;
     let err = null;
     try { A.build(F); } catch (e) { err = String(e && e.message || e); }

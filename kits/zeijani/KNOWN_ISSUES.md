@@ -38,3 +38,11 @@
       overlaps its head by 0.15 m (an exact abutment had left a hairline with no floor).
 - [ ] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.
+- [x] **The council's flank stairs broke out under the frieze** (the owner: the opening and the relief badly placed; the side
+      exit blocked). The flanks' moulding, frieze and pilasters left the wrong stretch; they now leave the stairs' (local x 4 to
+      6.6 west, -6.6 to -4 east, `49-zj-civic.js`).
+- [x] **The fountains showed no water**: the water was a disc inside the solid basin. The basin and the bowl are rims round a
+      floor now, the water under the rim, the streams pale (`54-zj-square.js`).
+- [x] **The stone door's lintel fought the masonry wall Dhelv adds round it** (their soffits shared a plane): the wall's pieces
+      stand clear of the jambs and over the lintel (`53-zj-additions.js`).
+- [x] **The cut-away's boxes had no top**: a box now stops over its site's height when the world gives one (`CV_BOXCUT`, uBoxB.w).

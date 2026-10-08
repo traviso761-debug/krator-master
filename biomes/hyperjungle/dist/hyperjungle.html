@@ -1689,11 +1689,14 @@ HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?
  HYPERJUNGLE.LIBSCALE={};
  M.bark.forEach((m,i)=>{const L=P('bark'+i);if(L){m.map=KMAT.textures(L,{aniso:8}).map;m.needsUpdate=true;HYPERJUNGLE.LIBSCALE['bark'+i]=L.scale;}});
  {const L=P('rock');if(L){M.rock.map=KMAT.textures(L,{aniso:8}).map;M.rock.needsUpdate=true;HYPERJUNGLE.LIBSCALE.rock=L.scale;}}
+ /* the limbs (boughs, twigs, roots) and the dead wood: their sets were in materials.json but never bound, so the branches kept
+    the painted canvas beside the library's bark (the owner: "branches not taking bark texture") */
+ for(const k of ['limb','wood']){const L=P(k);if(L){M[k].map=KMAT.textures(L,{aniso:8}).map;M[k].needsUpdate=true;HYPERJUNGLE.LIBSCALE[k]=L.scale;}}
  // the fauna sheets (58-fauna's optional FAUNATEX): from the pack when no host set them
  if(!HYPERJUNGLE.FAUNATEX){const F={};for(const k of ['wing','fur','hide','ray']){const L=P('fauna.'+k);if(L)F[k]=L.map;}if(Object.keys(F).length)HYPERJUNGLE.FAUNATEX=F;}}
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:HYPERJUNGLE.LIBSCALE['bark'+i]||[14,18]}));
-BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:[6,9]});
-BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:[3,4]});
+BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:HYPERJUNGLE.LIBSCALE.limb||[6,9]});
+BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:HYPERJUNGLE.LIBSCALE.wood||[3,4]});
 BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:HYPERJUNGLE.LIBSCALE.rock||[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far forest (impostors)'});
 
@@ -1714,7 +1717,7 @@ BIO.def('mossmat',BIO.geo.mat(),HYPERJUNGLE.MAT.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
-BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});
+BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
 BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
 // the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a

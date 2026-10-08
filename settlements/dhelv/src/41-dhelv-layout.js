@@ -58,7 +58,10 @@ const DH=(function(){
  const plainY=flankY;
  const cliffX=z=>PLAT.cliffX;   /* straight: the outpost's carved fronts stand on it */
  /* the lip's radius here (weathered: it wanders along the edge) */
- const lipR=(x,z)=>LIP.r0+(LIP.r1-LIP.r0)*(.5+.3*Math.sin(x/53+z/71)+.2*Math.sin(x/17-z/23));
+ /* (review 3, again: "too regular ... apply some randomized weathering there and the shelf edge"): three octaves of wander and
+    gullies, where the lip is cut back to half again its depth and more */
+ const lipR=(x,z)=>{const w=.5+.25*Math.sin(x/53+z/71)+.15*Math.sin(x/17-z/23+1.3)+.1*Math.sin(x/7.3+z/5.9),g=Math.max(0,Math.sin(x/29+z/37+.7)*Math.sin(x/11.3-z/13.7));
+  return LIP.r0+(LIP.r1-LIP.r0)*w+12*g*g;};
  /* the shelf's own height at d inside its edge: its top, the lip falling away in a quarter circle from e = d + LIP.out (the
     walls' columns' line) to the top at e = R; where the step is low (the back, merging into the slope) the lip is lower too */
  function shelfY(x,z,d){const t=topY(x,z),R=lipR(x,z)*sm(4,24,t-flankY(x,z)),e=d+LIP.out;if(R<.5||e>=R)return t;const u=R-Math.max(0,e);return t-(R-Math.sqrt(Math.max(0,R*R-u*u)));}

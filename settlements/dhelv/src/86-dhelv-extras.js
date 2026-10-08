@@ -26,7 +26,7 @@ function dhDecoyFace(mat){const D=DH.DECOY,O=DH.LIP.out,y=DH.groundY(D.c[0]+D.ou
  const geo=new THREE.BufferGeometry(),nv=pos.length/3;geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  geo.setAttribute('aW',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));geo.setAttribute('aCut',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
- const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;m.userData.cliff=true;m.name='the decoy’s face';return m;}
+ const m=new THREE.Mesh(geo,mat);m.castShadow=false;m.receiveShadow=true;m.userData.cliff=true;m.name='the decoy’s face';return m;}
 /* the drawing (buildWorld, 90: after the sites, into the world's buckets) */
 function dhExtras(){const B=DH.byId,wd=P('woodD'),ir=P('soot');
  /* the sentinels: a post at the way's side under each shaft, an arm, a cage of bars, a yellow bird on its perch */

@@ -30,17 +30,22 @@ const groundMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,verte
   groundMat.map=T.map;groundMat.normalMap=T.normalMap;groundMat.roughnessMap=T.roughnessMap;matHook(groundMat,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}}
 /* the cut-away and the holes, as the kit sheet's ground (its uniforms: 40-zj-cave.js fills the holes and masses) */
 const ZJ_CUTSITES={value:[]};for(let i=0;i<32;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
+const ZJ_CUTTOP={value:new Array(32).fill(1e9)};   /* each cut site's top: the ground opens under it only */
 const ZJ_MASSES={value:[]};for(let i=0;i<32;i++)ZJ_MASSES.value.push(new THREE.Vector4(0,0,0,0));
 const ZJ_HOLES={value:[]};for(let i=0;i<32;i++)ZJ_HOLES.value.push(new THREE.Vector4(0,0,0,0));
-matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;
+/* the outpost's carved fronts: a box each (x0,z0,x1,z1) and its floor and top (y0,y1). The ground's tile across the west face's
+   step slants from the apron up to the shelf over 5 m, before the rock; between the floor and the top it is not drawn there,
+   so the front stands clear (the owner: the gallery entrances buried in the wall) */
+const DH_FRONTS={b:{value:[]},y:{value:[]}};for(let i=0;i<8;i++){DH_FRONTS.b.value.push(new THREE.Vector4(0,0,0,0));DH_FRONTS.y.value.push(new THREE.Vector4(0,-1,0,0));}
+matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uCutTop=ZJ_CUTTOP;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;sh.uniforms.uFrontB=DH_FRONTS.b;sh.uniforms.uFrontY=DH_FRONTS.y;
  sh.vertexShader='varying vec3 vGW;\n'+sh.vertexShader.replace('#include <project_vertex>','vGW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
  /* (review 3: the ground still repeats from afar) over the library's breakup: the map read again at 3.7 times the size, its
     brightness against the set's mean folded in, and a broad brightness and warmth drift over tens of metres */
- sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];varying vec3 vGW;\n'+
+ sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform float uCutTop[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];uniform vec4 uFrontB[8];uniform vec4 uFrontY[8];varying vec3 vGW;\n'+
   'float dgH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float dgN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(dgH(i),dgH(i+vec2(1.,0.)),f.x),mix(dgH(i+vec2(0.,1.)),dgH(i+vec2(1.,1.)),f.x),f.y);}\n'+
   sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n#ifdef USE_MAP\n{vec3 t2=mapTexelToLinear(texture2D(map,vUv*0.27+vec2(0.31,0.67))).rgb;diffuseColor.rgb*=mix(1.0,clamp(dot(t2,vec3(0.333))/0.16,0.4,1.8),0.35);}\n#endif\n'+
    'diffuseColor.rgb*=(0.8+0.4*dgN(vGW.xz*0.019))*mix(vec3(1.05,0.99,0.93),vec3(0.94,1.0,1.06),dgN(vGW.zx*0.008+3.7));').replace('void main() {',
-  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z&&(q.w<=0.||vGW.y<q.w-10000.))discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
+  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z&&(q.w<=0.||vGW.y<q.w-10000.))discard;}\nfor(int i=0;i<8;i++){vec4 b=uFrontB[i];vec4 y=uFrontY[i];if(y.y<y.x)continue;if(vGW.x>b.x&&vGW.x<b.z&&vGW.z>b.y&&vGW.z<b.w&&vGW.y>y.x&&vGW.y<y.y)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.&&vGW.y<uCutTop[i])discard;}}');});
 /* a heightfield of the layout's ground; its colour by what it is: the plain's young flow (dark basalt), the apron (old soil),
    the plateau's top (its forest's loam), its wall (dark rock). P5b lays the biomes on it */
 /* Tiles of DH_GROUND.tile, each at its own step: g.step where a sheer step of the spur passes (or the outpost, an opening),
@@ -66,7 +71,14 @@ function dhGroundMesh(){const g=DH_GROUND,T=g.tile,W=DH.PLAT.cliffX,pos=[],col=[
   const xs=[];for(let x=x0;x<=x0+T+1e-6;x+=st){xs.push(x);if(Math.abs(x-W)<1e-6)xs.push(x+.05);}   /* a column 5 cm past the west face's line: it stands plumb, not a ramp */
   if(x0<W&&x0+T>W&&!xs.some(x=>Math.abs(x-W)<1e-6)){xs.push(W,W+.05);xs.sort((a,b)=>a-b);}
   const nz=Math.round(T/st),nx=xs.length-1,b0=pos.length/3;
-  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=z0+j*st;vert(x,H(x,z),z);}
+  /* an edge a coarser tile meets: its vertices on the coarse tile's straight edge (a T-junction left a crack the sky showed
+     through where the fine edge dipped under the coarse one) */
+  const cs=[stepAt(I,J-1),stepAt(I,J+1),stepAt(I-1,J),stepAt(I+1,J)].map(v=>v>st&&v<1e8?v:0);
+  const along=(s2,a,f)=>{const a0=Math.min(T-s2,Math.floor(a/s2+1e-9)*s2),t=(a-a0)/s2;return f(a0)+(f(a0+s2)-f(a0))*t;};
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=z0+j*st;let y=H(x,z);
+   if(j===0&&cs[0])y=along(cs[0],x-x0,a=>H(x0+a,z0));else if(j===nz&&cs[1])y=along(cs[1],x-x0,a=>H(x0+a,z0+T));
+   else if(i===0&&cs[2])y=along(cs[2],z-z0,a=>H(x0,z0+a));else if(i===nx&&cs[3])y=along(cs[3],z-z0,a=>H(x0+T,z0+a));
+   vert(x,y,z);}
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=b0+j*(nx+1)+i,b=a+1,d=a+nx+1,e=d+1;idx.push(a,d,b,b,d,e);}
   /* the skirt: each edge's vertices again, 1.5 m down (the outward winding: both faces drawn by the strip's two triangles a quad) */
   const edge=(L,I2,J2)=>{const dr=stepAt(I2,J2)>1e8?40:1.5;   /* the drawn ground's outer edge hangs deep: the far land's squares are coarse */
@@ -98,6 +110,7 @@ const DH_FAR=dhFarLand();scene.add(DH_FAR);
    shelf (its back) the step dies away and the walls with it. Gaps: the outpost's carved fronts in the west face (their mouths
    open through the ground's plumb step there) and the scouts' exit at its foot. One winding for a whole run; drawn both sides */
 function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,west=[];
+ const wh=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);},wn=t=>{const i=Math.floor(t),f=t-i,u=f*f*(3-2*f);return wh(i)+(wh(i+1)-wh(i))*u;};   /* hashed noise: a value a step, a smooth one between */
  /* a contour's points along a polyline: every 2.5 m, slid along the line's normal onto d = 0 (d positive inside) */
  const chainOf=(line,d,skip)=>{const out=[];for(let i=0;i+1<line.length;i++){const a=line[i],b=line[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/2.5),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
    let ox=uz,oz=-ux;const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;if(d(mx+ox*30,mz+oz*30)>d(mx-ox*30,mz-oz*30)){ox=-ox;oz=-oz;}   /* (ox, oz) points out of the shape */
@@ -111,9 +124,13 @@ function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,
  for(const c of chainOf(shelf,DH.plateauD,skip)){if(!c){flush();continue;}const yo=DH.groundY(c[0]+c[2]*(OUT+2),c[1]+c[3]*(OUT+2)),yi=DH.shelfY(c[0],c[1],0);
   if(yi-yo<4){flush();continue;}run.push([c[0],c[1],c[2],c[3],yo]);}flush();
  function strip(run){const base=pos.length/3,i0=idx.length,lowY=Math.min(...run.map(c=>c[4]))-5,rows=[];
-  run.forEach((c,i)=>{const [x,z,ox,oz]=c,jc=.55*Math.sin((x+z)*.9)+.35*Math.sin(x*.31+1)+.2*Math.sin(z*2.3),T=DH.topY(x,z),R=DH.lipR(x,z)*Math.min(1,Math.max(0,(T-DH.flankY(x,z)-4)/20));
-   const lip=d=>DH.shelfY(x,z,d)+.15,top=lip(-OUT),nr=Math.max(1,Math.ceil((top-lowY)/RW));
-   for(let r=0;r<=nr;r++){const y=r===nr?top:lowY+r*RW,j=OUT+(r===nr?0:jc+.25*Math.sin(y*.9+i*.37));pos.push(x+ox*j,y,z+oz*j);}
+  let arc=0;run.forEach((c,i)=>{if(i)arc+=Math.hypot(c[0]-run[i-1][0],c[1]-run[i-1][1]);const [x,z,ox,oz]=c,T=DH.topY(x,z),R=DH.lipR(x,z)*Math.min(1,Math.max(0,(T-DH.flankY(x,z)-4)/20));
+   /* weathering (the owner: "too regular, especially those columns"): facets of random widths (2 to 9 m along the wall) each
+      at its own depth, a slow wander over them, some columns broken lower at their heads, the joints blocky (each 3 m drum
+      set a little in or out) */
+   const s0=arc+(x*.013+z*.017)*100,fw=2+7*wh(Math.floor(s0/9)),fct=wh(Math.floor(s0/fw)+77),jc=1.9*(fct-.5)+.9*(wn(s0/23)-.5),brk=wh(Math.floor(s0/5)+311)>.82?2+7*wh(Math.floor(s0/5)+911):0;
+   const lip=d=>DH.shelfY(x,z,d)+.15,top=lip(-OUT)-brk,nr=Math.max(1,Math.ceil((top-lowY)/RW));
+   for(let r=0;r<=nr;r++){const y=r===nr?top:lowY+r*RW,j=OUT+(r===nr?jc*.4:jc+.45*(wh(Math.floor(s0/fw)*31+r)-.5));pos.push(x+ox*j,y,z+oz*j);}
    for(let k=1;k<=K;k++){const e=Math.max(R,1)*(1-Math.cos(k/K*PI/2)),d=e-OUT;pos.push(x-ox*d,lip(d),z-oz*d);}
    rows.push(nr+1);if(Math.abs(x-W)<1)west.push(z);});
   /* columns of different heights: each quad joins row r of one to row r of the next while both have it, the taller column's
@@ -131,7 +148,8 @@ function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
  /* the cave's own rock shader, darker: it lifts its basalt for the dark under the rock, too bright for a sunlit wall */
  const mat=new THREE.MeshStandardMaterial({color:0x5e5c5a,roughness:.95,metalness:0,side:THREE.DoubleSide});mat.onBeforeCompile=cvRockMat.onBeforeCompile;mat.customProgramCacheKey=()=>'cliff|'+cvRockMat.customProgramCacheKey();
- const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;m.userData.cliff=true;m.userData.tris=idx.length/3;
+ /* no shadow cast: so large a caster's shadow is drawn only inside the shadow camera's box, a dark rectangle that moved with the view */
+ const m=new THREE.Mesh(geo,mat);m.castShadow=false;m.receiveShadow=true;m.userData.cliff=true;m.userData.tris=idx.length/3;
  /* the west face's columns stand on the apron's floor: their z, for walk blocks (dhSurfaceWalk) */
  west.sort((p,q)=>p-q);m.userData.westRuns=[];for(const z of west){const R=m.userData.westRuns,l=R[R.length-1];if(l&&z-l[1]<3.5)l[1]=z;else R.push([z,z]);}
  return m;}
@@ -144,7 +162,7 @@ const DH_MOUTH={tops:{},r:{zj_portal:6.8,zj_gallery_a:2.2,zj_gallery_b:2.2,zj_hu
 /* the west face where the columns leave it for the outpost's carved fronts: a dressed face of the cliff's rock 8 cm before the
    ground's plumb step (whose map streaks down a vertical face), up to the lip's foot, open at each mouth (the cavern's cliff
    round the opening fills it) */
-function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.floor-1,ms=SITES.filter(s=>s.district==='outpost'&&s.at==='wall'&&DH_MOUTH.r[s.key]).map(s=>({z0:s.z-DH_MOUTH.r[s.key]-.5,z1:s.z+DH_MOUTH.r[s.key]+.5,y1:s.o.y+DH_MOUTH.top[s.key]}));
+function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.floor-1,ms=SITES.filter(s=>s.district==='outpost'&&s.at==='wall'&&DH.FOOT[s.key]).map(s=>({z0:s.z-DH.FOOT[s.key][0]/2-.3,z1:s.z+DH.FOOT[s.key][0]/2+.3,y1:s.o.y+DEFS[s.key].h+.5}));   /* each carved front's whole width and height (its mouth alone buried the gallery's front: the owner) */
  const gaps=[],R=DH_CLIFF.userData.westRuns,zs=[-DH.PLAT.cliffZ];for(const r of R)zs.push(r[0]-1.2,r[1]+1.2);zs.push(DH.PLAT.cliffZ);
  for(let i=0;i+1<zs.length;i+=2)if(zs[i+1]-zs[i]>.5)gaps.push([zs[i],zs[i+1]]);
  for(const [g0,g1] of gaps){const cut=[g0,g1];for(const m of ms){if(m.z1>g0&&m.z0<g1)cut.push(Math.max(g0,m.z0),Math.min(g1,m.z1));}
@@ -154,7 +172,7 @@ function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.fl
  const geo=new THREE.BufferGeometry(),nv=pos.length/3;geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  geo.setAttribute('aW',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));geo.setAttribute('aCut',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
- const m=new THREE.Mesh(geo,DH_CLIFF.material);m.receiveShadow=m.castShadow=true;m.userData.cliff=true;m.name='the west face';return m;}
+ const m=new THREE.Mesh(geo,DH_CLIFF.material);m.receiveShadow=true;m.castShadow=false;m.userData.cliff=true;m.name='the west face';return m;}
 const DH_WEST=dhWestFace();scene.add(DH_WEST);scene.add(dhDecoyFace(DH_CLIFF.material));   /* 86 */
 const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
 const ROWS=[];
@@ -349,7 +367,13 @@ FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DH_CELLS.t<250)return;DH_CE
    height + 10000; a well's hole has w 0 and goes through), and the rock round each mouth is kept meshed (DH_STREAM.pin): the hole
    always has the cavern's cliff round its opening in it, near the camera or far, so the portal reads from anywhere */
 const DH_MOUTHS=[];
+function dhInFront(x,z,y){const B=DH_FRONTS.b.value,Y=DH_FRONTS.y.value;for(let i=0;i<8;i++){const b=B[i],q=Y[i];if(q.y<q.x)continue;if(x>b.x&&x<b.z&&z>b.y&&z<b.w&&y>q.x&&y<q.y)return true;}return false;}
 function dhMouthHoles(){const H=ZJ_HOLES.value,TOP=DH_MOUTH.top;DH_MOUTHS.length=0;
+ /* the fronts' boxes: from 6 m before the site (the slanting tile) to just behind it, over its whole width */
+ let nf=0;for(const s of SITES){if(nf>=8||s.district!=='outpost'||s.at!=='wall'||!DH.FOOT[s.key])continue;const hw=DH.FOOT[s.key][0]/2+.3;
+  DH_FRONTS.b.value[nf].set(s.x-6,s.z-hw,s.x+.5,s.z+hw);DH_FRONTS.y.value[nf].set(s.o.y+.12,s.o.y+DEFS[s.key].h+.5,0,0);nf++;}
+ for(let i=nf;i<8;i++)DH_FRONTS.y.value[i].set(0,-1,0,0);
+ for(let i=0;i<nf;i++){const b=DH_FRONTS.b.value[i],y=DH_FRONTS.y.value[i];DH_MOUTHS.push({c:[(b.x+b.z)/2,(b.y+b.w)/2],r:Math.hypot(b.z-b.x,b.w-b.y)/2,y0:y.x-2,y1:y.y+2});}   /* its rock kept meshed, as a mouth's */
  for(const s of SITES){if(s.district!=='outpost'||s.at!=='wall'||!TOP[s.key])continue;const O=CVC.openings.find(o=>o.id==='dh.mouth.'+s.key+'.'+Math.round(s.z));if(!O)continue;
   const v=H.find(q=>q.z>0&&Math.abs(q.x-O.c[0])<1e-3&&Math.abs(q.y-O.c[1])<1e-3),top=s.o.y+TOP[s.key];if(v)v.w=top+10000;DH_MOUTHS.push({c:O.c,r:O.r+O.rim,y0:s.o.y-2,y1:top+2});}
  /* the decoy's (86) */
@@ -359,7 +383,7 @@ let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();
  KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;
- CV_OPTS.skipMass=true;CV_OPTS.groundKeep=(x,z,y)=>CVC.openings.some(O=>O.kind==='well'&&Math.hypot(x-O.c[0],z-O.c[1])<O.r+O.rim+.2&&!(DH_MOUTH.tops[O.id]<y));   /* at a mouth, only under its top (the page's ground is drawn over it) */CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
+ CV_OPTS.skipMass=true;CV_OPTS.groundKeep=(x,z,y)=>CVC.openings.some(O=>O.kind==='well'&&Math.hypot(x-O.c[0],z-O.c[1])<O.r+O.rim+.2&&!(DH_MOUTH.tops[O.id]<y))||dhInFront(x,z,y);   /* at a mouth, only under its top (the page's ground is drawn over it); before a carved front, the rock's face where the ground is not drawn */CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
  const t0=performance.now();
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
@@ -376,7 +400,11 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
   for(const [p,r] of [[[src[0],src[1]],4.2],[[snk[0],snk[1]],5.2]]){const y=DH.groundY(p[0],p[1]);cyl('water',p[0],y+.02,p[1],r,.04,wa,28);
    for(let i=0;i<11;i++){const a=i*TAU/11+.3*Math.sin(i*2.1),q=r+.5+.4*Math.sin(i*1.7);sph('tuffHewn',p[0]+Math.cos(a)*q,y,p[1]+Math.sin(a)*q,.5+.35*Math.abs(Math.sin(i*3.1)),P('tuffDark'),.55,8);}}}
  for(let i=1;i<DH.STREAM.length;i++){const a=DH.STREAM[i-1],b=DH.STREAM[i];if(a[0]>DH.PLAT.cliffX-1||b[0]>DH.PLAT.cliffX-1)continue;const L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
-  box('water',mx,DH.groundY(mx,mz)+.04,mz,3.2,.03,L+1,P('water'),Math.atan2(b[0]-a[0],b[1]-a[1]));for(const sd of [-1,1])box('earth',mx+Math.cos(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,DH.groundY(mx,mz),mz-Math.sin(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,.7,.12,L+1,P('earth'),Math.atan2(b[0]-a[0],b[1]-a[1]));}
+  /* in pieces of about 2 m, each a hand over the highest ground under it (one piece a leg was buried where the ground rose) */
+  const ry=Math.atan2(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/2),cr=Math.cos(ry),sr=Math.sin(ry);
+  for(let k=0;k<n;k++){const t0=k/n,t1=(k+1)/n,px=a[0]+(b[0]-a[0])*(t0+t1)/2,pz=a[1]+(b[1]-a[1])*(t0+t1)/2;let gy=-1e9;
+   for(const t of [t0,(t0+t1)/2,t1])for(const sd of [-1.6,0,1.6])gy=Math.max(gy,DH.groundY(a[0]+(b[0]-a[0])*t+cr*sd,a[1]+(b[1]-a[1])*t-sr*sd));
+   box('water',px,gy+.05,pz,3.2,.03,L/n+.25,P('water'),ry);for(const sd of [-1,1])box('earth',px+cr*sd*1.9,gy-.04,pz-sr*sd*1.9,.7,.14,L/n+.25,P('earth'),ry);}}
  flushBuckets(GB,WORLD,true);
  const tc=performance.now();CVC.build();const tb=performance.now()-tc;
  while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}WORLD.add(CV_GROUP);cvFinishOpenings();dhMouthHoles();dhStreamReset();dhSurfaceWalk();
@@ -400,9 +428,9 @@ CV_OPTS.cutBoxes=true;
 const DH_CUT={t:0,FWD:3,sites:[]};
 function dhCutBoxes(p){const C=SITES.filter(S=>(!ONLYSET||ONLYSET.has(S.key))&&(DEFS[S.key].originFront||DEFS[S.key].sunk)).map(S=>[S,(S.x-p.x)**2+(S.z-p.z)**2]).sort((a,b)=>a[1]-b[1]).slice(0,32);
  DH_CUT.sites=C.map(c=>c[0].key);
- for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);continue;}
+ for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);ZJ_CUTTOP.value[i]=1e9;continue;}
   const S=q[0],D=DEFS[S.key],c=Math.cos(S.ry||0),s=Math.sin(S.ry||0),F=D.sunk?0:DH_CUT.FWD,lz=D.sunk?0:(F-D.d)/2,hd=D.sunk?D.d/2:(D.d+F)/2,cx=S.x+s*lz,cz=S.z+c*lz;
-  A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,1);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);}}
+  const top=S.o.y+D.h+1.5;A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,top+10000);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);ZJ_CUTTOP.value[i]=top;}}   /* (each cut stops over its site's height: at the west face it opened the cliff to the sky) */
 FRAME_HOOKS.push(()=>{if(ANIMU.uCut.value<.5)return;const t=performance.now();if(t-DH_CUT.t<500)return;DH_CUT.t=t;dhCutBoxes(camera.position);});
 
 // ---------------------------------------------------------------- views

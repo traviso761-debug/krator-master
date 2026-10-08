@@ -8,8 +8,8 @@
  "99-tail.html": "841595c4eabb",
  "inspector.js": "0fc795979685",
  "krator-asset-engine.js": "e72b6df51040",
- "krator-furniture-core.js": "42db7636d92f",
- "krator-furniture-kit.js": "27fac463019c",
+ "krator-furniture-core.js": "d0ab1be915ff",
+ "krator-furniture-kit.js": "30ab9681aeb0",
  "krator-master-furniture-beast-rider.js": "25e636c9deb0",
  "krator-master-furniture-eastabyss.js": "8bf31d158a9d",
  "krator-master-furniture-generic-fruit.js": "55f3444102c2",
@@ -31,7 +31,7 @@
  "krator-master-furniture-scyvoi.js": "a65a36e39b98",
  "krator-master-furniture-voth.js": "d06ece0fbcfc",
  "krator-master-furniture-xanadu.js": "ae356c2170b5",
- "krator-master-furniture-zeijani.js": "6757259562d5",
+ "krator-master-furniture-zeijani.js": "7da66cf504fa",
  "krator-master-furniture.js": "d28ef6e7eebf",
  "krator-symbols.js": "31c952a56ea1"
 }

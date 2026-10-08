@@ -2550,7 +2550,7 @@ function furnFamily(culture, color, family) {
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
-  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth };
+  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth, span: opt.span || 0 };   /* span: a stretching piece's length (a cord of pennants along its wall), else 0 */
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
@@ -3211,7 +3211,7 @@ const FK = (function () {
     } else if (base === 'woven') {
       F.box(0, legH - 0.04, 0, W - 0.14, 0.03, D - 0.14, 0, P.rope, 'rope');
     } else if (base === 'slab') {
-      F.box(0, 0, 0, W - 0.02, legH, D - 0.02, 0, P.stone, P.sf);
+      F.box(0, 0, 0, W - 0.05, legH - 0.004, D - 0.05, 0, P.stone, P.sf);   /* inside the corner legs, under the mattress: no face shared */
     } else {
       for (let i = 0; i < 6; i++) F.box(0, legH - 0.05, -D / 2 + 0.2 + i * (D - 0.4) / 5, W - 0.14, 0.03, 0.12, 0, F.shade(P.wood, 0.05), P.wf);
     }
@@ -3220,9 +3220,9 @@ const FK = (function () {
     F.blob(0, legH + 0.15, -D / 2 + 0.3, Math.min(0.3, W * 0.28), 0.12, 0, P.clothL, P.cf);
     if (v === 1) {
       const b = P.pick();
-      F.box(0, legH + 0.1, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);
+      F.box(0, legH + 0.104, D * 0.1, W - 0.06, 0.05, D * 0.62, 0, b, P.cf);   /* a hair over the mattress, the band a hair over it: no face shared */
       for (const s of [-1, 1]) F.box(s * (W / 2 + 0.005), legH - 0.12, D * 0.1, 0.02, 0.26, D * 0.62, 0, F.shade(b, -0.1), P.cf);   /* clear of the rail's face */
-      F.box(0, legH + 0.15, -D * 0.2, W - 0.06, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
+      F.box(0, legH + 0.158, -D * 0.2, W - 0.05, 0.04, 0.12, 0, F.shade(b, 0.12), P.cf);
     }
     if (head) {
       F.box(0, 0, -D / 2 + 0.035, W - 0.02, H, 0.06, 0, P.wood, P.wf);
@@ -4142,7 +4142,7 @@ const FK = (function () {
 
   /* a string of pennants along a cord: alternating fields, the emblem on every second one */
   B.pennants = function (F, S, o) {
-    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const P = K.pal(F, S), W = F.span || o.w, D = o.d, H = o.h, v = o.variant || 0;   /* the placer's span when it stretches the cord along its wall */
     const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
     F.rod(-W / 2, H - 0.02, zb + 0.06, W / 2, H - 0.02, zb + 0.06, 0.006, P.rope, 'rope');
     for (const s of [-1, 1]) F.rod(s * (W / 2 - 0.01), H - 0.02, zb + 0.06, s * (W / 2 - 0.01), H - 0.01, zb + 0.012, 0.006, P.metal, P.mf);
@@ -4617,7 +4617,7 @@ const FK = (function () {
       { role: 'art', type: 'art', rooms: ['hall', 'bedroom', 'tavern', 'shrine', 'antechamber', 'study'], anchor: 'wall', clear: {}, w: 0.7, d: 0.3, h: 0.7, variants: 2, variantNames: ['first', 'second'], uses: ['wood', 'clay', 'cloth', 'accent', 'metal', 'stone'], bone: true, ceramic: true, build: 'art' },
       { role: 'banner', type: 'banner', rooms: ['hall', 'tavern', 'shrine', 'antechamber', 'barracks', 'market'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 2.0, variants: 2, variantNames: ['swallow-tail', 'fringed'], uses: ['wood', 'cloth', 'accent', 'metal'], build: 'banner' },
       { role: 'scroll', type: 'banner', rooms: ['hall', 'study', 'library', 'shrine', 'bedroom', 'school'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 1.6, variants: 2, variantNames: ['glyph columns', 'painted scene'], uses: ['wood', 'cloth', 'accent', 'rope'], plaster: true, build: 'scroll' },
-      { role: 'pennants', type: 'banner', rooms: ['hall', 'tavern', 'market', 'yard', 'antechamber'], setting: 'both', anchor: 'wall', clear: {}, w: 2.4, d: 0.12, h: 0.55, variants: 2, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'metal', 'rope'], build: 'pennants' },
+      { role: 'pennants', type: 'banner', rooms: ['hall', 'tavern', 'market', 'yard', 'antechamber'], setting: 'both', anchor: 'wall', clear: {}, w: 2.4, d: 0.12, h: 0.55, variants: 2, stretch: true, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'metal', 'rope'], build: 'pennants' },
       { role: 'bowl', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern'], anchor: 'surface', clear: {}, w: 0.34, d: 0.34, h: 0.2, variants: 2, variantNames: ['fruit', 'flatbread'], uses: ['clay', 'cloth', 'accent'], plant: true, build: 'bowl' },
       { role: 'jug', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern', 'bedroom'], anchor: 'surface', clear: {}, w: 0.44, d: 0.28, h: 0.34, uses: ['clay', 'accent'], build: 'jug' },
       { role: 'books', type: 'book', rooms: ['library', 'study', 'school', 'shrine', 'hall'], anchor: 'surface', clear: {}, w: 0.42, d: 0.32, h: 0.26, uses: ['cloth', 'accent', 'stone'], plaster: true, build: 'books' }
@@ -4737,6 +4737,7 @@ const FK = (function () {
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
       if (o.surface === false || R.surface === false) entry.surface = false;   /* no flat top: nothing is set on it (SPEC: surface) */
+      if (o.stretch || R.stretch) entry.stretch = true;   /* it may run the length of its wall (the placer's span: a cord of pennants) */
       const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
       if (job) entry.job = job;
       FURN(entry);
@@ -6551,9 +6552,9 @@ FURN({
       y = 0.12;
     }
     F.pillow(0, y + 0.06, 0, 0.9, 0.12, 1.84, 0, F.col('hide'), 'hide', { puff: 0.3, side: 0.4 });
-    F.pillow(0, y + 0.14, -0.1, 0.82, 0.08, 1.5, 0, F.pick(['fleece', 'fleece', 'fleeceDark']), 'cloth', { puff: 0.6, round: 3 });
-    F.pillow(0, y + 0.2, 0.42, 0.86, 0.05, 0.8, 0, F.pick(['alecap', 'cinnabar', 'ochre']), 'cloth', { puff: 0.4 });
-    F.bolster(0, y + 0.24, -0.72, 0.62, 0.06, 0, F.col('fleeceDark'), 'cloth');
+    F.pillow(0, y + 0.125, -0.1, 0.82, 0.08, 1.5, 0, F.pick(['fleece', 'fleece', 'fleeceDark']), 'cloth', { puff: 0.6, round: 3 });   /* each layer settled into the one under it (they read as floating) */
+    F.pillow(0, y + 0.17, 0.42, 0.86, 0.05, 0.8, 0, F.pick(['alecap', 'cinnabar', 'ochre']), 'cloth', { puff: 0.4 });
+    F.bolster(0, y + 0.215, -0.72, 0.62, 0.06, 0, F.col('fleeceDark'), 'cloth');
   }
 });
 FURN({
@@ -6734,9 +6735,9 @@ FURN({
   w: 0.32, d: 0.28, h: 0.3, variants: 1,
   build: function (F) {
     F.frustum(-0.05, 0, 0, 0.1, 0.12, 0.12, 0, F.col('basalt'), 'stone', 12);
-    F.cyl(-0.05, 0.1, 0, 0.09, 0.02, 0, F.col('resin'), 'food');
+    F.cyl(-0.05, 0.1, 0, 0.085, 0.026, 0, F.col('resin'), 'food');   /* its top 6 mm over the mortar's rim: they shared a plane */
     F.rod(-0.05, 0.08, 0, 0.02, 0.3, 0.03, 0.022, F.col('basaltDark'), 'stone');
-    for (let i = 0; i < 4; i++) F.blob(0.11 + F.rr(-0.02, 0.02), 0.012, F.rr(-0.08, 0.08), 0.02, 0.02, 0, F.col('resin'), 'food');
+    for (let i = 0; i < 4; i++) F.blob(0.11 + F.rr(-0.02, 0.02), 0.016, F.rr(-0.08, 0.08), 0.02, 0.026, 0, F.col('resin'), 'food');   /* drops standing proud of the surface */
   }
 });
 FURN({
@@ -7234,7 +7235,7 @@ const KF_API = (function () {
     if (!A) return { error: 'no such furniture: ' + key };
     const g = new THREE.Group(), prev = _target;
     _target = g;
-    const F = makeFrame(x, z, ry || 0, { y: y || 0, seed: o.seed || 1, variant: o.variant || 0, wealth: o.wealth == null ? 0.5 : o.wealth });
+    const F = makeFrame(x, z, ry || 0, { y: y || 0, seed: o.seed || 1, variant: o.variant || 0, wealth: o.wealth == null ? 0.5 : o.wealth, span: o.span || 0 });
     F.asset = A;
     let err = null;
     try { A.build(F); } catch (e) { err = String(e && e.message || e); }
@@ -8086,6 +8087,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const t = [dx / len, dz / len], n = [-t[1] * sign, t[0] * sign];
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
+    /* open sides (o.open: [[x, z], ...], each a point on the side): no wall there (a cloister open to its court behind
+       pillars), so no piece stands or hangs on it */
+    (o.open || []).forEach(function (p, k) { snap(R, p, 'open side ' + k).W.open = true; });
     (o.doors || []).forEach(function (d, k) {
       const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
@@ -8582,6 +8586,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
      catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
      catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
 
+     catalog.top(key, variant)                    OPTIONAL: a host's surface height (what stands on it stands there),
+                                                  null when it has none (it then hosts nothing); else its h
      catalog.lights(key, variant, { seed, wealth })  OPTIONAL: the lights a piece carries, in its own
                                                   frame [{ lx, ly, lz, color, intensity, distance }]
 
@@ -8625,7 +8631,10 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   function describe(catalog, d, v, room) {
     const dm = catalog.dims(d.key, v);
     const type = d.type || 'other';
-    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, type: type, anchor: d.anchor || 'floor',
+    /* a host's surface: none when the catalog says so (surface: false: a jar, a vat) or when what is drawn has no flat top; else the
+       height of what is drawn (catalog.top), else its declared h */
+    const top = d.surface === false ? null : IX.SURFACE_HOSTS.indexOf(type) >= 0 && catalog.top ? catalog.top(d.key, v) : dm.h;
+    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, top: top, type: type, anchor: d.anchor || 'floor',
       culture: d.culture, clear: d.clearance || {},
       usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
   }
@@ -8811,7 +8820,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         grid.stamp(Q.fp, +1);
         if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
       }
-      Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
+      Q.top = Q.layer === 'surface' ? hostQ.top + P.h : P.top == null ? null : room.y + P.top;   /* a floor piece's: its surface (null: none) */
       placed.push(Q); nFurn++;
       return Q;
     }
@@ -8831,6 +8840,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function wallSlots(P, role) {
       const back = (P.clear.back || 0) + WALL_GAP, out = [];
       for (const W of room.walls) {
+        if (W.open) continue;   /* an open side: no wall to stand against (20-rooms.js) */
         const lo = P.w / 2 + 0.03, hi = W.len - P.w / 2 - 0.03;
         if (hi < lo) continue;
         const us = [];
@@ -8898,7 +8908,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function surfaceSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0 || H.top == null) continue;   /* no top to stand a thing on */
         if (H.P.desc && H.P.desc.surface === false) continue;   /* no flat top (a jar, a vat, a basket): nothing is set on it */
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
@@ -9032,6 +9042,17 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
         anchor: P.anchor, type: P.type, role: Q.role, catRole: P.desc.role || null, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+      /* a stretching piece (catalog stretch: a cord of pennants) runs the free length of its wall: the run between the wall's ends
+         and its doors that holds it, up to 8 m, about where it was placed (it hangs over the floor pieces, so it is placed as declared
+         and only drawn longer: its footprint, w, stays the declared one, so the checks see what the placer placed) */
+      if (P.desc.stretch && P.anchor === 'wall') {
+        let W = null, bd = 1e9;for (const V of room.walls) { if (V.open || Math.abs(normAng(V.ry - Q.ry)) > 0.05) continue;const dd = G.segDist(Q.x, Q.z, V.a, V.b);if (dd < bd) { bd = dd;W = V; } }
+        if (W) {
+          const u = (Q.x - W.a[0]) * W.t[0] + (Q.z - W.a[1]) * W.t[1];let lo = 0.15, hi = W.len - 0.15;
+          for (const D of room.doors) { if (D.wall !== W.i) continue;const a = D.u - D.w / 2 - 0.2, b = D.u + D.w / 2 + 0.2;if (b <= u) lo = Math.max(lo, b);else if (a >= u) hi = Math.min(hi, a); }
+          const sp = Math.min(8, 2 * Math.min(u - lo, hi - u));if (sp > P.w) p.span = R3(sp);
+        }
+      }
       const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
       if (L && L.length) {
         const c = Math.cos(p.ry), s = Math.sin(p.ry);
@@ -10319,8 +10340,21 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
    ====================================================================== */
 (function (IX) {
   'use strict';
+  /* a host's surface, measured on what is drawn (a table's declared height is its tallest part, its top may be lower: the
+     map table's 0.95 m over its 0.82 m top floated what stood on it): rays down on a 5 x 5 grid over the middle 80% of its
+     footprint, the commonest height they meet (2 cm bins). None when under a third of them meet it (a sack, a jar, an open vat,
+     a rack of bottles: no top to stand a thing on) or when it is near the floor */
+  IX.measureTop = function (g, dm) {
+    const rc = new THREE.Raycaster(), ms = [], c = {};let n = 0;
+    g.updateMatrixWorld(true);g.traverse(function (m) { if (m.isMesh) ms.push(m); });
+    for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) {
+      rc.set(new THREE.Vector3(i * dm.w * 0.2, dm.h + 1, j * dm.d * 0.2), new THREE.Vector3(0, -1, 0));
+      const h = rc.intersectObjects(ms, false)[0];if (!h) continue;const b = Math.round(h.point.y * 50) / 50;c[b] = (c[b] || 0) + 1;n++; }
+    let mode = null, mc = 0;for (const k in c) if (c[k] > mc || (c[k] === mc && +k > mode)) { mc = c[k];mode = +k; }
+    return mode === null || mc < 25 / 3 || mode < 0.15 ? null : Math.min(dm.h, mode);
+  };
   IX.runtimeAdapter = function (KF, batch) {
-    let cache = null;
+    let cache = null;const tops = {};
     return {
       name: 'kits/catalog runtime',
       batch: batch,
@@ -10329,11 +10363,17 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         cache = KF.FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {}, tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined,
-            role: IX.guessRole(A), variants: A.variants || 1 };
+            role: IX.guessRole(A), variants: A.variants || 1, surface: A.surface !== false, stretch: !!A.stretch };
         });
         return cache;
       },
       dims: function (key, v) { return KF.entryDims(KF.FURN_BY_KEY[key], v); },
+      /* a host's surface height (IX.measureTop: built alone in a batch of its own, measured, thrown away), or null */
+      top: function (key, v) {
+        const k = key + '|' + (v | 0);if (k in tops) return tops[k];
+        const dm = KF.entryDims(KF.FURN_BY_KEY[key], v), B = KF.batch(), g = new THREE.Group();B.place(key, 0, 0, 0, 0, { variant: v | 0 });B.flush(g);
+        const t = IX.measureTop(g, dm);g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); });return tops[k] = t;
+      },
       anchorY: function (key, v, at) { return KF.furnAnchorY(KF.FURN_BY_KEY[key], v, at); },
       lights: function (key, v, o) {
         o = o || {};
@@ -10342,7 +10382,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         });
       },
       build: function (p, room) {
-        return batch.place(p.key, p.x, p.y, p.z, p.ry, { variant: p.variant, seed: p.seed, wealth: room ? room.wealth : 0.5,
+        return batch.place(p.key, p.x, p.y, p.z, p.ry, { variant: p.variant, seed: p.seed, wealth: room ? room.wealth : 0.5, span: p.span || 0,
           building: room ? room.building : null, room: room ? room.id : null, setting: 'indoor' });
       }
     };
@@ -10786,7 +10826,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     K.voids.forEach(function (v) { voids.push(v); });
     /* the cloisters, west and east: halls cut into the pit's side walls, open to the pit behind their pillars (left standing after) */
     [-1, 1].forEach(function (s) {
-      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const R = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? rrect(-22.5, -17, -44, -12) : rrect(17, 22.5, -44, -12), round: 0.3, y: 0, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, -28]] };   /* its pit side open behind the pillars */
       for (let z = -14; z >= -42; z -= 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (-z), poly: circle(0.45, 10, s * 17.9, z), y0: 0, y1: 4.4, phase: 3, finish: 'hewn' });
         R.fixtures.push(fx('pillar' + (-z), 'pillar', s * 17.9, z, 0.9, 0.9, { h: 4.2 }));
@@ -10843,7 +10883,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     voids.push({ kind: 'stair', id: 'gallery-door', joins: ['gallery'], a: [0, U, Z(25.6)], b: [0, U, Z(26.9)], w: 1.4, h: 2.6 });
     /* the cloisters, west and east, behind pillars left standing */
     [-1, 1].forEach(function (s) {
-      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [], open: [[s * 17, Z(-3)]] };   /* its pit side open behind the pillars */
       for (let z = -26; z <= 20; z += 4) {
         voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (z + 30), poly: circle(0.45, 10, s * 17.9, Z(z)), y0: Y, y1: Y + 4.4, phase: 3, finish: 'hewn' });
         C.fixtures.push(fx('pillar' + (z + 30), 'pillar', s * 17.9, Z(z), 0.9, 0.9, { h: 4.2 }));
@@ -11500,7 +11540,7 @@ const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[
    site's own (the hall's wall before a front, a way's ceiling) opens too, inside a site's turned box above its floor + 2 m.
    uBoxA: centre x, z, half width, half depth; uBoxB: cos, sin of its turn, its floor, on */
 const CV_BOXCUT='\nif(uCut>.5&&vCut.w<.5){for(int i=0;i<32;i++){vec4 a=uBoxA[i],b=uBoxB[i];if(b.w<.5)continue;vec2 d=vCWP.xz-a.xy;'+
- 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.)discard;}}';
+ 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.&&(b.w<1.5||vCWP.y<b.w-10000.))discard;}}';   /* b.w over 1.5: a top (+10000) the cut stops at */
 const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */
@@ -11685,7 +11725,10 @@ const DH=(function(){
  const plainY=flankY;
  const cliffX=z=>PLAT.cliffX;   /* straight: the outpost's carved fronts stand on it */
  /* the lip's radius here (weathered: it wanders along the edge) */
- const lipR=(x,z)=>LIP.r0+(LIP.r1-LIP.r0)*(.5+.3*Math.sin(x/53+z/71)+.2*Math.sin(x/17-z/23));
+ /* (review 3, again: "too regular ... apply some randomized weathering there and the shelf edge"): three octaves of wander and
+    gullies, where the lip is cut back to half again its depth and more */
+ const lipR=(x,z)=>{const w=.5+.25*Math.sin(x/53+z/71)+.15*Math.sin(x/17-z/23+1.3)+.1*Math.sin(x/7.3+z/5.9),g=Math.max(0,Math.sin(x/29+z/37+.7)*Math.sin(x/11.3-z/13.7));
+  return LIP.r0+(LIP.r1-LIP.r0)*w+12*g*g;};
  /* the shelf's own height at d inside its edge: its top, the lip falling away in a quarter circle from e = d + LIP.out (the
     walls' columns' line) to the top at e = R; where the step is low (the back, merging into the slope) the lip is lower too */
  function shelfY(x,z,d){const t=topY(x,z),R=lipR(x,z)*sm(4,24,t-flankY(x,z)),e=d+LIP.out;if(R<.5||e>=R)return t;const u=R-Math.max(0,e);return t-(R-Math.sqrt(Math.max(0,R*R-u*u)));}
@@ -12785,11 +12828,14 @@ HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?
  HYPERJUNGLE.LIBSCALE={};
  M.bark.forEach((m,i)=>{const L=P('bark'+i);if(L){m.map=KMAT.textures(L,{aniso:8}).map;m.needsUpdate=true;HYPERJUNGLE.LIBSCALE['bark'+i]=L.scale;}});
  {const L=P('rock');if(L){M.rock.map=KMAT.textures(L,{aniso:8}).map;M.rock.needsUpdate=true;HYPERJUNGLE.LIBSCALE.rock=L.scale;}}
+ /* the limbs (boughs, twigs, roots) and the dead wood: their sets were in materials.json but never bound, so the branches kept
+    the painted canvas beside the library's bark (the owner: "branches not taking bark texture") */
+ for(const k of ['limb','wood']){const L=P(k);if(L){M[k].map=KMAT.textures(L,{aniso:8}).map;M[k].needsUpdate=true;HYPERJUNGLE.LIBSCALE[k]=L.scale;}}
  // the fauna sheets (58-fauna's optional FAUNATEX): from the pack when no host set them
  if(!HYPERJUNGLE.FAUNATEX){const F={};for(const k of ['wing','fur','hide','ray']){const L=P('fauna.'+k);if(L)F[k]=L.map;}if(Object.keys(F).length)HYPERJUNGLE.FAUNATEX=F;}}
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:HYPERJUNGLE.LIBSCALE['bark'+i]||[14,18]}));
-BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:[6,9]});
-BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:[3,4]});
+BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:HYPERJUNGLE.LIBSCALE.limb||[6,9]});
+BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:HYPERJUNGLE.LIBSCALE.wood||[3,4]});
 BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:HYPERJUNGLE.LIBSCALE.rock||[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far forest (impostors)'});
 
@@ -12810,7 +12856,7 @@ BIO.def('mossmat',BIO.geo.mat(),HYPERJUNGLE.MAT.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
-BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});
+BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
 BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
 // the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a
@@ -15799,10 +15845,12 @@ defBuilding({key:'zj_council',name:'The council: a hall cut from the rock in its
    box('tuffPol',0,-6.6,.2,20.6,.4,.5,c);zkBand('patFriezeB',-9.6,9.6,0,-4.6,1.4,0,c);box('tuffPol',0,-1.6,.2,20.6,.4,.6,c);});
   for(let i=0;i<9;i++){const x=-8+i*2;box('tuffPol',x,0,14.3,.9,.5,.6,c);box('tuffPol',x,.5,14.3,.5,.3,.6,c);}
   /* the hall (x ±11, z -38..-10, y -12..0): base moulding, friezes (the flanks split at their stairs), pilasters, windows, cornice, parapet */
-  const faces=[[0,-10,0,22,[[-11,11]]],[0,-38,PI,22,[[-11,11]]],[-11,-24,-PI/2,28,[[-14,-3.2],[.8,14]]],[11,-24,PI/2,28,[[-14,-.8],[3.2,14]]]];
+  /* the flanks' stairs break out of their faces at local x 4 to 6.6 (west) and -6.6 to -4 (east), up to 3.6 m over the pit's floor:
+     the moulding, the frieze and the pilasters leave that stretch (the owner: they ran across the opening) */
+  const faces=[[0,-10,0,22,[[-11,11]]],[0,-38,PI,22,[[-11,11]]],[-11,-24,-PI/2,28,[[-14,3.4],[7.2,14]]],[11,-24,PI/2,28,[[-14,-7.2],[-3.4,14]]]];
   for(const [cx,cz,ry,L,spans] of faces)W(cx,0,cz,ry,()=>{
    for(const [a,b] of spans){box('tuffPol',(a+b)/2,Y,.1,b-a,.5,.5,c);zkBand('patFriezeB',a+.3,b-.3,0,Y+1.0,1.8,0,c);}
-   for(let x=-L/2+1.5;x<=L/2-1.4;x+=3.5){box('tuffPol',x,Y+3.2,.08,.45,8.6,.26,c);}
+   for(let x=-L/2+1.5;x<=L/2-1.4;x+=3.5){if(spans.length>1&&x>spans[0][1]-.3&&x<spans[1][0]+.3)continue;box('tuffPol',x,Y+3.2,.08,.45,8.6,.26,c);}
    box('tuffPol',0,-1.3,.18,L+.4,.5,.5,c);});
   /* the windows, cut through into the chamber by the plan (it.windows: the owner wanted real ones): a sill and a lintel at each */
   for(const w of (it&&it.windows)||[]){box('tuffPol',w.x+w.nx*.1,w.y-.12,w.z+w.nz*.1,1.4,.12,.2,c,w.ry);box('tuffPol',w.x+w.nx*.1,w.y+1.8,w.z+w.nz*.1,1.4,.18,.2,c,w.ry);}
@@ -16949,9 +16997,13 @@ defBuilding({key:'zj_market_hall',name:'Market hall',seed:5403,tags:{types:['mar
 
 /* the public fountain: a round basin on two steps, a column with a bowl, the water falling from it, jars at its rim */
 defBuilding({key:'zj_fountain',name:'Public fountain',seed:5404,cls:'infrastructure',tags:{types:['infrastructure'],wealth:'middle',style:'constructed',rock:'tuff'},w:6,d:6,h:4,front:{x:0,z:3},
- build(o){const c=P('white');cyl('ashlar',0,0,0,2.9,.2,P('tuffDark'),28);cyl('tuffPol',0,.2,0,2.5,.6,c,28);cyl('water',0,.75,0,2.25,.02,P('water'),28);
-  zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.8,.18,c,16);cyl('water',0,2.97,0,.65,.02,P('water'),16);
-  for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.78,.78,Math.sin(a)*.78,.06,2.2,.06,P('water'));}
+ build(o){const c=P('white'),fall=hc(0xc4e2e6);cyl('ashlar',0,0,0,2.9,.2,P('tuffDark'),28);
+  /* the basin and the bowl hollow (a rim round a floor), the water in them under the rim (the owner: no water showed: it was a
+     disc inside the solid basin) */
+  cyl('tuffPol',0,.2,0,2.3,.12,c,28);lathe('tuffPol',0,0,[[2.5,.2],[2.5,.8],[2.22,.8],[2.22,.32]],28,c);cyl('water',0,.62,0,2.24,.02,P('water'),28);
+  zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.66,.1,c,16);lathe('tuffPol',0,0,[[.8,2.8],[.8,3.02],[.66,3.02],[.66,2.9]],16,c);cyl('water',0,2.96,0,.67,.02,P('water'),16);
+  /* the streams falling from the bowl's lip into the basin, pale with their air */
+  for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.86,.64,Math.sin(a)*.86,.045,2.36,.045,fall);}
   FURNISH('zeijani_olla',2.0,0,1.9,0,{setting:'outdoor'});FURNISH('zeijani_olla',-2.1,0,1.7,0,{v:1,setting:'outdoor'});}});
 // prefix: dhn
 // ================================================================= DHELV: THE NAV GRAPH (kits/zeijani/PLAN.md 8.1, 8.3; P6). [G data]
@@ -17138,6 +17190,13 @@ DHS.init=function(clock,o){if(DHS.inited)return DHS;DHS.inited=true;o=o||{};cons
  for(const d of B.doors){if(!d.node)continue;const K=DHS.kindOf(d.key);if(!K)continue;const n=B.byId[d.node],o=K[2]||{},acts={};
   for(const a in K[1])acts[a]=/^(SLEEP|EAT|REST)$/.test(a)&&/^home/.test(K[0])?Math.max(1,Math.round(K[1][a]*k)):K[1][a];
   const S=DH.SITES.find(s=>Math.abs(s.x-d.rec.x)<.01&&Math.abs(s.z-d.rec.z)<.01),kind=K[0]==='home'&&S&&S.district==='outpost'?'home_out':K[0];   /* the outpost's own homes: its folk live there */
+  /* the park is the hill under the light well (41: HILLS): its crowd spread over eight spots on the hill between the lanes, each
+     at the hill's own height (one door held 90 people in a clump at the hill's foot) */
+  if(d.key==='zj_park'){const H=DH.HILLS.find(h=>h.well==='hall'),G=B.nodes.filter(q=>q.area==='hall');
+   for(let j=0;j<8;j++){const a=PI/4+(j%4)*PI/2,r=j<4?7:13,x=H.c[0]+Math.cos(a)*r,z=H.c[1]+Math.sin(a)*r;let nb=null,bd=1e9;for(const q of G){const dd=Math.hypot(q.x-x,q.z-z);if(dd<bd){bd=dd;nb=q;}}
+    if(!nb||bd>3)continue;const pa={};for(const a2 in acts)pa[a2]=Math.max(1,Math.round(acts[a2]/8));
+    SIM.place({id:'park_'+(i++),name:d.rec.name||d.key,kind:'park',x:nb.x,y:nb.y,z:nb.z,ry:0,door:at(nb),activities:pa,indoor:{},wander:1.5,tags:{key:d.key,tid:d.tid,district:'hub'}});DHS.places++;}
+   continue;}
   SIM.place({id:kind+'_'+(i++),name:d.rec.name||d.key,kind,x:n.x,y:n.y,z:n.z,ry:d.rec.ry,door:at(n),activities:acts,open:o.open,indoor:o.out?{}:true,
    wander:o.out?1.2:0,tags:{key:d.key,tid:d.tid,district:S?S.district:null}});DHS.places++;}
  /* the open grounds no building stands on: the pasture and the forest's edge (their door the kipuka grid's nearest node) */
@@ -18171,7 +18230,7 @@ function dhDecoyFace(mat){const D=DH.DECOY,O=DH.LIP.out,y=DH.groundY(D.c[0]+D.ou
  const geo=new THREE.BufferGeometry(),nv=pos.length/3;geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  geo.setAttribute('aW',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));geo.setAttribute('aCut',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
- const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;m.userData.cliff=true;m.name='the decoy’s face';return m;}
+ const m=new THREE.Mesh(geo,mat);m.castShadow=false;m.receiveShadow=true;m.userData.cliff=true;m.name='the decoy’s face';return m;}
 /* the drawing (buildWorld, 90: after the sites, into the world's buckets) */
 function dhExtras(){const B=DH.byId,wd=P('woodD'),ir=P('soot');
  /* the sentinels: a post at the way's side under each shaft, an arm, a cage of bars, a yellow bird on its perch */
@@ -19197,17 +19256,22 @@ const groundMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,verte
   groundMat.map=T.map;groundMat.normalMap=T.normalMap;groundMat.roughnessMap=T.roughnessMap;matHook(groundMat,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}}
 /* the cut-away and the holes, as the kit sheet's ground (its uniforms: 40-zj-cave.js fills the holes and masses) */
 const ZJ_CUTSITES={value:[]};for(let i=0;i<32;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
+const ZJ_CUTTOP={value:new Array(32).fill(1e9)};   /* each cut site's top: the ground opens under it only */
 const ZJ_MASSES={value:[]};for(let i=0;i<32;i++)ZJ_MASSES.value.push(new THREE.Vector4(0,0,0,0));
 const ZJ_HOLES={value:[]};for(let i=0;i<32;i++)ZJ_HOLES.value.push(new THREE.Vector4(0,0,0,0));
-matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;
+/* the outpost's carved fronts: a box each (x0,z0,x1,z1) and its floor and top (y0,y1). The ground's tile across the west face's
+   step slants from the apron up to the shelf over 5 m, before the rock; between the floor and the top it is not drawn there,
+   so the front stands clear (the owner: the gallery entrances buried in the wall) */
+const DH_FRONTS={b:{value:[]},y:{value:[]}};for(let i=0;i<8;i++){DH_FRONTS.b.value.push(new THREE.Vector4(0,0,0,0));DH_FRONTS.y.value.push(new THREE.Vector4(0,-1,0,0));}
+matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uCutTop=ZJ_CUTTOP;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;sh.uniforms.uFrontB=DH_FRONTS.b;sh.uniforms.uFrontY=DH_FRONTS.y;
  sh.vertexShader='varying vec3 vGW;\n'+sh.vertexShader.replace('#include <project_vertex>','vGW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
  /* (review 3: the ground still repeats from afar) over the library's breakup: the map read again at 3.7 times the size, its
     brightness against the set's mean folded in, and a broad brightness and warmth drift over tens of metres */
- sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];varying vec3 vGW;\n'+
+ sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform float uCutTop[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];uniform vec4 uFrontB[8];uniform vec4 uFrontY[8];varying vec3 vGW;\n'+
   'float dgH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float dgN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(dgH(i),dgH(i+vec2(1.,0.)),f.x),mix(dgH(i+vec2(0.,1.)),dgH(i+vec2(1.,1.)),f.x),f.y);}\n'+
   sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n#ifdef USE_MAP\n{vec3 t2=mapTexelToLinear(texture2D(map,vUv*0.27+vec2(0.31,0.67))).rgb;diffuseColor.rgb*=mix(1.0,clamp(dot(t2,vec3(0.333))/0.16,0.4,1.8),0.35);}\n#endif\n'+
    'diffuseColor.rgb*=(0.8+0.4*dgN(vGW.xz*0.019))*mix(vec3(1.05,0.99,0.93),vec3(0.94,1.0,1.06),dgN(vGW.zx*0.008+3.7));').replace('void main() {',
-  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z&&(q.w<=0.||vGW.y<q.w-10000.))discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
+  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z&&(q.w<=0.||vGW.y<q.w-10000.))discard;}\nfor(int i=0;i<8;i++){vec4 b=uFrontB[i];vec4 y=uFrontY[i];if(y.y<y.x)continue;if(vGW.x>b.x&&vGW.x<b.z&&vGW.z>b.y&&vGW.z<b.w&&vGW.y>y.x&&vGW.y<y.y)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.&&vGW.y<uCutTop[i])discard;}}');});
 /* a heightfield of the layout's ground; its colour by what it is: the plain's young flow (dark basalt), the apron (old soil),
    the plateau's top (its forest's loam), its wall (dark rock). P5b lays the biomes on it */
 /* Tiles of DH_GROUND.tile, each at its own step: g.step where a sheer step of the spur passes (or the outpost, an opening),
@@ -19233,7 +19297,14 @@ function dhGroundMesh(){const g=DH_GROUND,T=g.tile,W=DH.PLAT.cliffX,pos=[],col=[
   const xs=[];for(let x=x0;x<=x0+T+1e-6;x+=st){xs.push(x);if(Math.abs(x-W)<1e-6)xs.push(x+.05);}   /* a column 5 cm past the west face's line: it stands plumb, not a ramp */
   if(x0<W&&x0+T>W&&!xs.some(x=>Math.abs(x-W)<1e-6)){xs.push(W,W+.05);xs.sort((a,b)=>a-b);}
   const nz=Math.round(T/st),nx=xs.length-1,b0=pos.length/3;
-  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=z0+j*st;vert(x,H(x,z),z);}
+  /* an edge a coarser tile meets: its vertices on the coarse tile's straight edge (a T-junction left a crack the sky showed
+     through where the fine edge dipped under the coarse one) */
+  const cs=[stepAt(I,J-1),stepAt(I,J+1),stepAt(I-1,J),stepAt(I+1,J)].map(v=>v>st&&v<1e8?v:0);
+  const along=(s2,a,f)=>{const a0=Math.min(T-s2,Math.floor(a/s2+1e-9)*s2),t=(a-a0)/s2;return f(a0)+(f(a0+s2)-f(a0))*t;};
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=z0+j*st;let y=H(x,z);
+   if(j===0&&cs[0])y=along(cs[0],x-x0,a=>H(x0+a,z0));else if(j===nz&&cs[1])y=along(cs[1],x-x0,a=>H(x0+a,z0+T));
+   else if(i===0&&cs[2])y=along(cs[2],z-z0,a=>H(x0,z0+a));else if(i===nx&&cs[3])y=along(cs[3],z-z0,a=>H(x0+T,z0+a));
+   vert(x,y,z);}
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=b0+j*(nx+1)+i,b=a+1,d=a+nx+1,e=d+1;idx.push(a,d,b,b,d,e);}
   /* the skirt: each edge's vertices again, 1.5 m down (the outward winding: both faces drawn by the strip's two triangles a quad) */
   const edge=(L,I2,J2)=>{const dr=stepAt(I2,J2)>1e8?40:1.5;   /* the drawn ground's outer edge hangs deep: the far land's squares are coarse */
@@ -19265,6 +19336,7 @@ const DH_FAR=dhFarLand();scene.add(DH_FAR);
    shelf (its back) the step dies away and the walls with it. Gaps: the outpost's carved fronts in the west face (their mouths
    open through the ground's plumb step there) and the scouts' exit at its foot. One winding for a whole run; drawn both sides */
 function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,west=[];
+ const wh=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);},wn=t=>{const i=Math.floor(t),f=t-i,u=f*f*(3-2*f);return wh(i)+(wh(i+1)-wh(i))*u;};   /* hashed noise: a value a step, a smooth one between */
  /* a contour's points along a polyline: every 2.5 m, slid along the line's normal onto d = 0 (d positive inside) */
  const chainOf=(line,d,skip)=>{const out=[];for(let i=0;i+1<line.length;i++){const a=line[i],b=line[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/2.5),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
    let ox=uz,oz=-ux;const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;if(d(mx+ox*30,mz+oz*30)>d(mx-ox*30,mz-oz*30)){ox=-ox;oz=-oz;}   /* (ox, oz) points out of the shape */
@@ -19278,9 +19350,13 @@ function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,
  for(const c of chainOf(shelf,DH.plateauD,skip)){if(!c){flush();continue;}const yo=DH.groundY(c[0]+c[2]*(OUT+2),c[1]+c[3]*(OUT+2)),yi=DH.shelfY(c[0],c[1],0);
   if(yi-yo<4){flush();continue;}run.push([c[0],c[1],c[2],c[3],yo]);}flush();
  function strip(run){const base=pos.length/3,i0=idx.length,lowY=Math.min(...run.map(c=>c[4]))-5,rows=[];
-  run.forEach((c,i)=>{const [x,z,ox,oz]=c,jc=.55*Math.sin((x+z)*.9)+.35*Math.sin(x*.31+1)+.2*Math.sin(z*2.3),T=DH.topY(x,z),R=DH.lipR(x,z)*Math.min(1,Math.max(0,(T-DH.flankY(x,z)-4)/20));
-   const lip=d=>DH.shelfY(x,z,d)+.15,top=lip(-OUT),nr=Math.max(1,Math.ceil((top-lowY)/RW));
-   for(let r=0;r<=nr;r++){const y=r===nr?top:lowY+r*RW,j=OUT+(r===nr?0:jc+.25*Math.sin(y*.9+i*.37));pos.push(x+ox*j,y,z+oz*j);}
+  let arc=0;run.forEach((c,i)=>{if(i)arc+=Math.hypot(c[0]-run[i-1][0],c[1]-run[i-1][1]);const [x,z,ox,oz]=c,T=DH.topY(x,z),R=DH.lipR(x,z)*Math.min(1,Math.max(0,(T-DH.flankY(x,z)-4)/20));
+   /* weathering (the owner: "too regular, especially those columns"): facets of random widths (2 to 9 m along the wall) each
+      at its own depth, a slow wander over them, some columns broken lower at their heads, the joints blocky (each 3 m drum
+      set a little in or out) */
+   const s0=arc+(x*.013+z*.017)*100,fw=2+7*wh(Math.floor(s0/9)),fct=wh(Math.floor(s0/fw)+77),jc=1.9*(fct-.5)+.9*(wn(s0/23)-.5),brk=wh(Math.floor(s0/5)+311)>.82?2+7*wh(Math.floor(s0/5)+911):0;
+   const lip=d=>DH.shelfY(x,z,d)+.15,top=lip(-OUT)-brk,nr=Math.max(1,Math.ceil((top-lowY)/RW));
+   for(let r=0;r<=nr;r++){const y=r===nr?top:lowY+r*RW,j=OUT+(r===nr?jc*.4:jc+.45*(wh(Math.floor(s0/fw)*31+r)-.5));pos.push(x+ox*j,y,z+oz*j);}
    for(let k=1;k<=K;k++){const e=Math.max(R,1)*(1-Math.cos(k/K*PI/2)),d=e-OUT;pos.push(x-ox*d,lip(d),z-oz*d);}
    rows.push(nr+1);if(Math.abs(x-W)<1)west.push(z);});
   /* columns of different heights: each quad joins row r of one to row r of the next while both have it, the taller column's
@@ -19298,7 +19374,8 @@ function dhWalls(){const pos=[],idx=[],OUT=DH.LIP.out,RW=3,K=6,W=DH.PLAT.cliffX,
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
  /* the cave's own rock shader, darker: it lifts its basalt for the dark under the rock, too bright for a sunlit wall */
  const mat=new THREE.MeshStandardMaterial({color:0x5e5c5a,roughness:.95,metalness:0,side:THREE.DoubleSide});mat.onBeforeCompile=cvRockMat.onBeforeCompile;mat.customProgramCacheKey=()=>'cliff|'+cvRockMat.customProgramCacheKey();
- const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;m.userData.cliff=true;m.userData.tris=idx.length/3;
+ /* no shadow cast: so large a caster's shadow is drawn only inside the shadow camera's box, a dark rectangle that moved with the view */
+ const m=new THREE.Mesh(geo,mat);m.castShadow=false;m.receiveShadow=true;m.userData.cliff=true;m.userData.tris=idx.length/3;
  /* the west face's columns stand on the apron's floor: their z, for walk blocks (dhSurfaceWalk) */
  west.sort((p,q)=>p-q);m.userData.westRuns=[];for(const z of west){const R=m.userData.westRuns,l=R[R.length-1];if(l&&z-l[1]<3.5)l[1]=z;else R.push([z,z]);}
  return m;}
@@ -19311,7 +19388,7 @@ const DH_MOUTH={tops:{},r:{zj_portal:6.8,zj_gallery_a:2.2,zj_gallery_b:2.2,zj_hu
 /* the west face where the columns leave it for the outpost's carved fronts: a dressed face of the cliff's rock 8 cm before the
    ground's plumb step (whose map streaks down a vertical face), up to the lip's foot, open at each mouth (the cavern's cliff
    round the opening fills it) */
-function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.floor-1,ms=SITES.filter(s=>s.district==='outpost'&&s.at==='wall'&&DH_MOUTH.r[s.key]).map(s=>({z0:s.z-DH_MOUTH.r[s.key]-.5,z1:s.z+DH_MOUTH.r[s.key]+.5,y1:s.o.y+DH_MOUTH.top[s.key]}));
+function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.floor-1,ms=SITES.filter(s=>s.district==='outpost'&&s.at==='wall'&&DH.FOOT[s.key]).map(s=>({z0:s.z-DH.FOOT[s.key][0]/2-.3,z1:s.z+DH.FOOT[s.key][0]/2+.3,y1:s.o.y+DEFS[s.key].h+.5}));   /* each carved front's whole width and height (its mouth alone buried the gallery's front: the owner) */
  const gaps=[],R=DH_CLIFF.userData.westRuns,zs=[-DH.PLAT.cliffZ];for(const r of R)zs.push(r[0]-1.2,r[1]+1.2);zs.push(DH.PLAT.cliffZ);
  for(let i=0;i+1<zs.length;i+=2)if(zs[i+1]-zs[i]>.5)gaps.push([zs[i],zs[i+1]]);
  for(const [g0,g1] of gaps){const cut=[g0,g1];for(const m of ms){if(m.z1>g0&&m.z0<g1)cut.push(Math.max(g0,m.z0),Math.min(g1,m.z1));}
@@ -19321,7 +19398,7 @@ function dhWestFace(){const W=DH.PLAT.cliffX,F=-.08,pos=[],idx=[],fl=DH.APRON.fl
  const geo=new THREE.BufferGeometry(),nv=pos.length/3;geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  geo.setAttribute('aW',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));geo.setAttribute('aCut',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));
  const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
- const m=new THREE.Mesh(geo,DH_CLIFF.material);m.receiveShadow=m.castShadow=true;m.userData.cliff=true;m.name='the west face';return m;}
+ const m=new THREE.Mesh(geo,DH_CLIFF.material);m.receiveShadow=true;m.castShadow=false;m.userData.cliff=true;m.name='the west face';return m;}
 const DH_WEST=dhWestFace();scene.add(DH_WEST);scene.add(dhDecoyFace(DH_CLIFF.material));   /* 86 */
 const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
 const ROWS=[];
@@ -19516,7 +19593,13 @@ FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DH_CELLS.t<250)return;DH_CE
    height + 10000; a well's hole has w 0 and goes through), and the rock round each mouth is kept meshed (DH_STREAM.pin): the hole
    always has the cavern's cliff round its opening in it, near the camera or far, so the portal reads from anywhere */
 const DH_MOUTHS=[];
+function dhInFront(x,z,y){const B=DH_FRONTS.b.value,Y=DH_FRONTS.y.value;for(let i=0;i<8;i++){const b=B[i],q=Y[i];if(q.y<q.x)continue;if(x>b.x&&x<b.z&&z>b.y&&z<b.w&&y>q.x&&y<q.y)return true;}return false;}
 function dhMouthHoles(){const H=ZJ_HOLES.value,TOP=DH_MOUTH.top;DH_MOUTHS.length=0;
+ /* the fronts' boxes: from 6 m before the site (the slanting tile) to just behind it, over its whole width */
+ let nf=0;for(const s of SITES){if(nf>=8||s.district!=='outpost'||s.at!=='wall'||!DH.FOOT[s.key])continue;const hw=DH.FOOT[s.key][0]/2+.3;
+  DH_FRONTS.b.value[nf].set(s.x-6,s.z-hw,s.x+.5,s.z+hw);DH_FRONTS.y.value[nf].set(s.o.y+.12,s.o.y+DEFS[s.key].h+.5,0,0);nf++;}
+ for(let i=nf;i<8;i++)DH_FRONTS.y.value[i].set(0,-1,0,0);
+ for(let i=0;i<nf;i++){const b=DH_FRONTS.b.value[i],y=DH_FRONTS.y.value[i];DH_MOUTHS.push({c:[(b.x+b.z)/2,(b.y+b.w)/2],r:Math.hypot(b.z-b.x,b.w-b.y)/2,y0:y.x-2,y1:y.y+2});}   /* its rock kept meshed, as a mouth's */
  for(const s of SITES){if(s.district!=='outpost'||s.at!=='wall'||!TOP[s.key])continue;const O=CVC.openings.find(o=>o.id==='dh.mouth.'+s.key+'.'+Math.round(s.z));if(!O)continue;
   const v=H.find(q=>q.z>0&&Math.abs(q.x-O.c[0])<1e-3&&Math.abs(q.y-O.c[1])<1e-3),top=s.o.y+TOP[s.key];if(v)v.w=top+10000;DH_MOUTHS.push({c:O.c,r:O.r+O.rim,y0:s.o.y-2,y1:top+2});}
  /* the decoy's (86) */
@@ -19526,7 +19609,7 @@ let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();
  KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;
- CV_OPTS.skipMass=true;CV_OPTS.groundKeep=(x,z,y)=>CVC.openings.some(O=>O.kind==='well'&&Math.hypot(x-O.c[0],z-O.c[1])<O.r+O.rim+.2&&!(DH_MOUTH.tops[O.id]<y));   /* at a mouth, only under its top (the page's ground is drawn over it) */CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
+ CV_OPTS.skipMass=true;CV_OPTS.groundKeep=(x,z,y)=>CVC.openings.some(O=>O.kind==='well'&&Math.hypot(x-O.c[0],z-O.c[1])<O.r+O.rim+.2&&!(DH_MOUTH.tops[O.id]<y))||dhInFront(x,z,y);   /* at a mouth, only under its top (the page's ground is drawn over it); before a carved front, the rock's face where the ground is not drawn */CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
  const t0=performance.now();
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
@@ -19543,7 +19626,11 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
   for(const [p,r] of [[[src[0],src[1]],4.2],[[snk[0],snk[1]],5.2]]){const y=DH.groundY(p[0],p[1]);cyl('water',p[0],y+.02,p[1],r,.04,wa,28);
    for(let i=0;i<11;i++){const a=i*TAU/11+.3*Math.sin(i*2.1),q=r+.5+.4*Math.sin(i*1.7);sph('tuffHewn',p[0]+Math.cos(a)*q,y,p[1]+Math.sin(a)*q,.5+.35*Math.abs(Math.sin(i*3.1)),P('tuffDark'),.55,8);}}}
  for(let i=1;i<DH.STREAM.length;i++){const a=DH.STREAM[i-1],b=DH.STREAM[i];if(a[0]>DH.PLAT.cliffX-1||b[0]>DH.PLAT.cliffX-1)continue;const L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
-  box('water',mx,DH.groundY(mx,mz)+.04,mz,3.2,.03,L+1,P('water'),Math.atan2(b[0]-a[0],b[1]-a[1]));for(const sd of [-1,1])box('earth',mx+Math.cos(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,DH.groundY(mx,mz),mz-Math.sin(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,.7,.12,L+1,P('earth'),Math.atan2(b[0]-a[0],b[1]-a[1]));}
+  /* in pieces of about 2 m, each a hand over the highest ground under it (one piece a leg was buried where the ground rose) */
+  const ry=Math.atan2(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/2),cr=Math.cos(ry),sr=Math.sin(ry);
+  for(let k=0;k<n;k++){const t0=k/n,t1=(k+1)/n,px=a[0]+(b[0]-a[0])*(t0+t1)/2,pz=a[1]+(b[1]-a[1])*(t0+t1)/2;let gy=-1e9;
+   for(const t of [t0,(t0+t1)/2,t1])for(const sd of [-1.6,0,1.6])gy=Math.max(gy,DH.groundY(a[0]+(b[0]-a[0])*t+cr*sd,a[1]+(b[1]-a[1])*t-sr*sd));
+   box('water',px,gy+.05,pz,3.2,.03,L/n+.25,P('water'),ry);for(const sd of [-1,1])box('earth',px+cr*sd*1.9,gy-.04,pz-sr*sd*1.9,.7,.14,L/n+.25,P('earth'),ry);}}
  flushBuckets(GB,WORLD,true);
  const tc=performance.now();CVC.build();const tb=performance.now()-tc;
  while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}WORLD.add(CV_GROUP);cvFinishOpenings();dhMouthHoles();dhStreamReset();dhSurfaceWalk();
@@ -19567,9 +19654,9 @@ CV_OPTS.cutBoxes=true;
 const DH_CUT={t:0,FWD:3,sites:[]};
 function dhCutBoxes(p){const C=SITES.filter(S=>(!ONLYSET||ONLYSET.has(S.key))&&(DEFS[S.key].originFront||DEFS[S.key].sunk)).map(S=>[S,(S.x-p.x)**2+(S.z-p.z)**2]).sort((a,b)=>a[1]-b[1]).slice(0,32);
  DH_CUT.sites=C.map(c=>c[0].key);
- for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);continue;}
+ for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);ZJ_CUTTOP.value[i]=1e9;continue;}
   const S=q[0],D=DEFS[S.key],c=Math.cos(S.ry||0),s=Math.sin(S.ry||0),F=D.sunk?0:DH_CUT.FWD,lz=D.sunk?0:(F-D.d)/2,hd=D.sunk?D.d/2:(D.d+F)/2,cx=S.x+s*lz,cz=S.z+c*lz;
-  A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,1);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);}}
+  const top=S.o.y+D.h+1.5;A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,top+10000);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);ZJ_CUTTOP.value[i]=top;}}   /* (each cut stops over its site's height: at the west face it opened the cliff to the sky) */
 FRAME_HOOKS.push(()=>{if(ANIMU.uCut.value<.5)return;const t=performance.now();if(t-DH_CUT.t<500)return;DH_CUT.t=t;dhCutBoxes(camera.position);});
 
 // ---------------------------------------------------------------- views

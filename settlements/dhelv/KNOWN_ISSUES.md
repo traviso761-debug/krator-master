@@ -45,3 +45,12 @@
 - [ ] **The hall's wall curves; the carved fronts are flat.** A wide front (an estate, the temple) on the dome's foot stands
       up to a metre off the rock at its ends.
 - [ ] **The layout's numbers are a proposal** (PLAN.md section 12); `layout-plan.svg` is drawn for the owner to tune by eye.
+- [ ] **The spur's walls cast no shadow** (so large a caster's shadow was drawn only inside the shadow camera's box: a dark
+      rectangle moving with the view). The apron is lit in the morning where the shelf would shade it.
+- [ ] **The surface checks miss pieces on the defs' own built benches and niches** (lamps, figures): the page's float check
+      reads the furniture's meshes only.
+- [ ] **The outpost's carved fronts stand in square-cut recesses.** The ground's tile across the west face's step slanted over
+      their lower half (the owner: "gallery entrances buried in wall"); over each front's width, between its floor and its top,
+      the ground is not drawn and the cavern keeps its rock face instead (`DH_FRONTS`, `dhInFront`). The recess's edges are
+      straight, the slant overhangs above its top, and the rock in it is the cave's paler tuff. Its rock is kept meshed as a
+      mouth's (about 40 more chunks at the start).

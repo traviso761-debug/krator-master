@@ -19,10 +19,12 @@ defBuilding({key:'zj_council',name:'The council: a hall cut from the rock in its
    box('tuffPol',0,-6.6,.2,20.6,.4,.5,c);zkBand('patFriezeB',-9.6,9.6,0,-4.6,1.4,0,c);box('tuffPol',0,-1.6,.2,20.6,.4,.6,c);});
   for(let i=0;i<9;i++){const x=-8+i*2;box('tuffPol',x,0,14.3,.9,.5,.6,c);box('tuffPol',x,.5,14.3,.5,.3,.6,c);}
   /* the hall (x ±11, z -38..-10, y -12..0): base moulding, friezes (the flanks split at their stairs), pilasters, windows, cornice, parapet */
-  const faces=[[0,-10,0,22,[[-11,11]]],[0,-38,PI,22,[[-11,11]]],[-11,-24,-PI/2,28,[[-14,-3.2],[.8,14]]],[11,-24,PI/2,28,[[-14,-.8],[3.2,14]]]];
+  /* the flanks' stairs break out of their faces at local x 4 to 6.6 (west) and -6.6 to -4 (east), up to 3.6 m over the pit's floor:
+     the moulding, the frieze and the pilasters leave that stretch (the owner: they ran across the opening) */
+  const faces=[[0,-10,0,22,[[-11,11]]],[0,-38,PI,22,[[-11,11]]],[-11,-24,-PI/2,28,[[-14,3.4],[7.2,14]]],[11,-24,PI/2,28,[[-14,-7.2],[-3.4,14]]]];
   for(const [cx,cz,ry,L,spans] of faces)W(cx,0,cz,ry,()=>{
    for(const [a,b] of spans){box('tuffPol',(a+b)/2,Y,.1,b-a,.5,.5,c);zkBand('patFriezeB',a+.3,b-.3,0,Y+1.0,1.8,0,c);}
-   for(let x=-L/2+1.5;x<=L/2-1.4;x+=3.5){box('tuffPol',x,Y+3.2,.08,.45,8.6,.26,c);}
+   for(let x=-L/2+1.5;x<=L/2-1.4;x+=3.5){if(spans.length>1&&x>spans[0][1]-.3&&x<spans[1][0]+.3)continue;box('tuffPol',x,Y+3.2,.08,.45,8.6,.26,c);}
    box('tuffPol',0,-1.3,.18,L+.4,.5,.5,c);});
   /* the windows, cut through into the chamber by the plan (it.windows: the owner wanted real ones): a sill and a lintel at each */
   for(const w of (it&&it.windows)||[]){box('tuffPol',w.x+w.nx*.1,w.y-.12,w.z+w.nz*.1,1.4,.12,.2,c,w.ry);box('tuffPol',w.x+w.nx*.1,w.y+1.8,w.z+w.nz*.1,1.4,.18,.2,c,w.ry);}
