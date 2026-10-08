@@ -16,6 +16,10 @@
       texture of their own yet (a jointed basalt colonnade would suit; ask the owner for one before painting it in).
 - [ ] **The shelf's three hypertrees and three saplings are the same few trees.** Each is tinted a little and turned; up
       close the saplings read as a plantation. More variants cost load time (about 50 ms each).
+- [ ] **The wells' piles are walk blocks of three boxes**, not their round outline: a walker keeps a metre or so off a
+      pile's foot between the boxes' corners. The piles' plants are not walk blocks (as the forests').
+- [ ] **The wells' floors' flora is the Throne's skylight zone at its stations' density**: on these small floors it is
+      ferns, tufts and moss with a few siphon trees; the hall's quarters get one or two trees between them.
 - [ ] **What is drawn is decided by distance and the site's frame, not by occlusion.** A carved interior seen through a long
       window from more than 32 m out shows empty; the inspector's ray still meets furniture that is not drawn.
 - [ ] **Headroom is checked on the carved ways and the doors only** (the cavern's `ceilingAt` costs about 1 ms, every 2 m);

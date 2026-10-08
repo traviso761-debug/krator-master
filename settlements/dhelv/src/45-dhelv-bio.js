@@ -76,7 +76,8 @@ function dhbForest(){if(typeof HYPERJUNGLE==='undefined'||new URLSearchParams(lo
  /* the shelf's trees: three standardized giants and three saplings, grown once and drawn as instances (49); then the kit's floor */
  try{BIO.cur='jungle/trees';DHB.out={grove:dhgGrove()};BIO.cur='jungle/floor';Object.assign(DHB.out,HYPERJUNGLE.buildFloor(DHB.HJR,q));BIO.cur=null;}
  catch(e){BIO.cur=null;reportErr('hyperjungle: '+(e.stack||e));return null;}
- const b=BIO.bake();DHB.out.instances=b.inst;DHB.out.calls=b.calls;DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
+ const b=BIO.bake();DHB.out.instances=b.inst;DHB.out.calls=b.calls;/* the underground's plants, baked apart (drawn as the underground is: 90's dhSplitBiome): the wells' floors (89), the tunnels' fungi (88) */
+ DHB.out.wells=dhKnollFlora(tq);DHB.out.fungi=dhFungi(tq);{const n0=BIO.baked.length,u=BIO.bake();for(let i=n0;i<BIO.baked.length;i++)BIO.baked[i].userData.under=true;DHB.out.under={calls:u.calls,instances:u.inst};}DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
  DHB.out.throne=th?{trees:THRONE.TREES.length,shares:THRONE.FLOWS.shares()}:null;return DHB.out;}
 /* every tree's foot: where its kit's mask lets it root, not on the wall or a slope, not in a building */
 function dhbTreesOk(trees,mask){mask=mask||DHB.mask;const bad=[];for(const T of trees){const m=mask(T.x,T.z),g=DH.groundY,sl=Math.max(Math.abs(g(T.x+1,T.z)-g(T.x-1,T.z)),Math.abs(g(T.x,T.z+1)-g(T.x,T.z-1)))/2;

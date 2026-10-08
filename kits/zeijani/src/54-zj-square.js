@@ -23,12 +23,13 @@ defBuilding({key:'zj_park',name:'The park under the light well',seed:5401,cls:'f
  build(o){const R=16.5,c=P('white'),pv=P('tuffDark');
   cyl('earth',0,0,0,R,.12,P('grass'),48);lathe('tuffPol',0,0,[[R,0],[R+.35,0],[R+.35,.3],[R,.3]],48,c);
   /* the paths: four along the lanes (each 3.6 m), a ring at 10 m */
-  for(const ry of [0,PI/2])box('paving',0,.12,0,3.6,.03,2*R,pv,ry);lathe('paving',0,0,[[9,.13],[11,.13]],48,pv);
+  for(const ry of [0,PI/2])box('paving',0,.12,0,3.6,.03,2*R,pv,ry);if(!o.knoll)lathe('paving',0,0,[[9,.13],[11,.13]],48,pv);
   /* the pool and fountain */
   cyl('tuffPol',0,0,0,4.6,.55,c,32);cyl('water',0,.5,0,4.3,.02,P('water'),32);zfColumn('tuffPol',0,.5,0,.3,1.6,c);cyl('tuffPol',0,2.1,0,1.0,.18,c,16);
   for(let i=0;i<6;i++){const a=i*TAU/6;box('water',Math.cos(a)*.95,.55,Math.sin(a)*.95,.08,1.55,.08,P('water'));}
-  /* beds, trees, caps, shrubs in the four quarters (none on a path) */
-  let n=0;for(const qx of [-1,1])for(const qz of [-1,1]){
+  /* beds, trees, caps, shrubs in the four quarters (none on a path); o.knoll (Dhelv): the quarters are the breakdown's piles under
+     the light well, grown over by the world's biome, so the park keeps only its kerb, paths, pool and benches */
+  let n=0;for(const qx of [-1,1])for(const qz of [-1,1]){if(o.knoll){FURNISH('zeijani_stone_bench',qx*6.6,.12,qz*2.6,qx>0?-PI/2:PI/2,{setting:'outdoor'});continue;}
    for(const [r,a] of [[6.3,.78],[13.6,.5],[13.6,1.07]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqTree(x,z,1,++n);}
    for(const [r,a] of [[15.3,.25],[15.3,1.32]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqCap(x,z,3.4+((n++)%3)*.6,1.6);}
    for(const [r,a] of [[11.9,.78],[7.8,.35],[7.8,1.22]]){zqShrub(qx*Math.cos(a)*r,qz*Math.sin(a)*r,1,(n++)%2?'leafD':'leaf');}
@@ -37,7 +38,7 @@ defBuilding({key:'zj_park',name:'The park under the light well',seed:5401,cls:'f
    for(let i=0;i<9;i++)zfCard(i%2?'cardCrop':'cardYam',bx+((i%3)-1)*.7,.39,bz+(Math.floor(i/3)-1)*.7,.45,.4,i*.7,WHITE);
    FURNISH('zeijani_stone_bench',qx*6.6,.12,qz*2.6,qx>0?-PI/2:PI/2,{setting:'outdoor'});}
   /* the lawn's grass: cards over the quarters, off the paths */
-  for(let i=0;i<220;i++){const a=i*2.399,r=4.9+((i*.618)%1)*11,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<2.2||Math.abs(z)<2.2||Math.abs(Math.hypot(x,z)-10)<1.2)continue;zfCard('cardCrop',x,.12,z,.35,.3,a,P('grass'));}
+  if(!o.knoll)for(let i=0;i<220;i++){const a=i*2.399,r=4.9+((i*.618)%1)*11,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<2.2||Math.abs(z)<2.2||Math.abs(Math.hypot(x,z)-10)<1.2)continue;zfCard('cardCrop',x,.12,z,.35,.3,a,P('grass'));}
   door(0,0,R,0,3.6);}});
 
 /* the row house: a narrow house of three storeys in a street of them (the interiors planner's: living room and kitchen at the

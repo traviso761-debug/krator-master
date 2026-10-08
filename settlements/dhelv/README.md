@@ -22,6 +22,8 @@ section 13's extras; the Godot case (P7) waits for a Godot binary.
 | `src/00-head.html` | the page shell (the kit's, titled) |
 | `src/45-dhelv-bio.js` | the biome host: BIO bound before the kits load; the hyperjungle's mask (the shelf's top 10 m back from its edge, off the openings and the ridge's foot), the Throne's (the flank and the ridge's crest, off the walls), the outpost's buildings as obstacles; `dhbForest` plants both with the world |
 | `src/48-dhelv-flows.js` | the young lava as it ran `[G data]`: the Throne kit's flow model (`THRONE.flowHistory`) from seven vents up the flank over the layout's land; `DH.groundY` becomes the land plus the lava laid |
+| `src/88-dhelv-fungi.js` | the tunnels' fungi: the Throne kit's cave pass along every carved way, in a band at each wall's foot |
+| `src/89-dhelv-knolls.js` | the wells' floors: the breakdown piles drawn (their blocks, their walk blocks) and the Throne kit's skylight flora planted on them in a pass of its own |
 | `src/49-dhelv-grove.js` | the shelf's old growth, standardized: three hypertrees and three saplings grown once alone and drawn as instances in cells, each with a far level |
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield in tiles (`terrainH = DH.groundY`), the spur's walls (`dhWalls`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
@@ -61,6 +63,8 @@ x east, z south, y up, metres; the hub's square is y 0, and the flank rises east
   reads the kit's sources and fails if one differs.
 - `DISTRICTS`: the hub, the three wells, the cistern, the catacombs and the outpost, each with its anchor node, its graph distance
   from the square, its wealth (`wealthAt(distance)`: 0.9 at the square falling to 0.15 at the outpost) and the list it must hold.
+- `KNOLLS`: the breakdown piles on the wells' floors (`{id, well, c, y, r, h}`), each the largest disc in the well's daylight
+  clear of its floor's sites and ways; `knollAt(x, z)` the floor and the pile's height there.
 - `RULES`: the numbers the checks hold the layout to (PLAN.md section 12's ranges).
 
 ## The page
@@ -78,6 +82,8 @@ under the ground opens into its void as a doorway, not through the surface). The
 | Page check (`91-dhelv-probe.js`) | Its negative control |
 |---|---|
 | every layout site placed | |
+| the wells' floors' trees each on its pile, on no way, in no site | a tree in the lane across the square, one past the foot of a pile |
+| the tunnels' fungi each on a carved floor (within 0.6 m of the walk map's floor under it) | every one lifted 3 m |
 | the cavern built | |
 | no void meets the open air but at its openings (sampled every 2 m) | the hall's light well undeclared |
 | the wells' floors lit at noon: the sun up, the sky straight up over each floor | a plug of rock in the light well's throat |
@@ -109,6 +115,7 @@ under the ground opens into its void as a doorway, not through the surface). The
 | wealth falls with the distance from the square: the districts' wealth by the rule, and their homes' mean wealth never rising outward | an estate in the east well |
 | the foreigners' zone ends at the stone door: the outer ways reach it and nothing past it, and the door is the only way on | a side passage round the stone door |
 | the outpost's sites apart (the palisade's runs join end to end); the cliff's sites on the cliff, facing west | the barracks moved onto the timber house |
+| the wells' floors: a breakdown pile in each one's daylight, 2 m clear of its floor's sites, off its ways, the piles apart | the east well's smithy moved onto a pile |
 | the layout matches its golden digest | |
 
 ## Getting about
@@ -119,10 +126,31 @@ under the ground opens into its void as a doorway, not through the surface). The
 - **The minimap** (bottom right) shows the city or the outpost, whichever you are in; the ways within 6 m of your height are
   drawn bright. Click it to fly there; **M** hides it.
 
+## The wells' floors
+
+Under every opening (the owner: "a low hill", "a skirt of greenery", at the bottom of the well, as the Throne's lava tube
+station has under its skylights) the fallen roof lies in low piles grown over: four in the park's quarters under the light
+well (6 to 7 m across the radius, 2 m high), two on each satellite well's floor (8 to 10 m, up to 3 m). The layout places them
+(`KNOLLS`: the largest discs in the daylight clear of the floor's sites and ways); `89-dhelv-knolls.js` draws each (a heap on
+the ground's basalt, moss on its top, its blocks strewn on it), makes it a walk block (the walkers go round it), and plants
+the Throne kit's skylight zone on it in a pass of its own after the world's forests (its host swapped for the wells' floors:
+the ground the floor and the piles, the trees on the piles themselves, the ferns, moss and tufts of its floor and understory
+on a skirt 5 m round them, off the ways): a few siphon trees, some 2,400 plants, in about 20 ms. They are drawn as the
+underground is (within 420 m of the camera, wherever it is).
+
+## The tunnels' fungi
+
+Along every carved way (the tubes, the braid, the ramps; 27 ways, 3 km) the Throne kit's own cave pass (its lava tube
+station's dark floor) plants glow mushrooms, specimen and alien mushroom cards, scale cones and lichen in a band 1.3 to 2.4 m
+in from each side of the floor (past the reach of a clump's spread into the wall's fillet; the middle left to the walkers),
+off each way's last 6 m (its junctions) and out of the hall and the pits. One pass a way, the kit's host swapped for it (its
+ground the way's floor, its 'cave' field the band), at three times the kit's density; baked with the wells' floors and drawn
+as the underground is. They add to the glow fungus (`94-dhelv-light.js`).
+
 ## The square
 
-The park under the light well (`zj_park`: lawn, paths along the lanes, a pool and fountain, trees, shrubs, beds, giant
-alecaps at its shaded rim) with the stalls round its edge; then a deterministic pass in the layout (`41-dhelv-layout.js`,
+The park under the light well (`zj_park` with `knoll`: its kerb, the paths along the lanes, the pool and fountain and the
+benches; its quarters are the breakdown's piles, the kit's own trees, beds and alecaps left out) with the stalls round its edge; then a deterministic pass in the layout (`41-dhelv-layout.js`,
 "the square filled") lays in the market hall, three more shops, seven houses and 22 row houses (`zj_rowhouse`, a narrow
 three-storey home), and two fountains: the homes take the outer ring first, so they line the square in a street facing in,
 5 m in from the wall (6 m clear of a carved front), clear of the lanes, the ledge's stairs and the park.

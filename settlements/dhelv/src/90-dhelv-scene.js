@@ -122,7 +122,7 @@ function dhWalls(){const pos=[],idx=[],OUT=4,CAP=8,RW=3,W=DH.PLAT.cliffX;
 const DH_CLIFF=dhWalls();scene.add(DH_CLIFF);
 
 // ---------------------------------------------------------------- the sites: the layout's, each the kit's def
-const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor'},district:s.district,at:s.at}));
+const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor',knoll:!!s.knoll},district:s.district,at:s.at}));
 const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
 const ROWS=[];
 
@@ -274,10 +274,10 @@ function dhSplitInstanced(m,keyOf){const M=m.instanceMatrix.array,by={},out={};f
 function dhSplitBiome(){if(typeof BIO==='undefined'||!BIO.baked||!BIO.baked.length||BIO.baked._split)return 0;const t0=performance.now(),S=DH_CELLS.BIO,groups={},keep=[];
  const keyOf=(x,y,z)=>Math.floor(x/S)+','+Math.floor(z/S);
  for(const m of BIO.baked){if(!m.parent||!m.matrixWorld.equals(new THREE.Matrix4())){keep.push(m);continue;}
-  const parts=m.isInstancedMesh?dhSplitInstanced(m,keyOf):dhSplitIndexed(m,keyOf);
+  const kf=m.userData.under?(x,y,z)=>'w'+keyOf(x,y,z):keyOf,parts=m.isInstancedMesh?dhSplitInstanced(m,kf):dhSplitIndexed(m,kf);   /* the underground's plants (88, 89): cells of their own, drawn as the underground's */
   for(const k in parts){(groups[k]||(groups[k]=new THREE.Group())).add(parts[k]);keep.push(parts[k]);}m.parent.remove(m);}
  for(const k in groups){const g=groups[k];g.userData.cell='bio'+k;scene.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
-  DH_CELLS.list.push({k:'bio'+k,g,c:sp.center,r:sp.radius,under:false,bio:true,tris:g.children.reduce((a,m)=>a+m.userData.tris,0)});}
+  const w=k[0]==='w';DH_CELLS.list.push({k:'bio'+k,g,c:sp.center,r:sp.radius,under:w,bio:!w,tris:g.children.reduce((a,m)=>a+m.userData.tris,0)});}
  BIO.baked.length=0;keep.forEach(m=>BIO.baked.push(m));BIO.baked._split=true;DH_CELLS.bioMs=Math.round(performance.now()-t0);return Object.keys(groups).length;}
 /* the sites' boxes for the furniture: each site's declared box, turned (a carved front's runs back from its origin), 1.5 m out,
    from 3 m under its floor to 2 m over its height; a hash of 8 m squares to the boxes over them */
@@ -320,7 +320,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
  for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;const k=dhCellKey(S);GB=GTARGET=cells[k]||(cells[k]={});place(S.key,S.x,S.z,S.ry||0,S.o);}
- GB=GTARGET=base;dhCliffStairs();
+ GB=GTARGET=base;dhCliffStairs();dhKnolls();   /* 89: the wells' floors' piles */
  for(const k in cells){const g=new THREE.Group();g.userData.cell=k;flushBuckets(cells[k],g,true);if(!g.children.length)continue;WORLD.add(g);
   const bx=new THREE.Box3();g.children.forEach(m=>{m.geometry.computeBoundingBox();bx.union(m.geometry.boundingBox);});const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:k[0]==='u',tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}

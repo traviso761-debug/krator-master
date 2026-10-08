@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (2%) | 32 (12%) | 10 (4%) | 75 (28%) | 146 (55%) |
+| KB | 5 (2%) | 32 (12%) | 10 (4%) | 75 (28%) | 147 (55%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -32,7 +32,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/51-zj-guard.js` | 12.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/52-zj-trade.js` | 6.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-zj-additions.js` | 8.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/54-zj-square.js` | 6.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/54-zj-square.js` | 7.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/89-rows.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 8.4 | [web] | 18 | 0 | 1 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 |  |

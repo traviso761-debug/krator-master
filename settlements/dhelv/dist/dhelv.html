@@ -11799,7 +11799,7 @@ const DH=(function(){
  S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
  S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
  /* the park under the light well (its paths run along the lanes, so it is not in their way), the stalls round its edge */
- S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true});
+ S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true,knoll:true});   /* knoll: its quarters are the breakdown's piles (below) */
  for(const deg of [30,60,120,150]){const a=deg*PI/180,x=Math.cos(a)*23.5,z=Math.sin(a)*23.5;S('zj_stall_b','hub',x,z,faceIn(x,z,0,0),0,'floor',{v:deg>90?1:0});}
  S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-80);
  /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
@@ -11878,6 +11878,30 @@ const DH=(function(){
   lay('zj_rowhouse',22,outer,k=>({v:k%4}));
   lay('zj_fountain',2,ring(.3));}
 
+ /* ---- the wells' floors: the breakdown under each opening (the owner: "a low hill", "a skirt of greenery", at the BOTTOM of
+    the well, as the Throne's lava tube station has under its skylights): low piles of the fallen roof, grown over. Each pile is
+    the largest disc (to rMax) in the daylight that keeps 2 m off every site of its floor (the park's beds apart: the hall's piles
+    are the park's quarters) and 1 m past the half width of every way on that floor (3 m off a lane's line across the square, as its sites); taken greedily, best first, n to a floor.
+    A pile's height is a third of its radius (1.5 to 3 m); knollAt(x, z) is the floor and the pile over it there, or null */
+ const KNOLLS=[];
+ {const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
+  /* a point's distance to a site's footprint (its rectangle, turned; a round one a disc), negative inside */
+  const footD=(s,x,z)=>{const [w,d,o]=FOOT[s.key]||[4,4,'centre'];if(o==='round')return Math.hypot(x-s.x,z-s.z)-w/2;const c=Math.cos(s.ry),sn=Math.sin(s.ry),dx=x-s.x,dz=z-s.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;
+   const z0=o==='front'?-d:-d/2,z1=o==='front'?3.5:d/2,qx=Math.abs(lx)-w/2,qz=Math.max(z0-lz,lz-z1);return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0);};
+  const wells=[{id:'hall',c:HALL.c,y:HALL.y,light:HALL.pool+4,rMax:7.5,n:4,sites:SITES.filter(s=>s.district==='hub'&&s.at==='floor'&&!s.park)}]
+   .concat(PITS.map(P=>({id:P.id,c:P.c,y:P.floor,light:P.r-5,rMax:10,n:2,sites:SITES.filter(s=>s.district===P.id)})));
+  for(const W of wells){const ways=EDGES.filter(e=>{const a=byId[e.a],b=byId[e.b];return Math.abs(a.y-W.y)<2&&Math.abs(b.y-W.y)<2&&
+     sd(W.c,[a.x,a.z],[b.x,b.z])<W.light+40;}).map(e=>({a:[byId[e.a].x,byId[e.a].z],b:[byId[e.b].x,byId[e.b].z],hw:e.kind==='square'?3:(e.w||4)/2+1}));   /* a lane across the square: 3 m off its line, as the sites keep */
+   const room=(x,z,got)=>{let r=Math.min(W.rMax,W.light-Math.hypot(x-W.c[0],z-W.c[1]));
+    for(const s of W.sites)r=Math.min(r,footD(s,x,z)-2);for(const w of ways)r=Math.min(r,sd([x,z],w.a,w.b)-w.hw);for(const k of got)r=Math.min(r,Math.hypot(x-k.c[0],z-k.c[1])-k.r-2);return r;};
+   const got=[];for(let i=0;i<W.n;i++){let best=null;
+    for(let x=W.c[0]-W.light;x<=W.c[0]+W.light;x+=1)for(let z=W.c[1]-W.light;z<=W.c[1]+W.light;z+=1){const r=room(x,z,got);if(r>4.5&&(!best||r>best.r+1e-9))best={c:[x,z],r};}
+    if(!best)break;got.push(best);}
+   got.forEach((k,i)=>KNOLLS.push({id:W.id+'.k'+i,well:W.id,c:k.c,y:W.y,r:Math.floor(k.r*100)/100,h:+Math.max(1.5,Math.min(3,k.r/3)).toFixed(2)}));}}
+ /* the pile's height over its floor at (x, z): a heap (steeper at its foot), its top broken by two waves of noise */
+ const knollAt=(x,z)=>{for(const K of KNOLLS){const d=Math.hypot(x-K.c[0],z-K.c[1]);if(d>=K.r)continue;const u=1-d/K.r,s=u*u*(3-2*u);
+   const n=.85+.15*Math.sin(x*.9+z*.4)+.1*Math.sin(x*.31-z*.77+K.r);return {K,y:K.y+K.h*Math.pow(s,1.25)*n};}return null;};
+
  /* ---- the graph's helpers */
  const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});
  const len=e=>{const a=byId[e.a],b=byId[e.b];return Math.hypot(b.x-a.x,b.z-a.z);};
@@ -11889,7 +11913,7 @@ const DH=(function(){
  const fromSquare=dist('h.sq',e=>e.zone!=='secret');
  DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
 
- return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
+ return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,KNOLLS,knollAt,len,grade,dist,onHall,onPit,faceIn};
 })();
 if(typeof module!=='undefined')module.exports=DH;
 // prefix: zf
@@ -12325,7 +12349,8 @@ function dhbForest(){if(typeof HYPERJUNGLE==='undefined'||new URLSearchParams(lo
  /* the shelf's trees: three standardized giants and three saplings, grown once and drawn as instances (49); then the kit's floor */
  try{BIO.cur='jungle/trees';DHB.out={grove:dhgGrove()};BIO.cur='jungle/floor';Object.assign(DHB.out,HYPERJUNGLE.buildFloor(DHB.HJR,q));BIO.cur=null;}
  catch(e){BIO.cur=null;reportErr('hyperjungle: '+(e.stack||e));return null;}
- const b=BIO.bake();DHB.out.instances=b.inst;DHB.out.calls=b.calls;DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
+ const b=BIO.bake();DHB.out.instances=b.inst;DHB.out.calls=b.calls;/* the underground's plants, baked apart (drawn as the underground is: 90's dhSplitBiome): the wells' floors (89), the tunnels' fungi (88) */
+ DHB.out.wells=dhKnollFlora(tq);DHB.out.fungi=dhFungi(tq);{const n0=BIO.baked.length,u=BIO.bake();for(let i=n0;i<BIO.baked.length;i++)BIO.baked[i].userData.under=true;DHB.out.under={calls:u.calls,instances:u.inst};}DHB.out.ms=Math.round(performance.now()-t0);DHB.out.throneMs=Math.round(t1-t0);
  DHB.out.throne=th?{trees:THRONE.TREES.length,shares:THRONE.FLOWS.shares()}:null;return DHB.out;}
 /* every tree's foot: where its kit's mask lets it root, not on the wall or a slope, not in a building */
 function dhbTreesOk(trees,mask){mask=mask||DHB.mask;const bad=[];for(const T of trees){const m=mask(T.x,T.z),g=DH.groundY,sl=Math.max(Math.abs(g(T.x+1,T.z)-g(T.x-1,T.z)),Math.abs(g(T.x,T.z+1)-g(T.x,T.z-1)))/2;
@@ -16842,12 +16867,13 @@ defBuilding({key:'zj_park',name:'The park under the light well',seed:5401,cls:'f
  build(o){const R=16.5,c=P('white'),pv=P('tuffDark');
   cyl('earth',0,0,0,R,.12,P('grass'),48);lathe('tuffPol',0,0,[[R,0],[R+.35,0],[R+.35,.3],[R,.3]],48,c);
   /* the paths: four along the lanes (each 3.6 m), a ring at 10 m */
-  for(const ry of [0,PI/2])box('paving',0,.12,0,3.6,.03,2*R,pv,ry);lathe('paving',0,0,[[9,.13],[11,.13]],48,pv);
+  for(const ry of [0,PI/2])box('paving',0,.12,0,3.6,.03,2*R,pv,ry);if(!o.knoll)lathe('paving',0,0,[[9,.13],[11,.13]],48,pv);
   /* the pool and fountain */
   cyl('tuffPol',0,0,0,4.6,.55,c,32);cyl('water',0,.5,0,4.3,.02,P('water'),32);zfColumn('tuffPol',0,.5,0,.3,1.6,c);cyl('tuffPol',0,2.1,0,1.0,.18,c,16);
   for(let i=0;i<6;i++){const a=i*TAU/6;box('water',Math.cos(a)*.95,.55,Math.sin(a)*.95,.08,1.55,.08,P('water'));}
-  /* beds, trees, caps, shrubs in the four quarters (none on a path) */
-  let n=0;for(const qx of [-1,1])for(const qz of [-1,1]){
+  /* beds, trees, caps, shrubs in the four quarters (none on a path); o.knoll (Dhelv): the quarters are the breakdown's piles under
+     the light well, grown over by the world's biome, so the park keeps only its kerb, paths, pool and benches */
+  let n=0;for(const qx of [-1,1])for(const qz of [-1,1]){if(o.knoll){FURNISH('zeijani_stone_bench',qx*6.6,.12,qz*2.6,qx>0?-PI/2:PI/2,{setting:'outdoor'});continue;}
    for(const [r,a] of [[6.3,.78],[13.6,.5],[13.6,1.07]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqTree(x,z,1,++n);}
    for(const [r,a] of [[15.3,.25],[15.3,1.32]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqCap(x,z,3.4+((n++)%3)*.6,1.6);}
    for(const [r,a] of [[11.9,.78],[7.8,.35],[7.8,1.22]]){zqShrub(qx*Math.cos(a)*r,qz*Math.sin(a)*r,1,(n++)%2?'leafD':'leaf');}
@@ -16856,7 +16882,7 @@ defBuilding({key:'zj_park',name:'The park under the light well',seed:5401,cls:'f
    for(let i=0;i<9;i++)zfCard(i%2?'cardCrop':'cardYam',bx+((i%3)-1)*.7,.39,bz+(Math.floor(i/3)-1)*.7,.45,.4,i*.7,WHITE);
    FURNISH('zeijani_stone_bench',qx*6.6,.12,qz*2.6,qx>0?-PI/2:PI/2,{setting:'outdoor'});}
   /* the lawn's grass: cards over the quarters, off the paths */
-  for(let i=0;i<220;i++){const a=i*2.399,r=4.9+((i*.618)%1)*11,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<2.2||Math.abs(z)<2.2||Math.abs(Math.hypot(x,z)-10)<1.2)continue;zfCard('cardCrop',x,.12,z,.35,.3,a,P('grass'));}
+  if(!o.knoll)for(let i=0;i<220;i++){const a=i*2.399,r=4.9+((i*.618)%1)*11,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<2.2||Math.abs(z)<2.2||Math.abs(Math.hypot(x,z)-10)<1.2)continue;zfCard('cardCrop',x,.12,z,.35,.3,a,P('grass'));}
   door(0,0,R,0,3.6);}});
 
 /* the row house: a narrow house of three storeys in a street of them (the interiors planner's: living room and kitchen at the
@@ -18074,6 +18100,37 @@ const KratorSky=(function(){
   return{sunDir:s.clone(),sunIntensity:1.7*dayF*(1-0.85*e),sunColor:sunCol,ambient:0.18+0.55*dayF*(1-0.6*e)+0.08*(1-dayF),fog,giantDir:giantDir.clone(),eclipse:e,isNight:dayF<0.05,dayF,dusk};}
  return{attach,update,lighting,sunDir,altAz,giantDir,state,GIANT_ANG};})();
 window.KratorSky=KratorSky;
+// prefix: dhu
+// ================================================================= DHELV: THE TUNNELS' FUNGI (the owner: "add some fungal flora to the tunnels"). [web]
+// The Throne kit's own cave pass (THRONE.buildCave: the lava tube station's dark floor: glow mushrooms, specimen and alien
+// mushroom cards, scale cones, lichen, a stone), planted along every carved way (the tubes, the braid, the ramps, the scouts'
+// ways) in a band along each wall's foot (DHU.band: metres in from the floor's edge, past the reach of a clump's spread into the wall's
+// fillet), the middle left to the walkers, and off each way's
+// ends (its junctions). One pass a way, the kit's host swapped for it: its ground the way's floor (the layout's line, as the
+// cavern carves it), its 'cave' field the band. Baked with the wells' floors and drawn as the underground is (89, 90).
+const DHU={band:[1.3,2.4],end:6,kinds:{tube:1,braid:1,ramp:1,secret:1},out:null};
+function dhFungi(tq){if(typeof THRONE==='undefined'||!THRONE.buildCave)return null;const t0=performance.now(),H=BIO.host,B=DH.byId;
+ const keep={t:H.terrainH,m:H.mask,f:H.fields,o:H.origin,c:H.center,ob:H.obstacles},out={ways:0,m:0,ms:0};
+ const lit=(x,z)=>Math.hypot(x-DH.HALL.c[0],z-DH.HALL.c[1])<DH.HALL.rx+5&&Math.hypot((x-DH.HALL.c[0])/DH.HALL.rx,(z-DH.HALL.c[1])/DH.HALL.rz)<1.03||DH.PITS.some(P=>Math.hypot(x-P.c[0],z-P.c[1])<P.r+4);
+ H.obstacles=[];
+ try{for(const e of DH.EDGES){if(!DHU.kinds[e.kind]||e.door)continue;const a=B[e.a],b=B[e.b];if(DH.plateauD(a.x,a.z)<0&&DH.plateauD(b.x,b.z)<0&&e.kind!=='tube')continue;   /* the apron's paths: on the ground */
+   const dx=b.x-a.x,dz=b.z-a.z,L=Math.hypot(dx,dz);if(L<2*DHU.end+4)continue;const ux=dx/L,uz=dz/L,hw=Math.max(.8,((e.w||4)-.6)/2);
+   /* where a point is on this way: its run along it (t, metres) and its offset across it */
+   const at=(x,z)=>{const t=(x-a.x)*ux+(z-a.z)*uz,o=-(x-a.x)*uz+(z-a.z)*ux;return [t,o];};
+   const band=(x,z)=>{const [t,o]=at(x,z),f=hw-Math.abs(o);return t>DHU.end&&t<L-DHU.end&&f>DHU.band[0]&&f<Math.min(DHU.band[1],hw*.6)&&!lit(x,z);};
+   H.terrainH=(x,z)=>{const t=Math.max(0,Math.min(L,at(x,z)[0]));return a.y+(b.y-a.y)*t/L;};
+   H.mask=(x,z)=>band(x,z)?1:0;H.fields={cave:(x,z)=>band(x,z)?1:0,slope:()=>.4,rock:()=>.7,humid:()=>1,wet:()=>.9};
+   const c=[(a.x+b.x)/2,(a.z+b.z)/2];H.center=c;H.origin=[c];BIO.cur='throne/floor';THRONE.buildCave(L/2+hw+2,tq*3);   /* a narrow band: three times the kit's density */out.ways++;out.m+=L;}}
+ catch(e){reportErr('the tunnels’ fungi: '+(e.stack||e));}
+ finally{BIO.cur=null;H.terrainH=keep.t;H.mask=keep.m;H.fields=keep.f;H.origin=keep.o;H.center=keep.c;H.obstacles=keep.ob;}
+ out.m=Math.round(out.m);out.ms=Math.round(performance.now()-t0);return DHU.out=out;}
+/* the page's check (91): every fungus (an instance of the underground's bake, the wells' piles' skirts apart) stands on a carved
+   floor, within 0.6 m of the walk map's floor under it; lift raises them all (the negative) */
+function dhuOnFloors(lift){const bad=[],v=new THREE.Vector3(),M=new THREE.Matrix4();let n=0;
+ scene.traverse(m=>{if(!m.isInstancedMesh||!m.userData.under)return;for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);v.setFromMatrixPosition(M);v.y+=lift||0;
+   if(DH.KNOLLS.some(k=>Math.hypot(v.x-k.c[0],v.z-k.c[1])<k.r+DHK.SKIRT+1))continue;n++;
+   const f=KWALK.floorBelow(v.x,v.z,v.y+.5,.6);if(!f||Math.abs(f[0]-v.y)>.6)bad.push(v.x.toFixed(0)+' '+v.y.toFixed(1)+' '+v.z.toFixed(0));}});
+ return {n,bad};}
 // ================================================================= ATMOS — core: the host binding, the clock, instanced sets, the glow registry
 // ATMOS is the portable atmosphere and street-dressing module (core/atmos/README.md): evening lights, glow, particles,
 // weather, ivy and window boxes, sewer grates, street lamps and fountains, culling. Every fragment is a closure that
@@ -18939,6 +18996,81 @@ ATMOS.PRESETS={
    note:'a level deck at y; its top is y-down+(up+down)*u^heap (presets.clouddeck); follow the camera; thin it where the ground rises through it'});
   return{mesh,mat,record,inCloud:(x,yy,z)=>yy<A.deckHeight(x,z,A.clock.t,y)};};
 })();
+// prefix: dhk
+// ================================================================= DHELV: THE WELLS' FLOORS (the owner: "a low hill", "a skirt of greenery", at the bottom
+// of each light well, "as the original lava tube biome build"). [web] The breakdown under each opening (the layout's KNOLLS,
+// 41: the largest discs clear of the floor's sites and ways, in the daylight): a low pile of the fallen roof, its blocks strewn
+// on it, grown over by the Throne kit's skylight flora (its siphon trees, lamp caps, ferns and moss: the zone its lava tube
+// station plants under its skylights), planted in a pass of its own on the wells' floors after the world's forests. A pile is a
+// walk block (the walkers go round it, as round a building). Drawn underground in cells (DH_CELLS: within its reach of the
+// camera wherever it is, the plants too: dhSplitBiome keeps them apart by userData.under).
+const DHK={SKIRT:5,groups:[],trees:[],out:null};
+let DHK_MAT=null;
+function dhkMat(){if(DHK_MAT)return DHK_MAT;
+ /* the ground's own basalt maps, read the way the ground reads them (its uv over DH_GROUND), the pile's colour in its vertices */
+ const m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,vertexColors:true,map:groundMat.map,normalMap:groundMat.normalMap,roughnessMap:groundMat.roughnessMap});
+ if(KMAT.mode==='lib'){const L=KMAT.packed('zeijani','basalt');if(L)matHook(m,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
+ return DHK_MAT=m;}
+/* one pile: rings every 0.75 m, 48 round, out to a lip just under the floor (no seam against the cavern's floor); moss on its
+   top and its sunny side, earth and dark rubble lower down; its blocks; its walk blocks (three boxes over its body) */
+function dhkPile(K,grp){const g=DH_GROUND,NR=Math.ceil(K.r/.75)+1,NS=48,pos=[],col=[],uv=[],idx=[],R=KRAND.stream(KRAND.hash(7301,Math.round(K.c[0]*10),Math.round(K.c[1]*10)));
+ const moss=hc(0x8fa04e),earth=hc(0x96785a),rub=hc(0x726a62),c=new THREE.Color();
+ pos.push(K.c[0],(DH.knollAt(K.c[0],K.c[1])||{y:K.y}).y,K.c[1]);col.push(moss.r,moss.g,moss.b);uv.push((K.c[0]-g.x0)/(g.x1-g.x0),(K.c[1]-g.z0)/(g.z1-g.z0));
+ for(let i=1;i<=NR;i++)for(let j=0;j<NS;j++){const a=j/NS*TAU,d=Math.min(K.r+.4,K.r*i/(NR-1)),x=K.c[0]+Math.cos(a)*d,z=K.c[1]+Math.sin(a)*d,q=DH.knollAt(x,z),y=q?q.y:K.y-.04;
+  pos.push(x,y,z);uv.push((x-g.x0)/(g.x1-g.x0),(z-g.z0)/(g.z1-g.z0));
+  const up=(y-K.y)/K.h,n=.5+.5*Math.sin(x*1.3+z*.7)*Math.sin(x*.4-z*1.1);c.copy(rub).lerp(earth,Math.min(1,up*2.2)).lerp(moss,Math.max(0,Math.min(1,up*1.4+n*.5-.35)));col.push(c.r,c.g,c.b);}
+ for(let j=0;j<NS;j++)idx.push(0,1+(j+1)%NS,1+j);
+ for(let i=1;i<NR;i++)for(let j=0;j<NS;j++){const a=1+(i-1)*NS+j,b=1+(i-1)*NS+(j+1)%NS,d=a+NS,e=b+NS;idx.push(a,b,d,b,e,d);}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(idx);geo.computeVertexNormals();
+ const m=new THREE.Mesh(geo,dhkMat());m.receiveShadow=m.castShadow=true;m.name='knoll:'+K.id;m.userData.inspectLabel='The breakdown (the fallen roof, grown over)';grp.add(m);
+ /* the fallen roof's blocks: heaped on the pile, a few strewn past its foot */
+ const n=Math.round(K.r*2.4),bm=new THREE.InstancedMesh(DHK.blockGeo||(DHK.blockGeo=new THREE.DodecahedronGeometry(1,0)),DHK.blockMat||(DHK.blockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95,flatShading:true})),n),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler();
+ for(let i=0;i<n;i++){const a=R.range(0,TAU),d=K.r*Math.sqrt(R.next())*1.08,x=K.c[0]+Math.cos(a)*d,z=K.c[1]+Math.sin(a)*d,q=DH.knollAt(x,z),y=q?q.y:K.y,s=R.range(.25,1.15)*(1.15-.6*d/K.r);
+  M.compose(new THREE.Vector3(x,y+s*.15,z),Q.setFromEuler(E.set(R.range(0,TAU),R.range(0,TAU),R.range(0,TAU))),new THREE.Vector3(s*R.range(.8,1.3),s*R.range(.5,.85),s));bm.setMatrixAt(i,M);
+  bm.setColorAt(i,c.setHex([0x3a3634,0x46403c,0x2e2a28,0x55504a][Math.floor(R.next()*4)]).multiplyScalar(R.range(.85,1.1)));}
+ bm.castShadow=bm.receiveShadow=true;bm.userData.inspectLabel='Breakdown (the fallen roof)';grp.add(bm);
+ const q=K.r*.82,top=K.y+K.h+.6;for(const [hx,hz] of [[.92,.38],[.38,.92],[.71,.71]])KWALK.block([K.c[0]-q*hx,K.c[0]+q*hx,K.c[1]-q*hz,K.c[1]+q*hz,K.y-.5,top],'knoll');
+ return idx.length/3+n*36;}
+/* every pile, in a cell of its well (with the world: buildWorld, after the sites) */
+function dhKnolls(){DHK.groups.length=0;const by={};for(const K of DH.KNOLLS)(by[K.well]||(by[K.well]=[])).push(K);
+ for(const w in by){const g=new THREE.Group();g.userData.cell='knolls '+w;let tris=0;for(const K of by[w])tris+=dhkPile(K,g);WORLD.add(g);DHK.groups.push(g);
+  const bx=new THREE.Box3();for(const K of by[w])bx.union(new THREE.Box3(new THREE.Vector3(K.c[0]-K.r-1,K.y-1,K.c[1]-K.r-1),new THREE.Vector3(K.c[0]+K.r+1,K.y+K.h+2,K.c[1]+K.r+1)));
+  const sp=bx.getBoundingSphere(new THREE.Sphere());DH_CELLS.list.push({k:'knolls '+w,g,c:sp.center,r:sp.radius,under:true,tris});}
+ return DH.KNOLLS.length;}
+/* the piles' flora: the Throne kit again, its host swapped for the wells' floors (the ground the floor and the piles, the mask the
+   piles and a skirt of DHK.SKIRT m round them, off the floors' sites; the fields its skylight zone's: skylight 1, humid, the
+   piles' slope, a little rock), one pass a well round its piles; baked apart after the world's, with the tunnels' fungi (88), by
+   dhbForest (45).
+   The world's Throne trees are kept as they were (THRONE.TREES); the wells' are DHK.trees */
+function dhKnollFlora(tq){if(typeof THRONE==='undefined'||!DH.KNOLLS.length)return null;const t0=performance.now(),H=BIO.host,K=DH.KNOLLS,S=DHK.SKIRT;
+ const keep={t:H.terrainH,m:H.mask,f:H.fields,o:H.origin,c:H.center,ob:H.obstacles,age:THRONE.ageAt},world=THRONE.TREES.slice();DHK.trees.length=0;
+ const near=(x,z)=>{let b=K[0],bd=1e9;for(const k of K){const d=Math.hypot(x-k.c[0],z-k.c[1])-k.r;if(d<bd){bd=d;b=k;}}return [b,bd];};
+ const sites=DH.SITES.filter(s=>(s.district==='hub'||DH.PITS.some(P=>P.id===s.district))&&!s.park);
+ const floorY=(x,z)=>{const q=DH.knollAt(x,z);return q?q.y:near(x,z)[0].y;};
+ const sl=(x,z)=>{const e=.75;return Math.min(1,Math.hypot(floorY(x+e,z)-floorY(x-e,z),floorY(x,z+e)-floorY(x,z-e))/(2*e)*1.6);};
+ H.terrainH=floorY;H.obstacles=sites.map(s=>{const F=DH.FOOT[s.key]||[6,6];return {x:s.x,z:s.z,r:Math.hypot(F[0],F[1])/2+1,y0:s.y-2,y1:s.y+30};});
+ /* the ways on the floors (the layout's, as the piles keep off them): no plant on them */
+ const B=DH.byId,ways=DH.EDGES.filter(e=>K.some(k=>Math.abs(B[e.a].y-k.y)<2&&Math.abs(B[e.b].y-k.y)<2)).map(e=>({a:B[e.a],b:B[e.b],hw:e.kind==='square'?2.5:(e.w||4)/2+.5}));
+ const onWay=(x,z)=>ways.some(w=>{const dx=w.b.x-w.a.x,dz=w.b.z-w.a.z,L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-w.a.x)*dx+(z-w.a.z)*dz)/L2));return Math.hypot(w.a.x+dx*t-x,w.a.z+dz*t-z)<w.hw;});
+ let reach=S;H.mask=(x,z)=>near(x,z)[1]<reach&&!onWay(x,z)?1:0;   /* the trees on the piles themselves (reach -1.5), the floor's plants their skirt too */
+ H.fields={humid:()=>1,wet:()=>.9,skylight:(x,z)=>near(x,z)[1]<S?1:0,slope:sl,rock:(x,z)=>.12+.4*sl(x,z),owned:()=>0,kedge:()=>0,knear:()=>0,
+  iwood:(x,z)=>reach>0&&near(x,z)[1]<S?1:0};   /* the understory's ferns and moss (its island-forest ground), for the floor's passes only: no island trees on the piles */
+ THRONE.ageAt=()=>2600;const out={wells:0,trees:0,calls:0,instances:0,ms:0};
+ try{for(const w of [...new Set(K.map(k=>k.well))]){const ks=K.filter(k=>k.well===w),c=[0,0];ks.forEach(k=>{c[0]+=k.c[0]/ks.length;c[1]+=k.c[1]/ks.length;});
+   const R=Math.max(...ks.map(k=>Math.hypot(k.c[0]-c[0],k.c[1]-c[1])+k.r))+S+2;H.center=c;H.origin=[c];
+   const q=tq*2.5;   /* small floors: the kit's density at its stations' (the world's tq is for the flank) */
+   reach=-1.5;BIO.cur='throne/trees';THRONE.buildTrees(R,q);reach=S;BIO.cur='throne/floor';THRONE.buildFloor(R,q);THRONE.buildUnderstory(R,q);BIO.cur=null;THRONE.TREES.forEach(T=>DHK.trees.push(T));out.wells++;}}
+ catch(e){BIO.cur=null;reportErr('the wells’ flora: '+(e.stack||e));}
+ finally{H.terrainH=keep.t;H.mask=keep.m;H.fields=keep.f;H.origin=keep.o;H.center=keep.c;H.obstacles=keep.ob;THRONE.ageAt=keep.age;THRONE.TREES.length=0;world.forEach(T=>THRONE.TREES.push(T));}
+ out.trees=DHK.trees.length;out.ms=Math.round(performance.now()-t0);return DHK.out=out;}
+/* the wells' trees each on its pile (inside it by a metre), on no way, in no site of its floor: the page's check (91) */
+function dhkTreesOk(trees){const B=DH.byId,bad=[],sites=DH.SITES.filter(s=>(s.district==='hub'||DH.PITS.some(P=>P.id===s.district))&&!s.park);
+ for(const T of trees){const K=DH.KNOLLS.find(k=>Math.hypot(T.x-k.c[0],T.z-k.c[1])<k.r-1);if(!K){bad.push(Math.round(T.x)+','+Math.round(T.z)+' (off a pile)');continue;}
+  const w=DH.EDGES.find(e=>{const a=B[e.a],b=B[e.b];if(Math.abs(a.y-K.y)>=2||Math.abs(b.y-K.y)>=2)return false;const dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((T.x-a.x)*dx+(T.z-a.z)*dz)/L2));
+   return Math.hypot(a.x+dx*t-T.x,a.z+dz*t-T.z)<(e.kind==='square'?2.5:(e.w||4)/2);});if(w){bad.push(Math.round(T.x)+','+Math.round(T.z)+' (on the way '+w.a+'-'+w.b+')');continue;}
+  const s=sites.find(q=>{const F=DH.FOOT[q.key]||[6,6];return Math.hypot(T.x-q.x,T.z-q.z)<Math.min(F[0],F[1])/2;});if(s)bad.push(Math.round(T.x)+','+Math.round(T.z)+' (in '+s.key+')');}
+ return bad;}
 // ================================================================= DHELV: THE SCENE (P5). Renderer, the standard Krator sky, the ground, the
 // city carved from the layout (41-dhelv-layout.js) and the kit's defs placed on it, the rock meshed near the camera only.
 // The kit's camera, dev tools, furnishing, night and smoke (kits/zeijani/src 92-camera.js, 91f, 91n, 93) run on what this builds.
@@ -19063,7 +19195,7 @@ function dhWalls(){const pos=[],idx=[],OUT=4,CAP=8,RW=3,W=DH.PLAT.cliffX;
 const DH_CLIFF=dhWalls();scene.add(DH_CLIFF);
 
 // ---------------------------------------------------------------- the sites: the layout's, each the kit's def
-const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor'},district:s.district,at:s.at}));
+const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor',knoll:!!s.knoll},district:s.district,at:s.at}));
 const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
 const ROWS=[];
 
@@ -19215,10 +19347,10 @@ function dhSplitInstanced(m,keyOf){const M=m.instanceMatrix.array,by={},out={};f
 function dhSplitBiome(){if(typeof BIO==='undefined'||!BIO.baked||!BIO.baked.length||BIO.baked._split)return 0;const t0=performance.now(),S=DH_CELLS.BIO,groups={},keep=[];
  const keyOf=(x,y,z)=>Math.floor(x/S)+','+Math.floor(z/S);
  for(const m of BIO.baked){if(!m.parent||!m.matrixWorld.equals(new THREE.Matrix4())){keep.push(m);continue;}
-  const parts=m.isInstancedMesh?dhSplitInstanced(m,keyOf):dhSplitIndexed(m,keyOf);
+  const kf=m.userData.under?(x,y,z)=>'w'+keyOf(x,y,z):keyOf,parts=m.isInstancedMesh?dhSplitInstanced(m,kf):dhSplitIndexed(m,kf);   /* the underground's plants (88, 89): cells of their own, drawn as the underground's */
   for(const k in parts){(groups[k]||(groups[k]=new THREE.Group())).add(parts[k]);keep.push(parts[k]);}m.parent.remove(m);}
  for(const k in groups){const g=groups[k];g.userData.cell='bio'+k;scene.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
-  DH_CELLS.list.push({k:'bio'+k,g,c:sp.center,r:sp.radius,under:false,bio:true,tris:g.children.reduce((a,m)=>a+m.userData.tris,0)});}
+  const w=k[0]==='w';DH_CELLS.list.push({k:'bio'+k,g,c:sp.center,r:sp.radius,under:w,bio:!w,tris:g.children.reduce((a,m)=>a+m.userData.tris,0)});}
  BIO.baked.length=0;keep.forEach(m=>BIO.baked.push(m));BIO.baked._split=true;DH_CELLS.bioMs=Math.round(performance.now()-t0);return Object.keys(groups).length;}
 /* the sites' boxes for the furniture: each site's declared box, turned (a carved front's runs back from its origin), 1.5 m out,
    from 3 m under its floor to 2 m over its height; a hash of 8 m squares to the boxes over them */
@@ -19261,7 +19393,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  const base=GB,cells={};DH_CELLS.list.length=0;   /* each site's drawing into its cell's buckets (below: what is seen) */
  for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;const k=dhCellKey(S);GB=GTARGET=cells[k]||(cells[k]={});place(S.key,S.x,S.z,S.ry||0,S.o);}
- GB=GTARGET=base;dhCliffStairs();
+ GB=GTARGET=base;dhCliffStairs();dhKnolls();   /* 89: the wells' floors' piles */
  for(const k in cells){const g=new THREE.Group();g.userData.cell=k;flushBuckets(cells[k],g,true);if(!g.children.length)continue;WORLD.add(g);
   const bx=new THREE.Box3();g.children.forEach(m=>{m.geometry.computeBoundingBox();bx.union(m.geometry.boundingBox);});const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:k[0]==='u',tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}
@@ -19410,6 +19542,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling on the plateau's top, every Throne tree on the plain or the apron */
  {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],U=typeof THRONE!=='undefined'?THRONE.TREES:[],bad=dhbTreesOk(T).concat(dhbTreesOk(U,DHB.throneMask));
   add('no-trees-on-cliffs-or-in-buildings',T.length>0&&U.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor, '+U.length+' of the Throne kit\'s on the flows');}
+ {const W=DHK.trees,bad=dhkTreesOk(W);add('wells-floor-flora',DH.KNOLLS.length>0&&W.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):DH.KNOLLS.length+' piles under the openings, '+W.length+' trees on them');}
+ {const u=dhuOnFloors(0);add('tunnels-fungi',u.n>200&&!u.bad.length,(u.bad.length?u.bad.length+' off the floor, first '+u.bad.slice(0,3).join('; ')+'; ':'')+u.n+' fungi along '+(DHU.out?DHU.out.ways+' ways ('+DHU.out.m+' m)':'no way'));}
  {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
  {const w=DHP.budgets();add('view-budgets',w.ok,w.detail);}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
@@ -19435,6 +19569,8 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
  /* trees: one planted at the cliff's foot, one in the caravanserai */
  {const C=DH.SITES.find(q=>q.key==='zj_caravanserai'),bad=dhbTreesOk([{x:DH.PLAT.cliffX+2,z:0},{x:C.x,z:C.z}]);add('no-trees-on-cliffs-or-in-buildings: a tree on the cliff, one in a building',bad.length===2,bad.join(', '));}
+ {const K=DH.KNOLLS[0],bad=dhkTreesOk([{x:DH.HALL.c[0]+.5,z:DH.HALL.c[1]+30},{x:K.c[0]+K.r+3,z:K.c[1]}]);add('wells-floor-flora: a tree in the lane across the square, one past the foot of a pile',bad.length===2,bad.join(', '));}
+ {const u=dhuOnFloors(3);add('tunnels-fungi: every fungus lifted 3 m',u.n>0&&u.bad.length===u.n,u.bad.length+' of '+u.n+' off the floor');}
  /* light: a plug of rock left in the light well's throat */
  {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});
   let D=null;try{D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build();}catch(err){}const w=D?DHP.lit(D):{ok:true,detail:'the plugged copy did not load'};add('wells-lit-at-noon: the light well plugged',!w.ok,w.detail);}

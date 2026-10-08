@@ -183,7 +183,7 @@ const DH=(function(){
  S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
  S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
  /* the park under the light well (its paths run along the lanes, so it is not in their way), the stalls round its edge */
- S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true});
+ S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true,knoll:true});   /* knoll: its quarters are the breakdown's piles (below) */
  for(const deg of [30,60,120,150]){const a=deg*PI/180,x=Math.cos(a)*23.5,z=Math.sin(a)*23.5;S('zj_stall_b','hub',x,z,faceIn(x,z,0,0),0,'floor',{v:deg>90?1:0});}
  S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-80);
  /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
@@ -262,6 +262,30 @@ const DH=(function(){
   lay('zj_rowhouse',22,outer,k=>({v:k%4}));
   lay('zj_fountain',2,ring(.3));}
 
+ /* ---- the wells' floors: the breakdown under each opening (the owner: "a low hill", "a skirt of greenery", at the BOTTOM of
+    the well, as the Throne's lava tube station has under its skylights): low piles of the fallen roof, grown over. Each pile is
+    the largest disc (to rMax) in the daylight that keeps 2 m off every site of its floor (the park's beds apart: the hall's piles
+    are the park's quarters) and 1 m past the half width of every way on that floor (3 m off a lane's line across the square, as its sites); taken greedily, best first, n to a floor.
+    A pile's height is a third of its radius (1.5 to 3 m); knollAt(x, z) is the floor and the pile over it there, or null */
+ const KNOLLS=[];
+ {const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
+  /* a point's distance to a site's footprint (its rectangle, turned; a round one a disc), negative inside */
+  const footD=(s,x,z)=>{const [w,d,o]=FOOT[s.key]||[4,4,'centre'];if(o==='round')return Math.hypot(x-s.x,z-s.z)-w/2;const c=Math.cos(s.ry),sn=Math.sin(s.ry),dx=x-s.x,dz=z-s.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;
+   const z0=o==='front'?-d:-d/2,z1=o==='front'?3.5:d/2,qx=Math.abs(lx)-w/2,qz=Math.max(z0-lz,lz-z1);return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0);};
+  const wells=[{id:'hall',c:HALL.c,y:HALL.y,light:HALL.pool+4,rMax:7.5,n:4,sites:SITES.filter(s=>s.district==='hub'&&s.at==='floor'&&!s.park)}]
+   .concat(PITS.map(P=>({id:P.id,c:P.c,y:P.floor,light:P.r-5,rMax:10,n:2,sites:SITES.filter(s=>s.district===P.id)})));
+  for(const W of wells){const ways=EDGES.filter(e=>{const a=byId[e.a],b=byId[e.b];return Math.abs(a.y-W.y)<2&&Math.abs(b.y-W.y)<2&&
+     sd(W.c,[a.x,a.z],[b.x,b.z])<W.light+40;}).map(e=>({a:[byId[e.a].x,byId[e.a].z],b:[byId[e.b].x,byId[e.b].z],hw:e.kind==='square'?3:(e.w||4)/2+1}));   /* a lane across the square: 3 m off its line, as the sites keep */
+   const room=(x,z,got)=>{let r=Math.min(W.rMax,W.light-Math.hypot(x-W.c[0],z-W.c[1]));
+    for(const s of W.sites)r=Math.min(r,footD(s,x,z)-2);for(const w of ways)r=Math.min(r,sd([x,z],w.a,w.b)-w.hw);for(const k of got)r=Math.min(r,Math.hypot(x-k.c[0],z-k.c[1])-k.r-2);return r;};
+   const got=[];for(let i=0;i<W.n;i++){let best=null;
+    for(let x=W.c[0]-W.light;x<=W.c[0]+W.light;x+=1)for(let z=W.c[1]-W.light;z<=W.c[1]+W.light;z+=1){const r=room(x,z,got);if(r>4.5&&(!best||r>best.r+1e-9))best={c:[x,z],r};}
+    if(!best)break;got.push(best);}
+   got.forEach((k,i)=>KNOLLS.push({id:W.id+'.k'+i,well:W.id,c:k.c,y:W.y,r:Math.floor(k.r*100)/100,h:+Math.max(1.5,Math.min(3,k.r/3)).toFixed(2)}));}}
+ /* the pile's height over its floor at (x, z): a heap (steeper at its foot), its top broken by two waves of noise */
+ const knollAt=(x,z)=>{for(const K of KNOLLS){const d=Math.hypot(x-K.c[0],z-K.c[1]);if(d>=K.r)continue;const u=1-d/K.r,s=u*u*(3-2*u);
+   const n=.85+.15*Math.sin(x*.9+z*.4)+.1*Math.sin(x*.31-z*.77+K.r);return {K,y:K.y+K.h*Math.pow(s,1.25)*n};}return null;};
+
  /* ---- the graph's helpers */
  const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});
  const len=e=>{const a=byId[e.a],b=byId[e.b];return Math.hypot(b.x-a.x,b.z-a.z);};
@@ -273,6 +297,6 @@ const DH=(function(){
  const fromSquare=dist('h.sq',e=>e.zone!=='secret');
  DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
 
- return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
+ return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,KNOLLS,knollAt,len,grade,dist,onHall,onPit,faceIn};
 })();
 if(typeof module!=='undefined')module.exports=DH;
