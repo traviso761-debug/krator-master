@@ -257,7 +257,7 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 | Module | First consumer | Status |
 |---|---|---|
 | `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
-| `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
+| `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | **written 2026-10-08**: `KFIELD` (`30-core-field.js`, [G data]): a Float32 heightmap on a fixed grid with finer insets, named water surfaces and a land-cover byte grid; bilinear `h`, `normal`, the `krator-field` export (base64 little-endian Float32) and `load`; node test with golden vectors and negatives; the GDScript twin `kfield.gd` (`KField`) agrees with it to 2e-15 m in Godot 4.5. biomes/sedesert bakes its closure at load (8.9 m, half its mesh cell, plus a 1.5 m inset at the lip) and reads it for its ground, flora heights and export; `BIO.export`'s ground carries it as `field`, and `godot/krator/field_import.gd` builds a terrain mesh and HeightMapShape3D collision from it (the spike's `sedesert` case). Placement decisions stay on the closure until the reseeding event (`placeH`); measured errors in `biomes/sedesert/KNOWN_ISSUES.md`. Not yet: 16-bit PNG/EXR, carve floors and blockers, a land-cover map from a real build, the other 41 closures |
 | `core/tags/` | Yuni's `FIX.*` records | **written 2026-10-05**: registry, vocabulary (the catalog's lists copied, drift a failing test), label, node test, the uid's GDScript twin `ktags.gd` (passing in Godot 4.5); Yuni on it (13044 records, zero unknown vocabulary, nothing drawn moved), its export carries `krator-tags` and the spike's `yuni` case puts each record on its node (`core/tags/README.md`); the five core/furnish builds register their furniture (step 3, fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in before the first frame (step 4). Next: the biome kits (`PROPOSAL.md`, order of adoption) |
 | `core/furnish/` | Girder (the material pilot is there too) | **written 2026-10-05**: placement pass, draw helpers, host switches, node test; Girder, Mav's Refuge, Locus, Highlands and Post-Apoc on it with their furniture fingerprints unchanged (`core/furnish/README.md`). The catalog's own `F.furn` keeps its code |
 | `core/mask/` | Iziz's city (M5) | **written 2026-10-05**: `KMASK.canvas`, a drop-in for the mask canvases, hard-edged by pixel centre; node test, GDScript twin replaying the ops bit for bit; Iziz, Dalab, Erewhon and Roketstad place from it, each with the same placement and mask hashes on a GPU-canvas and a CPU-canvas load, rubble moved once with a screenshot pair (`core/mask/README.md`) |
@@ -520,7 +520,10 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    adopt it last, once placement writes plant records (an item's record, `flora_00012#37` per instance).
 5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
    `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags. *Compensated 2026-10-05:* `BIO.export` writes
-   a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it.
+   a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it. *Answered
+   for one kit 2026-10-08:* biomes/sedesert's ground is a `core/terrain` field and its export carries it
+   (`ground.field`, krator-field); the importer builds the mesh and a HeightMapShape3D from it. The other kits still
+   sample their closures.
 6. **Kit shader hooks with no core kind** come in plain: rift's iridescent bark and far impostors (their records have
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:

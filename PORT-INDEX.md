@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 60 | 449 | 230 | 60 | 52 | 17 | 89 | 5 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 61 | 463 | 244 | 60 | 52 | 17 | 89 | 5 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 60 | 730 | 151 | 40 | 10 | 38 | 492 | 9 |  | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 32 | 602 | 125 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
@@ -46,14 +46,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 279 | 1 | 0 | 10 | 83 | 184 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 182 | 1 | 0 | 13 | 37 | 131 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 215 | 1 | 0 | 16 | 32 | 166 | 5 | biome | yes | yes |
-| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 202 | 1 | 0 | 14 | 55 | 132 | 6 | biome | yes | yes |
+| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 204 | 1 | 0 | 14 | 57 | 132 | 6 | biome | yes | yes |
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 14 | 165 | 14 | 0 | 13 | 42 | 96 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 188 | 1 | 0 | 10 | 40 | 137 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 207 | 1 | 0 | 13 | 37 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1779 | 23715 | 3581 (15%) | 482 (2%) | 1033 (4%) | 2799 (12%) | 15820 (67%) | 248 | | | |
+| **all** | 1780 | 23730 | 3595 (15%) | 482 (2%) | 1033 (4%) | 2800 (12%) | 15820 (67%) | 248 | | | |
 
 ## Host-shell copies
 
@@ -64,7 +64,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `camera` | 22 | 16 | 255 |
 | `probe` | 20 | 15 | 57 |
 | `sky` | 19 | 5 | 407 |
-| `host-stage` | 16 | 16 | 322 |
+| `host-stage` | 16 | 16 | 323 |
 | `host-sky` | 16 | 14 | 228 |
 | `host-build` | 16 | 16 | 19 |
 | `host-camera` | 16 | 16 | 149 |

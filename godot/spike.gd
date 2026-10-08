@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "sedesert"]
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -21,6 +21,7 @@ const ABOUT := {
 }
 
 var current := ""
+var ground: Node3D   # the case's ground (a field, an export's sampled ground or terrain.json), for --check's collision rays
 var world: Node3D
 var cam: Camera3D
 var sun: DirectionalLight3D
@@ -121,7 +122,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"hyperjungle", "rift":
+		"hyperjungle", "rift", "sedesert":
 			var b := KratorBiome.build(dir + "biome.json")
 			world.add_child(b)
 			report = b.get_meta("report")
@@ -162,6 +163,7 @@ func _load_case(name: String) -> Dictionary:
 			world.add_child(r)
 			report = r.get_meta("report")
 			focus = r.get_meta("focus", Vector3.ZERO)
+	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
 	_stage_base = {}
@@ -220,6 +222,14 @@ func _check_all() -> void:
 		if r.get("gaps", {}).has("load") or r.get("gaps", {}).has("format"):
 			ok = false
 		await get_tree().process_frame
+		if ground and ground.has_meta("field"):   # a krator-field: rays onto its HeightMapShape3D against KField.h
+			await get_tree().physics_frame
+			await get_tree().physics_frame
+			var col := KratorField.check_collision(ground)
+			r["collision"] = col
+			print("  collision: ", JSON.stringify(col))
+			if col["grid_points"] == 0 or col["missed"] > 0 or col["grid_max"] > 0.01:
+				ok = false
 	var f := FileAccess.open("res://spike-report.json", FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(reports, "  "))

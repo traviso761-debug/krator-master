@@ -87,10 +87,26 @@ static func build(path: String) -> Node3D:
 	report["counts"] = {"items": d["items"].size(), "instances": instances, "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	_gap(report, "tags", "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label")
-	if d.has("ground"):
-		var g := KData.ground(d["ground"], d["stage"].get("ground") if d.get("stage") is Dictionary else null)
+	var look = d["stage"].get("ground") if d.get("stage") is Dictionary else null
+	if d.has("ground") and (d["ground"] as Dictionary).has("field"):
+		# the page's baked field (core/terrain, since 2026-10-08): the terrain mesh on its own grid and a HeightMapShape3D
+		# collision body (krator/field_import.gd); the sampled ground grid only places the look and the water sheet
+		var f := KField.from_export(d["ground"]["field"])
+		if f == null:
+			_gap(report, "field", "ground.field is not a readable krator-field")
+		else:
+			var g := KratorField.build(f, look, d["ground"])
+			var wm := KData.water_sheet(d["ground"])
+			if wm:
+				g.add_child(wm)
+			root.add_child(g)
+			root.set_meta("ground", g)
+			report["field"] = g.get_meta("krator")
+	elif d.has("ground"):
+		var g := KData.ground(d["ground"], look)
 		root.add_child(g)
 		root.set_meta("ground", g)
+		_gap(report, "field", "the ground is terrainH sampled on the export's grid: the page bakes no core/terrain field (only biomes/sedesert does, since 2026-10-08)")
 	else:
 		_gap(report, "terrain", "no ground in the export (an export from before 2026-10-05): the spike samples terrainH into terrain.json")
 	if d.get("stage") is Dictionary:

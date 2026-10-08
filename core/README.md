@@ -2,7 +2,7 @@
 
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
-runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
+runs on), `terrain/` (the baked terrain field, carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
 dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
 (the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock) and `tags/` (what a placed
@@ -147,6 +147,9 @@ Godot (`biomes/GODOT.md`).
 
 | File | What |
 |---|---|
+| `30-core-field.js` | the terrain field (global `KFIELD`, [G data]: no THREE, no DOM): a world's `terrainH` baked once onto a Float32 heightmap in metres, with finer insets, named water surfaces and an optional land-cover byte grid; `h(x,z)` is bilinear sampling, `export()` the `krator-field` file Godot reads. Below |
+| `test-field.js`, `golden-field.json` | `node core/terrain/test-field.js` (each check with a negative; `--write` rewrites the golden file): the contract, and the golden vectors `kfield.gd` is held to |
+| `kfield.gd`, `kfield_test.gd` | the GDScript twin (`class_name KField`: `from_export`, `h`, `normal`, `water_at`, `water_h`, `cover_at`, insets) and its test on the same golden file; the project's copies are `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.5 |
 | `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
 | `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam) |
@@ -179,6 +182,41 @@ build must:
 
 Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
 contract and its tunables are in the header of `36-core-carve.js`.
+
+### The field (`KFIELD`, 2026-10-08)
+
+GODOT-PLAN.md Phase 2 item 2: the ground as data, so the ground a page plants on is the ground Godot draws and
+collides with. A world paints its closure once and then reads the field:
+
+```
+const F = KFIELD.bake((x,z) => myClosure(x,z), [x0,z0,x1,z1], step, {
+  insets: [{box, step}],                      // finer where the world draws finer (a cliff, a cave mouth)
+  water:  {river: (x,z) => wet ? y : NaN, sea: -1.5},   // a surface on the lattice (NaN dry), or a level everywhere
+  waterBox: {river: [x0,z0,x1,z1]}});         // bake a surface only where it can be
+function terrainH(x,z){ return F.h(x,z); }    // bilinear, clamped at the edges; F.normal(x,z), F.waterH(x,z), F.coverAt(x,z)
+BIO.init({..., terrainH, field: F});          // a biome kit: BIO.export's ground then carries F.export({box}) as `field`
+```
+
+- **The grid.** Point (i, j) is at x = x0 + i*step, z = z0 + j*step, `heights[j*nx + i]`, Float32, metres, +y up, x east,
+  z south. Choose the step so the world's ground mesh vertices are grid points: there the drawn ground is the closure (to
+  float32: 6e-5 m at 900 m); between grid points the field is bilinear, and anything that reads it moves by that error.
+- **The arithmetic is the contract.** `bilinear()` clamps, takes `floor`, caps the cell at nx-2, then `a+(b-a)*fu` along
+  x and the same along z. `kfield.gd` repeats it operation for operation: on the golden file the two engines agree to
+  2e-15 m (the JSON parse's last bit), not merely 1e-6.
+- **Insets** are fields of their own over a window snapped out to the base lattice; `h` reads the first that holds the
+  point (edges included). The Godot importer leaves the base's cells under an inset out of the mesh and makes its grid
+  points a hole (NaN) in the base's HeightMapShape3D.
+- **Water** is named surfaces: `{level}` everywhere, or a window of the lattice with NaN where dry; `waterAt` is
+  bilinear where all four corners are wet, else the nearest corner. `waterH` is the highest wet surface, else `KFIELD.DRY`.
+- **The export** (`f.export({box})`): `{format:'krator-field', version:1, convention, name, x0, z0, step, nx, nz, min,
+  max, heights (base64 of little-endian Float32), water, cover?, coverNames?, insets?}`. A box crops on the field's own
+  lattice (the grid does not move). `KFIELD.load(json)` reads it back bit for bit; `KField.from_export` in Godot.
+  `godot/krator/field_import.gd` turns it into a terrain mesh and a StaticBody3D with one HeightMapShape3D per grid.
+- **Not yet:** a 16-bit PNG or EXR height export, the carver's floors and blockers, a land-cover map from a real
+  build (the byte grid and its legend are there; no world fills it yet).
+
+**Used by** `biomes/sedesert` (its ground, flora, camera and export; `biomes/sedesert/KNOWN_ISSUES.md` has the measured
+error). The other 41 `terrainH` closures are still closures.
 
 ## `atmos/`
 

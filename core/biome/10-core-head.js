@@ -39,7 +39,7 @@ function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 
 // ---------------------------------------------------------------- host binding
-// host = { THREE, scene, terrainH(x,z), mask(x,z), obstacles[], ticks(fn), seed,
+// host = { THREE, scene, terrainH(x,z), field, mask(x,z), obstacles[], ticks(fn), seed,
 //          origin[x,z] | [[x,z]...], center, fields{}, waterH(x,z), register(o),
 //          lod{}, windows{}, eye(), err(msg), stat(key,tris,inst) }   (BIOME-API.md)
 BIO.init=function(h){
@@ -49,10 +49,17 @@ BIO.init=function(h){
  BIO.host={
   THREE:h.THREE,scene:h.scene||null,
   terrainH:h.terrainH||((x,z)=>0),
+  // field (2026-10-08): the host's baked ground (core/terrain/30-core-field.js, a KFIELD field) when its terrainH reads
+  // one; BIO.export hands it to Godot as the ground's `field`. null: the export samples terrainH as before
+  field:h.field||null,
+  // placeH (2026-10-08): the ground placement DECIDES on (the default mask's and BIO.depth's water depth); terrainH
+  // when omitted. A host whose terrainH reads a baked field passes the closure it baked from, so its plants keep their
+  // places and only take the field's height, until the reseeding event moves them once (biomes/WORLD.md, Order)
+  placeH:h.placeH||null,
   // the default mask: everything may root, or, when the host hands in its water
   // (sedesert-1), nothing roots under the local water surface. A world with
   // footprints or its own rule passes its own.
-  mask:h.mask||(h.waterH?((x,z)=>{const d=BIO.terrainH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}):((x,z)=>1)),
+  mask:h.mask||(h.waterH?((x,z)=>{const d=BIO.placeH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}):((x,z)=>1)),
   obstacles:h.obstacles||[],
   ticks:h.ticks||(fn=>{}),
   seed:h.seed==null?1:h.seed,
@@ -98,7 +105,8 @@ BIO.terrainH=function(x,z){return BIO.host?BIO.host.terrainH(x,z):0;};
 BIO.mask=function(x,z){return BIO.host?BIO.host.mask(x,z):1;};
 BIO.waterH=function(x,z){return BIO.host?BIO.host.waterH(x,z):0;};
 // depth of the ground under the local water surface (negative: above it)
-BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.terrainH(x,z);};
+BIO.placeH=function(x,z){return BIO.host?(BIO.host.placeH||BIO.host.terrainH)(x,z):0;};
+BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.placeH(x,z);};
 BIO.register=function(o){if(BIO.host)BIO.host.register(o);};
 // the detail radii (sedesert-1, where it was BIO.LOD(); BIO.LOD is the runtime LOD's settings)
 BIO.radii=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};

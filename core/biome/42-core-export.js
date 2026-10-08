@@ -4,7 +4,8 @@
 // metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
 //
 //   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true, ground:2}) -> one JSON-able object (ground: a tile's
-//                                                                         heights and water on a 2 m grid)
+//                                                                         heights and water on a 2 m grid, and the
+//                                                                         host's baked field as ground.field if it has one)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
@@ -101,7 +102,10 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
  if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,
    H=new Float32Array(nx*nz),W=new Float32Array(nx*nz);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+i*st,z=box[1]+j*st;H[j*nx+i]=BIO.terrainH(x,z);W[j*nx+i]=BIO.waterH(x,z);}
-  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};}
+  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};
+  // the host's baked field (core/terrain/30-core-field.js) when it has one: the real heightmap, cropped to the box on
+  // its own lattice (krator-field; godot/krator/field_import.gd). opt.field:false leaves it out
+  const F=BIO.host&&BIO.host.field;if(F&&typeof F.export==='function'&&opt.field!==false)out.ground.field=F.export({box});}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  return out;};

@@ -50,9 +50,10 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 OUT=sys.argv[1] if len(sys.argv)>1 else "sedesert.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-# shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
-# BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=['36-core-carve.js']
+# shared fragments from core/terrain, opt-in by name (core/README.md): '30-core-field.js' gives KFIELD, the baked
+# heightmap the ground is read from; '36-core-carve.js' gives BIO.carve, overhangs on the heightfield. A local src/
+# copy with the same name wins.
+CORE_TERRAIN=['30-core-field.js','36-core-carve.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.

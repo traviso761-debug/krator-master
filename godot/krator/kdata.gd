@@ -147,6 +147,14 @@ static func ground(g: Dictionary, look = null) -> Node3D:
 	var hf := {"format": "krator-biome ground", "nx": g["nx"], "nz": g["nz"], "step": g["step"], "x0": g["x0"], "z0": g["z0"],
 		"heights": g["heights"]}
 	var n := _grid(hf, look)
+	var wm := water_sheet(g)
+	if wm:
+		n.add_child(wm)
+	return n
+
+
+# BIO.export's ground water (waterH on the ground's grid): one flat sheet at the mean level of the wet samples, or null
+static func water_sheet(g: Dictionary) -> MeshInstance3D:
 	if g.has("water"):
 		var w := floats(g["water"])
 		var h := floats(g["heights"])
@@ -169,8 +177,8 @@ static func ground(g: Dictionary, look = null) -> Node3D:
 			wm.mesh = q
 			wm.position = Vector3(float(g["x0"]) + q.size.x * 0.5, lvl / wet, float(g["z0"]) + q.size.y * 0.5)
 			wm.set_meta("krator", {"note": "one sheet at the mean water level of the wet cells (%d of %d)" % [wet, w.size()]})
-			n.add_child(wm)
-	return n
+			return wm
+	return null
 
 
 static func heightfield(path: String, look = null) -> Node3D:
@@ -209,6 +217,17 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 			st.add_index(a + 1); st.add_index(a + nx + 1); st.add_index(a + nx)
 	st.generate_normals()
 	var mesh := st.commit()
+	mesh.surface_set_material(0, ground_material(lk, CO.size() > 0))
+	var mi := MeshInstance3D.new()
+	mi.name = "Terrain"
+	mi.mesh = mesh
+	mi.set_meta("krator", {"format": hf["format"], "step": step, "nx": nx, "nz": nz})
+	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step})
+	return mi
+
+
+# the stage's ground material (look: KSTAGE.ground) for a grid mesh, or the spike's terrain shader without one
+static func ground_material(lk: Dictionary, has_colours: bool) -> ShaderMaterial:
 	var mat := ShaderMaterial.new()
 	if lk.has("material"):   # the page's own ground: its texture, colour and vertex colours
 		var m: Dictionary = lk["material"]
@@ -222,19 +241,15 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 		mat.set_shader_parameter("uv_repeat", Vector2(float(rp[0]), float(rp[1])))
 		mat.set_shader_parameter("uv_offset", Vector2(float(of[0]), float(of[1])))
 		mat.set_shader_parameter("flip_v", bool(m.get("flipY", true)))
-		mat.set_shader_parameter("use_vc", CO.size() > 0 and bool(m.get("vertexColours", false)))
+		mat.set_shader_parameter("use_vc", has_colours and bool(m.get("vertexColours", false)))
 	else:
 		mat.shader = load("res://shaders/terrain.gdshader")
-	mesh.surface_set_material(0, mat)
-	var mi := MeshInstance3D.new()
-	mi.name = "Terrain"
-	mi.mesh = mesh
-	mi.set_meta("krator", {"format": hf["format"], "step": step, "nx": nx, "nz": nz})
-	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step})
-	return mi
+	return mat
 
 
 static func height_at(hf_node: Node3D, x: float, z: float) -> float:
+	if hf_node != null and hf_node.has_meta("field"):   # a krator-field (krator/field_import.gd): sampled as the page does
+		return (hf_node.get_meta("field") as KField).h(x, z)
 	if hf_node == null or not hf_node.has_meta("grid"):
 		return 0.0
 	var g: Dictionary = hf_node.get_meta("grid")

@@ -23,6 +23,28 @@ Read before changing anything here. `build.py` prints the open count.
       whose channel is wider must widen the ribbon (45-host-stage, `HW`).
 - [ ] The cataract's plunge pool is a flat fan at -703 m with the Abyss floor's rocks
       standing out of it; the rapids are foam in the ribbon's vertex colour, not geometry.
+- [ ] THE GROUND IS A BAKED FIELD (2026-10-08, `core/terrain/30-core-field.js`; GODOT-PLAN.md Phase 2 item 2). At
+      load `terrainH0` (the closure, with the cave's recess) is baked once onto a 841 x 841 Float32 grid at 8.905 m
+      (half the ground mesh's 17.8 m cell) over the map's 7480 m square, plus a 145 x 133 inset at 1.484 m over the
+      lip's window (the mesh's 12-way split there), and the river and the pond as the field's water surfaces: ~1 s in
+      the page, 2.9 MB. `terrainH` is `TFIELD.h` (bilinear), and the ground mesh, flora heights, fauna paths, the
+      tower, the camera and `BIO.export` (`ground.field`, the krator-field Godot imports) read it. Measured against
+      the closure: **every ground vertex on a grid point is the closure to 6e-5 m** (float32; 186,504 on the base
+      grid, 19,152 in the inset), but the mesh's fine columns and rows run right across the map outside the lip's
+      window (the lattice is separable), and those **94,070 vertices fall between grid points: they now take the
+      field's 8.9 m line instead of the closure's 1.5 m one (median 5 mm, p99 2.5 m, max 4.5 m**, on the Abyss rim's
+      strip and the strip across the map at the lip's z). At **10,000 random points: mean 0.06 m, median 4 mm, p99
+      1.47 m, max 6.1 m** (the badland terraces, whose steps are discontinuous in the closure); inside the lip's
+      window p99 2.2 m, max 43 m on the promontory's sheer face, where the mesh has the same vertices. **Flora:
+      all 544,452 static instances keep their place and order (identical xz); 508,571 moved in y: mean 0.12 m, median
+      3 mm, p90 0.25 m, p99 1.99 m, max 9.6 m** (a stone on a terrace step), 14,245 by more than 1 m. They sit closer
+      to the ground as drawn than before (distance to the mesh's triangles: mean 0.31 to 0.23 m, p99 6.2 to 4.6 m).
+      To keep the places, the placement DECISIONS still read the closure (`placeH`: the masks' water depth,
+      `BIO.depth`, the field cache's slope, the deer's leg slope); read on the field they flip some acceptances and
+      reshuffle nearly every pass's stream (measured: 67k of 544k instances kept their xz). The reseeding event
+      (biomes/WORLD.md, Order 6) moves them onto the field with the cell seeding, once, and drops `placeH`. The page's
+      `waterH` is still its closure too (the field's surfaces end on the 8.9 m lattice), and `PL` is read from the
+      closure. Not baked: the carve patch (its rock is meshed from `terrainBase`, the closure), land cover.
 - [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
       ledges and soft ones are not recessed (that needs the heightfield's profile to read
       the column), and the Abyss cliff and the mountains still get the painter's coarse bands.

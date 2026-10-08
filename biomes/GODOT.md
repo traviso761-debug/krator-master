@@ -56,7 +56,7 @@ not convert it. `convention.colours` says this per table (since 2026-10-05).
 | `convention` | units, up, axes, handedness, matrix order, colour space (above) |
 | `core`, `kits` | the core's version, the kits resident in the page (`BIO.kit`) |
 | `box` | the tile, or null |
-| `ground` | with a box: the ground under the tile, `{x0, z0, step, nx, nz, heights, water}` (typed arrays; row j is z0 + j*step). The host's `terrainH` and `waterH` sampled on a grid (`opt.ground`: the step, 2 m by default; `false` leaves it out). A stand-in for the `core/terrain` bake (since 2026-10-05) |
+| `ground` | with a box: the ground under the tile, `{x0, z0, step, nx, nz, heights, water}` (typed arrays; row j is z0 + j*step). The host's `terrainH` and `waterH` sampled on a grid (`opt.ground`: the step, 2 m by default; `false` leaves it out). A stand-in for the `core/terrain` bake (since 2026-10-05). When the host binds a baked field (`BIO.init({field})`, `core/terrain/30-core-field.js`; biomes/sedesert since 2026-10-08) the block also carries `field`: the `krator-field` export cropped to the box on the field's own lattice, the real heightmap the page reads; `godot/krator/field_import.gd` builds the terrain mesh and a HeightMapShape3D from it (`opt.field: false` leaves it out) |
 | `stage` | with a box: the page's look (`core/biome/44-core-stage.js`, "The stage" below); `opt.stage: false` leaves it out, `opt.sky` sets the panorama's width (1024) |
 | `items` | one record per instanced mesh (below) |
 | `buckets` | one record per merged mesh (below) |

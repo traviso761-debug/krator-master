@@ -230,7 +230,7 @@ SEDESERT.buildFauna=function(R,q,keep){
  const deerOK=(x,z)=>{const Z=zones(x,z);return Z.rip+Z.oasis+Z.bank*.5+Z.scrub*.6+Z.bench*.3>.3&&dryOK(x,z,Z)&&(!fok||fok('deer',x,z));};
  const coyOK=(x,z)=>{const Z=zones(x,z);return Z.scrub+Z.rip+Z.bad*.6+Z.oasis+Z.bench*.4>.25&&dryOK(x,z,Z)&&(!fok||fok('coyote',x,z));};
  // a leg is walkable: every 3 m on it passes, and it climbs no steeper than 1 in 2.5
- const legOK=(a,b,ok)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/3);if(Math.abs(Y(b[0],b[1])-Y(a[0],a[1]))>L*.4)return false;
+ const legOK=(a,b,ok)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/3);if(Math.abs(BIO.placeH(b[0],b[1])-BIO.placeH(a[0],a[1]))>L*.4)return false;   // a decision: on placeH (core/biome head)
   for(let i=1;i<n;i++){const u=i/n;if(!ok(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u))return false;}return true;};
  const tint=()=>{const c=new T.Color(1,1,1);c.offsetHSL(rr(-.012,.012),rr(-.05,.03),rr(-.07,.05));return c.convertSRGBToLinear();};
  // ---- DEER: herds of 3-8 in the canyon's riparian strip and at the pond, browsing between points in
