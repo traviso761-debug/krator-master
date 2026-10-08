@@ -117,8 +117,7 @@ The working tree is 1,002 MB without `.git`; `.git` is 798 MB (LFS objects not f
 and is over half the tree: 425 MB across 39 `dist/` folders plus 104 MB of Voth-lineage pages written beside their
 `build.py`. The textures were moved to LFS and the history cleaned on 2026-10-05; the built pages were not, and
 they are regenerated deterministically from `src/` by every `build.py` and published by `gallery/`. Every one of
-those pages re-enters the pack on every rebuild commit. `archive/` holds 30 MB including 19 copies of
-`three.min.js` (11 MB). `wip/` holds three agent patches from 2026-09-29 against commits that no longer exist.
+those pages re-enters the pack on every rebuild commit. `archive/` holds 30 MB. `wip/` holds three agent patches from 2026-09-29 against commits that no longer exist.
 
 ### 3.2 Nothing runs unattended
 
@@ -150,7 +149,7 @@ can report should be a test.
 
 ### 3.4 Fragments the repo's own rules cannot read
 
-`CLAUDE.md` forbids reading a fragment over ~30 KB whole. Eight fragments exceed 70 KB; the largest is
+`CLAUDE.md` forbids reading a fragment over ~30 KB whole. Fifteen fragments exceed 70 KB and eight exceed 80 KB; the largest is
 `settlements/yuni/src/61a-ancients-kit.js` at 206 KB (a vendored copy of the Ancients kit), then Girder's and
 Mav's Refuge's `84-flyers.js` (91 and 80 KB), three Ancients arcology files (81-89 KB) and Throne's species file
 (78 KB). Every session that touches one pays in context and in risk of an edit landing in the wrong section.
@@ -221,7 +220,8 @@ Three principles the evaluations converge on, stated as rules the repo can check
   keeps its own asserts and imports the harness.
 - **c. Stop committing built pages**: either `dist/` and the lineage pages go to LFS like the textures, or they
   leave git and `gallery/` and `host/` build them on publish. Either way `port_baseline.py` keeps the hashes, so
-  nothing is lost. Delete `archive/`'s 19 `three.min.js` or move `archive/` out of the repo. Apply or delete `wip/`.
+  nothing is lost. **Decided 2026-10-08: LFS.** The 18 identical copies of `three.min.js` beside the builds are not
+  pages and stay for now; `archive/` and `wip/` wait on the owner.
 - **d. The stale facts** in section 3.3, in one commit. Then: every count a script already writes is removed from
   hand-kept prose.
 - **e. The eight `open()` calls without `encoding`** (verge, ys, ash-nomads, desert-nomads, scyvoi).
@@ -229,7 +229,7 @@ Three principles the evaluations converge on, stated as rules the repo can check
   (already in `TODO.md`; do it before any build adopts more sets).
 - **g. `??`-style defaults** in `BIO.standAt` and its eight copies and `renderOrder=order||3`: when those files
   are next touched; add the pattern to `check_port.py` as a warning for new `[G data]` code.
-- **h. Split the eight fragments over 70 KB** at their section markers; baseline unchanged.
+- **h. Split the eight fragments over 80 KB** at their section markers; baseline unchanged.
 - **i. One packed `tex/` per library set**, shared across builds (or the packs out of git with the pages): the
   60 MB of identical WebP goes, and the asset is content-addressed from then on.
 
@@ -322,10 +322,10 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 12. **Verge then Voth onto `core/simulation`; M6** (stage 5).
 13. **M7** (stage 6).
 
-## 7. Open questions for the owner
+## 7. Decisions and open questions
 
-- Built pages in git: LFS, or out of git with the gallery building them on publish? (stage 0c)
-- CI: GitHub Actions is the default; the nightly verify job needs Chromium and about 20 minutes. Acceptable?
+- **Decided (owner, 2026-10-08):** built pages go to Git LFS; a nightly verify job of about 20 minutes, starting Sunday
+  2026-10-11; stages 0 to 2 under way on the branch `full-refactor`.
 - Forward+ on a real GPU and the friend's Voth import route are still the spike's two open items that only
   people outside a cloud session can answer.
 - Is `archive/` worth keeping in the repository at all, given `krator-before-cleanup.bundle` holds the history?
