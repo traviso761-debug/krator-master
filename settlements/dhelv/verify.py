@@ -3,6 +3,7 @@
 
   python3 verify.py dist/dhelv.html [--views "The square|The west mouth"] [--all-views] [--cut] [--night]
                                     [--cam cx,cy,cz,tx,ty,tz] [--assert] [--eval "()=>..."] [--out shots] [--size 1280x800]
+                                    [--export ../../godot/data/dhelv]   (the Godot export: 92-dhelv-export.js's parts)
 
 As the kit's verify.py: serves dist/, routes three.min.js to a local r128, loads in headless Chromium (SwiftShader), waits
 for window._ready and the textures, prints the error panel and the build counters, runs the invariants with --assert
@@ -130,6 +131,18 @@ async def run(a):
         if a.cut: await pg.evaluate("cutSet(true)")
         if a.night: await pg.evaluate("nightSet(true)")
         if a.eval: print(json.dumps(await pg.evaluate(a.eval), indent=1)[:6000])
+        if a.export:   # the Godot export (92-dhelv-export.js): one JSON a part, and the meta every godot/data case carries
+            import datetime
+            os.makedirs(a.export, exist_ok=True)
+            for k in await pg.evaluate("()=>window._api.exportParts()"):
+                data = await pg.evaluate("k=>JSON.stringify(window._api.export(k))", k)
+                with open(os.path.join(a.export, k + '.json'), 'w', encoding='utf-8') as fh:
+                    fh.write(data)
+                print("export %-10s %8d KB" % (k, len(data) // 1024))
+            files = {f: os.path.getsize(os.path.join(a.export, f)) for f in sorted(os.listdir(a.export)) if f.endswith('.json') and f != 'meta.json'}
+            with open(os.path.join(a.export, 'meta.json'), 'w', encoding='utf-8') as fh:
+                json.dump({"case": "dhelv", "page": "settlements/dhelv/dist/dhelv.html", "kind": "data", "query": "t=4",
+                           "files": files, "page_errors": errs[:20], "exported": datetime.date.today().isoformat()}, fh)
         if a.cam:
             v = [float(t) for t in a.cam.split(',')]; await pg.evaluate("v=>{setView(...v);window._api.meshAround(v[0],v[1],v[2]);}", v); await pg.wait_for_timeout(900); await pg.screenshot(path=os.path.join(a.out, 'cam.png')); print('shot cam.png')
         views = parse_views(a.views, await pg.evaluate("Object.keys(VIEWS)"))
@@ -145,5 +158,5 @@ async def run(a):
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('html'); ap.add_argument('--views'); ap.add_argument('--all-views', action='store_true'); ap.add_argument('--only')
     ap.add_argument('--cut', action='store_true'); ap.add_argument('--night', action='store_true')
-    ap.add_argument('--cam'); ap.add_argument('--eval'); ap.add_argument('--assert', dest='assert_', action='store_true'); ap.add_argument('--out', default='shots'); ap.add_argument('--size', default='1280x800')
+    ap.add_argument('--cam'); ap.add_argument('--eval'); ap.add_argument('--export', default=''); ap.add_argument('--assert', dest='assert_', action='store_true'); ap.add_argument('--out', default='shots'); ap.add_argument('--size', default='1280x800')
     asyncio.run(run(ap.parse_args()))

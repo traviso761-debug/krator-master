@@ -69,4 +69,6 @@ python3 core/furnish/fingerprint.py --write    # record the pages as they are (a
 node core/furnish/test-furnish.js
 ```
 
-`fingerprint.json` was written from the pages before the move (2026-10-05). Every build matched it after.
+`fingerprint.json` was written from the pages before the move (2026-10-05). Every build matched it after. Rewritten 2026-10-08
+(the Zeijani branch): the catalog's beds, the interiors' measured host tops and stretched pennants, and the batch merging
+painted panels per material; compared first with main's own pages, which matched it nowhere since main's catalog changes.

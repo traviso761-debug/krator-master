@@ -13,7 +13,11 @@ what is drawn, the nav graph and the ramblers (P6); the owner's second review (t
 standardized grove, the stone door, the council's windows, the sky dome) and third (the spur's back merging into a steep
 slope, the weathered lip, the land to the horizon, the outpost's face solid with its mouths always open, the stream's fall and
 sink, the wells' floors as grassy hills, denser fungi, more dithering on the rock and the ground, the temple's round sky and
-its stair, and PLAN.md section 13's extras). The Godot case (P7) waits for a Godot binary.
+its stair, and PLAN.md section 13's extras). The Godot case (P7) is `godot/`'s `dhelv` case: `verify.py --export ../../godot/data/dhelv` writes nine parts
+(`92-dhelv-export.js`: the ground's heightfield, the sites and openings, the cavern's plan, the tags, the walk floors, the
+nav graph, the sim with every actor's baked motion, a golden trace of `SIM.pose`, the lamps); Godot replays the ramblers
+(`KSim`, 0 rows differ), bakes the walk floors into a navigation mesh and walks it from the gate to the temple through the
+stone door and the braid (1031 m against DHN's 1044 m). See `godot/README.md`.
 
 | Path | What |
 |---|---|
@@ -78,7 +82,9 @@ x east, z south, y up, metres; the hub's square is y 0, and the flank rises east
 The kit's code runs as it is: `build.py` takes `kits/zeijani/src/` (every def, the cavern host, the furnishing, the camera and
 dev tools) less the sheet's host, and adds the layout and Dhelv's host. Two options in the kit's cavern host serve Dhelv
 (`CV_OPTS` in `40-zj-cave.js`): `skipMass` (a def's block of rock is the world's rock here) and `wellDoor` (a kiva's hatch deep
-under the ground opens into its void as a doorway, not through the surface). The orbit camera has no floor inside a void
+under the ground opens into its void as a doorway, not through the surface), `groundKeep` (the cavern's ground kept only
+round the wells, under the mouths' tops and behind the outpost's fronts: the page draws the rest) and `cutBoxes` (the
+cut-away's boxes, `dhCutBoxes`). The orbit camera has no floor inside a void
 (`camGroundY`); underground the sky is hidden and a dark fog closes the distance.
 
 **The rock is meshed near the camera only** (`DH_STREAM`: 16 m chunks within 120 m, about 10 ms of meshing a frame, dropped past

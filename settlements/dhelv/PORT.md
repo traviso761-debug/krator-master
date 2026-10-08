@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 72 (33%) | 0 (0%) | 0 (0%) | 140 (64%) | 6 (3%) |
+| KB | 72 (32%) | 0 (0%) | 0 (0%) | 145 (65%) | 6 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,6 +24,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-dhelv-hills.js` | 8.8 | [web] | 9 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | the hills' drawing, walk floors and flora pass (a port plants its own); the hills and their pads are the layout's (41, data) |
 | `src/90-dhelv-scene.js` | 58.6 | [web] | 56 | 0 | 1 | 0 | 10 | 21 | 3 | 5 | 0 | 0 | 0 |  |
 | `src/91-dhelv-probe.js` | 18.4 | [web] | 3 | 0 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/92-dhelv-export.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the export to godot/data/dhelv (window._api): reads the data, holds none |
 | `src/93-dhelv-map.js` | 5.6 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/95-dhelv-life.js` | 8.7 | [web] | 12 | 0 | 2 | 2 | 1 | 3 | 0 | 2 | 2 | 0 | 0 | split: data inside host code |

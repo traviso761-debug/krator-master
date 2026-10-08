@@ -159,3 +159,7 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
       Fixed in `krator-master-furniture-zeijani.js`.
 - [ ] **`stretch` and `F.span`**: a piece marked `stretch` (the kit's pennants) is drawn to the placer's span along its wall;
       the catalog page draws it at its declared width.
+- [x] **Every painted panel (`F.decal`) was its own mesh, one draw each** (a cord of pennants: one a flag; the stretched
+      cords carry up to 23, and Highlands' interiors went from 462 meshes to 580). `Batch.flush` now merges the panels that
+      share a material (one canvas map each) into one mesh, the transforms baked in (Dhelv: 1746 panels in 152 meshes).
+      `batch.textured` is still the list of placed panel meshes until the flush (Girder and Mav's Refuge read it).

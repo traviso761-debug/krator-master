@@ -84,7 +84,7 @@ BIO.bucket=function(fam,mat,opt){opt=opt||{};
  return BIO.buckets[fam];};
 // THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
 // family in the page's pack (KMAT.pack(kit), from the kit's materials.json) the library map in place of its procedural one:
-// a slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
+// a card with `cell` (materials.json) shows that cell of its sheet only. A slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
 // table's entry its key and name (MAT.bk.smooth -> 'bk.smooth'). A card (the
 // slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
 // its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured

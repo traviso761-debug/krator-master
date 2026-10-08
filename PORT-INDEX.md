@@ -8,10 +8,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | [`core`](core/PORT.md) | 61 | 493 | 269 | 60 | 52 | 17 | 95 | 5 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 60 | 730 | 151 | 40 | 10 | 38 | 492 | 9 |  | yes | yes |
-| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 15 | 218 | 72 | 0 | 0 | 140 | 6 | 2 | atmos | yes | yes |
+| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 16 | 223 | 72 | 0 | 0 | 145 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 32 | 602 | 125 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
-| [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 873 | 199 | 23 | 52 | 47 | 551 | 6 | atmos | yes | yes |
+| [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 882 | 199 | 23 | 52 | 47 | 561 | 6 | atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 429 | 7 | 23 | 10 | 34 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 61 | 950 | 94 | 0 | 16 | 161 | 678 | 11 | atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 31 | 703 | 56 | 0 | 15 | 319 | 313 | 4 |  | yes | yes |
@@ -29,7 +29,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ancients`](kits/ancients/PORT.md) | 215 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 24 | 172 | 27 | 6 | 10 | 33 | 96 | 2 | atmos | yes | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 42 | 1851 | 42 | 0 | 10 | 59 | 1740 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 42 | 1852 | 42 | 0 | 10 | 59 | 1742 | 3 |  |  | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 167 | 30 | 6 | 10 | 33 | 88 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 234 | 121 | 0 | 10 | 66 | 37 | 1 |  |  | yes |
@@ -55,7 +55,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1826 | 24303 | 3698 (15%) | 514 (2%) | 1042 (4%) | 3017 (12%) | 16031 (66%) | 253 | | | |
+| **all** | 1827 | 24319 | 3698 (15%) | 514 (2%) | 1042 (4%) | 3022 (12%) | 16043 (66%) | 253 | | | |
 
 ## Host-shell copies
 

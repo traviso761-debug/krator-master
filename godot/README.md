@@ -5,7 +5,8 @@ find out what an importer lacks. It is a test bench, not the game: the importers
 reads each contract, and every guess they make is printed as a **gap**. Those gaps are the spike's output; the
 first pass is in `GODOT-PLAN.md` ("The spike: first findings").
 
-Written and run on 2026-10-05 in a cloud container with **Godot 4.5-stable**: headless for the imports and the
+Run on Windows with **Godot 4.7.2-stable** too (2026-10-08: the dhelv case and its tests; Verge's replay passes there). A fresh checkout needs
+`godot --headless --path godot --import` once before a `--script` test, so the class names register. Written and first run on 2026-10-05 in a cloud container with **Godot 4.5-stable**: headless for the imports and the
 `core/rand` test, and the Compatibility renderer (OpenGL on Mesa llvmpipe, under Xvfb) for the screenshots in
 `godot/shots/` (gitignored). Forward+ on a real GPU has **not** been run yet: that, and the look, is tomorrow's job (`CHECKLIST.md`).
 
@@ -21,6 +22,9 @@ godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/r
 godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/mask/kmask_test.gd   # core/mask's golden grid (exits 0 on pass)
 godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather, waves)
+godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # Verge's sim replayed against its golden trace
+godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
+godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 ```
 
@@ -31,7 +35,7 @@ twenty minutes. To try the editor's import route, copy a `.glb` out of `data/` (
 In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
 hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
 
-## The five cases
+## The cases
 
 | Key | Case | Route | What it tests |
 |---|---|---|---|
@@ -40,6 +44,8 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather 
 | 3 | `girder` | glTF from three's `GLTFExporter` | a 60 m region of Girder's centre: the material library's textures, extras, what glTF drops (hooks, instancing, custom attributes) |
 | 4 | `iziz` | `krator-atmos` JSON + glTF | the whole city's atmosphere (lamps, halos, smoke, searchlights, fog banks, 26 prop sets) on the Atmos autoload, over a glTF region of the centre |
 | 5 | `yuni` | `KRATOR_EXPORT` records | every building, door, window and light as tagged records with stable ids, and one compound's interior (rooms, walls with `-col`, furniture, nav links). No meshes at all |
+| 6 | `verge` | `krator-sim` + `krator-verge-place` | the twin cities' buildings as stand-ins; the caravans, porters, nomads and patrols on the exported timetable |
+| 7 | `dhelv` | `krator-dhelv-place`, `krator-walk`, `krator-sim` (its `motion` block), `krator-lights` | the cave city (kits/zeijani): its sites as boxes, its walk floors drawn and baked (Recast) to a NavigationMesh between the outpost's gate and the temple, a NavigationAgent3D walking that way, the 651 ramblers posed each frame by `KSim.pose`, the 48 lamps nearest the temple. Gaps: the cavern's rock (its marching cubes are not ported; the floors stand in), furniture, materials |
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
@@ -62,10 +68,13 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/lamps_import.gd` | a page's lamps (`lamps.json`, krator-lamps; Girder's `_api.lamps`): halos on `halo.gdshader` and the nearest 32 as OmniLight3D, run by `atmos_lights.gd` |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes, each node's `krator` metadata its core/tags record (`tags.json`; a MultiMesh keeps its instances' records in a `records` side table) |
 | `krator/fly_camera.gd` | the camera |
+| `krator/dhelv_import.gd`, `dhelv_sim_node.gd`, `dhelv_nav.gd` | the dhelv case: stand-ins, the frame (ramblers and the agent), and the walk floors as Recast source (`KratorDhelvNav`: both windings for floors, the blocks' sides; cell 0.25 m, walker 0.25 m by 1.7 m, step 0.6) with DHN's own route for comparison |
 | `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `atmos_waves.gdshaderinc` (the open-water wave field, generated by `tools/atmos_waves.js`; no water shader uses it yet), `atmos_clouddeck.gdshaderinc` (the cloud deck, generated by `tools/atmos_clouddeck.js`) and `clouddeck` (the deck drawn with it), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield) |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
 | `tests/mask/` | copies of `core/mask/kmask.gd` (the mask rasteriser), `kmask_test.gd`, `golden.json`, kept by `tools/sync_core.py` |
 | `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way |
+| `tests/sim/` | a copy of `core/simulation/ksim.gd` (`KSim`: SIM.at and SIM.pose, the wander's 32-bit hash), kept by `tools/sync_core.py`; its test reads a world's export (`tests/dhelv/`) |
+| `tests/dhelv/` | `dhelv_sim_test.gd` (3906 rows of the page's trace, 0 differ; a negative: legs 10% faster) and `dhelv_nav_test.gd` (the path reaches the temple through the stone door on a braid strand, within 0.8 to 1.15 of DHN's length; a negative: the stone door's floors left out) |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos); `waves_gpu_check.gd`, the wave include drawn on a GPU against the CPU twin (needs a renderer: Xvfb + Compatibility) |
 | `tools/atmos_waves.js` | writes `shaders/atmos_waves.gdshaderinc` from `ATMOS.waveGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.waves`) |
 | `tools/atmos_clouddeck.js` | writes `shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.clouddeck`). With no node on the machine: `python3 tools/node_in_chromium.py godot/tools/atmos_clouddeck.js --write` |
@@ -102,6 +111,13 @@ python3 godot/tools/export_spike.py --list
 
 The pages must be built first (`cd biomes/rift && python3 build.py`, and so on). Tiles and regions are set in
 `CASES` at the top of the script.
+
+Verge and Dhelv write their own data through their verify (their pages expose `_api.exportParts()`):
+
+```
+cd settlements/verge && python3 verify.py dist/verge.html --export ../../godot/data/verge
+cd settlements/dhelv && python3 verify.py dist/dhelv.html --export ../../godot/data/dhelv   # 92-dhelv-export.js: nine parts, about 10 MB
+```
 
 ## Rules
 

@@ -910,12 +910,19 @@ Object.assign(SYMBOLS, {
  // a skull, teeth and all (Screamers)
  skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
   g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a spiral sinking into a stepped arch: the way in (Zeijani): c1 the stepped stone and the spiral, c2 the dark of the opening
+ spiralarch:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.95,cy+R*.95);
+  for(const [x,y] of [[-.95,-.35],[-.72,-.35],[-.72,-.6],[-.48,-.6],[-.48,-.85],[.48,-.85],[.48,-.6],[.72,-.6],[.72,-.35],[.95,-.35],[.95,.95]])g.lineTo(cx+x*R,cy+y*R);g.closePath();g.fill();
+  const ow=R*.42,oy=cy-R*.12;g.fillStyle=c2;g.beginPath();g.moveTo(cx-ow,cy+R*.95);g.lineTo(cx-ow,oy);g.arc(cx,oy,ow,SYM_PI,0);g.lineTo(cx+ow,cy+R*.95);g.closePath();g.fill();
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.08);g.beginPath();const sx=cx,sy=cy+R*.3;for(let i=0;i<=60;i++){const t=i/60,a=-SYM_PI/2+t*SYM_TAU*2.1,r=R*.34*(1-t*.92);const x=sx+Math.cos(a)*r,y=sy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  g.fillStyle=c1;g.beginPath();g.arc(sx,sy,R*.05,0,SYM_TAU);g.fill();},
  // a toothed gear (post-apoc salvage and scrap)
  gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
 });
 // the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
 const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
- 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear' };
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
+ zeijani:'spiralarch' };
 // prefix: sd
 // The smallest possible building that uses the socket system: a wall, a door, a stall, a pole. It never names a culture.
 // It DECLARES five sockets (awning, banner, flag, emblem, sign); whichever culture pack is active draws into them.
@@ -970,7 +977,27 @@ const SIGN_ICONS={
   g.fillStyle=fg;for(const d of [-1,1]){g.beginPath();g.moveTo(cx+d*s*.38,cy+s*.2);g.lineTo(cx+d*s*.5,cy+s*.02);g.lineTo(cx+d*s*.22,cy+s*.06);g.fill();}},
  TICKETS:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.5,cy-s*.26);g.lineTo(cx+s*.5,cy-s*.26);g.lineTo(cx+s*.5,cy-s*.09);g.arc(cx+s*.5,cy,s*.09,-PI/2,PI/2,true);g.lineTo(cx+s*.5,cy+s*.26);g.lineTo(cx-s*.5,cy+s*.26);g.lineTo(cx-s*.5,cy+s*.09);g.arc(cx-s*.5,cy,s*.09,PI/2,-PI/2,true);g.closePath();g.fill();
   g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.035;g.setLineDash([s*.06,s*.05]);g.beginPath();g.moveTo(cx+s*.16,cy-s*.22);g.lineTo(cx+s*.16,cy+s*.22);g.stroke();g.setLineDash([]);g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.arc(cx-s*.14,cy,s*.11,0,TAU);g.fill();},
- MESS:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.42,cy);g.lineTo(cx+s*.42,cy);g.quadraticCurveTo(cx+s*.4,cy+s*.42,cx,cy+s*.42);g.quadraticCurveTo(cx-s*.4,cy+s*.42,cx-s*.42,cy);g.fill();g.strokeStyle=fg;g.lineWidth=s*.05;g.lineCap='round';for(const d of [-1,0,1]){g.beginPath();g.moveTo(cx+d*s*.2,cy-s*.08);g.bezierCurveTo(cx+d*s*.2-s*.08,cy-s*.2,cx+d*s*.2+s*.08,cy-s*.3,cx+d*s*.2,cy-s*.42);g.stroke();}}
+ MESS:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.42,cy);g.lineTo(cx+s*.42,cy);g.quadraticCurveTo(cx+s*.4,cy+s*.42,cx,cy+s*.42);g.quadraticCurveTo(cx-s*.4,cy+s*.42,cx-s*.42,cy);g.fill();g.strokeStyle=fg;g.lineWidth=s*.05;g.lineCap='round';for(const d of [-1,0,1]){g.beginPath();g.moveTo(cx+d*s*.2,cy-s*.08);g.bezierCurveTo(cx+d*s*.2-s*.08,cy-s*.2,cx+d*s*.2+s*.08,cy-s*.3,cx+d*s*.2,cy-s*.42);g.stroke();}},
+ /* the Zeijani trades (kits/zeijani, 2026-10-07): pictographs any culture's shop may use */
+ ALCHEMIST:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.arc(cx-s*.1,cy+s*.12,s*.3,0,TAU);g.fill();g.fillRect(cx-s*.18,cy-s*.42,s*.16,s*.3);g.strokeStyle=fg;g.lineWidth=s*.07;g.lineCap='round';g.beginPath();g.moveTo(cx+s*.15,cy-s*.05);g.quadraticCurveTo(cx+s*.42,cy-s*.32,cx+s*.56,cy+s*.08);g.stroke();
+  g.fillStyle='rgba(0,0,0,.45)';for(const [dx,dy,r] of [[-.2,.12,.07],[-.02,.2,.05],[-.08,.02,.04]]){g.beginPath();g.arc(cx+dx*s,cy+dy*s,r*s,0,TAU);g.fill();}},
+ LAMP:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.ellipse(cx,cy+s*.22,s*.42,s*.16,0,0,TAU);g.fill();g.beginPath();g.moveTo(cx+s*.3,cy+s*.16);g.lineTo(cx+s*.58,cy+s*.04);g.lineTo(cx+s*.38,cy+s*.3);g.fill();g.fillRect(cx-s*.22,cy+s*.34,s*.44,s*.1);
+  g.beginPath();g.moveTo(cx+s*.52,cy+s*.02);g.quadraticCurveTo(cx+s*.36,cy-s*.22,cx+s*.5,cy-s*.48);g.quadraticCurveTo(cx+s*.7,cy-s*.2,cx+s*.52,cy+s*.02);g.fill();},
+ STONE:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.5,cy+s*.05,s*.62,s*.38);g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.035;g.strokeRect(cx-s*.5,cy+s*.05,s*.62,s*.38);g.strokeStyle=fg;g.lineCap='round';g.lineWidth=s*.08;g.beginPath();g.moveTo(cx+s*.05,cy-s*.08);g.lineTo(cx+s*.5,cy-s*.45);g.stroke();
+  g.lineWidth=s*.1;g.beginPath();g.moveTo(cx+s*.2,cy-s*.5);g.quadraticCurveTo(cx+s*.42,cy-s*.36,cx+s*.62,cy-s*.18);g.stroke();},
+ DYE:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.42,cy-s*.05);g.lineTo(cx+s*.42,cy-s*.05);g.lineTo(cx+s*.32,cy+s*.45);g.lineTo(cx-s*.32,cy+s*.45);g.closePath();g.fill();g.strokeStyle=fg;g.lineWidth=s*.07;g.lineCap='round';
+  for(const d of [-.24,-.08,.08,.24]){g.beginPath();g.moveTo(cx+d*s,cy-s*.5);g.lineTo(cx+d*s,cy-s*.12);g.stroke();}g.beginPath();g.moveTo(cx-s*.34,cy-s*.5);g.lineTo(cx+s*.34,cy-s*.5);g.stroke();},
+ POTTER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.14,cy-s*.46);g.lineTo(cx+s*.14,cy-s*.46);g.quadraticCurveTo(cx+s*.12,cy-s*.3,cx+s*.32,cy-s*.12);g.quadraticCurveTo(cx+s*.48,cy+s*.2,cx+s*.18,cy+s*.46);g.lineTo(cx-s*.18,cy+s*.46);g.quadraticCurveTo(cx-s*.48,cy+s*.2,cx-s*.32,cy-s*.12);g.quadraticCurveTo(cx-s*.12,cy-s*.3,cx-s*.14,cy-s*.46);g.fill();
+  g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.04;for(const y of [-.02,.14]){g.beginPath();g.moveTo(cx-s*.36,cy+y*s);g.lineTo(cx+s*.36,cy+y*s);g.stroke();}},
+ LEATHER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();const P=[[-.2,-.48],[.2,-.48],[.28,-.3],[.5,-.36],[.44,-.08],[.3,.04],[.36,.3],[.5,.42],[.18,.4],[0,.5],[-.18,.4],[-.5,.42],[-.36,.3],[-.3,.04],[-.44,-.08],[-.5,-.36],[-.28,-.3]];
+  P.forEach(([x,y],i)=>i?g.lineTo(cx+x*s,cy+y*s):g.moveTo(cx+x*s,cy+y*s));g.closePath();g.fill();g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.03;g.setLineDash([s*.05,s*.04]);g.beginPath();g.ellipse(cx,cy,s*.2,s*.3,0,0,TAU);g.stroke();g.setLineDash([]);},
+ KNAPPER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx,cy-s*.5);g.quadraticCurveTo(cx+s*.3,cy-s*.05,cx+s*.08,cy+s*.42);g.lineTo(cx-s*.08,cy+s*.42);g.quadraticCurveTo(cx-s*.3,cy-s*.05,cx,cy-s*.5);g.fill();g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.03;
+  for(let k=0;k<5;k++){const y=cy-s*.3+k*s*.14;g.beginPath();g.moveTo(cx,y);g.lineTo(cx+s*.16,y+s*.08);g.moveTo(cx,y+s*.04);g.lineTo(cx-s*.16,y+s*.12);g.stroke();}},
+ ROPE:(g,cx,cy,s,fg)=>{g.strokeStyle=fg;g.lineWidth=s*.08;g.lineCap='round';g.beginPath();for(let i=0;i<=90;i++){const t=i/90,a=t*TAU*3.2,r=s*(.08+.36*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.8;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.lineTo(cx+s*.56,cy+s*.45);g.stroke();},
+ TAVERN:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.32,cy-s*.3,s*.46,s*.74);g.strokeStyle=fg;g.lineWidth=s*.09;g.beginPath();g.arc(cx+s*.16,cy+s*.05,s*.2,-PI/2,PI/2);g.stroke();g.beginPath();g.ellipse(cx-s*.09,cy-s*.32,s*.3,s*.14,0,0,TAU);g.fill();
+  g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.035;for(const x of [-.2,-.09,.02]){g.beginPath();g.moveTo(cx+x*s,cy-s*.15);g.lineTo(cx+x*s,cy+s*.36);g.stroke();}},
+ INN:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.52,cy+s*.02,s*1.04,s*.22);g.fillRect(cx-s*.52,cy-s*.3,s*.1,s*.72);g.fillRect(cx+s*.42,cy-s*.04,s*.1,s*.46);g.beginPath();g.ellipse(cx-s*.24,cy-s*.06,s*.16,s*.09,0,0,TAU);g.fill();
+  g.beginPath();g.moveTo(cx-s*.04,cy-s*.12);g.quadraticCurveTo(cx+s*.2,cy-s*.22,cx+s*.42,cy-s*.12);g.lineTo(cx+s*.42,cy+s*.02);g.lineTo(cx-s*.04,cy+s*.02);g.fill();}
 };
 function signBoard(o,bg,fg,frame){const w=o.w||2,h=o.h||.7,t=(o.trade||'').toUpperCase();const key='sign:'+t+bg+fg;if(!MAT[key])cvMat(key,256,96,(g,W_,H_)=>{g.fillStyle=bg;g.fillRect(0,0,W_,H_);reseed(9800+t.length);for(let i=0;i<180;i++){g.fillStyle=`rgba(0,0,0,${rr(.03,.12)})`;g.fillRect(rng()*W_,rng()*H_,rr(1,5),rr(1,3));}
   g.strokeStyle=fg;g.lineWidth=5;g.strokeRect(6,6,W_-12,H_-12);const ic=SIGN_ICONS[t];if(ic)ic(g,W_/2,H_/2,64,fg);else{g.fillStyle=fg;g.beginPath();g.arc(W_/2,H_/2,22,0,TAU);g.fill();}});
@@ -1036,6 +1063,11 @@ mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge
 mkCulture({key:'screamer',name:'Screamers',field:'#b8683e',edge:'#2a1e16',band:'#e8dcc4',disc:null,ink:'#f0e6d0',ink2:'#2a1e16',sym:'skull',pole:0x4a3424,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0xb8683e,0x8a4a2a,0xa08058,0x6a4a30]},
  paint:[0xb8683e,0x8a3f1c,0xe8dcc4,0x2a1e16,0x6a7a3a],signBg:'#2a1e16',signFg:'#e8dcc4',signFrame:0x4a3424});
+// Zeijani (kits/zeijani): alecap purple and bone over soot, ochre bands, the spiral sinking into a stepped arch; felt and hide awnings,
+// pennants; signs painted bone on soot (the palette: kits/zeijani/PLAN.md section 10)
+mkCulture({key:'zeijani',name:'Zeijani',field:'#5e3470',edge:'#221e1c',band:'#c49a4a',disc:null,ink:'#e8e0cc',ink2:'#221e1c',sym:'spiralarch',pole:0x4a3424,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x5e3470,0xa23a2a,0xc49a4a,0x8a6a4a]},
+ paint:[0x5e3470,0xa23a2a,0xc49a4a,0x3f8f88,0xe8e0cc],signBg:'#221e1c',signFg:'#e8e0cc',signFrame:0xa8683a});
 const TITLE='Culture Socket Sheet';
 // one row: the same building in every culture pack. 'key@culture' dresses that site in that culture's marks.
 const FAMILIES=[{name:'Cultures',keys:['sock-demo@generic','sock-demo@iziz','sock-demo@republic','sock-demo@voth','sock-demo@yuni','sock-demo@beast-rider','sock-demo@hykkousoi','sock-demo@xanadu','sock-demo@ringsea-islander','sock-demo@screamer']}];

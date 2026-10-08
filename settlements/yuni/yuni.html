@@ -2590,6 +2590,63 @@ if(typeof window !== 'undefined') window.TEX = TEX;
     img.src = entry.map;
   };
 })();
+/* ============================== MATERIAL LIBRARY BIND (core/materials/record) ==============================
+   [web]: for the builds whose materials already exist as a table of three.js MeshStandardMaterials (the Ancients
+   lineage's MAT, the shared vernacular 69b-vern-mat.js): bind the build's packed library families onto them IN PLACE,
+   before the first frame, as Ys's 79z-ys-matlib.js does by hand. Nothing is rebuilt; ?mat=proc binds nothing.
+
+     KMAT.bindMat(build, MAT, opt)   for every key of MAT that the build's pack has a family of the same name, swap in
+                                     the set's colour, normal and roughness maps, repeated so one tile of the old map
+                                     (1/K metres, K from vWorldUV's userData.uvK, or opt.tile[key] in metres) becomes
+                                     the set's own tile; add the library hooks (specular, tiling break-up) after the
+                                     material's own hook (vWorldUV). opt.alias = {matKey: packFamily} binds a key to
+                                     another key's family (woodV takes wood). opt.tile = KMAT.ANCIENT_TILES for the Ancients lineage.
+                                     A material bound already is skipped. Returns {key: lib} for the bound ones.
+
+   THE PROGRAM KEY. three.js keys a compiled program on onBeforeCompile.toString(), and kbake's Material.clone() keeps
+   onBeforeCompile but drops customProgramCacheKey (core/materials/opt/69a-world-uv.js). So the wrapper is built with
+   Function() and carries the material's id (build, key, world-UV K, library key) in its SOURCE TEXT; it reaches the
+   material's old hook and its pack entry through KMAT.bound[id], which a clone shares (userData would not keep a
+   function: clone() JSON-copies it). */
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('26-matlib-bind: load 23-mat-record.js and 25-matlib-host.js first');
+  var BOUND = KMAT.bound = KMAT.bound || {};
+  /* the Ancients lineage's MAT (core/materials 22-materials.js, kits/ancients 54, 69, 69w, 34): metres per UV unit, so a set
+     keeps the procedural map's feature size (the panel sheet is 4 x 8 panels of 2 x 1 m, the concrete 12 boards of 0.65 m).
+     A material with a world-UV K (vWorldUV) uses that instead. */
+  KMAT.ANCIENT_TILES = { white: 8, rust: 8, verdigris: 4, whiteWorn: 4.8, concrete: 7.8, concreteR: 7.8, paving: 7.8, ringPave: 7.8,
+    brick: 1.2, corrugate: 2, timber: 2, tarp: 2, rubbleK: 2 };
+  KMAT.bindMat = function(build, MAT, opt){
+    opt = opt || {};
+    var out = {};
+    if(KMAT.mode !== 'lib' || !MAT) return out;
+    Object.keys(MAT).forEach(function(key){
+      var m = MAT[key];
+      if(!m || !m.isMeshStandardMaterial || m.userData.lib) return;   /* bound already (a second call binds only what is new) */
+      var fam = (opt.alias && opt.alias[key]) || key, L = KMAT.packed(build, fam);
+      if(!L) return;
+      var tile = m.userData.uvK ? 1 / m.userData.uvK : (opt.tile && opt.tile[key]) || null;
+      var rep = tile ? [tile / L.scale[0], tile / L.scale[1]] : [1, 1];
+      var T = KMAT.textures(L, { aniso: opt.aniso || 8 });
+      [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(rep[0], rep[1]); });
+      m.map = T.map;
+      if(T.normalMap){ m.normalMap = T.normalMap; m.normalScale = new THREE.Vector2(L.normalScale || 1, L.normalScale || 1); }
+      if(T.roughnessMap){ m.roughnessMap = T.roughnessMap; m.roughness = 1; }
+      m.metalnessMap = null; m.metalness = L.metal || 0;
+      var id = build + '|' + key + '|' + (m.userData.uvK || 0).toFixed(4) + KMAT.libKey(L);
+      BOUND[id] = { prev: m.onBeforeCompile || null, lib: L };   /* by id, not on userData: clone() JSON-copies userData */
+      m.onBeforeCompile = new Function('sh', 'r', 'var b = KMAT.bound[' + JSON.stringify(id) + '];\n' +
+        'if(b.prev) b.prev.call(this, sh, r); KMAT.libHooks(sh, b.lib);');
+      var prevKey = m.customProgramCacheKey && m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? m.customProgramCacheKey() : '';
+      m.customProgramCacheKey = function(){ return prevKey + '|km|' + id; };
+      m.userData.lib = L.lib;
+      m.needsUpdate = true;
+      out[key] = L.lib;
+    });
+    return out;
+  };
+})();
 /* ============================== 8. LAYOUT ==============================
    PLANNER-OWNED. Builds NO geometry. Owns every position in Yuni: the wall,
    its five gates and sentry towers, the Grand Vault and its antechamber, the
@@ -4622,10 +4679,10 @@ window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 27 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -4633,17 +4690,21 @@ window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
  var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
  // FURN_JOBS
  var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
-   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
+   // the Zeijani trades (kits/zeijani, 2026-10-07): the alecap and cave-fungus farms, the fungal alchemists, the dyers,
+   // the stonecutters, the lampwrights, the obsidian knappers and the rope and caving outfitters
+   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 21 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
+   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
@@ -4689,12 +4750,12 @@ window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
    koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
    // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
    doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
-   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame', 'glow-fungus', 'daylight'],
    // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
    keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
      job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
-     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', rock: 'free', level: 'free', district: 'free', destination: 'free', stalls: 'free', canopies: 'free',
      lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
@@ -12905,8 +12966,28 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
 
 // ---------------------------------------------------------------- merged buckets
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,
+  uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};   /* a library map (BIO.libSwap) tiles at its own size */
  return BIO.buckets[fam];};
+// THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
+// family in the page's pack (KMAT.pack(kit), from the kit's materials.json) the library map in place of its procedural one:
+// a card with `cell` (materials.json) shows that cell of its sheet only. A slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
+// table's entry its key and name (MAT.bk.smooth -> 'bk.smooth'). A card (the
+// slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
+// its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured
+// brightness, so the species tints keep their tone. No pack (the open world): nothing changes. Returns {slot: lib}.
+BIO.libSwap=function(kit,MAT){const out={};
+ if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
+ const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
+  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+  else m.userData.libScale=L.scale;
+  m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
+ for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
+  else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
+  else one(v,k);}
+ return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
 // the shader untouched, and the renderer encodes its output to sRGB, so a raw
@@ -13968,7 +14049,7 @@ const M=EBADLANDS.MAT;
 // the library barks (materials.json bark.*): keep-0 grey detail under the species' vertex colours. The bucket's
 // uvScale becomes the set's tile size, and means() divides out the pack's brightness instead of the canvas's, so a
 // species' bark colour renders the same on either map. Without the pack the procedural canvases stay.
-const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver',null];
+const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver','bark.alien'];   // bark.alien: skin.alien.banded (2026-10-06)
 EBADLANDS.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;EBADLANDS.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Furrowed bark','Ponderosa plates','Aspen bark','Conifer bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>{const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);

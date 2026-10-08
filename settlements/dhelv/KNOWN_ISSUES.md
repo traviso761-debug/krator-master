@@ -54,3 +54,8 @@
       the ground is not drawn and the cavern keeps its rock face instead (`DH_FRONTS`, `dhInFront`). The recess's edges are
       straight, the slant overhangs above its top, and the rock in it is the cave's paler tuff. Its rock is kept meshed as a
       mouth's (about 40 more chunks at the start).
+- [ ] **The Godot case (P7) is stand-ins.** The cavern's rock is not meshed in Godot (cavern.json is KCAVERN's plan; its
+      marching cubes are not ported, and the chunk meshes are not exported): the walk floors stand in. No furniture,
+      interiors, materials or atmosphere are exported yet. The navmesh is baked over the gate-to-temple box only (about
+      1.1 km by 300 m, 1 s); the whole city at 0.25 m cells is untried. Godot replays the baked tasks (`KSim`); it does not
+      re-plan (`SIM.step` is not ported), so its ramblers stop where the snapshot's tasks end.

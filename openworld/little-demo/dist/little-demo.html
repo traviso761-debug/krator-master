@@ -459,8 +459,28 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
 
 // ---------------------------------------------------------------- merged buckets
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,
+  uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};   /* a library map (BIO.libSwap) tiles at its own size */
  return BIO.buckets[fam];};
+// THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
+// family in the page's pack (KMAT.pack(kit), from the kit's materials.json) the library map in place of its procedural one:
+// a card with `cell` (materials.json) shows that cell of its sheet only. A slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
+// table's entry its key and name (MAT.bk.smooth -> 'bk.smooth'). A card (the
+// slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
+// its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured
+// brightness, so the species tints keep their tone. No pack (the open world): nothing changes. Returns {slot: lib}.
+BIO.libSwap=function(kit,MAT){const out={};
+ if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
+ const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
+  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+  else m.userData.libScale=L.scale;
+  m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
+ for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
+  else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
+  else one(v,k);}
+ return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
 // the shader untouched, and the renderer encodes its output to sRGB, so a raw
@@ -1078,7 +1098,7 @@ const ATMOS={};
   A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
-   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
+   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600},ash:{value:0},snow:{value:0}};   // ash, snow: the opt-in ash and snow weathers (4-weather)
   A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
   // the shared GLSL, written from the presets so JS and shaders agree
   const f=A.glf;
@@ -1179,10 +1199,23 @@ ATMOS.PRESETS={
  fogbank:{size:[30,70],alpha:.16,distFade:.0009,nearFade:[3,25],sway:14,night:[.14,.15,.2],day:[.86,.87,.9],pxMax:220,blend:'normal'},
  glow:{pxMin:2,pxMax:240,distFade:.0022,fogFade:.004,fogSwell:.7,rainSwell:.4,gain:1.7,dayFloor:.15,blend:'add'},
  rain:{drops:7000,box:240,fall:60,streak:2.4,slant:.25,windRide:6,fade:[50,120],alpha:.42,color:[.72,.77,.86]},
+ // ASH (opt-in: ATMOS.weather({ash:true}); from Voth's ash storm, 2026-10-06): flecks tumbling in a box that rides the camera,
+ // falling slowly and driven hard downwind (ashfall: a few; the storm: thick); low veils of ash racing along the ground in
+ // the storm; the storm's lightning warm (a volcano's dirty thunderstorm)
+ ash:{flecks:16000,box:120,fall:5,windRide:2.6,size:[.1,.3],fade:[25,70],alpha:.9,color:[.5,.47,.42],
+  streaks:6000,streakBox:110,streakRide:4.2,streakLen:[1.5,3.5],streakAlpha:.5,streakColor:[.4,.37,.32],
+  veils:180,veilBox:420,veilRide:3.2,veilSize:[40,110],veilY:[1,14],veilAlpha:.42,veilColor:[.68,.62,.52],bolt:0xffc8a0,
+  ashfall:.35,stormFog:.55},
+ // SNOW (opt-in: ATMOS.weather({snow:true}); the Throne's glacier, 2026-10-06): the ash's flakes, white, bigger and slower;
+ // streaks of blown snow and spindrift skimming the ground in the blizzard; a white-out (the host's fog)
+ snow:{flecks:15000,box:110,fall:1.6,windRide:2,size:[.14,.4],fade:[25,75],alpha:.95,color:[.96,.97,1],
+  streaks:5000,streakBox:100,streakRide:4.6,streakLen:[1.2,3],streakAlpha:.45,streakColor:[.92,.94,.98],
+  veils:200,veilBox:420,veilRide:3.6,veilSize:[30,90],veilY:[.5,8],veilAlpha:.5,veilColor:[.9,.92,.96],
+  snowfall:.4,stormFog:.6},
  // the wind every effect shares: a base vector that veers slowly, scaled by the weather, with gust fronts travelling
  // downwind (atmGust in the shaders, ATMOS.gust in JS)
  wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
-  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
+  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5,ashfall:1.3,ash:2.8,snowfall:1.2,blizzard:2.7}},
  // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
  clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82},
  // THE WAVE FIELD (89-atmos-a-waves.js): open water as three families of travelling waves. A wave is [kx,kz,c,a]: its
@@ -1207,7 +1240,25 @@ ATMOS.PRESETS={
  // `every` frames. specular and diffuse scale the map's two terms on standard materials (diffuse is compiled in: set it
  // before the first frame; 0 keeps a build's tuned hemisphere and ambient fill as the only diffuse light). groundK scales
  // the ground colour the host passes for the lower half of the capture.
- skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1}
+ skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1},
+ // THE CLOUD DECK (89-atmos-d-clouddeck.js): a sea of cloud seen from above, the dense air of a basin pooled below a
+ // wall (the southern highlands' hyperjungle deck). Its relief is GRADIENT NOISE (fBm) on a lattice that repeats every
+ // `lattice` cells, hashed by integers (bit-exact in every engine), so no straight crest anywhere: billows [div, amp] are
+ // octaves of cell `cell`/div metres; their sum (over the total amp, times `gain`) is heaped by `heap` (the tops round,
+ // the troughs flatten) between `down` and `up` metres about the deck's level. warp {amp, seedA, seedB} bends the billows
+ // with a second noise of cell `cell` that drifts its own way (`evolve`), so the cloud changes shape as it goes; drift is
+ // the billows' own. drift and evolve are whole lattice periods per clock `period` ([cells of `cell`*lattice in x, in z]),
+ // so the clock's wrap is seamless. puff: the billows and the detail as BILLOW noise, 2|n| - 0.5 (rounded domes with sharp
+ // creases between them, as cumulus tops seen from above), not plain noise (smooth swells, which read as water). detail (detailAmp metres) only shades, faded out by camera distance (fade [near,far]);
+ // tilt turns slope into the shading normal. top and shade are the lit and hollow colours (display sRGB). ground: where
+ // the ground rises through the deck it thins from alpha 1 at ground[1] metres of clearance to 0 at ground[0]. mesh: a
+ // grid of `cells` a side, `radius` metres round the camera, snapped to `snap`; clear: the ground's height round the camera
+ // on `size` a side over `span` metres, resampled at each snap. fogK thins the scene's fog on the deck.
+ clouddeck:{period:51200,lattice:64,cell:640,drift:[2,-1],evolve:[-1,2],up:44,down:26,heap:2.1,tilt:3.2,gain:2.25,puff:true,
+  billows:[[1,.5],[2,.28],[4,.15],[8,.07]],warp:{amp:230,seedA:21,seedB:22},
+  detail:[[10,.5],[20,.32],[40,.18]],detailAmp:2.5,
+  fade:[600,2500],top:[.99,.985,.97],shade:[.49,.56,.66],ground:[-6,45],fogK:.55,
+  mesh:{radius:9000,cells:180,snap:300},clear:{size:160,span:5200}}
 };
 
 // ==================== core/atmos/89-atmos-a-waves.js
@@ -2071,6 +2122,7 @@ Object.assign(PAL,{
  rockGrey:[0x7a6a5e,0x8a7a6e,0x6a5a50],
  deadwood:[0x9a8a78,0x8a7a68,0xb0a090,0x7a6a5a],
  pod:[0xc8b850,0xd8c860,0xb8a840],
+ tuna:[0xe86a20,0xe0602a,0xd85a22],   // the catalog's fruitTuna (kits/catalog generic-goods), orange-red
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -2133,6 +2185,46 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. Ebadlands' HV().
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SEDESERT.HARVEST={
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound powder.'),
+ candelabra:HV('none',[],false,'The milky latex blinds and blisters: a fish poison, never food.'),
+ cardon:HV('ribs (light poles, roofing)',['fruit'],false,'Spiny fruit in early summer, eaten fresh or dried (not in the catalog yet).'),
+ bottle:HV('none',['stored water (famine)'],false,'The swollen trunk holds water; the bark fibre makes rope.'),
+ boojum:HV('none',[],false,''),
+ quiver:HV('hollowed branches (quivers)',[],false,'The soft branches are hollowed out for quivers.'),
+ mesquite:HV('fuel, posts, charcoal',['pods (ground into flour)'],true,'Sweet pods dried and ground for mesquite cakes; the gum is a salve.','generic_fruit_mesquite'),
+ palm:HV('trunks (beams), fronds (thatch)',['dates'],false,'A bunch of dates under the crown; the fronds thatch and weave.','generic_fruit_wadi_date'),
+ rose:HV('none',[],true,'The sap is an arrow poison; a little of it a heart medicine.'),
+ puya:HV('none',[],false,'The dry spike is kindling.'),
+ agave:HV('none',['heart (pit-roasted)','flower stalk'],true,'The heart is pit-roasted sweet; the leaves give fibre (not in the catalog yet).'),
+ yucca:HV('fuel',['flower buds (roasted)','seeds'],false,'The buds are roasted in spring; the leaf fibre makes sandals.'),
+ candle:HV('none',[],false,'Ornamental; the tips glow after dark.'),
+};
+SEDESERT.SPECIES.forEach(S=>{S.tags.harvest=SEDESERT.HARVEST[S.key]||HV('none');});
+// the small plants (the floor and the dressing), tagged: `items` names the instanced items that draw them, so the
+// inspector can name a plant from the item it clicked (the first plant naming an item wins)
+const PK=(name,climate,aridity,riparian,items,hv)=>({name,tags:{climate,aridity,abyssal:false,riparian,harvest:hv||HV('none')},items});
+SEDESERT.PLANTS={
+ pear:PK('Prickly pear','tropic','arid','no',['paddle','fruit'],HV('none',['tunas','young pads'],true,'Orange-red tunas along the pad rims, peeled; young pads fried.','generic_fruit_tuna')),
+ spinifex:PK('Spinifex','tropic','arid','no',['needle'],HV('thatch',[],true,'The resin is a glue for spear heads.')),
+ drygrass:PK('Dry grass','tropic','arid','both',['grass'],HV('thatch',['seed (ground)'],false,'')),
+ reed:PK('Reeds','tropic','humid','yes',['reed'],HV('thatch, mats',['young shoots'],false,'')),
+ creosote:PK('Creosote bush','tropic','arid','no',['small','rod'],HV('fuel',[],true,'A bitter tea for colds; it smells of rain.')),
+ saltbush:PK('Saltbush','tropic','arid','no',['lobe'],HV('fuel',['leaves (salty greens)'],false,'')),
+ echium:PK('Tower of jewels','tropic','semiarid','no',['spire'],HV('none',['nectar'],false,'Bees work the spires.')),
+ barrel:PK('Barrel cactus','tropic','arid','no',['barrel'],HV('none',['flesh (famine water)'],false,'')),
+ cholla:PK('Cholla','tropic','arid','no',['cone'],HV('none',['flower buds'],false,'')),
+ hoodia:PK('Hoodia','tropic','arid','no',['column'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
+ lichen:PK('Lichen','tropic','semiarid','both',['lichen'],HV('none',[],true,'A dye.')),
+};
+SEDESERT.plantOfItem=item=>{for(const k in SEDESERT.PLANTS)if(SEDESERT.PLANTS[k].items.indexOf(item)>=0)return SEDESERT.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SEDESERT.FRUIT_KEYS=[...new Set(SEDESERT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SEDESERT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -2329,6 +2421,9 @@ SEDESERT.MAT={
  candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'sedesert' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SEDESERT.LIB=BIO.libSwap('sedesert',SEDESERT.MAT);
 const M=SEDESERT.MAT;
 ['Dragon-tree bark','Fibrous bark','Pale peeling bark','Furrowed bark','Succulent stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===4?3:4,6]}));
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
@@ -2351,6 +2446,8 @@ BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
+BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
+BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Hanging growth'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
@@ -2449,7 +2546,7 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.co
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 const bloomsAt=blooms;SEDESERT.blooms=blooms;
 // the volume the world's inspector names a tree by
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
@@ -2588,7 +2685,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
  frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
  if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
   for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
-  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('dates',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
  st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
 // 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
 B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;
@@ -2817,7 +2914,12 @@ function barrel(x,y,z,lv,k){around(x,z,lv===2?ri(1,3):1,.8,1.6,(px,pz)=>{const R
  BIO.put('barrel',[px,y-.05,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.8,1.3),R],leafCol(PAL.barrel,1.15,.03,.08,.05));
  if(lv===2&&rng()<.3)blooms(px,y+R*.9,pz,R*.3,ri(2,4),[0xe8d040,0xf0a040],[.12,.22]);});}
 function pear(x,y,z,lv){const hc=vary(pick(PAL.pear),.03,.08,.05);
- around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4);card('paddle',px,y+h,pz,rr(1,1.8),rr(.9,1.4),bright(vary(hc,.02,.06,.05),1.3),.35);});
+ around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4),s=rr(1,1.8),sy=rr(.9,1.4);card('paddle',px,y+h,pz,s,sy,bright(vary(hc,.02,.06,.05),1.3),.35);
+  // tunas: orange-red fruit along the pad's upper rim (generic_fruit_tuna). Hashed, not drawn from rng(), so the
+  // floor's random stream (every plant after this one) is unchanged; near and mid bands only
+  if(lv>=1){const n=Math.floor(h3(px,h,pz)*(lv===2?4:3));
+   for(let k=0;k<n;k++){const u=h3(px+k*7.1,pz,h+k),v=h3(pz,px+k*3.3,s+k),a=u*TAU,d=s*(.22+.22*v),r=.065+.03*h3(px,pz+k*5.7,sy);
+    BIO.put('fruit',[px+Math.cos(a)*d,y+h+sy*(.3+.12*v),pz+Math.sin(a)*d],qEuler(.3*(v-.5),a,0),[r,r*1.3,r],bright(PAL.tuna[(u*97|0)%PAL.tuna.length],1.05));}}});
  if(lv===2&&rng()<.4)blooms(x,y+1.6,z,.8,ri(2,5),[0xe8c030,0xd8a030,0xe07070],[.14,.24]);}
 function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,2.6),n=lv===2?ri(5,9):3;
  BIO.beam('rod',[x,y-.1,z],[x,y+h*.5,z],.08,.06,rodCol(0x5a4a3a));
@@ -3382,6 +3484,38 @@ EASTABYSS.SPECIES=[
   leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},
   tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
 ];
+EASTABYSS.byKey={};EASTABYSS.SPECIES.forEach(S=>{EASTABYSS.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+EASTABYSS.HARVEST={
+ skyscale:HV('none (too big to fell)',['scalefruit'],false,'Red scale pods grow straight off the bole; the pink flesh is cut in wedges.','generic_fruit_scalefruit'),
+ forktree:HV('poles from fallen forks',['scalefruit'],false,'The same cauliflory pods as the sky scale-tree, lower down.','generic_fruit_scalefruit'),
+ bellbark:HV('timber',['scalefruit'],true,'Pods on the trunk and the boughs; the pale bark is a fever tea.','generic_fruit_scalefruit'),
+ treefern:HV('fibre (the trunk mat)',['pith (famine)'],false,'The starchy pith is baked in hard years; the fibrous trunk is cut for planters.'),
+ cycad:HV('none',['salt-cone kernels (steeped)'],false,'The cone in the crown. Poisonous raw: the kernels are steeped a week in the salt lake, then baked.','generic_fruit_salt_cone'),
+ horsetail:HV('none',[],false,'The silica-rough stems scour pots.'),
+ kneetree:HV('timber, knees for floats',[],false,'The knees are cut for fishing floats.'),
+ stiltwood:HV('poles',[],false,'Straight poles for platforms.'),
+ fanpalm:HV('thatch',['heart (palm cabbage)'],false,'The fans thatch huts; the heart is eaten, which kills the stem.'),
+ umbrella:HV('light timber, fuel',[],true,'A bark tea for the gut.'),
+ jade:HV('none',['leaves (pickled)'],false,'Salt-rich leaves pickled in brine.'),
+ tidelycopsid:HV('none',[],false,''),
+ calamophyton:HV('none',[],false,''),
+ sanfordacaulis:HV('none',[],false,'The fine twigs are tinder.'),
+ sigillaria:HV('poles (the fluted bole)',[],false,'The cones hang under the crown but nobody eats them.'),
+ cordaite:HV('timber',[],false,'The strap leaves are plaited into baskets.'),
+ seedfern:HV('none',['fern-eggs (roasted)'],false,'Seeds big as eggs under the fronds: roasted in the coals, mealy like chestnut.','generic_fruit_fern_egg'),
+ araucaria:HV('timber',['seeds in the cones'],false,'The cones at the crown shed edible seeds (not in the catalog yet).'),
+ beardoak:HV('fuel, boat ribs',[],true,'The beard moss stuffs mattresses and dresses wounds.'),
+ waterpalm:HV('thatch (the fronds)',['tideheart jelly'],false,'The fruit head at the water line: the jelly in its carpels is cut out and set in cubes.','generic_fruit_tideheart'),
+ matreed:HV('reed mats, thatch, cordage, reed boats',['rhizome, young shoots'],false,'The pale base of the reed is peeled and chewed.'),
+};
+EASTABYSS.SPECIES.forEach(S=>{S.tags.harvest=EASTABYSS.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+EASTABYSS.FRUIT_KEYS=[...new Set(EASTABYSS.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -3689,6 +3823,9 @@ EASTABYSS.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'eastabyss' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+EASTABYSS.LIB=BIO.libSwap('eastabyss',EASTABYSS.MAT);
 const M=EASTABYSS.MAT;
 ['Scale-tree bark','Fibrous bark','Pale bark','Knee-tree bark','Pipe-reed stems','Seal-tree bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:i===5?5:4,i===0?9:i===5?8:6]}));
 BIO.bucket('bark0i',M.barkIrid,{label:'Sky scale-tree bark (iridescent)',uvScale:[6,9]});
@@ -4777,7 +4914,42 @@ HYPERJUNGLE.PAL={
  bract:[0xd8402a,0xe8742a,0xf0b02a,0xc82a48,0xe05a2a],
  bromeliad:[0x4a8a4a,0x5a9a52,0x8a6a3a,0x3f7a44],
  bromCentre:[0xd8342a,0xe86a2a,0xc83a6a,0xf0a02a],
+ // the screwpine's pandan-key head: the catalog piece's own palette (generic-goods fruitPandanKey / fruitPandanTip)
+ pandanKey:0xd87a2a,pandanTip:0x5a6a2a,
 };
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. As ebadlands' HV().
+{// a block: HV and PK stay local (a world may bundle another kit's HV)
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+HYPERJUNGLE.HARVEST={
+ ironbark:HV('posts, beams (from fallen limbs)',[],false,'Too hard for an axe above the buttresses: the wind-felled limbs are the timber.'),
+ ghostwood:HV('light timber, carving',[],true,'The pale bark is scraped for a fever tea; the violet racemes feed the sky rays.'),
+ prismgum:HV('timber',[],true,'The iridescent gum seals hulls and dresses cuts.'),
+ baobab:HV('none (the hollow boles are lived in)',['gatepod pulp','seeds (roasted)','leaves (cooked)'],true,'The orange velvet pods are sawn into rounds; the chalky pulp dries into gatepod chalk that keeps a year.','generic_fruit_gatepod'),
+ mahogany:HV('timber (the finest red wood)',['seeds (roasted)'],true,'The woody capsules split for winged seeds, roasted and eaten wing and all; the bark is a fever tea.','generic_fruit_mahogany_nut'),
+ kapok:HV('light timber, dugouts',['young pods (cooked)','seed oil'],false,'Ripe pods burst into cream floss for stuffing; the black seeds are pressed for oil.','generic_fruit_silkpod'),
+};
+HYPERJUNGLE.SPECIES.forEach(S=>{S.tags.harvest=HYPERJUNGLE.HARVEST[S.key]||HV('none');});
+HYPERJUNGLE.byKey={};HYPERJUNGLE.SPECIES.forEach(S=>{HYPERJUNGLE.byKey[S.key]=S;});
+// the instanced items that draw a species' parts, so the inspector can name a tree from an item it clicked
+HYPERJUNGLE.speciesOfItem=item=>{const m=/^clump(\d)$/.exec(item||'');if(m)return HYPERJUNGLE.SPECIES[+m[1]]||null;
+ return item==='pod'?HYPERJUNGLE.byKey.baobab:item==='capsule'?HYPERJUNGLE.byKey.mahogany:null;};
+// the belt's own understorey (60-floor places it), tagged as flora; `items` names the items only that plant draws
+const PK=(name,items,hv)=>({name,tags:Object.assign({},HYPERJUNGLE.TAGS,{harvest:hv||HV('none')}),items});
+HYPERJUNGLE.PLANTS={
+ screwpine:PK('Screwpine',['pandankeys'],HV('none',['pandan keys (the fibrous base)'],false,'The orange keys of the hanging head are chewed, or boiled down to an orange paste; the strap leaves are woven into mats.','generic_fruit_pandan_keys')),
+ treefern:PK('Giant tree fern',[],HV('trunk fibre (planting pots)',['croziers (cooked)'],false,'The young croziers are boiled; the trunk fibre is cut into pots for orchids.')),
+ ginger:PK('Heliconia and ginger',['bract'],HV('none',['ginger rhizome'],true,'The rhizome spices food and settles the stomach; the bracts hold rain water.')),
+ bromeliad:PK('Bromeliad',[],HV('none',['rain water in the tanks'],false,'The tanks hold water and frogs.')),
+};
+HYPERJUNGLE.plantOfItem=item=>{for(const k in HYPERJUNGLE.PLANTS)if(HYPERJUNGLE.PLANTS[k].items.indexOf(item)>=0)return HYPERJUNGLE.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+HYPERJUNGLE.FRUIT_KEYS=[...new Set(HYPERJUNGLE.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(HYPERJUNGLE.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
+// the item that draws each catalog fruit on its plant (the kapok's burst silk pods are 'bloom' items in the silk colour)
+HYPERJUNGLE.FRUIT_ITEMS={generic_fruit_gatepod:'pod',generic_fruit_mahogany_nut:'capsule',generic_fruit_silkpod:'bloom',generic_fruit_pandan_keys:'pandankeys'};
+HYPERJUNGLE.HV=HV;}
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale leaf clusters on transparent canvases (BIO.alphaTex); the
@@ -4924,10 +5096,30 @@ HYPERJUNGLE.MAT={
  bloom:BIO.leafMat(null,'bloom',{swayW:'1.0',swayA:.05,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
-HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:[14,18]}));
-BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:[6,9]});
-BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:[3,4]});
-BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:[6,6]});
+// ---------------------------------------------------------------- the material library (core/materials/PLAN.md)
+// When the page carries a 'hyperjungle' pack (materials.json -> KMAT.pack('hyperjungle'): the showcase, and any host that
+// inlines the biome's pack), the procedural maps above give way to the library's: grey detail maps (keep 0) normalised to
+// the measured brightness of the canvas each replaces, so the species tints (55-trees tints(), read from the canvases)
+// render the same tone. The painters still ran, so the random stream and every plant are unchanged. A page without the
+// pack (the open world) keeps the procedural maps. Cards are DataTexture-like (flipY false), as BIO.alphaTex makes them.
+HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('hyperjungle',n):null;
+{const P=HYPERJUNGLE.LIBP,M=HYPERJUNGLE.MAT;
+ const card=n=>{const L=P(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;t.generateMipmaps=true;
+  t.minFilter=BIO.host.THREE.LinearMipmapLinearFilter;t.magFilter=BIO.host.THREE.LinearFilter;return t;};
+ M.leaf.forEach((m,i)=>{const t=card('leaf'+i);if(t){m.map=t;m.alphaTest=.4;m.needsUpdate=true;}});
+ for(const k of ['raceme','under','hang','frond','moss','bract']){const t=card(k);if(t){M[k].map=t;M[k].alphaTest=.4;M[k].needsUpdate=true;}}
+ HYPERJUNGLE.LIBSCALE={};
+ M.bark.forEach((m,i)=>{const L=P('bark'+i);if(L){m.map=KMAT.textures(L,{aniso:8}).map;m.needsUpdate=true;HYPERJUNGLE.LIBSCALE['bark'+i]=L.scale;}});
+ {const L=P('rock');if(L){M.rock.map=KMAT.textures(L,{aniso:8}).map;M.rock.needsUpdate=true;HYPERJUNGLE.LIBSCALE.rock=L.scale;}}
+ /* the limbs (boughs, twigs, roots) and the dead wood: their sets were in materials.json but never bound, so the branches kept
+    the painted canvas beside the library's bark (the owner: "branches not taking bark texture") */
+ for(const k of ['limb','wood']){const L=P(k);if(L){M[k].map=KMAT.textures(L,{aniso:8}).map;M[k].needsUpdate=true;HYPERJUNGLE.LIBSCALE[k]=L.scale;}}
+ // the fauna sheets (58-fauna's optional FAUNATEX): from the pack when no host set them
+ if(!HYPERJUNGLE.FAUNATEX){const F={};for(const k of ['wing','fur','hide','ray']){const L=P('fauna.'+k);if(L)F[k]=L.map;}if(Object.keys(F).length)HYPERJUNGLE.FAUNATEX=F;}}
+HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:HYPERJUNGLE.LIBSCALE['bark'+i]||[14,18]}));
+BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:HYPERJUNGLE.LIBSCALE.limb||[6,9]});
+BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:HYPERJUNGLE.LIBSCALE.wood||[3,4]});
+BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:HYPERJUNGLE.LIBSCALE.rock||[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far forest (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
@@ -4947,9 +5139,28 @@ BIO.def('mossmat',BIO.geo.mat(),HYPERJUNGLE.MAT.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
-BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});
+BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
 BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
+// the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a
+// short stalk, local y 0 (hung) .. -1.15. Vertex-coloured in linear (the instance colour only shades it): each key's tip
+// stands proud and green (fruitPandanTip), its body orange (fruitPandanKey), the seams between keys sunk. 328 triangles.
+HYPERJUNGLE.pandanGeo=function(){const tipDirs=[],tip=new THREE.Vector3(),v=new THREE.Vector3();
+ const b=new THREE.IcosahedronGeometry(1,1).attributes.position.array;
+ for(let i=0;i<b.length;i+=3){v.set(b[i],b[i+1],b[i+2]).normalize();if(!tipDirs.some(d=>d.dot(v)>.9999))tipDirs.push(v.clone());}
+ const K=new THREE.Color(HYPERJUNGLE.PAL.pandanKey).convertSRGBToLinear(),Tp=new THREE.Color(HYPERJUNGLE.PAL.pandanTip).convertSRGBToLinear();
+ const h0=new THREE.IcosahedronGeometry(1,3),h=h0.index?h0.toNonIndexed():h0,a=h.attributes.position.array,col=[];
+ for(let i=0;i<a.length;i+=3){v.set(a[i],a[i+1],a[i+2]).normalize();let best=-1;for(const d of tipDirs)best=Math.max(best,d.dot(v));
+  const isTip=best>.9999,r=isTip?1.1:.93;tip.copy(v).multiplyScalar(r);
+  a[i]=tip.x*.45;a[i+1]=tip.y*.5-.65;a[i+2]=tip.z*.45;const c=isTip?Tp:K;col.push(c.r,c.g,c.b);}
+ h.setAttribute('color',new THREE.Float32BufferAttribute(col,3));h.computeVertexNormals();   // faceted: each key reads
+ const s=new THREE.CylinderGeometry(.035,.05,.2,4,1,true).translate(0,-.1,0).toNonIndexed(),sc=[];
+ for(let i=0;i<s.attributes.position.count;i++)sc.push(Tp.r*.6,Tp.g*.6,Tp.b*.6);
+ const pos=[],nor=[],uv=[],cc=[];
+ [[h,col],[s,sc]].forEach(([g,c])=>{const p=g.attributes.position.array,n=g.attributes.normal.array;
+  for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(n[i]);}for(let i=0;i<p.length/3;i++)uv.push(0,0);for(const x of c)cc.push(x);});
+ return BIO.geo._make(pos,nor,uv,cc);};
+BIO.def('pandankeys',HYPERJUNGLE.pandanGeo(),HYPERJUNGLE.MAT.pod,{label:'Screwpine fruit (pandan keys)'});
 
 // ==================== biomes/hyperjungle/src/55-biome-hyperjungle-trees.js
 // ================================================================= HYPERJUNGLE — trees
@@ -5479,16 +5690,17 @@ function treeFern(x,y,z,lv){const H=lv===2?rr(4,11):rr(4,8),r=.28+H*.04,la=rr(0,
  if(lv===2){card(tx,ty+1.2,tz,2.2,1.8,bright(shade(hc,.25),1.5),.2);
   for(let k=0,n=ri(2,4);k<n;k++){const a=rr(0,TAU);BIO.put('ribbon',[tx+Math.cos(a)*r*1.2,ty-.6,tz+Math.sin(a)*r*1.2],qEuler(0,rr(0,TAU),0),[rr(.8,1.4),rr(2,4),1],shade(vary(0x8a7a4a,.03,.1,.06),-.2));}}}
 // a SCREWPINE: a short trunk on a cone of stilt roots, heads of stiff strap
-// leaves (old ones out and drooping, young ones upright), a hanging fruit head
+// leaves (old ones out and drooping, young ones upright), a hanging fruit head of pandan keys
 function screwpine(x,y,z,lv){const H=rr(3,8),r=.22+H*.05,hc=vary(pick(PAL.screwpine),.04,.12,.06),tt=trunkTint(0x6a5a44,.8);
  BIO.put('trunk',[x,y+H*.3-.2,z],qUp([0,1,0]),[r/.4,H*.7+.2,r/.4],tt);
  const tc=rodCol();for(let k=0,n=lv===2?ri(5,8):4;k<n;k++){const a=k/n*TAU+rr(-.3,.3),d=H*rr(.35,.6),gx=x+Math.cos(a)*d,gz=z+Math.sin(a)*d;
   BIO.beam('rod',[x+Math.cos(a)*r*.6,y+H*rr(.28,.42),z+Math.sin(a)*r*.6],[gx,Y(gx,gz)-.4,gz],r*.32,r*.22,tc);}
  const heads=[[x,y+H,z]];
- if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,tt);}
+ if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,shade(C(0x6a5a44),-.25));}   // untextured: the trunk's colour itself, not its texture tint (that rendered white)
  heads.forEach(h=>{const L=rr(3,5.5);frondCrown(h[0],h[1],h[2],L,lv===2?ri(9,12):6,-.35,.05,bright(hc,1.5));
   frondCrown(h[0],h[1]+.4,h[2],L*.7,lv===2?6:4,.55,1.05,bright(shade(hc,.08),1.55));
-  if(lv===2&&rng()<.4)BIO.put('fungus',[h[0]+rr(-.5,.5),h[1]-.6,h[2]+rr(-.5,.5)],qEuler(Math.PI,rr(0,TAU),0),[.9,1.3,.9],shade(0xd08a3a,-.15));});}
+  // the hanging pandan-key head (biomes/FRUIT.md); the same draws as the stand-in it replaced, so nothing else moves
+  if(lv===2&&rng()<.4){const fx=h[0]+rr(-.5,.5),fz=h[2]+rr(-.5,.5);BIO.put('pandankeys',[fx,h[1]-.3,fz],qEuler(0,rr(0,TAU),0),1.6,shade(0xffffff,-.15));}});}
 // a HELICONIA / GINGER clump: tall paddle leaves in a loose fan, the
 // inflorescences (zigzag bracts, 'bract' item) hanging off short stems
 function ginger(x,y,z,lv){const hc=vary(pick(PAL.ginger),.04,.12,.06),S=rr(4,8),n=lv===2?ri(4,6):3,a0=rr(0,TAU);
@@ -6176,7 +6388,7 @@ const M=EBADLANDS.MAT;
 // the library barks (materials.json bark.*): keep-0 grey detail under the species' vertex colours. The bucket's
 // uvScale becomes the set's tile size, and means() divides out the pack's brightness instead of the canvas's, so a
 // species' bark colour renders the same on either map. Without the pack the procedural canvases stay.
-const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver',null];
+const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver','bark.alien'];   // bark.alien: skin.alien.banded (2026-10-06)
 EBADLANDS.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;EBADLANDS.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Furrowed bark','Ponderosa plates','Aspen bark','Conifer bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>{const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);

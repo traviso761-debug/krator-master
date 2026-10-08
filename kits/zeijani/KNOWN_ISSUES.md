@@ -36,7 +36,7 @@
       temple (turned 60 degrees) a podium side's 24 m block lay across the stair. A turned block is now cut into 0.8 m pieces,
       each the box round its four corners (`40-zj-cave.js`, `cvFromItem`'s blocks); and the terrace's slot for the stair now
       overlaps its head by 0.15 m (an exact abutment had left a hairline with no floor).
-- [ ] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
+- [x] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.
 - [x] **The council's flank stairs broke out under the frieze** (the owner: the opening and the relief badly placed; the side
       exit blocked). The flanks' moulding, frieze and pilasters left the wrong stretch; they now leave the stairs' (local x 4 to
@@ -46,3 +46,9 @@
 - [x] **The stone door's lintel fought the masonry wall Dhelv adds round it** (their soffits shared a plane): the wall's pieces
       stand clear of the jambs and over the lintel (`53-zj-additions.js`).
 - [x] **The cut-away's boxes had no top**: a box now stops over its site's height when the world gives one (`CV_BOXCUT`, uBoxB.w).
+- [ ] **Stale words in headers and the plan** (found writing API.md, 2026-10-08): `36-def.js` documents a def field `carve`
+      no def uses and leaves out `originFront`, `sunk` and `note`; `verify.py`'s docstring speaks of tents (from Scyvoi) and
+      its footprint check's message says + 0.8 m where the threshold is 1.6 m; `build.py`'s docstring leaves `core/sockets`
+      out; `91f-furnish.js` and `91n-night.js` still say tents. PLAN.md section 4 names a `kit_bundle.py` (`KratorZeijani`)
+      that was never made, and 6.5 an export from the kit sheet (only Dhelv's page exports). `zjLife` and `ZJ_LIFE` are
+      defined but no def calls them, so the `life-records` check has nothing to check.

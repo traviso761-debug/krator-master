@@ -642,6 +642,11 @@ Locus is already closest to the target. Make it the mobility reference:
   system deciding what is instanced.
 - Not started until Phases 2–3 prove two builds run from the same vocabulary.
   No Unreal adapter.
+- **Begun (2026-10-08, Dhelv's P7):** `ksim.gd` (`KSim`) is the motion's twin: `SIM.at` and `SIM.pose`,
+  the wander's 32-bit hash through 16-bit halves (krand.gd's idiom). A world exports each actor's baked task
+  (Dhelv's `sim.json` `motion` block: the legs' routes, speeds, durations, the spot, the wander) and a trace of
+  `SIM.pose` from the same snapshot (`golden.json`); `godot/tests/dhelv/dhelv_sim_test.gd` replays it: 3906 rows,
+  0 differ. The decision stepper (`SIM.step`) is not ported: Godot replays the baked tasks, it does not re-plan.
 
 ---
 

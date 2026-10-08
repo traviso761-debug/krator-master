@@ -66,7 +66,7 @@ const KF_API = (function () {
     this.opt = opt || {};
     this.buckets = {};
     this.placements = [];
-    this.textured = [];      /* painted panels (F.decal): kept as their own meshes, their canvas map shared */
+    this.textured = [];      /* painted panels (F.decal): their canvas map shared; flush merges those sharing a material */
     this.tris = 0;
   }
   /* a growable typed buffer: positions and normals as float32, colours as uint8 (a settlement holds millions
@@ -143,7 +143,35 @@ const KF_API = (function () {
       m.userData.furniture = true;
       grp.add(m);
     }
-    for (const m of this.textured) grp.add(m);
+    /* the painted panels: merged per material (one canvas map each), so a cord of pennants is one draw, not one a flag
+       (a stretched cord carries up to 23); a material used once keeps its mesh */
+    const byMat = new Map();
+    for (const m of this.textured) { const a = byMat.get(m.material); if (a) a.push(m); else byMat.set(m.material, [m]); }
+    for (const [mt, ms] of byMat) {
+      if (ms.length === 1) { grp.add(ms[0]); continue; }
+      let n = 0;
+      for (const m of ms) { const g = m.geometry; n += g.index ? g.index.count : g.attributes.position.count; }
+      const P = new Float32Array(n * 3), N = new Float32Array(n * 3), U = new Float32Array(n * 2);
+      let k = 0;
+      for (const m of ms) {
+        m.updateMatrix(); _n.getNormalMatrix(m.matrix);
+        const g = m.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv, idx = g.index, c = idx ? idx.count : pos.count;
+        for (let i = 0; i < c; i++, k++) {
+          const j = idx ? idx.getX(i) : i;
+          _v.fromBufferAttribute(pos, j).applyMatrix4(m.matrix); P[k * 3] = _v.x; P[k * 3 + 1] = _v.y; P[k * 3 + 2] = _v.z;
+          if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); N[k * 3] = _w.x; N[k * 3 + 1] = _w.y; N[k * 3 + 2] = _w.z; } else N[k * 3 + 1] = 1;
+          if (uv) { U[k * 2] = uv.getX(j); U[k * 2 + 1] = uv.getY(j); }
+        }
+        g.dispose();
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+      geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+      geo.setAttribute('uv', new THREE.BufferAttribute(U, 2));
+      const mm = new THREE.Mesh(geo, mt);
+      mm.name = 'furniture:decal'; mm.userData.furniture = true;
+      grp.add(mm);
+    }
     this.buckets = {}; this.textured = [];
     if (parent) parent.add(grp);
     return grp;

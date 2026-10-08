@@ -19,6 +19,8 @@
         enough for their cut banks to clash: the probe finds 3 stations up to 7 m off the road (its one failing check).
         Veladiga-Mungo crosses a gorge near 295700, -16200 on an 816 m fill. Both want a viaduct or a route to a
         gentler ramp (a wider corridor, or the routing told about banks).
+        2026-10-08: still the one failing check of `verify.py --assert` on main ("the highways lie on the land": 3 stations,
+        worst 7.40 m at 206452, 155525). To fix in the open world build.
   - [ ] **Mungo's three roads end on a 126 m causeway**: at the scale model's 4 km the world's salt lake covers the
         whole of Mungo's site, so every approach crosses it. Its town floats on the lake as its build does.
   - [ ] **No highway meets a town's streets.** A road stops 30 m outside the footprint, on the land at the town's
