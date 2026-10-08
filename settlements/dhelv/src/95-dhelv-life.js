@@ -45,7 +45,7 @@ FRAME_HOOKS.push(dt=>{if(!DHL.on)return;const C=DHL.clock,now=performance.now();
   DHL.hud.textContent='Dhelv '+hm+(C.running?' (running x'+C.scale+')':' (held: ?time=run)')+'  '+out+' out, '+mv+' walking, '+DHL.shown+' drawn  stone door '+(DHS.doorShut?'shut':'open')+f;}});
 DHL.shownIds=[];
 /* the minimap's dots: everyone out on the map's half of the world, those near the camera's height bright */
-DHMAP.extra.push((g,F,p,mode)=>{if(!DHL.on)return;const t=SIM.time();for(const a of SIM.all('actor')){if(!a.present)continue;const s=SIM.pose(a,t);if(s.hidden||(mode==='outpost')!==(s.x<-1500))continue;
+DHMAP.extra.push((g,F,p,mode)=>{if(!DHL.on)return;const t=SIM.time();for(const a of SIM.all('actor')){if(!a.present)continue;const s=SIM.pose(a,t);if(s.hidden||(mode==='outpost')!==(s.x<DH.PLAT.cliffX+30))continue;
   g.fillStyle=Math.abs(s.y-p.y)<6?'#'+(DHL.COL[a.role]||0xcccccc).toString(16).padStart(6,'0'):'rgba(200,190,170,.35)';g.fillRect(F.X(s.x)-1,F.Z(s.z)-1,2,2);}});
 /* a click on a walker follows it; its way (the current task's legs) drawn as a line; Esc lets go */
 renderer.domElement.addEventListener('pointerup',e=>{if(!DHL.on||e.button!==0||DHL.bodies.count===0)return;const r=renderer.domElement.getBoundingClientRect(),m=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),ray=new THREE.Raycaster();

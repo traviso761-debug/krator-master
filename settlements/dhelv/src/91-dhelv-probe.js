@@ -63,7 +63,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  add('cavern-built',CVC.chunks.length>0,CVC.prims.length+' primitives, '+CVC.chunks.length+' chunks, built in '+CV_STATS.ms+' ms; '+DH_STREAM.meshes.size+' meshed near the camera');
  const t0=performance.now(),leaks=CVC.skyLeaks(2);add('cavern-sky',!leaks.length,(leaks.length?leaks.length+' void points in the open air outside every opening, first '+leaks[0].map(v=>typeof v==='number'?v.toFixed(1):v).join(' '):'no void meets the open air but at its openings')+' ('+Math.round(performance.now()-t0)+' ms at 2 m)');
  {const w=DHP.lit(CVC);add('wells-lit-at-noon',w.ok,w.detail);}
- /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling roots on the kipuka's floor */
+ /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling on the plateau's top, every Throne tree on the plain or the apron */
  {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],U=typeof THRONE!=='undefined'?THRONE.TREES:[],bad=dhbTreesOk(T).concat(dhbTreesOk(U,DHB.throneMask));
   add('no-trees-on-cliffs-or-in-buildings',T.length>0&&U.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor, '+U.length+' of the Throne kit\'s on the flows');}
  {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
@@ -90,7 +90,7 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* sky: the hall's light well forgotten */
  {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
  /* trees: one planted at the cliff's foot, one in the caravanserai */
- {const C=DH.SITES.find(q=>q.key==='zj_caravanserai'),bad=dhbTreesOk([{x:DH.CONE.cliffX+2,z:0},{x:C.x,z:C.z}]);add('no-trees-on-cliffs-or-in-buildings: a tree on the cliff, one in a building',bad.length===2,bad.join(', '));}
+ {const C=DH.SITES.find(q=>q.key==='zj_caravanserai'),bad=dhbTreesOk([{x:DH.PLAT.cliffX+2,z:0},{x:C.x,z:C.z}]);add('no-trees-on-cliffs-or-in-buildings: a tree on the cliff, one in a building',bad.length===2,bad.join(', '));}
  /* light: a plug of rock left in the light well's throat */
  {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});
   let D=null;try{D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build();}catch(err){}const w=D?DHP.lit(D):{ok:true,detail:'the plugged copy did not load'};add('wells-lit-at-noon: the light well plugged',!w.ok,w.detail);}

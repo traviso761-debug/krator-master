@@ -3,9 +3,10 @@
 // The capital of the Zeijani as data: no THREE, no DOM. x east, z south, y up, metres; the hub's square is y 0 and the flank rises
 // east toward the summit. P5's page builds from this; settlements/dhelv/tests/test-layout.js checks it (each check with a negative).
 //
-//   DH.surfaceY(x, z)   the young flow's surface over the city
-//   DH.groundY(x, z)    the ground the page draws: the flow, the kipuka's hollow round the outpost (old ground the flows went
-//                       round, 13 m below their fronts) and the old cone east of it, its west face a cliff (the portal's)
+//   DH.groundY(x, z)    the ground the page draws: the PLATEAU over the city (the kipuka: old ground the young flows went round,
+//                       its top at y 45, sheer 75 m walls; DH.PLAT, DH.plateauD the signed distance to its edge), the young
+//                       lava's plain round it, and the APRON at its straight west face, the outpost's level ground
+//   DH.surfaceY(x, z)   the same (the hall's throat and the wells open at it)
 //   DH.HALL             the hub: a bottle-shaped hall (its square an ellipse), the light well its throat, a ledge round it
 //   DH.PITS             the three satellites: open pits (centre, radius, floor y)
 //   DH.DISTRICTS        id, kind, anchor node, wealth (the rule's, by graph distance from the square), what it must hold
@@ -18,22 +19,56 @@
 const DH=(function(){
  'use strict';
  const PI=Math.PI,TAU=2*PI;
- const surfaceY=(x,z)=>42+.04*x+3*Math.sin(z/97)*Math.cos(x/131);
  const sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
- const KIPUKA={c:[-2650,20],r:260,floor:-75,edge:.15};   /* the hollow: its floor, and its edge rising to the flows' fronts over 15% of r */
- const CONE={c:[-2420,0],top:-24,slope:.3,squash:.7,cliffX:-2505,cliffZ:140};   /* the old cone; its west face cut to a cliff at x -2505 */
- const coneY=(x,z)=>CONE.top-CONE.slope*Math.hypot(x-CONE.c[0],(z-CONE.c[1])*CONE.squash);
- const cliffX=z=>CONE.cliffX;   /* straight: the outpost's carved fronts stand on it */
- function groundY(x,z){let y=surfaceY(x,z);const dk=Math.hypot(x-KIPUKA.c[0],(z-KIPUKA.c[1])*1.3)/KIPUKA.r+.03*Math.sin(x/41+z/37);
-  if(dk<1+KIPUKA.edge)y=KIPUKA.floor+(y-KIPUKA.floor)*sm(1,1+KIPUKA.edge,dk);   /* the hollow's floor is level: the walker's */
-  if(x>cliffX(z)||Math.abs(z-CONE.c[1])>CONE.cliffZ)y=Math.max(y,coneY(x,z));return y;}
+ /* ---- the land (the owner, review 2: the city in a SHELF sticking out of the volcano's slope; the young lava laid as it would
+    run). The FLANK rises east toward the summit (3.5%). Down it runs an old SPUR (the kipuka: older rock the young flows went
+    round): a narrow RIDGE from upslope that ends in a broad SHELF, the city under it, its top tilted gently west, sheer on
+    every side: its north, south and west walls (the flows banked against them) 40 m high at its upper end and 83 m at its tip,
+    and at its back a sheer step up to the ridge's crest (45 m), which climbs on toward the summit with flows on either side.
+    The young lava comes down the flank, parts at the ridge, runs down the troughs either side and spreads across the plain
+    below the tip: the PAGE lays it with the Throne kit's own flow model (48-dhelv-flows.js: groundY there is this land plus
+    the lava it lays). Here is the land alone (what the flows ran over). The APRON: the lee under the shelf's tip, which no
+    flow reached: older soil, level, the outpost's clearing, pasture and stream. The shelf's west face is cut straight at
+    x -680 where the outpost's portal and galleries stand; elsewhere its outline wanders */
+ const FLANK={x0:-825,y0:-34,slope:.035};
+ const PLAT={top:53,tilt:.0095,plain:-30,cliffX:-680,cliffZ:110,   /* top: at the tip (x -680), rising east by tilt; plain: the apron's level */
+  poly:[[-680,-110],[-680,110],[-690,175],[-650,240],[-600,300],[-560,380],[-470,420],[-420,500],[-330,530],[-250,500],[-170,560],[-60,590],[40,560],[130,610],
+   [250,620],[330,590],[420,640],[520,650],[590,600],[640,520],[700,440],[690,350],[730,260],[710,160],[740,60],[690,-30],[650,-110],[660,-190],[590,-260],
+   [500,-300],[420,-370],[320,-380],[220,-420],[120,-390],[20,-430],[-80,-410],[-180,-440],[-280,-400],[-380,-390],[-450,-340],[-530,-330],[-590,-270],
+   [-650,-230],[-700,-170],[-690,-140]]};
+ /* the ridge behind the shelf: a band from its back wall (x 640 on the shelf's top) up the flank, its crest 45 m over the shelf there */
+ const RIDGE={a:[640,90],b:[1750,150],w:72,top:111,tilt:.02};
+ const APRON={c:[-825,20],r:260,floor:PLAT.plain,edge:.15};   /* the outpost's ground: an ellipse (its z squashed 1.3) cut by the west face */
+ /* the outlines wander: each point but the west face's pushed out or in by a smooth noise along it */
+ const wob=(x,z)=>9*Math.sin(x/83+z/97)+5*Math.sin(x/37-z/43)+2*Math.sin(x/13+z/17);
+ /* signed distance to the shelf's edge (positive inside), the outline's wander added off the west face */
+ function plateauD(x,z){const P=PLAT.poly;let d=1e9,inside=false;
+  for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[j],b=P[i],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/L2));
+   d=Math.min(d,Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z));if(((a[1]>z)!==(b[1]>z))&&(x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0]))inside=!inside;}
+  const s=inside?d:-d,w=1-(1-sm(0,60,x-PLAT.cliffX))*(1-sm(0,50,Math.abs(z)-PLAT.cliffZ));   /* none on the west face, full 60 m off it */
+  return s+wob(x,z)*w;}
+ /* signed distance to the ridge (positive inside): its sides along the band, its west end a straight face across it (the back wall) */
+ function ridgeD(x,z){const A=RIDGE.a,B=RIDGE.b,dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),t=((x-A[0])*dx+(z-A[1])*dz)/L,c=Math.abs(((x-A[0])*dz-(z-A[1])*dx)/L);
+  return Math.min(RIDGE.w-c+wob(x+300,z-200)*.6,t+wob(x,z+500)*.25);}
+ const flankY=(x,z)=>FLANK.y0+FLANK.slope*(x-FLANK.x0)+1.4*Math.sin(x/61+z/83)+.6*Math.sin(x/19-z/27);
+ const topY=(x,z)=>PLAT.top+PLAT.tilt*(x-PLAT.cliffX)+1.6*Math.sin(x/97)*Math.cos(z/131)+.8*Math.sin(x/37+z/29);
+ const crestY=(x,z)=>RIDGE.top+RIDGE.tilt*(x-RIDGE.a[0])+1.2*Math.sin(x/71+z/53);
+ const plainY=flankY;
+ const cliffX=z=>PLAT.cliffX;   /* straight: the outpost's carved fronts stand on it */
+ /* the land: the flank, the shelf's top inside its edge, the ridge's crest inside its band (over the shelf at the back wall);
+    each step sheer (a metre either side of its edge); the apron's floor level where it lies */
+ function groundY(x,z){const d=plateauD(x,z),r=ridgeD(x,z);if(r>1)return crestY(x,z);if(d>1&&r<-1)return topY(x,z);
+  let y=flankY(x,z);const dk=Math.hypot(x-APRON.c[0],(z-APRON.c[1])*1.3)/APRON.r+.03*Math.sin(x/41+z/37);
+  if(dk<1+APRON.edge)y=APRON.floor+(y-APRON.floor)*sm(1,1+APRON.edge,dk);   /* the apron's floor is level: the walker's */
+  if(d>-1)y+=(topY(x,z)-y)*sm(-1,1,d);if(r>-1)y+=(crestY(x,z)-y)*sm(-1,1,r);return y;}
+ const surfaceY=groundY;
  /* the wealth rule: falls with the graph distance from the square (a district's anchor), from the hub's .9 to the outpost's .15 */
  const wealthAt=d=>+(.15+.75*Math.exp(-d/350)).toFixed(3);
  const RULES={
-  tube:{grade:[.01,.03],w:[8,12],len:[1800,2200]},   /* the outer tube */
-  braid:{rise:[30,40],len:[400,600],crossings:2,sep:6},   /* the braid; its crossings, each with at least sep m between the tubes */
+  tube:{grade:[.01,.03],w:[8,12],len:[100,300]},   /* the outer tube: from the portal in the west face to the stone door */
+  braid:{rise:[20,40],len:[350,600],crossings:2,sep:6},   /* the braid; its crossings, each with at least sep m between the tubes */
   grade:{tube:.04,braid:.15,street:.12,ramp:.15,ledge:.04,square:.02,stair:.75,door:.04,secret:.85},
-  satellite:{dist:[250,450],across:[60,90],depth:[25,40]},
+  satellite:{dist:[250,450],across:[60,90],depth:[40,75]},
   catacombs:{dist:[600,1200],depth:[40,80]},
   cistern:{dist:[0,250]},
   square:{gap:3,margin:2,free:.5},   /* floor sites 3 m apart, 2 m inside the square's edge, half the square left to walk */
@@ -60,23 +95,23 @@ const DH=(function(){
  const N=(id,x,z,y,o)=>{const n=Object.assign({id,x:+x.toFixed(2),z:+z.toFixed(2),y:+y.toFixed(2)},o||{});NODES.push(n);byId[id]=n;return n;};
  const E=(a,b,kind,w,o)=>{const e=Object.assign({a,b,kind,w,zone:'inner'},o||{});EDGES.push(e);return e;};
  const chain=(ids,kind,w,o)=>{for(let i=1;i<ids.length;i++)E(ids[i-1],ids[i],kind,w,o);};
- /* the outpost, in the kipuka: the portal in the old cone's cliff (x -2505, facing west), the clearing west of it */
- const OY=-75;
- N('o.gate',-2700,0,OY,{place:'the gate'});N('o.c',-2600,0,OY);N('o.portal',-2505,0,OY,{place:'the portal'});
- N('o.cara',-2600,52,OY,{place:'the caravanserai'});N('o.barr',-2620,-42,OY,{place:'the barracks'});N('o.huts',-2655,28,OY);N('o.huts2',-2650,-28,OY);
- N('o.galN',-2509,-45,OY,{place:'a gallery'});N('o.galS',-2509,45,OY,{place:'a gallery'});N('o.pasture',-2735,88,OY,{place:'the pasture'});
- N('o.tw1',-2498,-85,groundY(-2498,-85),{place:'a watchtower'});N('o.tw2',-2498,85,groundY(-2498,85),{place:'a watchtower'});N('o.tw3',-2758,-58,OY,{place:'a watchtower'});
- N('o.tube0',-2462,0,OY);
+ /* the outpost, on the apron at the plateau's west foot: the portal in the west face (x -680, facing west), the clearing west
+    of it; its watchtowers on the apron (the face is 75 m high: nothing stands on its shoulders) */
+ const OY=PLAT.plain;
+ N('o.gate',-875,0,OY,{place:'the gate'});N('o.c',-775,0,OY);N('o.portal',-680,0,OY,{place:'the portal'});
+ N('o.cara',-775,52,OY,{place:'the caravanserai'});N('o.barr',-795,-42,OY,{place:'the barracks'});N('o.huts',-830,28,OY);N('o.huts2',-825,-28,OY);
+ N('o.galN',-684,-45,OY,{place:'a gallery'});N('o.galS',-684,45,OY,{place:'a gallery'});N('o.pasture',-910,88,OY,{place:'the pasture'});
+ N('o.tw3',-933,-58,OY,{place:'a watchtower'});N('o.tw4',-885,-112,OY,{place:'a watchtower'});
+ N('o.tube0',-637,0,OY);
  for(const [a,b] of [['o.gate','o.c'],['o.c','o.portal'],['o.c','o.cara'],['o.c','o.barr'],['o.c','o.huts'],['o.c','o.huts2'],['o.portal','o.galN'],['o.portal','o.galS'],
-  ['o.gate','o.pasture'],['o.gate','o.tw3']])E(a,b,'street',4,{zone:'outer'});
- E('o.galN','o.tw1','stair',2,{zone:'outer',note:'a path cut up the cliff'});E('o.galS','o.tw2','stair',2,{zone:'outer',note:'a path cut up the cliff'});
+  ['o.gate','o.pasture'],['o.gate','o.tw3'],['o.gate','o.tw4']])E(a,b,'street',4,{zone:'outer'});
  E('o.portal','o.tube0','tube',10,{zone:'outer',note:'the portal\'s own tunnel'});
- /* the outer tube: 2 km east, climbing 2%, 10 m wide; side caves for the stores and the stables near the outpost; the rolling
-    stone door at its inner end */
- const T=[['t1',-2380,15],['t2',-2200,10],['t3',-1900,-20],['t4',-1500,10],['t5',-1100,-15],['t6',-800,10],['t.door',-560,0]];
- let px=-2462,pz=0,py=OY;for(const [id,x,z] of T){py+=Math.hypot(x-px,z-pz)*.02;N(id,x,z,py,id==='t.door'?{place:'the stone door'}:null);px=x;pz=z;}
+ /* the outer tube: east into the plateau, climbing 2%, 10 m wide; side caves for the stores and the stables by the portal; the
+    rolling stone door at its inner end */
+ const T=[['t1',-600,10],['t2',-560,-5],['t.door',-520,0]];
+ let px=-637,pz=0,py=OY;for(const [id,x,z] of T){py+=Math.hypot(x-px,z-pz)*.02;N(id,x,z,py,id==='t.door'?{place:'the stone door'}:null);px=x;pz=z;}
  chain(['o.tube0'].concat(T.map(t=>t[0])),'tube',10,{zone:'outer'});
- N('t.stores',-2372,48,byId.t1.y,{place:'the stores'});N('t.stables',-2392,-28,byId.t1.y,{place:'the stables'});
+ N('t.stores',-592,43,byId.t1.y,{place:'the stores'});N('t.stables',-612,-33,byId.t1.y,{place:'the stables'});
  E('t1','t.stores','tube',6,{zone:'outer'});E('t1','t.stables','tube',6,{zone:'outer'});
  /* the braid: from the stone door to the hall's west mouth, two strands that part and rejoin, climbing 35 m; an upper way from the
     hall's ledge crosses over it, and a drip-channel tube to the cistern crosses under the ledge's north tunnel */
@@ -119,9 +154,9 @@ const DH=(function(){
  /* the catacombs: down a processional way from the south well, far and deep; the Keepers' rooms at their head */
  pitNode(S2,'s2.e',PI/4);pitWay(S2,'s2.m',-11,0);pitWay(S2,'s2.k',-11,17);chain(['s2.c','s2.m','s2.k','s2.e'],'street',4);
  N('k1',300,420,-22);N('k2',480,560,-46);N('k.head',560,640,-58,{place:'the catacombs'});chain(['s2.e','k1','k2','k.head'],'ramp',4,{note:'the processional way'});
- /* the secret ways: scout exits to the surface, in the lava field and in the forest (scouts only) */
- N('x.lava',-200,-262,surfaceY(-200,-262),{place:'a scout exit',exit:'lava'});E('n.w','x.lava','secret',1.5,{zone:'secret'});
- N('x.forest',-2300,160,OY+2,{place:'a scout exit',exit:'forest'});E('t2','x.forest','secret',1.5,{zone:'secret'});
+ /* the secret ways (scouts only): an exit up into the forest on the plateau's top, and one out at the west face's foot */
+ N('x.lava',-200,-262,surfaceY(-200,-262),{place:'a scout exit (the forest on top)',exit:'top'});E('n.w','x.lava','secret',1.5,{zone:'secret'});
+ N('x.forest',-689,158,OY+2,{place:'a scout exit (the west face\'s foot)',exit:'foot'});E('t1','x.forest','secret',1.5,{zone:'secret',note:'out by a back passage from the outer tube, past the stores'});
 
  /* ---- the districts: each an anchor (its distance and wealth are the anchor's) and what it must hold */
  const DISTRICTS=[
@@ -170,24 +205,25 @@ const DH=(function(){
  sat(S1,{side:1,wall:[['zj_gallery_a',-120],['zj_store_tunnel',-70],['zj_farm_alecap',15],['zj_kiva',50],['zj_shop_dyer_carved',140],['zj_tavern_carved',175]]});
  sat(S2,{side:1,wall:[['zj_shop_rope_carved',-55],['zj_kiva',-20],['zj_farm_alecap',10],['zj_store_tunnel',80],['zj_inn_carved',125],['zj_gallery_b',180]]});
  sat(S3,{side:1,wall:[['zj_gallery_a',-50],['zj_kiva',30],['zj_shop_stonecutter_carved',95],['zj_store_tunnel',125],['zj_farm_alecap',155],['zj_tavern_carved',-100]]});
- /* the outpost: the portal and its galleries in the cliff (facing west), the caravanserai on the stream, the barracks, the gate
-    and a palisade round the clearing's west half, watchtowers on the cliff's shoulders and at the forest's edge, dwellings */
- S('zj_portal','outpost',-2505,0,-PI/2,OY,'wall');S('zj_gallery_a','outpost',-2505,-45,-PI/2,OY,'wall');S('zj_gallery_b','outpost',-2505,45,-PI/2,OY,'wall');
- S('zj_caravanserai','outpost',-2600,62,0,OY);S('zj_barracks_outpost','outpost',-2620,-48,0,OY);S('zj_gate','outpost',-2700,0,-PI/2,OY);
- S('zj_watchtower','outpost',-2498,-85,-PI/2,byId['o.tw1'].y);S('zj_watchtower','outpost',-2498,85,-PI/2,byId['o.tw2'].y);S('zj_watchtower','outpost',-2758,-58,-PI/2,OY);
- const PAL={c:[-2600,0],r:100};
+ /* the outpost: the portal and its galleries in the west face (facing west), the caravanserai on the stream, the barracks, the
+    gate and a palisade round the clearing's west half, two watchtowers outside it, dwellings */
+ S('zj_portal','outpost',-680,0,-PI/2,OY,'wall');S('zj_gallery_a','outpost',-680,-45,-PI/2,OY,'wall');S('zj_gallery_b','outpost',-680,45,-PI/2,OY,'wall');
+ S('zj_caravanserai','outpost',-775,62,0,OY);S('zj_barracks_outpost','outpost',-795,-48,0,OY);S('zj_gate','outpost',-875,0,-PI/2,OY);
+ S('zj_watchtower','outpost',-933,-58,-PI/2,OY);S('zj_watchtower','outpost',-885,-112,-PI/2,OY);
+ const PAL={c:[-775,0],r:100};
  for(let i=0;i<26;i++){const a=PI/2+.06+i*(PI-.12)/25;if(Math.abs(a-PI)<.07)continue;const x=PAL.c[0]+Math.cos(a)*PAL.r,z=PAL.c[1]+Math.sin(a)*PAL.r;S('zj_palisade','outpost',x,z,PI/2-a,OY);}   /* tangent, the bank (its front) outward */
  /* and from the ring's two ends straight on east to the cliff, so the clearing is closed: the last run reaches into the rock */
  for(const sz of [-1,1])for(let i=0;i<8;i++)S('zj_palisade','outpost',PAL.c[0]+6+12*i,sz*PAL.r,sz>0?0:PI,OY,'floor',{line:true});
- S('zj_hut_a','outpost',-2662,32,PI/2,OY);S('zj_hut_a','outpost',-2652,46,PI,OY);S('zj_hut_b','outpost',-2640,28,PI/2,OY);S('zj_hut_b','outpost',-2665,-30,PI/2,OY);
- S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-72,-PI/2,OY,'wall');
- S('zj_farm_veg','outpost',-2560,40,0,OY);
+ S('zj_hut_a','outpost',-837,32,PI/2,OY);S('zj_hut_a','outpost',-827,46,PI,OY);S('zj_hut_b','outpost',-815,28,PI/2,OY);S('zj_hut_b','outpost',-840,-30,PI/2,OY);
+ S('zj_house_wood','outpost',-823,-34,0,OY);S('zj_farmhouse_wood','outpost',-750,-62,PI,OY);S('zj_hut_c','outpost',-680.6,-72,-PI/2,OY,'wall');
+ S('zj_farm_veg','outpost',-735,40,0,OY);
  /* the outpost's kiva, sunk in the clearing, and beside it the lattice shrine (pierced stone wants the sky behind it) */
- S('zj_kiva','outpost',-2578,-16,0,OY);S('zj_shrine','outpost',-2562,-16,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
+ S('zj_kiva','outpost',-753,-16,0,OY);S('zj_shrine','outpost',-737,-16,0,OY);S('zj_stall_a','outpost',-682,72,-PI/2,OY,'wall');
  /* the stores and the stables in the outer tube's side caves */
  S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,faceIn(byId['t.stores'].x,byId['t.stores'].z,byId.t1.x,byId.t1.z),byId['t.stores'].y,'ground');
- const PASTURE=[[-2760,60],[-2700,60],[-2690,130],[-2770,140]];
- const STREAM=[[-2700,140],[-2640,95],[-2600,80],[-2540,70],[-2500,90]];
+ const PASTURE=[[-935,60],[-875,60],[-865,130],[-945,140]];
+ /* the stream: a spring at the west face's foot, west across the apron */
+ const STREAM=[[-875,140],[-815,95],[-775,80],[-715,70],[-678,90]];
 
  /* ---- each key's footprint, as the kit declares it (kits/zeijani/src: w, d; carved defs stand on the foot of their front) */
  const FOOT={zj_council:[46,92,'centre'],zj_temple:[48,52,'front'],zj_scout_hq:[12,12,'centre'],zj_tavern_built:[15,12,'centre'],zj_guard_hq:[16,12,'centre'],
@@ -237,6 +273,6 @@ const DH=(function(){
  const fromSquare=dist('h.sq',e=>e.zone!=='secret');
  DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
 
- return {PI,surfaceY,groundY,coneY,cliffX,KIPUKA,CONE,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
+ return {PI,surfaceY,groundY,topY,plainY,flankY,crestY,plateauD,ridgeD,cliffX,PLAT,RIDGE,FLANK,APRON,hallK,onLedge,hallNormal,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
 })();
 if(typeof module!=='undefined')module.exports=DH;

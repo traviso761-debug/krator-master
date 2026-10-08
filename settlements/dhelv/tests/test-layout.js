@@ -45,25 +45,25 @@ const steep=D=>D.EDGES.filter(e=>D.grade(e)>R.grade[e.kind]+1e-9).map(e=>e.a+'-'
  const D=fresh();D.byId.k2.y-=40;neg(!steep(D).length,'the processional way dropped 40 m at a step');}
 const tube=D=>{const E=D.EDGES.filter(e=>e.kind==='tube'&&/^(o\.tube0|t\d|t\.door)$/.test(e.a)&&/^(t\d|t\.door)$/.test(e.b));const L=E.reduce((a,e)=>a+D.len(e),0);
  return {L,ok:L>=R.tube.len[0]&&L<=R.tube.len[1]&&E.every(e=>{const g=D.grade(e);return g>=R.tube.grade[0]-1e-9&&g<=R.tube.grade[1]+1e-9&&e.w>=R.tube.w[0]&&e.w<=R.tube.w[1];})};};
-{const t=tube(DH);ok(t.ok,'the outer tube: 1.8 to 2.2 km, 1 to 3%, 8 to 12 m wide',t.L.toFixed(0)+' m');
- const D=fresh();D.byId.t4.y+=12;neg(tube(D).ok,'a 5% stretch in the outer tube');}
+{const t=tube(DH);ok(t.ok,'the outer tube: '+R.tube.len.join(' to ')+' m, 1 to 3%, 8 to 12 m wide',t.L.toFixed(0)+' m');
+ const D=fresh();D.byId.t2.y+=2.5;neg(tube(D).ok,'a 5% stretch in the outer tube');}
 
-/* ---- 3. the braid: climbs 30 to 40 m over 400 to 600 m; tubes cross at two levels or more, never at one */
+/* ---- 3. the braid: climbs 20 to 40 m over 400 to 600 m; tubes cross at two levels or more, never at one */
 function crossings(D){const out=[],E=D.EDGES.filter(e=>e.kind!=='square');for(let i=0;i<E.length;i++)for(let j=i+1;j<E.length;j++){const e=E[i],f=E[j];
   if(e.a===f.a||e.a===f.b||e.b===f.a||e.b===f.b)continue;const A=D.byId[e.a],B=D.byId[e.b],C=D.byId[f.a],Dd=D.byId[f.b];const x=cross([A.x,A.z],[B.x,B.z],[C.x,C.z],[Dd.x,Dd.z]);if(!x)continue;
   const y1=A.y+(B.y-A.y)*x[0],y2=C.y+(Dd.y-C.y)*x[1];out.push({e:e.a+'-'+e.b,f:f.a+'-'+f.b,sep:Math.abs(y1-y2)});}return out;}
 {const b0=DH.byId.b0,hw=DH.byId['h.w'],d=DH.dist('b0',e=>e.zone!=='secret'&&!/^(l[\d.-]|l1|l2|l4|u\.w)/.test(e.a)&&e.kind!=='stair')['h.w'],rise=hw.y-b0.y;
- ok(rise>=R.braid.rise[0]&&rise<=R.braid.rise[1]&&d>=R.braid.len[0]&&d<=R.braid.len[1],'the braid climbs 30 to 40 m over 400 to 600 m',rise.toFixed(1)+' m over '+d.toFixed(0)+' m');
+ ok(rise>=R.braid.rise[0]&&rise<=R.braid.rise[1]&&d>=R.braid.len[0]&&d<=R.braid.len[1],'the braid climbs '+R.braid.rise.join(' to ')+' m over '+R.braid.len.join(' to ')+' m',rise.toFixed(1)+' m over '+d.toFixed(0)+' m');
  const X=crossings(DH),bad=X.filter(c=>c.sep<R.braid.sep);ok(X.length>=R.braid.crossings&&!bad.length,'tubes cross on two levels, at least '+R.braid.sep+' m apart',X.map(c=>c.e+' over '+c.f+' '+c.sep.toFixed(1)+' m').join('; '));
  const D=fresh();D.byId['u.w'].y=-12;D.byId.l1.y=-12;const B=crossings(D).filter(c=>c.sep<R.braid.sep);neg(!B.length,'the ledge\'s west tunnel brought down to the braid\'s level',B.map(c=>c.e+'/'+c.f).join(', '));}
 
-/* ---- 4. the tubes stay under the young flow: 4 m of rock over an 8 m passage (but in the hall, the pits and the kipuka) */
+/* ---- 4. the ways stay under the rock: 4 m of it over an 8 m passage (but in the hall, the pits, and the portal's tunnel at the west face) */
 function cover(D){const out=[],H=D.HALL;for(const e of D.EDGES){if(!/^(tube|braid|ramp|stair|door)$/.test(e.kind))continue;const A=D.byId[e.a],B=D.byId[e.b];
   for(let t=0;t<=1;t+=.05){const x=A.x+(B.x-A.x)*t,z=A.z+(B.z-A.z)*t,y=A.y+(B.y-A.y)*t;
-   if(inEllipse([x,z],H.rx+6,H.rz+6,H.c)||D.PITS.some(P=>Math.hypot(x-P.c[0],z-P.c[1])<P.r+6)||x<-2440)continue;
+   if(inEllipse([x,z],H.rx+6,H.rz+6,H.c)||D.PITS.some(P=>Math.hypot(x-P.c[0],z-P.c[1])<P.r+6)||(x<D.PLAT.cliffX+45&&D.plateauD(x,z)<45))continue;
    const c=D.groundY(x,z)-(y+8);if(c<4)out.push(e.a+'-'+e.b+' @'+t.toFixed(2)+' '+c.toFixed(1)+' m');}}return out;}
 {const c=cover(DH);ok(!c.length,'every way under 4 m of rock or more',c.slice(0,4).join(', '));
- const D=fresh();D.byId.t5.y+=60;neg(!cover(D).length,'the outer tube raised 60 m into the open');}
+ const D=fresh();D.byId.t2.y+=80;neg(!cover(D).length,'the outer tube raised 80 m into the open');}
 
 /* ---- 5. the square holds its list with room to walk: inside its edge, 3 m apart, half of it free, the lanes to the mouths open,
    the stalls in the pool of daylight; the wall's sites on the wall, facing in, apart, clear of the mouths */
@@ -123,20 +123,20 @@ function outer(D){const s=reach(D,'o.gate',e=>e.zone==='outer'),bad=[];if(!s['t.
  const leave=D.EDGES.filter(e=>(s[e.a]?1:0)+(s[e.b]?1:0)===1&&e.zone!=='secret');if(leave.length!==1||leave[0].door!=='stonedoor')bad.push('ways on: '+leave.map(e=>e.a+'-'+e.b).join(' '));
  return {bad,n:Object.keys(s).length};}
 {const o=outer(DH);ok(!o.bad.length,'the foreigners\' zone ends at the stone door',o.bad.join(', ')||o.n+' nodes outside it');
- const D=fresh();D.EDGES.push({a:'t6',b:'a1',kind:'tube',w:4,zone:'outer'});D.adj.t6.push(['a1',D.EDGES.length-1]);D.adj.a1.push(['t6',D.EDGES.length-1]);
+ const D=fresh();D.EDGES.push({a:'t2',b:'a1',kind:'tube',w:4,zone:'outer'});D.adj.t2.push(['a1',D.EDGES.length-1]);D.adj.a1.push(['t2',D.EDGES.length-1]);
  neg(!outer(D).bad.length,'a side passage round the stone door',outer(D).bad.slice(0,3).join(', '));}
 
 /* ---- 10. the outpost's sites apart (the palisade's runs join end to end), the wall sites on the cliff and facing west */
 function outpost(D){const S=D.SITES.filter(s=>s.district==='outpost'),bad=[];
  for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const a=S[i],b=S[j];if(/zj_palisade|zj_gate/.test(a.key)&&/zj_palisade|zj_gate/.test(b.key))continue;
   const g=gap(quad(D,a),quad(D,b));if(g<1)bad.push(a.key+'/'+b.key+' '+g.toFixed(1)+' m');}
- for(const s of S.filter(s=>s.at==='wall'))if(s.x<-2512||s.x>-2504||Math.abs(s.ry+PI/2)>R.wallFit.face)bad.push(s.key+' off the cliff');return bad;}
+ for(const s of S.filter(s=>s.at==='wall'))if(s.x<D.PLAT.cliffX-7||s.x>D.PLAT.cliffX+1||Math.abs(s.ry+PI/2)>R.wallFit.face)bad.push(s.key+' off the cliff');return bad;}
 {const b=outpost(DH);ok(!b.length,'the outpost\'s sites apart, the cliff\'s on the cliff',b.join(', ')||DH.SITES.filter(s=>s.district==='outpost').length+' sites');
- const D=fresh();Object.assign(D.SITES.find(s=>s.key==='zj_barracks_outpost'),{x:-2648,z:-34});neg(!outpost(D).length,'the barracks moved onto the timber house',outpost(D).slice(0,2).join(', '));}
+ const D=fresh();Object.assign(D.SITES.find(s=>s.key==='zj_barracks_outpost'),(h=>({x:h.x,z:h.z}))(D.SITES.find(s=>s.key==='zj_house_wood')));neg(!outpost(D).length,'the barracks moved onto the timber house',outpost(D).slice(0,2).join(', '));}
 /* ---- 11. the palisade's runs lie tangent to their ring with the bank (each run's front) facing out */
 function palisade(D){const P=D.PAL,bad=[];
  /* the straight runs from the ring's ends to the cliff: their last one reaches the cliff, and they face out of the clearing */
- for(const sz of [-1,1]){const L=D.SITES.filter(s=>s.line&&Math.sign(s.z)===sz);if(!L.length||Math.max(...L.map(s=>s.x))+6.5<D.CONE.cliffX)bad.push('the '+(sz<0?'north':'south')+' run stops short of the cliff');
+ for(const sz of [-1,1]){const L=D.SITES.filter(s=>s.line&&Math.sign(s.z)===sz);if(!L.length||Math.max(...L.map(s=>s.x))+6.5<D.PLAT.cliffX)bad.push('the '+(sz<0?'north':'south')+' run stops short of the cliff');
   for(const s of L)if(Math.cos(s.ry)*sz<.98)bad.push('a straight run facing in');}for(const s of D.SITES.filter(s=>s.key==='zj_palisade'&&!s.line)){const r=Math.hypot(s.x-P.c[0],s.z-P.c[1]),ox=(s.x-P.c[0])/r,oz=(s.z-P.c[1])/r;
   if(Math.sin(s.ry)*ox+Math.cos(s.ry)*oz<.98)bad.push(s.x.toFixed(0)+','+s.z.toFixed(0));}return bad;}
 {const b=palisade(DH);ok(!b.length,'the palisade\'s runs tangent, their bank outward',b.length?b.length+' turned wrong, first at '+b[0]:DH.SITES.filter(s=>s.key==='zj_palisade').length+' runs');

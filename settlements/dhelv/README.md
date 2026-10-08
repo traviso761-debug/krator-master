@@ -1,15 +1,17 @@
 # Dhelv, the capital of the Zeijani
 
-The Zeijani's underground city under a young lava flow on the Throne's flank: an outpost in a kipuka, a 2 km outer tube to a rolling
+The Zeijani's underground city inside an old spur on the Throne's flank: a shelf standing 40 to 83 m out of the slope on sheer
+walls, old growth on top, a narrow ridge behind it up the volcano, the young flows parting round it. The outpost stands at its
+west foot in the apron (the lee no flow reached); a short outer tube (about 120 m) runs from its portal in the west face to a rolling
 stone door, a braid of tubes climbing to the hub (a bottle-shaped great hall under a light well), three satellite wells, the cistern
 hall and the funeral catacombs. Its buildings are the Zeijani kit's (`kits/zeijani`); the plan is `kits/zeijani/PLAN.md` (section 12
 is this layout; section 14 the phases).
 
-**State (2026-10-07): P5a, the page's skeleton.** The layout carved and placed: the hall, the three wells, every way (tubes,
-ramps, stairs, the ledge, the scouts' ways), the kit's defs on their sites with their interiors furnished, the ground of the
-flows, the kipuka and the old cone. Next: P5b (the surface: the hyperjungle and the Throne's kit read in place, the stream, the
-flows' basalt), P5c (the cave's light by the hour, drawing only what is seen, the minimap by level, walk mode's start). The
-ramblers (P6) and the Godot case (P7) follow.
+**State (2026-10-07): P6 and the owner's second review.** The layout carved and placed, both kits' flora, the cave's light,
+what is drawn, the nav graph and the ramblers (P6); then the owner's review: the shelf re-laid (the spur, the ridge, the
+apron, the flows by the model), the standardized grove, the stone door, the council's windows, the sky dome. Next: the light
+wells' floors (a breakdown hill with skylight flora, as the Throne's tube station), the tunnels' fungal flora, PLAN.md
+section 13's extras; the Godot case (P7) waits for a Godot binary.
 
 | Path | What |
 |---|---|
@@ -18,8 +20,10 @@ ramblers (P6) and the Godot case (P7) follow.
 | `tests/plan-svg.js` | draws the layout as a plan: `layout-plan.svg` |
 | `layout-plan.svg` | the plan, for tuning by eye (hover a line or a footprint for its id, height and grade) |
 | `src/00-head.html` | the page shell (the kit's, titled) |
-| `src/45-dhelv-bio.js` | the biome host: BIO bound before the kit loads; the kipuka's mask (its floor less the clearing, the stream, the pasture and the cliff's foot), the outpost's buildings as obstacles; `dhbForest` plants it with the world |
-| `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
+| `src/45-dhelv-bio.js` | the biome host: BIO bound before the kits load; the hyperjungle's mask (the shelf's top 10 m back from its edge, off the openings and the ridge's foot), the Throne's (the flank and the ridge's crest, off the walls), the outpost's buildings as obstacles; `dhbForest` plants both with the world |
+| `src/48-dhelv-flows.js` | the young lava as it ran `[G data]`: the Throne kit's flow model (`THRONE.flowHistory`) from seven vents up the flank over the layout's land; `DH.groundY` becomes the land plus the lava laid |
+| `src/49-dhelv-grove.js` | the shelf's old growth, standardized: three hypertrees and three saplings grown once alone and drawn as instances in cells, each with a far level |
+| `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield in tiles (`terrainH = DH.groundY`), the spur's walls (`dhWalls`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
 | `src/72-dhelv-nav.js` | the nav graph (`DHN`) and its checks: data |
 | `src/74-dhelv-sim.js` | the ramblers' world declared into core/simulation (`DHS`) and their checks: data |
@@ -38,6 +42,11 @@ python3 tools/node_in_chromium.py settlements/dhelv/tests/plan-svg.js --write   
 ## `DH`
 
 x east, z south, y up, metres; the hub's square is y 0, and the flank rises east (`DH.surfaceY`).
+
+- The land: `FLANK` (the volcano's slope, rising east at 3.5%), `PLAT` (the shelf: an organic outline, `plateauD` its signed
+  distance, its top 53 m tilting up east; its west face straight and plumb at `cliffX` for the outpost's mouths), `RIDGE`
+  (a band 72 m wide from the shelf's east end up the flank, `ridgeD`; its back wall where it rises off the shelf) and `APRON`
+  (the lee at the west foot, levelled for the outpost). `groundY` is the land; `48-dhelv-flows.js` lays the lava on it.
 
 - `HALL`: the hub. Its square is an ellipse 280 by 200 m; the light well's pool (18 m) at its middle; a ledge 10 m up round the
   north and east walls; four mouths (the braid comes in at the west).
@@ -91,12 +100,12 @@ under the ground opens into its void as a doorway, not through the surface). The
 |---|---|
 | the graph is connected from the outpost's gate | the portal's tunnel cut |
 | every edge within its kind's grade (a ramp 15%, a stair 75%) | the processional way dropped 40 m at a step |
-| the outer tube 1.8 to 2.2 km, climbing 1 to 3%, 8 to 12 m wide | a 5% stretch |
-| the braid climbs 30 to 40 m over 400 to 600 m; tubes cross at two levels or more, at least 6 m apart, never at one | the ledge's west tunnel brought down to the braid's level |
-| every way under at least 4 m of rock (outside the hall, the pits and the kipuka) | the outer tube raised 60 m |
+| the outer tube 100 to 300 m, climbing 1 to 3%, 8 to 12 m wide | a 5% stretch |
+| the braid climbs 20 to 40 m over 350 to 600 m; tubes cross at two levels or more, at least 6 m apart, never at one | the ledge's west tunnel brought down to the braid's level |
+| every way under at least 4 m of rock (outside the hall, the pits and the apron) | the outer tube raised 60 m |
 | the square holds its list with room to walk: inside its edge, 3 m apart, half of it free, the lanes to the four mouths open, the stalls in the daylight; the wall's sites on the wall, facing in, clear of the mouths | the guard headquarters pushed into a shop; the kiva set in the west lane |
 | every site is a kit def, its footprint the def's | the temple 8 m too narrow |
-| each district holds its list; the wells 250 to 450 m out, 60 to 90 m across, 25 to 40 m deep; the cistern within 250 m; the catacombs 600 to 1,200 m out and 40 to 80 m down; the caravanserai on the stream | the south well without its smithy; the outpost without its caravanserai; the catacombs 320 m out |
+| each district holds its list; the wells 250 to 450 m out, 60 to 90 m across, 40 to 75 m deep (down from the shelf's top); the cistern within 250 m; the catacombs 600 to 1,200 m out and 40 to 80 m down; the caravanserai on the stream | the south well without its smithy; the outpost without its caravanserai; the catacombs 320 m out |
 | wealth falls with the distance from the square: the districts' wealth by the rule, and their homes' mean wealth never rising outward | an estate in the east well |
 | the foreigners' zone ends at the stone door: the outer ways reach it and nothing past it, and the door is the only way on | a side passage round the stone door |
 | the outpost's sites apart (the palisade's runs join end to end); the cliff's sites on the cliff, facing west | the barracks moved onto the timber house |
@@ -127,25 +136,42 @@ bounce. The lamps the buildings record (lanterns, hearths, burners) and the glow
 rest: the 14 nearest the eye are real lights. `[` and `]` move the hour. Checked: the well floors see the sky at noon (its
 negative: the light well's throat plugged with rock).
 
-## The kipuka's forest
+## The shelf and its lava
+
+The city is inside an old spur (the owner: "a shelf sticking out of the slope of the volcano"; "think about how the lava would
+actually travel"). **The young lava is laid by the Throne kit's own flow model** (`48-dhelv-flows.js`, `THRONE.flowHistory`):
+seven flows from vents up the flank, oldest first (seven centuries to three years), each running down the fall line of the
+ground as it then stood, widening into lobes with steep fronts. The ridge parts them; they bank against the shelf's north and
+south walls and spread across the plain below its tip, leaving the apron (the lee under the west face) bare. The spur's
+ground is 2,600 years old, the apron 400; `THRONE.ageAt` answers the model's ages elsewhere. It lays the flows in about 0.7 s.
+
+The ground is drawn in 50 m tiles: at 5 m where a sheer step, the outpost or an opening passes, 10 m elsewhere on the spur,
+25 m out on the flank (about 125k triangles); a skirt hangs under an edge that meets a coarser tile, and the normals come
+from the height. **The spur's walls** are their own mesh (`dhWalls`): jointed columns 4 m out on each step's low side and a
+caprock 8 m deep along its top, on the cave's rock shader; the west face is the ground's own plumb step (the outpost's
+mouths open through it, their holes in the ground opening only with the camera near enough for the rock to be meshed).
+
+## The forests
 
 The hyperjungle kit (biomes/hyperjungle/src) is read in place: `build.py` takes core/biome (head, kit, foliage, place,
 stage) and wraps the kit's fragments (41, 50, 55, 60, 65, 70; its fauna left out) in one closure, so the helpers its 41
 declares (TAU, rng, fbm...) and its random stream stay its own beside the Zeijani kit's. Its texture pack goes beside the page
-(`dist/dhelv.tex.hyperjungle.js`, about 3 MB) to keep the page under 16 MB. Three hero hypertrees ring the outpost's
-clearing with their saplings and some 2,000 understory plants; the young flows are basalt; a stream runs through the
-clearing. Checked: no tree on the cliff or in a building (its negative: one planted at the cliff's foot, one in the
-caravanserai). `?noforest` leaves it out, `?q=` scales it.
+(`dist/dhelv.tex.hyperjungle.js`, about 3 MB) to keep the page under 16 MB.
 
-**The young lava is the Throne kit's** (biomes/throne/src 46, 50, 55, 60, 70, wrapped the same way; its pack less the host's
-ground, roof and sea sets in `dist/dhelv.tex.throne.js`, 8.6 MB). It plants first, as on its kipuka station, and its big
-trees (the great ruffs, the siphons, the frill trees) become obstacles to the hyperjungle's. Its flow model is not run:
-Dhelv binds its own ages (`45-dhelv-bio.js`: `THRONE.FLOWS` from the layout): the kipuka 2,600 years, the old cone 8,000
-(old ground: its forest), the flow over the city sixty ("a bare flow": the pioneers, scattered small trees) with older
-lobes (380: woodland) and fresh tongues (8: bare rock) where a noise says. Its fields (humid, slope, rock, owned, kedge,
-knear, skylight) are cached on an 8 m grid; the skylight ring round each well's pit takes the kit's skylight flora. Its
-mask: the ground's sheet less the cliff's foot and lip, the clearing, the stream, the pasture, the light well, the wells'
-pits and any scarp. About 4,300 of its trees; it plants in 2.9 s. `?nothrone` leaves it out, `?tq=` scales it (0.7).
+**The shelf's old growth is standardized** (`49-dhelv-grove.js`; the owner: "2-3 standardized trees ... and LOD"): the kit
+grows three hypertrees (a baobab, a mahogany, a ghostwood, each near and as its far impostor) and three saplings once, alone on
+a flat stage (`HYPERJUNGLE.make`, `.grow`, the open world's nursery harvest, copied), in about 0.15 s. 23 giants (scaled to
+about half the kit's, 80 to 140 m) and some 1,400 saplings stand on the shelf's top, each tinted a little; they are drawn as
+instances in cells (200 m near, 400 m far): a giant near within 420 m of the camera and its impostor beyond, a sapling as
+grown within 300 m and beyond it a stand-in (a bole and a crown in its leaves' colour, about 90 triangles). The kit's floor
+pass lays the understory round them. `?noforest` leaves the forests out, `?q=` scales the floor.
+
+**The Throne kit's flora** (biomes/throne/src 46, 50, 55, 60, 70, wrapped the same way; its pack less the host's ground, roof
+and sea sets in `dist/dhelv.tex.throne.js`, 8.6 MB) plants the flows by their ages and the ridge's crest, first, and its big
+trees become obstacles to the hyperjungle's. Its fields are cached on an 8 m grid; its mask is the flank less the spur's
+walls, their foot and lip, the light well, the wells' pits and any scarp. It plants in about 3.4 s. `?nothrone` leaves it
+out, `?tq=` scales it (0.7). Checked: no tree on a wall, a slope or in a building at its own level (its negative: one planted
+at the west face, one in the caravanserai).
 
 ## What is drawn
 
@@ -157,8 +183,8 @@ Every quarter second the camera decides what is drawn (`dhSeen`): a carved cell 
 within 220 m from below (out of the portal, up a well); a carved site's furniture only with the camera inside it or before its
 front (32 m out, at its floor's height), a sunk site's within 45 m, a built site's within 90 m (150 m on the surface), all of
 them in the cut-away; the plants within 1,300 m above ground, underground only up an opening or out of the cliff's mouths.
-Underground the views draw at most 0.83M triangles and 327 draws besides the rock; on the surface, over the kipuka's old
-growth, up to 1.5M and 585 (3.7M and 2,423 with everything drawn). `?seeall` draws everything.
+The textured furniture (the batch's decals: each its own mesh) goes into its site's cell too. On the surface the views draw at
+most 1.51M triangles and 540 draws (the outpost's view; 2,783 draws with everything drawn). `?seeall` draws everything.
 
 The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
 hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its
@@ -168,7 +194,7 @@ floor; the ground over them opens on the camera's side.
 
 `src/72-dhelv-nav.js` (`DHN`, data only) builds the one graph the ramblers walk, from what was built (built on first use,
 after the world, in about 0.8 s): the layout's ways (`DH.NODES`, `DH.EDGES`, each node set on the floor built under it);
-a grid on each open floor (the hall's floor and bays at 3 m, each well's pit floor at 3 m, the kipuka's floor at 5 m), its
+a grid on each open floor (the hall's floor and bays at 3 m, each well's pit floor at 3 m, the apron's floor at 5 m), its
 nodes where the walk map has that floor and no block, its edges where a walker walks; and a door node a metre out from
 each building's front (else behind or beside it: a kiva's hatch is reached from its ladder's side; else the way's node at
 the door: the cone's towers), linked to the two nearest nodes a walker reaches. A street or a square's lane between two
@@ -188,7 +214,7 @@ The life layer is core/simulation (with core/clock and core/sched), as Mungo's. 
 it: the nav graph's layers ('pedestrian', every way but the secret ones; 'outer', the outer zone only, for the ash-nomad
 traders; 'guard' and 'scout', which pass the stone door when it is shut, it being theirs); 118 places from what was built
 (each door's site by its key: homes, shops, taverns, the farms, the temple, kivas and shrines, the catacombs, the cistern,
-the posts, the caravanserai; the pasture and the forest's edge on the kipuka), each door carrying its nav node so a route
+the posts, the caravanserai; the pasture and the woods on the apron), each door carrying its nav node so a route
 starts and ends on the right level (SIM's own lookup is by plan); the PLAN's roles with hourly schedules; about 650 people
 from the homes (`?pop=2` doubles them). The rolling stone door is shut from 22:00 to 5:00. A day runs in under a second.
 

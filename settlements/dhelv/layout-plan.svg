@@ -4,11 +4,11 @@
 <text x="18" y="28" font-size="14" font-weight="bold">Dhelv: the city (x -620..720, z -320..720; north up)</text>
 <ellipse cx="472.7" cy="248.8" rx="104.5" ry="74.6" fill="#e2d6bd" stroke="#8a7a5a"/>
 <circle cx="472.7" cy="248.8" r="13.4" fill="#fff6d8" stroke="none"/>
-<circle cx="256.3" cy="121.9" r="29.9" fill="#e6efd8" stroke="#6a8a4a"/><text x="256.3" y="89.1" font-size="11" text-anchor="middle">the west well (floor -6, 38.17 m deep)</text>
-<circle cx="517.5" cy="472.7" r="26.1" fill="#e6efd8" stroke="#6a8a4a"/><text x="517.5" y="443.6" font-size="11" text-anchor="middle">the south well (floor 6, 38.53 m deep)</text>
-<circle cx="756.3" cy="338.4" r="31.3" fill="#e6efd8" stroke="#6a8a4a"/><text x="756.3" y="304.0" font-size="11" text-anchor="middle">the east well (floor 20, 34.45 m deep)</text>
-<polygon points="-1587.0,293.6 -1542.2,293.6 -1534.8,345.8 -1594.5,353.3" fill="#dfe8c0" stroke="#8a9a5a"/>
-<polyline points="-1542.2,353.3 -1497.5,319.7 -1467.6,308.5 -1422.8,301.0 -1393.0,316.0" fill="none" stroke="#4a86c0" stroke-width="2"/>
+<circle cx="256.3" cy="121.9" r="29.9" fill="#e6efd8" stroke="#6a8a4a"/><text x="256.3" y="89.1" font-size="11" text-anchor="middle">the west well (floor -6, 61.91 m deep)</text>
+<circle cx="517.5" cy="472.7" r="26.1" fill="#e6efd8" stroke="#6a8a4a"/><text x="517.5" y="443.6" font-size="11" text-anchor="middle">the south well (floor 6, 52.97 m deep)</text>
+<circle cx="756.3" cy="338.4" r="31.3" fill="#e6efd8" stroke="#6a8a4a"/><text x="756.3" y="304.0" font-size="11" text-anchor="middle">the east well (floor 20, 43.16 m deep)</text>
+<polygon points="-225.1,293.6 -180.3,293.6 -172.8,345.8 -232.5,353.3" fill="#dfe8c0" stroke="#8a9a5a"/>
+<polyline points="-180.3,353.3 -135.5,319.7 -105.7,308.5 -60.9,301.0 -33.3,316.0" fill="none" stroke="#4a86c0" stroke-width="2"/>
 <polygon points="393.2,236.9 393.2,202.5 461.9,202.5 461.9,236.9" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_council (hub)</title></polygon>
 <line x1="427.5" y1="219.7" x2="428.7" y2="219.7" stroke="#000" stroke-width="1"/>
 <polygon points="478.7,198.1 487.6,198.1 487.6,207.0 478.7,207.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_scout_hq (hub)</title></polygon>
@@ -56,8 +56,8 @@
 <line x1="378.0" y1="280.3" x2="378.9" y2="279.7" stroke="#000" stroke-width="1"/>
 <polygon points="361.1,272.2 358.4,262.9 369.5,259.6 372.2,268.9" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shop_knapper_carved (hub)</title></polygon>
 <line x1="370.5" y1="264.3" x2="371.6" y2="264.0" stroke="#000" stroke-width="1"/>
-<polygon points="61.5,245.1 61.5,252.5 54.4,252.5 54.4,245.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stonedoor (outpost)</title></polygon>
-<line x1="54.8" y1="248.8" x2="53.7" y2="248.8" stroke="#000" stroke-width="1"/>
+<polygon points="91.3,245.1 91.3,252.5 84.3,252.5 84.3,245.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stonedoor (outpost)</title></polygon>
+<line x1="84.6" y1="248.8" x2="83.5" y2="248.8" stroke="#000" stroke-width="1"/>
 <polygon points="505.7,97.8 526.0,110.3 512.5,132.2 492.2,119.7" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_cistern (cistern)</title></polygon>
 <line x1="502.5" y1="125.7" x2="502.0" y2="126.6" stroke="#000" stroke-width="1"/>
 <polygon points="911.7,730.6 894.8,747.5 881.9,734.6 898.8,717.7" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_catacomb (catacombs)</title></polygon>
@@ -128,128 +128,126 @@
 <line x1="727.9" y1="351.6" x2="728.9" y2="351.1" stroke="#000" stroke-width="1"/>
 <polygon points="739.4,292.1 756.3,289.1 759.3,306.4 742.4,309.3" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_tavern_carved (s3)</title></polygon>
 <line x1="750.8" y1="307.5" x2="751.0" y2="308.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1366.9,230.1 -1366.9,267.5 -1397.1,267.5 -1397.1,230.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_portal (outpost)</title></polygon>
-<line x1="-1396.7" y1="248.8" x2="-1397.8" y2="248.8" stroke="#000" stroke-width="1"/>
-<polygon points="-1354.9,204.0 -1354.9,226.4 -1397.1,226.4 -1397.1,204.0" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_a (outpost)</title></polygon>
-<line x1="-1396.7" y1="215.2" x2="-1397.8" y2="215.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1371.3,271.2 -1371.3,293.6 -1397.1,293.6 -1397.1,271.2" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_b (outpost)</title></polygon>
-<line x1="-1396.7" y1="282.4" x2="-1397.8" y2="282.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1484.8,281.6 -1450.4,281.6 -1450.4,308.5 -1484.8,308.5" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_caravanserai (outpost)</title></polygon>
-<line x1="-1467.6" y1="295.1" x2="-1467.6" y2="296.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1489.3,209.3 -1475.8,209.3 -1475.8,216.7 -1489.3,216.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_barracks_outpost (outpost)</title></polygon>
-<line x1="-1482.5" y1="213.0" x2="-1482.5" y2="214.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1540.4,244.3 -1540.4,253.3 -1544.1,253.3 -1544.1,244.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gate (outpost)</title></polygon>
-<line x1="-1542.2" y1="248.8" x2="-1543.4" y2="248.8" stroke="#000" stroke-width="1"/>
-<polygon points="-1388.9,182.8 -1388.9,188.0 -1394.1,188.0 -1394.1,182.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="-1391.5" y1="185.4" x2="-1392.6" y2="185.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1388.9,309.6 -1388.9,314.9 -1394.1,314.9 -1394.1,309.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="-1391.5" y1="312.2" x2="-1392.6" y2="312.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1582.9,202.9 -1582.9,208.1 -1588.1,208.1 -1588.1,202.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="-1585.5" y1="205.5" x2="-1586.6" y2="205.5" stroke="#000" stroke-width="1"/>
-<polygon points="-1476.8,321.5 -1467.2,322.1 -1467.3,325.1 -1477.0,324.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1472.1" y1="323.3" x2="-1472.2" y2="324.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1485.5,319.9 -1476.0,321.6 -1476.5,324.6 -1486.1,322.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1481.0" y1="322.2" x2="-1481.2" y2="323.3" stroke="#000" stroke-width="1"/>
-<polygon points="-1494.0,317.2 -1484.7,320.1 -1485.6,322.9 -1494.9,320.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1489.8" y1="320.1" x2="-1490.1" y2="321.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1502.0,313.5 -1493.2,317.5 -1494.4,320.2 -1503.3,316.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1498.2" y1="316.9" x2="-1498.7" y2="317.9" stroke="#000" stroke-width="1"/>
-<polygon points="-1509.6,308.9 -1501.3,313.9 -1502.8,316.5 -1511.1,311.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1506.2" y1="312.7" x2="-1506.8" y2="313.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1516.5,303.4 -1508.9,309.4 -1510.7,311.7 -1518.4,305.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1513.6" y1="307.6" x2="-1514.3" y2="308.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1522.7,297.1 -1515.9,304.0 -1518.0,306.1 -1524.9,299.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1520.4" y1="301.6" x2="-1521.2" y2="302.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1528.2,290.1 -1522.2,297.7 -1524.5,299.6 -1530.5,291.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1526.4" y1="294.8" x2="-1527.2" y2="295.5" stroke="#000" stroke-width="1"/>
-<polygon points="-1532.7,282.5 -1527.7,290.8 -1530.2,292.3 -1535.3,284.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1531.5" y1="287.4" x2="-1532.4" y2="288.0" stroke="#000" stroke-width="1"/>
-<polygon points="-1536.3,274.4 -1532.3,283.3 -1535.0,284.5 -1539.0,275.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1535.7" y1="279.4" x2="-1536.7" y2="279.9" stroke="#000" stroke-width="1"/>
-<polygon points="-1538.9,265.9 -1536.0,275.2 -1538.8,276.1 -1541.7,266.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1538.9" y1="271.0" x2="-1539.9" y2="271.3" stroke="#000" stroke-width="1"/>
-<polygon points="-1540.4,257.2 -1538.7,266.8 -1541.6,267.3 -1543.4,257.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1541.0" y1="262.3" x2="-1542.1" y2="262.5" stroke="#000" stroke-width="1"/>
-<polygon points="-1538.7,230.8 -1540.4,240.4 -1543.4,239.9 -1541.6,230.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1541.0" y1="235.4" x2="-1542.1" y2="235.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1536.0,222.4 -1538.9,231.7 -1541.7,230.8 -1538.8,221.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1538.9" y1="226.6" x2="-1539.9" y2="226.3" stroke="#000" stroke-width="1"/>
-<polygon points="-1532.3,214.4 -1536.3,223.2 -1539.0,222.0 -1535.0,213.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1535.7" y1="218.2" x2="-1536.7" y2="217.7" stroke="#000" stroke-width="1"/>
-<polygon points="-1527.7,206.8 -1532.7,215.1 -1535.3,213.6 -1530.2,205.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1531.5" y1="210.2" x2="-1532.4" y2="209.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1522.2,199.9 -1528.2,207.5 -1530.5,205.7 -1524.5,198.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1526.4" y1="202.8" x2="-1527.2" y2="202.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1515.9,193.6 -1522.7,200.5 -1524.9,198.4 -1518.0,191.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1520.4" y1="196.0" x2="-1521.2" y2="195.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1508.9,188.2 -1516.5,194.2 -1518.4,191.9 -1510.7,185.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1513.6" y1="190.1" x2="-1514.3" y2="189.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1501.3,183.7 -1509.6,188.7 -1511.1,186.2 -1502.8,181.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1506.2" y1="184.9" x2="-1506.8" y2="184.0" stroke="#000" stroke-width="1"/>
-<polygon points="-1493.2,180.1 -1502.0,184.1 -1503.3,181.4 -1494.4,177.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1498.2" y1="180.7" x2="-1498.7" y2="179.7" stroke="#000" stroke-width="1"/>
-<polygon points="-1484.7,177.5 -1494.0,180.4 -1494.9,177.6 -1485.6,174.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1489.8" y1="177.6" x2="-1490.1" y2="176.5" stroke="#000" stroke-width="1"/>
-<polygon points="-1476.0,176.0 -1485.5,177.7 -1486.1,174.8 -1476.5,173.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1481.0" y1="175.4" x2="-1481.2" y2="174.3" stroke="#000" stroke-width="1"/>
-<polygon points="-1467.2,175.5 -1476.8,176.1 -1477.0,173.1 -1467.3,172.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1472.1" y1="174.3" x2="-1472.2" y2="173.2" stroke="#000" stroke-width="1"/>
-<polygon points="-1458.3,175.7 -1468.0,175.7 -1468.0,172.7 -1458.3,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1463.1" y1="174.2" x2="-1463.1" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1449.3,175.7 -1459.0,175.7 -1459.0,172.7 -1449.3,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1454.2" y1="174.2" x2="-1454.2" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1440.4,175.7 -1450.1,175.7 -1450.1,172.7 -1440.4,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1445.2" y1="174.2" x2="-1445.2" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1431.4,175.7 -1441.1,175.7 -1441.1,172.7 -1431.4,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1436.3" y1="174.2" x2="-1436.3" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1422.5,175.7 -1432.2,175.7 -1432.2,172.7 -1422.5,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1427.3" y1="174.2" x2="-1427.3" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1413.5,175.7 -1423.2,175.7 -1423.2,172.7 -1413.5,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1418.4" y1="174.2" x2="-1418.4" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1404.6,175.7 -1414.3,175.7 -1414.3,172.7 -1404.6,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1409.4" y1="174.2" x2="-1409.4" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1395.6,175.7 -1405.3,175.7 -1405.3,172.7 -1395.6,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1400.4" y1="174.2" x2="-1400.4" y2="173.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1468.0,321.9 -1458.3,321.9 -1458.3,324.9 -1468.0,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1463.1" y1="323.4" x2="-1463.1" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1459.0,321.9 -1449.3,321.9 -1449.3,324.9 -1459.0,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1454.2" y1="323.4" x2="-1454.2" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1450.1,321.9 -1440.4,321.9 -1440.4,324.9 -1450.1,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1445.2" y1="323.4" x2="-1445.2" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1441.1,321.9 -1431.4,321.9 -1431.4,324.9 -1441.1,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1436.3" y1="323.4" x2="-1436.3" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1432.2,321.9 -1422.5,321.9 -1422.5,324.9 -1432.2,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1427.3" y1="323.4" x2="-1427.3" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1423.2,321.9 -1413.5,321.9 -1413.5,324.9 -1423.2,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1418.4" y1="323.4" x2="-1418.4" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1414.3,321.9 -1404.6,321.9 -1404.6,324.9 -1414.3,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1409.4" y1="323.4" x2="-1409.4" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1405.3,321.9 -1395.6,321.9 -1395.6,324.9 -1405.3,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="-1400.4" y1="323.4" x2="-1400.4" y2="324.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1516.9,275.7 -1516.9,269.7 -1510.9,269.7 -1510.9,275.7" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
-<line x1="-1513.9" y1="272.7" x2="-1512.8" y2="272.7" stroke="#000" stroke-width="1"/>
-<polygon points="-1503.4,286.1 -1509.4,286.1 -1509.4,280.1 -1503.4,280.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
-<line x1="-1506.4" y1="283.1" x2="-1506.4" y2="282.0" stroke="#000" stroke-width="1"/>
-<polygon points="-1501.2,273.1 -1501.2,266.3 -1493.7,266.3 -1493.7,273.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
-<line x1="-1497.5" y1="269.7" x2="-1496.3" y2="269.7" stroke="#000" stroke-width="1"/>
-<polygon points="-1519.9,229.8 -1519.9,223.1 -1512.4,223.1 -1512.4,229.8" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
-<line x1="-1516.1" y1="226.4" x2="-1515.0" y2="226.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1507.5,219.3 -1499.3,219.3 -1499.3,227.5 -1507.5,227.5" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_house_wood (outpost)</title></polygon>
-<line x1="-1503.4" y1="223.4" x2="-1503.4" y2="224.6" stroke="#000" stroke-width="1"/>
-<polygon points="-1443.7,207.8 -1454.2,207.8 -1454.2,197.3 -1443.7,197.3" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farmhouse_wood (outpost)</title></polygon>
-<line x1="-1449.0" y1="202.5" x2="-1449.0" y2="201.4" stroke="#000" stroke-width="1"/>
-<polygon points="-1392.7,191.3 -1392.7,198.8 -1401.6,198.8 -1401.6,191.3" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_c (outpost)</title></polygon>
-<line x1="-1397.2" y1="195.1" x2="-1398.3" y2="195.1" stroke="#000" stroke-width="1"/>
-<polygon points="-1443.7,274.2 -1431.8,274.2 -1431.8,283.1 -1443.7,283.1" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farm_veg (outpost)</title></polygon>
-<line x1="-1437.8" y1="278.7" x2="-1437.8" y2="279.8" stroke="#000" stroke-width="1"/>
-<polygon points="-1454.9,233.1 -1447.5,233.1 -1447.5,240.6 -1454.9,240.6" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_kiva (outpost)</title></polygon>
-<line x1="-1451.2" y1="236.9" x2="-1451.2" y2="238.0" stroke="#000" stroke-width="1"/>
-<polygon points="-1442.2,233.9 -1436.3,233.9 -1436.3,239.9 -1442.2,239.9" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shrine (outpost)</title></polygon>
-<line x1="-1439.3" y1="236.9" x2="-1439.3" y2="238.0" stroke="#000" stroke-width="1"/>
-<polygon points="-1396.3,300.7 -1396.3,304.4 -1397.9,304.4 -1397.9,300.7" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stall_a (outpost)</title></polygon>
-<line x1="-1397.1" y1="302.5" x2="-1398.2" y2="302.5" stroke="#000" stroke-width="1"/>
-<polygon points="-1285.5,302.5 -1300.0,306.0 -1304.8,286.0 -1290.3,282.5" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_store_tunnel (outpost)</title></polygon>
-<line x1="-1297.5" y1="284.6" x2="-1297.7" y2="283.5" stroke="#000" stroke-width="1"/>
+<polygon points="-4.9,230.1 -4.9,267.5 -35.1,267.5 -35.1,230.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_portal (outpost)</title></polygon>
+<line x1="-34.8" y1="248.8" x2="-35.9" y2="248.8" stroke="#000" stroke-width="1"/>
+<polygon points="7.0,204.0 7.0,226.4 -35.1,226.4 -35.1,204.0" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_a (outpost)</title></polygon>
+<line x1="-34.8" y1="215.2" x2="-35.9" y2="215.2" stroke="#000" stroke-width="1"/>
+<polygon points="-9.4,271.2 -9.4,293.6 -35.1,293.6 -35.1,271.2" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_b (outpost)</title></polygon>
+<line x1="-34.8" y1="282.4" x2="-35.9" y2="282.4" stroke="#000" stroke-width="1"/>
+<polygon points="-122.8,281.6 -88.5,281.6 -88.5,308.5 -122.8,308.5" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_caravanserai (outpost)</title></polygon>
+<line x1="-105.7" y1="295.1" x2="-105.7" y2="296.2" stroke="#000" stroke-width="1"/>
+<polygon points="-127.3,209.3 -113.9,209.3 -113.9,216.7 -127.3,216.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_barracks_outpost (outpost)</title></polygon>
+<line x1="-120.6" y1="213.0" x2="-120.6" y2="214.1" stroke="#000" stroke-width="1"/>
+<polygon points="-178.4,244.3 -178.4,253.3 -182.2,253.3 -182.2,244.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gate (outpost)</title></polygon>
+<line x1="-180.3" y1="248.8" x2="-181.4" y2="248.8" stroke="#000" stroke-width="1"/>
+<polygon points="-221.0,202.9 -221.0,208.1 -226.2,208.1 -226.2,202.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
+<line x1="-223.6" y1="205.5" x2="-224.7" y2="205.5" stroke="#000" stroke-width="1"/>
+<polygon points="-185.1,162.6 -185.1,167.8 -190.4,167.8 -190.4,162.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
+<line x1="-187.8" y1="165.2" x2="-188.9" y2="165.2" stroke="#000" stroke-width="1"/>
+<polygon points="-114.9,321.5 -105.2,322.1 -105.4,325.1 -115.1,324.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-110.1" y1="323.3" x2="-110.2" y2="324.4" stroke="#000" stroke-width="1"/>
+<polygon points="-123.6,319.9 -114.1,321.6 -114.6,324.6 -124.1,322.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-119.1" y1="322.2" x2="-119.3" y2="323.3" stroke="#000" stroke-width="1"/>
+<polygon points="-132.0,317.2 -122.8,320.1 -123.7,322.9 -132.9,320.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-127.9" y1="320.1" x2="-128.2" y2="321.1" stroke="#000" stroke-width="1"/>
+<polygon points="-140.1,313.5 -131.2,317.5 -132.5,320.2 -141.3,316.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-136.3" y1="316.9" x2="-136.7" y2="317.9" stroke="#000" stroke-width="1"/>
+<polygon points="-147.6,308.9 -139.3,313.9 -140.9,316.5 -149.2,311.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-144.3" y1="312.7" x2="-144.8" y2="313.6" stroke="#000" stroke-width="1"/>
+<polygon points="-154.6,303.4 -146.9,309.4 -148.8,311.7 -156.4,305.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-151.7" y1="307.6" x2="-152.4" y2="308.4" stroke="#000" stroke-width="1"/>
+<polygon points="-160.8,297.1 -153.9,304.0 -156.1,306.1 -162.9,299.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-158.4" y1="301.6" x2="-159.2" y2="302.4" stroke="#000" stroke-width="1"/>
+<polygon points="-166.2,290.1 -160.2,297.7 -162.6,299.6 -168.6,291.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-164.4" y1="294.8" x2="-165.3" y2="295.5" stroke="#000" stroke-width="1"/>
+<polygon points="-170.8,282.5 -165.7,290.8 -168.3,292.3 -173.3,284.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-169.5" y1="287.4" x2="-170.5" y2="288.0" stroke="#000" stroke-width="1"/>
+<polygon points="-174.4,274.4 -170.4,283.3 -173.1,284.5 -177.1,275.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-173.7" y1="279.4" x2="-174.7" y2="279.9" stroke="#000" stroke-width="1"/>
+<polygon points="-176.9,265.9 -174.0,275.2 -176.9,276.1 -179.8,266.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-176.9" y1="271.0" x2="-178.0" y2="271.3" stroke="#000" stroke-width="1"/>
+<polygon points="-178.5,257.2 -176.7,266.8 -179.7,267.3 -181.4,257.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-179.1" y1="262.3" x2="-180.2" y2="262.5" stroke="#000" stroke-width="1"/>
+<polygon points="-176.7,230.8 -178.5,240.4 -181.4,239.9 -179.7,230.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-179.1" y1="235.4" x2="-180.2" y2="235.1" stroke="#000" stroke-width="1"/>
+<polygon points="-174.0,222.4 -176.9,231.7 -179.8,230.8 -176.9,221.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-176.9" y1="226.6" x2="-178.0" y2="226.3" stroke="#000" stroke-width="1"/>
+<polygon points="-170.4,214.4 -174.4,223.2 -177.1,222.0 -173.1,213.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-173.7" y1="218.2" x2="-174.7" y2="217.7" stroke="#000" stroke-width="1"/>
+<polygon points="-165.7,206.8 -170.8,215.1 -173.3,213.6 -168.3,205.3" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-169.5" y1="210.2" x2="-170.5" y2="209.6" stroke="#000" stroke-width="1"/>
+<polygon points="-160.2,199.9 -166.2,207.5 -168.6,205.7 -162.6,198.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-164.4" y1="202.8" x2="-165.3" y2="202.1" stroke="#000" stroke-width="1"/>
+<polygon points="-153.9,193.6 -160.8,200.5 -162.9,198.4 -156.1,191.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-158.4" y1="196.0" x2="-159.2" y2="195.2" stroke="#000" stroke-width="1"/>
+<polygon points="-146.9,188.2 -154.6,194.2 -156.4,191.9 -148.8,185.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-151.7" y1="190.1" x2="-152.4" y2="189.2" stroke="#000" stroke-width="1"/>
+<polygon points="-139.3,183.7 -147.6,188.7 -149.2,186.2 -140.9,181.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-144.3" y1="184.9" x2="-144.8" y2="184.0" stroke="#000" stroke-width="1"/>
+<polygon points="-131.2,180.1 -140.1,184.1 -141.3,181.4 -132.5,177.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-136.3" y1="180.7" x2="-136.7" y2="179.7" stroke="#000" stroke-width="1"/>
+<polygon points="-122.8,177.5 -132.0,180.4 -132.9,177.6 -123.7,174.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-127.9" y1="177.6" x2="-128.2" y2="176.5" stroke="#000" stroke-width="1"/>
+<polygon points="-114.1,176.0 -123.6,177.7 -124.1,174.8 -114.6,173.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-119.1" y1="175.4" x2="-119.3" y2="174.3" stroke="#000" stroke-width="1"/>
+<polygon points="-105.2,175.5 -114.9,176.1 -115.1,173.1 -105.4,172.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-110.1" y1="174.3" x2="-110.2" y2="173.2" stroke="#000" stroke-width="1"/>
+<polygon points="-96.3,175.7 -106.0,175.7 -106.0,172.7 -96.3,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-101.2" y1="174.2" x2="-101.2" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-87.4,175.7 -97.1,175.7 -97.1,172.7 -87.4,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-92.2" y1="174.2" x2="-92.2" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-78.4,175.7 -88.1,175.7 -88.1,172.7 -78.4,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-83.3" y1="174.2" x2="-83.3" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-69.5,175.7 -79.2,175.7 -79.2,172.7 -69.5,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-74.3" y1="174.2" x2="-74.3" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-60.5,175.7 -70.2,175.7 -70.2,172.7 -60.5,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-65.4" y1="174.2" x2="-65.4" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-51.6,175.7 -61.3,175.7 -61.3,172.7 -51.6,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-56.4" y1="174.2" x2="-56.4" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-42.6,175.7 -52.3,175.7 -52.3,172.7 -42.6,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-47.5" y1="174.2" x2="-47.5" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-33.7,175.7 -43.4,175.7 -43.4,172.7 -33.7,172.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-38.5" y1="174.2" x2="-38.5" y2="173.1" stroke="#000" stroke-width="1"/>
+<polygon points="-106.0,321.9 -96.3,321.9 -96.3,324.9 -106.0,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-101.2" y1="323.4" x2="-101.2" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-97.1,321.9 -87.4,321.9 -87.4,324.9 -97.1,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-92.2" y1="323.4" x2="-92.2" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-88.1,321.9 -78.4,321.9 -78.4,324.9 -88.1,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-83.3" y1="323.4" x2="-83.3" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-79.2,321.9 -69.5,321.9 -69.5,324.9 -79.2,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-74.3" y1="323.4" x2="-74.3" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-70.2,321.9 -60.5,321.9 -60.5,324.9 -70.2,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-65.4" y1="323.4" x2="-65.4" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-61.3,321.9 -51.6,321.9 -51.6,324.9 -61.3,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-56.4" y1="323.4" x2="-56.4" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-52.3,321.9 -42.6,321.9 -42.6,324.9 -52.3,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-47.5" y1="323.4" x2="-47.5" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-43.4,321.9 -33.7,321.9 -33.7,324.9 -43.4,324.9" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="-38.5" y1="323.4" x2="-38.5" y2="324.6" stroke="#000" stroke-width="1"/>
+<polygon points="-154.9,275.7 -154.9,269.7 -149.0,269.7 -149.0,275.7" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
+<line x1="-151.9" y1="272.7" x2="-150.8" y2="272.7" stroke="#000" stroke-width="1"/>
+<polygon points="-141.5,286.1 -147.5,286.1 -147.5,280.1 -141.5,280.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
+<line x1="-144.5" y1="283.1" x2="-144.5" y2="282.0" stroke="#000" stroke-width="1"/>
+<polygon points="-139.3,273.1 -139.3,266.3 -131.8,266.3 -131.8,273.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
+<line x1="-135.5" y1="269.7" x2="-134.4" y2="269.7" stroke="#000" stroke-width="1"/>
+<polygon points="-157.9,229.8 -157.9,223.1 -150.4,223.1 -150.4,229.8" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
+<line x1="-154.2" y1="226.4" x2="-153.1" y2="226.4" stroke="#000" stroke-width="1"/>
+<polygon points="-145.6,219.3 -137.4,219.3 -137.4,227.5 -145.6,227.5" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_house_wood (outpost)</title></polygon>
+<line x1="-141.5" y1="223.4" x2="-141.5" y2="224.6" stroke="#000" stroke-width="1"/>
+<polygon points="-81.8,207.8 -92.2,207.8 -92.2,197.3 -81.8,197.3" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farmhouse_wood (outpost)</title></polygon>
+<line x1="-87.0" y1="202.5" x2="-87.0" y2="201.4" stroke="#000" stroke-width="1"/>
+<polygon points="-30.7,191.3 -30.7,198.8 -39.7,198.8 -39.7,191.3" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_c (outpost)</title></polygon>
+<line x1="-35.2" y1="195.1" x2="-36.3" y2="195.1" stroke="#000" stroke-width="1"/>
+<polygon points="-81.8,274.2 -69.9,274.2 -69.9,283.1 -81.8,283.1" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farm_veg (outpost)</title></polygon>
+<line x1="-75.8" y1="278.7" x2="-75.8" y2="279.8" stroke="#000" stroke-width="1"/>
+<polygon points="-93.0,233.1 -85.5,233.1 -85.5,240.6 -93.0,240.6" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_kiva (outpost)</title></polygon>
+<line x1="-89.3" y1="236.9" x2="-89.3" y2="238.0" stroke="#000" stroke-width="1"/>
+<polygon points="-80.3,233.9 -74.3,233.9 -74.3,239.9 -80.3,239.9" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shrine (outpost)</title></polygon>
+<line x1="-77.3" y1="236.9" x2="-77.3" y2="238.0" stroke="#000" stroke-width="1"/>
+<polygon points="-35.4,300.7 -35.4,304.4 -37.1,304.4 -37.1,300.7" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stall_a (outpost)</title></polygon>
+<line x1="-36.3" y1="302.5" x2="-37.4" y2="302.5" stroke="#000" stroke-width="1"/>
+<polygon points="42.9,298.7 28.4,302.2 23.6,282.3 38.1,278.8" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_store_tunnel (outpost)</title></polygon>
+<line x1="30.9" y1="280.9" x2="30.6" y2="279.8" stroke="#000" stroke-width="1"/>
 <polygon points="497.4,212.1 510.7,226.2 504.7,231.8 491.4,217.7" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_market_hall (hub)</title></polygon>
 <line x1="501.0" y1="221.9" x2="500.2" y2="222.7" stroke="#000" stroke-width="1"/>
 <polygon points="438.5,287.2 432.8,281.3 438.2,276.1 443.9,282.0" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shop_armour_built (hub)</title></polygon>
@@ -320,34 +318,29 @@
 <line x1="498.1" y1="235.4" x2="497.1" y2="235.9" stroke="#000" stroke-width="1"/>
 <polygon points="501.1,261.3 499.0,265.3 495.0,263.2 497.1,259.2" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_fountain (hub)</title></polygon>
 <line x1="498.1" y1="262.2" x2="497.1" y2="261.7" stroke="#000" stroke-width="1"/>
-<line x1="-1542.2" y1="248.8" x2="-1467.6" y2="248.8" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.c: street, 4 m, 0.0%</title></line>
-<line x1="-1467.6" y1="248.8" x2="-1396.7" y2="248.8" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.portal: street, 4 m, 0.0%</title></line>
-<line x1="-1467.6" y1="248.8" x2="-1467.6" y2="287.6" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.cara: street, 4 m, 0.0%</title></line>
-<line x1="-1467.6" y1="248.8" x2="-1482.5" y2="217.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.barr: street, 4 m, 0.0%</title></line>
-<line x1="-1467.6" y1="248.8" x2="-1508.7" y2="269.7" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.huts: street, 4 m, 0.0%</title></line>
-<line x1="-1467.6" y1="248.8" x2="-1504.9" y2="227.9" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.huts2: street, 4 m, 0.0%</title></line>
-<line x1="-1396.7" y1="248.8" x2="-1399.7" y2="215.2" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.portal - o.galN: street, 4 m, 0.0%</title></line>
-<line x1="-1396.7" y1="248.8" x2="-1399.7" y2="282.4" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.portal - o.galS: street, 4 m, 0.0%</title></line>
-<line x1="-1542.2" y1="248.8" x2="-1568.4" y2="314.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.pasture: street, 4 m, 0.0%</title></line>
-<line x1="-1542.2" y1="248.8" x2="-1585.5" y2="205.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.tw3: street, 4 m, 0.0%</title></line>
-<line x1="-1399.7" y1="215.2" x2="-1391.5" y2="185.4" stroke="#c49a4a" stroke-width="1.0" stroke-dasharray="6 3"><title>o.galN - o.tw1: stair, 2 m, 52.0%</title></line>
-<line x1="-1399.7" y1="282.4" x2="-1391.5" y2="312.2" stroke="#c49a4a" stroke-width="1.0" stroke-dasharray="6 3"><title>o.galS - o.tw2: stair, 2 m, 52.0%</title></line>
-<line x1="-1396.7" y1="248.8" x2="-1364.6" y2="248.8" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.tube0: tube, 10 m, 0.0%</title></line>
-<line x1="-1364.6" y1="248.8" x2="-1303.4" y2="260.0" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.tube0 - t1: tube, 10 m, 2.0%</title></line>
-<line x1="-1303.4" y1="260.0" x2="-1169.1" y2="256.3" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t2: tube, 10 m, 2.0%</title></line>
-<line x1="-1169.1" y1="256.3" x2="-945.2" y2="233.9" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t2 - t3: tube, 10 m, 2.0%</title></line>
-<line x1="-945.2" y1="233.9" x2="-646.7" y2="256.3" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t3 - t4: tube, 10 m, 2.0%</title></line>
-<line x1="-646.7" y1="256.3" x2="-348.2" y2="237.6" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t4 - t5: tube, 10 m, 2.0%</title></line>
-<line x1="-348.2" y1="237.6" x2="-124.3" y2="256.3" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t5 - t6: tube, 10 m, 2.0%</title></line>
-<line x1="-124.3" y1="256.3" x2="54.8" y2="248.8" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t6 - t.door: tube, 10 m, 2.0%</title></line>
-<line x1="-1303.4" y1="260.0" x2="-1297.5" y2="284.6" stroke="#8a6a48" stroke-width="2.7" stroke-dasharray="6 3"><title>t1 - t.stores: tube, 6 m, 0.0%</title></line>
-<line x1="-1303.4" y1="260.0" x2="-1312.4" y2="227.9" stroke="#8a6a48" stroke-width="2.7" stroke-dasharray="6 3"><title>t1 - t.stables: tube, 6 m, 0.0%</title></line>
-<line x1="54.8" y1="248.8" x2="61.5" y2="248.8" stroke="#000" stroke-width="1.8"><title>t.door - b0: door, 4 m, 3.3%</title></line>
-<line x1="61.5" y1="248.8" x2="136.9" y2="219.0" stroke="#5e3470" stroke-width="3.1"><title>b0 - a1: braid, 7 m, 6.2%</title></line>
-<line x1="136.9" y1="219.0" x2="233.9" y2="211.5" stroke="#5e3470" stroke-width="3.1"><title>a1 - a2: braid, 7 m, 9.1%</title></line>
+<line x1="-180.3" y1="248.8" x2="-105.7" y2="248.8" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.c: street, 4 m, 0.0%</title></line>
+<line x1="-105.7" y1="248.8" x2="-34.8" y2="248.8" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.portal: street, 4 m, 0.0%</title></line>
+<line x1="-105.7" y1="248.8" x2="-105.7" y2="287.6" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.cara: street, 4 m, 0.0%</title></line>
+<line x1="-105.7" y1="248.8" x2="-120.6" y2="217.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.barr: street, 4 m, 0.0%</title></line>
+<line x1="-105.7" y1="248.8" x2="-146.7" y2="269.7" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.huts: street, 4 m, 0.0%</title></line>
+<line x1="-105.7" y1="248.8" x2="-143.0" y2="227.9" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.c - o.huts2: street, 4 m, 0.0%</title></line>
+<line x1="-34.8" y1="248.8" x2="-37.8" y2="215.2" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.portal - o.galN: street, 4 m, 0.0%</title></line>
+<line x1="-34.8" y1="248.8" x2="-37.8" y2="282.4" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.portal - o.galS: street, 4 m, 0.0%</title></line>
+<line x1="-180.3" y1="248.8" x2="-206.4" y2="314.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.pasture: street, 4 m, 0.0%</title></line>
+<line x1="-180.3" y1="248.8" x2="-223.6" y2="205.5" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.tw3: street, 4 m, 0.0%</title></line>
+<line x1="-180.3" y1="248.8" x2="-187.8" y2="165.2" stroke="#7e6a50" stroke-width="1.8" stroke-dasharray="6 3"><title>o.gate - o.tw4: street, 4 m, 0.0%</title></line>
+<line x1="-34.8" y1="248.8" x2="-2.7" y2="248.8" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.tube0: tube, 10 m, 0.0%</title></line>
+<line x1="-2.7" y1="248.8" x2="24.9" y2="256.3" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.tube0 - t1: tube, 10 m, 2.0%</title></line>
+<line x1="24.9" y1="256.3" x2="54.8" y2="245.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t2: tube, 10 m, 2.0%</title></line>
+<line x1="54.8" y1="245.1" x2="84.6" y2="248.8" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t2 - t.door: tube, 10 m, 2.0%</title></line>
+<line x1="24.9" y1="256.3" x2="30.9" y2="280.9" stroke="#8a6a48" stroke-width="2.7" stroke-dasharray="6 3"><title>t1 - t.stores: tube, 6 m, 0.0%</title></line>
+<line x1="24.9" y1="256.3" x2="16.0" y2="224.2" stroke="#8a6a48" stroke-width="2.7" stroke-dasharray="6 3"><title>t1 - t.stables: tube, 6 m, 0.0%</title></line>
+<line x1="84.6" y1="248.8" x2="91.3" y2="248.8" stroke="#000" stroke-width="1.8"><title>t.door - b0: door, 4 m, 3.3%</title></line>
+<line x1="91.3" y1="248.8" x2="136.9" y2="219.0" stroke="#5e3470" stroke-width="3.1"><title>b0 - a1: braid, 7 m, 9.2%</title></line>
+<line x1="136.9" y1="219.0" x2="233.9" y2="211.5" stroke="#5e3470" stroke-width="3.1"><title>a1 - a2: braid, 7 m, 2.0%</title></line>
 <line x1="233.9" y1="211.5" x2="293.6" y2="230.1" stroke="#5e3470" stroke-width="3.1"><title>a2 - j1: braid, 7 m, 7.2%</title></line>
-<line x1="61.5" y1="248.8" x2="136.9" y2="282.4" stroke="#5e3470" stroke-width="2.2"><title>b0 - b1: braid, 5 m, 3.3%</title></line>
-<line x1="136.9" y1="282.4" x2="241.3" y2="289.9" stroke="#5e3470" stroke-width="2.2"><title>b1 - b2: braid, 5 m, 4.9%</title></line>
+<line x1="91.3" y1="248.8" x2="136.9" y2="282.4" stroke="#5e3470" stroke-width="2.2"><title>b0 - b1: braid, 5 m, 4.9%</title></line>
+<line x1="136.9" y1="282.4" x2="241.3" y2="289.9" stroke="#5e3470" stroke-width="2.2"><title>b1 - b2: braid, 5 m, 1.7%</title></line>
 <line x1="241.3" y1="289.9" x2="293.6" y2="230.1" stroke="#5e3470" stroke-width="2.2"><title>b2 - j1: braid, 5 m, 13.2%</title></line>
 <line x1="293.6" y1="230.1" x2="368.2" y2="248.8" stroke="#3f8f88" stroke-width="3.6"><title>j1 - h.w: ramp, 8 m, 11.6%</title></line>
 <line x1="472.7" y1="248.8" x2="368.2" y2="248.8" stroke="#b8ab90" stroke-width="4.0"><title>h.sq - h.w: square, 20 m, 0.0%</title></line>
@@ -400,48 +393,42 @@
 <line x1="535.9" y1="491.2" x2="696.6" y2="562.2" stroke="#3f8f88" stroke-width="1.8"><title>s2.e - k1: ramp, 4 m, 11.9%</title></line>
 <line x1="696.6" y1="562.2" x2="830.9" y2="666.7" stroke="#3f8f88" stroke-width="1.8"><title>k1 - k2: ramp, 4 m, 10.5%</title></line>
 <line x1="830.9" y1="666.7" x2="890.6" y2="726.4" stroke="#3f8f88" stroke-width="1.8"><title>k2 - k.head: ramp, 4 m, 10.6%</title></line>
-<line x1="360.7" y1="121.9" x2="323.4" y2="53.3" stroke="#2b6fb0" stroke-width="1.0" stroke-dasharray="2 3"><title>n.w - x.lava: secret, 1.5 m, 21.0%</title></line>
-<line x1="-1169.1" y1="256.3" x2="-1243.7" y2="368.2" stroke="#2b6fb0" stroke-width="1.0" stroke-dasharray="2 3"><title>t2 - x.forest: secret, 1.5 m, 1.8%</title></line>
-<circle cx="-1542.2" cy="248.8" r="2.2" fill="#222"><title>o.gate y -75</title></circle>
-<text x="-1538.2" y="244.8" font-size="10">the gate (y -75)</text>
-<circle cx="-1467.6" cy="248.8" r="2.2" fill="#222"><title>o.c y -75</title></circle>
-<circle cx="-1396.7" cy="248.8" r="2.2" fill="#222"><title>o.portal y -75</title></circle>
-<text x="-1392.7" y="244.8" font-size="10">the portal (y -75)</text>
-<circle cx="-1467.6" cy="287.6" r="2.2" fill="#222"><title>o.cara y -75</title></circle>
-<text x="-1463.6" y="283.6" font-size="10">the caravanserai (y -75)</text>
-<circle cx="-1482.5" cy="217.5" r="2.2" fill="#222"><title>o.barr y -75</title></circle>
-<text x="-1478.5" y="213.5" font-size="10">the barracks (y -75)</text>
-<circle cx="-1508.7" cy="269.7" r="2.2" fill="#222"><title>o.huts y -75</title></circle>
-<circle cx="-1504.9" cy="227.9" r="2.2" fill="#222"><title>o.huts2 y -75</title></circle>
-<circle cx="-1399.7" cy="215.2" r="2.2" fill="#222"><title>o.galN y -75</title></circle>
-<text x="-1395.7" y="211.2" font-size="10">a gallery (y -75)</text>
-<circle cx="-1399.7" cy="282.4" r="2.2" fill="#222"><title>o.galS y -75</title></circle>
-<text x="-1395.7" y="278.4" font-size="10">a gallery (y -75)</text>
-<circle cx="-1568.4" cy="314.5" r="2.2" fill="#222"><title>o.pasture y -75</title></circle>
-<text x="-1564.4" y="310.5" font-size="10">the pasture (y -75)</text>
-<circle cx="-1391.5" cy="185.4" r="2.2" fill="#222"><title>o.tw1 y -53.43</title></circle>
-<text x="-1387.5" y="181.4" font-size="10">a watchtower (y -53)</text>
-<circle cx="-1391.5" cy="312.2" r="2.2" fill="#222"><title>o.tw2 y -53.43</title></circle>
-<text x="-1387.5" y="308.2" font-size="10">a watchtower (y -53)</text>
-<circle cx="-1585.5" cy="205.5" r="2.2" fill="#222"><title>o.tw3 y -75</title></circle>
-<text x="-1581.5" y="201.5" font-size="10">a watchtower (y -75)</text>
-<circle cx="-1364.6" cy="248.8" r="2.2" fill="#222"><title>o.tube0 y -75</title></circle>
-<circle cx="-1303.4" cy="260.0" r="2.2" fill="#222"><title>t1 y -73.33</title></circle>
-<circle cx="-1169.1" cy="256.3" r="2.2" fill="#222"><title>t2 y -69.73</title></circle>
-<circle cx="-945.2" cy="233.9" r="2.2" fill="#222"><title>t3 y -63.7</title></circle>
-<circle cx="-646.7" cy="256.3" r="2.2" fill="#222"><title>t4 y -55.68</title></circle>
-<circle cx="-348.2" cy="237.6" r="2.2" fill="#222"><title>t5 y -47.66</title></circle>
-<circle cx="-124.3" cy="256.3" r="2.2" fill="#222"><title>t6 y -41.64</title></circle>
-<circle cx="54.8" cy="248.8" r="2.2" fill="#222"><title>t.door y -36.84</title></circle>
-<text x="58.8" y="244.8" font-size="10">the stone door (y -37)</text>
-<circle cx="-1297.5" cy="284.6" r="2.2" fill="#222"><title>t.stores y -73.33</title></circle>
-<text x="-1293.5" y="280.6" font-size="10">the stores (y -73)</text>
-<circle cx="-1312.4" cy="227.9" r="2.2" fill="#222"><title>t.stables y -73.33</title></circle>
-<text x="-1308.4" y="223.9" font-size="10">the stables (y -73)</text>
-<circle cx="61.5" cy="248.8" r="2.2" fill="#222"><title>b0 y -36.54</title></circle>
-<circle cx="136.9" cy="219.0" r="2.2" fill="#222"><title>a1 y -29.84</title></circle>
+<line x1="360.7" y1="121.9" x2="323.4" y2="53.3" stroke="#2b6fb0" stroke-width="1.0" stroke-dasharray="2 3"><title>n.w - x.lava: secret, 1.5 m, 43.3%</title></line>
+<line x1="24.9" y1="256.3" x2="-41.5" y2="366.7" stroke="#2b6fb0" stroke-width="1.0" stroke-dasharray="2 3"><title>t1 - x.forest: secret, 1.5 m, 0.7%</title></line>
+<circle cx="-180.3" cy="248.8" r="2.2" fill="#222"><title>o.gate y -30</title></circle>
+<text x="-176.3" y="244.8" font-size="10">the gate (y -30)</text>
+<circle cx="-105.7" cy="248.8" r="2.2" fill="#222"><title>o.c y -30</title></circle>
+<circle cx="-34.8" cy="248.8" r="2.2" fill="#222"><title>o.portal y -30</title></circle>
+<text x="-30.8" y="244.8" font-size="10">the portal (y -30)</text>
+<circle cx="-105.7" cy="287.6" r="2.2" fill="#222"><title>o.cara y -30</title></circle>
+<text x="-101.7" y="283.6" font-size="10">the caravanserai (y -30)</text>
+<circle cx="-120.6" cy="217.5" r="2.2" fill="#222"><title>o.barr y -30</title></circle>
+<text x="-116.6" y="213.5" font-size="10">the barracks (y -30)</text>
+<circle cx="-146.7" cy="269.7" r="2.2" fill="#222"><title>o.huts y -30</title></circle>
+<circle cx="-143.0" cy="227.9" r="2.2" fill="#222"><title>o.huts2 y -30</title></circle>
+<circle cx="-37.8" cy="215.2" r="2.2" fill="#222"><title>o.galN y -30</title></circle>
+<text x="-33.8" y="211.2" font-size="10">a gallery (y -30)</text>
+<circle cx="-37.8" cy="282.4" r="2.2" fill="#222"><title>o.galS y -30</title></circle>
+<text x="-33.8" y="278.4" font-size="10">a gallery (y -30)</text>
+<circle cx="-206.4" cy="314.5" r="2.2" fill="#222"><title>o.pasture y -30</title></circle>
+<text x="-202.4" y="310.5" font-size="10">the pasture (y -30)</text>
+<circle cx="-223.6" cy="205.5" r="2.2" fill="#222"><title>o.tw3 y -30</title></circle>
+<text x="-219.6" y="201.5" font-size="10">a watchtower (y -30)</text>
+<circle cx="-187.8" cy="165.2" r="2.2" fill="#222"><title>o.tw4 y -30</title></circle>
+<text x="-183.8" y="161.2" font-size="10">a watchtower (y -30)</text>
+<circle cx="-2.7" cy="248.8" r="2.2" fill="#222"><title>o.tube0 y -30</title></circle>
+<circle cx="24.9" cy="256.3" r="2.2" fill="#222"><title>t1 y -29.23</title></circle>
+<circle cx="54.8" cy="245.1" r="2.2" fill="#222"><title>t2 y -28.38</title></circle>
+<circle cx="84.6" cy="248.8" r="2.2" fill="#222"><title>t.door y -27.57</title></circle>
+<text x="88.6" y="244.8" font-size="10">the stone door (y -28)</text>
+<circle cx="30.9" cy="280.9" r="2.2" fill="#222"><title>t.stores y -29.23</title></circle>
+<text x="34.9" y="276.9" font-size="10">the stores (y -29)</text>
+<circle cx="16.0" cy="224.2" r="2.2" fill="#222"><title>t.stables y -29.23</title></circle>
+<text x="20.0" y="220.2" font-size="10">the stables (y -29)</text>
+<circle cx="91.3" cy="248.8" r="2.2" fill="#222"><title>b0 y -27.27</title></circle>
+<circle cx="136.9" cy="219.0" r="2.2" fill="#222"><title>a1 y -20.57</title></circle>
 <circle cx="233.9" cy="211.5" r="2.2" fill="#222"><title>a2 y -18</title></circle>
-<circle cx="136.9" cy="282.4" r="2.2" fill="#222"><title>b1 y -32.84</title></circle>
+<circle cx="136.9" cy="282.4" r="2.2" fill="#222"><title>b1 y -23.57</title></circle>
 <circle cx="241.3" cy="289.9" r="2.2" fill="#222"><title>b2 y -26</title></circle>
 <circle cx="293.6" cy="230.1" r="2.2" fill="#222"><title>j1 y -12</title></circle>
 <circle cx="368.2" cy="248.8" r="2.2" fill="#222"><title>h.w y 0</title></circle>
@@ -498,20 +485,20 @@
 <circle cx="830.9" cy="666.7" r="2.2" fill="#222"><title>k2 y -46</title></circle>
 <circle cx="890.6" cy="726.4" r="2.2" fill="#222"><title>k.head y -58</title></circle>
 <text x="894.6" y="722.4" font-size="10">the catacombs (y -58)</text>
-<circle cx="323.4" cy="53.3" r="2.2" fill="#222"><title>x.lava y 33.94</title></circle>
-<text x="327.4" y="49.3" font-size="10">a scout exit (y 34)</text>
-<circle cx="-1243.7" cy="368.2" r="2.2" fill="#222"><title>x.forest y -73</title></circle>
-<text x="-1239.7" y="364.2" font-size="10">a scout exit (y -73)</text>
+<circle cx="323.4" cy="53.3" r="2.2" fill="#222"><title>x.lava y 57.38</title></circle>
+<text x="327.4" y="49.3" font-size="10">a scout exit (the forest on top) (y 57)</text>
+<circle cx="-41.5" cy="366.7" r="2.2" fill="#222"><title>x.forest y -28</title></circle>
+<text x="-37.5" y="362.7" font-size="10">a scout exit (the west face's foot) (y -28)</text>
 </g>
 <g><rect x="10" y="806.1194029850747" width="1000" height="680.0" fill="#efe7d6" stroke="#999"/>
 <text x="18" y="824.1194029850747" font-size="14" font-weight="bold">The outpost in the kipuka and the outer tube's start (x -2800..-2300)</text>
 <ellipse cx="5610.0" cy="1126.1" rx="280.0" ry="200.0" fill="#e2d6bd" stroke="#8a7a5a"/>
 <circle cx="5610.0" cy="1126.1" r="36.0" fill="#fff6d8" stroke="none"/>
-<circle cx="5030.0" cy="786.1" r="80.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="5030.0" y="698.1" font-size="11" text-anchor="middle">the west well (floor -6, 38.17 m deep)</text>
-<circle cx="5730.0" cy="1726.1" r="70.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="5730.0" y="1648.1" font-size="11" text-anchor="middle">the south well (floor 6, 38.53 m deep)</text>
-<circle cx="6370.0" cy="1366.1" r="84.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="6370.0" y="1274.1" font-size="11" text-anchor="middle">the east well (floor 20, 34.45 m deep)</text>
-<polygon points="90.0,1246.1 210.0,1246.1 230.0,1386.1 70.0,1406.1" fill="#dfe8c0" stroke="#8a9a5a"/>
-<polyline points="210.0,1406.1 330.0,1316.1 410.0,1286.1 530.0,1266.1 610.0,1306.1" fill="none" stroke="#4a86c0" stroke-width="2"/>
+<circle cx="5030.0" cy="786.1" r="80.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="5030.0" y="698.1" font-size="11" text-anchor="middle">the west well (floor -6, 61.91 m deep)</text>
+<circle cx="5730.0" cy="1726.1" r="70.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="5730.0" y="1648.1" font-size="11" text-anchor="middle">the south well (floor 6, 52.97 m deep)</text>
+<circle cx="6370.0" cy="1366.1" r="84.0" fill="#e6efd8" stroke="#6a8a4a"/><text x="6370.0" y="1274.1" font-size="11" text-anchor="middle">the east well (floor 20, 43.16 m deep)</text>
+<polygon points="3740.0,1246.1 3860.0,1246.1 3880.0,1386.1 3720.0,1406.1" fill="#dfe8c0" stroke="#8a9a5a"/>
+<polyline points="3860.0,1406.1 3980.0,1316.1 4060.0,1286.1 4180.0,1266.1 4254.0,1306.1" fill="none" stroke="#4a86c0" stroke-width="2"/>
 <polygon points="5397.0,1094.1 5397.0,1002.1 5581.0,1002.1 5581.0,1094.1" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_council (hub)</title></polygon>
 <line x1="5489.0" y1="1048.1" x2="5492.0" y2="1048.1" stroke="#000" stroke-width="1"/>
 <polygon points="5626.0,990.1 5650.0,990.1 5650.0,1014.1 5626.0,1014.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_scout_hq (hub)</title></polygon>
@@ -559,8 +546,8 @@
 <line x1="5356.2" y1="1210.6" x2="5358.8" y2="1209.0" stroke="#000" stroke-width="1"/>
 <polygon points="5311.1,1188.7 5303.7,1163.8 5333.4,1155.0 5340.8,1179.9" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shop_knapper_carved (hub)</title></polygon>
 <line x1="5336.1" y1="1167.7" x2="5339.0" y2="1166.8" stroke="#000" stroke-width="1"/>
-<polygon points="4508.0,1116.1 4508.0,1136.1 4489.0,1136.1 4489.0,1116.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stonedoor (outpost)</title></polygon>
-<line x1="4490.0" y1="1126.1" x2="4487.0" y2="1126.1" stroke="#000" stroke-width="1"/>
+<polygon points="4588.0,1116.1 4588.0,1136.1 4569.0,1136.1 4569.0,1116.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stonedoor (outpost)</title></polygon>
+<line x1="4570.0" y1="1126.1" x2="4567.0" y2="1126.1" stroke="#000" stroke-width="1"/>
 <polygon points="5698.4,721.4 5752.9,755.0 5716.7,813.7 5662.2,780.2" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_cistern (cistern)</title></polygon>
 <line x1="5690.0" y1="796.1" x2="5688.4" y2="798.7" stroke="#000" stroke-width="1"/>
 <polygon points="6786.6,2417.4 6741.3,2462.7 6706.7,2428.0 6751.9,2382.8" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_catacomb (catacombs)</title></polygon>
@@ -631,128 +618,126 @@
 <line x1="6293.9" y1="1401.6" x2="6296.6" y2="1400.4" stroke="#000" stroke-width="1"/>
 <polygon points="6324.8,1242.1 6370.1,1234.1 6378.2,1280.4 6332.9,1288.4" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_tavern_carved (s3)</title></polygon>
 <line x1="6355.4" y1="1283.4" x2="6355.9" y2="1286.4" stroke="#000" stroke-width="1"/>
-<polygon points="680.0,1076.1 680.0,1176.1 599.0,1176.1 599.0,1076.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_portal (outpost)</title></polygon>
-<line x1="600.0" y1="1126.1" x2="597.0" y2="1126.1" stroke="#000" stroke-width="1"/>
-<polygon points="712.0,1006.1 712.0,1066.1 599.0,1066.1 599.0,1006.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_a (outpost)</title></polygon>
-<line x1="600.0" y1="1036.1" x2="597.0" y2="1036.1" stroke="#000" stroke-width="1"/>
-<polygon points="668.0,1186.1 668.0,1246.1 599.0,1246.1 599.0,1186.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_b (outpost)</title></polygon>
-<line x1="600.0" y1="1216.1" x2="597.0" y2="1216.1" stroke="#000" stroke-width="1"/>
-<polygon points="364.0,1214.1 456.0,1214.1 456.0,1286.1 364.0,1286.1" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_caravanserai (outpost)</title></polygon>
-<line x1="410.0" y1="1250.1" x2="410.0" y2="1253.1" stroke="#000" stroke-width="1"/>
-<polygon points="352.0,1020.1 388.0,1020.1 388.0,1040.1 352.0,1040.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_barracks_outpost (outpost)</title></polygon>
-<line x1="370.0" y1="1030.1" x2="370.0" y2="1033.1" stroke="#000" stroke-width="1"/>
-<polygon points="215.0,1114.1 215.0,1138.1 205.0,1138.1 205.0,1114.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gate (outpost)</title></polygon>
-<line x1="210.0" y1="1126.1" x2="207.0" y2="1126.1" stroke="#000" stroke-width="1"/>
-<polygon points="621.0,949.1 621.0,963.1 607.0,963.1 607.0,949.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="614.0" y1="956.1" x2="611.0" y2="956.1" stroke="#000" stroke-width="1"/>
-<polygon points="621.0,1289.1 621.0,1303.1 607.0,1303.1 607.0,1289.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="614.0" y1="1296.1" x2="611.0" y2="1296.1" stroke="#000" stroke-width="1"/>
-<polygon points="101.0,1003.1 101.0,1017.1 87.0,1017.1 87.0,1003.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
-<line x1="94.0" y1="1010.1" x2="91.0" y2="1010.1" stroke="#000" stroke-width="1"/>
-<polygon points="385.3,1321.0 411.2,1322.5 410.7,1330.5 384.8,1329.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="398.0" y1="1325.8" x2="397.8" y2="1328.8" stroke="#000" stroke-width="1"/>
-<polygon points="362.0,1316.6 387.5,1321.3 386.1,1329.1 360.5,1324.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="374.0" y1="1322.9" x2="373.5" y2="1325.8" stroke="#000" stroke-width="1"/>
-<polygon points="339.3,1309.4 364.2,1317.1 361.8,1324.8 337.0,1317.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="350.6" y1="1317.1" x2="349.7" y2="1319.9" stroke="#000" stroke-width="1"/>
-<polygon points="317.8,1299.5 341.5,1310.2 338.2,1317.5 314.5,1306.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="328.0" y1="1308.5" x2="326.7" y2="1311.3" stroke="#000" stroke-width="1"/>
-<polygon points="297.5,1287.2 319.8,1300.6 315.6,1307.4 293.4,1294.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="306.6" y1="1297.3" x2="305.0" y2="1299.9" stroke="#000" stroke-width="1"/>
-<polygon points="278.9,1272.4 299.4,1288.4 294.5,1294.7 274.0,1278.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="286.7" y1="1283.6" x2="284.9" y2="1285.9" stroke="#000" stroke-width="1"/>
-<polygon points="262.2,1255.6 280.6,1273.9 275.0,1279.6 256.6,1261.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="268.6" y1="1267.6" x2="266.5" y2="1269.7" stroke="#000" stroke-width="1"/>
-<polygon points="247.7,1236.8 263.7,1257.3 257.5,1262.2 241.4,1241.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="252.6" y1="1249.5" x2="250.2" y2="1251.4" stroke="#000" stroke-width="1"/>
-<polygon points="235.6,1216.4 249.0,1238.7 242.2,1242.8 228.7,1220.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="238.9" y1="1229.6" x2="236.3" y2="1231.2" stroke="#000" stroke-width="1"/>
-<polygon points="225.9,1194.7 236.6,1218.4 229.3,1221.7 218.6,1198.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="227.6" y1="1208.2" x2="224.9" y2="1209.5" stroke="#000" stroke-width="1"/>
-<polygon points="219.0,1172.0 226.7,1196.9 219.1,1199.2 211.4,1174.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="219.1" y1="1185.6" x2="216.2" y2="1186.5" stroke="#000" stroke-width="1"/>
-<polygon points="214.9,1148.7 219.6,1174.2 211.7,1175.7 207.0,1150.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="213.3" y1="1162.2" x2="210.3" y2="1162.7" stroke="#000" stroke-width="1"/>
-<polygon points="219.6,1078.0 214.9,1103.6 207.0,1102.1 211.7,1076.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="213.3" y1="1090.1" x2="210.3" y2="1089.5" stroke="#000" stroke-width="1"/>
-<polygon points="226.7,1055.4 219.0,1080.2 211.4,1077.8 219.1,1053.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="219.1" y1="1066.6" x2="216.2" y2="1065.7" stroke="#000" stroke-width="1"/>
-<polygon points="236.6,1033.8 225.9,1057.5 218.6,1054.2 229.3,1030.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="227.6" y1="1044.0" x2="224.9" y2="1042.8" stroke="#000" stroke-width="1"/>
-<polygon points="249.0,1013.6 235.6,1035.8 228.7,1031.7 242.2,1009.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="238.9" y1="1022.6" x2="236.3" y2="1021.1" stroke="#000" stroke-width="1"/>
-<polygon points="263.7,995.0 247.7,1015.4 241.4,1010.5 257.5,990.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="252.6" y1="1002.7" x2="250.2" y2="1000.9" stroke="#000" stroke-width="1"/>
-<polygon points="280.6,978.3 262.2,996.7 256.6,991.0 275.0,972.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="268.6" y1="984.7" x2="266.5" y2="982.5" stroke="#000" stroke-width="1"/>
-<polygon points="299.4,963.8 278.9,979.8 274.0,973.5 294.5,957.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="286.7" y1="968.7" x2="284.9" y2="966.3" stroke="#000" stroke-width="1"/>
-<polygon points="319.8,951.6 297.5,965.1 293.4,958.2 315.6,944.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="306.6" y1="954.9" x2="305.0" y2="952.4" stroke="#000" stroke-width="1"/>
-<polygon points="341.5,942.0 317.8,952.7 314.5,945.4 338.2,934.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="328.0" y1="943.7" x2="326.7" y2="941.0" stroke="#000" stroke-width="1"/>
-<polygon points="364.2,935.1 339.3,942.8 337.0,935.2 361.8,927.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="350.6" y1="935.2" x2="349.7" y2="932.3" stroke="#000" stroke-width="1"/>
-<polygon points="387.5,931.0 362.0,935.7 360.5,927.8 386.1,923.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="374.0" y1="929.4" x2="373.5" y2="926.4" stroke="#000" stroke-width="1"/>
-<polygon points="411.2,929.7 385.3,931.3 384.8,923.3 410.7,921.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="398.0" y1="926.5" x2="397.8" y2="923.5" stroke="#000" stroke-width="1"/>
-<polygon points="435.0,930.1 409.0,930.1 409.0,922.1 435.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="422.0" y1="926.1" x2="422.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="459.0,930.1 433.0,930.1 433.0,922.1 459.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="446.0" y1="926.1" x2="446.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="483.0,930.1 457.0,930.1 457.0,922.1 483.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="470.0" y1="926.1" x2="470.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="507.0,930.1 481.0,930.1 481.0,922.1 507.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="494.0" y1="926.1" x2="494.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="531.0,930.1 505.0,930.1 505.0,922.1 531.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="518.0" y1="926.1" x2="518.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="555.0,930.1 529.0,930.1 529.0,922.1 555.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="542.0" y1="926.1" x2="542.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="579.0,930.1 553.0,930.1 553.0,922.1 579.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="566.0" y1="926.1" x2="566.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="603.0,930.1 577.0,930.1 577.0,922.1 603.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="590.0" y1="926.1" x2="590.0" y2="923.1" stroke="#000" stroke-width="1"/>
-<polygon points="409.0,1322.1 435.0,1322.1 435.0,1330.1 409.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="422.0" y1="1326.1" x2="422.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="433.0,1322.1 459.0,1322.1 459.0,1330.1 433.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="446.0" y1="1326.1" x2="446.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="457.0,1322.1 483.0,1322.1 483.0,1330.1 457.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="470.0" y1="1326.1" x2="470.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="481.0,1322.1 507.0,1322.1 507.0,1330.1 481.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="494.0" y1="1326.1" x2="494.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="505.0,1322.1 531.0,1322.1 531.0,1330.1 505.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="518.0" y1="1326.1" x2="518.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="529.0,1322.1 555.0,1322.1 555.0,1330.1 529.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="542.0" y1="1326.1" x2="542.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="553.0,1322.1 579.0,1322.1 579.0,1330.1 553.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="566.0" y1="1326.1" x2="566.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="577.0,1322.1 603.0,1322.1 603.0,1330.1 577.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
-<line x1="590.0" y1="1326.1" x2="590.0" y2="1329.1" stroke="#000" stroke-width="1"/>
-<polygon points="278.0,1198.1 278.0,1182.1 294.0,1182.1 294.0,1198.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
-<line x1="286.0" y1="1190.1" x2="289.0" y2="1190.1" stroke="#000" stroke-width="1"/>
-<polygon points="314.0,1226.1 298.0,1226.1 298.0,1210.1 314.0,1210.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
-<line x1="306.0" y1="1218.1" x2="306.0" y2="1215.1" stroke="#000" stroke-width="1"/>
-<polygon points="320.0,1191.1 320.0,1173.1 340.0,1173.1 340.0,1191.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
-<line x1="330.0" y1="1182.1" x2="333.0" y2="1182.1" stroke="#000" stroke-width="1"/>
-<polygon points="270.0,1075.1 270.0,1057.1 290.0,1057.1 290.0,1075.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
-<line x1="280.0" y1="1066.1" x2="283.0" y2="1066.1" stroke="#000" stroke-width="1"/>
-<polygon points="303.0,1047.1 325.0,1047.1 325.0,1069.1 303.0,1069.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_house_wood (outpost)</title></polygon>
-<line x1="314.0" y1="1058.1" x2="314.0" y2="1061.1" stroke="#000" stroke-width="1"/>
-<polygon points="474.0,1016.1 446.0,1016.1 446.0,988.1 474.0,988.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farmhouse_wood (outpost)</title></polygon>
-<line x1="460.0" y1="1002.1" x2="460.0" y2="999.1" stroke="#000" stroke-width="1"/>
-<polygon points="610.8,972.1 610.8,992.1 586.8,992.1 586.8,972.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_c (outpost)</title></polygon>
-<line x1="598.8" y1="982.1" x2="595.8" y2="982.1" stroke="#000" stroke-width="1"/>
-<polygon points="474.0,1194.1 506.0,1194.1 506.0,1218.1 474.0,1218.1" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farm_veg (outpost)</title></polygon>
-<line x1="490.0" y1="1206.1" x2="490.0" y2="1209.1" stroke="#000" stroke-width="1"/>
-<polygon points="444.0,1084.1 464.0,1084.1 464.0,1104.1 444.0,1104.1" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_kiva (outpost)</title></polygon>
-<line x1="454.0" y1="1094.1" x2="454.0" y2="1097.1" stroke="#000" stroke-width="1"/>
-<polygon points="478.0,1086.1 494.0,1086.1 494.0,1102.1 478.0,1102.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shrine (outpost)</title></polygon>
-<line x1="486.0" y1="1094.1" x2="486.0" y2="1097.1" stroke="#000" stroke-width="1"/>
-<polygon points="601.2,1265.1 601.2,1275.1 596.8,1275.1 596.8,1265.1" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stall_a (outpost)</title></polygon>
-<line x1="599.0" y1="1270.1" x2="596.0" y2="1270.1" stroke="#000" stroke-width="1"/>
-<polygon points="898.2,1269.9 859.3,1279.3 846.3,1225.9 885.2,1216.4" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_store_tunnel (outpost)</title></polygon>
-<line x1="866.0" y1="1222.1" x2="865.3" y2="1219.2" stroke="#000" stroke-width="1"/>
+<polygon points="4330.0,1076.1 4330.0,1176.1 4249.0,1176.1 4249.0,1076.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_portal (outpost)</title></polygon>
+<line x1="4250.0" y1="1126.1" x2="4247.0" y2="1126.1" stroke="#000" stroke-width="1"/>
+<polygon points="4362.0,1006.1 4362.0,1066.1 4249.0,1066.1 4249.0,1006.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_a (outpost)</title></polygon>
+<line x1="4250.0" y1="1036.1" x2="4247.0" y2="1036.1" stroke="#000" stroke-width="1"/>
+<polygon points="4318.0,1186.1 4318.0,1246.1 4249.0,1246.1 4249.0,1186.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gallery_b (outpost)</title></polygon>
+<line x1="4250.0" y1="1216.1" x2="4247.0" y2="1216.1" stroke="#000" stroke-width="1"/>
+<polygon points="4014.0,1214.1 4106.0,1214.1 4106.0,1286.1 4014.0,1286.1" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_caravanserai (outpost)</title></polygon>
+<line x1="4060.0" y1="1250.1" x2="4060.0" y2="1253.1" stroke="#000" stroke-width="1"/>
+<polygon points="4002.0,1020.1 4038.0,1020.1 4038.0,1040.1 4002.0,1040.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_barracks_outpost (outpost)</title></polygon>
+<line x1="4020.0" y1="1030.1" x2="4020.0" y2="1033.1" stroke="#000" stroke-width="1"/>
+<polygon points="3865.0,1114.1 3865.0,1138.1 3855.0,1138.1 3855.0,1114.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_gate (outpost)</title></polygon>
+<line x1="3860.0" y1="1126.1" x2="3857.0" y2="1126.1" stroke="#000" stroke-width="1"/>
+<polygon points="3751.0,1003.1 3751.0,1017.1 3737.0,1017.1 3737.0,1003.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
+<line x1="3744.0" y1="1010.1" x2="3741.0" y2="1010.1" stroke="#000" stroke-width="1"/>
+<polygon points="3847.0,895.1 3847.0,909.1 3833.0,909.1 3833.0,895.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_watchtower (outpost)</title></polygon>
+<line x1="3840.0" y1="902.1" x2="3837.0" y2="902.1" stroke="#000" stroke-width="1"/>
+<polygon points="4035.3,1321.0 4061.2,1322.5 4060.7,1330.5 4034.8,1329.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4048.0" y1="1325.8" x2="4047.8" y2="1328.8" stroke="#000" stroke-width="1"/>
+<polygon points="4012.0,1316.6 4037.5,1321.3 4036.1,1329.1 4010.5,1324.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4024.0" y1="1322.9" x2="4023.5" y2="1325.8" stroke="#000" stroke-width="1"/>
+<polygon points="3989.3,1309.4 4014.2,1317.1 4011.8,1324.8 3987.0,1317.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4000.6" y1="1317.1" x2="3999.7" y2="1319.9" stroke="#000" stroke-width="1"/>
+<polygon points="3967.8,1299.5 3991.5,1310.2 3988.2,1317.5 3964.5,1306.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3978.0" y1="1308.5" x2="3976.7" y2="1311.3" stroke="#000" stroke-width="1"/>
+<polygon points="3947.5,1287.2 3969.8,1300.6 3965.6,1307.4 3943.4,1294.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3956.6" y1="1297.3" x2="3955.0" y2="1299.9" stroke="#000" stroke-width="1"/>
+<polygon points="3928.9,1272.4 3949.4,1288.4 3944.5,1294.7 3924.0,1278.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3936.7" y1="1283.6" x2="3934.9" y2="1285.9" stroke="#000" stroke-width="1"/>
+<polygon points="3912.2,1255.6 3930.6,1273.9 3925.0,1279.6 3906.6,1261.2" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3918.6" y1="1267.6" x2="3916.5" y2="1269.7" stroke="#000" stroke-width="1"/>
+<polygon points="3897.7,1236.8 3913.7,1257.3 3907.5,1262.2 3891.4,1241.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3902.6" y1="1249.5" x2="3900.2" y2="1251.4" stroke="#000" stroke-width="1"/>
+<polygon points="3885.6,1216.4 3899.0,1238.7 3892.2,1242.8 3878.7,1220.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3888.9" y1="1229.6" x2="3886.3" y2="1231.2" stroke="#000" stroke-width="1"/>
+<polygon points="3875.9,1194.7 3886.6,1218.4 3879.3,1221.7 3868.6,1198.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3877.6" y1="1208.2" x2="3874.9" y2="1209.5" stroke="#000" stroke-width="1"/>
+<polygon points="3869.0,1172.0 3876.7,1196.9 3869.1,1199.2 3861.4,1174.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3869.1" y1="1185.6" x2="3866.2" y2="1186.5" stroke="#000" stroke-width="1"/>
+<polygon points="3864.9,1148.7 3869.6,1174.2 3861.7,1175.7 3857.0,1150.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3863.3" y1="1162.2" x2="3860.3" y2="1162.7" stroke="#000" stroke-width="1"/>
+<polygon points="3869.6,1078.0 3864.9,1103.6 3857.0,1102.1 3861.7,1076.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3863.3" y1="1090.1" x2="3860.3" y2="1089.5" stroke="#000" stroke-width="1"/>
+<polygon points="3876.7,1055.4 3869.0,1080.2 3861.4,1077.8 3869.1,1053.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3869.1" y1="1066.6" x2="3866.2" y2="1065.7" stroke="#000" stroke-width="1"/>
+<polygon points="3886.6,1033.8 3875.9,1057.5 3868.6,1054.2 3879.3,1030.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3877.6" y1="1044.0" x2="3874.9" y2="1042.8" stroke="#000" stroke-width="1"/>
+<polygon points="3899.0,1013.6 3885.6,1035.8 3878.7,1031.7 3892.2,1009.4" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3888.9" y1="1022.6" x2="3886.3" y2="1021.1" stroke="#000" stroke-width="1"/>
+<polygon points="3913.7,995.0 3897.7,1015.4 3891.4,1010.5 3907.5,990.0" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3902.6" y1="1002.7" x2="3900.2" y2="1000.9" stroke="#000" stroke-width="1"/>
+<polygon points="3930.6,978.3 3912.2,996.7 3906.6,991.0 3925.0,972.6" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3918.6" y1="984.7" x2="3916.5" y2="982.5" stroke="#000" stroke-width="1"/>
+<polygon points="3949.4,963.8 3928.9,979.8 3924.0,973.5 3944.5,957.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3936.7" y1="968.7" x2="3934.9" y2="966.3" stroke="#000" stroke-width="1"/>
+<polygon points="3969.8,951.6 3947.5,965.1 3943.4,958.2 3965.6,944.8" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3956.6" y1="954.9" x2="3955.0" y2="952.4" stroke="#000" stroke-width="1"/>
+<polygon points="3991.5,942.0 3967.8,952.7 3964.5,945.4 3988.2,934.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="3978.0" y1="943.7" x2="3976.7" y2="941.0" stroke="#000" stroke-width="1"/>
+<polygon points="4014.2,935.1 3989.3,942.8 3987.0,935.2 4011.8,927.5" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4000.6" y1="935.2" x2="3999.7" y2="932.3" stroke="#000" stroke-width="1"/>
+<polygon points="4037.5,931.0 4012.0,935.7 4010.5,927.8 4036.1,923.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4024.0" y1="929.4" x2="4023.5" y2="926.4" stroke="#000" stroke-width="1"/>
+<polygon points="4061.2,929.7 4035.3,931.3 4034.8,923.3 4060.7,921.7" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4048.0" y1="926.5" x2="4047.8" y2="923.5" stroke="#000" stroke-width="1"/>
+<polygon points="4085.0,930.1 4059.0,930.1 4059.0,922.1 4085.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4072.0" y1="926.1" x2="4072.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4109.0,930.1 4083.0,930.1 4083.0,922.1 4109.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4096.0" y1="926.1" x2="4096.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4133.0,930.1 4107.0,930.1 4107.0,922.1 4133.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4120.0" y1="926.1" x2="4120.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4157.0,930.1 4131.0,930.1 4131.0,922.1 4157.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4144.0" y1="926.1" x2="4144.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4181.0,930.1 4155.0,930.1 4155.0,922.1 4181.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4168.0" y1="926.1" x2="4168.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4205.0,930.1 4179.0,930.1 4179.0,922.1 4205.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4192.0" y1="926.1" x2="4192.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4229.0,930.1 4203.0,930.1 4203.0,922.1 4229.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4216.0" y1="926.1" x2="4216.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4253.0,930.1 4227.0,930.1 4227.0,922.1 4253.0,922.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4240.0" y1="926.1" x2="4240.0" y2="923.1" stroke="#000" stroke-width="1"/>
+<polygon points="4059.0,1322.1 4085.0,1322.1 4085.0,1330.1 4059.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4072.0" y1="1326.1" x2="4072.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4083.0,1322.1 4109.0,1322.1 4109.0,1330.1 4083.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4096.0" y1="1326.1" x2="4096.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4107.0,1322.1 4133.0,1322.1 4133.0,1330.1 4107.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4120.0" y1="1326.1" x2="4120.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4131.0,1322.1 4157.0,1322.1 4157.0,1330.1 4131.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4144.0" y1="1326.1" x2="4144.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4155.0,1322.1 4181.0,1322.1 4181.0,1330.1 4155.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4168.0" y1="1326.1" x2="4168.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4179.0,1322.1 4205.0,1322.1 4205.0,1330.1 4179.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4192.0" y1="1326.1" x2="4192.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4203.0,1322.1 4229.0,1322.1 4229.0,1330.1 4203.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4216.0" y1="1326.1" x2="4216.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="4227.0,1322.1 4253.0,1322.1 4253.0,1330.1 4227.0,1330.1" fill="#5c6672" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_palisade (outpost)</title></polygon>
+<line x1="4240.0" y1="1326.1" x2="4240.0" y2="1329.1" stroke="#000" stroke-width="1"/>
+<polygon points="3928.0,1198.1 3928.0,1182.1 3944.0,1182.1 3944.0,1198.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
+<line x1="3936.0" y1="1190.1" x2="3939.0" y2="1190.1" stroke="#000" stroke-width="1"/>
+<polygon points="3964.0,1226.1 3948.0,1226.1 3948.0,1210.1 3964.0,1210.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_a (outpost)</title></polygon>
+<line x1="3956.0" y1="1218.1" x2="3956.0" y2="1215.1" stroke="#000" stroke-width="1"/>
+<polygon points="3970.0,1191.1 3970.0,1173.1 3990.0,1173.1 3990.0,1191.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
+<line x1="3980.0" y1="1182.1" x2="3983.0" y2="1182.1" stroke="#000" stroke-width="1"/>
+<polygon points="3920.0,1075.1 3920.0,1057.1 3940.0,1057.1 3940.0,1075.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_b (outpost)</title></polygon>
+<line x1="3930.0" y1="1066.1" x2="3933.0" y2="1066.1" stroke="#000" stroke-width="1"/>
+<polygon points="3953.0,1047.1 3975.0,1047.1 3975.0,1069.1 3953.0,1069.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_house_wood (outpost)</title></polygon>
+<line x1="3964.0" y1="1058.1" x2="3964.0" y2="1061.1" stroke="#000" stroke-width="1"/>
+<polygon points="4124.0,1016.1 4096.0,1016.1 4096.0,988.1 4124.0,988.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farmhouse_wood (outpost)</title></polygon>
+<line x1="4110.0" y1="1002.1" x2="4110.0" y2="999.1" stroke="#000" stroke-width="1"/>
+<polygon points="4260.8,972.1 4260.8,992.1 4236.8,992.1 4236.8,972.1" fill="#c9a28c" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_hut_c (outpost)</title></polygon>
+<line x1="4248.8" y1="982.1" x2="4245.8" y2="982.1" stroke="#000" stroke-width="1"/>
+<polygon points="4124.0,1194.1 4156.0,1194.1 4156.0,1218.1 4124.0,1218.1" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_farm_veg (outpost)</title></polygon>
+<line x1="4140.0" y1="1206.1" x2="4140.0" y2="1209.1" stroke="#000" stroke-width="1"/>
+<polygon points="4094.0,1084.1 4114.0,1084.1 4114.0,1104.1 4094.0,1104.1" fill="#9a6a86" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_kiva (outpost)</title></polygon>
+<line x1="4104.0" y1="1094.1" x2="4104.0" y2="1097.1" stroke="#000" stroke-width="1"/>
+<polygon points="4128.0,1086.1 4144.0,1086.1 4144.0,1102.1 4128.0,1102.1" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shrine (outpost)</title></polygon>
+<line x1="4136.0" y1="1094.1" x2="4136.0" y2="1097.1" stroke="#000" stroke-width="1"/>
+<polygon points="4248.2,1265.1 4248.2,1275.1 4243.8,1275.1 4243.8,1265.1" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_stall_a (outpost)</title></polygon>
+<line x1="4246.0" y1="1270.1" x2="4243.0" y2="1270.1" stroke="#000" stroke-width="1"/>
+<polygon points="4458.2,1259.9 4419.3,1269.3 4406.3,1215.9 4445.2,1206.4" fill="#7a9a50" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_store_tunnel (outpost)</title></polygon>
+<line x1="4426.0" y1="1212.1" x2="4425.3" y2="1209.2" stroke="#000" stroke-width="1"/>
 <polygon points="5676.1,1027.7 5711.9,1065.4 5695.9,1080.6 5660.1,1042.8" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_market_hall (hub)</title></polygon>
 <line x1="5686.0" y1="1054.1" x2="5683.8" y2="1056.2" stroke="#000" stroke-width="1"/>
 <polygon points="5518.4,1229.0 5503.2,1213.1 5517.6,1199.3 5532.8,1215.2" fill="#d6c25a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_shop_armour_built (hub)</title></polygon>
@@ -823,34 +808,29 @@
 <line x1="5678.0" y1="1090.1" x2="5675.3" y2="1091.5" stroke="#000" stroke-width="1"/>
 <polygon points="5686.1,1159.6 5680.5,1170.2 5669.9,1164.6 5675.5,1154.0" fill="#a8987a" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>zj_fountain (hub)</title></polygon>
 <line x1="5678.0" y1="1162.1" x2="5675.3" y2="1160.7" stroke="#000" stroke-width="1"/>
-<line x1="210.0" y1="1126.1" x2="410.0" y2="1126.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.c: street, 4 m, 0.0%</title></line>
-<line x1="410.0" y1="1126.1" x2="600.0" y2="1126.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.portal: street, 4 m, 0.0%</title></line>
-<line x1="410.0" y1="1126.1" x2="410.0" y2="1230.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.cara: street, 4 m, 0.0%</title></line>
-<line x1="410.0" y1="1126.1" x2="370.0" y2="1042.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.barr: street, 4 m, 0.0%</title></line>
-<line x1="410.0" y1="1126.1" x2="300.0" y2="1182.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.huts: street, 4 m, 0.0%</title></line>
-<line x1="410.0" y1="1126.1" x2="310.0" y2="1070.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.huts2: street, 4 m, 0.0%</title></line>
-<line x1="600.0" y1="1126.1" x2="592.0" y2="1036.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.galN: street, 4 m, 0.0%</title></line>
-<line x1="600.0" y1="1126.1" x2="592.0" y2="1216.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.galS: street, 4 m, 0.0%</title></line>
-<line x1="210.0" y1="1126.1" x2="140.0" y2="1302.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.pasture: street, 4 m, 0.0%</title></line>
-<line x1="210.0" y1="1126.1" x2="94.0" y2="1010.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.tw3: street, 4 m, 0.0%</title></line>
-<line x1="592.0" y1="1036.1" x2="614.0" y2="956.1" stroke="#c49a4a" stroke-width="2.4" stroke-dasharray="6 3"><title>o.galN - o.tw1: stair, 2 m, 52.0%</title></line>
-<line x1="592.0" y1="1216.1" x2="614.0" y2="1296.1" stroke="#c49a4a" stroke-width="2.4" stroke-dasharray="6 3"><title>o.galS - o.tw2: stair, 2 m, 52.0%</title></line>
-<line x1="600.0" y1="1126.1" x2="686.0" y2="1126.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.tube0: tube, 10 m, 0.0%</title></line>
-<line x1="686.0" y1="1126.1" x2="850.0" y2="1156.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.tube0 - t1: tube, 10 m, 2.0%</title></line>
-<line x1="850.0" y1="1156.1" x2="1210.0" y2="1146.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t2: tube, 10 m, 2.0%</title></line>
-<line x1="1210.0" y1="1146.1" x2="1810.0" y2="1086.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t2 - t3: tube, 10 m, 2.0%</title></line>
-<line x1="1810.0" y1="1086.1" x2="2610.0" y2="1146.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t3 - t4: tube, 10 m, 2.0%</title></line>
-<line x1="2610.0" y1="1146.1" x2="3410.0" y2="1096.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t4 - t5: tube, 10 m, 2.0%</title></line>
-<line x1="3410.0" y1="1096.1" x2="4010.0" y2="1146.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t5 - t6: tube, 10 m, 2.0%</title></line>
-<line x1="4010.0" y1="1146.1" x2="4490.0" y2="1126.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t6 - t.door: tube, 10 m, 2.0%</title></line>
-<line x1="850.0" y1="1156.1" x2="866.0" y2="1222.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t.stores: tube, 6 m, 0.0%</title></line>
-<line x1="850.0" y1="1156.1" x2="826.0" y2="1070.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t.stables: tube, 6 m, 0.0%</title></line>
-<line x1="4490.0" y1="1126.1" x2="4508.0" y2="1126.1" stroke="#000" stroke-width="4.0"><title>t.door - b0: door, 4 m, 3.3%</title></line>
-<line x1="4508.0" y1="1126.1" x2="4710.0" y2="1046.1" stroke="#5e3470" stroke-width="4.0"><title>b0 - a1: braid, 7 m, 6.2%</title></line>
-<line x1="4710.0" y1="1046.1" x2="4970.0" y2="1026.1" stroke="#5e3470" stroke-width="4.0"><title>a1 - a2: braid, 7 m, 9.1%</title></line>
+<line x1="3860.0" y1="1126.1" x2="4060.0" y2="1126.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.c: street, 4 m, 0.0%</title></line>
+<line x1="4060.0" y1="1126.1" x2="4250.0" y2="1126.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.portal: street, 4 m, 0.0%</title></line>
+<line x1="4060.0" y1="1126.1" x2="4060.0" y2="1230.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.cara: street, 4 m, 0.0%</title></line>
+<line x1="4060.0" y1="1126.1" x2="4020.0" y2="1042.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.barr: street, 4 m, 0.0%</title></line>
+<line x1="4060.0" y1="1126.1" x2="3950.0" y2="1182.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.huts: street, 4 m, 0.0%</title></line>
+<line x1="4060.0" y1="1126.1" x2="3960.0" y2="1070.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.c - o.huts2: street, 4 m, 0.0%</title></line>
+<line x1="4250.0" y1="1126.1" x2="4242.0" y2="1036.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.galN: street, 4 m, 0.0%</title></line>
+<line x1="4250.0" y1="1126.1" x2="4242.0" y2="1216.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.galS: street, 4 m, 0.0%</title></line>
+<line x1="3860.0" y1="1126.1" x2="3790.0" y2="1302.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.pasture: street, 4 m, 0.0%</title></line>
+<line x1="3860.0" y1="1126.1" x2="3744.0" y2="1010.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.tw3: street, 4 m, 0.0%</title></line>
+<line x1="3860.0" y1="1126.1" x2="3840.0" y2="902.1" stroke="#7e6a50" stroke-width="4.0" stroke-dasharray="6 3"><title>o.gate - o.tw4: street, 4 m, 0.0%</title></line>
+<line x1="4250.0" y1="1126.1" x2="4336.0" y2="1126.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.portal - o.tube0: tube, 10 m, 0.0%</title></line>
+<line x1="4336.0" y1="1126.1" x2="4410.0" y2="1146.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>o.tube0 - t1: tube, 10 m, 2.0%</title></line>
+<line x1="4410.0" y1="1146.1" x2="4490.0" y2="1116.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t2: tube, 10 m, 2.0%</title></line>
+<line x1="4490.0" y1="1116.1" x2="4570.0" y2="1126.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t2 - t.door: tube, 10 m, 2.0%</title></line>
+<line x1="4410.0" y1="1146.1" x2="4426.0" y2="1212.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t.stores: tube, 6 m, 0.0%</title></line>
+<line x1="4410.0" y1="1146.1" x2="4386.0" y2="1060.1" stroke="#8a6a48" stroke-width="4.0" stroke-dasharray="6 3"><title>t1 - t.stables: tube, 6 m, 0.0%</title></line>
+<line x1="4570.0" y1="1126.1" x2="4588.0" y2="1126.1" stroke="#000" stroke-width="4.0"><title>t.door - b0: door, 4 m, 3.3%</title></line>
+<line x1="4588.0" y1="1126.1" x2="4710.0" y2="1046.1" stroke="#5e3470" stroke-width="4.0"><title>b0 - a1: braid, 7 m, 9.2%</title></line>
+<line x1="4710.0" y1="1046.1" x2="4970.0" y2="1026.1" stroke="#5e3470" stroke-width="4.0"><title>a1 - a2: braid, 7 m, 2.0%</title></line>
 <line x1="4970.0" y1="1026.1" x2="5130.0" y2="1076.1" stroke="#5e3470" stroke-width="4.0"><title>a2 - j1: braid, 7 m, 7.2%</title></line>
-<line x1="4508.0" y1="1126.1" x2="4710.0" y2="1216.1" stroke="#5e3470" stroke-width="4.0"><title>b0 - b1: braid, 5 m, 3.3%</title></line>
-<line x1="4710.0" y1="1216.1" x2="4990.0" y2="1236.1" stroke="#5e3470" stroke-width="4.0"><title>b1 - b2: braid, 5 m, 4.9%</title></line>
+<line x1="4588.0" y1="1126.1" x2="4710.0" y2="1216.1" stroke="#5e3470" stroke-width="4.0"><title>b0 - b1: braid, 5 m, 4.9%</title></line>
+<line x1="4710.0" y1="1216.1" x2="4990.0" y2="1236.1" stroke="#5e3470" stroke-width="4.0"><title>b1 - b2: braid, 5 m, 1.7%</title></line>
 <line x1="4990.0" y1="1236.1" x2="5130.0" y2="1076.1" stroke="#5e3470" stroke-width="4.0"><title>b2 - j1: braid, 5 m, 13.2%</title></line>
 <line x1="5130.0" y1="1076.1" x2="5330.0" y2="1126.1" stroke="#3f8f88" stroke-width="4.0"><title>j1 - h.w: ramp, 8 m, 11.6%</title></line>
 <line x1="5610.0" y1="1126.1" x2="5330.0" y2="1126.1" stroke="#b8ab90" stroke-width="4.0"><title>h.sq - h.w: square, 20 m, 0.0%</title></line>
@@ -903,48 +883,42 @@
 <line x1="5779.5" y1="1775.6" x2="6210.0" y2="1966.1" stroke="#3f8f88" stroke-width="4.0"><title>s2.e - k1: ramp, 4 m, 11.9%</title></line>
 <line x1="6210.0" y1="1966.1" x2="6570.0" y2="2246.1" stroke="#3f8f88" stroke-width="4.0"><title>k1 - k2: ramp, 4 m, 10.5%</title></line>
 <line x1="6570.0" y1="2246.1" x2="6730.0" y2="2406.1" stroke="#3f8f88" stroke-width="4.0"><title>k2 - k.head: ramp, 4 m, 10.6%</title></line>
-<line x1="5310.0" y1="786.1" x2="5210.0" y2="602.1" stroke="#2b6fb0" stroke-width="1.8" stroke-dasharray="2 3"><title>n.w - x.lava: secret, 1.5 m, 21.0%</title></line>
-<line x1="1210.0" y1="1146.1" x2="1010.0" y2="1446.1" stroke="#2b6fb0" stroke-width="1.8" stroke-dasharray="2 3"><title>t2 - x.forest: secret, 1.5 m, 1.8%</title></line>
-<circle cx="210.0" cy="1126.1" r="2.2" fill="#222"><title>o.gate y -75</title></circle>
-<text x="214.0" y="1122.1" font-size="10">the gate (y -75)</text>
-<circle cx="410.0" cy="1126.1" r="2.2" fill="#222"><title>o.c y -75</title></circle>
-<circle cx="600.0" cy="1126.1" r="2.2" fill="#222"><title>o.portal y -75</title></circle>
-<text x="604.0" y="1122.1" font-size="10">the portal (y -75)</text>
-<circle cx="410.0" cy="1230.1" r="2.2" fill="#222"><title>o.cara y -75</title></circle>
-<text x="414.0" y="1226.1" font-size="10">the caravanserai (y -75)</text>
-<circle cx="370.0" cy="1042.1" r="2.2" fill="#222"><title>o.barr y -75</title></circle>
-<text x="374.0" y="1038.1" font-size="10">the barracks (y -75)</text>
-<circle cx="300.0" cy="1182.1" r="2.2" fill="#222"><title>o.huts y -75</title></circle>
-<circle cx="310.0" cy="1070.1" r="2.2" fill="#222"><title>o.huts2 y -75</title></circle>
-<circle cx="592.0" cy="1036.1" r="2.2" fill="#222"><title>o.galN y -75</title></circle>
-<text x="596.0" y="1032.1" font-size="10">a gallery (y -75)</text>
-<circle cx="592.0" cy="1216.1" r="2.2" fill="#222"><title>o.galS y -75</title></circle>
-<text x="596.0" y="1212.1" font-size="10">a gallery (y -75)</text>
-<circle cx="140.0" cy="1302.1" r="2.2" fill="#222"><title>o.pasture y -75</title></circle>
-<text x="144.0" y="1298.1" font-size="10">the pasture (y -75)</text>
-<circle cx="614.0" cy="956.1" r="2.2" fill="#222"><title>o.tw1 y -53.43</title></circle>
-<text x="618.0" y="952.1" font-size="10">a watchtower (y -53)</text>
-<circle cx="614.0" cy="1296.1" r="2.2" fill="#222"><title>o.tw2 y -53.43</title></circle>
-<text x="618.0" y="1292.1" font-size="10">a watchtower (y -53)</text>
-<circle cx="94.0" cy="1010.1" r="2.2" fill="#222"><title>o.tw3 y -75</title></circle>
-<text x="98.0" y="1006.1" font-size="10">a watchtower (y -75)</text>
-<circle cx="686.0" cy="1126.1" r="2.2" fill="#222"><title>o.tube0 y -75</title></circle>
-<circle cx="850.0" cy="1156.1" r="2.2" fill="#222"><title>t1 y -73.33</title></circle>
-<circle cx="1210.0" cy="1146.1" r="2.2" fill="#222"><title>t2 y -69.73</title></circle>
-<circle cx="1810.0" cy="1086.1" r="2.2" fill="#222"><title>t3 y -63.7</title></circle>
-<circle cx="2610.0" cy="1146.1" r="2.2" fill="#222"><title>t4 y -55.68</title></circle>
-<circle cx="3410.0" cy="1096.1" r="2.2" fill="#222"><title>t5 y -47.66</title></circle>
-<circle cx="4010.0" cy="1146.1" r="2.2" fill="#222"><title>t6 y -41.64</title></circle>
-<circle cx="4490.0" cy="1126.1" r="2.2" fill="#222"><title>t.door y -36.84</title></circle>
-<text x="4494.0" y="1122.1" font-size="10">the stone door (y -37)</text>
-<circle cx="866.0" cy="1222.1" r="2.2" fill="#222"><title>t.stores y -73.33</title></circle>
-<text x="870.0" y="1218.1" font-size="10">the stores (y -73)</text>
-<circle cx="826.0" cy="1070.1" r="2.2" fill="#222"><title>t.stables y -73.33</title></circle>
-<text x="830.0" y="1066.1" font-size="10">the stables (y -73)</text>
-<circle cx="4508.0" cy="1126.1" r="2.2" fill="#222"><title>b0 y -36.54</title></circle>
-<circle cx="4710.0" cy="1046.1" r="2.2" fill="#222"><title>a1 y -29.84</title></circle>
+<line x1="5310.0" y1="786.1" x2="5210.0" y2="602.1" stroke="#2b6fb0" stroke-width="1.8" stroke-dasharray="2 3"><title>n.w - x.lava: secret, 1.5 m, 43.3%</title></line>
+<line x1="4410.0" y1="1146.1" x2="4232.0" y2="1442.1" stroke="#2b6fb0" stroke-width="1.8" stroke-dasharray="2 3"><title>t1 - x.forest: secret, 1.5 m, 0.7%</title></line>
+<circle cx="3860.0" cy="1126.1" r="2.2" fill="#222"><title>o.gate y -30</title></circle>
+<text x="3864.0" y="1122.1" font-size="10">the gate (y -30)</text>
+<circle cx="4060.0" cy="1126.1" r="2.2" fill="#222"><title>o.c y -30</title></circle>
+<circle cx="4250.0" cy="1126.1" r="2.2" fill="#222"><title>o.portal y -30</title></circle>
+<text x="4254.0" y="1122.1" font-size="10">the portal (y -30)</text>
+<circle cx="4060.0" cy="1230.1" r="2.2" fill="#222"><title>o.cara y -30</title></circle>
+<text x="4064.0" y="1226.1" font-size="10">the caravanserai (y -30)</text>
+<circle cx="4020.0" cy="1042.1" r="2.2" fill="#222"><title>o.barr y -30</title></circle>
+<text x="4024.0" y="1038.1" font-size="10">the barracks (y -30)</text>
+<circle cx="3950.0" cy="1182.1" r="2.2" fill="#222"><title>o.huts y -30</title></circle>
+<circle cx="3960.0" cy="1070.1" r="2.2" fill="#222"><title>o.huts2 y -30</title></circle>
+<circle cx="4242.0" cy="1036.1" r="2.2" fill="#222"><title>o.galN y -30</title></circle>
+<text x="4246.0" y="1032.1" font-size="10">a gallery (y -30)</text>
+<circle cx="4242.0" cy="1216.1" r="2.2" fill="#222"><title>o.galS y -30</title></circle>
+<text x="4246.0" y="1212.1" font-size="10">a gallery (y -30)</text>
+<circle cx="3790.0" cy="1302.1" r="2.2" fill="#222"><title>o.pasture y -30</title></circle>
+<text x="3794.0" y="1298.1" font-size="10">the pasture (y -30)</text>
+<circle cx="3744.0" cy="1010.1" r="2.2" fill="#222"><title>o.tw3 y -30</title></circle>
+<text x="3748.0" y="1006.1" font-size="10">a watchtower (y -30)</text>
+<circle cx="3840.0" cy="902.1" r="2.2" fill="#222"><title>o.tw4 y -30</title></circle>
+<text x="3844.0" y="898.1" font-size="10">a watchtower (y -30)</text>
+<circle cx="4336.0" cy="1126.1" r="2.2" fill="#222"><title>o.tube0 y -30</title></circle>
+<circle cx="4410.0" cy="1146.1" r="2.2" fill="#222"><title>t1 y -29.23</title></circle>
+<circle cx="4490.0" cy="1116.1" r="2.2" fill="#222"><title>t2 y -28.38</title></circle>
+<circle cx="4570.0" cy="1126.1" r="2.2" fill="#222"><title>t.door y -27.57</title></circle>
+<text x="4574.0" y="1122.1" font-size="10">the stone door (y -28)</text>
+<circle cx="4426.0" cy="1212.1" r="2.2" fill="#222"><title>t.stores y -29.23</title></circle>
+<text x="4430.0" y="1208.1" font-size="10">the stores (y -29)</text>
+<circle cx="4386.0" cy="1060.1" r="2.2" fill="#222"><title>t.stables y -29.23</title></circle>
+<text x="4390.0" y="1056.1" font-size="10">the stables (y -29)</text>
+<circle cx="4588.0" cy="1126.1" r="2.2" fill="#222"><title>b0 y -27.27</title></circle>
+<circle cx="4710.0" cy="1046.1" r="2.2" fill="#222"><title>a1 y -20.57</title></circle>
 <circle cx="4970.0" cy="1026.1" r="2.2" fill="#222"><title>a2 y -18</title></circle>
-<circle cx="4710.0" cy="1216.1" r="2.2" fill="#222"><title>b1 y -32.84</title></circle>
+<circle cx="4710.0" cy="1216.1" r="2.2" fill="#222"><title>b1 y -23.57</title></circle>
 <circle cx="4990.0" cy="1236.1" r="2.2" fill="#222"><title>b2 y -26</title></circle>
 <circle cx="5130.0" cy="1076.1" r="2.2" fill="#222"><title>j1 y -12</title></circle>
 <circle cx="5330.0" cy="1126.1" r="2.2" fill="#222"><title>h.w y 0</title></circle>
@@ -1001,10 +975,10 @@
 <circle cx="6570.0" cy="2246.1" r="2.2" fill="#222"><title>k2 y -46</title></circle>
 <circle cx="6730.0" cy="2406.1" r="2.2" fill="#222"><title>k.head y -58</title></circle>
 <text x="6734.0" y="2402.1" font-size="10">the catacombs (y -58)</text>
-<circle cx="5210.0" cy="602.1" r="2.2" fill="#222"><title>x.lava y 33.94</title></circle>
-<text x="5214.0" y="598.1" font-size="10">a scout exit (y 34)</text>
-<circle cx="1010.0" cy="1446.1" r="2.2" fill="#222"><title>x.forest y -73</title></circle>
-<text x="1014.0" y="1442.1" font-size="10">a scout exit (y -73)</text>
+<circle cx="5210.0" cy="602.1" r="2.2" fill="#222"><title>x.lava y 57.38</title></circle>
+<text x="5214.0" y="598.1" font-size="10">a scout exit (the forest on top) (y 57)</text>
+<circle cx="4232.0" cy="1442.1" r="2.2" fill="#222"><title>x.forest y -28</title></circle>
+<text x="4236.0" y="1438.1" font-size="10">a scout exit (the west face's foot) (y -28)</text>
 </g>
 <line x1="20" y1="1516.1194029850747" x2="50" y2="1516.1194029850747" stroke="#8a6a48" stroke-width="3"/><text x="54" y="1520.1194029850747" font-size="11">tube</text><line x1="130" y1="1516.1194029850747" x2="160" y2="1516.1194029850747" stroke="#5e3470" stroke-width="3"/><text x="164" y="1520.1194029850747" font-size="11">braid</text><line x1="240" y1="1516.1194029850747" x2="270" y2="1516.1194029850747" stroke="#3f8f88" stroke-width="3"/><text x="274" y="1520.1194029850747" font-size="11">ramp</text><line x1="350" y1="1516.1194029850747" x2="380" y2="1516.1194029850747" stroke="#c49a4a" stroke-width="3"/><text x="384" y="1520.1194029850747" font-size="11">stair</text><line x1="460" y1="1516.1194029850747" x2="490" y2="1516.1194029850747" stroke="#a23a2a" stroke-width="3"/><text x="494" y="1520.1194029850747" font-size="11">ledge</text><line x1="570" y1="1516.1194029850747" x2="600" y2="1516.1194029850747" stroke="#b8ab90" stroke-width="3"/><text x="604" y="1520.1194029850747" font-size="11">square</text><line x1="680" y1="1516.1194029850747" x2="710" y2="1516.1194029850747" stroke="#7e6a50" stroke-width="3"/><text x="714" y="1520.1194029850747" font-size="11">street</text><line x1="790" y1="1516.1194029850747" x2="820" y2="1516.1194029850747" stroke="#000" stroke-width="3"/><text x="824" y="1520.1194029850747" font-size="11">door</text><line x1="900" y1="1516.1194029850747" x2="930" y2="1516.1194029850747" stroke="#2b6fb0" stroke-width="3"/><text x="934" y="1520.1194029850747" font-size="11">secret</text>
 <text x="20" y="1534" font-size="11">Dashed: the outer zone (foreigners). Dotted: the scouts' secret ways. A tick marks each site's front. Hover for ids, heights and grades.</text>

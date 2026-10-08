@@ -4,7 +4,7 @@
 // It shows the city or the outpost, whichever the camera is in; a click on it brings the orbit there (on the floor below the
 // nearest way's height). M hides it.
 const DHMAP={on:true,W:260,H:230,mode:null,base:{},t:0,extra:[],
- views:{city:{x0:-620,x1:720,z0:-320,z1:720},outpost:{x0:-2800,x1:-2300,z0:-200,z1:200}},
+ views:{city:{x0:-720,x1:780,z0:-470,z1:680},outpost:{x0:-1010,x1:-560,z0:-230,z1:230}},
  COL:{tube:'#8a6a48',braid:'#7a4c96',ramp:'#3f9f98',stair:'#d4aa5a',ledge:'#c24a3a',square:'#b8ab90',street:'#9e8a70',door:'#ffffff',secret:'#4a8fd0'}};
 DHMAP.cv=document.createElement('canvas');DHMAP.cv.width=DHMAP.W;DHMAP.cv.height=DHMAP.H;
 Object.assign(DHMAP.cv.style,{position:'fixed',right:'10px',bottom:'64px',zIndex:6,border:'1px solid #9a5a36',borderRadius:'4px',background:'rgba(20,14,10,.82)',cursor:'crosshair'});
@@ -18,8 +18,9 @@ function dhMapBase(mode,cy){const key=mode+':'+Math.round(cy/3),B=DHMAP.base;if(
  const H=DH.HALL;g.fillStyle='rgba(200,180,140,.25)';g.strokeStyle='#8a7a5a';g.beginPath();g.ellipse(F.X(H.c[0]),F.Z(H.c[1]),H.rx*F.s,H.rz*F.s,0,0,TAU);g.fill();g.stroke();
  g.fillStyle='rgba(255,240,190,.45)';g.beginPath();g.arc(F.X(H.c[0]),F.Z(H.c[1]),H.pool*F.s,0,TAU);g.fill();
  for(const P of DH.PITS){g.fillStyle='rgba(150,190,110,.3)';g.strokeStyle='#6a8a4a';g.beginPath();g.arc(F.X(P.c[0]),F.Z(P.c[1]),P.r*F.s,0,TAU);g.fill();g.stroke();}
- const K=DH.KIPUKA;if(mode==='outpost'){g.fillStyle='rgba(120,140,80,.25)';g.beginPath();g.ellipse(F.X(K.c[0]),F.Z(K.c[1]),K.r*F.s,K.r/1.3*F.s,0,0,TAU);g.fill();
-  g.strokeStyle='#8a7a62';g.lineWidth=2;g.beginPath();g.moveTo(F.X(DH.CONE.cliffX),F.Z(-140));g.lineTo(F.X(DH.CONE.cliffX),F.Z(140));g.stroke();g.lineWidth=1;}
+ /* the plateau's edge (its wall), and on the outpost's view the apron */
+ g.strokeStyle='#a08a62';g.lineWidth=2;g.beginPath();DH.PLAT.poly.forEach((q,i)=>{if(i)g.lineTo(F.X(q[0]),F.Z(q[1]));else g.moveTo(F.X(q[0]),F.Z(q[1]));});g.closePath();g.stroke();g.lineWidth=1;
+ const K=DH.APRON;if(mode==='outpost'){g.fillStyle='rgba(120,140,80,.25)';g.beginPath();g.ellipse(F.X(K.c[0]),F.Z(K.c[1]),K.r*F.s,K.r/1.3*F.s,0,0,TAU);g.fill();}
  for(const s of DH.SITES){const Fo=DH.FOOT[s.key];if(!Fo)continue;if(Fo[2]==='round'){g.fillStyle='rgba(120,170,80,.6)';g.beginPath();g.arc(F.X(s.x),F.Z(s.z),Fo[0]/2*F.s,0,TAU);g.fill();continue;}const [w,d,o]=Fo,za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(s.ry),sn=Math.sin(s.ry);
   g.fillStyle='rgba(214,194,90,.55)';g.beginPath();[[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].forEach(([lx,lz],i)=>{const x=F.X(s.x+lx*c+lz*sn),z=F.Z(s.z-lx*sn+lz*c);if(i)g.lineTo(x,z);else g.moveTo(x,z);});g.fill();}
  /* the ways: those within 6 m of the camera's height bright and thick, the rest faded */
@@ -28,7 +29,7 @@ function dhMapBase(mode,cy){const key=mode+':'+Math.round(cy/3),B=DHMAP.base;if(
   g.beginPath();g.moveTo(F.X(a.x),F.Z(a.z));g.lineTo(F.X(b.x),F.Z(b.z));g.stroke();}
  g.globalAlpha=1;g.setLineDash([]);g.fillStyle='#f0dcc4';g.font='11px system-ui';g.fillText(mode==='city'?'Dhelv: the city':'the outpost',6,12);
  B.key=key;B.cv=cv;return cv;}
-function dhMapDraw(){if(!DHMAP.on)return;const p=camera.position,mode=p.x<-1500?'outpost':'city',v=DHMAP.views[mode],F=dhMapFrame(v),g=DHMAP.cv.getContext('2d');DHMAP.mode=mode;
+function dhMapDraw(){if(!DHMAP.on)return;const p=camera.position,mode=p.x<DH.PLAT.cliffX+30?'outpost':'city',v=DHMAP.views[mode],F=dhMapFrame(v),g=DHMAP.cv.getContext('2d');DHMAP.mode=mode;
  g.clearRect(0,0,DHMAP.W,DHMAP.H);g.drawImage(dhMapBase(mode,p.y),0,0);
  for(const f of DHMAP.extra)f(g,F,p,mode);   /* others' layers (95: the walkers as dots) */
  const d=new THREE.Vector3();camera.getWorldDirection(d);const a=Math.atan2(d.z,d.x),cx=F.X(p.x),cz=F.Z(p.z);

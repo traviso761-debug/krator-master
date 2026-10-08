@@ -91,9 +91,9 @@ DHS.init=function(clock,o){if(DHS.inited)return DHS;DHS.inited=true;o=o||{};cons
   SIM.place({id:kind+'_'+(i++),name:d.rec.name||d.key,kind,x:n.x,y:n.y,z:n.z,ry:d.rec.ry,door:at(n),activities:acts,open:o.open,indoor:o.out?{}:true,
    wander:o.out?1.2:0,tags:{key:d.key,tid:d.tid,district:S?S.district:null}});DHS.places++;}
  /* the open grounds no building stands on: the pasture and the forest's edge (their door the kipuka grid's nearest node) */
- const Q2=DH.PASTURE,pc=[Q2.reduce((a,p)=>a+p[0],0)/Q2.length,Q2.reduce((a,p)=>a+p[1],0)/Q2.length],K0=DH.KIPUKA;
+ const Q2=DH.PASTURE,pc=[Q2.reduce((a,p)=>a+p[0],0)/Q2.length,Q2.reduce((a,p)=>a+p[1],0)/Q2.length],K0=DH.APRON;
  for(const [id,kind,p,acts] of [['pasture','pasture',pc,{HERD:10}],['forest','forest',[K0.c[0]-K0.r*.6,K0.c[1]+K0.r*.35],{FORAGE:16}]]){const n=DHN.nearest(p[0],K0.floor,p[1]);if(!n)continue;
-  SIM.place({id,name:id==='pasture'?'The pasture':'The forest\'s edge',kind,x:n.x,y:n.y,z:n.z,door:at(n),activities:acts,wander:2.5,tags:{district:'outpost'}});DHS.places++;}
+  SIM.place({id,name:id==='pasture'?'The pasture':'The woods on the apron',kind,x:n.x,y:n.y,z:n.z,door:at(n),activities:acts,wander:2.5,tags:{district:'outpost'}});DHS.places++;}
  /* the scouts' secret exits (the layout's x.lava, x.forest): where their patrol goes */
  for(const id of ['x.lava','x.forest']){const n=B.byId[id];if(n){SIM.place({id:'exit_'+id.slice(2),name:'A scout exit ('+id.slice(2)+')',kind:'secret_exit',x:n.x,y:n.y,z:n.z,door:at(n),activities:{SCOUT:6},tags:{district:null}});DHS.places++;}}
  /* the entries the groups start from and go back to (ports inside the world: each with its height and nav node) */

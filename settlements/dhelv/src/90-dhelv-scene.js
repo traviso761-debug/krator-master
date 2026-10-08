@@ -23,7 +23,7 @@ skyApply();
 
 // ---------------------------------------------------------------- the ground: the layout's (the flows, the kipuka's hollow, the old cone)
 terrainH=DH.groundY;   /* 10-core.js's flat sheet ground, replaced: place(), the cavern and the camera read this */
-const DH_GROUND={x0:-2960,x1:860,z0:-560,z1:960,step:5};
+const DH_GROUND={x0:-1150,x1:1700,z0:-800,z1:1100,step:5,tile:50};
 const groundMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,vertexColors:true});
 {const L=KMAT.mode==='lib'?KMAT.packed('zeijani','basalt'):null;   /* the young flows' basalt (the kipuka's floor tinted soil; its forest floor covers it) */
  if(L){const T=KMAT.textures(L,{aniso:TEXANISO});const g=DH_GROUND;for(const t of [T.map,T.normalMap,T.roughnessMap])if(t)t.repeat.set((g.x1-g.x0)/L.scale[0],(g.z1-g.z0)/L.scale[1]);
@@ -35,20 +35,91 @@ const ZJ_HOLES={value:[]};for(let i=0;i<32;i++)ZJ_HOLES.value.push(new THREE.Vec
 matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;
  sh.vertexShader='varying vec3 vGW;\n'+sh.vertexShader.replace('#include <project_vertex>','vGW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
  sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];varying vec3 vGW;\n'+sh.fragmentShader.replace('void main() {',
-  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
-/* a heightfield of the layout's ground; its colour by what it is: the young flow (dark basalt), the kipuka's floor (old soil),
-   the cone (weathered tuff). P5b lays the biomes on it */
-function dhGroundMesh(){const g=DH_GROUND,xs=[];for(let x=g.x0;x<=g.x1+1e-6;x+=g.step){xs.push(x);if(Math.abs(x-DH.CONE.cliffX)<1e-6)xs.push(x+.05);}   /* a column 5 cm past the cliff's line: the cliff stands plumb, not a 5 m ramp */
- const nx=xs.length-1,nz=Math.round((g.z1-g.z0)/g.step),pos=new Float32Array((nx+1)*(nz+1)*3),col=new Float32Array((nx+1)*(nz+1)*3),idx=[];
- const cFlow=hc(0x4e4f55),cKip=hc(0x7a6c4c),cCone=hc(0x8a7a62),c=new THREE.Color();
- for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=g.z0+j*g.step,y=DH.groundY(x,z),k=(j*(nx+1)+i)*3;pos[k]=x;pos[k+1]=y;pos[k+2]=z;
-  const K=DH.KIPUKA,dk=Math.hypot(x-K.c[0],(z-K.c[1])*1.3)/K.r,cone=y>DH.surfaceY(x,z)+.5&&x>DH.cliffX(z)-4;
-  c.copy(cone?cCone:dk<1.02?cKip:cFlow);if(!cone&&dk>=1.02&&dk<1+K.edge)c.lerp(cKip,.4);col[k]=c.r;col[k+1]=c.g;col[k+2]=c.b;}
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,d=a+nx+1,e=d+1;idx.push(a,d,b,b,d,e);}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));
- const uv=new Float32Array((nx+1)*(nz+1)*2);for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=(j*(nx+1)+i)*2;uv[k]=(xs[i]-g.x0)/(g.x1-g.x0);uv[k+1]=j/nz;}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- geo.setIndex(idx);geo.computeVertexNormals();return geo;}
+  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z&&(q.w<=0.||distance(uCam.xz,q.xy)<q.w))discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
+/* a heightfield of the layout's ground; its colour by what it is: the plain's young flow (dark basalt), the apron (old soil),
+   the plateau's top (its forest's loam), its wall (dark rock). P5b lays the biomes on it */
+/* Tiles of DH_GROUND.tile, each at its own step: g.step where a sheer step of the spur passes (or the outpost, an opening),
+   twice that elsewhere on the spur's ground, five times out on the far flank (the whole at 5 m was 430k triangles, in every
+   view). A skirt hangs 1.5 m under a tile's edge where it meets a coarser one, against the cracks; the normals come
+   from the height itself (central differences), so a tile's edge does not show in the light */
+function dhGroundMesh(){const g=DH_GROUND,T=g.tile,W=DH.PLAT.cliffX,pos=[],col=[],nor=[],uv=[],idx=[],H=DH.groundY;
+ const cFlow=hc(0x4e4f55),cKip=hc(0x7a6c4c),cTop=hc(0x5a4a34),cWall=hc(0x5c5a58),c=new THREE.Color();
+ const vert=(x,y,z)=>{pos.push(x,y,z);
+  /* the plateau's top (its forest floor's loam), its wall, the apron (old soil), the plain (young basalt) */
+  const K=DH.APRON,dk=Math.hypot(x-K.c[0],(z-K.c[1])*1.3)/K.r,d=DH.plateauD(x,z);
+  const r=DH.ridgeD(x,z),old=d>1.5||r>1.5,wall=!old&&(d>-1.5||r>-1.5);c.copy(old?cTop:wall?cWall:dk<1.02?cKip:cFlow);if(!old&&!wall&&dk>=1.02&&dk<1+K.edge)c.lerp(cKip,.4);col.push(c.r,c.g,c.b);
+  const e=1.25,nx=H(x-e,z)-H(x+e,z),nz=H(x,z-e)-H(x,z+e),l=Math.hypot(nx,2*e,nz);nor.push(nx/l,2*e/l,nz/l);uv.push((x-g.x0)/(g.x1-g.x0),(z-g.z0)/(g.z1-g.z0));return pos.length/3-1;};
+ const OPN=[[DH.HALL.c,DH.HALL.throat.r1],...DH.PITS.map(P=>[P.c,P.r+2]),...DH.NODES.filter(n=>n.exit).map(n=>[[n.x,n.z],8])];
+ const fine=(x0,z0)=>{if(x0<W+T&&x0+T>W-140&&z0<300&&z0+T>-300)return true;   /* the outpost and its apron */
+  if(OPN.some(([c,r])=>Math.abs(c[0]-(x0+T/2))<T/2+r+10&&Math.abs(c[1]-(z0+T/2))<T/2+r+10))return true;   /* the openings' rims meet the cavern's */
+  for(let x=x0;x<=x0+T;x+=g.step)for(let z=z0;z<=z0+T;z+=g.step)if(Math.abs(DH.plateauD(x,z))<12||Math.abs(DH.ridgeD(x,z))<12)return true;return false;};
+ const spur=(x0,z0)=>DH.plateauD(x0+T/2,z0+T/2)>-260||DH.ridgeD(x0+T/2,z0+T/2)>-200;
+ const NI=Math.round((g.x1-g.x0)/T),NJ=Math.round((g.z1-g.z0)/T),STEP=[];let n5=0;
+ for(let I=0;I<NI;I++)for(let J=0;J<NJ;J++){const x0=g.x0+I*T,z0=g.z0+J*T;STEP[I*NJ+J]=fine(x0,z0)?g.step:spur(x0,z0)?g.step*2:g.step*5;}
+ const stepAt=(I,J)=>I<0||J<0||I>=NI||J>=NJ?0:STEP[I*NJ+J];
+ for(let I=0;I<NI;I++)for(let J=0;J<NJ;J++){const x0=g.x0+I*T,z0=g.z0+J*T,st=stepAt(I,J);if(st===g.step)n5++;
+  const xs=[];for(let x=x0;x<=x0+T+1e-6;x+=st){xs.push(x);if(Math.abs(x-W)<1e-6)xs.push(x+.05);}   /* a column 5 cm past the west face's line: it stands plumb, not a ramp */
+  if(x0<W&&x0+T>W&&!xs.some(x=>Math.abs(x-W)<1e-6)){xs.push(W,W+.05);xs.sort((a,b)=>a-b);}
+  const nz=Math.round(T/st),nx=xs.length-1,b0=pos.length/3;
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=xs[i],z=z0+j*st;vert(x,H(x,z),z);}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=b0+j*(nx+1)+i,b=a+1,d=a+nx+1,e=d+1;idx.push(a,d,b,b,d,e);}
+  /* the skirt: each edge's vertices again, 1.5 m down (the outward winding: both faces drawn by the strip's two triangles a quad) */
+  const edge=(L)=>{for(let k=0;k+1<L.length;k++){const p=L[k],q=L[k+1],P=[pos[p*3],pos[p*3+1],pos[p*3+2]],Q=[pos[q*3],pos[q*3+1],pos[q*3+2]];
+   const a=vert(P[0],P[1]-1.5,P[2]),b=vert(Q[0],Q[1]-1.5,Q[2]);idx.push(p,a,q,q,a,b,p,q,a,q,b,a);}};
+  const row=j=>xs.map((_,i)=>b0+j*(nx+1)+i),colm=i=>{const o=[];for(let j=0;j<=nz;j++)o.push(b0+j*(nx+1)+i);return o;};
+  /* only where the neighbour is coarser (its straight edge misses this tile's middle vertices) */
+  if(stepAt(I,J-1)>st)edge(row(0));if(stepAt(I,J+1)>st)edge(row(nz));if(stepAt(I-1,J)>st)edge(colm(0));if(stepAt(I+1,J)>st)edge(colm(nx));}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+ geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(idx);
+ geo.userData.fineTiles=n5;return geo;}
 const groundM=new THREE.Mesh(dhGroundMesh(),groundMat);groundM.receiveShadow=true;groundM.userData.isGround=true;scene.add(groundM);
+/* THE SPUR'S WALLS (the owner: sheer, the light wells out of reach). The ground's 5 m grid cannot draw a sheer step (it leaves a
+   slope a cell wide along it), so every step of the spur is its own mesh in the cave's rock: the shelf's north, south and west
+   walls (down to the troughs and the plain), the ridge's two sides, and the back wall where the ridge rises off the shelf.
+   Jointed basalt columns stand 4 m out on the step's LOW side, from under its foot to its top, hiding the ground's slope from
+   below; a caprock ledge 8 m deep runs along the top on the HIGH side, hiding it from above. The shelf's straight west face is
+   left to the ground's own plumb step: the outpost's carved mouths open through it */
+function dhWalls(){const pos=[],idx=[],OUT=4,CAP=8,RW=3,W=DH.PLAT.cliffX;
+ /* a contour's points along a polyline: every 2.5 m, slid along the line's normal onto d = 0 (d positive inside) */
+ const chainOf=(line,d,skip)=>{const out=[];for(let i=0;i+1<line.length;i++){const a=line[i],b=line[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/2.5),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
+   let ox=uz,oz=-ux;const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;if(d(mx+ox*30,mz+oz*30)>d(mx-ox*30,mz-oz*30)){ox=-ox;oz=-oz;}   /* (ox, oz) points out of the shape */
+   for(let k=0;k<n;k++){const x=a[0]+ux*L*k/n,z=a[1]+uz*L*k/n;let lo=-25,hi=25;for(let q=0;q<26;q++){const m=(lo+hi)/2;if(d(x-ox*m,z-oz*m)>0)lo=m;else hi=m;}
+    const t=(lo+hi)/2,px=x-ox*t,pz=z-oz*t;if(skip&&skip(px,pz)){out.push(null);continue;}out.push([px,pz,ox,oz]);}}return out;};
+ const P=DH.PLAT.poly,shelf=[];for(let i=0;i<=P.length;i++)shelf.push(P[i%P.length]);
+ const skipShelf=(x,z)=>(Math.abs(x-W)<3&&Math.abs(z)<DH.PLAT.cliffZ+2)||DH.ridgeD(x,z)>3||DH.NODES.some(n=>n.exit==='foot'&&Math.hypot(x-n.x,z-n.z)<7);   /* the west face; under the ridge; a scouts' exit at the foot */
+ const R=DH.RIDGE,A=R.a,B=R.b,L=Math.hypot(B[0]-A[0],B[1]-A[1]),vx=-(B[1]-A[1])/L,vz=(B[0]-A[0])/L,g=DH_GROUND;
+ const end=t=>[A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t],E=Math.min(1,(g.x1-20-A[0])/(B[0]-A[0]));
+ const ridge=[[A[0]-vx*R.w,A[1]-vz*R.w],[end(E)[0]-vx*R.w,end(E)[1]-vz*R.w]],ridge2=[[end(E)[0]+vx*R.w,end(E)[1]+vz*R.w],[A[0]+vx*R.w,A[1]+vz*R.w],[A[0]-vx*R.w,A[1]-vz*R.w]];
+ const chains=[chainOf(shelf,DH.plateauD,skipShelf),chainOf(ridge,DH.ridgeD),chainOf(ridge2,DH.ridgeD)];
+ /* each run of a chain (broken where it is skipped, or where its high side changes) is a strip of columns and a caprock */
+ for(const ch of chains){let run=[],side=0;const flush=()=>{if(run.length>1)strip(run,side);run=[];};
+  for(const c of ch){if(!c){flush();continue;}const yi=DH.groundY(c[0]-c[2]*6,c[1]-c[3]*6),yo=DH.groundY(c[0]+c[2]*6,c[1]+c[3]*6);if(Math.abs(yi-yo)<4){flush();continue;}
+   const s=yi>yo?1:-1;if(s!==side){flush();side=s;}run.push([c[0],c[1],c[2],c[3],Math.min(yi,yo),Math.max(yi,yo)]);}flush();}
+ function strip(run,s){const base=pos.length/3,lowY=Math.min(...run.map(c=>c[4]))-5,rows=[];
+  run.forEach((c,i)=>{const jc=.55*Math.sin((c[0]+c[1])*.9)+.35*Math.sin(c[0]*.31+1)+.2*Math.sin(c[1]*2.3),top=c[5]+.45,ox=c[2]*s,oz=c[3]*s,nr=Math.ceil((top-lowY)/RW);
+   for(let r=0;r<=nr;r++){const y=r===nr?top:lowY+r*RW,j=OUT+jc+.25*Math.sin(y*.9+i*.37);pos.push(c[0]+ox*j,y,c[1]+oz*j);}
+   pos.push(c[0]+ox*(OUT-1.2),top,c[1]+oz*(OUT-1.2),c[0]-ox*CAP,top-.05,c[1]-oz*CAP);rows.push(nr+1);});
+  /* columns of different heights: each quad joins row r of one to row r of the next while both have it (the taller's top row
+     stays its own, the caprock covers it) */
+  const wall=[],cap=[];let a0=base;
+  for(let i=0;i+1<run.length;i++){const A0=a0,B0=a0+rows[i]+2,na=rows[i],nb=rows[i+1],n=Math.min(na,nb);
+   for(let r=0;r<n-1;r++)wall.push(A0+r,A0+r+1,B0+r,B0+r,A0+r+1,B0+r+1);
+   for(let r=n-1;r<na-1;r++)wall.push(A0+r,A0+r+1,B0+nb-1);   /* the taller column's rows fanned to the other's top */
+   for(let r=n-1;r<nb-1;r++)wall.push(B0+r,A0+na-1,B0+r+1);
+   wall.push(A0+na-1,A0+na,B0+nb-1,B0+nb-1,A0+na,B0+nb);   /* the top row to the caprock's edge */
+   cap.push(A0+rows[i],A0+rows[i]+1,B0+rows[i+1],B0+rows[i+1],A0+rows[i]+1,B0+rows[i+1]+1);a0=B0;}
+  /* the windings: the wall's faces toward the low side, the caprock's up */
+  const fn=(T,k)=>{const q=i=>new THREE.Vector3(pos[T[k+i]*3],pos[T[k+i]*3+1],pos[T[k+i]*3+2]),p0=q(0);return q(1).sub(p0).cross(q(2).sub(p0));};
+  const flip=T=>{for(let k=0;k<T.length;k+=3){const t=T[k+1];T[k+1]=T[k+2];T[k+2]=t;}};
+  if(wall.length&&fn(wall,0).dot(new THREE.Vector3(run[0][2]*s,0,run[0][3]*s))<0)flip(wall);if(cap.length&&fn(cap,0).y<0)flip(cap);
+  for(const v of wall)idx.push(v);for(const v of cap)idx.push(v);}
+ const geo=new THREE.BufferGeometry(),nv=pos.length/3;geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
+ geo.setAttribute('aW',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));geo.setAttribute('aCut',new THREE.Float32BufferAttribute(new Float32Array(nv*4),4));
+ const aM=new Float32Array(nv*3);for(let v=0;v<nv;v++)aM[v*3+2]=1;geo.setAttribute('aM',new THREE.BufferAttribute(aM,3));
+ /* the cave's own rock shader, darker: it lifts its basalt for the dark under the rock, too bright for a sunlit wall */
+ const mat=new THREE.MeshStandardMaterial({color:0x5e5c5a,roughness:.95,metalness:0});mat.onBeforeCompile=cvRockMat.onBeforeCompile;mat.customProgramCacheKey=()=>'cliff|'+cvRockMat.customProgramCacheKey();
+ const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;m.userData.cliff=true;m.userData.tris=idx.length/3;return m;}
+const DH_CLIFF=dhWalls();scene.add(DH_CLIFF);
 
 // ---------------------------------------------------------------- the sites: the layout's, each the kit's def
 const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y,walls:s.walls,liveStone:s.key==='zj_stonedoor'},district:s.district,at:s.at}));
@@ -80,7 +151,7 @@ function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
  const inPit=n=>DH.PITS.some(P=>Math.hypot(n.x-P.c[0],n.z-P.c[1])<P.r-.5);
  const stairTop=new Set(DH.EDGES.filter(e=>e.kind==='stair').map(e=>B[e.a].y>B[e.b].y?e.a:e.b));
  for(const e of DH.EDGES){const a=B[e.a],b=B[e.b];if(e.kind==='square'||e.kind==='street'||e.door==='stonedoor')continue;if(inPit(a)&&inPit(b))continue;   /* the stone door's own passage is the way through it */
-  const id='dh.'+e.a+'-'+e.b;if(a.x<-2440&&b.x<-2440&&e.kind!=='tube')continue;   /* the kipuka's paths up the cliff are on the ground */
+  const id='dh.'+e.a+'-'+e.b;if(DH.plateauD(a.x,a.z)<0&&DH.plateauD(b.x,b.z)<0&&e.kind!=='tube')continue;   /* the apron's paths are on the ground */
   /* a stair up to a node other ways leave (the ledge's l1, l4) ends short of it on a level landing at the node's height, long
      enough that no way leaving near the stair's line lays its floor beside and over the stair (half a metre above it: a lip a
      walker coming down drops off; P6's edge check): the half widths over the sine of the angle between them, 4.5 to 12 m */
@@ -108,15 +179,15 @@ function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
 const dhOpens=id=>/^h\.[wens]$|^s\d\.(in|up|e)$/.test(id);
 const dhFace=id=>/^(cis|k\.head|t\.stores)$/.test(id);   /* a carved front's foot: its forecourt takes the tunnel's end */
 function dhRun(p,q,ext){const dx=q.x-p.x,dy=q.y-p.y,dz=q.z-p.z,L=Math.hypot(dx,dz)||1;return [q.x+dx/L*ext,q.y+dy/L*ext,q.z+dz/L*ext];}
-/* the kipuka's floor and the cliff paths, for the walker (the rest of the surface is not walked in P5a) */
+/* the apron's floor, for the walker (the rest of the surface is not walked) */
 /* the stairs up the old cone's cliff to its two watchtowers (the layout's o.galN-o.tw1, o.galS-o.tw2): a straight flight from
    the gallery would run into the cliff, and the face beside each tower is taken (a gallery's front, a lean-to), so each is a
    built switchback of tuff ashlar against the cliff between the lean-to and the palisade: the lower flight on the outer lane
    from the clearing, a landing, the upper flight against the cliff to the cone's top, then a paved path to the tower's door.
    Drawn, put on the walk map, and handed to the nav as the way's real shape (DH_REAL: its points and kinds) */
 const DH_REAL={};
-function dhCliffStairs(){for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind!=='stair'||a.x>-2440||b.x>-2440)continue;
-  const s=Math.sign(b.z)||1,zt=b.z,x0=DH.cliffX(zt),xi=x0-1.3,xo=x0-3.6,yb=DH.KIPUKA.floor,yt=b.y,ym=(yb+yt)/2,zTop=zt-6.5*s,zLand=zt+11.5*s,n=Math.ceil((ym-yb)/.2),rise=(ym-yb)/n,run=Math.abs(zLand-zTop)/n,col=P('tuff');
+function dhCliffStairs(){for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind!=='stair'||DH.plateauD(a.x,a.z)>=0||DH.plateauD(b.x,b.z)<0)continue;   /* from the apron up the west face (none since the plateau: its face is 75 m) */
+  const s=Math.sign(b.z)||1,zt=b.z,x0=DH.cliffX(zt),xi=x0-1.3,xo=x0-3.6,yb=DH.APRON.floor,yt=b.y,ym=(yb+yt)/2,zTop=zt-6.5*s,zLand=zt+11.5*s,n=Math.ceil((ym-yb)/.2),rise=(ym-yb)/n,run=Math.abs(zLand-zTop)/n,col=P('tuff');
   for(let k=0;k<n;k++){const zl=zTop+s*(k+.5)*run,zu=zLand-s*(k+.5)*run,tl=yb+(k+1)*rise,tu=ym+(k+1)*rise;
    box('ashlar',xo,yb,zl,2,tl-yb,run+.01,col);box('ashlar',xi,yb,zu,2,tu-yb,run+.01,col);
    if(k%3===0){box('ashlar',xo-1.12,tl,zl+s*run,.24,.9,run*3,col);box('ashlar',xi-1.12,tu,zu-s*run,.24,.9,run*3,col);}}   /* the parapets, over the drop */
@@ -130,11 +201,12 @@ function dhCliffStairs(){for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId
   KWALK.strip({a:[xi-.6,zTop,yt],b:[x0+1.2,zTop,yt],w:1.2,name:'dh.'+e.a+'-'+e.b+'.top',tag:'built:path'});
   KWALK.strip({a:[x0+1.2,zTop,yt],b:[D[0],D[1],yt],w:1.6,name:'dh.'+e.a+'-'+e.b+'.path',tag:'built:path'});
   DH_REAL[e.a+'-'+e.b]={end:false,pts:[[xo,yb,zTop],[xo,ym,zLand],[xi,ym,zLand],[xi,yt,zTop],[x0+1.2,yt,zTop],[D[0],yt,D[1]]],kinds:['street','stair','landing','stair','path','path']};}}
-function dhSurfaceWalk(){const K=DH.KIPUKA,rx=K.r*.97,rz=rx/1.3,cx=DH.CONE.cliffX,t0=Math.acos(Math.max(-1,Math.min(1,(cx-K.c[0])/rx))),pts=[];
- /* the hollow's floor west of the cliff: the kipuka's ellipse cut by a chord at the cliff's foot (convex; the portal's tunnel starts 1.5 m in front of it) */
+function dhSurfaceWalk(){const K=DH.APRON,rx=K.r*.97,rz=rx/1.3,cx=DH.PLAT.cliffX-1.2,t0=Math.acos(Math.max(-1,Math.min(1,(cx-K.c[0])/rx))),pts=[];
+ /* the apron's floor west of the cliff: its ellipse cut by a chord 1.2 m short of the face, where the ground's sheer step has
+    not begun to rise (convex; the portal's tunnel starts 1.5 m in front of the face) */
  for(let i=0;i<=40;i++){const a=t0+(TAU-2*t0)*i/40;pts.push([K.c[0]+Math.cos(a)*rx,K.c[1]+Math.sin(a)*rz,K.floor]);}
- KWALK.poly({pts,name:'the kipuka\'s floor',tag:'ground'});
- for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440&&!DH_REAL[e.a+'-'+e.b])KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
+ KWALK.poly({pts,name:'the apron\'s floor',tag:'ground'});
+ for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&DH.plateauD(a.x,a.z)<0&&DH.plateauD(b.x,b.z)<0&&!DH_REAL[e.a+'-'+e.b])KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
 
 // ---------------------------------------------------------------- the rock, meshed near the camera only (PLAN.md 7: about 2M triangles in all)
 const DH_STREAM={R:120,drop:170,budget:10,on:true,meshes:new Map(),keys:[],cen:null,near:[],tick:0,meshed:0,tris:0};
@@ -162,7 +234,7 @@ FRAME_HOOKS.push(()=>dhStream());
    each one for the whole map) are cut into cells of DH_CELLS.BIO (an instanced mesh by its instances, a merged one by its
    triangles) and drawn within DH_CELLS.far (the surface's fog), underground only within DH_CELLS.mouth. Frustum culling does
    the rest. ?seeall draws everything */
-const DH_CELLS={list:[],SIZE:160,BIO:400,under:420,mouth:220,near:45,front:32,built:[90,150],far:1300,on:!new URLSearchParams(location.search).has('seeall'),t:0,shown:0,tris:0};
+const DH_CELLS={list:[],SIZE:160,BIO:400,under:420,mouth:220,near:45,front:32,built:[90,150],far:1300,treeNear:420,on:!new URLSearchParams(location.search).has('seeall'),t:0,shown:0,tris:0};
 function dhCellKey(S){const u=S.o.y<DH.groundY(S.x,S.z)-3;return (u?'u':'s')+Math.floor(S.x/DH_CELLS.SIZE)+','+Math.floor(S.z/DH_CELLS.SIZE);}
 /* whether a group is drawn with the camera at p (under: the camera below the ground) */
 function dhSeenOne(q,p,under,cut){const C=DH_CELLS;if(!C.on)return true;const d=Math.max(0,p.distanceTo(q.c)-q.r);
@@ -170,12 +242,12 @@ function dhSeenOne(q,p,under,cut){const C=DH_CELLS;if(!C.on)return true;const d=
   const dx=p.x-b.S.x,dz=p.z-b.S.z,lx=dx*b.c-dz*b.s,lz=dx*b.s+dz*b.c,dy=p.y-b.S.o.y;
   if(lx>b.x0-3&&lx<b.x1+3&&lz>b.z0-3&&lz<b.z1+3&&p.y>b.y0-2&&p.y<b.y1+2)return true;
   return lz>-1&&lz<C.front&&Math.abs(lx)<b.x1+C.front*.8&&dy>-4&&dy<C.front*.6;}
- if(q.bio)return d<C.far&&(!under||C.open&&d<C.mouth);
+ if(q.bio)return d<C.far&&(!under||C.open&&d<C.mouth)&&(!q.lod||(q.lod==='near'?d<C.treeNear:q.lod==='far'?d>=C.treeNear:q.lod==='snear'?d<DHG.SAP_NEAR:d>=DHG.SAP_NEAR));   /* the grove's levels (49) */
  return q.under?d<C.under:(!under||d<C.mouth);}
 function dhSeen(p,under){const C=DH_CELLS,cut=ANIMU.uCut.value>.5;let n=0,t=0,f=0;
  /* underground the plants show only up an opening (the camera under the light well's throat or a well's pit) or out of the
     cliff's mouths (the portal, the galleries) */
- C.open=Math.hypot(p.x-DH.HALL.c[0],p.z-DH.HALL.c[1])<DH.HALL.throat.r0+30||DH.PITS.some(P=>Math.hypot(p.x-P.c[0],p.z-P.c[1])<P.r+30)||p.x<DH.CONE.cliffX+150;
+ C.open=Math.hypot(p.x-DH.HALL.c[0],p.z-DH.HALL.c[1])<DH.HALL.throat.r0+30||DH.PITS.some(P=>Math.hypot(p.x-P.c[0],p.z-P.c[1])<P.r+30)||p.x<DH.PLAT.cliffX+150;
  for(const q of C.list){const v=dhSeenOne(q,p,under,cut);q.g.visible=v;if(v){n++;t+=q.tris;if(q.bio)f++;}}
  C.shown=n;C.tris=t;C.forest=f;return n;}
 /* a merged mesh cut by key (keyOf(x, y, z) of a triangle's middle; null keeps it out): one mesh a key, its vertices shared, its
@@ -222,13 +294,22 @@ function dhSplitFurniture(){const G=typeof ZJF!=='undefined'&&ZJF.group;if(!G||G
  const S=DH_CELLS.SIZE,SB=dhSiteBoxes(),gy=new Map(),under=(x,y,z)=>{const k=Math.round(x/4)+','+Math.round(z/4);let g=gy.get(k);if(g===undefined){g=DH.groundY(x,z);gy.set(k,g);}return y<g-3;};
  const meshes=[],groups={},info={};G.traverse(m=>{if(m.isMesh&&!m.userData.probeSkip)meshes.push(m);});G.updateMatrixWorld(true);
  const keyOf=(x,y,z)=>{const sb=SB.at(x,y,z),u=under(x,y,z),k=sb?'f'+sb.si:(u?'u':'s')+Math.floor(x/S)+','+Math.floor(z/S);if(!info[k])info[k]={under:u,site:sb};return k;};
- for(const m of meshes){if(!m.matrixWorld.equals(new THREE.Matrix4()))continue;const parts=dhSplitIndexed(m,keyOf);
+ const I4=new THREE.Matrix4(),wb=new THREE.Box3();
+ for(const m of meshes){if(!m.matrixWorld.equals(I4)){   /* a textured piece (the batch's decals: its own mesh, placed): into the cell of its middle, whole */
+   m.geometry.computeBoundingBox();wb.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld);const q=wb.getCenter(new THREE.Vector3()),k=keyOf(q.x,q.y,q.z);
+   (groups[k]||(groups[k]=new THREE.Group())).add(m);m.matrix.copy(m.matrixWorld);m.matrix.decompose(m.position,m.quaternion,m.scale);m.userData.worldBox=wb.clone();continue;}
+  const parts=dhSplitIndexed(m,keyOf);
   for(const k in parts)(groups[k]||(groups[k]=new THREE.Group())).add(parts[k]);m.parent.remove(m);}
- for(const k in groups){const g=groups[k],I_=info[k];g.userData.cell=k;G.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
-  DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:I_.under,box:I_.site,site:I_.site?I_.site.S.key:null,furniture:true,tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}
+ const triOf=m=>(m.geometry.index?m.geometry.index.count:m.geometry.attributes.position.count)/3;
+ for(const k in groups){const g=groups[k],I_=info[k];g.userData.cell=k;G.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.userData.worldBox||m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
+  DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:I_.under,box:I_.site,site:I_.site?I_.site.S.key:null,furniture:true,tris:g.children.reduce((a,m)=>a+triOf(m),0)});}
  DH_CELLS.splitMs=Math.round(performance.now()-t0);return Object.keys(groups).length;}
 FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DH_CELLS.t<250)return;DH_CELLS.t=t;dhSplitFurniture();dhSplitBiome();const p=camera.position;dhSeen(p,p.y<terrainH(p.x,p.z)-2);});
 
+/* a carved mouth's hole in the ground's face (40-zj-cave.js fills ZJ_HOLES) opens only with the camera near it: past the rock's
+   streaming the cavern has not meshed the cliff round it, and the hole would show the sky through the shelf (w: that reach) */
+function dhMouthHoles(){const H=ZJ_HOLES.value;CVC.openings.filter(O=>O.kind==='well').forEach(O=>{if(!/^dh\.mouth\./.test(O.id))return;
+ const v=H.find(q=>q.z>0&&Math.abs(q.x-O.c[0])<1e-3&&Math.abs(q.y-O.c[1])<1e-3);if(v)v.w=DH_STREAM.R-10;});}
 // ---------------------------------------------------------------- (re)build the world
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
@@ -244,11 +325,11 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
   const bx=new THREE.Box3();g.children.forEach(m=>{m.geometry.computeBoundingBox();bx.union(m.geometry.boundingBox);});const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:k[0]==='u',tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}
  /* the kipuka's stream: a ribbon of water a hand above the floor, west of the cliff */
- for(let i=1;i<DH.STREAM.length;i++){const a=DH.STREAM[i-1],b=DH.STREAM[i];if(a[0]>DH.CONE.cliffX-1||b[0]>DH.CONE.cliffX-1)continue;const L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
+ for(let i=1;i<DH.STREAM.length;i++){const a=DH.STREAM[i-1],b=DH.STREAM[i];if(a[0]>DH.PLAT.cliffX-1||b[0]>DH.PLAT.cliffX-1)continue;const L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
   box('water',mx,DH.groundY(mx,mz)+.04,mz,3.2,.03,L+1,P('water'),Math.atan2(b[0]-a[0],b[1]-a[1]));for(const sd of [-1,1])box('earth',mx+Math.cos(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,DH.groundY(mx,mz),mz-Math.sin(Math.atan2(b[0]-a[0],b[1]-a[1]))*sd*1.9,.7,.12,L+1,P('earth'),Math.atan2(b[0]-a[0],b[1]-a[1]));}
  flushBuckets(GB,WORLD,true);
  const tc=performance.now();CVC.build();const tb=performance.now()-tc;
- while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}WORLD.add(CV_GROUP);cvFinishOpenings();dhStreamReset();dhSurfaceWalk();
+ while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}WORLD.add(CV_GROUP);cvFinishOpenings();dhMouthHoles();dhStreamReset();dhSurfaceWalk();
  CV_STATS={chunks:CVC.chunks.length,tris:0,ms:Math.round(tb),prims:CVC.prims.length};
  const forest=dhbForest();
  window._build={forest,ms:Math.round(performance.now()-t0),cavernBuildMs:Math.round(tb),tris:Math.round(GSTAT.tris),sites:SITES.length,records:REG.length,halos:HALOS.length,life:ZJ_LIFE.length,
@@ -284,16 +365,17 @@ function autoViews(){const V={},B=DH.byId,H=DH.HALL;
  V['Under the light well']=[6,1.7,8,0,30,0];
  V['The west mouth']=at('h.w',22,4,6,2);
  V['The braid']=along('a2','j1',16,2.4);
- V['The stone door']=along('a1','b0',14,2.2);V['The stone door from the outer tube']=along('t6','t.door',16,2.4);
- V['The outer tube']=along('t4','t5',40,3);
- V['The outpost']=[-2760,-40,40,-2560,-70,0];
- V['The portal']=[-2560,-68,10,-2505,-62,0];
+ V['The stone door']=along('a1','b0',14,2.2);V['The stone door from the outer tube']=along('t2','t.door',16,2.4);
+ V['The outer tube']=along('t1','t2',30,3);
+ V['The outpost']=[-935,DH.PLAT.plain+35,40,-735,DH.PLAT.plain+5,0];
+ V['The portal']=[-735,DH.PLAT.plain+7,10,-680,DH.PLAT.plain+13,0];
+ V['The plateau from the plain']=[-1100,DH.PLAT.plain+20,-420,-500,DH.PLAT.top-10,-80];
  for(const P of DH.PITS){V[P.name+': from the rim']=[P.c[0]+P.r*.8,DH.groundY(P.c[0],P.c[1])+4,P.c[1]+P.r*.8,P.c[0],P.floor+3,P.c[1]];
   V[P.name+': its floor']=[P.c[0]+P.r*.5,P.floor+1.7,P.c[1]+P.r*.3,P.c[0],P.floor+4,P.c[1]];}
  V['The cistern']=at('cis',8,2,8,0);
  V['The catacombs\' head']=at('k.head',-12,2,-10,0);
- V['Over the flow (the city below)']=[-150,DH.surfaceY(0,0)+260,520,-80,0,60];
- V['Over the outpost']=[-2900,40,300,-2580,-70,0];
+ V['Over the plateau (the city below)']=[-150,DH.surfaceY(0,0)+260,520,-80,DH.PLAT.top-20,60];
+ V['Over the outpost']=[-1075,DH.PLAT.plain+115,300,-755,DH.PLAT.plain+5,0];
  return V;}
 const ATMOS_HOOKS=[];function atmosFrame(dt){for(const f of ATMOS_HOOKS)f(dt);}
 ATMOS.init({THREE,scene,camera,hour:()=>SKY.hour,onFrame:fn=>ATMOS_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:4401,err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});

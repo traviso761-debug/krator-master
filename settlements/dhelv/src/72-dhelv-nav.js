@@ -3,7 +3,7 @@
 // One graph the ramblers walk (core/simulation's 'pedestrian' layer), written from what was built, never read off a mesh:
 //   the LAYOUT's ways (DH.NODES and DH.EDGES: tubes, the braid, stairs, ramps, the ledge, the streets, with their width
 //   and zone: outer, where a foreigner may go; inner; secret, the scouts' own);
-//   a GRID on each open floor (the hall's floor and its bays, each well's pit floor, the kipuka's floor), its nodes where
+//   a GRID on each open floor (the hall's floor and its bays, each well's pit floor, the apron's floor), its nodes where
 //   the walk map (core/walk) has that floor and no block, its edges between neighbours a walker can walk;
 //   a DOOR node a metre out from each building's front, linked to the nearest nodes it can walk to.
 // Every lookup takes y: a point finds the floor under it, then a node on that floor (DHN.nearest), never the nearest in
@@ -17,9 +17,9 @@ DHN.segOk=function(a,b,o){o=o||{};const W=o.walk||KWALK,dx=b.x-a.x,dz=b.z-a.z,L=
   if(o.head&&typeof CVC!=='undefined'&&CVC&&(i*L/n-lastC>=2||i===n)){lastC=i*L/n;const c=CVC.ceilingAt(x,z,feet+.1);if(c!==null&&c-feet<(o.headroom||DHN.HEAD))return {ok:false,why:'headroom '+(c-feet).toFixed(2)+' m',at:[x,feet,z]};}}
  return Math.abs(feet-b.y)<=DHN.STEP?{ok:true}:{ok:false,why:'ends off its node',at:[b.x,feet,b.z]};};
 /* the open floors: a grid of cell metres where the walk map has the named floor */
-DHN.areas=function(){const H=DH.HALL,K=DH.KIPUKA,A=[{id:'hall',zone:'inner',cell:3,y:H.y,x0:H.c[0]-H.rx-6,x1:H.c[0]+H.rx+6,z0:H.c[1]-H.rz-6,z1:H.c[1]+H.rz+6,floor:/^dh\.hall\.foot|^dh\.bay/}];
+DHN.areas=function(){const H=DH.HALL,K=DH.APRON,A=[{id:'hall',zone:'inner',cell:3,y:H.y,x0:H.c[0]-H.rx-6,x1:H.c[0]+H.rx+6,z0:H.c[1]-H.rz-6,z1:H.c[1]+H.rz+6,floor:/^dh\.hall\.foot|^dh\.bay/}];
  for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit')});
- A.push({id:'kipuka',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:K.c[0]+K.r,z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/kipuka's floor/});
+ A.push({id:'apron',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:Math.min(K.c[0]+K.r,DH.PLAT.cliffX),z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/apron's floor/});
  return A;};
 DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
  /* the layout's ways (each node set on the floor built under it: a building's plinth stands a hand over the layout's height) */
