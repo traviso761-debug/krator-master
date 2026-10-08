@@ -26,7 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `30b-mainland-shore.js` | 19 | 6. THE MAINLAND SHORE (1) |
 | `30c-roads.js` | 43 **big** | 5b. WARREN: BLOCK CARVING (1); 5c. ROAD GRAPH (138); 5d. WARREN: TANGLE (292); 5e. NEAREST STREET (504); 5f. ROAD METRICS (556); 5g. GRAPH CONNECTIVITY (575) |
 | `30d-wall-stations.js` | 17 | NEW CURTAIN WALL (point-designated) (1); silt strider stations (Route 1) (217); silt strider stations (Route 2) (249); silt strider stations (Route 3) (276) |
-| `40-ground.js` | 11 | 7. GROUND CANVASES (1) |
+| `40-ground.js` | 12 | 7. GROUND CANVASES (1) |
 | `45-kit.js` | 31 **big** | 10. BLOCK KIT (1); NIGHT ILLUMINATION (142) |
 | `47-texture.js` | 18 | 12b. TEXTURES (1) |
 | `50a-cantons.js` | 20 | 11. CANTONS (1) |
