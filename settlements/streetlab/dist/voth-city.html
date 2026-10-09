@@ -46080,13 +46080,15 @@ var TUNE = {
                  Granary: { bakery: 3, granary: 5, kitchen: 1, office: 1, store: 1 },
                  Arena: { training: 4, barracks: 3, stable: 3, mess: 1, store: 1, shrine: 1 },
                  Port: { warehouse: 6, office: 1, workshop: 2, tavern: 1 },
-                 Fortress: { training: 3, barracks: 3, cell: 4, office: 2, armoury: 1, shrine: 1 },
+                 Fortress: { training: 3, barracks: 3, office: 2, armoury: 1, shrine: 1 },   /* its cells are all in its dungeon (TUNE.interiors.dungeon) */
                  Foreign: { office: 4, reception: 2, library: 1, living: 2, bedroom: 2 },
                  Ancestry: { catacomb: 1 }
                },
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
                cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
+               dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
                   point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
                lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
@@ -46102,7 +46104,14 @@ var TUNE = {
   market: { ground: 0.2, stock: 0.75, side: 3.1, back: 1.0, goods: ['generic_crate', 'generic_basket', 'generic_sack', 'generic_storage_jar', 'generic_barrel'] },
   /* the Temple's dressing (31-vc-voth.js VC.templeDress): Voth's temple colours (65d: blood red, its dark, matte gilt), how
      near a side a bridge or flight must come to cut the trim, banner drop and spacing, the fire pylons' height, the crown */
-  temple: { red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
+  dress: {
+    Temple: { trim: true, banners: true, pylons: true, crown: true, red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, banner: 0xa8241c, fire: [1.0, 0.45, 0.12], flame: 0xf07a1e,
+              keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
+    /* the Fortress (owner, 2026-10-09): black and dark grey all over (grey: the linear range its colours map into), green
+       and gold banners, a green fire on each corner tower at night */
+    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, grey: [0.006, 0.09],
+                keepBand: 10, bannerH: 10, bannerEvery: 18, cornerShare: 0.72 }
+  },
   /* the house of healing (30-vc-site.js VC.placeHealing, 31-vc-voth.js VC.healingModel): its half-width with its plinth's
      steps, the margin kept round it, how far from its marker it may move, how far its wall may stand from the avenue it
      fronts, the steepest relief its plinth takes, the forecourt's width, the lanterns' and cots' spacing */
@@ -48738,15 +48747,14 @@ VC.healingModel = function (c, ry, f, court) {
    - a crown of red obelisks with gilt tips round the top deck.
    Nothing is laid where a bridge lands or a flight of steps climbs (each side's runs are cut round them). No draws
    from any stream: every choice is fixed by the canton's geometry. */
-VC.templeDress = function () {
-  var M = CANT.by.Temple; if (!M) return 'no Temple canton';
-  var B = VOTH, K = TUNE.temple, n = { trim: 0, pylons: 0, banners: 0, obelisks: 0 };
-  VC.templeFires = [];
+VC.cantonDress = function (cn) {
+  var M = CANT.by[cn], K = TUNE.dress[cn]; if (!M || !K) return 'no ' + cn + ' canton';
+  var B = VOTH, n = { trim: 0, pylons: 0, banners: 0, obelisks: 0, fires: 0 };
   /* what each side must leave open: flights, bridge landings, the dock flights */
   var keep = [];
-  CANT.flights.filter(function (f) { return f.canton === 'Temple'; }).forEach(function (f) { keep.push({ p: f.a, w: f.w }, { p: f.b, w: f.w }, { p: [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], w: f.w }); });
-  CANT.spans.forEach(function (S) { if (S.a === 'Temple') keep.push({ p: S.la, w: S.w + 4 }, { p: [S.ax, S.az], w: S.w + 4 }); if (S.b === 'Temple') keep.push({ p: S.lb, w: S.w + 4 }, { p: [S.bx, S.bz], w: S.w + 4 }); });
-  (CANT.ends || []).forEach(function (e) { if (e.canton === 'Temple') keep.push({ p: [e.x, e.z], w: (e.w || 30) + 4 }); });
+  CANT.flights.filter(function (f) { return f.canton === cn; }).forEach(function (f) { keep.push({ p: f.a, w: f.w }, { p: f.b, w: f.w }, { p: [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], w: f.w }); });
+  CANT.spans.forEach(function (S) { if (S.a === cn) keep.push({ p: S.la, w: S.w + 4 }, { p: [S.ax, S.az], w: S.w + 4 }); if (S.b === cn) keep.push({ p: S.lb, w: S.w + 4 }, { p: [S.bx, S.bz], w: S.w + 4 }); });
+  (CANT.ends || []).forEach(function (e) { if (e.canton === cn) keep.push({ p: [e.x, e.z], w: (e.w || 30) + 4 }); });
   /* a side: s 0..3 (+x, +z, -x, -z), the point at along-coordinate t on the square of radius r */
   var pt = function (s, r, t) { return s === 0 ? [M.x + r, M.z + t] : s === 1 ? [M.x - t, M.z + r] : s === 2 ? [M.x - r, M.z - t] : [M.x + t, M.z - r]; };
   var ryOf = function (s) { return s % 2 === 0 ? 0 : Math.PI / 2; };   /* a box's depth (z) along the side */
@@ -48760,31 +48768,33 @@ VC.templeDress = function () {
     cut.forEach(function (c) { iv = [].concat.apply([], iv.map(function (q) { return c[0] >= q[1] || c[1] <= q[0] ? [q] : [[q[0], c[0]], [c[1], q[1]]].filter(function (z) { return z[1] - z[0] > 1.5; }); })); });
     return iv;
   };
-  VC.capture('temple dress', 2, function () {
+  VC.capture(cn.toLowerCase() + ' dress', 2, function () {
     var L = M.levels;
     L.forEach(function (lv, k) {
       var r = lv.ro, y = lv.y;
       for (var s = 0; s < 4; s++) runs(s, r, -r + 1, r - 1).forEach(function (q) {
         var m = pt(s, r + 0.3, (q[0] + q[1]) / 2), len = q[1] - q[0], ry = ryOf(s);
+        if (K.trim) {
         B.BOX(m[0], y - 1.15, m[1], 1.3, 1.05, len, ry, K.red, 'stone');                          /* the blood-red cornice */
         var mg = pt(s, r + 0.4, (q[0] + q[1]) / 2);
         B.BOX(mg[0], y - 1.55, mg[1], 1.5, 0.4, len, ry, K.gold, 'stone');                        /* the gilt fillet */
         var md = pt(s, r + 0.2, (q[0] + q[1]) / 2);
         B.BOX(md[0], y - 3.1, md[1], 1.0, 0.55, len, ry, K.dark, 'stone');                        /* the dark-red course */
         n.trim++;
+        }
         /* banners down the wall below, from this level's cornice to the terrace beneath (the apron has none) */
-        if (k === 0) return;
+        if (k === 0 || !K.banners) return;
         var drop = Math.min(K.bannerH, (y - L[k - 1].y) * 0.62);
         for (var t = q[0] + K.bannerEvery / 2; t < q[1] - 2; t += K.bannerEvery) {
           var bp = pt(s, r + 0.75, t);
-          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.red, 'cloth');
+          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.banner, 'cloth');
           B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.26, 0.45, 3.3, ry, K.gold, 'cloth');
           var bq = pt(s, r + 0.78, t); B.BOX(bq[0], y - 1.7 - drop * 0.55, bq[1], 0.26, 1.1, 1.1, ry + Math.PI / 4, K.gold, 'cloth');   /* the gilt lozenge */
           n.banners++;
         }
       });
       /* fire pylons on the corners of every terrace but the top deck's */
-      if (lv.top || k === L.length - 1) return;
+      if (!K.pylons || lv.top || k === L.length - 1) return;
       var inner = lv.ri || r * 0.8, cr = (r + inner) / 2;
       if (r - inner < 6) return;
       [[1, 1], [-1, 1], [-1, -1], [1, -1]].forEach(function (c) {
@@ -48798,12 +48808,13 @@ VC.templeDress = function () {
         B.CYL(p[0], y + h + 0.6, p[1], 1.5, 0.9, 0, K.gold, 'stone');                              /* the brazier bowl */
         B.CYL(p[0], y + h + 1.2, p[1], 1.1, 0.5, 0, 0x2a1a12, 'soil');                             /* its coals */
         B.CONE(p[0], y + h + 1.5, p[1], 0.9, 1.6, 0, 0xf07a1e, 'cloth');                           /* the flame */
-        VC.templeFires.push([p[0], y + h + 2.4, p[1]]);
+        VC.cantonFires.push([p[0], y + h + 2.4, p[1], K.fire]); n.fires++;
         n.pylons++;
       });
     });
     /* the crown: obelisks round the top deck's edge */
     var T = L[L.length - 1], R = T.ro - 3.5;
+    if (K.crown)
     for (var s2 = 0; s2 < 4; s2++) runs(s2, T.ro, -R, R).forEach(function (q) {
       for (var t2 = q[0] + 3; t2 <= q[1] - 3; t2 += K.obeliskEvery) {
         var o = pt(s2, R, t2);
@@ -48813,8 +48824,24 @@ VC.templeDress = function () {
         n.obelisks++;
       }
     });
+    /* fires on the corner towers' tops (the Fortress's green flame): a brazier on the highest piece of each corner */
+    if (K.towerFires) {
+      var best = {}, seen = new Set();
+      CANT.grid.forEach(function (a) { a.forEach(function (p) {
+        if (seen.has(p) || p.M !== M) return; seen.add(p);
+        var cx = (p.x0 + p.x1) / 2 - M.x, cz = (p.z0 + p.z1) / 2 - M.z, rr = Math.max(Math.abs(cx), Math.abs(cz));
+        if (Math.min(Math.abs(cx), Math.abs(cz)) < rr * K.cornerShare || rr < (M.top.ri || 0) + 2) return;   /* a corner, not a face, and outside the keep */
+        var key = (cx > 0 ? 1 : 0) + (cz > 0 ? 2 : 0); if (!best[key] || p.y1 > best[key].y1) best[key] = p;
+      }); });
+      Object.keys(best).forEach(function (q2) {
+        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1;
+        B.CYL(c[0], y, c[1], 1.7, 0.8, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8, c[1], 1.2, 0.5, 0, 0x101010, 'soil');
+        B.CONE(c[0], y + 1.1, c[1], 1.0, 2.2, 0, K.flame, 'cloth');
+        VC.cantonFires.push([c[0], y + 2.6, c[1], K.fire]); n.fires++;
+      });
+    }
   });
-  return 'the Temple dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks';
+  return cn + ' dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks, ' + n.fires + ' fires';
 };
 /* ships alongside a ship pier: on each side, by a KRAND hash of the pier and the side (never the stream), a junk or a
    cargo hulk toward the pier's tip, a clearance off its deck, only where all of its hull floats */
@@ -48877,7 +48904,9 @@ VC.buildDistricts = function () {
   /* then the cantons' stairs: from each canton pier up onto the apron, and up the terraces to the top deck; the
      decks below keep clear of where they and the bridges arrive */
   CANT.planB(Object.keys(VC.FP).filter(function (id) { return VC.FP[id].canton; }).map(function (id) { var P = VC.FP[id]; return { id: id, canton: (P.to || '').split(' ')[0], root: P.root, dir: P.dir, w: 5.5, deckY: B.SEA + 2.1 }; }));
-  log.push(VC.templeDress());                          /* the Temple's blood-red and gilt dressing (below) */
+  VC.cantonFires = [];
+  log.push(VC.cantonDress('Temple'));                  /* the Temple's blood-red and gilt dressing (below) */
+  log.push(VC.cantonDress('Fortress'));                /* the Fortress's green and gold banners, its towers' green fires */
   log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
   log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the harbour next: its piers go into Voth's own PIERS list, which the chinampa pass keeps clear of */
@@ -49603,7 +49632,7 @@ VC.buildMonastery = function (d) {
       function (c, y, ry) { B.monasteryAssemblyHall(c[0], c[1], y, hw, hd, B.rr(30, 34), ry, col, {}); },
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
     /* dormitories round the chapel (owner: more of them) */
-    var dw = fx * 0.20 * 1.5, dd = fz * 0.17 * 2.0, roof = B.shade(B.GREYC[1], -0.05);
+    var ds = counts.compound || 1, dw = fx * 0.20 * 1.5 * ds, dd = fz * 0.17 * 2.0 * ds, roof = B.shade(B.GREYC[1], -0.05);   /* round Voth's compound: at its scale */
     for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
@@ -52200,8 +52229,21 @@ VC.intPlanAll = function () {
     CANT.holes[cn] = [[c.x - w[0], c.x + w[0], c.z - w[1], c.z + w[1], P.M.top.y]];
   });
   VC.intEntrances();
+  /* what the hollowing lays open (owner, 2026-10-09: "what are these stones clipping inside the arena"): a captured
+     piece wholly inside a tier's interior (its footprint within the tier's R, its middle within the tier's heights)
+     was buried in the canton's stone (Voth's inner stairs, the arena's sunk footings); the stone is rooms now, so it goes */
+  var opened = 0;
+  Object.keys(VC.INT.cantons).forEach(function (cn) {
+    var P = VC.INT.cantons[cn]; if (P.catacombs || !P.tiers) return;
+    var M = P.M, seen = new Set();
+    CANT.grid.forEach(function (a) { a.forEach(function (q) {
+      if (seen.has(q) || q.M !== M) return; seen.add(q);
+      var ym = (q.y0 + q.y1) / 2, ext = Math.max(Math.abs(q.x0 - M.x), Math.abs(q.x1 - M.x), Math.abs(q.z0 - M.z), Math.abs(q.z1 - M.z));
+      if (P.tiers.concat(P.dungeon ? [P.dungeon] : []).some(function (tr) { return ym > tr.y0 + 0.3 && ym < tr.y1 - 0.3 && q.y1 < tr.y1 + 0.3 && ext <= tr.R + T.wall * 0.5; })) { CANT.cut(q, 'inside the hollowed canton'); opened++; }
+    }); });
+  });
   var n = 0, r = 0; for (var k in VC.INT.cantons) { n++; r += VC.INT.cantons[k].rooms.length; }
-  return n + ' canton interiors, ' + r + ' rooms';
+  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out';
 };
 
 /* ---------------------------------------------------------------- a tiered canton */
@@ -52228,8 +52270,13 @@ VC.intPlanTiered = function (M) {
   var P = { n: M.n, M: M, axis: axis, perp: perp, core: { x: cc[0], z: cc[1], half: T.core }, tiers: tiers, rooms: [], halls: [], tunnels: [], flights: [], boxes: [], floors: [], doorsOut: doors, storeys: [] };
   var allSt = [];
   tiers.forEach(function (t) { t.storeys.forEach(function (s) { allSt.push({ t: t, s: s }); }); });
+  /* a dungeon (owner, 2026-10-09: "add clear dungeon level to the interior" of the Fortress): a storey of its own under
+     the ground storey, below the apron, in the first tier's walls, reached by the core's stair only; its rooms are
+     TUNE.interiors.dungeon's (cells, guard rooms), drawn in darker stone. The doors and tunnels stay on the ground storey */
+  var DG = T.dungeon && T.dungeon[M.n];
+  if (DG) allSt.unshift({ t: tiers[0], s: { j: -1, y: tiers[0].y0 - DG.h, h: DG.h - T.slab, dungeon: true } });
   allSt.forEach(function (o, si) {
-    var t = o.t, s = o.s, ground = s.j === 0, first = si === 0, S = { i: si, tier: t.k, y: s.y, h: s.h, R: t.R };
+    var t = o.t, s = o.s, ground = s.j === 0, first = si === 0, S = { i: si, tier: t.k, y: s.y, h: s.h, R: t.R, dungeon: !!s.dungeon };
     P.storeys.push(S);
     /* the arms: both axes; the axis arms reach the wall on the lowest storey of each tier, the others stop short */
     [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
@@ -52253,7 +52300,7 @@ VC.intPlanTiered = function (M) {
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
           room.door = { x: dp[0], z: dp[1], w: T.doorW, n: [-(-d[1] * side), -(d[0] * side)] };
-          room.kind = VC.intRoomKind(M, si, ai, side, idx);
+          room.kind = s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
           room.id = M.n + '.s' + si + '.a' + ai + (side > 0 ? 'r' : 'l') + idx;
           P.rooms.push(room);
           a0 += w + T.room.gap; idx++;
@@ -52264,7 +52311,8 @@ VC.intPlanTiered = function (M) {
     P.flights = P.flights.concat(VC.intCoreStair(P, S, allSt[si + 1] ? allSt[si + 1].s.y : M.top.y));
   });
   /* the way in: each bottom door's tunnel, on the ground storey of tier 0, through the wall to its arm's hall */
-  var g0 = allSt[0];
+  var g0i = allSt.findIndex(function (o) { return !o.s.dungeon; }), g0 = allSt[g0i];
+  P.ground = g0i; if (DG) P.dungeon = { y0: allSt[0].s.y, y1: g0.s.y, R: tiers[0].R };
   doors.forEach(function (D, i) {
     var d = D.n, rFace = CANT.sq(M, D.x, D.z), cIn = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1];
     var along = (D.x - M.x) * -d[1] + (D.z - M.z) * d[0], ccA = (cc[0] - M.x) * -d[1] + (cc[1] - M.z) * d[0];
@@ -52281,7 +52329,7 @@ VC.intPlanTiered = function (M) {
       var pas = Object.assign({ y: g0.s.y, h: tun.h, kind: 'passage', door: D.id }, VC.intSeg(e, f, T.tunnelW / 2));
       P.tunnels.push(pas);
       /* the rooms the passage would cut through give way */
-      P.rooms = P.rooms.filter(function (r) { return r.storey !== 0 || !VC.intOverlap(r, pas, 0.2); });
+      P.rooms = P.rooms.filter(function (r) { return r.storey !== g0i || !VC.intOverlap(r, pas, 0.2); });
     }
   });
   /* the top: the core's last flights rise through the top deck into a stair house */
@@ -52742,7 +52790,7 @@ VIEW.cantons = function () {
       var pl = null;
       v.r.forEach(function (r) { if (r[0] !== 9 && (!pl || r[5] * r[7] > pl[5] * pl[7])) pl = r; });
       var g = buildAsset(key, c.x - pl[2], c.z - pl[4], 0, { variant: 0, seed: 7, wealth: 1, y: bed });
-      if (g && !g.userData.error) { g.userData.kind = 'canton'; g.userData.canton = c.n; rec.ok = true; rec.group = g; made.push(c.n); VIEW.stoneUp(g); }
+      if (g && !g.userData.error) { g.userData.kind = 'canton'; g.userData.canton = c.n; rec.ok = true; rec.group = g; made.push(c.n); VIEW.stoneUp(g); if (VIEW.recolour && VIEW.recolour[c.n]) VIEW.recolour[c.n](g); }   /* a page may restyle a canton (the city: the Fortress in black) */
     }
     VIEW.cantonList.push(rec);
   });
@@ -53412,6 +53460,24 @@ VC.drawVessels = function () {
   var n = {}; L.forEach(function (r) { n[r.key] = (n[r.key] || 0) + 1; });
   VC.vesselStats = { moored: n, meshes: VC.vesselMeshes.length };
 };
+/* a canton in one dark scheme (owner, 2026-10-09: the Fortress "just use the dark grey/black color scheme"): every colour on
+   its captured model (instance colours, vertex colours, material colours) mapped to a grey between lo and hi (linear),
+   by the square root of its own lightness, so its courses and trims still read against each other */
+VC.greyscale = function (lo, hi) {
+  var c = new THREE.Color(), map = function (r, g, b) { var l = 0.2126 * r + 0.7152 * g + 0.0722 * b, v = lo + (hi - lo) * Math.sqrt(Math.min(1, l)); return v; };
+  return function (root) {
+    var done = new Set();
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      if (o.instanceColor) { var A = o.instanceColor.array; for (var i = 0; i < A.length; i += 3) { var v = map(A[i], A[i + 1], A[i + 2]); A[i] = A[i + 1] = A[i + 2] = v; } o.instanceColor.needsUpdate = true; }
+      var ca = o.geometry && o.geometry.attributes.color;
+      if (ca && !done.has(o.geometry)) { if (o.geometry.userData.shared !== false) { o.geometry = o.geometry.clone(); ca = o.geometry.attributes.color; } done.add(o.geometry); for (var k = 0; k < ca.count; k++) { var w = map(ca.getX(k), ca.getY(k), ca.getZ(k)); ca.setXYZ(k, w, w, w); } ca.needsUpdate = true; }
+      var ms = Array.isArray(o.material) ? o.material : [o.material];
+      o.material = ms.map(function (m) { if (!m || !m.color || m.vertexColors) return m; var n = m.clone(); c.copy(m.color); var v = map(c.r, c.g, c.b); n.color.setRGB(v, v, v); return n; });
+      if (!Array.isArray(o.material) || o.material.length === 1) o.material = Array.isArray(o.material) ? o.material[0] : o.material;
+    });
+  };
+};
 /* the elephant bugs are Voth's own (VSTRIDER, lifted from 79c-strider-model.js by build.py): the merged body as
    one instanced mesh, the twelve leg bars of each as another, placed by Voth's striderPlaceLegs with its gait (feet
    planted while it travels at its own speed, all six down while it stands at a station) */
@@ -53914,7 +53980,7 @@ VC.dayNight = function () {
     /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
     var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
     /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
-    (VC.templeFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
     if (sm.length) ATMOS.smoke(sm);
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
@@ -53947,6 +54013,7 @@ VC.start = function () {
   VC.stripped = VC.stripCantons();
   VIEW.stage(); VIEW.terrain(); VIEW.refreshTerrain(null, true);
   CANT.walkOn = true;                 /* the causeways register their decks in KWALK as they are built */
+  VIEW.recolour = { Fortress: VC.greyscale(TUNE.dress.Fortress.grey[0], TUNE.dress.Fortress.grey[1]) };   /* the Fortress in black */
   VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.falls(); VIEW.cantonLabels();
   CANT.walk(); CANT.tag();             /* the cantons' levels, bridges and stairs: the walker's floors; their records' tags */
   VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */
@@ -54034,7 +54101,7 @@ VC.drawInterior = function (cn) {
   var M = P.M, tone = new THREE.Color(M.tone), wall = tone.clone().lerp(new THREE.Color(0xc9b58f), 0.4).multiplyScalar(0.82), floor = tone.clone().lerp(new THREE.Color(0x7a5a3e), 0.55), ceil = tone.clone().multiplyScalar(0.5), step = new THREE.Color(0xa79b82), hallF = floor.clone().multiplyScalar(1.1);   /* the core floors as the halls': the halls start inside it, and two colours on one plane fight */
   /* the boxes, by storey (so the cutaway can hide the storeys above its cut) */
   var byS = {};
-  var add = function (si, b, col) { (byS[si] = byS[si] || []).push([b, col]); };
+  var add = function (si, b, col) { var S = P.storeys[si]; (byS[si] = byS[si] || []).push([b, S && S.dungeon ? col.clone().multiplyScalar(TUNE.interiors.dungeonDark) : col]); };   /* the dungeon in darker stone */
   P.boxes.forEach(function (b) { add(b.storey, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], wall); });
   P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
   (P.ceilings || []).forEach(function (c) { add(c.storey, [c.x0, c.x1, c.z0, c.z1, c.y, c.y + 0.3], ceil); });
@@ -54166,7 +54233,7 @@ VC.cutTo = function (cn, storey) {
   VC.cutBox([M.x - r, M.x + r, M.z - r, M.z + r, S.y + TUNE.interiors.cutAt]);
   VC.showInterior(cn, true, S.i);
   VC.cutBar();
-  var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
+  var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + (S.dungeon ? ', the dungeon' : '') + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
 };
 VC.cutOff = function () {
   var C = VC.INTD.cut; if (C.canton && !VC.INTD.walkIn) VC.showInterior(C.canton, false);
@@ -54180,7 +54247,7 @@ VC.cutBar = function () {
   var C = VC.INTD.cut, bar = $('cutbar'); if (!bar) return;
   bar.style.display = C.on ? 'block' : 'none'; if (!C.on) return;
   var P = VC.INT.cantons[C.canton], S = P.storeys[C.storey];
-  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
+  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + (S.dungeon ? ' <b>(dungeon)</b>' : '') + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
   $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= P.storeys.length - 1;
   $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= P.storeys.length - 1 ? 0.35 : 1;
   $('cut-canton').value = C.canton;

@@ -75,7 +75,7 @@ VC.drawInterior = function (cn) {
   var M = P.M, tone = new THREE.Color(M.tone), wall = tone.clone().lerp(new THREE.Color(0xc9b58f), 0.4).multiplyScalar(0.82), floor = tone.clone().lerp(new THREE.Color(0x7a5a3e), 0.55), ceil = tone.clone().multiplyScalar(0.5), step = new THREE.Color(0xa79b82), hallF = floor.clone().multiplyScalar(1.1);   /* the core floors as the halls': the halls start inside it, and two colours on one plane fight */
   /* the boxes, by storey (so the cutaway can hide the storeys above its cut) */
   var byS = {};
-  var add = function (si, b, col) { (byS[si] = byS[si] || []).push([b, col]); };
+  var add = function (si, b, col) { var S = P.storeys[si]; (byS[si] = byS[si] || []).push([b, S && S.dungeon ? col.clone().multiplyScalar(TUNE.interiors.dungeonDark) : col]); };   /* the dungeon in darker stone */
   P.boxes.forEach(function (b) { add(b.storey, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], wall); });
   P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
   (P.ceilings || []).forEach(function (c) { add(c.storey, [c.x0, c.x1, c.z0, c.z1, c.y, c.y + 0.3], ceil); });
@@ -207,7 +207,7 @@ VC.cutTo = function (cn, storey) {
   VC.cutBox([M.x - r, M.x + r, M.z - r, M.z + r, S.y + TUNE.interiors.cutAt]);
   VC.showInterior(cn, true, S.i);
   VC.cutBar();
-  var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
+  var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + (S.dungeon ? ', the dungeon' : '') + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
 };
 VC.cutOff = function () {
   var C = VC.INTD.cut; if (C.canton && !VC.INTD.walkIn) VC.showInterior(C.canton, false);
@@ -221,7 +221,7 @@ VC.cutBar = function () {
   var C = VC.INTD.cut, bar = $('cutbar'); if (!bar) return;
   bar.style.display = C.on ? 'block' : 'none'; if (!C.on) return;
   var P = VC.INT.cantons[C.canton], S = P.storeys[C.storey];
-  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
+  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + (S.dungeon ? ' <b>(dungeon)</b>' : '') + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
   $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= P.storeys.length - 1;
   $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= P.storeys.length - 1 ? 0.35 : 1;
   $('cut-canton').value = C.canton;

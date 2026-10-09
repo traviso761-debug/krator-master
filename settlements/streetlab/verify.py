@@ -171,7 +171,7 @@ CITY_CHECK = r"""() => {
     const cr = (P.core.x - M.x) * n[0] + (P.core.z - M.z) * n[1];
     wp.push(at(cr + (cr < rIn ? 1 : -1) * (TUNE.interiors.core - 1), cA));
     wp.push([P.core.x - P.axis[0] * (TUNE.interiors.well[1] + 1.2) - P.perp[0] * TUNE.interiors.well[0] / 2, P.core.z - P.axis[1] * (TUNE.interiors.well[1] + 1.2) - P.perp[1] * TUNE.interiors.well[0] / 2]);
-    P.flights.forEach((f, i) => { wp.push(f.a, f.b); if (i % 2 === 0) { const L = P.floors.filter(q => q.kind === 'landing' && q.storey === f.storey)[0]; if (L) wp.push([(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2]); } });
+    P.flights.filter(f => !(P.storeys[f.storey] || {}).dungeon).forEach((f, i) => { wp.push(f.a, f.b); if (i % 2 === 0) { const L = P.floors.filter(q => q.kind === 'landing' && q.storey === f.storey)[0]; if (L) wp.push([(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2]); } });
     wp.push(P.house.door, [P.house.door[0] + P.house.n[0] * 4, P.house.door[1] + P.house.n[1] * 4]);
     const r = walk([dock.a[0], dock.a[1], dock.y0], wp);
     out[cn] = r.ok ? 'OK, top at ' + r.end[2] + ' (deck ' + P.M.top.y.toFixed(1) + ')' : JSON.stringify(r);

@@ -44,8 +44,21 @@ VC.intPlanAll = function () {
     CANT.holes[cn] = [[c.x - w[0], c.x + w[0], c.z - w[1], c.z + w[1], P.M.top.y]];
   });
   VC.intEntrances();
+  /* what the hollowing lays open (owner, 2026-10-09: "what are these stones clipping inside the arena"): a captured
+     piece wholly inside a tier's interior (its footprint within the tier's R, its middle within the tier's heights)
+     was buried in the canton's stone (Voth's inner stairs, the arena's sunk footings); the stone is rooms now, so it goes */
+  var opened = 0;
+  Object.keys(VC.INT.cantons).forEach(function (cn) {
+    var P = VC.INT.cantons[cn]; if (P.catacombs || !P.tiers) return;
+    var M = P.M, seen = new Set();
+    CANT.grid.forEach(function (a) { a.forEach(function (q) {
+      if (seen.has(q) || q.M !== M) return; seen.add(q);
+      var ym = (q.y0 + q.y1) / 2, ext = Math.max(Math.abs(q.x0 - M.x), Math.abs(q.x1 - M.x), Math.abs(q.z0 - M.z), Math.abs(q.z1 - M.z));
+      if (P.tiers.concat(P.dungeon ? [P.dungeon] : []).some(function (tr) { return ym > tr.y0 + 0.3 && ym < tr.y1 - 0.3 && q.y1 < tr.y1 + 0.3 && ext <= tr.R + T.wall * 0.5; })) { CANT.cut(q, 'inside the hollowed canton'); opened++; }
+    }); });
+  });
   var n = 0, r = 0; for (var k in VC.INT.cantons) { n++; r += VC.INT.cantons[k].rooms.length; }
-  return n + ' canton interiors, ' + r + ' rooms';
+  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out';
 };
 
 /* ---------------------------------------------------------------- a tiered canton */
@@ -72,8 +85,13 @@ VC.intPlanTiered = function (M) {
   var P = { n: M.n, M: M, axis: axis, perp: perp, core: { x: cc[0], z: cc[1], half: T.core }, tiers: tiers, rooms: [], halls: [], tunnels: [], flights: [], boxes: [], floors: [], doorsOut: doors, storeys: [] };
   var allSt = [];
   tiers.forEach(function (t) { t.storeys.forEach(function (s) { allSt.push({ t: t, s: s }); }); });
+  /* a dungeon (owner, 2026-10-09: "add clear dungeon level to the interior" of the Fortress): a storey of its own under
+     the ground storey, below the apron, in the first tier's walls, reached by the core's stair only; its rooms are
+     TUNE.interiors.dungeon's (cells, guard rooms), drawn in darker stone. The doors and tunnels stay on the ground storey */
+  var DG = T.dungeon && T.dungeon[M.n];
+  if (DG) allSt.unshift({ t: tiers[0], s: { j: -1, y: tiers[0].y0 - DG.h, h: DG.h - T.slab, dungeon: true } });
   allSt.forEach(function (o, si) {
-    var t = o.t, s = o.s, ground = s.j === 0, first = si === 0, S = { i: si, tier: t.k, y: s.y, h: s.h, R: t.R };
+    var t = o.t, s = o.s, ground = s.j === 0, first = si === 0, S = { i: si, tier: t.k, y: s.y, h: s.h, R: t.R, dungeon: !!s.dungeon };
     P.storeys.push(S);
     /* the arms: both axes; the axis arms reach the wall on the lowest storey of each tier, the others stop short */
     [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
@@ -97,7 +115,7 @@ VC.intPlanTiered = function (M) {
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
           room.door = { x: dp[0], z: dp[1], w: T.doorW, n: [-(-d[1] * side), -(d[0] * side)] };
-          room.kind = VC.intRoomKind(M, si, ai, side, idx);
+          room.kind = s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
           room.id = M.n + '.s' + si + '.a' + ai + (side > 0 ? 'r' : 'l') + idx;
           P.rooms.push(room);
           a0 += w + T.room.gap; idx++;
@@ -108,7 +126,8 @@ VC.intPlanTiered = function (M) {
     P.flights = P.flights.concat(VC.intCoreStair(P, S, allSt[si + 1] ? allSt[si + 1].s.y : M.top.y));
   });
   /* the way in: each bottom door's tunnel, on the ground storey of tier 0, through the wall to its arm's hall */
-  var g0 = allSt[0];
+  var g0i = allSt.findIndex(function (o) { return !o.s.dungeon; }), g0 = allSt[g0i];
+  P.ground = g0i; if (DG) P.dungeon = { y0: allSt[0].s.y, y1: g0.s.y, R: tiers[0].R };
   doors.forEach(function (D, i) {
     var d = D.n, rFace = CANT.sq(M, D.x, D.z), cIn = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1];
     var along = (D.x - M.x) * -d[1] + (D.z - M.z) * d[0], ccA = (cc[0] - M.x) * -d[1] + (cc[1] - M.z) * d[0];
@@ -125,7 +144,7 @@ VC.intPlanTiered = function (M) {
       var pas = Object.assign({ y: g0.s.y, h: tun.h, kind: 'passage', door: D.id }, VC.intSeg(e, f, T.tunnelW / 2));
       P.tunnels.push(pas);
       /* the rooms the passage would cut through give way */
-      P.rooms = P.rooms.filter(function (r) { return r.storey !== 0 || !VC.intOverlap(r, pas, 0.2); });
+      P.rooms = P.rooms.filter(function (r) { return r.storey !== g0i || !VC.intOverlap(r, pas, 0.2); });
     }
   });
   /* the top: the core's last flights rise through the top deck into a stair house */

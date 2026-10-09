@@ -87,13 +87,15 @@ var TUNE = {
                  Granary: { bakery: 3, granary: 5, kitchen: 1, office: 1, store: 1 },
                  Arena: { training: 4, barracks: 3, stable: 3, mess: 1, store: 1, shrine: 1 },
                  Port: { warehouse: 6, office: 1, workshop: 2, tavern: 1 },
-                 Fortress: { training: 3, barracks: 3, cell: 4, office: 2, armoury: 1, shrine: 1 },
+                 Fortress: { training: 3, barracks: 3, office: 2, armoury: 1, shrine: 1 },   /* its cells are all in its dungeon (TUNE.interiors.dungeon) */
                  Foreign: { office: 4, reception: 2, library: 1, living: 2, bedroom: 2 },
                  Ancestry: { catacomb: 1 }
                },
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
                cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
+               dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
                   point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
                lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
@@ -109,7 +111,14 @@ var TUNE = {
   market: { ground: 0.2, stock: 0.75, side: 3.1, back: 1.0, goods: ['generic_crate', 'generic_basket', 'generic_sack', 'generic_storage_jar', 'generic_barrel'] },
   /* the Temple's dressing (31-vc-voth.js VC.templeDress): Voth's temple colours (65d: blood red, its dark, matte gilt), how
      near a side a bridge or flight must come to cut the trim, banner drop and spacing, the fire pylons' height, the crown */
-  temple: { red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
+  dress: {
+    Temple: { trim: true, banners: true, pylons: true, crown: true, red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, banner: 0xa8241c, fire: [1.0, 0.45, 0.12], flame: 0xf07a1e,
+              keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
+    /* the Fortress (owner, 2026-10-09): black and dark grey all over (grey: the linear range its colours map into), green
+       and gold banners, a green fire on each corner tower at night */
+    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, grey: [0.006, 0.09],
+                keepBand: 10, bannerH: 10, bannerEvery: 18, cornerShare: 0.72 }
+  },
   /* the house of healing (30-vc-site.js VC.placeHealing, 31-vc-voth.js VC.healingModel): its half-width with its plinth's
      steps, the margin kept round it, how far from its marker it may move, how far its wall may stand from the avenue it
      fronts, the steepest relief its plinth takes, the forecourt's width, the lanterns' and cots' spacing */

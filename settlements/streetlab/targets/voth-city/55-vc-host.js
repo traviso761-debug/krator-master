@@ -143,6 +143,24 @@ VC.drawVessels = function () {
   var n = {}; L.forEach(function (r) { n[r.key] = (n[r.key] || 0) + 1; });
   VC.vesselStats = { moored: n, meshes: VC.vesselMeshes.length };
 };
+/* a canton in one dark scheme (owner, 2026-10-09: the Fortress "just use the dark grey/black color scheme"): every colour on
+   its captured model (instance colours, vertex colours, material colours) mapped to a grey between lo and hi (linear),
+   by the square root of its own lightness, so its courses and trims still read against each other */
+VC.greyscale = function (lo, hi) {
+  var c = new THREE.Color(), map = function (r, g, b) { var l = 0.2126 * r + 0.7152 * g + 0.0722 * b, v = lo + (hi - lo) * Math.sqrt(Math.min(1, l)); return v; };
+  return function (root) {
+    var done = new Set();
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      if (o.instanceColor) { var A = o.instanceColor.array; for (var i = 0; i < A.length; i += 3) { var v = map(A[i], A[i + 1], A[i + 2]); A[i] = A[i + 1] = A[i + 2] = v; } o.instanceColor.needsUpdate = true; }
+      var ca = o.geometry && o.geometry.attributes.color;
+      if (ca && !done.has(o.geometry)) { if (o.geometry.userData.shared !== false) { o.geometry = o.geometry.clone(); ca = o.geometry.attributes.color; } done.add(o.geometry); for (var k = 0; k < ca.count; k++) { var w = map(ca.getX(k), ca.getY(k), ca.getZ(k)); ca.setXYZ(k, w, w, w); } ca.needsUpdate = true; }
+      var ms = Array.isArray(o.material) ? o.material : [o.material];
+      o.material = ms.map(function (m) { if (!m || !m.color || m.vertexColors) return m; var n = m.clone(); c.copy(m.color); var v = map(c.r, c.g, c.b); n.color.setRGB(v, v, v); return n; });
+      if (!Array.isArray(o.material) || o.material.length === 1) o.material = Array.isArray(o.material) ? o.material[0] : o.material;
+    });
+  };
+};
 /* the elephant bugs are Voth's own (VSTRIDER, lifted from 79c-strider-model.js by build.py): the merged body as
    one instanced mesh, the twelve leg bars of each as another, placed by Voth's striderPlaceLegs with its gait (feet
    planted while it travels at its own speed, all six down while it stands at a station) */
@@ -645,7 +663,7 @@ VC.dayNight = function () {
     /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
     var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
     /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
-    (VC.templeFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
     if (sm.length) ATMOS.smoke(sm);
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
@@ -678,6 +696,7 @@ VC.start = function () {
   VC.stripped = VC.stripCantons();
   VIEW.stage(); VIEW.terrain(); VIEW.refreshTerrain(null, true);
   CANT.walkOn = true;                 /* the causeways register their decks in KWALK as they are built */
+  VIEW.recolour = { Fortress: VC.greyscale(TUNE.dress.Fortress.grey[0], TUNE.dress.Fortress.grey[1]) };   /* the Fortress in black */
   VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.falls(); VIEW.cantonLabels();
   CANT.walk(); CANT.tag();             /* the cantons' levels, bridges and stairs: the walker's floors; their records' tags */
   VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */

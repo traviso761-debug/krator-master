@@ -88,15 +88,14 @@ VC.healingModel = function (c, ry, f, court) {
    - a crown of red obelisks with gilt tips round the top deck.
    Nothing is laid where a bridge lands or a flight of steps climbs (each side's runs are cut round them). No draws
    from any stream: every choice is fixed by the canton's geometry. */
-VC.templeDress = function () {
-  var M = CANT.by.Temple; if (!M) return 'no Temple canton';
-  var B = VOTH, K = TUNE.temple, n = { trim: 0, pylons: 0, banners: 0, obelisks: 0 };
-  VC.templeFires = [];
+VC.cantonDress = function (cn) {
+  var M = CANT.by[cn], K = TUNE.dress[cn]; if (!M || !K) return 'no ' + cn + ' canton';
+  var B = VOTH, n = { trim: 0, pylons: 0, banners: 0, obelisks: 0, fires: 0 };
   /* what each side must leave open: flights, bridge landings, the dock flights */
   var keep = [];
-  CANT.flights.filter(function (f) { return f.canton === 'Temple'; }).forEach(function (f) { keep.push({ p: f.a, w: f.w }, { p: f.b, w: f.w }, { p: [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], w: f.w }); });
-  CANT.spans.forEach(function (S) { if (S.a === 'Temple') keep.push({ p: S.la, w: S.w + 4 }, { p: [S.ax, S.az], w: S.w + 4 }); if (S.b === 'Temple') keep.push({ p: S.lb, w: S.w + 4 }, { p: [S.bx, S.bz], w: S.w + 4 }); });
-  (CANT.ends || []).forEach(function (e) { if (e.canton === 'Temple') keep.push({ p: [e.x, e.z], w: (e.w || 30) + 4 }); });
+  CANT.flights.filter(function (f) { return f.canton === cn; }).forEach(function (f) { keep.push({ p: f.a, w: f.w }, { p: f.b, w: f.w }, { p: [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], w: f.w }); });
+  CANT.spans.forEach(function (S) { if (S.a === cn) keep.push({ p: S.la, w: S.w + 4 }, { p: [S.ax, S.az], w: S.w + 4 }); if (S.b === cn) keep.push({ p: S.lb, w: S.w + 4 }, { p: [S.bx, S.bz], w: S.w + 4 }); });
+  (CANT.ends || []).forEach(function (e) { if (e.canton === cn) keep.push({ p: [e.x, e.z], w: (e.w || 30) + 4 }); });
   /* a side: s 0..3 (+x, +z, -x, -z), the point at along-coordinate t on the square of radius r */
   var pt = function (s, r, t) { return s === 0 ? [M.x + r, M.z + t] : s === 1 ? [M.x - t, M.z + r] : s === 2 ? [M.x - r, M.z - t] : [M.x + t, M.z - r]; };
   var ryOf = function (s) { return s % 2 === 0 ? 0 : Math.PI / 2; };   /* a box's depth (z) along the side */
@@ -110,31 +109,33 @@ VC.templeDress = function () {
     cut.forEach(function (c) { iv = [].concat.apply([], iv.map(function (q) { return c[0] >= q[1] || c[1] <= q[0] ? [q] : [[q[0], c[0]], [c[1], q[1]]].filter(function (z) { return z[1] - z[0] > 1.5; }); })); });
     return iv;
   };
-  VC.capture('temple dress', 2, function () {
+  VC.capture(cn.toLowerCase() + ' dress', 2, function () {
     var L = M.levels;
     L.forEach(function (lv, k) {
       var r = lv.ro, y = lv.y;
       for (var s = 0; s < 4; s++) runs(s, r, -r + 1, r - 1).forEach(function (q) {
         var m = pt(s, r + 0.3, (q[0] + q[1]) / 2), len = q[1] - q[0], ry = ryOf(s);
+        if (K.trim) {
         B.BOX(m[0], y - 1.15, m[1], 1.3, 1.05, len, ry, K.red, 'stone');                          /* the blood-red cornice */
         var mg = pt(s, r + 0.4, (q[0] + q[1]) / 2);
         B.BOX(mg[0], y - 1.55, mg[1], 1.5, 0.4, len, ry, K.gold, 'stone');                        /* the gilt fillet */
         var md = pt(s, r + 0.2, (q[0] + q[1]) / 2);
         B.BOX(md[0], y - 3.1, md[1], 1.0, 0.55, len, ry, K.dark, 'stone');                        /* the dark-red course */
         n.trim++;
+        }
         /* banners down the wall below, from this level's cornice to the terrace beneath (the apron has none) */
-        if (k === 0) return;
+        if (k === 0 || !K.banners) return;
         var drop = Math.min(K.bannerH, (y - L[k - 1].y) * 0.62);
         for (var t = q[0] + K.bannerEvery / 2; t < q[1] - 2; t += K.bannerEvery) {
           var bp = pt(s, r + 0.75, t);
-          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.red, 'cloth');
+          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.banner, 'cloth');
           B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.26, 0.45, 3.3, ry, K.gold, 'cloth');
           var bq = pt(s, r + 0.78, t); B.BOX(bq[0], y - 1.7 - drop * 0.55, bq[1], 0.26, 1.1, 1.1, ry + Math.PI / 4, K.gold, 'cloth');   /* the gilt lozenge */
           n.banners++;
         }
       });
       /* fire pylons on the corners of every terrace but the top deck's */
-      if (lv.top || k === L.length - 1) return;
+      if (!K.pylons || lv.top || k === L.length - 1) return;
       var inner = lv.ri || r * 0.8, cr = (r + inner) / 2;
       if (r - inner < 6) return;
       [[1, 1], [-1, 1], [-1, -1], [1, -1]].forEach(function (c) {
@@ -148,12 +149,13 @@ VC.templeDress = function () {
         B.CYL(p[0], y + h + 0.6, p[1], 1.5, 0.9, 0, K.gold, 'stone');                              /* the brazier bowl */
         B.CYL(p[0], y + h + 1.2, p[1], 1.1, 0.5, 0, 0x2a1a12, 'soil');                             /* its coals */
         B.CONE(p[0], y + h + 1.5, p[1], 0.9, 1.6, 0, 0xf07a1e, 'cloth');                           /* the flame */
-        VC.templeFires.push([p[0], y + h + 2.4, p[1]]);
+        VC.cantonFires.push([p[0], y + h + 2.4, p[1], K.fire]); n.fires++;
         n.pylons++;
       });
     });
     /* the crown: obelisks round the top deck's edge */
     var T = L[L.length - 1], R = T.ro - 3.5;
+    if (K.crown)
     for (var s2 = 0; s2 < 4; s2++) runs(s2, T.ro, -R, R).forEach(function (q) {
       for (var t2 = q[0] + 3; t2 <= q[1] - 3; t2 += K.obeliskEvery) {
         var o = pt(s2, R, t2);
@@ -163,8 +165,24 @@ VC.templeDress = function () {
         n.obelisks++;
       }
     });
+    /* fires on the corner towers' tops (the Fortress's green flame): a brazier on the highest piece of each corner */
+    if (K.towerFires) {
+      var best = {}, seen = new Set();
+      CANT.grid.forEach(function (a) { a.forEach(function (p) {
+        if (seen.has(p) || p.M !== M) return; seen.add(p);
+        var cx = (p.x0 + p.x1) / 2 - M.x, cz = (p.z0 + p.z1) / 2 - M.z, rr = Math.max(Math.abs(cx), Math.abs(cz));
+        if (Math.min(Math.abs(cx), Math.abs(cz)) < rr * K.cornerShare || rr < (M.top.ri || 0) + 2) return;   /* a corner, not a face, and outside the keep */
+        var key = (cx > 0 ? 1 : 0) + (cz > 0 ? 2 : 0); if (!best[key] || p.y1 > best[key].y1) best[key] = p;
+      }); });
+      Object.keys(best).forEach(function (q2) {
+        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1;
+        B.CYL(c[0], y, c[1], 1.7, 0.8, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8, c[1], 1.2, 0.5, 0, 0x101010, 'soil');
+        B.CONE(c[0], y + 1.1, c[1], 1.0, 2.2, 0, K.flame, 'cloth');
+        VC.cantonFires.push([c[0], y + 2.6, c[1], K.fire]); n.fires++;
+      });
+    }
   });
-  return 'the Temple dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks';
+  return cn + ' dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks, ' + n.fires + ' fires';
 };
 /* ships alongside a ship pier: on each side, by a KRAND hash of the pier and the side (never the stream), a junk or a
    cargo hulk toward the pier's tip, a clearance off its deck, only where all of its hull floats */
@@ -227,7 +245,9 @@ VC.buildDistricts = function () {
   /* then the cantons' stairs: from each canton pier up onto the apron, and up the terraces to the top deck; the
      decks below keep clear of where they and the bridges arrive */
   CANT.planB(Object.keys(VC.FP).filter(function (id) { return VC.FP[id].canton; }).map(function (id) { var P = VC.FP[id]; return { id: id, canton: (P.to || '').split(' ')[0], root: P.root, dir: P.dir, w: 5.5, deckY: B.SEA + 2.1 }; }));
-  log.push(VC.templeDress());                          /* the Temple's blood-red and gilt dressing (below) */
+  VC.cantonFires = [];
+  log.push(VC.cantonDress('Temple'));                  /* the Temple's blood-red and gilt dressing (below) */
+  log.push(VC.cantonDress('Fortress'));                /* the Fortress's green and gold banners, its towers' green fires */
   log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
   log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the harbour next: its piers go into Voth's own PIERS list, which the chinampa pass keeps clear of */
