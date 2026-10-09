@@ -142,7 +142,9 @@ var TUNE = {
     roadsFor: ['S12'], roadReach: 2400, fishReach: 420,
     mines: { n: 8, grid: 40, minH: 25, slope: [0.3, 1.3], apart: 230, trackReach: 900, houses: 4 },
     quarries: { n: 4, grid: 30, rim: 60, slope: [0.05, 0.32], apart: 240, trackReach: 900, houses: 4 },
-    moreFarms: { farmGrid: 210, trackReach: 700, fieldsPerFarm: [5, 9], fieldGrid: 75 },
+    moreFarms: { farmGrid: 210, trackReach: 700, fieldsPerFarm: [5, 9], fieldGrid: 75,
+                 alignReach: 160,                        /* a field squares to the nearest road this close, else lies as it falls */
+                 mush: { n: 6, apart: 140, edge: 30 } },  /* mushroom farms among them (TUNE.country.mush otherwise) */
     village: { at: [{ id: 'S10', lanes: 8, laneLen: [110, 210], gap: [2, 5], fish: 4 }, 'S11', 'S12'], greenFrom: 64, green: 16, laneOff: 70, lanes: 5, laneLen: [80, 150], gap: [2, 7], vacancy: 0.12, fields: 18, fieldRing: [150, 380],
                mix: { poor: 0.6, middle: 0.24, craft: 0.1, shop: 0.04, tavern: 0.02 } },
     /* the ridge west of the city (top ~230 m at -2400, 200, running south to -1800, 1300): its slopes toward the city */

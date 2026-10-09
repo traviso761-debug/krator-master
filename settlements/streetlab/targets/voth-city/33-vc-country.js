@@ -568,10 +568,12 @@ VC.routeToRoad = function (p, reach, opt) {
   var cost = function (k, i, j) {
     var h = H[k]; if (h < 0.9) return Infinity;
     var q = at(k); if (!opt.city && VC.inCity(q, 10)) return Infinity;
+    if (!opt.overFields && VC.fieldHit(obb(q, [1, 0], c / 2, c / 2))) return Infinity;   /* round the fields, never through them (owner, 2026-10-09) */
     var gx = (H[j * n + Math.min(n - 1, i + 1)] - H[j * n + Math.max(0, i - 1)]) / (2 * c), gz = (H[Math.min(n - 1, j + 1) * n + i] - H[Math.max(0, j - 1) * n + i]) / (2 * c);
     return 1 + 60 * (gx * gx + gz * gz);
   };
   var si = Math.floor((p[0] - x0) / c), sj = Math.floor((p[1] - z0) / c), path = ASTAR(G, sj * n + si, goals, cost, null, 1.0);
+  if (!path && !opt.overFields) return VC.routeToRoad(p, reach, Object.assign({}, opt, { overFields: true }));   /* hemmed in: the fields it crosses go (VC.fieldsOffWays) */
   if (!path) return null;
   var pts = [p].concat(path.slice(1).map(at)), last = pts[pts.length - 1], rn = VC.roadNear(last, 12);
   if (rn) { var ww = rn.way, nq = ww.F.nearest(last); pts.push(ww.F.at(nq.s)); }
@@ -642,9 +644,9 @@ VC.quarries = function (rs) {
 /* mushroom farms (owner, 2026-10-09: "add mushroom farms to 'mush farm' region"): Voth's own mushroomFarm() (71-industry:
    a fenced plot of cultivated fungus in rows, damp gentle ground), on the gentle ground of the owner's polygon, apart from
    each other, each with a track to the roads and its grower's house */
-VC.mushFarms = function (rs) {
-  var B = VOTH, K = TUNE.country.mush, made = [], houses = 0;
-  VC.districts('mushfarm').forEach(function (d) {
+VC.mushFarms = function (rs, role, KK) {
+  var B = VOTH, K = Object.assign({}, TUNE.country.mush, KK || {}), made = [], houses = 0, tag = role || 'mushfarm', n0 = (VC.industry.mush || []).length;
+  VC.districts(tag).forEach(function (d) {
     var xs = d.poly.map(function (p) { return p[0]; }), zs = d.poly.map(function (p) { return p[1]; }), cand = [];
     for (var x = Math.min.apply(null, xs); x <= Math.max.apply(null, xs); x += K.grid) for (var z = Math.min.apply(null, zs); z <= Math.max.apply(null, zs); z += K.grid) {
       var p = [x + rs.rr(-8, 8), z + rs.rr(-8, 8)]; if (!inPoly(p, d.poly) || polyEdgeDist(p, d.poly) < K.edge) continue;
@@ -657,15 +659,15 @@ VC.mushFarms = function (rs) {
       var c = cand[i].p, o = obb(c, [1, 0], K.half, K.half);
       if (made.some(function (m) { return V.dist(m.p, c) < K.apart; }) || !VC.countryOk(o, { road: 4, relief: K.relief })) continue;
       var near = VC.roadNear(c, 600), to = near ? near.way.F.at(near.way.F.nearest(c).s) : V.add(c, [1, 0]), ry = Math.atan2(-(to[1] - c[1]), to[0] - c[0]), ok = false;
-      VC.capture('mush' + made.length, 13, function () { ok = !!B.mushroomFarm(c[0], c[1], ry, {}); });
+      VC.capture('mush' + (n0 + made.length), 13, function () { ok = !!B.mushroomFarm(c[0], c[1], ry, {}); });
       if (!ok) continue;
       var m = { p: c }; made.push(m); VC.big.push(o);
       m.track = !!VC.track(V.add(c, V.mul(V.norm(V.sub(to, c)), K.half + 2)), K.trackReach, 'mushroom farm track');
       houses += VC.workersHouses(c, rs, 1, 'mushroom growers');
     }
   });
-  VC.industry.mush = made;
-  return made.length + ' mushroom farms (' + made.filter(function (m) { return m.track; }).length + ' with a track to the roads), ' + houses + ' growers\u2019 houses';
+  VC.industry.mush = (VC.industry.mush || []).concat(made);
+  return made.length + ' mushroom farms' + (role ? ' in ' + role : '') + ' (' + made.filter(function (m) { return m.track; }).length + ' with a track to the roads), ' + houses + ' growers\u2019 houses';
 };
 VC.workersHouses = function (c, rs, n, tag) {
   var got = 0;
@@ -680,6 +682,8 @@ VC.workersHouses = function (c, rs, n, tag) {
    farmsteads on a jittered grid, each on a track to the nearest road; then fields wherever the ground allows */
 VC.moreFarms = function (rs) {
   var K = TUNE.country.moreFarms, D = VC.districts('farms'), farms = 0, fields = 0;
+  /* mushroom farms on its gentle ground first (owner, 2026-10-09: "add some mushroom farms in there"), on their tracks */
+  var mush = D.length ? VC.mushFarms(rs, 'farms', K.mush) : '';
   D.forEach(function (d) {
     var xs = d.poly.map(function (p) { return p[0]; }), zs = d.poly.map(function (p) { return p[1]; });
     for (var x = Math.min.apply(null, xs); x <= Math.max.apply(null, xs); x += K.farmGrid) for (var z = Math.min.apply(null, zs); z <= Math.max.apply(null, zs); z += K.farmGrid) {
@@ -692,11 +696,14 @@ VC.moreFarms = function (rs) {
     }
     for (var x2 = Math.min.apply(null, xs); x2 <= Math.max.apply(null, xs); x2 += K.fieldGrid) for (var z2 = Math.min.apply(null, zs); z2 <= Math.max.apply(null, zs); z2 += K.fieldGrid) {
       var c = [x2 + rs.rr(-12, 12), z2 + rs.rr(-12, 12)]; if (!inPoly(c, d.poly)) continue;
-      var fw = rs.rr(TUNE.country.field[0], TUNE.country.field[1]), fd = fw * rs.rr(0.45, 0.85), o = obb(c, V.rot([1, 0], rs.rr(-0.3, 0.3)), fw / 2, fd / 2);
+      /* square to the nearest road (owner, 2026-10-09: "align the farms within 'more farms' to the streets"): its long
+         side along the road's run there, so the fields stand in rows along the tracks and lanes, not across them */
+      var fw = rs.rr(TUNE.country.field[0], TUNE.country.field[1]), fd = fw * rs.rr(0.45, 0.85), jr = rs.rr(-0.3, 0.3), rn = VC.roadNear(c, K.alignReach);
+      var ax = rn ? rn.way.F.tan(rn.way.F.nearest(c).s, 8) : V.rot([1, 0], jr), o = obb(c, ax, fw / 2, fd / 2);
       if (VC.countryOk(o, { road: 2, relief: TUNE.country.fieldRelief, cityPad: 40 })) { VC.addField(o, VOTH.pick(VOTH.FIELDC)); fields++; }
     }
   });
-  return D.length ? farms + ' farmsteads and ' + fields + ' fields in ' + D.map(function (d) { return d.name; }).join(', ') : '';
+  return D.length ? farms + ' farmsteads and ' + fields + ' fields in ' + D.map(function (d) { return d.name; }).join(', ') + '; ' + mush : '';
 };
 
 /* a station's own road to the city (S12): from beside the station to the nearest road */
@@ -800,6 +807,21 @@ VC.orchards = function (rs) {
   return trees + ' orchard trees and ' + walls + ' terrace walls on the west hill';
 };
 
+/* no field under a road (owner, 2026-10-09: farms "cut thru" by the streets): once the country is laid, a field any
+   way runs across (a lane, a track, a highway laid after it) is taken up, sampled every 8 m over its footprint */
+VC.fieldsOffWays = function () {
+  VC.roadHash(); var gone = 0;
+  PLAN.fields = PLAN.fields.filter(function (F) {
+    var o = F.bo, hit = false;
+    for (var a = -o.hw; a <= o.hw + 0.1 && !hit; a += Math.min(8, o.hw)) for (var b = -o.hd; b <= o.hd + 0.1 && !hit; b += Math.min(8, o.hd)) {
+      var p = V.add(o.c, V.add(V.mul(o.u, a), V.mul(o.v, b))), r = VC.roadNear(p, 0.5); if (r) hit = true;
+    }
+    if (hit) gone++; return !hit;
+  });
+  VC.FH = new Map(); PLAN.fields.forEach(function (F) { var k = Math.floor(F.bo.c[0] / 80) + ',' + Math.floor(F.bo.c[1] / 80); (VC.FH.get(k) || VC.FH.set(k, []).get(k)).push(F); });
+  return gone;
+};
+
 SL.pass13 = function () {
   var rs = SL.stream(13), K = TUNE.country, n0 = PLAN.lots.length;
   PLAN.fields = []; VC.FH = new Map(); VC.big = (VC.clans || []).map(function (L) { return L.bo; }); VC.villages = [];
@@ -857,6 +879,7 @@ SL.pass13 = function () {
   log.push(VC.orchards(rs));
   log.push(VC.farmMills(rs));
   log.push(VC.waterMills(rs)); log.push(VC.ranches(rs));
+  log.push(VC.fieldsOffWays() + ' fields taken up from under a road');
   PLAN.country = { lots: PLAN.lots.length - n0, fields: PLAN.fields.length, villages: VC.villages };
   SL.note(13, log.join('; '));
 };
