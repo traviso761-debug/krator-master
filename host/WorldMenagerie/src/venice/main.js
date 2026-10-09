@@ -7,6 +7,12 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {boats} from './boats.js';
 import {life} from './life.js';
+import {palazzi} from '../core/palazzi.js';
+import {courts} from '../core/courts.js';
+import {streetlife} from '../core/streetlife.js';
+import {crowds} from '../core/crowds.js';
+import {navmap} from '../core/navmap.js';
+import {drawstats} from '../core/drawstats.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -25,5 +31,9 @@ configureLoading({
   prefix:'raising Venice… ',labels:{'map-data':'reading the sestieri',ground:'flooding the canals',buildings:'raising the palazzi',details:'laying the calli',landmarks:'raising the Campanile',el:'',traffic:'launching the boats',ui:'opening the windows'}});
 // The Campanile, the Basilica, the Salute and the Rialto are shapes rather than heights, so they travel with
 // this page; the boats travel with it too, because nowhere else on the site has traffic on the water.
-const ctx=window._iz={defaultCity:'venice',models:[landmarks],extras:[{name:'boats',fn:boats},{name:'life',fn:life}]};
+const ctx=window._iz={defaultCity:'venice',models:[landmarks],extras:[{name:'palazzi',fn:palazzi},{name:'boats',fn:boats},{name:'life',fn:life},{name:'courts',fn:courts},{name:'streetlife',fn:streetlife},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'drawstats',fn:drawstats}]};
+// each extra timed: its build time in the details (extraMs), so a slow load says which stage it is
+ctx.extras=ctx.extras.map(e=>({name:e.name,fn:api=>{const t0=performance.now();try{return e.fn(api);}finally{api.ctx.details=api.ctx.details||{};(api.ctx.details.extraMs=api.ctx.details.extraMs||{})[e.name]=Math.round(performance.now()-t0);}}}));
+// with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
+if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 boot(()=>build(ctx));

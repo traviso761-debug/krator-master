@@ -4,6 +4,7 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
+import {dress} from '../core/dress.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -21,5 +22,5 @@ configureLoading({
   ],
   prefix:'raising New York… ',labels:{'map-data':'reading the map',ground:'laying out the grid',buildings:'raising the towers',details:'planting the trees',landmarks:'placing the landmarks',el:'running the trains',traffic:'starting the traffic',ui:'opening the windows'}});
 // Liberty, the suspension bridges and One World Trade belong to this city alone, so the page carries them
-const ctx=window._iz={defaultCity:'nyc',models:[landmarks]};
+const ctx=window._iz={defaultCity:'nyc',models:[landmarks],extras:[{name:'dress',fn:dress}]};
 boot(()=>build(ctx));
