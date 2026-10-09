@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tongues of Krator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya%20SC:wght@500;700&family=JetBrains%20Mono:wght@400;500&family=Marcellus%20SC&family=Crimson%20Pro:ital,wght@0,400;0,600;1,400&family=IBM%20Plex%20Mono:wght@400;500&family=GFS%20Didot&family=Gentium%20Book%20Plus:ital,wght@0,400;0,700;1,400&family=DM%20Mono:wght@400;500&family=Rozha%20One&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Fira%20Mono:wght@400;500&family=Saira%20Stencil%20One&family=Uncial%20Antiqua&family=Source%20Serif%204:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Red%20Hat%20Mono:wght@400;500&family=Spectral%20SC:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=VT323&family=Martian%20Mono:wght@400;500&family=Alumni%20Sans:wght@600;800&family=PT%20Serif:ital,wght@0,400;0,700;1,400&family=PT%20Mono&family=Grenze:wght@600;700&family=Faustina:ital,wght@0,400;0,600;1,400&family=Overpass%20Mono:wght@400;500&family=Cormorant%20Unicase:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Azeret%20Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya%20SC:wght@500;700&family=JetBrains%20Mono:wght@400;500&family=Marcellus%20SC&family=Crimson%20Pro:ital,wght@0,400;0,600;1,400&family=IBM%20Plex%20Mono:wght@400;500&family=GFS%20Didot&family=Gentium%20Book%20Plus:ital,wght@0,400;0,700;1,400&family=DM%20Mono:wght@400;500&family=Rozha%20One&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Fira%20Mono:wght@400;500&family=Saira%20Stencil%20One&family=Uncial%20Antiqua&family=Source%20Serif%204:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Red%20Hat%20Mono:wght@400;500&family=Spectral%20SC:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=VT323&family=Martian%20Mono:wght@400;500&family=Alumni%20Sans:wght@600;800&family=PT%20Serif:ital,wght@0,400;0,700;1,400&family=PT%20Mono&family=Grenze:wght@600;700&family=Faustina:ital,wght@0,400;0,600;1,400&family=Overpass%20Mono:wght@400;500&family=Cormorant%20Unicase:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Azeret%20Mono:wght@400;500&family=Reem%20Kufi:wght@500;700&family=Gelasio:ital,wght@0,400;0,600;1,400&family=Sometype%20Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a sticky tab bar over one section at a time. The overview is neutral parchment; each tongue keeps its own palette and type, scoped to its own section. */
 :root{--bg:#ece8e0;--panel:#e2ddd2;--ink:#26231f;--muted:#6b665d;--accent:#8a5a2b;--line:#cfc8ba;
@@ -38,549 +38,636 @@ section.tongue{min-height:100%}
 @media (max-width:560px){.tree div{grid-template-columns:1fr;gap:2px}}
 .tree b{font-weight:600}
 #overview .tbl{overflow-x:auto}
-#overview table{border-collapse:collapse;width:100%;min-width:1180px;font-size:.95rem}
+#overview table{border-collapse:collapse;width:100%;min-width:1340px;font-size:.95rem}
 #overview th,#overview td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
 #overview th{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 #overview td.m{font:.84rem var(--mono)}
 #overview .note{font-size:.92rem;color:var(--muted)}
-:root #vothic{
+.phr-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.phr-pick button{font:500 .8rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+.phr-pick button:hover{border-color:var(--accent)}
+.phr-pick button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.phr-pick button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.phr-head{display:grid;gap:2px;margin-bottom:10px}
+.phr-head .en{font:600 1.35rem "Spectral",Georgia,serif}
+.phr-head .nt{font-size:.92rem;color:var(--muted)}
+#overview table.phr{min-width:720px}
+#overview table.phr td{vertical-align:middle}
+#overview table.phr td.lg{font:600 .95rem "Spectral",Georgia,serif;white-space:nowrap}
+#overview table.phr td.lg button{all:unset;cursor:pointer;border-bottom:1px dotted var(--muted)}
+#overview table.phr td.lg button:focus-visible{outline:2px solid var(--accent)}
+#overview table.phr td.rm{font:500 .92rem var(--mono)}
+#overview table.phr td.gl{font-size:.86rem;color:var(--muted);font-style:italic}
+#overview .chip{display:inline-flex;align-items:center;padding:4px 8px;border-radius:4px;min-height:34px;font-size:15px;line-height:1.2;max-width:100%;overflow-x:auto}
+#overview .chip .line,#overview .chip .out,#overview .chip .word{min-height:0;gap:4px 10px;flex-wrap:nowrap}
+#overview .chip svg{height:28px!important;width:auto!important;margin:0!important}
+#overview .chip .st{font-size:1.1rem}
+#overview .chip.none{background:transparent;color:var(--muted);font-size:.82rem;font-style:italic}
+:root :is(#vothic,[data-tongue="vothic"]){
   --bg:#ece6dc; --panel:#e3dbcd; --ink:#2a1f38; --muted:#6b5f72; --accent:#8a6517; --line:#cbbfae; --green:#3f6a4b;
   --display:"Alegreya SC", "Palatino Linotype", Georgia, serif;
   --body:"Alegreya", "Palatino Linotype", Georgia, serif;
   --mono:"JetBrains Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #vothic{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#vothic,[data-tongue="vothic"]){
   --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}}
-:root[data-theme="dark"] #vothic{
+:root[data-theme="dark"] :is(#vothic,[data-tongue="vothic"]){
   --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}
-#vothic{background:var(--bg);color:var(--ink);font:17px/1.55 var(--body)}
-#vothic .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#vothic h1,#vothic h2{font-family:var(--display);font-weight:700;letter-spacing:.02em;text-wrap:balance;margin:0}
-#vothic h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05}
-#vothic h2{font-size:1.6rem;margin-bottom:12px}
-#vothic p{margin:0 0 12px;max-width:65ch}
-#vothic .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#vothic .mono{font-family:var(--mono);font-size:.88em}
-#vothic header{display:grid;gap:14px}
-#vothic .hero-glyphs{display:flex;flex-wrap:wrap;gap:2px;align-items:flex-end;min-height:80px}
-#vothic .hero-glyphs svg{width:46px;height:62px}
-#vothic .ink{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#vothic .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#vothic .plain .mark{stroke:var(--ink)}
-#vothic .dia{fill:var(--accent);stroke:none}
-#vothic .plain .dia{fill:var(--ink)}
-#vothic .scribe{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px}
-#vothic .scribe label{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#vothic .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#vothic #vothic-src{flex:1 1 260px;min-width:0;font:1.15rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
-#vothic #vothic-src:focus,#vothic button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#vothic button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
-#vothic button:hover{border-color:var(--accent);color:var(--accent)}
-#vothic .out{display:flex;flex-wrap:wrap;gap:6px 22px;min-height:84px;align-items:flex-end}
-#vothic .word{display:flex;align-items:flex-end}
-#vothic .word svg{width:40px;height:54px}
-#vothic .unk{display:inline-grid;place-items:center;width:30px;height:40px;margin-bottom:8px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
-#vothic .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#vothic .note{font-size:.9rem;color:var(--muted)}
-#vothic .samples{display:flex;flex-wrap:wrap;gap:6px}
-#vothic .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
-#vothic .card{border:1px solid var(--line);border-radius:4px;padding:10px 10px 12px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
-#vothic .card:hover{border-color:var(--accent)}
-#vothic .card svg{width:64px;height:86px}
-#vothic .card .rom{font:600 1.05rem var(--mono);color:var(--accent)}
-#vothic .card .ipa{font:.8rem var(--mono);color:var(--muted)}
-#vothic .card .name{font-family:var(--display);font-size:1.05rem;margin-top:4px}
-#vothic .card .gloss{font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.3}
-#vothic .legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:var(--muted);margin-top:4px}
-#vothic .legend b{color:var(--accent);font-weight:600}
-#vothic .tbl{overflow-x:auto}
-#vothic table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
-#vothic th,#vothic td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#vothic th{font:500 .74rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#vothic td.m{font-family:var(--mono);font-size:.9rem}
-#vothic td.g svg{width:26px;height:35px}
-#vothic .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
-#vothic .cols>div{min-width:0}
-#vothic .feat{display:grid;gap:14px}
-#vothic .feat .f{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
-#vothic .feat .pair{display:flex;align-items:flex-end}
-#vothic .feat .pair svg{width:38px;height:52px}
-#vothic .feat .arrow{color:var(--muted);font-family:var(--mono);padding:0 4px 14px}
-@media (prefers-reduced-motion:no-preference){#vothic .word svg{animation:ink .35s ease-out both}}
+:is(#vothic,[data-tongue="vothic"]){background:var(--bg);color:var(--ink);font:17px/1.55 var(--body)}
+:is(#vothic,[data-tongue="vothic"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#vothic,[data-tongue="vothic"]) h1,:is(#vothic,[data-tongue="vothic"]) h2{font-family:var(--display);font-weight:700;letter-spacing:.02em;text-wrap:balance;margin:0}
+:is(#vothic,[data-tongue="vothic"]) h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05}
+:is(#vothic,[data-tongue="vothic"]) h2{font-size:1.6rem;margin-bottom:12px}
+:is(#vothic,[data-tongue="vothic"]) p{margin:0 0 12px;max-width:65ch}
+:is(#vothic,[data-tongue="vothic"]) .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#vothic,[data-tongue="vothic"]) .mono{font-family:var(--mono);font-size:.88em}
+:is(#vothic,[data-tongue="vothic"]) header{display:grid;gap:14px}
+:is(#vothic,[data-tongue="vothic"]) .hero-glyphs{display:flex;flex-wrap:wrap;gap:2px;align-items:flex-end;min-height:80px}
+:is(#vothic,[data-tongue="vothic"]) .hero-glyphs svg{width:46px;height:62px}
+:is(#vothic,[data-tongue="vothic"]) .ink{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+:is(#vothic,[data-tongue="vothic"]) .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+:is(#vothic,[data-tongue="vothic"]) .plain .mark{stroke:var(--ink)}
+:is(#vothic,[data-tongue="vothic"]) .dia{fill:var(--accent);stroke:none}
+:is(#vothic,[data-tongue="vothic"]) .plain .dia{fill:var(--ink)}
+:is(#vothic,[data-tongue="vothic"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px}
+:is(#vothic,[data-tongue="vothic"]) .scribe label{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#vothic,[data-tongue="vothic"]) .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+:is(#vothic,[data-tongue="vothic"]) #vothic-src{flex:1 1 260px;min-width:0;font:1.15rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#vothic,[data-tongue="vothic"]) #vothic-src:focus,:is(#vothic,[data-tongue="vothic"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#vothic,[data-tongue="vothic"]) button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
+:is(#vothic,[data-tongue="vothic"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#vothic,[data-tongue="vothic"]) .out{display:flex;flex-wrap:wrap;gap:6px 22px;min-height:84px;align-items:flex-end}
+:is(#vothic,[data-tongue="vothic"]) .word{display:flex;align-items:flex-end}
+:is(#vothic,[data-tongue="vothic"]) .word svg{width:40px;height:54px}
+:is(#vothic,[data-tongue="vothic"]) .unk{display:inline-grid;place-items:center;width:30px;height:40px;margin-bottom:8px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
+:is(#vothic,[data-tongue="vothic"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#vothic,[data-tongue="vothic"]) .note{font-size:.9rem;color:var(--muted)}
+:is(#vothic,[data-tongue="vothic"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#vothic,[data-tongue="vothic"]) .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+:is(#vothic,[data-tongue="vothic"]) .card{border:1px solid var(--line);border-radius:4px;padding:10px 10px 12px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+:is(#vothic,[data-tongue="vothic"]) .card:hover{border-color:var(--accent)}
+:is(#vothic,[data-tongue="vothic"]) .card svg{width:64px;height:86px}
+:is(#vothic,[data-tongue="vothic"]) .card .rom{font:600 1.05rem var(--mono);color:var(--accent)}
+:is(#vothic,[data-tongue="vothic"]) .card .ipa{font:.8rem var(--mono);color:var(--muted)}
+:is(#vothic,[data-tongue="vothic"]) .card .name{font-family:var(--display);font-size:1.05rem;margin-top:4px}
+:is(#vothic,[data-tongue="vothic"]) .card .gloss{font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.3}
+:is(#vothic,[data-tongue="vothic"]) .legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:var(--muted);margin-top:4px}
+:is(#vothic,[data-tongue="vothic"]) .legend b{color:var(--accent);font-weight:600}
+:is(#vothic,[data-tongue="vothic"]) .tbl{overflow-x:auto}
+:is(#vothic,[data-tongue="vothic"]) table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+:is(#vothic,[data-tongue="vothic"]) th,:is(#vothic,[data-tongue="vothic"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#vothic,[data-tongue="vothic"]) th{font:500 .74rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#vothic,[data-tongue="vothic"]) td.m{font-family:var(--mono);font-size:.9rem}
+:is(#vothic,[data-tongue="vothic"]) td.g svg{width:26px;height:35px}
+:is(#vothic,[data-tongue="vothic"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+:is(#vothic,[data-tongue="vothic"]) .cols>div{min-width:0}
+:is(#vothic,[data-tongue="vothic"]) .feat{display:grid;gap:14px}
+:is(#vothic,[data-tongue="vothic"]) .feat .f{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+:is(#vothic,[data-tongue="vothic"]) .feat .pair{display:flex;align-items:flex-end}
+:is(#vothic,[data-tongue="vothic"]) .feat .pair svg{width:38px;height:52px}
+:is(#vothic,[data-tongue="vothic"]) .feat .arrow{color:var(--muted);font-family:var(--mono);padding:0 4px 14px}
+@media (prefers-reduced-motion:no-preference){:is(#vothic,[data-tongue="vothic"]) .word svg{animation:ink .35s ease-out both}}
 @keyframes ink{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:none}}
-:root #izani{
+:root :is(#izani,[data-tongue="izani"]){
   --bg:#f1e9da; --panel:#e8dcc6; --ink:#173f45; --muted:#5d6b66; --accent:#b8521f; --line:#d3c4a8; --voth:#4a3a5e;
   --display:"Marcellus SC", "Trajan Pro", Georgia, serif;
   --body:"Crimson Pro", Georgia, serif;
   --mono:"IBM Plex Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #izani{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#izani,[data-tongue="izani"]){
   --bg:#102a2e; --panel:#173a3f; --ink:#efe5d2; --muted:#9fb3ad; --accent:#e9874e; --line:#2a4f54; --voth:#c9b8e0; color-scheme:dark}}
-:root[data-theme="dark"] #izani{
+:root[data-theme="dark"] :is(#izani,[data-tongue="izani"]){
   --bg:#102a2e; --panel:#173a3f; --ink:#efe5d2; --muted:#9fb3ad; --accent:#e9874e; --line:#2a4f54; --voth:#c9b8e0; color-scheme:dark}
-#izani{background:var(--bg);color:var(--ink);font:18px/1.55 var(--body)}
-#izani .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#izani h1,#izani h2{font-family:var(--display);font-weight:400;letter-spacing:.06em;text-wrap:balance;margin:0}
-#izani h1{font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.05}
-#izani h2{font-size:1.65rem;margin-bottom:12px}
-#izani p{margin:0 0 12px;max-width:65ch}
-#izani .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#izani .mono{font-family:var(--mono);font-size:.85em}
-#izani header{display:grid;gap:14px}
-#izani .hero{display:flex;flex-wrap:wrap;gap:4px 26px;align-items:flex-end;min-height:70px;padding-block:6px;border-block:3px double var(--line)}
-#izani .hero .word svg{width:44px;height:58px}
-#izani .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
-#izani .cut.hi{stroke:var(--accent)}
-#izani .ink{fill:none;stroke:var(--voth);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#izani .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#izani .dot{fill:var(--accent)}
-#izani .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
-#izani .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#izani .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#izani #izani-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
-#izani #izani-src:focus,#izani button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#izani button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:8px 12px;cursor:pointer}
-#izani button:hover{border-color:var(--accent);color:var(--accent)}
-#izani .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:70px;align-items:flex-end}
-#izani .word{display:flex;align-items:flex-end;gap:2px}
-#izani .out .word svg{width:38px;height:50px}
-#izani .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:2px;font:500 .9rem var(--mono);color:var(--muted)}
-#izani .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#izani .note{font-size:.95rem;color:var(--muted)}
-#izani .samples{display:flex;flex-wrap:wrap;gap:6px}
-#izani .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px}
-#izani .card{border:1px solid var(--line);border-radius:2px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
-#izani .card:hover{border-color:var(--accent)}
-#izani .card svg{width:56px;height:74px;margin-bottom:4px}
-#izani .card .rom{font:600 1rem var(--mono);color:var(--accent)}
-#izani .card .ipa{font:.78rem var(--mono);color:var(--muted)}
-#izani .card .name{font-family:var(--display);font-size:1.1rem;margin-top:4px;letter-spacing:.04em}
-#izani .card .gloss{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.3}
-#izani .tbl{overflow-x:auto}
-#izani table{border-collapse:collapse;width:100%;min-width:560px;font-size:.98rem}
-#izani th,#izani td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#izani th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#izani td.m{font-family:var(--mono);font-size:.88rem}
-#izani td.g{white-space:nowrap}
-#izani td.g .word svg{width:24px;height:32px}
-#izani td.v .word svg{width:28px;height:38px}
-#izani .desc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-#izani .d{border:1px solid var(--line);border-radius:2px;padding:10px 12px;display:grid;grid-template-columns:auto auto 1fr;gap:4px 10px;align-items:center}
-#izani .d .from svg{width:34px;height:45px}
-#izani .d .to{display:flex;align-items:flex-end}
-#izani .d .to svg{width:34px;height:46px}
-#izani .d .arrow{color:var(--muted);font-family:var(--mono)}
-#izani .d .lbl{grid-column:1/-1;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
-#izani .d .lbl b{color:var(--accent);font-weight:500}
-#izani .d.lost{opacity:.6}
-#izani .legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.95rem;color:var(--muted)}
-#izani .sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
-:root #hykkousik{
+:is(#izani,[data-tongue="izani"]){background:var(--bg);color:var(--ink);font:18px/1.55 var(--body)}
+:is(#izani,[data-tongue="izani"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#izani,[data-tongue="izani"]) h1,:is(#izani,[data-tongue="izani"]) h2{font-family:var(--display);font-weight:400;letter-spacing:.06em;text-wrap:balance;margin:0}
+:is(#izani,[data-tongue="izani"]) h1{font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.05}
+:is(#izani,[data-tongue="izani"]) h2{font-size:1.65rem;margin-bottom:12px}
+:is(#izani,[data-tongue="izani"]) p{margin:0 0 12px;max-width:65ch}
+:is(#izani,[data-tongue="izani"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .mono{font-family:var(--mono);font-size:.85em}
+:is(#izani,[data-tongue="izani"]) header{display:grid;gap:14px}
+:is(#izani,[data-tongue="izani"]) .hero{display:flex;flex-wrap:wrap;gap:4px 26px;align-items:flex-end;min-height:70px;padding-block:6px;border-block:3px double var(--line)}
+:is(#izani,[data-tongue="izani"]) .hero .word svg{width:44px;height:58px}
+:is(#izani,[data-tongue="izani"]) .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+:is(#izani,[data-tongue="izani"]) .cut.hi{stroke:var(--accent)}
+:is(#izani,[data-tongue="izani"]) .ink{fill:none;stroke:var(--voth);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+:is(#izani,[data-tongue="izani"]) .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+:is(#izani,[data-tongue="izani"]) .dot{fill:var(--accent)}
+:is(#izani,[data-tongue="izani"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+:is(#izani,[data-tongue="izani"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#izani,[data-tongue="izani"]) .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+:is(#izani,[data-tongue="izani"]) #izani-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+:is(#izani,[data-tongue="izani"]) #izani-src:focus,:is(#izani,[data-tongue="izani"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#izani,[data-tongue="izani"]) button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:8px 12px;cursor:pointer}
+:is(#izani,[data-tongue="izani"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#izani,[data-tongue="izani"]) .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:70px;align-items:flex-end}
+:is(#izani,[data-tongue="izani"]) .word{display:flex;align-items:flex-end;gap:2px}
+:is(#izani,[data-tongue="izani"]) .out .word svg{width:38px;height:50px}
+:is(#izani,[data-tongue="izani"]) .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:2px;font:500 .9rem var(--mono);color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#izani,[data-tongue="izani"]) .note{font-size:.95rem;color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#izani,[data-tongue="izani"]) .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px}
+:is(#izani,[data-tongue="izani"]) .card{border:1px solid var(--line);border-radius:2px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+:is(#izani,[data-tongue="izani"]) .card:hover{border-color:var(--accent)}
+:is(#izani,[data-tongue="izani"]) .card svg{width:56px;height:74px;margin-bottom:4px}
+:is(#izani,[data-tongue="izani"]) .card .rom{font:600 1rem var(--mono);color:var(--accent)}
+:is(#izani,[data-tongue="izani"]) .card .ipa{font:.78rem var(--mono);color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .card .name{font-family:var(--display);font-size:1.1rem;margin-top:4px;letter-spacing:.04em}
+:is(#izani,[data-tongue="izani"]) .card .gloss{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.3}
+:is(#izani,[data-tongue="izani"]) .tbl{overflow-x:auto}
+:is(#izani,[data-tongue="izani"]) table{border-collapse:collapse;width:100%;min-width:560px;font-size:.98rem}
+:is(#izani,[data-tongue="izani"]) th,:is(#izani,[data-tongue="izani"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#izani,[data-tongue="izani"]) th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) td.m{font-family:var(--mono);font-size:.88rem}
+:is(#izani,[data-tongue="izani"]) td.g{white-space:nowrap}
+:is(#izani,[data-tongue="izani"]) td.g .word svg{width:24px;height:32px}
+:is(#izani,[data-tongue="izani"]) td.v .word svg{width:28px;height:38px}
+:is(#izani,[data-tongue="izani"]) .desc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+:is(#izani,[data-tongue="izani"]) .d{border:1px solid var(--line);border-radius:2px;padding:10px 12px;display:grid;grid-template-columns:auto auto 1fr;gap:4px 10px;align-items:center}
+:is(#izani,[data-tongue="izani"]) .d .from svg{width:34px;height:45px}
+:is(#izani,[data-tongue="izani"]) .d .to{display:flex;align-items:flex-end}
+:is(#izani,[data-tongue="izani"]) .d .to svg{width:34px;height:46px}
+:is(#izani,[data-tongue="izani"]) .d .arrow{color:var(--muted);font-family:var(--mono)}
+:is(#izani,[data-tongue="izani"]) .d .lbl{grid-column:1/-1;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .d .lbl b{color:var(--accent);font-weight:500}
+:is(#izani,[data-tongue="izani"]) .d.lost{opacity:.6}
+:is(#izani,[data-tongue="izani"]) .legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.95rem;color:var(--muted)}
+:is(#izani,[data-tongue="izani"]) .sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+:root :is(#hykkousik,[data-tongue="hykkousik"]){
   --bg:#f3eee4; --panel:#e9e2d4; --ink:#2b3d52; --muted:#66707a; --accent:#a87a12; --line:#d6ccb9; --sea:#3c6e86;
   --display:"GFS Didot", "Didot", Georgia, serif;
   --body:"Gentium Book Plus", Georgia, serif;
   --mono:"DM Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #hykkousik{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#hykkousik,[data-tongue="hykkousik"]){
   --bg:#152331; --panel:#1c2e40; --ink:#ece5d6; --muted:#9aa8b5; --accent:#e0b44c; --line:#2c4256; --sea:#8cc0d6; color-scheme:dark}}
-:root[data-theme="dark"] #hykkousik{
+:root[data-theme="dark"] :is(#hykkousik,[data-tongue="hykkousik"]){
   --bg:#152331; --panel:#1c2e40; --ink:#ece5d6; --muted:#9aa8b5; --accent:#e0b44c; --line:#2c4256; --sea:#8cc0d6; color-scheme:dark}
-#hykkousik{background:var(--bg);color:var(--ink);font:18px/1.6 var(--body)}
-#hykkousik .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#hykkousik h1,#hykkousik h2{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-wrap:balance;margin:0}
-#hykkousik h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
-#hykkousik h2{font-size:1.75rem;margin-bottom:12px}
-#hykkousik p{margin:0 0 12px;max-width:65ch}
-#hykkousik .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#hykkousik .mono{font-family:var(--mono);font-size:.84em}
-#hykkousik header{display:grid;gap:14px}
-#hykkousik .hero{display:flex;flex-wrap:wrap;gap:6px 26px;align-items:flex-end;min-height:76px}
-#hykkousik .hero .word svg{width:44px;height:58px}
-#hykkousik .st{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-#hykkousik .br{fill:none;stroke:var(--accent);stroke-width:3.4;stroke-linecap:round}
-#hykkousik .wave{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round}
-#hykkousik .scribe{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px}
-#hykkousik .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#hykkousik .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#hykkousik #hykkousik-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
-#hykkousik #hykkousik-src:focus,#hykkousik button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#hykkousik button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
-#hykkousik button:hover{border-color:var(--accent);color:var(--accent)}
-#hykkousik .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:72px;align-items:flex-end}
-#hykkousik .word{display:flex;align-items:flex-end}
-#hykkousik .out .word svg{width:38px;height:50px}
-#hykkousik .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:4px;font:500 .9rem var(--mono);color:var(--muted)}
-#hykkousik .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#hykkousik .note{font-size:.95rem;color:var(--muted)}
-#hykkousik .samples{display:flex;flex-wrap:wrap;gap:6px}
-#hykkousik .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
-#hykkousik .card{border:1px solid var(--line);border-radius:8px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
-#hykkousik .card:hover{border-color:var(--accent)}
-#hykkousik .card svg{width:58px;height:76px;margin-bottom:2px}
-#hykkousik .card .rom{font:500 1rem var(--mono);color:var(--accent)}
-#hykkousik .card .ipa{font:.78rem var(--mono);color:var(--muted)}
-#hykkousik .card .name{font-family:var(--display);font-size:1.15rem;margin-top:4px}
-#hykkousik .card .src{font-size:.82rem;color:var(--sea);line-height:1.3}
-#hykkousik .tbl{overflow-x:auto}
-#hykkousik table{border-collapse:collapse;width:100%;min-width:580px;font-size:.98rem}
-#hykkousik th,#hykkousik td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#hykkousik th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#hykkousik td.m{font-family:var(--mono);font-size:.86rem}
-#hykkousik td.g{white-space:nowrap}
-#hykkousik td.g .word svg{width:24px;height:32px}
-#hykkousik .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
-#hykkousik .cols>div{min-width:0}
-:root #xanadui{
+:is(#hykkousik,[data-tongue="hykkousik"]){background:var(--bg);color:var(--ink);font:18px/1.6 var(--body)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#hykkousik,[data-tongue="hykkousik"]) h1,:is(#hykkousik,[data-tongue="hykkousik"]) h2{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-wrap:balance;margin:0}
+:is(#hykkousik,[data-tongue="hykkousik"]) h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
+:is(#hykkousik,[data-tongue="hykkousik"]) h2{font-size:1.75rem;margin-bottom:12px}
+:is(#hykkousik,[data-tongue="hykkousik"]) p{margin:0 0 12px;max-width:65ch}
+:is(#hykkousik,[data-tongue="hykkousik"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .mono{font-family:var(--mono);font-size:.84em}
+:is(#hykkousik,[data-tongue="hykkousik"]) header{display:grid;gap:14px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .hero{display:flex;flex-wrap:wrap;gap:6px 26px;align-items:flex-end;min-height:76px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .hero .word svg{width:44px;height:58px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .st{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+:is(#hykkousik,[data-tongue="hykkousik"]) .br{fill:none;stroke:var(--accent);stroke-width:3.4;stroke-linecap:round}
+:is(#hykkousik,[data-tongue="hykkousik"]) .wave{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round}
+:is(#hykkousik,[data-tongue="hykkousik"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#hykkousik,[data-tongue="hykkousik"]) .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+:is(#hykkousik,[data-tongue="hykkousik"]) #hykkousik-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+:is(#hykkousik,[data-tongue="hykkousik"]) #hykkousik-src:focus,:is(#hykkousik,[data-tongue="hykkousik"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#hykkousik,[data-tongue="hykkousik"]) button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
+:is(#hykkousik,[data-tongue="hykkousik"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:72px;align-items:flex-end}
+:is(#hykkousik,[data-tongue="hykkousik"]) .word{display:flex;align-items:flex-end}
+:is(#hykkousik,[data-tongue="hykkousik"]) .out .word svg{width:38px;height:50px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:4px;font:500 .9rem var(--mono);color:var(--muted)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#hykkousik,[data-tongue="hykkousik"]) .note{font-size:.95rem;color:var(--muted)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card{border:1px solid var(--line);border-radius:8px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card:hover{border-color:var(--accent)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card svg{width:58px;height:76px;margin-bottom:2px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card .rom{font:500 1rem var(--mono);color:var(--accent)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card .ipa{font:.78rem var(--mono);color:var(--muted)}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card .name{font-family:var(--display);font-size:1.15rem;margin-top:4px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .card .src{font-size:.82rem;color:var(--sea);line-height:1.3}
+:is(#hykkousik,[data-tongue="hykkousik"]) .tbl{overflow-x:auto}
+:is(#hykkousik,[data-tongue="hykkousik"]) table{border-collapse:collapse;width:100%;min-width:580px;font-size:.98rem}
+:is(#hykkousik,[data-tongue="hykkousik"]) th,:is(#hykkousik,[data-tongue="hykkousik"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#hykkousik,[data-tongue="hykkousik"]) th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#hykkousik,[data-tongue="hykkousik"]) td.m{font-family:var(--mono);font-size:.86rem}
+:is(#hykkousik,[data-tongue="hykkousik"]) td.g{white-space:nowrap}
+:is(#hykkousik,[data-tongue="hykkousik"]) td.g .word svg{width:24px;height:32px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+:is(#hykkousik,[data-tongue="hykkousik"]) .cols>div{min-width:0}
+:root :is(#xanadui,[data-tongue="xanadui"]){
   --bg:#f5ecdf; --panel:#efe0c9; --ink:#3d1a1e; --muted:#7a5e55; --accent:#c9771a; --line:#dcc6a6; --gold:#a8761c;
   --display:"Rozha One", Georgia, serif;
   --body:"Literata", Georgia, serif;
   --mono:"Fira Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #xanadui{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#xanadui,[data-tongue="xanadui"]){
   --bg:#24110f; --panel:#331a17; --ink:#f2e4cf; --muted:#b89c8c; --accent:#f0a03c; --line:#4a2a25; --gold:#e3b75a; color-scheme:dark}}
-:root[data-theme="dark"] #xanadui{
+:root[data-theme="dark"] :is(#xanadui,[data-tongue="xanadui"]){
   --bg:#24110f; --panel:#331a17; --ink:#f2e4cf; --muted:#b89c8c; --accent:#f0a03c; --line:#4a2a25; --gold:#e3b75a; color-scheme:dark}
-#xanadui{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#xanadui .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#xanadui h1,#xanadui h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
-#xanadui h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
-#xanadui h2{font-size:1.75rem;margin-bottom:12px}
-#xanadui p{margin:0 0 12px;max-width:66ch}
-#xanadui blockquote{margin:0 0 12px;padding-left:16px;border-left:3px solid var(--accent);font-style:italic;max-width:60ch}
-#xanadui .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#xanadui .mono{font-family:var(--mono);font-size:.84em}
-#xanadui header{display:grid;gap:14px}
-#xanadui .hero{display:flex;flex-wrap:wrap;gap:6px 30px;align-items:flex-start;min-height:80px}
-#xanadui .ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#xanadui .mk{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#xanadui .plain .mk{stroke:var(--ink)}
-#xanadui .dotf{fill:var(--ink)}
-#xanadui .wh{fill:none;stroke:var(--gold);stroke-width:2.2}
-#xanadui .word{display:flex;align-items:flex-start;gap:1px}
-#xanadui .word svg{display:block}
-#xanadui .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
-#xanadui .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#xanadui .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#xanadui #xanadui-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
-#xanadui #xanadui-src:focus,#xanadui button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#xanadui button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
-#xanadui button:hover{border-color:var(--accent);color:var(--accent)}
-#xanadui .keys button{min-width:34px}
-#xanadui .out{display:flex;flex-wrap:wrap;gap:10px 26px;min-height:80px;align-items:flex-start}
-#xanadui .unk{display:inline-grid;place-items:center;width:26px;height:40px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
-#xanadui .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#xanadui .note{font-size:.93rem;color:var(--muted)}
-#xanadui .samples{display:flex;flex-wrap:wrap;gap:6px}
-#xanadui .tbl{overflow-x:auto}
-#xanadui table{border-collapse:collapse;width:100%;font-size:.96rem}
-#xanadui th,#xanadui td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#xanadui th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left}
-#xanadui .grid{min-width:620px}
-#xanadui .grid td{text-align:center;cursor:pointer;border-left:1px solid var(--line)}
-#xanadui .grid td:hover{background:var(--panel)}
-#xanadui .grid td.rowh{text-align:left;cursor:default;border-left:0;font:500 .78rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-#xanadui .grid td.rowh:hover{background:none}
-#xanadui .grid td.empty{cursor:default}
-#xanadui .grid td.empty:hover{background:none}
-#xanadui .cell{display:grid;justify-items:center;gap:0}
-#xanadui .cell .rom{font:500 .95rem var(--mono);color:var(--accent)}
-#xanadui .cell .ipa{font:.74rem var(--mono);color:var(--muted)}
-#xanadui .plain-t{min-width:560px}
-#xanadui td.m{font-family:var(--mono);font-size:.86rem}
-#xanadui td.g{white-space:nowrap}
-#xanadui .vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
-#xanadui .vs .c{border:1px solid var(--line);border-radius:4px;padding:8px 4px;display:grid;justify-items:center;gap:2px}
-#xanadui .vs .c .rom{font:500 .9rem var(--mono);color:var(--accent)}
-#xanadui .vs .c .n{font-size:.78rem;color:var(--muted);text-align:center;line-height:1.25}
-#xanadui .legend{font-size:.93rem;color:var(--muted)}
-#xanadui .legend b{color:var(--accent);font-weight:600}
-#xanadui .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
-#xanadui .cols>div{min-width:0}
-#xanadui .ex{background:var(--panel);border-radius:4px;padding:14px 16px;display:grid;gap:6px;margin-bottom:12px}
-#xanadui .ex .gl{font-family:var(--mono);font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}
-#xanadui .ex .tr{font-style:italic}
-:root #yuni{
+:is(#xanadui,[data-tongue="xanadui"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#xanadui,[data-tongue="xanadui"]) .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#xanadui,[data-tongue="xanadui"]) h1,:is(#xanadui,[data-tongue="xanadui"]) h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+:is(#xanadui,[data-tongue="xanadui"]) h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
+:is(#xanadui,[data-tongue="xanadui"]) h2{font-size:1.75rem;margin-bottom:12px}
+:is(#xanadui,[data-tongue="xanadui"]) p{margin:0 0 12px;max-width:66ch}
+:is(#xanadui,[data-tongue="xanadui"]) blockquote{margin:0 0 12px;padding-left:16px;border-left:3px solid var(--accent);font-style:italic;max-width:60ch}
+:is(#xanadui,[data-tongue="xanadui"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#xanadui,[data-tongue="xanadui"]) .mono{font-family:var(--mono);font-size:.84em}
+:is(#xanadui,[data-tongue="xanadui"]) header{display:grid;gap:14px}
+:is(#xanadui,[data-tongue="xanadui"]) .hero{display:flex;flex-wrap:wrap;gap:6px 30px;align-items:flex-start;min-height:80px}
+:is(#xanadui,[data-tongue="xanadui"]) .ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+:is(#xanadui,[data-tongue="xanadui"]) .mk{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+:is(#xanadui,[data-tongue="xanadui"]) .plain .mk{stroke:var(--ink)}
+:is(#xanadui,[data-tongue="xanadui"]) .dotf{fill:var(--ink)}
+:is(#xanadui,[data-tongue="xanadui"]) .wh{fill:none;stroke:var(--gold);stroke-width:2.2}
+:is(#xanadui,[data-tongue="xanadui"]) .word{display:flex;align-items:flex-start;gap:1px}
+:is(#xanadui,[data-tongue="xanadui"]) .word svg{display:block}
+:is(#xanadui,[data-tongue="xanadui"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#xanadui,[data-tongue="xanadui"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#xanadui,[data-tongue="xanadui"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#xanadui,[data-tongue="xanadui"]) #xanadui-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#xanadui,[data-tongue="xanadui"]) #xanadui-src:focus,:is(#xanadui,[data-tongue="xanadui"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#xanadui,[data-tongue="xanadui"]) button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#xanadui,[data-tongue="xanadui"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#xanadui,[data-tongue="xanadui"]) .keys button{min-width:34px}
+:is(#xanadui,[data-tongue="xanadui"]) .out{display:flex;flex-wrap:wrap;gap:10px 26px;min-height:80px;align-items:flex-start}
+:is(#xanadui,[data-tongue="xanadui"]) .unk{display:inline-grid;place-items:center;width:26px;height:40px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
+:is(#xanadui,[data-tongue="xanadui"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#xanadui,[data-tongue="xanadui"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#xanadui,[data-tongue="xanadui"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#xanadui,[data-tongue="xanadui"]) .tbl{overflow-x:auto}
+:is(#xanadui,[data-tongue="xanadui"]) table{border-collapse:collapse;width:100%;font-size:.96rem}
+:is(#xanadui,[data-tongue="xanadui"]) th,:is(#xanadui,[data-tongue="xanadui"]) td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#xanadui,[data-tongue="xanadui"]) th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left}
+:is(#xanadui,[data-tongue="xanadui"]) .grid{min-width:620px}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td{text-align:center;cursor:pointer;border-left:1px solid var(--line)}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td:hover{background:var(--panel)}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td.rowh{text-align:left;cursor:default;border-left:0;font:500 .78rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td.rowh:hover{background:none}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td.empty{cursor:default}
+:is(#xanadui,[data-tongue="xanadui"]) .grid td.empty:hover{background:none}
+:is(#xanadui,[data-tongue="xanadui"]) .cell{display:grid;justify-items:center;gap:0}
+:is(#xanadui,[data-tongue="xanadui"]) .cell .rom{font:500 .95rem var(--mono);color:var(--accent)}
+:is(#xanadui,[data-tongue="xanadui"]) .cell .ipa{font:.74rem var(--mono);color:var(--muted)}
+:is(#xanadui,[data-tongue="xanadui"]) .plain-t{min-width:560px}
+:is(#xanadui,[data-tongue="xanadui"]) td.m{font-family:var(--mono);font-size:.86rem}
+:is(#xanadui,[data-tongue="xanadui"]) td.g{white-space:nowrap}
+:is(#xanadui,[data-tongue="xanadui"]) .vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+:is(#xanadui,[data-tongue="xanadui"]) .vs .c{border:1px solid var(--line);border-radius:4px;padding:8px 4px;display:grid;justify-items:center;gap:2px}
+:is(#xanadui,[data-tongue="xanadui"]) .vs .c .rom{font:500 .9rem var(--mono);color:var(--accent)}
+:is(#xanadui,[data-tongue="xanadui"]) .vs .c .n{font-size:.78rem;color:var(--muted);text-align:center;line-height:1.25}
+:is(#xanadui,[data-tongue="xanadui"]) .legend{font-size:.93rem;color:var(--muted)}
+:is(#xanadui,[data-tongue="xanadui"]) .legend b{color:var(--accent);font-weight:600}
+:is(#xanadui,[data-tongue="xanadui"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#xanadui,[data-tongue="xanadui"]) .cols>div{min-width:0}
+:is(#xanadui,[data-tongue="xanadui"]) .ex{background:var(--panel);border-radius:4px;padding:14px 16px;display:grid;gap:6px;margin-bottom:12px}
+:is(#xanadui,[data-tongue="xanadui"]) .ex .gl{font-family:var(--mono);font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#xanadui,[data-tongue="xanadui"]) .ex .tr{font-style:italic}
+:root :is(#yuni,[data-tongue="yuni"]){
   --bg:#efe6d6; --panel:#e6d9c2; --ink:#2f2a24; --muted:#6f655a; --yellow:#b8900b; --saffron:#c0661b; --line:#d2c3a8;
   --stencil:"Saira Stencil One", Impact, sans-serif;
   --uncial:"Uncial Antiqua", Georgia, serif;
   --body:"Source Serif 4", Georgia, serif;
   --mono:"Red Hat Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #yuni{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#yuni,[data-tongue="yuni"]){
   --bg:#1d1a16; --panel:#28241e; --ink:#eee5d4; --muted:#a99d8c; --yellow:#e8c33f; --saffron:#ee9445; --line:#3b352c; color-scheme:dark}}
-:root[data-theme="dark"] #yuni{
+:root[data-theme="dark"] :is(#yuni,[data-tongue="yuni"]){
   --bg:#1d1a16; --panel:#28241e; --ink:#eee5d4; --muted:#a99d8c; --yellow:#e8c33f; --saffron:#ee9445; --line:#3b352c; color-scheme:dark}
-#yuni{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#yuni .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#yuni h1{font-family:var(--stencil);font-weight:400;font-size:clamp(2.6rem,7vw,4.4rem);line-height:1;letter-spacing:.04em;margin:0;text-wrap:balance}
-#yuni h2{font-family:var(--stencil);font-weight:400;font-size:1.7rem;letter-spacing:.03em;margin:0 0 12px;text-wrap:balance}
-#yuni h2.u{font-family:var(--uncial);letter-spacing:0}
-#yuni p{margin:0 0 12px;max-width:66ch}
-#yuni .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#yuni .mono{font-family:var(--mono);font-size:.84em}
-#yuni header{display:grid;gap:14px}
-#yuni .gate{font-family:var(--stencil);font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.12em;color:var(--yellow);border-block:4px solid var(--yellow);padding-block:6px;overflow-wrap:anywhere}
-#yuni .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
-#yuni .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#yuni .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#yuni #yuni-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
-#yuni #yuni-src:focus,#yuni button:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
-#yuni button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
-#yuni button:hover{border-color:var(--saffron);color:var(--saffron)}
-#yuni .hands{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-#yuni .hand{border:1px solid var(--line);border-radius:4px;padding:14px;min-width:0;background:var(--bg)}
-#yuni .hand .lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-#yuni .hand .txt{font-size:1.7rem;line-height:1.3;overflow-wrap:anywhere}
-#yuni .st{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
-#yuni .un{font-family:var(--uncial);color:var(--ink)}
-#yuni .ev{color:var(--saffron);font-family:var(--body);font-size:.85em}
-#yuni .note{font-size:.93rem;color:var(--muted)}
-#yuni .samples{display:flex;flex-wrap:wrap;gap:6px}
-#yuni .abc{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
-#yuni .lt{border:1px solid var(--line);border-radius:4px;padding:8px 6px;display:grid;justify-items:center;gap:0;cursor:pointer;background:transparent;color:inherit;font:inherit}
-#yuni .lt:hover{border-color:var(--saffron)}
-#yuni .lt .s{font-family:var(--stencil);font-size:2.2rem;line-height:1.1}
-#yuni .lt .u{font-family:var(--uncial);font-size:1.9rem;line-height:1.15;color:var(--saffron)}
-#yuni .lt .n{font:.72rem var(--mono);color:var(--muted)}
-#yuni .lt.special{border-color:var(--yellow)}
-#yuni .tbl{overflow-x:auto}
-#yuni table{border-collapse:collapse;width:100%;min-width:560px;font-size:.96rem}
-#yuni th,#yuni td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#yuni th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#yuni td.m{font-family:var(--mono);font-size:.86rem}
-#yuni td.sg{font-family:var(--stencil);letter-spacing:.08em;font-size:1.05rem;white-space:nowrap}
-#yuni .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
-#yuni .cols>div{min-width:0}
-#yuni .marks{display:grid;gap:10px}
-#yuni .mk{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center}
-#yuni .mk .g{font-size:1.9rem;color:var(--saffron);text-align:center;line-height:1}
-#yuni .folio{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px;display:grid;grid-template-columns:1fr 40px;gap:4px 14px;font-family:var(--uncial);font-size:1.15rem;line-height:1.6}
-#yuni .folio .mg{color:var(--saffron);font-family:var(--body);text-align:center}
-#yuni .folio .cap{grid-column:1/-1;font-family:var(--mono);font-size:.76rem;color:var(--muted);margin-top:6px}
-:root #dalab{
+:is(#yuni,[data-tongue="yuni"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#yuni,[data-tongue="yuni"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#yuni,[data-tongue="yuni"]) h1{font-family:var(--stencil);font-weight:400;font-size:clamp(2.6rem,7vw,4.4rem);line-height:1;letter-spacing:.04em;margin:0;text-wrap:balance}
+:is(#yuni,[data-tongue="yuni"]) h2{font-family:var(--stencil);font-weight:400;font-size:1.7rem;letter-spacing:.03em;margin:0 0 12px;text-wrap:balance}
+:is(#yuni,[data-tongue="yuni"]) h2.u{font-family:var(--uncial);letter-spacing:0}
+:is(#yuni,[data-tongue="yuni"]) p{margin:0 0 12px;max-width:66ch}
+:is(#yuni,[data-tongue="yuni"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#yuni,[data-tongue="yuni"]) .mono{font-family:var(--mono);font-size:.84em}
+:is(#yuni,[data-tongue="yuni"]) header{display:grid;gap:14px}
+:is(#yuni,[data-tongue="yuni"]) .gate{font-family:var(--stencil);font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.12em;color:var(--yellow);border-block:4px solid var(--yellow);padding-block:6px;overflow-wrap:anywhere}
+:is(#yuni,[data-tongue="yuni"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#yuni,[data-tongue="yuni"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#yuni,[data-tongue="yuni"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#yuni,[data-tongue="yuni"]) #yuni-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#yuni,[data-tongue="yuni"]) #yuni-src:focus,:is(#yuni,[data-tongue="yuni"]) button:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+:is(#yuni,[data-tongue="yuni"]) button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#yuni,[data-tongue="yuni"]) button:hover{border-color:var(--saffron);color:var(--saffron)}
+:is(#yuni,[data-tongue="yuni"]) .hands{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+:is(#yuni,[data-tongue="yuni"]) .hand{border:1px solid var(--line);border-radius:4px;padding:14px;min-width:0;background:var(--bg)}
+:is(#yuni,[data-tongue="yuni"]) .hand .lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+:is(#yuni,[data-tongue="yuni"]) .hand .txt{font-size:1.7rem;line-height:1.3;overflow-wrap:anywhere}
+:is(#yuni,[data-tongue="yuni"]) .st{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+:is(#yuni,[data-tongue="yuni"]) .un{font-family:var(--uncial);color:var(--ink)}
+:is(#yuni,[data-tongue="yuni"]) .ev{color:var(--saffron);font-family:var(--body);font-size:.85em}
+:is(#yuni,[data-tongue="yuni"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#yuni,[data-tongue="yuni"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#yuni,[data-tongue="yuni"]) .abc{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+:is(#yuni,[data-tongue="yuni"]) .lt{border:1px solid var(--line);border-radius:4px;padding:8px 6px;display:grid;justify-items:center;gap:0;cursor:pointer;background:transparent;color:inherit;font:inherit}
+:is(#yuni,[data-tongue="yuni"]) .lt:hover{border-color:var(--saffron)}
+:is(#yuni,[data-tongue="yuni"]) .lt .s{font-family:var(--stencil);font-size:2.2rem;line-height:1.1}
+:is(#yuni,[data-tongue="yuni"]) .lt .u{font-family:var(--uncial);font-size:1.9rem;line-height:1.15;color:var(--saffron)}
+:is(#yuni,[data-tongue="yuni"]) .lt .n{font:.72rem var(--mono);color:var(--muted)}
+:is(#yuni,[data-tongue="yuni"]) .lt.special{border-color:var(--yellow)}
+:is(#yuni,[data-tongue="yuni"]) .tbl{overflow-x:auto}
+:is(#yuni,[data-tongue="yuni"]) table{border-collapse:collapse;width:100%;min-width:560px;font-size:.96rem}
+:is(#yuni,[data-tongue="yuni"]) th,:is(#yuni,[data-tongue="yuni"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#yuni,[data-tongue="yuni"]) th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#yuni,[data-tongue="yuni"]) td.m{font-family:var(--mono);font-size:.86rem}
+:is(#yuni,[data-tongue="yuni"]) td.sg{font-family:var(--stencil);letter-spacing:.08em;font-size:1.05rem;white-space:nowrap}
+:is(#yuni,[data-tongue="yuni"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#yuni,[data-tongue="yuni"]) .cols>div{min-width:0}
+:is(#yuni,[data-tongue="yuni"]) .ex-y{border-left:3px solid var(--yellow);padding-left:12px;display:grid;gap:2px;margin-bottom:12px}
+:is(#yuni,[data-tongue="yuni"]) .ex-y .y1{font-family:var(--mono);font-size:.92rem}
+:is(#yuni,[data-tongue="yuni"]) .ex-y .y2{font-size:.9rem;color:var(--muted);font-style:italic}
+:is(#yuni,[data-tongue="yuni"]) .marks{display:grid;gap:10px}
+:is(#yuni,[data-tongue="yuni"]) .mk{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center}
+:is(#yuni,[data-tongue="yuni"]) .mk .g{font-size:1.9rem;color:var(--saffron);text-align:center;line-height:1}
+:is(#yuni,[data-tongue="yuni"]) .folio{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px;display:grid;grid-template-columns:1fr 40px;gap:4px 14px;font-family:var(--uncial);font-size:1.15rem;line-height:1.6}
+:is(#yuni,[data-tongue="yuni"]) .folio .mg{color:var(--saffron);font-family:var(--body);text-align:center}
+:is(#yuni,[data-tongue="yuni"]) .folio .cap{grid-column:1/-1;font-family:var(--mono);font-size:.76rem;color:var(--muted);margin-top:6px}
+:root :is(#dalab,[data-tongue="dalab"]){
   --bg:#ece3d0; --panel:#e2d6bd; --ink:#1f3324; --muted:#5f6b5d; --red:#a8281e; --line:#cdbf9f; --gold:#9a7414; --term:#1f3324;
   --display:"Spectral SC", Georgia, serif;
   --body:"Spectral", Georgia, serif;
   --god:"VT323", "Courier New", monospace;
   --mono:"Martian Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #dalab{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#dalab,[data-tongue="dalab"]){
   --bg:#141c15; --panel:#1c271d; --ink:#e9e2cf; --muted:#9fab9b; --red:#e2584a; --line:#2e3c2f; --gold:#ddb24c; --term:#9fe0a8; color-scheme:dark}}
-:root[data-theme="dark"] #dalab{
+:root[data-theme="dark"] :is(#dalab,[data-tongue="dalab"]){
   --bg:#141c15; --panel:#1c271d; --ink:#e9e2cf; --muted:#9fab9b; --red:#e2584a; --line:#2e3c2f; --gold:#ddb24c; --term:#9fe0a8; color-scheme:dark}
-#dalab{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#dalab .wrap{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#dalab h1,#dalab h2{font-family:var(--display);font-weight:700;letter-spacing:.03em;margin:0;text-wrap:balance}
-#dalab h1{font-size:clamp(2.4rem,6vw,3.7rem);line-height:1.05}
-#dalab h2{font-size:1.65rem;margin-bottom:12px}
-#dalab p{margin:0 0 12px;max-width:66ch}
-#dalab .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#dalab .mono{font-family:var(--mono);font-size:.8em}
-#dalab header{display:grid;gap:14px}
-#dalab .stele{border:1px solid var(--line);border-top:6px solid var(--red);background:var(--panel);padding:18px 22px;display:grid;gap:6px;max-width:640px}
-#dalab .stele .god{font-family:var(--god);font-size:1.6rem;line-height:1.15;color:var(--term)}
-#dalab .stele .god::before{content:"> ";color:var(--red)}
-#dalab .stele .cap{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.06em}
-#dalab .holy{color:var(--red)}
-#dalab .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-#dalab .tongue{border:1px solid var(--line);border-radius:4px;padding:16px 18px;min-width:0}
-#dalab .tongue h3{font-family:var(--display);font-size:1.2rem;margin:0 0 8px}
-#dalab .tongue ul{margin:0;padding-left:18px;display:grid;gap:4px}
-#dalab .say{display:grid;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-#dalab .say .t{font-size:1.1rem}
-#dalab .say .g{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
-#dalab .tbl{overflow-x:auto}
-#dalab table{border-collapse:collapse;width:100%;min-width:540px;font-size:.96rem}
-#dalab th,#dalab td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#dalab th{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#dalab td.m{font-family:var(--mono);font-size:.8rem}
-#dalab td.lo{font-style:italic;color:var(--red)}
-#dalab .prayers{display:grid;gap:10px}
-#dalab .pr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px}
-#dalab .pr .god{font-family:var(--god);font-size:1.35rem;line-height:1.15;color:var(--term)}
-#dalab .pr.lost .god{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red)}
-@media (max-width:560px){#dalab .pr{grid-template-columns:1fr;gap:4px}}
-#dalab .note{font-size:.93rem;color:var(--muted)}
-:root #republic{
+:is(#dalab,[data-tongue="dalab"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#dalab,[data-tongue="dalab"]) .wrap{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#dalab,[data-tongue="dalab"]) h1,:is(#dalab,[data-tongue="dalab"]) h2{font-family:var(--display);font-weight:700;letter-spacing:.03em;margin:0;text-wrap:balance}
+:is(#dalab,[data-tongue="dalab"]) h1{font-size:clamp(2.4rem,6vw,3.7rem);line-height:1.05}
+:is(#dalab,[data-tongue="dalab"]) h2{font-size:1.65rem;margin-bottom:12px}
+:is(#dalab,[data-tongue="dalab"]) p{margin:0 0 12px;max-width:66ch}
+:is(#dalab,[data-tongue="dalab"]) .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#dalab,[data-tongue="dalab"]) .mono{font-family:var(--mono);font-size:.8em}
+:is(#dalab,[data-tongue="dalab"]) header{display:grid;gap:14px}
+:is(#dalab,[data-tongue="dalab"]) .stele{border:1px solid var(--line);border-top:6px solid var(--red);background:var(--panel);padding:18px 22px;display:grid;gap:6px;max-width:640px}
+:is(#dalab,[data-tongue="dalab"]) .stele .god{font-family:var(--god);font-size:1.6rem;line-height:1.15;color:var(--term)}
+:is(#dalab,[data-tongue="dalab"]) .stele .god::before{content:"> ";color:var(--red)}
+:is(#dalab,[data-tongue="dalab"]) .stele .cap{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.06em}
+:is(#dalab,[data-tongue="dalab"]) .holy{color:var(--red)}
+:is(#dalab,[data-tongue="dalab"]) .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+:is(#dalab,[data-tongue="dalab"]) .tongue{border:1px solid var(--line);border-radius:4px;padding:16px 18px;min-width:0}
+:is(#dalab,[data-tongue="dalab"]) .tongue h3{font-family:var(--display);font-size:1.2rem;margin:0 0 8px}
+:is(#dalab,[data-tongue="dalab"]) .tongue ul{margin:0;padding-left:18px;display:grid;gap:4px}
+:is(#dalab,[data-tongue="dalab"]) .say{display:grid;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+:is(#dalab,[data-tongue="dalab"]) .say .t{font-size:1.1rem}
+:is(#dalab,[data-tongue="dalab"]) .say .g{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+:is(#dalab,[data-tongue="dalab"]) .tbl{overflow-x:auto}
+:is(#dalab,[data-tongue="dalab"]) table{border-collapse:collapse;width:100%;min-width:540px;font-size:.96rem}
+:is(#dalab,[data-tongue="dalab"]) th,:is(#dalab,[data-tongue="dalab"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#dalab,[data-tongue="dalab"]) th{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#dalab,[data-tongue="dalab"]) td.m{font-family:var(--mono);font-size:.8rem}
+:is(#dalab,[data-tongue="dalab"]) td.lo{font-style:italic;color:var(--red)}
+:is(#dalab,[data-tongue="dalab"]) .prayers{display:grid;gap:10px}
+:is(#dalab,[data-tongue="dalab"]) .pr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px}
+:is(#dalab,[data-tongue="dalab"]) .pr .god{font-family:var(--god);font-size:1.35rem;line-height:1.15;color:var(--term)}
+:is(#dalab,[data-tongue="dalab"]) .pr.lost .god{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red)}
+@media (max-width:560px){:is(#dalab,[data-tongue="dalab"]) .pr{grid-template-columns:1fr;gap:4px}}
+:is(#dalab,[data-tongue="dalab"]) .note{font-size:.93rem;color:var(--muted)}
+:root :is(#republic,[data-tongue="republic"]){
   --bg:#ebe7e2; --panel:#e0dad2; --ink:#232426; --muted:#686a6e; --accent:#a3241c; --line:#cbc4ba; --steel:#4b5a66;
   --display:"Alumni Sans", "Arial Narrow", sans-serif;
   --body:"PT Serif", Georgia, serif;
   --mono:"PT Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #republic{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#republic,[data-tongue="republic"]){
   --bg:#18191b; --panel:#222427; --ink:#e9e6e1; --muted:#a2a4a8; --accent:#e5574a; --line:#35383c; --steel:#9fb2c1; color-scheme:dark}}
-:root[data-theme="dark"] #republic{
+:root[data-theme="dark"] :is(#republic,[data-tongue="republic"]){
   --bg:#18191b; --panel:#222427; --ink:#e9e6e1; --muted:#a2a4a8; --accent:#e5574a; --line:#35383c; --steel:#9fb2c1; color-scheme:dark}
-#republic{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#republic .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#republic h1,#republic h2{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin:0;text-wrap:balance}
-#republic h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95}
-#republic h2{font-size:1.9rem;margin-bottom:12px;line-height:1.05}
-#republic h3{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:1.25rem;margin:0 0 8px}
-#republic p{margin:0 0 12px;max-width:66ch}
-#republic .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#republic .mono{font-family:var(--mono);font-size:.86em}
-#republic header{display:grid;gap:14px}
-#republic .motto{display:grid;gap:6px;border-block:3px solid var(--accent);padding-block:12px}
-#republic .motto .gl{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
-#republic .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
-#republic .cut.hi{stroke:var(--accent)}
-#republic .dot{fill:var(--accent)}
-#republic .word{display:flex;align-items:flex-end;gap:2px}
-#republic .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
-#republic .line .word svg{width:34px;height:46px}
-#republic .motto .line .word svg{width:40px;height:52px}
-#republic .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.9rem var(--mono);color:var(--muted)}
-#republic .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
-#republic .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#republic .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#republic #republic-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
-#republic #republic-src:focus,#republic button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#republic button{font:.85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
-#republic button:hover{border-color:var(--accent);color:var(--accent)}
-#republic .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#republic .note{font-size:.93rem;color:var(--muted)}
-#republic .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
-#republic .cols>div{min-width:0}
-#republic .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
-#republic .mp{border:1px solid var(--line);border-radius:3px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center}
-#republic .mp svg{width:34px;height:46px}
-#republic .mp .s{font:1.05rem var(--mono);color:var(--accent)}
-#republic .mp .n{grid-column:1/-1;font-size:.86rem;color:var(--muted)}
-#republic .tbl{overflow-x:auto}
-#republic table{border-collapse:collapse;width:100%;min-width:600px;font-size:.96rem}
-#republic th,#republic td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#republic th{font:.7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#republic td.m{font-family:var(--mono);font-size:.86rem}
-#republic td.g{white-space:nowrap}
-#republic td.g .word svg{width:22px;height:30px}
-#republic td.iz{color:var(--accent)}
-:root #riders{
+:is(#republic,[data-tongue="republic"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#republic,[data-tongue="republic"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#republic,[data-tongue="republic"]) h1,:is(#republic,[data-tongue="republic"]) h2{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin:0;text-wrap:balance}
+:is(#republic,[data-tongue="republic"]) h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95}
+:is(#republic,[data-tongue="republic"]) h2{font-size:1.9rem;margin-bottom:12px;line-height:1.05}
+:is(#republic,[data-tongue="republic"]) h3{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:1.25rem;margin:0 0 8px}
+:is(#republic,[data-tongue="republic"]) p{margin:0 0 12px;max-width:66ch}
+:is(#republic,[data-tongue="republic"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) .mono{font-family:var(--mono);font-size:.86em}
+:is(#republic,[data-tongue="republic"]) header{display:grid;gap:14px}
+:is(#republic,[data-tongue="republic"]) .motto{display:grid;gap:6px;border-block:3px solid var(--accent);padding-block:12px}
+:is(#republic,[data-tongue="republic"]) .motto .gl{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+:is(#republic,[data-tongue="republic"]) .cut.hi{stroke:var(--accent)}
+:is(#republic,[data-tongue="republic"]) .dot{fill:var(--accent)}
+:is(#republic,[data-tongue="republic"]) .word{display:flex;align-items:flex-end;gap:2px}
+:is(#republic,[data-tongue="republic"]) .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
+:is(#republic,[data-tongue="republic"]) .line .word svg{width:34px;height:46px}
+:is(#republic,[data-tongue="republic"]) .motto .line .word svg{width:40px;height:52px}
+:is(#republic,[data-tongue="republic"]) .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.9rem var(--mono);color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+:is(#republic,[data-tongue="republic"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#republic,[data-tongue="republic"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#republic,[data-tongue="republic"]) #republic-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+:is(#republic,[data-tongue="republic"]) #republic-src:focus,:is(#republic,[data-tongue="republic"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#republic,[data-tongue="republic"]) button{font:.85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+:is(#republic,[data-tongue="republic"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#republic,[data-tongue="republic"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#republic,[data-tongue="republic"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#republic,[data-tongue="republic"]) .cols>div{min-width:0}
+:is(#republic,[data-tongue="republic"]) .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+:is(#republic,[data-tongue="republic"]) .mp{border:1px solid var(--line);border-radius:3px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center}
+:is(#republic,[data-tongue="republic"]) .mp svg{width:34px;height:46px}
+:is(#republic,[data-tongue="republic"]) .mp .s{font:1.05rem var(--mono);color:var(--accent)}
+:is(#republic,[data-tongue="republic"]) .mp .n{grid-column:1/-1;font-size:.86rem;color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) .tbl{overflow-x:auto}
+:is(#republic,[data-tongue="republic"]) table{border-collapse:collapse;width:100%;min-width:600px;font-size:.96rem}
+:is(#republic,[data-tongue="republic"]) th,:is(#republic,[data-tongue="republic"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#republic,[data-tongue="republic"]) th{font:.7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#republic,[data-tongue="republic"]) td.m{font-family:var(--mono);font-size:.86rem}
+:is(#republic,[data-tongue="republic"]) td.g{white-space:nowrap}
+:is(#republic,[data-tongue="republic"]) td.g .word svg{width:22px;height:30px}
+:is(#republic,[data-tongue="republic"]) td.iz{color:var(--accent)}
+:root :is(#riders,[data-tongue="riders"]){
   --bg:#e8ebdf; --panel:#dde2d1; --ink:#1d2b20; --muted:#5c6a5e; --accent:#b5452a; --line:#c4cbb6; --leaf:#2f7a4a;
   --display:"Grenze", Georgia, serif;
   --body:"Faustina", Georgia, serif;
   --mono:"Overpass Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #riders{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#riders,[data-tongue="riders"]){
   --bg:#121a14; --panel:#1a241c; --ink:#e3e9dc; --muted:#9aa89b; --accent:#ec7a5a; --line:#2b382d; --leaf:#78c793; color-scheme:dark}}
-:root[data-theme="dark"] #riders{
+:root[data-theme="dark"] :is(#riders,[data-tongue="riders"]){
   --bg:#121a14; --panel:#1a241c; --ink:#e3e9dc; --muted:#9aa89b; --accent:#ec7a5a; --line:#2b382d; --leaf:#78c793; color-scheme:dark}
-#riders{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#riders .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#riders h1,#riders h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
-#riders h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95;color:var(--leaf)}
-#riders h2{font-size:1.8rem;margin-bottom:12px}
-#riders h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
-#riders p{margin:0 0 12px;max-width:66ch}
-#riders .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#riders .mono{font-family:var(--mono);font-size:.84em}
-#riders header{display:grid;gap:14px}
-#riders .claw{display:flex;gap:16px;align-items:center}
-#riders .claw svg.sign{width:54px;height:54px;flex:none}
-#riders .slash{fill:none;stroke:var(--leaf);stroke-width:7;stroke-linecap:round}
-#riders .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
-#riders .cut.hi{stroke:var(--accent)}
-#riders .dot{fill:var(--accent)}
-#riders .word{display:flex;align-items:flex-end;gap:2px}
-#riders .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
-#riders .line .word svg{height:46px}
-#riders .hero .word svg{height:58px}
-#riders .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
-#riders .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
-#riders .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#riders .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#riders #riders-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
-#riders #riders-src:focus,#riders button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#riders button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
-#riders button:hover{border-color:var(--accent);color:var(--accent)}
-#riders .samples{display:flex;flex-wrap:wrap;gap:6px}
-#riders .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
-#riders .note{font-size:.92rem;color:var(--muted)}
-#riders .adds{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-#riders .ad{border:1px solid var(--line);border-radius:3px;padding:12px;display:grid;gap:6px}
-#riders .ad .gs{display:flex;gap:6px;align-items:flex-end}
-#riders .ad .gs svg{height:56px}
-#riders .ad .t{font:500 .95rem var(--mono);color:var(--accent)}
-#riders .ad .n{font-size:.9rem}
-#riders .tbl{overflow-x:auto}
-#riders table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
-#riders th,#riders td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#riders th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#riders td.m{font-family:var(--mono);font-size:.84rem}
-#riders td.g{white-space:nowrap}
-#riders td.g .word svg{height:28px}
-#riders td.iz{color:var(--accent)}
-#riders td.cn{font-weight:600;color:var(--leaf)}
-#riders .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
-#riders .cols>div{min-width:0}
-#riders .ex{background:var(--panel);border-radius:3px;padding:14px 16px;display:grid;gap:6px;margin-top:6px}
-#riders .ex .gl{font-family:var(--mono);font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
-#riders .ex .tr{font-style:italic}
-:root #zeijani{
+:is(#riders,[data-tongue="riders"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#riders,[data-tongue="riders"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#riders,[data-tongue="riders"]) h1,:is(#riders,[data-tongue="riders"]) h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+:is(#riders,[data-tongue="riders"]) h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95;color:var(--leaf)}
+:is(#riders,[data-tongue="riders"]) h2{font-size:1.8rem;margin-bottom:12px}
+:is(#riders,[data-tongue="riders"]) h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
+:is(#riders,[data-tongue="riders"]) p{margin:0 0 12px;max-width:66ch}
+:is(#riders,[data-tongue="riders"]) .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#riders,[data-tongue="riders"]) .mono{font-family:var(--mono);font-size:.84em}
+:is(#riders,[data-tongue="riders"]) header{display:grid;gap:14px}
+:is(#riders,[data-tongue="riders"]) .claw{display:flex;gap:16px;align-items:center}
+:is(#riders,[data-tongue="riders"]) .claw svg.sign{width:54px;height:54px;flex:none}
+:is(#riders,[data-tongue="riders"]) .slash{fill:none;stroke:var(--leaf);stroke-width:7;stroke-linecap:round}
+:is(#riders,[data-tongue="riders"]) .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+:is(#riders,[data-tongue="riders"]) .cut.hi{stroke:var(--accent)}
+:is(#riders,[data-tongue="riders"]) .dot{fill:var(--accent)}
+:is(#riders,[data-tongue="riders"]) .word{display:flex;align-items:flex-end;gap:2px}
+:is(#riders,[data-tongue="riders"]) .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
+:is(#riders,[data-tongue="riders"]) .line .word svg{height:46px}
+:is(#riders,[data-tongue="riders"]) .hero .word svg{height:58px}
+:is(#riders,[data-tongue="riders"]) .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#riders,[data-tongue="riders"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+:is(#riders,[data-tongue="riders"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#riders,[data-tongue="riders"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#riders,[data-tongue="riders"]) #riders-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+:is(#riders,[data-tongue="riders"]) #riders-src:focus,:is(#riders,[data-tongue="riders"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#riders,[data-tongue="riders"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+:is(#riders,[data-tongue="riders"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#riders,[data-tongue="riders"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#riders,[data-tongue="riders"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#riders,[data-tongue="riders"]) .note{font-size:.92rem;color:var(--muted)}
+:is(#riders,[data-tongue="riders"]) .adds{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+:is(#riders,[data-tongue="riders"]) .ad{border:1px solid var(--line);border-radius:3px;padding:12px;display:grid;gap:6px}
+:is(#riders,[data-tongue="riders"]) .ad .gs{display:flex;gap:6px;align-items:flex-end}
+:is(#riders,[data-tongue="riders"]) .ad .gs svg{height:56px}
+:is(#riders,[data-tongue="riders"]) .ad .t{font:500 .95rem var(--mono);color:var(--accent)}
+:is(#riders,[data-tongue="riders"]) .ad .n{font-size:.9rem}
+:is(#riders,[data-tongue="riders"]) .tbl{overflow-x:auto}
+:is(#riders,[data-tongue="riders"]) table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+:is(#riders,[data-tongue="riders"]) th,:is(#riders,[data-tongue="riders"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#riders,[data-tongue="riders"]) th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#riders,[data-tongue="riders"]) td.m{font-family:var(--mono);font-size:.84rem}
+:is(#riders,[data-tongue="riders"]) td.g{white-space:nowrap}
+:is(#riders,[data-tongue="riders"]) td.g .word svg{height:28px}
+:is(#riders,[data-tongue="riders"]) td.iz{color:var(--accent)}
+:is(#riders,[data-tongue="riders"]) td.cn{font-weight:600;color:var(--leaf)}
+:is(#riders,[data-tongue="riders"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#riders,[data-tongue="riders"]) .cols>div{min-width:0}
+:is(#riders,[data-tongue="riders"]) .ex{background:var(--panel);border-radius:3px;padding:14px 16px;display:grid;gap:6px;margin-top:6px}
+:is(#riders,[data-tongue="riders"]) .ex .gl{font-family:var(--mono);font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#riders,[data-tongue="riders"]) .ex .tr{font-style:italic}
+:root :is(#zeijani,[data-tongue="zeijani"]){
   --bg:#e9e3d8; --panel:#ded6c8; --ink:#2c2621; --muted:#6d655c; --accent:#7a3f8f; --line:#cbbfad; --ash:#2f5f96; --sun:#b98a12;
   --display:"Cormorant Unicase", Georgia, serif;
   --body:"Newsreader", Georgia, serif;
   --mono:"Azeret Mono", Consolas, monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #zeijani{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#zeijani,[data-tongue="zeijani"]){
   --bg:#1a1817; --panel:#252220; --ink:#ebe4d8; --muted:#a69d92; --accent:#c48ad8; --line:#3a3530; --ash:#7fb0e6; --sun:#e4bd4e; color-scheme:dark}}
-:root[data-theme="dark"] #zeijani{
+:root[data-theme="dark"] :is(#zeijani,[data-tongue="zeijani"]){
   --bg:#1a1817; --panel:#252220; --ink:#ebe4d8; --muted:#a69d92; --accent:#c48ad8; --line:#3a3530; --ash:#7fb0e6; --sun:#e4bd4e; color-scheme:dark}
-#zeijani{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-#zeijani .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
-#zeijani h1,#zeijani h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
-#zeijani h1{font-size:clamp(2.6rem,7vw,4.2rem);line-height:1}
-#zeijani h2{font-size:1.8rem;margin-bottom:12px}
-#zeijani h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
-#zeijani p{margin:0 0 12px;max-width:66ch}
-#zeijani .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-#zeijani .mono{font-family:var(--mono);font-size:.82em}
-#zeijani header{display:grid;gap:14px}
-#zeijani .ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-#zeijani .way{border:1px solid var(--line);border-radius:3px;padding:14px 16px;min-width:0}
-#zeijani .way .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-#zeijani .way.z{border-top:4px solid var(--accent)}
-#zeijani .way.a{border-top:4px solid var(--ash)}
-#zeijani .way.c{border-top:4px solid var(--sun)}
-#zeijani .wg{fill:var(--ink)}
-#zeijani .wg.mk{fill:var(--accent)}
-#zeijani .ashh .wg,#zeijani .ashh .wg.mk{fill:var(--ash)}
-#zeijani .plain .wg.mk{fill:var(--ink)}
-#zeijani .ashh.plain .wg.mk{fill:var(--ash)}
-#zeijani .word{display:flex;align-items:flex-end;gap:1px}
-#zeijani .line{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:flex-end}
-#zeijani .line .word svg{width:30px;height:36px}
-#zeijani .hero .word svg{width:44px;height:52px}
-#zeijani .unk{display:inline-grid;place-items:center;width:24px;height:32px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
-#zeijani .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
-#zeijani .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-#zeijani .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#zeijani #zeijani-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
-#zeijani #zeijani-src:focus,#zeijani button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#zeijani button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
-#zeijani button:hover{border-color:var(--accent);color:var(--accent)}
-#zeijani .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-#zeijani .hand{border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:var(--bg);min-width:0;display:grid;gap:8px}
-#zeijani .hand .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#zeijani .hand .rom{font-family:var(--mono);font-size:.86rem;overflow-wrap:anywhere}
-#zeijani .note{font-size:.92rem;color:var(--muted)}
-#zeijani .samples{display:flex;flex-wrap:wrap;gap:6px}
-#zeijani .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
-#zeijani .card{border:1px solid var(--line);border-radius:3px;padding:10px 6px;display:grid;justify-items:center;gap:1px;cursor:pointer;background:transparent;color:inherit;font:inherit}
-#zeijani .card:hover{border-color:var(--accent)}
-#zeijani .card svg{width:54px;height:64px}
-#zeijani .card .r{font:500 .95rem var(--mono);color:var(--accent)}
-#zeijani .card .i{font:.72rem var(--mono);color:var(--muted)}
-#zeijani .card .f{font-size:.78rem;color:var(--muted)}
-#zeijani .tbl{overflow-x:auto}
-#zeijani table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
-#zeijani th,#zeijani td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-#zeijani th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-#zeijani td.m{font-family:var(--mono);font-size:.82rem}
-#zeijani td.g{white-space:nowrap}
-#zeijani td.g .word svg{width:20px;height:24px}
-#zeijani .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
-#zeijani .cols>div{min-width:0}
+:is(#zeijani,[data-tongue="zeijani"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#zeijani,[data-tongue="zeijani"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#zeijani,[data-tongue="zeijani"]) h1,:is(#zeijani,[data-tongue="zeijani"]) h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+:is(#zeijani,[data-tongue="zeijani"]) h1{font-size:clamp(2.6rem,7vw,4.2rem);line-height:1}
+:is(#zeijani,[data-tongue="zeijani"]) h2{font-size:1.8rem;margin-bottom:12px}
+:is(#zeijani,[data-tongue="zeijani"]) h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
+:is(#zeijani,[data-tongue="zeijani"]) p{margin:0 0 12px;max-width:66ch}
+:is(#zeijani,[data-tongue="zeijani"]) .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .mono{font-family:var(--mono);font-size:.82em}
+:is(#zeijani,[data-tongue="zeijani"]) header{display:grid;gap:14px}
+:is(#zeijani,[data-tongue="zeijani"]) .ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+:is(#zeijani,[data-tongue="zeijani"]) .way{border:1px solid var(--line);border-radius:3px;padding:14px 16px;min-width:0}
+:is(#zeijani,[data-tongue="zeijani"]) .way .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .way.z{border-top:4px solid var(--accent)}
+:is(#zeijani,[data-tongue="zeijani"]) .way.a{border-top:4px solid var(--ash)}
+:is(#zeijani,[data-tongue="zeijani"]) .way.c{border-top:4px solid var(--sun)}
+:is(#zeijani,[data-tongue="zeijani"]) .wg{fill:var(--ink)}
+:is(#zeijani,[data-tongue="zeijani"]) .wg.mk{fill:var(--accent)}
+:is(#zeijani,[data-tongue="zeijani"]) .ashh .wg,:is(#zeijani,[data-tongue="zeijani"]) .ashh .wg.mk{fill:var(--ash)}
+:is(#zeijani,[data-tongue="zeijani"]) .plain .wg.mk{fill:var(--ink)}
+:is(#zeijani,[data-tongue="zeijani"]) .ashh.plain .wg.mk{fill:var(--ash)}
+:is(#zeijani,[data-tongue="zeijani"]) .word{display:flex;align-items:flex-end;gap:1px}
+:is(#zeijani,[data-tongue="zeijani"]) .line{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:flex-end}
+:is(#zeijani,[data-tongue="zeijani"]) .line .word svg{width:30px;height:36px}
+:is(#zeijani,[data-tongue="zeijani"]) .hero .word svg{width:44px;height:52px}
+:is(#zeijani,[data-tongue="zeijani"]) .unk{display:inline-grid;place-items:center;width:24px;height:32px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+:is(#zeijani,[data-tongue="zeijani"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#zeijani,[data-tongue="zeijani"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#zeijani,[data-tongue="zeijani"]) #zeijani-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+:is(#zeijani,[data-tongue="zeijani"]) #zeijani-src:focus,:is(#zeijani,[data-tongue="zeijani"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#zeijani,[data-tongue="zeijani"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+:is(#zeijani,[data-tongue="zeijani"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#zeijani,[data-tongue="zeijani"]) .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+:is(#zeijani,[data-tongue="zeijani"]) .hand{border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:var(--bg);min-width:0;display:grid;gap:8px}
+:is(#zeijani,[data-tongue="zeijani"]) .hand .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .hand .rom{font-family:var(--mono);font-size:.86rem;overflow-wrap:anywhere}
+:is(#zeijani,[data-tongue="zeijani"]) .note{font-size:.92rem;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#zeijani,[data-tongue="zeijani"]) .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+:is(#zeijani,[data-tongue="zeijani"]) .card{border:1px solid var(--line);border-radius:3px;padding:10px 6px;display:grid;justify-items:center;gap:1px;cursor:pointer;background:transparent;color:inherit;font:inherit}
+:is(#zeijani,[data-tongue="zeijani"]) .card:hover{border-color:var(--accent)}
+:is(#zeijani,[data-tongue="zeijani"]) .card svg{width:54px;height:64px}
+:is(#zeijani,[data-tongue="zeijani"]) .card .r{font:500 .95rem var(--mono);color:var(--accent)}
+:is(#zeijani,[data-tongue="zeijani"]) .card .i{font:.72rem var(--mono);color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .card .f{font-size:.78rem;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) .tbl{overflow-x:auto}
+:is(#zeijani,[data-tongue="zeijani"]) table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+:is(#zeijani,[data-tongue="zeijani"]) th,:is(#zeijani,[data-tongue="zeijani"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#zeijani,[data-tongue="zeijani"]) th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#zeijani,[data-tongue="zeijani"]) td.m{font-family:var(--mono);font-size:.82rem}
+:is(#zeijani,[data-tongue="zeijani"]) td.g{white-space:nowrap}
+:is(#zeijani,[data-tongue="zeijani"]) td.g .word svg{width:20px;height:24px}
+:is(#zeijani,[data-tongue="zeijani"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#zeijani,[data-tongue="zeijani"]) .cols>div{min-width:0}
+:root :is(#desert,[data-tongue="desert"]){
+  --bg:#efe7da; --panel:#e6dccb; --ink:#3a2a1c; --muted:#76685a; --brass:#a77818; --abyss:#2f7f86; --line:#d3c6b0;
+  --display:"Reem Kufi", "Trebuchet MS", sans-serif;
+  --body:"Gelasio", Georgia, serif;
+  --mono:"Sometype Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#desert,[data-tongue="desert"]){
+  --bg:#1c1712; --panel:#272019; --ink:#efe5d6; --muted:#ab9d8c; --brass:#e2b44c; --abyss:#78c9cf; --line:#3b3128; color-scheme:dark}}
+:root[data-theme="dark"] :is(#desert,[data-tongue="desert"]){
+  --bg:#1c1712; --panel:#272019; --ink:#efe5d6; --muted:#ab9d8c; --brass:#e2b44c; --abyss:#78c9cf; --line:#3b3128; color-scheme:dark}
+:is(#desert,[data-tongue="desert"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#desert,[data-tongue="desert"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#desert,[data-tongue="desert"]) h1,:is(#desert,[data-tongue="desert"]) h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+:is(#desert,[data-tongue="desert"]) h1{font-size:clamp(2.4rem,6.5vw,3.9rem);line-height:1.05}
+:is(#desert,[data-tongue="desert"]) h1 .d{color:var(--brass)}
+:is(#desert,[data-tongue="desert"]) h1 .a{color:var(--abyss)}
+:is(#desert,[data-tongue="desert"]) h2{font-size:1.7rem;margin-bottom:12px}
+:is(#desert,[data-tongue="desert"]) h3{font-family:var(--display);font-weight:500;font-size:1.25rem;margin:0 0 6px}
+:is(#desert,[data-tongue="desert"]) p{margin:0 0 12px;max-width:66ch}
+:is(#desert,[data-tongue="desert"]) .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) .mono{font-family:var(--mono);font-size:.84em}
+:is(#desert,[data-tongue="desert"]) header{display:grid;gap:14px}
+:is(#desert,[data-tongue="desert"]) .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+:is(#desert,[data-tongue="desert"]) .side{border:1px solid var(--line);border-radius:4px;padding:14px 16px;min-width:0;display:grid;gap:8px;align-content:start}
+:is(#desert,[data-tongue="desert"]) .side.d{border-top:4px solid var(--brass)}
+:is(#desert,[data-tongue="desert"]) .side.a{border-top:4px solid var(--abyss)}
+:is(#desert,[data-tongue="desert"]) .side .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) .dz{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+:is(#desert,[data-tongue="desert"]) .dd{fill:var(--brass)}
+:is(#desert,[data-tongue="desert"]) .ab{fill:none;stroke:var(--abyss);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+:is(#desert,[data-tongue="desert"]) .abf{fill:var(--abyss)}
+:is(#desert,[data-tongue="desert"]) .line{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:flex-end}
+:is(#desert,[data-tongue="desert"]) .line svg{display:block}
+:is(#desert,[data-tongue="desert"]) .unk{display:inline-grid;place-items:center;width:24px;height:30px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#desert,[data-tongue="desert"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#desert,[data-tongue="desert"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#desert,[data-tongue="desert"]) #desert-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#desert,[data-tongue="desert"]) #desert-src:focus,:is(#desert,[data-tongue="desert"]) button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+:is(#desert,[data-tongue="desert"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#desert,[data-tongue="desert"]) button:hover{border-color:var(--brass);color:var(--brass)}
+:is(#desert,[data-tongue="desert"]) button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:is(#desert,[data-tongue="desert"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#desert,[data-tongue="desert"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#desert,[data-tongue="desert"]) .note{font-size:.92rem;color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+:is(#desert,[data-tongue="desert"]) .lc{border:1px solid var(--line);border-radius:3px;padding:8px 4px;display:grid;justify-items:center;gap:0}
+:is(#desert,[data-tongue="desert"]) .lc .r{font:500 .88rem var(--mono)}
+:is(#desert,[data-tongue="desert"]) .lc .i{font:.7rem var(--mono);color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) .tbl{overflow-x:auto}
+:is(#desert,[data-tongue="desert"]) table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+:is(#desert,[data-tongue="desert"]) th,:is(#desert,[data-tongue="desert"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#desert,[data-tongue="desert"]) th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#desert,[data-tongue="desert"]) td.m{font-family:var(--mono);font-size:.84rem}
+:is(#desert,[data-tongue="desert"]) td.md{font-family:var(--mono);font-size:.84rem;color:var(--brass)}
+:is(#desert,[data-tongue="desert"]) td.ma{font-family:var(--mono);font-size:.84rem;color:var(--abyss)}
+:is(#desert,[data-tongue="desert"]) td.y{font-family:var(--mono);font-size:.84rem}
+:is(#desert,[data-tongue="desert"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#desert,[data-tongue="desert"]) .cols>div{min-width:0}
+:is(#desert,[data-tongue="desert"]) .ex{background:var(--panel);border-radius:4px;padding:14px 16px;display:grid;gap:6px}
+:is(#desert,[data-tongue="desert"]) .ex .s{font-family:var(--mono);font-size:.9rem}
+:is(#desert,[data-tongue="desert"]) .ex .s.d{color:var(--brass)}
+:is(#desert,[data-tongue="desert"]) .ex .s.a{color:var(--abyss)}
+:is(#desert,[data-tongue="desert"]) .ex .gl{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
 </style>
 
 <nav class="tabs" aria-label="Tongues"><div class="in" id="tabbar" role="tablist"></div></nav>
@@ -602,7 +689,7 @@ section.tongue{min-height:100%}
     <h2>Where the letters came from</h2>
     <p>Five separate traditions. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, and to Voth transformed.</p>
     <div class="tree">
-      <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
+      <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
       <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters.</span></div>
       <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
       <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
@@ -611,11 +698,20 @@ section.tongue{min-height:100%}
   </div>
 
   <div>
-    <h2>One word, twelve roads</h2>
+    <h2>One word, fourteen roads</h2>
     <p>In order of how far each tongue drifted from English.</p>
     <div class="tbl"><table>
-      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Izani</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Xanadui</th></tr></thead>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Izani</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Xanadui</th></tr></thead>
       <tbody id="fam"></tbody>
+    </table></div>
+  <div>
+    <h2>Phrasebook</h2>
+    <p>Eight things a traveller needs to say, in every tongue, each in its own letters. The Monks of History and Dalab's priests would answer you in plain English. Click a tongue's name to open its page.</p>
+    <div class="phr-pick" id="phrpick" role="group" aria-label="Phrase"></div>
+    <div class="phr-head"><span class="en" id="phren"></span><span class="nt" id="phrnt"></span></div>
+    <div class="tbl"><table class="phr">
+      <thead><tr><th>Tongue</th><th>Said</th><th>Word by word</th><th>Written</th></tr></thead>
+      <tbody id="phrbody"></tbody>
     </table></div>
   </div>
 </div>
@@ -910,7 +1006,7 @@ section.tongue{min-height:100%}
   <h1>Yuni Letters</h1>
   <div class="gate" aria-label="Gate inscription">UNIV. · AGRIC. &amp; MECH. · EST.</div>
   <p>Yuni never lost the Latin alphabet. The town grew up inside the shell of an Ancient technical college, an agricultural and mechanical school, and its letters were on every door: room numbers, department signs, lab labels, the gate. Its name is the gate's first word, <span class="mono">UNIV.</span>, said as written: <i>Yuni</i>.</p>
-  <p>Two hands keep the letters. Yuni's own is <b>the gate capitals</b>, a stencil copied from campus signage, used for houses, contracts and the Emir's decrees. The Monks of History write <b>the book hand</b>, a rounded script for copying records, with margin marks they borrowed from Xanadu.</p>
+  <p>Two hands keep the letters. Yuni's own is <b>the gate capitals</b>, a stencil copied from campus signage, used for houses, contracts and the Emmo's decrees. The Monks of History write <b>the book hand</b>, a rounded script for copying records, with margin marks they borrowed from Xanadu.</p>
 </header>
 
 <section class="scribe" aria-labelledby="yuni-scribe-h">
@@ -940,15 +1036,16 @@ section.tongue{min-height:100%}
   <h2 id="yuni-sp-h">Yuni speech</h2>
   <div class="cols">
     <div>
-      <p>Yuni speech is close to English, worn the way London English wore: <i>th</i> to <i>f</i> and <i>v</i>, <i>-ing</i> to <i>-in</i>, a dropped final <i>r</i>, a stopped <i>t</i> between vowels.</p>
-      <p>Its words are clipped like the abbreviations on campus signs. The town spells them out in full on its oldest walls and has not said them in full for centuries. Spelling stays conservative while speech moves, as it does in English.</p>
+      <p>Yuni kept the letters, not the speech. Nobody spoke real Latin in 1000 AD however many Latin books they owned, and nobody in Yuni speaks the English on its walls. The college's people sounded Australian, and a thousand years carried every Australian habit further, until a modern English speaker would not follow a word.</p>
+      <p>Words are clipped and given <i>-o</i> or <i>-i</i>, as Australians made <i>arvo</i>, <i>brekkie</i> and <i>uni</i>. <i>Yuni</i> itself is that word. The vowels kept sliding (<i>day</i> is <i>dai</i>, <i>high</i> is <i>hoi</i>, <i>no</i> is <i>nau</i>), r is gone after a vowel, t is <i>d</i> between vowels and a catch at the end, and phrases run together into single words. The walls are still spelled the old way and read aloud the new way, as French spells <i>eau</i>.</p>
+      <div class="ex-y"><div class="y1">“Gdai, mai. Awyagoi?” · “Doi. Wiyof da Vol disarvo.”</div><div class="y2">“G'day, mate. How are you going?” · “Fine. We're off to the Vault this afternoon.”</div></div>
     </div>
     <div>
-      <p>Several Yuni titles are campus words that kept their prestige after their meaning was lost. The <b>Emir</b> comes from <i>Emeritus</i>, the title on the oldest office doors, which the old families now pass among themselves. Land-working valley folk are <b>Aggis</b>, from the college's Aggies. Where the <b>Geomancers</b> come from is your call; a geomatics or geomechanics department would fit.</p>
+      <p>Several Yuni titles are campus words that kept their prestige after their meaning was lost. The ruler is the <b>Emmo</b>, from <i>Emeritus</i>, the title on the oldest office doors, which the old families now pass among themselves. Outsiders know the title in the desert nomads' mouths: the caravaneers say <i>Emīr</i>. Land-working valley folk are <b>Aggis</b>, from the college's Aggies. Where the <b>Geomancers</b> come from is your call; a geomatics or geomechanics department would fit.</p>
     </div>
   </div>
   <div class="tbl"><table>
-    <thead><tr><th>On the wall</th><th>Said</th><th>Meaning now</th></tr></thead>
+    <thead><tr><th>On the wall</th><th>Said now</th><th>Meaning now</th></tr></thead>
     <tbody id="yuni-clip"></tbody>
   </table></div>
 </section>
@@ -1338,6 +1435,118 @@ section.tongue{min-height:100%}
 </div>
 
 </section>
+<section id="desert" class="tongue" data-label="Desert & Abyss" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">The eastern high desert · the salt marshes of the eastern Abyss</div>
+  <h1><span class="d">Dasrī</span> and <span class="a">Tabist</span></h1>
+  <div class="pair">
+    <div class="side d"><span class="k">the desert nomads · Shade, the dune raiders, the caravaneers</span><b>Dasrī</b><span>English gone Arabic: emphatics, a throaty <i>ḥ</i>, <i>q</i>, the article <i>al-</i> and plurals made by changing the vowels inside a word.</span><div class="line" id="desert-heroD"></div></div>
+    <div class="side a"><span class="k">the abyssal people · the deltas, the piles, the Altar</span><b>Tabist</b><span>The same English gone Berber: nouns that begin in <i>a-</i>, feminines wrapped in <i>t-…-t</i>, plurals in <i>-en</i>, and words packed with consonants.</span><div class="line" id="desert-heroA"></div></div>
+  </div>
+  <p>The two tongues are cousins and have been neighbours for centuries, so a desert caravaneer and a marsh trader understand each other the way Spanish and Italian speakers do. It takes effort at first, then comes easily, because the differences are regular. Both peoples have long lived under Yuni's shadow: they trade through its caravanserai, work its Geomancers' oil, and learned their letters there. Both tongues are full of Yuni words.</p>
+</header>
+
+<section class="scribe" aria-labelledby="desert-scribe-h">
+  <h2 id="desert-scribe-h">Scribe</h2>
+  <div class="row" role="group" aria-label="Tongue">
+    <button type="button" id="desert-tD" aria-pressed="true">Dasrī · caravan hand</button>
+    <button type="button" id="desert-tA" aria-pressed="false">Tabist · salt marks</button>
+  </div>
+  <label for="desert-src">Romanized text</label>
+  <div class="row">
+    <input id="desert-src" type="text" value="Yidarnaq al-qumūl wāṭar bi-Šayd." autocomplete="off" spellcheck="false">
+    <span class="row" id="desert-keys"></span>
+  </div>
+  <div class="samples" id="desert-samples"></div>
+  <div class="line" id="desert-out" aria-live="polite"></div>
+  <div class="tokens" id="desert-tok"></div>
+  <p class="note" id="desert-snote"></p>
+</section>
+
+<section aria-labelledby="desert-ab-h">
+  <h2 id="desert-ab-h">Two hands from Yuni's letters</h2>
+  <div class="pair">
+    <div class="side d">
+      <span class="k">the caravan hand · Dasrī</span>
+      <p style="margin:0">Caravaneers learned joined-up Latin from Yuni's clerks and wrote it fast, on the move, until the letters ran together into a few shapes on one line. Dots now tell them apart. Short vowels fell out of the writing, leaving consonants and long vowels, the way Arabic and Hebrew are written. <i>D</i>, <i>r</i>, <i>w</i> and long <i>ā</i> never join the letter after them.</p>
+      <div class="chart" id="desert-chartD"></div>
+    </div>
+    <div class="side a">
+      <span class="k">the salt marks · Tabist</span>
+      <p style="margin:0">The abyssal people painted letters on piles, sails and tin in lime-wash, and reduced Yuni's capitals to strokes, rings and dots that a brush can make in one go. The result looks like Tifinagh. Every vowel is written, and the Amazigh-looking <i>z</i> stands in the middle of every temple banner.</p>
+      <div class="chart" id="desert-chartA"></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="desert-co-h">
+  <h2 id="desert-co-h">Regular differences</h2>
+  <p>Learn these and a desert word gives you the marsh word, as Spanish <i>hijo</i> gives Italian <i>figlio</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Dasrī</th><th>Tabist</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td class="m">p</td><td class="md">b</td><td class="ma">f</td><td>please → <i>blīz</i> / <i>flīz</i>; ship → <i>šib</i> / <i>ašif</i></td></tr>
+      <tr><td class="m">v</td><td class="md">f</td><td class="ma">b</td><td>servo → <i>sarfū</i> / <i>asarbu</i></td></tr>
+      <tr><td class="m">g</td><td class="md">j</td><td class="ma">g</td><td>gold → <i>jūld</i> / <i>aguld</i>; go → <i>jū</i> / <i>gu</i></td></tr>
+      <tr><td class="m">th (θ / ð)</td><td class="md">th / dh, kept</td><td class="ma">t / d</td><td>thing → <i>thinj</i> / <i>atin</i></td></tr>
+      <tr><td class="m">h</td><td class="md">ḥ (throaty)</td><td class="ma">h</td><td>horn → <i>ḥurn</i> / <i>ahurn</i>; house → <i>ḥaws</i> / <i>tahawst</i></td></tr>
+      <tr><td class="m">the</td><td class="md">al- (from <i>all</i>)</td><td class="ma">a- (masc.), t-…-t (fem.)</td><td>the camel → <i>al-qamal</i> / <i>aqamal</i>; the tent → <i>aṭ-ṭant</i> / <i>taṭant</i></td></tr>
+      <tr><td class="m">plural</td><td class="md">vowels change inside</td><td class="ma">i-…-en</td><td>camels → <i>qumūl</i> / <i>iqamalen</i></td></tr>
+      <tr><td class="m">in, at</td><td class="md">bi- (from <i>by</i>)</td><td class="ma">di (from <i>in the</i>)</td><td>at Shade → <i>bi-Šayd</i> / <i>di Tašayt</i></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="desert-pl-h">
+  <h2 id="desert-pl-h">Two ways to make a plural, both English</h2>
+  <div class="cols">
+    <div>
+      <h3>Dasrī: man, men</h3>
+      <p>English had a handful of plurals made by changing a vowel: <i>man/men</i>, <i>foot/feet</i>, <i>mouse/mice</i>. The desert generalised them. Now every noun has a plural pattern of its own, Arabic-fashion: <i>qamal</i> camel, <i>qumūl</i> camels; <i>ṭant</i> tent, <i>ṭunūt</i>; <i>ḥaws</i> house, <i>ḥuyūs</i>; <i>ḥurn</i> horn, <i>ḥirān</i>.</p>
+    </div>
+    <div>
+      <h3>Tabist: ox, oxen</h3>
+      <p>The marshes took the other English leftover, the <i>-en</i> of <i>oxen</i> and <i>children</i>, and put it on every noun with an <i>i-</i> in front, Berber-fashion: <i>aqamal</i>, <i>iqamalen</i>; <i>ahurn</i>, <i>ihurnen</i>; <i>taṭant</i>, <i>tiṭanin</i>. The people's own name works the same way: one abyssal is an <i>abis</i>, the people are the <i>Ibisen</i>, and their speech is <i>Tabist</i>.</p>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="s d">Yidarnaq al-qumūl wāṭar bi-Šayd.</div>
+    <div class="s a">Idarnaq iqamalen awaṭar di Tašayt.</div>
+    <div class="gl">he/they-drink · the-camels · water · at-Shade</div>
+    <div class="gl">“The camels drink water at Shade.” Both put the verb first, and both tongues can read each other's line.</div>
+  </div>
+</section>
+
+<section aria-labelledby="desert-sn-h">
+  <h2 id="desert-sn-h">From English, together</h2>
+  <p>Before the cousins parted, their English had already gone the same way. <i>T</i>, <i>d</i>, <i>s</i> and <i>k</i> turned emphatic or uvular next to back vowels, and English diphthongs flattened to <i>ay</i> and <i>aw</i>. Like Arabic speakers, they also broke a cluster at the start of a word with a vowel.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Both</th><th>Examples</th></tr></thead>
+    <tbody id="desert-shared"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="desert-yu-h">
+  <h2 id="desert-yu-h">The Yuni layer</h2>
+  <p>Yuni is where the caravans water and the Geomancers pump. For centuries both peoples have taken Yuni words for trade, money, oil and rank, and given them their own shape. Outsiders know Yuni's ruler as the <b>Emir</b> because they learned the title from the caravaneers, who made the Yuni <i>Emmo</i> sound like their own <i>Emīr</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Yuni</th><th>From</th><th>Dasrī</th><th>Tabist</th><th>Meaning</th></tr></thead>
+    <tbody id="desert-yuni"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="desert-nm-h">
+  <h2 id="desert-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Dasrī</th><th>Tabist</th><th>Origin</th></tr></thead>
+    <tbody id="desert-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
 
 <script>
 /* Vothic */
@@ -1477,6 +1686,8 @@ const NAMES=[
 ];
 document.getElementById("vothic-names").innerHTML=NAMES.map(n=>`<tr><td class="m">${n[0]}</td><td class="g plain"></td><td>${n[1]}</td></tr>`).join("");
 document.querySelectorAll("#vothic-names td.g").forEach((td,i)=>{render(NAMES[i][0],td);td.style.whiteSpace="nowrap"});
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.vothic=(t,el)=>render(t,el);
 
 })();
 /* Izani */
@@ -1649,6 +1860,8 @@ const NAMES=[
 ];
 document.getElementById("izani-names").innerHTML=NAMES.map(n=>`<tr><td class="m">${n[0]}</td><td class="g"></td><td>${n[1]}</td></tr>`).join("");
 document.querySelectorAll("#izani-names td.g").forEach((td,i)=>zrender(NAMES[i][0],td,null,true));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.izani=(t,el)=>zrender(t,el,null,true);
 
 })();
 /* Hykkousik */
@@ -1765,6 +1978,8 @@ const NAMES=[
 ];
 document.getElementById("hykkousik-names").innerHTML=NAMES.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g"></td><td>${n[2]}</td></tr>`).join("");
 document.querySelectorAll("#hykkousik-names td.g").forEach((td,i)=>render(NAMES[i][1],td));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.hykkousik=(t,el)=>render(t,el);
 
 })();
 /* Xanadui */
@@ -1945,6 +2160,8 @@ document.querySelectorAll("#xanadui-names td.g").forEach((td,i)=>render(NAMES[i]
 const COG=[["sun","son","tzun","san","sã"],["star","istar","tzhar","astar","sitār"],["stone","iston","tzhon","astoun","satõ"],["sky","iskai","khai","sky","sakāi"],["ship","xipa","sip","sip","śip"],["war","guar","vorh","ouar","wār"],["gold","golda","gol","gould","ghol"],["fire","fira","vairh","phyr","phāyar"]];
 document.getElementById("xanadui-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td><td class="m">${c[4]}</td><td class="g plain"></td></tr>`).join("");
 document.querySelectorAll("#xanadui-cog td.g").forEach((td,i)=>render(COG[i][4],td,null,.4));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.xanadui=(t,el)=>render(t,el,null,.4);
 
 })();
 /* Yuni */
@@ -1958,7 +2175,7 @@ function go(){
 }
 src.addEventListener("input",go);
 document.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{src.value=src.value.replace(/\s*[◉◌△]\s*$/,"")+b.dataset.m;go();src.focus()}));
-const SAMPLES=["The Ancients sealed the Vault ◉","Univ. Agric. & Mech.","Emir of Yuni","Tzintzun climbed a holy mountain ◌","The Starfish was a starport △"];
+const SAMPLES=["The Ancients sealed the Vault ◉","Univ. Agric. & Mech.","Emmo of Yuni","Tzintzun climbed a holy mountain ◌","The Starfish was a starport △"];
 const sm=document.getElementById("yuni-samples");
 sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${esc(s)}">${esc(s)}</button>`).join("");
 sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
@@ -1969,7 +2186,7 @@ abc.innerHTML="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l=>`<button type="butto
  +`<button type="button" class="lt special" data-l="&amp;" aria-label="ampersand, said an"><span class="s">&amp;</span><span class="u">&amp;</span><span class="n">“an”</span></button>`;
 abc.addEventListener("click",e=>{const b=e.target.closest(".lt");if(!b)return;src.value+=b.dataset.l;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
 
-const CLIP=[["UNIV.","Yuni","the town; once University"],["EMER.","Emir","the ruler chosen by the old families; once Professor Emeritus"],["AGRIC. & MECH.","Aggi an Mek","the two old trades: farming and machine-work"],["LAB.","Lab","any Ancient room still sealed; the Reliquary is <i>the Lab</i>"],["DEPT.","Dep","a great family's tower-house and everyone in it"],["BLDG.","Bildin","a superblock of the Ancients"],["DORM.","Dorm","a caravanserai room"],["NO ENTRY","Nonchri","sacred, forbidden: what the Vault doors say"]];
+const CLIP=[["UNIV.","Yuni","the town; once University"],["EMER.","Emmo","the ruler chosen by the old families; once Professor Emeritus. Outsiders say Emir"],["AGRIC. & MECH.","Aggonmekki","the two old trades, run together: farming and machine-work"],["LAB.","Labbo","any Ancient room still sealed; the Reliquary is <i>da Labbo</i>"],["DEPT.","Deppo","a great family's tower-house and everyone in it"],["BLDG.","Bildo","a superblock of the Ancients"],["DORM.","Dommi","a caravanserai room"],["NO ENTRY","Nonchri","sacred, forbidden: what the Vault doors say"]];
 document.getElementById("yuni-clip").innerHTML=CLIP.map(c=>`<tr><td class="sg">${esc(c[0])}</td><td><i>${c[1]}</i></td><td>${c[2]}</td></tr>`).join("");
 
 
@@ -2092,6 +2309,8 @@ const NM=[
 ];
 document.getElementById("republic-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g"></td><td>${n[2]}</td></tr>`).join("");
 document.querySelectorAll("#republic-names td.g").forEach((td,i)=>hr(NM[i][1],td));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.republic=(t,el)=>hr(t,el,null,true);
 
 })();
 /* Beast Riders */
@@ -2267,6 +2486,8 @@ document.querySelectorAll("#riders-tribes td.g").forEach((td,i)=>rrender(TR[i][1
 
 const DI=[["claw","tł'aa","tł'oo","klaa","tłaa","tł'aa"],["three","łii","łüü","łii","łii","łii"],["night","naat'","nööt'","naat'","naat","naat'"],["horn","khon","khön","khorn","khon","khon"],["raptor","araptar","öröptör","raptar","araptar","araptar"]];
 document.getElementById("riders-dial").innerHTML=DI.map(d=>`<tr><td>${d[0]}</td>${d.slice(1).map((c,i)=>`<td class="m${i===4?" cn":""}">${c}</td>`).join("")}</tr>`).join("");
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.riders=(t,el)=>rrender(t,el);
 
 })();
 /* Zeijani */
@@ -2389,6 +2610,190 @@ const NM=[
 ];
 document.getElementById("zeijani-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g plain"></td><td>${n[2]}</td></tr>`).join("");
 document.querySelectorAll("#zeijani-names td.g").forEach((td,i)=>render(NM[i][1],td));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.zeijani=(t,el)=>render(t,el);KR.ash=(t,el)=>render(toAsh(t),el);
+
+})();
+/* Desert & Abyss */
+(()=>{
+/* ---------- the caravan hand (Dasrī): joined letters on a baseline at y=60; each [width, path, dots, nojoin] ---------- */
+const TOOTH="M0 60 L7 60 L7 51 M7 60 L10 60";
+const D={
+ "ā":[8,"M0 60 L4 60 L4 24",[],1],
+ "b":[10,TOOTH,[[7,67]]],
+ "t":[10,TOOTH,[[4,44],[10,44]]],
+ "th":[10,TOOTH,[[4,44],[10,44],[7,38]]],
+ "n":[10,TOOTH,[[7,43]]],
+ "y":[10,TOOTH,[[4,67],[10,67]]],
+ "ī":[12,"M0 60 L7 60 L7 51 M7 60 Q14 60 12 68 Q8 76 2 72",[[5,80],[11,80]],1],
+ "j":[18,"M0 60 Q10 52 16 56 Q20 60 14 72 Q8 82 2 76",[[9,68]]],
+ "ḥ":[18,"M0 60 Q10 52 16 56 Q20 60 14 72 Q8 82 2 76",[]],
+ "x":[18,"M0 60 Q10 52 16 56 Q20 60 14 72 Q8 82 2 76",[[10,45]]],
+ "d":[12,"M0 60 L10 60 Q12 52 5 47",[],1],
+ "dh":[12,"M0 60 L10 60 Q12 52 5 47",[[7,38]],1],
+ "r":[9,"M0 60 Q8 60 8 67 Q6 75 0 77",[],1],
+ "z":[9,"M0 60 Q8 60 8 67 Q6 75 0 77",[[7,49]],1],
+ "s":[20,"M0 60 L4 60 L4 53 M4 60 L10 60 L10 53 M10 60 L16 60 L16 53 M16 60 L20 60",[]],
+ "š":[20,"M0 60 L4 60 L4 53 M4 60 L10 60 L10 53 M10 60 L16 60 L16 53 M16 60 L20 60",[[4,44],[10,44],[16,44]]],
+ "ṣ":[22,"M0 60 L4 60 Q6 48 16 50 Q22 54 16 60 L22 60",[]],
+ "ḍ":[22,"M0 60 L4 60 Q6 48 16 50 Q22 54 16 60 L22 60",[[13,41]]],
+ "ṭ":[22,"M0 60 L4 60 Q6 48 16 50 Q22 54 16 60 L22 60 M8 52 L8 24",[]],
+ "f":[14,"M0 60 L4 60 Q2 48 10 50 Q14 56 8 60 L14 60",[[8,41]]],
+ "q":[14,"M0 60 L4 60 Q2 48 10 50 Q14 56 8 60 L14 60",[[5,41],[11,41]]],
+ "k":[16,"M0 60 L14 60 L14 26 M4 44 L14 36",[]],
+ "l":[11,"M0 60 L8 60 L8 24 Q8 18 12 20",[]],
+ "m":[14,"M0 60 Q4 66 10 64 Q14 60 10 56 Q6 54 6 60 L14 60",[]],
+ "h":[14,"M0 60 L2 60 Q2 50 8 50 Q14 50 14 56 Q14 62 8 62 L14 60",[]],
+ "w":[12,"M0 60 Q2 50 8 52 Q12 56 8 60 Q6 68 0 74",[],1],
+ "ū":[12,"M0 60 Q2 50 8 52 Q12 56 8 60 Q6 68 0 74",[],1],
+};
+const DK=["th","dh","sh","kh","ā","ī","ū","ḥ","ṣ","ḍ","ṭ","š","b","t","n","y","j","x","d","r","z","s","f","q","k","l","m","h","w"];
+function dWord(letters){
+  let x=4,out="";
+  letters.forEach((k,i)=>{
+    const g=D[k];if(!g)return;
+    out+=`<g transform="translate(${x} 0)"><path class="dz" d="${g[1]}"/>${g[2].map(([a,b])=>`<rect class="dd" x="${a-2.2}" y="${b-2.2}" width="4.4" height="4.4" transform="rotate(45 ${a} ${b})"/>`).join("")}</g>`;
+    x+=g[0]+(g[3]&&i<letters.length-1?5:0);
+  });
+  return `<svg viewBox="0 14 ${x+4} 72" height="40" width="${((x+4)*40/72).toFixed(1)}" role="img" aria-label="caravan hand">${out}</svg>`;
+}
+function dTok(s){
+  s=s.normalize("NFC").toLowerCase().replace(/ḥ/g,"ḥ").replace(/sh/g,"š").replace(/kh/g,"x").replace(/aa/g,"ā").replace(/ii/g,"ī").replace(/uu/g,"ū").replace(/ē/g,"ī").replace(/ō/g,"ū").replace(/c/g,"k").replace(/g/g,"j");
+  return s.split(/[\s]+/).filter(Boolean).map(w=>{
+    const letters=[],unk=[];let first=true;
+    for(let i=0;i<w.length;){
+      const c=w[i];
+      if(/[-'.,!?;:]/.test(c)){i++;continue}
+      const k=DK.find(k=>w.startsWith(k,i));
+      if(k){letters.push(k==="sh"?"š":k==="kh"?"x":k);i+=k.length;first=false;continue}
+      if(/[aeiuo]/.test(c)){if(first)letters.push("ā");i++;first=false;continue}
+      unk.push(c);i++;
+    }
+    return {letters,unk};
+  });
+}
+function dRender(text,el,tokEl){
+  const ws=dTok(text);
+  el.innerHTML=ws.map(w=>dWord(w.letters)+w.unk.map(u=>`<span class="unk">${u}</span>`).join("")).join("");
+  if(tokEl)tokEl.textContent=ws.map(w=>w.letters.join("")).join("  ")+"   (short vowels unwritten)";
+}
+
+/* ---------- the salt marks (Tabist): strokes, rings and dots in a 40 x 60 cell ---------- */
+const A={
+ a:"M8 58 L20 14 L32 58|D20 66",
+ b:"C20 36 16|M20 20 L20 52",
+ d:"M12 18 Q36 18 36 36 Q36 54 12 54",
+ e:"M8 20 L32 20 M8 36 L32 36 M8 52 L32 52",
+ f:"C20 36 16|M4 36 L36 36",
+ g:"M32 18 L10 18 L10 56",
+ h:"M12 16 L12 56 M28 16 L28 56",
+ ḥ:"M12 16 L12 56 M28 16 L28 56|D20 36",
+ i:"M20 14 L20 58",
+ j:"M6 56 L34 56 M20 56 L20 16",
+ k:"M10 14 L10 58 M32 14 L12 36 L32 58",
+ l:"M10 14 L10 56 L32 56",
+ m:"M6 16 L6 56 L34 56 L34 16 M20 56 L20 28",
+ n:"M8 58 L8 14 L32 58 L32 14",
+ q:"C20 36 16|D20 36",
+ r:"M8 58 L8 34 Q8 16 20 16 Q32 16 32 34 L32 58",
+ s:"M32 16 L8 16 L32 56 L8 56",
+ š:"M32 16 L8 16 L32 56 L8 56|M4 36 L36 36",
+ ṣ:"M32 16 L8 16 L32 56 L8 56|D38 36",
+ t:"M20 12 L20 60 M4 36 L36 36",
+ ṭ:"C20 36 18|M20 18 L20 54 M2 36 L38 36",
+ ḍ:"M12 18 Q36 18 36 36 Q36 54 12 54|D20 36",
+ u:"M8 16 L8 56 L32 56 L32 16",
+ w:"M2 16 L11 56 L20 26 L29 56 L38 16",
+ x:"M6 14 L34 58 M34 14 L6 58",
+ y:"M6 14 L20 36 L34 14 M20 36 L20 60",
+ z:"M20 10 L20 62 M6 18 Q20 34 34 18 M6 54 Q20 38 34 54",
+};
+function aGlyph(k){
+  const parts=A[k].split("|");let s="";
+  parts.forEach(p=>{
+    if(p[0]==="C"){const [cx,cy,r]=p.slice(1).trim().split(/\s+/);s+=`<circle class="ab" cx="${cx}" cy="${cy}" r="${r}"/>`}
+    else if(p[0]==="D"){const [cx,cy]=p.slice(1).trim().split(/\s+/);s+=`<circle class="abf" cx="${cx}" cy="${cy}" r="3.4"/>`}
+    else s+=`<path class="ab" d="${p}"/>`;
+  });
+  return `<svg viewBox="0 6 40 64" height="36" width="22.5" role="img" aria-label="${k}">${s}</svg>`;
+}
+const AK=["sh","kh","ḥ","ṣ","ṭ","ḍ","š","a","b","d","e","f","g","h","i","j","k","l","m","n","q","r","s","t","u","w","x","y","z"];
+function aTok(s){
+  s=s.normalize("NFC").toLowerCase().replace(/ā/g,"aa").replace(/ī/g,"ii").replace(/ū/g,"uu").replace(/o/g,"u").replace(/c/g,"k").replace(/p/g,"f").replace(/v/g,"b");
+  return s.split(/\s+/).filter(Boolean).map(w=>{
+    const out=[];
+    for(let i=0;i<w.length;){
+      const c=w[i];
+      if(/[-'.,!?;:]/.test(c)){i++;continue}
+      const k=AK.find(k=>w.startsWith(k,i));
+      if(k){out.push({g:k==="sh"?"š":k==="kh"?"x":k});i+=k.length}else{out.push({u:c});i++}
+    }
+    return out;
+  });
+}
+function aRender(text,el,tokEl){
+  const ws=aTok(text);
+  el.innerHTML=ws.map(w=>`<span style="display:flex;gap:1px">${w.map(t=>t.g?aGlyph(t.g):`<span class="unk">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=ws.map(w=>w.map(t=>t.g||`[${t.u}]`).join("·")).join("  ");
+}
+
+/* ---------- page ---------- */
+const src=document.getElementById("desert-src"),out=document.getElementById("desert-out"),tk=document.getElementById("desert-tok");
+let mode="D";
+const SAMP={D:["Yidarnaq al-qumūl wāṭar bi-Šayd.","Dasrī","al-Aqwīfar ad-Dīb","Emīr","Jidāy!"],A:["Idarnaq iqamalen awaṭar di Tašayt.","Tabist","Ibisen","Aleṭṭar","Gidday!"]};
+const NOTE={D:"Short vowels are not written: a word-initial vowel takes the long-ā stroke as its seat. g is read as j, as Dasrī says it.",A:"Every vowel is written; long vowels twice. p is read as f and v as b, as Tabist says them."};
+const KEYS={D:["ḥ","ṣ","ḍ","ṭ","š","ā","ī","ū"],A:["ḥ","ṣ","ḍ","ṭ","š"]};
+function go(){(mode==="D"?dRender:aRender)(src.value,out,tk)}
+function setMode(m){
+  mode=m;document.getElementById("desert-tD").setAttribute("aria-pressed",m==="D");document.getElementById("desert-tA").setAttribute("aria-pressed",m==="A");
+  document.getElementById("desert-samples").innerHTML=SAMP[m].map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+  document.getElementById("desert-keys").innerHTML=KEYS[m].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+  document.getElementById("desert-snote").textContent=NOTE[m];
+  src.value=SAMP[m][0];go();
+}
+document.getElementById("desert-tD").addEventListener("click",()=>setMode("D"));
+document.getElementById("desert-tA").addEventListener("click",()=>setMode("A"));
+document.getElementById("desert-samples").addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+document.getElementById("desert-keys").addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+src.addEventListener("input",go);
+setMode("D");
+dRender("Dasrī",document.getElementById("desert-heroD"));
+aRender("Tabist",document.getElementById("desert-heroA"));
+
+const DL=[["ā","aː"],["b","b"],["t","t"],["th","θ"],["j","dʒ"],["ḥ","ħ"],["x","x"],["d","d"],["dh","ð"],["r","r"],["z","z"],["s","s"],["š","ʃ"],["ṣ","sˤ"],["ḍ","dˤ"],["ṭ","tˤ"],["f","f"],["q","q"],["k","k"],["l","l"],["m","m"],["n","n"],["h","h"],["w","w"],["ū","uː"],["y","j"],["ī","iː"]];
+document.getElementById("desert-chartD").innerHTML=DL.map(([k,i])=>`<div class="lc">${dWord([k])}<span class="r">${k}</span><span class="i">/${i}/</span></div>`).join("");
+const AL=[["a","a"],["e","ə"],["i","i"],["u","u"],["b","b"],["d","d"],["ḍ","dˤ"],["f","f"],["g","g"],["h","h"],["ḥ","ħ"],["j","dʒ"],["k","k"],["l","l"],["m","m"],["n","n"],["q","q"],["r","r"],["s","s"],["ṣ","sˤ"],["š","ʃ"],["t","t"],["ṭ","tˤ"],["w","w"],["x","x"],["y","j"],["z","z"]];
+document.getElementById("desert-chartA").innerHTML=AL.map(([k,i])=>`<div class="lc">${aGlyph(k)}<span class="r">${k}</span><span class="i">/${i}/</span></div>`).join("");
+
+const SH=[
+ ["t, d, s next to a, o, u","ṭ, ḍ, ṣ","sun → <i>ṣan</i> / <i>aṣan</i>; tent → <i>ṭant</i> / <i>taṭant</i>; water → <i>wāṭar</i> / <i>awaṭar</i>"],
+ ["k next to a, o, u","q","camel → <i>qamal</i> / <i>aqamal</i>; market → <i>mārqit</i> / <i>amarqit</i>"],
+ ["English diphthongs","ay, aw","Shade → <i>Šayd</i>; house → <i>ḥaws</i> / <i>tahawst</i>; how → <i>ḥaw</i> / <i>haw</i>"],
+ ["uh (sun, blood)","a","sun → <i>ṣan</i>; much → <i>maš</i>"],
+ ["ch","š","much → <i>maš</i>; church → <i>šarš</i>"],
+ ["two consonants at the start","a vowel before them","star → <i>istār</i> / <i>tastart</i>; drink → <i>-darnaq</i>"],
+ ["he, they (as a verb prefix)","yi- / i-","drink → <i>yidarnaq</i> / <i>idarnaq</i>, “he drinks, they drink”"],
+];
+document.getElementById("desert-shared").innerHTML=SH.map(s=>`<tr><td class="m">${s[0]}</td><td class="m">${s[1]}</td><td>${s[2]}</td></tr>`).join("");
+
+const YU=[["Emmo","Emeritus","Emīr","Amir","Yuni's ruler: outsiders learned the Dasrī form"],["Dommi","dormitory","Dummī","Tadummit","a caravanserai room"],["Labbo","laboratory","Labbū","Alabbu","a sealed Ancient room; a thing nobody should open"],["Servo","service station","Sarfū","Asarbu","a Geomancer pump or oil depot; the v goes f in the desert, b in the marsh"],["Mai","mate","Mayy","Amay","a trading partner; a friend you owe"],["Arvo","afternoon","Arfū","Tarbut","the trading hours, after the heat"],["Gdai","g'day","Jidāy","Gidday","a greeting for anyone from Yuni"],["Aggi","Aggie","Ajjī","Agi","a farmer of the Yuni valley; a soft townsman"]];
+document.getElementById("desert-yuni").innerHTML=YU.map(y=>`<tr><td class="y">${y[0]}</td><td><i>${y[1]}</i></td><td class="md">${y[2]}</td><td class="ma">${y[3]}</td><td>${y[4]}</td></tr>`).join("");
+
+const NM=[
+ ["Shade","Šayd","Tašayt","shade: the sunken basin. Feminine in the marsh, as places are."],
+ ["the Deep Aquifer","al-Aqwīfar ad-Dīb","Aqwifar Adib","aquifer + deep: the adjective follows with its own article, Arabic-fashion."],
+ ["the Wardens","al-Wurdān","Iwarden","wardens: a vowel-change plural in the desert, -en in the marsh."],
+ ["the Altar","al-Ṭār","Aleṭṭar","Dasrī heard <i>altar</i> as al- + <i>ṭār</i>, so the Altar has an article built in. The abyssals kept the word whole."],
+ ["the Headman","al-Ḥadmān","Ahedman","headman."],
+ ["Locus","Lūqus","Luqus","the Geomancers' oil town: a Yuni name."],
+ ["the horns (the desert sign)","al-Ḥurn, pl. al-Ḥirān","Ahurn, pl. Ihurnen","horn."],
+ ["the star (the abyss sign)","al-Istār","Tastart","star: a vowel before the cluster in both; feminine in the marsh."],
+ ["the Khan (caravanserai)","al-Xān","Taxant","origin open: perhaps an Ancient sign, perhaps Yuni."],
+];
+document.getElementById("desert-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="md">${n[1]}</td><td class="ma">${n[2]}</td><td>${n[3]}</td></tr>`).join("");
+
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender(t,el);
 
 })();
 
@@ -2399,15 +2804,16 @@ document.querySelectorAll("#zeijani-names td.g").forEach((td,i)=>render(NM[i][1]
    ["izani","Izani","the Empire of Iziz","Romance-sounding, with a Star Wars edge. 27 capitals cut in straight strokes; the parent of the Vothic letters.","Empar de Son"],
    ["hykkousik","Hykkousik","the Hykkousoi of Ys","Greek-sounding. 26 letters copied from the Greek symbols in a drowned gene-lab's records.","Hykkousoi"],
    ["xanadui","Xanadui","the Sultanate of Xanadu","The furthest drift: Nepali and Persian sounds, verb-last, every claim marked seen or said. A syllabary on a sound grid.","Xānaḍu"],
-   ["yuni","Yuni","Yuni and the Monks of History","Near English, clipped like campus signs. Latin in two hands; the Historians mark their evidence in the margin.","Univ."],
+   ["yuni","Yuni","Yuni and the Monks of History","Australian a thousand years on: clipped, run together, past following. Latin kept in two hands; the Historians mark their evidence in the margin.","Univ."],
    ["dalab","Dalab","the mound-builders","Two tongues: the priests' high tongue, our English, held in place by the God, and the peasants' creole.","Dalab"],
    ["republic","Hajlandsk","the Iron Republic, the Free Clans, the Painted Men","Highland English gone Norse and Slavic, with Izani law-words on top. Written in the Izani alphabet, letter for letter.","Roketstad"],
    ["riders","Tł'aai","the Beast Rider tribes","Mongol and Apache sounds with a Star Wars edge: ejectives, tł, nasal vowels. Izani letters taken for trade, with four marks added.","Tł'aai"],
+   ["desert","Dasrī & Tabist","the desert nomads and the abyssal people","Cousins as close as Spanish and Italian: one gone Arabic, one Berber, both full of Yuni words. A caravan hand and painted salt marks, both from Yuni's letters.","Dasrī"],
    ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
   ];
   const cards=document.getElementById("cards");
   cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
-  const FAM=[["sun","sun","sun","sun","sun","sun","są","son","san","tzun","sunu","ṣunum","sã"],["star","star","star","stah","tar","stjar","istar","istar","astar","tzhar","stāru","ṣṭārum","sitār"],["ship","ship","ship","ship","ship","šip","ship","xipa","sip","sip","šippu","šippum","śip"],["war","war","war","waw","wa","vor","baar","guar","ouar","vorh","māru","wārum","wār"],["gold","gold","gold","gol'","gol","golt","gol","golda","gould","gol","guldu","guldum","ghol"],["fire","fire","fire","fiyah","faya","fajr","paar","fira","phyr","vairh","pēru","pērum","phāyar"],["thing","thing","thing (dental th)","fin","ting","ting","łį","tiñ","thing","thing","šingi","šingim","thĩ"],["the lab","the lab","the lab","ve lab","Dalab","labet","","de laba","","","ze-labbu","ze-labbum",""]];
+  const FAM=[["sun","sun","sun","san","sun","sun","są","son","san","tzun","sunu","ṣunum","ṣan","aṣan","sã"],["star","star","star","sta","tar","stjar","istar","istar","astar","tzhar","stāru","ṣṭārum","istār","tastart","sitār"],["ship","ship","ship","shippo","ship","šip","ship","xipa","sip","sip","šippu","šippum","šib","ašif","śip"],["war","war","war","wo","wa","vor","baar","guar","ouar","vorh","māru","wārum","wār","awar","wār"],["gold","gold","gold","gol'","gol","golt","gol","golda","gould","gol","guldu","guldum","jūld","aguld","ghol"],["fire","fire","fire","foya","faya","fajr","paar","fira","phyr","vairh","pēru","pērum","fāyar","afayar","phāyar"],["thing","thing","thing (dental th)","ting","ting","ting","łį","tiñ","thing","thing","šingi","šingim","thinj","atin","thĩ"],["the lab","the lab","the lab","da labbo","Dalab","labet","","de laba","","","ze-labbu","ze-labbum","al-Labbū","alabbu",""]];
   document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
 
   const secs=[...document.querySelectorAll("section.tongue")];
@@ -2422,6 +2828,47 @@ document.querySelectorAll("#zeijani-names td.g").forEach((td,i)=>render(NM[i][1]
     try{localStorage.setItem("tongue-tab",id)}catch(e){}
   }
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
+
+  /* phrasebook: [key, tongue, renderer, wrapper class] */
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""]];
+  const PH=[
+   {en:"Greetings.",nt:"Each people greets by what it values: the Sun, the day, the claw, light in the dark.",r:{
+    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"]}},
+   {en:"Thank you.",nt:"",r:{vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"]}},
+   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"]}},
+   {en:"I am a stranger here.",nt:"In Hykkousik, I is y, from the same change that made isles into Ys.",r:{vothic:["Ai chhensharh hirh.","I · stranger · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"]}},
+   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"]}},
+   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hau makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"]}},
+   {en:"Go away!",nt:"",r:{vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"]}},
+   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Dagod no ear yu.","the-God · not · hear · you"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"]}},
+  ];
+  const toAshTxt=t=>t.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
+  const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const pick=document.getElementById("phrpick");
+  pick.innerHTML=PH.map((p,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===0}">${esc(p.en)}</button>`).join("");
+  function drawPhr(i){
+    const p=PH[i];
+    pick.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.i==i?"true":"false"));
+    document.getElementById("phren").textContent=p.en;
+    document.getElementById("phrnt").textContent=p.nt;
+    const body=document.getElementById("phrbody");
+    body.innerHTML=PT.map(([k,name,rd,cls])=>{
+      const src=k==="ash"?p.r.zeijani:p.r[k];
+      const said=k==="ash"?toAshTxt(src[0]):src[0];
+      const tongue=k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k;
+      const chip=rd==="none"?`<span class="chip none">seldom written</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
+      const gloss=k==="ash"?src[1].replace(/-SUBJ/g,"-SUBJ, no -m"):src[1];
+      return `<tr><td class="lg"><button type="button" data-go="${tongue}">${esc(name)}</button></td><td class="rm">${esc(said)}</td><td class="gl">${esc(gloss)}</td><td>${chip}</td></tr>`;
+    }).join("");
+    body.querySelectorAll("[data-r]").forEach(el=>{
+      const r=el.dataset.r,t=el.dataset.t.replace(/[?!,]/g,"");
+      if(r==="latin"){el.textContent=el.dataset.t;return}
+      try{if(window.KR&&KR[r])KR[r](t,el)}catch(e){el.textContent="—"}
+    });
+  }
+  pick.addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)drawPhr(+b.dataset.i)});
+  document.getElementById("phrbody").addEventListener("click",e=>{const b=e.target.closest("button[data-go]");if(b)show(b.dataset.go,true)});
+  drawPhr(0);
   let start=(location.hash||"").slice(1);
   if(!start){try{start=localStorage.getItem("tongue-tab")||""}catch(e){}}
   show(start||"overview",false);

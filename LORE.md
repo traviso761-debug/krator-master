@@ -297,6 +297,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The raiders come as a convoy of camel riders every few days; they water and trade.
 - Faith: the **Shrine of the Deep Aquifer**, carved behind the falls. Worship at dawn and dusk.
 - The Khan (caravanserai), camel lines. Sign: **horns**.
+- **Language and script.** **Dasrī**: English gone Arabic (emphatics, ḥ, q, the article *al-* from *all*, plurals by vowel change generalised from *man/men*: *qamal*, *qumūl*). A cousin of the abyssals' Tabist (§6.9), mutually intelligible like Spanish and Italian, with regular differences (p > b, v > f, g > j; th and dh kept). Heavily Yuni-influenced: Yuni loans for trade, oil and rank (*sarfū* from Yuni *servo*); outsiders' *Emir* for Yuni's ruler is the Dasrī form. Letters learned at Yuni, written as a joined caravan hand told apart by dots, short vowels unwritten. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.9 The abyssal people and the Geomancers (eastern Abyss; Locus; Yuni)
 
@@ -314,6 +315,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Their Chapterhouse holds a rock relief-map table, drill cores and a brass gnomon.
   - In Yuni they hold the Cloisters. Culturally "mostly Yuni".
   - Lizard riders patrol in sixes.
+- **Language and script.** The abyssal people speak **Tabist** (they are the *Ibisen*, one *abis*): the same English as Dasrī (§6.8) gone Berber (nouns in *a-*, feminines in *t-…-t*, plurals in *i-…-en* from *oxen*; p > f, v > b, g kept). Mutually intelligible with Dasrī like Spanish and Italian, and as full of Yuni words. Yuni's letters reduced to painted strokes, rings and dots, like Tifinagh. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.10 Reed Lake: the lake people
 
@@ -337,7 +339,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the caravanserai.
 - Sign: the **hyperboloid**, yellow. No ships.
 - Controls Locus, Verge lower city, and an outpost to their north [TBD].
-- **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college. Speech near English, clipped like sign abbreviations (*Emir* < Emeritus, *Aggi*, *Dep*). Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.12 Voth (SW Bay of Ring Sea)
 
