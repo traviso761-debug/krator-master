@@ -185,6 +185,29 @@ VC.cantonDress = function (cn) {
   });
   return cn + ' dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks, ' + n.fires + ' fires';
 };
+/* a canton's gold redrawn as metal (owner, 2026-10-09: "palace has a noticeably shinier and better gold texture than temple
+   dome, give temple an upgrade"): the Palace's gilt is captured in the 'metal' family (glossy, the sky in it); the
+   Temple's dome and spire tips were captured as plain stone-family pieces in gold. Every piece of the canton's capture
+   whose colour is a gold (its hue, saturation and value in TUNE.regild) is cut from the capture and drawn again, the same
+   shape and place, in the metal family, its colour lifted a shade */
+VC.regild = function (cn) {
+  var M = CANT.by[cn], D = window.VOTH_CITY_CAPTURE, K = TUNE.regild, n = 0; if (!M || !D || !M.v) return 'no ' + cn;
+  var c = { r: 0, g: 0, b: 0 }, gold = function (hex) {
+    var r = (hex >> 16 & 255) / 255, g = (hex >> 8 & 255) / 255, b = (hex & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    if (!d || mx < K.value || d / mx < K.sat) return false;
+    var h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; if (h < 0) h += 360;
+    return h >= K.hue[0] && h <= K.hue[1];
+  };
+  M.v.r.forEach(function (q, k) {
+    if (q[0] === 9 || D.fams[q[1]] === 'metal') return;
+    var col = D.cols[q[9]]; if (typeof col !== 'number' || !gold(col)) return;
+    CANT.cut({ M: M, k: k }, 'regilt');
+    CANT.prims.push([D.shapes[q[0]], q[2] + M.ox, q[3] + M.bed, q[4] + M.oz, q[5], q[6], q[7], q[8] || 0, VOTH.shade(col, K.lift), 'metal']);
+    n++;
+  });
+  return cn + ': ' + n + ' gold pieces in metal';
+};
+
 /* the captured domes that stand on nothing (owner, 2026-10-09: "side domes on fortress dont actually connect to
    anything"): under each dome of a canton's model, the highest piece beneath its middle is what it should sit on; where
    there is air between them (more than TUNE.domeGap), a drum fills it, as wide as the dome's foot, with a moulding at its
@@ -273,6 +296,7 @@ VC.buildDistricts = function () {
   VC.cantonFires = [];
   log.push(VC.cantonDress('Temple'));                  /* the Temple's blood-red and gilt dressing (below) */
   log.push(VC.cantonDress('Fortress'));                /* the Fortress's green and gold banners, its towers' green fires */
+  log.push(VC.regild('Temple'));                       /* its gold in the metal the Palace's is (below) */
   log.push(VC.domeDrums());                            /* drums under the captured domes that float (below) */
   log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
   log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */

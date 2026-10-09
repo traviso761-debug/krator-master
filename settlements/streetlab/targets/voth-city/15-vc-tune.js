@@ -119,6 +119,8 @@ var TUNE = {
   market: { ground: 0.2, stock: 0.75, side: 3.1, back: 1.0, goods: ['generic_crate', 'generic_basket', 'generic_sack', 'generic_storage_jar', 'generic_barrel'] },
   /* the Temple's dressing (31-vc-voth.js VC.templeDress): Voth's temple colours (65d: blood red, its dark, matte gilt), how
      near a side a bridge or flight must come to cut the trim, banner drop and spacing, the fire pylons' height, the crown */
+  /* gold on a canton's capture redrawn as metal (31-vc-voth.js VC.regild): its hue range, least saturation and value, the lift */
+  regild: { hue: [36, 58], sat: 0.45, value: 0.5, lift: 0.06 },
   domeGap: 0.6,   /* air under a captured dome that earns it a drum (31-vc-voth.js VC.domeDrums) */
   dress: {
     Temple: { trim: true, banners: true, pylons: true, crown: true, red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, banner: 0xa8241c, fire: [1.0, 0.45, 0.12], flame: 0xf07a1e,
