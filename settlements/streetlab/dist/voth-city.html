@@ -47176,7 +47176,7 @@ var TUNE = {
                   stair arrives (toward the field), the gate's mouth, the top storey's wings by arm (2: west, 3: east) and their colours */
                gateway: { Arena: { core: [0, -62.7], axis: [0, 1], gate: [0, -52.5], wings: { 2: 'barracks', 3: 'stable' }, colours: { barracks: 0x5d7391, stable: 0xa88f50 } } },
                /* the cantons with homes among their rooms: their residences' share, and how many top storeys are all homes */
-               homes: { Guild: { share: 0.3, topStoreys: 2 }, Market: { share: 0.3, topStoreys: 2 }, Granary: { share: 0.35, topStoreys: 2 } },
+               homes: { Guild: { share: 0.5, topStoreys: 3 }, Market: { share: 0.5, topStoreys: 3 }, Granary: { share: 0.5, topStoreys: 3 } },
                /* the beasts in a stable (kits/fauna's Voth group): the room kinds that keep them, which, the odds of two to a room */
                beasts: { rooms: ['stable'], keys: ['arena-tiger', 'pit-lizard', 'giant-beetle', 'staghorn-beetle'], pair: 0.45 },
                /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
@@ -47273,7 +47273,7 @@ var TUNE = {
              store: [1, 0, 'porters and warehousemen'], warehouse: [3, 0, 'porters and warehousemen'], granary: [1, 0, 'granary keepers and millers'],
              shop: [3, 0, 'shopkeepers and assistants'], tavern: [5, 0, 'innkeepers and servers'], guildhall: [6, 0, 'guild masters and journeymen'],
              training: [3, 0, 'drill masters and trainers'], stable: [2, 0, 'grooms and beast keepers'], shrine: [1, 0, 'shrine keepers'], cell: [0.5, 1, 'jailers'],
-             reception: [2, 0, 'envoys and embassy staff'], library: [2, 0, 'scribes and librarians'], living: [0, 5, ''], cottage: [0, 6, ''], bedroom: [0, 2, ''],   /* a canton home is a family's apartment */
+             reception: [2, 0, 'envoys and embassy staff'], library: [2, 0, 'scribes and librarians'], living: [0, 6, ''], cottage: [0, 8, ''], bedroom: [0, 2, ''],   /* a canton home is a family's apartment, often three generations */
              catacomb: [0.3, 0, 'necropolis keepers'], tomb: [0.2, 0, 'necropolis keepers'],
              byCanton: { Arena: { barracks: 'gladiators and arena keepers', training: 'gladiators and arena keepers' }, Fortress: { barracks: 'Ordinator garrison', training: 'Ordinator garrison', office: 'Ordinator garrison' },
                          Foreign: { office: 'envoys and embassy staff' }, Guild: { workshop: 'guild masters and journeymen', smithy: 'guild masters and journeymen' }, Arsenal: { workshop: 'armourers and quartermasters' } } },
