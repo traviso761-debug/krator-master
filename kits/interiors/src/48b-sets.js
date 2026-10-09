@@ -105,6 +105,7 @@
     const door = function (d) {
       const q = Object.assign({}, d); q.at = T(d.at);
       if (q.to == null) q.to = 'street';
+      else if (typeof q.to === 'string' && q.to.charAt(0) === '.') q.to = id + q.to;   /* '.back': the item's own room 'back' */
       return q;
     };
     item.bodies.forEach(function (b, bi) {
@@ -168,6 +169,8 @@
     if (!item.residence || item.skip) return out;
     const FOOD = IX.FOOD_ROLES || [], ITEM = IX.ITEM_ROLES || [];
     inst.rooms.forEach(function (R) {
+      /* a carved bed shelf (or any fixture marked bed: n) sleeps n: structure, not furniture (kits/zeijani) */
+      (R.fixtures || []).forEach(function (f) { if (f.bed) out.beds += f.bed === true ? 1 : f.bed; });
       const P = plans[R.id]; if (!P) return;
       P.placements.forEach(function (p) {
         if (p.type === 'bed') out.beds += p.catRole === 'bunk' ? 2 : 1;     /* a bunk sleeps two */

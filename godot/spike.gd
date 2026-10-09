@@ -1,6 +1,6 @@
 # The spike's one scene (GODOT-PLAN.md Phase 7): load one export case at a time and show what came through.
 #
-#   godot --path godot                          the window; keys 1-5 switch case, F1 help
+#   godot --path godot                          the window; keys 1-7 switch case, F1 help
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv"]
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -18,6 +18,7 @@ const ABOUT := {
 	"iziz": "krator-atmos JSON for the whole city + a glTF region of the city centre",
 	"yuni": "KRATOR_EXPORT records: every building, door, window and light as tagged records; one interior in full",
 	"verge": "krator-sim + krator-verge-place: the twin cities' buildings as stand-ins and the caravans, porters, nomads and patrols moved by the exported timetable (KratorVergeSim)",
+	"dhelv": "krator-dhelv-place + krator-walk + krator-sim motion: the cave city's sites as stand-ins, its walk floors baked to a navmesh with an agent walking gate to temple, the ramblers posed by KSim (core/simulation's twin)",
 }
 
 var current := ""
@@ -157,6 +158,17 @@ func _load_case(name: String) -> Dictionary:
 			world.add_child(v)
 			report = v.get_meta("report")
 			focus = v.get_meta("focus", Vector3.ZERO)
+		"dhelv":
+			var dv := KratorDhelv.build(dir)
+			world.add_child(dv)
+			report = dv.get_meta("report")
+			focus = dv.get_meta("focus", Vector3.ZERO)
+			if terrain:   # the city is underground: the land over it drawn faint
+				for m in ([terrain] if terrain is MeshInstance3D else []) + terrain.find_children("*", "MeshInstance3D", true, false):
+					var tm := StandardMaterial3D.new()
+					tm.albedo_color = Color(0.45, 0.42, 0.38, 0.18)
+					tm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+					m.material_override = tm
 		"yuni":
 			var r := KratorRecords.build(dir + "fixtures.json", dir + "building.json")
 			world.add_child(r)
@@ -170,7 +182,7 @@ func _load_case(name: String) -> Dictionary:
 		report["stage"] = _stage_base.get("report", {})
 	else:
 		_default_stage()
-	var span := 60.0 if name in ["girder", "yuni"] else 900.0 if name == "verge" else 140.0
+	var span := 60.0 if name in ["girder", "yuni"] else 900.0 if name == "verge" else 160.0 if name == "dhelv" else 140.0
 	cam.look_from(focus + Vector3(span * 0.6, span * 0.45, span * 0.8), focus)
 	cam.set("speed", span * 0.25)
 	var args := _args()
@@ -254,7 +266,7 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-6 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "\n1-7 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -262,7 +274,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if not (e is InputEventKey and e.pressed and not e.echo):
 		return
 	var k := (e as InputEventKey).keycode
-	if k >= KEY_1 and k <= KEY_6:
+	if k >= KEY_1 and k <= KEY_7:
 		_load_case(CASES[k - KEY_1])
 	elif k == KEY_F1:
 		help_on = not help_on

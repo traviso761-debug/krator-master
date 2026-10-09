@@ -1,0 +1,9 @@
+[
+ {"src": "zeijani-sky-dome-disc.png", "out": "core/materials/patterns/zeijani/sky-dome",
+  "record": {"id": "zeijani/sky-dome", "family": "paint", "colour": "#ffffff", "roughness": 0.8, "metal": 0, "scale": [1, 1], "tint": false, "pattern": true,
+   "_source": {"generator": "supplied by the owner (pasted in the session, 2026-10-08): a round painting for the dome, the zenith at its centre and the gilt zigzag band at its rim; it replaces the 2026-10-07 equirectangular sheet (reworked by dome_sheet.py), which looked warped on the hemisphere",
+    "licence": "generated for this project by its owner",
+    "prompt": "kits/zeijani/KNOWN_ISSUES.md, \"The temple's sky dome\" (the sky over the Throne: sun, ringed gas giant, moons, stars, a gilt zigzag band at the rim), drawn as a disc to be mapped round a dome's zenith",
+    "reuse": "the painted sky inside a dome, mapped polar (the disc's centre at the zenith, its rim at the dome's spring): the Zeijani temple's sanctum dome; any round sky-motif ceiling"}},
+  "options": {"pattern": true, "keep_aspect": true, "delight": 0.0, "lift": 0.0, "normal_strength": 0.2, "rough": 0.8, "rough_var": 0.08, "size": 2048, "seam_axes": "none"}}
+]

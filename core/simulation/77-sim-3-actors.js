@@ -11,9 +11,11 @@
 //   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock}, speed?})
 //   SIM.group({id, kind, org, members:[actor ids], beasts?, mount?, vehicle?})
 //   SIM.event({id, kind, org, every:[minH,maxH] (world hours between firings), window?:[h0,h1], from:[ports], to:[ports]|'other',
+//              spread?: metres either side of the leader its members walk in pairs (1.6, a caravan 1.1); 0: single file, 1.4 m apart
 //              size:[a,b] (units), unit:[{role, n}], arrive:{kinds:[..]}, stay:{untilHour, nights}, layer, mode, speed, beasts?, mount?,
 //              legs?:[{activity, mins, kinds?}] (an itinerary instead of arrive and stay: stop to stop together, then out)})
-//   SIM.port({id, x, z, layer, kind})                   a map-edge entry
+//   SIM.port({id, x, z, layer, kind, y?, node?})        a map-edge entry (y and node: where it stands in a world of levels,
+//                                                       an entry inside it: a group starts there and its route ends on that node)
 //   SIM.step()                                          one simulated minute (the host calls it as the world minute advances)
 //   SIM.jump()                                          the clock jumped: everyone is re-placed from the schedule (a share mid-trip)
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
@@ -131,10 +133,10 @@
     if(!from){ SIM.err('event '+E.id+': no port'); return null; }
     if(E.kind==='excursion') return excursion(E, minute, t, from);
     var P0=SIM.R.port[from], units=SIM.rng.int(E.size?E.size[0]:1, E.size?E.size[1]:1), gid=E.id+'#'+(++E.fired), members=[];
-    var G=SIM.group({ id:gid, kind:E.kind, org:E.org, event:E.id, members:members, beasts:E.beasts?units*(E.beasts||1):0, mount:E.mount||null, from:from, to:to, units:units, mode:E.mode||'walk', layer:E.layer||'pedestrian', speed:E.speed||SIM.SPEED.walk });
+    var G=SIM.group({ id:gid, kind:E.kind, org:E.org, event:E.id, spread:E.spread, members:members, beasts:E.beasts?units*(E.beasts||1):0, mount:E.mount||null, from:from, to:to, units:units, mode:E.mode||'walk', layer:E.layer||'pedestrian', speed:E.speed||SIM.SPEED.walk });
     for(var u=0;u<units;u++) (E.unit||[]).forEach(function(U){ for(var n=0;n<U.n;n++){
       var id=gid+'.'+members.length, a=SIM.actor({ id:id, role:U.role, org:E.org, transient:true, group:gid, home:null });
-      a.at=[P0.x, P0.z]; a.pos={ x:P0.x, y:0, z:P0.z }; a.inVehicle=null; members.push(id); } });
+      a.at=[P0.x, P0.z]; a.pos={ x:P0.x, y:P0.y||0, z:P0.z }; a.inVehicle=null; members.push(id); } });
     if(!members.length){ SIM.err('event '+E.id+': its unit makes no one (unit:[{role, n}])'); SIM.remove('group', gid); return null; }
     if(E.legs && E.legs.length) return itinerary(E, G, members, P0, to, minute, t);
     /* the itinerary: arrive together, stay to the depart hour (the members' own schedules meanwhile), leave together */
@@ -168,7 +170,7 @@
   /* a group's TOGETHER leg: the leader's route, the others behind and beside it (KSCHED.formation's offsets) */
   function groupLeg(G, minute, t){
     var lead=SIM.R.actor[G.leader], L=lead.plan[lead.planI], P;
-    if(L.port){ var Pt=SIM.R.port[L.port]; P={ id:'port:'+L.port, x:Pt.x, z:Pt.z, y:0, door:{ x:Pt.x, z:Pt.z, y:0 }, layer:Pt.layer }; }
+    if(L.port){ var Pt=SIM.R.port[L.port]; P={ id:'port:'+L.port, x:Pt.x, z:Pt.z, y:Pt.y||0, door:{ x:Pt.x, z:Pt.z, y:Pt.y||0, node:Pt.node }, layer:Pt.layer }; }
     else P=SIM.R.place[L.place];
     if(!P) return;
     var from=SIM.pose(lead, t), layer=G.layer||'pedestrian', mode=G.mode||'walk', spd=G.speed||lead.speed;
@@ -176,8 +178,8 @@
     var r=SIM.nav.route(layer, from, to, { minW:G.kind==='caravan'?5:0 });
     G.members.forEach(function(id, i){ var a=SIM.R.actor[id]; if(L.place && P.occ!=null) SIM.reserve(a, P, L.activity);
       a.activity=L.activity; a.place=L.place||null;
-      var row=Math.floor(i/2), side=(i%2?1:-1)*(G.kind==='caravan'?1.1:1.6);
-      a.task={ act:L.activity, place:a.place, t0:t, legs:r?[{ route:r, speed:spd, mode:mode, layer:layer, dur:r.len/spd, back:row*(G.kind==='caravan'?3.2:3.0), side:i?side:0 }]:[], spot:to, dur:r?r.len/spd:0, indoor:false, together:G.id };
+      var file=G.spread===0, row=file?i:Math.floor(i/2), side=file?0:(i%2?1:-1)*(G.spread!=null?G.spread:G.kind==='caravan'?1.1:1.6);   /* spread 0: single file on the leader's path */
+      a.task={ act:L.activity, place:a.place, t0:t, legs:r?[{ route:r, speed:spd, mode:mode, layer:layer, dur:r.len/spd, back:row*(file?1.4:G.kind==='caravan'?3.2:3.0), side:i?side:0 }]:[], spot:to, dur:r?r.len/spd:0, indoor:false, together:G.id };
       a.task.arrive=t+a.task.dur; });
     G.legAt=t; G.legArrive=t+(r?r.len/spd:0); G.route=r; G.phase=L.port?'depart':'arrive';
     if(!r) SIM.logEvent('nopath', { group:G.id, layer:layer, to:L.port||L.place });

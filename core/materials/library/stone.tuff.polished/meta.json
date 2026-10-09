@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.193,
+    1.234
+   ],
+   "seam_before": [
+    1.161,
+    1.352
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.3,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": false,
+   "rough": 0.38,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.tuff.polished",
+  "metal": 0,
+  "roughness": 0.38,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone.tuff.polished.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Warm Travertine Stone Texture.png\")",
+  "reuse": "burnished tuff (it reads as a soft travertine): Zeijani wealthy and civic carved rooms; any polished cream stone (court floors, a bath)",
+  "sha1": "1c32aadca960ab9cc65d006b3b33c849e6721efc"
+ }
+}

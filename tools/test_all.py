@@ -30,7 +30,8 @@ NIGHTLY_VERIFY = [
 ]
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/atmos/atmos_test.gd',
-               'res://tests/verge/verge_sim_test.gd']
+               'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd',
+               'res://tests/dhelv/dhelv_nav_test.gd']
 
 
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'

@@ -117,7 +117,7 @@ def izv_files():
 
 def izv_bundle():
     fs = izv_files()
-    body = ''.join('/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT), rd(f)) for f in fs)
+    body = ''.join('/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, "/"), rd(f)) for f in fs)
     return safe('/* IZV: the Iziz Vernacular kit and its Ancients core, one closure (settlements/verge/build.py). GENERATED: '
                 'edit settlements/iziz/src, core/materials or kits/ancients/src. */\n'
                 'var IZV = (function(){\n' + body +
@@ -126,7 +126,7 @@ def izv_bundle():
                 'return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
                 '  TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),\n'
                 '  FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),\n'
-                '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT) for f in fs]
+                '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT).replace(os.sep, "/") for f in fs]
 
 
 # ---------------------------------------------------------------- the Yuni / Locus / Abyss bundle (YKIT)
@@ -153,7 +153,7 @@ def ykit_bundle():
             if n != 1:
                 sys.exit('build.py: locus 10-core.js no longer reads window.YUNI_TARGET exactly once (%d): fix the YKIT bundle' % n)
             s = s.replace('window.YUNI_TARGET', "'verge'")
-        parts.append('/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT), s))
+        parts.append('/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, "/"), s))
     glow = rd(os.path.join(LOCUS, '81-glow.js'))
     body = ''.join(parts)
     return safe('/* YKIT: the Yuni base assets, the Locus kit and the Eastern Abyssal kit with the Yuni engine they draw through, '
@@ -166,7 +166,7 @@ def ykit_bundle():
                 '  emitBuckets: emitBuckets, emitMerged: emitMerged, nlLampAdd: nlLampAdd, nlMaterial: nlMaterial, NLV_U: NLV_U,\n'
                 '  NL_LAMPS: NL_LAMPS, NL_WINDOWS: NL_WINDOWS, SITES: SITES, shade: shade, BUCKET: BUCKET, MBK: MBK, glow: YK_GLOW,\n'
                 '  CLOTH_TIME: CLOTH_TIME, kitDone: function(){ KIT_EMITTED = true; }, LANTERN: LANTERN, LAMPPOST: LAMPPOST };\n})();\n'), \
-        [os.path.relpath(f, ROOT) for f in fs] + ['settlements/locus/src/81-glow.js']
+        [os.path.relpath(f, ROOT).replace(os.sep, "/") for f in fs] + ['settlements/locus/src/81-glow.js']
 
 
 def catalog_bundle():
@@ -197,7 +197,7 @@ def main():
             for w in FORBID:
                 if w in s:
                     bad.append('%s: uses %s' % (os.path.relpath(p, ROOT), w))
-            frags[slot] = (s, os.path.relpath(p, ROOT))
+            frags[slot] = (s, os.path.relpath(p, ROOT).replace(os.sep, "/"))   # "/" on every OS: the page must not depend on the machine
     if bad and CHECKS:
         print('BIOME FRAGMENT DEPENDS ON A HOST:\n  ' + '\n  '.join(bad)); return 1
     cat, sets = catalog_bundle()

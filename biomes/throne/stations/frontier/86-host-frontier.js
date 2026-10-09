@@ -1,7 +1,7 @@
 // ================================================================= HOST — the frontier's layout: rows, stumps, slash, walls, traps
 // What the colonists and the natives have made of the ground, as RECORDS first (README.md: a world rule lives in data,
 // the drawing is only its picture), then drawn:
-//   ROWS     the planted spice trees, in rows along the contours of each terrace (THRONE.make + grow: the kit's own
+//   ROWS     the planted Ranj trees, in rows along the contours of each terrace (THRONE.make + grow: the kit's own
 //            builder, T.planted: thin, yellowing, no resin: the tree's fungus has not taken here)
 //   STUMPS   the hypertrees felled for the fields and the clearings: sawn stumps metres across, buttressed, ringed tops
 //   SLASH    the felled crowns, burnt where the clearing was fired

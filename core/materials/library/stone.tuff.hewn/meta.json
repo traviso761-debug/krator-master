@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.196,
+    1.332
+   ],
+   "seam_before": [
+    1.362,
+    1.533
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.tuff.hewn",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone.tuff.hewn.webp",
+  "generator": "supplied by the owner (pasted into the chat, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\", stone.tuff.hewn",
+  "reuse": "tuff hewn by pick and adze in curving fans: the Zeijani poor carved rooms and passages; any rock-cut room in soft stone (Cappadocia, Petra's back rooms, a quarry face)",
+  "sha1": "190574334f19e04f345f3a7ef80729a3ae153c7d"
+ }
+}

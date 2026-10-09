@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.237,
+    1.154
+   ],
+   "seam_before": [
+    1.857,
+    1.033
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "rock.basalt.flowbanded",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock.basalt.flowbanded.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Layered Basalt Lava Flow Texture.png\")",
+  "reuse": "a lava tube's flow-banded lining (Raufarholshellir): the Zeijani tubes, the Throne's tube station, any lava cave",
+  "sha1": "05699fc861fc1956f03e630dfd2a33a3f762682f"
+ }
+}

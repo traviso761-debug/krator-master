@@ -1,77 +1,77 @@
 {
  "abyss-kit": {
   "interiors-off": {
-   "batchTris": 164900,
-   "geometry": "8835c3ce",
-   "groupTris": 164900,
+   "batchTris": 179735,
+   "geometry": "dd8706c3",
+   "groupTris": 179735,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 17,
+   "meshes": 23,
    "missing": {},
-   "placed": 521,
-   "records": "b20be4e7"
+   "placed": 611,
+   "records": "de5aebd9"
   },
   "interiors-on": {
-   "batchTris": 707583,
-   "geometry": "f1369dd",
-   "groupTris": 707583,
-   "interiorPieces": 1219,
-   "interiors": 49,
+   "batchTris": 824847,
+   "geometry": "945565cc",
+   "groupTris": 824847,
+   "interiorPieces": 1415,
+   "interiors": 54,
    "lights": 0,
-   "meshes": 89,
+   "meshes": 56,
    "missing": {},
-   "placed": 521,
-   "records": "a9ea04ed"
+   "placed": 611,
+   "records": "93687d9d"
   }
  },
  "girder": {
   "interiors-off": {
    "batchTris": 107158,
-   "geometry": "3c7e9a37",
+   "geometry": "a07a46b8",
    "groupTris": 107158,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 13,
+   "meshes": 21,
    "missing": {},
    "placed": 1331,
-   "records": "84eaf4a0"
+   "records": "721ba00d"
   },
   "interiors-on": {
    "batchTris": 107158,
-   "geometry": "3c7e9a37",
+   "geometry": "a07a46b8",
    "groupTris": 107158,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 13,
+   "meshes": 21,
    "missing": {},
    "placed": 1331,
-   "records": "84eaf4a0"
+   "records": "721ba00d"
   }
  },
  "highlands": {
   "interiors-off": {
    "batchTris": 1022986,
-   "geometry": "cb9697ec",
+   "geometry": "4b7cfea9",
    "groupTris": 1022986,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 19,
+   "meshes": 23,
    "missing": {},
    "placed": 1126,
    "records": "c56e9bdd"
   },
   "interiors-on": {
-   "batchTris": 5506280,
-   "geometry": "b102d5e6",
-   "groupTris": 5506280,
-   "interiorPieces": 5297,
+   "batchTris": 5568375,
+   "geometry": "31c5efcf",
+   "groupTris": 5568375,
+   "interiorPieces": 5317,
    "interiors": 146,
    "lights": 0,
-   "meshes": 456,
+   "meshes": 118,
    "missing": {},
    "placed": 1126,
    "records": "c56e9bdd"
@@ -79,34 +79,34 @@
  },
  "locus": {
   "interiors-off": {
-   "batchTris": 195124,
-   "geometry": "2b64de15",
-   "groupTris": 195124,
+   "batchTris": 190632,
+   "geometry": "894be6ce",
+   "groupTris": 190632,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
    "meshes": 14,
    "missing": {},
-   "placed": 750,
-   "records": "92859cea"
+   "placed": 739,
+   "records": "baf0c842"
   },
   "interiors-on": {
-   "batchTris": 1033006,
-   "geometry": "1d20e2eb",
-   "groupTris": 1033006,
-   "interiorPieces": 2450,
-   "interiors": 151,
+   "batchTris": 1094958,
+   "geometry": "f754fdf3",
+   "groupTris": 1094958,
+   "interiorPieces": 2386,
+   "interiors": 147,
    "lights": 0,
-   "meshes": 146,
+   "meshes": 59,
    "missing": {},
-   "placed": 750,
-   "records": "92859cea"
+   "placed": 739,
+   "records": "baf0c842"
   }
  },
  "locus-kit": {
   "interiors-off": {
    "batchTris": 33204,
-   "geometry": "cda5115a",
+   "geometry": "433494fd",
    "groupTris": 33204,
    "interiorPieces": 0,
    "interiors": 0,
@@ -117,13 +117,13 @@
    "records": "96cbfc60"
   },
   "interiors-on": {
-   "batchTris": 104541,
-   "geometry": "b358c325",
-   "groupTris": 104541,
-   "interiorPieces": 218,
+   "batchTris": 105228,
+   "geometry": "b68b3efa",
+   "groupTris": 105228,
+   "interiorPieces": 217,
    "interiors": 16,
    "lights": 0,
-   "meshes": 46,
+   "meshes": 34,
    "missing": {},
    "placed": 148,
    "records": "214c0f12"
@@ -131,80 +131,80 @@
  },
  "mavs-refuge": {
   "interiors-off": {
-   "batchTris": 1278216,
-   "geometry": "6f90d386",
-   "groupTris": 1278216,
+   "batchTris": 1277994,
+   "geometry": "fd059bc1",
+   "groupTris": 1277994,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 2612,
-   "meshes": 17,
+   "meshes": 19,
    "missing": {},
    "placed": 10991,
-   "records": "d91ead26"
+   "records": "e94658af"
   },
   "interiors-on": {
-   "batchTris": 1303831,
-   "geometry": "b0a46a68",
-   "groupTris": 1303831,
-   "interiorPieces": 78,
-   "interiors": 3,
+   "batchTris": 1277994,
+   "geometry": "fd059bc1",
+   "groupTris": 1277994,
+   "interiorPieces": 0,
+   "interiors": 0,
    "lights": 2612,
-   "meshes": 36,
+   "meshes": 19,
    "missing": {},
    "placed": 10991,
-   "records": "d91ead26"
+   "records": "e94658af"
   }
  },
  "post-apoc": {
   "interiors-off": {
    "batchTris": 321357,
-   "geometry": "28b6acd5",
+   "geometry": "b74583e9",
    "groupTris": 321357,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 17,
+   "meshes": 20,
    "missing": {},
    "placed": 903,
-   "records": "c79a17d0"
+   "records": "c029aff6"
   },
   "interiors-on": {
-   "batchTris": 452409,
-   "geometry": "3a01a558",
-   "groupTris": 452409,
-   "interiorPieces": 585,
+   "batchTris": 452465,
+   "geometry": "606876c5",
+   "groupTris": 452465,
+   "interiorPieces": 582,
    "interiors": 31,
    "lights": 0,
-   "meshes": 43,
+   "meshes": 38,
    "missing": {},
    "placed": 903,
-   "records": "c79a17d0"
+   "records": "c029aff6"
   }
  },
  "roketstad": {
   "interiors-off": {
-   "batchTris": 3502168,
-   "geometry": "159bfaa5",
-   "groupTris": 3502168,
+   "batchTris": 3450736,
+   "geometry": "ce8edb72",
+   "groupTris": 3450736,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 16,
+   "meshes": 20,
    "missing": {},
-   "placed": 5818,
-   "records": "1a33d0b1"
+   "placed": 5994,
+   "records": "fb3c5a7e"
   },
   "interiors-on": {
-   "batchTris": 21021956,
-   "geometry": "f311ce6",
-   "groupTris": 21021956,
-   "interiorPieces": 43572,
-   "interiors": 1689,
+   "batchTris": 21276092,
+   "geometry": "31bb497b",
+   "groupTris": 21276092,
+   "interiorPieces": 45366,
+   "interiors": 1704,
    "lights": 0,
-   "meshes": 3326,
+   "meshes": 68,
    "missing": {},
-   "placed": 5818,
-   "records": "1a33d0b1"
+   "placed": 6021,
+   "records": "3b53674"
   }
  }
 }

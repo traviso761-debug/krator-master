@@ -1,4 +1,21 @@
 {
+  "dhelv": {
+    "counts": {
+      "lights": "760 records, 48 lit",
+      "navmesh_bake_ms": 1713,
+      "navmesh_polygons": 6477,
+      "ramblers": 651,
+      "sites": 169,
+      "walk_blocks": 15566,
+      "walk_floors": 2731
+    },
+    "gaps": {
+      "cavern": "the cavern's rock is not meshed: cavern.json is KCAVERN's plan and its marching cubes are not ported; the walk floors stand in",
+      "furniture": "no furniture or interiors exported (IX.exportBuilding, the catalog's records)",
+      "materials": "the material library (tex/pack.json) is not read: flat district colours"
+    },
+    "route": "krator-dhelv-place, krator-walk, krator-sim (motion), krator-lights (settlements/dhelv)"
+  },
   "girder": {
     "counts": {
       "extras_keys": {
@@ -16,7 +33,7 @@
       },
       "images": 48,
       "instances": 521,
-      "load_ms": 452,
+      "load_ms": 1387,
       "materials": 57,
       "meshes": 57,
       "multimeshes": 11,
@@ -49,9 +66,7 @@
         "trim": 1
       },
       "replaced": 16,
-      "unmatched": {
-
-      },
+      "unmatched": {},
       "world_uv": 8
     },
     "route": "glTF (three GLTFExporter r128)",
@@ -85,7 +100,7 @@
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 256,
+      "load_ms": 181,
       "materials": 32,
       "textures": 21,
       "triangles": 10738
@@ -114,7 +129,7 @@
       },
       "images": 18,
       "instances": 6752,
-      "load_ms": 120,
+      "load_ms": 439,
       "materials": 75,
       "meshes": 161,
       "multimeshes": 122,
@@ -169,7 +184,7 @@
       },
       "glow": 322,
       "lamps": 65,
-      "load_ms": 23,
+      "load_ms": 131,
       "prop_instances": 2339,
       "prop_sets": 26
     },
@@ -195,7 +210,7 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 881,
+      "load_ms": 909,
       "materials": 51,
       "textures": 35,
       "triangles": 186920
@@ -236,7 +251,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 299,
+      "load_ms": 1312,
       "windows": 6841
     },
     "counts_interior": {

@@ -15,7 +15,7 @@ edge crosses (Koppen BSk, Csa, BSh, Csb: `THRONE.KOPPEN`, read off the scale mod
 | field | from the world | how the kit uses it |
 |---|---|---|
 | `plume` | how far under the plume, 0..1 | **the turn**: the shoulder's species (Earth's descendants, the crater's standbys) give way to Krator's own |
-| `vent` | near a fumarole | steaming ground: bone bells, brain caps, vent coral, the mat; its edge (`halo`) the spice trees |
+| `vent` | near a fumarole | steaming ground: bone bells, brain caps, vent coral, the mat; its edge (`halo`) the Ranj trees |
 | `acid` | the acid lake's and hot pools' shores | sulphur rosettes, vent coral, drizzle trumpets |
 | `cinder` | a cinder cone's loose flanks | sparse: star aloes and ash pines on the shoulder, rope-trees and soot cups under the plume |
 | `skylight` | the floor and walls of a skylight into a lava tube | ferns, scale cones, glow mushrooms, lamp caps, trumpet trees |
@@ -27,7 +27,7 @@ edge crosses (Koppen BSk, Csa, BSh, Csb: `THRONE.KOPPEN`, read off the scale mod
 | `humid` | the climate: 1 windward, 0 on the shoulder | `wetW` / `dryW`: the wet species or the dry |
 | `owned`, `kedge`, `knear` | the kipuka (station 2) | the hyperjungle's ground; its rim (great ruffs, frill trees); the young lava outside it |
 | `field`, `clear`, `coast`, `edge` | the frontier (station 3) | plantations, clearings, the shore's strip, the poison gardens |
-| `grove` | the geyser isle (station 4): the warm ground round its basin | **wild spice that bears** (the isles' geyser ground: `NOTES.md`), tree ferns, arch palms |
+| `grove` | the geyser isle (station 4): the warm ground round its basin | **wild Ranj that bears** (the isles' geyser ground: `NOTES.md`), tree ferns, arch palms |
 | `iwood` | the isle's own forest | a closed forest of lehua over tree ferns, a few palm frill trees (an island's: smaller) |
 | `beach` | the strip behind the isle's sand | coconut palms and palm frill trees, leaning out to the sea (downhill) |
 | `mangal` | the lagoon's shallows and mud flats | the hyper-mangroves (the shallows pass, off the mask: they stand in water) |
@@ -70,7 +70,7 @@ the fall line turned by `veer` and a noise `wander`, widening from `w0` to `w1` 
 
 | # | key | name | H (m) | origin | lives |
 |---|---|---|---|---|---|
-| 0 | spice | Spice tree | 8-15 | earth | seam (its resin is the spice: `NOTES.md`) |
+| 0 | spice | Ranj tree | 8-15 | earth | seam (its resin is Ranj, the spice: `NOTES.md`; the key stays `spice`) |
 | 1 | trumpet | Trumpet tree | 9-18 | krator | shoulder |
 | 2 | frill | Frill-tree | 5-10 | krator | shoulder |
 | 3 | gillparasol | Gill-parasol | 10-22 | native | seam |
@@ -110,7 +110,7 @@ mycelium) is the host's (84).
 ## The library
 
 With the pack (`materials.json`, `tex/`; the owner's textures, `core/materials/PLAN.md`, The Throne) the kit takes six
-barks (the spice tree's honeycomb, the rope-tree's twisted strands among them), the bone bells' sulphur flesh, the needles and the broom from the library, and places the library's card plants (glowing shelf
+barks (the Ranj tree's honeycomb, the rope-tree's twisted strands among them), the bone bells' sulphur flesh, the needles and the broom from the library, and places the library's card plants (glowing shelf
 fungi, glow mushrooms, glow tufts, snare flowers, sixteen plume fungi, dripping fungi, tendril creepers, lava-leaf,
 withered and succulent leaves). `THRONE.LIB.cardsOf(key)` lists what the pack carries; without it (an open world,
 `?mat=proc`) the kit is procedural throughout and those plants are simply not placed.
@@ -145,10 +145,10 @@ kits' fragments read in place). Station 2, the kipuka, reads the hyperjungle kit
 41 and 48a-48f, so both kits sit on one page; its build plants the Throne first, makes the Throne's big trees obstacles,
 then plants the hyperjungle with the 'owned' mask. Station 3, the frontier, adds 'atmos' to station.json (core/atmos files,
 the sea's wave field) and reads 'field', 'clear', 'coast', 'edge' (zones and floor planters of the same names); its host
-plants the plantation rows itself through THRONE.make/grow with T.planted (a thin, yellowing spice tree with no resin). The kit's zones read 'humid' (the climate: 1 windward, 0 on the
+plants the plantation rows itself through THRONE.make/grow with T.planted (a thin, yellowing Ranj tree with no resin). The kit's zones read 'humid' (the climate: 1 windward, 0 on the
 shoulder) to choose the wet or the dry species, and 'owned', 'kedge', 'knear' for the kipuka. Station 4, the geyser isle,
 is the Throne kit alone (no hyperjungle: an island's forest is its own, smaller) with `shallows` and `understory`; it
-reads 'grove', 'iwood', 'beach', 'mangal', 'wrack', and taps the spice trees its camp stands among after the build
+reads 'grove', 'iwood', 'beach', 'mangal', 'wrack', and taps the Ranj trees its camp stands among after the build
 (`ISLE.tap`). Its passes come last in `THRONE.PASSES`: every pass draws from the PRNG in every cell, so a pass added before
 the others would reshuffle every other station's trees. Station 5, the cloud forest, is the Throne kit alone with
 `understory`; it reads 'cforest' (and 'humid' for the heath in the ridge's lee), and binds the shared atmosphere's weather

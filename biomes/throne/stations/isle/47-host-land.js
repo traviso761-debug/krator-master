@@ -62,7 +62,7 @@ function waterH(x,z){const h=terrainH(x,z);if(h<SEA+.25)return SEA;
  return -1e9;}
 
 // ---------------------------------------------------------------- the fields (cached below; these are the definitions)
-// The world's and the Throne's (BIOME-API.md), and the isle's: grove (the warm ground round the basin: wild spice), iwood
+// The world's and the Throne's (BIOME-API.md), and the isle's: grove (the warm ground round the basin: wild Ranj), iwood
 // (the isle's own forest), beach (the strip behind the sand: palms), coast (the same, for the floor), path, camp
 function ventAt(x,z){let v=0;for(const S of STEAM){const d=Math.hypot(x-S.x,z-S.z);if(d<S.R*2.2)v=Math.max(v,S.s*Math.exp(-Math.pow(d/S.R,2)));}
  for(const G of GEYSERS){const d=Math.hypot(x-G.x,z-G.z);if(d<G.mound*2.4)v=Math.max(v,Math.exp(-Math.pow(d/(G.mound*.9),2)));}

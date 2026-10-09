@@ -31,10 +31,12 @@
         o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<L.route.len; o.mode=L.mode; o.leg=i;
         if(!a.present) o.hidden=true; return o; }
       dt -= L.dur; }
-    /* arrived: at the spot (behind the leader for a group, so a caravan does not stand in one place) */
+    /* arrived: at the spot; a group's member where its walk stopped, `back` metres behind its leader ALONG the way (straight
+       back off the last bend would stand it in a wall where a way turns at its end), so a caravan does not stand in one place */
     var sp=T.spot, lastL=T.legs[T.legs.length-1], back=lastL?(lastL.back||0):0, side=lastL?(lastL.side||0):0, tx=0, tz=1;
-    if(lastL){ var e=SIM.at(lastL.route, lastL.route.len); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode; }
-    o.x = sp.x - tx*back - tz*side; o.z = sp.z - tz*back + tx*side; o.y = sp.y||0;
+    if(lastL){ var e=SIM.at(lastL.route, Math.max(0, lastL.route.len-back)); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode;
+      o.x = e.x - tz*side; o.z = e.z + tx*side; o.y = back ? e.y : (sp.y||0); }
+    else { o.x = sp.x; o.z = sp.z; o.y = sp.y||0; }
     var W=T.wander; if(W>0 && !T.indoor){ var P=SIM.WANDER.period, k=a.k||0, c=Math.floor((t+k*3.7)/P), u=((t+k*3.7)/P)-c;
       var ax=(h32(k,c)-0.5)*2*W, az=(h32(k+7919,c)-0.5)*2*W, bx=(h32(k,c+1)-0.5)*2*W, bz=(h32(k+7919,c+1)-0.5)*2*W, f=u<0.55?0:(u-0.55)/0.45, sm=f*f*(3-2*f);
       o.x += ax+(bx-ax)*sm; o.z += az+(bz-az)*sm; if(sm>0 && sm<1){ o.moving=true; o.h=Math.atan2(bx-ax, bz-az); } }

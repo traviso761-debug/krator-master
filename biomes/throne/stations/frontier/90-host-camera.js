@@ -20,7 +20,7 @@ const VMODE={};
 const VIEWS={
  'The frontier from the forest':(function(){const c=at2(F0.u[1]+120,F0.cp);return[c[0],gh(c[0],c[1],35),c[1],F0.x,gh(F0.x,F0.z,0),F0.z];})(),
  'Spice terraces':(function(){const c=at2(F0.cu,F0.p[0]-25);const t=at2(F0.cu-20,F0.cp);return[c[0],gh(c[0],c[1],5),c[1],t[0],gh(t[0],t[1],2),t[1]];})(),
- 'A planted spice tree (no resin)':(function(){const r=FRONTIER.rows.filter(r=>BIO.lodD(r.x,r.z)<200&&r.H>6)[0]||FRONTIER.rows[0];return[r.x+5,gh(r.x,r.z,3.5),r.z+4,r.x,gh(r.x,r.z,3),r.z];})(),
+ 'A planted Ranj tree (no resin)':(function(){const r=FRONTIER.rows.filter(r=>BIO.lodD(r.x,r.z)<200&&r.H>6)[0]||FRONTIER.rows[0];return[r.x+5,gh(r.x,r.z,3.5),r.z+4,r.x,gh(r.x,r.z,3),r.z];})(),
  'A fresh clearing':(function(){const c=at2(FC0.u[0]-10,FC0.cp);const t=at2(FC0.cu,FC0.cp);return[c[0],gh(c[0],c[1],6),c[1],t[0],gh(t[0],t[1],3),t[1]];})(),
  'A felled hypertree':[ST.x+ST.r*2.6,gh(ST.x,ST.z,ST.h+4),ST.z+ST.r*1.8,ST.x,gh(ST.x,ST.z,ST.h*.5),ST.z],
  'A native trail out of the forest':(function(){const P=T0.pts,a=P[Math.floor(P.length*.62)],b=P[Math.floor(P.length*.75)];return[a[0],gh(a[0],a[1],1.7),a[1],b[0],gh(b[0],b[1],1),b[1]];})(),

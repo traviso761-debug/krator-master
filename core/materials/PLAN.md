@@ -1645,6 +1645,34 @@ spill pass could not reach. Not adopted by a build yet.
 | `card.groundsel` | key #ff00ff 60/170, choke 2, rough 0.75, tint | nine Dendrosenecio leaves (green, felted silver undersides, two yellowing, one brown-tipped): the giant groundsel in `biomes/rift` and Voth; lobelia and any felted alpine rosette (mullein, lamb's ear, silversword) tinted |
 | `metal.steel.brushed` | seamless (`steel-brushed-2026-10.json`), delight 0.4, normal 0.5, rough 0.4, metal 0.8, tint | neutral grey brushed steel, fine horizontal grain: fills the audit's `metal.steel.brushed` row (the catalog's `steel` and `alloyWhite` keys); appliances, counters, railings, machine housings, vehicle trim |
 
+#### Delivered 2026-10-07 and processed: the Zeijani (`Downloads/zeijani.zip`, 22 images)
+
+The prompts of PROMPTS-ready.md "The Zeijani" (`kits/zeijani/PLAN.md` section 10), with eight extras the owner added for
+variety. Batches `tools/textures/batches/zeijani-2026-10.json` (19 surfaces) and `zeijani-cards-2026-10.json` (3 cut-outs).
+`stone.tuff.hewn` followed, pasted into the chat the same day (the same batch; delight .6, tint, 1.5 m: pick and adze scoops
+in curving fans). The frieze, mural and glazed sheets keep their aspect;
+the painted murals are not de-lit. Two sheets lost part of their motif to the pattern-period crop (the salamander's head and
+tail; the horned figures' lower border) and were redone with cross-faded edges instead (`_note` in their records).
+| Set | From | Options | Reuse |
+|---|---|---|---|
+| `rock.tuff` | Porous Beige Volcanic Stone | seamless, delight .6, rough .9, tint, 3 m | raw welded tuff: Zeijani spires, cliffs, gallery fronts; any volcanic-tuff country |
+| `stone.tuff.polished` | Warm Travertine Stone | delight .5, normal .35, rough .38, dark gloss .3, tint, 2 m | burnished tuff (reads as a soft travertine): Zeijani rich and civic rooms; any polished cream stone |
+| `stone.basalt.polished` | Dark Charcoal Terrazzo | as above, 1.5 m | honed near-black basalt: Zeijani hub floors; altars, dark polished floors |
+| `rock.basalt.flowbanded` | Layered Basalt Lava Flow | seamless, delight .6, tint, 2 m | a lava tube's banded lining: the Zeijani tubes, the Throne's tube station |
+| `rock.basalt.oxidised` | Multicolored Fractured Rock | seamless, full colour, 3 m | a lava tube's oxidised breakdown: Zeijani ceilings and fallen blocks; any lava cave |
+| `bone.ossuary` | Seamless Ossuary Wall | rough .7, tint, 1.5 m | stacked bones and skulls: the Zeijani catacombs; any charnel house |
+| `patterns/zeijani/labyrinth-relief` | Seamless Carved Stone Labyrinth | pattern, delight .25, normal .9, tint, 1.2 m | the council chamber, civic fronts |
+| `patterns/zeijani/frieze-spirits`, `-b`, `-c` | Ritual Procession; Stone Dancer, Mythic Stone Figure (extras) | pattern (c: cross-faded), keep aspect, 0.9 m band | rich fronts, the temple's base, kivas, the council |
+| `patterns/zeijani/frieze-skeletons` | Mesoamerican Skeleton Relief (extra) | pattern, keep aspect, 0.9 m | the catacombs, the mortuary chapel; any funerary front |
+| `patterns/zeijani/kiva-mural`, `-b`, `-c` | Weathered Mythic Fresco; Cosmic Ritual Fresco, Weathered Ritual Mural (extras) | pattern, keep aspect, delight 0, full colour, 1.5 m band | kiva and shrine walls, the temple |
+| `patterns/zeijani/sky-dome` | the owner's painted sky as a disc (pasted, 2026-10-08: batch `zeijani-skydome-disc-2026-10.json`; it replaced the 2026-10-07 wrapped sheet, which looked warped on the dome) | pattern, keep aspect, `seam_axes none` (a picture that does not repeat), 2048; packed at 1024 | the inside of a dome, mapped polar (the disc's centre at the zenith, its gilt band the rim): the temple's sanctum |
+| `patterns/zeijani/textile`, `-b` | Southwestern Diamond Rug; Inverted Kilim (extra) | pattern, keep aspect, full colour, 1 m | blankets, awnings, banners, cushions; the Eastern Nomads' pueblo cloth, any kilim |
+| `patterns/zeijani/glazed-frieze` | Turquoise Salamander Tile Mural | cross-faded, keep aspect, rough .35, full colour, 1.2 m | the capital's portal rim, the temple's way |
+| `patterns/zeijani/glazed-frieze-dragonfly`, `-beetle` | Glazed Dragonfly; Stag Beetle (extras) | pattern, keep aspect, 1.2 m | gates and baths; the beetle riders' gate |
+| `card.mushroom.alecap` | Purple Mushroom Cluster | key #ff00ff 50/120, spill edge (keeps the purples), choke 1 | the alecap, 3 x 3: beds and wild (a Throne species) |
+| `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
+| `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
+
 ## Next steps
 
 0. **Scan libraries:** catalogued (see "Available, not committed"). Nothing is reduced or committed until the demo texture

@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 60
     env:
       GIT_LFS_SKIP_SMUDGE: '1'
-      GODOT_VERSION: 4.5-stable
+      GODOT_VERSION: 4.7.2-stable
     steps:
       - name: Started yet?
         id: gate

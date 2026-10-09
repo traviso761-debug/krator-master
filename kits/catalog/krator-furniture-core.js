@@ -372,7 +372,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'ashnomad'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -429,7 +429,8 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
-  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
+  'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
 /* the activity an NPC can do AT a piece (simulation layer, 2026-10): `task: [..]` from FURN_TASKS. A trade (`job`) is
    what a worker produces; a task is what any NPC does: sleep, eat, read. A building holding a piece with a task is a
    destination for that task. Derived when an entry leaves task out: FURN_ROLE_TASK[role] first (a kit piece, [] = none),
@@ -517,6 +518,7 @@ const CATALOG_MATERIALS = {
   bronze:    { tags: ['metal'], families: ['bronze'] },
   lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
   ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  terracotta: { tags: ['stone'], families: ['terracotta'] },   /* unglazed fired clay: matte (ceramic is glazed); textured as ceramic ('ceramic/terracotta') */
   obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
   jade:      { tags: ['stone'], families: ['jade'] },
   bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },
@@ -852,7 +854,7 @@ function furnFamily(culture, color, family) {
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
-  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth };
+  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth, span: opt.span || 0 };   /* span: a stretching piece's length (a cord of pennants along its wall), else 0 */
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();

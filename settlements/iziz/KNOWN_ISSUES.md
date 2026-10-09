@@ -15,9 +15,13 @@ saying what fixed it.
 - [ ] (2026-10-05) Headless `verify.py dist/iziz.html` ends in `WebGL: CONTEXT_LOST_WEBGL` and FAILED even on the committed page (checked against
       `git show HEAD:settlements/iziz/dist/iziz.html`): the error panel is clean and the counters print (814 draw calls). It is the software GL on the city, not a regression;
       the Iziz page has no headless pass at the moment.
-- [ ] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
+- [x] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
       empties it (restore with git). The 58 and 55 copies were patched by hand (they differ from upstream only in the wrapper line). `build.py --help` also runs a full
       build and rewrites the manifests.
+      2026-10-08 (the vendor part fixed): the upstream was CRLF in this checkout and the wrap matched LF only; `bio_read` now
+      reads both as LF and `--vendor-bio` wraps before opening the copy. Re-vendored: the hyperjungle's harvest data, its
+      single-tree `make`/`grow`, the pandan keys, and its limbs and dead wood bound to the library's bark (`limb`, `wood`).
+      `--help` still runs a full build.
 - [ ] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
       patterns/iziz/mosaic-b, glass.frosted.b; PLAN.md) but Iziz has not adopted the library; its materials are still the procedural ones.
 

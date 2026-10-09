@@ -55,14 +55,14 @@ function valleyAt(u,p){let cut=0,bed=0,bank=0;for(const V of VALLEYS){const g=va
 // THE FIELDS: the colonists' terraced plantations, rectangles in (u up the flank, p along it); kind mature / young /
 // clear (a fresh clearing, cut and burnt, not yet planted). Their terraces follow the contours (the u axis)
 const FIELDS=[
- {u:[-1020,-760],p:[-700,-330],kind:'mature',name:'An old spice terrace'},
- {u:[-700,-380],p:[-640,-160],kind:'mature',name:'A spice terrace'},
- {u:[-320,-20],p:[-560,-40],kind:'young',name:'A young spice terrace'},
- {u:[-1020,-720],p:[560,1000],kind:'mature',name:'A spice terrace'},
- {u:[-640,-300],p:[620,1100],kind:'young',name:'A young spice terrace'},
+ {u:[-1020,-760],p:[-700,-330],kind:'mature',name:'An old Ranj terrace'},
+ {u:[-700,-380],p:[-640,-160],kind:'mature',name:'A Ranj terrace'},
+ {u:[-320,-20],p:[-560,-40],kind:'young',name:'A young Ranj terrace'},
+ {u:[-1020,-720],p:[560,1000],kind:'mature',name:'A Ranj terrace'},
+ {u:[-640,-300],p:[620,1100],kind:'young',name:'A young Ranj terrace'},
  {u:[60,420],p:[-760,-260],kind:'clear',name:'A fresh clearing (cut and burnt)'},
  {u:[-200,180],p:[640,1060],kind:'clear',name:'A fresh clearing (cut and burnt)'},
- {u:[-900,-520],p:[-1560,-1120],kind:'mature',name:'An old spice terrace'},
+ {u:[-900,-520],p:[-1560,-1120],kind:'mature',name:'An old Ranj terrace'},
 ];
 FIELDS.forEach((F,i)=>{F.i=i;F.cu=(F.u[0]+F.u[1])/2;F.cp=(F.p[0]+F.p[1])/2;const c=xzOf(F.cu,F.cp);F.x=c[0];F.z=c[1];});
 // how far inside a field (0 outside .. 1 a few metres in), with ragged cut edges

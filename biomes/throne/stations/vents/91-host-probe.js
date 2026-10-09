@@ -28,7 +28,7 @@ const ORIGINS=['earth','krator','native'],LIVES=['shoulder','seam','plume','vent
 const SPK=k=>THRONE.SPECIES.indexOf(THRONE.byKey[k]);
 const KEYOF=t=>THRONE.SPECIES[t.sp].key;
 const HCHK={
- // Krator's own life holds vent country: its trees native; of Earth's only the spice tree (its fungus takes on the vent ground)
+ // Krator's own life holds vent country: its trees native; of Earth's only the Ranj tree (its fungus takes on the vent ground)
  native(T){const earth=T.filter(t=>THRONE.SPECIES[t.sp].tags.origin==='earth'&&KEYOF(t)!=='spice'),bb=T.filter(t=>KEYOF(t)==='bonebell').length;
   return{ok:bb>=20&&!earth.length,detail:(earth.length?earth.length+' Earth trees on the vents ('+[...new Set(earth.map(KEYOF))].join(', ')+'); ':'')+bb+' bone bells, '+T.length+' trees'};},
  // nothing lives in the CO2 hollows: no tree, no plant on their floors

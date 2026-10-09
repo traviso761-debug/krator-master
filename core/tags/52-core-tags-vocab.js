@@ -12,10 +12,10 @@
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 26 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 27 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'ashnomad'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -23,17 +23,21 @@
  var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
  // FURN_JOBS
  var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
-   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
+   // the Zeijani trades (kits/zeijani, 2026-10-07): the alecap and cave-fungus farms, the fungal alchemists, the dyers,
+   // the stonecutters, the lampwrights, the obsidian knappers and the rope and caving outfitters
+   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 20 (Scyvoi added 2026-10-05, the Ash Nomads 2026-10-07) ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 21 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi', 'ashnomad': 'Ash Nomads'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
+   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
@@ -79,12 +83,12 @@
    koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
    // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
    doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
-   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame', 'glow-fungus', 'daylight'],
    // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
    keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
      job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
-     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', rock: 'free', level: 'free', district: 'free', destination: 'free', stalls: 'free', canopies: 'free',
      lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',

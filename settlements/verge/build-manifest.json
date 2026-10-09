@@ -25,7 +25,7 @@
  ],
  "20-core-walk.js": [
   "core/walk/20-core-walk.js",
-  "281f4e28180e"
+  "a62f43ac5e15"
  ],
  "23-mat-record.js": [
   "core/materials/record/23-mat-record.js",
@@ -105,7 +105,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags/52-core-tags-vocab.js",
-  "32bf1c7ddd9a"
+  "8efb35da8c9c"
  ],
  "53-core-furnish-host.js": [
   "core/furnish/53-core-furnish-host.js",
@@ -173,7 +173,7 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "c1360e990439"
+  "f59450ba79a9"
  ],
  "64-izv-bundle.js": [
   "GENERATED: settlements/iziz/src/10-core.js, settlements/iziz/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, settlements/iziz/src/30-kit.js, settlements/iziz/src/32-surfaces.js, settlements/iziz/src/34-kitdefs.js, settlements/iziz/src/38-helpers2.js, settlements/iziz/src/50-registry.js, settlements/iziz/src/54-mat-concrete.js, core/materials/68-mat-v5.js, settlements/iziz/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, settlements/iziz/src/69b-vern-mat.js, settlements/iziz/src/69c-vern-helpers.js, settlements/iziz/src/70-vern-dwellings.js, settlements/iziz/src/71-vern-trade.js, settlements/iziz/src/72-vern-civic.js, settlements/iziz/src/73-vern-infra.js, settlements/iziz/src/74-vern-guilds.js, settlements/iziz/src/74b-vern-frontier.js, kits/ancients/src/8ap-funicular.js",

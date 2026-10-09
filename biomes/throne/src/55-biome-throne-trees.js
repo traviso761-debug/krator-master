@@ -1,7 +1,7 @@
 // ================================================================= THE THRONE — trees
 // The twelve tree-scale species, each with its own builder, placed by zone from the host's fields and the age of the
 // ground's last flow (46). The plume field turns the mix: the shoulder's ash pines, ruff trees, trumpet trees and star
-// aloes on the clear side; gill-parasols and the wild spice trees on the seam; pagoda caps, drizzle trumpets,
+// aloes on the clear side; gill-parasols and the wild Ranj trees on the seam; pagoda caps, drizzle trumpets,
 // rope-trees and lamp caps under the plume; bone bells in the vents' steam. Beyond the LOD spine a tree becomes an
 // impostor in the 'far' bucket. Every count scales with q.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
@@ -12,7 +12,7 @@ THRONE.TREES=[];
 // ---------------------------------------------------------------- zones from the fields
 // The world's fields (wet, flow, rock, slope) and the Throne's own (plume, vent, acid, cinder, skylight, ash: BIOME-API),
 // and the flow age (46). Each 0..1:
-//   vent      steaming ground round a fumarole; halo its edge (where the spice trees stand)
+//   vent      steaming ground round a fumarole; halo its edge (where the Ranj trees stand)
 //   marsh     the acid lake's and the hot pools' shores
 //   sky       a skylight into the tube: its floor and walls
 //   cinder    a cinder cone's loose flanks
@@ -25,8 +25,8 @@ THRONE.TREES=[];
 //   owned     ground another kit plants (the windward station's kipuka: the hyperjungle's); every open zone x 1-owned
 //   kedge     the rim just inside a kipuka (the great ruffs, the frill trees); knear the young lava just outside one (its seedlings,
 //             the lava casts of the trees the flow swallowed)
-//   grove     the geyser isle's warm ground round its basin (stations/isle): where the spice's fungus takes (NOTES.md:
-//             "the isles' geyser ground"), so wild spice bears there, with tree ferns and arch palms
+//   grove     the geyser isle's warm ground round its basin (stations/isle): where Ranj's fungus takes (NOTES.md:
+//             "the isles' geyser ground"), so wild Ranj bears there, with tree ferns and arch palms
 //   iwood     the isle's own forest (an island's: smaller trees, lehua, tree ferns, a few palms)
 //   beach     the strip behind the isle's beaches (coconut palms, palm frill trees, leaning out to the sea)
 //   cforest   the cloud forest's (stations/cloudforest): the elfin woods in the cloud belt
@@ -139,11 +139,11 @@ function cap(p,s,flat,col,st){const q=qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,age} and lv 2 near / 1 mid
 const B=[];
 
-// 0 the SPICE TREE: a short stout trunk, a few rising limbs, a dense round crown of glossy dark leaves (clove-like).
-// Its wounds, where the native vent fungus got in, weep red resin -- the spice -- and the fungus's small brackets
+// 0 the RANJ TREE (its spice is Ranj): a short stout trunk, a few rising limbs, a dense round crown of glossy dark leaves (clove-like).
+// Its wounds, where the native vent fungus got in, weep red resin -- Ranj, the spice -- and the fungus's small brackets
 // crowd round them (and glow at night). Wild here, on the seam and at the edge of the steaming ground.
 // T.planted (the frontier's plantations, NOTES.md): set out in rows where its fungus has not taken (its conditions are
-// narrow and not understood), it grows thin and yellowing and never bleeds: no fungus, so no resin, so no spice
+// narrow and not understood), it grows thin and yellowing and never bleeds: no fungus, so no resin, so no Ranj
 B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR*(T.planted?.8:1),sick=!!T.planted;
  const pts=bole(T,S,'bark10',T.x,T.z,H*.42,T.rb,T.rb*.7,rr(.02,.08),rr(0,TAU),.05,lv===2?4:2,st,lv===2?7:5);
  const e=tip(pts),hc=sick?C(pick(S.leaf)).lerp(C(pick([0xa8a040,0x988a3a,0xb0a050])),rr(.35,.6)):C(pick(S.leaf)),cy=T.y0+H*.66;let top=e.y;
@@ -156,7 +156,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR*(T.planted?.8:1),sick=!
    const SH=THRONE.LIB.cardsOf('shelf');
    for(let k=0,m=ri(2,4);k<m;k++){const s=rr(.12,.22),y=p.y+rr(-.4,.5),q=qEuler(0,Math.PI/2-a+rr(-.4,.4),0);
     if(SH.length)BIO.put(pick(SH),[p.x+ox,y-s,p.z+oz],q,s*3,null);else BIO.put('bracket',[p.x+ox,y,p.z+oz],q,[s,s*.6,s],C(pick(PAL.spiceFungus)));}}}
- BIO.register({name:sick?'Spice tree (planted: no resin)':S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:R+1,h:top-T.y0+R*.6,age:T.age,planted:sick});};
+ BIO.register({name:sick?'Ranj tree (planted: no resin)':S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:R+1,h:top-T.y0+R*.6,age:T.age,planted:sick});};
 
 // 1 the TRUMPET TREE (the Rift's, here on the shoulder): a twisted trunk, crooked rising limbs each ending in a
 // ribbed funnel with a frilled rim, held up to the rain; small funnels sprouting from the trunk itself

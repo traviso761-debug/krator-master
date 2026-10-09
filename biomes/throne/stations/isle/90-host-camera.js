@@ -24,7 +24,7 @@ const VIEWS={
  'The Fountain (erupting)':toward(GF.x-30,GF.z+20,GF.x,GF.z,30,4,3),
  'The mud pots':(function(){const p=MUD.pots[0];return toward(MUD.x+12,MUD.z-8,p.x,p.z,7,2.2,0);})(),
  'The drowned trees':(function(){const S=ISLE.snags[0]||{x:BASIN.x,z:BASIN.z};return toward(BASIN.x,BASIN.z,S.x,S.z,40,2.5,4);})(),
- 'Wild spice on the warm ground':(function(){const T=nearTree('spice',CAMP.x,CAMP.z,4);return atTree(T,T.crownR*2.4,rr(0,TAU),2.2,.45);})(),
+ 'Wild Ranj on the warm ground':(function(){const T=nearTree('spice',CAMP.x,CAMP.z,4);return atTree(T,T.crownR*2.4,rr(0,TAU),2.2,.45);})(),
  'The resin-tappers\' camp':toward(CAMP.x+14,CAMP.z+10,CAMP.x,CAMP.z,18,3.5,.5),
  'The landing':toward(DOME.cx,DOME.cz,LANDING.x,LANDING.z,-40,4,.5),
  'Coconut palms on the beach':(function(){const T=nearTree('coconut',LANDING.x,LANDING.z,8);const a=Math.atan2(T.z-DOME.cz,T.x-DOME.cx);return atTree(T,22,a,1.8,.65);})(),

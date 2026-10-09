@@ -437,7 +437,7 @@ def bio_paths(f):
 
 def bio_read(p):
     with open(p, encoding='utf-8', newline='') as fh:
-        return fh.read()
+        return fh.read().replace('\r\n', '\n')   # line-ending neutral: a checkout may hold the upstream as CRLF
 
 
 def vendor_manifest():
@@ -487,8 +487,9 @@ def vendor_bio():
     """Rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src through bio_wrap()."""
     for f in BIO_VENDORED:
         up, dst = bio_paths(f)
+        s = bio_wrap(f, bio_read(up))   # before the copy is opened: a wrap that fails leaves the copy as it was
         with open(dst, 'w', encoding='utf-8', newline='') as fh:
-            fh.write(bio_wrap(f, bio_read(up)))
+            fh.write(s)
     print('vendor-bio: wrote %d biome fragments' % len(BIO_VENDORED))
 
 

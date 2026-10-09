@@ -5,7 +5,7 @@
 //   SNAGS     the drowned trees at the basin's edge: the sinter spread into the forest and killed it, and the trunks
 //             stand bleached, white to the height the silica climbed ("bobby socks", as in Yellowstone)
 //   CAMP      the resin-tappers' camp on the warm ground (culture: the Throne's natives): lean-tos, a hearth, a rack of
-//             resin cakes drying, pots; the spice trees round it tapped (ISLE.tap, after the kit has grown them: 88)
+//             resin cakes drying, pots; the Ranj trees round it tapped (ISLE.tap, after the kit has grown them: 88)
 //   CANOES    their outrigger dugouts drawn up at the landing on the west beach
 // Runs before 88 builds the kit: the camp, the cones and the snags are obstacles it plants round.
 const ISLE={geysers:GEYSERS.map(G=>({key:G.key,name:G.name,x:G.x,z:G.z,period:G.period,dur:G.dur,H:G.H})),springs:POOLS.map(P=>({key:P.key,name:P.name,x:P.x,z:P.z,r:P.r,temp:P.temp})),
@@ -64,7 +64,7 @@ const ISLE={geysers:GEYSERS.map(G=>({key:G.key,name:G.name,x:G.x,z:G.z,period:G.
    BIO.put('thatch',[x,y+Hh*.5,z],qE(-slope,-face+Math.PI/2,0),[W*1.1,1,len*1.08],thatch);
    BIO.put('thatch',[x-fx*.1,y+.05,z-fz*.1],qE(0,-face+Math.PI/2,0),[W*.8,1,D*.7],C(0x6a5a3a));   // a sleeping mat
    ISLE.camp.shelters.push({x,z,face,W,D,kind:'lean-to'});OBSTACLES.push({x,z,r:W*.7});}
-  // the rack: two posts and a bar, resin cakes hung on it to cure (the spice's red)
+  // the rack: two posts and a bar, resin cakes hung on it to cure (Ranj's red)
   {const a=rr2(0,TAU),x=cx+Math.cos(a)*4.4,z=cz+Math.sin(a)*4.4,y=Y(x,z),b=a+Math.PI/2,ex=Math.cos(b)*1.4,ez=Math.sin(b)*1.4;
    for(const s of [-1,1])BIO.tube('pole',[{x:x+ex*s,y:y-.2,z:z+ez*s,r:.05,col:pole},{x:x+ex*s,y:y+1.6,z:z+ez*s,r:.045,col:pole}],pole,{seg:5,cap:true});
    BIO.tube('pole',[{x:x-ex*1.1,y:y+1.55,z:z-ez*1.1,r:.035,col:pole},{x:x+ex*1.1,y:y+1.55,z:z+ez*1.1,r:.035,col:pole}],pole,{seg:4,cap:true});
@@ -90,7 +90,7 @@ const ISLE={geysers:GEYSERS.map(G=>({key:G.key,name:G.name,x:G.x,z:G.z,period:G.
  ISLE.paths=TRAILS.map((T,i)=>({id:'path_'+i,kind:T.kind,owner:T.owner,name:T.name,width:T.width,n:T.pts.length,start:T.pts[0],end:T.pts[T.pts.length-1]}));
  _mark('layout');
 })();
-// ---- TAPPING (after the kit has grown its trees, 88): the wild spice trees nearest the camp, each with a cut in its bark
+// ---- TAPPING (after the kit has grown its trees, 88): the wild Ranj trees nearest the camp, each with a cut in its bark
 // facing the camp, the red resin run down from it into a gourd tied under it (the record: which tree, where)
 ISLE.tap=function(){const C=h=>new THREE.Color(h),rr2=BIO.fn.rr;BIO.fn.reseed(8602);const sp=THRONE.SPECIES.indexOf(THRONE.byKey.spice);
  const near=THRONE.TREES.filter(T=>T.sp===sp&&T.lv===2&&Math.hypot(T.x-CAMP.x,T.z-CAMP.z)<160).sort((a,b)=>Math.hypot(a.x-CAMP.x,a.z-CAMP.z)-Math.hypot(b.x-CAMP.x,b.z-CAMP.z)).slice(0,10);
