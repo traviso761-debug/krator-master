@@ -126,7 +126,7 @@ VC.intPlanTiered = function (M) {
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
           room.door = { x: dp[0], z: dp[1], w: T.doorW, n: [-(-d[1] * side), -(d[0] * side)] };
-          room.kind = wing ? wing : s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
+          room.kind = wing ? wing : s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx, allSt.length);
           room.id = M.n + '.s' + si + '.a' + ai + (side > 0 ? 'r' : 'l') + idx;
           P.rooms.push(room);
           a0 += w + T.room.gap; idx++;
@@ -184,9 +184,13 @@ VC.intSideRect = function (c, d, side, a0, a1, lat0, lat1, y, hh) {
 VC.intSeg = function (a, b, h) { return { x0: Math.min(a[0], b[0]) - (Math.abs(a[0] - b[0]) < 1e-6 ? h : 0), x1: Math.max(a[0], b[0]) + (Math.abs(a[0] - b[0]) < 1e-6 ? h : 0), z0: Math.min(a[1], b[1]) - (Math.abs(a[1] - b[1]) < 1e-6 ? h : 0), z1: Math.max(a[1], b[1]) + (Math.abs(a[1] - b[1]) < 1e-6 ? h : 0) }; };
 VC.intOverlap = function (a, b, pad) { return a.x0 < b.x1 + pad && a.x1 > b.x0 - pad && a.z0 < b.z1 + pad && a.z1 > b.z0 - pad; };
 /* a room's kind: the canton's purposes (one in TUNE.interiors.residence a residence), by a hash of where it is */
-VC.intRoomKind = function (M, si, ai, side, idx) {
-  var T = TUNE.interiors, u = VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 2);
-  if (u < T.residence) return VC.intU(M.n, si, idx, 3) < 0.5 ? 'cottage' : 'living';
+VC.intRoomKind = function (M, si, ai, side, idx, nSt) {
+  var T = TUNE.interiors, u = VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 2), H = T.homes[M.n];
+  /* homes (owner, 2026-10-09: "add more residences inside the guild, market, and granary cantons to help fill unfilled
+     jobs"): a canton in TUNE.interiors.homes takes its own share of residences, and its top storeys are all homes */
+  var share = H ? H.share : T.residence;
+  if (H && nSt != null && si >= nSt - H.topStoreys) share = 1;
+  if (u < share) return VC.intU(M.n, si, idx, 3) < 0.5 ? 'cottage' : 'living';
   return VC.intPick(T.purposes[M.n], VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 4));
 };
 /* the core's stair, one storey: up the -perp side of the well along the axis to a landing, back up the +perp side
