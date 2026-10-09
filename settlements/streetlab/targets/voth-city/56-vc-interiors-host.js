@@ -43,8 +43,9 @@ VC.intFurnish = function (cn) {
   if (!IX || !P || typeof ROOM === 'undefined') return out;
   var t0 = performance.now(), cat = VC.INTD.catalog || (VC.INTD.catalog = IX.catalogAdapter()), T = TUNE.interiors;
   P.rooms.forEach(function (r, i) {
-    var poly = [[r.x0 + 0.3, r.z0 + 0.3], [r.x1 - 0.3, r.z0 + 0.3], [r.x1 - 0.3, r.z1 - 0.3], [r.x0 + 0.3, r.z1 - 0.3]];
-    var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + 0.3, r.x1 - 0.3), CANT.cl(r.door.z, r.z0 + 0.3, r.z1 - 0.3)], w: r.door.w, to: 'hall' }] : [];
+    var q = TUNE.interiors.wallT / 2 + 0.02;   /* 2 cm off the wall's face: a piece's back flush with it would fight it */
+    var poly = [[r.x0 + q, r.z0 + q], [r.x1 - q, r.z0 + q], [r.x1 - q, r.z1 - q], [r.x0 + q, r.z1 - q]];
+    var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + q, r.x1 - q), CANT.cl(r.door.z, r.z0 + q, r.z1 - q)], w: r.door.w, to: 'hall' }] : [];
     try {
       var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: T.wealth[cn] == null ? 0.5 : T.wealth[cn],
                      id: r.id, seed: KRAND.hash(7401, Math.round(r.x0 * 10), Math.round(r.z0 * 10), r.storey) });
@@ -67,16 +68,20 @@ VC.drawInterior = function (cn) {
   if (VC.INTD.groups[cn]) return VC.INTD.groups[cn];
   var P = VC.INT.cantons[cn]; if (!P) return null;
   var g = new THREE.Group(); g.userData = { kind: 'interior', canton: cn }; g.visible = false; scene.add(g);
-  var M = P.M, tone = new THREE.Color(M.tone), wall = tone.clone().lerp(new THREE.Color(0xc9b58f), 0.4).multiplyScalar(0.82), floor = tone.clone().lerp(new THREE.Color(0x7a5a3e), 0.55), ceil = tone.clone().multiplyScalar(0.5), step = new THREE.Color(0xa79b82);
+  /* the whole interior a few cm up (owner, 2026-10-09: "lots of z fighting inside the cantons"): each tier's lowest storey
+     stands exactly on the captured tier's top face, and the keep's floor on the Fortress's deck; lifted, those faces lie
+     inside the floor slabs. The walker still stands on the plan's heights (KWALK); the lift is far under a step. */
+  g.position.y = TUNE.interiors.lift;
+  var M = P.M, tone = new THREE.Color(M.tone), wall = tone.clone().lerp(new THREE.Color(0xc9b58f), 0.4).multiplyScalar(0.82), floor = tone.clone().lerp(new THREE.Color(0x7a5a3e), 0.55), ceil = tone.clone().multiplyScalar(0.5), step = new THREE.Color(0xa79b82), hallF = floor.clone().multiplyScalar(1.1);   /* the core floors as the halls': the halls start inside it, and two colours on one plane fight */
   /* the boxes, by storey (so the cutaway can hide the storeys above its cut) */
   var byS = {};
   var add = function (si, b, col) { (byS[si] = byS[si] || []).push([b, col]); };
   P.boxes.forEach(function (b) { add(b.storey, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], wall); });
-  P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' ? floor.clone().multiplyScalar(1.1) : floor); });
+  P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
   (P.ceilings || []).forEach(function (c) { add(c.storey, [c.x0, c.x1, c.z0, c.z1, c.y, c.y + 0.3], ceil); });
   P.flights.forEach(function (f) {
     var n = Math.max(2, Math.round((f.y1 - f.y0) / 0.3)), L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]), u = [(f.b[0] - f.a[0]) / L, (f.b[1] - f.a[1]) / L], alongX = Math.abs(u[0]) > 0.5;
-    for (var s = 0; s < n; s++) { var t = (s + 0.5) / n, x = f.a[0] + u[0] * L * t, z = f.a[1] + u[1] * L * t, top = f.y0 + (f.y1 - f.y0) * (s + 1) / n, d = L / n / 2 * 1.02, w = f.w / 2;
+    for (var s = 0; s < n; s++) { var t = (s + 0.5) / n, x = f.a[0] + u[0] * L * t, z = f.a[1] + u[1] * L * t, top = f.y0 + (f.y1 - f.y0) * (s + 1) / n - (s === n - 1 ? 0.012 : 0),   /* the last tread a shade under the floor it meets */ d = L / n / 2 * 1.02, w = f.w / 2;
       add(f.storey, alongX ? [x - d, x + d, z - w, z + w, f.base, top] : [x - w, x + w, z - d, z + d, f.base, top], step); }
   });
   var geo = new THREE.BoxGeometry(1, 1, 1).translate(0.5, 0.5, 0.5), m4 = new THREE.Matrix4(), mat = VC.intMat();
@@ -161,12 +166,25 @@ VC.cutTo = function (cn, storey) {
   var M = P.M, r = (M.apron ? M.apron.ro : M.r) + 20;
   VC.cutBox([M.x - r, M.x + r, M.z - r, M.z + r, S.y + TUNE.interiors.cutAt]);
   VC.showInterior(cn, true, S.i);
+  VC.cutBar();
   var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
 };
 VC.cutOff = function () {
   var C = VC.INTD.cut; if (C.canton && !VC.INTD.walkIn) VC.showInterior(C.canton, false);
   C.on = false; C.canton = null; VC.cutBox(null);
   var e = $('cut-status'); if (e) e.textContent = '';
+  VC.cutBar();
+};
+/* the cutaway's bar (owner, 2026-10-09: "make it more clear how to advance the floor up/down"): at the top of the view while
+   the cutaway is on, the canton, the storey of how many, down and up buttons, and the keys */
+VC.cutBar = function () {
+  var C = VC.INTD.cut, bar = $('cutbar'); if (!bar) return;
+  bar.style.display = C.on ? 'block' : 'none'; if (!C.on) return;
+  var P = VC.INT.cantons[C.canton], S = P.storeys[C.storey];
+  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
+  $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= P.storeys.length - 1;
+  $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= P.storeys.length - 1 ? 0.35 : 1;
+  $('cut-canton').value = C.canton;
 };
 /* the canton nearest the middle of the view (the orbit's target) */
 VC.cutPick = function () {
@@ -184,6 +202,21 @@ VC.cutUI = function () {
     else if (C.on && (k === 'PageUp' || k === ']')) { VC.cutTo(C.canton, C.storey + 1); e.preventDefault(); }
     else if (C.on && (k === 'PageDown' || k === '[')) { VC.cutTo(C.canton, C.storey - 1); e.preventDefault(); }
   });
+  /* the bar's controls */
+  var sel = $('cut-canton');
+  if (sel) {
+    sel.innerHTML = Object.keys(VC.INT.cantons).map(function (cn) { return '<option>' + cn + '</option>'; }).join('');
+    sel.onchange = function () { VC.cutTo(sel.value, 0); };
+    $('cut-down').onclick = function () { var C = VC.INTD.cut; if (C.on) VC.cutTo(C.canton, C.storey - 1); };
+    $('cut-up').onclick = function () { var C = VC.INTD.cut; if (C.on) VC.cutTo(C.canton, C.storey + 1); };
+    $('cut-close').onclick = function () { VC.cutOff(); b.classList.remove('on'); };
+    /* Shift + the wheel steps the storeys (the wheel alone still zooms) */
+    renderer.domElement.addEventListener('wheel', function (e) {
+      var C = VC.INTD.cut; if (!C.on || !e.shiftKey) return;
+      e.preventDefault(); e.stopImmediatePropagation(); var now = performance.now(); if (now - (C.wheelT || 0) < 220) return; C.wheelT = now;   /* a trackpad's burst is one step */
+      VC.cutTo(C.canton, C.storey + ((e.deltaY || e.deltaX) < 0 ? 1 : -1));
+    }, { capture: true, passive: false });
+  }
   /* walking into a canton shows its interior (and walking out hides it) */
   (window._frameHooks = window._frameHooks || []).push(function () {
     var A = ctl.walk && VC.walkAt, inside = null;

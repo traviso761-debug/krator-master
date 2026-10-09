@@ -27,6 +27,11 @@
   #legend span{display:inline-block;margin:3px 8px 0 0;font-size:11px}
   #tip{position:fixed;z-index:40;display:none;pointer-events:none;max-width:360px}
   #loading{left:50%;top:45%;transform:translate(-50%,-50%);font-size:15px}
+  #cutbar{top:14px;left:50%;transform:translateX(-50%);display:none;text-align:center;font-size:13px;padding:8px 14px}
+  #cutbar button{font-size:14px;padding:6px 14px;margin:0 4px}
+  #cutbar select{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit}
+  #cutbar select option{background:#2a2416}
+  #cutbar .k{display:block;margin-top:4px}
   #edit{left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));max-height:52vh;overflow:auto;display:none}
   #edit select,#edit input{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px}
   #edit select option{background:#2a2416}
@@ -69,6 +74,9 @@
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
 <div id="tip" class="pnl"></div>
+<div id="cutbar" class="pnl"><b>Cutaway</b> <select id="cut-canton" title="the canton"></select>
+  <button id="cut-down" title="the storey below (PageDown or [)">&#9660; down</button><span id="cut-storey"></span><button id="cut-up" title="the storey above (PageUp or ])">up &#9650;</button><button id="cut-close" title="leave the cutaway (x)">&#10005;</button>
+  <span class="k">storeys: the buttons, PageUp / PageDown, [ and ], or the mouse wheel with Shift &middot; x leaves</span></div>
 <div id="edit" class="pnl" data-title="Edit">
   <b>Edit the plan</b> <span id="ed-status" class="k"></span><br>
   <button id="ed-m-place" class="on">place building</button><button id="ed-m-street">paint street</button><button id="ed-m-del">delete</button><button id="ed-m-flora">flora</button><br>
