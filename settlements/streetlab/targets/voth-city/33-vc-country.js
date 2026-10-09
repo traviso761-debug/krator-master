@@ -113,7 +113,7 @@ VC.buildMonastery = function (d) {
        coops and fields the owner asked for stand round it, inside the district's wall */
     if (M.compound && B.monasteryCompound) {
       var cry = B.faceToward(cen[0], cen[1], T.x, T.z), S0 = B.MONASTERY_SITES, n0 = { f: S0.fields.length, c: S0.coops.length, d: S0.dorms.length }, fit = null;
-      for (var sc = 1; sc >= 0.5 && !fit; sc -= 0.05) {
+      for (var sc = M.compoundMax == null ? 1 : M.compoundMax; sc >= 0.45 && !fit; sc -= 0.05) {
         var best = null;
         cand.forEach(function (c) { var o = VC.obbAt(c.p, cry, fx * sc + 6, fz * sc + 6); if (!best || c.dc < best.dc) { if (!VC.anyHit(o, placed, 0) && ok(o, M.relief + 4)) best = { dc: c.dc, c: c.p, o: o }; } });
         if (best) fit = { c: best.c, o: best.o, s: sc };

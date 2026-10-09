@@ -46038,7 +46038,7 @@ var TUNE = {
             dims: { vothJunk: { L: 46, B: 16 }, vothHulk: { L: 36, B: 16 } } } },   /* kits/ringsea's RS_VESSEL L and B */   /* a pier takes at most this share of the open water ahead, and leaves this much clear beyond its tip */
   fishGap: 26, fishClear: 9,                          /* harbour: a fishing dock in each gap of this much quay between the long piers */
   riverDockGap: 58, bargeClear: 2, bridgeBand: 20,   /* elephant bugs keep this far off a bridge's line, except on its deck */   /* a barge moors this far off its pier's head */                     /* river port: a quay every this much bank (Voth's RPIERS: 58) */
-  monastery: { compound: true, grid: 8, edge: 9, gap: 5, relief: 7, gateW: 18, sideGateW: 7, sideGates: 2, dorms: 6, stores: 2, pens: 2, coops: 10, fields: 30, field: [26, 44] },
+  monastery: { compound: true, compoundMax: 0.65, grid: 8, edge: 9, gap: 5, relief: 7, gateW: 18, sideGateW: 7, sideGates: 2, dorms: 6, stores: 2, pens: 2, coops: 10, fields: 30, field: [26, 44] },
   /* power and light (37-vc-light.js; owner, 2026-10-09): Voth's power houses stand in the industry district; electric light
      reaches the industry district, the guilds, the clan compounds and wealthy houses within `reach` of a power house, and
      the Palace and Temple interiors, and little else. Everywhere else is lit by lanterns and torches: a fancy lantern
@@ -47287,6 +47287,7 @@ CANT.T = {
   w: [12, 15],           /* bridge widths */
   pierEvery: 105,        /* one pier per this much open water */
   rise: 0.32, tread: 0.62, /* a step */
+  landing: 3.5,           /* the clear landing at a flight's head and foot (owner, 2026-10-09: "a clear landing that doesn't conflict with decorative geometry") */
   flightW: 7,            /* a terrace flight's width (less where its band is narrower) */
   dockW: 5,              /* a pier's or a mole's flight */
   apronSide: 0.7         /* how far a mole's or a pier's flight may run in under the apron's cornice before it must climb */
@@ -47663,6 +47664,7 @@ CANT.planCauseways = function (list) {
         /* the flight: on the mole's end, rising to the apron's edge */
         var top = VOTH.RLAND + 0.7, n = Math.max(2, Math.ceil((lev.y - top) / T.rise)), run = n * T.tread, fw = Math.min(l.width * 0.5, 14);
         end.flight = CANT.addFlight({ canton: M.n, kind: 'mole', a: [e[0] + dir[0] * run, e[1] + dir[1] * run], b: [e[0] - dir[0] * 0.6, e[1] - dir[1] * 0.6], y0: top, y1: lev.y, w: fw, base: top });
+        CANT.clearLanding(end.flight, dir, 'mole stair');
       }
       out.ends[side] = end; CANT.ends.push(end);
       CANT.audit.causeways.push({ id: l.id, canton: M.n, kind: l.kind, y: +lev.y.toFixed(1), moved: +k.toFixed(1), flight: !!end.flight });
@@ -47698,7 +47700,18 @@ CANT.planDocks = function (piers) {
     /* its top step runs half a metre onto the apron, so there is no gap at the edge */
     var fl = CANT.addFlight({ canton: M.n, kind: 'dock', a: [e[0] + dir[0] * run, e[1] + dir[1] * run], b: [e[0] - dir[0] * 0.7, e[1] - dir[1] * 0.7], y0: y0, y1: M.apron.y, w: Math.min(T.dockW, (pr.w || 5.5) - 0.6), base: y0, pier: pr.id || i });
     CANT.docks.push({ canton: M.n, flight: fl, at: e, dir: dir, pier: pr.id || i });
+    CANT.clearLanding(fl, dir, 'dock stair');
   });
+};
+/* a dock's or mole's flight: what stands on its run and on its landing (T.landing in from its top step, a little wider
+   than it) is cleared, the small pieces and rails cut; a big piece there is reported (CANT.audit.bigLanding) */
+CANT.clearLanding = function (fl, outward, why) {
+  var T = CANT.T, M = CANT.by[fl.canton], inn = [fl.b[0] - outward[0] * T.landing, fl.b[1] - outward[1] * T.landing];
+  var boxes = CANT.flightBoxes(fl).concat(CANT.stripBoxes(fl.b, inn, fl.w + 1, fl.y1, fl.y1, -0.3, 2.4, 2.5)), small = [], big = [];
+  boxes.forEach(function (b) { CANT.hits(b.box).forEach(function (P) { if (P.M !== M && P.M) return; if (P.small || P.rail) { if (small.indexOf(P) < 0) small.push(P); } else if (big.indexOf(P) < 0) big.push(P); }); });
+  CANT.clearCorridor(small, boxes, why);
+  big.forEach(function (P) { (CANT.audit.bigLanding = CANT.audit.bigLanding || []).push(fl.canton + ' ' + fl.kind + ': ' + P.fam + ' ' + P.sh + ' y ' + P.y0.toFixed(1)); });
+  fl.landing = { at: inn, boxes: boxes.length, cut: small.length, big: big.length };
 };
 /* the bottom doors: on the tier-0 wall behind each dock and mole flight, for the interiors (one per canton side used) */
 CANT.planDoors = function () {
@@ -47744,7 +47757,7 @@ CANT.planChains = function () {
         }
       });
       if (!best) { ok = false; break; }
-      var o = CANT.addFlight(best); CANT.clearCorridor(best.hits.filter(function (P) { return P.small || P.rail; }), CANT.flightBoxes(o), 'terrace stair');
+      var o = CANT.addFlight(best); CANT.clearCorridor(best.hits.filter(function (P) { return P.small || P.rail; }), CANT.flightBoxes(o).concat(best.land || []), 'terrace stair');
       fl.push(o); cut += best.cut; big += best.big; from = o.b;
       best.hits.forEach(function (P) { if (!P.small && !P.rail) (CANT.audit.bigFlight = CANT.audit.bigFlight || []).push(M.n + ' L' + k + ': ' + P.fam + ' ' + P.sh + ' ' + P.q[5].toFixed(1) + 'x' + P.q[7].toFixed(1) + 'x' + P.q[6].toFixed(1) + ' y ' + P.y0.toFixed(1)); });
     }
@@ -47769,10 +47782,14 @@ CANT.flightAt = function (M, k, n, tg, s0, dir) {
   var f = { canton: M.n, kind: 'terrace', a: [M.x + n[0] * rc + tg[0] * s0, M.z + n[1] * rc + tg[1] * s0], b: [M.x + n[0] * rc + tg[0] * e, M.z + n[1] * rc + tg[1] * e],
             y0: lo.y, y1: hi.y, w: w, base: lo.y, lev: k, n: n, hits: [], cost: 0, cut: 0, big: 0 };
   /* the arrival: the upper level's edge must be open where the flight steps onto it */
-  var arr = [f.b[0] - n[0] * (w / 2 + 3), f.b[1] - n[1] * (w / 2 + 3)], ay = CANT.surface(M, arr[0], arr[1]);
+  var arr = [f.b[0] - n[0] * (w / 2 + T.landing), f.b[1] - n[1] * (w / 2 + T.landing)], ay = CANT.surface(M, arr[0], arr[1]);
   if (ay === null || ay < hi.y - 0.3 || ay > hi.y + 3.2) return null;
   f.y1 = ay;                                                                           /* onto a raised band, its top */
-  var boxes = CANT.flightBoxes(f).concat(CANT.stripBoxes(f.b, arr, w, ay, ay, -0.3, 2.4, 2.5));
+  /* the landings: the head's, from the top step in onto the upper level, and its run on past the top step; the foot's,
+     back from the bottom step along the terrace. What stands on them is cut (small pieces) or avoided (big ones) */
+  var on = [f.b[0] + tg[0] * dir * T.landing, f.b[1] + tg[1] * dir * T.landing], foot = [f.a[0] - tg[0] * dir * T.landing, f.a[1] - tg[1] * dir * T.landing];
+  f.land = CANT.stripBoxes(f.b, arr, w + 1, ay, ay, -0.3, 2.4, 2.5).concat(CANT.stripBoxes(f.b, on, w + 1, ay, ay, -0.3, 2.4, 2.5), CANT.stripBoxes(f.a, foot, w + 1, lo.y, lo.y, -0.3, 2.4, 2.5));
+  var boxes = CANT.flightBoxes(f).concat(f.land);
   for (var i = 0; i < boxes.length; i++) {
     var bx = boxes[i];
     CANT.hits(bx.box).forEach(function (P) { if (f.hits.indexOf(P) >= 0) return; f.hits.push(P); if (P.small || P.rail) { f.cost += 0.4; f.cut++; } else { f.cost += 120; f.big++; } });
@@ -49563,7 +49580,7 @@ VC.buildMonastery = function (d) {
        coops and fields the owner asked for stand round it, inside the district's wall */
     if (M.compound && B.monasteryCompound) {
       var cry = B.faceToward(cen[0], cen[1], T.x, T.z), S0 = B.MONASTERY_SITES, n0 = { f: S0.fields.length, c: S0.coops.length, d: S0.dorms.length }, fit = null;
-      for (var sc = 1; sc >= 0.5 && !fit; sc -= 0.05) {
+      for (var sc = M.compoundMax == null ? 1 : M.compoundMax; sc >= 0.45 && !fit; sc -= 0.05) {
         var best = null;
         cand.forEach(function (c) { var o = VC.obbAt(c.p, cry, fx * sc + 6, fz * sc + 6); if (!best || c.dc < best.dc) { if (!VC.anyHit(o, placed, 0) && ok(o, M.relief + 4)) best = { dc: c.dc, c: c.p, o: o }; } });
         if (best) fit = { c: best.c, o: best.o, s: sc };
