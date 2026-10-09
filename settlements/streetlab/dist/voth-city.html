@@ -46114,7 +46114,7 @@ var TUNE = {
               keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
     /* the Fortress (owner, 2026-10-09): black and dark grey all over (grey: the linear range its colours map into), green
        and gold banners, a green fire on each corner tower at night */
-    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, grey: [0.006, 0.09],
+    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, fireScale: 3, grey: [0.006, 0.09],
                 keepBand: 10, bannerH: 10, bannerEvery: 18, cornerShare: 0.72 }
   },
   /* the house of healing (30-vc-site.js VC.placeHealing, 31-vc-voth.js VC.healingModel): its half-width with its plinth's
@@ -48839,10 +48839,11 @@ VC.cantonDress = function (cn) {
         var key = (cx > 0 ? 1 : 0) + (cz > 0 ? 2 : 0); if (!best[key] || p.y1 > best[key].y1) best[key] = p;
       }); });
       Object.keys(best).forEach(function (q2) {
-        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1;
-        B.CYL(c[0], y, c[1], 1.7, 0.8, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8, c[1], 1.2, 0.5, 0, 0x101010, 'soil');
-        B.CONE(c[0], y + 1.1, c[1], 1.0, 2.2, 0, K.flame, 'cloth');
-        VC.cantonFires.push([c[0], y + 2.6, c[1], K.fire]); n.fires++;
+        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1, s = K.fireScale || 1;   /* the flame's size (owner: "make the green flames larger") */
+        B.CYL(c[0], y, c[1], 1.7 * s, 0.8 * s, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8 * s, c[1], 1.2 * s, 0.5 * s, 0, 0x101010, 'soil');
+        B.CONE(c[0], y + 1.1 * s, c[1], 1.0 * s, 2.6 * s, 0, K.flame, 'cloth');
+        B.CONE(c[0], y + 1.1 * s, c[1], 0.55 * s, 3.6 * s, Math.PI / 5, 0xb8ffc8, 'cloth');                       /* its pale heart */
+        VC.cantonFires.push([c[0], y + 2.8 * s, c[1], K.fire, 8 * s]); n.fires++;
       });
     }
   });
@@ -54036,7 +54037,7 @@ VC.dayNight = function () {
     /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
     var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
     /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
-    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], p[4] || 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
     if (sm.length) ATMOS.smoke(sm);
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();

@@ -663,7 +663,7 @@ VC.dayNight = function () {
     /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
     var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
     /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
-    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], p[4] || 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
     if (sm.length) ATMOS.smoke(sm);
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();

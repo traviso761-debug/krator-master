@@ -175,10 +175,11 @@ VC.cantonDress = function (cn) {
         var key = (cx > 0 ? 1 : 0) + (cz > 0 ? 2 : 0); if (!best[key] || p.y1 > best[key].y1) best[key] = p;
       }); });
       Object.keys(best).forEach(function (q2) {
-        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1;
-        B.CYL(c[0], y, c[1], 1.7, 0.8, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8, c[1], 1.2, 0.5, 0, 0x101010, 'soil');
-        B.CONE(c[0], y + 1.1, c[1], 1.0, 2.2, 0, K.flame, 'cloth');
-        VC.cantonFires.push([c[0], y + 2.6, c[1], K.fire]); n.fires++;
+        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1, s = K.fireScale || 1;   /* the flame's size (owner: "make the green flames larger") */
+        B.CYL(c[0], y, c[1], 1.7 * s, 0.8 * s, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8 * s, c[1], 1.2 * s, 0.5 * s, 0, 0x101010, 'soil');
+        B.CONE(c[0], y + 1.1 * s, c[1], 1.0 * s, 2.6 * s, 0, K.flame, 'cloth');
+        B.CONE(c[0], y + 1.1 * s, c[1], 0.55 * s, 3.6 * s, Math.PI / 5, 0xb8ffc8, 'cloth');                       /* its pale heart */
+        VC.cantonFires.push([c[0], y + 2.8 * s, c[1], K.fire, 8 * s]); n.fires++;
       });
     }
   });

@@ -121,7 +121,7 @@ var TUNE = {
               keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
     /* the Fortress (owner, 2026-10-09): black and dark grey all over (grey: the linear range its colours map into), green
        and gold banners, a green fire on each corner tower at night */
-    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, grey: [0.006, 0.09],
+    Fortress: { banners: true, towerFires: true, banner: 0x1e6b3c, gold: 0xc9a227, fire: [0.25, 1.0, 0.35], flame: 0x3cff6a, fireScale: 3, grey: [0.006, 0.09],
                 keepBand: 10, bannerH: 10, bannerEvery: 18, cornerShare: 0.72 }
   },
   /* the house of healing (30-vc-site.js VC.placeHealing, 31-vc-voth.js VC.healingModel): its half-width with its plinth's
