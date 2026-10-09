@@ -171,6 +171,17 @@ var TUNE = {
     cantons: { Palace: [150, 'palace household and officials'], Temple: [100, 'temple priests and servants'], Guild: [400, 'guild masters and journeymen'],
                Arena: [60, 'arena keepers and fighters'], Fortress: [300, 'Ordinator garrison'], Ancestry: [30, 'necropolis keepers'], Port: [80, 'dockers and stevedores'] },
     live: { poor: 7, middle: 5, rich: 6, manor: 14, shop: 5, craft: 6, tavern: 4, clan: 40, farm: 8, bigFarm: 18, garrison: 220, barracks: 90, monkPerDorm: 30 },
+    /* the canton interiors' rooms (36-vc-census.js): [workplaces, residents, kind of work] per room kind, and the kinds of
+       work a canton calls by its own name */
+    rooms: { barracks: [8, 8, 'soldiers'], smithy: [4, 0, 'smiths and craftsmen'], armoury: [3, 0, 'armourers and quartermasters'], workshop: [4, 0, 'smiths and craftsmen'],
+             mess: [4, 0, 'cooks and bakers'], kitchen: [3, 0, 'cooks and bakers'], bakery: [4, 0, 'cooks and bakers'], office: [3, 0, 'clerks and officials'],
+             store: [1, 0, 'porters and warehousemen'], warehouse: [3, 0, 'porters and warehousemen'], granary: [1, 0, 'granary keepers and millers'],
+             shop: [3, 0, 'shopkeepers and assistants'], tavern: [5, 0, 'innkeepers and servers'], guildhall: [6, 0, 'guild masters and journeymen'],
+             training: [3, 0, 'drill masters and trainers'], stable: [2, 0, 'grooms and beast keepers'], shrine: [1, 0, 'shrine keepers'], cell: [0.5, 1, 'jailers'],
+             reception: [2, 0, 'envoys and embassy staff'], library: [2, 0, 'scribes and librarians'], living: [0, 3, ''], bedroom: [0, 2, ''],
+             catacomb: [0.3, 0, 'necropolis keepers'], tomb: [0.2, 0, 'necropolis keepers'],
+             byCanton: { Arena: { barracks: 'gladiators and arena keepers', training: 'gladiators and arena keepers' }, Fortress: { barracks: 'Ordinator garrison', training: 'Ordinator garrison', office: 'Ordinator garrison' },
+                         Foreign: { office: 'envoys and embassy staff' }, Guild: { workshop: 'guild masters and journeymen', smithy: 'guild masters and journeymen' }, Arsenal: { workshop: 'armourers and quartermasters' } } },
     jobs: { shop: 4, craft: 5, tavern: 6, warehouse: 10, industrial: 15, power: 130, rich: 2, manor: 8, clanService: 6, garrison: 240, barracks: 90, school: 8, guild: 14, customs: 22,
             healing: 45, funeraryTemple: 18, shrine: 3, lighthouse: 4, pier: 30, riverQuay: 14, fishDock: 10, stall: 2,
             mill: 3, watermill: 4, ranch: 8, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }

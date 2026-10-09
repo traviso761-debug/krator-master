@@ -2,8 +2,8 @@
 /* [G data] An estimate of how many people the plan houses and how many workplaces it offers (owner, 2026-10-09:
    "give me an estimate of the city population vs how many workplaces we have for them. break it down in a table
    listing types of jobs"). Every rate is TUNE.census: residents per house class and per institution, jobs per
-   workplace. The Voth cantons' own people (the Palace, the Temple, the canton tiers) are not counted: their buildings
-   are Voth's captured models, not the plan's. Run after the last step; the host shows it under the step's counts. */
+   workplace. The Palace's and the Temple's own people are not counted (their buildings are Voth's captured models, not
+   the plan's); the other cantons' interiors are, room by room. Run after the last step; the host shows it under the step's counts. */
 VC.census = function () {
   var K = TUNE.census, alive = PLAN.lots.filter(function (L) { return L.died == null; }), live = {}, jobs = {};
   var addL = function (k, n) { live[k] = (live[k] || 0) + n; }, addJ = function (k, n, where) { var e = jobs[k] || (jobs[k] = { n: 0, where: '' }); e.n += n; if (where && (', ' + e.where + ',').indexOf(', ' + where + ',') < 0) e.where = e.where ? e.where + ', ' + where : where; };
@@ -53,7 +53,19 @@ VC.census = function () {
   addJ('envoys and embassy staff', (VC.embassyPlots || []).length * K.jobs.embassy, 'embassies');
   /* the Voth cantons' own workplaces (their buildings are Voth's captured models, not plan lots): a working staff
      for each, TUNE.census.cantons; their households are still not counted */
-  Object.keys(K.cantons).forEach(function (n) { if (VOTH.CIDX[n]) addJ(K.cantons[n][1], K.cantons[n][0], n + ' canton'); });
+  /* a canton with an interior (40-vc-interiors.js) is counted room by room instead (owner, 2026-10-09: "add new canton
+     interior jobs to the job count"): each room kind's workplaces and residents (TUNE.census.rooms), under its own kind
+     of work, or the canton's where it has one (the Arena's barracks are gladiators', the Fortress's Ordinators') */
+  var INT = (VC.INT && VC.INT.cantons) || {}, R = K.rooms;
+  Object.keys(K.cantons).forEach(function (n) { if (VOTH.CIDX[n] && !INT[n]) addJ(K.cantons[n][1], K.cantons[n][0], n + ' canton'); });
+  Object.keys(INT).forEach(function (n) {
+    (INT[n].rooms || []).forEach(function (r) {
+      var e = R[r.kind]; if (!e) return;
+      var label = (R.byCanton[n] && R.byCanton[n][r.kind]) || e[2];
+      if (e[0]) addJ(label, e[0], n + ' canton interior');
+      if (e[1]) addL('canton interiors', e[1]);
+    });
+  });
   /* transit */
   var T = PLAN.transit || { lines: [], stations: [] }, ferries = 0, striders = 0;
   T.lines.forEach(function (l) { if (l.kind === 'ferry') ferries += l.vehicles; else striders += l.vehicles; });
@@ -61,6 +73,6 @@ VC.census = function () {
   addJ('elephant bug handlers and station hands', striders * K.jobs.bug + T.stations.filter(function (s) { return s.kind === 'strider'; }).length * K.jobs.bugStation, 'elephant bugs and stations');
   var pop = 0, J = 0; Object.keys(live).forEach(function (k) { pop += live[k]; }); Object.keys(jobs).forEach(function (k) { jobs[k].n = Math.round(jobs[k].n); J += jobs[k].n; });
   var work = Math.round(pop * K.workingShare);
-  PLAN.census = { population: pop, workforce: work, jobs: J, homes: live, byJob: jobs, note: 'the cantons’ households are not counted; their workplaces are' };
+  PLAN.census = { population: pop, workforce: work, jobs: J, homes: live, byJob: jobs, note: 'the Palace’s and Temple’s households are not counted; their workplaces are, and the other cantons’ interiors room by room' };
   return PLAN.census;
 };
