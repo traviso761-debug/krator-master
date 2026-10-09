@@ -10807,14 +10807,18 @@ VIEW.primMeshes = function (prims, name) {
   var PLAIN = { leaf: 1, trunk: 1, wood: 1, cloth: 1, metal: 1, fungus: 1, soil: 1 };
   var mats = VIEW.primMats || (VIEW.primMats = {
     stone: (function () { var m = new THREE.MeshStandardMaterial({ roughness: 0.88 }); VIEW.hook(m, 'stone', false); return m; })(),
-    plain: new THREE.MeshStandardMaterial({ roughness: 0.9 }), metal: new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.6 })
+    plain: new THREE.MeshStandardMaterial({ roughness: 0.9 }), metal: new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.6 }),
+    /* gilt: polished gold leaf, the stone detail under it as its panelling (the Temple's regilt dome; the Palace's own
+       gilt is its captured model's) */
+    gilt: (function () { var m = new THREE.MeshStandardMaterial({ roughness: 0.26, metalness: 0.88 }); VIEW.hook(m, 'stone', false); return m; })()
   });
-  var by = {}; prims.forEach(function (r) { var mk = r[9] === 'metal' ? 'metal' : PLAIN[r[9]] ? 'plain' : 'stone', k = r[0] + '|' + mk; (by[k] = by[k] || []).push(r); });
+  if (!GEO.domeHi) GEO.domeHi = new THREE.SphereGeometry(1, 48, 16, 0, Math.PI * 2, 0, Math.PI * 0.5);   /* a gilt dome catches the light: smooth it */
+  var by = {}; prims.forEach(function (r) { var mk = r[9] === 'metal' ? 'metal' : r[9] === 'gilt' ? 'gilt' : PLAIN[r[9]] ? 'plain' : 'stone', k = r[0] + '|' + mk; (by[k] = by[k] || []).push(r); });
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0), col = new THREE.Color(), out = [];
   Object.keys(by).forEach(function (key) {
     var k = key.split('|')[0], L = by[key];
     if (!GEO[k]) return;
-    var M = new THREE.InstancedMesh(GEO[k], mats[key.split('|')[1]], L.length);
+    var M = new THREE.InstancedMesh(k === 'dome' && key.split('|')[1] === 'gilt' ? GEO.domeHi : GEO[k], mats[key.split('|')[1]], L.length);
     L.forEach(function (r, i) {
       q.setFromAxisAngle(Y, r[7]); m4.compose(new THREE.Vector3(r[1], r[2], r[3]), q, new THREE.Vector3(Math.max(r[4], 0.01), Math.max(r[5], 0.01), Math.max(r[6], 0.01)));
       M.setMatrixAt(i, m4); M.setColorAt(i, col.setHex(r[8]).convertSRGBToLinear());
