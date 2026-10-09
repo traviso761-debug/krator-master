@@ -194,7 +194,10 @@ outbuilding is **furniture**: a catalog piece placed as data and built by the ca
   setting})`, `B.flush(scene)`, `KF.setDetail(k)`, `KF.has`, `KF.entryDims`, `KF.furnAnchorY`). Nothing
   else leaks: the core's names stay inside the closure. A batch merges every piece's triangles into one
   mesh per render family (vertex colours), keeps the lights as data, and keeps painted panels
-  (`F.decal`) as their own meshes. The build's glue defines `FURNISH(key, lx, ly, lz, lry, {v, seed,
+  (`F.decal`) as their own meshes. **The merged meshes are indexed** (2026-10, ROADMAP stage 1): each
+  source mesh's vertices go in once and its index is kept, offset (a Uint16 index, Uint32 past 65535
+  vertices); `B.tris` counts triangles as before. Code that copies a batch mesh's (or a bucket's) arrays
+  must carry the index too: Girder's `gixAccum` and Mav's Refuge's `mixBuild`/`mixRebuild` do. The build's glue defines `FURNISH(key, lx, ly, lz, lry, {v, seed,
   setting})` in its builders' local frame; with `?interiors=1` it also furnishes the rooms from
   `kits/interiors` (`kit_bundle.py`, `IX.sets`). Worked examples: `settlements/highlands`
   (`89y-hl-furnish.js`), `settlements/locus` (`66-locus-furnish.js`), `settlements/girder`,

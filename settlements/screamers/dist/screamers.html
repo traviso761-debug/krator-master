@@ -4054,6 +4054,79 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
 }
+/* GROWN SURFACES (2026-10, ported from the Ys Hykkousoi set): an ellipsoid, a lathe and a tube. Plain meshes of indexed
+   BufferGeometry like every other primitive here, so the inspector, measureInstance() and the size audit see real vertices.
+   mkEll: a CENTRED ellipsoid, radii rx, ry, rz, turned ry2. mkLathe: a surface of revolution about the vertical axis at
+   (x, y, z), profile [[r, h], ...] (h upward from y, outward-facing normals; o.double also draws the inside), o: { nu (around),
+   nv (rows along the profile), lobes {n, amp, ph}, flute {n, amp, sharp} (r is scaled by 1 + amp cos(n th) and by
+   1 + amp raised-cosine(n th)^sharp) }. mkTube: a tube along the world-space polyline pts, radius r (a number or
+   fn(t, i) with t the fraction along it), o: { seg (sides), double }; parallel-transport frames, open at both ends. */
+const _matDouble = new Map();
+function _matDbl(color, family) {
+  const k = color + '|' + (family || '');
+  if (_matDouble.has(k)) return _matDouble.get(k);
+  const m = mat(color, family).clone(); m.side = THREE.DoubleSide; m.userData.family = family || '';
+  _matDouble.set(k, m); return m;
+}
+function _surfGeo(nu, nv, fn, rev) {
+  const P = new Float32Array((nu + 1) * (nv + 1) * 3), I = [];
+  for (let j = 0; j <= nv; j++) for (let i = 0; i <= nu; i++) { const p = fn(i / nu, j / nv), k = (j * (nu + 1) + i) * 3; P[k] = p[0]; P[k + 1] = p[1]; P[k + 2] = p[2]; }
+  for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+    const a = j * (nu + 1) + i, b = a + 1, c = a + nu + 1, d = c + 1;
+    if (rev) I.push(a, b, c, b, d, c); else I.push(a, c, b, b, c, d);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setIndex(I); geo.computeVertexNormals();
+  const N = geo.attributes.normal;   /* the seam column is duplicated: share its normal so it does not show */
+  for (let j = 0; j <= nv; j++) {
+    const a = j * (nu + 1), b = a + nu;
+    const x = N.getX(a) + N.getX(b), y = N.getY(a) + N.getY(b), z = N.getZ(a) + N.getZ(b), l = Math.hypot(x, y, z) || 1;
+    N.setXYZ(a, x / l, y / l, z / l); N.setXYZ(b, x / l, y / l, z / l);
+  }
+  return geo;
+}
+function mkEll(x, y, z, rx, ry, rz, ry2, color, family) {
+  const geo = new THREE.SphereGeometry(0.5, _seg(12, 6), _seg(8, 4));
+  geo.scale(Math.max(rx, 0.01) * 2, Math.max(ry, 0.01) * 2, Math.max(rz, 0.01) * 2);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry2 || 0;
+  return _add(m);
+}
+function mkLathe(x, y, z, prof, ry, color, family, o) {
+  o = o || {};
+  const n = prof.length, per = Math.max(1, Math.round((o.nv || n * 2) / Math.max(1, n - 1))), rows = [];
+  for (let k = 0; k < n - 1; k++) for (let s = 0; s < per; s++) { const t = s / per, a = prof[k], b = prof[k + 1]; rows.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+  rows.push(prof[n - 1].slice());
+  const nu = _seg(o.nu || 24, 12), nv = rows.length - 1, lb = o.lobes, fl = o.flute;
+  const geo = _surfGeo(nu, nv, (u, v) => {
+    const th = u * TAU, row = rows[Math.round(v * nv)]; let r = row[0];
+    if (lb) r *= 1 + lb.amp * Math.cos(lb.n * th + (lb.ph || 0));
+    if (fl) r *= 1 + fl.amp * Math.pow(0.5 + 0.5 * Math.cos(fl.n * th), fl.sharp || 2);
+    r = Math.max(0, r);
+    return [r * Math.cos(th), row[1], r * Math.sin(th)];
+  }, false);
+  const m = new THREE.Mesh(geo, o.double ? _matDbl(color, family) : mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkTube(pts, r, color, family, o) {
+  o = o || {};
+  const n = pts.length; if (n < 2) return null;
+  const P = pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), T = [], N = [], B = [];
+  for (let i = 0; i < n; i++) T.push(new THREE.Vector3().subVectors(P[Math.min(n - 1, i + 1)], P[Math.max(0, i - 1)]).normalize());
+  const n0 = new THREE.Vector3(0, 1, 0); if (Math.abs(n0.dot(T[0])) > 0.9) n0.set(1, 0, 0);
+  n0.sub(T[0].clone().multiplyScalar(n0.dot(T[0]))).normalize(); N.push(n0);
+  for (let i = 1; i < n; i++) { const pv = N[i - 1], nn = pv.clone().sub(T[i].clone().multiplyScalar(pv.dot(T[i]))); if (nn.lengthSq() < 1e-8) nn.copy(pv); N.push(nn.normalize()); }
+  for (let i = 0; i < n; i++) B.push(new THREE.Vector3().crossVectors(T[i], N[i]).normalize());
+  const rf = typeof r === 'function' ? r : () => r, o0 = P[0];
+  const geo = _surfGeo(_seg(o.seg || 8, 4), n - 1, (u, v) => {
+    const i = Math.round(v * (n - 1)), rr = Math.max(0.004, rf(i / (n - 1), i)), ph = u * TAU, c = Math.cos(ph), s = Math.sin(ph);
+    return [P[i].x - o0.x + rr * (N[i].x * c + B[i].x * s), P[i].y - o0.y + rr * (N[i].y * c + B[i].y * s), P[i].z - o0.z + rr * (N[i].z * c + B[i].z * s)];
+  }, true);
+  const m = new THREE.Mesh(geo, o.double ? _matDbl(color, family) : mat(color, family));
+  m.position.copy(o0);
+  return _add(m);
+}
 /* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
    with an optional boxed side wall between them; its corners stay sharp and its mid-edges pinch in, as a stuffed
    cloth does. CENTRED at (x, y, z), like blob and ball; w along x, h its thickness (y), d along z; turned ry, then
@@ -4227,7 +4300,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'ashnomad'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -4284,7 +4357,22 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
-  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
+/* the activity an NPC can do AT a piece (simulation layer, 2026-10): `task: [..]` from FURN_TASKS. A trade (`job`) is
+   what a worker produces; a task is what any NPC does: sleep, eat, read. A building holding a piece with a task is a
+   destination for that task. Derived when an entry leaves task out: FURN_ROLE_TASK[role] first (a kit piece, [] = none),
+   then FURN_TYPE_TASK[type]; set `task: []` on a piece that should have none. verify.py rejects a task not listed here. */
+const FURN_TASKS = ['sleeping', 'resting', 'eating', 'drinking', 'cooking', 'socializing', 'praying', 'reading', 'writing', 'storage', 'feeding',
+  'melee-training', 'ranged-training'];
+const FURN_TYPE_TASK = { bed: ['sleeping'], chair: ['resting'], bench: ['resting', 'socializing'], seating: ['resting', 'socializing'],
+  table: ['eating', 'socializing'], storage: ['storage'], shelf: ['storage'], desk: ['writing'], altar: ['praying'], shrine: ['praying'],
+  brazier: ['socializing'], book: ['reading'], rack: ['storage'], stack: ['storage'], food: ['eating'], drink: ['drinking'] };
+/* a vessel or supply is storage only when it is a container by name (a jug or bowl on a table is a good, not storage) */
+const FURN_STORAGE_NAME = /\b(barrels?|casks?|kegs?|jars?|pots?|crates?|sacks?|baskets?|bins?|chests?|trunks?|hampers?|urns?|buckets?|butts?|vats?|amphorae?|pithos|pithoi|hoppers?|silos?|bales?|cupboards?|cabinets?|lockers?|larders?|wardrobes?|coffers?|boxe?s?|containers?|tubs?|gourds)\b/i;
+/* feeding: where beasts eat and drink (a trough, a manger, a hay rack, a feed basket); added on top of any other task */
+const FURN_FEED_NAME = /\b(troughs?|mangers?|hay ?racks?|hay hecks?|feed|fodder)\b/i;
+const FURN_ROLE_TASK = { bookcase: ['storage', 'reading'], hearth: ['cooking', 'socializing'], low_table: ['eating', 'socializing'],
+  throne: [], forge: [], kiln: [], bunk: ['sleeping'], rack: ['storage'], trough: ['feeding'], training_dummy: ['melee-training'], archery_butt: ['ranged-training'], hayrack: ['feeding'], armour_stand: [], vat: [] };
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -4296,6 +4384,12 @@ function FURN(o) {
   /* tier and wealth band: given, or read off the culture name (yuni-court, yuni-poor), else common */
   if (!o.tier) o.tier = /-court$/.test(o.culture) ? 'court' : /-poor$/.test(o.culture) || o.culture === 'generic' || o.culture === 'scrap' ? 'poor' : 'common';
   if (!o.wealth) o.wealth = (FURN_TIERS[o.tier] || [0, 1]).slice();
+  if (typeof o.task === 'string') o.task = [o.task];
+  if (!o.task) {
+    o.task = (FURN_ROLE_TASK[o.role] || FURN_TYPE_TASK[o.type] || []).slice();
+    if (!o.task.length && !FURN_ROLE_TASK[o.role] && /^(vessel|supply|tool)$/.test(o.type) && FURN_STORAGE_NAME.test(o.name || '') && !/archery/i.test(o.name)) o.task = ['storage'];
+    if (FURN_FEED_NAME.test(o.name || '') && o.task.indexOf('feeding') < 0 && !(FURN_ROLE_TASK[o.role] && !FURN_ROLE_TASK[o.role].length)) o.task.push('feeding');
+  }
   FURNS.push(o); FURN_BY_KEY[o.key] = o;
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
@@ -4438,7 +4532,11 @@ const FPAL = {
     /* the arcology's fittings (Noah's Regret, 2026-10): a painted dark grey, the earth and the greens of its beds,
        ripe fruit, still water */
     paintGrey: 0x3a3c3e, soil: 0x4a3a2a, leafGreen: 0x4e7a34, leafLight: 0x6a9440, leafDark: 0x3f6a30,
-    fruitRed: 0xb83224, water: 0x4a6a72, rust: 0x5a3a28
+    fruitRed: 0xb83224, water: 0x4a6a72, rust: 0x5a3a28,
+    /* the intact buildings' interiors (2026-10): upholstery on the moulded seats and beds, the medical and server
+       status lamps, a sample vial's violet */
+    clothSlate: 0x5e6b78, clothDove: 0xd2d5d8, clothTeal: 0x3d7a80,
+    glowGreen: 0x7dffa0, glowRed: 0xff5a48, glowViolet: 0xb48cff
   },
   'ancients-salvage': {
     blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
@@ -4731,6 +4829,11 @@ function makeFrame(x, z, ry, opt) {
     }
   };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, ff(color, family)); };
+  /* grown surfaces (mkEll, mkLathe, mkTube above): F.ell is CENTRED at ly; F.lathe stands on ly (profile heights [[r, h], ...] are added to it);
+     F.tube takes the polyline in the local frame, absolute heights, and closes neither end */
+  F.ell = (lx, ly, lz, rx, ry, rz, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkEll(x2, F.y + ly, z2, rx, ry, rz, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.lathe = (lx, ly, lz, prof, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkLathe(x2, F.y + ly, z2, prof, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.tube = (pts, r, color, family, o) => { mkTube(pts.map(p => { const [x2, z2] = toWorld(p[0], p[2]); return [x2, F.y + p[1], z2]; }), r, color, ff(color, family), o); };
   F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
   F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
@@ -6533,6 +6636,29 @@ const FK = (function () {
   };
   /* a weapon rack: the rack builder with weapons on it */
   B.weaponRack = function (F, S, o) { B.rack(F, Object.assign({}, S, { rack: S.rackWeapons || 'weapons' }), o); };
+  /* melee practice post: a planted post with a crossbar, a straw-wrapped body and head, a shield on one arm, a practice sword leaning */
+  B.trainingDummy = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.9, 0.08, D * 0.8, 0, P.woodD, P.wf);                                  /* base boards */
+    F.box(0, 0.08, 0, 0.12, H * 0.78, 0.12, 0, P.wood, P.wf);                                 /* the post */
+    F.blob(0, H * 0.5, 0, 0.19, H * 0.34, 0, hay, 'plant');                                   /* straw-wrapped body */
+    F.rod(-W * 0.4, H * 0.72, 0, W * 0.4, H * 0.72, 0, 0.035, P.wood, P.wf);                 /* crossbar arms */
+    F.ball(0, H * 0.9, 0, 0.12, hay, 'plant');                                                 /* head */
+    F.box(-W * 0.28, H * 0.48, D * 0.12, 0.26, 0.38, 0.04, 0, P.pick(), P.cf);                /* shield on the left arm */
+    F.rod(W * 0.34, 0.08, D * 0.3, W * 0.26, H * 0.5, D * 0.12, 0.015, P.woodL, P.wf);        /* practice sword against the post */
+    F.rod(W * 0.28, H * 0.6, D * 0.1, W * 0.4, H * 0.58, D * 0.1, 0.012, P.rope, 'rope');    /* strap on the crossbar */
+  };
+  /* ranged practice butt: a straw backstop between two posts, painted rings on its face, an arrow stuck in */
+  B.archeryButt = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.95, 0.06, D * 0.9, 0, P.woodD, P.wf);                                 /* base boards */
+    for (const s of [-1, 1]) F.box(s * (W / 2 - 0.1), 0.06, -0.05, 0.1, H - 0.06, 0.1, 0, P.wood, P.wf);   /* the two posts */
+    F.box(0, H - 0.08, -0.05, W - 0.1, 0.08, 0.1, 0, P.woodD, P.wf);                          /* top beam */
+    F.box(0, 0.5, 0, W - 0.3, 0.9, 0.36, 0, hay, 'plant');                                     /* straw backstop */
+    const rings = [[0.76, P.woodL, P.wf], [0.58, P.pick(), P.cf], [0.4, P.woodL, P.wf], [0.22, P.pick(), P.cf]];
+    rings.forEach(function (r, i) { F.box(0, 0.95 - r[0] / 2, 0.18 + i * 0.008, r[0], r[0], 0.01, 0, r[1], r[2]); });   /* the target face */
+    F.rod(0.1, 0.8, 0.2, 0.1, 0.78, 0.38, 0.01, P.wood, P.wf);                                  /* an arrow in the face */
+  };
   /* a staved vat (brewing, dyeing, tanning) with its paddle */
   B.vat = function (F, S, o) {
     const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, R = Math.min(W, D) / 2 - 0.02;
@@ -6802,6 +6928,12 @@ const FK = (function () {
       { role: 'grindstone', type: 'workstation', rooms: ['smithy', 'workshop', 'yard'], setting: 'both', clear: { front: 0.7 }, w: 0.9, d: 0.6, h: 1.0, uses: ['wood', 'metal', 'stone'], build: 'grindstone' },
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
       { role: 'barrel', type: 'storage', rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
+    ],
+    /* training furniture (2026-10): a melee and a ranged practice piece for every culture, registered with
+       FK.set({ roles: 'training' }) as <culture>_training_<role>; their tasks are melee-training and ranged-training */
+    training: [
+      { role: 'training_dummy', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 1.2, back: 1.0, left: 1.0, right: 1.0 }, w: 0.9, d: 0.7, h: 1.8, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'trainingDummy' },
+      { role: 'archery_butt', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 3.0 }, w: 1.3, d: 0.8, h: 1.6, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'archeryButt' }
     ]
   };
 
@@ -7427,7 +7559,7 @@ FURN({
 });
 
 FURN({
-  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', setting: 'both',
+  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', task: ['melee-training'], setting: 'both',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 1.2, back: 1.2, left: 0.8, right: 0.8 },
   materials: ['timber', 'rope'],
   source: 'settlements/mavs-refuge/src/55-arch.js provingGround (training posts: padded pells and a quintain)',
@@ -8179,6 +8311,10 @@ FURN({
 FK.set({ culture: 'generic', tier: 'poor', roles: 'trade', prefix: 'generic_trade_', S: GENERIC_STYLE, names: {
   forge: 'Fieldstone forge', anvil: 'Anvil on a stump', trough: 'Plank trough', stall: 'Plank stall', hayrack: 'Hay rack and manger', display: 'Plank display steps', armour_stand: 'Armour post', weapon_rack: 'Weapon rack', vat: 'Staved vat', still: 'Pot still', bin: 'Grain bins', larder: 'Larder cupboard', bunk: 'Plank bunk', locker: 'Plank locker', lathe: 'Pole lathe', press: 'Screw press', kiln: 'Clay kiln', grindstone: 'Grindstone', barrel: 'Barrel cradle', altar: 'Household altar' } });
 
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed generic_training_<role> */
+FK.set({ culture: 'generic', tier: 'poor', roles: 'training', prefix: 'generic_training_', S: GENERIC_STYLE, names: {
+  training_dummy: 'Straw practice dummy', archery_butt: 'Straw archery butt' } });
+
 /* ---- kits/catalog/krator-master-furniture-post-apoc.js ---- */
 /* ======================================================================
    Post-Apoc furniture: common and court tiers of high-value salvaged
@@ -8304,6 +8440,10 @@ FURN({
       F.rod(x - 0.06, 0.23, 0.15, x + 0.06, 0.23, 0.15, 0.05, F.col('dialGrey'), 'metal'); }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed post-apoc_training_<role> */
+FK.set({ culture: 'post-apoc', tier: 'common', roles: 'training', prefix: 'post-apoc_training_', S: PA_COMMON, names: {
+  training_dummy: 'Sandbag practice dummy', archery_butt: 'Plate shooting target' } });
 
 /* ---- kits/catalog/krator-master-furniture-scrap.js ---- */
 /* ======================================================================
@@ -9736,6 +9876,10 @@ FURN({
   }
 });
 
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scrap_training_<role> */
+FK.set({ culture: 'scrap', tier: 'poor', roles: 'training', prefix: 'scrap_training_', S: SCRAP_STYLE, names: {
+  training_dummy: 'Tyre-wrapped practice dummy', archery_butt: 'Scrap-plate shooting target' } });
+
 /* ---- kits/catalog/krator-master-furniture-screamer.js ---- */
 /* ======================================================================
    Screamer furniture: common and court tiers (the chief's).
@@ -9807,6 +9951,10 @@ FURN({
   }
 });
 
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed screamer_training_<role> */
+FK.set({ culture: 'screamer', tier: 'common', roles: 'training', prefix: 'screamer_training_', S: SCR_COMMON, names: {
+  training_dummy: 'Skull-topped practice post', archery_butt: 'Bone-ring target' } });
+
 /* ---- kits/catalog/krator-furniture-runtime.js ---- */
 /* ======================================================================
    Krator Furniture Runtime: the catalog's furniture in any build.
@@ -9834,7 +9982,7 @@ FURN({
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
-  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS;
+  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS; API.FURN_TASKS = FURN_TASKS;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
@@ -9886,11 +10034,16 @@ const KF_API = (function () {
     if (this.n + 3 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
+  Buf.prototype.push1 = function (x) {
+    if (this.n + 1 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
+    this.a[this.n++] = x;
+  };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
   /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
   Batch.prototype.bucket = function (family, tex) {
     const k = tex ? tex + '/' + family : family;
-    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array),
+      idx: new Buf(Uint32Array) });   /* idx: the triangles, as indices into pos/nor/col (a vertex is pos.n / 3 of them) */
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -9908,14 +10061,18 @@ const KF_API = (function () {
       }
       const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
-      const n = idx ? idx.count : pos.count;
-      for (let i = 0; i < n; i++) {
-        const j = idx ? idx.getX(i) : i;
+      /* each vertex once (world space, its colour), then the triangles as indices offset by the bucket's vertices so far;
+         a non-indexed source gets sequential ones. The corners and their order are the unrolled soup's, shared not copied */
+      const base = b.pos.n / 3, nv = pos.count, cr = Math.round(c.r * 255), cg = Math.round(c.g * 255), cb = Math.round(c.b * 255);
+      for (let j = 0; j < nv; j++) {
         _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
         b.pos.push3(_v.x, _v.y, _v.z);
         if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
-        b.col.push3(Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255));
+        b.col.push3(cr, cg, cb);
       }
+      const n = idx ? idx.count : nv;
+      if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
+      else for (let i = 0; i < n; i++) b.idx.push1(base + i);
       self.tris += n / 3;
     });
   };
@@ -9939,6 +10096,7 @@ const KF_API = (function () {
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
       geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
       geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
+      geo.setIndex(new THREE.BufferAttribute(b.pos.n / 3 > 65535 ? b.idx.view().slice() : new Uint16Array(b.idx.view()), 1));   /* indexed: Uint16, Uint32 past 65535 vertices */
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });
       else {
@@ -14734,10 +14892,10 @@ KFURN.linearColours = function(geo){
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 25 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 26 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'ashnomad'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -14745,17 +14903,17 @@ KFURN.linearColours = function(geo){
  var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
  // FURN_JOBS
  var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
-   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 19 (Scyvoi added 2026-10-05) ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 20 (Scyvoi added 2026-10-05, the Ash Nomads 2026-10-07) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi', 'ashnomad': 'Ash Nomads'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)

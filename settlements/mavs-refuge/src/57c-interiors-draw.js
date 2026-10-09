@@ -121,16 +121,21 @@ function mixBuild(u){
   MIX.piecesNow(u.i).forEach(function(p){
     bt.place(p.key, p.x, p.y, p.z, p.ry, { variant:p.v, seed:p.seed, wealth:u.wealth, building:u.id, room:p.room, setting:'indoor' }); });
   var G = mixShell(u, B), parts = { lit:[], glow:[] }, geo = {}, tris = 0;
-  function add(f, pos, nor, col){
+  /* a part: its vertices (pos, nor, col: 3 per vertex) and its triangles as indices into them (the batch's buckets are
+     indexed; the shell's soup gets sequential ones) */
+  function add(f, pos, nor, col, idx){
     var k = f==='glow' ? 1 : brfMaterial(f).color.r, c = col;
     if(k !== 1){ c = new Uint8Array(col.length); for(var i=0;i<col.length;i++) c[i] = Math.round(col[i]*k); }
-    parts[f==='glow' ? 'glow' : 'lit'].push({ pos:pos, nor:nor, col:c }); tris += pos.length/9;
+    parts[f==='glow' ? 'glow' : 'lit'].push({ pos:pos, nor:nor, col:c, idx:idx }); tris += idx.length/3;
   }
-  for(var f in bt.buckets){ var b = bt.buckets[f]; if(b.pos.n) add(f, b.pos.view(), b.nor.view(), b.col.view()); }
-  for(var g in G){ var s = G[g]; add(g, new Float32Array(s.p), new Float32Array(s.n), new Uint8Array(s.c)); }
+  for(var f in bt.buckets){ var b = bt.buckets[f]; if(b.pos.n) add(f, b.pos.view(), b.nor.view(), b.col.view(), b.idx.view()); }
+  for(var g in G){ var s = G[g], seq = new Uint32Array(s.p.length/3); for(var i=0;i<seq.length;i++) seq[i] = i;
+    add(g, new Float32Array(s.p), new Float32Array(s.n), new Uint8Array(s.c), seq); }
   for(var key in parts){ var L = parts[key]; if(!L.length) continue;
-    var n = L.reduce(function(a,q){ return a + q.pos.length; }, 0), o = 0, A = { pos:new Float32Array(n), nor:new Float32Array(n), col:new Uint8Array(n) };
-    L.forEach(function(q){ A.pos.set(q.pos, o); A.nor.set(q.nor, o); A.col.set(q.col, o); o += q.pos.length; });
+    var n = L.reduce(function(a,q){ return a + q.pos.length; }, 0), ni = L.reduce(function(a,q){ return a + q.idx.length; }, 0), o = 0, oi = 0;
+    var A = { pos:new Float32Array(n), nor:new Float32Array(n), col:new Uint8Array(n), idx:new Uint32Array(ni) };
+    L.forEach(function(q){ A.pos.set(q.pos, o); A.nor.set(q.nor, o); A.col.set(q.col, o);
+      var base = o/3; for(var i=0;i<q.idx.length;i++) A.idx[oi+i] = q.idx[i] + base; o += q.pos.length; oi += q.idx.length; });
     geo[key] = A; }
   /* the painted panels (rugs, hangings: a canvas map each design) are baked into world space and grouped by map, so the
      interiors draw one mesh per design in view, not one per panel */
@@ -163,14 +168,16 @@ function mixMesh(f){
   mesh.name = 'interiors:'+f; mesh.frustumCulled = false; mesh.castShadow = mesh.receiveShadow = !FAST;
   mesh.userData.interiors = true; mesh.userData.fam = 'Interiors'; mesh.visible = false;    /* until mixRebuild fills it */
   MIX.group.add(mesh);
-  return (MIX.meshes[f] = { mesh:mesh, cap:0, n:0 });
+  return (MIX.meshes[f] = { mesh:mesh, cap:0, icap:0, n:0, ni:0 });
 }
+/* each family's mesh is indexed: the active units' vertices one after another, their indices offset to match; the draw
+   range counts indices */
 function mixRebuild(){
-  var tot = {}, f;
-  MIX.active.forEach(function(u){ for(var k in u.geo) tot[k] = (tot[k]||0) + u.geo[k].pos.length; });
-  for(f in MIX.meshes) if(!(f in tot)) tot[f] = 0;
+  var tot = {}, toti = {}, f;
+  MIX.active.forEach(function(u){ for(var k in u.geo){ tot[k] = (tot[k]||0) + u.geo[k].pos.length; toti[k] = (toti[k]||0) + u.geo[k].idx.length; } });
+  for(f in MIX.meshes) if(!(f in tot)){ tot[f] = 0; toti[f] = 0; }
   for(f in tot){
-    var M = mixMesh(f), n = tot[f], g = M.mesh.geometry;
+    var M = mixMesh(f), n = tot[f], ni = toti[f], g = M.mesh.geometry;
     if(n > M.cap){
       var cap = Math.max(Math.ceil(n*1.4/3)*3, 3*20000);
       g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cap), 3));
@@ -178,12 +185,19 @@ function mixRebuild(){
       g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(cap), 3, true));
       M.cap = cap;
     }
-    if(n){
-      var o = 0, P = g.attributes.position, N = g.attributes.normal, C = g.attributes.color;
-      MIX.active.forEach(function(u){ var a = u.geo[f]; if(!a) return; P.array.set(a.pos, o); N.array.set(a.nor, o); C.array.set(a.col, o); o += a.pos.length; });
-      [P, N, C].forEach(function(at){ at.updateRange.offset = 0; at.updateRange.count = n; at.needsUpdate = true; });
+    if(ni > M.icap){
+      var icap = Math.max(Math.ceil(ni*1.4/3)*3, 3*20000);
+      g.setIndex(new THREE.BufferAttribute(new Uint32Array(icap), 1));
+      M.icap = icap;
     }
-    g.setDrawRange(0, n/3); M.n = n; M.mesh.visible = n > 0;
+    if(n){
+      var o = 0, oi = 0, P = g.attributes.position, N = g.attributes.normal, C = g.attributes.color, X = g.index.array;
+      MIX.active.forEach(function(u){ var a = u.geo[f]; if(!a) return; P.array.set(a.pos, o); N.array.set(a.nor, o); C.array.set(a.col, o);
+        var base = o/3; for(var i=0;i<a.idx.length;i++) X[oi+i] = a.idx[i] + base; o += a.pos.length; oi += a.idx.length; });
+      [P, N, C].forEach(function(at){ at.updateRange.offset = 0; at.updateRange.count = n; at.needsUpdate = true; });
+      g.index.updateRange.offset = 0; g.index.updateRange.count = ni; g.index.needsUpdate = true;
+    }
+    g.setDrawRange(0, ni); M.n = n; M.ni = ni; M.mesh.visible = ni > 0;
   }
   /* the painted panels: one mesh per design for the MIX_DECALS designs with the most panels among the active units;
      the rest share one mesh in their design's mean colour (a draw call each would cost ten or more in a busy hold) */

@@ -90,7 +90,7 @@ emitBuckets = function(){
     else BRF_MAT.glow = m.material;
     m.castShadow = m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.fam = 'Furniture';
   });
-  var tris = 0; g.children.forEach(function(m){ tris += m.geometry.attributes.position.count/3; });
+  var tris = 0; g.children.forEach(function(m){ var q = m.geometry; tris += (q.index ? q.index.count : q.attributes.position.count)/3; });
   window._furniture = { placed:BRF.placed.length, tris:tris|0, meshes:g.children.length, lights:BRF.lights, missing:BRF.missing,
                         interiors:BRF.buildings.length, interiorPieces:BRF.buildings.reduce(function(a,b){ return a+b.interior.pieces; }, 0),
                         byKey:BRF.placed.reduce(function(a,r){ a[r.key]=(a[r.key]||0)+1; return a; }, {}) };

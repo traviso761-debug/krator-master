@@ -109,7 +109,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "344dbe75dfa7"
+  "32bf1c7ddd9a"
  ],
  "53-assets.js": [
   "locus",
@@ -233,11 +233,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "abea6bee17b0"
+  "6078e10bb1c2"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "1c862153fc56"
+  "d82b688e61ff"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -405,11 +405,11 @@
  ],
  "89-atmos-0-core.js": [
   "core/atmos",
-  "b1873caed73e"
+  "2d9ce6e7a4ee"
  ],
  "89-atmos-0p-presets.js": [
   "core/atmos",
-  "14872a1d4c11"
+  "a669eaffc302"
  ],
  "89-atmos-1-street.js": [
   "core/atmos",
@@ -425,7 +425,7 @@
  ],
  "89-atmos-4-weather.js": [
   "core/atmos",
-  "883c626ac543"
+  "566cf244c945"
  ],
  "89-atmos-5-dress.js": [
   "core/atmos",
@@ -441,7 +441,7 @@
  ],
  "89-atmos-8-export.js": [
   "core/atmos",
-  "64da0c333c2b"
+  "02d7d568ab27"
  ],
  "89-atmos-9-host.js": [
   "core/atmos",
@@ -454,6 +454,10 @@
  "89-atmos-b-skylight.js": [
   "core/atmos",
   "ef9512dd517b"
+ ],
+ "89-atmos-d-clouddeck.js": [
+  "core/atmos",
+  "1e789bbcf6fc"
  ],
  "89-sheetui.js": [
   "locus",

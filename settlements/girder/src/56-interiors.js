@@ -167,27 +167,35 @@ function gixFurnish(J){
   J.owner.interior.residence = { residence:res.residence, beds:res.beds, food:res.food, items:res.items, fails:res.fails.length };
   J.plans = plans; GIX.pieces += n; GIX.done++;
 }
-/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
+/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map).
+   Each is indexed: a flushed batch mesh brings its vertices and its index (offset by the vertices already there); a non-indexed
+   geometry (a decal: gfDecal) gets sequential indices. A.n counts vertices, A.ni indices (the draw range) */
 var GIX_SPEC = { col:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['color',3,Uint8Array,true]],
                  uv:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['uv',2,Float32Array,false]] };
 function gixAccum(key, kind, material, geo){
-  var spec = GIX_SPEC[kind], A = GIX.acc[key], nv = geo.attributes.position.count;
-  if(!A || A.n + nv > A.cap){
+  var spec = GIX_SPEC[kind], A = GIX.acc[key], nv = geo.attributes.position.count, I = geo.index, ni = I ? I.count : nv, i;
+  if(!A || A.n + nv > A.cap || A.ni + ni > A.icap){
     var cap = Math.max(nv*2, A ? A.cap*2 : 60000); while(A && A.n + nv > cap) cap *= 2;
-    var g2 = new THREE.BufferGeometry(), arrs = {};
+    var icap = Math.max(ni*2, A ? A.icap*2 : 90000); while(A && A.ni + ni > icap) icap *= 2;
+    var g2 = new THREE.BufferGeometry(), arrs = {}, idx = new Uint32Array(icap);
     spec.forEach(function(s){ var a = new s[2](cap*s[1]); if(A) a.set(A.arrs[s[0]].subarray(0, A.n*s[1])); arrs[s[0]] = a; g2.setAttribute(s[0], new THREE.BufferAttribute(a, s[1], s[3])); });
-    if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = g2; A.arrs = arrs; A.cap = cap; A.fresh = true; }
+    if(A) idx.set(A.idx.subarray(0, A.ni));
+    g2.setIndex(new THREE.BufferAttribute(idx, 1));
+    if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = g2; A.arrs = arrs; A.idx = idx; A.cap = cap; A.icap = icap; A.fresh = true; }
     else {
       var mesh = new THREE.Mesh(g2, material); mesh.name = 'interiors:'+key; gixMaterial(mesh, kind);
-      GIX.group.add(mesh); A = GIX.acc[key] = { n:0, cap:cap, arrs:arrs, mesh:mesh, fresh:true, spec:spec };
+      GIX.group.add(mesh); A = GIX.acc[key] = { n:0, ni:0, cap:cap, icap:icap, arrs:arrs, idx:idx, mesh:mesh, fresh:true, spec:spec };
     }
   }
-  var at = A.mesh.geometry.attributes;
+  var at = A.mesh.geometry.attributes, ix = A.mesh.geometry.index;
   spec.forEach(function(s){ A.arrs[s[0]].set(geo.attributes[s[0]].array, A.n*s[1]); var b = at[s[0]];
     if(A.fresh){ b.updateRange.offset = 0; b.updateRange.count = -1; } else { b.updateRange.offset = A.n*s[1]; b.updateRange.count = nv*s[1]; }
     b.needsUpdate = true; });
-  A.fresh = false; A.n += nv;
-  A.mesh.geometry.setDrawRange(0, A.n);
+  if(I){ var src = I.array; for(i=0;i<ni;i++) A.idx[A.ni+i] = src[i] + A.n; } else for(i=0;i<ni;i++) A.idx[A.ni+i] = A.n + i;
+  if(A.fresh){ ix.updateRange.offset = 0; ix.updateRange.count = -1; } else { ix.updateRange.offset = A.ni; ix.updateRange.count = ni; }
+  ix.needsUpdate = true;
+  A.fresh = false; A.n += nv; A.ni += ni;
+  A.mesh.geometry.setDrawRange(0, A.ni);
   A.mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0,0,0), 1e5);
   geo.dispose();
 }

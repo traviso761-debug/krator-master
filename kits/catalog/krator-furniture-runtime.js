@@ -76,11 +76,16 @@ const KF_API = (function () {
     if (this.n + 3 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
+  Buf.prototype.push1 = function (x) {
+    if (this.n + 1 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
+    this.a[this.n++] = x;
+  };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
   /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
   Batch.prototype.bucket = function (family, tex) {
     const k = tex ? tex + '/' + family : family;
-    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array),
+      idx: new Buf(Uint32Array) });   /* idx: the triangles, as indices into pos/nor/col (a vertex is pos.n / 3 of them) */
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -98,14 +103,18 @@ const KF_API = (function () {
       }
       const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
-      const n = idx ? idx.count : pos.count;
-      for (let i = 0; i < n; i++) {
-        const j = idx ? idx.getX(i) : i;
+      /* each vertex once (world space, its colour), then the triangles as indices offset by the bucket's vertices so far;
+         a non-indexed source gets sequential ones. The corners and their order are the unrolled soup's, shared not copied */
+      const base = b.pos.n / 3, nv = pos.count, cr = Math.round(c.r * 255), cg = Math.round(c.g * 255), cb = Math.round(c.b * 255);
+      for (let j = 0; j < nv; j++) {
         _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
         b.pos.push3(_v.x, _v.y, _v.z);
         if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
-        b.col.push3(Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255));
+        b.col.push3(cr, cg, cb);
       }
+      const n = idx ? idx.count : nv;
+      if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
+      else for (let i = 0; i < n; i++) b.idx.push1(base + i);
       self.tris += n / 3;
     });
   };
@@ -129,6 +138,7 @@ const KF_API = (function () {
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
       geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
       geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
+      geo.setIndex(new THREE.BufferAttribute(b.pos.n / 3 > 65535 ? b.idx.view().slice() : new Uint16Array(b.idx.view()), 1));   /* indexed: Uint16, Uint32 past 65535 vertices */
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });
       else {
