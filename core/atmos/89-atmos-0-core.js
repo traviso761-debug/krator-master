@@ -89,6 +89,6 @@ const ATMOS={};
  A.sprites=(name,attrs,m,order)=>{const T=A.T,g=new T.InstancedBufferGeometry(),n=attrs.ipos[1].length/3;
   g.setAttribute('position',new T.Float32BufferAttribute([-.5,-.5,0,.5,-.5,0,.5,.5,0,-.5,.5,0],3));g.setIndex([0,1,2,0,2,3]);
   for(const k in attrs)g.setAttribute(k,new T.InstancedBufferAttribute(new Float32Array(attrs[k][1]),attrs[k][0]));g.instanceCount=n;
-  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order||3;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
+  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order==null?3:order;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
  A.finish=()=>{A.bakeSets();if(A.buildGlow)A.buildGlow();return A.stats;};
 })();

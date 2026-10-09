@@ -11,6 +11,11 @@ BROWSER. A [G data] row whose note starts with "split" is a fragment the audit h
 recorded as mixing data with host code: its browser lines are reported as warnings, not
 failures, until it is split. Every other [G data] fragment with a browser line fails.
 
+A numeric default written with || in a [G data] fragment is a warning (ROADMAP.md stage 0g): `x = x || 5`, or
+`seed || 9483` on a parameter of the function it is in, turns a 0 the caller meant into the default (BIO.standAt
+did this with its scale and seed). Write `x == null ? 5 : x`. `|| 0` is not flagged (0 for 0 changes nothing).
+Warnings only: these never fail a build. With --quiet (every build.py) they are counted on one line per build.
+
 A fragment with no row in PORT.md is a warning that names the fix (rerun tools/audit_port.py).
 A build with no PORT.md passes: the lint has nothing to check yet.
 
@@ -29,6 +34,49 @@ BROWSER = [
     ('storage', r'localStorage|sessionStorage|indexedDB'),
     ('network', r'\bfetch\(|XMLHttpRequest|new Worker\(|WebSocket|AudioContext|new Audio\('),
 ]
+# a numeric default written with ||: `x = x || 5` anywhere, or `x || 5` where x is a parameter of the function the line
+# is in (a header on the line, or the last header above it). The number must not be 0.
+_ID = r'[A-Za-z_$][\w$]*'
+_NUM = r'-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?'
+FALSY_SELF = re.compile(r'(?<![\w$.])(' + _ID + r')\s*=(?!=)\s*\1\s*\|\|\s*(' + _NUM + r')(?![\w$.])')
+FALSY_USE = re.compile(r'(?<![\w$.])(' + _ID + r')\s*\|\|\s*(' + _NUM + r')(?![\w$.])')
+HEADER = re.compile(r'function\s*[\w$]*\s*\(([^()]*)\)|\(([^()]*)\)\s*=>|(?<![\w$.])(' + _ID + r')\s*=>')
+
+
+def params(header_groups):
+    """The parameter names in one function header's parameter list (defaults and destructuring dropped)."""
+    out = set()
+    for g in header_groups:
+        if not g:
+            continue
+        for p in g.split(','):
+            m = re.match(r'\s*(?:\.\.\.)?\s*(' + _ID + r')', p.replace('{', ' ').replace('[', ' '))
+            if m:
+                out.add(m.group(1))
+    return out
+
+
+def falsy_defaults(path):
+    """(line number, text) of each numeric default written with || in a file."""
+    hits, last = [], set()
+    for i, ln in enumerate(open(path, encoding='utf-8', errors='replace'), 1):
+        code = ln.split('//')[0] if ln.lstrip().startswith('//') else re.sub(r'\s//\s.*$', '', ln)
+        heads = [params(m.groups()) for m in HEADER.finditer(code)]
+        here = set().union(*heads) if heads else set()
+        found = []
+        for m in FALSY_SELF.finditer(code):
+            if float(m.group(2)) != 0:
+                found.append(m.group(0))
+        for m in FALSY_USE.finditer(code):
+            if float(m.group(2)) != 0 and m.group(1) in (here | last) and not any(m.group(0) in f for f in found):
+                found.append(m.group(0))
+        if found:
+            hits.append((i, ', '.join(re.sub(r'\s+', '', f) for f in found)))
+        if heads:
+            last = heads[-1]
+    return hits
+
+
 ROW = re.compile(r'^\|\s*`([^`]+)`\s*\|\s*[0-9.]+\s*\|\s*(\[[^\]]+\])\s*\|(.*)\|\s*(.*?)\s*\|$')
 
 
@@ -66,12 +114,12 @@ def fragments(build):
 
 
 def check(build):
-    """(failures, warnings) for one build, each a list of printable lines."""
+    """(failures, warnings, falsy-default warnings) for one build, each a list of printable lines."""
     port_md = os.path.join(ROOT, build, 'PORT.md')
     if not os.path.isfile(port_md):
-        return [], ['%s: no PORT.md (run tools/audit_port.py); nothing to check' % build]
+        return [], ['%s: no PORT.md (run tools/audit_port.py); nothing to check' % build], []
     tags = rows(port_md)
-    fails, warns = [], []
+    fails, warns, falsy = [], [], []
     for name in fragments(build):
         if name not in tags:
             warns.append('%s/%s: not in PORT.md; rerun tools/audit_port.py' % (build, name))
@@ -80,6 +128,8 @@ def check(build):
         if tag != '[G data]':
             continue
         path = os.path.join(ROOT, build, name)
+        falsy += ['%s/%s:%d: falsy default: %s (a 0 passed becomes the default; write x==null?N:x)' % (build, name, i, t)
+                  for i, t in falsy_defaults(path)]
         hits = []
         for i, ln in enumerate(open(path, encoding='utf-8', errors='replace'), 1):
             for kind, rx in BROWSER:
@@ -92,7 +142,7 @@ def check(build):
             warns += [h + '   (tagged [G data], noted split: warning until it is split)' for h in hits]
         else:
             fails += hits
-    return fails, warns
+    return fails, warns, falsy
 
 
 def main(argv):
@@ -105,10 +155,18 @@ def main(argv):
             builds += ['%s/%s' % (top, n) for n in sorted(os.listdir(d))
                        if os.path.isfile(os.path.join(d, n, 'build.py'))]
     nf = nw = 0
+    quiet = '--quiet' in argv
     for b in builds:
-        fails, warns = check(b)
+        fails, warns, falsy = check(b)
         for w in warns:
             print('port lint WARN  ' + w)
+        if falsy and quiet:
+            print('port lint WARN  %s: %d numeric default(s) written with || in [G data] fragments '
+                  '(python3 tools/check_port.py %s lists them)' % (b, len(falsy), b))
+        elif falsy:
+            for w in falsy:
+                print('port lint WARN  ' + w)
+        nw += len(falsy)
         for f in fails:
             print('port lint FAIL  ' + f)
         nf += len(fails); nw += len(warns)

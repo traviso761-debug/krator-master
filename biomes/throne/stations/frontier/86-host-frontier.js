@@ -40,8 +40,8 @@ const FRONTIER={rows:[],stumps:[],traps:[],walls:0,slash:0};
    T.planted=true;T.H=young?rr2(2.2,4):rr2(5,9);T.crownR=young?rr2(1,1.6):rr2(2.2,3.4);T.rb=young?rr2(.06,.1):rr2(.14,.24);
    FRONTIER.rows.push({x:c[0],z:c[1],field:F.i,H:T.H,planted:true});
    THRONE.grow(T,lv);}}
- // (not obstacles: neither kit plants a tree in a field, and BIO.clearOf scans its list linearly: 6,000 entries made
- // both kits' builds 3x slower)
+ // (not obstacles: neither kit plants a tree in a field, and BIO.clearOf scanned its list linearly then: 6,000 entries made
+ // both kits' builds 3x slower. It reads a grid index now (core/biome BIO.Hash), but the rows stay out: the planting stands)
 
  _mark('rows');
  // ---- STUMPS: the felled hypertrees, in the clearings and along the fields' upper edges

@@ -814,7 +814,7 @@ BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE
 // 1/27/53/20 % for four species. The value is stretched through the middle of
 // the bell first so the n bands come out roughly even.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
-BIO.standAt=function(x,z,n,scale,seed){scale=scale||.0017;const f=fbm(x*scale+31,z*scale-19,seed||9483,2);
+BIO.standAt=function(x,z,n,scale,seed){scale=scale==null?.0017:scale;const f=fbm(x*scale+31,z*scale-19,seed==null?9483:seed,2);
  const u=smooth(.30,.70,f);return clamp(Math.floor(u*n),0,n-1);};
 BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.floor(rng()*n):BIO.standAt(x,z,n,scale,seed);};
 
@@ -844,20 +844,57 @@ BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||B
   if(!BIO.clearOf(x,z,opt.pad||0))continue;
   fn(x,BIO.terrainH(x,z),z,d);n++;}
  return n;};
+// A SPATIAL INDEX: a uniform grid of buckets (openworld/little-demo's flora, 85-world-flora.js). insert(x,z,r,item)
+// files an item under every cell its disc [x-r,x+r]^2 touches (a disc wider than 64 cells goes on a short list every
+// query reads); some(x,z,pad,fn) calls fn on every item whose square reaches the square of half-size pad round (x,z),
+// and on some others, until fn says true. A superset, never a miss (1 mm of slack each side covers the rounding), so a
+// query that applies its own exact test to what it is handed answers exactly what a scan of the whole list answers.
+// Bucket order is not list order: only an any/none answer may come out of it (clearOf, clearOf3, scatter's spacing).
+BIO.Hash=function(cell){const C=cell>0&&isFinite(cell)?cell:24,cells=new Map(),big=[],all=[],S=1e-3,LIM=1048576;
+ const lo=(a,r)=>Math.floor((a-r-S)/C),hi=(a,r)=>Math.floor((a+r+S)/C);
+ const ok=(i0,i1,j0,j1)=>i0>-LIM&&i1<LIM&&j0>-LIM&&j1<LIM;   // the cell keys stay exact integers (i*2^22+j)
+ return{cell:C,all,
+  insert(x,z,r,item){const rr=r>0?r:0,i0=lo(x,rr),i1=hi(x,rr),j0=lo(z,rr),j1=hi(z,rr);all.push(item);
+   if(!((i1-i0+1)*(j1-j0+1)<=64&&ok(i0,i1,j0,j1))){big.push(item);return;}
+   for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){const k=i*4194304+j;let b=cells.get(k);if(!b)cells.set(k,b=[]);b.push(item);}},
+  some(x,z,pad,fn){const p=pad>0?pad:0,i0=lo(x,p),i1=hi(x,p),j0=lo(z,p),j1=hi(z,p);
+   if(!((i1-i0+1)*(j1-j0+1)<=all.length&&ok(i0,i1,j0,j1))){for(let i=0;i<all.length;i++)if(fn(all[i]))return true;return false;}
+   for(let i=0;i<big.length;i++)if(fn(big[i]))return true;
+   for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){const b=cells.get(i*4194304+j);if(b)for(let q=0;q<b.length;q++)if(fn(b[q]))return true;}
+   return false;}};};
 // POISSON-ish scatter of n points with a minimum spacing, area-uniform in the
-// annulus, biased outward by `pow` (>1 pushes the crowd out)
+// annulus, biased outward by `pow` (>1 pushes the crowd out). The spacing test reads the accepted points through a
+// BIO.Hash of cell minD (it was a scan of all of them: O(n^2)); the same points pass, the same draws are made.
 BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[];let tries=0;
+ const H=typeof minD==='number'&&minD>0&&isFinite(minD)?BIO.Hash(minD):null;let x=0,z=0;const near=q=>Math.hypot(x-q[0],z-q[1])<minD;
  while(P.length<n&&tries++<n*40){const a=rng()*TAU,u=Math.pow(rng(),opt.pow||1);
-  const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u)),x=o[0]+Math.cos(a)*r,z=o[1]+Math.sin(a)*r;
+  const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u));x=o[0]+Math.cos(a)*r;z=o[1]+Math.sin(a)*r;
   if(rng()>BIO.mask(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
-  let ok=true;for(const q of P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
-  if(!ok)continue;P.push([x,z]);fn(x,BIO.terrainH(x,z),z,r);}
+  let ok=true;if(H)ok=!H.some(x,z,minD,near);else for(const q of P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
+  if(!ok)continue;const p=[x,z];P.push(p);if(H)H.insert(x,z,0,p);fn(x,BIO.terrainH(x,z),z,r);}
  return P;};
-// keep-clear: outside every host obstacle cylinder (plus pad), on the ground
+// keep-clear: outside every host obstacle cylinder (plus pad), on the ground.
+// The obstacles are read through a BIO.Hash kept beside BIO.host.obstacles. Kits push into that array directly (Throne's
+// mangroves, while a grid is running), so every query first files what was pushed since the last one; a new array (a
+// nursery swaps its own in) or a shorter one is filed afresh. An entry is read once, when filed: change an obstacle's
+// x, z or r in place and the index does not see it (push a new one). An entry without finite numeric x, z and r, or a
+// query whose x, z or pad is not a number, goes to the plain scan, which answers as it always did.
+const OBS_CELL=24;let _obs=null;
+function obsIndex(){const O=BIO.host.obstacles;if(!O||!(O.length>8))return null;
+ if(!_obs||_obs.arr!==O||O.length<_obs.n)_obs={arr:O,n:0,h:BIO.Hash(OBS_CELL),scan:false};
+ const I=_obs;for(;I.n<O.length;I.n++){const q=O[I.n];
+  if(q&&typeof q.x==='number'&&typeof q.z==='number'&&typeof q.r==='number'&&isFinite(q.x)&&isFinite(q.z)&&isFinite(q.r))I.h.insert(q.x,q.z,q.r,q);else I.scan=true;}
+ return I.scan?null:I.h;}
+BIO.obstacleIndex=obsIndex;
+let _x=0,_z=0,_p=0,_y=0,_v=0;
+const _hit=q=>Math.hypot(_x-q.x,_z-q.z)<q.r+_p;
+const _hit3=q=>!(q.y0!=null&&(_y+_v<q.y0||_y-_v>q.y1))&&Math.hypot(_x-q.x,_z-q.z)<q.r+_p;
 BIO.clearOf=function(x,z,pad){const O=BIO.host.obstacles;pad=pad||0;
+ const H=typeof pad==='number'&&typeof x==='number'&&typeof z==='number'?obsIndex():null;if(H){_x=x;_z=z;_p=pad;return !H.some(x,z,pad,_hit);}
  for(let i=0;i<O.length;i++){const q=O[i];if(Math.hypot(x-q.x,z-q.z)<q.r+pad)return false;}return true;};
 // keep-clear in 3D: a blob of horizontal radius rad, half-height vr at (x,y,z)
 BIO.clearOf3=function(x,y,z,rad,vr){const O=BIO.host.obstacles;
+ const H=typeof rad==='number'&&typeof x==='number'&&typeof z==='number'?obsIndex():null;if(H){_x=x;_z=z;_p=rad;_y=y;_v=vr;return !H.some(x,z,rad,_hit3);}
  for(let i=0;i<O.length;i++){const q=O[i];if(q.y0!=null&&(y+vr<q.y0||y-vr>q.y1))continue;
   if(Math.hypot(x-q.x,z-q.z)<q.r+rad)return false;}return true;};
 
@@ -3646,7 +3683,7 @@ const ATMOS={};
  A.sprites=(name,attrs,m,order)=>{const T=A.T,g=new T.InstancedBufferGeometry(),n=attrs.ipos[1].length/3;
   g.setAttribute('position',new T.Float32BufferAttribute([-.5,-.5,0,.5,-.5,0,.5,.5,0,-.5,.5,0],3));g.setIndex([0,1,2,0,2,3]);
   for(const k in attrs)g.setAttribute(k,new T.InstancedBufferAttribute(new Float32Array(attrs[k][1]),attrs[k][0]));g.instanceCount=n;
-  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order||3;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
+  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order==null?3:order;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
  A.finish=()=>{A.bakeSets();if(A.buildGlow)A.buildGlow();return A.stats;};
 })();
 

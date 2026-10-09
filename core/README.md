@@ -102,8 +102,8 @@ additions are in it, each marked with the kit it came from:
 | `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
 | `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
-| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
-| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
+| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, the spatial index `BIO.Hash`, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
+| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract and the spatial index's (indexed keep-clear and scatter equal the linear scans), each check with a negative |
 | `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
 | `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
 | `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
@@ -120,6 +120,13 @@ its last: it gets its own registry of items and buckets (two kits may both have 
 its exported functions run in that registry, and material cache keys carry its name
 (`BIO.kitKey`), so two kits' `grass` cannot share one compiled shader. Mesh names stay
 `biome:<name>`; `userData.kit` says whose.
+
+**Keep-clear and scatter are indexed** (Oct 2026): `BIO.clearOf`/`clearOf3` read `BIO.host.obstacles` through a
+uniform grid (`BIO.Hash`, 24 m cells) that files whatever was pushed since the last query (a swapped or shorter array is
+filed afresh; an entry without numeric `x`/`z`/`r` falls back to the plain scan), and `BIO.scatter` tests its spacing
+through one, so neither grows with the square of the count any more. The answers are the scans' exactly (`test-place.js`,
+and every kit's baked geometry hashed the same before and after); an obstacle changed in place after it was pushed is
+not seen: push a new one.
 
 **`BIO.LOD`** is both the runtime LOD's settings (`chunk`, `scale`) and, called, the detail
 radii (sedesert's `BIO.LOD()`, the same as `BIO.radii()`), so sedesert's fragments and
