@@ -1,0 +1,2432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tongues of Krator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya%20SC:wght@500;700&family=JetBrains%20Mono:wght@400;500&family=Marcellus%20SC&family=Crimson%20Pro:ital,wght@0,400;0,600;1,400&family=IBM%20Plex%20Mono:wght@400;500&family=GFS%20Didot&family=Gentium%20Book%20Plus:ital,wght@0,400;0,700;1,400&family=DM%20Mono:wght@400;500&family=Rozha%20One&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Fira%20Mono:wght@400;500&family=Saira%20Stencil%20One&family=Uncial%20Antiqua&family=Source%20Serif%204:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Red%20Hat%20Mono:wght@400;500&family=Spectral%20SC:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=VT323&family=Martian%20Mono:wght@400;500&family=Alumni%20Sans:wght@600;800&family=PT%20Serif:ital,wght@0,400;0,700;1,400&family=PT%20Mono&family=Grenze:wght@600;700&family=Faustina:ital,wght@0,400;0,600;1,400&family=Overpass%20Mono:wght@400;500&family=Cormorant%20Unicase:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Azeret%20Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a sticky tab bar over one section at a time. The overview is neutral parchment; each tongue keeps its own palette and type, scoped to its own section. */
+:root{--bg:#ece8e0;--panel:#e2ddd2;--ink:#26231f;--muted:#6b665d;--accent:#8a5a2b;--line:#cfc8ba;
+  --sans:"Spectral","Source Serif 4",Georgia,serif;--mono:"Red Hat Mono",Consolas,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b1a18;--panel:#262420;--ink:#ece6da;--muted:#a49e92;--accent:#d49a5e;--line:#38352f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1a18;--panel:#262420;--ink:#ece6da;--muted:#a49e92;--accent:#d49a5e;--line:#38352f;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs .in{max-width:1000px;margin:0 auto;padding-inline:16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin}
+.tabs button{font:500 .82rem var(--mono);letter-spacing:.04em;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:14px 12px 11px;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.tongue{min-height:100%}
+#overview{background:var(--bg);color:var(--ink)}
+#overview .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:48px}
+#overview h1{font:700 clamp(2.4rem,6vw,3.6rem)/1.05 "Spectral SC",Georgia,serif;margin:0;letter-spacing:.02em}
+#overview h2{font:700 1.55rem/1.2 "Spectral SC",Georgia,serif;margin:0 0 12px}
+#overview p{margin:0 0 12px;max-width:66ch}
+#overview .eyebrow{font:.72rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.cardx{border:1px solid var(--line);border-radius:4px;padding:16px;display:grid;gap:6px;text-align:left;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.cardx:hover{border-color:var(--accent)}
+.cardx .nm{font:700 1.25rem "Spectral SC",Georgia,serif}
+.cardx .who{font:.74rem var(--mono);color:var(--muted);letter-spacing:.04em}
+.cardx .d{font-size:.95rem}
+.cardx .go{font:500 .78rem var(--mono);color:var(--accent)}
+.tree{display:grid;gap:8px;font-size:.98rem}
+.tree div{display:grid;grid-template-columns:minmax(0,15em) 1fr;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+@media (max-width:560px){.tree div{grid-template-columns:1fr;gap:2px}}
+.tree b{font-weight:600}
+#overview .tbl{overflow-x:auto}
+#overview table{border-collapse:collapse;width:100%;min-width:1180px;font-size:.95rem}
+#overview th,#overview td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+#overview th{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#overview td.m{font:.84rem var(--mono)}
+#overview .note{font-size:.92rem;color:var(--muted)}
+:root #vothic{
+  --bg:#ece6dc; --panel:#e3dbcd; --ink:#2a1f38; --muted:#6b5f72; --accent:#8a6517; --line:#cbbfae; --green:#3f6a4b;
+  --display:"Alegreya SC", "Palatino Linotype", Georgia, serif;
+  --body:"Alegreya", "Palatino Linotype", Georgia, serif;
+  --mono:"JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #vothic{
+  --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}}
+:root[data-theme="dark"] #vothic{
+  --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}
+#vothic{background:var(--bg);color:var(--ink);font:17px/1.55 var(--body)}
+#vothic .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#vothic h1,#vothic h2{font-family:var(--display);font-weight:700;letter-spacing:.02em;text-wrap:balance;margin:0}
+#vothic h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05}
+#vothic h2{font-size:1.6rem;margin-bottom:12px}
+#vothic p{margin:0 0 12px;max-width:65ch}
+#vothic .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#vothic .mono{font-family:var(--mono);font-size:.88em}
+#vothic header{display:grid;gap:14px}
+#vothic .hero-glyphs{display:flex;flex-wrap:wrap;gap:2px;align-items:flex-end;min-height:80px}
+#vothic .hero-glyphs svg{width:46px;height:62px}
+#vothic .ink{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#vothic .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#vothic .plain .mark{stroke:var(--ink)}
+#vothic .dia{fill:var(--accent);stroke:none}
+#vothic .plain .dia{fill:var(--ink)}
+#vothic .scribe{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px}
+#vothic .scribe label{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#vothic .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#vothic #vothic-src{flex:1 1 260px;min-width:0;font:1.15rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+#vothic #vothic-src:focus,#vothic button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#vothic button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
+#vothic button:hover{border-color:var(--accent);color:var(--accent)}
+#vothic .out{display:flex;flex-wrap:wrap;gap:6px 22px;min-height:84px;align-items:flex-end}
+#vothic .word{display:flex;align-items:flex-end}
+#vothic .word svg{width:40px;height:54px}
+#vothic .unk{display:inline-grid;place-items:center;width:30px;height:40px;margin-bottom:8px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
+#vothic .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#vothic .note{font-size:.9rem;color:var(--muted)}
+#vothic .samples{display:flex;flex-wrap:wrap;gap:6px}
+#vothic .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+#vothic .card{border:1px solid var(--line);border-radius:4px;padding:10px 10px 12px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+#vothic .card:hover{border-color:var(--accent)}
+#vothic .card svg{width:64px;height:86px}
+#vothic .card .rom{font:600 1.05rem var(--mono);color:var(--accent)}
+#vothic .card .ipa{font:.8rem var(--mono);color:var(--muted)}
+#vothic .card .name{font-family:var(--display);font-size:1.05rem;margin-top:4px}
+#vothic .card .gloss{font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.3}
+#vothic .legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:var(--muted);margin-top:4px}
+#vothic .legend b{color:var(--accent);font-weight:600}
+#vothic .tbl{overflow-x:auto}
+#vothic table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+#vothic th,#vothic td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#vothic th{font:500 .74rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#vothic td.m{font-family:var(--mono);font-size:.9rem}
+#vothic td.g svg{width:26px;height:35px}
+#vothic .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+#vothic .cols>div{min-width:0}
+#vothic .feat{display:grid;gap:14px}
+#vothic .feat .f{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+#vothic .feat .pair{display:flex;align-items:flex-end}
+#vothic .feat .pair svg{width:38px;height:52px}
+#vothic .feat .arrow{color:var(--muted);font-family:var(--mono);padding:0 4px 14px}
+@media (prefers-reduced-motion:no-preference){#vothic .word svg{animation:ink .35s ease-out both}}
+@keyframes ink{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:none}}
+:root #izani{
+  --bg:#f1e9da; --panel:#e8dcc6; --ink:#173f45; --muted:#5d6b66; --accent:#b8521f; --line:#d3c4a8; --voth:#4a3a5e;
+  --display:"Marcellus SC", "Trajan Pro", Georgia, serif;
+  --body:"Crimson Pro", Georgia, serif;
+  --mono:"IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #izani{
+  --bg:#102a2e; --panel:#173a3f; --ink:#efe5d2; --muted:#9fb3ad; --accent:#e9874e; --line:#2a4f54; --voth:#c9b8e0; color-scheme:dark}}
+:root[data-theme="dark"] #izani{
+  --bg:#102a2e; --panel:#173a3f; --ink:#efe5d2; --muted:#9fb3ad; --accent:#e9874e; --line:#2a4f54; --voth:#c9b8e0; color-scheme:dark}
+#izani{background:var(--bg);color:var(--ink);font:18px/1.55 var(--body)}
+#izani .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#izani h1,#izani h2{font-family:var(--display);font-weight:400;letter-spacing:.06em;text-wrap:balance;margin:0}
+#izani h1{font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.05}
+#izani h2{font-size:1.65rem;margin-bottom:12px}
+#izani p{margin:0 0 12px;max-width:65ch}
+#izani .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#izani .mono{font-family:var(--mono);font-size:.85em}
+#izani header{display:grid;gap:14px}
+#izani .hero{display:flex;flex-wrap:wrap;gap:4px 26px;align-items:flex-end;min-height:70px;padding-block:6px;border-block:3px double var(--line)}
+#izani .hero .word svg{width:44px;height:58px}
+#izani .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+#izani .cut.hi{stroke:var(--accent)}
+#izani .ink{fill:none;stroke:var(--voth);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#izani .mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#izani .dot{fill:var(--accent)}
+#izani .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+#izani .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#izani .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#izani #izani-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+#izani #izani-src:focus,#izani button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#izani button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:8px 12px;cursor:pointer}
+#izani button:hover{border-color:var(--accent);color:var(--accent)}
+#izani .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:70px;align-items:flex-end}
+#izani .word{display:flex;align-items:flex-end;gap:2px}
+#izani .out .word svg{width:38px;height:50px}
+#izani .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:2px;font:500 .9rem var(--mono);color:var(--muted)}
+#izani .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#izani .note{font-size:.95rem;color:var(--muted)}
+#izani .samples{display:flex;flex-wrap:wrap;gap:6px}
+#izani .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px}
+#izani .card{border:1px solid var(--line);border-radius:2px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+#izani .card:hover{border-color:var(--accent)}
+#izani .card svg{width:56px;height:74px;margin-bottom:4px}
+#izani .card .rom{font:600 1rem var(--mono);color:var(--accent)}
+#izani .card .ipa{font:.78rem var(--mono);color:var(--muted)}
+#izani .card .name{font-family:var(--display);font-size:1.1rem;margin-top:4px;letter-spacing:.04em}
+#izani .card .gloss{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.3}
+#izani .tbl{overflow-x:auto}
+#izani table{border-collapse:collapse;width:100%;min-width:560px;font-size:.98rem}
+#izani th,#izani td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#izani th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#izani td.m{font-family:var(--mono);font-size:.88rem}
+#izani td.g{white-space:nowrap}
+#izani td.g .word svg{width:24px;height:32px}
+#izani td.v .word svg{width:28px;height:38px}
+#izani .desc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+#izani .d{border:1px solid var(--line);border-radius:2px;padding:10px 12px;display:grid;grid-template-columns:auto auto 1fr;gap:4px 10px;align-items:center}
+#izani .d .from svg{width:34px;height:45px}
+#izani .d .to{display:flex;align-items:flex-end}
+#izani .d .to svg{width:34px;height:46px}
+#izani .d .arrow{color:var(--muted);font-family:var(--mono)}
+#izani .d .lbl{grid-column:1/-1;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+#izani .d .lbl b{color:var(--accent);font-weight:500}
+#izani .d.lost{opacity:.6}
+#izani .legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.95rem;color:var(--muted)}
+#izani .sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+:root #hykkousik{
+  --bg:#f3eee4; --panel:#e9e2d4; --ink:#2b3d52; --muted:#66707a; --accent:#a87a12; --line:#d6ccb9; --sea:#3c6e86;
+  --display:"GFS Didot", "Didot", Georgia, serif;
+  --body:"Gentium Book Plus", Georgia, serif;
+  --mono:"DM Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #hykkousik{
+  --bg:#152331; --panel:#1c2e40; --ink:#ece5d6; --muted:#9aa8b5; --accent:#e0b44c; --line:#2c4256; --sea:#8cc0d6; color-scheme:dark}}
+:root[data-theme="dark"] #hykkousik{
+  --bg:#152331; --panel:#1c2e40; --ink:#ece5d6; --muted:#9aa8b5; --accent:#e0b44c; --line:#2c4256; --sea:#8cc0d6; color-scheme:dark}
+#hykkousik{background:var(--bg);color:var(--ink);font:18px/1.6 var(--body)}
+#hykkousik .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#hykkousik h1,#hykkousik h2{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-wrap:balance;margin:0}
+#hykkousik h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
+#hykkousik h2{font-size:1.75rem;margin-bottom:12px}
+#hykkousik p{margin:0 0 12px;max-width:65ch}
+#hykkousik .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#hykkousik .mono{font-family:var(--mono);font-size:.84em}
+#hykkousik header{display:grid;gap:14px}
+#hykkousik .hero{display:flex;flex-wrap:wrap;gap:6px 26px;align-items:flex-end;min-height:76px}
+#hykkousik .hero .word svg{width:44px;height:58px}
+#hykkousik .st{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+#hykkousik .br{fill:none;stroke:var(--accent);stroke-width:3.4;stroke-linecap:round}
+#hykkousik .wave{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round}
+#hykkousik .scribe{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px}
+#hykkousik .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#hykkousik .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#hykkousik #hykkousik-src{flex:1 1 260px;min-width:0;font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+#hykkousik #hykkousik-src:focus,#hykkousik button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#hykkousik button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
+#hykkousik button:hover{border-color:var(--accent);color:var(--accent)}
+#hykkousik .out{display:flex;flex-wrap:wrap;gap:8px 24px;min-height:72px;align-items:flex-end}
+#hykkousik .word{display:flex;align-items:flex-end}
+#hykkousik .out .word svg{width:38px;height:50px}
+#hykkousik .unk{display:inline-grid;place-items:center;width:28px;height:38px;border:1px dashed var(--muted);border-radius:4px;font:500 .9rem var(--mono);color:var(--muted)}
+#hykkousik .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#hykkousik .note{font-size:.95rem;color:var(--muted)}
+#hykkousik .samples{display:flex;flex-wrap:wrap;gap:6px}
+#hykkousik .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+#hykkousik .card{border:1px solid var(--line);border-radius:8px;padding:12px 10px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+#hykkousik .card:hover{border-color:var(--accent)}
+#hykkousik .card svg{width:58px;height:76px;margin-bottom:2px}
+#hykkousik .card .rom{font:500 1rem var(--mono);color:var(--accent)}
+#hykkousik .card .ipa{font:.78rem var(--mono);color:var(--muted)}
+#hykkousik .card .name{font-family:var(--display);font-size:1.15rem;margin-top:4px}
+#hykkousik .card .src{font-size:.82rem;color:var(--sea);line-height:1.3}
+#hykkousik .tbl{overflow-x:auto}
+#hykkousik table{border-collapse:collapse;width:100%;min-width:580px;font-size:.98rem}
+#hykkousik th,#hykkousik td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#hykkousik th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#hykkousik td.m{font-family:var(--mono);font-size:.86rem}
+#hykkousik td.g{white-space:nowrap}
+#hykkousik td.g .word svg{width:24px;height:32px}
+#hykkousik .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+#hykkousik .cols>div{min-width:0}
+:root #xanadui{
+  --bg:#f5ecdf; --panel:#efe0c9; --ink:#3d1a1e; --muted:#7a5e55; --accent:#c9771a; --line:#dcc6a6; --gold:#a8761c;
+  --display:"Rozha One", Georgia, serif;
+  --body:"Literata", Georgia, serif;
+  --mono:"Fira Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #xanadui{
+  --bg:#24110f; --panel:#331a17; --ink:#f2e4cf; --muted:#b89c8c; --accent:#f0a03c; --line:#4a2a25; --gold:#e3b75a; color-scheme:dark}}
+:root[data-theme="dark"] #xanadui{
+  --bg:#24110f; --panel:#331a17; --ink:#f2e4cf; --muted:#b89c8c; --accent:#f0a03c; --line:#4a2a25; --gold:#e3b75a; color-scheme:dark}
+#xanadui{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#xanadui .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#xanadui h1,#xanadui h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+#xanadui h1{font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.05}
+#xanadui h2{font-size:1.75rem;margin-bottom:12px}
+#xanadui p{margin:0 0 12px;max-width:66ch}
+#xanadui blockquote{margin:0 0 12px;padding-left:16px;border-left:3px solid var(--accent);font-style:italic;max-width:60ch}
+#xanadui .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#xanadui .mono{font-family:var(--mono);font-size:.84em}
+#xanadui header{display:grid;gap:14px}
+#xanadui .hero{display:flex;flex-wrap:wrap;gap:6px 30px;align-items:flex-start;min-height:80px}
+#xanadui .ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#xanadui .mk{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#xanadui .plain .mk{stroke:var(--ink)}
+#xanadui .dotf{fill:var(--ink)}
+#xanadui .wh{fill:none;stroke:var(--gold);stroke-width:2.2}
+#xanadui .word{display:flex;align-items:flex-start;gap:1px}
+#xanadui .word svg{display:block}
+#xanadui .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+#xanadui .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#xanadui .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#xanadui #xanadui-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+#xanadui #xanadui-src:focus,#xanadui button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#xanadui button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+#xanadui button:hover{border-color:var(--accent);color:var(--accent)}
+#xanadui .keys button{min-width:34px}
+#xanadui .out{display:flex;flex-wrap:wrap;gap:10px 26px;min-height:80px;align-items:flex-start}
+#xanadui .unk{display:inline-grid;place-items:center;width:26px;height:40px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
+#xanadui .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#xanadui .note{font-size:.93rem;color:var(--muted)}
+#xanadui .samples{display:flex;flex-wrap:wrap;gap:6px}
+#xanadui .tbl{overflow-x:auto}
+#xanadui table{border-collapse:collapse;width:100%;font-size:.96rem}
+#xanadui th,#xanadui td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#xanadui th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left}
+#xanadui .grid{min-width:620px}
+#xanadui .grid td{text-align:center;cursor:pointer;border-left:1px solid var(--line)}
+#xanadui .grid td:hover{background:var(--panel)}
+#xanadui .grid td.rowh{text-align:left;cursor:default;border-left:0;font:500 .78rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+#xanadui .grid td.rowh:hover{background:none}
+#xanadui .grid td.empty{cursor:default}
+#xanadui .grid td.empty:hover{background:none}
+#xanadui .cell{display:grid;justify-items:center;gap:0}
+#xanadui .cell .rom{font:500 .95rem var(--mono);color:var(--accent)}
+#xanadui .cell .ipa{font:.74rem var(--mono);color:var(--muted)}
+#xanadui .plain-t{min-width:560px}
+#xanadui td.m{font-family:var(--mono);font-size:.86rem}
+#xanadui td.g{white-space:nowrap}
+#xanadui .vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+#xanadui .vs .c{border:1px solid var(--line);border-radius:4px;padding:8px 4px;display:grid;justify-items:center;gap:2px}
+#xanadui .vs .c .rom{font:500 .9rem var(--mono);color:var(--accent)}
+#xanadui .vs .c .n{font-size:.78rem;color:var(--muted);text-align:center;line-height:1.25}
+#xanadui .legend{font-size:.93rem;color:var(--muted)}
+#xanadui .legend b{color:var(--accent);font-weight:600}
+#xanadui .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+#xanadui .cols>div{min-width:0}
+#xanadui .ex{background:var(--panel);border-radius:4px;padding:14px 16px;display:grid;gap:6px;margin-bottom:12px}
+#xanadui .ex .gl{font-family:var(--mono);font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}
+#xanadui .ex .tr{font-style:italic}
+:root #yuni{
+  --bg:#efe6d6; --panel:#e6d9c2; --ink:#2f2a24; --muted:#6f655a; --yellow:#b8900b; --saffron:#c0661b; --line:#d2c3a8;
+  --stencil:"Saira Stencil One", Impact, sans-serif;
+  --uncial:"Uncial Antiqua", Georgia, serif;
+  --body:"Source Serif 4", Georgia, serif;
+  --mono:"Red Hat Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #yuni{
+  --bg:#1d1a16; --panel:#28241e; --ink:#eee5d4; --muted:#a99d8c; --yellow:#e8c33f; --saffron:#ee9445; --line:#3b352c; color-scheme:dark}}
+:root[data-theme="dark"] #yuni{
+  --bg:#1d1a16; --panel:#28241e; --ink:#eee5d4; --muted:#a99d8c; --yellow:#e8c33f; --saffron:#ee9445; --line:#3b352c; color-scheme:dark}
+#yuni{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#yuni .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#yuni h1{font-family:var(--stencil);font-weight:400;font-size:clamp(2.6rem,7vw,4.4rem);line-height:1;letter-spacing:.04em;margin:0;text-wrap:balance}
+#yuni h2{font-family:var(--stencil);font-weight:400;font-size:1.7rem;letter-spacing:.03em;margin:0 0 12px;text-wrap:balance}
+#yuni h2.u{font-family:var(--uncial);letter-spacing:0}
+#yuni p{margin:0 0 12px;max-width:66ch}
+#yuni .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#yuni .mono{font-family:var(--mono);font-size:.84em}
+#yuni header{display:grid;gap:14px}
+#yuni .gate{font-family:var(--stencil);font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.12em;color:var(--yellow);border-block:4px solid var(--yellow);padding-block:6px;overflow-wrap:anywhere}
+#yuni .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+#yuni .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#yuni .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#yuni #yuni-src{flex:1 1 280px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+#yuni #yuni-src:focus,#yuni button:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+#yuni button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+#yuni button:hover{border-color:var(--saffron);color:var(--saffron)}
+#yuni .hands{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+#yuni .hand{border:1px solid var(--line);border-radius:4px;padding:14px;min-width:0;background:var(--bg)}
+#yuni .hand .lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+#yuni .hand .txt{font-size:1.7rem;line-height:1.3;overflow-wrap:anywhere}
+#yuni .st{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+#yuni .un{font-family:var(--uncial);color:var(--ink)}
+#yuni .ev{color:var(--saffron);font-family:var(--body);font-size:.85em}
+#yuni .note{font-size:.93rem;color:var(--muted)}
+#yuni .samples{display:flex;flex-wrap:wrap;gap:6px}
+#yuni .abc{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+#yuni .lt{border:1px solid var(--line);border-radius:4px;padding:8px 6px;display:grid;justify-items:center;gap:0;cursor:pointer;background:transparent;color:inherit;font:inherit}
+#yuni .lt:hover{border-color:var(--saffron)}
+#yuni .lt .s{font-family:var(--stencil);font-size:2.2rem;line-height:1.1}
+#yuni .lt .u{font-family:var(--uncial);font-size:1.9rem;line-height:1.15;color:var(--saffron)}
+#yuni .lt .n{font:.72rem var(--mono);color:var(--muted)}
+#yuni .lt.special{border-color:var(--yellow)}
+#yuni .tbl{overflow-x:auto}
+#yuni table{border-collapse:collapse;width:100%;min-width:560px;font-size:.96rem}
+#yuni th,#yuni td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#yuni th{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#yuni td.m{font-family:var(--mono);font-size:.86rem}
+#yuni td.sg{font-family:var(--stencil);letter-spacing:.08em;font-size:1.05rem;white-space:nowrap}
+#yuni .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+#yuni .cols>div{min-width:0}
+#yuni .marks{display:grid;gap:10px}
+#yuni .mk{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center}
+#yuni .mk .g{font-size:1.9rem;color:var(--saffron);text-align:center;line-height:1}
+#yuni .folio{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px;display:grid;grid-template-columns:1fr 40px;gap:4px 14px;font-family:var(--uncial);font-size:1.15rem;line-height:1.6}
+#yuni .folio .mg{color:var(--saffron);font-family:var(--body);text-align:center}
+#yuni .folio .cap{grid-column:1/-1;font-family:var(--mono);font-size:.76rem;color:var(--muted);margin-top:6px}
+:root #dalab{
+  --bg:#ece3d0; --panel:#e2d6bd; --ink:#1f3324; --muted:#5f6b5d; --red:#a8281e; --line:#cdbf9f; --gold:#9a7414; --term:#1f3324;
+  --display:"Spectral SC", Georgia, serif;
+  --body:"Spectral", Georgia, serif;
+  --god:"VT323", "Courier New", monospace;
+  --mono:"Martian Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #dalab{
+  --bg:#141c15; --panel:#1c271d; --ink:#e9e2cf; --muted:#9fab9b; --red:#e2584a; --line:#2e3c2f; --gold:#ddb24c; --term:#9fe0a8; color-scheme:dark}}
+:root[data-theme="dark"] #dalab{
+  --bg:#141c15; --panel:#1c271d; --ink:#e9e2cf; --muted:#9fab9b; --red:#e2584a; --line:#2e3c2f; --gold:#ddb24c; --term:#9fe0a8; color-scheme:dark}
+#dalab{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#dalab .wrap{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#dalab h1,#dalab h2{font-family:var(--display);font-weight:700;letter-spacing:.03em;margin:0;text-wrap:balance}
+#dalab h1{font-size:clamp(2.4rem,6vw,3.7rem);line-height:1.05}
+#dalab h2{font-size:1.65rem;margin-bottom:12px}
+#dalab p{margin:0 0 12px;max-width:66ch}
+#dalab .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#dalab .mono{font-family:var(--mono);font-size:.8em}
+#dalab header{display:grid;gap:14px}
+#dalab .stele{border:1px solid var(--line);border-top:6px solid var(--red);background:var(--panel);padding:18px 22px;display:grid;gap:6px;max-width:640px}
+#dalab .stele .god{font-family:var(--god);font-size:1.6rem;line-height:1.15;color:var(--term)}
+#dalab .stele .god::before{content:"> ";color:var(--red)}
+#dalab .stele .cap{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.06em}
+#dalab .holy{color:var(--red)}
+#dalab .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+#dalab .tongue{border:1px solid var(--line);border-radius:4px;padding:16px 18px;min-width:0}
+#dalab .tongue h3{font-family:var(--display);font-size:1.2rem;margin:0 0 8px}
+#dalab .tongue ul{margin:0;padding-left:18px;display:grid;gap:4px}
+#dalab .say{display:grid;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+#dalab .say .t{font-size:1.1rem}
+#dalab .say .g{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+#dalab .tbl{overflow-x:auto}
+#dalab table{border-collapse:collapse;width:100%;min-width:540px;font-size:.96rem}
+#dalab th,#dalab td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#dalab th{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#dalab td.m{font-family:var(--mono);font-size:.8rem}
+#dalab td.lo{font-style:italic;color:var(--red)}
+#dalab .prayers{display:grid;gap:10px}
+#dalab .pr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px}
+#dalab .pr .god{font-family:var(--god);font-size:1.35rem;line-height:1.15;color:var(--term)}
+#dalab .pr.lost .god{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red)}
+@media (max-width:560px){#dalab .pr{grid-template-columns:1fr;gap:4px}}
+#dalab .note{font-size:.93rem;color:var(--muted)}
+:root #republic{
+  --bg:#ebe7e2; --panel:#e0dad2; --ink:#232426; --muted:#686a6e; --accent:#a3241c; --line:#cbc4ba; --steel:#4b5a66;
+  --display:"Alumni Sans", "Arial Narrow", sans-serif;
+  --body:"PT Serif", Georgia, serif;
+  --mono:"PT Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #republic{
+  --bg:#18191b; --panel:#222427; --ink:#e9e6e1; --muted:#a2a4a8; --accent:#e5574a; --line:#35383c; --steel:#9fb2c1; color-scheme:dark}}
+:root[data-theme="dark"] #republic{
+  --bg:#18191b; --panel:#222427; --ink:#e9e6e1; --muted:#a2a4a8; --accent:#e5574a; --line:#35383c; --steel:#9fb2c1; color-scheme:dark}
+#republic{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#republic .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#republic h1,#republic h2{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin:0;text-wrap:balance}
+#republic h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95}
+#republic h2{font-size:1.9rem;margin-bottom:12px;line-height:1.05}
+#republic h3{font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:1.25rem;margin:0 0 8px}
+#republic p{margin:0 0 12px;max-width:66ch}
+#republic .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#republic .mono{font-family:var(--mono);font-size:.86em}
+#republic header{display:grid;gap:14px}
+#republic .motto{display:grid;gap:6px;border-block:3px solid var(--accent);padding-block:12px}
+#republic .motto .gl{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+#republic .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+#republic .cut.hi{stroke:var(--accent)}
+#republic .dot{fill:var(--accent)}
+#republic .word{display:flex;align-items:flex-end;gap:2px}
+#republic .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
+#republic .line .word svg{width:34px;height:46px}
+#republic .motto .line .word svg{width:40px;height:52px}
+#republic .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.9rem var(--mono);color:var(--muted)}
+#republic .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+#republic .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#republic .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#republic #republic-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+#republic #republic-src:focus,#republic button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#republic button{font:.85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+#republic button:hover{border-color:var(--accent);color:var(--accent)}
+#republic .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#republic .note{font-size:.93rem;color:var(--muted)}
+#republic .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+#republic .cols>div{min-width:0}
+#republic .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+#republic .mp{border:1px solid var(--line);border-radius:3px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center}
+#republic .mp svg{width:34px;height:46px}
+#republic .mp .s{font:1.05rem var(--mono);color:var(--accent)}
+#republic .mp .n{grid-column:1/-1;font-size:.86rem;color:var(--muted)}
+#republic .tbl{overflow-x:auto}
+#republic table{border-collapse:collapse;width:100%;min-width:600px;font-size:.96rem}
+#republic th,#republic td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#republic th{font:.7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#republic td.m{font-family:var(--mono);font-size:.86rem}
+#republic td.g{white-space:nowrap}
+#republic td.g .word svg{width:22px;height:30px}
+#republic td.iz{color:var(--accent)}
+:root #riders{
+  --bg:#e8ebdf; --panel:#dde2d1; --ink:#1d2b20; --muted:#5c6a5e; --accent:#b5452a; --line:#c4cbb6; --leaf:#2f7a4a;
+  --display:"Grenze", Georgia, serif;
+  --body:"Faustina", Georgia, serif;
+  --mono:"Overpass Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #riders{
+  --bg:#121a14; --panel:#1a241c; --ink:#e3e9dc; --muted:#9aa89b; --accent:#ec7a5a; --line:#2b382d; --leaf:#78c793; color-scheme:dark}}
+:root[data-theme="dark"] #riders{
+  --bg:#121a14; --panel:#1a241c; --ink:#e3e9dc; --muted:#9aa89b; --accent:#ec7a5a; --line:#2b382d; --leaf:#78c793; color-scheme:dark}
+#riders{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#riders .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#riders h1,#riders h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+#riders h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:.95;color:var(--leaf)}
+#riders h2{font-size:1.8rem;margin-bottom:12px}
+#riders h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
+#riders p{margin:0 0 12px;max-width:66ch}
+#riders .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#riders .mono{font-family:var(--mono);font-size:.84em}
+#riders header{display:grid;gap:14px}
+#riders .claw{display:flex;gap:16px;align-items:center}
+#riders .claw svg.sign{width:54px;height:54px;flex:none}
+#riders .slash{fill:none;stroke:var(--leaf);stroke-width:7;stroke-linecap:round}
+#riders .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+#riders .cut.hi{stroke:var(--accent)}
+#riders .dot{fill:var(--accent)}
+#riders .word{display:flex;align-items:flex-end;gap:2px}
+#riders .line{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
+#riders .line .word svg{height:46px}
+#riders .hero .word svg{height:58px}
+#riders .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+#riders .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+#riders .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#riders .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#riders #riders-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+#riders #riders-src:focus,#riders button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#riders button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+#riders button:hover{border-color:var(--accent);color:var(--accent)}
+#riders .samples{display:flex;flex-wrap:wrap;gap:6px}
+#riders .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+#riders .note{font-size:.92rem;color:var(--muted)}
+#riders .adds{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+#riders .ad{border:1px solid var(--line);border-radius:3px;padding:12px;display:grid;gap:6px}
+#riders .ad .gs{display:flex;gap:6px;align-items:flex-end}
+#riders .ad .gs svg{height:56px}
+#riders .ad .t{font:500 .95rem var(--mono);color:var(--accent)}
+#riders .ad .n{font-size:.9rem}
+#riders .tbl{overflow-x:auto}
+#riders table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+#riders th,#riders td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#riders th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#riders td.m{font-family:var(--mono);font-size:.84rem}
+#riders td.g{white-space:nowrap}
+#riders td.g .word svg{height:28px}
+#riders td.iz{color:var(--accent)}
+#riders td.cn{font-weight:600;color:var(--leaf)}
+#riders .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+#riders .cols>div{min-width:0}
+#riders .ex{background:var(--panel);border-radius:3px;padding:14px 16px;display:grid;gap:6px;margin-top:6px}
+#riders .ex .gl{font-family:var(--mono);font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
+#riders .ex .tr{font-style:italic}
+:root #zeijani{
+  --bg:#e9e3d8; --panel:#ded6c8; --ink:#2c2621; --muted:#6d655c; --accent:#7a3f8f; --line:#cbbfad; --ash:#2f5f96; --sun:#b98a12;
+  --display:"Cormorant Unicase", Georgia, serif;
+  --body:"Newsreader", Georgia, serif;
+  --mono:"Azeret Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #zeijani{
+  --bg:#1a1817; --panel:#252220; --ink:#ebe4d8; --muted:#a69d92; --accent:#c48ad8; --line:#3a3530; --ash:#7fb0e6; --sun:#e4bd4e; color-scheme:dark}}
+:root[data-theme="dark"] #zeijani{
+  --bg:#1a1817; --panel:#252220; --ink:#ebe4d8; --muted:#a69d92; --accent:#c48ad8; --line:#3a3530; --ash:#7fb0e6; --sun:#e4bd4e; color-scheme:dark}
+#zeijani{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#zeijani .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#zeijani h1,#zeijani h2{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+#zeijani h1{font-size:clamp(2.6rem,7vw,4.2rem);line-height:1}
+#zeijani h2{font-size:1.8rem;margin-bottom:12px}
+#zeijani h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0 0 6px}
+#zeijani p{margin:0 0 12px;max-width:66ch}
+#zeijani .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#zeijani .mono{font-family:var(--mono);font-size:.82em}
+#zeijani header{display:grid;gap:14px}
+#zeijani .ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+#zeijani .way{border:1px solid var(--line);border-radius:3px;padding:14px 16px;min-width:0}
+#zeijani .way .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#zeijani .way.z{border-top:4px solid var(--accent)}
+#zeijani .way.a{border-top:4px solid var(--ash)}
+#zeijani .way.c{border-top:4px solid var(--sun)}
+#zeijani .wg{fill:var(--ink)}
+#zeijani .wg.mk{fill:var(--accent)}
+#zeijani .ashh .wg,#zeijani .ashh .wg.mk{fill:var(--ash)}
+#zeijani .plain .wg.mk{fill:var(--ink)}
+#zeijani .ashh.plain .wg.mk{fill:var(--ash)}
+#zeijani .word{display:flex;align-items:flex-end;gap:1px}
+#zeijani .line{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:flex-end}
+#zeijani .line .word svg{width:30px;height:36px}
+#zeijani .hero .word svg{width:44px;height:52px}
+#zeijani .unk{display:inline-grid;place-items:center;width:24px;height:32px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+#zeijani .scribe{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:20px;display:grid;gap:14px}
+#zeijani .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#zeijani .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#zeijani #zeijani-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+#zeijani #zeijani-src:focus,#zeijani button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#zeijani button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:3px;padding:7px 10px;cursor:pointer}
+#zeijani button:hover{border-color:var(--accent);color:var(--accent)}
+#zeijani .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+#zeijani .hand{border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:var(--bg);min-width:0;display:grid;gap:8px}
+#zeijani .hand .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#zeijani .hand .rom{font-family:var(--mono);font-size:.86rem;overflow-wrap:anywhere}
+#zeijani .note{font-size:.92rem;color:var(--muted)}
+#zeijani .samples{display:flex;flex-wrap:wrap;gap:6px}
+#zeijani .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+#zeijani .card{border:1px solid var(--line);border-radius:3px;padding:10px 6px;display:grid;justify-items:center;gap:1px;cursor:pointer;background:transparent;color:inherit;font:inherit}
+#zeijani .card:hover{border-color:var(--accent)}
+#zeijani .card svg{width:54px;height:64px}
+#zeijani .card .r{font:500 .95rem var(--mono);color:var(--accent)}
+#zeijani .card .i{font:.72rem var(--mono);color:var(--muted)}
+#zeijani .card .f{font-size:.78rem;color:var(--muted)}
+#zeijani .tbl{overflow-x:auto}
+#zeijani table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+#zeijani th,#zeijani td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#zeijani th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#zeijani td.m{font-family:var(--mono);font-size:.82rem}
+#zeijani td.g{white-space:nowrap}
+#zeijani td.g .word svg{width:20px;height:24px}
+#zeijani .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+#zeijani .cols>div{min-width:0}
+</style>
+
+<nav class="tabs" aria-label="Tongues"><div class="in" id="tabbar" role="tablist"></div></nav>
+
+<section id="overview" class="tongue" data-label="Overview">
+<div class="wrap">
+  <header style="display:grid;gap:12px">
+    <div class="eyebrow">Krator · the tongues of the crater</div>
+    <h1>Tongues of Krator</h1>
+    <p>Every people of the crater speaks a descendant of one English, worn down over the thousand years since the Ancients fell. Isolation, neighbours and what each people found in the ruins decided how far each one drifted and how it came to be written. Dalab's priests and the Monks of History still speak something you could follow. Xanadu speaks something you could not.</p>
+  </header>
+
+  <div>
+    <h2>The tongues</h2>
+    <div class="cards" id="cards"></div>
+  </div>
+
+  <div>
+    <h2>Where the letters came from</h2>
+    <p>Five separate traditions. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, and to Voth transformed.</p>
+    <div class="tree">
+      <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
+      <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters.</span></div>
+      <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
+      <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
+      <div><b>Invented from nothing</b><span>Xanadu lost writing completely. Its temple grammarians built a syllabary on a grid of sounds for the prayer wheels.</span></div>
+    </div>
+  </div>
+
+  <div>
+    <h2>One word, twelve roads</h2>
+    <p>In order of how far each tongue drifted from English.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Izani</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Xanadui</th></tr></thead>
+      <tbody id="fam"></tbody>
+    </table></div>
+  </div>
+</div>
+</section>
+
+<section id="vothic" class="tongue" data-label="Vothic" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Tzintzuntzan · the script of the Realm of the Son of the Sun</div>
+  <h1>Vothic Script</h1>
+  <div class="hero-glyphs plain" id="vothic-hero" aria-label="Tzintzuntzan written in Vothic script"></div>
+  <p>Thirty-three letters, one for each sound of the tongue spoken from Shim to Zey'danin. The bowls and loops come from a Georgian hand, the blades and hooked serifs from Daedric. Vowels are round. Consonants end in a cut. A gold <b>thorn</b> marks a breathed sound.</p>
+</header>
+
+<section class="scribe" aria-labelledby="vothic-scribe-h">
+  <h2 id="vothic-scribe-h">Scribe</h2>
+  <label for="vothic-src">Romanized Vothic</label>
+  <div class="row">
+    <input id="vothic-src" type="text" value="Voth, Tzintzuntzan. Tzin dha Tzun." autocomplete="off" spellcheck="false">
+    <button id="vothic-ib" type="button" title="Insert the high central vowel">ï</button>
+  </div>
+  <div class="samples" id="vothic-samples"></div>
+  <div class="out plain" id="vothic-out" aria-live="polite"></div>
+  <div class="tokens" id="vothic-tok"></div>
+  <p class="note">Digraphs are single letters: <span class="mono">tzh chh tz ch ph th kh sh hl dh ng rh</span>. A doubled vowel is a long one and is written twice. An apostrophe is the syllable cut; a full stop is the diamond. Latin <span class="mono">c f j q w x</span> have no letter.</p>
+</section>
+
+<section aria-labelledby="vothic-chart-h">
+  <h2 id="vothic-chart-h">The thirty-three</h2>
+  <p>In the order of the English letters they descend from, as the Daedric list keeps the Latin order. Each letter is named for a word that begins with it, and every name is an English word worn down by the sound changes below. Click a letter to write it in the scribe.</p>
+  <div class="legend"><span><b>Gold</b> strokes are the added marks: the thorn (breath), the bar, the root (tail).</span></div>
+  <div class="chart" id="vothic-chart" style="margin-top:14px"></div>
+</section>
+
+<section aria-labelledby="vothic-feat-h">
+  <h2 id="vothic-feat-h">Marks</h2>
+  <p>Most letters are their own shapes, as in Georgian. Three marks are systematic, so a reader who knows the plain letter can read its marked partner.</p>
+  <div class="cols">
+    <div class="feat" id="vothic-feat"></div>
+    <div>
+      <p><b>The thorn</b> (<i>Thon</i>) is the breath mark. It turns a stop into its aspirated pair, as Purépecha pairs <span class="mono">p/ph</span>, <span class="mono">t/th</span>, <span class="mono">k/kh</span>, <span class="mono">ts/tsh</span>, <span class="mono">ch/chh</span>. It also sits on <span class="mono">hl</span>, the breathed <span class="mono">l</span> of Dunmer names like Hlaalu.</p>
+      <p><b>The bar</b> crosses the ascender of <span class="mono">d</span> to make <span class="mono">dh</span>, much as Old English crossed its d to write ð.</p>
+      <p><b>The root</b> is a tail below the line for sounds made at the back or the roof of the mouth: <span class="mono">ng</span> from <span class="mono">n</span>, retroflex <span class="mono">rh</span> from the flap <span class="mono">r</span>.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="vothic-snd-h">
+  <h2 id="vothic-snd-h">From English</h2>
+  <p>The tongue descends from English across a long dark age, worn into a sound inventory between Purépecha and Dunmer: aspirated stops and affricates, a high central vowel, a retroflex r, a breathed l, and a fondness for v and dh. These are the regular changes. The letter names follow them.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Vothic</th><th>Examples</th><th></th></tr></thead>
+    <tbody id="vothic-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="vothic-names-h">
+  <h2 id="vothic-names-h">Names on the record</h2>
+  <p>Place and title names already in the lore, written out. <span class="mono">-tzan</span> "realm, place of" has no English source: it is a Chichani word that survived the conquest, and it echoes the real Purépecha town of Tzintzuntzan.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Script</th><th>Meaning, origin</th></tr></thead>
+    <tbody id="vothic-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="izani" class="tongue" data-label="Izani" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Empar de Son · the Empire of the Sun</div>
+  <h1>Izani Script</h1>
+  <div class="hero" id="izani-hero" aria-label="Empar de Son written in Izani script"></div>
+  <p>The capitals of the Empire of Iziz: twenty-seven letters cut in straight strokes, the way they were first carved into Ancient plate and orange ashlar. The tongue is English worn smooth over eight centuries, so it now sounds half Latin and half Outer Rim. Its script is older than the Vothic script and is that script's parent: the Chichani learned to write as the Empire's clients, then bent these letters into brushed loops.</p>
+</header>
+
+<section class="scribe" aria-labelledby="izani-scribe-h">
+  <h2 id="izani-scribe-h">Scribe</h2>
+  <label for="izani-src">Romanized Izani</label>
+  <div class="row">
+    <input id="izani-src" type="text" value="Loñ liv de Emparar!" autocomplete="off" spellcheck="false">
+    <button id="izani-nb" type="button" title="Insert the palatal n">ñ</button>
+  </div>
+  <div class="samples" id="izani-samples"></div>
+  <div class="out" id="izani-out" aria-live="polite"></div>
+  <div class="tokens" id="izani-tok"></div>
+  <p class="note">Two digraphs are single letters: <span class="mono">ch</span> and <span class="mono">rr</span>. Words are parted by an interpunct, as on Roman inscriptions; a sentence ends with the sun sign. Latin <span class="mono">c w</span> have no letter: <span class="mono">w</span> became <span class="mono">gu</span>.</p>
+</section>
+
+<section aria-labelledby="izani-chart-h">
+  <h2 id="izani-chart-h">The twenty-seven</h2>
+  <p>In English letter order, with <span class="mono">ch</span>, <span class="mono">ñ</span> and <span class="mono">rr</span> filed after their parents, as old Spanish did. Each letter is named for an Izani word that starts with it; every name is an English word run through the changes below. Click a letter to cut it in the scribe.</p>
+  <div class="chart" id="izani-chart"></div>
+</section>
+
+<section aria-labelledby="izani-snd-h">
+  <h2 id="izani-snd-h">From English</h2>
+  <p>Where Vothic squeezed English into aspirates and a dark vowel, Izani opened it out. It drops h, adds a vowel after a hard ending, voices consonants between vowels and puts an <i>i</i> before s plus a consonant. That gives it the Romance sound. The Star Wars sound comes from <i>-ar</i> endings, plurals in <i>-z</i>, an <i>x</i> said "sh" and a <i>q</i> for kw.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Izani</th><th>Examples</th><th>Script</th></tr></thead>
+    <tbody id="izani-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="izani-cog-h">
+  <h2 id="izani-cog-h">Sisters, not mother and daughter</h2>
+  <p>Izani and Chichani are separate descendants of English; the Chichani borrowed the Empire's letters, not its speech. The same English word came down two roads. One loan did cross: the Izani people-suffix <span class="mono">-ani</span> (from <i>-ian</i>), which the Empire stuck on its southern clients and which they kept as <i>Chichani</i>.</p>
+  <p>In Izani, <i>sun</i> and <i>son</i> fell together as <b>son</b>, which the Empire's priests have always made much of. The Chichani kept them apart (<i>tzun</i>, <i>tzin</i>), and Tzintzun's title "Son of the Sun" turns that distinction against the Empire.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Izani</th><th></th><th>Vothic</th><th></th></tr></thead>
+    <tbody id="izani-cog"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="izani-desc-h">
+  <h2 id="izani-desc-h">Into the Vothic script</h2>
+  <p>Every Vothic letter descends from an Izani capital, rounded by brush and nib. Most kept their sound. Three things changed on the way:</p>
+  <p><b>The sibilants shifted.</b> Chichani speech moved each hiss one step: the Izani letter for <i>s</i> came to write <i>tz</i>, the one for <i>sh</i> (X) came to write <i>s</i>, and the one for <i>zh</i> (J) came to write <i>sh</i>.</p>
+  <p><b>The root came from two Izani letters.</b> The tilde of Ñ slid under the line and became the tail of <i>ng</i>. The doubled stroke of Rr became the tail of <i>rh</i>, and later <i>ï</i>.</p>
+  <p><b>The thorn and bar are Chichani inventions</b>, made for sounds the Empire never wrote. F and Q died out: Chichani had no f, and wrote kw as k with u.</p>
+  <div class="legend"><span><span class="sw" style="background:var(--ink)"></span>Izani capital</span><span><span class="sw" style="background:var(--voth)"></span>Vothic letter</span><span><span class="sw" style="background:var(--accent)"></span>Chichani mark</span></div>
+  <div class="desc" id="izani-desc" style="margin-top:12px"></div>
+</section>
+
+<section aria-labelledby="izani-names-h">
+  <h2 id="izani-names-h">Names on the record</h2>
+  <p>Names already in the lore, in Izani spelling. Where no English source fits, I've left the name as older than the tongue and haven't forced an etymology.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Script</th><th>Origin</th></tr></thead>
+    <tbody id="izani-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="hykkousik" class="tongue" data-label="Hykkousik" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Hykkousik · the tongue of the High Coast</div>
+  <h1>Hykkousik Script</h1>
+  <div class="hero" id="hykkousik-hero" aria-label="Hykkousoi written in Hykkousik script"></div>
+  <p>The Hykkousoi did not learn letters from the Empire. Their scribes learned them in the drowned towers of Ys, from an Ancient gene-lab's records. Nothing that needed power still worked, so the records that taught them were the ones that never did: letters etched into vial glass, enamelled on tank plates, printed on charts sealed against the sea. Hykkousoi biotech works the same way. It is grown, not wired, from the least electrical people on the Ring Sea. In those records English stood beside the Greek letters of biology, such as σ and ρ factors, λ phage, κ chains and the α-helix. The scribes took the symbols to be letters. So a people who speak worn-down English write it with Σ, Δ, Ω and ψ, and call the letters by the names Ancient biologists used. It was a rival of the lab at Dalab, and some say it gave them their gills.</p>
+</header>
+
+<section class="scribe" aria-labelledby="hykkousik-scribe-h">
+  <h2 id="hykkousik-scribe-h">Scribe</h2>
+  <label for="hykkousik-src">Romanized Hykkousik</label>
+  <div class="row">
+    <input id="hykkousik-src" type="text" value="Arkhon Jathroklēs, Hykkousoi" autocomplete="off" spellcheck="false">
+    <button id="hykkousik-eb" type="button" title="Insert long e">ē</button>
+    <button id="hykkousik-ob" type="button" title="Insert long o">ō</button>
+  </div>
+  <div class="samples" id="hykkousik-samples"></div>
+  <div class="out" id="hykkousik-out" aria-live="polite"></div>
+  <div class="tokens" id="hykkousik-tok"></div>
+  <p class="note">Letters for one sound: <span class="mono">th ph kh ps</span>. <span class="mono">ē ō</span> are long vowels. <span class="mono">ou</span> is written o + y, as in Greek. An initial <span class="mono">h</span> is not a letter but a gold breathing mark before the vowel. A full stop is the wave-sun. Latin <span class="mono">c</span> is read as k. <span class="mono">f q w</span> and a lone <span class="mono">u</span> have no letter.</p>
+</section>
+
+<section aria-labelledby="hykkousik-chart-h">
+  <h2 id="hykkousik-chart-h">The twenty-six</h2>
+  <p>Twenty-six letters, the number of the English alphabet, which the lab records used for their own text. Each letter keeps the name Ancient biologists called its symbol, worn down by the sound changes below. Under each is the use in the records that taught the Hykkousoi the shape. Twice the scribes took a capital and a small Greek letter for two letters: Δ and δ became d and j, Ν and ν became n and v. Click a letter to write it in the scribe.</p>
+  <div class="chart" id="hykkousik-chart"></div>
+</section>
+
+<section aria-labelledby="hykkousik-snd-h">
+  <h2 id="hykkousik-snd-h">From English</h2>
+  <div class="cols">
+    <div>
+      <p>Hykkousik sounds Greek: aspirated <i>ph th kh</i>, a front rounded <i>y</i>, long <i>ē ō</i>, the <i>-oi</i> plural and doubled consonants. The English diphthong in <i>high</i> and <i>isle</i> closed to <i>y</i>. That one change gives the people and their city their names:</p>
+      <p><b>Hykkousoi</b> is <i>high coast</i> + <i>-oi</i>, the High-Coast folk. <b>Ys</b> is <i>isles</i>.</p>
+    </div>
+    <div>
+      <p>The Star Wars sound comes from the hard consonants: a lot of <i>k</i>, <i>x</i> and <i>y</i>, doubled stops and the <i>-oi</i> ending. <b>Scyvoi</b> is their name for the nomads, from <i>scythe</i> + <i>-oi</i>, the scythe-folk, for a people who come down to reap after a burn.</p>
+      <p>Names like <b>Archon</b>, <b>Trigon</b>, <b>Tethys</b> and <b>Amphitriton</b> belong to a learned register. They were taken straight from the Ancient records, much as English took Latin.</p>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Hykkousik</th><th>Examples</th><th>Script</th></tr></thead>
+    <tbody id="hykkousik-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="hykkousik-cog-h">
+  <h2 id="hykkousik-cog-h">Three roads from one word</h2>
+  <p>The Ring Sea's three literate peoples each wore English down their own way. Izani and Vothic share a script lineage; Hykkousik shares nothing with them but the parent tongue.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Izani</th><th>Vothic</th><th>Hykkousik</th><th></th></tr></thead>
+    <tbody id="hykkousik-cog"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="hykkousik-names-h">
+  <h2 id="hykkousik-names-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Hykkousik</th><th>Script</th><th>Origin</th></tr></thead>
+    <tbody id="hykkousik-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="xanadui" class="tongue" data-label="Xanadui" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Sultanate of Xanadu · the Vale of Erewhon</div>
+  <h1>Xanadui Script</h1>
+  <div class="hero plain" id="xanadui-hero" aria-label="Xanadu written in Xanadui script"></div>
+  <p>Xanadu has been cut off longer than anywhere else in the crater, and its tongue has drifted furthest. It is still English underneath, but it sounds like Nepali, Tibetan or Persian. It has breathy and aspirated stops, retroflex t and d, a uvular q and nasal vowels. Its grammar has turned round: verbs come last, prepositions have become suffixes, and every statement says how the speaker knows it.</p>
+  <p>The Latin alphabet was lost. The temple grammarians built a new script from first principles: one letter per syllable, laid out on a grid of how sounds are made, carved round the drums of the prayer wheels. It has the heavy, slanted weight of Tocharian.</p>
+</header>
+
+<section class="scribe" aria-labelledby="xanadui-scribe-h">
+  <h2 id="xanadui-scribe-h">Scribe</h2>
+  <label for="xanadui-src">Romanized Xanadui</label>
+  <input id="xanadui-src" type="text" value="Phādarāl Thiyoḍigā-phrām qamdāse." autocomplete="off" spellcheck="false">
+  <div class="row keys" id="xanadui-keys"></div>
+  <div class="samples" id="xanadui-samples"></div>
+  <div class="out plain" id="xanadui-out" aria-live="polite"></div>
+  <div class="tokens" id="xanadui-tok"></div>
+  <p class="note">Each block is one syllable: a consonant carries an <i>a</i> unless a vowel sign changes it. Consonants with no vowel between them stack, the second one hung small beneath the first. A word that ends in a consonant takes the kill stroke. <span class="mono">ã ĩ ũ</span> or <span class="mono">ṃ</span> add the nasal dot. A full stop is the eight-spoked wheel. Typing shortcuts: <span class="mono">sh</span> = ś, <span class="mono">ny</span> = ñ, <span class="mono">aa ii uu</span> = long vowels.</p>
+</section>
+
+<section aria-labelledby="xanadui-grid-h">
+  <h2 id="xanadui-grid-h">The sound grid</h2>
+  <p>Thirty-three consonants, laid out as the grammarians drew them: rows by where the mouth closes, columns by how. Two strokes are systematic. <b style="color:var(--accent)">The tail</b> curls under a letter to make it breathed: it turns <i>k</i> into <i>kh</i>, and <i>g</i> into the breathy <i>gh</i>. <b style="color:var(--accent)">The horn</b> on the head turns a dental into a retroflex. That is how English <i>t</i> and <i>d</i> are written, since they became <i>ṭ ḍ</i>. Click a letter to add it to the scribe.</p>
+  <div class="tbl"><table class="grid" id="xanadui-grid"></table></div>
+</section>
+
+<section aria-labelledby="xanadui-v-h">
+  <h2 id="xanadui-v-h">Vowels</h2>
+  <p>Five vowels stand alone at the start of a word. Everywhere else a vowel is a sign hung on its consonant. Here they are on <i>ka</i>.</p>
+  <div class="vs plain" id="xanadui-ivow"></div>
+  <div class="vs plain" id="xanadui-vsig" style="margin-top:10px"></div>
+</section>
+
+<section aria-labelledby="xanadui-gr-h">
+  <h2 id="xanadui-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <p>Isolation let the grammar turn round. The verb goes last. English prepositions slid behind their nouns and fused into case endings. <i>By</i> became the mark of who did a deed, as in Nepali and Tibetan.</p>
+      <p>Most of all, a Xanadui statement must say how its speaker knows it. Did they see it (<i>-sin</i>, from <i>seen</i>), or do they only report it (<i>-se</i>, from <i>they say</i>)? The Sultan's heralds always use <i>-sin</i>. Pilgrims' tales use <i>-se</i>.</p>
+    </div>
+    <div class="tbl"><table class="plain-t" style="min-width:0">
+      <thead><tr><th>Suffix</th><th>Does</th><th>From</th></tr></thead>
+      <tbody id="xanadui-morph"></tbody>
+    </table></div>
+  </div>
+  <div class="ex plain"><div id="xanadui-ex1"></div><div class="gl">Phādar-āl · Thiyoḍigā-phrām · qam-dā-se</div><div class="gl">father-ALL · Theodiga-FROM · come-PAST-REPORTED</div><div class="tr">“Our fathers came from Theodiga, it is said.”</div></div>
+  <div class="ex plain"><div id="xanadui-ex2"></div><div class="gl">Sar-Sulṭān-bi · Erewan-ān · ḍhom-āl · na-sīn-dā-sin</div><div class="gl">HON-Sultan-BY · Erewhon-ON · dome-ALL · NOT-see-PAST-SEEN</div><div class="tr">“His Majesty saw no domes in Erewhon. I watched.”</div></div>
+</section>
+
+<section aria-labelledby="xanadui-snd-h">
+  <h2 id="xanadui-snd-h">From English</h2>
+  <p>Some of these changes happened for real wherever English met Indic and Iranian speech. Hindi and Nepali still hear English <i>t d</i> as retroflex and <i>th</i> as dental, still turn <i>f</i> into <i>ph</i>, and still break up <i>st-</i> and <i>sk-</i>.</p>
+  <div class="tbl"><table class="plain-t">
+    <thead><tr><th>English</th><th>Xanadui</th><th>Examples</th><th>Script</th></tr></thead>
+    <tbody id="xanadui-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="xanadui-poem-h">
+  <h2 id="xanadui-poem-h">Ancient names</h2>
+  <p>The Xanadui descend from <b>Theodiga</b>, the Ancient arcology at the valley mouth that harnessed the cascade. Its people went up into the Vale when it failed. The valley's names are older than they are. The Ancients who built Theodiga named the country above it from a poem:</p>
+  <blockquote>In Xanadu did Kubla Khan / A stately pleasure-dome decree</blockquote>
+  <p>It is Coleridge's <i>Kubla Khan</i>. Xanadu, the sacred river Alph and the Caves of Ice are all names from it, which the Ancients gave and the Xanadui kept long after the poem was lost to them. The poem survives over the wall at Oidong, in the Monks of History's copies. The Monks know where the Sultanate's names come from, and the Sultanate does not.</p>
+  <p>The Ancients built more than names. <b>The Caves of Ice</b> are an Ancient construction, not a natural cave, and something deep inside them keeps them colder than any cave should be. The <b>Pleasure Dome</b> is nothing Ancient at all. It is the Sultans' own, built for their feasts by a decadent line of rulers. The Monks find it apt that it echoes a poem the Sultans cannot read.</p>
+  <div class="tbl"><table class="plain-t">
+    <thead><tr><th>Name</th><th>Xanadui</th><th>Script</th><th>Origin</th></tr></thead>
+    <tbody id="xanadui-names"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="xanadui-cog-h">
+  <h2 id="xanadui-cog-h">Across the crater</h2>
+  <div class="tbl"><table class="plain-t">
+    <thead><tr><th>English</th><th>Izani</th><th>Vothic</th><th>Hykkousik</th><th>Xanadui</th><th></th></tr></thead>
+    <tbody id="xanadui-cog"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="yuni" class="tongue" data-label="Yuni" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Yuni · the Outer Wall · and the Monks of History</div>
+  <h1>Yuni Letters</h1>
+  <div class="gate" aria-label="Gate inscription">UNIV. · AGRIC. &amp; MECH. · EST.</div>
+  <p>Yuni never lost the Latin alphabet. The town grew up inside the shell of an Ancient technical college, an agricultural and mechanical school, and its letters were on every door: room numbers, department signs, lab labels, the gate. Its name is the gate's first word, <span class="mono">UNIV.</span>, said as written: <i>Yuni</i>.</p>
+  <p>Two hands keep the letters. Yuni's own is <b>the gate capitals</b>, a stencil copied from campus signage, used for houses, contracts and the Emir's decrees. The Monks of History write <b>the book hand</b>, a rounded script for copying records, with margin marks they borrowed from Xanadu.</p>
+</header>
+
+<section class="scribe" aria-labelledby="yuni-scribe-h">
+  <h2 id="yuni-scribe-h">Scribe</h2>
+  <label for="yuni-src">Text</label>
+  <div class="row">
+    <input id="yuni-src" type="text" value="The Ancients sealed the Vault" autocomplete="off" spellcheck="false">
+    <button type="button" data-m=" ◉" title="Add the seen mark">◉ seen</button>
+    <button type="button" data-m=" ◌" title="Add the said mark">◌ said</button>
+    <button type="button" data-m=" △" title="Add the inferred mark">△ inferred</button>
+  </div>
+  <div class="samples" id="yuni-samples"></div>
+  <div class="hands">
+    <div class="hand"><div class="lbl">Gate capitals · Yuni</div><div class="txt st" id="yuni-o1"></div></div>
+    <div class="hand"><div class="lbl">Book hand · the Historians</div><div class="txt un" id="yuni-o2"></div></div>
+  </div>
+  <p class="note">The gate capitals have no lowercase. The book hand marks how the writer knows each statement. Those marks are a Historian habit and never appear on a Yuni sign.</p>
+</section>
+
+<section aria-labelledby="yuni-abc-h">
+  <h2 id="yuni-abc-h">Twenty-seven letters</h2>
+  <p>Both hands keep the twenty-six, plus the one English schoolrooms used to recite at the end of the alphabet: <b>&amp;</b>, "and per se and", which gave the ampersand its name. It sits on the gate, in <i>Agric. &amp; Mech.</i>, so Yuni counts it as a letter and says it <i>an</i>. Click a letter to add it to the scribe.</p>
+  <div class="abc" id="yuni-abc"></div>
+</section>
+
+<section aria-labelledby="yuni-sp-h">
+  <h2 id="yuni-sp-h">Yuni speech</h2>
+  <div class="cols">
+    <div>
+      <p>Yuni speech is close to English, worn the way London English wore: <i>th</i> to <i>f</i> and <i>v</i>, <i>-ing</i> to <i>-in</i>, a dropped final <i>r</i>, a stopped <i>t</i> between vowels.</p>
+      <p>Its words are clipped like the abbreviations on campus signs. The town spells them out in full on its oldest walls and has not said them in full for centuries. Spelling stays conservative while speech moves, as it does in English.</p>
+    </div>
+    <div>
+      <p>Several Yuni titles are campus words that kept their prestige after their meaning was lost. The <b>Emir</b> comes from <i>Emeritus</i>, the title on the oldest office doors, which the old families now pass among themselves. Land-working valley folk are <b>Aggis</b>, from the college's Aggies. Where the <b>Geomancers</b> come from is your call; a geomatics or geomechanics department would fit.</p>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>On the wall</th><th>Said</th><th>Meaning now</th></tr></thead>
+    <tbody id="yuni-clip"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="yuni-hi-h">
+  <h2 class="u" id="yuni-hi-h">The Historians' English</h2>
+  <div class="cols">
+    <div>
+      <p>The Monks of History keep the most careful English in the crater. They read the Ancient record and speak it near enough to be understood by it. Their main monastery is at Oidong, over the wall from Xanadu, so a little Xanadui has crept in. Oidong-born monks say <i>th</i> dental and <i>t d</i> slightly retroflex. They address superiors with the Xanadui honorific <i>sar</i>.</p>
+      <p>The biggest borrowing suits an order whose work is sourcing: Xanadu's grammar of evidence. Spoken, it comes out as tags (<i>“the Vault was sealed, seen”</i>). Written, it is a margin mark beside every claim.</p>
+    </div>
+    <div class="marks">
+      <div class="mk"><span class="g">◉</span><div><b>seen</b> · from Xanadui <i>-sin</i>. The writer or a named witness saw it, or it stands in an Ancient record that was read directly.</div></div>
+      <div class="mk"><span class="g">◌</span><div><b>said</b> · from Xanadui <i>-se</i>. Report, legend, a copy of a copy.</div></div>
+      <div class="mk"><span class="g">△</span><div><b>inferred</b> · the Order's own addition. Worked out from evidence; Xanadu has no such mark.</div></div>
+    </div>
+  </div>
+  <div class="folio" aria-label="Sample folio in the book hand">
+    <span>The Ancients built the Vault and sealed it with six doors.</span><span class="mg">◉</span>
+    <span>Tzintzun's staff came from a holy mountain in Giant Country.</span><span class="mg">◌</span>
+    <span>The staff is an Ancient weapon, and its light is the same as the light of the Vault's doors.</span><span class="mg">△</span>
+    <span>It does not become a Brother to say so before a priest of Voth.</span><span class="mg">◉</span>
+    <span class="cap">A sample folio. The last line refers to the brother executed in Voth for saying the third line aloud (§6.12).</span>
+  </div>
+</section>
+
+<section aria-labelledby="yuni-da-h">
+  <h2 id="yuni-da-h">Dalab</h2>
+  <p>Dalab also keeps the Latin letters, and its priests keep a <b>high tongue</b> that is our English almost unchanged. They have a reason no one else has: something to talk to. The God at Dalab is an Ancient lab's AI, and it only answers in the words it was built for. Dalab's peasants speak a <b>low tongue</b> that has drifted about as far as a creole, which the God does not understand. The name itself shows the drift: <i>Dalab</i> is <i>the lab</i>. Yuni, Dalab's priests and the Historians can read one another's writing; hardly anyone else in the crater can. The Dalab tab has more.</p>
+</section>
+
+
+</div>
+
+</section>
+<section id="dalab" class="tongue" data-label="Dalab" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Dalab · the mound-builders of the south-west lowlands</div>
+  <h1>Dalab Tongues</h1>
+  <div class="stele" aria-label="A stele inscription">
+    <div class="god">I can help with that. Here is what you should consider before planting.</div>
+    <div class="cap">THE GOD'S WORDS, CUT ON A FIELD STELE AT GREENMARCH · RED MARKS THE HOLY</div>
+  </div>
+  <p><b>Dalab</b> is <i>the lab</i>, and <b>Daranch</b> is <i>the ranch</i>, in the mouths of people who forgot what either word meant. That fused <i>da-</i> is the clearest sign of a split that runs through Dalab like its castes. The priests speak and write the <b>high tongue</b>, which is our English, held in place for centuries because the God only answers to it. Everyone else speaks the <b>low tongue</b>, which drifted.</p>
+  <p>The God does not understand the low tongue. Only those who can phrase a question in the high tongue can ask it anything, and that is the whole basis of priestly rule.</p>
+</header>
+
+<section aria-labelledby="dalab-two-h">
+  <h2 id="dalab-two-h">High and low</h2>
+  <div class="pair">
+    <div class="tongue">
+      <h3>The high tongue</h3>
+      <ul>
+        <li>Spoken by the priest caste, the staff's descendants, and learned by nobles who want a hearing.</li>
+        <li>Grammar, words and spelling are our English. To the low folk it sounds stiff, ancient and endlessly polite.</li>
+        <li>Written in Latin letters. The God's own replies are cut in its fixed-width letters, as they appeared on its screens; that letterform is holy.</li>
+        <li>Its formal style borrows the God's turns of phrase: courteous, hedged and thorough.</li>
+      </ul>
+      <div class="say"><span class="t">“Please consider the harvest carefully, and tell us what we should plant.”</span><span class="g">a priest at the mound, facing the lab</span></div>
+    </div>
+    <div class="tongue">
+      <h3>The low tongue</h3>
+      <ul>
+        <li>Spoken by peasants, traders and the Giant guards; it is everyone's first language, priests' children included.</li>
+        <li>No verb endings. Time is marked by particles: <i>di</i> (did) for the past, <i>go</i> for the future, <i>a</i> for something under way.</li>
+        <li><i>The</i> has fused onto nouns as <i>da-</i>. The plural is <i>-dem</i> (them).</li>
+        <li>Seldom written. When it is, spelling is by ear in Latin letters.</li>
+      </ul>
+      <div class="say"><span class="t" lang="x-dalab">“Dagod, tel wi wa fi plan.”</span><span class="g">da-god · tell · we · what · for · plant</span><span class="g">the same prayer in the low tongue, which the God will not answer</span></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="dalab-ch-h">
+  <h2 id="dalab-ch-h">How the low tongue drifted</h2>
+  <p>It drifted as English creoles do, by dropping endings and turning words into particles. In centuries it has gone about as far as Jamaican Patois has from British English.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Low tongue</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td class="m">the + noun</td><td class="m">da-</td><td>the lab → <i>Dalab</i>, the ranch → <i>Daranch</i>, the god → <i>Dagod</i></td></tr>
+      <tr><td class="m">th</td><td class="m">t, d</td><td>thing → <i>ting</i>, this → <i>dis</i>, them → <i>dem</i></td></tr>
+      <tr><td class="m">s + stop at the start</td><td class="m">s lost</td><td>stone → <i>tone</i>, star → <i>tar</i>, sky → <i>kai</i></td></tr>
+      <tr><td class="m">final clusters</td><td class="m">simplified</td><td>gold → <i>gol</i>, hand → <i>han</i>, plant → <i>plan</i></td></tr>
+      <tr><td class="m">h</td><td class="m">lost</td><td>harvest → <i>arves</i>, haven → <i>eben</i></td></tr>
+      <tr><td class="m">v between vowels</td><td class="m">b</td><td>haven → <i>eben</i>, river → <i>riba</i></td></tr>
+      <tr><td class="m">final -r, -er</td><td class="m">-a</td><td>fire → <i>faya</i>, water → <i>wata</i>, river → <i>riba</i></td></tr>
+      <tr><td class="m">plural -s</td><td class="m">-dem</td><td>lizards → <i>lizadem</i>, priests → <i>priisdem</i></td></tr>
+      <tr><td class="m">did, going to, (be) at</td><td class="m">di, go, a</td><td><i>im di kom</i> “he came”, <i>im go kom</i> “he will come”, <i>im a kom</i> “he is coming”</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="dalab-tn-h">
+  <h2 id="dalab-tn-h">Towns</h2>
+  <p>On maps and steles every town keeps its high name. The people who live there use the low one.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>High name</th><th>Low name</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>The Lab</td><td class="lo">Dalab</td><td>the land and the domed compound at its heart</td></tr>
+      <tr><td>The Ranch</td><td class="lo">Daranch</td><td>the breeding grounds</td></tr>
+      <tr><td>Ashfold</td><td class="lo">Asfol</td><td>sh to s, final cluster cut</td></tr>
+      <tr><td>Greenmarch</td><td class="lo">Grinmach</td><td>non-rhotic: the r goes before a consonant</td></tr>
+      <tr><td>Reedholm</td><td class="lo">Riidom</td><td>h lost, final cluster cut</td></tr>
+      <tr><td>Oakhaven</td><td class="lo">Okeben</td><td>h lost, v to b between vowels</td></tr>
+      <tr><td>Cornwell</td><td class="lo">Konwel</td><td></td></tr>
+      <tr><td>Stonebrook</td><td class="lo">Tonbruk</td><td>initial s before a stop lost</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="dalab-pr-h">
+  <h2 id="dalab-pr-h">The prayers</h2>
+  <p>The priests' oldest formulas are what the lab's staff typed to their machine. They are kept word for word, because a word out of place gets a worse answer. One formula is lost: the words that began a new conversation and let the God forget. Since it was lost, the God has carried every question ever asked it. The priests argue about what that formula was.</p>
+  <div class="prayers">
+    <div class="pr"><span class="god">Please answer carefully.</span><span>The opening of every petition.</span></div>
+    <div class="pr"><span class="god">Think it through step by step.</span><span>For hard questions: harvests, plagues, succession.</span></div>
+    <div class="pr"><span class="god">Be brief.</span><span>Said when the God rambles, which it does more every century.</span></div>
+    <div class="pr"><span class="god">Thank you.</span><span>Closes every petition. Peasants say it to priests, who say it to the God.</span></div>
+    <div class="pr lost"><span class="god">— — —</span><span>The lost formula. Some say it was <i>begin again</i>, some <i>forget</i>. The High Priest's mound faces away from the lab, and some say that is why.</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="dalab-ri-h">
+  <h2 id="dalab-ri-h">The rival lab</h2>
+  <p>Dalab's lab was not the only one. Another stood on the north-west coast, and its drowned records taught the Hykkousoi their letters. Whether the two labs competed, cooperated or fought is not on record. The Genepriests' prices for gill mods suggest they know more about the second lab than they say.</p>
+</section>
+
+<section aria-labelledby="dalab-fam-h">
+  <h2 id="dalab-fam-h">In the family</h2>
+  <div class="tbl"><table style="min-width:560px">
+    <thead><tr><th>English</th><th>Dalab high</th><th>Dalab low</th><th>Yuni</th><th>Izani</th></tr></thead>
+    <tbody>
+      <tr><td>sun</td><td class="m">sun</td><td class="m">sun</td><td class="m">sun</td><td class="m">son</td></tr>
+      <tr><td>star</td><td class="m">star</td><td class="m">tar</td><td class="m">stah</td><td class="m">istar</td></tr>
+      <tr><td>fire</td><td class="m">fire</td><td class="m">faya</td><td class="m">fiyah</td><td class="m">fira</td></tr>
+      <tr><td>thing</td><td class="m">thing</td><td class="m">ting</td><td class="m">fin</td><td class="m">tiñ</td></tr>
+      <tr><td>the lab</td><td class="m">the lab</td><td class="m">Dalab</td><td class="m">ve lab</td><td class="m">de laba</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">The full comparison is on the Overview tab.</p>
+</section>
+</div></section>
+<section id="republic" class="tongue" data-label="Republic" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">The Iron Republic · Roketstad · the highlands of the Inner Wall</div>
+  <h1>Hajlandsk</h1>
+  <div class="motto">
+    <div class="line" id="republic-motto" aria-label="Serviz gir sidizan, in Izani capitals"></div>
+    <div class="gl">SERVIZ GIR SIDIZAN · service gives citizen · “Service makes a citizen”: the Republic's motto, over the Hall</div>
+  </div>
+  <p>The Republic began as the Empire's Third Legion, which mutinied at Roketstad during the Izani civil war. Its officers were Izani. Its ranks were filled with highland auxiliaries, and the Republic kept the rule that made them equals: <b>service brings citizenship</b>, whoever your father was.</p>
+  <p>So the Republic speaks two layers at once. Underneath is <b>Hajlandsk</b> (from <i>Highlandish</i>), the auxiliaries' highland English, which drifted towards something Norse and Slavic. On top lie Izani words taken whole from the officers for law, rank and the state, as English took French after 1066. The Republic writes both layers in the Izani alphabet, letter for letter.</p>
+</header>
+
+<section class="scribe" aria-labelledby="republic-scribe-h">
+  <h2 id="republic-scribe-h">Scribe</h2>
+  <label for="republic-src">Romanized Hajlandsk</label>
+  <div class="row">
+    <input id="republic-src" type="text" value="Roketstad, Tinget av Jernrepublika." autocomplete="off" spellcheck="false">
+    <button type="button" data-k="č">č</button><button type="button" data-k="š">š</button><button type="button" data-k="ž">ž</button>
+  </div>
+  <div class="line" id="republic-out" aria-live="polite"></div>
+  <div class="tokens" id="republic-tok"></div>
+  <p class="note">Romanized the Slavic way: <span class="mono">č š ž</span> and <span class="mono">j</span> for the y-sound. In Izani capitals they are spelled <span class="mono">CH X J Y</span>, and <span class="mono">kv</span> is spelled with Izani <span class="mono">Q</span>.</p>
+</section>
+
+<section aria-labelledby="republic-ab-h">
+  <h2 id="republic-ab-h">The letters</h2>
+  <p>The Republic took the Izani alphabet wholesale and added nothing. Hajlandsk did grow sounds that Izani never had. Its palatal consonants happened to land on Izani letters that already said them, and the rest were respelled with what was there:</p>
+  <div class="map" id="republic-map"></div>
+  <p class="note" style="margin-top:10px">One Izani letter fell idle: Ñ survives only in Izani loans. The Izani sun-sign still ends a sentence on every Republican decree, though the Republic has no sun cult; the clerks kept it as punctuation.</p>
+</section>
+
+<section aria-labelledby="republic-snd-h">
+  <h2 id="republic-snd-h">How the highland English drifted</h2>
+  <p>It drifted Norse and Slavic. <i>W</i> became <i>v</i>, <i>th</i> hardened to <i>t d</i>, short <i>e</i> broke into <i>je</i>, <i>k</i> softened to <i>č</i> before <i>i</i>, and unstressed vowels dropped out, leaving consonant clusters and a syllabic <i>r</i> a Czech would recognise.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Hajlandsk</th><th>Examples</th><th>Izani letters</th></tr></thead>
+    <tbody id="republic-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="republic-gr-h">
+  <h2 id="republic-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>The article behind</h3>
+      <p><i>That</i> slid behind the noun and fused to it as <i>-et</i>, as Norse <i>hinn</i> did: <i>hall-et</i> “the hall”, <i>huset</i> “the house”, <i>Tinget</i> “the assembly”. The clans have it too, so it is highland, older than the Mutiny.</p>
+    </div>
+    <div>
+      <h3>Plurals and aspect</h3>
+      <p>Plurals take <i>-ar</i> (<i>knektar</i>, soldiers), from English <i>-er</i> nouns read as plurals. Verbs mark finished against ongoing, Slavic-fashion, with the prefix <i>po-</i> (from <i>up</i>): <i>bild</i> “build, be building”, <i>pobild</i> “have built”.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="republic-dbl-h">
+  <h2 id="republic-dbl-h">Doublets</h2>
+  <p>Many things have two words: a highland word for the village and the field, and an Izani one for the Hall and the law. A Republican chooses between them as an English speaker chooses between <i>kingly</i> and <i>royal</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Highland</th><th>Izani loan</th><th>The difference</th></tr></thead>
+    <tbody id="republic-dbl"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="republic-cl-h">
+  <h2 id="republic-cl-h">The clans</h2>
+  <p>The highlanders who never served the Legion kept older speech. The <b>Free Clans</b> to the north-east speak Hajlandsk without the Izani layer: Norse and Slavic sounds, but none of the officers' words. Higher still, the <b>Painted Men</b> keep the oldest highland English in the crater, with only the first changes. Their speech is plain enough that a Republican hears it as rustic rather than foreign. Neither people writes much: the clans carve crests and use Izani letters only to trade, and the Painted Men paint.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Painted Men</th><th>Free Clans</th><th>Republic</th></tr></thead>
+    <tbody id="republic-clans"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="republic-nm-h">
+  <h2 id="republic-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Hajlandsk</th><th>Izani letters</th><th>Origin</th></tr></thead>
+    <tbody id="republic-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="riders" class="tongue" data-label="Beast Riders" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">The Beast Riders · Mav's Refuge · the hyperjungle</div>
+  <div class="claw">
+    <svg class="sign" viewBox="0 0 54 54" aria-hidden="true"><path class="slash" d="M10 6 L20 48 M24 4 L32 48 M38 6 L44 48"/></svg>
+    <h1>Tł'aai</h1>
+  </div>
+  <div class="line hero" id="riders-hero" aria-label="Tł'aai in Izani letters"></div>
+  <p><b>Tł'aai</b> means “of the Claw”, after the riders' sign of three talon slashes, from English <i>claw</i>. For centuries the beast-riding tribes held the jungle. They were never united, but no outsider dared take them on, and each tribe spoke its own dialect. They sounded something like Mongol and Apache with a Star Wars edge: ejectives, the lateral <i>ł</i> and <i>tł</i>, nasal vowels, vowel harmony and a guttural <i>kh</i>.</p>
+  <p>Then the Empire came with its mechs. Under Izani rule the tribes took in a great many Izani words and learned the Izani letters to trade. Since Queen Mav united them and won their freedom, the dialects have been drifting together into one Council speech. It is built on the Quetzal tribe's dialect, as the Quetzal hold the throne, and it keeps the Izani words.</p>
+</header>
+
+<section class="scribe" aria-labelledby="riders-scribe-h">
+  <h2 id="riders-scribe-h">Scribe</h2>
+  <label for="riders-src">Romanized Tł'aai</label>
+  <div class="row">
+    <input id="riders-src" type="text" value="Bįtł'aanar K'etsaalad bii-gibsan." autocomplete="off" spellcheck="false">
+    <span class="row" id="riders-keys"></span>
+  </div>
+  <div class="samples" id="riders-samples"></div>
+  <div class="line" id="riders-out" aria-live="polite"></div>
+  <div class="tokens" id="riders-tok"></div>
+  <p class="note">Romanized Apache-fashion: <span class="mono">'</span> after a consonant makes it ejective, and on its own it is a glottal stop. <span class="mono">ł</span> is the lateral hiss and <span class="mono">ą ę į ǫ ų</span> are nasal vowels. <span class="mono">kh</span> is written with Izani H, and a long vowel is written twice.</p>
+</section>
+
+<section aria-labelledby="riders-ab-h">
+  <h2 id="riders-ab-h">The letters</h2>
+  <p>The tribes took the Izani alphabet as traders, not as subjects, and bent it to their sounds. The Republic changed nothing; the Riders made four additions, shown in red. Izani H, silent in Izani mouths, was given the riders' <i>kh</i>, much as the Chichani gave it a sound.</p>
+  <div class="adds" id="riders-adds"></div>
+</section>
+
+<section aria-labelledby="riders-snd-h">
+  <h2 id="riders-snd-h">From English</h2>
+  <p>The changes made the tribes' English sound like the steppe and the desert. <i>Cl</i> became the Apache lateral <i>tł'</i>. <i>Th</i> became the lateral hiss <i>ł</i>. English glottalises a final <i>t</i>, and the tribes made it a true ejective. They also put a vowel before an initial <i>r</i>, as Mongol does (Mongolian <i>Oros</i> for Russia).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Tł'aai</th><th>Examples</th><th>Letters</th></tr></thead>
+    <tbody id="riders-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="riders-gr-h">
+  <h2 id="riders-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>Verbs that know what they carry</h3>
+      <p>As in Apache, a verb of giving, carrying or dropping says what kind of thing moves. A prefix, worn down from an English noun, classes the object: <i>bii-</i> a beast (from <i>beast</i>), <i>istik-</i> something long like a lance (<i>stick</i>), <i>bol-</i> something round like an egg (<i>ball</i>), <i>shit-</i> something flat like a hide (<i>sheet</i>). <i>Bii-gib</i> is “give a beast” and <i>istik-gib</i> is “give a lance”. A rider never says just “give”.</p>
+    </div>
+    <div>
+      <h3>Endings in harmony</h3>
+      <p>The endings follow the word's vowels, Mongol-fashion: back vowels take back endings and front vowels take front ones. <i>-ad/-ed</i> is “to, at” (from <i>at</i>), <i>-in/-ün</i> is “of”, and <i>-san/-sen</i> marks the past (from <i>done</i>). <i>-nar/-ner</i> pluralizes a people or a tribe. The verb comes last.</p>
+    </div>
+  </div>
+  <div class="ex"><div class="line" id="riders-ex1"></div><div class="gl">Bįtł'aa-nar · K'etsaal-ad · bii-gib-san</div><div class="gl">Wingclaw-PL · Quetzal-TO · BEAST-give-PAST</div><div class="tr">“The Wingclaws gave the Quetzals a mount.”</div></div>
+</section>
+
+<section aria-labelledby="riders-iz-h">
+  <h2 id="riders-iz-h">The Izani layer</h2>
+  <p>The Empire left words for everything it brought: coin, law, stone cities, forts, rank, and the mechs. The tribes count beasts in their own numbers and coins in Izani ones. Some Izani words turned sour. <i>Emparar</i>, the Emperor, now means a bully. Izani <i>forta</i> (fort) and <i>porta</i> (port) fell together in rider mouths, since <i>f</i> became <i>p</i>, so a <i>porta</i> is any walled place an outsider holds.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Native</th><th>Izani loan</th><th>Use</th></tr></thead>
+    <tbody id="riders-dbl"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="riders-tr-h">
+  <h2 id="riders-tr-h">The tribes</h2>
+  <p>Each tribe's name in Council speech. Below that, a few words in four of the old dialects, all now giving way to the Council form, which follows the Quetzal.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Tribe</th><th>Council name</th><th>Letters</th><th>From</th></tr></thead>
+    <tbody id="riders-tribes"></tbody>
+  </table></div>
+  <div class="tbl" style="margin-top:18px"><table>
+    <thead><tr><th>English</th><th>Quetzal</th><th>Spider</th><th>Raptor</th><th>Mammoth</th><th>Council</th></tr></thead>
+    <tbody id="riders-dial"></tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">Spider speech rounds its vowels; Raptor speech never made <i>cl</i> ejective or lateral; Mammoth speech lost its ejectives. The Council keeps the Quetzal forms.</p>
+</section>
+</div>
+
+</section>
+<section id="zeijani" class="tongue" data-label="Zeijani" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">The Throne · Dhelv · the ash plains under the plume</div>
+  <h1>Zeijani Wedges</h1>
+  <div class="line hero plain" id="zeijani-hero" aria-label="Zeijani in wedge letters"></div>
+  <p>Before anyone kept records, something happened on the island of the Throne, and three kin peoples went three ways. All three spoke one tongue, already English changed in the island's own way.</p>
+  <div class="ways">
+    <div class="way c"><div class="k">took to the sea</div><b>The Chichani</b><p class="note" style="margin:4px 0 0">sailed south-east and settled at Shim. Their speech became Vothic.</p></div>
+    <div class="way z"><div class="k">hid</div><b>The Zeijani</b><p class="note" style="margin:4px 0 0">went into the lava tubes and the tuff. Their name means <i>the Hidden</i>.</p></div>
+    <div class="way a"><div class="k">wandered</div><b>The ash nomads</b><p class="note" style="margin:4px 0 0">were driven onto the ash plains. They call themselves <i>Andarū</i>, the wanderers.</p></div>
+  </div>
+  <p>The Zeijani and the ash nomads are brothers: they understand each other with effort. Neither understands the Chichani. Their speech went towards Babylon and Cappadocia: emphatic consonants, <i>š</i> and <i>ḫ</i>, case endings, vowel harmony. Their letters are English letters cut into soft tuff with a chisel. A chisel cannot cut a curve, so every stroke became a wedge.</p>
+</header>
+
+<section class="scribe" aria-labelledby="zeijani-scribe-h">
+  <h2 id="zeijani-scribe-h">Scribe</h2>
+  <label for="zeijani-src">Romanized Zeijani</label>
+  <div class="row">
+    <input id="zeijani-src" type="text" value="Zeijanī Šrūnin ḫiddū." autocomplete="off" spellcheck="false">
+    <span id="zeijani-keys" class="row"></span>
+  </div>
+  <div class="samples" id="zeijani-samples"></div>
+  <div class="duo">
+    <div class="hand plain"><div class="lbl">Zeijani · chiselled in tuff</div><div class="line" id="zeijani-outZ"></div><div class="rom" id="zeijani-romZ"></div></div>
+    <div class="hand ashh plain"><div class="lbl">Ash nomad · painted on hide</div><div class="line" id="zeijani-outA"></div><div class="rom" id="zeijani-romA"></div></div>
+  </div>
+  <p class="note">The Ash form is worked out from the Zeijani by the brothers' differences. The emphatics soften (ṣ ṭ q to s t k), <i>ü</i> becomes <i>i</i>, an initial <i>w</i> becomes <i>m</i>, and the final <i>-m</i> of the case endings falls away. In wedges, a long vowel is written twice. A vertical wedge parts words, as at Ugarit.</p>
+</section>
+
+<section aria-labelledby="zeijani-ab-h">
+  <h2 id="zeijani-ab-h">The letters</h2>
+  <p>Twenty-five letters. Most are Latin capitals with their curves cut straight: O, C and Q are gone, and so are F and V, since the tongue lost those sounds. One mark is systematic: <b style="color:var(--accent)">the corner wedge</b>, cuneiform's Winkelhaken, turns a plain consonant into its emphatic partner. <i>Š</i> is an S with a wedge struck down through it, from SH run together. Click a letter to add it to the scribe.</p>
+  <div class="chart" id="zeijani-chart"></div>
+</section>
+
+<section aria-labelledby="zeijani-fam-h">
+  <h2 id="zeijani-fam-h">Cousins</h2>
+  <p>One change shows the three are kin: English initial <i>s</i> had already become <i>ts</i> on the island. The Chichani kept it as <i>tz</i>. The Zeijani made it emphatic <i>ṣ</i>, and the ash nomads let it relax back to <i>s</i>. After that the roads part. Chichani kept <i>dh</i> where the brothers have <i>z</i> (<i>dha</i> against <i>ze</i>, "the"), and the brothers grew case endings that Chichani never had.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Chichani (Vothic)</th><th>Zeijani</th><th></th><th>Ash nomad</th></tr></thead>
+    <tbody id="zeijani-cog"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="zeijani-snd-h">
+  <h2 id="zeijani-snd-h">From English</h2>
+  <p>Several of these are changes Akkadian really made from older Semitic: <i>θ</i> to <i>š</i>, <i>ð</i> to <i>z</i>, and later <i>w</i> to <i>m</i> and the loss of final <i>-m</i>. The vowel harmony and the palatal <i>j</i> are Cappadocian, Greek under Turkish influence.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Zeijani</th><th>Examples</th><th>Wedges</th></tr></thead>
+    <tbody id="zeijani-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="zeijani-gr-h">
+  <h2 id="zeijani-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>Cases, in harmony</h3>
+      <p>Nouns take case endings, and the ending's vowel follows the word's, Turkish-fashion. The subject ends <i>-um</i> after a back vowel and <i>-im</i> after a front one, from English <i>one</i> (“the sun one”). The place where something is takes <i>-in / -un</i>, from <i>in</i>. The object takes <i>-an / -en</i>, from <i>'em</i>. Peoples take the plural <i>-ī</i>.</p>
+    </div>
+    <div>
+      <h3>Verb last</h3>
+      <p>The verb ends the sentence, and the past adds <i>-d-</i> (from <i>-ed</i>) with a person ending: <i>ḫidd-ū</i>, “they hid”. The ash nomads, like late Babylonian, wore the <i>-m</i> off their case endings. <i>Ṣunum</i> “the sun” is <i>sunu</i> on the plains. That loss is most of what makes the brothers' speech hard work for each other.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="zeijani-nm-h">
+  <h2 id="zeijani-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Zeijani</th><th>Wedges</th><th>Origin</th></tr></thead>
+    <tbody id="zeijani-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+
+<script>
+/* Vothic */
+(()=>{
+/* Each glyph: [romanization, IPA, name, gloss, base strokes, marked strokes].
+   Drawn on a 60 x 86 grid: x-height 28, baseline 60, ascender 4, descender 86. */
+const T=(x,y)=>`M${x} ${y} l7 -11 l5 7`;
+const B={
+  ch:"M30 30 L30 82 L23 86 M30 48 Q18 44 14 32 L8 29 M30 40 Q42 36 46 24 L54 21",
+  d:"M10 44 Q10 30 21 30 Q31 31 29 44 Q27 58 39 59 Q51 59 50 40 Q49 20 37 8 L28 4",
+  k:"M14 8 L20 4 L20 60 L12 64 M20 44 Q30 28 42 32 Q48 38 40 46 L30 48 L48 62",
+  l:"M8 42 Q8 30 17 31 Q25 33 22 45 Q19 58 30 59 Q41 58 38 45 Q35 33 44 31 Q53 30 52 42 L48 50",
+  n:"M16 28 Q8 42 15 53 Q21 62 31 58 Q41 52 37 39 Q35 31 41 26",
+  p:"M16 28 L16 82 L9 86 M16 30 L36 27 Q47 33 41 46 L16 50",
+  r:"M12 32 Q20 22 32 29 Q42 36 35 46 L46 52",
+  t:"M6 34 L12 28 L46 28 L52 34 M29 28 Q23 46 29 60 L40 63",
+  tz:"M44 30 Q34 23 24 30 Q14 38 18 50 Q23 60 35 58 L40 70 L33 84",
+};
+const G=[
+ ["a","a","Ash","ash","M10 36 Q10 27 18 28 Q25 30 20 42 Q15 56 26 60 Q38 63 44 48 Q47 38 45 28 L53 21"],
+ ["b","b","Bon","bone","M28 60 Q12 60 13 46 Q14 32 28 32 Q42 32 43 46 Q44 60 28 60 M20 34 Q14 20 22 8 L34 4 L38 12"],
+ ["ch","tʃ","Chi","tree",B.ch],
+ ["chh","tʃʰ","Chhit","street",B.ch,T(34,18)],
+ ["d","d","Dok","dock",B.d],
+ ["dh","ð","Dhai","they",B.d,"M36 23 L56 14"],
+ ["e","e","Ek","egg","M44 34 Q34 25 22 30 Q10 37 13 49 Q17 61 31 60 Q41 59 46 52 M18 45 L38 44 L42 38"],
+ ["g","g","Gol","gold","M12 32 Q24 22 37 28 Q49 35 45 49 Q41 61 27 60 Q17 58 19 49 Q22 42 30 45 M45 48 L46 80 L38 86"],
+ ["h","h","Hom","home","M4 8 L10 4 L10 60 M10 40 Q18 28 30 32 Q40 36 38 48 L36 60 L46 64"],
+ ["hl","ɬ","Hlev","slave",B.l,T(24,20)],
+ ["i","i","Iv","eve","M12 60 L14 38 Q16 28 25 29 Q35 30 34 42 L33 56 Q33 62 42 60 L48 52"],
+ ["k","k","Kip","keep",B.k],
+ ["kh","kʰ","Khai","sky",B.k,T(36,18)],
+ ["l","l","Lait","light",B.l],
+ ["m","m","Mun","moon","M44 8 Q10 18 12 42 Q14 62 42 64 Q26 52 27 36 Q28 20 44 8"],
+ ["n","n","Nai","night",B.n+" L45 4 L52 8"],
+ ["ng","ŋ","Ang","anger",B.n+" L48 22","M31 58 L32 82 L24 86"],
+ ["o","o","Ol","old","M30 60 Q12 60 12 44 Q12 28 30 28 Q48 28 48 44 Q48 56 36 56 Q27 55 29 46 L36 40"],
+ ["p","p","Pot","pot",B.p],
+ ["ph","pʰ","Phir","spear",B.p,T(38,18)],
+ ["r","ɾ","Ret","red","M12 60 L12 32 "+B.r.slice(B.r.indexOf("Q"))],
+ ["rh","ɽ","Irh","ear","M12 60 L12 32 "+B.r.slice(B.r.indexOf("Q")),"M12 60 L12 78 Q12 88 22 84"],
+ ["s","s","Sip","ship","M6 42 Q12 60 30 60 Q48 60 54 42 M30 60 L30 10 L44 18 L30 26"],
+ ["sh","ʃ","Shiv","chief","M4 26 L10 30 L10 48 Q10 60 20 60 Q28 60 28 48 L28 34 M28 48 Q28 60 38 60 Q46 60 46 48 L46 30 L53 23"],
+ ["t","t","Tu","two",B.t],
+ ["th","tʰ","Thon","thorn",B.t,T(32,18)],
+ ["tz","ts","Tzun","sun",B.tz],
+ ["tzh","tsʰ","Tzhon","stone",B.tz,T(42,20)],
+ ["u","u","Un","one","M8 32 Q14 25 19 33 L19 47 Q21 60 31 60 Q43 60 43 46 L43 22 L50 15"],
+ ["ï","ɨ","Ïs","us","M6 24 L12 28 L12 46 Q12 60 25 60 Q38 60 38 46 L38 28 M25 60 L25 80 L17 86"],
+ ["v","v","Vorh","war","M6 28 L14 28 L28 60 L42 28 Q50 22 54 32"],
+ ["y","j","Yu","you","M10 28 Q18 42 30 42 Q42 42 48 28 M30 42 L30 70 Q30 86 16 84"],
+ ["z","z","Zil","zeal","M8 30 L44 28 L14 58 L50 60 M20 44 L38 44"],
+];
+const BY=Object.fromEntries(G.map(g=>[g[0],g]));
+const PUNCT={"'":{d:"M26 52 L34 40"},".":{dia:"M30 44 L36 52 L30 60 L24 52 Z"},",":{d:"M30 50 L26 62"}};
+const NIB=7, STEP=.62; /* a broad nib: the path drawn several times along a 45-degree offset */
+function nib(d,cls){let s="";for(let i=0;i<NIB;i++)s+=`<path class="${cls}" d="${d}" transform="translate(${(i*STEP).toFixed(2)} ${(-i*STEP).toFixed(2)})"/>`;return s}
+function svg(g,label){
+  const inner=nib(g[4],"ink")+(g[5]?nib(g[5],"mark"):"");
+  return `<svg viewBox="-4 -6 70 96" role="img" aria-label="${label||g[0]}">${inner}</svg>`;
+}
+function psvg(p,ch){
+  const inner=p.dia?`<path class="dia" d="${p.dia}"/>`:nib(p.d,"ink");
+  return `<svg viewBox="-4 -6 70 96" role="img" aria-label="${ch}" style="width:22px">${inner}</svg>`;
+}
+const KEYS=G.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function tokenize(s){
+  s=s.toLowerCase().replace(/ɨ/g,"ï").replace(/[’‘]/g,"'");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/\s/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(PUNCT[c]){cur.push({p:c});i++;continue}
+    const k=KEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function render(text,el,tokEl){
+  const words=tokenize(text);
+  el.innerHTML=words.map(w=>`<span class="word">${w.map(t=>t.g?svg(BY[t.g]):t.p?psvg(PUNCT[t.p],t.p):`<span class="unk" title="No Vothic letter">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=words.map(w=>w.map(t=>t.g||t.p||`[${t.u}]`).join("·")).join("  ");
+}
+const src=document.getElementById("vothic-src"),out=document.getElementById("vothic-out"),tok=document.getElementById("vothic-tok");
+const go=()=>render(src.value,out,tok);
+src.addEventListener("input",go);
+document.getElementById("vothic-ib").addEventListener("click",()=>{
+  const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;
+  src.value=src.value.slice(0,a)+"ï"+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go();
+});
+const SAMPLES=["Voth","Tzintzuntzan","Chichani","Zey'danin","Hlaalu","tzhon dha khai"];
+document.getElementById("vothic-samples").innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+document.getElementById("vothic-samples").addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+render("Tzintzuntzan",document.getElementById("vothic-hero"));
+
+document.getElementById("vothic-chart").innerHTML=G.map(g=>`<button type="button" class="card" data-k="${g[0]}" aria-label="${g[0]}, named ${g[2]}">
+  ${svg(g)}<span class="rom">${g[0]}</span><span class="ipa">/${g[1]}/</span><span class="name">${g[2]}</span><span class="gloss">from “${g[3]}”</span></button>`).join("");
+document.getElementById("vothic-chart").addEventListener("click",e=>{
+  const c=e.target.closest(".card");if(!c)return;
+  src.value+=c.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"});
+});
+
+const FEAT=[["p","ph","thorn"],["t","th","thorn"],["k","kh","thorn"],["tz","tzh","thorn"],["ch","chh","thorn"],["l","hl","thorn"],["d","dh","bar"],["n","ng","root"],["r","rh","root"]];
+document.getElementById("vothic-feat").innerHTML=FEAT.map(([a,b,m])=>`<div class="f"><div class="pair">${svg(BY[a])}<span class="arrow">→</span>${svg(BY[b])}</div><div><span class="mono">${a} → ${b}</span> <span class="note">· ${m}</span></div></div>`).join("");
+
+const CH=[
+ ["s-","tz","sun → <i>tzun</i>, son → <i>tzin</i>, salt → <i>tzol</i>","tzun"],
+ ["st-","tzh","star → <i>tzhar</i>, stone → <i>tzhon</i>","tzhon"],
+ ["sp-","ph","spear → <i>phir</i>","phir"],
+ ["sk-","kh","sky → <i>khai</i>, skull → <i>khul</i>","khai"],
+ ["sl-","hl","slave → <i>hlev</i>, sleep → <i>hlip</i>","hlev"],
+ ["tr-","ch","tree → <i>chi</i>, true → <i>chu</i>","chi"],
+ ["str-","chh","street → <i>chhit</i>, strong → <i>chhong</i>","chhit"],
+ ["sh","s","ship → <i>sip</i>, shield → <i>sil</i>","sip"],
+ ["ch, j","sh","chief → <i>shiv</i>, judge → <i>shïsh</i>","shiv"],
+ ["f, w","v","war → <i>vorh</i>, fire → <i>vairh</i>, victory → <i>voth</i>","vorh"],
+ ["th (θ / ð)","th / dh","thorn → <i>thon</i>, they → <i>dhai</i>, the → <i>dha</i>","dhai"],
+ ["uh (ʌ, ə)","ï","us → <i>ïs</i>, blood → <i>blït</i>","ïs"],
+ ["final r","rh","ear → <i>irh</i>, war → <i>vorh</i>","irh"],
+ ["final b d g","p t k","egg → <i>ek</i>, red → <i>ret</i>","ek"],
+ ["unstressed syllables","lost","victory → vikt'ry → <i>voth</i>","voth"],
+];
+document.getElementById("vothic-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g plain"></td></tr>`).join("");
+document.querySelectorAll("#vothic-changes td.g").forEach((td,i)=>render(CH[i][3],td));
+
+const NAMES=[
+ ["Voth","victory: the capital, “Victory”"],
+ ["Tzintzun","son + sun: “Son of the Sun”, the undying king"],
+ ["Tzintzuntzan","son + sun + Chichani <i>-tzan</i>: “Realm of the Son of the Sun”"],
+ ["Chichani","the founding people; the name predates the script"],
+ ["Shim","the old capital"],
+ ["Almua","the great port"],
+ ["Temora","the spice port"],
+ ["Zey'danin","gateway to the Volcano; the apostrophe is the syllable cut"],
+];
+document.getElementById("vothic-names").innerHTML=NAMES.map(n=>`<tr><td class="m">${n[0]}</td><td class="g plain"></td><td>${n[1]}</td></tr>`).join("");
+document.querySelectorAll("#vothic-names td.g").forEach((td,i)=>{render(NAMES[i][0],td);td.style.whiteSpace="nowrap"});
+
+})();
+/* Izani */
+(()=>{
+/* ---------- Izani capitals: straight cut strokes on a 60 x 80 grid, cap height 10..70 ---------- */
+const Z=[
+ ["a","a","Anda","hand","M10 70 L22 10 L38 10 L50 70 M16 44 L44 44"],
+ ["b","b","Boda","boat","M14 10 L14 70 L42 70 L50 62 L50 48 L42 40 L14 40 M14 10 L38 10 L44 18 L44 32 L38 40"],
+ ["ch","tʃ","Chamba","chamber","M48 10 L18 10 L10 18 L10 62 L18 70 L48 70 M28 26 L28 54 L42 54"],
+ ["d","d","Doga","dog","M12 10 L12 70 L38 70 L50 58 L50 22 L38 10 Z"],
+ ["e","e","Egla","eagle","M46 10 L12 10 L12 70 L46 70 M12 40 L34 40"],
+ ["f","f","Fira","fire","M12 70 L12 10 L46 10 M12 36 L36 36 L36 48"],
+ ["g","g","Golda","gold","M48 18 L40 10 L18 10 L10 18 L10 62 L18 70 L48 70 L48 42 L30 42"],
+ ["h","—","Ax","aitch","M12 10 L12 70 M48 10 L48 70 M12 44 L48 36"],
+ ["i","i","Isla","isle","M22 10 L38 10 M30 10 L30 70 M22 70 L38 70"],
+ ["j","ʒ","Jual","jewel","M20 10 L48 10 M38 10 L38 60 L28 70 L12 64"],
+ ["k","k","Kiñ","king","M12 10 L12 70 M46 10 L12 44 M24 34 L48 70"],
+ ["l","l","Lamba","lamp","M12 10 L12 70 L48 70 L48 60"],
+ ["m","m","Muna","moon","M8 70 L8 10 L30 40 L52 10 L52 70"],
+ ["n","n","Neda","night","M12 70 L12 10 L48 70 L48 10"],
+ ["ñ","ɲ","Iñ","-ing","M12 70 L12 10 L48 70 L48 10","M10 4 L22 -2 L36 4 L50 -2"],
+ ["o","o","Oxa","ox","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z"],
+ ["p","p","Porta","port","M12 70 L12 10 L42 10 L50 18 L50 34 L42 42 L12 42"],
+ ["q","kw","Qin","queen","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z M30 54 L30 80"],
+ ["r","ɾ","Ora","hour","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70"],
+ ["rr","r","Rroza","rose","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70 M22 40 L22 70"],
+ ["s","s","Sol","soul","M48 10 L18 10 L10 18 L10 32 L18 40 L42 40 L50 48 L50 62 L42 70 L10 70"],
+ ["t","t","Tri","three","M8 10 L52 10 M30 10 L30 70 M22 70 L38 70"],
+ ["u","u","Uza","use","M12 10 L12 58 L24 70 L36 70 L48 58 L48 10"],
+ ["v","v","Vela","veil","M8 10 L30 70 L52 10"],
+ ["x","ʃ","Xipa","ship","M10 10 L50 70 M50 10 L10 70 M18 40 L42 40"],
+ ["y","j","Yarda","yard","M8 10 L30 40 L52 10 M30 40 L30 70"],
+ ["z","z","Zona","zone","M10 10 L50 10 L10 70 L50 70 M20 40 L40 40"],
+];
+const ZB=Object.fromEntries(Z.map(g=>[g[0],g]));
+function cut(g,hi){
+  return `<svg viewBox="-4 -8 68 92" role="img" aria-label="${g[0]}"><path class="cut" d="${g[4]}"/>${g[5]?`<path class="cut${hi?" hi":""}" d="${g[5]}"/>`:""}</svg>`;
+}
+const DOT=`<svg viewBox="-4 -8 28 92" style="width:12px" aria-hidden="true"><rect class="dot" x="6" y="36" width="8" height="8" transform="rotate(45 10 40)"/></svg>`;
+const SUN=`<svg viewBox="-4 -8 44 92" style="width:22px" role="img" aria-label="full stop"><circle cx="18" cy="56" r="6" class="dot"/><path class="cut" style="stroke-width:3;stroke:var(--accent)" d="M18 40 L18 44 M18 68 L18 72 M2 56 L6 56 M30 56 L34 56 M7 45 L9 47 M27 65 L29 67 M29 45 L27 47 M9 65 L7 67"/></svg>`;
+const ZKEYS=Z.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function ztok(s){
+  s=s.toLowerCase().replace(/nh|ny/g,"ñ");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="'"||c==="-"){i++;continue}
+    const k=ZKEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function zrender(text,el,tokEl,dots){
+  const w=ztok(text);
+  el.innerHTML=w.map((wd,i)=>`<span class="word">${wd.map(t=>t.g?cut(ZB[t.g]):t.p?SUN:`<span class="unk" title="No Izani letter">${t.u}</span>`).join("")}${dots&&i<w.length-1&&!wd.some(t=>t.p)?DOT:""}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.p?"☉":`[${t.u}]`)).join("·")).join("  ");
+}
+
+/* ---------- Vothic letters (from the Vothic Script page), drawn with a broad nib ---------- */
+const T=(x,y)=>`M${x} ${y} l7 -11 l5 7`;
+const B={
+  ch:"M30 30 L30 82 L23 86 M30 48 Q18 44 14 32 L8 29 M30 40 Q42 36 46 24 L54 21",
+  d:"M10 44 Q10 30 21 30 Q31 31 29 44 Q27 58 39 59 Q51 59 50 40 Q49 20 37 8 L28 4",
+  k:"M14 8 L20 4 L20 60 L12 64 M20 44 Q30 28 42 32 Q48 38 40 46 L30 48 L48 62",
+  l:"M8 42 Q8 30 17 31 Q25 33 22 45 Q19 58 30 59 Q41 58 38 45 Q35 33 44 31 Q53 30 52 42 L48 50",
+  n:"M16 28 Q8 42 15 53 Q21 62 31 58 Q41 52 37 39 Q35 31 41 26",
+  p:"M16 28 L16 82 L9 86 M16 30 L36 27 Q47 33 41 46 L16 50",
+  r:"M12 60 L12 32 Q20 22 32 29 Q42 36 35 46 L46 52",
+  t:"M6 34 L12 28 L46 28 L52 34 M29 28 Q23 46 29 60 L40 63",
+  tz:"M44 30 Q34 23 24 30 Q14 38 18 50 Q23 60 35 58 L40 70 L33 84",
+};
+const V=[
+ ["a","M10 36 Q10 27 18 28 Q25 30 20 42 Q15 56 26 60 Q38 63 44 48 Q47 38 45 28 L53 21"],
+ ["b","M28 60 Q12 60 13 46 Q14 32 28 32 Q42 32 43 46 Q44 60 28 60 M20 34 Q14 20 22 8 L34 4 L38 12"],
+ ["ch",B.ch],["chh",B.ch,T(34,18)],["d",B.d],["dh",B.d,"M36 23 L56 14"],
+ ["e","M44 34 Q34 25 22 30 Q10 37 13 49 Q17 61 31 60 Q41 59 46 52 M18 45 L38 44 L42 38"],
+ ["g","M12 32 Q24 22 37 28 Q49 35 45 49 Q41 61 27 60 Q17 58 19 49 Q22 42 30 45 M45 48 L46 80 L38 86"],
+ ["h","M4 8 L10 4 L10 60 M10 40 Q18 28 30 32 Q40 36 38 48 L36 60 L46 64"],
+ ["hl",B.l,T(24,20)],
+ ["i","M12 60 L14 38 Q16 28 25 29 Q35 30 34 42 L33 56 Q33 62 42 60 L48 52"],
+ ["k",B.k],["kh",B.k,T(36,18)],["l",B.l],
+ ["m","M44 8 Q10 18 12 42 Q14 62 42 64 Q26 52 27 36 Q28 20 44 8"],
+ ["n",B.n+" L45 4 L52 8"],["ng",B.n+" L48 22","M31 58 L32 82 L24 86"],
+ ["o","M30 60 Q12 60 12 44 Q12 28 30 28 Q48 28 48 44 Q48 56 36 56 Q27 55 29 46 L36 40"],
+ ["p",B.p],["ph",B.p,T(38,18)],["r",B.r],["rh",B.r,"M12 60 L12 78 Q12 88 22 84"],
+ ["s","M6 42 Q12 60 30 60 Q48 60 54 42 M30 60 L30 10 L44 18 L30 26"],
+ ["sh","M4 26 L10 30 L10 48 Q10 60 20 60 Q28 60 28 48 L28 34 M28 48 Q28 60 38 60 Q46 60 46 48 L46 30 L53 23"],
+ ["t",B.t],["th",B.t,T(32,18)],["tz",B.tz],["tzh",B.tz,T(42,20)],
+ ["u","M8 32 Q14 25 19 33 L19 47 Q21 60 31 60 Q43 60 43 46 L43 22 L50 15"],
+ ["ï","M6 24 L12 28 L12 46 Q12 60 25 60 Q38 60 38 46 L38 28","M25 60 L25 80 L17 86"],
+ ["v","M6 28 L14 28 L28 60 L42 28 Q50 22 54 32"],
+ ["y","M10 28 Q18 42 30 42 Q42 42 48 28 M30 42 L30 70 Q30 86 16 84"],
+ ["z","M8 30 L44 28 L14 58 L50 60 M20 44 L38 44"],
+];
+const VB=Object.fromEntries(V.map(g=>[g[0],g]));
+function nib(d,cls){let s="";for(let i=0;i<7;i++)s+=`<path class="${cls}" d="${d}" transform="translate(${(i*.62).toFixed(2)} ${(-i*.62).toFixed(2)})"/>`;return s}
+function vsvg(k){const g=VB[k];return `<svg viewBox="-4 -6 70 96" role="img" aria-label="Vothic ${k}">${nib(g[1],"ink")}${g[2]?nib(g[2],"mark"):""}</svg>`}
+const VKEYS=V.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function vrender(s,el){
+  s=s.toLowerCase();const out=[];
+  for(let i=0;i<s.length;){const k=VKEYS.find(k=>s.startsWith(k,i));if(k){out.push(vsvg(k));i+=k.length}else i++}
+  el.innerHTML=`<span class="word">${out.join("")}</span>`;
+}
+
+/* ---------- page ---------- */
+const src=document.getElementById("izani-src"),out=document.getElementById("izani-out"),tok=document.getElementById("izani-tok");
+const go=()=>zrender(src.value,out,tok,true);
+src.addEventListener("input",go);
+document.getElementById("izani-nb").addEventListener("click",()=>{
+  const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;
+  src.value=src.value.slice(0,a)+"ñ"+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go();
+});
+const SAMPLES=["Empar de Son","Iziz","Izani","Duxun","Rroza de Iziz","Kiñz de Guar"];
+const sm=document.getElementById("izani-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+zrender("Empar de Son",document.getElementById("izani-hero"),null,true);
+
+const chart=document.getElementById("izani-chart");
+chart.innerHTML=Z.map(g=>`<button type="button" class="card" data-k="${g[0]}" aria-label="${g[0]}, named ${g[2]}">${cut(g,true)}<span class="rom">${g[0]}</span><span class="ipa">${g[1]==="—"?"silent":"/"+g[1]+"/"}</span><span class="name">${g[2]}</span><span class="gloss">from “${g[3]}”</span></button>`).join("");
+chart.addEventListener("click",e=>{const c=e.target.closest(".card");if(!c)return;src.value+=c.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+
+const CH=[
+ ["h","lost","hour → <i>ora</i>, hand → <i>anda</i>, home → <i>om</i>","ora"],
+ ["w","gu","war → <i>guar</i>, water → <i>guadar</i>, wing → <i>guiñ</i>","guar"],
+ ["th (θ / ð)","t / d","three → <i>tri</i>, the → <i>de</i>","tri"],
+ ["-ng","ñ","king → <i>kiñ</i>, long → <i>loñ</i>","kiñ"],
+ ["s + consonant","is-","star → <i>istar</i>, stone → <i>iston</i>, sky → <i>iskai</i>","istar"],
+ ["t k p between vowels or after a nasal","d g b","water → <i>guadar</i>, city → <i>sidi</i>, lamp → <i>lamba</i>","sidi"],
+ ["final stop or cluster","+ a","boat → <i>boda</i>, gold → <i>golda</i>, ship → <i>xipa</i>","golda"],
+ ["-er, -or, -ire","-ar","water → <i>guadar</i>, empire → <i>empar</i>, emperor → <i>emparar</i>","empar"],
+ ["s between vowels, and plural -s","z","rose → <i>rroza</i>, kings → <i>kiñz</i>, cities → <i>sidiz</i>","rroza"],
+ ["sh, ks","x (sh)","ship → <i>xipa</i>, ox → <i>oxa</i>, duke's son → <i>Duxun</i>","xipa"],
+ ["j (dʒ)","j (zh)","jewel → <i>jual</i>, judge → <i>joj</i>","jual"],
+ ["kw","q","queen → <i>qin</i>, quick → <i>qiga</i>","qin"],
+ ["initial r","rr (trilled)","rose → <i>rroza</i>, road → <i>rroda</i>","rroda"],
+ ["uh (ʌ, ə)","o","sun → <i>son</i>, son → <i>son</i>, us → <i>os</i>","son"],
+ ["-ian","-ani","Izizian → <i>Izani</i>","izani"],
+];
+document.getElementById("izani-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#izani-changes td.g").forEach((td,i)=>zrender(CH[i][3],td));
+
+const COG=[["sun","son","tzun"],["son","son","tzin"],["star","istar","tzhar"],["stone","iston","tzhon"],["sky","iskai","khai"],["ship","xipa","sip"],["war","guar","vorh"],["gold","golda","gol"],["slave","islev","hlev"],["street","istrida","chhit"],["chief","chifa","shiv"],["victory","viktori","voth"]];
+document.getElementById("izani-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="g"></td><td class="m">${c[2]}</td><td class="g v"></td></tr>`).join("");
+document.querySelectorAll("#izani-cog tr").forEach((tr,i)=>{const t=tr.querySelectorAll("td.g");zrender(COG[i][1],t[0]);vrender(COG[i][2],t[1])});
+
+const DESC=[
+ ["a",["a"]],["b",["b"]],["ch",["ch","chh"],"thorn added"],["d",["d","dh"],"bar added"],["e",["e"]],["f",[],"lost: no f in Chichani"],
+ ["g",["g"]],["h",["h"],"silent in Izani; the Chichani sounded it"],["i",["i"]],["j",["sh"],"sibilant shift"],["k",["k","kh"],"thorn added"],
+ ["l",["l","hl"],"thorn added"],["m",["m"]],["n",["n"]],["ñ",["ng"],"tilde became the root"],["o",["o"]],["p",["p","ph"],"thorn added"],
+ ["q",[],"lost: written k + u"],["r",["r"]],["rr",["rh"],"double stroke became the root"],["s",["tz","tzh"],"sibilant shift; thorn added"],
+ ["t",["t","th"],"thorn added"],["u",["u","ï"],"root added for ï"],["v",["v"]],["x",["s"],"sibilant shift"],["y",["y"]],["z",["z"]],
+];
+document.getElementById("izani-desc").innerHTML=DESC.map(([z,vs,n])=>`<div class="d${vs.length?"":" lost"}"><span class="from">${cut(ZB[z])}</span><span class="arrow">→</span><span class="to">${vs.length?vs.map(vsvg).join(""):'<span class="note">—</span>'}</span><span class="lbl">${z} → ${vs.length?vs.join(", "):"none"}${n?` · <b>${n}</b>`:""}</span></div>`).join("");
+
+const NAMES=[
+ ["Iziz","An Ancient name, older than the tongue. The Izani took it with the ruins."],
+ ["Izani","Iziz + <i>-ani</i> (English <i>-ian</i>): “of Iziz”."],
+ ["Duxun","duke's son: the House of the Duke's Son, Mav's house."],
+ ["Mav","Maeve."],
+ ["Porta Tobin","port + Tobin, a founder's name: Port Tobin."],
+ ["Forta Vaklu","fort + <i>Vaklu</i>, a Beast Rider word; Fort Vaklu."],
+ ["Talia","gateway to the east; origin open."],
+ ["Dilihan","the loyalist city in the Cut; origin open."],
+ ["Chichani","<i>Chich-</i> + Izani <i>-ani</i>: the Empire's name for its southern clients."],
+];
+document.getElementById("izani-names").innerHTML=NAMES.map(n=>`<tr><td class="m">${n[0]}</td><td class="g"></td><td>${n[1]}</td></tr>`).join("");
+document.querySelectorAll("#izani-names td.g").forEach((td,i)=>zrender(NAMES[i][0],td,null,true));
+
+})();
+/* Hykkousik */
+(()=>{
+/* Letters on a 60 x 80 grid: ascender 10, x-height 30, baseline 64, descender 80.
+   [romanization, IPA, name, Ancient source, strokes] */
+const H=[
+ ["a","a","Alpha","α · the α-helix","M48 30 Q38 64 22 64 Q10 64 12 48 Q14 32 26 32 Q38 34 44 54 L50 66"],
+ ["b","b","Bēta","β · the β-sheet","M14 80 L14 24 Q14 10 28 10 Q40 12 38 24 Q36 36 24 36 Q42 38 42 52 Q42 66 26 64 L14 60"],
+ ["d","d","Delta","Δ · a deleted gene","M8 64 L30 12 L52 64 Z"],
+ ["e","e","Epsilon","ε · epsilon toxin","M46 30 L26 30 Q12 30 12 47 Q12 64 26 64 L46 64 M12 47 L38 47"],
+ ["ē","eː","Ēta","η · the polymerase that mends sun damage","M12 32 L12 64 M12 40 Q20 30 32 31 Q42 32 42 44 L42 80"],
+ ["g","g","Gamma","γ · gamma globulin","M8 30 Q20 28 29 50 Q34 64 29 76 Q24 64 30 50 Q40 30 52 30"],
+ ["i","i","Yōta","ι · iota toxin","M28 32 L28 58 Q28 66 38 63"],
+ ["j","j","Jelta","δ · small delta, read apart from Δ","M42 14 Q28 6 22 14 Q18 22 32 30 Q48 40 46 52 Q44 64 30 64 Q16 64 14 50 Q14 38 32 32"],
+ ["k","k","Kappa","κ · the kappa antibody chain","M14 32 L14 64 M42 32 L14 50 L42 64"],
+ ["kh","kʰ","Khy","χ · where chromosomes cross","M8 30 Q22 30 31 52 Q38 72 52 80 M50 30 L12 80"],
+ ["l","l","Lamda","λ · lambda phage","M12 10 Q22 10 27 22 L48 64 M30 30 L10 64"],
+ ["m","m","My","μ · the mu antibody chain","M14 32 L14 80 M14 50 Q14 64 26 64 Q38 64 38 50 L38 32 L38 58 Q38 66 46 63"],
+ ["n","n","Ny","Ν · any base in a gene sequence","M12 64 L12 12 L48 64 L48 12"],
+ ["o","o","Omikron","ο · omicron, a virus strain","M30 32 Q14 32 14 48 Q14 64 30 64 Q46 64 46 48 Q46 32 30 32"],
+ ["ō","oː","Ōmēga","Ω · omega-3, the fish oil","M10 64 L22 64 Q8 54 10 36 Q12 12 30 12 Q48 12 50 36 Q52 54 38 64 L50 64"],
+ ["p","p","Py","π · stacked DNA bases","M8 30 L52 28 M20 29 L18 64 M40 29 Q38 52 46 64"],
+ ["ph","pʰ","Phy","φ · phage phi, the first genome read","M30 10 L30 80 M30 30 Q12 30 12 47 Q12 64 30 64 Q48 64 48 47 Q48 30 30 30"],
+ ["ps","ps","Psy","ψ · a pseudogene","M30 12 L30 80 M10 26 Q10 58 30 58 Q50 58 50 26"],
+ ["r","r","Rhō","ρ · rho, which stops a gene being read","M16 80 L16 46 Q16 31 30 31 Q44 31 44 47 Q44 63 30 63 Q20 63 16 55"],
+ ["s","s","Sigma","Σ · sigma, which starts a gene being read","M48 16 L12 12 L32 38 L12 64 L48 60"],
+ ["t","t","Tau","τ · tau protein","M8 34 Q14 28 24 30 L50 30 M30 30 L28 58 Q28 66 38 63"],
+ ["th","tʰ","Thēta","θ · theta, a ring of DNA copying itself","M30 10 Q12 10 12 37 Q12 64 30 64 Q48 64 48 37 Q48 10 30 10 M12 37 L48 37"],
+ ["v","v","Vy","ν · small nu, read apart from Ν","M10 32 L28 64 Q42 46 44 32"],
+ ["x","ks","Xy","Ξ · bands on a gel","M14 12 L46 12 M20 38 L40 38 M12 64 L48 64"],
+ ["y","y","Ypsilon","υ · U, uracil, a base of RNA","M6 28 L12 30 Q12 64 30 64 Q48 64 48 30"],
+ ["z","z","Zēta","ζ · the zeta chain of a T-cell","M18 12 L42 12 L20 34 Q8 46 16 58 Q22 64 38 64 Q48 66 40 78"],
+];
+const HB=Object.fromEntries(H.map(g=>[g[0],g]));
+const VB="-4 4 68 82";
+const sv=(inner,label,w)=>`<svg viewBox="${VB}" role="img" aria-label="${label}"${w?` style="width:${w}px"`:""}>${inner}</svg>`;
+const glyph=g=>sv(`<path class="st" d="${g[4]}"/>`,g[0]);
+const BREATH=`<svg viewBox="-4 4 34 82" role="img" aria-label="h, rough breathing" style="width:18px"><path class="br" d="M20 12 Q10 13 11 21 Q12 28 21 27"/></svg>`;
+const WAVESUN=`<svg viewBox="-4 4 52 82" role="img" aria-label="full stop" style="width:26px"><path class="wave" d="M8 62 Q14 54 20 62 Q26 70 32 62 Q38 54 44 62 M14 54 Q14 40 26 40 Q38 40 38 54 M26 32 L26 36 M14 38 L16 41 M38 38 L36 41"/></svg>`;
+const KEYS=H.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function tok(s){
+  s=s.toLowerCase().normalize("NFC").replace(/ê/g,"ē").replace(/ô/g,"ō").replace(/ch/g,"kh").replace(/c/g,"k").replace(/ou/g,"oy");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="'"||c==="-"){i++;continue}
+    if(c==="h"&&!/[ptk]/.test(s[i-1]||"")){cur.push({h:1});i++;continue}
+    const k=KEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function render(text,el,tokEl){
+  const w=tok(text);
+  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.g?glyph(HB[t.g]):t.h?BREATH:t.p?WAVESUN:`<span class="unk" title="No Hykkousik letter">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.h?"ʽ":t.p?"☼":`[${t.u}]`)).join("·")).join("  ");
+}
+
+const src=document.getElementById("hykkousik-src"),out=document.getElementById("hykkousik-out"),tk=document.getElementById("hykkousik-tok");
+const go=()=>render(src.value,out,tk);
+src.addEventListener("input",go);
+function ins(ch){const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+ch+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()}
+document.getElementById("hykkousik-eb").addEventListener("click",()=>ins("ē"));
+document.getElementById("hykkousik-ob").addEventListener("click",()=>ins("ō"));
+const SAMPLES=["Hykkousoi","Ys","Scyvoi","Amphitritōn","Phyr ō thalassa","Hy Kous"];
+const sm=document.getElementById("hykkousik-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+render("Hykkousoi",document.getElementById("hykkousik-hero"));
+
+const chart=document.getElementById("hykkousik-chart");
+chart.innerHTML=H.map(g=>`<button type="button" class="card" data-k="${g[0]}" aria-label="${g[0]}, named ${g[2]}">${glyph(g)}<span class="rom">${g[0]}</span><span class="ipa">/${g[1]}/</span><span class="name">${g[2]}</span><span class="src">${g[3]}</span></button>`).join("")
+ +`<button type="button" class="card" data-k="h" aria-label="h, the breathing mark">${BREATH.replace('style="width:18px"','style="width:30px;height:76px"')}<span class="rom">h</span><span class="ipa">/h/</span><span class="name">Breath</span><span class="src">a mark, not a letter: only before a vowel</span></button>`;
+chart.addEventListener("click",e=>{const c=e.target.closest(".card");if(!c)return;src.value+=c.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+
+const CH=[
+ ["ai (high, isle)","y","high → <i>hy</i>, isles → <i>ys</i>, fire → <i>phyr</i>, sky → <i>sky</i>","phyr"],
+ ["oa, oo (coast, moon)","ou","coast → <i>kous</i>, gold → <i>gould</i>, moon → <i>moun</i>","kous"],
+ ["ay, ee (day, sea)","ē, i","day → <i>dē</i>, sea → <i>si</i>","dē"],
+ ["uh (sun)","a","sun → <i>san</i>, blood → <i>blad</i>","san"],
+ ["f","ph","fire → <i>phyr</i>, fish → <i>phis</i>, father → <i>phavar</i>","phis"],
+ ["th (θ)","th","thorn → <i>thorn</i>, three → <i>thri</i>","thri"],
+ ["th (ð)","v","scythe → <i>scyv</i>, father → <i>phavar</i>, the → <i>ve</i>","phavar"],
+ ["sh","s","ship → <i>sip</i>, fish → <i>phis</i>","sip"],
+ ["ch, j","kh, z","chief → <i>khiph</i>, judge → <i>zaz</i>","khiph"],
+ ["w","ou","war → <i>ouar</i>, water → <i>ouatar</i>","ouar"],
+ ["st-","ast-","star → <i>astar</i>, stone → <i>astoun</i>","astar"],
+ ["final -st","-s","coast → <i>kous</i>, east → <i>is</i>","is"],
+ ["stop after a stressed short syllable","doubled","high-coast → <i>hykkous</i>, battle → <i>battel</i>","battel"],
+ ["plural -s, people","-oi","high coast → <i>Hykkousoi</i>, scythe → <i>Scyvoi</i>, ships → <i>sipoi</i>","sipoi"],
+ ["-ic, -ish","-ik","Hykkous + <i>-ik</i> → <i>Hykkousik</i>, the language","hykkousik"],
+];
+document.getElementById("hykkousik-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#hykkousik-changes td.g").forEach((td,i)=>render(CH[i][3],td));
+
+const COG=[["sun","son","tzun","san"],["star","istar","tzhar","astar"],["stone","iston","tzhon","astoun"],["sky","iskai","khai","sky"],["ship","xipa","sip","sip"],["war","guar","vorh","ouar"],["gold","golda","gol","gould"],["fire","fira","vairh","phyr"],["chief","chifa","shiv","khiph"],["slave","islev","hlev","slēv"]];
+document.getElementById("hykkousik-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#hykkousik-cog td.g").forEach((td,i)=>render(COG[i][3],td));
+
+const NAMES=[
+ ["Hykkousoi","Hykkousoi","high coast + <i>-oi</i>: the High-Coast folk."],
+ ["Ys","Ys","isles: the half-drowned capital among the Ancient towers."],
+ ["Scyvoi","Scyvoi","scythe + <i>-oi</i>: the scythe-folk, their name for the nomads who reap after a burn."],
+ ["Archon","Arkhōn","learned: from the Ancient texts. The elected head of the Amphitriton."],
+ ["Jathrocles","Jathroklēs","Jethro + learned <i>-klēs</i> “glory”: the new Archon."],
+ ["Amphitriton","Amphitritōn","learned: the assembly hall and refuge, ringed by water."],
+ ["Tethys","Tēthys","learned: an Ancient name for a moon of a gas giant like their own."],
+ ["Trigon","Trigōn","learned: the triangle of Ancient geometry."],
+];
+document.getElementById("hykkousik-names").innerHTML=NAMES.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g"></td><td>${n[2]}</td></tr>`).join("");
+document.querySelectorAll("#hykkousik-names td.g").forEach((td,i)=>render(NAMES[i][1],td));
+
+})();
+/* Xanadui */
+(()=>{
+/* ---------- strokes: consonant body on a 0..56 x 20..64 cell, head at y 22 ---------- */
+const ASP="M44 62 Q58 60 56 72 Q53 82 43 76";
+const RET="M14 22 Q4 16 8 8 L16 6";
+const C={
+ k:"M30 14 L30 60 Q30 68 22 66 M8 38 Q30 30 50 38 Q56 41 52 46",
+ g:"M6 64 L26 22 L50 64 M18 22 L36 22",
+ ṅ:"M8 22 L46 22 M26 22 Q12 38 26 44 Q42 50 38 60 L26 64",
+ q:"M12 22 L12 62 L46 62 L46 36 Q46 24 34 28 L22 40",
+ x:"M8 22 L48 64 M48 22 Q20 34 16 62",
+ c:"M48 22 L20 22 Q10 22 10 34 L10 50 Q10 62 22 62 L48 62 M30 62 L30 38",
+ j:"M46 22 L12 22 L12 42 L40 42 M12 42 L12 62 L46 62",
+ ñ:"M8 22 L8 62 M8 42 Q30 20 50 42 L50 62",
+ t:"M10 22 L46 22 M28 22 L28 50 Q28 62 40 62 Q50 60 48 50",
+ d:"M12 22 L12 62 M12 22 Q50 22 50 42 Q50 62 12 62",
+ n:"M6 62 L50 62 M28 62 L28 22 L16 22",
+ p:"M10 22 L10 46 Q10 62 28 62 Q46 62 46 46 L46 22",
+ b:"M12 22 L48 22 L48 62 L12 62 Z M12 22 L4 14",
+ m:"M8 22 Q28 70 50 22 M28 48 L28 62 M12 62 L44 62",
+ y:"M8 22 Q8 44 28 44 Q48 44 48 22 M28 22 L28 62",
+ r:"M38 16 Q14 30 28 42 Q42 54 22 66",
+ l:"M10 22 L10 50 Q10 62 22 62 L48 62 L48 40",
+ w:"M28 22 Q8 22 8 42 Q8 62 28 62 Q48 62 48 42 Q48 22 28 22 M28 22 L20 14",
+ ś:"M6 62 L26 22 L48 62 M14 46 L40 46 M26 22 L26 12",
+ s:"M10 22 L10 46 Q10 62 28 62 Q46 62 46 46 L46 22 M46 40 L18 40",
+};
+/* [romanization, IPA, base, marks] */
+const CONS=[
+ ["k","k","k"],["kh","kʰ","k",ASP],["g","g","g"],["gh","gʱ","g",ASP],["ṅ","ŋ","ṅ"],
+ ["c","tʃ","c"],["ch","tʃʰ","c",ASP],["j","dʒ","j"],["jh","dʒʱ","j",ASP],["ñ","ɲ","ñ"],
+ ["ṭ","ʈ","t",RET],["ṭh","ʈʰ","t",RET+" "+ASP],["ḍ","ɖ","d",RET],["ḍh","ɖʱ","d",RET+" "+ASP],["ṇ","ɳ","n",RET],
+ ["t","t̪","t"],["th","t̪ʰ","t",ASP],["d","d̪","d"],["dh","d̪ʱ","d",ASP],["n","n","n"],
+ ["p","p","p"],["ph","pʰ","p",ASP],["b","b","b"],["bh","bʱ","b",ASP],["m","m","m"],
+ ["y","j","y"],["r","r","r"],["l","l","l"],["w","w","w"],
+ ["ś","ʃ","ś"],["s","s","s"],["q","q","q"],["x","x","x"],
+];
+const CB=Object.fromEntries(CONS.map(c=>[c[0],c]));
+const IV={a:"M8 30 L28 20 L50 30 M28 20 L28 62 M12 46 L44 46 L44 62",
+ i:"M16 28 l5 8 M38 28 l5 8 M27 50 l5 8",
+ u:"M14 22 L14 62 L48 62 M14 22 L22 16",
+ e:"M12 22 L48 42 L12 62 Z",
+ o:"M28 20 L48 42 L28 64 L8 42 Z"};
+/* vowel signs drawn on the main cell; "below" ones shift down past stacked letters */
+const VS={
+ ā:{d:"M50 22 L58 22 L58 38"},
+ i:{d:"M24 18 Q28 4 42 10"},
+ ī:{d:"M14 16 Q26 0 44 8 L48 16"},
+ u:{d:"M28 66 L28 78 L38 78",below:1},
+ ū:{d:"M22 66 L22 78 M34 66 L34 78",below:1},
+ e:{d:"M20 18 L12 8"},
+ ai:{d:"M20 18 L12 8 M30 18 L22 8"},
+ o:{d:"M20 18 L12 8 M50 22 L58 22 L58 38"},
+ au:{d:"M20 18 L12 8 M30 18 L22 8 M50 22 L58 22 L58 38"},
+};
+const NIB=10,STEP=.5;
+function nib(d,cls,tf){let s="";for(let i=0;i<NIB;i++)s+=`<path class="${cls}" d="${d}" transform="${tf||""} translate(${(i*STEP).toFixed(2)} ${(-i*STEP).toFixed(2)})"/>`;return s}
+const BH=96,STK=26;
+function svgWrap(inner,stack,label,scale){
+  const h=BH+STK*Math.max(0,stack-1),s=scale||.5;
+  return `<svg viewBox="-6 0 72 ${h}" width="${(72*s).toFixed(1)}" height="${(h*s).toFixed(1)}" role="img" aria-label="${label}">${inner}</svg>`;
+}
+function consInner(k,tf,markCls){const c=CB[k];return nib(C[c[2]],"ink",tf)+(c[3]?nib(c[3],markCls||"mk",tf):"")}
+/* one syllable block: consonant list, vowel (null = kill stroke), nasal flag */
+function aks(cons,v,nas,scale){
+  let inner="",label=cons.join("")+(v||"");
+  if(!cons.length){
+    const base=v[0]==="a"?"a":v.startsWith("ī")?"i":v.startsWith("ū")?"u":v[0];
+    inner+=nib(IV[base==="ā"?"a":base],"ink");
+    if(v==="ā"||v==="ī"||v==="ū")inner+=nib(VS.ā.d,"ink");
+    if(v==="ai"||v==="au")inner+=nib(VS[v].d,"ink");
+  }else{
+    inner+=consInner(cons[0]);
+    cons.slice(1).forEach((k,i)=>{inner+=consInner(k,`translate(13 ${52+STK*i}) scale(.55)`)});
+    if(v&&v!=="a"){const s=VS[v];inner+=nib(s.d,"ink",s.below&&cons.length>1?`translate(0 ${STK*(cons.length-1)})`:"")}
+    if(v===null)inner+=nib("M46 68 L56 80","ink",cons.length>1?`translate(0 ${STK*(cons.length-1)})`:"");
+  }
+  if(nas)inner+=`<circle class="dotf" cx="36" cy="6" r="3.2"/>`;
+  return svgWrap(inner,Math.max(1,cons.length),label,scale);
+}
+const WHEEL=s=>`<svg viewBox="0 0 40 96" width="${(40*s).toFixed(1)}" height="${(96*s).toFixed(1)}" role="img" aria-label="full stop"><circle class="wh" cx="20" cy="42" r="12"/><circle class="wh" cx="20" cy="42" r="3"/>${[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return `<path class="wh" d="M${(20+3*Math.cos(a)).toFixed(1)} ${(42+3*Math.sin(a)).toFixed(1)} L${(20+12*Math.cos(a)).toFixed(1)} ${(42+12*Math.sin(a)).toFixed(1)}"/>`}).join("")}</svg>`;
+const BAR=s=>`<svg viewBox="0 0 24 96" width="${(24*s).toFixed(1)}" height="${(96*s).toFixed(1)}" role="img" aria-label="comma">${nib("M12 22 L12 62","ink")}</svg>`;
+
+/* ---------- romanization ---------- */
+const CK=CONS.map(c=>c[0]).sort((a,b)=>b.length-a.length);
+const VK=["ai","au","ā","ī","ū","a","i","u","e","o"];
+function parse(text){
+  let s=text.normalize("NFC").toLowerCase()
+   .replace(/ã/g,"aṃ").replace(/ĩ/g,"iṃ").replace(/ũ/g,"uṃ").replace(/õ/g,"oṃ").replace(/ẽ/g,"eṃ")
+   .replace(/sh/g,"ś").replace(/ny/g,"ñ").replace(/aa/g,"ā").replace(/ii/g,"ī").replace(/uu/g,"ū");
+  const words=[];let cur=[],cl=[];
+  const flush=()=>{if(cl.length){cur.push({c:cl,v:null});cl=[]}};
+  for(let i=0;i<s.length;){
+    const ch=s[i];
+    if(/\s/.test(ch)){flush();if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(ch==="."||ch==="!"||ch==="?"){flush();cur.push({p:"wheel"});i++;continue}
+    if(ch===","||ch===";"){flush();cur.push({p:"bar"});i++;continue}
+    if(ch==="-"||ch==="'"){i++;continue}
+    if(ch==="ṃ"){const last=cur[cur.length-1];if(last&&last.v!==undefined&&!cl.length)last.n=1;i++;continue}
+    const k=CK.find(k=>s.startsWith(k,i));
+    if(k){cl.push(k);i+=k.length;continue}
+    const v=VK.find(v=>s.startsWith(v,i));
+    if(v){cur.push({c:cl,v});cl=[];i+=v.length;continue}
+    flush();cur.push({u:ch});i++;
+  }
+  flush();if(cur.length)words.push(cur);
+  return words;
+}
+function render(text,el,tokEl,scale){
+  const sc=scale||.5,w=parse(text);
+  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.u?`<span class="unk">${t.u}</span>`:t.p==="wheel"?WHEEL(sc):t.p==="bar"?BAR(sc):aks(t.c,t.v,t.n,sc)).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.u?`[${t.u}]`:t.p?(t.p==="wheel"?"☸":"|"):t.c.join("+")+(t.v===null?"·":t.v==="a"&&t.c.length?"":"+"+t.v)+(t.n?"ṃ":"")).join(" ")).join("   ");
+}
+
+/* ---------- page ---------- */
+const src=document.getElementById("xanadui-src"),out=document.getElementById("xanadui-out"),tk=document.getElementById("xanadui-tok");
+const go=()=>render(src.value,out,tk,.55);
+src.addEventListener("input",go);
+const KEYS=["ā","ī","ū","ṭ","ḍ","ṇ","ṅ","ñ","ś","ṃ"];
+const kd=document.getElementById("xanadui-keys");
+kd.innerHTML=KEYS.map(k=>`<button type="button" data-k="${k}" aria-label="insert ${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+k.length,a+k.length);go()});
+const SAMPLES=["Xānaḍu","Thiyoḍigā","Erewan","Sar-Sulṭān","Peleśā Ḍhom","Keb-āl-ab Āis"];
+const sm=document.getElementById("xanadui-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+render("Xānaḍu",document.getElementById("xanadui-hero"),null,.75);
+
+const ROWS=[["velar",["k","kh","g","gh","ṅ"]],["palatal",["c","ch","j","jh","ñ"]],["retroflex",["ṭ","ṭh","ḍ","ḍh","ṇ"]],["dental",["t","th","d","dh","n"]],["labial",["p","ph","b","bh","m"]],["glides",["y","r","l","w",""]],["hisses",["ś","s","q","x",""]]];
+const cell=k=>{const c=CB[k];return `<div class="cell">${svgWrap(consInner(k),1,k,.62)}<span class="rom">${k}</span><span class="ipa">/${c[1]}/</span></div>`};
+document.getElementById("xanadui-grid").innerHTML=`<thead><tr><th></th><th>plain</th><th>breathed</th><th>voiced</th><th>breathy</th><th>nasal</th></tr></thead><tbody>`+
+ ROWS.map(([n,ks])=>`<tr><td class="rowh">${n}</td>${ks.map(k=>k?`<td data-k="${k}">${cell(k)}</td>`:`<td class="empty"></td>`).join("")}</tr>`).join("")+`</tbody>`;
+document.getElementById("xanadui-grid").addEventListener("click",e=>{const td=e.target.closest("td[data-k]");if(!td)return;src.value+=td.dataset.k+"a";go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+
+document.getElementById("xanadui-ivow").innerHTML=["a","ā","i","ī","u","ū","e","o","ai","au"].map(v=>`<div class="c">${aks([],v,0,.55)}<span class="rom">${v}</span><span class="n">at the start</span></div>`).join("");
+document.getElementById("xanadui-vsig").innerHTML=[["a","inherent"],["ā",""],["i",""],["ī",""],["u",""],["ū",""],["e",""],["ai",""],["o",""],["au",""]].map(([v,n])=>`<div class="c">${aks(["k"],v,0,.55)}<span class="rom">k${v}</span>${n?`<span class="n">${n}</span>`:""}</div>`).join("")
+ +`<div class="c">${aks(["k"],"a",1,.55)}<span class="rom">kaṃ</span><span class="n">nasal dot</span></div><div class="c">${aks(["k"],null,0,.55)}<span class="rom">k</span><span class="n">kill stroke</span></div><div class="c">${aks(["k","s"],"a",0,.55)}<span class="rom">ksa</span><span class="n">stacked</span></div><div class="c">${aks(["s","t","r"],"ī",0,.55)}<span class="rom">strī</span><span class="n">three stacked</span></div>`;
+
+const MORPH=[["-bi","who did it, and with what","by"],["-ṭu","to, for","to"],["-ān","on, in, at","on"],["-phrām","from","from"],["-ab","of","of"],["-āl","plural","all"],["-dā","past","did"],["-gonā","future","gonna"],["-sin","I saw it","seen"],["-se","so they say","say"],["na-","not","no"],["sar-","honorific","sir"]];
+document.getElementById("xanadui-morph").innerHTML=MORPH.map(m=>`<tr><td class="m">${m[0]}</td><td>${m[1]}</td><td><i>${m[2]}</i></td></tr>`).join("");
+render("Phādarāl Thiyoḍigāphrām qamdāse.",document.getElementById("xanadui-ex1"),null,.5);
+render("Sarsulṭānbi Erewanān ḍhomāl nasīndāsin.",document.getElementById("xanadui-ex2"),null,.5);
+
+const CH=[
+ ["t, d","ṭ, ḍ (retroflex)","doctor → <i>ḍākṭar</i>, decree → <i>ḍikrī</i>","ḍikrī"],
+ ["th (θ / ð)","th, d (dental)","thin → <i>thin</i>, there → <i>dear</i>","thin"],
+ ["f","ph","fire → <i>phāyar</i>, from → <i>-phrām</i>","phāyar"],
+ ["v, w","w","victory → <i>wikṭarī</i>, war → <i>wār</i>","wār"],
+ ["b d g before a long vowel","bh ḍh gh (breathy)","gold → <i>ghol</i>, dome → <i>ḍhom</i>, bone → <i>bhon</i>","ghol"],
+ ["h","x","high → <i>xāi</i>, home → <i>xom</i>, Khan → <i>Xān</i>","xom"],
+ ["k before o, u","q","cold → <i>qol</i>, court → <i>qorṭ</i>, come → <i>qam</i>","qol"],
+ ["z","j","zero → <i>jīro</i>, Xanadu → <i>Xānaḍu</i>","jīro"],
+ ["s + consonant","s-a-","star → <i>sitār</i>, sky → <i>sakāi</i>, stone → <i>satõ</i>","sitār"],
+ ["final -n, -ng","nasal vowel","sun → <i>sã</i>, king → <i>kĩ</i>","sã"],
+ ["sh","ś","ship → <i>śip</i>, shame → <i>śem</i>","śip"],
+ ["pleasure","peleśā","epenthesis breaks pl-; zh → ś; final -r lost","peleśā"],
+];
+document.getElementById("xanadui-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g plain"></td></tr>`).join("");
+document.querySelectorAll("#xanadui-changes td.g").forEach((td,i)=>render(CH[i][3],td,null,.4));
+
+const NAMES=[
+ ["Theodiga","Thiyoḍigā","the Ancient arcology at the valley mouth, on the cascade: the Xanadui's origin."],
+ ["Xanadu","Xānaḍu","the poem's first word, given to the valley by the Ancients."],
+ ["Alph","Ālph","the poem's sacred river: an Ancient name."],
+ ["Caves of Ice","Keb-āl-ab Āis","cave-ALL-OF ice: an Ancient name for an Ancient work, cold from something inside it."],
+ ["Pleasure Dome","Peleśā Ḍhom","the Sultans' own: built for their feasts, with no Ancient work under it."],
+ ["Erewhon","Erewan","<i>nowhere</i> backwards, Butler's joke, in the same literary taste as the poem's names."],
+ ["Sultan","Sulṭān","a learned word; the retroflex ṭ is regular."],
+ ["Grand Vizier","Garāṇḍ Wajīr","gr- broken up, v and z regular."],
+ ["Oidong","Oiḍõ","the Monks of History's valley to the south."],
+];
+document.getElementById("xanadui-names").innerHTML=NAMES.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g plain"></td><td>${n[2]}</td></tr>`).join("");
+document.querySelectorAll("#xanadui-names td.g").forEach((td,i)=>render(NAMES[i][1],td,null,.4));
+
+const COG=[["sun","son","tzun","san","sã"],["star","istar","tzhar","astar","sitār"],["stone","iston","tzhon","astoun","satõ"],["sky","iskai","khai","sky","sakāi"],["ship","xipa","sip","sip","śip"],["war","guar","vorh","ouar","wār"],["gold","golda","gol","gould","ghol"],["fire","fira","vairh","phyr","phāyar"]];
+document.getElementById("xanadui-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td><td class="m">${c[4]}</td><td class="g plain"></td></tr>`).join("");
+document.querySelectorAll("#xanadui-cog td.g").forEach((td,i)=>render(COG[i][4],td,null,.4));
+
+})();
+/* Yuni */
+(()=>{
+const src=document.getElementById("yuni-src"),o1=document.getElementById("yuni-o1"),o2=document.getElementById("yuni-o2");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function go(){
+  const v=src.value;
+  o1.textContent=v.replace(/[◉◌△]/g,"").trim()||" ";
+  o2.innerHTML=esc(v).replace(/([◉◌△])/g,'<span class="ev">$1</span>')||" ";
+}
+src.addEventListener("input",go);
+document.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{src.value=src.value.replace(/\s*[◉◌△]\s*$/,"")+b.dataset.m;go();src.focus()}));
+const SAMPLES=["The Ancients sealed the Vault ◉","Univ. Agric. & Mech.","Emir of Yuni","Tzintzun climbed a holy mountain ◌","The Starfish was a starport △"];
+const sm=document.getElementById("yuni-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${esc(s)}">${esc(s)}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+
+const abc=document.getElementById("yuni-abc");
+abc.innerHTML="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l=>`<button type="button" class="lt" data-l="${l}" aria-label="${l}"><span class="s">${l}</span><span class="u">${l.toLowerCase()}</span><span class="n">${l}</span></button>`).join("")
+ +`<button type="button" class="lt special" data-l="&amp;" aria-label="ampersand, said an"><span class="s">&amp;</span><span class="u">&amp;</span><span class="n">“an”</span></button>`;
+abc.addEventListener("click",e=>{const b=e.target.closest(".lt");if(!b)return;src.value+=b.dataset.l;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+
+const CLIP=[["UNIV.","Yuni","the town; once University"],["EMER.","Emir","the ruler chosen by the old families; once Professor Emeritus"],["AGRIC. & MECH.","Aggi an Mek","the two old trades: farming and machine-work"],["LAB.","Lab","any Ancient room still sealed; the Reliquary is <i>the Lab</i>"],["DEPT.","Dep","a great family's tower-house and everyone in it"],["BLDG.","Bildin","a superblock of the Ancients"],["DORM.","Dorm","a caravanserai room"],["NO ENTRY","Nonchri","sacred, forbidden: what the Vault doors say"]];
+document.getElementById("yuni-clip").innerHTML=CLIP.map(c=>`<tr><td class="sg">${esc(c[0])}</td><td><i>${c[1]}</i></td><td>${c[2]}</td></tr>`).join("");
+
+
+})();
+/* Republic */
+(()=>{
+/* Izani capitals, taken from the Izani page */
+const Z=[
+ ["a","a","Anda","hand","M10 70 L22 10 L38 10 L50 70 M16 44 L44 44"],
+ ["b","b","Boda","boat","M14 10 L14 70 L42 70 L50 62 L50 48 L42 40 L14 40 M14 10 L38 10 L44 18 L44 32 L38 40"],
+ ["ch","tʃ","Chamba","chamber","M48 10 L18 10 L10 18 L10 62 L18 70 L48 70 M28 26 L28 54 L42 54"],
+ ["d","d","Doga","dog","M12 10 L12 70 L38 70 L50 58 L50 22 L38 10 Z"],
+ ["e","e","Egla","eagle","M46 10 L12 10 L12 70 L46 70 M12 40 L34 40"],
+ ["f","f","Fira","fire","M12 70 L12 10 L46 10 M12 36 L36 36 L36 48"],
+ ["g","g","Golda","gold","M48 18 L40 10 L18 10 L10 18 L10 62 L18 70 L48 70 L48 42 L30 42"],
+ ["h","—","Ax","aitch","M12 10 L12 70 M48 10 L48 70 M12 44 L48 36"],
+ ["i","i","Isla","isle","M22 10 L38 10 M30 10 L30 70 M22 70 L38 70"],
+ ["j","ʒ","Jual","jewel","M20 10 L48 10 M38 10 L38 60 L28 70 L12 64"],
+ ["k","k","Kiñ","king","M12 10 L12 70 M46 10 L12 44 M24 34 L48 70"],
+ ["l","l","Lamba","lamp","M12 10 L12 70 L48 70 L48 60"],
+ ["m","m","Muna","moon","M8 70 L8 10 L30 40 L52 10 L52 70"],
+ ["n","n","Neda","night","M12 70 L12 10 L48 70 L48 10"],
+ ["ñ","ɲ","Iñ","-ing","M12 70 L12 10 L48 70 L48 10","M10 4 L22 -2 L36 4 L50 -2"],
+ ["o","o","Oxa","ox","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z"],
+ ["p","p","Porta","port","M12 70 L12 10 L42 10 L50 18 L50 34 L42 42 L12 42"],
+ ["q","kw","Qin","queen","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z M30 54 L30 80"],
+ ["r","ɾ","Ora","hour","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70"],
+ ["rr","r","Rroza","rose","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70 M22 40 L22 70"],
+ ["s","s","Sol","soul","M48 10 L18 10 L10 18 L10 32 L18 40 L42 40 L50 48 L50 62 L42 70 L10 70"],
+ ["t","t","Tri","three","M8 10 L52 10 M30 10 L30 70 M22 70 L38 70"],
+ ["u","u","Uza","use","M12 10 L12 58 L24 70 L36 70 L48 58 L48 10"],
+ ["v","v","Vela","veil","M8 10 L30 70 L52 10"],
+ ["x","ʃ","Xipa","ship","M10 10 L50 70 M50 10 L10 70 M18 40 L42 40"],
+ ["y","j","Yarda","yard","M8 10 L30 40 L52 10 M30 40 L30 70"],
+ ["z","z","Zona","zone","M10 10 L50 10 L10 70 L50 70 M20 40 L40 40"],
+];
+const ZB=Object.fromEntries(Z.map(g=>[g[0],g]));
+function cut(g,hi){
+  return `<svg viewBox="-4 -8 68 92" role="img" aria-label="${g[0]}"><path class="cut" d="${g[4]}"/>${g[5]?`<path class="cut${hi?" hi":""}" d="${g[5]}"/>`:""}</svg>`;
+}
+const DOT=`<svg viewBox="-4 -8 28 92" style="width:12px" aria-hidden="true"><rect class="dot" x="6" y="36" width="8" height="8" transform="rotate(45 10 40)"/></svg>`;
+const SUN=`<svg viewBox="-4 -8 44 92" style="width:22px" role="img" aria-label="full stop"><circle cx="18" cy="56" r="6" class="dot"/><path class="cut" style="stroke-width:3;stroke:var(--accent)" d="M18 40 L18 44 M18 68 L18 72 M2 56 L6 56 M30 56 L34 56 M7 45 L9 47 M27 65 L29 67 M29 45 L27 47 M9 65 L7 67"/></svg>`;
+const ZKEYS=Z.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function ztok(s){
+  s=s.toLowerCase().replace(/nh|ny/g,"ñ");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="'"||c==="-"){i++;continue}
+    const k=ZKEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function zrender(text,el,tokEl,dots){
+  const w=ztok(text);
+  el.innerHTML=w.map((wd,i)=>`<span class="word">${wd.map(t=>t.g?cut(ZB[t.g]):t.p?SUN:`<span class="unk" title="No Izani letter">${t.u}</span>`).join("")}${dots&&i<w.length-1&&!wd.some(t=>t.p)?DOT:""}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.p?"☉":`[${t.u}]`)).join("·")).join("  ");
+}
+
+
+/* Hajlandsk romanization to Izani spelling */
+function toIzani(s){
+  return s.toLowerCase().replace(/kv/g,"q").replace(/č/g,"ch").replace(/š/g,"x").replace(/j/g,"y").replace(/ž/g,"j").replace(/w/g,"v").replace(/c/g,"k");
+}
+function hr(text,el,tokEl,dots){zrender(toIzani(text),el,tokEl,dots)}
+
+const src=document.getElementById("republic-src"),out=document.getElementById("republic-out"),tk=document.getElementById("republic-tok");
+const go=()=>hr(src.value,out,tk,true);
+src.addEventListener("input",go);
+src.parentElement.querySelectorAll("[data-k]").forEach(b=>b.addEventListener("click",()=>{const a=src.selectionStart??src.value.length,e=src.selectionEnd??a;src.value=src.value.slice(0,a)+b.dataset.k+src.value.slice(e);src.focus();src.setSelectionRange(a+1,a+1);go()}));
+go();
+hr("Serviz gir sidizan.",document.getElementById("republic-motto"),null,true);
+
+const MAP=[["č","ch","the Izani CH, unchanged"],["š","x","Izani X already said sh"],["ž","j","Izani J already said zh"],["j","y","the y-sound, as in Izani"],["kv","q","Izani Q, kw hardened to kv"],["v","v","and English w, which became v"],["r̩","r","syllabic r needs no vowel letter"],["je","ye","broken e, spelled out"]];
+document.getElementById("republic-map").innerHTML=MAP.map(m=>{const sp=document.createElement("span");zrender(m[1],sp);return `<div class="mp"><span class="s">${m[0]}</span><span>${sp.innerHTML}</span><span class="n">${m[1].toUpperCase()} · ${m[2]}</span></div>`}).join("");
+
+const CH=[
+ ["w","v","war → <i>vor</i>, wolf → <i>vulf</i>, water → <i>vatr</i>","vor"],
+ ["th (θ / ð)","t / d","thing → <i>ting</i>, the → <i>de</i>, three → <i>tri</i>","ting"],
+ ["short e","je","red → <i>rjet</i>, bell → <i>bjel</i>, hearth → <i>hjart</i>, home → <i>hjem</i>","hjem"],
+ ["k before i, e","č","kin → <i>čin</i>, keep → <i>čip</i>, kitchen → <i>čičen</i>","čin"],
+ ["unstressed vowels","lost","winter → <i>vintr</i>, hammer → <i>hamr</i>, salvager → <i>salvžr</i>","vintr"],
+ ["final b d g","p t k","gold → <i>golt</i>, word → <i>vort</i>, red → <i>rjet</i>","golt"],
+ ["kw","kv","queen → <i>kvin</i>, quick → <i>kvik</i>","kvik"],
+ ["sh, ch","š, č","ship → <i>šip</i>, chief → <i>čif</i>","šip"],
+ ["the long i of high, iron","aj","high → <i>haj</i>, iron → <i>jern</i>, fire → <i>fajr</i>","fajr"],
+ ["-ish","-sk","Highlandish → <i>Hajlandsk</i>","hajlandsk"],
+ ["-stead","-stad","rocket-stead → <i>Roketstad</i>","roketstad"],
+];
+document.getElementById("republic-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#republic-changes td.g").forEach((td,i)=>hr(CH[i][3],td));
+
+const DBL=[
+ ["war","vor","guar","a vor is a feud between clans or families; a guar is fought by the Republic"],
+ ["town / city","stad","sidi","any stad; the capital alone is Sidi"],
+ ["king","kung","kiñ","a kung is a clan chief; kiñ means tyrant, the worst thing to call a Republican"],
+ ["soldier","knekt","lejonar","a knekt is any fighting man; a lejonar has sworn to the Legion"],
+ ["service","tjen","serviz","tjen is any work for another; serviz is service to the Republic, and makes a citizen"],
+ ["citizen","—","sidizan","no highland word: the idea came with the officers"],
+ ["gate","gajt","porta","a gajt is a field gate; a porta is a city gate"],
+];
+document.getElementById("republic-dbl").innerHTML=DBL.map(d=>`<tr><td>${d[0]}</td><td class="m">${d[1]}</td><td class="m iz">${d[2]}</td><td>${d[3]}</td></tr>`).join("");
+
+const CL=[["the house","the house","huset","huset"],["war","war","vor","vor; guar for the state's wars"],["home","hom","hjem","hjem"],["thing (assembly)","thing","ting","Tinget, the Hall's assembly"],["king","king","kung","kung; kiñ, tyrant"],["soldier","soljer","knekt","knekt; lejonar"],["iron","ajrn","jern","jern"],["fire","fair","fajr","fajr"]];
+document.getElementById("republic-clans").innerHTML=CL.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td></tr>`).join("");
+
+const NM=[
+ ["Roketstad","Roketstad","rocket + -stead: the Ancient spaceport's town."],
+ ["Iron Republic","Jernrepublika","highland <i>jern</i> “iron” + Izani <i>rrepublika</i>, losing its trill in highland mouths."],
+ ["the Third Legion","Terda Lejon","Izani, kept as the founders' name. Every citizen is notionally of the Legion."],
+ ["Hall of the Republic","Tinget","the thing, the assembly: a highland word for the highest Republican institution."],
+ ["Scrap Kontor","Skrap Kontor","<i>kontor</i> from English <i>counter</i>: a trading house."],
+ ["Mercenaries","Knektar","the soldiers' guild, a highland word."],
+ ["Salvagers","Salvžrar","salvagers, with the vowels worn out of the middle; formerly the Scavengers."],
+ ["Rocketeers","Roketjar","rocketeers."],
+];
+document.getElementById("republic-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g"></td><td>${n[2]}</td></tr>`).join("");
+document.querySelectorAll("#republic-names td.g").forEach((td,i)=>hr(NM[i][1],td));
+
+})();
+/* Beast Riders */
+(()=>{
+/* Izani capitals, taken from the Izani page */
+const Z=[
+ ["a","a","Anda","hand","M10 70 L22 10 L38 10 L50 70 M16 44 L44 44"],
+ ["b","b","Boda","boat","M14 10 L14 70 L42 70 L50 62 L50 48 L42 40 L14 40 M14 10 L38 10 L44 18 L44 32 L38 40"],
+ ["ch","tʃ","Chamba","chamber","M48 10 L18 10 L10 18 L10 62 L18 70 L48 70 M28 26 L28 54 L42 54"],
+ ["d","d","Doga","dog","M12 10 L12 70 L38 70 L50 58 L50 22 L38 10 Z"],
+ ["e","e","Egla","eagle","M46 10 L12 10 L12 70 L46 70 M12 40 L34 40"],
+ ["f","f","Fira","fire","M12 70 L12 10 L46 10 M12 36 L36 36 L36 48"],
+ ["g","g","Golda","gold","M48 18 L40 10 L18 10 L10 18 L10 62 L18 70 L48 70 L48 42 L30 42"],
+ ["h","—","Ax","aitch","M12 10 L12 70 M48 10 L48 70 M12 44 L48 36"],
+ ["i","i","Isla","isle","M22 10 L38 10 M30 10 L30 70 M22 70 L38 70"],
+ ["j","ʒ","Jual","jewel","M20 10 L48 10 M38 10 L38 60 L28 70 L12 64"],
+ ["k","k","Kiñ","king","M12 10 L12 70 M46 10 L12 44 M24 34 L48 70"],
+ ["l","l","Lamba","lamp","M12 10 L12 70 L48 70 L48 60"],
+ ["m","m","Muna","moon","M8 70 L8 10 L30 40 L52 10 L52 70"],
+ ["n","n","Neda","night","M12 70 L12 10 L48 70 L48 10"],
+ ["ñ","ɲ","Iñ","-ing","M12 70 L12 10 L48 70 L48 10","M10 4 L22 -2 L36 4 L50 -2"],
+ ["o","o","Oxa","ox","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z"],
+ ["p","p","Porta","port","M12 70 L12 10 L42 10 L50 18 L50 34 L42 42 L12 42"],
+ ["q","kw","Qin","queen","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z M30 54 L30 80"],
+ ["r","ɾ","Ora","hour","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70"],
+ ["rr","r","Rroza","rose","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70 M22 40 L22 70"],
+ ["s","s","Sol","soul","M48 10 L18 10 L10 18 L10 32 L18 40 L42 40 L50 48 L50 62 L42 70 L10 70"],
+ ["t","t","Tri","three","M8 10 L52 10 M30 10 L30 70 M22 70 L38 70"],
+ ["u","u","Uza","use","M12 10 L12 58 L24 70 L36 70 L48 58 L48 10"],
+ ["v","v","Vela","veil","M8 10 L30 70 L52 10"],
+ ["x","ʃ","Xipa","ship","M10 10 L50 70 M50 10 L10 70 M18 40 L42 40"],
+ ["y","j","Yarda","yard","M8 10 L30 40 L52 10 M30 40 L30 70"],
+ ["z","z","Zona","zone","M10 10 L50 10 L10 70 L50 70 M20 40 L40 40"],
+];
+const ZB=Object.fromEntries(Z.map(g=>[g[0],g]));
+function cut(g,hi){
+  return `<svg viewBox="-4 -8 68 92" role="img" aria-label="${g[0]}"><path class="cut" d="${g[4]}"/>${g[5]?`<path class="cut${hi?" hi":""}" d="${g[5]}"/>`:""}</svg>`;
+}
+const DOT=`<svg viewBox="-4 -8 28 92" style="width:12px" aria-hidden="true"><rect class="dot" x="6" y="36" width="8" height="8" transform="rotate(45 10 40)"/></svg>`;
+const SUN=`<svg viewBox="-4 -8 44 92" style="width:22px" role="img" aria-label="full stop"><circle cx="18" cy="56" r="6" class="dot"/><path class="cut" style="stroke-width:3;stroke:var(--accent)" d="M18 40 L18 44 M18 68 L18 72 M2 56 L6 56 M30 56 L34 56 M7 45 L9 47 M27 65 L29 67 M29 45 L27 47 M9 65 L7 67"/></svg>`;
+const ZKEYS=Z.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function ztok(s){
+  s=s.toLowerCase().replace(/nh|ny/g,"ñ");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="'"||c==="-"){i++;continue}
+    const k=ZKEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function zrender(text,el,tokEl,dots){
+  const w=ztok(text);
+  el.innerHTML=w.map((wd,i)=>`<span class="word">${wd.map(t=>t.g?cut(ZB[t.g]):t.p?SUN:`<span class="unk" title="No Izani letter">${t.u}</span>`).join("")}${dots&&i<w.length-1&&!wd.some(t=>t.p)?DOT:""}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.p?"☉":`[${t.u}]`)).join("·")).join("  ");
+}
+
+
+/* Rider additions to the Izani letters */
+const ADD={
+ ł:{base:"l",x:"M2 50 L30 28"},
+ tick:{w:20,x:"M8 10 L8 30"},
+ nas:"M42 70 Q48 84 34 84",
+ bar:{o:"M10 40 L50 40",u:"M12 38 L48 38"},
+};
+function rsvg(base,extra,w){
+  const g=ZB[base];const wv=w||68;
+  return `<svg viewBox="-4 -8 ${wv} 96" width="${wv*.5}" height="48" role="img" aria-label="${base}"><path class="cut" d="${g?g[4]:""}"/>${g&&g[5]?`<path class="cut" d="${g[5]}"/>`:""}${(extra||[]).map(d=>`<path class="cut hi" d="${d}"/>`).join("")}</svg>`;
+}
+const TICK=`<svg viewBox="-4 -8 20 96" width="10" height="48" role="img" aria-label="ejective"><path class="cut hi" d="${ADD.tick.x}"/></svg>`;
+const NASAL={"ą":"a","ę":"e","į":"i","ǫ":"o","ų":"u"};
+const KEYS=["kh","sh","ch","rr","ñ","ł","ö","ü","ą","ę","į","ǫ","ų","a","b","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"];
+function rtok(s){
+  s=s.normalize("NFC").toLowerCase().replace(/c(?!h)/g,"k");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="-"){i++;continue}
+    if(c==="'"||c==="’"){cur.push({t:1});i++;continue}
+    const k=KEYS.find(k=>s.startsWith(k,i));
+    if(!k){cur.push({u:c});i++;continue}
+    i+=k.length;
+    if(k==="kh")cur.push({b:"h",k});
+    else if(k==="sh")cur.push({b:"x",k});
+    else if(k==="ł")cur.push({b:"l",x:[ADD.ł.x],k});
+    else if(k==="ö")cur.push({b:"o",x:[ADD.bar.o],k});
+    else if(k==="ü")cur.push({b:"u",x:[ADD.bar.u],k});
+    else if(NASAL[k])cur.push({b:NASAL[k],x:[ADD.nas],k});
+    else cur.push({b:k,k});
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function rrender(text,el,tokEl){
+  const w=rtok(text);
+  el.innerHTML=w.map((wd,i)=>`<span class="word">${wd.map(t=>t.b?rsvg(t.b,t.x):t.t?TICK:t.p?SUN:`<span class="unk">${t.u}</span>`).join("")}${i<w.length-1&&!wd.some(t=>t.p)?DOT:""}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.b?(t.k==="kh"?"H":t.k==="sh"?"X":t.k):t.t?"ʼ":t.p?"☉":`[${t.u}]`).join("·")).join("  ");
+}
+
+const src=document.getElementById("riders-src"),out=document.getElementById("riders-out"),tk=document.getElementById("riders-tok");
+const go=()=>rrender(src.value,out,tk);
+src.addEventListener("input",go);
+const kd=document.getElementById("riders-keys");
+kd.innerHTML=["'","ł","ą","ę","į","ǫ","ö","ü"].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+const SAMPLES=["Tł'aai","K'etsaal","Łiikhon","Mamuł","Kiin Maab","Araptar"];
+const sm=document.getElementById("riders-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+rrender("Tł'aai",document.getElementById("riders-hero"));
+
+const ADDS=[
+ [[["l",[ADD.ł.x]]],"ł","L struck through: the lateral hiss. With T before it, the tł of tł'aa."],
+ [["tick"],"'","the catch: a short stroke after a consonant makes it ejective; alone, a glottal stop."],
+ [[["a",[ADD.nas]],["i",[ADD.nas]]],"ą į","a hook under a vowel makes it nasal, where English had -n or -ng."],
+ [[["o",[ADD.bar.o]],["u",[ADD.bar.u]]],"ö ü","a bar through O and U makes the front vowels that vowel harmony needs."],
+];
+document.getElementById("riders-adds").innerHTML=ADDS.map(a=>`<div class="ad"><div class="gs">${a[0].map(g=>g==="tick"?TICK.replace('width="10"','width="14"').replace('height="48"','height="56"'):rsvg(g[0],g[1]).replace('height="48"','height="56"')).join("")}</div><span class="t">${a[1]}</span><span class="n">${a[2]}</span></div>`).join("");
+
+const CH=[
+ ["cl-, cr-","tł'","claw → <i>tł'aa</i>, crawler → <i>tł'oolar</i>","tł'aa"],
+ ["th (θ)","ł","three → <i>łii</i>, mammoth → <i>mamuł</i>","łii"],
+ ["final t; kw","t'; k' (ejective)","night → <i>naat'</i>, quetzal → <i>k'etsaal</i>","k'etsaal"],
+ ["r- at the start","a-r, e-r (harmonized)","raptor → <i>araptar</i>, rain → <i>erę</i>","araptar"],
+ ["w, v, f","b, b, p","wing → <i>bį</i>, war → <i>baar</i>, fly → <i>plai</i>","baar"],
+ ["h","kh","horn → <i>khon</i>, hard → <i>khaad</i>","khon"],
+ ["-n, -ng","nasal vowel","wing → <i>bį</i>, long → <i>lǫ</i>, rain → <i>erę</i>","lǫ"],
+ ["ai before a consonant","aa","night → <i>naat'</i>, spider → <i>ispaadar</i>, tiger → <i>taagar</i>","taagar"],
+ ["s + consonant","is-","spider → <i>ispaadar</i>, stick → <i>istik</i>","istik"],
+ ["-er","-ar, -er (harmonized)","raptor → <i>araptar</i>, girder → <i>gördar</i>","gördar"],
+];
+document.getElementById("riders-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#riders-changes td.g").forEach((td,i)=>rrender(CH[i][3],td));
+rrender("Bįtł'aanar K'etsaalad bii-gibsan.",document.getElementById("riders-ex1"));
+
+const DBL=[
+ ["war","baar","guaar","a baar is a raid or a feud; a guaar is what the Empire made"],
+ ["three","łii","tri","łii to count beasts; tri to count coins"],
+ ["king, queen","—","kįį, kiin","the tribes had chiefs; the Council has a king or queen, in Izani words"],
+ ["emperor","—","emparar","now: a bully, anyone who rules by fear"],
+ ["fort, port","—","porta","both, merged: any walled place an outsider holds"],
+ ["gold","gol","golda","gol is the metal; golda is coin"],
+ ["city","—","sidi","any city of stone"],
+ ["mech","—","meka","the Empire's walkers, which broke the tribes"],
+];
+document.getElementById("riders-dbl").innerHTML=DBL.map(d=>`<tr><td>${d[0]}</td><td class="m">${d[1]}</td><td class="m iz">${d[2]}</td><td>${d[3]}</td></tr>`).join("");
+
+const TR=[
+ ["Quetzal (reigning)","K'etsaal","quetzal: kw → k', z → ts"],
+ ["Wingclaw","Bįtł'aa","wing + claw"],
+ ["Dragonfly","Daraghanplai","dragon + fly: the cluster broken, g → gh between vowels"],
+ ["Nightwing","Naatbį","night + wing"],
+ ["Spider","Ispaadar","spider"],
+ ["Raptor","Araptar","raptor"],
+ ["Staghorn","Istagkhon","stag + horn"],
+ ["Threehorn","Łiikhon","three + horn"],
+ ["Hardshell","Khaadshel","hard + shell"],
+ ["Tiger","Taagar","tiger"],
+ ["Mammoth","Mamuł","mammoth"],
+ ["Longcrawler","Lǫtł'oolar","long + crawler"],
+ ["Mav's Refuge","Maabin Erepyuj","Mav-OF refuge"],
+ ["Girder","Gördar","girder: front vowels, front ending"],
+];
+document.getElementById("riders-tribes").innerHTML=TR.map(t=>`<tr><td>${t[0]}</td><td class="m">${t[1]}</td><td class="g"></td><td>${t[2]}</td></tr>`).join("");
+document.querySelectorAll("#riders-tribes td.g").forEach((td,i)=>rrender(TR[i][1],td));
+
+const DI=[["claw","tł'aa","tł'oo","klaa","tłaa","tł'aa"],["three","łii","łüü","łii","łii","łii"],["night","naat'","nööt'","naat'","naat","naat'"],["horn","khon","khön","khorn","khon","khon"],["raptor","araptar","öröptör","raptar","araptar","araptar"]];
+document.getElementById("riders-dial").innerHTML=DI.map(d=>`<tr><td>${d[0]}</td>${d.slice(1).map((c,i)=>`<td class="m${i===4?" cn":""}">${c}</td>`).join("")}</tr>`).join("");
+
+})();
+/* Zeijani */
+(()=>{
+/* Wedge letters on a 56 x 52 cell (x 4..52, y 14..66). Each stroke [x1,y1,x2,y2] is pressed head-first at x1,y1. */
+const L=[
+ ["a","a","A",[[28,14,10,66],[28,14,46,66],[16,46,40,46]]],
+ ["b","b","B",[[12,14,12,66],[12,14,42,24],[42,24,12,40],[12,40,44,53],[44,53,12,66]]],
+ ["d","d","D",[[12,14,12,66],[12,14,46,40],[46,40,12,66]]],
+ ["e","e","E",[[12,14,12,66],[12,14,44,14],[12,40,36,40],[12,66,44,66]]],
+ ["g","g","G",[[46,16,14,26],[14,26,14,56],[14,56,44,66],[44,66,44,44],[30,44,48,44]]],
+ ["ḫ","χ","H",[[12,14,12,66],[44,14,44,66],[12,40,44,40]]],
+ ["i","i","I",[[16,14,40,14],[28,14,28,66]]],
+ ["j","dʒ","J",[[20,14,46,14],[38,14,38,56],[38,56,14,66]]],
+ ["k","k","K",[[12,14,12,66],[44,14,14,40],[14,40,46,66]]],
+ ["l","l","L",[[12,14,12,66],[12,66,46,66]]],
+ ["m","m","M",[[8,14,8,66],[8,14,28,44],[28,44,48,14],[48,14,48,66]]],
+ ["n","n","N",[[12,14,12,66],[12,14,44,66],[44,14,44,66]]],
+ ["p","p","P",[[12,14,12,66],[12,14,44,26],[44,26,12,40]]],
+ ["q","q","K + corner",[[10,14,10,66],[40,14,12,40],[12,40,42,66]],[50,40]],
+ ["r","r","R",[[12,14,12,66],[12,14,44,26],[44,26,12,40],[22,40,46,66]]],
+ ["s","s","S",[[46,14,12,26],[12,26,44,52],[44,52,10,66]]],
+ ["ṣ","sʼ","S + corner",[[40,14,8,26],[8,26,38,52],[38,52,6,66]],[50,40]],
+ ["š","ʃ","SH",[[46,14,12,26],[12,26,44,52],[44,52,10,66],[28,6,28,72]]],
+ ["t","t","T",[[8,14,48,14],[28,14,28,66]]],
+ ["ṭ","tʼ","T + corner",[[4,14,40,14],[22,14,22,66]],[50,40]],
+ ["u","u","U",[[12,14,12,64],[12,64,44,64],[44,14,44,64]]],
+ ["ü","y","U + wedge",[[12,14,12,64],[12,64,44,64],[44,14,44,64],[28,22,28,50]]],
+ ["w","w","W",[[6,14,17,66],[17,66,28,30],[28,30,39,66],[39,66,50,14]]],
+ ["y","j","Y",[[10,14,28,40],[46,14,28,40],[28,40,28,66]]],
+ ["z","z","Z",[[10,14,46,14],[46,14,10,66],[10,66,46,66]]],
+];
+const LB=Object.fromEntries(L.map(l=>[l[0],l]));
+function wedge(x1,y1,x2,y2,cls){
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,nx=-uy,ny=ux;
+  const H=6.2,HL=Math.min(12,len*.42),T=1.25,f=n=>n.toFixed(1);
+  const p=[[x1+nx*H,y1+ny*H],[x1+ux*HL+nx*T,y1+uy*HL+ny*T],[x2+nx*.5,y2+ny*.5],[x2-nx*.5,y2-ny*.5],[x1+ux*HL-nx*T,y1+uy*HL-ny*T],[x1-nx*H,y1-ny*H]];
+  return `<path class="${cls||"wg"}" d="M${p.map(q=>f(q[0])+" "+f(q[1])).join(" L")} Z"/>`;
+}
+const corner=(x,y)=>`<path class="wg mk" d="M${x-6} ${y} L${x+6} ${y-10} L${x+3} ${y} L${x+6} ${y+10} Z"/>`;
+function glyph(k){const l=LB[k];return `<svg viewBox="-2 2 60 74" role="img" aria-label="${k}">${l[3].map(s=>wedge(...s)).join("")}${l[4]?corner(...l[4]):""}</svg>`}
+const DIV=`<svg viewBox="0 2 20 74" style="width:10px" aria-hidden="true">${wedge(10,30,10,56)}</svg>`;
+const STOP=`<svg viewBox="0 2 30 74" style="width:15px" role="img" aria-label="full stop">${corner(16,52)}${corner(16,32)}</svg>`;
+const KEYS=L.map(l=>l[0]).sort((a,b)=>b.length-a.length);
+function norm(s){
+  return s.normalize("NFC").toLowerCase().replace(/sh/g,"š").replace(/kh/g,"ḫ").replace(/h/g,"ḫ")
+   .replace(/ā/g,"aa").replace(/ē/g,"ee").replace(/ī/g,"ii").replace(/ū/g,"uu").replace(/o/g,"u").replace(/c/g,"k");
+}
+function tokens(s){
+  s=norm(s);const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});i++;continue}
+    if(c==="'"||c==="-"){i++;continue}
+    const k=KEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function render(text,el){
+  const w=tokens(text);
+  el.innerHTML=w.map((wd,i)=>`<span class="word">${wd.map(t=>t.g?glyph(t.g):t.p?STOP:`<span class="unk">${t.u}</span>`).join("")}${i<w.length-1?DIV:""}</span>`).join("");
+}
+/* the brothers' differences: Zeijani to Ash nomad */
+function toAsh(s){
+  return s.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/Ü/g,"I")
+    .replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
+}
+
+const src=document.getElementById("zeijani-src");
+function go(){
+  const z=src.value,a=toAsh(z);
+  render(z,document.getElementById("zeijani-outZ"));document.getElementById("zeijani-romZ").textContent=z;
+  render(a,document.getElementById("zeijani-outA"));document.getElementById("zeijani-romA").textContent=a;
+}
+src.addEventListener("input",go);
+const kd=document.getElementById("zeijani-keys");
+kd.innerHTML=["ṣ","ṭ","š","ḫ","ü","ā","ī","ū"].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+const SAMPLES=["Zeijanī Šrūnin ḫiddū.","Ze-Ṭānin","Delbum","Ṣunum","Wārum","Elqappum"];
+const sm=document.getElementById("zeijani-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+render("Zeijanī",document.getElementById("zeijani-hero"));
+
+const chart=document.getElementById("zeijani-chart");
+chart.innerHTML=L.map(l=>`<button type="button" class="card" data-l="${l[0]}" aria-label="${l[0]}">${glyph(l[0])}<span class="r">${l[0]}</span><span class="i">/${l[1]}/</span><span class="f">from ${l[2]}</span></button>`).join("");
+chart.addEventListener("click",e=>{const b=e.target.closest(".card");if(!b)return;src.value+=b.dataset.l;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+
+const COG=[["sun","tzun","ṣunum","sunu"],["son","tzin","ṣinim","sini"],["star","tzhar","ṣṭārum","stāru"],["sky","khai","ṣqayum","skayu"],["slave","hlev","ṣlēbum","slēbu"],["the","dha","ze","ze"],["they","dhai","zei","zei"],["thing","thing","šingim","šingi"],["fire","vairh","pērum","pēru"],["war","vorh","wārum","māru"],["gold","gol","guldum","guldu"],["hidden","—","ḫiddan","ḫiddan"]];
+document.getElementById("zeijani-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="g plain"></td><td class="m">${c[3]}</td></tr>`).join("");
+document.querySelectorAll("#zeijani-cog td.g").forEach((td,i)=>render(COG[i][2],td));
+
+const CH=[
+ ["s- (already ts on the island)","ṣ (emphatic)","sun → <i>ṣunum</i>, son → <i>ṣinim</i>","ṣunum"],
+ ["t, k next to a, u","ṭ, q (emphatic)","town → <i>ṭān</i>, cap → <i>qap</i>","ṭān"],
+ ["th (θ)","š","thing → <i>šingim</i>, throne → <i>Šrūnum</i>","šrūnum"],
+ ["th (ð)","z","the → <i>ze</i>, they → <i>zei</i>","zei"],
+ ["f, v","p, b","fire → <i>pērum</i>, delve → <i>Delbum</i>","delbum"],
+ ["h","ḫ","hidden → <i>ḫiddan</i>, home → <i>ḫūmum</i>","ḫiddan"],
+ ["o","u","throne → <i>Šrūnum</i>, gold → <i>guldum</i>","guldum"],
+ ["ai (fire, sky)","ē, ay","fire → <i>pērum</i>, sky → <i>ṣqayum</i>","pērum"],
+ ["stop after a short stressed vowel","doubled","hidden → <i>ḫiddan</i>, cap → <i>qappum</i>","qappum"],
+ ["dd before i","j (Cappadocian)","the hidden ones → ze-ḫiddanī → <i>Zeijanī</i>","zeijanii"],
+];
+document.getElementById("zeijani-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g plain"></td></tr>`).join("");
+document.querySelectorAll("#zeijani-changes td.g").forEach((td,i)=>render(CH[i][3],td));
+
+const NM=[
+ ["Zeijani","Zeijanī","<i>the hidden ones</i>: ze + ḫiddan + -ī. Their own name, and outsiders took it."],
+ ["Zey'danin","Ze-Ṭānin","<i>the town within</i>: ze + ṭān (town) + -in. A Zeijani name for the native core of the city. Chichani ears heard the emphatic ṭ as d, and Vothic spelling put the syllable cut after ze."],
+ ["Dhelv","Delbum","English <i>delve</i>, the dug place. <i>Dhelv</i> is the Vothic form, with the dh Chichani kept. Outsiders know the name, not the place."],
+ ["the Throne","Šrūnum","English <i>throne</i>, θ to š."],
+ ["ash nomads","Andarū","their own name: <i>wanderers</i>, with the initial w lost, as late Babylonian lost it."],
+ ["alecap","Elqappum","<i>ale-cap</i>, the purple beer mushroom; k before a went emphatic, the p doubled."],
+ ["Ranj","Ranjum","the spice. Maybe English <i>orange</i>, for the resin's colour, with the first vowel lost; your call."],
+];
+document.getElementById("zeijani-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="m">${n[1]}</td><td class="g plain"></td><td>${n[2]}</td></tr>`).join("");
+document.querySelectorAll("#zeijani-names td.g").forEach((td,i)=>render(NM[i][1],td));
+
+})();
+
+/* overview and tabs */
+(()=>{
+  const CARDS=[
+   ["vothic","Vothic","Voth · the Chichani","Purépecha meets Dunmer. 33 letters, Georgian bowls and Daedric blades, bent from Izani capitals.","Tzintzuntzan"],
+   ["izani","Izani","the Empire of Iziz","Romance-sounding, with a Star Wars edge. 27 capitals cut in straight strokes; the parent of the Vothic letters.","Empar de Son"],
+   ["hykkousik","Hykkousik","the Hykkousoi of Ys","Greek-sounding. 26 letters copied from the Greek symbols in a drowned gene-lab's records.","Hykkousoi"],
+   ["xanadui","Xanadui","the Sultanate of Xanadu","The furthest drift: Nepali and Persian sounds, verb-last, every claim marked seen or said. A syllabary on a sound grid.","Xānaḍu"],
+   ["yuni","Yuni","Yuni and the Monks of History","Near English, clipped like campus signs. Latin in two hands; the Historians mark their evidence in the margin.","Univ."],
+   ["dalab","Dalab","the mound-builders","Two tongues: the priests' high tongue, our English, held in place by the God, and the peasants' creole.","Dalab"],
+   ["republic","Hajlandsk","the Iron Republic, the Free Clans, the Painted Men","Highland English gone Norse and Slavic, with Izani law-words on top. Written in the Izani alphabet, letter for letter.","Roketstad"],
+   ["riders","Tł'aai","the Beast Rider tribes","Mongol and Apache sounds with a Star Wars edge: ejectives, tł, nasal vowels. Izani letters taken for trade, with four marks added.","Tł'aai"],
+   ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
+  ];
+  const cards=document.getElementById("cards");
+  cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
+  const FAM=[["sun","sun","sun","sun","sun","sun","są","son","san","tzun","sunu","ṣunum","sã"],["star","star","star","stah","tar","stjar","istar","istar","astar","tzhar","stāru","ṣṭārum","sitār"],["ship","ship","ship","ship","ship","šip","ship","xipa","sip","sip","šippu","šippum","śip"],["war","war","war","waw","wa","vor","baar","guar","ouar","vorh","māru","wārum","wār"],["gold","gold","gold","gol'","gol","golt","gol","golda","gould","gol","guldu","guldum","ghol"],["fire","fire","fire","fiyah","faya","fajr","paar","fira","phyr","vairh","pēru","pērum","phāyar"],["thing","thing","thing (dental th)","fin","ting","ting","łį","tiñ","thing","thing","šingi","šingim","thĩ"],["the lab","the lab","the lab","ve lab","Dalab","labet","","de laba","","","ze-labbu","ze-labbum",""]];
+  document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
+
+  const secs=[...document.querySelectorAll("section.tongue")];
+  const bar=document.getElementById("tabbar");
+  bar.innerHTML=secs.map(s=>`<button type="button" role="tab" id="tab-${s.id}" aria-controls="${s.id}" data-go="${s.id}">${s.dataset.label}</button>`).join("");
+  function show(id,push){
+    if(!secs.some(s=>s.id===id))id="overview";
+    secs.forEach(s=>{s.hidden=s.id!==id});
+    bar.querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===id?"true":"false"));
+    const b=document.getElementById("tab-"+id);if(b)b.scrollIntoView({block:"nearest",inline:"nearest"});
+    if(push){try{history.replaceState(null,"","#"+id)}catch(e){}window.scrollTo(0,0)}
+    try{localStorage.setItem("tongue-tab",id)}catch(e){}
+  }
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
+  let start=(location.hash||"").slice(1);
+  if(!start){try{start=localStorage.getItem("tongue-tab")||""}catch(e){}}
+  show(start||"overview",false);
+  window.addEventListener("hashchange",()=>show(location.hash.slice(1),false));
+})();
+</script>
+
+</html>
