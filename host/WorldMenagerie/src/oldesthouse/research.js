@@ -52,7 +52,7 @@ export function buildResearch(K){
     // greenery hanging over the front, in uneven strands
     const n=Math.floor(Math.hypot(fx1-fx0,fz1-fz0)/1.6);
     for(let k=0;k<n;k++){const t=(k+R())/n,hx=fx0+(fx1-fx0)*t,hz=fz0+(fz1-fz0)*t,L=0.8+R()*(y>12?3.2:1.8);if(R()<0.55)continue;
-      B.blk('leaf',X(hx+(alongX?0:0.15)),Y(y-0.7-L),Z(hz+(alongX?(side==='n'?0.15:-0.15):0)),0.25+R()*0.35,L,0.2);}
+      B.blk('leaf',X(hx+(alongX?0:0.15)),Y(y-0.7-L),Z(hz+(alongX?(side==='n'?0.15:-0.15):0)),0.12+R()*0.2,L,0.1);}
     // the lights under the slab
     if(alongX)F.panels(X(-26),Z((z0+z1)/2),X(26),Z((z0+z1)/2),Y(y-0.7),6,0.7,11);
     else F.panels(X((x0+x1)/2),Z(z0+3),X((x0+x1)/2),Z(z1-3),Y(y-0.7),6,0.7,11);};
@@ -68,17 +68,27 @@ export function buildResearch(K){
   // planted bed
   const TREES=[[8,6,2.7],[-11,12,2.3],[13,-13,2.0]];
   for(const [tx,tz,r] of TREES){B.cyl('concreteDark',X(tx),Y(0),Z(tz),r+2.2,r+2.2,0.9,16,{caps:true});
-    for(let k=0;k<8;k++){const a=k/8*Math.PI*2;B.blk('leaf',X(tx+Math.cos(a)*(r+1.3)),Y(0.9),Z(tz+Math.sin(a)*(r+1.3)),1.4,0.7+R()*0.6,1.4);}
+    B.ring('rockBlack',X(tx),Y(0.91),Z(tz),r*1.7,r+2.1,16);   /* the soil */
+    /* ferns round the bed, each a tuft of fronds arching out */
+    for(let k=0;k<10;k++){const a=k/10*Math.PI*2,c=[X(tx+Math.cos(a)*(r+1.3)),Y(0.9),Z(tz+Math.sin(a)*(r+1.3))],hh=0.7+R()*0.6;
+      for(let j=0;j<7;j++){const b=j/7*Math.PI*2+k,m=[c[0]+Math.cos(b)*0.35,c[1]+hh,c[2]+Math.sin(b)*0.35],e=[c[0]+Math.cos(b)*1.0,c[1]+hh*0.45,c[2]+Math.sin(b)*1.0];
+        B.beam(j%2?'leaf':'leafDark',c,m,0.26,0.05);B.beam(j%2?'leaf':'leafDark',m,e,0.22,0.05);}}
     /* the trunk: flared at the foot, buttress roots out into the bed, tapering up through the whole atrium */
     B.cyl('bark',X(tx),Y(0),Z(tz),r*1.7,r*1.05,3,14);B.cyl('bark',X(tx),Y(3),Z(tz),r*1.05,r*0.42,AH+1,14);
     for(let k=0;k<6;k++){const a=k/6*Math.PI*2+R();B.beam('bark',[X(tx+Math.cos(a)*r*0.8),Y(2.6),Z(tz+Math.sin(a)*r*0.8)],[X(tx+Math.cos(a)*(r+2)),Y(0.2),Z(tz+Math.sin(a)*(r+2))],0.9,1.2);}
-    /* the crown: tiers of branches from twenty metres up, long below and short at the top, each drooping a little
-       and carrying a flat layer of dark needles - the narrow, layered spire a redwood makes */
-    for(let h=19;h<=AH+3;h+=2.3){const u=(h-19)/(AH+3-19),Lb=7.5*(1-u)+1.6,n=6+Math.floor(R()*3),rr=r*(1.05-0.6*(h/(AH+4)));
-      for(let k=0;k<n;k++){const a=k/n*Math.PI*2+R()*0.8+h,ex=tx+Math.cos(a)*(rr+Lb),ez=tz+Math.sin(a)*(rr+Lb),ey=h-Lb*0.25;
-        B.beam('bark',[X(tx+Math.cos(a)*rr),Y(h),Z(tz+Math.sin(a)*rr)],[X(ex),Y(ey),Z(ez)],0.35,0.35);
-        B.at(X(tx+Math.cos(a)*(rr+Lb*0.55)),Y(ey+0.2),Z(tz+Math.sin(a)*(rr+Lb*0.55)),-a);B.box(k%3?'leafDark':'leaf',-Lb*0.55,0,-1.1,Lb*0.55,0.9,1.1);B.box('leafDark',-Lb*0.4,-0.6,-1.6,Lb*0.4,0.1,1.6);B.pop();}}
-    B.cyl('leafDark',X(tx),Y(AH+3),Z(tz),1.6,0.2,3.5,8);}
+    /* the crown: tiers of branches from eighteen metres up, long below and short at the top. Each branch droops
+       from the trunk and turns up again at its tip, and carries sprays of needles hanging along it in two layers,
+       broad near the trunk and narrowing out - the narrow, layered spire a redwood makes. A few dead stubs below. */
+    const pt=(a,d,y)=>[X(tx+Math.cos(a)*d),Y(y),Z(tz+Math.sin(a)*d)],mix=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t,p[2]+(q[2]-p[2])*t];
+    for(let h=10;h<18;h+=2.6+R()*2){const a=R()*6.3,rr=r*(1.05-0.6*(h/(AH+4)));B.beam('bark',pt(a,rr*0.9,h),pt(a,rr+1+R()*1.5,h-0.6),0.25,0.25);}
+    for(let h=18;h<=AH+2;h+=1.9){const u=(h-18)/(AH+2-18),Lb=8*Math.pow(1-u,1.1)+1.4,n=5+Math.floor(R()*3),rr=r*(1.05-0.6*(h/(AH+4)));
+      for(let k=0;k<n;k++){const a=k/n*Math.PI*2+R()*0.9+h*1.7,L=Lb*(0.8+R()*0.4),dr=0.3+R()*0.1;
+        const p0=pt(a,rr*0.9,h),p1=pt(a,rr+L*0.55,h-L*dr),p2=pt(a,rr+L,h-L*dr+L*0.12);
+        B.beam('bark',p0,p1,0.34,0.34);B.beam('bark',p1,p2,0.2,0.2);
+        for(let j=0;j<3;j++){const t0=0.2+j*0.27,t1=t0+0.36,seg=(t)=>t<0.55?mix(p0,p1,t/0.55):mix(p1,p2,(t-0.55)/0.45),q0=seg(t0),q1=seg(Math.min(1,t1)),W=(2.7-j*0.6)*(0.6+0.4*L/8);
+          B.beam(j%2?'leafDark':'leaf',[q0[0],q0[1]-0.1,q0[2]],[q1[0],q1[1]-0.25,q1[2]],W,0.14);
+          B.beam('leafDark',[q0[0],q0[1]-0.55,q0[2]],[q1[0],q1[1]-0.9,q1[2]],W*1.15,0.1);}}}
+    B.cyl('leafDark',X(tx),Y(AH+2),Z(tz),1.8,0.15,4.5,8);}
   for(let k=0;k<12;k++)F.plant(X(-26+R()*52),Y(0),Z(-26+R()*10+(k%2?40:0)),1.1);
 
   // ================================================================ the labs, west off the atrium
@@ -212,7 +222,9 @@ export function buildResearch(K){
       const L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]),ns=Math.floor(L/4);
       for(let k=1;k<ns;k++){const t=k/ns,x=p0[0]+(p1[0]-p0[0])*t+out[0]*0.15,z=p0[1]+(p1[1]-p0[1])*t+out[2]*0.15;
         if(k%3===1&&(++doorN)%2){B.blk('woodDark',x-out[0]*0.08,y0,z-out[2]*0.08,Math.abs(out[2])>0.5?1.3:0.12,2.5,Math.abs(out[0])>0.5?1.3:0.12);B.blk('brass',x+out[0]*0.02,y0+1.2,z+out[2]*0.02,0.08,0.08,0.08);continue;}
-        B.blk('brass',x,y0+2.4,z,0.12,0.5,0.12);B.blk('lightWarm',x+out[0]*0.12,y0+2.75,z+out[2]*0.12,0.32,0.36,0.32);lights.add([x+out[0]*0.4,y0+2.8,z+out[2]*0.4],0xffb070,0.55,7);}}
+        /* a sconce: a brass backplate, an arm, a pleated shade narrowing to the top */
+        B.blk('brass',x-out[0]*0.1,y0+2.3,z-out[2]*0.1,Math.abs(out[2])>0.5?0.2:0.04,0.5,Math.abs(out[0])>0.5?0.2:0.04);B.beam('brass',[x-out[0]*0.1,y0+2.5,z-out[2]*0.1],[x+out[0]*0.18,y0+2.62,z+out[2]*0.18],0.04,0.04);
+        B.cyl('lightWarm',x+out[0]*0.18,y0+2.6,z+out[2]*0.18,0.17,0.1,0.28,8,{caps:true});lights.add([x+out[0]*0.4,y0+2.8,z+out[2]*0.4],0xffb070,0.55,7);}}
     // the coffers: beams across the ceiling every two metres
     const L=Math.hypot(MZ[i+1][0]-MZ[i][0],MZ[i+1][1]-MZ[i][1]);for(let k=1;k<L/2;k++){const t=k*2/L,x=MZ[i][0]+(MZ[i+1][0]-MZ[i][0])*t,z=MZ[i][1]+(MZ[i+1][1]-MZ[i][1])*t;
       B.beam('woodDark',[x+n[0]*HW,y0+MH-0.25,z+n[1]*HW],[x-n[0]*HW,y0+MH-0.25,z-n[1]*HW],0.2,0.5);}}
@@ -228,7 +240,7 @@ export function buildResearch(K){
   const along=s=>{s=Math.max(0,Math.min(mzL,s));let i=0;while(i<MZ.length-2&&mzS[i+1]<s)i++;const t=(s-mzS[i])/(mzS[i+1]-mzS[i]||1),[ax,az]=MZ[i],[bx,bz]=MZ[i+1],l=mzS[i+1]-mzS[i]||1;
     return {x:ax+(bx-ax)*t,z:az+(bz-az)*t,tx:(bx-ax)/l,tz:(bz-az)/l};};
   const SEG=3.9,NP=40,NF=14;
-  const ptex=K.T.ashtray.clone();ptex.needsUpdate=true;ptex.repeat.set(SEG/1.2,MH/2.4);
+  const ptex=K.T.ashtray.clone();ptex.needsUpdate=true;ptex.repeat.set(SEG/0.6,(MH-1)/1.2);   /* the paper's own scale (mats.js TEX_M) */
   const ftex=K.T.carpet.clone();ftex.needsUpdate=true;ftex.repeat.set(SEG/2,2.1);
   const panels=new THREE.InstancedMesh(new THREE.BoxGeometry(SEG,MH-1,0.22),new THREE.MeshBasicMaterial({map:ptex,color:0xd8c8b0}),NP);
   const tiles=new THREE.InstancedMesh(new THREE.BoxGeometry(SEG,0.2,HW*2-0.1),new THREE.MeshBasicMaterial({map:ftex,color:0x8a1a1c}),NF);
@@ -281,11 +293,12 @@ export function buildResearch(K){
   // ================================================================ the events
   K.events.push({key:'ashtraymaze',label:'The Ashtray Maze',card:'ashtray',start(api){api.setCut(false);
     let s=0;const zone={c:[X(0),Y(2),Z(-310)],r:170,color:'#8a2010',density:0.02};K.zones.push(zone);panels.visible=tiles.visible=true;const p0=new THREE.Vector3(),t0=new THREE.Vector3();
-    return {update(t,dt){s+=dt*5.5;const a=along(s),b=along(s+5);poseMaze(s,t);
+    const end=()=>{panels.visible=tiles.visible=false;const i=K.zones.indexOf(zone);if(i>=0)K.zones.splice(i,1);};
+    return {camera:true,stop:end,update(t,dt){s+=dt*5.5;const a=along(s),b=along(s+5);poseMaze(s,t);
       p0.set(a.x,y0+1.75,a.z);t0.set(b.x,y0+1.65+Math.sin(t*0.9)*0.15,b.z);const d=p0.distanceTo(t0)||1;
       api.ctl.t.copy(t0);api.ctl.d=d;api.ctl.yaw=Math.atan2(p0.x-t0.x,p0.z-t0.z);api.ctl.pitch=Math.asin(Math.max(-1,Math.min(1,(p0.y-t0.y)/d)));
       const k=0.5+0.5*Math.sin(t*1.7);zone.color='#'+new THREE.Color(0x8a1a10).lerp(new THREE.Color(0xb0701a),k).getHexString();
-      if(s>=mzL-6){panels.visible=tiles.visible=false;const i=K.zones.indexOf(zone);if(i>=0)K.zones.splice(i,1);return false;}}};}});
+      if(s>=mzL-6){end();return false;}}};}});
   K.events.push({key:'hedron',label:'The Hedron',card:'hedron',view:K.views.find(v=>v.name==='The Hedron'),start(){let u=0;
     return {update(t,dt){u+=dt;hedronPulse=Math.min(1,u/3)*Math.min(1,Math.max(0,(22-u)/4));if(u>22){hedronPulse=0;return false;}}};}});
   K.anchors.research={hedron,HC,maze:MZ};

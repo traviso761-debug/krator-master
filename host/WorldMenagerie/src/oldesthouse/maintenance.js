@@ -58,6 +58,11 @@ export function buildMaintenance(K){
   F.shelves(ox-117,oy,oz-13.6,0,4,2.4);F.cabinet(ox-123.4,oy,oz-6,-Math.PI/2);
   beam('wood',[-112,0,-12],[-111.6,1.6,-12.4],0.05,0.05);blk('paper',-112,0,-12,0.4,0.15,0.2);B.cyl('yellow',ox-111.2,oy,oz-11,0.3,0.35,0.4,10,{caps:true});
   F.lamp(ox-118.6,oy+1.1,oz-11.3,0xffc880,0.9,6);F.panel(ox-117,oy+3.2,oz-9,1.2,0.6,0.8,8);
+  // three lockers by the shelves, a deep sink on the west wall, cartons stacked in the corner, a calendar
+  for(let k=0;k<3;k++){const x=-114.4+k*1.05;box('steel',x,0,-14,x+0.98,2.0,-13.45);for(let j=0;j<4;j++)box('steelDark',x+0.3,1.6+j*0.07,-13.45,x+0.68,1.63+j*0.07,-13.42);box('steelDark',x+0.8,1.0,-13.45,x+0.86,1.2,-13.4);}
+  box('white',-124,0.75,-9.8,-123.3,1.0,-8.6);box('steelDark',-123.95,0.9,-9.7,-123.35,0.98,-8.7);beam('steel',[-123.95,1.0,-9.2],[-123.95,1.35,-9.2],0.04,0.04);beam('steel',[-123.95,1.35,-9.2],[-123.7,1.35,-9.2],0.04,0.04);
+  for(const [x,y,z] of [[-123.2,0,-12.9],[-122.4,0,-13.1],[-123,0.5,-12.95]])blk('woodDark',x,y,z,0.7,0.5,0.55);
+  box('paper',-110.04,1.5,-8.4,-110,2.1,-7.9);box('red',-110.05,2.0,-8.4,-110.01,2.1,-7.9);
   place('the janitor\'s office',[-117,1.5,-9],7);
   view('The janitor\'s office',[-117,1.2,-9.5],5.2,0.6,0.25,'mt_janitor');
   card('mt_janitor','The janitor\'s office','A cramped room off the corridor: a desk with a radio playing something old, shelves of cleaning supplies, a mop leaning in its bucket. The Bureau\'s janitor keeps the House clean, and seems to know a good deal more about it than he lets on.');
@@ -201,6 +206,14 @@ export function buildMaintenance(K){
   box('concreteDark',30.5,1.5,40,39.5,10.5,44,['nz']);B.quad('lightWhite',A(30.5,1.5,43.9),A(39.5,1.5,43.9),A(39.5,10.5,43.9),A(30.5,10.5,43.9),[0,0,-1]);
   for(const [x0,y0,x1,y1] of [[29.8,0.8,40.2,1.5],[29.8,10.5,40.2,11.2],[29.8,1.5,30.5,10.5],[39.5,1.5,40.2,10.5]])box('steelDark',x0,y0,39.5,x1,y1,40);
   lamp(35,6,38,0xf4f8ff,1.3,26,[0,0,-1]);panels(26,12,44,12,12,6,0.6,12);
+  // filter banks two high down both side walls: steel frames, grating faces
+  for(const [x0,x1,f] of [[20,20.5,20.52],[49.5,50,49.48]])for(let z=9;z<35;z+=3)for(const y of [0.3,3.1]){box('steelDark',x0,y,z,x1,y+2.6,z+2.8);
+    box('grate',Math.min(f,x0+(x0<30?0.5:0)),y+0.15,z+0.15,Math.max(f,x0<30?x1:x0),y+2.45,z+2.65);}
+  // two great ducts along the ceiling from the north wall to the fan wall, flanged every three metres
+  for(const x of [24,46]){box('steel',x-0.9,9.6,5,x+0.9,11.4,40);for(let z=7;z<40;z+=3)box('steelDark',x-1.0,9.5,z,x+1.0,11.5,z+0.15);}
+  // the fan's mouth: warning stripes on the floor before it, a rail across, a control panel to one side
+  for(let k=0;k<10;k++)box(k%2?'black':'yellow',30+k,0.01,37,31+k,0.03,38.2,['ny']);
+  rail([29.5,0,36.5],[40.5,0,36.5],1.1);F.terminal(ox+43,oy,oz+37,Math.PI);
   const fanShape=new THREE.Shape();{const N=5,Rb=4.3,Rh=0.9;for(let i=0;i<N;i++){const a=i/N*Math.PI*2;for(let k=0;k<=6;k++){const b=a-0.32+k/6*0.64,r=k===0||k===6?Rh:Rb*(0.85+0.15*Math.sin(k/6*Math.PI));const px=Math.cos(b)*r,py=Math.sin(b)*r;if(i===0&&k===0)fanShape.moveTo(px,py);else fanShape.lineTo(px,py);}
     const g=a+Math.PI/N;fanShape.lineTo(Math.cos(g)*Rh,Math.sin(g)*Rh);}}
   const fan=new THREE.Mesh(new THREE.ExtrudeGeometry(fanShape,{depth:0.25,bevelEnabled:false}),new THREE.MeshLambertMaterial({color:0x3a3c40}));
@@ -212,9 +225,14 @@ export function buildMaintenance(K){
   // ================================================================ the Furnace Chamber
   room(101,0,5,109,6,40,CORR,{n:[[101,109,0,6]],s:[[101,109,0,6]]});panels(105,8,105,38,6,8,0.9,12,0xffe0a0);
   const FX0=60,FX1=150,FZ0=40,FZ1=160,FH=30;
-  room(FX0,0,FZ0,FX1,FH,FZ1,{floor:'terrazzo',wall:'concreteWarm',ceil:'concreteWarm:ceil'},{n:[[101,109,0,6]],s:[[90,120,12,24]]});
+  room(FX0,0,FZ0,FX1,FH,FZ1,{floor:'concreteDark',wall:'concreteWarm',ceil:'concreteDark:ceil'},{n:[[101,109,0,6]],s:[[90,120,12,24]]});
   // pilasters down both long walls
   for(let z=48;z<FZ1;z+=12){F.pier(ox+FX0+0.9,oy,oz+z,3,1.8,FH,Math.PI/2,'concreteWarm');F.pier(ox+FX1-0.9,oy,oz+z,3,1.8,FH,Math.PI/2,'concreteWarm');}
+  // the ceiling: deep beams across the hall, one over each pair of pilasters; a bronze lamp on every pilaster
+  for(let z=48;z<FZ1;z+=12){box('concreteDark:ceil',FX0,FH-2.2,z-0.9,FX1,FH,z+0.9,['py']);
+    for(const [x,o] of [[FX0+2.1,1],[FX1-2.1,-1]]){box('brass',x-(o>0?0.3:0),7,z-0.25,x+(o>0?0:0.3),7.6,z+0.25);blk('lightFurnace',x+o*0.2,7.6,z,0.3,0.4,0.3);lamp(x+o*1.2,7.8,z,0xffb850,0.5,11);}}
+  // a dark stone runner up the middle of the floor to the foot of the stair, edged in brass
+  box('rockBlack',96,0,FZ0,114,0.03,70,['ny']);for(const x of [96,114])beam('brass',[x,0.035,FZ0],[x,0.035,70],0.12,0.02);
   // the landing at the top, full width, and the three flights up to it - the grand one in the middle
   box('concreteWarm',64,0,100,146,12,FZ1,['ny']);
   B.stairs('concreteWarm',ox+105,oy,oz+70,-Math.PI/2,20,0.3,0.75,40);
@@ -225,9 +243,12 @@ export function buildMaintenance(K){
   box('concreteDark',90,12,FZ1,91,24,166,['px']);box('concreteDark',119,12,FZ1,120,24,166,['nx']);box('concreteDark',90,23.9,FZ1,120,24.6,166);
   B.quad('lightFurnace',A(90,12,165.8),A(120,12,165.8),A(120,24,165.8),A(90,24,165.8),[0,0,-1]);
   for(const [x0,x1,y0,y1] of [[86,90,10,28],[120,124,10,28],[86,124,24.6,28]])box('concreteDark',x0,y0,FZ1-1.5,x1,y1,FZ1);
+  // a second frame stepped out round the first, and a grate of heavy bars across the mouth
+  for(const [x0,x1,y0,y1] of [[82,86,8,31],[124,128,8,31],[82,128,28,31]])box('rockBlack',x0,y0,FZ1-2.6,x1,y1,FZ1);
+  for(let x=93;x<=117;x+=3)beam('steelDark',[x,12,FZ1+0.8],[x,23.9,FZ1+0.8],0.35,0.35);beam('steelDark',[90,18,FZ1+0.6],[120,18,FZ1+0.6],0.4,0.4);
   lamp(105,18,157,0xffb030,2.4,135,[0,-0.2,-1]);lamp(105,14,140,0xffc040,1.2,60);
   for(const z of [60,90]){lamp(80,24,z,0xffd070,0.6,30);lamp(130,24,z,0xffd070,0.6,30);}
-  zone(FX0-1,-1,FZ0-1,FX1+1,FH+1,FZ1+7,0x8a6418,0.6);
+  zone(FX0-1,-1,FZ0-1,FX1+1,FH+1,FZ1+7,0x3e2a12,0.65);   /* dim: the furnace and the lamps do the lighting */
   // what moves: the glow at the mouth, and the embers
   const glowM=new THREE.MeshBasicMaterial({color:0xffb030,transparent:true,opacity:0.35,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
   const glow=new THREE.Mesh(new THREE.PlaneGeometry(34,16),glowM);glow.position.set(...A(105,18,FZ1-0.8));glow.rotation.y=Math.PI;dyn.add(glow);
@@ -243,7 +264,7 @@ export function buildMaintenance(K){
   view('Up the grand stair',[105,8,96],30,Math.PI,0.2,'mt_furnace');
   view('The furnace mouth',[105,18,160],18,Math.PI+0.25,0.05,'mt_furnace');
   card('mt_furnace','The Furnace Chamber','A golden hall, and at the top of a grand stair the furnace: a mouth in the south wall the width of a house, blazing so bright the whole chamber glows the colour of it. What goes in does not come out. The Bureau burns things here that cannot be destroyed any other way.');
-  fog([105,12,110],70,'#5a3c0a',0.009);
+  fog([105,12,110],70,'#3a2408',0.007);
 
   // ================================================================ every frame
   let lastT=0;

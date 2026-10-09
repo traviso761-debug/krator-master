@@ -31,34 +31,40 @@ function rock(rnd){const S=256,[c,g]=canvas(S,S);g.fillStyle='#4a4a4c';g.fillRec
 function ashtray(){const W=128,H=256,[c,g]=canvas(W,H);g.fillStyle='#e8d8b8';g.fillRect(0,0,W,H);
   const diamond=(cx,cy)=>{for(let k=0;k<24;k++){const a=k/24*Math.PI*2;g.strokeStyle=k%2?'#a8201a':'#e8d8b8';g.lineWidth=5;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(a)*64*Math.abs(Math.cos(a))+Math.cos(a)*10,cy+Math.sin(a)*128*Math.abs(Math.sin(a))+Math.sin(a)*10);g.stroke();}};
   g.save();g.beginPath();g.moveTo(64,0);g.lineTo(128,128);g.lineTo(64,256);g.lineTo(0,128);g.closePath();g.clip();g.fillStyle='#8a1a14';g.fillRect(0,0,W,H);diamond(64,128);g.restore();
+  g.strokeStyle='#c89a48';g.lineWidth=5;g.beginPath();g.moveTo(64,6);g.lineTo(122,128);g.lineTo(64,250);g.lineTo(6,128);g.closePath();g.stroke();
   g.strokeStyle='#5a1008';g.lineWidth=3;g.beginPath();g.moveTo(64,0);g.lineTo(128,128);g.lineTo(64,256);g.lineTo(0,128);g.closePath();g.stroke();return c;}
 function motel(rnd){const S=128,[c,g]=canvas(S,S);g.fillStyle='#ffffff';g.fillRect(0,0,S,S);for(let x=0;x<S;x+=16){g.fillStyle='rgba(0,0,0,0.08)';g.fillRect(x,0,6,S);}noise(g,S,S,12,rnd);return c;}
 function ceiling(rnd){const S=128,[c,g]=canvas(S,S);g.fillStyle='#d4d2cc';g.fillRect(0,0,S,S);for(let i=0;i<500;i++){g.fillStyle='rgba(90,88,84,0.35)';g.fillRect(rnd()*S,rnd()*S,1,1);}g.strokeStyle='#8a8880';g.lineWidth=2;g.strokeRect(1,1,S-2,S-2);return c;}
 function paper(rnd){const S=128,[c,g]=canvas(S,S);g.fillStyle='#f2efe6';g.fillRect(0,0,S,S);g.fillStyle='rgba(60,60,80,0.4)';for(let y=12;y<S;y+=8)g.fillRect(10,y,60+rnd()*50,1.2);noise(g,S,S,8,rnd);return c;}
+// needles and leaves: short fine strokes, light and dark, on a mid tone (the greens tint it)
+function needle(rnd){const S=128,[c,g]=canvas(S,S);g.fillStyle='#c8c8c8';g.fillRect(0,0,S,S);
+  for(let i=0;i<900;i++){const x=rnd()*S,y=rnd()*S,a=rnd()*0.8-0.4+(rnd()<0.5?0:Math.PI),l=3+rnd()*6,k=rnd();g.strokeStyle=k<0.5?'rgba(40,40,40,0.5)':'rgba(255,255,255,0.45)';
+    g.lineWidth=0.8+rnd()*0.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke();}
+  blot(g,S,S,8,24,'rgba(0,0,0,0.18)',rnd);return c;}
 // a soft round dot, for glows and the motes in the air
 function dot(){const [c,g]=canvas(64,64);const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.35,'rgba(255,255,255,0.5)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return c;}
 
 export function makeTextures(THREE,rnd,aniso){
   return {concrete:tex(THREE,concrete(rnd,true),aniso),panel:tex(THREE,concrete(rnd,false),aniso),carpet:tex(THREE,carpet(rnd),aniso),wood:tex(THREE,wood(rnd),aniso),
-    terrazzo:tex(THREE,terrazzo(rnd),aniso),tile:tex(THREE,tile(rnd),aniso),grate:tex(THREE,grate(rnd),aniso),rock:tex(THREE,rock(rnd),aniso),ashtray:tex(THREE,ashtray(),aniso),
+    terrazzo:tex(THREE,terrazzo(rnd),aniso),tile:tex(THREE,tile(rnd),aniso),grate:tex(THREE,grate(rnd),aniso),rock:tex(THREE,rock(rnd),aniso),ashtray:tex(THREE,ashtray(),aniso),needle:tex(THREE,needle(rnd),aniso),
     motel:tex(THREE,motel(rnd),aniso),ceiling:tex(THREE,ceiling(rnd),aniso),paper:tex(THREE,paper(rnd),aniso),dot:tex(THREE,dot(),aniso)};
 }
 
 // metres per texture repeat, [across, up]
-export const TEX_M={concrete:[4,4],panel:[3,3],carpet:[2,2],wood:[1.2,2.4],terrazzo:[2.4,2.4],tile:[1.2,1.2],grate:[1,1],rock:[6,6],ashtray:[1.2,2.4],motel:[1.6,1.6],ceiling:[1.2,1.2],paper:[0.6,0.6]};
+export const TEX_M={concrete:[4,4],panel:[3,3],carpet:[2,2],wood:[1.2,2.4],terrazzo:[2.4,2.4],tile:[1.2,1.2],grate:[1,1],rock:[6,6],ashtray:[0.6,1.2],motel:[1.6,1.6],ceiling:[1.2,1.2],paper:[0.6,0.6],needle:[0.9,0.9]};
 
 // the materials: key -> [texture, colour, options]. Builders write geometry under these keys; a key with a
 // ':' suffix (e.g. 'concrete:ceil') shares the look but becomes its own mesh, so ceilings can be lifted away.
 export const MAT_DEF={
   concrete:['concrete',0xd6d2ca],concreteDark:['concrete',0x8a867e],concreteWarm:['concrete',0xcfc4b4],brick:['panel',0x9a5a44],brickDark:['panel',0x6a4234],panel:['panel',0xe2ded6],panelDark:['panel',0x7a7670],
-  carpet:['carpet',0x8a1a1c],carpetDark:['carpet',0x4a1012],carpetGrey:['carpet',0x5a5654],wood:['wood',0xffffff],woodDark:['wood',0x8a7a70],
+  carpet:['carpet',0x8a1a1c],carpetDark:['carpet',0x4a1012],carpetGrey:['carpet',0x5a5654],curtain:['carpet',0x9cc4ae],wood:['wood',0xffffff],woodDark:['wood',0x8a7a70],
   terrazzo:['terrazzo',0xffffff],tile:['tile',0xffffff],tileGreen:['tile',0x9ac8b0],grate:['grate',0xffffff],steel:[null,0x6a6c70],steelDark:[null,0x2e3034],brass:[null,0xb8903a],
   rock:['rock',0xffffff],rockBlack:['rock',0x5a5a60],rockRed:['rock',0xb06a5a],ashtray:['ashtray',0xffffff],motel:['motel',0x2a4a9a],ceiling:['ceiling',0xffffff],paper:['paper',0xffffff],
-  glass:[null,0x9ab8c0,{transparent:true,opacity:0.35}],leaf:[null,0x3a6a32],leafDark:[null,0x24401f],bark:[null,0x5a3a26],black:[null,0x0c0c0e],white:[null,0xf4f4f2],red:[null,0xc8201a],orange:[null,0xe8641a],
+  glass:[null,0x9ab8c0,{transparent:true,opacity:0.35}],leaf:['needle',0x42703c],leafDark:['needle',0x2a4a2a],bark:[null,0x5a3a26],black:[null,0x0c0c0e],white:[null,0xf4f4f2],red:[null,0xc8201a],orange:[null,0xe8641a],
   yellow:[null,0xe8b830],teal:[null,0x3aa8a8],pipe:[null,0xd89a3a],pipeRed:[null,0xb8301a],
   // the ones that give light: they are not lit, they shine
   lightPanel:[null,0xfff8ec,{emissive:true}],lightWarm:[null,0xffc880,{emissive:true}],lightTeal:[null,0x7affe8,{emissive:true}],lightRed:[null,0xff3a2a,{emissive:true}],
-  lightFurnace:[null,0xffc030,{emissive:true}],lightWhite:[null,0xffffff,{emissive:true}],lightBlue:[null,0x6ab8ff,{emissive:true}],screen:[null,0x8affc8,{emissive:true}],
+  lightFurnace:[null,0xffc030,{emissive:true}],lightWhite:[null,0xffffff,{emissive:true}],lightBlue:[null,0x6ab8ff,{emissive:true}],lightSky:[null,0xc8d2dc,{emissive:true}],screen:[null,0x8affc8,{emissive:true}],
 };
 
 export function makeMaterial(THREE,T,key){

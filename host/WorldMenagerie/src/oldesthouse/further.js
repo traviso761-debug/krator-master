@@ -189,6 +189,15 @@ export function buildFurther(K){
     B.blk('lightBlue',ix,iy+4.2,MZ+0.3,9,0.6,0.1);for(let k=0;k<9;k++)B.blk('lightWhite',ix-3.6+k*0.9,iy+4.25,MZ+0.38,0.5,0.5,0.06);   /* the sign */
     B.blk('carpetGrey',ix+6,iy,MZ+5,3,0.45,1.2);B.blk('carpetGrey',ix+6,iy+0.45,MZ+4.5,3,0.6,0.2);F.plant(ix+10,iy,MZ+2,1);
     for(const x of [ix-8,ix+2])lights.add([x,iy+4.6,MZ+8],0x7a9aff,1.0,14);
+    // walnut wainscot round the lobby under a rail (the doorways left open), and the warm lamps a motel keeps on
+    for(const [x0,z0,x1,z1] of [[ix-12,MZ,ix-2.5,MZ+0.08],[ix+2.5,MZ,ix+12,MZ+0.08],[ix-12,ML-0.08,ix-2.5,ML],[ix+2.5,ML-0.08,ix+12,ML],[ix-12,MZ,ix-11.92,ML],[ix+11.92,MZ,ix+12,ML]]){
+      B.box('woodDark',x0,iy,z0,x1,iy+1.0,z1);B.box('wood',x0-(x1-x0<1?0.04:0),iy+1.0,z0-(z1-z0<1?0.04:0),x1+(x1-x0<1?0.04:0),iy+1.08,z1+(z1-z0<1?0.04:0));}
+    B.box('woodDark',ix-8,iy+0.15,MZ+9.18,ix+2,iy+1.0,MZ+9.2);for(let k=0;k<5;k++)B.box('wood',ix-7.6+k*2,iy+0.3,MZ+9.14,ix-6.4+k*2,iy+0.85,MZ+9.18);   /* the desk's panelled front */
+    F.lamp(ix-6.6,iy+1.32,MZ+10.2,0xffc890,0.7,7);B.beam('brass',[ix-6.6,iy+1.13,MZ+10.2],[ix-6.6,iy+1.2,MZ+10.2],0.12,0.12);
+    B.blk('steelDark',ix+0.6,iy+1.13,MZ+10.1,0.6,0.3,0.45);B.blk('paper',ix-2.4,iy+1.13,MZ+10,0.5,0.02,0.35);   /* the register, the guest book */
+    B.blk('woodDark',ix+8.4,iy,MZ+3,0.6,0.55,0.6);F.lamp(ix+8.4,iy+0.8,MZ+3,0xffc890,0.6,6);
+    // on the south wall, a painting of the sea the motel is named for, in a walnut frame
+    B.box('woodDark',ix+4,iy+1.9,ML-0.1,ix+8,iy+3.6,ML-0.04);B.box('tileGreen',ix+4.15,iy+2.05,ML-0.13,ix+7.85,iy+2.75,ML-0.1);B.box('white',ix+4.15,iy+2.75,ML-0.13,ix+7.85,iy+3.45,ML-0.1);
     const CE=iz+152;
     B.room({floor:'carpetDark',wall:'motel',ceil:'ceiling:ceil'},ix-2.5,iy,ML,ix+2.5,iy+MH,CE,{n:[[0,5,MH]]});
     let n=101;for(let z=ML+4;z<CE-3;z+=6){for(const s of [-1,1]){const x=ix+s*2.48,yaw=s>0?Math.PI/2:-Math.PI/2;
@@ -213,12 +222,25 @@ export function buildFurther(K){
 
   // =================================================================== THE ASTRAL PLANE
   {const [ax,ay,az]=AO,GY=ay-200;
-    B.quad('tile',[ax-500,GY,az-500],[ax+500,GY,az-500],[ax+500,GY,az+500],[ax-500,GY,az+500],[0,1,0]);
-    // black slabs, floating, some upright, some leaning, some lying
-    for(let k=0;k<34;k++){const a=R(0,6.283),r=R(70,420),x=ax+Math.cos(a)*r,z=az+Math.sin(a)*r,y=GY+R(10,260),h=R(14,60),w=R(5,16),t=R(1.5,4);
-      const lean=R(-0.9,0.9),dir=R(0,6.283),p=[x,y,z],q=[x+Math.sin(lean)*Math.cos(dir)*h,y+Math.cos(lean)*h,z+Math.sin(lean)*Math.sin(dir)*h];B.beam('black',p,q,w,t);}
-    for(let k=0;k<6;k++){const x=ax+R(-300,300),z=az+R(-300,300);B.blk('black',x,GY,z,R(4,10),R(30,90),R(4,10));}
-    lights.zone([ax-520,ay-320,az-520],[ax+520,ay+320,az+520],0xf4f4f2,1);
+    /* the light here is the same everywhere, so every face is one light cell (coarse) */
+    const was=B.coarse;B.coarse=true;
+    B.quad('tile',[ax-2400,GY,az-2400],[ax+2400,GY,az-2400],[ax+2400,GY,az+2400],[ax-2400,GY,az+2400],[0,1,0]);   /* out past where the white swallows it */
+    // under the pyramid, its shadow in the floor: a black triangle, point toward the way in
+    B.quad('black',[ax-60,GY+0.05,az-40],[ax+60,GY+0.05,az-40],[ax,GY+0.05,az+64],[ax,GY+0.05,az+64],[0,1,0]);
+    // a ring of monoliths standing round it, faces turned in
+    for(let k=0;k<12;k++){const a=k/12*Math.PI*2+0.13,r=250+(k%3)*30,x=ax+Math.cos(a)*r,z=az+Math.sin(a)*r,h=70+(k*53%5)*14;
+      B.at(x,GY,z,-a);B.box('black',-2,0,-9,2,h,9);B.pop();}
+    /* nothing in line with the pyramid as the views and the Board's event see it (yaws 0.5, 0.9, 1.1), so it never
+       seems to stand on a slab */
+    const clear=(x,z,w)=>[0.5,0.9,1.1].every(y=>Math.abs((x-ax)*Math.cos(y)-(z-az)*Math.sin(y))>45+w/2);
+    // black slabs, floating, some upright, some leaning, some lying: broad, heavy, and in every size
+    for(let k=0;k<34;k++){const a=R(0,6.283),r=R(70,520),x=ax+Math.cos(a)*r,z=az+Math.sin(a)*r,y=GY+R(10,260),h=R(18,70),w=R(8,26),t=R(2.5,6);
+      const lean=R(-0.9,0.9),dir=R(0,6.283),p=[x,y,z],q=[x+Math.sin(lean)*Math.cos(dir)*h,y+Math.cos(lean)*h,z+Math.sin(lean)*Math.sin(dir)*h];if(clear(x,z,w+h)&&clear(q[0],q[2],w))B.beam('black',p,q,w,t);}
+    for(let k=0;k<6;k++){const x=ax+R(-300,300),z=az+R(-300,300),w=R(4,10),h=R(30,90),d=R(4,10);if(clear(x,z,w))B.blk('black',x,GY,z,w,h,d);}
+    // and cubes, hanging still
+    for(let k=0;k<14;k++){const a=R(0,6.283),r=R(120,600),s=R(4,14),y=GY+R(20,200);if(clear(ax+Math.cos(a)*r,az+Math.sin(a)*r,s))B.blk('black',ax+Math.cos(a)*r,y,az+Math.sin(a)*r,s,s,s);}
+    B.coarse=was;
+    lights.zone([ax-2420,ay-320,az-2420],[ax+2420,ay+320,az+2420],0xf4f4f2,1);
     K.zones.push({c:[ax,ay,az],r:700,color:'#eeeeec',density:0.0007});   /* thin, so the pyramid stays black */
     // the pyramid: black, inverted, hanging in the white, turning slowly; a pale ring shows when the Board speaks
     const pyr=new THREE.Mesh(new THREE.ConeGeometry(70,120,4).rotateX(Math.PI),new THREE.MeshBasicMaterial({color:0x040405,fog:false}));   /* unlit: black against the white, however far */

@@ -195,7 +195,6 @@ async function build(){
       ctl.d=clamp(ctl.d*Math.exp(dy*0.0014),ctl.dmin,ctl.dmax);}});
   const keys=trackKeys({onKey:(k,e,held)=>{wake();
     if(held){stopFall();anim=null;return;}
-    if(k===BIND.fly){S.fly=!S.fly;syncUI();return;}
     if(k==='b'){play(e.shiftKey?2:1);return;}
     if(k==='m'){toggleSound();return;}
     if(k===BIND.close){views.classList.remove('open');vb.setAttribute('aria-expanded','false');stopFall();}}});
@@ -223,7 +222,7 @@ async function build(){
   const bb=mkBtn('Biwa',ui,()=>play(1));bb.title='Nakime plays, and the castle moves (B)';
   const gb=mkBtn('Biwa ×3',ui,()=>play(2));gb.title='A great strum: three strikes, and the castle turns itself inside out (Shift+B)';
   const ab=mkBtn('',ui,()=>{S.auto=!S.auto;nextAuto=performance.now()+15000;syncUI();writeHash();});ab.title='Whether she plays on her own - every fifteen to thirty seconds, a great strum every fourth time, and the castle never still between';
-  const flyB=mkBtn('Fly',ui,()=>{S.fly=!S.fly;syncUI();});flyB.title='Fly (F): drag to look, WASD along where you look, Q/E down and up, the wheel for speed';
+  const flyB=document.createElement('button');   // fly mode is not offered in the fictional scenes: no button, no key
   const fallB=mkBtn('Fall',ui,()=>S.fall?endFall():startFall());fallB.title='Fall in through the doors the way the Demon Slayer Corps did, down past everything';
   const sb=mkBtn('',ui,()=>toggleSound());sb.title='The biwa (M)';
   function toggleSound(){wake();biwa.sound.on=!biwa.sound.on;syncUI();}
@@ -285,7 +284,7 @@ async function build(){
    setState(ctl,VIEWS[0]);
    if(at.length===6&&at.every(Number.isFinite))setState(ctl,{t:at.slice(0,3),d:at[3],yaw:at[4],pitch:at[5]});
    const vi=+HASH.get('view');if(HASH.has('view')&&VIEWS[vi]){setState(ctl,VIEWS[vi]);showCard(VIEWS[vi].card);}
-   if(HASH.has('fly'))S.fly=true;
+   // (#fly no longer turns fly mode on)
    if(HASH.has('fall'))setTimeout(startFall,600);
    // #strum (or #strum=2 for a great strum): she plays as soon as the page is up
    if(HASH.has('strum'))setTimeout(()=>play(+HASH.get('strum')===2?2:1),1500);}

@@ -176,6 +176,8 @@ export function descent(api){
     gauge.tabIndex=0;
     Object.assign(gauge.style,{position:'fixed',right:'10px',top:'90px',bottom:'calc(var(--barh,56px) + 16px)',width:'86px',
       display:'flex',flexDirection:'column',gap:'4px',zIndex:5,font:'11px/1.2 Georgia,serif',color:'#f0dcc0',userSelect:'none'});
+    // under the clock column (#side: the compass, the time bar, the readout), however tall that is, not over it
+    {const place=()=>{const sd=document.getElementById('side');if(sd)gauge.style.top=Math.round(sd.getBoundingClientRect().bottom+10)+'px';};setInterval(place,500);requestAnimationFrame(place);}
     const gUp=document.createElement('button'),gDown=document.createElement('button');
     for(const [b,t,d] of [[gUp,'▲ Up','Up towards the surface'],[gDown,'▼ Down','Down the shaft']]){
       b.textContent=t;b.title=d;Object.assign(b.style,{background:'rgba(13,11,46,.9)',color:'#f0dcc0',border:'1px solid #c99a55',padding:'4px',cursor:'pointer'});}

@@ -110,9 +110,13 @@ async function build(){
   // the views: the overview first, then each sector's, grouped by sector
   const VIEWS=[{name:'The blueprints',group:'The Oldest House',t:[0,-60,40],d:820,yaw:0.55,pitch:0.95,card:'house',cut:true}   /* below the Astral Plane, which hangs at 800 m and up */,...K.views];
   let anim=null;
+  /* the events now running; one that drives the camera (camera:true) lets go of it, through its stop(), the moment
+     anything else takes the camera: another event, a view, a drag, the wheel, a held key */
+  const running=[];
+  function release(){for(let i=running.length-1;i>=0;i--)if(running[i].camera){running[i].stop&&running[i].stop();running.splice(i,1);}}
   const snap=s=>({t:s.t.clone(),d:s.d,yaw:s.yaw,pitch:s.pitch});
   function setState(s,v){s.t.set(v.t[0],v.t[1],v.t[2]);s.d=v.d;s.yaw=v.yaw;s.pitch=v.pitch;}
-  function go(v,Tt){anim=null;const from=snap(ctl),dl=Math.abs(Math.log(v.d/ctl.d)),dt=ctl.t.distanceTo(new V3(...v.t));
+  function go(v,Tt){anim=null;release();const from=snap(ctl),dl=Math.abs(Math.log(v.d/ctl.d)),dt=ctl.t.distanceTo(new V3(...v.t));
     if(Tt===undefined)Tt=clamp(1.1+0.3*dl+0.35*Math.log(1+dt/Math.max(v.d,ctl.d)),1.1,5);anim={from,to:v,t0:performance.now(),T:Tt*1000};
     setCut(!!v.cut);}   /* a view that does not ask for the cutaway puts the ceilings back */
   function step(now){const a=anim,s=ctl,u=clamp((now-a.t0)/a.T,0,1),e=u*u*(3-2*u);
@@ -124,14 +128,13 @@ async function build(){
   // ---- the input: drag to orbit, right or Shift-drag to pan, the wheel to zoom; F flies; X the cutaway ----
   const el=renderer.domElement,rv=new V3(),uv=new V3();
   function pan(dx,dy){const s=ctl,k=2*s.d*Math.tan(camera.fov*Math.PI/360)/innerHeight;rv.setFromMatrixColumn(camera.matrix,0);uv.setFromMatrixColumn(camera.matrix,1);s.t.addScaledVector(rv,-dx*k).addScaledVector(uv,dy*k);}
-  trackPointers(el,{down:()=>{anim=null;},
+  trackPointers(el,{down:()=>{anim=null;release();},
     drag:(dx,dy,{pan:p})=>{const s=ctl;if(p)pan(dx,dy);
       else if(S.fly){const P0=s.t.clone().add(offs(s,ov3));s.yaw-=dx*0.004;s.pitch=clamp(s.pitch+dy*0.004,-1.52,1.52);s.t.copy(P0).sub(offs(s,ov3));}
       else{s.yaw-=dx*ORBIT_RATE;s.pitch=clamp(s.pitch+dy*ORBIT_RATE,-1.52,1.52);}},
     pinch:(ratio,dx,dy)=>{ctl.d=clamp(ctl.d*ratio,ctl.dmin,ctl.dmax);pan(dx,dy);},
-    wheel:(dy)=>{anim=null;if(S.fly){S.flySpeed=clamp(S.flySpeed*Math.exp(-dy*0.0015),0.5,600);return;}ctl.d=clamp(ctl.d*Math.exp(dy*0.0014),ctl.dmin,ctl.dmax);}});
-  const keys=trackKeys({onKey:(k,e,held)=>{if(held){anim=null;return;}
-    if(k===BIND.fly){S.fly=!S.fly;syncUI();return;}
+    wheel:(dy)=>{anim=null;release();if(S.fly){S.flySpeed=clamp(S.flySpeed*Math.exp(-dy*0.0015),0.5,600);return;}ctl.d=clamp(ctl.d*Math.exp(dy*0.0014),ctl.dmin,ctl.dmax);}});
+  const keys=trackKeys({onKey:(k,e,held)=>{if(held){anim=null;release();return;}
     if(k===BIND.cut){setCut(!S.cut);return;}
     if(k===BIND.close){views.classList.remove('open');vb.setAttribute('aria-expanded','false');evp.classList.remove('open');}}});
 
@@ -153,13 +156,12 @@ async function build(){
     for(const v of list)mkBtn(v.name,views,()=>{go(v);showCard(v.card);views.classList.remove('open');vb.setAttribute('aria-expanded','false');});}
   // the events: each sector's, in one panel
   const eb=mkBtn('Events',ui,()=>{const o=!evp.classList.contains('open');evp.classList.toggle('open',o);views.classList.remove('open');});
-  const running=[];
-  function fire(key){const E=K.events.find(e=>e.key===key);if(!E)return;evp.classList.remove('open');
+  function fire(key){const E=K.events.find(e=>e.key===key);if(!E)return;evp.classList.remove('open');release();
     const r=E.start({go,showCard,setCut,camera,ctl});if(r&&r.update)running.push(r);if(E.card)showCard(E.card);
     if(E.view)go(E.view);}
   for(const E of K.events)mkBtn(E.label,evp,()=>fire(E.key));
   const cutB=mkBtn('Cutaway',ui,()=>setCut(!S.cut));cutB.title='Lift the ceilings (X): the sectors from above, as the blueprints draw them';
-  const flyB=mkBtn('Fly',ui,()=>{S.fly=!S.fly;syncUI();});flyB.title='Fly (F): drag to look, WASD along where you look, Q/E down and up, the wheel for speed';
+  const flyB=document.createElement('button');   // fly mode is not offered in the fictional scenes: no button, no key
   function syncUI(){flyB.setAttribute('aria-pressed',String(S.fly));cutB.setAttribute('aria-pressed',String(S.cut));}
   const wire=createWire({THREE,scene,animHooks});
   installWireUI({ui,mkBtn,wire,hash:location.hash.slice(1)});
@@ -172,7 +174,7 @@ async function build(){
   {const at=(HASH.get('at')||'').split(',').map(Number);setState(ctl,VIEWS[0]);setCut(!!VIEWS[0].cut);
    if(at.length===6&&at.every(Number.isFinite)){setState(ctl,{t:at.slice(0,3),d:at[3],yaw:at[4],pitch:at[5]});setCut(HASH.has('cut'));}
    const vn=HASH.get('view');if(vn!=null){const v=VIEWS.find(x=>x.name===vn)||VIEWS[+vn];if(v){setState(ctl,v);setCut(!!v.cut);showCard(v.card);}}
-   if(HASH.has('fly'))S.fly=true;
+   // (#fly no longer turns fly mode on)
    if(HASH.has('event'))setTimeout(()=>fire(HASH.get('event')),900);}
   syncUI();
   trackResize(renderer,camera);

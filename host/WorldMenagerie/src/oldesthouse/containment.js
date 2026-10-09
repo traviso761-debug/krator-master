@@ -168,9 +168,17 @@ export function buildContainment(K){
   B.room({floor:'tile',wall:'tile',ceil:'ceiling:ceil'},-175,0,85,-45,5,175,{e:[[25,35,4]]});
   for(let i=0;i<8;i++){const xc=-165+i*14;for(const zs of [92,168]){const s=zs<120?1:-1;
       B.box('steel',xc-1,0,zs,xc+1,0.55,zs+s*2.2);B.box('white',xc-0.95,0.55,zs+s*0.1,xc+0.95,0.75,zs+s*2.1);B.box('white',xc-0.7,0.75,zs+s*0.2,xc+0.7,0.9,zs+s*0.7);
-      B.box('panel',xc+3,0,zs,xc+3.05,2.6,zs+s*3);F.cabinet(xc-2.2,0,zs+s*0.4,s>0?0:Math.PI);}}
+      B.box('panel',xc+3,0,zs,xc+3.05,2.6,zs+s*3);F.cabinet(xc-2.2,0,zs+s*0.4,s>0?0:Math.PI);
+      /* a curtain on its rail across the foot of the bed, drawn back to the partition in pleats; a drip stand; a
+         monitor on the cabinet */
+      const zc=zs+s*2.9;B.beam('steel',[xc-3,2.5,zc],[xc+3,2.5,zc],0.04,0.04);
+      for(let k=0;k<7;k++)B.box('curtain',xc+1.1+k*0.27,0.35,zc-0.03+(k%2)*0.08*s,xc+1.38+k*0.27,2.45,zc+0.01+(k%2)*0.08*s);
+      B.beam('steel',[xc+1.3,0,zs+s*0.5],[xc+1.3,2.0,zs+s*0.5],0.04,0.04);B.box('glass',xc+1.2,1.6,zs+s*0.45-0.05,xc+1.4,1.95,zs+s*0.45+0.05);
+      const mz0=zs+s*0.25,mz1=zs+s*0.55;B.box('steelDark',xc-2.4,1.32,Math.min(mz0,mz1),xc-2.0,1.62,Math.max(mz0,mz1));B.box('screen',xc-2.36,1.36,zs+s*0.56-0.005,xc-2.04,1.58,zs+s*0.56+0.005);}}
   // the ward walls either side of the middle corridor, a doorway into each bay
-  for(const zw of [112,138])for(let x=-175;x<-45;x+=14){B.box('tile',x,0,zw-0.15,x+10,3.2,zw+0.15);B.box('tile',x+10,2.4,zw-0.15,x+14,3.2,zw+0.15);}
+  for(const zw of [112,138])for(let x=-175;x<-45;x+=14){B.box('tile',x,0,zw-0.15,x+10,3.2,zw+0.15);B.box('tile',x+10,2.4,zw-0.15,x+14,3.2,zw+0.15);
+    B.box('tileGreen',x,1.0,zw-0.17,x+10,1.25,zw+0.17,['ny','py']);}
+  B.box('teal',-175,0,118.8,-45,0.015,119.2,['ny']);   /* the guide line down the middle corridor */
   // the nurses' station and the operating table
   B.box('panel',-125,0,124,-95,1.1,126);B.box('white',-125.2,1.1,123.8,-94.8,1.16,126.2);F.terminal(-118,0,128,Math.PI);F.terminal(-104,0,128,Math.PI);
   B.box('steel',-70,0,128,-67.5,0.9,132);B.box('white',-70.2,0.9,127.8,-67.3,1.05,132.2);B.cyl('steelDark',-68.7,3.8,130,1.2,1.4,0.5,16);B.box('lightWhite',-69.4,3.75,129.3,-68,3.8,130.7);
@@ -199,6 +207,7 @@ export function buildContainment(K){
     {name:'The Archives',group:G,t:W(110,10,35),d:45,yaw:1.3,pitch:0.15,card:'contain_archives'},
     {name:'Logistics',group:G,t:W(110,4,130),d:40,yaw:0.9,pitch:0.2,card:'contain_logistics'},
     {name:'The Medical Wing',group:G,t:W(-110,2,130),d:30,yaw:-1.2,pitch:0.05,card:'contain_medical'},
+    {name:'A ward bay',group:G,t:W(-123,1.0,95),d:8,yaw:0.3,pitch:0.18,card:'contain_medical'},
     {name:'The Containment checkpoint',group:G,t:W(0,2,160),d:14,yaw:0.2,pitch:0.1,card:'contain_checkpoint'},
     {name:'Containment from above',group:G,t:W(0,0,0),d:420,yaw:0.4,pitch:1.1,card:'contain_sector',cut:true});
   Object.assign(cards,{

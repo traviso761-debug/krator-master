@@ -9,6 +9,7 @@ import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {surface} from './surface.js';
+import {desert} from './desert.js';
 import {organism} from './organism.js';
 import {descent} from './camera.js';
 import {anatomy} from './anatomy.js';
@@ -34,5 +35,5 @@ configureLoading({
   ],
   prefix:'opening the park… ',labels:{tunnels:'gating the passages',section:'cutting the section',anatomy:'finding the heart',promenade:'laying the paths',visitors:'opening the gates',fauna:'counting the copepods',incident:'filing the report','map-data':'reading the survey',ground:'laying the caliche',buildings:'raising the visitor center',details:'planting the mesquite',landmarks:'railing off the lip',el:'running the monorail',traffic:'opening the road',organism:'descending',ui:'opening the windows'}});
 const ctx=window._iz={defaultCity:'fleshpit',pitBus:createPitBus(),models:[landmarks,surface],
-  extras:[{name:'organism',fn:organism},{name:'tunnels',fn:tunnels},{name:'anatomy',fn:anatomy},{name:'promenade',fn:promenade},{name:'visitors',fn:visitors},{name:'fauna',fn:fauna},{name:'incident',fn:incident},{name:'section',fn:section},{name:'descent',fn:descent}]};
+  extras:[{name:'desert',fn:desert},{name:'organism',fn:organism},{name:'tunnels',fn:tunnels},{name:'anatomy',fn:anatomy},{name:'promenade',fn:promenade},{name:'visitors',fn:visitors},{name:'fauna',fn:fauna},{name:'incident',fn:incident},{name:'section',fn:section},{name:'descent',fn:descent}]};
 boot(()=>build(ctx));

@@ -32,8 +32,8 @@ export class Builder{
     let ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=d[0]-a[0],vy=d[1]-a[1],vz=d[2]-a[2];
     let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const nl=Math.hypot(nx,ny,nz)||1;nx/=nl;ny/=nl;nz/=nl;
     if(out&&nx*out[0]+ny*out[1]+nz*out[2]<0){[b,d]=[d,b];nx=-nx;ny=-ny;nz=-nz;}
-    const base=m.split(':')[0],tm=TEX_M[{concreteDark:'concrete',concreteWarm:'concrete',panelDark:'panel',carpetDark:'carpet',carpetGrey:'carpet',woodDark:'wood',
-      rockBlack:'rock',rockRed:'rock',tileGreen:'tile',brick:'panel',brickDark:'panel'}[base]||base]||[2,2];
+    const base=m.split(':')[0],tm=TEX_M[{concreteDark:'concrete',concreteWarm:'concrete',panelDark:'panel',carpetDark:'carpet',carpetGrey:'carpet',curtain:'carpet',woodDark:'wood',
+      rockBlack:'rock',rockRed:'rock',tileGreen:'tile',brick:'panel',brickDark:'panel',leaf:'needle',leafDark:'needle'}[base]||base]||[2,2];
     const w=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]),h=Math.hypot(d[0]-a[0],d[1]-a[1],d[2]-a[2]);
     /* coarse: one cell, for long thin things the light need not vary along (window strips, rails) */
     const nu=this.coarse?1:Math.max(1,Math.min(40,Math.ceil(w/this.cell))),nv=this.coarse?1:Math.max(1,Math.min(40,Math.ceil(h/this.cell)));
@@ -141,7 +141,8 @@ export function furnish(B,lights){
     // the terminal on a pedestal (the Bureau's computers are old, beige, square-screened)
     terminal(x,y,z,yaw=0){B.at(x,y,z,yaw);B.box('panel',-0.3,0,-0.3,0.3,0.9,0.3);B.box('panel',-0.3,0.9,-0.3,0.3,1.3,0.1);B.box('screen',-0.2,0.95,0.1,0.2,1.25,0.11);B.pop();},
     // the Bureau's piers: tall slabs of concrete, fluted on their faces, as in the Central Executive
-    pier(x,y,z,w,d,h,yaw=0,m='concrete'){B.at(x,y,z,yaw);B.box(m,-w/2,0,-d/2,w/2,h,d/2);const n=Math.max(2,Math.floor(w/0.6));
+    pier(x,y,z,w,d,h,yaw=0,m='concrete'){B.at(x,y,z,yaw);B.box(m,-w/2,0,-d/2,w/2,h,d/2);B.box('concreteDark',-w/2-0.2,0,-d/2-0.2,w/2+0.2,0.4,d/2+0.2,['ny']);
+      B.box('concreteDark',-w/2-0.1,h-0.3,-d/2-0.1,w/2+0.1,h,d/2+0.1);   /* a dark plinth it stands on, a shadow-line cap */const n=Math.max(2,Math.floor(w/0.6));
       for(const s of [-1,1])for(let k=0;k<n;k++){const u=-w/2+(k+0.5)*w/n;B.box(m,u-w/n*0.3,0.4,s*d/2,u+w/n*0.3,h-0.4,s*(d/2+0.08));}B.pop();},
     // a rail along a line: posts and a top bar
     rail(p,q,h=1.05,m='steelDark'){const L=Math.hypot(q[0]-p[0],q[2]-p[2]),n=Math.max(1,Math.ceil(L/1.6));
@@ -155,8 +156,11 @@ export function furnish(B,lights){
     lamp(x,y,z,c=0xffc880,i=0.8,r=6){B.blk('lightWarm',x,y,z,0.35,0.3,0.35);L(x,y,z,c,i,r);},
     // a pipe from p to q, radius r: as a square-sectioned run is enough at these sizes
     pipe(p,q,r=0.3,m='pipe'){B.beam(m,p,q,r*2,r*2);},
-    // a potted plant: a concrete planter and a heap of leaves
-    plant(x,y,z,s=1){B.blk('concreteDark',x,y,z,0.7*s,0.6*s,0.7*s);for(let k=0;k<5;k++){const a=k*1.3;B.blk('leaf',x+Math.cos(a)*0.2*s,y+0.6*s+k*0.12*s,z+Math.sin(a)*0.2*s,0.5*s,0.4*s,0.5*s);}},
+    // a potted plant: a concrete planter with a rim, soil, and long fronds that arch up and droop out over it
+    plant(x,y,z,s=1){B.blk('concreteDark',x,y,z,0.7*s,0.6*s,0.7*s);B.blk('concreteDark',x,y+0.6*s,z,0.8*s,0.06*s,0.8*s,['ny']);B.blk('rockBlack',x,y+0.6*s,z,0.6*s,0.07*s,0.6*s,['ny']);
+      const n=9,c=[x,y+0.62*s,z];for(let k=0;k<n;k++){const a=k*2.4+x*0.7+z*1.3,h=0.55+0.45*((k*37)%10)/10,ca=Math.cos(a),sa=Math.sin(a);
+        const m=[x+ca*0.35*s,y+(0.62+0.7*h)*s,z+sa*0.35*s],e=[x+ca*(0.7+0.3*h)*s,y+(0.62+0.35*h)*s,z+sa*(0.7+0.3*h)*s];
+        B.beam(k%2?'leaf':'leafDark',c,m,0.22*s,0.05*s);B.beam(k%2?'leaf':'leafDark',m,e,0.18*s,0.05*s);}},
     // a doorway's frame (the opening itself is the gap the room leaves)
     doorframe(x,y,z,yaw=0,w=1.6,h=2.6,m='woodDark'){B.at(x,y,z,yaw);B.box(m,-w/2-0.15,0,-0.12,-w/2,h+0.15,0.12);B.box(m,w/2,0,-0.12,w/2+0.15,h+0.15,0.12);B.box(m,-w/2,h,-0.12,w/2,h+0.15,0.12);B.pop();},
     light:L,
