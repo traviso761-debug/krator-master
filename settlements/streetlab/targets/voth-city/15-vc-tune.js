@@ -85,7 +85,7 @@ var TUNE = {
                  Guild: { workshop: 5, shop: 3, store: 2, guildhall: 1, office: 1, smithy: 1 },
                  Market: { shop: 6, store: 3, tavern: 1, workshop: 2, kitchen: 1 },
                  Granary: { bakery: 3, granary: 5, kitchen: 1, office: 1, store: 1 },
-                 Arena: { training: 4, barracks: 3, stable: 3, mess: 1, store: 1, shrine: 1 },
+                 Arena: { training: 4, mess: 1, store: 1, shrine: 1, armoury: 1 },   /* its dorms and stables are the top storey's wings (gateway) */
                  Port: { warehouse: 6, office: 1, workshop: 2, tavern: 1 },
                  Fortress: { training: 3, barracks: 3, office: 2, armoury: 1, shrine: 1 },   /* its cells are all in its dungeon (TUNE.interiors.dungeon) */
                  Foreign: { office: 4, reception: 2, library: 1, living: 2, bedroom: 2 },
@@ -94,6 +94,10 @@ var TUNE = {
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
                cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               /* a canton whose top has its own gateway: its core under it (offsets from the canton's middle, measured off Voth's
+                  arena pit entrance, 65l: the building 54 x 17 m at z -54..-71, its barred gate on its -z..+z front), the way the
+                  stair arrives (toward the field), the gate's mouth, the top storey's wings by arm (2: west, 3: east) and their colours */
+               gateway: { Arena: { core: [0, -62.7], axis: [0, 1], gate: [0, -52.5], wings: { 2: 'barracks', 3: 'stable' }, colours: { barracks: 0x5d7391, stable: 0xa88f50 } } },
                /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
                dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
@@ -196,7 +200,7 @@ var TUNE = {
             mill: 3, watermill: 4, ranch: 8, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }
   },
   /* the rim cantons' decks (33-vc-country.js VC.cantonDecks): usable square inside the parapets, layout grid, gaps */
-  decks: { port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },
+  decks: { capturedPad: 1.5, capturedH: 14, port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },
            embassies: ['Hykkousoi', 'Iziz', 'Jimjam', 'Republic', 'Dalab', 'Yuni'], fill: { Granary: 6, Arsenal: 8, Market: 16, Foreign: 6 } },
   station: { roadReach: 160, gap: 2, laneHalf: 11, platGap: 2, layLen: 56, taper: 34, forecourt: 10 },   /* an elephant bug lay-by: 22 m wide, 56 m straight beside the platform */
   bugAwning: 0xd9792b, beaconOpacity: 0.55, navCell: 10, navHalf: 4200, navFree: 60, navFreeBug: 22, berthClear: 14, causewayClear: 8, bugWade: 4.5, bugSink: 2.5, bugScale: 0.5,   /* the elephant bug at half Voth's size (owner, 2026-10-09: it towered over the buildings); its wading depth and sink halved with it */ portEdge: 3900, timeScale: 6,

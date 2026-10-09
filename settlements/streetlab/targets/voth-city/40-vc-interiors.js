@@ -82,6 +82,12 @@ VC.intPlanTiered = function (M) {
   /* a top level that is a ring round a keep (the Fortress): the core rises inside the keep, which opens onto the ring */
   if (M.top.ri) off = Math.min(off, M.top.ri - T.core - 3);
   var cc = [M.x + axis[0] * off, M.z + axis[1] * off];
+  /* a canton whose top has a gateway of its own (owner, 2026-10-09: "make the arena interior actually interface with the
+     gates and doors topside"; "separate paths from that big gateway to clearly-defined dorms and stables"): the core
+     stands under Voth's building (the Arena's barred pit entrance, TUNE.interiors.gateway), its stair rising inside it
+     and out through its gate onto the field; the top storey's side arms are the wings it names, each down its own hall */
+  var GW = T.gateway && T.gateway[M.n];
+  if (GW) { cc = [M.x + GW.core[0], M.z + GW.core[1]]; axis = GW.axis; perp = [-axis[1], axis[0]]; }
   var P = { n: M.n, M: M, axis: axis, perp: perp, core: { x: cc[0], z: cc[1], half: T.core }, tiers: tiers, rooms: [], halls: [], tunnels: [], flights: [], boxes: [], floors: [], doorsOut: doors, storeys: [] };
   var allSt = [];
   tiers.forEach(function (t) { t.storeys.forEach(function (s) { allSt.push({ t: t, s: s }); }); });
@@ -100,7 +106,8 @@ VC.intPlanTiered = function (M) {
       var c0 = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1], start = T.core - 1.5, end = reach - c0;   /* it starts inside the core: no wall between */
       if (end - start < T.room.w[0] + 2) return;
       var hall = VC.intRect(cc, d, start, end, T.hall / 2, s.y, s.h, 'hall');
-      hall.storey = si; hall.arm = ai; P.halls.push(hall);
+      hall.storey = si; hall.arm = ai; hall.d = d; P.halls.push(hall);
+      var wing = GW && si === allSt.length - 1 && GW.wings[ai]; if (wing) hall.wing = wing;
       /* rooms along both sides */
       [-1, 1].forEach(function (side) {
         var a0 = T.start, idx = 0;
@@ -115,7 +122,7 @@ VC.intPlanTiered = function (M) {
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
           room.door = { x: dp[0], z: dp[1], w: T.doorW, n: [-(-d[1] * side), -(d[0] * side)] };
-          room.kind = s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
+          room.kind = wing ? wing : s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
           room.id = M.n + '.s' + si + '.a' + ai + (side > 0 ? 'r' : 'l') + idx;
           P.rooms.push(room);
           a0 += w + T.room.gap; idx++;
@@ -196,7 +203,9 @@ VC.intCoreStair = function (P, S, yNext) {
 VC.intWell = function (P) { var wl = TUNE.interiors.well, a = wl[1] - 0.8; return Math.abs(P.axis[0]) > 0.5 ? [a, wl[0]] : [wl[0], a]; };
 /* the stair house over the core on the top deck: walls on three sides, its door where the last flight arrives */
 VC.intStairHouse = function (P) {
-  var T = TUNE.interiors, c = P.core, w = T.well, M = P.M;
+  var T = TUNE.interiors, c = P.core, w = T.well, M = P.M, GW = T.gateway && T.gateway[M.n];
+  /* the gateway's own building is the house: nothing is built on the deck, its gate is the door */
+  if (GW) return { gate: true, x: c.x, z: c.z, y: M.top.y, hw: w[0] + 3.6, hd: w[1] + 3.6, h: 0, door: [M.x + GW.gate[0], M.z + GW.gate[1]], n: GW.axis.slice() };
   if (M.top.ri) {
     /* the keep's floor at the ring's height, its walls round it, a door onto the ring where the stair arrives */
     var r = M.top.ri + 0.3, d = [M.x - P.axis[0] * (r - 0.9), M.z - P.axis[1] * (r - 0.9)];   /* its floor meets the ring */
@@ -337,7 +346,7 @@ VC.intWalk = function (W) {
     P.flights.forEach(function (f) { W.strip({ a: [f.a[0], f.a[1], f.y0], b: [f.b[0], f.b[1], f.y1], w: f.w, name: cn + ' core stair', tag: tag }); });
     P.boxes.forEach(function (b) { if (b.kind === 'wall') W.block([b.x0, b.x1, b.z0, b.z1, b.y0 + 0.05, b.y1], tag); });
     (P.shell || []).forEach(function (s) { W.block(s, tag + ':shell'); });
-    if (P.house) {
+    if (P.house && !P.house.gate) {
       /* the stair house's walls on the deck: three sides, the door side open */
       var H = P.house, t = TUNE.interiors.wallT, x0 = H.x - H.hw, x1 = H.x + H.hw, z0 = H.z - H.hd, z1 = H.z + H.hd;
       [[x0, x1, z0 - t / 2, z0 + t / 2, [0, -1]], [x0, x1, z1 - t / 2, z1 + t / 2, [0, 1]], [x0 - t / 2, x0 + t / 2, z0, z1, [-1, 0]], [x1 - t / 2, x1 + t / 2, z0, z1, [1, 0]]].forEach(function (w) {
@@ -367,6 +376,7 @@ VC.intEntrances = function () {
         var sc = at(2.6, 0); B.BOX(sc[0], D.y - 0.15, sc[1], w + 1.6, 0.3, 1.6, ry, B.shade(tone, -0.08));                  /* the sill */
       });
       var H = P.house; if (!H || H.keep) return;
+      if (H.gate) { B.BOX(H.x, H.y - 0.02, H.z, (Math.abs(P.axis[0]) > 0.5 ? T.well[1] : T.well[0]) * 2, 0.06, (Math.abs(P.axis[0]) > 0.5 ? T.well[0] : T.well[1]) * 2, 0, 0x1c1814); return; }   /* inside the gateway: the well's mouth only */
       var t = 0.9, x0 = H.x - H.hw, x1 = H.x + H.hw, z0 = H.z - H.hd, z1 = H.z + H.hd, col = B.shade(tone, 0.06), y = H.y;
       [[x0, x1, z0, [0, -1]], [x0, x1, z1, [0, 1]], [z0, z1, x0, [-1, 0]], [z0, z1, x1, [1, 0]]].forEach(function (s) {
         var n = s[3], alongX = n[0] === 0, mid = (s[0] + s[1]) / 2, len = s[1] - s[0], door = n[0] === H.n[0] && n[1] === H.n[1];

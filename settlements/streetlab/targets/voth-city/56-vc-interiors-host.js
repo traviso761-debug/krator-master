@@ -77,7 +77,17 @@ VC.drawInterior = function (cn) {
   var byS = {};
   var add = function (si, b, col) { var S = P.storeys[si]; (byS[si] = byS[si] || []).push([b, S && S.dungeon ? col.clone().multiplyScalar(TUNE.interiors.dungeonDark) : col]); };   /* the dungeon in darker stone */
   P.boxes.forEach(function (b) { add(b.storey, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], wall); });
-  P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
+  var GW = TUNE.interiors.gateway && TUNE.interiors.gateway[cn], wingOf = function (f) { var h = P.halls.filter(function (q) { return q.wing && q.storey === f.storey && q.x0 === f.x0 && q.z0 === f.z0 && q.x1 === f.x1 && q.z1 === f.z1; })[0]; return h && h.wing; };
+  P.floors.forEach(function (f) { var wg = f.kind === 'hall' && GW && wingOf(f); add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], wg ? new THREE.Color(GW.colours[wg]) : f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
+  /* each wing's portal at its hall's mouth, in its colour: pillars either side, a lintel and a sign board over it */
+  P.halls.forEach(function (h) {
+    if (!h.wing || !GW) return;
+    var c = [P.core.x + h.d[0] * (TUNE.interiors.core + 0.6), P.core.z + h.d[1] * (TUNE.interiors.core + 0.6)], n = [-h.d[1], h.d[0]], hw = TUNE.interiors.hall / 2, col = new THREE.Color(GW.colours[h.wing]), y = h.y;
+    var box = function (p, along, across, y0, y1, cl) { var ax = Math.abs(h.d[0]) > 0.5; add(h.storey, ax ? [p[0] - along, p[0] + along, p[1] - across, p[1] + across, y0, y1] : [p[0] - across, p[0] + across, p[1] - along, p[1] + along, y0, y1], cl); };
+    [-1, 1].forEach(function (s) { box([c[0] + n[0] * s * (hw - 0.5), c[1] + n[1] * s * (hw - 0.5)], 0.5, 0.5, y, y + h.h - 0.4, col.clone().multiplyScalar(0.7)); });
+    box(c, 0.5, hw, y + h.h - 1.2, y + h.h - 0.4, col.clone().multiplyScalar(0.7));
+    box([c[0] + h.d[0] * 0.55, c[1] + h.d[1] * 0.55], 0.06, hw * 0.55, y + h.h - 2.0, y + h.h - 1.25, col);
+  });
   (P.ceilings || []).forEach(function (c) { add(c.storey, [c.x0, c.x1, c.z0, c.z1, c.y, c.y + 0.3], ceil); });
   P.flights.forEach(function (f) {
     var n = Math.max(2, Math.round((f.y1 - f.y0) / 0.3)), L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]), u = [(f.b[0] - f.a[0]) / L, (f.b[1] - f.a[1]) / L], alongX = Math.abs(u[0]) > 0.5;

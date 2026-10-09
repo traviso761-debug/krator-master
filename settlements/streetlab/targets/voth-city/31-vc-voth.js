@@ -356,7 +356,10 @@ VC.coastIn = function (poly) {
   }
   return out;
 };
-VC.inCanton = function (p, pad) { return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
+VC.inCanton = function (p, pad) {
+  /* a canton's real apron (20-site-cantons.js, read off its model) reaches further than Voth's radius (owner, 2026-10-09: "the long pier should not run into canton") */
+  if (typeof CANT !== 'undefined' && CANT.list && CANT.list.length && CANT.at(p[0], p[1], pad || 0)) return true;
+  return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
 VC.pierHit = function (p, w) { return VOTH.PIERS.some(function (q) { return segDist(p, [q.x0, q.z0], [q.x1, q.z1]) < (q.w + (w || 10)) / 2 + 14; }); };
 VC.wet = function (p) { return baseH(p[0], p[1]) < -1.5 && !VC.inCanton(p, 12) && !(VC.chin && VC.chin.chinHit(p[0], p[1], 6)) && !(VC.pierHit && VC.pierHit(p)); };
 

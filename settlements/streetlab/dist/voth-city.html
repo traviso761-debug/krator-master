@@ -46078,7 +46078,7 @@ var TUNE = {
                  Guild: { workshop: 5, shop: 3, store: 2, guildhall: 1, office: 1, smithy: 1 },
                  Market: { shop: 6, store: 3, tavern: 1, workshop: 2, kitchen: 1 },
                  Granary: { bakery: 3, granary: 5, kitchen: 1, office: 1, store: 1 },
-                 Arena: { training: 4, barracks: 3, stable: 3, mess: 1, store: 1, shrine: 1 },
+                 Arena: { training: 4, mess: 1, store: 1, shrine: 1, armoury: 1 },   /* its dorms and stables are the top storey's wings (gateway) */
                  Port: { warehouse: 6, office: 1, workshop: 2, tavern: 1 },
                  Fortress: { training: 3, barracks: 3, office: 2, armoury: 1, shrine: 1 },   /* its cells are all in its dungeon (TUNE.interiors.dungeon) */
                  Foreign: { office: 4, reception: 2, library: 1, living: 2, bedroom: 2 },
@@ -46087,6 +46087,10 @@ var TUNE = {
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
                cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               /* a canton whose top has its own gateway: its core under it (offsets from the canton's middle, measured off Voth's
+                  arena pit entrance, 65l: the building 54 x 17 m at z -54..-71, its barred gate on its -z..+z front), the way the
+                  stair arrives (toward the field), the gate's mouth, the top storey's wings by arm (2: west, 3: east) and their colours */
+               gateway: { Arena: { core: [0, -62.7], axis: [0, 1], gate: [0, -52.5], wings: { 2: 'barracks', 3: 'stable' }, colours: { barracks: 0x5d7391, stable: 0xa88f50 } } },
                /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
                dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
@@ -46189,7 +46193,7 @@ var TUNE = {
             mill: 3, watermill: 4, ranch: 8, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }
   },
   /* the rim cantons' decks (33-vc-country.js VC.cantonDecks): usable square inside the parapets, layout grid, gaps */
-  decks: { port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },
+  decks: { capturedPad: 1.5, capturedH: 14, port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },
            embassies: ['Hykkousoi', 'Iziz', 'Jimjam', 'Republic', 'Dalab', 'Yuni'], fill: { Granary: 6, Arsenal: 8, Market: 16, Foreign: 6 } },
   station: { roadReach: 160, gap: 2, laneHalf: 11, platGap: 2, layLen: 56, taper: 34, forecourt: 10 },   /* an elephant bug lay-by: 22 m wide, 56 m straight beside the platform */
   bugAwning: 0xd9792b, beaconOpacity: 0.55, navCell: 10, navHalf: 4200, navFree: 60, navFreeBug: 22, berthClear: 14, causewayClear: 8, bugWade: 4.5, bugSink: 2.5, bugScale: 0.5,   /* the elephant bug at half Voth's size (owner, 2026-10-09: it towered over the buildings); its wading depth and sink halved with it */ portEdge: 3900, timeScale: 6,
@@ -49015,7 +49019,10 @@ VC.coastIn = function (poly) {
   }
   return out;
 };
-VC.inCanton = function (p, pad) { return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
+VC.inCanton = function (p, pad) {
+  /* a canton's real apron (20-site-cantons.js, read off its model) reaches further than Voth's radius (owner, 2026-10-09: "the long pier should not run into canton") */
+  if (typeof CANT !== 'undefined' && CANT.list && CANT.list.length && CANT.at(p[0], p[1], pad || 0)) return true;
+  return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
 VC.pierHit = function (p, w) { return VOTH.PIERS.some(function (q) { return segDist(p, [q.x0, q.z0], [q.x1, q.z1]) < (q.w + (w || 10)) / 2 + 14; }); };
 VC.wet = function (p) { return baseH(p[0], p[1]) < -1.5 && !VC.inCanton(p, 12) && !(VC.chin && VC.chin.chinHit(p[0], p[1], 6)) && !(VC.pierHit && VC.pierHit(p)); };
 
@@ -49738,6 +49745,18 @@ VC.deckOf = function (n) {
 };
 /* the first free spot for a footprint on a deck, scored by `score` (low is best); faces the deck's middle, squared to
    the deck's axes. Returns {c, f, o} or null. */
+/* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
+   deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
+   just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+VC.capturedHit = function (n, o, y) {
+  var M = CANT.by[n]; if (!M) return false;
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
+    if (P.M !== M || cut[P.k]) return false;
+    var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
+    return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
+  });
+};
 VC.deckSpot = function (dk, hw, hd, score, gap) {
   var best = null, bs = Infinity, G = TUNE.decks.grid;
   for (var x = -dk.use; x <= dk.use; x += G) for (var z = -dk.use; z <= dk.use; z += G) {
@@ -49746,7 +49765,8 @@ VC.deckSpot = function (dk, hw, hd, score, gap) {
     for (var i = 0; i < 4 && ok; i++) { var lx = C[i][0] - dk.c[0], lz = C[i][1] - dk.c[1]; if (Math.max(Math.abs(lx), Math.abs(lz)) > dk.use || Math.hypot(lx, lz) < TUNE.decks.obelisk) ok = false; }
     if (!ok || Math.hypot(x, z) < TUNE.decks.obelisk + Math.min(hw, hd)) continue;
     if (VC.anyHit(o, dk.placed, gap == null ? TUNE.decks.gap : gap) || SL.clash(o)) continue;
-    var sc = score(x, z); if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
+    var sc = score(x, z); if (sc >= bs) continue;
+    if (VC.capturedHit(dk.n, o, dk.y)) continue;                                           /* what the canton's own model has standing there */ if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
   }
   return best;
 };
@@ -49832,7 +49852,7 @@ VC.cantonDecks = function () {
         for (var qq = -1; qq <= 1; qq++) {
           var it = qitems[(qn + qq + 3) % qitems.length]; if (!it) continue;
           var cq = V.add(V.add(po.c, V.mul(e, qhw - 8 - it.d / 2)), V.mul([-e[1], e[0]], qq * qhw * 0.55)), oq = obb(cq, [e[1], -e[0]], it.w / 2, it.d / 2);
-          if (SL.clash(oq)) continue;
+          if (SL.clash(oq) || VC.capturedHit('Port', oq, qy - 0.9)) continue;
           var Lq = VC.deckLot({ n: 'Port', y: qy, placed: [] }, 'warehouse', it, { c: cq, f: e, o: oq }); Lq.quay = true; qn++;
         }
       }
@@ -52267,6 +52287,12 @@ VC.intPlanTiered = function (M) {
   /* a top level that is a ring round a keep (the Fortress): the core rises inside the keep, which opens onto the ring */
   if (M.top.ri) off = Math.min(off, M.top.ri - T.core - 3);
   var cc = [M.x + axis[0] * off, M.z + axis[1] * off];
+  /* a canton whose top has a gateway of its own (owner, 2026-10-09: "make the arena interior actually interface with the
+     gates and doors topside"; "separate paths from that big gateway to clearly-defined dorms and stables"): the core
+     stands under Voth's building (the Arena's barred pit entrance, TUNE.interiors.gateway), its stair rising inside it
+     and out through its gate onto the field; the top storey's side arms are the wings it names, each down its own hall */
+  var GW = T.gateway && T.gateway[M.n];
+  if (GW) { cc = [M.x + GW.core[0], M.z + GW.core[1]]; axis = GW.axis; perp = [-axis[1], axis[0]]; }
   var P = { n: M.n, M: M, axis: axis, perp: perp, core: { x: cc[0], z: cc[1], half: T.core }, tiers: tiers, rooms: [], halls: [], tunnels: [], flights: [], boxes: [], floors: [], doorsOut: doors, storeys: [] };
   var allSt = [];
   tiers.forEach(function (t) { t.storeys.forEach(function (s) { allSt.push({ t: t, s: s }); }); });
@@ -52285,7 +52311,8 @@ VC.intPlanTiered = function (M) {
       var c0 = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1], start = T.core - 1.5, end = reach - c0;   /* it starts inside the core: no wall between */
       if (end - start < T.room.w[0] + 2) return;
       var hall = VC.intRect(cc, d, start, end, T.hall / 2, s.y, s.h, 'hall');
-      hall.storey = si; hall.arm = ai; P.halls.push(hall);
+      hall.storey = si; hall.arm = ai; hall.d = d; P.halls.push(hall);
+      var wing = GW && si === allSt.length - 1 && GW.wings[ai]; if (wing) hall.wing = wing;
       /* rooms along both sides */
       [-1, 1].forEach(function (side) {
         var a0 = T.start, idx = 0;
@@ -52300,7 +52327,7 @@ VC.intPlanTiered = function (M) {
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
           room.door = { x: dp[0], z: dp[1], w: T.doorW, n: [-(-d[1] * side), -(d[0] * side)] };
-          room.kind = s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
+          room.kind = wing ? wing : s.dungeon ? VC.intPick(DG.purposes, VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 5)) : VC.intRoomKind(M, si, ai, side, idx);
           room.id = M.n + '.s' + si + '.a' + ai + (side > 0 ? 'r' : 'l') + idx;
           P.rooms.push(room);
           a0 += w + T.room.gap; idx++;
@@ -52381,7 +52408,9 @@ VC.intCoreStair = function (P, S, yNext) {
 VC.intWell = function (P) { var wl = TUNE.interiors.well, a = wl[1] - 0.8; return Math.abs(P.axis[0]) > 0.5 ? [a, wl[0]] : [wl[0], a]; };
 /* the stair house over the core on the top deck: walls on three sides, its door where the last flight arrives */
 VC.intStairHouse = function (P) {
-  var T = TUNE.interiors, c = P.core, w = T.well, M = P.M;
+  var T = TUNE.interiors, c = P.core, w = T.well, M = P.M, GW = T.gateway && T.gateway[M.n];
+  /* the gateway's own building is the house: nothing is built on the deck, its gate is the door */
+  if (GW) return { gate: true, x: c.x, z: c.z, y: M.top.y, hw: w[0] + 3.6, hd: w[1] + 3.6, h: 0, door: [M.x + GW.gate[0], M.z + GW.gate[1]], n: GW.axis.slice() };
   if (M.top.ri) {
     /* the keep's floor at the ring's height, its walls round it, a door onto the ring where the stair arrives */
     var r = M.top.ri + 0.3, d = [M.x - P.axis[0] * (r - 0.9), M.z - P.axis[1] * (r - 0.9)];   /* its floor meets the ring */
@@ -52522,7 +52551,7 @@ VC.intWalk = function (W) {
     P.flights.forEach(function (f) { W.strip({ a: [f.a[0], f.a[1], f.y0], b: [f.b[0], f.b[1], f.y1], w: f.w, name: cn + ' core stair', tag: tag }); });
     P.boxes.forEach(function (b) { if (b.kind === 'wall') W.block([b.x0, b.x1, b.z0, b.z1, b.y0 + 0.05, b.y1], tag); });
     (P.shell || []).forEach(function (s) { W.block(s, tag + ':shell'); });
-    if (P.house) {
+    if (P.house && !P.house.gate) {
       /* the stair house's walls on the deck: three sides, the door side open */
       var H = P.house, t = TUNE.interiors.wallT, x0 = H.x - H.hw, x1 = H.x + H.hw, z0 = H.z - H.hd, z1 = H.z + H.hd;
       [[x0, x1, z0 - t / 2, z0 + t / 2, [0, -1]], [x0, x1, z1 - t / 2, z1 + t / 2, [0, 1]], [x0 - t / 2, x0 + t / 2, z0, z1, [-1, 0]], [x1 - t / 2, x1 + t / 2, z0, z1, [1, 0]]].forEach(function (w) {
@@ -52552,6 +52581,7 @@ VC.intEntrances = function () {
         var sc = at(2.6, 0); B.BOX(sc[0], D.y - 0.15, sc[1], w + 1.6, 0.3, 1.6, ry, B.shade(tone, -0.08));                  /* the sill */
       });
       var H = P.house; if (!H || H.keep) return;
+      if (H.gate) { B.BOX(H.x, H.y - 0.02, H.z, (Math.abs(P.axis[0]) > 0.5 ? T.well[1] : T.well[0]) * 2, 0.06, (Math.abs(P.axis[0]) > 0.5 ? T.well[0] : T.well[1]) * 2, 0, 0x1c1814); return; }   /* inside the gateway: the well's mouth only */
       var t = 0.9, x0 = H.x - H.hw, x1 = H.x + H.hw, z0 = H.z - H.hd, z1 = H.z + H.hd, col = B.shade(tone, 0.06), y = H.y;
       [[x0, x1, z0, [0, -1]], [x0, x1, z1, [0, 1]], [z0, z1, x0, [-1, 0]], [z0, z1, x1, [1, 0]]].forEach(function (s) {
         var n = s[3], alongX = n[0] === 0, mid = (s[0] + s[1]) / 2, len = s[1] - s[0], door = n[0] === H.n[0] && n[1] === H.n[1];
@@ -54103,7 +54133,17 @@ VC.drawInterior = function (cn) {
   var byS = {};
   var add = function (si, b, col) { var S = P.storeys[si]; (byS[si] = byS[si] || []).push([b, S && S.dungeon ? col.clone().multiplyScalar(TUNE.interiors.dungeonDark) : col]); };   /* the dungeon in darker stone */
   P.boxes.forEach(function (b) { add(b.storey, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], wall); });
-  P.floors.forEach(function (f) { add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
+  var GW = TUNE.interiors.gateway && TUNE.interiors.gateway[cn], wingOf = function (f) { var h = P.halls.filter(function (q) { return q.wing && q.storey === f.storey && q.x0 === f.x0 && q.z0 === f.z0 && q.x1 === f.x1 && q.z1 === f.z1; })[0]; return h && h.wing; };
+  P.floors.forEach(function (f) { var wg = f.kind === 'hall' && GW && wingOf(f); add(f.storey, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], wg ? new THREE.Color(GW.colours[wg]) : f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' ? hallF : floor); });
+  /* each wing's portal at its hall's mouth, in its colour: pillars either side, a lintel and a sign board over it */
+  P.halls.forEach(function (h) {
+    if (!h.wing || !GW) return;
+    var c = [P.core.x + h.d[0] * (TUNE.interiors.core + 0.6), P.core.z + h.d[1] * (TUNE.interiors.core + 0.6)], n = [-h.d[1], h.d[0]], hw = TUNE.interiors.hall / 2, col = new THREE.Color(GW.colours[h.wing]), y = h.y;
+    var box = function (p, along, across, y0, y1, cl) { var ax = Math.abs(h.d[0]) > 0.5; add(h.storey, ax ? [p[0] - along, p[0] + along, p[1] - across, p[1] + across, y0, y1] : [p[0] - across, p[0] + across, p[1] - along, p[1] + along, y0, y1], cl); };
+    [-1, 1].forEach(function (s) { box([c[0] + n[0] * s * (hw - 0.5), c[1] + n[1] * s * (hw - 0.5)], 0.5, 0.5, y, y + h.h - 0.4, col.clone().multiplyScalar(0.7)); });
+    box(c, 0.5, hw, y + h.h - 1.2, y + h.h - 0.4, col.clone().multiplyScalar(0.7));
+    box([c[0] + h.d[0] * 0.55, c[1] + h.d[1] * 0.55], 0.06, hw * 0.55, y + h.h - 2.0, y + h.h - 1.25, col);
+  });
   (P.ceilings || []).forEach(function (c) { add(c.storey, [c.x0, c.x1, c.z0, c.z1, c.y, c.y + 0.3], ceil); });
   P.flights.forEach(function (f) {
     var n = Math.max(2, Math.round((f.y1 - f.y0) / 0.3)), L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]), u = [(f.b[0] - f.a[0]) / L, (f.b[1] - f.a[1]) / L], alongX = Math.abs(u[0]) > 0.5;

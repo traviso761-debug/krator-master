@@ -242,6 +242,18 @@ VC.deckOf = function (n) {
 };
 /* the first free spot for a footprint on a deck, scored by `score` (low is best); faces the deck's middle, squared to
    the deck's axes. Returns {c, f, o} or null. */
+/* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
+   deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
+   just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+VC.capturedHit = function (n, o, y) {
+  var M = CANT.by[n]; if (!M) return false;
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
+    if (P.M !== M || cut[P.k]) return false;
+    var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
+    return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
+  });
+};
 VC.deckSpot = function (dk, hw, hd, score, gap) {
   var best = null, bs = Infinity, G = TUNE.decks.grid;
   for (var x = -dk.use; x <= dk.use; x += G) for (var z = -dk.use; z <= dk.use; z += G) {
@@ -250,7 +262,8 @@ VC.deckSpot = function (dk, hw, hd, score, gap) {
     for (var i = 0; i < 4 && ok; i++) { var lx = C[i][0] - dk.c[0], lz = C[i][1] - dk.c[1]; if (Math.max(Math.abs(lx), Math.abs(lz)) > dk.use || Math.hypot(lx, lz) < TUNE.decks.obelisk) ok = false; }
     if (!ok || Math.hypot(x, z) < TUNE.decks.obelisk + Math.min(hw, hd)) continue;
     if (VC.anyHit(o, dk.placed, gap == null ? TUNE.decks.gap : gap) || SL.clash(o)) continue;
-    var sc = score(x, z); if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
+    var sc = score(x, z); if (sc >= bs) continue;
+    if (VC.capturedHit(dk.n, o, dk.y)) continue;                                           /* what the canton's own model has standing there */ if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
   }
   return best;
 };
@@ -336,7 +349,7 @@ VC.cantonDecks = function () {
         for (var qq = -1; qq <= 1; qq++) {
           var it = qitems[(qn + qq + 3) % qitems.length]; if (!it) continue;
           var cq = V.add(V.add(po.c, V.mul(e, qhw - 8 - it.d / 2)), V.mul([-e[1], e[0]], qq * qhw * 0.55)), oq = obb(cq, [e[1], -e[0]], it.w / 2, it.d / 2);
-          if (SL.clash(oq)) continue;
+          if (SL.clash(oq) || VC.capturedHit('Port', oq, qy - 0.9)) continue;
           var Lq = VC.deckLot({ n: 'Port', y: qy, placed: [] }, 'warehouse', it, { c: cq, f: e, o: oq }); Lq.quay = true; qn++;
         }
       }
