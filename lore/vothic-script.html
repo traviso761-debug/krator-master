@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vothic Script</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya+SC:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a live scribe at the top, then the 33-letter chart as a grid of cards, then the rules that made it. */
+:root{
+  --bg:#ece6dc; --panel:#e3dbcd; --ink:#2a1f38; --muted:#6b5f72; --accent:#8a6517; --line:#cbbfae; --green:#3f6a4b;
+  --display:"Alegreya SC", "Palatino Linotype", Georgia, serif;
+  --body:"Alegreya", "Palatino Linotype", Georgia, serif;
+  --mono:"JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#211a2c; --panel:#2b2238; --ink:#ebe5da; --muted:#a99db3; --accent:#d4ac52; --line:#40354f; --green:#7fae8a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+h1,h2{font-family:var(--display);font-weight:700;letter-spacing:.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05}
+h2{font-size:1.6rem;margin-bottom:12px}
+p{margin:0 0 12px;max-width:65ch}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:.88em}
+header{display:grid;gap:14px}
+.hero-glyphs{display:flex;flex-wrap:wrap;gap:2px;align-items:flex-end;min-height:80px}
+.hero-glyphs svg{width:46px;height:62px}
+.ink{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mark{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.plain .mark{stroke:var(--ink)}
+.dia{fill:var(--accent);stroke:none}
+.plain .dia{fill:var(--ink)}
+/* scribe */
+.scribe{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px}
+.scribe label{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#src{flex:1 1 260px;min-width:0;font:1.15rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+#src:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:500 .85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--accent);color:var(--accent)}
+.out{display:flex;flex-wrap:wrap;gap:6px 22px;min-height:84px;align-items:flex-end}
+.word{display:flex;align-items:flex-end}
+.word svg{width:40px;height:54px}
+.unk{display:inline-grid;place-items:center;width:30px;height:40px;margin-bottom:8px;border:1px dashed var(--muted);border-radius:3px;font:500 .9rem var(--mono);color:var(--muted)}
+.tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+.note{font-size:.9rem;color:var(--muted)}
+.samples{display:flex;flex-wrap:wrap;gap:6px}
+/* chart */
+.chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+.card{border:1px solid var(--line);border-radius:4px;padding:10px 10px 12px;display:grid;justify-items:center;gap:2px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit}
+.card:hover{border-color:var(--accent)}
+.card svg{width:64px;height:86px}
+.card .rom{font:600 1.05rem var(--mono);color:var(--accent)}
+.card .ipa{font:.8rem var(--mono);color:var(--muted)}
+.card .name{font-family:var(--display);font-size:1.05rem;margin-top:4px}
+.card .gloss{font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.3}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:var(--muted);margin-top:4px}
+.legend b{color:var(--accent);font-weight:600}
+/* tables */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:500 .74rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+td.m{font-family:var(--mono);font-size:.9rem}
+td.g svg{width:26px;height:35px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+.cols>div{min-width:0}
+.feat{display:grid;gap:14px}
+.feat .f{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.feat .pair{display:flex;align-items:flex-end}
+.feat .pair svg{width:38px;height:52px}
+.feat .arrow{color:var(--muted);font-family:var(--mono);padding:0 4px 14px}
+@media (prefers-reduced-motion:no-preference){.word svg{animation:ink .35s ease-out both}}
+@keyframes ink{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:none}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Tzintzuntzan · the script of the Realm of the Son of the Sun</div>
+  <h1>Vothic Script</h1>
+  <div class="hero-glyphs plain" id="hero" aria-label="Tzintzuntzan written in Vothic script"></div>
+  <p>Thirty-three letters, one for each sound of the tongue spoken from Shim to Zey'danin. The bowls and loops come from a Georgian hand, the blades and hooked serifs from Daedric. Vowels are round. Consonants end in a cut. A gold <b>thorn</b> marks a breathed sound.</p>
+</header>
+
+<section class="scribe" aria-labelledby="scribe-h">
+  <h2 id="scribe-h">Scribe</h2>
+  <label for="src">Romanized Vothic</label>
+  <div class="row">
+    <input id="src" type="text" value="Voth, Tzintzuntzan. Tzin dha Tzun." autocomplete="off" spellcheck="false">
+    <button id="ib" type="button" title="Insert the high central vowel">ï</button>
+  </div>
+  <div class="samples" id="samples"></div>
+  <div class="out plain" id="out" aria-live="polite"></div>
+  <div class="tokens" id="tok"></div>
+  <p class="note">Digraphs are single letters: <span class="mono">tzh chh tz ch ph th kh sh hl dh ng rh</span>. A doubled vowel is a long one and is written twice. An apostrophe is the syllable cut; a full stop is the diamond. Latin <span class="mono">c f j q w x</span> have no letter.</p>
+</section>
+
+<section aria-labelledby="chart-h">
+  <h2 id="chart-h">The thirty-three</h2>
+  <p>In the order of the English letters they descend from, as the Daedric list keeps the Latin order. Each letter is named for a word that begins with it, and every name is an English word worn down by the sound changes below. Click a letter to write it in the scribe.</p>
+  <div class="legend"><span><b>Gold</b> strokes are the added marks: the thorn (breath), the bar, the root (tail).</span></div>
+  <div class="chart" id="chart" style="margin-top:14px"></div>
+</section>
+
+<section aria-labelledby="feat-h">
+  <h2 id="feat-h">Marks</h2>
+  <p>Most letters are their own shapes, as in Georgian. Three marks are systematic, so a reader who knows the plain letter can read its marked partner.</p>
+  <div class="cols">
+    <div class="feat" id="feat"></div>
+    <div>
+      <p><b>The thorn</b> (<i>Thon</i>) is the breath mark. It turns a stop into its aspirated pair, as Purépecha pairs <span class="mono">p/ph</span>, <span class="mono">t/th</span>, <span class="mono">k/kh</span>, <span class="mono">ts/tsh</span>, <span class="mono">ch/chh</span>. It also sits on <span class="mono">hl</span>, the breathed <span class="mono">l</span> of Dunmer names like Hlaalu.</p>
+      <p><b>The bar</b> crosses the ascender of <span class="mono">d</span> to make <span class="mono">dh</span>, much as Old English crossed its d to write ð.</p>
+      <p><b>The root</b> is a tail below the line for sounds made at the back or the roof of the mouth: <span class="mono">ng</span> from <span class="mono">n</span>, retroflex <span class="mono">rh</span> from the flap <span class="mono">r</span>.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="snd-h">
+  <h2 id="snd-h">From English</h2>
+  <p>The tongue descends from English across a long dark age, worn into a sound inventory between Purépecha and Dunmer: aspirated stops and affricates, a high central vowel, a retroflex r, a breathed l, and a fondness for v and dh. These are the regular changes. The letter names follow them.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Vothic</th><th>Examples</th><th></th></tr></thead>
+    <tbody id="changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="names-h">
+  <h2 id="names-h">Names on the record</h2>
+  <p>Place and title names already in the lore, written out. <span class="mono">-tzan</span> "realm, place of" has no English source: it is a Chichani word that survived the conquest, and it echoes the real Purépecha town of Tzintzuntzan.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Script</th><th>Meaning, origin</th></tr></thead>
+    <tbody id="names"></tbody>
+  </table></div>
+</section>
+</div>
+
+<script>
+/* Each glyph: [romanization, IPA, name, gloss, base strokes, marked strokes].
+   Drawn on a 60 x 86 grid: x-height 28, baseline 60, ascender 4, descender 86. */
+const T=(x,y)=>`M${x} ${y} l7 -11 l5 7`;
+const B={
+  ch:"M30 30 L30 82 L23 86 M30 48 Q18 44 14 32 L8 29 M30 40 Q42 36 46 24 L54 21",
+  d:"M10 44 Q10 30 21 30 Q31 31 29 44 Q27 58 39 59 Q51 59 50 40 Q49 20 37 8 L28 4",
+  k:"M14 8 L20 4 L20 60 L12 64 M20 44 Q30 28 42 32 Q48 38 40 46 L30 48 L48 62",
+  l:"M8 42 Q8 30 17 31 Q25 33 22 45 Q19 58 30 59 Q41 58 38 45 Q35 33 44 31 Q53 30 52 42 L48 50",
+  n:"M16 28 Q8 42 15 53 Q21 62 31 58 Q41 52 37 39 Q35 31 41 26",
+  p:"M16 28 L16 82 L9 86 M16 30 L36 27 Q47 33 41 46 L16 50",
+  r:"M12 32 Q20 22 32 29 Q42 36 35 46 L46 52",
+  t:"M6 34 L12 28 L46 28 L52 34 M29 28 Q23 46 29 60 L40 63",
+  tz:"M44 30 Q34 23 24 30 Q14 38 18 50 Q23 60 35 58 L40 70 L33 84",
+};
+const G=[
+ ["a","a","Ash","ash","M10 36 Q10 27 18 28 Q25 30 20 42 Q15 56 26 60 Q38 63 44 48 Q47 38 45 28 L53 21"],
+ ["b","b","Bon","bone","M28 60 Q12 60 13 46 Q14 32 28 32 Q42 32 43 46 Q44 60 28 60 M20 34 Q14 20 22 8 L34 4 L38 12"],
+ ["ch","tʃ","Chi","tree",B.ch],
+ ["chh","tʃʰ","Chhit","street",B.ch,T(34,18)],
+ ["d","d","Dok","dock",B.d],
+ ["dh","ð","Dhai","they",B.d,"M36 23 L56 14"],
+ ["e","e","Ek","egg","M44 34 Q34 25 22 30 Q10 37 13 49 Q17 61 31 60 Q41 59 46 52 M18 45 L38 44 L42 38"],
+ ["g","g","Gol","gold","M12 32 Q24 22 37 28 Q49 35 45 49 Q41 61 27 60 Q17 58 19 49 Q22 42 30 45 M45 48 L46 80 L38 86"],
+ ["h","h","Hom","home","M4 8 L10 4 L10 60 M10 40 Q18 28 30 32 Q40 36 38 48 L36 60 L46 64"],
+ ["hl","ɬ","Hlev","slave",B.l,T(24,20)],
+ ["i","i","Iv","eve","M12 60 L14 38 Q16 28 25 29 Q35 30 34 42 L33 56 Q33 62 42 60 L48 52"],
+ ["k","k","Kip","keep",B.k],
+ ["kh","kʰ","Khai","sky",B.k,T(36,18)],
+ ["l","l","Lait","light",B.l],
+ ["m","m","Mun","moon","M44 8 Q10 18 12 42 Q14 62 42 64 Q26 52 27 36 Q28 20 44 8"],
+ ["n","n","Nai","night",B.n+" L45 4 L52 8"],
+ ["ng","ŋ","Ang","anger",B.n+" L48 22","M31 58 L32 82 L24 86"],
+ ["o","o","Ol","old","M30 60 Q12 60 12 44 Q12 28 30 28 Q48 28 48 44 Q48 56 36 56 Q27 55 29 46 L36 40"],
+ ["p","p","Pot","pot",B.p],
+ ["ph","pʰ","Phir","spear",B.p,T(38,18)],
+ ["r","ɾ","Ret","red","M12 60 L12 32 "+B.r.slice(B.r.indexOf("Q"))],
+ ["rh","ɽ","Irh","ear","M12 60 L12 32 "+B.r.slice(B.r.indexOf("Q")),"M12 60 L12 78 Q12 88 22 84"],
+ ["s","s","Sip","ship","M6 42 Q12 60 30 60 Q48 60 54 42 M30 60 L30 10 L44 18 L30 26"],
+ ["sh","ʃ","Shiv","chief","M4 26 L10 30 L10 48 Q10 60 20 60 Q28 60 28 48 L28 34 M28 48 Q28 60 38 60 Q46 60 46 48 L46 30 L53 23"],
+ ["t","t","Tu","two",B.t],
+ ["th","tʰ","Thon","thorn",B.t,T(32,18)],
+ ["tz","ts","Tzun","sun",B.tz],
+ ["tzh","tsʰ","Tzhon","stone",B.tz,T(42,20)],
+ ["u","u","Un","one","M8 32 Q14 25 19 33 L19 47 Q21 60 31 60 Q43 60 43 46 L43 22 L50 15"],
+ ["ï","ɨ","Ïs","us","M6 24 L12 28 L12 46 Q12 60 25 60 Q38 60 38 46 L38 28 M25 60 L25 80 L17 86"],
+ ["v","v","Vorh","war","M6 28 L14 28 L28 60 L42 28 Q50 22 54 32"],
+ ["y","j","Yu","you","M10 28 Q18 42 30 42 Q42 42 48 28 M30 42 L30 70 Q30 86 16 84"],
+ ["z","z","Zil","zeal","M8 30 L44 28 L14 58 L50 60 M20 44 L38 44"],
+];
+const BY=Object.fromEntries(G.map(g=>[g[0],g]));
+const PUNCT={"'":{d:"M26 52 L34 40"},".":{dia:"M30 44 L36 52 L30 60 L24 52 Z"},",":{d:"M30 50 L26 62"}};
+const NIB=7, STEP=.62; /* a broad nib: the path drawn several times along a 45-degree offset */
+function nib(d,cls){let s="";for(let i=0;i<NIB;i++)s+=`<path class="${cls}" d="${d}" transform="translate(${(i*STEP).toFixed(2)} ${(-i*STEP).toFixed(2)})"/>`;return s}
+function svg(g,label){
+  const inner=nib(g[4],"ink")+(g[5]?nib(g[5],"mark"):"");
+  return `<svg viewBox="-4 -6 70 96" role="img" aria-label="${label||g[0]}">${inner}</svg>`;
+}
+function psvg(p,ch){
+  const inner=p.dia?`<path class="dia" d="${p.dia}"/>`:nib(p.d,"ink");
+  return `<svg viewBox="-4 -6 70 96" role="img" aria-label="${ch}" style="width:22px">${inner}</svg>`;
+}
+const KEYS=G.map(g=>g[0]).sort((a,b)=>b.length-a.length);
+function tokenize(s){
+  s=s.toLowerCase().replace(/ɨ/g,"ï").replace(/[’‘]/g,"'");
+  const words=[];let cur=[];
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/\s/.test(c)){if(cur.length)words.push(cur);cur=[];i++;continue}
+    if(PUNCT[c]){cur.push({p:c});i++;continue}
+    const k=KEYS.find(k=>s.startsWith(k,i));
+    if(k){cur.push({g:k});i+=k.length}else{cur.push({u:c});i++}
+  }
+  if(cur.length)words.push(cur);
+  return words;
+}
+function render(text,el,tokEl){
+  const words=tokenize(text);
+  el.innerHTML=words.map(w=>`<span class="word">${w.map(t=>t.g?svg(BY[t.g]):t.p?psvg(PUNCT[t.p],t.p):`<span class="unk" title="No Vothic letter">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=words.map(w=>w.map(t=>t.g||t.p||`[${t.u}]`).join("·")).join("  ");
+}
+const src=document.getElementById("src"),out=document.getElementById("out"),tok=document.getElementById("tok");
+const go=()=>render(src.value,out,tok);
+src.addEventListener("input",go);
+document.getElementById("ib").addEventListener("click",()=>{
+  const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;
+  src.value=src.value.slice(0,a)+"ï"+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go();
+});
+const SAMPLES=["Voth","Tzintzuntzan","Chichani","Zey'danin","Hlaalu","tzhon dha khai"];
+document.getElementById("samples").innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+document.getElementById("samples").addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+render("Tzintzuntzan",document.getElementById("hero"));
+
+document.getElementById("chart").innerHTML=G.map(g=>`<button type="button" class="card" data-k="${g[0]}" aria-label="${g[0]}, named ${g[2]}">
+  ${svg(g)}<span class="rom">${g[0]}</span><span class="ipa">/${g[1]}/</span><span class="name">${g[2]}</span><span class="gloss">from “${g[3]}”</span></button>`).join("");
+document.getElementById("chart").addEventListener("click",e=>{
+  const c=e.target.closest(".card");if(!c)return;
+  src.value+=c.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"});
+});
+
+const FEAT=[["p","ph","thorn"],["t","th","thorn"],["k","kh","thorn"],["tz","tzh","thorn"],["ch","chh","thorn"],["l","hl","thorn"],["d","dh","bar"],["n","ng","root"],["r","rh","root"]];
+document.getElementById("feat").innerHTML=FEAT.map(([a,b,m])=>`<div class="f"><div class="pair">${svg(BY[a])}<span class="arrow">→</span>${svg(BY[b])}</div><div><span class="mono">${a} → ${b}</span> <span class="note">· ${m}</span></div></div>`).join("");
+
+const CH=[
+ ["s-","tz","sun → <i>tzun</i>, son → <i>tzin</i>, salt → <i>tzol</i>","tzun"],
+ ["st-","tzh","star → <i>tzhar</i>, stone → <i>tzhon</i>","tzhon"],
+ ["sp-","ph","spear → <i>phir</i>","phir"],
+ ["sk-","kh","sky → <i>khai</i>, skull → <i>khul</i>","khai"],
+ ["sl-","hl","slave → <i>hlev</i>, sleep → <i>hlip</i>","hlev"],
+ ["tr-","ch","tree → <i>chi</i>, true → <i>chu</i>","chi"],
+ ["str-","chh","street → <i>chhit</i>, strong → <i>chhong</i>","chhit"],
+ ["sh","s","ship → <i>sip</i>, shield → <i>sil</i>","sip"],
+ ["ch, j","sh","chief → <i>shiv</i>, judge → <i>shïsh</i>","shiv"],
+ ["f, w","v","war → <i>vorh</i>, fire → <i>vairh</i>, victory → <i>voth</i>","vorh"],
+ ["th (θ / ð)","th / dh","thorn → <i>thon</i>, they → <i>dhai</i>, the → <i>dha</i>","dhai"],
+ ["uh (ʌ, ə)","ï","us → <i>ïs</i>, blood → <i>blït</i>","ïs"],
+ ["final r","rh","ear → <i>irh</i>, war → <i>vorh</i>","irh"],
+ ["final b d g","p t k","egg → <i>ek</i>, red → <i>ret</i>","ek"],
+ ["unstressed syllables","lost","victory → vikt'ry → <i>voth</i>","voth"],
+];
+document.getElementById("changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g plain"></td></tr>`).join("");
+document.querySelectorAll("#changes td.g").forEach((td,i)=>render(CH[i][3],td));
+
+const NAMES=[
+ ["Voth","victory: the capital, “Victory”"],
+ ["Tzintzun","son + sun: “Son of the Sun”, the undying king"],
+ ["Tzintzuntzan","son + sun + Chichani <i>-tzan</i>: “Realm of the Son of the Sun”"],
+ ["Chichani","the founding people; the name predates the script"],
+ ["Shim","the old capital"],
+ ["Almua","the great port"],
+ ["Temora","the spice port"],
+ ["Zey'danin","gateway to the Volcano; the apostrophe is the syllable cut"],
+];
+document.getElementById("names").innerHTML=NAMES.map(n=>`<tr><td class="m">${n[0]}</td><td class="g plain"></td><td>${n[1]}</td></tr>`).join("");
+document.querySelectorAll("#names td.g").forEach((td,i)=>{render(NAMES[i][0],td);td.style.whiteSpace="nowrap"});
+</script>
+
+</html>

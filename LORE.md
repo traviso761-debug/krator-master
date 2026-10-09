@@ -354,6 +354,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Ordinators**: temple guards in green-and-gold armour, about 180 of them. A branch of them forms the secret police. Also purple-robed priests; a crimson-and-gold high priest; grey-robed penitents in threes; monks; pilgrims on shrine circuits.
 - Sign: the **diamond**, ash-white on deep purple. Ships: the Ordinator flagship, chitin biremes, cargo hulks.
 - An embassy (a clan compound) stands in Iziz and Roketstad.
+- **Language and script.** Vothic descends, very distantly, from English; its sounds sit between Purépecha and Morrowind's Dunmer: aspirated stops and affricates (p/ph, t/th, k/kh, tz/tzh, ch/chh), a high central vowel ï, tap r and retroflex rh, a breathed hl, and v, z, dh. Regular changes from English: s- > tz (sun > *tzun*, son > *tzin*: Tzintzun, "Son of the Sun"), st- > tzh, sp- > ph, sk- > kh, sl- > hl, tr- > ch, str- > chh, sh > s, ch/j > sh, f/w > v, final r > rh, final b/d/g devoice, unstressed syllables fall (victory > *Voth*). *-tzan* "realm, place of" is a Chichani survival. The script has 33 letters, Georgian bowls crossed with Daedric blades, in English alphabetical order, each named for a worn-down English word (*Ash*, *Bon* "bone", *Tzun* "sun", *Hlev* "slave"); three marks are systematic: the thorn (aspiration, and hl), the bar (d > dh) and the root (n > ng, r > rh). The full stop is the diamond. Chart, letter names and a transliterator: `lore/vothic-script.html`. [the owner, Oct 2026]
 
 ### 6.13 The Sultanate of Xanadu (East Rift Highlands)
 
