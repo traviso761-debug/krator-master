@@ -153,7 +153,39 @@ VC.drawInterior = function (cn) {
       nFurn += items.length;
     });
   });
-  g.userData.stats = { boxes: Object.keys(byS).reduce(function (s, k) { return s + byS[k].length; }, 0), furniture: nFurn, rooms: P.rooms.length, furnishMs: F.ms, missing: F.missing, errors: F.errors || 0, firstError: F.firstError || null };
+  /* the beasts in the stables (owner, 2026-10-09: "populate it with tigers, beetles, and lizards"): kits/fauna's Voth
+     animals (build.py fauna_fragment), one or two to a stable room, a KRAND hash of the room choosing which and where,
+     each fitted to the room and facing its door, idling while the interior shows (VC.INTD.beasts) */
+  var BT = TUNE.interiors.beasts, nBeast = 0;
+  if (typeof KratorFauna !== 'undefined' && BT) {
+    var protoB = VC.INTD.beastProto || (VC.INTD.beastProto = {});
+    P.rooms.forEach(function (r) {
+      if (BT.rooms.indexOf(r.kind) < 0) return;
+      var u = function (s) { return KRAND.unit(KRAND.hash(7901, Math.round(r.x0 * 4), Math.round(r.z0 * 4), s)); };
+      var n = u(1) < BT.pair ? 2 : 1, rw = r.x1 - r.x0, rd = r.z1 - r.z0;
+      for (var k = 0; k < n; k++) {
+        var key = BT.keys[Math.floor(u(2 + k) * BT.keys.length) % BT.keys.length];
+        if (!protoB[key]) { try { protoB[key] = KratorFauna.build(key, { seed: 3 }); } catch (e) { protoB[key] = { bad: String(e) }; } }
+        var Pb = protoB[key]; if (!Pb || Pb.bad) continue;
+        var ud = Pb.userData, len = Math.max(ud.d || 1, ud.w || 1), room = Math.min(rw, rd) * (n > 1 ? 0.45 : 0.7), s = Math.min(1, room / len);
+        var a = Pb.clone(); a.scale.setScalar(s);
+        var along = rw >= rd, off = n > 1 ? (k ? 1 : -1) * (along ? rw : rd) * 0.22 : 0;
+        a.position.set((r.x0 + r.x1) / 2 + (along ? off : 0), r.y, (r.z0 + r.z1) / 2 + (along ? 0 : off));
+        if (r.door) a.rotation.y = Math.atan2(r.door.x - a.position.x, r.door.z - a.position.z) + (u(5 + k) - 0.5) * 0.8;   /* +z its snout, toward the door */
+        a.userData = Object.assign({}, ud, { kind: 'beast', canton: cn, storey: r.storey, phase: u(7 + k) * 10 });
+        g.add(a); (g.userData.storeys[r.storey] = g.userData.storeys[r.storey] || []).push(a);
+        (VC.INTD.beasts = VC.INTD.beasts || []).push(a); nBeast++;
+      }
+    });
+    if (nBeast && !VC.INTD.beastTick) {
+      VC.INTD.beastTick = true;
+      (window._frameHooks = window._frameHooks || []).push(function (now) {
+        var t = now / 1000;
+        VC.INTD.beasts.forEach(function (a) { if (a.visible && a.parent && a.parent.visible) KratorFauna.animate(a, t + a.userData.phase, 'idle'); });
+      });
+    }
+  }
+  g.userData.stats = { beasts: nBeast, boxes: Object.keys(byS).reduce(function (s, k) { return s + byS[k].length; }, 0), furniture: nFurn, rooms: P.rooms.length, furnishMs: F.ms, missing: F.missing, errors: F.errors || 0, firstError: F.firstError || null };
   VC.INTD.groups[cn] = g;
   return g;
 };

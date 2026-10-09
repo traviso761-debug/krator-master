@@ -266,6 +266,14 @@ def interiors_fragment():
     return kit_bundle.bundle([]) + kit_bundle.safe(read(os.path.join(ROOT, 'kits', 'interiors', 'adapters', 'catalog-adapter.js'))) + NL
 
 
+def fauna_fragment():
+    """kits/fauna's Voth group (the arena tiger, the pit lizard, the giant and staghorn beetles) for the Arena's stables,
+    as fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours)"""
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
+    import fauna_bundle
+    return fauna_bundle.bundle(['voth'], tex=False) + NL
+
+
 def voth_pathviz_fragment():
     """Voth's path visualizer (87-pathviz.js, its 'Paths' devtool), lifted live: the register / build / show machinery,
     the auto-discovery, the mesh and its button (#pathvizToggle, #pathvizSel in the head), with its two colour lists
@@ -387,7 +395,7 @@ def main():
     city = os.path.join(HERE, 'targets', 'voth-city')
     if os.path.isdir(city):
         import foreign, ringsea
-        page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(),
+        page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(), fauna_fragment(),
              tex_fragment(('stone', 'ground', 'rock', 'sand', 'grass', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'), ('map',),
                           ('road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'))], True, CITY_JS)
 

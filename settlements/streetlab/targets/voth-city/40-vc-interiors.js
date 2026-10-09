@@ -44,17 +44,21 @@ VC.intPlanAll = function () {
     CANT.holes[cn] = [[c.x - w[0], c.x + w[0], c.z - w[1], c.z + w[1], P.M.top.y]];
   });
   VC.intEntrances();
-  /* what the hollowing lays open (owner, 2026-10-09: "what are these stones clipping inside the arena"): a captured
-     piece wholly inside a tier's interior (its footprint within the tier's R, its middle within the tier's heights)
-     was buried in the canton's stone (Voth's inner stairs, the arena's sunk footings); the stone is rooms now, so it goes */
+  /* what the hollowing lays open (owner, 2026-10-09: "what are these stones clipping inside the arena", "the strange pile
+     of stones is still present"): a captured piece inside the interior's reach (its footprint within the first tier's R)
+     whose top lies more than 0.3 m under the canton's walking surface there (CANT.surface) was buried in its stone (Voth's
+     inner stairs, the arena's sunk shafts and footings, whatever their height); the stone is rooms now, so it goes. What
+     stands on a terrace or a deck, and the decks and the field themselves, reach the surface and stay */
   var opened = 0;
   Object.keys(VC.INT.cantons).forEach(function (cn) {
     var P = VC.INT.cantons[cn]; if (P.catacombs || !P.tiers) return;
-    var M = P.M, seen = new Set();
+    var M = P.M, seen = new Set(), R0 = P.tiers[0].R + T.wall * 0.5, lo = (P.dungeon ? P.dungeon.y0 : P.tiers[0].y0) - 1;
     CANT.grid.forEach(function (a) { a.forEach(function (q) {
       if (seen.has(q) || q.M !== M) return; seen.add(q);
-      var ym = (q.y0 + q.y1) / 2, ext = Math.max(Math.abs(q.x0 - M.x), Math.abs(q.x1 - M.x), Math.abs(q.z0 - M.z), Math.abs(q.z1 - M.z));
-      if (P.tiers.concat(P.dungeon ? [P.dungeon] : []).some(function (tr) { return ym > tr.y0 + 0.3 && ym < tr.y1 - 0.3 && q.y1 < tr.y1 + 0.3 && ext <= tr.R + T.wall * 0.5; })) { CANT.cut(q, 'inside the hollowed canton'); opened++; }
+      var ext = Math.max(Math.abs(q.x0 - M.x), Math.abs(q.x1 - M.x), Math.abs(q.z0 - M.z), Math.abs(q.z1 - M.z));
+      if (ext > R0 || q.y1 < lo) return;
+      var sy = CANT.surface(M, (q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2);
+      if (sy != null && q.y1 < sy - 0.3) { CANT.cut(q, 'inside the hollowed canton'); opened++; }
     }); });
   });
   var n = 0, r = 0; for (var k in VC.INT.cantons) { n++; r += VC.INT.cantons[k].rooms.length; }

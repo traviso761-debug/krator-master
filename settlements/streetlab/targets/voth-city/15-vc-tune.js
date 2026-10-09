@@ -98,6 +98,8 @@ var TUNE = {
                   arena pit entrance, 65l: the building 54 x 17 m at z -54..-71, its barred gate on its -z..+z front), the way the
                   stair arrives (toward the field), the gate's mouth, the top storey's wings by arm (2: west, 3: east) and their colours */
                gateway: { Arena: { core: [0, -62.7], axis: [0, 1], gate: [0, -52.5], wings: { 2: 'barracks', 3: 'stable' }, colours: { barracks: 0x5d7391, stable: 0xa88f50 } } },
+               /* the beasts in a stable (kits/fauna's Voth group): the room kinds that keep them, which, the odds of two to a room */
+               beasts: { rooms: ['stable'], keys: ['arena-tiger', 'pit-lizard', 'giant-beetle', 'staghorn-beetle'], pair: 0.45 },
                /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
                dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
