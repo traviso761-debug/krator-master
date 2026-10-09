@@ -22,7 +22,8 @@
 var CANT = { list: [], by: {}, spans: [], ends: [], flights: [], doors: [], keep: [], cuts: {}, audit: { spans: [], causeways: [], flights: [], removed: {} } };
 /* the numbers (no TUNE on the site page: they live here) */
 CANT.T = {
-  gmax: 0.11,            /* the steepest a bridge deck may run (1 in 9) */
+  gmax: 0.11,
+  reachIn: 30,           /* how far past the level's square a causeway's end may run to meet its masonry */            /* the steepest a bridge deck may run (1 in 9) */
   arch: 8,               /* the most a bridge rises above its chord at mid-span */
   land: 7,               /* how far a bridge's deck runs onto the level it lands on */
   ring: 9,               /* a terrace narrower than this (edge to wall) takes no bridge */
@@ -397,6 +398,11 @@ CANT.planCauseways = function (list) {
       var L = Math.hypot(q[0] - p[0], q[1] - p[1]), dir = [(q[0] - p[0]) / L, (q[1] - p[1]) / L];
       var lev = l.kind === 'mole' ? M.apron : M.levels.filter(function (v) { return v.y <= VOTH.CWAY + 8; }).sort(function (a, b) { return Math.abs(a.y - VOTH.CWAY) - Math.abs(b.y - VOTH.CWAY); })[0] || M.apron;
       var k = 0; while (k < L - 10 && CANT.sq(M, p[0] + dir[0] * k, p[1] + dir[1] * k) < lev.ro) k += 0.25;
+      /* the square says where the level begins, but its corners are rounded and its skirt battered (owner, 2026-10-09:
+         "causeway not quite reaching canton"): back in from there until real masonry of the level stands under the end
+         (CANT.surface), then a metre more, so the deck runs into it rather than stopping in the water */
+      var k0 = k; while (k > 0 && k > k0 - T.reachIn) { var sy = CANT.surface(M, p[0] + dir[0] * k, p[1] + dir[1] * k); if (sy != null && sy >= lev.y - 1.5) break; k -= 0.25; }
+      k = Math.max(0, k - 1);
       var e = [p[0] + dir[0] * k, p[1] + dir[1] * k];
       P[ei] = e;
       var end = { id: l.id + (side ? ':b' : ':a'), causeway: l.id, canton: M.n, x: e[0], z: e[1], y: lev.y, dir: dir, kind: l.kind, lev: lev.k, w: l.width };

@@ -45,7 +45,7 @@ var TUNE = {
             dims: { vothJunk: { L: 46, B: 16 }, vothHulk: { L: 36, B: 16 } } } },   /* kits/ringsea's RS_VESSEL L and B */   /* a pier takes at most this share of the open water ahead, and leaves this much clear beyond its tip */
   fishGap: 26, fishClear: 9,                          /* harbour: a fishing dock in each gap of this much quay between the long piers */
   riverDockGap: 58, bargeClear: 2, bridgeBand: 20,   /* elephant bugs keep this far off a bridge's line, except on its deck */   /* a barge moors this far off its pier's head */                     /* river port: a quay every this much bank (Voth's RPIERS: 58) */
-  monastery: { grid: 8, edge: 9, gap: 5, relief: 7, gateW: 18, sideGateW: 7, sideGates: 2, dorms: 6, stores: 2, pens: 2, coops: 10, fields: 30, field: [26, 44] },
+  monastery: { compound: true, grid: 8, edge: 9, gap: 5, relief: 7, gateW: 18, sideGateW: 7, sideGates: 2, dorms: 6, stores: 2, pens: 2, coops: 10, fields: 30, field: [26, 44] },
   /* power and light (37-vc-light.js; owner, 2026-10-09): Voth's power houses stand in the industry district; electric light
      reaches the industry district, the guilds, the clan compounds and wealthy houses within `reach` of a power house, and
      the Palace and Temple interiors, and little else. Everywhere else is lit by lanterns and torches: a fancy lantern
@@ -104,6 +104,13 @@ var TUNE = {
   /* a market pitch (30-vc-site.js VC.marketPitch): the share left as goods on the ground, the odds of stock on each side
      of a stall, how far out to the side and how far back and forth it sits, and the stock it draws from */
   market: { ground: 0.2, stock: 0.75, side: 3.1, back: 1.0, goods: ['generic_crate', 'generic_basket', 'generic_sack', 'generic_storage_jar', 'generic_barrel'] },
+  /* the Temple's dressing (31-vc-voth.js VC.templeDress): Voth's temple colours (65d: blood red, its dark, matte gilt), how
+     near a side a bridge or flight must come to cut the trim, banner drop and spacing, the fire pylons' height, the crown */
+  temple: { red: 0xa8241c, dark: 0x4a0e0a, gold: 0xc9a227, keepBand: 10, bannerH: 9, bannerEvery: 16, pylonH: 7.5, obeliskEvery: 14, obeliskH: 8 },
+  /* the house of healing (30-vc-site.js VC.placeHealing, 31-vc-voth.js VC.healingModel): its half-width with its plinth's
+     steps, the margin kept round it, how far from its marker it may move, how far its wall may stand from the avenue it
+     fronts, the steepest relief its plinth takes, the forecourt's width, the lanterns' and cots' spacing */
+  healing: { half: 66, pad: 4, reach: 420, front: 60, relief: 5, forecourt: 12, lampEvery: 9, cotEvery: 3.4 },
   /* the Ring Sea vessels (55-vc-host.js): the model each ferry line runs (the moored ones are VC.MOOR's) */
   vessels: { ferry: 'vothFerry' },
   /* park and plaza furniture (39-vc-furnish.js): bench spacing and inset along a park's edges, the areas that earn a
@@ -169,7 +176,7 @@ var TUNE = {
   decks: { port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },
            embassies: ['Hykkousoi', 'Iziz', 'Jimjam', 'Republic', 'Dalab', 'Yuni'], fill: { Granary: 6, Arsenal: 8, Market: 16, Foreign: 6 } },
   station: { roadReach: 160, gap: 2, laneHalf: 11, platGap: 2, layLen: 56, taper: 34, forecourt: 10 },   /* an elephant bug lay-by: 22 m wide, 56 m straight beside the platform */
-  bugAwning: 0xd9792b, beaconOpacity: 0.55, navCell: 10, navHalf: 4200, navFree: 60, navFreeBug: 22, berthClear: 14, bugWade: 9, bugSink: 5, portEdge: 3900, timeScale: 6,
+  bugAwning: 0xd9792b, beaconOpacity: 0.55, navCell: 10, navHalf: 4200, navFree: 60, navFreeBug: 22, berthClear: 14, causewayClear: 8, bugWade: 4.5, bugSink: 2.5, bugScale: 0.5,   /* the elephant bug at half Voth's size (owner, 2026-10-09: it towered over the buildings); its wading depth and sink halved with it */ portEdge: 3900, timeScale: 6,
   classes: {
     rich:   [['voth_house_rich', 0], ['voth_house_rich', 1], ['voth_house_rich', 2], ['voth_house_rich', 3], ['voth_house_rich', 4], ['voth_bldg_townhouse', 0], ['voth_bldg_townhouse', 2]],
     manor:  [['voth_manor', 0], ['voth_manor', 1], ['voth_manor', 2]],

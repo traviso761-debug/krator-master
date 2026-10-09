@@ -107,6 +107,24 @@ VC.buildMonastery = function (d) {
       return null;
     };
     var fx = 145, fz = 120;                                   /* Voth's compound: the builders' sizes are fractions of it */
+    /* Voth's own compound at the heart of it (owner, 2026-10-09: "pull in the model from original voth"): its
+       monasteryCompound() whole, as voth.html draws it (wall, chapel and bell tower, dormitories, hall, well, pen,
+       fields), its gate toward the Temple canton, at its own size or shrunk to fit; the extra dormitories, stores, pens,
+       coops and fields the owner asked for stand round it, inside the district's wall */
+    if (M.compound && B.monasteryCompound) {
+      var cry = B.faceToward(cen[0], cen[1], T.x, T.z), S0 = B.MONASTERY_SITES, n0 = { f: S0.fields.length, c: S0.coops.length, d: S0.dorms.length }, fit = null;
+      for (var sc = 1; sc >= 0.5 && !fit; sc -= 0.05) {
+        var best = null;
+        cand.forEach(function (c) { var o = VC.obbAt(c.p, cry, fx * sc + 6, fz * sc + 6); if (!best || c.dc < best.dc) { if (!VC.anyHit(o, placed, 0) && ok(o, M.relief + 4)) best = { dc: c.dc, c: c.p, o: o }; } });
+        if (best) fit = { c: best.c, o: best.o, s: sc };
+      }
+      if (fit) {
+        B.monasteryCompound(fit.c[0], fit.c[1], cry, fx * fit.s, fz * fit.s);
+        placed.push(fit.o);
+        counts.dorm += S0.dorms.length - n0.d; counts.coop += S0.coops.length - n0.c; counts.field += S0.fields.length - n0.f; counts.compound = +fit.s.toFixed(2);
+      }
+    }
+    if (!counts.compound) {
     /* the chapel at the middle, its door toward the Temple canton */
     var cw = fx * 0.26 * 1.5, cd = fz * 0.22 * 1.5;
     put('chapel', cw * 0.77, cd * 0.5 + cw * 0.27, function (c) { return V.dist(c.p, cen); },
@@ -119,13 +137,14 @@ VC.buildMonastery = function (d) {
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
     /* dormitories round the chapel (owner: more of them) */
     var dw = fx * 0.20 * 1.5, dd = fz * 0.17 * 2.0, roof = B.shade(B.GREYC[1], -0.05);
-    for (var k = 0; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
+    for (var k = 0; k < M.dorms; k++) if (!counts.compound) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
       function (c, y, ry) { B.shed(c[0], y, c[1], fx * 0.22, fz * 0.15, B.rr(9, 12), ry, col); });
     /* the well at the heart of the cluster */
     put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
+    }
     /* pens and coops between the buildings and the fields */
     var ring = function (f) { return function (c) { return Math.abs(c.de / maxDe - f) * 300 + B.rr(0, 60); }; };
     for (var p2 = 0; p2 < M.pens; p2++) put('pen', MO.penW / 2 + 3, MO.penD / 2 + 3, ring(0.45), function (c, y, ry) { B.monasteryPen(c[0], y, c[1], MO.penW / 2, MO.penD / 2, ry); });

@@ -53,6 +53,19 @@ VC.paint = function () {
     ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(25,20,15,0.7)'; ctx.stroke();
   });
   VIEW.ovTex.needsUpdate = true;
+  /* the park mask for the grass (50-site-scene.js VIEW.hook): the parks white, their walks cut out */
+  if (VIEW.gmCanvas) {
+    var gc = VIEW.gmCanvas.getContext('2d'), gk = VIEW.gmCanvas.width / (2 * E), GX = function (x) { return (x + E) * gk; }, GZ = function (z) { return (z + E) * gk; };
+    var gpoly = function (P) { gc.beginPath(); P.forEach(function (p, i) { if (i) gc.lineTo(GX(p[0]), GZ(p[1])); else gc.moveTo(GX(p[0]), GZ(p[1])); }); gc.closePath(); };
+    gc.fillStyle = '#000'; gc.fillRect(0, 0, VIEW.gmCanvas.width, VIEW.gmCanvas.height);
+    if (st >= 2) {
+      gc.fillStyle = '#fff';
+      PLAN.site.forEach(function (d) { if (d.role === 'park') { gpoly(d.poly); gc.fill(); } });
+      PLAN.greens.forEach(function (G) { if (G.kind === 'park' && G.born <= st) { gpoly(G.poly); gc.fill(); } });
+      if (VC.parkWalks) { gc.strokeStyle = '#000'; gc.lineCap = 'round'; VC.parkWalks.forEach(function (w) { gc.lineWidth = w.w * gk; gc.beginPath(); gc.moveTo(GX(w.a[0]), GZ(w.a[1])); gc.lineTo(GX(w.b[0]), GZ(w.b[1])); gc.stroke(); }); }
+    }
+    VIEW.gmTex.needsUpdate = true;
+  }
 };
 
 /* ---------------------------------------------------------------- Voth's structures, transit lines, labels */
@@ -155,6 +168,7 @@ VC.drawVehicles = function () {
     body.userData = { kind: 'strider' }; scene.add(body); scene.add(legs);
     VC.striderMeshes = [body, legs];
   }
+  var K = TUNE.bugScale == null ? 1 : TUNE.bugScale, sk = new THREE.Vector3(K, K, K), kM = new THREE.Matrix4().makeScale(K, K, K), about = new THREE.Matrix4(), back = new THREE.Matrix4(), lm = new THREE.Matrix4();
   var last = -1;
   (window._frameHooks = window._frameHooks || []).push(function (now) {
     var t = (VC.clock ? VC.clock.t : now / 1000) * TUNE.timeScale, dt = last < 0 ? 0 : Math.min(1, t - last); last = t; VC.motionT = t;
@@ -172,10 +186,13 @@ VC.drawVehicles = function () {
         for (var b = 0; b < S.BARS; b++) legs.setMatrixAt(i * S.BARS + b, tm);
         return;
       }
-      var dk = VOTH.lifeBridgeY(p.x, p.z), y = dk != null ? dk : Math.max(-S.WADE, terrainH(p.x, p.z));   /* on a bridge: its deck */
-      if (p.moving) v.gait += dt * Math.PI * v.spd / (2 * S.STRIDE);   /* Voth: omega = pi * speed / (2 * stride) */
-      tq.setFromAxisAngle(up, p.h); tm.compose(tp.set(p.x, y, p.z), tq, one); body.setMatrixAt(i, tm);
+      var dk = VOTH.lifeBridgeY(p.x, p.z), y = dk != null ? dk : Math.max(-S.WADE * K, terrainH(p.x, p.z));   /* on a bridge: its deck */
+      if (p.moving) v.gait += dt * Math.PI * v.spd / (2 * S.STRIDE * K);   /* Voth: omega = pi * speed / (2 * stride), the stride scaled */
+      tq.setFromAxisAngle(up, p.h); tm.compose(tp.set(p.x, y, p.z), tq, sk); body.setMatrixAt(i, tm);
       S.legs(legs, i, p.x, y, p.z, p.h, v.gait, p.moving ? 1 : 0);
+      /* Voth places the legs at full size round the body: scale each bar about the body's origin */
+      if (K !== 1) { about.makeTranslation(p.x, y, p.z).multiply(kM).multiply(back.makeTranslation(-p.x, -y, -p.z));
+        for (var lb = 0; lb < S.BARS; lb++) { legs.getMatrixAt(i * S.BARS + lb, lm); legs.setMatrixAt(i * S.BARS + lb, lm.premultiply(about)); } }
     });
     body.instanceMatrix.needsUpdate = true; legs.instanceMatrix.needsUpdate = true;
   });
@@ -259,8 +276,8 @@ VC.floraPlace = function () {
     else if (SWBAY.plantAt(f.plant, f.x, f.y, f.z, {})) n.plants++;
   });
   /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora) */
-  (VC.parkFlora || []).forEach(function (f) {
-    var y = baseH(f.x, f.z), gr = function (x, z) { return baseH(x, z); };
+  (VC.parkFlora || []).concat(VC.hohFlora || []).forEach(function (f) {
+    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = function (x, z) { return baseH(x, z); };
     if (f.tree) { var H = P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
     else if (SWBAY.plantAt(f.plant, f.x, y, f.z, { ground: gr })) n.plants++;
   });
@@ -583,7 +600,10 @@ VC.dayNight = function () {
     /* the weather: core/atmos's modes with its opt-in ash (Voth's ash storm); it draws the rain and the ash, the host
        (applyHour) does what they do to this scene */
     /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
-    if (CANT.falls && CANT.falls.length) ATMOS.smoke(CANT.falls.filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; }));
+    var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
+    /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
+    (VC.templeFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [1.0, 0.45, 0.12], 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    if (sm.length) ATMOS.smoke(sm);
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
     ATMOS.weatherUI($('wx'));

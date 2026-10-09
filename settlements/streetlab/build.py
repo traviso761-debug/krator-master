@@ -144,7 +144,7 @@ CITY_SEEDS = ('span reclaimedCauseway rectFrus bedAt shade loc structure watchto
               'harborGate spiritGate riverGate wallGateRuinA wallGateRuinB wallGateRuinC monasteryCompound houseOfHealing '
               'funeraryTemple lifeStandaloneShrine lifeBuildFerryPier lifeCantonEdge striderStationBuild customsHouse shed '
               'benchPlain faceToward plinth footing claim gridHit wallSeg buildFishDockPier monasteryChapel monasteryDorm monasteryAssemblyHall '
-              'monasteryWell monasteryPen monasteryCoop monasteryField LIFE_FISHDOCK_LEN mineEntrance quarryPit MINE_CART_STOPS QUARRY_CART_STOPS granary windmill MILL_CLUSTERS monasteryOpenings monasteryWindow mushroomFarm watermill beetleRanch').split()
+              'monasteryWell monasteryPen monasteryCoop monasteryField LIFE_FISHDOCK_LEN mineEntrance quarryPit MINE_CART_STOPS QUARRY_CART_STOPS granary windmill MILL_CLUSTERS monasteryOpenings monasteryWindow MONASTERY_SITES mushroomFarm watermill beetleRanch').split()
 CITY_SHIM = NL.join([
     'var PRIMS = [];',
     'function __c(c){ return typeof c === "string" ? parseInt(c.replace("#", ""), 16) : c; }   /* Voth palettes mix 0xRRGGBB and "#rrggbb" */',
@@ -388,7 +388,7 @@ def main():
     if os.path.isdir(city):
         import foreign, ringsea
         page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(),
-             tex_fragment(('stone', 'ground', 'rock', 'sand', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'), ('map',),
+             tex_fragment(('stone', 'ground', 'rock', 'sand', 'grass', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'), ('map',),
                           ('road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'))], True, CITY_JS)
 
 

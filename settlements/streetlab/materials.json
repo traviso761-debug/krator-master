@@ -1,6 +1,6 @@
 {
  "build": "streetlab",
- "note": "Streetlab's adapter onto the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py settlements/streetlab after a change, then python3 build.py. The Voth site editor (targets/voth-site) and the city plan take the sets as grey detail maps under Voth's own colours, in world space: stone (cantons, bridges, causeways), ground, rock (slopes), sand (beaches). The Voth city plan's streets take the road_* sets (paving and cart-road surfaces), one per street class (55-vc-host.js HOST.ROADTEX).",
+ "note": "Streetlab's adapter onto the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py settlements/streetlab after a change, then python3 build.py. The Voth site editor (targets/voth-site) and the city plan take the sets as grey detail maps under Voth's own colours, in world space: stone (cantons, bridges, causeways), ground, grass (the city's parks: a grey detail under the park green, 50-site-scene.js VIEW.hook), rock (slopes), sand (beaches). The Voth city plan's streets take the road_* sets (paving and cart-road surfaces), one per street class (55-vc-host.js HOST.ROADTEX).",
  "size": 512,
  "families": {
   "stone": {
@@ -27,6 +27,20 @@
     "keep": 0.0,
     "mean": 0.5,
     "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "grass": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.4
    },
    "roughLift": 0.4,
    "specular": 0.2

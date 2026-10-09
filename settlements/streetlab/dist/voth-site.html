@@ -9658,7 +9658,8 @@ SITE.fromVoth = function () {
 var CANT = { list: [], by: {}, spans: [], ends: [], flights: [], doors: [], keep: [], cuts: {}, audit: { spans: [], causeways: [], flights: [], removed: {} } };
 /* the numbers (no TUNE on the site page: they live here) */
 CANT.T = {
-  gmax: 0.11,            /* the steepest a bridge deck may run (1 in 9) */
+  gmax: 0.11,
+  reachIn: 30,           /* how far past the level's square a causeway's end may run to meet its masonry */            /* the steepest a bridge deck may run (1 in 9) */
   arch: 8,               /* the most a bridge rises above its chord at mid-span */
   land: 7,               /* how far a bridge's deck runs onto the level it lands on */
   ring: 9,               /* a terrace narrower than this (edge to wall) takes no bridge */
@@ -10033,6 +10034,11 @@ CANT.planCauseways = function (list) {
       var L = Math.hypot(q[0] - p[0], q[1] - p[1]), dir = [(q[0] - p[0]) / L, (q[1] - p[1]) / L];
       var lev = l.kind === 'mole' ? M.apron : M.levels.filter(function (v) { return v.y <= VOTH.CWAY + 8; }).sort(function (a, b) { return Math.abs(a.y - VOTH.CWAY) - Math.abs(b.y - VOTH.CWAY); })[0] || M.apron;
       var k = 0; while (k < L - 10 && CANT.sq(M, p[0] + dir[0] * k, p[1] + dir[1] * k) < lev.ro) k += 0.25;
+      /* the square says where the level begins, but its corners are rounded and its skirt battered (owner, 2026-10-09:
+         "causeway not quite reaching canton"): back in from there until real masonry of the level stands under the end
+         (CANT.surface), then a metre more, so the deck runs into it rather than stopping in the water */
+      var k0 = k; while (k > 0 && k > k0 - T.reachIn) { var sy = CANT.surface(M, p[0] + dir[0] * k, p[1] + dir[1] * k); if (sy != null && sy >= lev.y - 1.5) break; k -= 0.25; }
+      k = Math.max(0, k - 1);
       var e = [p[0] + dir[0] * k, p[1] + dir[1] * k];
       P[ei] = e;
       var end = { id: l.id + (side ? ':b' : ':a'), causeway: l.id, canton: M.n, x: e[0], z: e[1], y: lev.y, dir: dir, kind: l.kind, lev: lev.k, w: l.width };
@@ -10502,11 +10508,38 @@ VIEW.dtex = function (fam) {
   if (T && T.map) { t = new THREE.TextureLoader().load(T.map); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); }
   return (VIEW.detailTex[fam] = t ? { tex: t, scale: T.scale[0] } : null);
 };
+/* the shoreline (owner, 2026-10-09: "a smoothing pass on the shoreline so it isn't zig zaggy"): the ground mesh is a few
+   metres a cell, and the lake's level cuts its triangles along their diagonals, in teeth. VIEW.shoreTex holds the true
+   ground (TERR.h) against SEA over the editable square, as a signed, clamped height: the ground's shader paints water
+   where the true ground is under SEA and its mesh is not, and the water's leaves out what is truly land, so the line
+   is the bilinear contour of the texture: smooth. Blocks far from the waterline are filled from their corners. */
+VIEW.SHORE_N = 1024;
+VIEW.shore = function (box) {
+  var N = VIEW.SHORE_N, E = VIEW.ext, c = 2 * E / N, SEA = VOTH.SEA;
+  if (!VIEW.shoreTex) { VIEW.shoreData = new Uint8Array(N * N * 4); VIEW.shoreTex = new THREE.DataTexture(VIEW.shoreData, N, N, THREE.RGBAFormat); VIEW.shoreTex.magFilter = VIEW.shoreTex.minFilter = THREE.LinearFilter; VIEW.shoreTex.flipY = false; }
+  var D = VIEW.shoreData, B = 8, enc = function (h) { return Math.round((Math.max(-1, Math.min(1, (h - SEA) / 3)) * 0.5 + 0.5) * 255); };
+  var i0 = 0, i1 = N, j0 = 0, j1 = N;
+  if (box) { i0 = Math.max(0, Math.floor((box[0] + E) / c) - B); i1 = Math.min(N, Math.ceil((box[2] + E) / c) + B); j0 = Math.max(0, Math.floor((box[1] + E) / c) - B); j1 = Math.min(N, Math.ceil((box[3] + E) / c) + B); }
+  var hx = function (i, j) { return TERR.h(-E + (i + 0.5) * c, -E + (j + 0.5) * c); };
+  for (var bj = j0 - j0 % B; bj < j1; bj += B) for (var bi = i0 - i0 % B; bi < i1; bi += B) {
+    var hs = [hx(bi, bj), hx(bi + B - 1, bj), hx(bi, bj + B - 1), hx(bi + B - 1, bj + B - 1), hx(bi + B / 2, bj + B / 2)], lo = Math.min.apply(null, hs), hi = Math.max.apply(null, hs);
+    var far = lo > SEA + 6 || hi < SEA - 6;
+    for (var j = bj; j < Math.min(N, bj + B); j++) for (var i = bi; i < Math.min(N, bi + B); i++) {
+      var v = far ? (lo > SEA ? 255 : 0) : enc(hx(i, j)), k = (j * N + i) * 4; D[k] = D[k + 1] = D[k + 2] = v; D[k + 3] = 255;
+    }
+  }
+  VIEW.shoreTex.needsUpdate = true;
+};
 VIEW.hook = function (mat, kind, overlay) {
   var fams = kind === 'terrain' ? ['ground', 'rock', 'sand'] : kind === 'stone' ? ['stone'] : [];
   var D = fams.map(VIEW.dtex);
   if (D.some(function (d) { return !d; })) D = [];          /* no pack: plain colour, as before */
-  mat.customProgramCacheKey = function () { return 'site-' + kind + (overlay ? '-ov' : '') + (D.length ? '-d' : ''); };
+  /* the parks' grass (owner, 2026-10-09: "add better grass texture to parkland"): the library's grass as a grey detail
+     under two park greens that drift over a slow sample of it, wherever the park mask (VIEW.gmCanvas, painted by the
+     city's VC.paint; empty on the site page) is white */
+  var G = kind === 'terrain' && overlay ? VIEW.dtex('grass') : null;
+  if (G && !VIEW.gmTex) { VIEW.gmCanvas = document.createElement('canvas'); VIEW.gmCanvas.width = VIEW.gmCanvas.height = 2048; VIEW.gmTex = new THREE.CanvasTexture(VIEW.gmCanvas); }
+  mat.customProgramCacheKey = function () { return 'site-' + kind + (overlay ? '-ov' : '') + (D.length ? '-d' : '') + (G ? '-g' : ''); };
   mat.onBeforeCompile = function (sh) {
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvec4 _wp = vec4(transformed, 1.0);\n#ifdef USE_INSTANCING\n_wp = instanceMatrix * _wp;\n#endif\nvWP = (modelMatrix * _wp).xyz;');
@@ -10531,7 +10564,18 @@ VIEW.hook = function (mat, kind, overlay) {
       sh.uniforms.uOv = { value: VIEW.ovTex }; sh.uniforms.uOvExt = { value: VIEW.ext };
       head += 'uniform sampler2D uOv;\nuniform float uOvExt;\n';
       body += 'vec2 ouv = vec2(vWP.x / (2.0 * uOvExt) + 0.5, 0.5 - vWP.z / (2.0 * uOvExt));\n' +
-        'if (ouv.x > 0.0 && ouv.x < 1.0 && ouv.y > 0.0 && ouv.y < 1.0) { vec4 ov = texture2D(uOv, ouv); diffuseColor.rgb = mix(diffuseColor.rgb, pow(ov.rgb, vec3(2.2)), ov.a); }\n';
+        'if (ouv.x > 0.0 && ouv.x < 1.0 && ouv.y > 0.0 && ouv.y < 1.0) { vec4 ov = texture2D(uOv, ouv); diffuseColor.rgb = mix(diffuseColor.rgb, pow(ov.rgb, vec3(2.2)), ov.a);' +
+        (G ? ' float _gm = texture2D(uGm, ouv).r; if (_gm > 0.004) {' +
+          ' float _g1 = texture2D(uG, vWP.xz / ' + G.scale.toFixed(2) + ').r, _g2 = texture2D(uG, vWP.xz / ' + (G.scale * 9.7).toFixed(2) + ').r, _g3 = texture2D(uG, vWP.zx / ' + (G.scale * 43).toFixed(2) + ').r;' +
+          ' vec3 _lo = pow(vec3(0.19, 0.34, 0.12), vec3(2.2)), _hi = pow(vec3(0.42, 0.56, 0.21), vec3(2.2));' +
+          ' vec3 _c = mix(_lo, _hi, clamp((_g2 - 0.5) * 2.4 + (_g3 - 0.5) * 1.6 + 0.5, 0.0, 1.0)) * clamp(mix(1.0, _g1 / 0.5, 0.85), 0.45, 1.6);' +
+          ' diffuseColor.rgb = mix(diffuseColor.rgb, _c, _gm); }' : '') +
+        (kind === 'terrain' ? ' float _sh = texture2D(uSh, vWP.xz / (2.0 * uOvExt) + 0.5).r;' +
+          ' if (_sh < 0.5 && vWP.y > uSea - 0.6) diffuseColor.rgb = mix(diffuseColor.rgb, pow(vec3(0.31, 0.45, 0.47), vec3(2.2)), 0.86);' +   /* truly under the lake: water */
+          ' else if (_sh >= 0.5 && vWP.y < uSea + 0.6) diffuseColor.rgb = pow(vec3(0.65, 0.60, 0.49), vec3(2.2));' :                            /* truly ashore, mesh under: wet sand */
+         kind === 'water' ? ' if (texture2D(uSh, vWP.xz / (2.0 * uOvExt) + 0.5).r > 0.5) discard;' : '') + ' }\n';
+      if (kind === 'terrain' || kind === 'water') { if (!VIEW.shoreTex) VIEW.shore(); sh.uniforms.uSh = { value: VIEW.shoreTex }; sh.uniforms.uSea = { value: VOTH.SEA }; head += 'uniform sampler2D uSh;\nuniform float uSea;\n'; }
+      if (G) { sh.uniforms.uG = { value: G.tex }; sh.uniforms.uGm = { value: VIEW.gmTex }; head += 'uniform sampler2D uG;\nuniform sampler2D uGm;\n'; }
     }
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + head).replace('#include <map_fragment>', '#include <map_fragment>\n' + body);
   };
@@ -10625,6 +10669,7 @@ VIEW.refreshTerrain = function (box, normals) {
   var PG = VIEW.pickMesh.geometry, PP = PG.attributes.position;
   for (var k = 0; k < PP.count; k++) { var px = PP.getX(k), pz = PP.getZ(k); if (box && (px < box[0] - 30 || px > box[2] + 30 || pz < box[1] - 30 || pz > box[3] + 30)) continue; PP.setY(k, Math.max(VOTH.SEA, VIEW.pBaseY[k] + TERR.delta(px, pz))); }
   PP.needsUpdate = true; PG.computeBoundingSphere(); PG.boundingBox = null;
+  if (VIEW.shoreTex) VIEW.shore(box);   /* the waterline follows the edit */
 };
 
 /* ---------------------------------------------------------------- the cantons: the city's own captured models, in place */

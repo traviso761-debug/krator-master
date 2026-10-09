@@ -153,6 +153,9 @@ VC.navGrid = function () {
   B.CPIERS.forEach(function (P) { stamp([P.x0, P.z0], [P.x1, P.z1], P.w / 2 + 6, function (k) { wet[k] = 0; }); });
   /* the canton bridges' piers (20-site-cantons.js CANT.spans) */
   CANT.spans.forEach(function (S) { S.piers.forEach(function (p) { stamp([p.x, p.z], [p.x, p.z], S.w * 0.95 + 6, function (k) { wet[k] = 0; }); }); });
+  /* the causeways (owner, 2026-10-09: "ferries and boats in general should avoid causeways"): the whole run of each, the
+     moles and the spans on piers alike, and a clearance either side (TUNE.causewayClear) */
+  (CANT.causewayList || SITE.causeways()).forEach(function (l) { for (var i = 1; i < l.pts.length; i++) stamp(l.pts[i - 1], l.pts[i], (l.width || 46) / 2 + TUNE.causewayClear, function (k) { wet[k] = 0; }); });
   /* what stands out of the raster: country buildings; the station platforms; the wall (its gates are open) */
   PLAN.lots.forEach(function (L) { if (L.died == null && L.bo && L.country) { var rr = Math.max(L.bo.hw, L.bo.hd) + 3; stamp(L.bo.c, L.bo.c, rr, function (k) { block[k] = 1; }); } });
   (VC.platforms || []).forEach(function (o) { var C = obbCorners(o); for (var e = 0; e < 4; e++) stamp(C[e], C[(e + 1) % 4], 4, function (k) { block[k] = 1; }); stamp(o.c, o.c, Math.min(o.hw, o.hd), function (k) { block[k] = 1; }); });

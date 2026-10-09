@@ -195,7 +195,7 @@ SL.pass1 = function () {
   var LH = VC.marker(/^LH$/i);
   if (LH) PLAN.voth.push({ role: 'lighthouse', id: 'LH', x: LH.x, z: LH.z, islet: !!isle(LH, 'light') });
   var H = VC.marker(/^HOH$/i);
-  if (H) { var ah = VC.towardAvenue([H.x, H.z]); PLAN.voth.push({ role: 'healing', id: 'HOH', x: H.x, z: H.z, ry: VC.face(H.x, H.z, ah[0], ah[1]) }); VC.hardSquare(H.x, H.z, 62); }
+  VC.hohMarker = H || null;   /* the house of healing is placed once the avenues are down (step 3, VC.placeHealing): at the marker it stood on one */
   var FT = VC.marker(/FUNER/i);
   if (FT) { var T = VOTH.CIDX.Temple; PLAN.voth.push({ role: 'funeraryTemple', id: FT.id, x: FT.x, z: FT.z, ry: VC.face(FT.x, FT.z, T.x, T.z) }); VC.hardSquare(FT.x, FT.z, 40); }
   SL.note(1, (I ? 'garrison castle and mustering ground at I; ' : '') + PLAN.voth.map(function (q) { return q.id + ' ' + q.role + (q.islet ? ' (islet)' : ''); }).join(', '));
@@ -336,9 +336,48 @@ SL.pass3 = function () {
     if (d.role !== 'park' && d.role !== 'market') return;
     rings += VC.addRing(offsetConvex(d.poly, TUNE.ringGap + W / 2, 6), 3, 'ring ' + d.name);
   });
+  /* the house of healing, now the avenues are down and before any street (owner, 2026-10-09: "move it out of the avenue") */
+  var hoh = VC.placeHealing();
   /* the clan compounds, now the avenues are down (33-vc-country.js) */
   var clans = VC.clanCompounds(3);
-  SL.note(3, made + ' avenues as drawn, ' + joins + ' joins to avenues and causeways, ' + bridges + ' bridge approaches, ' + rings + ' ring runs round the parks and markets; ' + clans);
+  SL.note(3, made + ' avenues as drawn, ' + joins + ' joins to avenues and causeways, ' + bridges + ' bridge approaches, ' + rings + ' ring runs round the parks and markets; ' + hoh + '; ' + clans);
+};
+
+/* the house of healing (Voth's houseOfHealing, 65j: a 112 m square cloister with a gate on every side and its plinth's
+   steps), at step 3: the free spot nearest the owner's HOH marker where its whole footprint, a margin round it, is on
+   open dry ground (no avenue, ring, causeway or landmark), not too steep for its plinth, and fronting an avenue within
+   TUNE.healing.front of its wall; a gate turned to that avenue, and a paved forecourt from the gate to the avenue's edge */
+VC.placeHealing = function () {
+  var H = VC.hohMarker; if (!H) return 'no HOH marker';
+  var K = TUNE.healing, R = SL.R, best = null;
+  var footOk = function (c, ry) {
+    var u = [Math.cos(ry), -Math.sin(ry)], v = [Math.sin(ry), Math.cos(ry)], lo = Infinity, hi = -Infinity, h = K.half + K.pad;
+    for (var a = -h; a <= h; a += 6) for (var b = -h; b <= h; b += 6) {
+      var p = V.add(c, V.add(V.mul(u, a), V.mul(v, b))), g = baseH(p[0], p[1]); if (g < 1) return false;
+      lo = Math.min(lo, g); hi = Math.max(hi, g);
+      if (R.idx(p[0], p[1]) >= 0) { var o = R.at(p[0], p[1]); if (o !== OCC.FREE && o !== OCC.RESERVE) return false; }
+      if (VC.inCanton(p, 4)) return false;
+    }
+    return hi - lo <= K.relief;
+  };
+  for (var r = 0; r <= K.reach && !best; r += 8) {
+    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
+    for (var i = 0; i < n && !best; i++) {
+      var th = i / n * 2 * Math.PI, c = [H.x + Math.cos(th) * r, H.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
+      if (!q || q.d > K.half + K.front + q.way.w / 2) continue;
+      var f = V.norm(V.sub(q.p, c)), ry = Math.atan2(f[0], f[1]) - Math.PI / 2;   /* the builder's local +x (a gate) toward the avenue */
+      if (footOk(c, ry)) best = { c: c, ry: ry, q: q, f: f };
+    }
+  }
+  if (!best) return 'the house of healing: no free ground within ' + K.reach + ' m of its marker';
+  var c = best.c;
+  PLAN.voth.push({ role: 'healing', id: 'HOH', x: c[0], z: c[1], ry: best.ry, moved: +V.dist(c, [H.x, H.z]).toFixed(0) });
+  VC.hardSquare(c[0], c[1], K.half + K.pad, best.ry);
+  /* the forecourt: from the gate's steps to the avenue's edge, as wide as the gate's flight */
+  var gate = V.add(c, V.mul(best.f, K.half)), edge = V.sub(best.q.p, V.mul(best.f, best.q.way.w / 2)), L = V.dist(gate, edge), mid = V.lerp(gate, edge, 0.5);
+  if (L > 1) SL.R.stampPoly(obbCorners(obb(mid, V.perp(best.f), K.forecourt / 2 + 2, L / 2)), OCC.HARD, -1);
+  VC.capture('healing', 3, function () { VC.healingModel(c, best.ry, best.f, L > 1 ? { mid: mid, L: L } : null); });
+  return 'the house of healing ' + Math.round(V.dist(c, [H.x, H.z])) + ' m from its marker, off ' + (best.q.way.tag || 'an avenue');
 };
 
 /* ---------------------------------------------------------------- step 4: highways */

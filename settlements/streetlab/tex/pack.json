@@ -1,6 +1,36 @@
 {
  "build": "streetlab",
  "families": {
+  "grass": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "grass.albedo.webp",
+    "normalMap": "grass.normal.webp",
+    "roughnessMap": "grass.rough.webp"
+   },
+   "lib": "ground.grass_ground",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9dbff918a2de84d51f1677516c87c1e0fe6429d0",
+    "normal": "c24b61b9c8059b74a5712fbe3c348464b8933e8e",
+    "roughness": "705b4f92076304fd8b3c73b6e49d2123456014a9"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.4,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.3788
+   }
+  },
   "ground": {
    "breakup": null,
    "card": false,
