@@ -4,6 +4,8 @@ __pycache__/
 *.swp
 scratch/
 data/osm/raw/
+# streamed tiles cut from a regional extract (tools/metro-tiler.py): generated, hundreds of MB
+data/metro/
 
 # reference images: looked at, never redistributed (see refs/README.md)
 refs/*

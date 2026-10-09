@@ -54,8 +54,9 @@ const viewsBtn=mkBtn('Views',ui,()=>{const open=!viewsEl.classList.contains('ope
 // the way out: a Home button and a menu of everything else the server is serving (src/core/menagerie.js).
 // It is added only when the server answers with a scene list, so a page opened off the disk is unchanged.
 installMenagerie({ui,mkBtn}).then(m=>{if(m)ctx.details=Object.assign(ctx.details||{},{menagerie:m.scenes.length+' scenes'});}).catch(e=>report('menagerie',e));
-const pauseBtn=mkBtn('Pause sun',ui,()=>{if(!clockPaused){clockPaused=true;pausedAt=performance.now()-clockOffset;pauseBtn.textContent='Resume sun';}else{clockPaused=false;clockOffset=performance.now()-pausedAt;pauseBtn.textContent='Pause sun';}});
 const tw=document.createElement('div');tw.id='timebar';tw.innerHTML='<label for="tslider" id="tlabel">10:30</label><input id="tslider" type="range" min="0" max="24" step="0.05" value="10.5" aria-label="Time of day"><select id="daylen" aria-label="Length of a day"><option value="120">day 2 min</option><option value="240" selected>day 4 min</option><option value="720">day 12 min</option></select>';side.appendChild(tw);
+// Pause sun sits in the time bar, beside the clock it stops
+const pauseBtn=mkBtn('Pause sun',tw,()=>{if(!clockPaused){clockPaused=true;pausedAt=performance.now()-clockOffset;pauseBtn.textContent='Resume sun';}else{clockPaused=false;clockOffset=performance.now()-pausedAt;pauseBtn.textContent='Pause sun';}});
 const tsl=document.getElementById('tslider'),tlab=document.getElementById('tlabel'),dsel=document.getElementById('daylen');let dragging=false;
 tsl.addEventListener('pointerdown',()=>{dragging=true;});addEventListener('pointerup',()=>{dragging=false;});tsl.addEventListener('input',()=>setHour(parseFloat(tsl.value)));
 dsel.addEventListener('change',()=>{const h=hourCur;DAY=+dsel.value;setHour(h);});

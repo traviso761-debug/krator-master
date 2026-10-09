@@ -66,16 +66,45 @@ section('el',()=>{
   ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,elevatedDeck:chains.length?deckLo+'–'+deckHi+' m':'none',stations:nst,trainLines:lines.length,trains:trains.length});
 });
 // commuter rail: double-deck silver trains (Chicago's Metra) on the mapped heavy-rail lines, at grade and on their embankments
-section('commuter-rail',()=>{
-  const lines=joinChains(RAILS.filter(r=>r.type==='rail').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>1500).sort((a,b)=>b.len-a.len).slice(0,8);
-  const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0x8a9096,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x1e2630});   // stainless double-deckers, dark window bands
-  const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:14}));
-  const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,4.6,3).translate(0,2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1,1.6,3.05).translate(0,3.1,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
+// A train rides the ground under it (they used to ride y = 0.2, the datum, wherever the land was), the road deck
+// where it shares one, and across a mapped rail bridge the chord between the bridge's ends. The lines are joined
+// one name at a time, so a train keeps to its own line instead of turning off down the next one. A city whose own
+// traffic (src/core/traffic.js, C.vehicles) runs its trains does without these.
+function railLines(rails,minLen){const by=new Map();for(const r of rails){const k=r.name||'';if(!by.has(k))by.set(k,[]);by.get(k).push(r.pts.map(p=>[p[0],p[1],r.elevated?1:0]));}
+  const out=[];for(const [name,ls] of by)for(const p of joinChains(ls,3)){const r=polyLen({pts:p});if(r.len<minLen)continue;r.hasName=name?1:0;
+    // the heights at the bridge points: along the chord between the ground at the bridge's two ends
+    const g=p.map(q=>q[2]?NaN:groundH(q[0],q[1]));for(let i=0;i<g.length;i++)if(isNaN(g[i])){let j=i;while(j<g.length&&isNaN(g[j]))j++;const a=i>0?g[i-1]:(j<g.length?g[j]:0),b=j<g.length?g[j]:a,s0=i>0?r.cum[i-1]:r.cum[i],s1=j<g.length?r.cum[j]:r.cum[g.length-1];
+      for(let k=i;k<j;k++)g[k]=Math.max(a+(b-a)*((r.cum[k]-s0)/((s1-s0)||1)),groundH(p[k][0],p[k][1])+(C.railBridge||3));i=j;}
+    r.ys=g;r.elev=p.map(q=>q[2]);out.push(r);}return out;}
+function railY(r,s,x,z){let lo=0,hi=r.cum.length-2;s=Math.max(0,Math.min(r.len,s));while(lo<hi){const m=(lo+hi+1)>>1;if(r.cum[m]<=s)lo=m;else hi=m-1;}
+  const base=(r.elev[lo]||r.elev[lo+1])?r.ys[lo]+(r.ys[lo+1]-r.ys[lo])*((s-r.cum[lo])/((r.cum[lo+1]-r.cum[lo])||1)):groundH(x,z);return Math.max(base,deckAt(x,z));}
+section('commuter-rail',()=>{if(C.vehicles)return;
+  {const pos=[],nor=[],W=3.2,T=1.4,q=(a,b,c,d,n)=>{for(const v of [a,b,c,a,c,d])pos.push(...v);for(let k=0;k<6;k++)nor.push(...n);};
+    for(const r of railLines(RAILS.filter(r=>r.type==='rail'),0))for(let i=0;i+1<r.pts.length;i++){if(!(r.elev[i]&&r.elev[i+1]))continue;
+      const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.1)continue;const nx=-(bz-az)/L*W,nz=(bx-ax)/L*W,ya=r.ys[i],yb=r.ys[i+1];
+      q([ax+nx,ya,az+nz],[ax-nx,ya,az-nz],[bx-nx,yb,bz-nz],[bx+nx,yb,bz+nz],[0,1,0]);
+      q([ax+nx,ya-T,az+nz],[ax+nx,ya,az+nz],[bx+nx,yb,bz+nz],[bx+nx,yb-T,bz+nz],[nx/W,0,nz/W]);q([bx-nx,yb-T,bz-nz],[bx-nx,yb,bz-nz],[ax-nx,ya,az-nz],[ax-nx,ya-T,az-nz],[-nx/W,0,-nz/W]);}
+    if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
+      const mesh=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x8a857c,side:THREE.DoubleSide}));mesh.castShadow=mesh.receiveShadow=true;scene.add(mesh);ctx.details=Object.assign(ctx.details||{},{railBridgeTris:pos.length/9});}}
+  // the named main lines first (the unnamed track is sidings and spurs as often as not), never a yard
+  const CM=C.commuter||{},YARD=/yard|terminal district|industrial|siding/i;
+  const lines=railLines(RAILS.filter(r=>r.type==='rail'&&!YARD.test(r.name||'')),1500);
+  const cars=CM.freight?(CM.cars||14):(CM.cars||6),carL=CM.freight?17:26,N=cars;
+  // C.commuter: {body, band, cars, freight} - stainless double-deckers with dark window bands by default (Metra);
+  // a freight line's cars come in rust, brown, tank black and intermodal colours, and are not lit at night
+  const m=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:new THREE.Color(CM.band||'#1e2630')});
+  lines.sort((a,b)=>(b.hasName-a.hasName)||(b.len-a.len));lines.splice(C.commuterLines||8);
+  const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:CM.freight?9:14}));
+  const FREIGHT=['#7a3a26','#5a3a2a','#2a2a2c','#8a5a2a','#3a5a7a','#a83a2a','#6a6a62'].map(c=>new THREE.Color(c)),BODY=new THREE.Color(CM.body||'#8a9096');
+  const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,CM.freight?3.6:4.6,CM.freight?2.9:3).translate(0,CM.freight?2.4:2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1,1.6,3.05).translate(0,3.1,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
   body.frustumCulled=stripe.frustumCulled=false;scene.add(body,stripe);let last=performance.now();
+  for(let k=0;k<trains.length*N;k++)body.setColorAt(k,CM.freight?FREIGHT[Math.floor(((Math.sin(k*12.9898)*43758.5453)%1+1)%1*FREIGHT.length)]:BODY);
+  if(CM.freight)stripe.visible=false;
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
     for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+1)+5)t.dir=1;
-      for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+1));d.position.set(x,0.2,z);d.rotation.set(0,-a,0);d.updateMatrix();body.setMatrixAt(i,d.matrix);stripe.setMatrixAt(i,d.matrix);i++;}}
-    body.count=stripe.count=i;body.instanceMatrix.needsUpdate=stripe.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.5,w*0.48,w*0.35);});
+      for(let c=0;c<N;c++){const s2=t.s-t.dir*c*(carL+1),[x,z,a]=polyAt(t.r,s2);d.position.set(x,railY(t.r,s2,x,z)+0.2,z);d.rotation.set(0,-a,0);d.updateMatrix();body.setMatrixAt(i,d.matrix);stripe.setMatrixAt(i,d.matrix);i++;}}
+    body.count=stripe.count=i;body.instanceMatrix.needsUpdate=stripe.instanceMatrix.needsUpdate=true;const w=CM.freight?0:windowF(hourCur);m.emissive.setRGB(w*0.5,w*0.48,w*0.35);
+    if(trains.length&&/raildebug/.test(location.hash)){const t=trains[0],[x,z]=polyAt(t.r,t.s);ctx.details.commuterAt=[Math.round(x),Math.round(railY(t.r,t.s,x,z)*10)/10,Math.round(z),Math.round(groundH(x,z)*10)/10];}});
   ctx.details=Object.assign(ctx.details||{},{commuterTrains:trains.length});
 });
 // light rail and streetcars at street level (MAX, the Portland Streetcar): rails in the pavement and trains running the joined lines
@@ -90,10 +119,10 @@ section('surface-rail',()=>{
       band=new THREE.InstancedMesh(new THREE.BoxGeometry(carL+0.02,0.45,2.72).translate(0,1.2,0),new THREE.MeshLambertMaterial({color:type==='tram'?0xd8d0c0:0x2a5aa8}),Math.max(1,trains.length*N)),d=new THREE.Object3D();
     im.frustumCulled=win.frustumCulled=band.frustumCulled=false;scene.add(im,win,band);let last=performance.now();
     animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+0.5)+5)t.dir=1;
-        for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i,d.matrix);win.setMatrixAt(i,d.matrix);band.setMatrixAt(i++,d.matrix);}}
+        for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,Math.max(groundH(x,z),deckAt(x,z)),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i,d.matrix);win.setMatrixAt(i,d.matrix);band.setMatrixAt(i++,d.matrix);}}
       im.count=win.count=band.count=i;im.instanceMatrix.needsUpdate=win.instanceMatrix.needsUpdate=band.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};
   // on a bridge the tracks share the road deck: lift the train to it
-  const nMax=make('L',28,EL.trainCars||2,0x9ea3a8,11),nCar=make('tram',20,1,0x7a2a5a,7);   // MAX: grey with a blue stripe; the streetcar in its plum livery
+  const nMax=make('L',28,EL.trainCars||2,0x9ea3a8,11),nCar=C.vehicles?0:make('tram',20,1,new THREE.Color(EL.tramColour||'#7a2a5a'),7);   // MAX: grey with a blue stripe; the streetcar in its plum livery
   ctx.details=Object.assign(ctx.details||{},{lightRailTrains:nMax,streetcars:nCar});
 });
 Object.assign(API,{polyLen,polyAt,joinChains});

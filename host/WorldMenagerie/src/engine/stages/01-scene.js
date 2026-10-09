@@ -1,6 +1,6 @@
 // ---------- scene: renderer, camera, the sun's day, sky ----------
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),24000*WORLD);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),(C.cameraFar||24000)*WORLD);   // a streamed metropolis draws further (C.cameraFar)
 const renderer=createRenderer(THREE,{pixelCap:1.5});installContextLoss(renderer);
 // quality: ?quality=low|medium|high, or the city's own default. Low drops shadows entirely, which on a
 // weak GPU is worth more than everything else put together.
@@ -36,7 +36,9 @@ const nightF=h=>1-smooth(DAYC.dawn[0],DAYC.dawn[1],h)+smooth(DAYC.dusk[0],DAYC.d
 const LIT=C.litWindows===undefined?1:C.litWindows;   // how much of the city keeps its lights on after dark
 const windowF=h=>LIT*(smooth(16.5,18.5,h)*(1-smooth(23,25,h))+0.12*nightF(h));
 // the sun: rises in the east (+x), sets in the west
-function sunAt(h){const f=(h-6)/12,E=Math.sin(Math.PI*f)*0.95,az=Math.PI*(1-f);return new THREE.Vector3(Math.cos(az)*Math.cos(E),Math.sin(E),Math.sin(az)*0.35*Math.cos(E)).normalize();}
+// the sun: up in the east (+x) at six, high in the south (+z) at noon, down in the west at six in the evening
+// (it used to be az = PI*(1-f), which put the morning sun in the west and set it in the east)
+function sunAt(h){const f=(h-6)/12,E=Math.sin(Math.PI*f)*0.95,az=Math.PI*f;return new THREE.Vector3(Math.cos(az)*Math.cos(E),Math.sin(E),Math.sin(az)*0.35*Math.cos(E)).normalize();}
 // sky: a gradient dome, coloured by the hour
 const SKY=(()=>{const D={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:0xf0a060},night:{top:0x050a1c,hor:0x16243c}},hx=v=>typeof v==='string'?parseInt(v.slice(1),16):v;
   for(const k in (C.sky||{}))for(const q in C.sky[k])D[k][q]=hx(C.sky[k][q]);return D;})();   // the city's own sky, if its config gives one
