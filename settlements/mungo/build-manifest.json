@@ -237,7 +237,7 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "1b2cac2617ab"
+  "42b91ac6b1b8"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -317,7 +317,7 @@
  ],
  "77-sim-0-core.js": [
   "core/simulation",
-  "b29efa457428"
+  "5ae9d87a20e8"
  ],
  "77-sim-1-world.js": [
   "core/simulation",
@@ -339,13 +339,17 @@
   "core/simulation",
   "9088c18375f2"
  ],
+ "77-sim-5r-routes.js": [
+  "core/simulation",
+  "ab6f36a600b9"
+ ],
  "77-sim-6-population.js": [
   "core/simulation",
   "1f6c887b3fae"
  ],
  "77-sim-8-export.js": [
   "core/simulation",
-  "9e54bd902b7c"
+  "e03f1b6f1213"
  ],
  "77-sim-9-debug.js": [
   "core/simulation",

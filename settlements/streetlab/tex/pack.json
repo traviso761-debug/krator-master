@@ -1,0 +1,277 @@
+{
+ "build": "streetlab",
+ "families": {
+  "ground": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.albedo.webp",
+    "normalMap": "ground.normal.webp",
+    "roughnessMap": "ground.rough.webp"
+   },
+   "lib": "ground.dirt",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2436dad96e7a5f2eb0cac52674856ce3ecdafa4d",
+    "normal": "18218a6c549ac1a047eaf3176a6bfb1663f773be",
+    "roughness": "1401865b87f24e4fdced1c0edae68d59d42a0813"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.2,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.33
+   }
+  },
+  "road_alley": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road_alley.albedo.webp",
+    "normalMap": "road_alley.normal.webp",
+    "roughnessMap": "road_alley.rough.webp"
+   },
+   "lib": "paving.grassy_cobblestone",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "6674dc20750d39773d6870100f24e59f479b1b71",
+    "normal": "b08003f5ba53d484dac0f211710a6123bf18daeb",
+    "roughness": "b1b0c783f7d0f3e612990da893797288efa4d490"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.85,
+    "mean": 0.55,
+    "sourceMean": 0.4102
+   }
+  },
+  "road_cobble": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road_cobble.albedo.webp",
+    "normalMap": "road_cobble.normal.webp",
+    "roughnessMap": "road_cobble.rough.webp"
+   },
+   "lib": "paving.cobblestone_01",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "204c827dfdfe48e24f208825600f34b3d19fa579",
+    "normal": "049ca117fd8a2236b2e559f3e15ed00ace60c4f1",
+    "roughness": "c587b513d4b5704e8d6691f8c23f84fb1c3fe950"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.85,
+    "mean": 0.55,
+    "sourceMean": 0.4073
+   }
+  },
+  "road_flag": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road_flag.albedo.webp",
+    "normalMap": "road_flag.normal.webp",
+    "roughnessMap": "road_flag.rough.webp"
+   },
+   "lib": "paving.flagstone",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e7cf62fc87b97f172f5065ab9807c318320a3e3b",
+    "normal": "f16d717d82106edd8fb7f143223d0c4c24e8567e",
+    "roughness": "62707d6a3dbc7c091b16729f9e44235c17ef9294"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.85,
+    "mean": 0.55,
+    "sourceMean": 0.4292
+   }
+  },
+  "road_paving": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road_paving.albedo.webp",
+    "normalMap": "road_paving.normal.webp",
+    "roughnessMap": "road_paving.rough.webp"
+   },
+   "lib": "paving.pavement_01",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7cbfbae189d06c7c02f3c0c20e8f9bb8003f3de0",
+    "normal": "efa25c694dea09d18466c43b4cd41e5e1e544597",
+    "roughness": "231e665c9e8b65589c9e5485cb8934f04bf78a70"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.85,
+    "mean": 0.55,
+    "sourceMean": 0.4892
+   }
+  },
+  "road_ruts": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road_ruts.albedo.webp",
+    "normalMap": "road_ruts.normal.webp",
+    "roughnessMap": "road_ruts.rough.webp"
+   },
+   "lib": "ground.road.ruts",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    10.0,
+    10.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c04cb5a199bf17b59104765d263114e0623422fc",
+    "normal": "bb2cc30f8173168830ac088e598ca20a1a9eaa6f",
+    "roughness": "ea1c9c0d8139d0c61bbfe2294864d99fd191acf8"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.9,
+    "mean": 0.5,
+    "sourceMean": 0.437
+   }
+  },
+  "rock": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.albedo.webp",
+    "normalMap": "rock.normal.webp",
+    "roughnessMap": "rock.rough.webp"
+   },
+   "lib": "rock.rock_face",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    16.0,
+    16.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a34bace7db1794889da4af27d0a3a6213f1df66f",
+    "normal": "39f14df4dfa9bcdf658bd155f428388df63c743b",
+    "roughness": "6a79e0bad6f9ef8efa542edfce608e5701576391"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.3,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.289
+   }
+  },
+  "sand": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "sand.albedo.webp",
+    "normalMap": "sand.normal.webp",
+    "roughnessMap": "sand.rough.webp"
+   },
+   "lib": "ground.coast_sand_01",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.4,
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d7cf38a2d2337dc24b34b471bd176adc649ea55e",
+    "normal": "526aecd43781abca55ae7882a5d7595bc84fbd9c",
+    "roughness": "2c48e2548f045471502a68f936bf1905a7800314"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.2,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.4541
+   }
+  },
+  "stone": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "stone.albedo.webp",
+    "normalMap": "stone.normal.webp",
+    "roughnessMap": "stone.rough.webp"
+   },
+   "lib": "stone.cut",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0c8afeac54c23a04bc6aba749f67bbfa88059ebe",
+    "normal": "e099e97cde1e81337b8de512c86bc3995d6af6b4",
+    "roughness": "639f8fc891da638cff9062226bdee03f52e5d3f5"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.25,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.6318
+   }
+  }
+ },
+ "size": 512,
+ "what": "generated by tools/textures/pack.py from materials.json; do not edit"
+}

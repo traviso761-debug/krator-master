@@ -33,8 +33,10 @@ SITE = os.path.join(HERE, 'site')
 
 # (section, slug, built file, name, one line[, tag])
 ENTRIES = [
-    ('world', 'voth', 'settlements/voth/voth.html', 'Voth',
-     'A city of cantons on an enclosed brackish bay, with barges, ferries, monks and ordinators on the move.'),
+    ('world', 'voth', 'settlements/voth/voth.html', 'Voth - old',
+     'A city of cantons on an enclosed brackish bay, with barges, ferries, monks and ordinators on the move. The first Voth, kept beside the new one.'),
+    ('world', 'voth-new', 'settlements/streetlab/dist/voth-city.html', 'Voth - new',
+     "Voth laid out again by the city builder (core/city) on the owner's site: walled city, harbour and river port, clan compounds, a monastery, chinampas and the country round it, about 8,000 buildings; the south-west bay's jungle in the parks and savannah outside, a 72-minute day with electric, lantern and torch light, ferries and elephant bugs on their lines."),
     ('world', 'yuni', 'settlements/yuni/yuni.html', 'Yuni',
      'Rich, middle and poor quarters on canals, with an underground and an Ancients quarter. Every surface from the material library, inside the houses too; the wild valley planted by the eastern badlands kit, its Zion side (oak, maple, cottonwood galleries, hanging gardens on the butte). Run time for the day, M for the map.'),
     ('world', 'dalab', 'settlements/dalab/dist/dalab.html', 'Dalab',

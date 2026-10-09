@@ -321,6 +321,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 11. **The Godot project graduates; the round-trip test; the streamer** (stage 4).
 12. **Verge then Voth onto `core/simulation`; M6** (stage 5).
 13. **M7** (stage 6).
+14. **`core/city` onto the substrate** (section 8): KRAND, `core/mask`, `core/tags`, `KFIELD`, one spatial index;
+    then the cities' placement passes ported onto it, Iziz first; its `city` export section with item 7.
 
 ## 7. Decisions and open questions
 
@@ -329,6 +331,50 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 - Forward+ on a real GPU and the friend's Voth import route are still the spike's two open items that only
   people outside a cloud session can answer.
 - Is `archive/` worth keeping in the repository at all, given `krator-before-cleanup.bundle` holds the history?
+
+## 8. Since the plan: `core/city` (on `main` 2026-10-09)
+
+**What landed.** `core/city` is the city builder worked out in Streetlab: a city as plain records (ways, lots,
+greens, each with the step that made it) on one occupancy raster, steps 6 to 12 (civic, avenue lots, main streets,
+side streets, alleys, the infill of every block), and a reference drawing. A world brings its site (steps 0 to 5),
+its kit and its tuning. `settlements/streetlab` is now Voth's site editor and Voth's city plan on it, published in
+the gallery as "Voth - new" beside "Voth - old". The same commit added transport routes to `core/simulation`
+(`77-sim-5r-routes.js`: `SIM.transportQueue`, `SIM.vehiclePose`, pure functions of motion time), seven Voth and
+Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant bug" in prose.
+
+**It is compatible with the refactor.** Checked on 2026-10-09:
+
+| Check | Result |
+|---|---|
+| The working rules on `main` | followed: `core/city/README.md` lists its debts to the refactor (its own random streams, raster and noise; lots not yet in `core/tags`) |
+| Portability | its layout fragments are `[G data]` with no DOM; its random streams are integer and seeded per step, so they port to GDScript; its trigonometry is geometry, not hashing |
+| Encodings and rebuilds | Streetlab's `build.py` passes the encoding lint; every page the commit rebuilt reproduces, except Verge (the Windows path-separator bug, fixed on `full-refactor`) |
+| Voth's mask | no clash: Streetlab loads Voth's layout fragments (`10-core`, `15-shore`, `30a-layout-districts`), not the ground fragment that moved onto `core/mask` |
+| Merge into `full-refactor` | six small conflicts (generated tables, the baseline, one hook line, two additive rows in `core/simulation/SCHEMA.md`), settled; every page rebuilt |
+
+**What it adds to the roadmap.**
+
+- **Stage 2, the substrate, takes `core/city` as a consumer of each shared module** (its README's debts):
+  its streams move onto `KRAND` cell seeding in the reseeding event; its occupancy raster onto `core/mask`; its
+  lots registered in `core/tags` before they are drawn; its site's ground read from the terrain field (`KFIELD`,
+  branch `refactor/terrain-field`).
+- **One spatial index, not three.** `core/city` keeps a 40 m hash of building footprints, little-demo buckets its
+  flora at 24 m, and stage 1 planned a third for the biome core (`wip/biome-spatial-index`). Make it one small
+  core module that all three use, with the biome work's equality tests.
+- **`core/city` is the target for every city placement pass.** The plan already asks each city to split its
+  builders into a data pass and a draw pass; `core/city` is that data pass. Order: Voth (done in Streetlab), then the
+  four cities already on `core/mask` (Iziz, Dalab, Erewhon, Roketstad), then Ys's placement pass, each proven with
+  a placement hash and a screenshot pair.
+- **`core/export` gets a `city` section** (ways, lots, greens and their steps), so Godot receives a city as records
+  and baked meshes. Godot does not regenerate cities, so `core/city` needs no GDScript twin.
+- **Stage 5 starts from the transport routes.** Voth's ferries, elephant bugs and ships used random departures
+  that Godot could not reproduce; `SIM.transportBake` and `SIM.vehiclePose` make them timetables, which is the
+  Phase 5 rule. Verge's own `SIM` moves onto the core with them.
+- **Owner's decision: one Voth.** The old page (`settlements/voth`, now on `core/mask`) and the new city plan
+  (Streetlab on `core/city`) both build. Say which is canonical, and when the old one retires; until then a fix to
+  Voth's shared layout reaches both.
+- **Minor debts:** two `x || number` defaults in `core/city/10-city-core.js` (`span`, `hw`); `core/city` has no node
+  test yet (rule 6.9); `PORT-INDEX.md` needs a rerun of `tools/audit_port.py` to count Streetlab.
 
 ## Appendix: how this evaluation was made
 

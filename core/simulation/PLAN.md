@@ -325,7 +325,8 @@ Group        { id, kind, org, leader, members[], route, activity, state, timer }
 NavLayer     'pedestrian' | 'road' | 'water' | 'climb' | 'animal' | 'air' | 'interior'
 NAV          { nodes:[{id,x,y,z,tag,layer,...}], edges:[{id,a,b,kind,len,w,layer}] }   the Mav/Locus/GAME_EXPORT contract;
              a grid backend (Shade, Voth water, Locus RG) answers the same route() call
-TransportRoute { id, layer, stops[place], period, phase, segments[[dur, ease, from, to]], capacity, faction, vehicle }   TODO.md shape
+TransportRoute { id, layer, stops[place], period, phase, segments[[dur, ease, from, to]], capacity, faction, vehicle }   TODO.md shape;
+               built: kind 'transport', 77-sim-5r-routes.js (stops may be 'port:<id>'; first stop = last makes a loop). First user: streetlab's Voth city
 SupplyRoute    { id, origin, destination, resource, qty, freq, faction, security, status }
 Event          { id, type, faction, org, from(port), to(port), stops[{activity, mins}], every_days, consequences[] }   Shade EVENTS + ROADMAP §29
 Stockpile      { settlement, resource, amount, produce, consume }

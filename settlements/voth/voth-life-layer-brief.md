@@ -56,7 +56,7 @@ or GPU-bound; it decides how much of tier 3 can move back to the CPU.
 district, river mouth, arena, palace, two or three stops on the south and east
 sides, occasional shrine-island detours. A few river craft running up past the
 map edge. Sailing ships arriving at and departing the harbour district. Barges
-down-river and back up off-map. Silt striders on a circuit of the city edge,
+down-river and back up off-map. Elephant bugs on a circuit of the city edge,
 leaving by the south, east and west roads.
 
 **Routes are multi-leg CatmullRom curves with dwell**, eased with smoothstep so

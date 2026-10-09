@@ -218,6 +218,23 @@ each lists the three fragments the way it lists `lod/`. `furnish/README.md` has 
 | `test-furnish.js` | `node core/furnish/test-furnish.js` |
 | `fingerprint.py` | every furnished page's records and furniture meshes, compared with `fingerprint.json`: a change to this module must leave them `same` |
 
+## `city/`
+
+The city builder and its infill: avenues and lots, main streets, side streets, alleys, and the infill of every block,
+as plain records (ways, lots, greens) with the step that made each, on one occupancy raster. A world brings its site
+(steps 0-5: ground, landmarks, wall, districts, avenues, highways), its kit and its tuning; the module does steps 6-12.
+Voth's city plan (`settlements/streetlab`) is the first world on it. **Every settlement should eventually be ported to
+it**: `city/README.md` has the method, the contract, the porting steps and the module's debts to the refactor.
+
+| File | What |
+|---|---|
+| `10-city-core.js` | [G data] stream PRNG, value noise, geometry, the occupancy raster, A* |
+| `20-city-plan.js` | [G data] the plan's records: ways (a street knocks out and salvages lots), lots along streets, parks and plazas |
+| `31-city-steps-b.js` | [G data] steps 6-9: civic, avenue lots, main streets, main-street lots |
+| `32-city-steps-c.js` | [G data] steps 10-12: side streets, lots and alley entrances, alleys and the infill; a default runner |
+| `50-city-host-streets.js` | [web] streets, the ground overlay, labels, the step slider |
+| `52-city-host-buildings.js` | [web] lots' kit pieces as instanced LOD prototypes; furniture pieces |
+
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
 Three small modules with no THREE and no DOM in their data side, each with a node test (each check has a negative).

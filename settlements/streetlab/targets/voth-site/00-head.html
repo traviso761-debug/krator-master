@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voth Site Editor</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#bfcfd8;font-family:Georgia,serif}
+  #app{position:fixed;inset:0}
+  .pnl{position:fixed;z-index:30;background:rgba(24,21,15,0.88);color:#f3ecd8;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.45}
+  .pnl button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;padding:4px 8px;font:inherit;font-size:11.5px;margin:3px 3px 0 0;cursor:pointer}
+  .pnl button.on{background:#c9a227;color:#2a2416}
+  .pnl button:disabled{opacity:.35;cursor:default}
+  #b-undo,#b-redo{background:rgba(255,255,255,0.18);font-weight:bold}
+  .pnl input,.pnl select{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:4px;padding:3px 6px;font:inherit;font-size:12px;width:calc(100% - 60px)}
+  .pnl select option{background:#2a2518}
+  .pnl label{display:block;margin-top:5px}
+  .k{opacity:.6;font-size:11px}
+  #bar{left:14px;top:14px;width:min(400px,calc(100vw - 28px))}
+  #bar h1{font-size:13px;margin:0 0 4px;color:#e0c98a;letter-spacing:.06em;text-transform:uppercase}
+  #hint{opacity:.8;font-size:11.5px;margin-top:6px}
+  #status{font-size:11px;opacity:.75;margin-left:4px}
+  #status.dirty{color:#ffb070;opacity:1}
+  #side{right:14px;top:14px;width:min(300px,calc(100vw - 28px));max-height:calc(100vh - 330px);overflow:auto}
+  #side b{color:#e0c98a}
+  .it{padding:3px 4px;border-radius:4px;cursor:pointer}
+  .it:hover{background:rgba(255,255,255,0.08)}
+  .it.on{background:rgba(201,162,39,0.35)}
+  .mk{display:inline-block;min-width:16px;text-align:center;background:#c0392b;border-radius:9px;color:#fff;font-size:11px;padding:0 3px}
+  i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border-radius:2px}
+  #editor{display:none;margin-top:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:6px}
+  #mmw{right:14px;bottom:14px;padding:6px}
+  #mm{width:260px;height:260px;display:block;cursor:crosshair}
+  #tip{position:fixed;z-index:40;display:none;pointer-events:none;max-width:320px}
+  #flash{left:50%;top:14px;transform:translateX(-50%);opacity:0;transition:opacity .4s;pointer-events:none}
+  #loading{left:50%;top:45%;transform:translate(-50%,-50%);font-size:15px}
+  @media (max-width:760px){#side{top:auto;bottom:290px;max-height:25vh}#mm{width:180px;height:180px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="bar" class="pnl">
+  <h1>Voth site editor</h1>
+  <div class="k">Voth's ground, lake and cantons, no roads. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move.</div>
+  <div>
+    <button id="m-select">1 select</button><button id="m-park">2 park</button><button id="m-market">3 market</button><button id="m-funerary">4 funerary</button><button id="m-plaza">5 plaza</button><button id="m-misc">6 misc</button><button id="m-marker">7 marker</button>
+    <button id="m-avenue">8 avenue</button><button id="m-causeway">9 causeway</button><button id="m-raise">R raise</button><button id="m-lower">L lower</button><button id="m-smooth">M smooth</button>
+    <button id="m-ferry">B ferry stop</button><button id="m-strider">N elephant bug station</button><button id="m-route">K route</button>
+  </div>
+  <div id="hint"></div>
+  <div id="brush" style="display:none">
+    <label>size <input id="br-r" type="range" min="10" max="400" value="60" style="width:55%"> <span id="br-rv">60 m</span></label>
+    <label>strength <input id="br-s" type="range" min="0.2" max="6" step="0.2" value="2" style="width:55%"> <span id="br-sv">2</span></label>
+  </div>
+  <div>
+    <button id="b-undo" title="Ctrl+Z">&#8630; undo</button><button id="b-redo" title="Ctrl+Y">&#8631; redo</button><button id="b-save">save</button><button id="b-export">export JSON</button><button id="b-copy">copy JSON</button><button id="b-import">import</button>
+    <button id="b-voth">add Voth's current districts</button><button id="b-clear">clear all</button><button id="restore" style="display:none">restore unsaved draft</button>
+    <span id="status"></span>
+  </div>
+  <div><button id="v-map">map view</button><button id="v-city">city view</button><button id="v-labels">labels</button></div>
+  <input id="file" type="file" accept=".json,application/json" style="display:none">
+</div>
+<div id="side" class="pnl"><b>Districts and markers</b> <span class="k" id="count"></span><div id="items"></div><div id="editor"></div></div>
+<div id="mmw" class="pnl"><canvas id="mm" width="520" height="520"></canvas></div>
+<div id="tip" class="pnl"></div>
+<div id="flash" class="pnl"></div>
+<div id="loading" class="pnl">Raising Voth's ground...</div>

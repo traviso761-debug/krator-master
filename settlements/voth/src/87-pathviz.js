@@ -245,7 +245,7 @@ var PATHVIZ_BUILTIN = [
 ];
 PATHVIZ_BUILTIN.forEach(pathvizRegister);
 
-/* silt striders: ONE entry per route, generated from STRIDER_ROUTES itself
+/* elephant bugs: ONE entry per route, generated from STRIDER_ROUTES itself
    rather than written out — the old file hard-coded strider1/strider2 and
    silently dropped Route 3 when 79-striders.js grew a third one. Generated
    this way, a Route 4 appears here the day it is added. Each convoy carries
@@ -256,7 +256,7 @@ PATHVIZ_BUILTIN.forEach(pathvizRegister);
   var cols = PATHVIZ_STRIDER_COLS;   /* 05-palette.js — build.py keeps every colour array there */
   STRIDER_ROUTES.forEach(function(route, ri2){
     pathvizRegister({
-      key:'strider'+(ri2+1), label:'Silt strider (Route '+(ri2+1)+')', color: cols[ri2 % cols.length],
+      key:'strider'+(ri2+1), label:'Elephant bug (Route '+(ri2+1)+')', color: cols[ri2 % cols.length],
       posts: function(){ return route.stops || []; }, postR:5, seg:16, glow:6,
       entities: function(){ return LIFE_STRIDERS.filter(function(cv){ return cv.route === route; }); },
       pos: function(cv){ return pathvizEntityPos(cv.state==='docked' ? route.stops[cv.idx] : cv); }

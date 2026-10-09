@@ -461,7 +461,7 @@ function brazierOrnate(x,y,z,ry,col,opt){
   nlLampAdd(x, y+h*0.85+r*0.6, z, 1.15*(r/0.65), 18*Math.sqrt(r/0.65));   /* see brazierPlain above */
 }
 
-/* a silt strider boarding station: a raised platform on posts, a stepped
+/* an elephant bug boarding station: a raised platform on posts, a stepped
    approach, low rails and a small roofed shelter — meant to read as transit
    infrastructure, not a generic shed */
 function siltStriderStation(x,y,z,ry,col,opt){

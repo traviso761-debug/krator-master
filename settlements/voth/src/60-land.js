@@ -1076,7 +1076,7 @@ reseed(3131);
 RBRIDGES.forEach(function(b){
   /* deck floor bumped 8.5->11.5 (plus the span's own +6 mid-arch already on
      top of that) per the owner's "a tad more height for barge and wading
-     silt strider passage" — a barge's tallest point (cabin roof) sits
+     elephant bug passage" — a barge's tallest point (cabin roof) sits
      ~5 units above the waterline, so this keeps a real margin rather than
      the ~3.5 units the old minimum left. */
   var ya = terrainH(b.ax,b.az)+2.2, yb2 = terrainH(b.bx,b.bz)+2.2, deck = Math.max(ya,yb2,11.5);

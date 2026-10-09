@@ -3,7 +3,7 @@
 // can be edited and dropped back in as the overlay. The convention block is the atmos / biome / Yuni exports' own.
 //
 //   SIM.export({log:n, nav:true}) -> {format:'krator-sim', version, convention, clock, activities, factions, orgs,
-//        relations, presence, places, roles, actors, groups, events, ports, nav, log}
+//        relations, presence, places, roles, actors, groups, events, ports, transports, nav, log}
 (function(root){
   'use strict';
   var SIM = root.SIM;
@@ -16,6 +16,7 @@
       clock:{ minute:SIM.minute(), hour:SIM.hour(), seed:SIM.seed } };
     ['activity','faction','org','relation','presence','place','role','event','port'].forEach(function(k){ out[k==='activity'?'activities':k==='presence'?'presence':k+'s'] = SIM.all(k).map(clean); });
     out.actors = SIM.all('actor').filter(function(a){ return !a.transient; }).map(function(a){ return { id:a.id, role:a.role, org:a.org, faction:a.faction, home:a.home||null, work:a.work||null }; });
+    out.transports = SIM.all('transport').map(function(R){ return { id:R.id, layer:R.layer, stops:R.stops.slice(), vehicle:R.vehicle, vehicles:R.vehicles, speed:R.speed, dwell:R.dwell, phase:R.phase, capacity:R.capacity, faction:R.faction, org:R.org, period:R.period, segments:R.segments }; });
     out.groups = SIM.all('group').map(function(G){ return { id:G.id, kind:G.kind, org:G.org, event:G.event, members:G.members.slice(), from:G.from, to:G.to, beasts:G.beasts, phase:G.phase }; });
     out.nav = {};
     Object.keys(SIM.nav.layers).forEach(function(k){ var L=SIM.nav.layers[k];

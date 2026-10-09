@@ -244,7 +244,7 @@ FURN({
 });
 
 FURN({
-  key: 'voth_strider_station', name: "Silt Strider Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
+  key: 'voth_strider_station', name: "Elephant Bug Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
   rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 3 },
   materials: ['timber', 'cloth'],
   w: 10, d: 16, h: 5.6, variants: 1,

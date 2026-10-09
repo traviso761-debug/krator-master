@@ -23,8 +23,10 @@ LOAD_MS = 900000
 # KRATOR_CHROME names a Chromium to launch. The other names are the ones single copies of this harness used before
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
-# ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (document.getElementById('errs')&&"
+# ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Streetlab's city plan and site
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
+READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+            "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;
  const v=window[k];if(typeof v==='function'||typeof v==='object'&&v&&!Array.isArray(v)&&k==='_api')continue;

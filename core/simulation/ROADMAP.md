@@ -8,7 +8,7 @@ Krator's life layer should become an engine-independent simulation of the people
 
 The existing Voth and Mav's Refuge life systems already contain many of the necessary ideas:
 
-- Voth has citizens, homes, destinations, social classes, guards, patrols, guild workers, merchants, caravans, ferries, ships, silt-strider routes, temples, and faction-specific populations.
+- Voth has citizens, homes, destinations, social classes, guards, patrols, guild workers, merchants, caravans, ferries, ships, elephant-bug routes, temples, and faction-specific populations.
 - Mav's Refuge has pedestrians, homes, soldiers, patrols, gathering parties, workers, lifts, beast handlers, drills, ladders, and day/night activity.
 - Both already use navigation graphs, destination registries, role-specific behavior, schedules, squads, transportation routes, and world geometry as behavioral constraints.
 
@@ -290,7 +290,7 @@ Very little is thrown away; they are reference implementations. Voth teaches des
 ## 35. Development Strategy
 
 - **Phase 1 Behavioral vocabulary:** Actor, Faction, Organization, Activity, Schedule, Group, Location, Resource, Route, Relationship. No engine integration.
-- **Phase 2 Translate Voth:** civilians, Ordinators, Temple, guild workers, caravans, ferries, silt striders; make the existing Three.js simulation consume the new data.
+- **Phase 2 Translate Voth:** civilians, Ordinators, Temple, guild workers, caravans, ferries, elephant bugs; make the existing Three.js simulation consume the new data.
 - **Phase 3 Translate Mav's Refuge:** civilians, soldiers, patrols, gatherers, lift workers, handlers, drills. If both run from the same abstractions, the architecture is sound.
 - **Phase 4 Faction relationships:** country, organization, foreign presence, permissions, relations (the History Monk / Voth / Refuge example).
 - **Phase 5 Resources and supply:** food, water, raw materials, manufactured goods, stockpiles, trade routes, production, consumption. Start abstractly.
