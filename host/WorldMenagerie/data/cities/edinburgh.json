@@ -1,0 +1,1194 @@
+{
+ "name": "Edinburgh",
+ "note": "Scotland's capital from OpenStreetMap, on its real ground: the Old Town down its ridge from the Castle Rock, the New Town's grid, Holyrood under Arthur's Seat, Calton Hill, and Leith on the Forth.",
+ "origin": [
+  55.953,
+  -3.19
+ ],
+ "defaultSeed": 1124,
+ "defaultHour": 15,
+ "bounds": [
+  55.932,
+  -3.228,
+  55.982,
+  -3.15
+ ],
+ "osm": "data/cities/edinburgh-osm.json",
+ "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles.",
+ "fetch": {
+  "bbox": [
+   55.929,
+   -3.233,
+   55.985,
+   -3.145
+  ],
+  "tiles": {
+   "buildings": [
+    4,
+    4
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    55.932,
+    -3.228,
+    55.982,
+    -3.15
+   ]
+  ],
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});way[\"highway\"=\"steps\"]({b});",
+  "_": "the whole box is a detail zone; the closes and wynds of the Old Town are named service ways and steps"
+ },
+ "seaLevelWater": true,
+ "terrain": {
+  "zoom": 14,
+  "step": 12,
+  "_": "Castle Rock, the Old Town ridge, Calton Hill, Arthur's Seat and Salisbury Crags: elevation from tools/fetch-terrain.py",
+  "filter": {
+   "open": 60,
+   "close": 24,
+   "blur": 24,
+   "_": "a narrow filter: the elevation carries roofs and trees, but the Castle Rock and the Salisbury Crags are narrow too, and the source is coarse enough already"
+  }
+ },
+ "defaultView": "The Castle from Princes Street",
+ "waterLevel": -6.0,
+ "_waterLevel": "the Forth at sea level: the datum (the box's 5th percentile) is 6.3 m up, so a sea at the datum would flood Leith",
+ "defaultHeights": {
+  "_": "Edinburgh's untagged buildings are tenements of four to six storeys in the Old Town and Georgian terraces of three or four in the New",
+  "yes": 15,
+  "apartments": 17,
+  "residential": 14,
+  "house": 9,
+  "detached": 9,
+  "semidetached_house": 8,
+  "terrace": 12,
+  "commercial": 15,
+  "retail": 10,
+  "church": 20,
+  "cathedral": 24,
+  "public": 17,
+  "office": 17,
+  "hotel": 19,
+  "school": 13,
+  "university": 16,
+  "civic": 16,
+  "government": 16,
+  "chapel": 10,
+  "garage": 3.5,
+  "garages": 3.5,
+  "roof": 5,
+  "shed": 3,
+  "industrial": 9,
+  "warehouse": 9,
+  "castle": 14
+ },
+ "heightSpread": 0.2,
+ "facade": {
+  "bay": 3.6,
+  "floor": 3.6,
+  "shutters": false,
+  "_": "Georgian and tenement proportions: sash windows close-set, three to six storeys"
+ },
+ "sky": {
+  "day": {
+   "top": "#6b8db0",
+   "hor": "#d6dcdf"
+  },
+  "dusk": {
+   "top": "#3a4466",
+   "hor": "#d88a5e"
+  },
+  "night": {
+   "top": "#070b16",
+   "hor": "#1e2434"
+  }
+ },
+ "fog": 3.2e-05,
+ "terrainColours": {
+  "low": "#8f9078",
+  "high": "#6f8448",
+  "steep": "#4e4a44",
+  "far": "#6f7c78"
+ },
+ "waterColour": "#4a5c62",
+ "lakeColour": "#3c5056",
+ "lakeSheen": "#6a7e84",
+ "litWindows": 0.6,
+ "streetTrees": 0.35,
+ "parkedCars": 0.45,
+ "traffic": 0,
+ "people": 0.5,
+ "lowRiseFar": 4000,
+ "bridgeDeck": 12,
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "rooftops": false,
+ "groundMottle": 0.12,
+ "instanceCulling": true,
+ "noBuildingsInWater": true,
+ "palette": {
+  "_": "blackened sandstone: Craigleith grey and buff, and the soot of Auld Reekie on the Old Town",
+  "brick": [
+   "#8c8070",
+   "#7a6f60",
+   "#968a76",
+   "#6e6558",
+   "#857a6a",
+   "#5e574e",
+   "#9a8c74",
+   "#736a5c"
+  ],
+  "stone": [
+   "#a89c86",
+   "#948a78",
+   "#9e927c",
+   "#8a8070"
+  ]
+ },
+ "paving": {
+  "classes": [
+   "residential",
+   "unclassified",
+   "living_street",
+   "pedestrian",
+   "alley",
+   "service"
+  ],
+  "plazas": true,
+  "metres": 2.6,
+  "_": "setts: grey granite cobbles on the Royal Mile and the closes"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk"
+  ],
+  "colour": "#e6e2d8"
+ },
+ "tramTracks": true,
+ "roadColours": {
+  "residential": "#7e7c78",
+  "unclassified": "#7e7c78",
+  "living_street": "#86827c",
+  "pedestrian": "#8e8a82",
+  "alley": "#7a7670",
+  "primary": "#3e3f42",
+  "secondary": "#404144",
+  "tertiary": "#444548",
+  "trail": "#a89c80"
+ },
+ "areaColours": {
+  "park": "#4e7038",
+  "grass": "#5a7a3e",
+  "garden": "#4c6e36",
+  "recreation_ground": "#5a7a3e",
+  "residential": "#8a857a",
+  "commercial": "#8a857a",
+  "plaza": "#8e8a82",
+  "scrub": "#62692f"
+ },
+ "namedService": "pedestrian",
+ "namedServiceMatch": "Close|Wynd|Court|Lane|Row|Steps|Brae|Vennel",
+ "vehicles": {
+  "seed": 1124,
+  "side": "left",
+  "cars": 20,
+  "mopeds": 2,
+  "buses": 2.2,
+  "trams": 1.2,
+  "trains": 0.5,
+  "trainCars": 6,
+  "railElevated": true,
+  "viaduct": 6,
+  "far": 1000,
+  "carFar": 700,
+  "mopedFar": 400,
+  "railFar": 2500,
+  "maxCars": 2500,
+  "maxMopeds": 200,
+  "maxBuses": 160,
+  "maxTrams": 20,
+  "maxTrains": 20,
+  "stationDwell": 30,
+  "stationNear": 90,
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#2a3a5a",
+   "#7a2a2a",
+   "#3c4a3a",
+   "#d8d8d4"
+  ],
+  "mopedColours": [
+   "#1a1a1e",
+   "#e8e8e4"
+  ],
+  "busColours": [
+   "#7a1f2a",
+   "#7a1f2a",
+   "#f2f0ea"
+  ],
+  "tramColours": [
+   "#f2f2f0"
+  ],
+  "trainColours": [
+   "#24365e",
+   "#24365e",
+   "#f2f2f2"
+  ],
+  "lineColours": {
+   "East Coast Main Line": "#b0192a"
+  },
+  "_": "src/core/traffic.js: on the left; Lothian's maroon and white buses, the trams, ScotRail and LNER's red on the East Coast"
+ },
+ "crowds": {
+  "seed": 1124,
+  "centre": [
+   55.9505,
+   -3.1905,
+   1800,
+   9
+  ],
+  "pedestrianMul": 2.0,
+  "maxPedestrians": 12000,
+  "keepOut": [],
+  "pedestrians": 14,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    55.94895,
+    -3.1965,
+    45,
+    260
+   ],
+   [
+    55.9496,
+    -3.1905,
+    40,
+    220
+   ],
+   [
+    55.9476,
+    -3.1956,
+    50,
+    170
+   ],
+   [
+    55.9486,
+    -3.1934,
+    25,
+    90
+   ],
+   [
+    55.9549,
+    -3.1826,
+    60,
+    150
+   ],
+   [
+    55.9523,
+    -3.1934,
+    40,
+    140
+   ],
+   [
+    55.9524,
+    -3.1733,
+    35,
+    90
+   ],
+   [
+    55.9441,
+    -3.1618,
+    25,
+    60
+   ],
+   [
+    55.9506,
+    -3.1872,
+    35,
+    120
+   ]
+  ],
+  "_sites": "[lat, lon, radius, how many]: the Castle Esplanade, the Royal Mile at St Giles', the Grassmarket, Victoria Street, Calton Hill, the Scott Monument, Holyrood, Arthur's Seat, the Royal Mile at the Tron"
+ },
+ "streetlife": {
+  "seed": 1124,
+  "centre": [
+   55.951,
+   -3.19,
+   2200
+  ],
+  "far": 550,
+  "shops": 0.5,
+  "flowerBoxes": 0.05,
+  "smoke": 0.16,
+  "_": "src/core/streetlife.js: shopfronts, pubs, and the chimney smoke of Auld Reekie"
+ },
+ "life": {
+  "tile": 600,
+  "seed": 1124,
+  "near": 600,
+  "density": 0.0009,
+  "perArea": 500,
+  "max": 6000
+ },
+ "flight": true,
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "oldtown": [
+   "Old Town",
+   "#8a7e6c",
+   16,
+   30,
+   [
+    55.9455,
+    -3.203,
+    55.952,
+    -3.172
+   ]
+  ],
+  "newtown": [
+   "New Town",
+   "#a89a82",
+   14,
+   24,
+   [
+    55.952,
+    -3.215,
+    55.962,
+    -3.18
+   ]
+  ],
+  "leith": [
+   "Leith",
+   "#9a8e7a",
+   12,
+   30,
+   [
+    55.965,
+    -3.19,
+    55.982,
+    -3.15
+   ]
+  ],
+  "southside": [
+   "Southside",
+   "#9c907c",
+   14,
+   24,
+   [
+    55.932,
+    -3.205,
+    55.9455,
+    -3.17
+   ]
+  ],
+  "outer": [
+   "Edinburgh",
+   "#9a8e7a",
+   12,
+   24,
+   [
+    55.932,
+    -3.228,
+    55.982,
+    -3.15
+   ]
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "Edinburgh Castle",
+   "model": "castle",
+   "at": [
+    55.94865,
+    -3.2003
+   ],
+   "top": 115.7,
+   "outline": [
+    [
+     55.94905,
+     -3.2024
+    ],
+    [
+     55.94935,
+     -3.2012
+    ],
+    [
+     55.9493,
+     -3.1996
+    ],
+    [
+     55.94905,
+     -3.1983
+    ],
+    [
+     55.9487,
+     -3.19805
+    ],
+    [
+     55.94828,
+     -3.1985
+    ],
+    [
+     55.94805,
+     -3.2
+    ],
+    [
+     55.94812,
+     -3.2015
+    ],
+    [
+     55.9485,
+     -3.20262
+    ]
+   ],
+   "halfmoon": [
+    55.94878,
+    -3.19865
+   ],
+   "palace": [
+    55.94845,
+    -3.19935
+   ],
+   "hall": [
+    55.9483,
+    -3.19992
+   ],
+   "memorial": [
+    55.94872,
+    -3.19995
+   ],
+   "chapel": [
+    55.94888,
+    -3.20048
+   ],
+   "barracks": [
+    55.94822,
+    -3.20135
+   ],
+   "gate": [
+    55.94893,
+    -3.19818
+   ],
+   "esplanade": [
+    [
+     55.94896,
+     -3.19795
+    ],
+    [
+     55.949,
+     -3.19625
+    ]
+   ],
+   "esplanadeWidth": 48,
+   "esplanadeTop": [
+    105.7,
+    89.0
+   ],
+   "info": "On the Castle Rock, the plug of an extinct volcano, since at least the 12th century: the Half Moon Battery, the Royal Palace where the Honours of Scotland are kept, the Great Hall, St Margaret's Chapel (the oldest building in the city, c. 1130), and Mons Meg. The One O'Clock Gun fires from the Mills Mount Battery every day but Sunday.",
+   "flags": [
+    [
+     55.94845,
+     -3.1992,
+     14
+    ],
+    [
+     55.94878,
+     -3.19865,
+     10
+    ]
+   ],
+   "monsmeg": [
+    55.94893,
+    -3.2003
+   ]
+  },
+  {
+   "name": "St Giles' Cathedral",
+   "model": "stgiles",
+   "at": [
+    55.94953,
+    -3.19077
+   ],
+   "clear": [
+    36,
+    0
+   ],
+   "face": 0,
+   "info": "The High Kirk of Edinburgh, mostly 14th and 15th century; its crown steeple of 1495 is one of the city's emblems. John Knox preached here."
+  },
+  {
+   "name": "The Hub",
+   "model": "spire",
+   "at": [
+    55.94889,
+    -3.19478
+   ],
+   "clear": [
+    14,
+    0
+   ],
+   "tower": 34,
+   "side": 11,
+   "nave": 28,
+   "face": 180,
+   "info": "The Tolbooth Kirk (1844), Pugin and Gillespie Graham's: its 72 m spire is the highest point of the Old Town. Home of the Edinburgh International Festival.",
+   "towerH": 72
+  },
+  {
+   "name": "The Scott Monument",
+   "model": "scott",
+   "at": [
+    55.95239,
+    -3.19325
+   ],
+   "clear": [
+    16,
+    0
+   ],
+   "face": 0,
+   "info": "George Meikle Kemp's Gothic spire for Sir Walter Scott, 1846: 61 m, the largest monument to a writer in the world, black with the city's soot. 287 steps to the top."
+  },
+  {
+   "name": "The National Monument",
+   "model": "natmon",
+   "at": [
+    55.95485,
+    -3.18215
+   ],
+   "clear": [
+    26,
+    0
+   ],
+   "face": 90.0,
+   "info": "A Parthenon for the dead of the Napoleonic Wars, begun in 1826 and abandoned in 1829 when the money ran out: twelve columns, 'Scotland's Disgrace', 'Edinburgh's Folly'."
+  },
+  {
+   "name": "The Nelson Monument",
+   "model": "nelson",
+   "at": [
+    55.95455,
+    -3.18107
+   ],
+   "clear": [
+    12,
+    0
+   ],
+   "info": "An upturned telescope for Nelson, 1816. Its time ball drops at one o'clock, with the gun from the Castle, for the ships at Leith to set their chronometers."
+  },
+  {
+   "name": "The Dugald Stewart Monument",
+   "model": "tholos",
+   "at": [
+    55.9552,
+    -3.1844
+   ],
+   "clear": [
+    10,
+    0
+   ],
+   "radius": 3.6,
+   "columns": 9,
+   "info": "Playfair's, 1831, after the Choragic Monument of Lysicrates: the frame of the postcard of the Old Town and the Castle from Calton Hill."
+  },
+  {
+   "name": "The Balmoral",
+   "model": "clock",
+   "at": [
+    55.95304,
+    -3.18953
+   ],
+   "from": 0,
+   "side": 11,
+   "face": 0,
+   "info": "The North British Hotel, 1902, over Waverley: its clock is kept three minutes fast so that no one misses a train, except on Hogmanay.",
+   "towerH": 58,
+   "clear": [
+    9,
+    0
+   ]
+  },
+  {
+   "name": "The Palace of Holyroodhouse",
+   "model": "palace",
+   "at": [
+    55.95285,
+    -3.17262
+   ],
+   "clear": [
+    40,
+    0
+   ],
+   "width": 70,
+   "depth": 14,
+   "face": 180,
+   "info": "The monarch's official residence in Scotland. James V's tower at the north-west corner, 1528-32, where Mary, Queen of Scots, lived and Rizzio was murdered in front of her."
+  },
+  {
+   "name": "Holyrood Abbey",
+   "model": "abbey",
+   "at": [
+    55.95302,
+    -3.1719
+   ],
+   "clear": [
+    28,
+    0
+   ],
+   "face": 0,
+   "info": "An Augustinian abbey founded by David I in 1128; the nave stands roofless since its vault fell in 1768."
+  },
+  {
+   "name": "The Ross Fountain",
+   "model": "fountain",
+   "at": [
+    55.9502,
+    -3.2012
+   ],
+   "info": "Cast in Paris, 1862, shown at the Great Exhibition and shipped in 122 pieces; restored in 2018 in its olive, teal and gold."
+  },
+  {
+   "name": "The Royal Scottish Academy",
+   "model": "temple",
+   "at": [
+    55.9517,
+    -3.1959
+   ],
+   "order": "doric",
+   "length": 66,
+   "width": 24,
+   "columnH": 9,
+   "statue": true,
+   "face": 90,
+   "clear": [
+    36,
+    0
+   ],
+   "info": "Playfair's Doric temple at the foot of the Mound, 1826; Queen Victoria sits on its north pediment, sphinxes at its corners."
+  },
+  {
+   "name": "The National Gallery",
+   "model": "temple",
+   "at": [
+    55.9508,
+    -3.1958
+   ],
+   "order": "ionic",
+   "length": 60,
+   "width": 24,
+   "columnH": 10,
+   "face": 90,
+   "clear": [
+    34,
+    0
+   ],
+   "info": "Playfair's Ionic gallery behind the Academy, 1859: Raphael, Titian, Rembrandt, and Raeburn's skating minister."
+  },
+  {
+   "name": "The Camera Obscura",
+   "model": "obscura",
+   "at": [
+    55.9487,
+    -3.1958
+   ],
+   "face": 0,
+   "clear": [
+    9,
+    0
+   ],
+   "info": "The Outlook Tower on Castlehill: since 1853 a lens in the dark dome has thrown the living city onto a white table below it.",
+   "towerH": 26
+  },
+  {
+   "name": "Greyfriars Kirk",
+   "model": "kirk",
+   "at": [
+    55.94675,
+    -3.1924
+   ],
+   "length": 48,
+   "width": 20,
+   "bobby": [
+    55.9469,
+    -3.19115
+   ],
+   "face": 0,
+   "clear": [
+    26,
+    0
+   ],
+   "info": "1620, where the National Covenant was signed in 1638. In the kirkyard, Greyfriars Bobby, who kept watch on his master's grave for fourteen years; his statue is at the gate."
+  },
+  {
+   "name": "St Mary's Episcopal Cathedral",
+   "model": "cathedral",
+   "at": [
+    55.94858,
+    -3.2164
+   ],
+   "length": 84,
+   "width": 26,
+   "face": 0,
+   "clear": [
+    56,
+    0
+   ],
+   "info": "Sir George Gilbert Scott's, 1879: three spires, the central one of 90 m, the tallest building in Edinburgh."
+  },
+  {
+   "name": "The Old College",
+   "model": "dome",
+   "at": [
+    55.94765,
+    -3.18705
+   ],
+   "side": 30,
+   "face": 0,
+   "info": "Robert Adam and Playfair, 1789-1827: the University's quadrangle; Rowand Anderson's dome of 1887 carries the Golden Boy, Youth with his torch.",
+   "towerH": 21
+  },
+  {
+   "name": "The City Observatory",
+   "model": "observatory",
+   "at": [
+    55.9552,
+    -3.183
+   ],
+   "face": 0,
+   "clear": [
+    22,
+    0
+   ],
+   "info": "Playfair's, 1818, on Calton Hill: a cross of four porticoes round the telescope dome. Now the Collective gallery."
+  }
+ ],
+ "terrainCuts": [
+  {
+   "line": [
+    [
+     55.94742,
+     -3.198,
+     57.7
+    ],
+    [
+     55.9477,
+     -3.196,
+     55.7
+    ],
+    [
+     55.94795,
+     -3.1942,
+     53.7
+    ]
+   ],
+   "width": 46,
+   "slope": 1.0,
+   "_": "the Grassmarket, in its hollow under the Castle Rock: the coarse elevation smears the rock over it"
+  },
+  {
+   "line": [
+    [
+     55.9497,
+     -3.2065,
+     49.0
+    ],
+    [
+     55.9504,
+     -3.201,
+     47.5
+    ],
+    [
+     55.9513,
+     -3.197,
+     46.5
+    ],
+    [
+     55.9519,
+     -3.193,
+     46.0
+    ]
+   ],
+   "width": 60,
+   "slope": 0.6,
+   "_": "Princes Street Gardens in their valley (the Nor' Loch that was), and the railway under the Mound"
+  }
+ ],
+ "views": {
+  "The Castle from Princes Street": [
+   [
+    55.9508,
+    -3.2012,
+    69.8
+   ],
+   [
+    55.94865,
+    -3.2,
+    123.7
+   ]
+  ],
+  "The Royal Mile from the Esplanade": [
+   [
+    55.94898,
+    -3.1972,
+    108.7
+   ],
+   [
+    55.94985,
+    -3.1885,
+    88.3
+   ]
+  ],
+  "Calton Hill: the Old Town and the Castle": [
+   [
+    55.9556,
+    -3.1829,
+    99.6
+   ],
+   [
+    55.9488,
+    -3.199,
+    123.7
+   ]
+  ],
+  "From Arthur's Seat": [
+   [
+    55.944,
+    -3.1615,
+    213.5
+   ],
+   [
+    55.9515,
+    -3.193,
+    63.7
+   ]
+  ],
+  "Holyrood": [
+   [
+    55.95272,
+    -3.1742,
+    43.0
+   ],
+   [
+    55.95285,
+    -3.17262,
+    43.8
+   ]
+  ],
+  "The Grassmarket": [
+   [
+    55.9477,
+    -3.1962,
+    77.7
+   ],
+   [
+    55.9486,
+    -3.2,
+    125.7
+   ]
+  ],
+  "Dean Village": [
+   [
+    55.95244,
+    -3.21752,
+    49.3
+   ],
+   [
+    55.953,
+    -3.22,
+    45.4
+   ]
+  ],
+  "The Shore, Leith": [
+   [
+    55.9748,
+    -3.1709,
+    10.0
+   ],
+   [
+    55.977,
+    -3.1696,
+    1.5
+   ]
+  ],
+  "The Scott Monument": [
+   [
+    55.95195,
+    -3.1947,
+    68.2
+   ],
+   [
+    55.95239,
+    -3.19325,
+    89.2
+   ]
+  ],
+  "Over Edinburgh": [
+   [
+    55.937,
+    -3.215,
+    782.5
+   ],
+   [
+    55.953,
+    -3.188,
+    60.7
+   ]
+  ]
+ },
+ "navmap": {
+  "labels": [
+   "Edinburgh Castle",
+   "St Giles' Cathedral",
+   "The Hub",
+   "The Scott Monument",
+   "The National Monument",
+   "The Nelson Monument",
+   "The Palace of Holyroodhouse",
+   "Holyrood Abbey",
+   "The Balmoral",
+   "The Ross Fountain",
+   "The Royal Scottish Academy",
+   "The National Gallery",
+   "The Camera Obscura",
+   "Greyfriars Kirk",
+   "St Mary's Episcopal Cathedral",
+   "The Old College",
+   "The City Observatory",
+   "Victoria Street"
+  ]
+ },
+ "focus": [
+  {
+   "name": "The Royal Mile",
+   "at": [
+    55.95,
+    -3.189
+   ],
+   "radius": 300
+  },
+  {
+   "name": "The Grassmarket",
+   "at": [
+    55.9477,
+    -3.196
+   ],
+   "radius": 150
+  }
+ ],
+ "terrainRaise": [
+  {
+   "poly": [
+    [
+     55.94905,
+     -3.2024
+    ],
+    [
+     55.94935,
+     -3.2012
+    ],
+    [
+     55.9493,
+     -3.1996
+    ],
+    [
+     55.94905,
+     -3.1983
+    ],
+    [
+     55.9487,
+     -3.19805
+    ],
+    [
+     55.94828,
+     -3.1985
+    ],
+    [
+     55.94805,
+     -3.2
+    ],
+    [
+     55.94812,
+     -3.2015
+    ],
+    [
+     55.9485,
+     -3.20262
+    ]
+   ],
+   "top": 115.7,
+   "slope": 2.4,
+   "reach": 60,
+   "_": "the Castle Rock: the elevation tiles make it forty metres short; cliffs all round"
+  },
+  {
+   "line": [
+    [
+     55.94896,
+     -3.19795,
+     106.7
+    ],
+    [
+     55.949,
+     -3.19625,
+     89.0
+    ]
+   ],
+   "width": 46,
+   "slope": 1.6,
+   "reach": 40,
+   "_": "the Esplanade, down to Castlehill"
+  }
+ ],
+ "crags": {
+  "slope": 0.7,
+  "step": 7,
+  "zones": [
+   [
+    55.94865,
+    -3.2002,
+    230
+   ],
+   [
+    55.944,
+    -3.163,
+    900
+   ],
+   [
+    55.9548,
+    -3.1825,
+    260
+   ]
+  ],
+  "_": "src/edinburgh/crags.js: the Castle Rock, Arthur's Seat and the Salisbury Crags, Calton Hill"
+ },
+ "scrub": "low",
+ "_scrub": "Arthur's Seat and the crags are grass and gorse, not woodland: scrub stays low (no trees in it)",
+ "treeCells": {
+  "garden": 30,
+  "park": 34
+ },
+ "treeMinArea": {
+  "garden": 4000,
+  "park": 1500
+ },
+ "treeFar": 1500,
+ "pitchAll": {
+  "types": [
+   "yes",
+   "apartments",
+   "residential",
+   "terrace",
+   "house",
+   "commercial",
+   "retail",
+   "hotel",
+   "office",
+   "public"
+  ],
+  "share": 0.85,
+  "_": "slate roofs on the tenements and the Georgian terraces"
+ },
+ "roofMaxArea": 1600,
+ "roofMaxHeight": 30,
+ "roofPitch": 0.45,
+ "roofRise": 4.5,
+ "roofColours": [
+  "#646a72",
+  "#6c7178",
+  "#5c6168",
+  "#727780",
+  "#686d74"
+ ],
+ "oldtown": {
+  "chimneys": {
+   "share": 0.7,
+   "oldShare": 0.95,
+   "oldTown": [
+    55.9495,
+    -3.19,
+    700
+   ]
+  },
+  "painted": [
+   {
+    "line": [
+     [
+      55.94862,
+      -3.19295
+     ],
+     [
+      55.94838,
+      -3.1935
+     ],
+     [
+      55.94805,
+      -3.19405
+     ],
+     [
+      55.94778,
+      -3.19458
+     ]
+    ],
+    "reach": 14
+   }
+  ],
+  "_": "src/edinburgh/oldtown.js: chimney stacks on the gables; Victoria Street's painted shopfronts"
+ },
+ "roofStreet": true,
+ "roofFill": 0.8,
+ "_roofStreet": "a terrace's ridge runs along its street, and only a footprint that fills its roof's box gets one (roofFill)",
+ "flatRoofColours": [
+  "#5e6066",
+  "#6a6c70",
+  "#56585c"
+ ],
+ "dress": {
+  "cornice": {
+   "share": 0.5,
+   "minH": 8,
+   "maxH": 30,
+   "depth": 0.5
+  },
+  "dormers": {
+   "share": 0.45,
+   "every": 6,
+   "roof": "#5c6168"
+  },
+  "bays": {
+   "share": 0.2,
+   "types": [
+    "yes",
+    "apartments",
+    "residential",
+    "terrace",
+    "house"
+   ],
+   "maxH": 18
+  },
+  "far": 650,
+  "_": "src/core/dress.js: cornices, string courses, water towers, fire escapes, dormers, bay windows"
+ }
+}
