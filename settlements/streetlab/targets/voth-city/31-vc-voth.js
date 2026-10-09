@@ -2,6 +2,27 @@
 /* [G data] Every structure here is drawn by Voth's own builder (lifted by name into VOTH, build.py/vothlift.py),
    on the edited ground, with Voth's seeds; this file says where, following Voth's own placement rules. The
    primitives each call pushes are kept per group (VC.prims[name] = {step, list}) for the host to draw. */
+
+/* the Ring Sea vessels moored in the city (owner, 2026-10-09: "import new ship models from ring sea"): records the
+   host draws with the kit's own models (ringsea.py, RINGSEA.make; 55-vc-host.js VC.drawVessels). `ry` is the hull's
+   heading as a box's (its length along (sin ry, cos ry)), `len` the length it takes: the model is scaled to it, so a
+   berth sized for the old box hull holds the vessel that replaces it. */
+VC.moor = function (key, x, z, ry, len) { (VC.MOOR = VC.MOOR || []).push({ key: key, x: x, z: z, ry: ry, len: len }); };
+/* ships alongside a ship pier: on each side, by a KRAND hash of the pier and the side (never the stream), a junk or a
+   cargo hulk toward the pier's tip, a clearance off its deck, only where all of its hull floats */
+VC.berthShips = function (root, out, Lp, w) {
+  var S = TUNE.harbour.ship, side = [out[1], -out[0]];
+  [-1, 1].forEach(function (sd, k) {
+    var u = KRAND.unit(KRAND.hash(6801, Math.round(root[0] * 2), Math.round(root[1] * 2), k)); if (u > S.moored) return;
+    var key = KRAND.unit(KRAND.hash(6802, Math.round(root[0] * 2), Math.round(root[1] * 2), k)) < S.junk ? 'vothJunk' : 'vothHulk';
+    var D = S.dims[key], L = D.L, at = Lp - L / 2 - S.tipGap;
+    if (at < L / 2) return;
+    var c = V.add(V.add(root, V.mul(out, at)), V.mul(side, sd * (w / 2 + S.berth + D.B / 2)));
+    if (!obbCorners(obb(c, side, D.B / 2, L / 2)).concat([c]).every(function (q) { return baseH(q[0], q[1]) < -1.5; })) return;
+    VC.moor(key, c[0], c[1], Math.atan2(out[0], out[1]) + (KRAND.unit(KRAND.hash(6803, Math.round(root[0] * 2), Math.round(root[1] * 2), k)) < 0.5 ? Math.PI : 0), L);
+  });
+};
+
 VC.capture = function (name, step, fn) {
   VOTH.PRIMS.length = 0;
   var r = fn();
@@ -43,21 +64,30 @@ VC.buildDistricts = function () {
      else at the district's middle, sized to it; gate toward the Temple canton */
   var mon = VC.districts('monastery')[0];
   if (mon) log.push(VC.buildMonastery(mon));          /* 33-vc-country.js: walled round the owner's polygon */
-  log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the ferry stops' piers are set out first and booked in Voth's PIERS, so the harbour's piers and fishing docks
      and the chinampas all keep clear of them (built with the lines, step 14) */
   VC.ferryPiers();
+  /* then the cantons' stairs: from each canton pier up onto the apron, and up the terraces to the top deck; the
+     decks below keep clear of where they and the bridges arrive */
+  CANT.planB(Object.keys(VC.FP).filter(function (id) { return VC.FP[id].canton; }).map(function (id) { var P = VC.FP[id]; return { id: id, canton: (P.to || '').split(' ')[0], root: P.root, dir: P.dir, w: 5.5, deckY: B.SEA + 2.1 }; }));
+  log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
+  log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the harbour next: its piers go into Voth's own PIERS list, which the chinampa pass keeps clear of */
   VC.districts('harbor').forEach(function (d) { log.push(VC.buildHarbor(d)); });
   VC.districts('riverport').forEach(function (d) { log.push(VC.buildRiverPort(d)); });
   /* chinampas: the whole of 55-chinampa.js, in Voth's own zones */
   VC.chin = VC.capture('chinampas', 2, function () { return B.runChinampas(); });
+  /* Voth's beds, drawn again from their records (31b-vc-chinampa.js): wattle, crop rows, canoes; its stilt huts as kit
+     shore houses (district art), its willows the biome's trees (VC.floraPlace) */
+  VC.prims.chinampas.list = VC.chinampaPrims(VC.chin.units);
+  PLAN.districts.push({ kind: 'chinampa huts', name: 'Chinampa huts', born: 2, art: VC.CHIN.huts });
   /* the owner's 'chinampa exclusion' polygons: no bed, canal post, willow or hut there (a primitive goes with its
      centre), and the water there is open again for the ferries */
   var ex = VC.districts('nochin');
   if (ex.length) {
     var CL = VC.prims.chinampas.list, n0 = CL.length, inEx = function (x, z) { return ex.some(function (d) { return inPoly([x, z], d.poly); }); };
     VC.prims.chinampas.list = CL.filter(function (q) { return !inEx(q[1], q[3]); });
+    ['beds', 'huts', 'flora'].forEach(function (k) { var L = VC.CHIN[k]; L.splice.apply(L, [0, L.length].concat(L.filter(function (o) { return !inEx(o.x, o.z); }))); });
     var hit0 = VC.chin.chinHit; VC.chin.chinHit = function (x, z, pad) { return !inEx(x, z) && hit0(x, z, pad); };
     log.push((n0 - VC.prims.chinampas.list.length) + ' chinampa pieces cleared from ' + ex.map(function (d) { return d.name; }).join(', '));
   }
@@ -195,6 +225,7 @@ VC.buildHarbor = function (d) {
         B.BOX(c[0], 3, c[1], w, 1.2, Lp / n * 1.04, ry2, 0x7a6448, 'wood');
         [-1, 1].forEach(function (sd) { var pp = V.add(c, V.mul([out[1], -out[0]], sd * (w / 2 - 0.8))); B.CYL(pp[0], Math.min(-1, baseH(pp[0], pp[1])), pp[1], 0.7, 4 - Math.min(-1, baseH(pp[0], pp[1])), 0, 0x5a4a36, 'wood'); });
       }
+      VC.berthShips(root, out, Lp, w);
       if (B.chance(0.6)) { var cr = V.add(root, V.mul(out, Lp * 0.8)); B.BOX(cr[0], 4.2, cr[1], 3, 14, 3, ry2, 0x5a4a36, 'wood'); B.BOX(cr[0], 17, cr[1], 1.6, 1.6, 16, ry2 + 0.7, 0x5a4a36, 'wood'); }
       piers++;
       /* a warehouse from the kit on the quay behind every other pier, its front to the pier */
@@ -219,9 +250,7 @@ VC.buildHarbor = function (d) {
       [-1, 1].forEach(function (sd) {
         if (!B.chance(0.7)) return;
         var hc = V.add(V.add(fr, V.mul(fo, fl * B.rr(0.45, 0.75))), V.mul(side, sd * (B.LIFE_FISHDOCK_W / 2 + 3.4)));
-        B.BOX(hc[0], -1.0, hc[1], 4.2, 2.1, B.rr(12, 15), fry, 0x5e4d3a, 'wood');
-        B.BOX(hc[0], 1.1, hc[1], 3.6, 0.4, 11, fry, 0x4a3c2c, 'wood');
-        B.CYL(hc[0], 1.1, hc[1], 0.22, B.rr(8, 11), 0, 0x4a3c2c, 'wood');
+        VC.moor('vothDhow', hc[0], hc[1], fry, B.rr(12, 15)); B.rr(8, 11);   /* the old mast's draw, kept so the stream is as it was */
       });
     }
     /* cargo on the quay */
@@ -281,8 +310,7 @@ VC.buildRiverPort = function (d) {
           var tg = [p.tx, p.tz], gl = B.rr(26, 34), gb = B.rr(7, 9), g = V.add(root, V.mul(out, L + gb / 2 + TUNE.bargeClear)), gry = Math.atan2(tg[0], tg[1]), col = 0x5e4d3a;
           var afloat = obbCorners(obb(g, [tg[1], -tg[0]], gb / 2, gl / 2)).concat([g]).every(function (q) { return baseH(q[0], q[1]) < -0.8; });
           if (afloat) {
-            B.BOX(g[0], -1.6, g[1], gb, 3.4, gl, gry, col, 'wood'); B.BOX(g[0], 1.8, g[1], gb * 0.9, 0.6, gl * 0.96, gry, B.shade(col, -0.2), 'wood');
-            var cb = V.sub(g, V.mul(tg, gl * 0.28)); B.BOX(cb[0], 2.4, cb[1], gb * 0.7, 2.6, gl * 0.26, gry, B.shade(col, 0.08), 'wood');
+            VC.moor('vothBarge', g[0], g[1], gry, gl);
             /* the boats steer round it as round a pier */
             B.PIERS.push({ x0: g[0] - tg[0] * gl / 2, z0: g[1] - tg[1] * gl / 2, x1: g[0] + tg[0] * gl / 2, z1: g[1] + tg[1] * gl / 2, w: gb, river: true, barge: true });
             VC.barges = (VC.barges || 0) + 1;

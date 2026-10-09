@@ -35,6 +35,8 @@ VC.paint = function () {
     ctx.globalAlpha = 0.7; ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.stroke(); ctx.globalAlpha = 1;
   });
   PLAN.greens.forEach(function (G) { if (G.born > st) return; poly(G.poly); ctx.fillStyle = G.kind === 'park' ? '#3d7031' : '#cbbd9c'; ctx.fill(); });
+  /* the big parks' gravel walks (39-vc-furnish.js VC.parkWalks) */
+  if (st >= 2 && VC.parkWalks) { ctx.strokeStyle = TUNE.parkFurn.walkTone; ctx.lineCap = 'round'; VC.parkWalks.forEach(function (w) { ctx.lineWidth = w.w * k; ctx.beginPath(); ctx.moveTo(X(w.a[0]), Z(w.a[1])); ctx.lineTo(X(w.b[0]), Z(w.b[1])); ctx.stroke(); }); ctx.lineCap = 'butt'; }
   /* the country's fields: Voth's field tones, plough lines along the long side (Voth's 40-ground.js FARMS) */
   (PLAN.fields || []).forEach(function (F) {
     if (F.born > st) return;
@@ -83,10 +85,50 @@ VC.drawTransit = function () {
 /* the vehicles: one small model per vehicle of each line, placed every frame where core/simulation says
    (SIM.vehiclePose: a pure function of motion time; TUNE.timeScale runs the timetable faster than life) */
 VC.vehicleModel = function () {
+  /* the Ring Sea kit's Voth bay ferry (ringsea.py), turned so its bow (the kit's +x) leads along the pose's heading */
+  var R = typeof RINGSEA !== 'undefined' && RINGSEA.make(TUNE.vessels.ferry);
+  if (R) { var w = new THREE.Group(); R.group.rotation.y = -Math.PI / 2; w.add(R.group); return w; }
   var g = new THREE.Group(), wood = new THREE.MeshStandardMaterial({ color: 0x6a5238, roughness: 0.9 }), cloth = new THREE.MeshStandardMaterial({ color: 0xd8c9a0, roughness: 0.9 });
   var hull = new THREE.Mesh(new THREE.BoxGeometry(7, 2.6, 20), wood); hull.position.y = 0.6; g.add(hull);
   var cab = new THREE.Mesh(new THREE.BoxGeometry(5.4, 2.6, 8), cloth); cab.position.set(0, 3.2, -1.5); g.add(cab);
   return g;
+};
+/* the moored vessels (31-vc-voth.js VC.MOOR: dhows at the fishing docks, barges off the river quays, junks and hulks
+   along the ship piers): the Ring Sea kit's models (ringsea.py), each scaled to the berth's length and drawn as one
+   InstancedMesh per mesh of its model, so a hundred dhows cost what one does in draw calls. Without the kit: plain
+   hulls. The sails flutter on the kit's clock (RINGSEA.tick). */
+VC.drawVessels = function () {
+  var L = VC.MOOR || [], by = {}; VC.vesselMeshes = [];
+  L.forEach(function (m) { (by[m.key] = by[m.key] || []).push(m); });
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), p = new THREE.Vector3(), s = new THREE.Vector3(), rel = new THREE.Matrix4(), tmp = new THREE.Matrix4();
+  Object.keys(by).forEach(function (key) {
+    var list = by[key], R = typeof RINGSEA !== 'undefined' && RINGSEA.make(key), D = R && RINGSEA.dims[key];
+    var place = function (r) { var k = r.len / (D ? D.L : r.len); q.setFromAxisAngle(up, r.ry - Math.PI / 2); return m4.compose(p.set(r.x, 0, r.z), q, s.set(k, k, k)); };
+    if (!R) {
+      var box = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0x5e4d3a, roughness: 0.9 }), list.length);
+      list.forEach(function (r, i) { q.setFromAxisAngle(up, r.ry); box.setMatrixAt(i, m4.compose(p.set(r.x, -0.2, r.z), q, s.set(r.len * 0.3, 2.4, r.len))); });
+      box.userData = { kind: 'vessel', key: key }; scene.add(box); VC.vesselMeshes.push(box); return;
+    }
+    var root = R.group; root.updateMatrixWorld(true);
+    var inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      rel.multiplyMatrices(inv, o.matrixWorld);
+      var per = o.isInstancedMesh ? o.count : 1, IM = new THREE.InstancedMesh(o.geometry, o.material, list.length * per);
+      list.forEach(function (r, i) {
+        place(r);
+        for (var j = 0; j < per; j++) {
+          if (o.isInstancedMesh) { o.getMatrixAt(j, tmp); IM.setMatrixAt(i * per + j, new THREE.Matrix4().multiplyMatrices(m4, rel).multiply(tmp)); }
+          else IM.setMatrixAt(i, new THREE.Matrix4().multiplyMatrices(m4, rel));
+        }
+      });
+      IM.frustumCulled = false; IM.castShadow = o.castShadow; IM.receiveShadow = o.receiveShadow;
+      IM.userData = { kind: 'vessel', key: key, step: 2 }; scene.add(IM); VC.vesselMeshes.push(IM);
+    });
+  });
+  if (typeof RINGSEA !== 'undefined') (window._frameHooks = window._frameHooks || []).push(function (now) { RINGSEA.tick(now / 1000); });
+  var n = {}; L.forEach(function (r) { n[r.key] = (n[r.key] || 0) + 1; });
+  VC.vesselStats = { moored: n, meshes: VC.vesselMeshes.length };
 };
 /* the elephant bugs are Voth's own (VSTRIDER, lifted from 79c-strider-model.js by build.py): the merged body as
    one instanced mesh, the twelve leg bars of each as another, placed by Voth's striderPlaceLegs with its gait (feet
@@ -194,12 +236,48 @@ VC.drawFlora = function () {
       seed: 11, origin: F.spine, center: F.center, fields: F.fields,
       eye: function () { return [camera.position.x, camera.position.y, camera.position.z]; }, err: function (m) { console.warn('biome: ' + m); } });
     BIO.setSun([sun.position.x, sun.position.y, sun.position.z]);
-    var out = SWBAY.build({ R: F.R, quality: F.quality, fauna: true }) || {}, b = BIO.bake(), T = BIO.totals();
+    VC.flInit();                               /* 59-vc-flora-edit.js: the saved flora edits' veto, the kit's record hook */
+    var out = SWBAY.build({ R: F.R, quality: F.quality, fauna: true }) || {};
+    VC.placedFlora = VC.floraPlace();          /* the plants the city places itself (the Ancestry's beds), before the bake */
+    VC.placedFlora.edits = VC.flAddSaved();    /* the owner's own (59) */
+    var b = VC.flBake(), T = BIO.totals();
     var by = {}; (SWBAY.TREES || []).forEach(function (t) { var k = SWBAY.SPECIES[t.sp].key; by[k] = (by[k] || 0) + 1; });
     var inPark = (SWBAY.TREES || []).filter(function (t) { return F.park(t.x, t.z); }).length;
     VC.floraStats = { trees: (SWBAY.TREES || []).length, inParks: inPark, heroes: out.heroes || 0, far: out.far || 0, bySpecies: by, tris: T.tris, inst: T.inst, calls: b && b.calls, ms: Math.round(performance.now() - t0) };
   } catch (e) { console.error('flora: ' + (e.stack || e)); VC.floraStats = { error: String(e) }; }
   (window._frameHooks = window._frameHooks || []).push(function () { if (!grp.visible) return; camera.updateMatrixWorld(); BIO.lodTick(camera); });
+};
+/* the plants the city places one by one with the biome's own builders (SWBAY.treeAt, SWBAY.plantAt), each standing on
+   what is under it (a canton's garden bed, CANT.surface): the Ancestry's trees where Voth's stood, a cherry for each
+   cherry (20-site-cantons.js CANT.floraToBiome), and its bed cover. Heights and kinds: TUNE.flora.placed. */
+VC.floraPlace = function () {
+  var P = TUNE.flora.placed, n = { trees: 0, plants: 0 }, A = CANT.by.Ancestry, AF = CANT.ancFlora;
+  if (!SWBAY.treeAt) return n;
+  /* the chinampas' banks and marsh beds (31b-vc-chinampa.js VC.CHIN.flora) */
+  ((VC.CHIN && VC.CHIN.flora) || []).forEach(function (f) {
+    if (f.tree) { if (SWBAY.treeAt(f.tree, f.x, f.y, f.z, { H: f.H, wet: 0.85 })) n.trees++; }
+    else if (SWBAY.plantAt(f.plant, f.x, f.y, f.z, {})) n.plants++;
+  });
+  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora) */
+  (VC.parkFlora || []).forEach(function (f) {
+    var y = baseH(f.x, f.z), gr = function (x, z) { return baseH(x, z); };
+    if (f.tree) { var H = P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
+    else if (SWBAY.plantAt(f.plant, f.x, y, f.z, { ground: gr })) n.plants++;
+  });
+  if (!AF || !A) return n;
+  var ground = function (x, z) { var y = CANT.surface(A, x, z); return y == null ? TERR.h(x, z) : y; };
+  AF.trees.forEach(function (T, i) {
+    var H = P.H[T.kind] || [6, 10], u = KRAND.unit(KRAND.hash(4401, Math.round(T.x * 10), Math.round(T.z * 10), i));
+    if (SWBAY.treeAt(T.kind, T.x, T.y, T.z, { H: H[0] + (H[1] - H[0]) * u, wet: 0.55, ground: ground })) n.trees++;
+  });
+  AF.ground.forEach(function (g, i) {
+    var u = KRAND.unit(KRAND.hash(4402, Math.round(g.x * 10), Math.round(g.z * 10), i)), acc = 0, kind = null;
+    if (u > P.groundKeep) return;
+    var v = KRAND.unit(KRAND.hash(4403, Math.round(g.x * 10), Math.round(g.z * 10), i));
+    for (var k in P.ground) { acc += P.ground[k]; if (v < acc) { kind = k; break; } }
+    if (kind && SWBAY.plantAt(kind, g.x, g.y, g.z, { ground: ground })) n.plants++;
+  });
+  return n;
 };
 VC.drawBeacons = function () {
   var B = VOTH, list = [];
@@ -504,6 +582,8 @@ VC.dayNight = function () {
     (PLAN.lamps || []).forEach(function (l) { var c = new THREE.Color(TUNE.light.glow[l.kind]); (l.heads || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [c.r, c.g, c.b], TUNE.light.halo[l.kind], l.on, l.off); }); });
     /* the weather: core/atmos's modes with its opt-in ash (Voth's ash storm); it draws the rain and the ash, the host
        (applyHour) does what they do to this scene */
+    /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
+    if (CANT.falls && CANT.falls.length) ATMOS.smoke(CANT.falls.filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; }));
     ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
     ATMOS.weatherUI($('wx'));
@@ -534,7 +614,12 @@ VC.clockUI = function () {
 VC.start = function () {
   VC.stripped = VC.stripCantons();
   VIEW.stage(); VIEW.terrain(); VIEW.refreshTerrain(null, true);
-  VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.cantonLabels();
-  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
-  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  CANT.walkOn = true;                 /* the causeways register their decks in KWALK as they are built */
+  VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.falls(); VIEW.cantonLabels();
+  CANT.walk(); CANT.tag();             /* the cantons' levels, bridges and stairs: the walker's floors; their records' tags */
+  VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */
+  /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
+  Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
+  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
+  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };

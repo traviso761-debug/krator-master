@@ -132,6 +132,115 @@ CITY_CHECK = r"""() => {
     problems: SIM.problems.length, pure: T.every(R => { const a = SIM.vehiclePose(R.id, 0, 1234.5), b = SIM.vehiclePose(R.id, 0, 1234.5), c = SIM.vehiclePose(R.id, 0, 1234.5 + (R.sched ? R.horizonS : R.period)); return a && a.x === b.x && Math.abs(a.x - c.x) < 1e-6; }),
     berthClash: (() => { let n = 0; for (let t = 0; t < 20000; t += 30) { const at = {}; T.forEach(R => { for (let k = 0; k < R.vehicles; k++) { const p = SIM.vehiclePose(R.id, k, t); if (p && p.at) { at[p.at] = (at[p.at] || 0) + 1; if (at[p.at] > (R.berths || 1)) n++; } } }); } return n; })(),
     ports: SIM.all('port').map(p => p.id) };
+  /* owner, 2026-10-09: the cantons walkable from a ferry to the top (the interiors' routes; the bridges, the terrace
+     chains, the Ancestry's spiral and catacombs), walked in 0.25 m steps on core/walk with the walker's own rules */
+  out.walkInt = (() => {
+  const W = KWALK, Tw = TUNE.walk, out = {};
+  const stand = (x, z, y) => { const g = VIEW.surf(x, z), f = W.floorBelow(x, z, y, Tw.step); return f && f[0] >= g - 0.3 ? f[0] : g; };
+  /* walk from A=[x,z,y] to each waypoint [x,z] in 0.25 m steps with the page's rules; report where it stuck */
+  const walk = (start, wps) => {
+    let p = start.slice(), log = [];
+    for (let i = 0; i < wps.length; i++) {
+      const T = wps[i]; let guard = 0;
+      while (Math.hypot(T[0] - p[0], T[1] - p[1]) > 0.3 && guard++ < 4000) {
+        const d = Math.hypot(T[0] - p[0], T[1] - p[1]), s = Math.min(0.25, d), x = p[0] + (T[0] - p[0]) / d * s, z = p[1] + (T[1] - p[1]) / d * s;
+        let y = stand(x, z, p[2]);
+        if (p[2] - y > Tw.drop) return { ok: false, at: i, why: 'ledge', p: p.map(v => +v.toFixed(1)), y: +y.toFixed(1), log };
+        if (W.blocked(x, y, z, Tw.r, Tw.h)) { const b = W.blocked(x, y, z, Tw.r, Tw.h); return { ok: false, at: i, why: 'blocked ' + (b.tag || ''), p: p.map(v => +v.toFixed(1)), box: b.box.map(v => +v.toFixed(1)), log }; }
+        p = [x, z, y];
+      }
+      log.push(p[2].toFixed(1));
+    }
+    return { ok: true, end: p.map(v => +v.toFixed(1)), log };
+  };
+  Object.keys(VC.INT.cantons).forEach(cn => {
+    const P = VC.INT.cantons[cn]; if (P.catacombs) return;
+    const dock = CANT.flights.filter(f => f.canton === cn && (f.kind === 'dock' || f.kind === 'mole'))[0];
+    if (!dock) { out[cn] = 'no dock'; return; }
+    const dd = [dock.a[0] - dock.b[0], dock.a[1] - dock.b[1]], fn = Math.abs(dd[0]) > Math.abs(dd[1]) ? [Math.sign(dd[0]), 0] : [0, Math.sign(dd[1])];
+    const D = P.doorsOut.filter(d => d.n[0] === fn[0] && d.n[1] === fn[1])[0] || P.doorsOut[0];
+    const n = D.n, wp = [dock.b, [D.x + n[0] * 3, D.z + n[1] * 3], [D.x - n[0] * 4, D.z - n[1] * 4]];
+    /* along the tunnel and the passage to the hall, then to the core */
+    /* the tunnel's inner end, the passage's far end (if any), the hall's end, the core */
+    const M = P.M, tg = [-n[1], n[0]], along = (D.x - M.x) * tg[0] + (D.z - M.z) * tg[1], cA = (P.core.x - M.x) * tg[0] + (P.core.z - M.z) * tg[1], R0 = P.storeys[0].R;
+    const at = (r, a) => [M.x + n[0] * r + tg[0] * a, M.z + n[1] * r + tg[1] * a];
+    const rIn = R0 - 1 - TUNE.interiors.tunnelW / 2 - 0.5;
+    wp.push(at(rIn, along));
+    if (Math.abs(along - cA) > TUNE.interiors.hall / 2) wp.push(at(rIn, cA));
+    wp.push(at(Math.min(rIn, R0 - 4), cA));
+    const cr = (P.core.x - M.x) * n[0] + (P.core.z - M.z) * n[1];
+    wp.push(at(cr + (cr < rIn ? 1 : -1) * (TUNE.interiors.core - 1), cA));
+    wp.push([P.core.x - P.axis[0] * (TUNE.interiors.well[1] + 1.2) - P.perp[0] * TUNE.interiors.well[0] / 2, P.core.z - P.axis[1] * (TUNE.interiors.well[1] + 1.2) - P.perp[1] * TUNE.interiors.well[0] / 2]);
+    P.flights.forEach((f, i) => { wp.push(f.a, f.b); if (i % 2 === 0) { const L = P.floors.filter(q => q.kind === 'landing' && q.storey === f.storey)[0]; if (L) wp.push([(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2]); } });
+    wp.push(P.house.door, [P.house.door[0] + P.house.n[0] * 4, P.house.door[1] + P.house.n[1] * 4]);
+    const r = walk([dock.a[0], dock.a[1], dock.y0], wp);
+    out[cn] = r.ok ? 'OK, top at ' + r.end[2] + ' (deck ' + P.M.top.y.toFixed(1) + ')' : JSON.stringify(r);
+  });
+  return out;
+})();
+  out.walkOut = (() => {
+  const W = KWALK, Tw = TUNE.walk, out = { bridges: {}, chains: {}, ancestry: null, catacombs: null };
+  const stand = (x, z, y) => { const g = VIEW.surf(x, z), f = W.floorBelow(x, z, y, Tw.step); return f && f[0] >= g - 0.3 ? f[0] : g; };
+  const walk = (start, wps) => {
+    let p = start.slice();
+    for (let i = 0; i < wps.length; i++) {
+      const T = wps[i]; let guard = 0;
+      while (Math.hypot(T[0] - p[0], T[1] - p[1]) > 0.3 && guard++ < 8000) {
+        const d = Math.hypot(T[0] - p[0], T[1] - p[1]), s = Math.min(0.25, d), x = p[0] + (T[0] - p[0]) / d * s, z = p[1] + (T[1] - p[1]) / d * s;
+        const y = stand(x, z, p[2]);
+        if (p[2] - y > Tw.drop) return { ok: false, at: i, of: wps.length, why: 'ledge', p: p.map(v => +v.toFixed(1)), y: +y.toFixed(1) };
+        const b = W.blocked(x, y, z, Tw.r, Tw.h); if (b) return { ok: false, at: i, of: wps.length, why: 'blocked ' + b.tag, p: p.map(v => +v.toFixed(1)) };
+        p = [x, z, y];
+      }
+    }
+    return { ok: true, end: p.map(v => +v.toFixed(1)) };
+  };
+  const fmt = r => r.ok ? 'OK ' + r.end[2] : JSON.stringify(r);
+  CANT.spans.forEach(S => { out.bridges[S.a + '-' + S.b] = fmt(walk([S.la[0], S.la[1], S.ya], [[S.ax, S.az], [S.bx, S.bz], S.lb])); });
+  /* round a canton's square at radius r: the corner points between p and q, the shorter way */
+  const ring = (M, r, p, q) => {
+    const per = (x, z) => { const lx = x - M.x, lz = z - M.z, R = Math.max(Math.abs(lx), Math.abs(lz)) || 1; let s; if (lx >= R - 1e-6) s = (lz + R) / (8 * R); else if (lz >= R - 1e-6) s = 0.25 + (R - lx) / (8 * R); else if (lx <= -R + 1e-6) s = 0.5 + (R - lz) / (8 * R); else s = 0.75 + (lx + R) / (8 * R); return s; };
+    const C = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(c => [M.x + c[0] * r, M.z + c[1] * r]), cs = [0.25, 0.5, 0.75, 1.0];
+    let a = per(p[0], p[1]), b = per(q[0], q[1]), out = [], fwd = ((b - a) + 1) % 1 <= 0.5;
+    if (fwd) { for (let k = 0; k < 4; k++) { const c = cs[k] % 1; if (((c - a + 1) % 1) < ((b - a + 1) % 1) && ((c - a + 1) % 1) > 0) out.push([C[k], (c - a + 1) % 1]); } out.sort((u, v) => u[1] - v[1]); }
+    else { for (let k = 0; k < 4; k++) { const c = cs[k] % 1; if (((a - c + 1) % 1) < ((a - b + 1) % 1) && ((a - c + 1) % 1) > 0) out.push([C[k], (a - c + 1) % 1]); } out.sort((u, v) => u[1] - v[1]); }
+    return out.map(o => o[0]);
+  };
+  CANT.chains.forEach(ch => {
+    const M = CANT.by[ch.canton], dock = CANT.flights.filter(f => f.canton === M.n && (f.kind === 'dock' || f.kind === 'mole'))[0];
+    let p = dock ? [dock.b[0], dock.b[1], dock.y1] : [ch.flights[0].a[0], ch.flights[0].a[1], ch.flights[0].y0];
+    const wps = [];
+    ch.flights.forEach(f => {
+      const lev = M.levels[f.lev], rm = lev.ri ? (lev.ro + Math.max(lev.ri, M.levels[f.lev + 1].ro)) / 2 : lev.ro - 3;
+      const from = wps.length ? wps[wps.length - 1] : [p[0], p[1]];
+      const rIn = [from[0] + (M.x - from[0]) * 0.0, from[1]];
+      /* step in to the ring's middle, round it, out to the flight's foot */
+      const toRing = pt => { const lx = pt[0] - M.x, lz = pt[1] - M.z, R = Math.max(Math.abs(lx), Math.abs(lz)); return [M.x + lx * rm / R, M.z + lz * rm / R]; };
+      wps.push(toRing(from)); ring(M, rm, toRing(from), toRing(f.a)).forEach(c => wps.push(c)); wps.push(toRing(f.a), f.a, f.b, [f.b[0] - f.n[0] * (f.w / 2 + 2.5), f.b[1] - f.n[1] * (f.w / 2 + 2.5)]);
+    });
+    out.chains[M.n] = fmt(walk(p, wps)) + ' (top ' + M.top.y.toFixed(1) + ')';
+  });
+  /* the Ancestry: its dock, round the apron to the ramp's foot, up every face, the summit flight */
+  const A = CANT.by.Ancestry, ad = CANT.flights.filter(f => f.canton === 'Ancestry' && f.kind === 'dock')[0];
+  if (A && ad) {
+    const rm = (A.apron.ro + 116) / 2, F = A.faces, su = CANT.flights.filter(f => f.kind === 'summit')[0];
+    const toRing = pt => { const lx = pt[0] - A.x, lz = pt[1] - A.z, R = Math.max(Math.abs(lx), Math.abs(lz)); return [A.x + lx * rm / R, A.z + lz * rm / R]; };
+    const p0 = F[0].p0, wps = [toRing(ad.b)].concat(ring(A, rm, toRing(ad.b), toRing(p0)), [toRing(p0), p0]);
+    F.forEach(f => wps.push(f.p1));
+    if (su) wps.push(su.a, su.b);
+    out.ancestry = fmt(walk([ad.b[0], ad.b[1], ad.y1], wps)) + ' (summit ' + (su ? su.y1.toFixed(1) : '?') + ')';
+    const P = VC.INT.cantons.Ancestry, D = CANT.doors.filter(d => d.canton === 'Ancestry')[0];
+    if (P && D) out.catacombs = fmt(walk([ad.b[0], ad.b[1], ad.y1], [toRing(ad.b)].concat(ring(A, rm, toRing(ad.b), toRing([D.x, D.z])), [toRing([D.x, D.z]), [D.x + D.n[0] * 2, D.z + D.n[1] * 2], [D.x - D.n[0] * 6, D.z - D.n[1] * 6], [D.x - D.n[0] * 60, D.z - D.n[1] * 60]])));
+  }
+  return out;
+})();
+  out.spans = CANT.audit.spans.map(s => ({ id: s.id, ok: s.ok, grade: s.grade, big: s.big.length, levels: s.levels }));
+  out.cantonFlights = CANT.audit.flights.filter(f => !f.ok).map(f => f.canton);
+  out.interiors = Object.keys(VC.INT.cantons).map(n => { const P = VC.INT.cantons[n]; return n + ' ' + P.storeys.length + 's ' + P.rooms.length + 'r'; });
+  { const furn = {}; P.districts.forEach(d => (d.art || []).forEach(a => { if (/market_stall|bench|lantern|well|brazier/.test(a.key)) furn[a.key] = (furn[a.key] || 0) + 1; }));
+    out.furnish = { pieces: furn, walks: (VC.parkWalks || []).length, parkFlora: (VC.parkFlora || []).length }; }
+  out.vessels = VC.vesselStats || {};
+  out.floraEdit = { tracked: VC.FL.list.length, unmapped: VC.FL.list.filter(e => !e.hide.length).length };
   return out;
 }"""
 
@@ -165,6 +274,9 @@ def verify_city(a, port, rel, sync_playwright):
     print('elephant bugs and bridges', json.dumps(r['striderBridges']))
     print('flora', json.dumps(r['flora']), '; light', json.dumps(r['light']))
     print('country', json.dumps(r['country']), '; ferry docks failing the audit', r['ferryAudit'])
+    print('walks: interiors', json.dumps(r['walkInt']), '; outside', json.dumps(r['walkOut']))
+    print('canton bridges', json.dumps(r['spans']), '; cantons whose flights failed', r['cantonFlights'])
+    print('interiors', r['interiors'], '; park and market furniture', json.dumps(r['furnish']), '; vessels', json.dumps(r['vessels']), '; flora editor', json.dumps(r['floraEdit']))
     for e in errors: print('ERROR', e)
     if a.check:
         bad = []
@@ -197,6 +309,16 @@ def verify_city(a, port, rel, sync_playwright):
         if lt.get('powerHouses', 0) < 1 or not lt.get('lamps', {}).get('fancy') or not lt.get('lamps', {}).get('electric'): bad.append('power and light')
         if len(r['embassies']['drawn']) < r['embassies']['wanted']: bad.append('embassies: ' + ', '.join(r['embassies']['drawn']))
         if r['ferryAudit']: bad.append('ferry docks: ' + ', '.join(r['ferryAudit']))
+        wi, wo = r['walkInt'], r['walkOut']
+        bad_walks = [k for k, v in wi.items() if not str(v).startswith('OK')] + [k for k, v in list(wo['bridges'].items()) + list(wo['chains'].items()) if not str(v).startswith('OK')] + \
+            [k for k in ('ancestry', 'catacombs') if not str(wo.get(k)).startswith('OK')]
+        if bad_walks: bad.append('cantons not walkable: ' + ', '.join(bad_walks))
+        if any(not s['ok'] or s['big'] or (s['grade'] or 0) > 0.11 for s in r['spans']): bad.append('canton bridges (grade, clearance)')
+        if r['cantonFlights']: bad.append('terrace flights: ' + ', '.join(r['cantonFlights']))
+        fu = r['furnish']
+        if not fu['pieces'].get('voth_market_stall') or not fu['pieces'].get('voth_lantern_fixture') or not fu['walks'] or not fu['parkFlora']: bad.append('market stalls and park walks')
+        if not r['vessels'].get('moored', {}).get('vothJunk') or not r['vessels'].get('moored', {}).get('vothDhow'): bad.append('Ring Sea vessels')
+        if not r['floraEdit']['tracked'] or r['floraEdit']['unmapped']: bad.append('flora editor: trees not mapped to their meshes')
         sm = r['sim']
         if sm['routes'] != r['transit']['lines'] or sm['bad'] or sm['problems'] or not sm['pure'] or not sm['vehicles'] or sm['berthClash']: bad.append('transit routes (core/simulation)')
         if bad:

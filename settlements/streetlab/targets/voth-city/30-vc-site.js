@@ -50,6 +50,9 @@ SL.pass0 = function () {
   SITE.load(SITE_INIT);
   TERR.sync(SITE.data.terrain);
   VOTH.setGroundEdit(TERR.delta);
+  /* the cantons' walkable levels, bridges and causeway ends (targets/voth-site/20-site-cantons.js) */
+  CANT.biomeFlora = true;           /* the Ancestry's trees and bed cover go to the swbay biome (VC.drawFlora) */
+  CANT.planA({ causeways: SITE.causeways() }); CANT.planned = true;
   var emb = VC.embank();
   var c = TUNE.groundCell, half = TUNE.rasterHalf, n = Math.ceil(2 * half / c) + 1, H = new Float32Array(n * n);
   for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) H[j * n + i] = TERR.h(-half + i * c, -half + j * c);
@@ -198,10 +201,28 @@ SL.pass1 = function () {
   SL.note(1, (I ? 'garrison castle and mustering ground at I; ' : '') + PLAN.voth.map(function (q) { return q.id + ' ' + q.role + (q.islet ? ' (islet)' : ''); }).join(', '));
 };
 
+/* a market pitch (owner, 2026-10-09: "actual market stalls"): the catalog's canopied stall (voth_market_stall, variant 0
+   produce or 1 exotic), its stock beside it (crates, baskets, sacks, jars from the generic goods), or now and then a
+   seller's goods laid on the ground as before (the captured voth_city_stall_* slabs). Every choice is a KRAND hash of
+   the pitch's place (never the draws before it). `ground` is the captured slab the caller drew; ry faces the front. */
+VC.marketPitch = function (D, x, y, z, ry, ground) {
+  var u = function (s) { return KRAND.unit(KRAND.hash(6601, Math.round(x * 4), Math.round(z * 4), s)); };
+  if (typeof FURN_BY_KEY === 'undefined' || !FURN_BY_KEY.voth_market_stall || u(1) < TUNE.market.ground) { D.art.push({ key: ground, x: x, z: z, y: y, ry: ry }); return 'ground'; }
+  D.art.push({ key: 'voth_market_stall', v: u(2) < 0.55 ? 0 : 1, x: x, y: y, z: z, ry: ry, furn: true });
+  var X = [Math.cos(ry), -Math.sin(ry)], F = [Math.sin(ry), Math.cos(ry)], G = TUNE.market.goods;
+  [-1, 1].forEach(function (s, k) {
+    if (u(3 + k) > TUNE.market.stock) return;
+    var key = G[Math.floor(u(5 + k) * G.length) % G.length]; if (!FURN_BY_KEY[key]) return;
+    var off = TUNE.market.side, back = TUNE.market.back * (u(7 + k) - 0.5) * 2;
+    D.art.push({ key: key, v: 0, x: x + X[0] * s * off + F[0] * back, y: y, z: z + X[1] * s * off + F[1] * back, ry: ry + (u(9 + k) - 0.5), furn: true });
+  });
+  return 'stall';
+};
+
 /* ---------------------------------------------------------------- step 2: districts */
 SL.pass2 = function () {
   var R = SL.R, rs = SL.stream(2);
-  PLAN.districts = [];
+  PLAN.districts = []; VC.MOOR = [];
   PLAN.site.forEach(function (d) {
     var D = { kind: d.role, name: d.name, poly: d.poly, born: 2, art: [] };
     if (d.role === 'park' || d.role === 'plaza') R.stampPoly(d.poly, OCC.GREEN, -1);
@@ -213,7 +234,7 @@ SL.pass2 = function () {
       for (var x = Math.min.apply(null, xs); x < Math.max.apply(null, xs); x += 9) for (var z = Math.min.apply(null, zs); z < Math.max.apply(null, zs); z += 9) {
         var p = [x + rs.rr(-1.5, 1.5), z + rs.rr(-1.5, 1.5)];
         if (!inPoly(p, d.poly) || polyEdgeDist(p, d.poly) < 6 || !rs.chance(0.6)) continue;
-        D.art.push({ key: rs.pick(STALLS), x: p[0], z: p[1], y: baseH(p[0], p[1]), ry: Math.atan2(c[0] - p[0], c[1] - p[1]) });
+        VC.marketPitch(D, p[0], baseH(p[0], p[1]), p[1], Math.atan2(c[0] - p[0], c[1] - p[1]), rs.pick(STALLS));
       }
     }
     if (d.role === 'plaza') { var pc = polyCentroid(d.poly); D.art.push({ key: 'sl_fountain', x: pc[0], z: pc[1], y: baseH(pc[0], pc[1]), ry: 0 }); }

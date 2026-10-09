@@ -24058,6 +24058,84 @@ FURN({
 FK.set({ culture: 'voth', tier: 'common', roles: 'training', prefix: 'voth_training_', S: VOTH_COMMON, names: {
   training_dummy: 'Cane-wrapped practice post', archery_butt: 'Reed-bundle archery butt' } });
 
+/* trades and households (2026-10-09, for the Voth city plan's canton interiors: settlements/streetlab,
+   targets/voth-city/40-vc-interiors.js): the FK.ROLES.trade pieces in Voth's common style sheet, keyed voth_trade_<role> */
+FK.set({ culture: 'voth', tier: 'common', roles: 'trade', prefix: 'voth_trade_', S: VOTH_COMMON, names: {
+  forge: 'Ash-brick forge', anvil: 'Anvil on a walnut block', trough: 'Quench trough', stall: 'Beetle stall', hayrack: 'Fodder rack',
+  display: 'Wares table', armour_stand: 'Armour stand', weapon_rack: 'Spear and blade rack', vat: 'Dye vat', still: 'Alembic still',
+  bin: 'Grain bin', larder: 'Larder', bunk: 'Garrison bunk', locker: 'Walnut locker', lathe: 'Pole lathe', press: 'Screw press',
+  kiln: 'Glaze kiln', grindstone: 'Grindstone', altar: 'Ancestor altar', barrel: 'Barrel rack' } });
+
+/* the canton interiors' own pieces (2026-10-09): a bakery's oven, a cell's grate, a tomb's sarcophagus, a catacomb's
+   ossuary shelves */
+FURN({
+  key: 'voth_bread_oven', name: 'Ash-brick bread oven', culture: 'voth', tier: 'common', type: 'stove', role: 'oven', setting: 'indoor',
+  rooms: ['kitchen', 'bakery'], anchor: 'wall', clearance: { front: 1.4 },
+  materials: ['stone', 'ceramic', 'metal', 'emissive', 'timber'],
+  w: 2.6, d: 1.9, h: 2.3, variants: 1,
+  build: function (F) {
+    const br = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), soot = F.shade(br, -0.6);
+    F.box(0, 0, -0.1, 2.6, 0.9, 1.7, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
+    F.frustum(0, 0.9, -0.15, 1.1, 0.75, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome */
+    F.ball(0, 1.82, -0.15, 0.62, F.shade(ash, -0.08), 'ceramic');
+    F.box(0, 0.95, 0.58, 0.9, 0.62, 0.18, 0, soot, 'stone');                               /* the mouth */
+    F.box(0, 1.0, 0.6, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
+    F.box(0, 1.6, 0.66, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
+    F.cyl(0.62, 2.0, -0.55, 0.14, 0.5, 0, soot, 'stone');                                  /* the flue */
+    F.box(-1.05, 0.9, 0.4, 0.5, 0.06, 0.9, 0, F.col('timberWalnut'), 'wood');               /* the peel rest and a peel */
+    F.box(-1.05, 0.96, 0.25, 0.32, 0.03, 0.32, 0, F.col('timberWalnut'), 'wood');
+    F.lamp(0, 1.0, 0.8, 0.6, 4);
+  }
+});
+FURN({
+  key: 'voth_cell_grate', name: 'Cell grate', culture: 'voth', tier: 'common', type: 'screen', setting: 'indoor',
+  rooms: ['cell', 'jail'], anchor: 'wall', clearance: {},
+  materials: ['metal', 'stone'],
+  w: 2.4, d: 0.25, h: 2.6, variants: 1,
+  build: function (F) {
+    const iron = F.col('iron'), st = F.col('stoneGraphite');
+    F.box(0, 0, 0, 2.4, 0.12, 0.25, 0, st, 'stone');
+    F.box(0, 2.48, 0, 2.4, 0.12, 0.25, 0, st, 'stone');
+    for (let i = 0; i < 11; i++) F.cyl(-1.1 + i * 0.22, 0.12, 0, 0.025, 2.36, 0, iron, 'metal');
+    for (const y of [0.9, 1.7]) F.box(0, y, 0, 2.3, 0.06, 0.08, 0, iron, 'metal');
+    F.box(0.55, 1.1, 0.06, 0.12, 0.2, 0.06, 0, F.shade(iron, 0.2), 'metal');                /* the lock */
+  }
+});
+FURN({
+  key: 'voth_sarcophagus', name: 'Ancestor sarcophagus', culture: 'voth', tier: 'common', type: 'tomb', setting: 'indoor',
+  rooms: ['tomb', 'catacomb', 'shrine'], anchor: 'floor', clearance: { front: 0.8, left: 0.5, right: 0.5 },
+  materials: ['stone', 'ceramic', 'metal'],
+  w: 1.3, d: 2.6, h: 1.25, variants: 2, variantNames: ['plain', 'effigy'],
+  build: function (F) {
+    const st = F.col('stoneGraphite'), lid = F.shade(st, 0.12), ash = F.col('ceramicAsh');
+    F.box(0, 0, 0, 1.3, 0.2, 2.6, 0, F.shade(st, -0.1), 'stone');                           /* the plinth */
+    F.box(0, 0.2, 0, 1.12, 0.72, 2.42, 0, st, 'stone');                                      /* the chest */
+    for (let i = 0; i < 4; i++) F.box(0, 0.36 + i * 0.12, 1.22, 1.0, 0.04, 0.02, 0, F.shade(st, 0.18), 'stone');   /* the stepped fret */
+    F.box(0, 0.92, 0, 1.24, 0.14, 2.56, 0, lid, 'stone');                                    /* the lid */
+    if (F.variant === 1) {
+      F.box(0, 1.06, -0.1, 0.5, 0.16, 1.7, 0, F.shade(lid, 0.08), 'stone');                 /* the effigy, lying */
+      F.ball(0, 1.12, 0.92, 0.17, F.shade(lid, 0.1), 'stone');
+    } else F.frustum(0, 1.06, 0, 0.5, 0.28, 0.14, 0, F.shade(lid, 0.06), 'stone', 4);
+    F.frustum(0.42, 1.06, 1.0, 0.07, 0.11, 0.18, 0, ash, 'ceramic', 8);                       /* an urn of ash at its head */
+  }
+});
+FURN({
+  key: 'voth_ossuary_shelves', name: 'Ossuary niches', culture: 'voth', tier: 'common', type: 'shelf', setting: 'indoor',
+  rooms: ['catacomb', 'tomb', 'shrine'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['stone', 'ceramic'],
+  w: 2.4, d: 0.6, h: 2.4, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), bone = F.col('clothBone');
+    F.box(0, 0, -0.05, 2.4, 2.4, 0.5, 0, st, 'stone');
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+      const x = -0.9 + c * 0.6, y = 0.25 + r * 0.72;
+      F.box(x, y, 0.12, 0.46, 0.52, 0.16, 0, F.shade(st, -0.55), 'stone');                  /* a niche */
+      if ((r + c) % 3) F.frustum(x, y, 0.16, 0.1, 0.07, 0.24, 0, F.shade(ash, ((r * 4 + c) % 3) * 0.05), 'ceramic', 8);   /* its urn */
+      else F.ball(x, y + 0.12, 0.17, 0.11, bone, 'plaster');                                  /* or a skull */
+    }
+  }
+});
+
 </script>
 <script>/* kits/catalog/krator-master-furniture-xanadu.js */
 /* ======================================================================

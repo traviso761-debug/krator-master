@@ -61,7 +61,7 @@
   <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it.</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button> <span id="cut-status" class="k"></span><br>
   <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
@@ -71,12 +71,16 @@
 <div id="tip" class="pnl"></div>
 <div id="edit" class="pnl" data-title="Edit">
   <b>Edit the plan</b> <span id="ed-status" class="k"></span><br>
-  <button id="ed-m-place" class="on">place building</button><button id="ed-m-street">paint street</button><button id="ed-m-del">delete</button><br>
+  <button id="ed-m-place" class="on">place building</button><button id="ed-m-street">paint street</button><button id="ed-m-del">delete</button><button id="ed-m-flora">flora</button><br>
   <div id="ed-place"><input id="ed-find" placeholder="find a building (name or family)"><div id="ed-grid"></div><select id="ed-kit" style="display:none"></select> <select id="ed-var"></select><br>
     <label class="k"><input type="checkbox" id="ed-align" checked> align to the nearest street</label> <span class="k">Q/E turn the last 15&deg; &middot; R aligns it</span></div>
   <div id="ed-street" style="display:none"><select id="ed-cls"><option>avenue</option><option selected>main</option><option>side</option><option>alley</option><option>lane</option></select>
     <span class="k">click to add points; Backspace takes one off; Enter or a double-click finishes; Esc drops it</span></div>
   <div id="ed-del" style="display:none" class="k">click a building or a painted street to delete it (a generated building is taken out of the plan)</div>
+  <div id="ed-flora" style="display:none"><select id="ed-fl-mode"><option value="pick">select and delete</option><option value="plant">plant</option></select>
+    <span id="ed-fl-plant" style="display:none"><select id="ed-fl-key"></select> <span class="k">height</span> <input id="ed-fl-h" type="number" step="0.5" min="1" style="width:56px" placeholder="auto"></span>
+    <button id="ed-fl-del">delete selected</button><div class="k" id="ed-fl-sel"></div>
+    <div class="k">select: click a tree or a placed plant, Delete removes it (Esc lets go) &middot; plant: click a floor or the ground</div></div>
   <div class="k" id="ed-count"></div>
   <button id="ed-undo">undo</button><button id="ed-save">save</button><button id="ed-copy">copy JSON</button>
   <div class="k">Saved edits join the plan when the page next loads (placed buildings and painted streets at step 3, deletions at the end).</div>

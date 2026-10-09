@@ -219,7 +219,7 @@ VC.deckOf = function (n) {
   var c = VOTH.CIDX[n], hw = c.r * 0.97 * Math.pow(0.86, c.tiers), yTop = c.top + 0.12 * c.tiers, y = yTop + 0.9;
   var D = typeof VOTH_CITY_CAPTURE !== 'undefined' ? VOTH_CITY_CAPTURE : null, v = D && D.entries['voth_city_canton_' + n.toLowerCase()];
   if (v && v[0]) { var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), top = -Infinity; v[0].r.forEach(function (q) { if (q[0] !== 9 && q[5] * q[7] > 2000) top = Math.max(top, bed + q[3] + q[6]); }); if (top > 0) y = top; }
-  return { n: n, c: [c.x, c.z], y: y, shift: y - 0.9 - yTop, hw: hw, use: hw * TUNE.decks.use, placed: [] };
+  return { n: n, c: [c.x, c.z], y: y, shift: y - 0.9 - yTop, hw: hw, use: hw * TUNE.decks.use, placed: CANT.deckKeep(n).concat(VC.intKeep(n)) };   /* the bridges' and the stairs' arrivals, the stair house */
 };
 /* the first free spot for a footprint on a deck, scored by `score` (low is best); faces the deck's middle, squared to
    the deck's axes. Returns {c, f, o} or null. */
@@ -293,7 +293,8 @@ VC.cantonDecks = function () {
       B.BOX(m.c[0], m.y - 0.25, m.c[1], sq * 2, 0.4, sq * 2, 0, 0xb2a68c);
       for (var x = -sq + 7; x <= sq - 7; x += 9) for (var z = -sq + 7; z <= sq - 7; z += 9) {
         if (Math.hypot(x, z) < K.obelisk + 6 || !rs.chance(0.7)) continue;
-        D.art.push({ key: rs.pick(STALLS), x: m.c[0] + x + rs.rr(-1, 1), z: m.c[1] + z + rs.rr(-1, 1), y: m.y, ry: Math.atan2(-x, -z) }); st++;
+        if (VC.intKeep('Market').some(function (o) { return SL.pen(obb([m.c[0] + x, m.c[1] + z], [1, 0], 4.5, 4.5), o) > 0; })) continue;   /* the stair house (a stall and its stock) */
+        var gk = rs.pick(STALLS), jx = rs.rr(-1, 1), jz = rs.rr(-1, 1); VC.marketPitch(D, m.c[0] + x + jx, m.y, m.c[1] + z + jz, Math.atan2(-x, -z), gk); st++;
       }
       PLAN.districts.push(D);
       m.placed.push(obb(m.c, [1, 0], sq + 2, sq + 2));
@@ -541,7 +542,7 @@ VC.fishDocks = function (g, rs, n, id) {
       [-1, 1].forEach(function (sd) {
         if (!rs.chance(0.75)) return;
         var hc = V.add(V.add(root, V.mul(dir, (L + 4) * rs.rr(0.45, 0.8))), V.mul(side, sd * (B.LIFE_FISHDOCK_W / 2 + 3.4)));
-        B.BOX(hc[0], -1.0, hc[1], 4.2, 2.1, rs.rr(12, 15), fry, 0x5e4d3a, 'wood'); B.BOX(hc[0], 1.1, hc[1], 3.6, 0.4, 11, fry, 0x4a3c2c, 'wood'); B.CYL(hc[0], 1.1, hc[1], 0.22, rs.rr(8, 11), 0, 0x4a3c2c, 'wood');
+        VC.moor('vothDhow', hc[0], hc[1], fry, rs.rr(12, 15)); rs.rr(8, 11);   /* a Ring Sea dhow (31-vc-voth.js VC.moor); the old mast's draw kept */
       });
     });
   });

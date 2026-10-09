@@ -45,7 +45,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
 | `krator-master-furniture-screamer.js` | 6 |  |
 | `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
-| `krator-master-furniture-voth.js` | 6 |  |
+| `krator-master-furniture-voth.js` | 12 |  |
 | `krator-master-furniture-xanadu.js` | 7 |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture.js` | 275 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1372); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1867); Yuni (64 pieces) (2612); Ancients kit extras (32 pieces) (4435) |

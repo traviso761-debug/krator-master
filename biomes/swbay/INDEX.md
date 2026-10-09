@@ -17,9 +17,9 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 23 | the bay, the river, the rise (53); terrain (80); the host binding (100); the ground (111); the water (156); the far country (214) |
-| `50-biome-swbay-species.js` | 37 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (125); leaf textures (149); bark textures (248); geometries local to this biome (308); an iridescent foliage (360); materials (364); instanced items (407) |
-| `55-biome-swbay-trees.js` | 48 **big** | zones from the fields (23); colour (35); polyline helpers (Girder's) (57); keep-clear between trees (66); epiphytes (73); foliage helpers (88); the builders (100); impostors (the far canopy) (367); the pass (409) |
-| `60-biome-swbay-floor.js` | 14 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127) |
+| `50-biome-swbay-species.js` | 37 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (312); an iridescent foliage (364); materials (368); instanced items (411) |
+| `55-biome-swbay-trees.js` | 53 **big** | zones from the fields (23); colour (35); polyline helpers (Girder's) (57); keep-clear between trees (66); epiphytes (73); foliage helpers (88); the builders (100); impostors (the far canopy) (388); the pass (431); one tree where a world puts it (484) |
+| `60-biome-swbay-floor.js` | 16 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127); one plant where a world puts it (149) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
 | `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (93) |

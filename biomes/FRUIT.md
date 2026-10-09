@@ -166,7 +166,8 @@ the probe checks it). The umbrella thorn's pods and the monkey-puzzle cones are 
 |---|---|---|---|
 | Bay fungi | `coral` (the coral fungus shrub), `parasol` (parasol mushroom) | Fruiting bodies rather than fruit. The orange, pink and violet coral is picked as a clump. Parasol caps are grilled whole in a pan. | `generic_fruit_bay_fungi` |
 
-The gatepod (above) also grows here, on the savannah baobabs. The umbrella thorn's pods and the monkey-puzzle cones are not drawn.
+The gatepod (above) also grows here, on the savannah baobabs. The umbrella thorn's pods, the monkey-puzzle cones and the ash
+cherry's cherries (2026-10-09: the species added for the Voth necropolis, tagged edible with `fruit: null`) are not drawn.
 
 ## South-western Lowlands
 

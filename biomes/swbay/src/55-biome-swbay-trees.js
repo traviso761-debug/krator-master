@@ -364,6 +364,27 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hc=C(
  if(lv===2)for(let c=0,m=ri(4,8);c<m;c++){const a=rr(0,TAU),d=R*rr(.2,.9);clumpAt('leaflet',T.x+Math.cos(a)*d,top-rr(.2,1.4),T.z+Math.sin(a)*d,sz0*rr(.8,1.1),.28,hc,T.x,cy,T.z,R,Math.max(3,R*.3));st.clumps++;}   // fill the disc
  if(!spots.length){clumpAt('leaflet',T.x,top,T.z,sz0,.3,hc,T.x,cy,T.z,R,4);st.clumps++;}
  if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:R,h:T.H});};
+// 13 the ash cherry: a short dark bole that forks low into a few spreading, upturned boughs; the blossom in loose
+// puffs along the outer boughs and at their tips (a wide, open dome), petals fallen round its foot. Planted by the
+// bay's tombs and gardens (the Voth necropolis), and wild here and there on the rain slope.
+B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=tint(pick(S.bark),means().bark[3],rr(.75,.95)),R=T.crownR,spots=[];
+ const fork=H*rr(.26,.36),la=rr(0,TAU),lk=rr(.04,.12),o=[T.x+Math.cos(la)*lk*fork,T.y0+fork,T.z+Math.sin(la)*lk*fork];
+ BIO.beam('rod',[T.x,T.y0-.3,T.z],o,rb,rb*.78,rc);st.sapTris+=BIO.defs.rod.tris;
+ const nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU);
+ for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.35,.35),el=rr(.45,.85),L1=(H-fork)*rr(.45,.6);
+  const m1=[o[0]+Math.cos(a)*Math.cos(el)*L1,o[1]+Math.sin(el)*L1,o[2]+Math.sin(a)*Math.cos(el)*L1];
+  BIO.beam('rod',o,m1,rb*.62,rb*.4,rc);st.sapTris+=BIO.defs.rod.tris;
+  for(let s=0,n=lv===2?ri(2,3):1;s<n;s++){const a2=a+rr(-.6,.6),el2=rr(.1,.5),L2=R*rr(.45,.8),e=[m1[0]+Math.cos(a2)*Math.cos(el2)*L2,Math.min(T.y0+H,m1[1]+Math.sin(el2)*L2),m1[2]+Math.sin(a2)*Math.cos(el2)*L2];
+   if(!clear3(e[0],e[1],e[2],1.2,1.2))continue;BIO.beam('rod',m1,e,rb*.36,rb*.12,rc);st.sapTris+=BIO.defs.rod.tris;
+   spots.push([mix(m1[0],e[0],.5),mix(m1[1],e[1],.5)+.4,mix(m1[2],e[2],.5)],e);}
+  spots.push(m1);}
+ const cy=T.y0+H*.8,base=vary(pick(S.leaf),.02,.08,.05),sz0=clamp(R*.42,1.6,3.2);
+ spots.forEach((p,i)=>{for(let c=0,m=lv===2?2:1;c<m;c++){const a=rr(0,TAU),d=sz0*.45*rng(),col=bright(vary(i%3?base:pick(S.leaf),.02,.06,.05),1.15);
+  clumpAt('leaflet',p[0]+Math.cos(a)*d,p[1]+rr(-.3,.6),p[2]+Math.sin(a)*d,sz0*rr(.85,1.2),.62,col,T.x,cy,T.z,R,Math.max(2.5,H*.3));st.clumps++;st.blooms++;}});
+ if(lv===2){const pc=bright(vary(pick(S.leaf),.02,.06,.04),1.1);for(let b=0,m=ri(10,22);b<m;b++){const a=rr(0,TAU),d=R*Math.sqrt(rng())*1.1;
+  BIO.put('bloom',[T.x+Math.cos(a)*d,Y(T.x+Math.cos(a)*d,T.z+Math.sin(a)*d)+.03,T.z+Math.sin(a)*d],qEuler(rr(-1.3,-1.1),rr(0,TAU),rr(-.2,.2)),rr(.16,.3),pc);}}
+ if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:R,h:T.H});};
+
 // ---------------------------------------------------------------- impostors (the far canopy)
 // lite: the stand-in behind a hero tree (seen only past SWBAY.LOD.tree, 1.2-2.9 km): the cheap
 // blob count in 20-triangle blobs (a prism gum's 15 m blob is ~25 px across at 1.2 km) on a
@@ -383,7 +404,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.Ic
    const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
    vtx(x+dx*rx*m,y+dy*ry*m*(under&&dy<0?under:1),z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
   tris+=ip.length/9;}
- const bc=(T.sp===2?tint(PAL.stipe[fi%4],[1,1,1],.8):C(S.bark[fi%S.bark.length])).convertSRGBToLinear(),seg=tiny?3:cheap?4:6,top=T.y0+T.H*[.88,.9,.8,.62,.95,.5,.9,.9,.4,.92,.9,.3,.5][T.sp],rings=[];
+ const bc=(T.sp===2?tint(PAL.stipe[fi%4],[1,1,1],.8):C(S.bark[fi%S.bark.length])).convertSRGBToLinear(),seg=tiny?3:cheap?4:6,top=T.y0+T.H*[.88,.9,.8,.62,.95,.5,.9,.9,.4,.92,.9,.3,.5,.3][T.sp],rings=[];
  (lite?[0,1]:[0,.06,.5,1]).forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(T.sp===6?.15:.5,T.rb*(1-.5*u)*(u<.08?1.6:1)*(T.sp===1&&u<.6?1.3:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
   [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
@@ -396,6 +417,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.Ic
  else if(T.sp===9){for(let k=0;k<(cheap?3:4);k++){const t=k/3;blob(T.x+Math.sin(k*2.4+a0)*R*.06,mix(T.y0+T.H*.55,T.y0+T.H*.94,t),T.z+Math.cos(k*2.4+a0)*R*.06,R*mix(.8,.22,t),T.H*.07,L[(k+fi)%4],L[2],fi+k);}}
  else if(T.sp===4){blob(T.x,T.y0+T.H*.92,T.z,R*.95,T.H*.05,L[fi%4],L[2],fi,.3);}
  else if(T.sp===12){blob(T.x,T.y0+T.H*.95,T.z,R*.9,T.H*.08,L[fi%4],L[2],fi,.3);}
+ else if(T.sp===13){blob(T.x,T.y0+T.H*.72,T.z,R*.95,T.H*.26,L[fi%4],L[(fi+1)%4],fi,.6);}
  else if(T.sp===6){const cc=T.capCol||(T.capCol=vary(pick(PAL.capSav),.02,.08,.05));blob(T.x,T.y0+T.H*.94,T.z,R*.98,T.H*.06,cc,shade(cc,-.3),fi,.3);}
  else if(T.sp===5){blob(T.x,T.y0+T.H*.9,T.z,R*.85,T.H*.16,L[fi%4],L[2],fi);}
  else if(T.sp===7){blob(T.x,T.y0+T.H*.95,T.z,R*.95,T.H*.1,L[fi%4],L[2],fi,.5);}
@@ -442,17 +464,40 @@ SWBAY.buildTrees=function(R,q){
  // the fungoid understorey: bracket trees on the wet slope, coral fungus in the jungle's shade
  pass(10,58,(Z)=>Z.hyper*.4+Z.rain*.5+Z.flow*.2*(Z.rain+Z.hyper),{hero:580,mid:1000,far:true,pad:3,lodK:.6,patch:.5});
  pass(11,40,(Z)=>Z.hyper*.45+Z.rain*.3+Z.shore*.2,{hero:520,mid:900,far:true,pad:1,lodK:.8,patch:.6,patchScale:.012,space:.4});
+ // the ash cherries, last (so every tree before them is drawn as it was): a few wild on the rain slope's open edge
+ pass(13,96,(Z)=>Z.rain*.16*smooth(.28,.5,Z.up)+Z.hyper*.04,{hero:560,mid:1000,far:true,pad:3,lodK:.6,patch:.6,patchScale:.01,space:2});
  // build
  // runtime LOD: a hero is drawn in full while the camera is within SWBAY.LOD.tree of its chunk (its
  // foot keys all of it) and as its lite stand-in past that; a far tree (beyond the spine's mid ring)
  // is only ever its impostor, always drawn. The stand-ins are tris.lite.
- TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];
+ // a world's editor (SWBAY.veto, SWBAY.onFlora): a vetoed tree keeps its place in TREES and the hash (so every other tree,
+ // its index and its seed stay as they were) and is marked cut, not built; onFlora(T, 0|1) brackets each tree's writes
+ TREES.forEach((T,i)=>{if(SWBAY.veto&&SWBAY.veto('tree',SP[T.sp].key,T.x,T.z)){T.cut=true;return;}
+  if(SWBAY.onFlora)SWBAY.onFlora(T,0);BIO.owner=[T.x,T.z];
   if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st);st.fars++;}
   else{BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
    BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,i,st,true);}
-  st.byS[T.sp]++;});
+  st.byS[T.sp]++;if(SWBAY.onFlora)SWBAY.onFlora(T,1);});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,fans:st.fans,epiphytes:st.epi,tiers:st.tiers,roots:st.roots,shelves:st.shelves,corals:st.corals,
   tris:{trunk:st.trunk,limbs:st.limb,caps:st.cap,far:st.far,lite:st.lite,small:st.sapTris}};};
+// ---------------------------------------------------------------- one tree where a world puts it
+// SWBAY.treeAt(key, x, y, z, opt): a species by key, standing at (x, y, z) on whatever the world has there (a garden
+// bed on a canton, a park): built as a hero within SWBAY.LOD.tree of its chunk and its lite impostor past that, as the
+// pass builds one. opt: {seed (default a hash of x, z), scale, H, wet, ground(x, z) (the height its petals, roots and
+// side pieces stand on; default y)}. Call between SWBAY.build() and BIO.bake(). Returns the tree, or null for an unknown
+// species. Draws from its own seed, never the pass's stream. A world's veto (SWBAY.veto) refuses it (null).
+SWBAY.treeAt=function(key,x,y,z,opt){opt=opt||{};const sp=SP.findIndex(S=>S.key===key);if(sp<0)return null;
+ if(SWBAY.veto&&SWBAY.veto('tree',key,x,z))return null;
+ const S=SP[sp],host=BIO.host,keepH=host.terrainH,seed=opt.seed==null?(Math.floor(x*31.7)*73856093^Math.floor(z*17.3)*19349663)>>>0:opt.seed;
+ reseed(seed);const k=opt.scale||1;
+ const T={x:x,z:z,y0:y,sp:sp,H:(opt.H||rr(S.H[0],S.H[1]))*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),wet:opt.wet==null?.6:opt.wet,sav:0,lv:2,placed:true};
+ const st={trunk:0,limb:0,cap:0,far:0,lite:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ host.terrainH=opt.ground||(()=>y);
+ try{means();SWBAY.TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});if(SWBAY.onFlora)SWBAY.onFlora(T,0);BIO.owner=[x,z];
+  BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[sp](T,st,2);
+  BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,SWBAY.TREES.length-1,st,true);}
+ finally{host.terrainH=keepH;BIO.owner=null;BIO.range=null;BIO.minRange=0;if(SWBAY.onFlora)SWBAY.onFlora(T,1);}
+ return T;};
 SWBAY._canopyH=function(x,z){let h=0;for(const T of SWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();

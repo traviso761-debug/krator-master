@@ -38,7 +38,11 @@ var TUNE = {
   sideSpacing: 48, sideMax: 240, alleyFrac: 0.25, blindMax: 110,
   interiorDepth: 9, interiorRounds: 8,
   suburbVacancy: 0.4,                   /* outside the wall: this share of frontage is left open */
-  harbour: { look: 700, share: 0.5, basin: 100, ship: { len: 68, beam: 16, clear: 8, spacing: 72 } },   /* a pier takes at most this share of the open water ahead, and leaves this much clear beyond its tip */
+  harbour: { look: 700, share: 0.5, basin: 100, ship: { len: 68, beam: 16, clear: 8, spacing: 72,
+            /* the Ring Sea ships moored along it (31-vc-voth.js VC.berthShips): the odds on each side, the junks' share
+               (the rest are cargo hulks), how far in from the tip and off the deck */
+            moored: 0.7, junk: 0.55, tipGap: 6, berth: 1.2,
+            dims: { vothJunk: { L: 46, B: 16 }, vothHulk: { L: 36, B: 16 } } } },   /* kits/ringsea's RS_VESSEL L and B */   /* a pier takes at most this share of the open water ahead, and leaves this much clear beyond its tip */
   fishGap: 26, fishClear: 9,                          /* harbour: a fishing dock in each gap of this much quay between the long piers */
   riverDockGap: 58, bargeClear: 2, bridgeBand: 20,   /* elephant bugs keep this far off a bridge's line, except on its deck */   /* a barge moors this far off its pier's head */                     /* river port: a quay every this much bank (Voth's RPIERS: 58) */
   monastery: { grid: 8, edge: 9, gap: 5, relief: 7, gateW: 18, sideGateW: 7, sideGates: 2, dorms: 6, stores: 2, pens: 2, coops: 10, fields: 30, field: [26, 44] },
@@ -59,19 +63,70 @@ var TUNE = {
   /* the clock (core/clock KCLOCK, a 72-minute day): the hour it opens at, whether it runs, the speeds offered, the
      day of the year for the sun (Voth's equinox) */
   clock: { hour: 10, running: true, speeds: [1, 2, 4, 8], doy: 80 },
+  /* the chinampas drawn again (31b-vc-chinampa.js): a bed's top over the water (a marsh bed's lower), stakes a side,
+     crop rows, the crops' shares, maize and amaranth heights, the odds of a mature bed (with the biome's trees on its
+     banks: up to `trees`, crown ferns or splay shrubs, heights), of a canoe and of a plank; reeds on a marsh bed, bank
+     plants a bed; the stilt hut's kit piece and its height over the water */
+  chin: { top: 1.45, marshTop: 0.55, stakes: 9, rows: 4, maizeH: 1.9, amaranthH: 1.5,
+          crops: { maize: 0.3, beans: 0.16, squash: 0.14, amaranth: 0.09, marigold: 0.08, greens: 0.15, seedbed: 0.08 },
+          mature: 0.36, trees: 3, fernShare: 0.6, treeH: [5.5, 9], canoe: 0.08, plank: 0.05, marshReeds: 5, bankPlants: 3,
+          hut: ['voth_house_poor', 4], hutY: 0.35 },
+  /* the cantons' interiors (40-vc-interiors.js): the tier wall's thickness, the least storey height, the slab, the
+     core (its half-width, how far off the middle toward the main door: [least, share of the narrowest tier]), the stair
+     well [half-width across, half-length along], the stair house's height, halls (width; an arm off the main axis is
+     at most `arm` long above the ground storey), rooms (depth, width range, the gap between), the inner walls and doors,
+     the tunnels, the share of residences, each canton's purposes (room kind -> share) and the cantons left solid. The
+     Ancestry's catacombs: their height, gallery width and spacing, tomb chambers [length, depth] and their share. */
+  interiors: { wall: 3.2, storeyMin: 4.6, slab: 0.4, core: 10, coreOff: [28, 0.55], well: [3.4, 7], houseH: 5.2, hall: 6, arm: 46,
+               start: 16, room: { d: 12, w: [10, 15], gap: 0.6 }, wallT: 0.6, doorW: 1.8, tunnelW: 5, tunnelH: 5, residence: 0.12,
+               skip: ['Palace', 'Temple'],
+               purposes: {
+                 Arsenal: { barracks: 4, smithy: 3, armoury: 3, workshop: 2, mess: 1, office: 1, store: 2 },
+                 Guild: { workshop: 5, shop: 3, store: 2, guildhall: 1, office: 1, smithy: 1 },
+                 Market: { shop: 6, store: 3, tavern: 1, workshop: 2, kitchen: 1 },
+                 Granary: { bakery: 3, granary: 5, kitchen: 1, office: 1, store: 1 },
+                 Arena: { training: 4, barracks: 3, stable: 3, mess: 1, store: 1, shrine: 1 },
+                 Port: { warehouse: 6, office: 1, workshop: 2, tavern: 1 },
+                 Fortress: { training: 3, barracks: 3, cell: 4, office: 2, armoury: 1, shrine: 1 },
+                 Foreign: { office: 4, reception: 2, library: 1, living: 2, bedroom: 2 },
+                 Ancestry: { catacomb: 1 }
+               },
+               cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
+               /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
+               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6 },
+  /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
+  walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
      far each closes the fog in (fogK, rainK, ashK of the way to closeFar metres), how much each dims the sun, the ash
      haze and the lightning's colours and kick, and the volcano's odds of a large or small eruption each quarter hour */
   weather: { mode: 'clear', fogK: 0.93, rainK: 0.55, ashK: 0.97, closeFar: 420, rainSun: 0.55, fogSun: 0.3, ashSun: 0.8,
              ashFog: 0x6b5d49, flash: 0xffd8b8, flashHemi: 1.4, eruptLarge: 0.05, eruptSmall: 0.3 },
+  /* a market pitch (30-vc-site.js VC.marketPitch): the share left as goods on the ground, the odds of stock on each side
+     of a stall, how far out to the side and how far back and forth it sits, and the stock it draws from */
+  market: { ground: 0.2, stock: 0.75, side: 3.1, back: 1.0, goods: ['generic_crate', 'generic_basket', 'generic_sack', 'generic_storage_jar', 'generic_barrel'] },
+  /* the Ring Sea vessels (55-vc-host.js): the model each ferry line runs (the moored ones are VC.MOOR's) */
+  vessels: { ferry: 'vothFerry' },
   /* park and plaza furniture (39-vc-furnish.js): bench spacing and inset along a park's edges, the areas that earn a
      shrine, corner statues and an obelisk, the plaza's ring of benches round its fountain, the pocket greens' odds */
   parkFurn: { benchEvery: 24, benchInset: 4, shrineInset: 6, cornerInset: 9, statueArea: 20000, statues: 3, shrineArea: 8000, obeliskArea: 70000,
-              gap: 1.5, fountain: 4, plazaR: 10, plazaBenches: 8, pocketBench: 0.7, pocketStatue: 0.25, plazaBench: 0.5, pocketInset: 1.4, pocketFountain: 2.2 },
+              gap: 1.5, fountain: 4, plazaR: 10, plazaBenches: 8, pocketBench: 0.7, pocketStatue: 0.25, plazaBench: 0.5, pocketInset: 1.4, pocketFountain: 2.2,
+              /* the big parks' walks and groves (VC.parkWalks, VC.parkGroves): the area that earns them, the walk's width and
+                 the clearance kept from it, the edges long enough to reach and how many, the ring round the middle (radius,
+                 segments, benches), lantern, bench and avenue-tree spacing, the trees' offset from the walk and from each
+                 other, the cherry's share, the grove lattice and its inset, and the mix of what stands at each lattice point */
+              walkArea: 15000, walkW: 3.2, walkGap: 0.4, walkEdge: 30, walks: 4, ringR: 14, ringN: 16, ringBenches: 6,
+              lampEvery: 20, walkBench: 26, treeEvery: 12, treeOff: 4.5, treeGap: 6, cherry: 0.6, groveEvery: 30, groveInset: 10,
+              grove: { grove: 0.45, garden: 0.25, hearth: 0.14, well: 0.06 }, walkTone: '#b9aa86' },
   /* the swbay biome (38-vc-flora.js): its mask grid, the clearances round what is built, the LOD spine's spacing, the
      build's disc and quality, the climate a park and the environs hand the kit, how far the crowns follow the ceiling */
   flora: { half: 3900, cell: 4, lotPad: 2, roadPad: 2, landmarkClear: 18, spine: 700, spineCountry: 1000, R: 3900, quality: 0.4,
-           park: { wet: 0.8, upland: 0.16 }, sav: { wet: 0.2, upland: 0.72 }, crownK: 0.6 },
+           park: { wet: 0.8, upland: 0.16 }, sav: { wet: 0.2, upland: 0.72 }, crownK: 0.6,
+           /* the plants the city places itself (55-vc-host.js VC.floraPlace): tree heights by species, the share of
+              Voth's bed-cover blobs that become a plant, and the mix of plants they become */
+           placed: { H: { cherry: [5.5, 8.5], dragon: [6, 10], baobab: [11, 15] }, groundKeep: 0.7,
+                     ground: { shrub: 0.4, fern: 0.22, moss: 0.14, blooms: 0.12, splaylet: 0.12 },
+                     /* the parks' gardens and the beds round their groves (39-vc-furnish.js) */
+                     garden: { blooms: 0.34, shrub: 0.28, fern: 0.16, rosette: 0.12, splaylet: 0.1 } } },
   /* clan compounds (33-vc-country.js, after the avenues): one per `per` square metres of their districts, fronting the avenues first */
   clan: { keys: ['voth_clan_compound_b', 'voth_bldg_clan_compound'], per: 14000, perMin: 7, max: 40, grid: 10, front: 14, setback: 2, spill: 6, gap: 8, relief: 7 },
   country: {

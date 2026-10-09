@@ -35,12 +35,43 @@ Build: `cd settlements/streetlab && python3 build.py`. Serve: `python3 serve.py`
 | — | census | `36-vc-census.js` |
 | — | power and light: power houses (at step 9), electric reach, street lamps | `37-vc-light.js` |
 | — | flora: the swbay biome's mask and climate (parks jungle, environs savannah); built by `VC.drawFlora` (55) | `38-vc-flora.js` |
-| — | park and plaza furniture | `39-vc-furnish.js` |
+| — | park and plaza furniture; the big parks' walks, groves and gardens | `39-vc-furnish.js` |
+| — | the chinampa beds | `31b-vc-chinampa.js` |
+| — | the canton interiors (plans, walls, floors, KWALK) | `40-vc-interiors.js` |
+| — | the cantons read into levels; bridges, causeways, flights, doors, falls (both pages) | `targets/voth-site/20-site-cantons.js` |
 
 Host fragments:
 - `55-vc-host.js`: drawing, sidebar, census table, foldable panels.
+- `56-vc-interiors-host.js`: the interiors furnished and drawn; the cutaway (x).
 - `57-vc-marks.js`: marks (p).
 - `58-vc-tools.js`: Paths, the pin, the editor (b).
+- `59-vc-flora-edit.js`: the editor's flora mode (select, delete, plant).
+- `ringsea.py` (beside `foreign.py`): the Voth watercraft of `kits/ringsea`, sealed (`RINGSEA`).
+
+### 2026-10-09, second session (the owner's nine asks), all in README.md
+1. **Ring Sea vessels:** the ferries, plus moored dhows, barges, junks and hulks (`VC.MOOR`, `VC.drawVessels`).
+2. **Sky:** Voth's own sky, lifted live into `VSKY` (it is not in core/atmos yet).
+3. **Weather:** core/atmos weather with its ash modes.
+4. **Chinampas:** redrawn, with swbay plants.
+5. **Ancestry:**
+   - tombs face inward;
+   - shader waterfalls;
+   - its bridge moved off the falls;
+   - walkable to the summit;
+   - flora from the biome, with a new ash cherry (species 13 in swbay, `SWBAY.treeAt`).
+6. **Bridges and causeways:**
+   - replanned deck to deck (`CANT`);
+   - every canton walkable from its ferry to its top;
+   - no doors buried.
+7. **Canton interiors:** for every canton but the Palace and Temple, and the cutaway (x).
+8. **Markets and parks:**
+   - real market stalls with stock;
+   - the big parks' walks, lanterns, benches, avenues, groves and gardens.
+9. **The flora editor:** select, delete, plant; saved in the edits file.
+
+`verify.py --assert` now also walks every canton (the interiors from the ferry to the top deck; every bridge, the
+terrace chains, the Ancestry and its catacombs), checks the bridges' grade and clearance, and checks the stalls, the
+walks, the vessels and the flora editor's mapping.
 
 ### Last session's work, all verified
 - **Dev tools** (`58-vc-tools.js`):

@@ -165,6 +165,10 @@ VIEW.refreshTerrain = function (box, normals) {
 /* ---------------------------------------------------------------- the cantons: the city's own captured models, in place */
 VIEW.cantons = function () {
   KratorLOD.enabled = true;
+  /* the cantons' records (20-site-cantons.js): the city plans them while it lays out; this page plans them here, with
+     Voth's own canton piers. The captures lose what the records replace before they are drawn. */
+  if (!CANT.planned) { CANT.planA({}); CANT.planB(VIEW.cantonPiers()); CANT.planned = true; }
+  CANT.applyCuts();
   var E = (window.VOTH_CITY_CAPTURE || {}).entries || {}, made = [];
   VIEW.cantonList = [];
   VOTH.CANTONS.forEach(function (c) {
@@ -184,24 +188,22 @@ VIEW.cantons = function () {
   VIEW.cantonsMade = made;
 };
 
-/* ---------------------------------------------------------------- bridges and causeways
-   Voth's own span() and reclaimedCauseway() (50f-spans-build.js) on its own SPANS, CAUSEWAYS and RBRIDGES, the
-   loops as 50f and 60-land.js run them, with the same seeds. Left out: the stairs, landing doors and canton
-   doors that tie each end into a canton's tiers (they read the canton builders' own measurements). The span
-   pylons are simplified: they spring from the canton's top deck, or just under the span on a tall canton. */
+/* the ferry piers Voth builds at four cantons (CPIERS), as the canton plan takes them */
+VIEW.cantonPiers = function () {
+  return (VOTH.CPIERS || []).map(function (q, i) { var L = Math.hypot(q.x1 - q.x0, q.z1 - q.z0); return { id: 'cpier' + i, canton: q.canton, root: [q.x0, q.z0], dir: [(q.x1 - q.x0) / L, (q.z1 - q.z0) / L], w: 5.5, deckY: VOTH.SEA + 2.1 }; });
+};
+
+/* ---------------------------------------------------------------- bridges, stairs and causeways
+   The canton spans are the canton plan's records (20-site-cantons.js CANT.spans): each lands on a walkable level at both
+   ends, at its edge, with piers in the water or on a terrace; CANT.drawSpan builds one in Voth's primitives. The flights
+   (docks, moles, the terrace chains), the Ancestry's re-stepped walkway and the rails cut round a corridor are drawn
+   with them. The river bridges are Voth's own span() on RBRIDGES, as 60-land.js runs it. */
 VIEW.bridges = function () {
   var B = VOTH; B.PRIMS.length = 0;
-  B.reseed(777);
-  B.SPANS.forEach(function (p) {
-    var A = B.CANTONS[p.a], C = B.CANTONS[p.b], dx = C.x - A.x, dz = C.z - A.z, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L;
-    var w = B.rr(12, 17), ax = A.x + ux * A.r * 0.94, az = A.z + uz * A.r * 0.94, bx = C.x - ux * C.r * 0.94, bz = C.z - uz * C.r * 0.94, ry = Math.atan2(dx, dz);
-    [[A, ax, az], [C, bx, bz]].forEach(function (e) {
-      var spring = Math.min(e[0].top, B.DECK - 6);
-      B.FR8(e[1], spring - 3, e[2], w * 1.85, B.DECK - spring + 4, w * 2.3, ry, B.shade(e[0].tone, 0.02));
-      B.BOX(e[1], B.DECK + 1.0, e[2], w * 2.05, 2.8, w * 2.6, ry, B.shade(e[0].tone, -0.18));
-    });
-    B.span(ax, az, B.DECK, bx, bz, B.DECK, w, B.TONES[0], Math.min(20, L * 0.055), true);
-  });
+  CANT.spans.forEach(function (S) { CANT.drawSpan(B, S); });
+  CANT.drawFlights(B, ['dock', 'terrace', 'summit']);
+  CANT.drawSpiral(B);
+  CANT.prims.forEach(function (q) { B.PRIMS.push(q.slice()); });
   B.reseed(3131);
   B.RBRIDGES.forEach(function (b) {
     var ya = B.terrainH(b.ax, b.az) + 2.2, yb = B.terrainH(b.bx, b.bz) + 2.2, deck = Math.max(ya, yb, 11.5), ry = Math.atan2(b.bx - b.ax, b.bz - b.az);
@@ -212,8 +214,61 @@ VIEW.bridges = function () {
     B.span(b.ax, b.az, deck, b.bx, b.bz, deck, b.w, 0xa89d84, 6, true);
   });
   VIEW.bridgeMeshes = VIEW.primMeshes(B.PRIMS.slice(), 'Bridges');
-  VIEW.bridgeCount = { spans: B.SPANS.length, river: B.RBRIDGES.length, prims: B.PRIMS.length };
+  VIEW.bridgeCount = { spans: CANT.spans.length, river: B.RBRIDGES.length, prims: B.PRIMS.length, flights: CANT.flights.length };
 };
+/* ---------------------------------------------------------------- the Ancestry waterfalls (CANT.falls)
+   Each fall is a sheet that leaves its lip with a little forward throw and drops to its foot: a strip of quads whose
+   shader streams streaks down it (faster and paler as it falls), frays at its edges and thins to spray at the
+   bottom; a disc of churned foam at the foot. One material for all; the time uniform rides the frame hooks.
+   Replaces Voth's flat slabs (CANT.editCaptures cuts them). */
+VIEW.fallMat = function () {
+  if (VIEW._fallMat) return VIEW._fallMat;
+  var U = { uTime: { value: 0 }, uCol: { value: new THREE.Color(0x9ec9d2).convertSRGBToLinear() }, uFoam: { value: new THREE.Color(0xf2f6f6).convertSRGBToLinear() } };
+  var vs = 'varying vec2 vUv; varying float vFoam; attribute float foam; void main(){ vUv = uv; vFoam = foam; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+  var fs = ['uniform float uTime; uniform vec3 uCol; uniform vec3 uFoam; varying vec2 vUv; varying float vFoam;',
+    'float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
+    'float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h(i), h(i + vec2(1.0, 0.0)), f.x), mix(h(i + vec2(0.0, 1.0)), h(i + vec2(1.0, 1.0)), f.x), f.y); }',
+    'void main(){',
+    '  float x = vUv.x, y = vUv.y;',
+    '  if (vFoam > 0.5) { float r = length(vUv - 0.5) * 2.0; float a = (1.0 - smoothstep(0.55, 1.0, r)) * (0.55 + 0.45 * n(vUv * 14.0 + vec2(uTime * 1.3, -uTime * 0.7))); gl_FragColor = vec4(uFoam, a * 0.85); return; }',
+    '  float speed = 1.4 + 2.6 * y;',
+    '  float s1 = n(vec2(x * 22.0, y * 3.0 - uTime * speed)), s2 = n(vec2(x * 57.0 + 3.1, y * 7.0 - uTime * speed * 1.6));',
+    '  float streak = smoothstep(0.35, 0.95, s1 * 0.6 + s2 * 0.5);',
+    '  float edge = smoothstep(0.0, 0.16 + 0.08 * n(vec2(y * 9.0 - uTime * 2.0, 1.0)), x) * smoothstep(0.0, 0.16 + 0.08 * n(vec2(y * 9.0 - uTime * 2.0, 7.0)), 1.0 - x);',
+    '  float lip = smoothstep(0.0, 0.04, y), spray = smoothstep(0.82, 1.0, y);',
+    '  vec3 c = mix(uCol, uFoam, clamp(streak * (0.35 + 0.5 * y) + spray * 0.7, 0.0, 1.0));',
+    '  float a = edge * lip * (0.62 + 0.3 * streak) * (1.0 - 0.55 * spray * n(vec2(x * 30.0, uTime * 3.0)));',
+    '  gl_FragColor = vec4(c, a);',
+    '}'].join('\n');
+  var m = new THREE.ShaderMaterial({ uniforms: U, vertexShader: vs, fragmentShader: fs, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  (window._frameHooks = window._frameHooks || []).push(function (now) { U.uTime.value = (now || performance.now()) / 1000 % 3600; });
+  return (VIEW._fallMat = m);
+};
+VIEW.falls = function () {
+  (VIEW.fallMeshes || []).forEach(function (M) { scene.remove(M); M.geometry.dispose(); });
+  VIEW.fallMeshes = [];
+  if (!CANT.falls || !CANT.falls.length) return;
+  var pos = [], uv = [], foam = [], idx = [], add = function (p, u, f) { pos.push(p[0], p[1], p[2]); uv.push(u[0], u[1]); foam.push(f); return pos.length / 3 - 1; };
+  CANT.falls.forEach(function (F) {
+    var n = F.n, tg = [-n[1], n[0]], drop = F.y0 - F.y1, throwD = Math.min(3.5, 0.6 + drop * 0.05), rows = Math.max(6, Math.ceil(drop / 3));
+    var lx = F.lip[0], lz = F.lip[1], fx = F.foot[0] - lx, fz = F.foot[1] - lz;
+    for (var r = 0; r <= rows; r++) {
+      var v = r / rows, out = throwD * Math.sqrt(v) + (fx * n[0] + fz * n[1]) * v * v, y = F.y0 - drop * v, w = F.w * (1 + 0.35 * v);
+      for (var c = 0; c <= 1; c++) { var s = (c - 0.5) * w; add([lx + n[0] * out + tg[0] * s, y, lz + n[1] * out + tg[1] * s], [c, v], 0); }
+      if (r) { var a = pos.length / 3 - 4; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    }
+    /* the foam at its foot */
+    var cx = lx + n[0] * (throwD + (fx * n[0] + fz * n[1])), cz = lz + n[1] * (throwD + (fx * n[0] + fz * n[1])), R = F.w * 1.1, seg = 14, c0 = add([cx, F.y1 + 0.12, cz], [0.5, 0.5], 1);
+    for (var k = 0; k <= seg; k++) { var an = k / seg * Math.PI * 2; add([cx + Math.cos(an) * R, F.y1 + 0.12, cz + Math.sin(an) * R], [0.5 + Math.cos(an) * 0.5, 0.5 + Math.sin(an) * 0.5], 1); if (k) idx.push(c0, c0 + k, c0 + k + 1); }
+    F.foam = [cx, F.y1 + 0.3, cz];
+  });
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('foam', new THREE.Float32BufferAttribute(foam, 1));
+  g.setIndex(idx); g.computeBoundingSphere();
+  var M = new THREE.Mesh(g, VIEW.fallMat()); M.renderOrder = 3; M.userData = { kind: 'water', name: 'Ancestry waterfalls', probeSkip: true };
+  scene.add(M); VIEW.fallMeshes.push(M);
+};
+
 /* primitives to meshes: one InstancedMesh per shape, colour per instance (palette hexes are sRGB) */
 VIEW.primMeshes = function (prims, name) {
   var B = VOTH;
@@ -222,7 +277,7 @@ VIEW.primMeshes = function (prims, name) {
     cyl: new THREE.CylinderGeometry(1, 1, 1, 10).translate(0, 0.5, 0), stk: new THREE.CylinderGeometry(0.8, 1, 1, 6).translate(0, 0.5, 0), cone: new THREE.ConeGeometry(1, 1, 6).translate(0, 0.5, 0),
     dome: new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), blob: new THREE.SphereGeometry(1, 8, 5, 0, Math.PI * 2, 0, Math.PI * 0.5) });
   /* masonry wears the stone detail; foliage, timber, cloth and metal keep plain colour */
-  var PLAIN = { leaf: 1, trunk: 1, wood: 1, cloth: 1, metal: 1, fungus: 1 };
+  var PLAIN = { leaf: 1, trunk: 1, wood: 1, cloth: 1, metal: 1, fungus: 1, soil: 1 };
   var mats = VIEW.primMats || (VIEW.primMats = {
     stone: (function () { var m = new THREE.MeshStandardMaterial({ roughness: 0.88 }); VIEW.hook(m, 'stone', false); return m; })(),
     plain: new THREE.MeshStandardMaterial({ roughness: 0.9 }), metal: new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.6 })
@@ -247,27 +302,26 @@ VIEW.primMeshes = function (prims, name) {
    Voth's nine stand as records (SITE.vothCauseways, 10-site-model.js) until the site takes them over; a drawn one
    is a polyline. Each segment is built as Voth builds its causeways: a mole (reclaimedCauseway, at RLAND) or a
    bridge causeway (span, at CWAY over water, easing to the ground ashore, a pier pad under each inner corner).
-   An end inside a canton's square gets Voth's abutment up the canton's flank, in the canton's tone. */
+   An end at a canton is the canton plan's (CANT.planCauseways): a mole stops at the apron's edge, with a flight up
+   its end onto the apron; a bridge causeway lands on the level nearest its deck, at that level's edge. */
 VIEW.cantonAt = function (p) { return VOTH.CANTONS.filter(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 && Math.abs(p[1] - c.z) < c.r * 1.08; })[0] || null; };
 VIEW.causeways = function () {
   var B = VOTH; B.PRIMS.length = 0;
   (VIEW.causewayMeshes || []).forEach(function (M) { scene.remove(M); if (M.dispose) M.dispose(); });
-  SITE.causeways().forEach(function (l) {
+  /* the canton plan moves each canton end to its level's edge (a mole's to the apron, with a flight up its end) */
+  var list = CANT.relayCauseways(SITE.causeways()), W = CANT.walkOn && typeof KWALK !== 'undefined' ? KWALK : null;
+  list.forEach(function (l) {
     var h = 0; for (var i = 0; i < l.id.length; i++) h = (h * 31 + l.id.charCodeAt(i)) >>> 0;
     B.reseed(2468 + h % 100000);
-    var P = l.pts, w = l.width, ends = [VIEW.cantonAt(P[0]), VIEW.cantonAt(P[P.length - 1])], cn = ends[0] || ends[1];
-    var tone = cn && !cn.fortress ? cn.tone : B.TONES[0];
-    var deck = function (p) { var g = B.terrainH(p[0], p[1]); return VIEW.cantonAt(p) || g < B.SEA ? B.CWAY : Math.max(B.CWAY - 6, g + 2.5); };
-    ends.forEach(function (c, e) {
-      if (!c) return;
-      var p = e ? P[P.length - 1] : P[0], q = e ? P[P.length - 2] : P[1], ry = Math.atan2(q[0] - p[0], q[1] - p[1]);
-      if (l.kind === 'mole') B.FR8(p[0], B.RLAND - 3, p[1], w * 0.60, c.top - B.RLAND + 3, w * 0.84, ry, B.shade(c.tone, 0.02));
-      else B.FR8(p[0], B.CWAY - 2, p[1], w * 1.7, c.top - B.CWAY + 3, w * 2.4, ry, B.shade(c.tone, 0.02));
-    });
+    var P = l.pts, w = l.width, cn = l.ends[0] || l.ends[1], cm = cn && VOTH.CIDX[cn.canton];
+    var tone = cm && !cm.fortress ? cm.tone : B.TONES[0];
+    var deck = function (p, k) { var e = k === 0 ? l.ends[0] : k === P.length - 1 ? l.ends[1] : null; if (e) return e.y; var g = B.terrainH(p[0], p[1]); return VIEW.cantonAt(p) || g < B.SEA ? B.CWAY : Math.max(B.CWAY - 6, g + 2.5); };
     for (var k = 1; k < P.length; k++) {
       var a = P[k - 1], b = P[k];
-      if (l.kind === 'mole') { B.reclaimedCauseway(a[0], a[1], b[0], b[1], w, tone); continue; }
-      B.span(a[0], a[1], deck(a), b[0], b[1], deck(b), w, B.TONES[0], P.length > 2 ? 4 : 5, true);
+      if (l.kind === 'mole') { B.reclaimedCauseway(a[0], a[1], b[0], b[1], w, tone); CANT.walkCauseway(W, a, b, B.RLAND + 0.7, B.RLAND + 0.7, w * 0.9, l.name); continue; }
+      var ya = deck(a, k - 1), yb = deck(b, k);
+      B.span(a[0], a[1], ya, b[0], b[1], yb, w, B.TONES[0], P.length > 2 ? 4 : 5, true);
+      CANT.walkCauseway(W, a, b, ya + 0.2, yb + 0.2, w - 2, l.name);
       if (k < P.length - 1 && B.terrainH(b[0], b[1]) < B.CWAY - 2) {          /* a pier pad under an inner corner */
         var iy = Math.min(B.terrainH(b[0], b[1]), -1), ry2 = Math.atan2(b[0] - a[0], b[1] - a[1]);
         B.BOX(b[0], iy - 1, b[1], w * 2.6, B.CWAY - iy + 1, w * 2.6, ry2, B.shade(tone, -0.12));
@@ -275,8 +329,9 @@ VIEW.causeways = function () {
       }
     }
   });
+  CANT.drawFlights(B, ['mole']);
   VIEW.causewayMeshes = VIEW.primMeshes(B.PRIMS.slice(), 'Causeways');
-  VIEW.causewayCount = { causeways: SITE.causeways().length, prims: B.PRIMS.length };
+  VIEW.causewayCount = { causeways: list.length, prims: B.PRIMS.length, ends: CANT.ends.length };
 };
 
 /* ---------------------------------------------------------------- labels */

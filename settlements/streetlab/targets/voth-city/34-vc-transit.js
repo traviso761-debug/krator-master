@@ -151,10 +151,8 @@ VC.navGrid = function () {
   /* every pier deck, its own stop's too: a ferry berths at the tip, beside the deck, never across it */
   B.PIERS.forEach(function (P) { stamp([P.x0, P.z0], [P.x1, P.z1], (P.ferry ? 5.5 : P.w) / 2 + 6, function (k) { wet[k] = 0; }); });
   B.CPIERS.forEach(function (P) { stamp([P.x0, P.z0], [P.x1, P.z1], P.w / 2 + 6, function (k) { wet[k] = 0; }); });
-  B.SPANS.forEach(function (p) {
-    var A = B.CANTONS[p.a], Cc = B.CANTONS[p.b], L = Math.hypot(Cc.x - A.x, Cc.z - A.z), np = Math.max(1, Math.round((L - A.r * 0.94 - Cc.r * 0.94) / 135));
-    for (var m = 1; m <= np; m++) { var t = m / (np + 1), ax = A.x + (Cc.x - A.x) / L * A.r * 0.94, az = A.z + (Cc.z - A.z) / L * A.r * 0.94, bx = Cc.x - (Cc.x - A.x) / L * Cc.r * 0.94, bz = Cc.z - (Cc.z - A.z) / L * Cc.r * 0.94, sp = [ax + (bx - ax) * t, az + (bz - az) * t]; stamp(sp, sp, 22, function (k) { wet[k] = 0; }); }
-  });
+  /* the canton bridges' piers (20-site-cantons.js CANT.spans) */
+  CANT.spans.forEach(function (S) { S.piers.forEach(function (p) { stamp([p.x, p.z], [p.x, p.z], S.w * 0.95 + 6, function (k) { wet[k] = 0; }); }); });
   /* what stands out of the raster: country buildings; the station platforms; the wall (its gates are open) */
   PLAN.lots.forEach(function (L) { if (L.died == null && L.bo && L.country) { var rr = Math.max(L.bo.hw, L.bo.hd) + 3; stamp(L.bo.c, L.bo.c, rr, function (k) { block[k] = 1; }); } });
   (VC.platforms || []).forEach(function (o) { var C = obbCorners(o); for (var e = 0; e < 4; e++) stamp(C[e], C[(e + 1) % 4], 4, function (k) { block[k] = 1; }); stamp(o.c, o.c, Math.min(o.hw, o.hd), function (k) { block[k] = 1; }); });
@@ -170,10 +168,7 @@ VC.navGrid = function () {
      side of a river bridge's deck, and under every canton span, is closed to it. A river bridge is walked from its
      ends, along its deck (the host draws it at the deck's height, Voth's lifeBridgeY) */
   B.RBRIDGES.forEach(function (b) { stamp([b.ax, b.az], [b.bx, b.bz], b.w / 2 + TUNE.bridgeBand, function (k) { if (road[k] !== 2 && H[k] < 0.5) under[k] = 1; }); });
-  B.SPANS.forEach(function (p) {
-    var A = B.CANTONS[p.a], Cc = B.CANTONS[p.b], L = Math.hypot(Cc.x - A.x, Cc.z - A.z), ux = (Cc.x - A.x) / L, uz = (Cc.z - A.z) / L;
-    stamp([A.x + ux * A.r * 0.94, A.z + uz * A.r * 0.94], [Cc.x - ux * Cc.r * 0.94, Cc.z - uz * Cc.r * 0.94], TUNE.bridgeBand, function (k) { if (H[k] < 0.5) under[k] = 1; });
-  });
+  CANT.spans.forEach(function (S) { stamp([S.ax, S.az], [S.bx, S.bz], TUNE.bridgeBand, function (k) { if (H[k] < 0.5) under[k] = 1; }); });
   /* a stop's own berth: the few cells round a pier tip a boat must reach, never inside a canton or on land */
   var route = function (ferry) {
     return function (ax, az, bx, bz) {

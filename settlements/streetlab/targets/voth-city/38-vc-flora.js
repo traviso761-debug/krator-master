@@ -44,6 +44,8 @@ VC.floraMask = function () {
   (PLAN.voth || []).forEach(function (q) { if (q.x != null) G.eachNearSeg([q.x, q.z], [q.x, q.z], F.landmarkClear, zero); });
   (PLAN.lamps || []).forEach(function (l) { var k = G.idx(l.x, l.z); if (k >= 0) M[k] = 0; });
   (VC.furnPlaced || []).forEach(function (o) { G.eachInPoly(obbCorners(VC.grow(o, 1)), zero); });
+  (VC.parkWalks || []).forEach(function (w) { G.eachNearSeg(w.a, w.b, w.w / 2 + 0.5, zero); });
+  (VC.parkFlora || []).forEach(function (f) { if (f.tree) G.eachNearSeg([f.x, f.z], [f.x, f.z], 3, zero); });
   var open = 0, park = 0; for (var q = 0; q < N; q++) { if (M[q]) open++; if (M[q] && P[q]) park++; }
   return { G: G, M: M, P: P, open: open * G.c * G.c, park: park * G.c * G.c };
 };

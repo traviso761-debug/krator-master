@@ -59,13 +59,33 @@ river's banks and the delta are lush because `wet` and `flow` are both high ther
 SWBAY.build({R:2400, quality:1, bayHue:.5, fauna:true}) -> {trees, heroes, far, bySpecies, ..., under, fauna, tris}
 SWBAY.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette); takes shells (below)
 SWBAY.canopyH(x,z)               // approximate canopy top
-SWBAY.SPECIES                    // the 13 tree species (tagged), SWBAY.PAL the palettes
+SWBAY.SPECIES                    // the 14 tree species (13: the ash cherry) (tagged), SWBAY.PAL the palettes
 SWBAY.zones(x,z)                 // the zone weights a world can reuse for its own placement
 SWBAY.FAUNA.species              // the 8 animal kinds (tagged, + diet); SWBAY.FAUNA.herd where the herd started, .pods the swimmers' loops
 SWBAY.LOD                        // the runtime LOD ranges (below)
 ```
 
 Then `BIO.bake()` once. `quality` scales every count.
+
+**One plant where a world puts it** (between `SWBAY.build()` and `BIO.bake()`; the Voth city's Ancestry beds, chinampas
+and parks use them):
+
+```js
+SWBAY.treeAt(key, x, y, z, {seed, scale, H, wet, ground(x,z)}) -> tree | null   // a species by key ('cherry', 'dragon', ...), built as the pass builds one
+SWBAY.plantAt(kind, x, y, z, {seed, lv, ground(x,z)}) -> {plant, x, y0, z} | false  // one of SWBAY.plantKinds (fern, shrub, blooms, reed, ...)
+```
+
+Both draw from their own seed (a hash of x, z), never the pass's stream. Species 13 is the **ash cherry** (`cherry`): a
+few grow wild on the rain slope's open edge, in a pass of their own run last, so every tree before them is as it was.
+
+**A world's editor** (the Voth city's flora editor) has two optional hooks:
+* `SWBAY.veto(kind, key, x, z) -> bool`: `kind` is `'tree'` or `'plant'`. A vetoed pass tree keeps its place, index and seed in
+  `TREES` and the spatial hash, so every other tree stays as it was; it is marked `cut` and not built. A vetoed
+  `treeAt` returns null, and a vetoed `plantAt` returns false.
+* `SWBAY.onFlora(rec, 0|1)` is called before (0) and after (1) every tree's (pass or `treeAt`) and placed plant's writes, so a host can
+  note which instances and triangles of the store are whose.
+
+Neither hook changes anything when it is unset.
 
 **Runtime LOD** (the core's, as xanadu and swlowlands use it). The passes build under
 `BIO.range`, so bake splits every item and bucket into one mesh per 1200 m chunk and range,

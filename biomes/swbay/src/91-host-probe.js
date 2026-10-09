@@ -29,7 +29,7 @@ function nanSweep(){const bad=[];let badInst=0;
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // species that yield something edible the kit does not draw as a catalog fruit: named, not hidden. The umbrella
 // thorn's pods and the monkey-puzzle cones are not drawn (biomes/FRUIT.md); the tree fern's are fiddleheads.
-const FRUIT_NOT_DRAWN=['thorn','puzzle','treefern'];
+const FRUIT_NOT_DRAWN=['thorn','puzzle','treefern','cherry'];
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.

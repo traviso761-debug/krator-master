@@ -36,6 +36,11 @@ VENDOR = [
     os.path.join(VOTH, 'catalog', 'registry', 'voth-civic.js'),
     os.path.join(VOTH, 'catalog', 'registry', 'voth-military.js'),
 ]
+# the city page's interiors (40-vc-interiors.js) furnish from the catalog's parametric kit and these culture sets:
+# Voth's common, court, trade and training pieces and its interiors' own (krator-master-furniture-voth.js), then the
+# chain kits/interiors falls back along (Iziz, generic) and the generic goods (containers, food, supplies)
+CITY_VENDOR = VENDOR + [os.path.join(CAT, f) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
+                                                     'krator-master-furniture-generic-goods.js', 'krator-master-furniture-iziz.js', 'krator-master-furniture-voth.js')]
 
 
 def read(p):
@@ -80,10 +85,10 @@ SIM_JS = ['../../core/simulation/' + f for f in ('77-sim-0-core.js', '77-sim-1-w
 # tuning and steps 0-5, the site model and ground (targets/voth-site), core/simulation
 CITY = '../../core/city/'
 CITY_JS = [CITY + '10-city-core.js', 'targets/voth-city/15-vc-tune.js', CITY + '20-city-plan.js', CITY + '31-city-steps-b.js', CITY + '32-city-steps-c.js',
-           'targets/voth-site/10-site-model.js', 'targets/voth-city/30-vc-site.js', 'targets/voth-city/31-vc-voth.js',
+           'targets/voth-site/10-site-model.js', 'targets/voth-site/20-site-cantons.js', 'targets/voth-city/30-vc-site.js', 'targets/voth-city/31-vc-voth.js', 'targets/voth-city/31b-vc-chinampa.js',
            'targets/voth-city/32-vc-city.js', 'targets/voth-city/33-vc-country.js'] + SIM_JS + ['targets/voth-city/34-vc-transit.js',
-           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
-           CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/98-start.js']
+           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
+           CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/56-vc-interiors-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/59-vc-flora-edit.js', 'targets/voth-city/98-start.js']
 NL = '\n'
 
 
@@ -177,7 +182,7 @@ def voth_city_fragment():
     body += 'function buildIslets(){' + NL + isl + '}' + NL
     chin = read(os.path.join(VOTH_SRC, '55-chinampa.js'))
     body += ('/* ---- settlements/voth/src/55-chinampa.js, whole, run on demand ---- */' + NL + 'function runChinampas(){' + NL + chin + NL +
-             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS };' + NL + '}' + NL)
+             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, units: finalUnits };' + NL + '}' + NL)
     # the edited ground: every Voth builder reads terrainH by name, so it reads the site's edits too
     body += NL.join(['var __rawTerrainH = terrainH, __groundEdit = null;',
                      'terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };',
@@ -252,6 +257,15 @@ def voth_sky_fragment():
             '/* ---- settlements/voth/src/21-sky.js ---- */' + NL + k0 + NL + tail + '} };' + NL)
 
 
+def interiors_fragment():
+    """kits/interiors for the cantons' rooms: its engine-neutral core (ROOM, furnishRoom, the programs) as
+    kit_bundle.bundle([]) gives it (no sets), and its catalog adapter (adapters/catalog-adapter.js: list, dims, anchorY over
+    the page's FURNS), read from the kit's folder"""
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import kit_bundle
+    return kit_bundle.bundle([]) + kit_bundle.safe(read(os.path.join(ROOT, 'kits', 'interiors', 'adapters', 'catalog-adapter.js'))) + NL
+
+
 def voth_pathviz_fragment():
     """Voth's path visualizer (87-pathviz.js, its 'Paths' devtool), lifted live: the register / build / show machinery,
     the auto-discovery, the mesh and its button (#pathvizToggle, #pathvizSel in the head), with its two colour lists
@@ -284,6 +298,16 @@ SWBAY_TEMPLE_H = 40
 # its binding, presets, the glow layer, particles, weather with its ash modes, the export and its Weather select, the
 # skylight), read from their folders: the day and night of 55-vc-host.js (VC.dayNight) run on them
 CORE_TIME = ['core/clock/20-core-clock.js'] + ['core/atmos/89-atmos-%s.js' % f for f in ('0-core', '0p-presets', '2-lights', '3-particles', '4-weather', '8-export', '9-host', 'b-skylight')]
+
+
+# where things stand and what they are, from core (core/rand KRAND, core/tags KTAGS, core/walk KWALK), read from their
+# folders: the cantons' bridges, causeways and stairs (targets/voth-site/20-site-cantons.js) are seeded by KRAND,
+# registered in KTAGS and walked through KWALK
+CORE_PLACE = ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
+
+
+def core_place_fragment():
+    return ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(ROOT, *f.split('/'))), NL) for f in CORE_PLACE)
 
 
 def core_time_fragment():
@@ -359,11 +383,11 @@ def main():
     if os.path.isfile(port) and '--no-checks' not in sys.argv:
         if subprocess.call([sys.executable, port, '--quiet', HERE]) != 0:
             sys.exit('build.py: the port lint failed (tools/check_port.py)')
-    page('voth-site.html', os.path.join(HERE, 'targets', 'voth-site'), SITE_VENDOR, [voth_fragment(), site_fragment(), tex_fragment(('stone', 'ground', 'rock', 'sand'), ('map',))], True)
+    page('voth-site.html', os.path.join(HERE, 'targets', 'voth-site'), SITE_VENDOR, [voth_fragment(), core_place_fragment(), site_fragment(), tex_fragment(('stone', 'ground', 'rock', 'sand'), ('map',))], True)
     city = os.path.join(HERE, 'targets', 'voth-city')
     if os.path.isdir(city):
-        import foreign
-        page('voth-city.html', city, VENDOR, [voth_city_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(),
+        import foreign, ringsea
+        page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(),
              tex_fragment(('stone', 'ground', 'rock', 'sand', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'), ('map',),
                           ('road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'))], True, CITY_JS)
 
