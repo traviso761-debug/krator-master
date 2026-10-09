@@ -396,7 +396,9 @@ VC.ui = function () {
   $('ly-inspect').onclick = function () { on = !on; this.classList.toggle('on', on); tip.style.display = on ? 'block' : 'none'; };
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if (e.key === 'i') $('ly-inspect').onclick(); if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
+    if (e.key === 'i') $('ly-inspect').onclick();
+    if (VC.INTD && VC.INTD.cut && VC.INTD.cut.on) return;   /* [ and ] step the cutaway's storeys then (56-vc-interiors-host.js) */
+    if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
   });
   window.addEventListener('mousemove', function (e) {
     if (!on || e.target !== renderer.domElement) return;
@@ -422,7 +424,48 @@ VC.pickLot = function (r) {
   });
   return best;
 };
+/* the furniture under a ray (owner, 2026-10-09: "make it so furniture is also clickable for inspector"): the pieces of a
+   shown interior (their InstancedMeshes, storeys the cutaway hides left out) and the outdoor pieces (benches, stalls,
+   lanterns: the districts' furniture records, as boxes of the catalog's sizes), the nearest along the ray */
+VC.pickFurn = function (r) {
+  var best = null, rc = new THREE.Raycaster(); rc.ray.copy(r);
+  Object.keys((VC.INTD && VC.INTD.groups) || {}).forEach(function (cn) {
+    var g = VC.INTD.groups[cn]; if (!g.visible) return;
+    g.children.forEach(function (m) {
+      if (!m.visible || !m.userData.items) return;
+      var hit = rc.intersectObject(m, false)[0]; if (!hit || (best && hit.distance >= best.d)) return;
+      var p = m.userData.items[hit.instanceId]; if (!p) return;
+      var room = (VC.INT.cantons[cn].rooms || []).filter(function (q) { return q.id === p.room; })[0];
+      best = { d: hit.distance, key: p.key, v: p.variant || 0, where: cn + ' canton, ' + (room ? room.kind : 'room') + ', storey ' + (m.userData.storey + 1) };
+    });
+  });
+  var o = r.origin, dir = r.direction, inv = new THREE.Vector3();
+  (PLAN.districts || []).forEach(function (D) {
+    if (D.born > HOST.step) return;
+    (D.art || []).forEach(function (a) {
+      if (!a.furn || Math.hypot(a.x - o.x, a.z - o.z) > 900) return;
+      var dm = VC.furnDims(a.key, a.v || 0); if (!dm) return;
+      /* the ray in the piece's frame (turned by -ry about its foot), against its box */
+      var c = Math.cos(-a.ry || 0), s = Math.sin(-a.ry || 0), ox = o.x - a.x, oz = o.z - a.z;
+      var lo = [ox * c + oz * s, o.y - a.y, -ox * s + oz * c], ld = [dir.x * c + dir.z * s, dir.y, -dir.x * s + dir.z * c];
+      var mn = [-dm.w / 2, 0, -dm.d / 2], mx = [dm.w / 2, dm.h, dm.d / 2], t0 = 0, t1 = Infinity;
+      for (var k = 0; k < 3; k++) {
+        if (Math.abs(ld[k]) < 1e-9) { if (lo[k] < mn[k] || lo[k] > mx[k]) return; continue; }
+        var ta = (mn[k] - lo[k]) / ld[k], tb = (mx[k] - lo[k]) / ld[k]; if (ta > tb) { var tt = ta; ta = tb; tb = tt; }
+        t0 = Math.max(t0, ta); t1 = Math.min(t1, tb); if (t0 > t1) return;
+      }
+      if (!best || t0 < best.d) best = { d: t0, key: a.key, v: a.v || 0, where: D.name || D.kind };
+    });
+  });
+  return best;
+};
 VC.describe = function (r) {
+  var Fp = VC.pickFurn(r), gh = VIEW.pick(r);
+  if (Fp && (!gh || Fp.d <= Math.hypot(gh[0] - r.origin.x, gh[1] - r.origin.z) / Math.max(0.05, Math.hypot(r.direction.x, r.direction.z)) + 1)) {
+    var FA = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[Fp.key]) || {};
+    return '<b>' + (FA.name || Fp.key) + '</b> <span class="k">' + Fp.key + ' v' + Fp.v + '</span><br>' + [FA.type, FA.culture, FA.tier, FA.setting].filter(Boolean).join(' &middot; ') +
+      (FA.w ? ' <span class="k">' + FA.w + ' &times; ' + FA.d + ' &times; ' + FA.h + ' m</span>' : '') + '<br>' + Fp.where;
+  }
   var L = VC.pickLot(r);
   if (L) {
     var A = ASSET_BY_KEY[L.key] || {}, w = PLAN.ways[L.way];

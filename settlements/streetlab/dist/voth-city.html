@@ -46086,7 +46086,10 @@ var TUNE = {
                },
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
-               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05 },
+               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
+                  point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
+               lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
@@ -49573,7 +49576,7 @@ VC.buildMonastery = function (d) {
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
     /* dormitories round the chapel (owner: more of them) */
     var dw = fx * 0.20 * 1.5, dd = fz * 0.17 * 2.0, roof = B.shade(B.GREYC[1], -0.05);
-    for (var k = 0; k < M.dorms; k++) if (!counts.compound) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
+    for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
@@ -53622,7 +53625,9 @@ VC.ui = function () {
   $('ly-inspect').onclick = function () { on = !on; this.classList.toggle('on', on); tip.style.display = on ? 'block' : 'none'; };
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if (e.key === 'i') $('ly-inspect').onclick(); if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
+    if (e.key === 'i') $('ly-inspect').onclick();
+    if (VC.INTD && VC.INTD.cut && VC.INTD.cut.on) return;   /* [ and ] step the cutaway's storeys then (56-vc-interiors-host.js) */
+    if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
   });
   window.addEventListener('mousemove', function (e) {
     if (!on || e.target !== renderer.domElement) return;
@@ -53648,7 +53653,48 @@ VC.pickLot = function (r) {
   });
   return best;
 };
+/* the furniture under a ray (owner, 2026-10-09: "make it so furniture is also clickable for inspector"): the pieces of a
+   shown interior (their InstancedMeshes, storeys the cutaway hides left out) and the outdoor pieces (benches, stalls,
+   lanterns: the districts' furniture records, as boxes of the catalog's sizes), the nearest along the ray */
+VC.pickFurn = function (r) {
+  var best = null, rc = new THREE.Raycaster(); rc.ray.copy(r);
+  Object.keys((VC.INTD && VC.INTD.groups) || {}).forEach(function (cn) {
+    var g = VC.INTD.groups[cn]; if (!g.visible) return;
+    g.children.forEach(function (m) {
+      if (!m.visible || !m.userData.items) return;
+      var hit = rc.intersectObject(m, false)[0]; if (!hit || (best && hit.distance >= best.d)) return;
+      var p = m.userData.items[hit.instanceId]; if (!p) return;
+      var room = (VC.INT.cantons[cn].rooms || []).filter(function (q) { return q.id === p.room; })[0];
+      best = { d: hit.distance, key: p.key, v: p.variant || 0, where: cn + ' canton, ' + (room ? room.kind : 'room') + ', storey ' + (m.userData.storey + 1) };
+    });
+  });
+  var o = r.origin, dir = r.direction, inv = new THREE.Vector3();
+  (PLAN.districts || []).forEach(function (D) {
+    if (D.born > HOST.step) return;
+    (D.art || []).forEach(function (a) {
+      if (!a.furn || Math.hypot(a.x - o.x, a.z - o.z) > 900) return;
+      var dm = VC.furnDims(a.key, a.v || 0); if (!dm) return;
+      /* the ray in the piece's frame (turned by -ry about its foot), against its box */
+      var c = Math.cos(-a.ry || 0), s = Math.sin(-a.ry || 0), ox = o.x - a.x, oz = o.z - a.z;
+      var lo = [ox * c + oz * s, o.y - a.y, -ox * s + oz * c], ld = [dir.x * c + dir.z * s, dir.y, -dir.x * s + dir.z * c];
+      var mn = [-dm.w / 2, 0, -dm.d / 2], mx = [dm.w / 2, dm.h, dm.d / 2], t0 = 0, t1 = Infinity;
+      for (var k = 0; k < 3; k++) {
+        if (Math.abs(ld[k]) < 1e-9) { if (lo[k] < mn[k] || lo[k] > mx[k]) return; continue; }
+        var ta = (mn[k] - lo[k]) / ld[k], tb = (mx[k] - lo[k]) / ld[k]; if (ta > tb) { var tt = ta; ta = tb; tb = tt; }
+        t0 = Math.max(t0, ta); t1 = Math.min(t1, tb); if (t0 > t1) return;
+      }
+      if (!best || t0 < best.d) best = { d: t0, key: a.key, v: a.v || 0, where: D.name || D.kind };
+    });
+  });
+  return best;
+};
 VC.describe = function (r) {
+  var Fp = VC.pickFurn(r), gh = VIEW.pick(r);
+  if (Fp && (!gh || Fp.d <= Math.hypot(gh[0] - r.origin.x, gh[1] - r.origin.z) / Math.max(0.05, Math.hypot(r.direction.x, r.direction.z)) + 1)) {
+    var FA = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[Fp.key]) || {};
+    return '<b>' + (FA.name || Fp.key) + '</b> <span class="k">' + Fp.key + ' v' + Fp.v + '</span><br>' + [FA.type, FA.culture, FA.tier, FA.setting].filter(Boolean).join(' &middot; ') +
+      (FA.w ? ' <span class="k">' + FA.w + ' &times; ' + FA.d + ' &times; ' + FA.h + ' m</span>' : '') + '<br>' + Fp.where;
+  }
   var L = VC.pickLot(r);
   if (L) {
     var A = ASSET_BY_KEY[L.key] || {}, w = PLAN.ways[L.way];
@@ -53965,6 +54011,24 @@ VC.drawInterior = function (cn) {
     IM.castShadow = true; IM.receiveShadow = true; IM.userData = { kind: 'interior', canton: cn, storey: +si, probeSkip: true };
     g.add(IM); g.userData.storeys[si] = [IM];
   });
+  /* the lamps (owner, 2026-10-09: "add interior lighting to cantons"): a warm fitting under every room's ceiling and
+     down the halls and tunnels, drawn per storey (the cutaway hides them with their storey); the light itself is the
+     pool's (VC.intLightPool): the few lamps nearest the camera, on storeys that are showing, light the rooms round them */
+  var LT = TUNE.interiors.lamps, lamps = [];
+  P.rooms.forEach(function (r) { lamps.push({ x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y + (r.h || 4) - LT.drop, s: r.storey }); });
+  P.halls.concat(P.tunnels || []).forEach(function (o) {
+    var si = o.storey == null ? 0 : o.storey, lx = o.x1 - o.x0, lz = o.z1 - o.z0, L = Math.max(lx, lz), k = Math.max(1, Math.round(L / LT.hallEvery));
+    for (var i = 0; i < k; i++) { var t = (i + 0.5) / k; lamps.push({ x: lx >= lz ? o.x0 + lx * t : (o.x0 + o.x1) / 2, z: lx >= lz ? (o.z0 + o.z1) / 2 : o.z0 + lz * t, y: o.y + (o.h || 4) - LT.drop, s: si }); }
+  });
+  var lampBy = {}; lamps.forEach(function (l) { (lampBy[l.s] = lampBy[l.s] || []).push(l); });
+  var lgeo = new THREE.BoxGeometry(0.7, 0.3, 0.7), lmat = VC.INTD.lampMat || (VC.INTD.lampMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(LT.color) }));
+  Object.keys(lampBy).forEach(function (si) {
+    var Ls = lampBy[si], IM = new THREE.InstancedMesh(lgeo, lmat, Ls.length);
+    Ls.forEach(function (l, i) { m4.makeTranslation(l.x, l.y, l.z); IM.setMatrixAt(i, m4); });
+    IM.userData = { kind: 'interior lamps', canton: cn, storey: +si, probeSkip: true };
+    g.add(IM); (g.userData.storeys[si] = g.userData.storeys[si] || []).push(IM);
+  });
+  g.userData.lamps = lamps;
   /* the furniture: kits/interiors' placements, one InstancedMesh per piece (key and variant) and part */
   var F = VC.intFurnish(cn), protos = {};
   F.placements.forEach(function (p) {
@@ -53992,7 +54056,7 @@ VC.drawInterior = function (cn) {
       Pr.parts.forEach(function (part) {
         var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
         items.forEach(function (p, i) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(i, m4); });
-        IM.castShadow = false; IM.receiveShadow = true; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true };
+        IM.castShadow = false; IM.receiveShadow = true; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true, items: items };   /* items[instanceId]: the inspector's piece */
         g.add(IM); (g.userData.storeys[si] = g.userData.storeys[si] || []).push(IM);
       });
       nFurn += items.length;
@@ -54007,6 +54071,28 @@ VC.showInterior = function (cn, on, upTo) {
   var g = on ? VC.drawInterior(cn) : VC.INTD.groups[cn]; if (!g) return;
   g.visible = !!on;
   if (on) Object.keys(g.userData.storeys).forEach(function (si) { g.userData.storeys[si].forEach(function (m) { m.visible = upTo == null || +si <= upTo; }); });
+};
+
+/* the interiors' light pool: TUNE.interiors.lamps.pool point lights, made once at the start (so every material compiles
+   with them once), moved each few frames onto the lamps nearest the camera among the interiors and storeys showing;
+   dark when no interior shows */
+VC.intLightPool = function () {
+  var LT = TUNE.interiors.lamps, pool = [];
+  for (var i = 0; i < LT.pool; i++) { var L = new THREE.PointLight(new THREE.Color(LT.color), 0, LT.range, 2); L.castShadow = false; scene.add(L); pool.push(L); }
+  VC.INTD.pool = pool;
+  var tick = 0, cam = new THREE.Vector3();
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    if (tick++ % 3) return;
+    var cand = [];
+    camera.getWorldPosition(cam);
+    Object.keys(VC.INTD.groups).forEach(function (cn) {
+      var g = VC.INTD.groups[cn]; if (!g.visible || !g.userData.lamps) return;
+      var showing = {}; Object.keys(g.userData.storeys).forEach(function (si) { showing[si] = g.userData.storeys[si][0].visible; });
+      g.userData.lamps.forEach(function (l) { if (!showing[l.s]) return; var d = (l.x - cam.x) * (l.x - cam.x) + (l.y - cam.y) * (l.y - cam.y) + (l.z - cam.z) * (l.z - cam.z); if (d < LT.reach * LT.reach) cand.push([d, l, g.position.y]); });
+    });
+    cand.sort(function (a, b) { return a[0] - b[0]; });
+    pool.forEach(function (L, i) { var c = cand[i]; if (!c) { L.intensity = 0; return; } L.position.set(c[1].x, c[1].y + c[2] - 0.4, c[1].z); L.intensity = LT.intensity; });
+  });
 };
 
 /* ---------------------------------------------------------------- the cutaway */
@@ -54067,6 +54153,7 @@ VC.cutPick = function () {
 };
 VC.cutUI = function () {
   var b = $('ly-cut'); if (!b) return;
+  VC.intLightPool();
   b.onclick = function () { if (VC.INTD.cut.on) VC.cutOff(); else { var cn = VC.cutPick(); if (cn) VC.cutTo(cn, 0); } b.classList.toggle('on', VC.INTD.cut.on); };
   window.addEventListener('keydown', function (e) {
     if (VC.typing(e) || e.ctrlKey || e.metaKey) return;

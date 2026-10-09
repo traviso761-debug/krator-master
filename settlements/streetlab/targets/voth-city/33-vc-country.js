@@ -137,7 +137,7 @@ VC.buildMonastery = function (d) {
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
     /* dormitories round the chapel (owner: more of them) */
     var dw = fx * 0.20 * 1.5, dd = fz * 0.17 * 2.0, roof = B.shade(B.GREYC[1], -0.05);
-    for (var k = 0; k < M.dorms; k++) if (!counts.compound) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
+    for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
