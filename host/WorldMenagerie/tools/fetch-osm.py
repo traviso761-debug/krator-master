@@ -73,6 +73,14 @@ def main():
     cfg = json.load(open(os.path.join(ROOT, "data", "cities", city + ".json")))["fetch"]
     RAW = os.path.join(RAW_ROOT, city)
     os.makedirs(RAW, exist_ok=True)
+    # --region NAME: a city that grows fetches each new area on its own (fetch.regions: {name: {bbox, tiles}}), into
+    # files of its own (buildings-NAME-0-0.json ...), beside what it already has; the build reads them all
+    region = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--region=")), None)
+    tag = ""
+    if region:
+        rc = cfg["regions"][region]
+        cfg = {**cfg, "bbox": rc["bbox"], "tiles": rc.get("tiles", cfg.get("tiles", {}))}
+        tag = region + "-"
     s, w, n, e = cfg["bbox"]
     tiles = {**DEFAULT_TILES, **{k: tuple(v) for k, v in cfg.get("tiles", {}).items()}}
     for name, q in QUERIES.items():
@@ -80,13 +88,30 @@ def main():
         for i in range(rows):
             for j in range(cols):
                 b = (s + (n - s) * i / rows, w + (e - w) * j / cols, s + (n - s) * (i + 1) / rows, w + (e - w) * (j + 1) / cols)
-                dest = os.path.join(RAW, f"{name}-{i}-{j}.json")
+                dest = os.path.join(RAW, f"{name}-{tag}{i}-{j}.json")
                 if os.path.exists(dest) and not refresh:
                     print(f"{name} {i},{j}: cached")
                     continue
                 size = fetch(q.replace("{b}", ",".join(f"{v:.5f}" for v in b)), dest)
                 print(f"{name} {i},{j}: {size / 1e6:.1f} MB", flush=True)
                 time.sleep(8)   # be polite to the public server
+    # a city may want ways the general road query leaves out (fetch.extraRoads: Overpass clauses with {b}, e.g. the
+    # named service roads, which is how Rome's Via dei Fori Imperiali is mapped); one query over the whole box, into
+    # roads-extra.json, which the build reads with the other roads files
+    # and fetch.extraLand likewise, into land-extra.json (Tokyo's woods are landuse=forest, which the land query leaves out)
+    # fetch.extraFiles: {name: Overpass clauses} - anything else a city wants, into <name>-extra.json (Tokyo's footbridges
+    # and its convenience stores), for the build to read by that name
+    extras = [(k, n) for k, n in (("extraRoads", "roads"), ("extraLand", "land"))] + [(n, n) for n in cfg.get("extraFiles", {})]
+    for key, name in extras:
+        clause = cfg.get(key) if key in ("extraRoads", "extraLand") else cfg["extraFiles"][key]
+        if not clause:
+            continue
+        dest = os.path.join(RAW, name + "-extra" + ("-" + region if region else "") + ".json")
+        if os.path.exists(dest) and not refresh:
+            print(f"{name} extra: cached")
+        else:
+            size = fetch("(" + clause.replace("{b}", ",".join(f"{v:.5f}" for v in (s, w, n, e))) + ");out geom;", dest)
+            print(f"{name} extra: {size / 1e6:.1f} MB", flush=True)
 
 
 if __name__ == "__main__":
