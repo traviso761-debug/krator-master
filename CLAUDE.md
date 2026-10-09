@@ -8,6 +8,54 @@ Read `README.md` first: it holds the design rules for every build (tagging,
 modularity, the inspector and polygon tools, the standard skybox). `INDEX.md`
 says which build holds what.
 
+## Working rules while the refactor is paused (2026-10-09)
+
+Three evaluations of the repo produced a roadmap; its work is on the branch `full-refactor` (`ROADMAP.md` there,
+and the owner's "Krator Roadmap" doc). It is paused, not abandoned: it will be merged into `main` later. Until
+then, every session on `main` follows these rules, so the merge stays cheap and the bugs it found are not repeated.
+
+**Do not collide with the refactor.**
+- Do not add repo-wide tooling (a test runner, CI workflows, a shared verify harness, LFS rules) or edit
+  `.gitattributes`: `full-refactor` has `tools/test_all.py`, `tools/harness.py`, `tools/check_encoding.py`,
+  `.github/workflows/` and LFS rules for built pages. Ask the owner if you need one of them now.
+- Do not rewrite a verify.py's "Harness helpers" block; `full-refactor` replaced it with an import.
+- Leave these to the refactor unless the owner asks: `kits/catalog/krator-furniture-runtime.js`'s `Batch.absorb`
+  (keeping indices; branch `wip/furniture-indexed`), `core/biome/40-core-place.js`'s `clearOf`/`scatter`/`standAt`
+  (a spatial index; branch `wip/biome-spatial-index`), `core/terrain/` (the terrain field `KFIELD`; branch
+  `refactor/terrain-field`), and Voth's placement mask (on `core/mask` in `full-refactor`).
+
+**Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
+their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
+`kits/catalog/` or a kit other builds vendor, rebuild every build that takes it and commit those pages too. The
+Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
+are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
+`dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
+on purpose and checked.
+
+**Write code that is the same on every machine and in Godot.**
+- Every text-mode `open()` in a build.py names `encoding='utf-8'` (and `newline='\n'` when writing).
+- A path written into a page or a manifest uses `/`, never `os.sep` (`os.path.relpath(...).replace(os.sep, '/')`):
+  Verge's page differed between Windows and Linux builds because of this.
+- New placement draws from `core/rand` (`KRAND`): a tile or cell is seeded from a hash of (world, cell, index,
+  salt), never from how many draws came before it, and never from a `Math.sin` hash.
+- Placement never reads canvas pixels (`getImageData`): use `core/mask` (`KMASK.canvas`). GPU and CPU canvases
+  disagree.
+- A numeric default is `x == null ? d : x`, not `x || d` (0 is a real seed, scale and renderOrder).
+- Everything placed is registered in `core/tags` before it is drawn; a builder draws a record, it does not decide
+  where things go.
+- Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
+  `core/` module, or ask before writing a new one. `GODOT-PLAN.md` section 6 has the full list.
+
+**Known bugs not to build on.** `BIO.iridBarkMat` is defined by five biome kits (two unguarded): never load two of
+them in one page until it is a core material kind. The catalog furniture batch unrolls indexed geometry (1.5 to 6
+times the vertices); do not write new code that depends on that triangle soup. Packed normal maps from
+`tools/textures/pack.py` are lossy (4:2:0, about 11 degrees of error); `full-refactor` packs them lossless, so do
+not tune a material against the current normals.
+
+**Godot is 4.7.2** (the owner's version). Every Godot test passes on it; the Dhelv navigation test (branch
+`claude/zeijani`) fails on 4.5. Run `godot --headless --path godot --import` once in a fresh checkout before a
+`--script` test, so the class names register.
+
 ## Layout
 
 | Path | What |
