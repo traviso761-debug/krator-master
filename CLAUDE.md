@@ -45,6 +45,9 @@ on purpose and checked.
   where things go.
 - Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
   `core/` module, or ask before writing a new one. `GODOT-PLAN.md` section 6 has the full list.
+- A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
+  not a new bespoke pass. Do not write another spatial hash or occupancy grid: `core/city`'s, little-demo's flora
+  buckets and the biome core's planned index are to become one shared module (the refactor's roadmap, section 8).
 
 **Known bugs not to build on.** `BIO.iridBarkMat` is defined by five biome kits (two unguarded): never load two of
 them in one page until it is a core material kind. The catalog furniture batch unrolls indexed geometry (1.5 to 6
