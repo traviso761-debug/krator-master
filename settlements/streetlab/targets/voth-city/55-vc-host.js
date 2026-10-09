@@ -461,7 +461,7 @@ VC.pickFurn = function (r) {
 };
 VC.describe = function (r) {
   var Fp = VC.pickFurn(r), gh = VIEW.pick(r);
-  if (Fp && (!gh || Fp.d <= Math.hypot(gh[0] - r.origin.x, gh[1] - r.origin.z) / Math.max(0.05, Math.hypot(r.direction.x, r.direction.z)) + 1)) {
+  if (Fp && (!gh || Fp.d <= Math.hypot(gh[0] - r.origin.x, VIEW.surf(gh[0], gh[1]) - r.origin.y, gh[1] - r.origin.z) + 1)) {   /* nearer than the ground under the cursor */
     var FA = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[Fp.key]) || {};
     return '<b>' + (FA.name || Fp.key) + '</b> <span class="k">' + Fp.key + ' v' + Fp.v + '</span><br>' + [FA.type, FA.culture, FA.tier, FA.setting].filter(Boolean).join(' &middot; ') +
       (FA.w ? ' <span class="k">' + FA.w + ' &times; ' + FA.d + ' &times; ' + FA.h + ' m</span>' : '') + '<br>' + Fp.where;
