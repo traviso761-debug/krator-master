@@ -49787,7 +49787,7 @@ VC.routeToRoad = function (p, reach, opt) {
   var cost = function (k, i, j) {
     var h = H[k]; if (h < 0.9) return Infinity;
     var q = at(k); if (!opt.city && VC.inCity(q, 10)) return Infinity;
-    if (!opt.overFields && VC.fieldHit(obb(q, [1, 0], c / 2, c / 2))) return Infinity;   /* round the fields, never through them (owner, 2026-10-09) */
+    if (!opt.overFields && (VC.fieldHit(obb(q, [1, 0], c / 2, c / 2)) || VC.anyHit(obb(q, [1, 0], c / 2, c / 2), VC.big || [], 2))) return Infinity;   /* nor through the big plots (farmsteads, mushroom farms) */   /* round the fields, never through them (owner, 2026-10-09) */
     var gx = (H[j * n + Math.min(n - 1, i + 1)] - H[j * n + Math.max(0, i - 1)]) / (2 * c), gz = (H[Math.min(n - 1, j + 1) * n + i] - H[Math.max(0, j - 1) * n + i]) / (2 * c);
     return 1 + 60 * (gx * gx + gz * gz);
   };
@@ -50027,12 +50027,12 @@ VC.orchards = function (rs) {
 };
 
 /* no field under a road (owner, 2026-10-09: farms "cut thru" by the streets): once the country is laid, a field any
-   way runs across (a lane, a track, a highway laid after it) is taken up, sampled every 8 m over its footprint */
+   way runs across (a lane, a track, a highway laid after it) is taken up, sampled every 4 m over its footprint */
 VC.fieldsOffWays = function () {
   VC.roadHash(); var gone = 0;
   PLAN.fields = PLAN.fields.filter(function (F) {
     var o = F.bo, hit = false;
-    for (var a = -o.hw; a <= o.hw + 0.1 && !hit; a += Math.min(8, o.hw)) for (var b = -o.hd; b <= o.hd + 0.1 && !hit; b += Math.min(8, o.hd)) {
+    for (var a = -o.hw; a <= o.hw + 0.1 && !hit; a += Math.min(4, o.hw)) for (var b = -o.hd; b <= o.hd + 0.1 && !hit; b += Math.min(4, o.hd)) {
       var p = V.add(o.c, V.add(V.mul(o.u, a), V.mul(o.v, b))), r = VC.roadNear(p, 0.5); if (r) hit = true;
     }
     if (hit) gone++; return !hit;
