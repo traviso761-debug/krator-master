@@ -41,8 +41,8 @@
    "sha256": "a984cb7ac2f8c885d51f1ae1c94812d8cf4b5dc9b0bdcf5b475f60f94fa38a5c"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 270393,
-   "sha256": "469b2085a1d291c2e23f13fd300e1fc8e62eccf8257943fb36c9e2fc28f729c0"
+   "bytes": 4565488,
+   "sha256": "5308530a816a8a0f42e86022f3fae254344c088d587089c29bef0260b28c7070"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
    "bytes": 285925,
@@ -225,16 +225,16 @@
    "sha256": "d9c57f310bd9e4efc51480b3cd5b673d9c7d81644cac7aeaca8759a5ff41227b"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1590607,
-   "sha256": "547f21b7ebf0c50229bddb8fe939cc3efba02350f5b7fdeb38e01a55fcde73f1"
+   "bytes": 1595990,
+   "sha256": "18c6ee0d8baa2cc508a9b81e8c37d6b1cf815417b6f69a0eb529a7a00ffbf99f"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 501757,
    "sha256": "4d1327bf4a95a81616c0c9adf2bb7d5ecd67554f71289cab88cc3ecfcbfafd4e"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9448845,
-   "sha256": "1f3c7e1ae403da4710373a88900a4bf85777c8ea575174e9b2ac15d75aca1a2e"
+   "bytes": 9454228,
+   "sha256": "0c8f92c04b9c1817ca48bc33b6e34cbf2355ce386762d73afafee26bbb5ab68f"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 242516,
@@ -489,12 +489,12 @@
    "sha256": "9cfb3170668e89b9ec7fb09d4ced999316b3f3aff46decd624b0aca534c122bd"
   },
   "settlements/streetlab/dist/voth-city.html": {
-   "bytes": 7156206,
-   "sha256": "3000447aee27f261f4676741b8e0329d886b83b59f59487c4c228504f58aa5ad"
+   "bytes": 7986770,
+   "sha256": "e4439f554470b5c0fc34031209583e92faabd737b62773095ac0d814c397ca0e"
   },
   "settlements/streetlab/dist/voth-site.html": {
-   "bytes": 3487238,
-   "sha256": "70b79a66f2c13be90092a192626b7a7d413d73a0e60fe45c409ad23bae5c216b"
+   "bytes": 3585357,
+   "sha256": "46561c791819283b441370d6ace06412e291cf1eb525f64a42bface8b645c450"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 2887450,
