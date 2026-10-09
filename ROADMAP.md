@@ -323,6 +323,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 13. **M7** (stage 6).
 14. **`core/city` onto the substrate** (section 8): KRAND, `core/mask`, `core/tags`, `KFIELD`, one spatial index;
     then the cities' placement passes ported onto it, Iziz first; its `city` export section with item 7.
+15. **`core/city` in Godot** (section 8): its GDScript twin with golden tests, edits as an id-keyed overlay, rules as
+    shared functions; the base for the NPC and quest tool and, later, the player's settlement builder.
 
 ## 7. Decisions and open questions
 
@@ -366,13 +368,26 @@ Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant b
   four cities already on `core/mask` (Iziz, Dalab, Erewhon, Roketstad), then Ys's placement pass, each proven with
   a placement hash and a screenshot pair.
 - **`core/export` gets a `city` section** (ways, lots, greens and their steps), so Godot receives a city as records
-  and baked meshes. Godot does not regenerate cities, so `core/city` needs no GDScript twin.
+  and baked meshes.
 - **Stage 5 starts from the transport routes.** Voth's ferries, elephant bugs and ships used random departures
   that Godot could not reproduce; `SIM.transportBake` and `SIM.vehiclePose` make them timetables, which is the
   Phase 5 rule. Verge's own `SIM` moves onto the core with them.
-- **Owner's decision: one Voth.** The old page (`settlements/voth`, now on `core/mask`) and the new city plan
-  (Streetlab on `core/city`) both build. Say which is canonical, and when the old one retires; until then a fix to
-  Voth's shared layout reaches both.
+- **Decided (owner, 2026-10-09): the new Voth is canonical.** Streetlab's city plan on `core/city` is Voth from
+  now on. The old page (`settlements/voth`) stays up as the source things are ported from (its life layer,
+  collision, props); it gets no new features, and it retires when nothing is left to port.
+- **Where `core/city` is going (owner, 2026-10-09).** A modified city builder is to become a dev tool for placing
+  NPCs and building quests, and a further modified version the player's settlement-builder mode. That changes
+  three calls:
+  1. **It needs a GDScript port.** Godot will run the steps at play time, so `core/city`'s data side gets a twin
+     with golden tests like `core/rand` and `core/mask`, not only an export. Its integer per-step streams already
+     make that feasible.
+  2. **Edits are an overlay, not a rerun.** The README's furniture rule applies to cities: records keyed by stable
+     id, the owner's (and later the player's) changes kept as deltas by id, a step re-runnable on one region without
+     moving the rest. Cell-seeded `KRAND` is what makes "rerun one block" leave its neighbours alone.
+  3. **Rules are data the tools share.** Overlap, frontage, reach and slope tests stay plain functions on records and
+     the occupancy grid, so the preview editor, the NPC and quest tool and the player's mode all ask the same
+     question. NPC posts and quest anchors are `core/tags` records on lots and places, which is what
+     `core/simulation`'s places already are.
 - **Minor debts:** two `x || number` defaults in `core/city/10-city-core.js` (`span`, `hw`); `core/city` has no node
   test yet (rule 6.9); `PORT-INDEX.md` needs a rerun of `tools/audit_port.py` to count Streetlab.
 
