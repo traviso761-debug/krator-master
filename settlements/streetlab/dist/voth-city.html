@@ -48275,7 +48275,7 @@ VC.marketPitch = function (D, x, y, z, ry, ground) {
 /* ---------------------------------------------------------------- step 2: districts */
 SL.pass2 = function () {
   var R = SL.R, rs = SL.stream(2);
-  PLAN.districts = []; VC.MOOR = [];
+  PLAN.districts = []; VC.MOOR = []; VC.FH = null;   /* the country's fields come at step 13 */
   PLAN.site.forEach(function (d) {
     var D = { kind: d.role, name: d.name, poly: d.poly, born: 2, art: [] };
     if (d.role === 'park' || d.role === 'plaza') R.stampPoly(d.poly, OCC.GREEN, -1);
@@ -49610,6 +49610,7 @@ VC.clashWide = function (o) {
 };
 VC.FH = null;
 VC.fieldHit = function (o) {
+  if (!VC.FH) return false;                     /* before the country (step 4's roads): no fields yet */
   var gx = Math.floor(o.c[0] / 80), gz = Math.floor(o.c[1] / 80);
   for (var x = gx - 2; x <= gx + 2; x++) for (var z = gz - 2; z <= gz + 2; z++) { var L = VC.FH.get(x + ',' + z); if (!L) continue; for (var i = 0; i < L.length; i++) if (SL.pen(o, L[i].bo) > 0) return true; }
   return false;

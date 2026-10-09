@@ -222,7 +222,7 @@ VC.marketPitch = function (D, x, y, z, ry, ground) {
 /* ---------------------------------------------------------------- step 2: districts */
 SL.pass2 = function () {
   var R = SL.R, rs = SL.stream(2);
-  PLAN.districts = []; VC.MOOR = [];
+  PLAN.districts = []; VC.MOOR = []; VC.FH = null;   /* the country's fields come at step 13 */
   PLAN.site.forEach(function (d) {
     var D = { kind: d.role, name: d.name, poly: d.poly, born: 2, art: [] };
     if (d.role === 'park' || d.role === 'plaza') R.stampPoly(d.poly, OCC.GREEN, -1);

@@ -392,6 +392,7 @@ VC.clashWide = function (o) {
 };
 VC.FH = null;
 VC.fieldHit = function (o) {
+  if (!VC.FH) return false;                     /* before the country (step 4's roads): no fields yet */
   var gx = Math.floor(o.c[0] / 80), gz = Math.floor(o.c[1] / 80);
   for (var x = gx - 2; x <= gx + 2; x++) for (var z = gz - 2; z <= gz + 2; z++) { var L = VC.FH.get(x + ',' + z); if (!L) continue; for (var i = 0; i < L.length; i++) if (SL.pen(o, L[i].bo) > 0) return true; }
   return false;
