@@ -9,7 +9,7 @@ knows where its vessel is placed.
 `build()` opens with `reseed(N)` (checked by `build.py`) and returns `{group, anims, deckY}`.
 `L/B/H` are length, beam (incl. oars/outriggers) and air draught; `verify.py` checks them against the built box.
 
-Seeds: 71000 + 100·n per vessel (71000 trireme … 73000 lighter); 79001 is the far shore. Next free: 73100 (73000 is the salvage lighter).
+Seeds: 71000 + 100·n per vessel (71000 trireme … 73700 Voth dhow); 79001 is the far shore. Next free: 73800 (73700 is the Voth fishing dhow).
 
 ## Building blocks (all write into a bucket `B = rsBucket()`, baked once by `rsBake(B, group)`)
 - Materials by key: `wood paint metal rope cloth thatch tile hex chitin glow foam ancient bronze rust`, all vertex-coloured; `rsDefMat` adds one.

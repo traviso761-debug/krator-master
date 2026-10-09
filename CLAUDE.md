@@ -62,7 +62,7 @@ not tune a material against the current normals.
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
-| `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
+| `kits/ringsea/` | the Ring Sea watercraft kit: 28 vessels, one fragment each |
 | `kits/catalog/` | master catalog: asset engine, 1674 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/ancients-interiors/` | the Ancients' ship interiors (backported from Noah's Regret) on `kits/interiors`: the ship's room kinds, ship's rooms and cabins, fourteen hall recipes in two dresses, each audited; bundled as `KratorAncientsInteriors` (`kit_bundle.bundle()`). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
@@ -74,6 +74,7 @@ not tune a material against the current normals.
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
+| `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/streetlab`) is on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
@@ -151,6 +152,8 @@ A fix to one settlement or biome republishes only that build's files. A wider ch
   and rebuild every build that lists them.
 - `core/furnish/` is one shared copy too: after changing it, run `node core/furnish/test-furnish.js`, rebuild the five
   builds that take it, and `python3 core/furnish/fingerprint.py` (every page must read `same`).
+- `core/city/` is one shared copy too: a build lists its fragments by path (`settlements/streetlab/build.py` `CITY_JS`).
+  After changing it, rebuild and verify every build that takes it (today only Streetlab: `verify.py dist/voth-city.html --assert`).
 - `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
   Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and

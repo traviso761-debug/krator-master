@@ -1975,6 +1975,248 @@ function buildRsIzizLighter(){reseed(73000);
 RS_VESSEL({key:'izizLighter',name:'Iziz Salvage Lighter',culture:'iziz-vernacular',L:34,B:13,H:20,
  tags:{type:['cargo','lighter','salvage'],propulsion:['sail','poles'],hull:'monohull',wealth:'common',crew:10,role:'hauls Ancient panels and pipe to the Iziz yards'},
  blurb:'A flat orange lighter with a well of white Ancient panels and pipe, an A-frame derrick at the bow and a sun-marked lug sail.',build:buildRsIzizLighter});
+// ---------------------------------------------------------------- vessel: Voth Merchant Junk
+// The merchant junk of the Voth bay (settlements/voth/src/78c-life-ships.js, the life layer's own ships: 34 m x 11 m at
+// its 1.18 scale, so 40 m x 13 m): a dark tarred hull (0x2c2116, the owner's ask), a raked bow and a flat transom, a
+// poop cabin, two masts (the fore raked forward, the main raked aft) under lavender battened sails (0xa494c9, the
+// battens 0x4d4058), a deck of cargo and five hands.
+function rsVothLavender(g,W,H,P){rsCloth(g,W,H,'#a494c9',9,'h');g.save();rsPolyPath(g,P);g.clip();for(let i=0;i<9;i++){g.fillStyle=`rgba(40,28,60,${.05+.04*(i%2)})`;g.fillRect(0,H*i/9,W,H/9);}
+ g.strokeStyle='#4d4058';g.lineWidth=W*.022;rsPolyPath(g,P);g.stroke();g.restore();}
+function buildRsVothJunk(){reseed(73100);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x2c2116),DARK=lin(0x1a130c),DECK=lin(0x5a4632),WALL=lin(0x3a2a1c),BATT=0x2a2030,RED=lin(0x5a1e16);
+ const H=rsHull({L:40,B:13,fb:3.4,dr:2.8,sheerF:2.2,sheerA:3.6,sp:2.2,pb:1.7,pa:2.4,q:.5,n:4.2,flare:.12,rakeF:3.4,rakeA:.8,transom:.6,keelEnd:1,kp:4});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.93?RED:h>.82?HULL:h<.42?DARK:HULL);rsFoam(B,H,1.3);
+ const dY=rsDeck(B,H,{bw:.9,col:DECK});rsWale(B,H,.88,.14,'wood',DARK);rsWale(B,H,.66,.12,'wood',DARK);rsSpine(B,H,.28,DARK);
+ for(const a of rsAlong(H,.12,.95,30,1))rsLink(B,'wood',a.p,[a.p[0],a.p[1]+.8,a.p[2]],.05,DARK,5);
+ for(const s of[-1,1]){const pts=[];for(let i=0;i<=24;i++){const p=H.pt(lerp(.12,.95,i/24),s,1);pts.push([p[0],p[1]+.8,p[2]]);}rsTube(B,'wood',pts,.07,WALL,48,5);}
+ // the poop cabin over the transom, and its stern lanterns
+ const pc=H.xAt(.12,1)+4.2,top=rsCabin(B,{x:pc,y:dY(.12),w:8,d:8.4,h:2.6,wall:WALL,win:5,winCol:0xe8a040,roof:'hip',roofMk:'tile',roofCol:lin(0x4a1c12),rh:1.2,over:.45,flare:.3});
+ for(const s of[-1,1])rsSphere(B,'glow',.32,[H.xAt(0,1)+.6,H.ys(0)+1.4,s*3],[1,1.3,1],0xff8a3a,10,8);
+ // two masts: the fore raked forward (0.10), the main raked aft (-0.07), as Voth rakes them; battened lavender sails
+ [[8,15.3,.10,5.0],[-2.4,21.2,-.07,top-dY(H.uAt(-2.4))+1.0]].forEach(([mx,mh,lean,foot],i)=>{
+  const base=dY(H.uAt(mx)),tp=[mx+Math.sin(lean)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.5,0],tp,.28,0x241810,8,.18);
+  rsRig(B,[[mx,base-.5,0],tp]);const sh=mh-foot-1,w=Math.min(sh*.74,i?15:11);
+  const S=rsSail(B,{key:'voth-junk-'+i,O:[mx+.4,base+foot,-.5],U:[-1,0,-.18],V:[Math.sin(lean),1,0],belly:.9,scallop:6,
+   A:t=>[-w*.12,t*sh],Bf:t=>[w*(.74+.2*Math.sin(t*Math.PI*.9)),t*sh*.95+sh*.03],draw:rsVothLavender});
+  for(let k=0;k<=6;k++){const pts=[];for(let j=0;j<=8;j++)pts.push(S.at(k/6,j/8));rsTube(B,'wood',pts,.055,BATT,16,5);}
+  rsRope(B,tp,[H.xAt(1,1)+.4,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],3.4,.8,[lin(0x4b2a6e),lin(0xd8cdb4)]);});rsRigEnd(B);
+ // the rudder, the windlass, deck cargo and the hands
+ {const p=H.pt(0,0,.2);rsBox(B,'wood',[2.6,3.6,.36],[p[0]-1.2,p[1]-.3,0],null,DARK);}
+ rsCyl(B,'wood',.42,.42,2.6,[15.5,dY(.89)+.6,0],[Math.PI/2,0,0],0x3a2418,10);
+ for(let i=0;i<10;i++){const x=rr(1,6),z=rr(-3.4,3.4),y=dY(H.uAt(x))+.5;if(i%3)rsBox(B,'wood',[1,1,1],[x,y,z],[0,rr(0,1),0],WALL);else rsCyl(B,'wood',.45,.45,1,[x,y,z],null,lin(0x6a4a30),10);}
+ for(const [x,z] of[[-12,2.6],[-6,-3],[4,3.4],[11,-2],[15,1.5]])rsFigure(B,[x,x<-9?top:dY(H.uAt(x)),z],rr(0,TAU),lin(0x6a5a48),false,0x8a8aa0);
+ rsBake(B,V.group,'vothJunk');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothJunk',name:'Voth Merchant Junk',culture:'voth',L:46,B:16,H:30,
+ tags:{type:['cargo','merchant','junk'],propulsion:['sail'],hull:'monohull',wealth:'middle',crew:12,role:'bay and coastal trader'},
+ blurb:'The Voth bay junk: a dark tarred hull, a poop cabin, two raked masts under lavender battened sails, a deck of cargo.',build:buildRsVothJunk});
+// ---------------------------------------------------------------- vessel: Hykkousoi Sea Galleon
+// The second of the Voth life layer's ship kinds was a galleon (settlements/voth/src/78c-life-ships.js, lifeGalleonHull:
+// 58 m x 14 m, two masts). Its European silhouette never fitted the Voth (the owner: it "doesn't fit dark elves"), so in
+// the kit it is a Hykkousoi ship (owner, 2026-10-09): a 58 m deep-sea galleon in the Hykkousoi colours, timber banded in
+// blue and gold, a gilded beakhead and figurehead, a three-tier aftcastle with gallery windows, round gun ports in two
+// rows, square courses and topsails on the fore and main in cream edged blue, the main course bearing the Hykkousoi ring,
+// a lateen on the mizzen.
+function rsHykGalleonSail(ring){return function(g,W,H,P){rsCloth(g,W,H,'#ece6d6',8,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.05;rsPolyPath(g,P);g.stroke();
+ g.strokeStyle='#d8a640';g.lineWidth=W*.012;rsPolyPath(g,rsInset(P,W*.05));g.stroke();
+ if(ring){const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.22;g.fillStyle='#3f86a6';for(let i=0;i<16;i++){const a=i/16*TAU;g.beginPath();g.arc(cx+Math.cos(a)*R,cy+Math.sin(a)*R,R*.08,0,TAU);g.fill();}
+  g.fillStyle='#d8a640';g.beginPath();g.arc(cx,cy,R*.42,0,TAU);g.fill();g.fillStyle='#34495a';g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();}g.restore();};}
+function buildRsHykGalleon(){reseed(73200);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
+ const BLUE=0x3f86a6,GOLD=0xd8a640,WOOD=0x7a5030,DARK=0x3a2a1e,SLATE=0x34495a,DECK=0x9a7a54;
+ const H=rsHull({L:58,B:14,fb:4.4,dr:3.4,sheerF:3.2,sheerA:5.6,sp:2.2,pb:1.9,pa:2.4,q:.5,n:3.6,flare:.1,rakeF:3.6,rakeA:.8,transom:.62,keelEnd:1.2,kp:4});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.93?BLUE:h>.9?GOLD:h>.62&&h<.66?BLUE:h<.38?0x3a3a30:WOOD);rsFoam(B,H,1.5);
+ const dY=rsDeck(B,H,{bw:.95,col:DECK});for(const hF of[.88,.76,.58])rsWale(B,H,hF,.15,'wood',DARK);rsSpine(B,H,.32,DARK);
+ // round gun ports, two rows a side, gilded rims
+ for(const s of[-1,1])for(const hF of[.7,.52])for(let i=0;i<12;i++){const u=.24+i*.052;rsDecal(B,H,u,s,hF,.42,GOLD,'metal',12,.06);rsDecal(B,H,u,s,hF,.32,0x120c08,'paint',12,.09);}
+ // rails: gold posts, a blue rail
+ for(const a of rsAlong(H,.12,.94,46,1))rsLink(B,'paint',a.p,[a.p[0],a.p[1]+.9,a.p[2]],.06,GOLD,5);
+ for(const s of[-1,1]){const pts=[];for(let i=0;i<=30;i++){const p=H.pt(lerp(.12,.94,i/30),s,1);pts.push([p[0],p[1]+.9,p[2]]);}rsTube(B,'paint',pts,.08,BLUE,60,6);}
+ // the beakhead: a gilded spur under the bowsprit, a scroll figurehead at its tip
+ {const p=H.pt(1,0,.75);rsBox(B,'wood',[5,.6,2.2],[p[0]+2.2,p[1],0],[0,0,.12],WOOD);rsBox(B,'metal',[5.2,.18,2.4],[p[0]+2.2,p[1]+.38,0],[0,0,.12],GOLD);
+  rsScroll(B,[p[0]+4.8,p[1]+.6,0],.9,1.6,.18,GOLD,1,'metal');}
+ // the forecastle
+ const fc=rsCabin(B,{x:H.xAt(.87,1)-3,y:dY(.87),w:7,d:9,h:2.4,wall:WOOD,win:4,winCol:0x1a1410,roof:'flat',roofMk:'paint',roofCol:BLUE,over:.3});
+ for(const s of[-1,1])rsBox(B,'metal',[7.4,.16,.14],[H.xAt(.87,1)-3,fc+.5,s*4.6],null,GOLD);
+ // the aftcastle: three tiers stepping up, gallery windows lit, blue roofs and gilded rails; stern lanterns
+ const uS=.11;let top=dY(uS);[[13,12,2.8],[9,9.6,2.5],[5.4,7,2.3]].forEach(([w,d,h],i)=>{const x=H.xAt(uS,1)+w/2-1.4+i*.6;
+  rsCabin(B,{x,y:top,w,d,h,wall:WOOD,win:Math.round(w/1.3),winCol:0xe8c070,roof:'flat',roofMk:'paint',roofCol:BLUE,over:.4});top+=h+.2;
+  for(const s of[-1,1])rsBox(B,'metal',[w+.6,.16,.14],[x,top+.4,s*(d/2+.3)],null,GOLD);});
+ const castleTop=top+1.2;
+ {const p=H.pt(0,0,.85);for(let i=0;i<5;i++)rsBox(B,'paint',[.08,1.6,1],[p[0]-.2,p[1]-.2,(i-2)*1.7],null,0xe8c070);rsBox(B,'metal',[.12,.2,9],[p[0]-.2,p[1]+1.5,0],null,GOLD);}
+ for(const s of[-1,0,1])rsSphere(B,'glow',.4,[H.xAt(0,1)-.3,castleTop+.4,s*2.8],[1,1.3,1],0xffc060,10,8);
+ // the bowsprit
+ const bs0=[H.xAt(1,1)-1,H.ys(1)+.8,0],bs1=[H.xAt(1,1)+12,H.ys(1)+5,0];rsLink(B,'wood',bs0,bs1,.26,DARK,8,.14);
+ // fore and main: square course and topsail, braced a little round; the main course bears the ring
+ const square=(mx,mh,courseW,key)=>{const base=dY(H.uAt(mx)),tp=[mx,base+mh,0];rsLink(B,'wood',[mx,base-.5,0],tp,.4,DARK,10,.22);
+  rsCyl(B,'wood',1,.9,1.2,[mx,base+mh*.6,0],null,DARK,12);rsRig(B,[mx,0]);const a=1.25,U=[Math.sin(a),0,Math.cos(a)];
+  const foot=Math.max(fc,castleTop)-base+1.4,yard=mh*.6-.6;
+  const S=rsSail(B,{key:key+'-course',O:[mx+.6,base+foot,0],U,V:[0,1,0],belly:-1.8,A:t=>[(t-.5)*courseW,yard-foot],Bf:t=>[(t-.5)*courseW*.94,0],draw:rsHykGalleonSail(key==='hyk-galleon-main')});
+  rsSailEdge(B,S,1,.2,DARK);rsSailEdge(B,S,0,.12,DARK);
+  const T=rsSail(B,{key:key+'-top',O:[mx+.6,base+yard+1.4,0],U,V:[0,1,0],belly:-1,A:t=>[(t-.5)*courseW*.7,mh-yard-2.6],Bf:t=>[(t-.5)*courseW*.86,0],draw:rsHykGalleonSail(false)});
+  rsSailEdge(B,T,1,.14,DARK);rsSailEdge(B,T,0,.12,DARK);
+  for(const s of[-1,1]){rsRope(B,S.at(s<0?0:1,0),[mx-4,dY(H.uAt(mx-4))+.5,s*6.4]);rsRope(B,tp,[mx-2,H.ys(H.uAt(mx-2)),s*6.8]);}
+  rsPennant(B,[mx,base+mh+.3,0],5.5,1,[BLUE,GOLD]);rsRigEnd(B);return tp;};
+ const foreTop=square(16,30,16,'hyk-galleon-fore');const mainTop=square(-1,37,19,'hyk-galleon-main');
+ rsRope(B,foreTop,bs1);rsRope(B,mainTop,foreTop);
+ // the mizzen: a lateen on a mast raked aft, clear of the main
+ {const mx=-17,base=castleTop,rk=-.08,mh=16,tp=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,dY(H.uAt(mx))-.3,0],tp,.26,DARK,8,.16);
+  rsRig(B,[[mx,base,0],tp]);const S=rsSail(B,{key:'hyk-galleon-mizzen',O:[0,base,.45],U:[1,0,0],V:[0,1,0],belly:1,nu:20,nv:10,
+   A:t=>[lerp(mx+2,mx-3,t),lerp(1.4,mh+2,t)+Math.sin(Math.PI*t)*.8],Bf:t=>[lerp(mx-7,mx-3,t)+Math.sin(Math.PI*t)*.6,lerp(1,mh+2,t)],draw:rsHykGalleonSail(false)});
+  rsSailEdge(B,S,0,.12,DARK);rsPennant(B,[tp[0],tp[1]+.3,0],3.4,.8,[BLUE,GOLD]);rsRigEnd(B);}
+ // the rudder, the capstan, the crew
+ {const p=H.pt(0,0,.2);rsBox(B,'wood',[3,4.6,.4],[p[0]-1.4,p[1]-.4,0],null,DARK);}
+ rsCyl(B,'wood',.9,.9,1.2,[5,dY(H.uAt(5))+.6,0],null,DARK,12);
+ for(const [x,z] of[[-23,3],[-20,-3],[-8,3.6],[2,-3.6],[8,3.4],[16,-2.6],[22,2],[-12,-3.4],[11,0],[-2,3.8]])rsFigure(B,[x,x<-18?top:dY(H.uAt(x)),z],rr(0,TAU),[BLUE,0xece6d6,SLATE][Math.floor(rng()*3)],false,0xb08a6a);
+ rsBake(B,V.group,'hykGalleon');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'hykGalleon',name:'Hykkousoi Sea Galleon',culture:'hykkousoi',L:78,B:24,H:48,
+ tags:{type:['warship','cargo','galleon'],propulsion:['sail'],hull:'monohull',wealth:'wealthy',crew:140,role:'deep-sea trader and escort'},
+ blurb:'A 58 m Hykkousoi galleon banded blue and gold: a gilded beakhead, a three-tier aftcastle with lit gallery windows, two rows of round ports, square courses and topsails edged blue, the main bearing the Hykkousoi ring, a lateen mizzen.',build:buildRsHykGalleon});
+// ---------------------------------------------------------------- vessel: Voth Bay Ferry
+// The canton ferry of the Voth bay (settlements/voth/src/78d-life-ferries-barges.js, ferry() in 65b-town-props.js:
+// 16 m x 6 m): a beamy open boat with a passenger cabin aft where the cargo used to go, a single mast with a square
+// cream sail, a ferryman at the tiller and passengers on the benches.
+function rsVothFerrySail(g,W,H,P){rsCloth(g,W,H,'#e8dcbc',6,'v');g.save();rsPolyPath(g,P);g.clip();g.fillStyle='#4b2a6e';g.fillRect(0,H*.78,W,H*.08);g.restore();}
+function buildRsVothFerry(){reseed(73300);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x6b5942),DARK=lin(0x3a2c1e),DECK=lin(0x8a7458),CAB=lin(0xd8cdb4),ROOF=lin(0x4b2a6e);
+ const H=rsHull({L:16,B:6,fb:1.6,dr:1,sheerF:.9,sheerA:.6,sp:2,pb:1.6,pa:2,q:.5,n:3.4,flare:.1,rakeF:1.2,rakeA:.4,transom:.55,keelEnd:.4,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?DARK:h<.4?DARK:HULL);rsFoam(B,H,.7);
+ const dY=rsDeck(B,H,{bw:.6,col:DECK});rsWale(B,H,.86,.08,'wood',DARK);rsSpine(B,H,.14,DARK);
+ // the passenger cabin aft, under a purple canopy roof
+ const cx=-3.4;rsCabin(B,{x:cx,y:dY(H.uAt(cx)),w:4.4,d:3.6,h:2,wall:CAB,win:3,winCol:0x2a2016,roof:'gable',roofMk:'cloth',roofCol:ROOF,rh:.7,over:.3});
+ // benches forward
+ for(const x of[.6,2.6])rsBox(B,'wood',[.5,.45,4.2],[x,dY(H.uAt(x))+.25,0],null,DARK);
+ // the mast and its square sail
+ const mx=2.9,base=dY(H.uAt(mx)),mh=7,tp=[mx,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],tp,.14,DARK,6,.1);
+ rsRig(B,[mx,0]);const w=3.4,foot=1.4;
+ const S=rsSail(B,{key:'voth-ferry',O:[mx+.15,base+foot,0],U:[0,0,1],V:[0,1,0],belly:-.5,A:t=>[(t-.5)*w,mh-foot-.6],Bf:t=>[(t-.5)*w*.94,0],draw:rsVothFerrySail});
+ rsSailEdge(B,S,1,.06,DARK);rsSailEdge(B,S,0,.05,DARK);rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1)+1,H.ys(0),0]);rsRigEnd(B);
+ // the tiller and the people: the ferryman aft, passengers on the benches
+ {const p=H.pt(0,0,.3);rsBox(B,'wood',[1,1.6,.16],[p[0]-.4,p[1]-.2,0],null,DARK);rsLink(B,'wood',[p[0]+.2,H.ys(0)+.3,0],[p[0]+1.6,H.ys(0)+.6,0],.05,DARK);}
+ rsFigure(B,[H.xAt(0,1)+1.8,dY(.08),.4],Math.PI,lin(0x4b2a6e),false,0x8a8aa0);
+ for(const [x,z] of[[.6,-1.2],[.6,1.1],[2.6,-.6],[2.6,1.4]])rsFigure(B,[x,dY(H.uAt(x))+.45,z],rr(0,TAU),[lin(0x6a5a48),lin(0x8a6a3a),lin(0x3a4a5a)][Math.floor(rng()*3)],true,0x8a8aa0);
+ rsBake(B,V.group,'vothFerry');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothFerry',name:'Voth Bay Ferry',culture:'voth',L:18,B:7,H:10,
+ tags:{type:['ferry','passenger'],propulsion:['sail'],hull:'monohull',wealth:'middle',crew:1,role:'canton ferry of the bay'},
+ blurb:'The Voth canton ferry: a beamy open boat with a passenger cabin aft under a purple canopy, one square cream sail.',build:buildRsVothFerry});
+// ---------------------------------------------------------------- vessel: Voth Water Taxi
+// The bay's water taxi (settlements/voth/src/78d-life-ferries-barges.js, lifeTaxiHull: 20 m x 3 m): a long slim
+// open boat with a high curved prow, a long striped awning on six posts over the passengers, a life ring at the bow,
+// a boatman standing at the stern with a sweep.
+function buildRsVothTaxi(){reseed(73400);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x8a7a68),BAND=lin(0x4b2a6e),DARK=lin(0x3a2c1e),POST=lin(0x6b5942),AWN=lin(0xe8dcbc),AWN2=lin(0x6a4a8f);
+ const H=rsHull({L:20,B:3,fb:1.1,dr:.6,sheerF:2.2,sheerA:.9,sp:3,pb:1.6,pa:1.6,q:.55,n:3,flare:.1,rakeF:1.6,rakeA:.6,keelEnd:.3,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?BAND:h<.35?DARK:HULL);rsFoam(B,H,.5);
+ const dY=rsDeck(B,H,{bw:.3,col:lin(0x9a8468)});rsSpine(B,H,.1,DARK);
+ // the high curved prow: a stem rising and curling forward off the bow
+ {const p=H.pt(1,0,1);const pts=[];for(let i=0;i<=10;i++){const t=i/10;pts.push([p[0]+Math.sin(t*1.6)*1.4,p[1]+t*1.8,0]);}rsTube(B,'wood',pts,.16,BAND,20,6);}
+ // the awning on six posts, a purple stripe down its middle and purple valances
+ const xs=[-8,-2.5,3],aY=dY(.5)+2.6;for(const x of xs)for(const s of[-1,1])rsLink(B,'wood',[x,dY(H.uAt(x)),s*1.2],[x,aY,s*1.2],.06,POST,5);
+ rsBox(B,'cloth',[13,.1,3.4],[-2.5,aY+.05,0],null,AWN);rsBox(B,'cloth',[13,.11,.9],[-2.5,aY+.06,0],null,AWN2);
+ for(const s of[-1,1])rsBox(B,'cloth',[13,.5,.06],[-2.5,aY-.2,s*1.7],null,AWN2);rsSolid(B,[-9,aY-.4,-1.75],[4,aY+.2,1.75]);
+ // benches, the life ring, the boatman with his sweep, passengers
+ for(const x of[-6,-3,0,2.4])rsBox(B,'wood',[.4,.35,2.2],[x,dY(H.uAt(x))+.18,0],null,DARK);
+ {const r=H.pt(.92,0,1);rsPut(B,'paint',new THREE.TorusGeometry(.42,.1,6,14),[r[0]-.6,r[1]+.5,0],[0,Math.PI/2,0],null,0xe8e0d0);}
+ const sx=H.xAt(.05,1)+1;rsFigure(B,[sx,dY(.05),0],Math.PI,BAND,false,0x8a8aa0);rsLink(B,'wood',[sx-.2,dY(.05)+1.3,.2],[sx-3,H.ys(0)-1.4,.7],.05,POST,5);
+ for(const [x,z] of[[-6,-.5],[-3,.5],[0,-.5],[2.4,.5]])rsFigure(B,[x,dY(H.uAt(x))+.35,z],rr(0,TAU),[lin(0x6a5a48),lin(0x8a6a3a),lin(0x3a4a5a)][Math.floor(rng()*3)],true,0x8a8aa0);
+ rsBake(B,V.group,'vothTaxi');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothTaxi',name:'Voth Water Taxi',culture:'voth',L:22,B:4,H:5,
+ tags:{type:['taxi','passenger'],propulsion:['sweep'],hull:'monohull',wealth:'middle',crew:1,role:'water taxi of the bay'},
+ blurb:'A long slim Voth water taxi: a high curved prow, a long striped awning on six posts, a boatman at the sweep.',build:buildRsVothTaxi});
+// ---------------------------------------------------------------- vessel: Voth River Barge
+// The river barge of the Voth river trade (settlements/voth/src/78d-life-ferries-barges.js, lifeRBargeHull: 50 m x
+// 14 m): a flat, boxy, shallow hull; a deckhouse aft and a smaller forecastle house; stacked cargo between; a short
+// derrick mast; sweeps at the stern; bargemen.
+function buildRsVothBarge(){reseed(73500);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x4a3a28),DARK=lin(0x2a2016),DECK=lin(0x6a5a44),WALL=lin(0x7a6448),ROOF=lin(0x3a2a1c);
+ const H=rsHull({L:50,B:14,fb:2.6,dr:1.6,sheerF:.8,sheerA:.6,sp:2.6,pb:3,pa:3,q:.25,n:6,flare:.04,rakeF:3,rakeA:2.2,keelEnd:.8,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?DARK:h<.4?DARK:HULL);rsFoam(B,H,1.4);
+ const dY=rsDeck(B,H,{bw:.7,col:DECK});rsWale(B,H,.86,.14,'wood',DARK);rsWale(B,H,.6,.12,'wood',DARK);rsSpine(B,H,.24,DARK);
+ // the deckhouse aft (Voth's: 0.75 of the beam, 0.19 of the length, 3.5 high) and the forecastle house
+ const ax=-18,top=rsCabin(B,{x:ax,y:dY(H.uAt(ax)),w:9.5,d:10.5,h:3.5,wall:WALL,win:5,winCol:0x2a2016,roof:'gable',roofMk:'wood',roofCol:ROOF,rh:1.4,over:.4});
+ rsCabin(B,{x:20,y:dY(H.uAt(20)),w:7,d:9,h:2.6,wall:WALL,win:3,winCol:0x2a2016,roof:'flat',roofMk:'wood',roofCol:ROOF,over:.3});
+ // the cargo: crates, barrels, sacks and canvas-covered stacks
+ for(let i=0;i<34;i++){const x=rr(-11,14),z=rr(-5,5),y=dY(H.uAt(x));const k=i%4;
+  if(k===0)rsBox(B,'wood',[2.4,1.8,2.4],[x,y+.9,z],[0,rr(-.2,.2),0],lin(0x7a6a4e));else if(k===1)rsCyl(B,'wood',.6,.6,1.3,[x,y+.65,z],null,lin(0x6a4a30),10);
+  else if(k===2)rsSphere(B,'cloth',.55,[x,y+.35,z],[1.2,.6,.8],0xc8b890,8,6);else rsBox(B,'cloth',[3,1.6,2.6],[x,y+.8,z],null,lin(0x9a8a6a));}
+ // the derrick mast and its boom, a Voth pennant
+ const mx=-4,base=dY(H.uAt(mx));rsLink(B,'wood',[mx,base-.3,0],[mx,base+8,0],.22,DARK,8,.15);rsLink(B,'wood',[mx,base+1.2,0],[mx+7,base+4.5,3],.12,DARK,6);rsRope(B,[mx,base+8,0],[mx+7,base+4.5,3],.03);
+ rsPennant(B,[mx,base+8.2,0],2.6,.6,[lin(0x4b2a6e),lin(0xd8cdb4)]);
+ // the stern sweeps and the bargemen
+ for(const s of[-1,1]){const p=H.pt(.03,s,1);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*.8],[p[0]-6,-.4,p[2]*1.3],.1,DARK,6);}
+ for(const [x,z] of[[ax-4,2],[ax+5,-4],[2,5],[10,-4.6],[20,3]])rsFigure(B,[x,x===ax-4?top:dY(H.uAt(x)),z],rr(0,TAU),lin(0x6a5a48),false,0x8a8aa0);
+ rsBake(B,V.group,'vothBarge');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothBarge',name:'Voth River Barge',culture:'voth',L:58,B:17,H:13,
+ tags:{type:['cargo','barge','river'],propulsion:['sweep','pole'],hull:'flat',wealth:'poor',crew:8,role:'river freight'},
+ blurb:'The Voth river barge: a flat boxy hull, a deckhouse aft and a forecastle house, stacked cargo, a derrick, stern sweeps.',build:buildRsVothBarge});
+// ---------------------------------------------------------------- vessel: Voth Pleasure Barge
+// The pleasure barge that cruises the Voth bay (settlements/voth/src/78d-life-ferries-barges.js, lifePBargeHull: 26 m
+// x 10 m): a broad, low, gilded hull; a pavilion amidships-aft under a sweeping oxblood roof with lit windows; a canopied
+// foredeck with cushions; a single 10 m mast with a long Voth-purple pennant and a small square sail; gilded rails,
+// lanterns, guests and an oarsman crew.
+function rsVothPleasureSail(g,W,H,P){rsCloth(g,W,H,'#4b2a6e',5,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#d4a83a';g.lineWidth=W*.05;rsPolyPath(g,P);g.stroke();
+ const [cx,cy]=rsCentroid(P);rsSymDiamond(g,cx,cy,Math.min(W,H)*.22,'#d8cdb4');g.restore();}
+function buildRsVothPleasure(){reseed(73600);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x2a1c14),DARK=lin(0x160f0a),GOLD=0xd4a83a,RED=lin(0x6a1e14),TILE=lin(0x4a1c12),WALL=lin(0xd8cdb4),DECK=lin(0x7a6044),PURP=lin(0x4b2a6e);
+ const H=rsHull({L:26,B:10,fb:2.2,dr:1.3,sheerF:1.8,sheerA:1.4,sp:2.4,pb:2.2,pa:2.4,q:.4,n:3.8,flare:.06,rakeF:2,rakeA:1.2,transom:.5,keelEnd:.5,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.92?GOLD:h>.86?RED:h<.4?DARK:HULL);rsFoam(B,H,1);
+ const dY=rsDeck(B,H,{bw:.6,col:DECK});rsWale(B,H,.8,.1,'metal',GOLD);rsSpine(B,H,.18,DARK);
+ for(const a of rsAlong(H,.08,.96,32,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+.8,a.p[2]],.05,GOLD,5);
+ for(const s of[-1,1]){const pts=[];for(let i=0;i<=24;i++){const p=H.pt(lerp(.08,.96,i/24),s,1);pts.push([p[0],p[1]+.8,p[2]]);}rsTube(B,'paint',pts,.07,RED,48,6);}
+ // the pavilion: Voth's 0.7 beam x 0.36 length, under a sweeping hip roof, lit windows
+ const px=-4.7,top=rsCabin(B,{x:px,y:dY(H.uAt(px)),w:9.4,d:7,h:2.6,wall:WALL,win:6,winCol:0xe8a040,roof:'hip',roofMk:'tile',roofCol:TILE,rh:1.6,over:.7,flare:.45});
+ rsCone(B,'metal',.25,1.2,[px,top+.6,0],null,GOLD,6);
+ // the canopied foredeck with cushions
+ const fx=5.5,fy=dY(H.uAt(fx));for(const [x,z] of[[3,-2.6],[3,2.6],[8,-2.2],[8,2.2]])rsLink(B,'metal',[x,dY(H.uAt(x)),z],[x,fy+2.6,z],.06,GOLD,5);
+ rsBox(B,'cloth',[5.6,.1,5.8],[5.5,fy+2.65,0],null,PURP);rsSolid(B,[2.6,fy+2.4,-2.9],[8.4,fy+2.8,2.9]);
+ for(let i=0;i<8;i++)rsBox(B,'cloth',[.9,.35,.9],[rr(3.6,7.6),fy+.18,rr(-2,2)],[0,rr(0,1),0],[RED,PURP,lin(0xd8cdb4)][i%3]);
+ // the mast, a small square sail, the long pennant
+ const mx=2.4,base=dY(H.uAt(mx)),mh=10,tp=[mx,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],tp,.18,DARK,6,.12);
+ rsRig(B,[mx,0]);const w=3.6,foot=fy+2.9-base+.4;
+ const S=rsSail(B,{key:'voth-pleasure',O:[mx+.2,base+foot,0],U:[0,0,1],V:[0,1,0],belly:-.4,A:t=>[(t-.5)*w,mh-foot-.6],Bf:t=>[(t-.5)*w*.94,0],draw:rsVothPleasureSail});
+ rsSailEdge(B,S,1,.06,GOLD);rsSailEdge(B,S,0,.05,GOLD);rsPennant(B,[mx,base+mh+.2,0],6,.8,[PURP,lin(0xd8cdb4)]);rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1)+1,H.ys(0),0]);rsRigEnd(B);
+ // stern lanterns, the steersman, guests and oarsmen
+ for(const s of[-1,1])rsSphere(B,'glow',.3,[H.xAt(0,1)+.6,H.ys(0)+1.2,s*2.6],[1,1.3,1],0xff8a3a,10,8);
+ rsFigure(B,[H.xAt(0,1)+1.6,dY(.05),0],Math.PI,PURP,false,0x8a8aa0);
+ for(const [x,z] of[[4,-1],[5.5,1.2],[7,-.4],[-4,-2.4]])rsFigure(B,[x,dY(H.uAt(x))+(x>0?.35:0),z],rr(0,TAU),[GOLD,RED,PURP][Math.floor(rng()*3)],x>0,0x8a8aa0);
+ rsBake(B,V.group,'vothPleasure');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothPleasure',name:'Voth Pleasure Barge',culture:'voth',L:30,B:12,H:14,
+ tags:{type:['pleasure','barge','state'],propulsion:['sail','oar'],hull:'monohull',wealth:'wealthy',crew:10,role:'pleasure barge of the bay'},
+ blurb:'The Voth pleasure barge: a broad gilded hull, a pavilion under a sweeping oxblood roof, a canopied foredeck of cushions, a purple sail and pennant.',build:buildRsVothPleasure});
+// ---------------------------------------------------------------- vessel: Voth Fishing Dhow
+// The fishing dhow of the Voth bay (settlements/voth/src/78e-life-dhows.js: 12 m x 3 m at 1.35 scale, so 16 m x 4 m,
+// hull 0x8a6b45): a light wooden hull, a mast raked forward (0.26 rad) under a lateen, the fish bin aft of the mast
+// (its walls 0.26 darker than the hull), nets and floats, two fishers.
+function rsVothDhowSail(g,W,H,P){rsCloth(g,W,H,'#e2d4b0',7,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#7a5a3a';g.lineWidth=W*.03;rsPolyPath(g,P);g.stroke();g.restore();}
+function buildRsVothDhow(){reseed(73700);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();const lin=h=>new THREE.Color(h).convertSRGBToLinear();
+ const HULL=lin(0x8a6b45),BIN=lin(0x5e4a30),DARK=lin(0x3a2c1e),NET=lin(0x7a7060);
+ const H=rsHull({L:16.2,B:4,fb:1.3,dr:.9,sheerF:1.4,sheerA:.9,sp:2.2,pb:1.6,pa:1.7,q:.5,n:2.8,flare:.1,rakeF:2,rakeA:.8,keelEnd:.3,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?DARK:h<.35?DARK:HULL);rsFoam(B,H,.6);
+ const dY=rsDeck(B,H,{bw:.35,col:lin(0x9a7a50)});rsWale(B,H,.85,.07,'wood',DARK);rsSpine(B,H,.12,DARK);
+ // the fish bin: four plank walls aft of the mast, a catch inside
+ const bx=-3.2,by=dY(H.uAt(bx)),bl=5.2,bw=1.7,bh=.8;
+ for(const s of[-1,1]){rsBox(B,'wood',[bl,bh,.12],[bx,by+bh/2,s*bw/2],null,BIN);rsBox(B,'wood',[.12,bh,bw],[bx+s*bl/2,by+bh/2,0],null,BIN);}
+ for(let i=0;i<14;i++)rsSphere(B,'paint',.18,[bx+rr(-2.2,2.2),by+.3,rr(-.6,.6)],[2.2,.5,.7],lin(0x9aa4a8),6,4);
+ // the mast raked forward under the lateen, its yard slanting aft
+ const mx=2.2,base=dY(H.uAt(mx)),rk=.26,mh=9.4,tp=[mx+Math.sin(rk)*mh,base+mh*Math.cos(rk),0];rsLink(B,'wood',[mx,base-.2,0],tp,.13,DARK,6,.09);
+ rsRig(B,[[mx,base-.2,0],tp]);
+ const S=rsSail(B,{key:'voth-dhow',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:.6,nu:18,nv:9,
+  A:t=>[lerp(mx+3.8,mx-1.2,t),lerp(1.2,mh+1,t)+Math.sin(Math.PI*t)*.4],Bf:t=>[lerp(mx-4.8,mx-1.2,t)+Math.sin(Math.PI*t)*.4,lerp(.9,mh+1,t)],draw:rsVothDhowSail});
+ rsSailEdge(B,S,0,.08,DARK);rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(0,0),[H.xAt(.15,1),H.ys(.15),.8]);rsRigEnd(B);
+ // the nets heaped forward, cork floats, the tiller and two fishers
+ for(let i=0;i<5;i++)rsSphere(B,'rope',.5,[5.2+rr(-.6,.6),dY(H.uAt(5.2))+.2,rr(-.6,.6)],[1.3,.5,1],NET,8,5);
+ for(let i=0;i<6;i++)rsSphere(B,'paint',.12,[5+rr(-.8,.8),dY(H.uAt(5))+.45,rr(-.7,.7)],[1,1,1],lin(0xc89a5a),6,4);
+ {const p=H.pt(0,0,.3);rsBox(B,'wood',[1,1.5,.14],[p[0]-.3,p[1]-.3,0],null,DARK);}
+ for(const [x,z] of[[-6.4,0],[0,.8]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),lin(0x6a5a48),false,0x8a8aa0);
+ rsBake(B,V.group,'vothDhow');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'vothDhow',name:'Voth Fishing Dhow',culture:'voth',L:20,B:6,H:13,
+ tags:{type:['fishing'],propulsion:['sail'],hull:'monohull',wealth:'poor',crew:2,role:'bay fishing boat'},
+ blurb:'The Voth fishing dhow: a light wooden hull, a forward-raked mast under a cream lateen, a fish bin aft of the mast, nets and floats.',build:buildRsVothDhow});
 // ---------------------------------------------------------------- scene (the Ring Sea roadstead)
 // The kit sheet: every registered vessel riding at anchor on open water, rowing in place, in a
 // grid of RS_COLS columns, bows east (+x), so a camera on the south side sees every starboard

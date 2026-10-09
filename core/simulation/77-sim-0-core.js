@@ -10,7 +10,7 @@
 //   SIM.minute()                  the world minute: day*1440 + floor(hour*60)
 //   SIM.sched([[h, ACT], ...])    a schedule as spans -> 24 hourly activities (Shade's form); 24-arrays pass through
 //   SIM.add(kind, rec)            register a record of a kind (activity faction org relation place role actor group
-//                                 event port); a duplicate id throws. The typed helpers below call it.
+//                                 event port transport); a duplicate id throws. The typed helpers below call it.
 //   SIM.get(kind, id) / SIM.all(kind)
 //   SIM.load(json)                the hand-edited overlay (PLAN.md 4.2): a record with a known id overrides it field by
 //                                 field, a new id is added, {id, remove:true} deletes; then every reference is checked
@@ -18,7 +18,7 @@
 //   SIM.logEvent(kind, data)      the decision log (a ring of SIM.LOG_MAX), what the export carries
 (function(root){
   'use strict';
-  var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port'];
+  var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port','transport'];
   var SIM = { version:1, R:{}, order:{}, problems:[], LOG:[], LOG_MAX:6000, host:null, rng:null, routeFail:[] };
   KINDS.forEach(function(k){ SIM.R[k] = {}; SIM.order[k] = []; });
 
@@ -66,7 +66,7 @@
 
   /* the overlay: what a hand-edited world/*.json says wins over what the geometry registered */
   var PLURAL = { activities:'activity', factions:'faction', orgs:'org', organizations:'org', relations:'relation', presence:'presence',
-                 places:'place', roles:'role', actors:'actor', population:'role', groups:'group', events:'event', ports:'port' };
+                 places:'place', roles:'role', actors:'actor', population:'role', groups:'group', events:'event', ports:'port', transports:'transport' };
   SIM.load = function(json){
     var n={ added:0, overridden:0, removed:0 };
     Object.keys(json||{}).forEach(function(file){
@@ -79,7 +79,7 @@
         if(r.remove){ if(cur){ SIM.remove(kind, r.id); n.removed++; } else SIM.err('load: remove of unknown '+kind+' '+r.id+' ('+(r._src||'?')+')'); return; }
         if(cur){ for(var k in r) if(k!=='id') cur[k]=r[k]; if(cur.sched && !Array.isArray(cur.sched[0]) && cur.sched.length!==24) cur.sched=SIM.sched(cur.sched); n.overridden++; }
         else { var rec={}; for(var k2 in r) rec[k2]=r[k2];
-          var mk={ activity:SIM.activity, faction:SIM.faction, org:SIM.org, relation:SIM.relation, presence:SIM.presence, place:SIM.place, role:SIM.role, actor:SIM.actor, group:SIM.group, event:SIM.event, port:SIM.port }[kind];
+          var mk={ activity:SIM.activity, faction:SIM.faction, org:SIM.org, relation:SIM.relation, presence:SIM.presence, place:SIM.place, role:SIM.role, actor:SIM.actor, group:SIM.group, event:SIM.event, port:SIM.port, transport:SIM.transport }[kind];
           (mk || function(o){ return SIM.add(kind, o); })(rec); n.added++; }
       });
     });
@@ -102,6 +102,8 @@
     SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); }); });
     SIM.all('actor').forEach(function(a){ need(Ro[a.role], 'actor '+a.id+': unknown role '+a.role); need(!a.home || P[a.home], 'actor '+a.id+': unknown home '+a.home); need(!a.work || P[a.work], 'actor '+a.id+': unknown work place '+a.work); });
     SIM.all('event').forEach(function(e){ (e.from||[]).concat(Array.isArray(e.to)?e.to:[]).forEach(function(p){ need(SIM.R.port[p], 'event '+e.id+': unknown port '+p); }); need(!e.to || Array.isArray(e.to) || e.to==='other', 'event '+e.id+': to must be a port list or "other"'); (e.legs||[]).forEach(function(l){ need(A[l.activity], 'event '+e.id+': unknown activity '+l.activity); }); });
+    SIM.all('transport').forEach(function(t){ need(SIM.nav.layers[t.layer], 'transport '+t.id+': unknown layer '+t.layer); need(!t.faction || F[t.faction], 'transport '+t.id+': unknown faction '+t.faction); need(!t.org || O[t.org], 'transport '+t.id+': unknown org '+t.org);
+      (t.stops||[]).forEach(function(s){ need(s.indexOf('port:')===0 ? SIM.R.port[s.slice(5)] : P[s], 'transport '+t.id+': unknown stop '+s); }); });
     out.forEach(function(m){ SIM.err(m); });
     return out;
   };

@@ -126,7 +126,7 @@ LIFE_FERRY_STOPS.forEach(function(s){
   LIFE_DOORS.push(d);
   LIFE_DOOR_BY_STOPNAME[s.name] = d;
 });
-/* silt strider stations (66-striders.js, which loads before this file) —
+/* elephant bug stations (66-striders.js, which loads before this file) —
    the station records THEMSELVES are pushed straight into LIFE_DOORS
    (same object, not a copy) so lifePedPickDestination/the 'queued' state
    machine below treat a station exactly like a ferry dock, and
@@ -549,7 +549,7 @@ if(typeof pathvizRegister === 'function'){
    this session. MARKET_STALLS is 69-district-content.js's own global
    (that fragment loads before this one, so it's already full here). */
 var LIFE_SHOPKEEPER_N = (typeof MARKET_STALLS !== 'undefined') ? Math.floor(MARKET_STALLS.length/2) : 0;
-/* +480 reserved, trailing, for silt strider riders (79-striders.js): up to
+/* +480 reserved, trailing, for elephant bug riders (79-striders.js): up to
    20 convoys (6 on Route 1, 6 on Route 2, 8 on Route 3) x 3 cars x 8 seats,
    same "grow an existing InstancedMesh's instance count" technique as the
    shopkeeper pool just above (same mesh, lifePersonGeo — already used for

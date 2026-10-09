@@ -34,6 +34,7 @@ export; `_src` (file:line) is added by the build. A field not listed here is kep
 | `actors.json` | actor | **id**, **role**, `home`, `work`, `org` (default the role's), `sched` (overrides the role's), `boat:{dock, pier}`, `vehicle:{base}`: rarely hand-written; `populate` makes them |
 | `events.json` | event | **id**, **kind**: `caravan` / `riders` (a group arrives, stays, leaves) or `excursion` (one resident takes a vehicle out and back), **org**, `every:[minH,maxH]` (world hours between firings), `window:[h0,h1]`, `from:[ports]`, `to:[ports]` or `"other"`, `size:[a,b]` units, `unit:[{role, n}]` per unit, `beasts` per unit, `mount`, `arrive:{kinds, activity}`, `stay:{nights, untilHour}` or `legs:[{activity, mins, kinds?}]` (an itinerary instead: stop to stop together, each the nearest place offering the activity, `mins` world minutes there, then out by `to`), `layer`, `mode` (`walk ride drive boat`), `speed`, `maxLive`; excursions: `base` (place id), `fromKind`, `away:[minH,maxH]` |
 | `ports.json` | port | **id**, **x**, **z**, `kind` (`road` / `country`), `layer` |
+| `transports.json` | transport | **id**, **layer** (`water`, `strider`, ...), **stops** (place ids, or `port:<id>` for a line that enters or leaves by a map edge; first === last makes a loop, else the line runs out and back), `vehicle` (a catalog id), `vehicleKind` (`ferry` / `strider`: speed and dwell defaults, `SIM.TRANSPORT`), `vehicles` (default one per `headway` seconds of the round; `headway` defaults to `SIM.TRANSPORT.headway`), `exclusive` (one vehicle at a time at a stop's berth: a later one queues `queueGap` metres back and waits; the day is laid out over `horizon` seconds and repeats), `speed` m/s, `dwell` s at each stop, `phase` s, `capacity`, `faction`, `org`. `SIM.transportBake` adds `legs`, `segments` `[[dur, ease, from, to]]` (a dwell has from === to) and `period`; `SIM.vehiclePose(id, k, t)` is a pure function of motion time |
 
 ## The resolver (what an actor does, minute by minute)
 
@@ -54,7 +55,7 @@ country), and in time `climb`, `air`, `interior`. A graph layer is `{nodes:[{id,
 ## The export
 
 `SIM.export()` -> `{format:'krator-sim', version:1, convention, clock, activities, factions, orgs, relations, presence,
-places, roles, actors, groups, events, ports, nav, log}` in these record shapes. The convention block is the atmos and
+places, roles, actors, groups, events, ports, transports, nav, log}` in these record shapes. The convention block is the atmos and
 biome exports' (metres, +Y up, x east, z south, radians about +Y).
 
 ## Audits (`window._sim`)

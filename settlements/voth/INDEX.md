@@ -25,7 +25,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `30a-layout-districts.js` | 25 | 5. CITY LAYOUT (1); 4b. DISTRICTS (195) |
 | `30b-mainland-shore.js` | 19 | 6. THE MAINLAND SHORE (1) |
 | `30c-roads.js` | 43 **big** | 5b. WARREN: BLOCK CARVING (1); 5c. ROAD GRAPH (138); 5d. WARREN: TANGLE (292); 5e. NEAREST STREET (504); 5f. ROAD METRICS (556); 5g. GRAPH CONNECTIVITY (575) |
-| `30d-wall-stations.js` | 17 | NEW CURTAIN WALL (point-designated) (1); silt strider stations (Route 1) (217); silt strider stations (Route 2) (249); silt strider stations (Route 3) (276) |
+| `30d-wall-stations.js` | 17 | NEW CURTAIN WALL (point-designated) (1); elephant bug stations (Route 1) (217); elephant bug stations (Route 2) (249); elephant bug stations (Route 3) (276) |
 | `40-ground.js` | 11 | 7. GROUND CANVASES (1) |
 | `45-kit.js` | 31 **big** | 10. BLOCK KIT (1); NIGHT ILLUMINATION (142) |
 | `47-texture.js` | 18 | 12b. TEXTURES (1) |
@@ -50,7 +50,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65j-tavern-healing.js` | 26 | TAVERN + BEER GARDEN (1); HOUSE OF HEALING (260) |
 | `65k-granary-mills-ranch.js` | 28 | GRANARY / MILLS / BEETLE RANCH (1); MILL ANIMATION RIG (126); BEETLE RANCH (400) |
 | `65l-arena-built.js` | 17 | ARENA COMBAT: THE BUILT HALF (1) |
-| `66-striders.js` | 11 | SILT STRIDER STATIONS (static) (1); eastern nucleus: shrine (117); SILT STRIDER STATIONS (Route 2) (133); SILT STRIDER STATIONS (Route 3) (168) |
+| `66-striders.js` | 11 | ELEPHANT BUG STATIONS (static) (1); eastern nucleus: shrine (117); ELEPHANT BUG STATIONS (Route 2) (133); ELEPHANT BUG STATIONS (Route 3) (168) |
 | `68-props.js` | 10 | 19d. STREET PROPS & DRESSING (1) |
 | `69-district-content.js` | 70 **big** | 19e. DISTRICT CONTENT (1); 19f. AD HOC INFILL (477); TAVERN PLACEMENT (605); HOUSE OF HEALING (955); NEW TRADE GUILD HALLS (976) |
 | `70-veg.js` | 35 **big** | 18. VEGETATION (1); 18b. NAMED WILD FLORA + SHRUBS/SUCCULENTS (154); placement (437) |
@@ -67,9 +67,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `78h-life-temple.js` | 51 **big** | citizens: ordinators (1); citizens: priests & templars (712) |
 | `78i-life-trade.js` | 28 | citizens: guild workers (1); citizens: merchant caravans (156) |
 | `78j-life-arena.js` | 53 **big** | ARENA GLADIATOR COMBAT (1) |
-| `79a-convoys.js` | 12 | SILT STRIDER CONVOYS (moving) (1); WADING — the one tuning block (64) |
+| `79a-convoys.js` | 12 | ELEPHANT BUG CONVOYS (moving) (1); WADING — the one tuning block (64) |
 | `79b-strider-nav.js` | 36 **big** | the strider's own nav grid + A (1) |
-| `79c-strider-model.js` | 42 **big** | THE BESPOKE SILT STRIDER MODEL (1) |
+| `79c-strider-model.js` | 42 **big** | THE BESPOKE ELEPHANT BUG MODEL (1) |
 | `80-camera.js` | 21 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (298) |
 | `82-daynight.js` | 47 **big** | DAY/NIGHT CYCLE (1); night-light props (162); moving-vehicle lanterns (299); the Guild canton's clock (497); NIGHT ILLUMINATION DRIVER (592) |
 | `83-weather.js` | 8 | WEATHER (1) |

@@ -237,3 +237,6 @@ millipedes), `worlds/scyvoi.html` replaced (13.3 MB: Tibetan appliqué tents and
 and cattle), `worlds/fauna.html` (0.8 MB: 51 species) and `worlds/krator-catalog.html` (1.6 MB: 1932 pieces, the Ash Nomads, the
 desert nomads' pieces, training furniture) replaced, from `main` at b5badc0c. The live index (version 67) was kept: the two cards
 added after Scyvoi, the Scyvoi, Fauna and Master catalog cards updated. One publish call; about 228 MB.
+Pending (2026-10-09): `ENTRIES` renames the first Voth's card "Voth - old" and adds "Voth - new", the city plan on
+`core/city` (`settlements/streetlab/dist/voth-city.html`, 6.8 MB, as `worlds/voth-new.html`). Not yet published: publish the
+index (edited from the live version 68: the Voth card renamed, the new card after it) and the one page, in one call.

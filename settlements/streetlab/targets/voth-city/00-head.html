@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voth City Plan</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#bfcfd8;font-family:Georgia,serif}
+  #app{position:fixed;inset:0}
+  .pnl{position:fixed;z-index:30;background:rgba(24,21,15,0.88);color:#f3ecd8;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.45}
+  #bar{left:14px;top:14px;width:min(390px,calc(100vw - 28px))}
+  #bar h1{font-size:13px;margin:0 0 6px;color:#e0c98a;letter-spacing:.06em;text-transform:uppercase}
+  .pnl button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;padding:4px 8px;font:inherit;font-size:11.5px;margin:3px 3px 0 0;cursor:pointer}
+  .pnl button.on{background:#c9a227;color:#2a2416}
+  #bar input[type=range]{width:100%;margin:6px 0 2px}
+  #stats{right:14px;top:14px;width:min(320px,calc(100vw - 28px));max-height:calc(100vh - 60px);overflow:auto}
+  #stats b{color:#e0c98a}
+  #stats table{width:100%;border-collapse:collapse;margin-top:6px}
+  #stats th{text-align:left;color:#e0c98a;font-weight:normal;padding-top:6px}
+  #stats td:last-child{text-align:right}
+  #stats tr.ln{cursor:pointer}
+  #stats tr.ln td{text-align:left!important;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)}
+  #stats tr.ln.sel td{background:rgba(201,162,39,0.16)}
+  .lg{opacity:.78;font-size:11px;margin-top:4px}
+  .k{opacity:.6;font-size:11px}
+  i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px;border-radius:2px}
+  #legend span{display:inline-block;margin:3px 8px 0 0;font-size:11px}
+  #tip{position:fixed;z-index:40;display:none;pointer-events:none;max-width:360px}
+  #loading{left:50%;top:45%;transform:translate(-50%,-50%);font-size:15px}
+  #edit{left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));max-height:52vh;overflow:auto;display:none}
+  #edit select,#edit input{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px}
+  #edit select option{background:#2a2416}
+  #edit.placing{width:min(460px,calc(100vw - 28px));max-height:70vh}
+  #ed-find{width:calc(100% - 14px);margin:4px 0}
+  #ed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:34vh;overflow:auto;margin:2px 0 6px}
+  #ed-grid .t{background:rgba(255,255,255,0.06);border:2px solid transparent;border-radius:6px;padding:3px;cursor:pointer;text-align:center;font-size:10.5px;line-height:1.2}
+  #ed-grid .t:hover{border-color:rgba(201,162,39,0.5)}
+  #ed-grid .t.on{border-color:#c9a227;background:rgba(201,162,39,0.18)}
+  #ed-grid .t img,#ed-grid .t .ph{display:block;width:88px;height:88px;margin:0 auto 3px;border-radius:4px;background:#9fb0bc}
+  #ed-grid .t .f{color:#bfae80;font-size:9.5px}
+  #pathvizSel{margin-top:3px;background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px}
+  #marks{left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));max-height:46vh;overflow:auto;display:none}
+  #marks .mk{border-top:1px solid rgba(255,255,255,0.12);padding:5px 0}
+  #marks .mk.sel{background:rgba(201,162,39,0.14)}
+  #marks input,#marks textarea{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px;padding:2px 5px}
+  #marks .mk-name{width:130px}
+  #marks textarea{width:calc(100% - 12px);margin-top:3px;resize:vertical}
+  #mk-out{height:38px;opacity:.7}
+  .pnl-min{position:absolute;top:6px;right:6px;margin:0!important;padding:0 7px!important;line-height:18px}
+  .pnl.min{width:auto!important;max-height:none!important;padding-right:40px}
+  .pnl.min > :not(.pnl-min){display:none!important}
+  .pnl.min::before{content:attr(data-title);color:#e0c98a;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+  #marks .mk-q{font-size:11.5px;color:#e0c98a;margin:2px 0 0 14px}
+  @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="bar" class="pnl" data-title="Voth &middot; city plan">
+  <h1>Voth &middot; city plan</h1>
+  <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it.</div>
+  <input id="step" type="range" min="0" max="14" step="1" value="14">
+  <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><br>
+  <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"><br>
+  <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
+  <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
+  <div id="legend" class="lg"></div>
+</div>
+<div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
+<div id="tip" class="pnl"></div>
+<div id="edit" class="pnl" data-title="Edit">
+  <b>Edit the plan</b> <span id="ed-status" class="k"></span><br>
+  <button id="ed-m-place" class="on">place building</button><button id="ed-m-street">paint street</button><button id="ed-m-del">delete</button><br>
+  <div id="ed-place"><input id="ed-find" placeholder="find a building (name or family)"><div id="ed-grid"></div><select id="ed-kit" style="display:none"></select> <select id="ed-var"></select><br>
+    <label class="k"><input type="checkbox" id="ed-align" checked> align to the nearest street</label> <span class="k">Q/E turn the last 15&deg; &middot; R aligns it</span></div>
+  <div id="ed-street" style="display:none"><select id="ed-cls"><option>avenue</option><option selected>main</option><option>side</option><option>alley</option><option>lane</option></select>
+    <span class="k">click to add points; Backspace takes one off; Enter or a double-click finishes; Esc drops it</span></div>
+  <div id="ed-del" style="display:none" class="k">click a building or a painted street to delete it (a generated building is taken out of the plan)</div>
+  <div class="k" id="ed-count"></div>
+  <button id="ed-undo">undo</button><button id="ed-save">save</button><button id="ed-copy">copy JSON</button>
+  <div class="k">Saved edits join the plan when the page next loads (placed buildings and painted streets at step 3, deletions at the end).</div>
+  <textarea id="ed-out" readonly style="height:34px;width:calc(100% - 12px);opacity:.7"></textarea>
+</div>
+<div id="marks" class="pnl" data-title="Marks">
+  <b>Marks</b> <span id="mk-status" class="k"></span><br>
+  <button id="mk-area">+ area</button><button id="mk-line">+ line</button><button id="mk-point">+ point</button><button id="mk-copy">copy JSON</button>
+  <div class="k">Click the ground to add points. Backspace takes the last off; Enter or a double-click finishes; Esc stops.</div>
+  <div id="mk-list"></div>
+  <textarea id="mk-out" readonly></textarea>
+</div>
+<div id="loading" class="pnl">Laying out the city on the site...</div>

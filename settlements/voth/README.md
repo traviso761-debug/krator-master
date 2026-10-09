@@ -63,7 +63,7 @@ treats the group as one unit. The main groups are:
 | `src/65a–65l` | smoke, props, flora, docks, shrines, walls and gates, tavern, healing, mills, arena |
 | `src/70-veg.js`, `71-industry.js` | vegetation; wilderness industry |
 | `src/78a–78j` | life layer: nav grid, ships, boats, citizens, clergy, trade, arena combat |
-| `src/79a–79c` | silt strider convoys, their nav grid, the strider model |
+| `src/79a–79c` | elephant bug convoys, their nav grid, the strider model |
 | `src/80`–`87` | camera, day/night, weather, fauna, probe, inspector, path visualizer |
 
 ## Level of detail
