@@ -1,0 +1,2421 @@
+{
+ "name": "Tokyo",
+ "note": "Central Tokyo from OpenStreetMap, on the shared engine: a strip from Shinjuku's towers and Kabukichō, past Meiji Jingū's forest, Yoyogi and Shibuya Crossing, across Akasaka and Roppongi to the Imperial Palace, Tokyo Station, Marunouchi and Ginza, with Tokyo Tower at its south edge. The first strip of a Tokyo that grows outward.",
+ "origin": [
+  35.6775,
+  139.735
+ ],
+ "defaultSeed": 1868,
+ "defaultHour": 16.5,
+ "bounds": [
+  35.655,
+  139.69,
+  35.7,
+  139.78
+ ],
+ "osm": "data/cities/tokyo-osm.json",
+ "attribution": "Tokyo: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles (SRTM). Built by tools/build-osm-city.py.",
+ "flight": true,
+ "fetch": {
+  "bbox": [
+   35.655,
+   139.69,
+   35.7,
+   139.78
+  ],
+  "tiles": {
+   "buildings": [
+    6,
+    6
+   ],
+   "roads": [
+    3,
+    3
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    3,
+    3
+   ],
+   "water": [
+    2,
+    2
+   ],
+   "rail": [
+    2,
+    2
+   ]
+  },
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});",
+  "detailZones": [
+   [
+    35.655,
+    139.69,
+    35.7,
+    139.78
+   ]
+  ],
+  "_": "dense: the buildings in 36 tiles",
+  "extraLand": "nwr[\"landuse\"=\"forest\"]({b});",
+  "extraFiles": {
+   "footbridges": "way[\"highway\"=\"footway\"][\"bridge\"=\"yes\"]({b});way[\"highway\"=\"footway\"][\"footway\"=\"crossing\"][\"layer\"~\"^[1-9]\"]({b});",
+   "shops": "nwr[\"shop\"=\"convenience\"]({b});"
+  },
+  "regions": {
+   "east": {
+    "bbox": [
+     35.695,
+     139.755,
+     35.725,
+     139.82
+    ],
+    "tiles": {
+     "buildings": [
+      4,
+      6
+     ],
+     "roads": [
+      2,
+      3
+     ],
+     "land": [
+      1,
+      2
+     ],
+     "landuse": [
+      2,
+      2
+     ],
+     "water": [
+      1,
+      2
+     ],
+     "rail": [
+      1,
+      2
+     ]
+    }
+   }
+  }
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 12,
+  "_": "the Yamanote plateau and the shitamachi below it: elevation from tools/fetch-terrain.py",
+  "filter": {
+   "open": 150,
+   "close": 36,
+   "blur": 48,
+   "_": "the elevation here is the city's surface: towers stand in it, and pits of metres lie on flat ground"
+  }
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "defaultView": "Shibuya Crossing",
+ "defaultHeights": {
+  "_": "untagged buildings: central Tokyo is mid-rise concrete",
+  "yes": 16,
+  "apartments": 30,
+  "residential": 20,
+  "office": 45,
+  "commercial": 30,
+  "retail": 14,
+  "hotel": 55,
+  "house": 8,
+  "detached": 8,
+  "school": 16,
+  "university": 18,
+  "hospital": 24,
+  "train_station": 14,
+  "temple": 12,
+  "shrine": 9
+ },
+ "heightSpread": 0.45,
+ "facade": {
+  "bay": 3.2,
+  "floor": 3.4,
+  "shutters": false,
+  "_": "close-set windows, no shutters"
+ },
+ "palette": {
+  "_": "concrete, tile and render: greys, beiges, white",
+  "brick": [
+   "#c8c0b4",
+   "#b8b0a6",
+   "#d8d2c8",
+   "#a8a49c",
+   "#c4b8a8",
+   "#9a948c",
+   "#d0c8bc"
+  ],
+  "stone": [
+   "#e8e6e0",
+   "#d6d4ce",
+   "#f0eee8",
+   "#c8c8c4",
+   "#dcd8d0"
+  ]
+ },
+ "sky": {
+  "day": {
+   "top": "#6a94c4",
+   "hor": "#dfe4e6"
+  },
+  "dusk": {
+   "top": "#2c3466",
+   "hor": "#f0905a"
+  },
+  "night": {
+   "top": "#070a18",
+   "hor": "#1c2236"
+  }
+ },
+ "fog": 1.6e-05,
+ "litWindows": 0.85,
+ "streetTrees": true,
+ "parkedCars": 0.1,
+ "traffic": 0,
+ "people": 0,
+ "lowRiseFar": 3000,
+ "bridgeDeck": 8,
+ "terrainColours": {
+  "low": "#8a8678",
+  "high": "#8a8678",
+  "steep": "#7a766a",
+  "far": "#76828c"
+ },
+ "lakeColour": "#3c5a5c",
+ "lakeSheen": "#6a8a8a",
+ "instanceCulling": true,
+ "groundMottle": 0.06,
+ "noBuildingsInWater": true,
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk"
+  ]
+ },
+ "namedService": "pedestrian",
+ "namedServiceMatch": "^(.+通り|.+通|.+坂|.+横丁|.+小路)$",
+ "areaColours": {
+  "plaza": "#a6a29a",
+  "park": "#5a7444",
+  "grass": "#64774a",
+  "garden": "#557040"
+ },
+ "roadColours": {
+  "pedestrian": "#a8a49c",
+  "living_street": "#9a968e"
+ },
+ "landmarks": [
+  {
+   "name": "Tokyo Tower",
+   "at": [
+    35.658581,
+    139.745433
+   ],
+   "model": "tokyotower",
+   "clear": [
+    45,
+    200
+   ],
+   "info": "1958, 332.9 m: steel lattice in international orange and white, after the Eiffel Tower and thirteen metres taller. The main deck is at 150 m, the top deck at 250 m."
+  },
+  {
+   "name": "Shibuya Crossing",
+   "at": [
+    35.659482,
+    139.70056
+   ],
+   "model": "scramble",
+   "radius": 17,
+   "hachiko": [
+    35.659064,
+    139.700596
+   ],
+   "screens": [
+    [
+     35.65973,
+     139.7004,
+     18,
+     22,
+     10,
+     0
+    ],
+    [
+     35.6593,
+     139.69988,
+     14,
+     16,
+     9,
+     2
+    ],
+    [
+     35.65992,
+     139.70093,
+     12,
+     14,
+     8,
+     4
+    ]
+   ],
+   "info": "The scramble: every light turns red for cars at once and up to three thousand people cross in every direction. Hachikō waits by the station."
+  },
+  {
+   "name": "Tokyo Station",
+   "at": [
+    35.681132,
+    139.766109
+   ],
+   "model": "station",
+   "face": 283,
+   "info": "Tatsuno Kingo, 1914: the Marunouchi building, 335 m of red brick. Its domes, lost in 1945, were rebuilt as they were in 2012.",
+   "clearArea": {
+    "poly": [
+     [
+      35.67962,
+      139.765408
+     ],
+     [
+      35.679523,
+      139.765925
+     ],
+     [
+      35.682644,
+      139.76681
+     ],
+     [
+      35.682741,
+      139.766293
+     ]
+    ]
+   }
+  },
+  {
+   "name": "National Diet Building",
+   "at": [
+    35.67596,
+    139.74495
+   ],
+   "model": "diet",
+   "face": 90,
+   "clear": [
+    60,
+    0
+   ],
+   "info": "1936: the two houses either side of the stepped central tower, 65 m."
+  },
+  {
+   "name": "Wakō",
+   "at": [
+    35.67175,
+    139.76493
+   ],
+   "model": "wako",
+   "face": 135,
+   "clear": [
+    20,
+    0
+   ],
+   "info": "Ginza 4-chōme: the curved corner and the clock tower, 1932, the face of Ginza."
+  },
+  {
+   "name": "Kabukichō Ichiban-gai",
+   "at": [
+    35.69377,
+    139.70229
+   ],
+   "model": "kabukicho",
+   "face": 180,
+   "info": "The red gate into Kabukichō."
+  },
+  {
+   "name": "Godzilla",
+   "at": [
+    35.69505,
+    139.70191
+   ],
+   "model": "godzilla",
+   "face": 200,
+   "terrace": 40,
+   "info": "Godzilla looks over the Hotel Gracery Shinjuku from its eighth-floor terrace."
+  },
+  {
+   "name": "Zōjō-ji Sanmon",
+   "at": [
+    35.65745,
+    139.74955
+   ],
+   "model": "sanmon",
+   "face": 90,
+   "info": "1622: the main gate of Zōjō-ji, the Tokugawa family temple, under Tokyo Tower."
+  },
+  {
+   "name": "Meiji Jingū Ōtorii",
+   "at": [
+    35.674112,
+    139.701309
+   ],
+   "model": "torii",
+   "height": 12,
+   "span": 9.1,
+   "pillar": 1.2,
+   "clear": [
+    10,
+    0
+   ],
+   "info": "The Ōtorii, the great torii of Meiji Jingū: Taiwan cypress over 1,500 years old, 12 m high, raised in 1975 - the largest wooden torii of its kind in Japan.",
+   "face": 266.3
+  },
+  {
+   "name": "Seimon Ishibashi",
+   "at": [
+    35.679975,
+    139.7546955
+   ],
+   "model": "nijubashi",
+   "length": 47,
+   "width": 11,
+   "deck": 8,
+   "face": 113.1,
+   "info": "The stone bridge before the Imperial Palace's main gate, its two arches doubled in the moat (people call it Nijūbashi; the true Nijūbashi is the iron bridge behind it)."
+  },
+  {
+   "name": "Fushimi-yagura",
+   "at": [
+    35.680587,
+    139.752924
+   ],
+   "model": "yagura",
+   "w": 16,
+   "d": 9,
+   "base": 14,
+   "wall": 22,
+   "face": 135,
+   "clear": [
+    14,
+    0
+   ],
+   "info": "A turret of Edo Castle, said to have come from Fushimi Castle in Kyoto: white plaster on the stone wall, over the Nijūbashi moat."
+  },
+  {
+   "name": "Tokyo Skytree",
+   "at": [
+    35.710063,
+    139.8107
+   ],
+   "model": "skytree",
+   "clear": [
+    40,
+    60
+   ],
+   "info": "634 m, 2012: the tallest tower in the world, three legs turning from a triangle to a circle, the Tembo Deck at 350 m and the Galleria at 450 m. Lit at night in Iki, the Sumida's pale blue."
+  },
+  {
+   "name": "Sensō-ji",
+   "at": [
+    35.71106,
+    139.79631
+   ],
+   "hall": [
+    35.71477,
+    139.79676
+   ],
+   "model": "sensoji",
+   "info": "Tokyo's oldest temple (645): in under the Kaminarimon's great red lantern, up Nakamise's stalls to the Hōzōmon, the five-storey pagoda, the main hall.",
+   "clearPath": {
+    "line": [
+     [
+      35.71106,
+      139.79631
+     ],
+     [
+      35.7135,
+      139.79645
+     ],
+     [
+      35.7147,
+      139.79676
+     ]
+    ],
+    "radius": 9,
+    "_": "Nakamise: the streamed buildings out of the approach, the model's stalls in"
+   }
+  },
+  {
+   "name": "Asahi Beer Hall",
+   "at": [
+    35.7099,
+    139.7983
+   ],
+   "model": "asahi",
+   "face": 270,
+   "roof": 22,
+   "clear": [
+    18,
+    0
+   ],
+   "info": "Philippe Starck, 1989: the black hall and its golden flame, the Flamme d'Or, over the Sumida."
+  },
+  {
+   "name": "Rainbow Bridge",
+   "model": "rainbow",
+   "at": [
+    35.63641,
+    139.76394
+   ],
+   "from": [
+    35.637884,
+    139.759191
+   ],
+   "to": [
+    35.634935,
+    139.768683
+   ],
+   "clearDecks": 470,
+   "info": "The Tokyo Port Connector Bridge, 1993: 798 m of suspension bridge across the harbour to Odaiba, its main span 570 m between towers of 126 m. The Shuto expressway rides the upper deck, the Yurikamome and the road the lower; after dark its cables are strung with lamps."
+  },
+  {
+   "name": "Fuji Television",
+   "model": "fujitv",
+   "at": [
+    35.627,
+    139.7748
+   ],
+   "clear": [
+    70,
+    0
+   ],
+   "face": 45.0,
+   "info": "Tange Kenzō, 1996: two blocks of 25 storeys joined by a lattice of corridors, and in the gap the titanium sphere of the observation deck, 32 m across."
+  },
+  {
+   "name": "Unicorn Gundam",
+   "model": "gundam",
+   "at": [
+    35.62515,
+    139.7756
+   ],
+   "face": 90,
+   "info": "RX-0 Unicorn Gundam at 1:1, 19.7 m, outside DiverCity Tokyo Plaza since 2017. Its red psycho-frame glows after dark, and on the hour it transforms."
+  }
+ ],
+ "views": {
+  "Shibuya Crossing": [
+   [
+    35.658937,
+    139.700947,
+    61.4
+   ],
+   [
+    35.659482,
+    139.70056,
+    23.2
+   ]
+  ],
+  "Tokyo Tower": [
+   [
+    35.6627,
+    139.7482,
+    114.4
+   ],
+   [
+    35.658581,
+    139.745433,
+    162.4
+   ]
+  ],
+  "The Shinjuku skyline": [
+   [
+    35.6858,
+    139.7085,
+    188.0
+   ],
+   [
+    35.6905,
+    139.6925,
+    134.1
+   ]
+  ],
+  "Tokyo Station": [
+   [
+    35.681476,
+    139.764277,
+    15.4
+   ],
+   [
+    35.681132,
+    139.766109,
+    13.5
+   ]
+  ],
+  "The Imperial Palace": [
+   [
+    35.6775,
+    139.7575,
+    47.7
+   ],
+   [
+    35.6825,
+    139.752,
+    22.2
+   ]
+  ],
+  "Ginza at dusk": [
+   [
+    35.672061,
+    139.76588,
+    13.9
+   ],
+   [
+    35.67175,
+    139.76493,
+    21.1
+   ]
+  ],
+  "Kabukichō": [
+   [
+    35.6929,
+    139.70215,
+    44.5
+   ],
+   [
+    35.69377,
+    139.70229,
+    41.6
+   ]
+  ],
+  "The Diet": [
+   [
+    35.67578,
+    139.747825,
+    36.1
+   ],
+   [
+    35.67596,
+    139.74495,
+    47.1
+   ]
+  ],
+  "Over Tokyo": [
+   [
+    35.64,
+    139.7,
+    1600
+   ],
+   [
+    35.68,
+    139.74,
+    -9.6
+   ]
+  ],
+  "Meiji Jingū": [
+   [
+    35.674088,
+    139.700868,
+    38.4
+   ],
+   [
+    35.674112,
+    139.701309,
+    42.2
+   ]
+  ],
+  "Nijūbashi": [
+   [
+    35.679477,
+    139.753593,
+    35.1
+   ],
+   [
+    35.679975,
+    139.754695,
+    10.4
+   ]
+  ],
+  "Kaminarimon": [
+   [
+    35.71045,
+    139.79631,
+    4.9
+   ],
+   [
+    35.71106,
+    139.79631,
+    6.9
+   ]
+  ],
+  "Tokyo Skytree": [
+   [
+    35.7048,
+    139.803,
+    177.9
+   ],
+   [
+    35.710063,
+    139.8107,
+    326.8
+   ]
+  ],
+  "Akihabara": [
+   [
+    35.6965,
+    139.7712,
+    68.4
+   ],
+   [
+    35.7005,
+    139.7716,
+    9.5
+   ]
+  ],
+  "Asakusa and the Skytree": [
+   [
+    35.7115,
+    139.794,
+    43.4
+   ],
+   [
+    35.710063,
+    139.8107,
+    246.8
+   ]
+  ],
+  "Greater Tokyo": [
+   [
+    35.62,
+    139.7,
+    6000
+   ],
+   [
+    35.7,
+    139.8,
+    0
+   ]
+  ],
+  "Yokohama, Minato Mirai": [
+   [
+    35.4485,
+    139.642,
+    159.9
+   ],
+   [
+    35.4548,
+    139.6314,
+    115.6
+   ]
+  ],
+  "Ebisu": [
+   [
+    35.644,
+    139.716,
+    66.2
+   ],
+   [
+    35.6421,
+    139.7137,
+    40.3
+   ]
+  ],
+  "Maihama": [
+   [
+    35.626,
+    139.874,
+    213.2
+   ],
+   [
+    35.6329,
+    139.8804,
+    8.0
+   ]
+  ],
+  "Makuhari": [
+   [
+    35.64,
+    140.025,
+    171.1
+   ],
+   [
+    35.6481,
+    140.0347,
+    63.8
+   ]
+  ],
+  "The Rainbow Bridge at night": [
+   [
+    35.63,
+    139.77,
+    21.1
+   ],
+   [
+    35.6368,
+    139.762,
+    41.1
+   ]
+  ],
+  "Odaiba: Fuji TV and the Gundam": [
+   [
+    35.6312,
+    139.7698,
+    30.0
+   ],
+   [
+    35.627,
+    139.7748,
+    40.0
+   ]
+  ],
+  "Yakatabune on the Sumida": [
+   [
+    35.689,
+    139.7912,
+    14.0
+   ],
+   [
+    35.6935,
+    139.7893,
+    -5.0
+   ]
+  ],
+  "Sakura on the Meguro river": [
+   [
+    35.64507,
+    139.6997,
+    18.3
+   ],
+   [
+    35.64368,
+    139.70127,
+    11.3
+   ]
+  ],
+  "Icho Namiki, Gaien": [
+   [
+    35.6725,
+    139.7187,
+    26.4
+   ],
+   [
+    35.6765,
+    139.7182,
+    21.5
+   ]
+  ]
+ },
+ "crowds": {
+  "seed": 1868,
+  "pedestrians": 45,
+  "pedestrianMul": 2,
+  "maxPedestrians": 16000,
+  "far": 300,
+  "touristFar": 420,
+  "couples": 0.25,
+  "hatless": 0.85,
+  "strollers": 0.45,
+  "photographers": 0.2,
+  "_sites": "[lat, lon, radius, how many, keep-clear radius]",
+  "sites": [
+   [
+    35.65905,
+    139.70045,
+    25,
+    180
+   ],
+   [
+    35.67125,
+    139.70495,
+    30,
+    160
+   ],
+   [
+    35.67175,
+    139.76493,
+    35,
+    140
+   ],
+   [
+    35.68124,
+    139.7635,
+    45,
+    200
+   ],
+   [
+    35.6797,
+    139.7552,
+    60,
+    140
+   ],
+   [
+    35.69377,
+    139.70229,
+    30,
+    150
+   ],
+   [
+    35.658581,
+    139.745433,
+    70,
+    160,
+    30
+   ],
+   [
+    35.7112,
+    139.7963,
+    25,
+    220
+   ],
+   [
+    35.7122,
+    139.7964,
+    14,
+    180
+   ],
+   [
+    35.7095,
+    139.7745,
+    25,
+    160
+   ],
+   [
+    35.699,
+    139.7713,
+    40,
+    200
+   ],
+   [
+    35.7123,
+    139.7768,
+    40,
+    120
+   ],
+   [
+    35.7101,
+    139.8107,
+    60,
+    160,
+    35
+   ]
+  ],
+  "keepOut": []
+ },
+ "streetlife": {
+  "seed": 1868,
+  "style": "tokyo",
+  "centre": [
+   35.69,
+   139.755,
+   7200
+  ],
+  "far": 450,
+  "shops": 0.7,
+  "konbini": 0.05,
+  "kanban": 0.45,
+  "smoke": 0,
+  "parks": {
+   "busts": [
+    0,
+    0,
+    0
+   ],
+   "picnicArea": 2600
+  },
+  "_": "src/core/streetlife.js, Tokyo style: shopfronts and fascias, konbini, kanban, vending machines, lanterns, air-conditioners, utility poles and wires"
+ },
+ "vehicles": {
+  "seed": 1868,
+  "side": "left",
+  "cars": 26,
+  "mopeds": 5,
+  "buses": 1.4,
+  "trams": 0,
+  "trains": 0.6,
+  "trainCars": 10,
+  "railElevated": true,
+  "viaduct": 8,
+  "far": 1300,
+  "carFar": 1000,
+  "mopedFar": 500,
+  "railFar": 2500,
+  "maxCars": 3000,
+  "maxMopeds": 600,
+  "maxBuses": 120,
+  "maxTrains": 40,
+  "carColours": [
+   "#f2f2f0",
+   "#c8ccd0",
+   "#1a1c22",
+   "#f2f2f0",
+   "#2a2e48",
+   "#a0a8b0",
+   "#f4f4f2",
+   "#1e2a44",
+   "#e8c040",
+   "#d8d8d4"
+  ],
+  "mopedColours": [
+   "#e8e8e4",
+   "#1a1a1e",
+   "#c82a2a",
+   "#2a5aa8"
+  ],
+  "busColours": [
+   "#eef0ea",
+   "#2a8a5a"
+  ],
+  "trainColours": [
+   "#c8ccd0",
+   "#e8e8e4"
+  ],
+  "lineColours": {
+   "山手|Yamanote": "#80c241",
+   "中央線快速|中央本線|中央線|Chuo": "#f15a22",
+   "総武|Sobu": "#ffd400",
+   "京浜東北|Keihin": "#00b2e5",
+   "埼京|湘南新宿|Saikyo": "#00ac9b",
+   "新幹線|Shinkansen": "#f4f4f2",
+   "東海道|Tokaido": "#f68b1e",
+   "小田急|Odakyu": "#2a88cc",
+   "京王|Keio": "#c8106e",
+   "横須賀|Yokosuka": "#0a4aa8"
+  },
+  "_": "src/core/traffic.js: on the left; the JR lines in their colours",
+  "stationDwell": 25,
+  "stationNear": 70,
+  "shinkansen": {
+   "match": "新幹線|Shinkansen",
+   "speed": [
+    30,
+    45
+   ],
+   "cars": 16,
+   "dwell": 60,
+   "perKm": 0.4,
+   "max": 6,
+   "_": "the Tōkaidō and Tōhoku Shinkansen: N700s, sixteen cars, a minute at Tokyo Station"
+  }
+ },
+ "navmap": {
+  "labels": [
+   "Tokyo Tower",
+   "Shibuya Crossing",
+   "Tokyo Station",
+   "National Diet Building",
+   "Wakō",
+   "Kabukichō Ichiban-gai",
+   "Zōjō-ji Sanmon",
+   "Meiji Jingū Ōtorii",
+   "Seimon Ishibashi",
+   "Fushimi-yagura",
+   "Tokyo Skytree",
+   "Sensō-ji",
+   "Asahi Beer Hall"
+  ],
+  "regions": [
+   {
+    "name": "Detailed core: Shinjuku–Ginza",
+    "box": [
+     35.655,
+     139.69,
+     35.7,
+     139.78
+    ],
+    "status": "built"
+   },
+   {
+    "name": "Greater Tokyo, streamed",
+    "box": [
+     35.4,
+     139.45,
+     35.9,
+     140.2
+    ],
+    "status": "built"
+   }
+  ],
+  "allLabels": [
+   [
+    35.6896,
+    139.7006,
+    "Shinjuku"
+   ],
+   [
+    35.658,
+    139.7016,
+    "Shibuya"
+   ],
+   [
+    35.6717,
+    139.765,
+    "Ginza"
+   ],
+   [
+    35.6812,
+    139.7671,
+    "Tokyo Station"
+   ],
+   [
+    35.7148,
+    139.7967,
+    "Asakusa"
+   ],
+   [
+    35.7101,
+    139.8107,
+    "Skytree"
+   ],
+   [
+    35.7141,
+    139.7774,
+    "Ueno"
+   ],
+   [
+    35.7295,
+    139.7109,
+    "Ikebukuro"
+   ],
+   [
+    35.6267,
+    139.7757,
+    "Odaiba"
+   ],
+   [
+    35.6285,
+    139.7387,
+    "Shinagawa"
+   ],
+   [
+    35.6628,
+    139.7314,
+    "Roppongi"
+   ],
+   [
+    35.6984,
+    139.7731,
+    "Akihabara"
+   ],
+   [
+    35.4437,
+    139.638,
+    "Yokohama"
+   ],
+   [
+    35.6073,
+    140.1063,
+    "Chiba"
+   ],
+   [
+    35.8617,
+    139.6455,
+    "Saitama"
+   ],
+   [
+    35.5308,
+    139.7029,
+    "Kawasaki"
+   ],
+   [
+    35.6329,
+    139.8804,
+    "Maihama"
+   ],
+   [
+    35.6486,
+    140.0417,
+    "Makuhari"
+   ],
+   [
+    35.6947,
+    139.9826,
+    "Funabashi"
+   ],
+   [
+    35.6467,
+    139.7101,
+    "Ebisu"
+   ],
+   [
+    35.6486,
+    139.7031,
+    "Daikanyama"
+   ]
+  ]
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "shinjuku": [
+   "Shinjuku",
+   "#c8c4bc",
+   20,
+   240,
+   [
+    35.682,
+    139.69,
+    35.7,
+    139.715
+   ]
+  ],
+  "shibuya": [
+   "Shibuya",
+   "#c4bcb2",
+   18,
+   230,
+   [
+    35.655,
+    139.69,
+    35.682,
+    139.715
+   ]
+  ],
+  "minato": [
+   "Minato: Akasaka, Roppongi",
+   "#ccc6bc",
+   20,
+   240,
+   [
+    35.655,
+    139.715,
+    35.678,
+    139.755
+   ]
+  ],
+  "chiyoda": [
+   "Chiyoda: the Palace, Marunouchi",
+   "#d2ccc2",
+   20,
+   200,
+   [
+    35.678,
+    139.735,
+    35.7,
+    139.775
+   ]
+  ],
+  "chuo": [
+   "Chūō: Ginza, Nihonbashi",
+   "#cac2b6",
+   22,
+   180,
+   [
+    35.655,
+    139.755,
+    35.678,
+    139.78
+   ]
+  ],
+  "outer": [
+   "Tokyo",
+   "#c8c2b8",
+   16,
+   200,
+   [
+    35.655,
+    139.69,
+    35.7,
+    139.78
+   ]
+  ]
+ },
+ "groves": {
+  "seed": 1920,
+  "density": {
+   "wood": 0.005,
+   "park": 0.0018,
+   "garden": 0.0014,
+   "cemetery": 0.0012
+  },
+  "max": 45000,
+  "tile": 500,
+  "near": 650,
+  "far": 4500,
+  "_": "src/core/groves.js: Meiji Jingū's forest, Yoyogi, the palace gardens, Shinjuku Gyoen, Hibiya and Shiba parks"
+ },
+ "facadeStyles": [
+  {
+   "tex": "curtain",
+   "when": {
+    "minH": 70,
+    "share": 0.85
+   },
+   "bay": 1.6,
+   "floor": 4.0,
+   "colours": [
+    "#a8bccc",
+    "#b8cad8",
+    "#9fb4c4",
+    "#c4d2dc",
+    "#b0c4d0",
+    "#90a8bc",
+    "#c8d4dc"
+   ]
+  },
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "apartments",
+     "residential",
+     "dormitory"
+    ],
+    "minH": 8
+   },
+   "bay": 3.4,
+   "floor": 3.0,
+   "colours": [
+    "#f0eee8",
+    "#e4ddd0",
+    "#d8d0c0",
+    "#ece4d4",
+    "#e0e2e0"
+   ]
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial",
+     "yes"
+    ],
+    "minH": 16,
+    "share": 0.5
+   },
+   "bay": 3.6,
+   "floor": 3.8,
+   "colours": [
+    "#e8e8e4",
+    "#d8d8d4",
+    "#c8c8c4",
+    "#f0eee8",
+    "#b8bcc0"
+   ]
+  },
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "yes"
+    ],
+    "minH": 8,
+    "maxH": 60,
+    "share": 0.35
+   },
+   "bay": 3.4,
+   "floor": 3.0,
+   "low": true,
+   "colours": [
+    "#f0eee8",
+    "#e8e2d6",
+    "#d8d0c0",
+    "#e6e6e2"
+   ]
+  },
+  {
+   "tex": "tile",
+   "when": {
+    "types": [
+     "yes",
+     "commercial",
+     "retail",
+     "office"
+    ],
+    "maxH": 45,
+    "share": 0.55
+   },
+   "bay": 3.2,
+   "floor": 3.4,
+   "low": true,
+   "colours": [
+    "#b8a48a",
+    "#a8927a",
+    "#c8b8a0",
+    "#9a8a78",
+    "#d0c4b0",
+    "#bfb2a0"
+   ]
+  }
+ ],
+ "_facadeStyles": "the engine's facade styles (src/engine/stages/03-blocks.js): towers in glass, apartments with balconies, offices with ribbon windows, older mid-rises in tile",
+ "tokyoRoofs": {
+  "lights": 60,
+  "helipads": 100,
+  "billboards": {
+   "zones": [
+    [
+     35.6915,
+     139.7015,
+     450
+    ],
+    [
+     35.6595,
+     139.7005,
+     380
+    ],
+    [
+     35.6715,
+     139.765,
+     350
+    ],
+    [
+     35.6935,
+     139.7035,
+     300
+    ],
+    [
+     35.6995,
+     139.7715,
+     420
+    ],
+    [
+     35.709,
+     139.774,
+     300
+    ],
+    [
+     35.711,
+     139.796,
+     260
+    ]
+   ],
+   "share": 0.25
+  },
+  "_": "src/tokyo/roofs.js: the red aviation lights blinking on every tower, the helipads, the rooftop billboards of Shinjuku, Shibuya and Ginza"
+ },
+ "bridgeOverGround": true,
+ "_bridgeOverGround": "Tokyo stands on a plateau: the Shuto's decks are measured from the ground under them, six metres a layer",
+ "metro": {
+  "pbf": "data/osm/raw/kanto/kanto-latest.osm.pbf",
+  "box": [
+   35.4,
+   139.45,
+   35.9,
+   140.2
+  ],
+  "tile": 1000,
+  "core": [
+   [
+    35.655,
+    139.69,
+    35.7,
+    139.78
+   ]
+  ],
+  "skyline": {
+   "block": 4000,
+   "minH": 30
+  },
+  "terrainZoom": 13,
+  "near": 2200,
+  "far": 26000,
+  "_": "Greater Tokyo, streamed (tools/metro-tiler.py -> data/metro/tokyo/, src/core/metro.js): Yokohama to Chiba city, southern Saitama; the strip above is the detailed core",
+  "demClose": 3
+ },
+ "cameraFar": 45000,
+ "farLevel": -12,
+ "_farLevel": "the engine's horizon ring goes under the sea: Greater Tokyo's own ground (src/core/metro.js) runs out to the horizon, and the eastern lowlands sit below the core's datum",
+ "stations": {
+  "length": 210,
+  "width": 6,
+  "far": 900,
+  "rush": 220,
+  "day": 0.12,
+  "_": "src/tokyo/stations.js: platforms where the trains stop, and the people on them by the hour"
+ },
+ "rivers": {
+  "sumida": [
+   [
+    35.73873,
+    139.80087
+   ],
+   [
+    35.73871,
+    139.80134
+   ],
+   [
+    35.73866,
+    139.80233
+   ],
+   [
+    35.73895,
+    139.80377
+   ],
+   [
+    35.74087,
+    139.80907
+   ],
+   [
+    35.74121,
+    139.81107
+   ],
+   [
+    35.74123,
+    139.81118
+   ],
+   [
+    35.74086,
+    139.81301
+   ],
+   [
+    35.74026,
+    139.8141
+   ],
+   [
+    35.73945,
+    139.81446
+   ],
+   [
+    35.7375,
+    139.81474
+   ],
+   [
+    35.73652,
+    139.81448
+   ],
+   [
+    35.7357,
+    139.81387
+   ],
+   [
+    35.73487,
+    139.8131
+   ],
+   [
+    35.73339,
+    139.81167
+   ],
+   [
+    35.73188,
+    139.8108
+   ],
+   [
+    35.73028,
+    139.81005
+   ],
+   [
+    35.72803,
+    139.80981
+   ],
+   [
+    35.724,
+    139.80936
+   ],
+   [
+    35.72227,
+    139.80885
+   ],
+   [
+    35.72032,
+    139.80828
+   ],
+   [
+    35.71974,
+    139.80803
+   ],
+   [
+    35.71813,
+    139.80733
+   ],
+   [
+    35.71744,
+    139.80665
+   ],
+   [
+    35.7164,
+    139.80562
+   ],
+   [
+    35.71445,
+    139.80372
+   ],
+   [
+    35.71419,
+    139.80341
+   ],
+   [
+    35.71294,
+    139.80192
+   ],
+   [
+    35.71192,
+    139.80071
+   ],
+   [
+    35.71169,
+    139.80049
+   ],
+   [
+    35.71003,
+    139.79894
+   ],
+   [
+    35.70903,
+    139.798
+   ],
+   [
+    35.70824,
+    139.79742
+   ],
+   [
+    35.70712,
+    139.79659
+   ],
+   [
+    35.7056,
+    139.79583
+   ],
+   [
+    35.70195,
+    139.79403
+   ],
+   [
+    35.70135,
+    139.79373
+   ],
+   [
+    35.69958,
+    139.79255
+   ],
+   [
+    35.69916,
+    139.79227
+   ],
+   [
+    35.69758,
+    139.79086
+   ],
+   [
+    35.69642,
+    139.78995
+   ],
+   [
+    35.69537,
+    139.78914
+   ],
+   [
+    35.6948,
+    139.7889
+   ],
+   [
+    35.69385,
+    139.78881
+   ],
+   [
+    35.69285,
+    139.78872
+   ],
+   [
+    35.69206,
+    139.7889
+   ],
+   [
+    35.69177,
+    139.78897
+   ],
+   [
+    35.6917,
+    139.78898
+   ],
+   [
+    35.69141,
+    139.78905
+   ],
+   [
+    35.69096,
+    139.78931
+   ],
+   [
+    35.68948,
+    139.79019
+   ],
+   [
+    35.68921,
+    139.79047
+   ],
+   [
+    35.68779,
+    139.792
+   ],
+   [
+    35.68749,
+    139.79216
+   ],
+   [
+    35.68612,
+    139.7929
+   ],
+   [
+    35.68603,
+    139.79294
+   ],
+   [
+    35.68595,
+    139.79298
+   ],
+   [
+    35.68503,
+    139.79315
+   ],
+   [
+    35.68354,
+    139.79268
+   ],
+   [
+    35.68335,
+    139.79252
+   ],
+   [
+    35.68132,
+    139.79086
+   ],
+   [
+    35.68107,
+    139.79066
+   ],
+   [
+    35.6795,
+    139.78937
+   ],
+   [
+    35.67895,
+    139.78904
+   ],
+   [
+    35.67692,
+    139.7878
+   ],
+   [
+    35.67691,
+    139.78779
+   ],
+   [
+    35.6763,
+    139.78757
+   ],
+   [
+    35.67429,
+    139.78683
+   ],
+   [
+    35.67414,
+    139.78679
+   ],
+   [
+    35.67332,
+    139.78665
+   ],
+   [
+    35.67286,
+    139.78657
+   ],
+   [
+    35.67213,
+    139.78527
+   ],
+   [
+    35.67172,
+    139.78444
+   ],
+   [
+    35.67105,
+    139.78312
+   ],
+   [
+    35.6709,
+    139.78286
+   ],
+   [
+    35.6709,
+    139.78285
+   ],
+   [
+    35.67077,
+    139.78263
+   ],
+   [
+    35.67051,
+    139.78218
+   ],
+   [
+    35.66995,
+    139.78193
+   ],
+   [
+    35.66853,
+    139.78131
+   ],
+   [
+    35.66788,
+    139.78102
+   ],
+   [
+    35.66666,
+    139.78048
+   ],
+   [
+    35.66587,
+    139.77988
+   ],
+   [
+    35.66555,
+    139.77955
+   ],
+   [
+    35.66514,
+    139.77915
+   ],
+   [
+    35.66436,
+    139.7781
+   ],
+   [
+    35.66432,
+    139.77803
+   ],
+   [
+    35.6632,
+    139.77625
+   ],
+   [
+    35.66305,
+    139.77601
+   ],
+   [
+    35.66174,
+    139.77391
+   ],
+   [
+    35.66145,
+    139.77352
+   ],
+   [
+    35.6614,
+    139.77346
+   ],
+   [
+    35.65973,
+    139.77124
+   ],
+   [
+    35.65879,
+    139.76998
+   ],
+   [
+    35.65737,
+    139.7681
+   ],
+   [
+    35.65691,
+    139.76748
+   ],
+   [
+    35.65623,
+    139.76658
+   ],
+   [
+    35.65548,
+    139.76597
+   ],
+   [
+    35.65151,
+    139.76488
+   ]
+  ],
+  "meguro": [
+   [
+    35.65119,
+    139.68601
+   ],
+   [
+    35.65112,
+    139.68611
+   ],
+   [
+    35.65073,
+    139.68662
+   ],
+   [
+    35.65038,
+    139.68711
+   ],
+   [
+    35.65025,
+    139.68735
+   ],
+   [
+    35.65013,
+    139.68763
+   ],
+   [
+    35.65007,
+    139.68788
+   ],
+   [
+    35.65003,
+    139.68816
+   ],
+   [
+    35.64995,
+    139.6903
+   ],
+   [
+    35.64994,
+    139.69059
+   ],
+   [
+    35.64992,
+    139.691
+   ],
+   [
+    35.64989,
+    139.69145
+   ],
+   [
+    35.64983,
+    139.6918
+   ],
+   [
+    35.64974,
+    139.69209
+   ],
+   [
+    35.64963,
+    139.69238
+   ],
+   [
+    35.6495,
+    139.69263
+   ],
+   [
+    35.64927,
+    139.69302
+   ],
+   [
+    35.649,
+    139.69347
+   ],
+   [
+    35.64863,
+    139.69408
+   ],
+   [
+    35.64823,
+    139.69474
+   ],
+   [
+    35.64793,
+    139.69524
+   ],
+   [
+    35.64764,
+    139.69575
+   ],
+   [
+    35.64723,
+    139.69642
+   ],
+   [
+    35.64693,
+    139.69693
+   ],
+   [
+    35.64653,
+    139.69755
+   ],
+   [
+    35.64627,
+    139.69805
+   ],
+   [
+    35.64605,
+    139.69844
+   ],
+   [
+    35.64586,
+    139.6987
+   ],
+   [
+    35.64551,
+    139.69917
+   ],
+   [
+    35.64507,
+    139.6997
+   ],
+   [
+    35.64489,
+    139.69993
+   ],
+   [
+    35.64454,
+    139.70037
+   ],
+   [
+    35.64444,
+    139.70048
+   ],
+   [
+    35.64425,
+    139.70064
+   ],
+   [
+    35.64402,
+    139.70082
+   ],
+   [
+    35.64389,
+    139.70092
+   ],
+   [
+    35.64384,
+    139.70098
+   ],
+   [
+    35.64368,
+    139.70127
+   ],
+   [
+    35.64364,
+    139.70134
+   ],
+   [
+    35.64359,
+    139.70139
+   ],
+   [
+    35.64354,
+    139.70144
+   ],
+   [
+    35.64267,
+    139.70184
+   ],
+   [
+    35.64239,
+    139.70197
+   ],
+   [
+    35.64228,
+    139.70202
+   ],
+   [
+    35.64164,
+    139.70243
+   ],
+   [
+    35.64137,
+    139.7026
+   ],
+   [
+    35.64088,
+    139.70309
+   ],
+   [
+    35.64032,
+    139.70369
+   ],
+   [
+    35.63953,
+    139.70464
+   ],
+   [
+    35.63855,
+    139.70569
+   ],
+   [
+    35.63779,
+    139.70654
+   ],
+   [
+    35.63684,
+    139.70754
+   ],
+   [
+    35.63579,
+    139.70863
+   ],
+   [
+    35.63491,
+    139.70959
+   ],
+   [
+    35.63377,
+    139.71089
+   ],
+   [
+    35.63202,
+    139.71249
+   ],
+   [
+    35.63162,
+    139.71279
+   ],
+   [
+    35.6312,
+    139.71309
+   ],
+   [
+    35.62848,
+    139.71504
+   ],
+   [
+    35.62808,
+    139.71551
+   ],
+   [
+    35.628,
+    139.71567
+   ],
+   [
+    35.62743,
+    139.71676
+   ],
+   [
+    35.62672,
+    139.7182
+   ],
+   [
+    35.62613,
+    139.71966
+   ],
+   [
+    35.62561,
+    139.72102
+   ],
+   [
+    35.62551,
+    139.72137
+   ],
+   [
+    35.6251,
+    139.72284
+   ],
+   [
+    35.62472,
+    139.72371
+   ],
+   [
+    35.62445,
+    139.72416
+   ],
+   [
+    35.62433,
+    139.72471
+   ],
+   [
+    35.62429,
+    139.72542
+   ],
+   [
+    35.62405,
+    139.72592
+   ],
+   [
+    35.62309,
+    139.72744
+   ],
+   [
+    35.62233,
+    139.72842
+   ],
+   [
+    35.62138,
+    139.72931
+   ],
+   [
+    35.62094,
+    139.72976
+   ],
+   [
+    35.6207,
+    139.73025
+   ],
+   [
+    35.62032,
+    139.73118
+   ],
+   [
+    35.61966,
+    139.73197
+   ],
+   [
+    35.61941,
+    139.73237
+   ],
+   [
+    35.6191,
+    139.73288
+   ],
+   [
+    35.61882,
+    139.73342
+   ],
+   [
+    35.61853,
+    139.73386
+   ],
+   [
+    35.61826,
+    139.73412
+   ],
+   [
+    35.61808,
+    139.73426
+   ],
+   [
+    35.61794,
+    139.73434
+   ],
+   [
+    35.61787,
+    139.73437
+   ],
+   [
+    35.61787,
+    139.73437
+   ],
+   [
+    35.6172,
+    139.73477
+   ],
+   [
+    35.61681,
+    139.735
+   ],
+   [
+    35.61659,
+    139.73515
+   ],
+   [
+    35.61652,
+    139.7352
+   ],
+   [
+    35.61647,
+    139.73523
+   ],
+   [
+    35.61631,
+    139.73538
+   ],
+   [
+    35.61621,
+    139.73549
+   ],
+   [
+    35.61612,
+    139.73565
+   ],
+   [
+    35.61605,
+    139.73581
+   ],
+   [
+    35.61597,
+    139.73607
+   ],
+   [
+    35.61584,
+    139.73672
+   ],
+   [
+    35.61579,
+    139.73702
+   ],
+   [
+    35.61576,
+    139.73724
+   ],
+   [
+    35.61579,
+    139.73744
+   ],
+   [
+    35.61586,
+    139.73795
+   ],
+   [
+    35.61589,
+    139.7382
+   ],
+   [
+    35.61589,
+    139.73845
+   ],
+   [
+    35.61587,
+    139.73872
+   ],
+   [
+    35.61584,
+    139.739
+   ],
+   [
+    35.6158,
+    139.73928
+   ],
+   [
+    35.61578,
+    139.73953
+   ],
+   [
+    35.61579,
+    139.73974
+   ],
+   [
+    35.61584,
+    139.74005
+   ],
+   [
+    35.61637,
+    139.74231
+   ],
+   [
+    35.61695,
+    139.7447
+   ],
+   [
+    35.61784,
+    139.74827
+   ]
+  ],
+  "_": "centrelines from the Kantō extract, for the boats and the cherry trees (src/tokyo/water.js, src/tokyo/seasons.js)"
+ },
+ "boats": {
+  "yakatabune": 10,
+  "waterBuses": 4,
+  "_": "src/tokyo/water.js: on the Sumida",
+  "start": [
+   35.6908,
+   139.7902
+  ]
+ },
+ "seasons": {
+  "spacing": 8,
+  "far": 2500,
+  "cherries": {
+   "Meguro river": {
+    "line": "river:meguro",
+    "offsets": [
+     -11,
+     11
+    ]
+   },
+   "Chidorigafuchi": {
+    "line": [
+     [
+      35.69245,
+      139.7448
+     ],
+     [
+      35.6911,
+      139.74575
+     ],
+     [
+      35.6896,
+      139.7469
+     ],
+     [
+      35.6883,
+      139.7484
+     ],
+     [
+      35.6874,
+      139.7499
+     ]
+    ],
+    "offsets": [
+     0,
+     6
+    ]
+   },
+   "Ueno Park": {
+    "line": [
+     [
+      35.7126,
+      139.7718
+     ],
+     [
+      35.7144,
+      139.7726
+     ],
+     [
+      35.7161,
+      139.7736
+     ],
+     [
+      35.7176,
+      139.7744
+     ]
+    ],
+    "offsets": [
+     -7,
+     7
+    ]
+   },
+   "Sumida Park": {
+    "line": [
+     [
+      35.7083,
+      139.8008
+     ],
+     [
+      35.7115,
+      139.8015
+     ],
+     [
+      35.7147,
+      139.8023
+     ],
+     [
+      35.7178,
+      139.8031
+     ]
+    ],
+    "offsets": [
+     0,
+     10
+    ]
+   },
+   "_": "the Meguro river along both banks; the rest along their paths"
+  },
+  "ginkgo": [
+   [
+    35.6731,
+    139.7186
+   ],
+   [
+    35.6788,
+    139.718
+   ]
+  ],
+  "_": "src/tokyo/seasons.js: cherries and ginkgo; the season from the date, #season=, or the button"
+ },
+ "tokyoEvents": {
+  "first": 45000,
+  "every": [
+   70000,
+   120000
+  ],
+  "_": "src/tokyo/events.js: the hanabi, the Sanja Matsuri, the Shibuya scramble, Godzilla",
+  "matsuriPath": [
+   [
+    35.7112,
+    139.79632
+   ],
+   [
+    35.7135,
+    139.79645
+   ],
+   [
+    35.71455,
+    139.79672
+   ]
+  ]
+ }
+}
