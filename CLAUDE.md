@@ -48,6 +48,11 @@ on purpose and checked.
 - A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
   not a new bespoke pass. Do not write another spatial hash or occupancy grid: `core/city`'s, little-demo's flora
   buckets and the biome core's planned index are to become one shared module (the refactor's roadmap, section 8).
+- **Voth is Streetlab's city plan** (`settlements/streetlab`, on `core/city`; owner, 2026-10-09). The old page
+  (`settlements/voth`) stays up only as the source things are ported from: port from it, do not add features to it.
+- `core/city` will become the NPC-placement and quest-building tool and, later, the player's settlement builder, so
+  it will run in Godot: keep its data side free of three.js and the DOM, its records keyed by stable ids, its edits
+  kept as deltas by id, and its rules (overlap, frontage, slope) as plain functions on records.
 
 **Known bugs not to build on.** `BIO.iridBarkMat` is defined by five biome kits (two unguarded): never load two of
 them in one page until it is a core material kind. The catalog furniture batch unrolls indexed geometry (1.5 to 6
