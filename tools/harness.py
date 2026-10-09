@@ -134,6 +134,11 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
     return pg, errs, ready
 
 
+# Pages too big to build whole under software GL: the query a smoke load opens them with (their own verify.py does the
+# same). The catalog's contact sheet builds all 1674 pieces otherwise, past any sensible timeout.
+SMOKE_QUERY = {'kits/catalog/dist/catalog.html': '?page=indoor'}
+
+
 async def smoke(pages, settle_ms=2500):
     from playwright.async_api import async_playwright
     bad = 0
@@ -142,7 +147,8 @@ async def smoke(pages, settle_ms=2500):
         for html in pages:
             t = time.time()
             with serve(ROOT) as port:
-                pg, errs, ready = await open_page(b, html, port, root=ROOT)
+                rel = os.path.relpath(os.path.abspath(html), ROOT).replace(os.sep, '/')
+                pg, errs, ready = await open_page(b, html, port, root=ROOT, query=SMOKE_QUERY.get(rel, ''))
                 await pg.wait_for_timeout(settle_ms)
                 try:
                     st = await pg.evaluate(STATS_JS)
