@@ -184,6 +184,30 @@ VC.cantonDress = function (cn) {
   });
   return cn + ' dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks, ' + n.fires + ' fires';
 };
+/* the captured domes that stand on nothing (owner, 2026-10-09: "side domes on fortress dont actually connect to
+   anything"): under each dome of a canton's model, the highest piece beneath its middle is what it should sit on; where
+   there is air between them (more than TUNE.domeGap), a drum fills it, as wide as the dome's foot, with a moulding at its
+   head. The Fortress's in its own dark grey, the others in their canton's stone */
+VC.domeDrums = function () {
+  var B = VOTH, n = 0;
+  VC.capture('dome drums', 2, function () {
+    CANT.list.forEach(function (M) {
+      var mine = [], seen = new Set();
+      CANT.grid.forEach(function (a) { a.forEach(function (p) { if (!seen.has(p) && p.M === M) { seen.add(p); mine.push(p); } }); });
+      mine.forEach(function (D) {
+        if (D.sh !== 'dome') return;
+        var cx = (D.x0 + D.x1) / 2, cz = (D.z0 + D.z1) / 2, r = Math.min(D.x1 - D.x0, D.z1 - D.z0) / 2, sup = -Infinity;
+        mine.forEach(function (p) { if (p !== D && p.x0 <= cx && p.x1 >= cx && p.z0 <= cz && p.z1 >= cz && p.y1 <= D.y0 + 0.2 && p.y1 > sup) sup = p.y1; });
+        if (sup === -Infinity || D.y0 - sup < TUNE.domeGap) return;
+        var col = M.n === 'Fortress' ? 0x24252a : B.shade(M.tone, -0.06);
+        B.CYL(cx, sup, cz, r * 0.92, D.y0 - sup + 0.2, 0, col, 'stone');
+        B.CYL(cx, D.y0 - 0.5, cz, r * 1.0, 0.7, 0, B.shade(col, -0.15), 'stone');
+        n++;
+      });
+    });
+  });
+  return n + ' drums under floating domes';
+};
 /* ships alongside a ship pier: on each side, by a KRAND hash of the pier and the side (never the stream), a junk or a
    cargo hulk toward the pier's tip, a clearance off its deck, only where all of its hull floats */
 VC.berthShips = function (root, out, Lp, w) {
@@ -248,6 +272,7 @@ VC.buildDistricts = function () {
   VC.cantonFires = [];
   log.push(VC.cantonDress('Temple'));                  /* the Temple's blood-red and gilt dressing (below) */
   log.push(VC.cantonDress('Fortress'));                /* the Fortress's green and gold banners, its towers' green fires */
+  log.push(VC.domeDrums());                            /* drums under the captured domes that float (below) */
   log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
   log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the harbour next: its piers go into Voth's own PIERS list, which the chinampa pass keeps clear of */
