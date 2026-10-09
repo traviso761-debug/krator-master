@@ -159,12 +159,26 @@ on the page's own renderer, read back and kept. They are drawn two a frame from 
 ones the search shows go first.
 
 **Day and night** (`VC.dayNight` in `55-vc-host.js`, `TUNE.clock`; owner, 2026-10-09). One clock drives the page:
-core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`) as their own scripts.
-* **The sun** follows Voth's own sun for the hour (`21-sky.js` `skySunDir`, lifted into `VOTH` with `SKY` and `PAL`),
-  at Voth's latitude on the equinox (`TUNE.clock.doy`).
-  * Its strength and colour run from `PAL.sky.sunLow` to `sunCore`.
-  * At night the fill light turns to the gas giant's planetshine (`PAL.sky.shine`, from the giant's direction).
-  * The sky and fog go to `PAL.sky.nightHor`, with a little `sunset` at the horizon hours.
+core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`,
+`3-particles`, `4-weather`, `8-export`, `9-host`, `b-skylight`) as their own scripts.
+* **The sky** is the standard Krator sky, Voth's own: `build.py voth_sky_fragment()` lifts `20-stage.js` section 5 (the baked
+  volcano dome, the sun and moon discs) and `21-sky.js` up to its panel (the gas giant and its rings, the stars, the sun
+  disc, the pressure and eclipse model) into `VSKY`, with Voth's core helpers as a private stream. Nothing is copied. It
+  is not in core/atmos yet: `GODOT-PLAN.md` moves `21-sky.js` there as a sky preset in the refactor.
+  * `VC.dayNight` makes it (`VSKY.make`) and draws its background scene before the city each frame (a wrapper on
+    `renderer.render` for the screen pass only).
+  * The clock sets its hour, day and day of the year (`TUNE.clock.doy`). Its state drives the city's sun: the key light's
+    direction, colour and strength, with planetshine at night and eclipses. It also drives the sky fill, and the fog takes
+    the dome's horizon colour.
+  * `ATMOS.skylight` captures it as every standard material's reflections, recaptured as the hour moves.
+  * The volcano smokes, with a small or large eruption now and then, picked by an integer hash of the clock's quarter
+    hour (`TUNE.weather.eruptLarge`, `eruptSmall`), so the same hour always shows the same sky.
+* **The weather** is core/atmos's (`ATMOS.weather`) with its opt-in ash modes. The **Weather** select in the panel offers
+  auto, clear, rain, storm, fog, ashfall and ash (the ash storm). The page opens clear (`TUNE.weather.mode`).
+  * The module draws the rain and the ash flecks.
+  * `VC.applyHour` does what the weather does to this scene (`TUNE.weather`): it closes the fog in, dims the sun and the
+    fill, browns the haze in ash, lights everything in a lightning flash, and veils the dome (which takes no fog).
+  * An ash storm puts the volcano in Voth's violent bake.
 * **The lamps:** every lamp head is a core/atmos glow (`ATMOS.glowAdd`) with its own on and off hours
   (`TUNE.light.hours`):
   * electric switches on at once;

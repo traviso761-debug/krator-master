@@ -59,6 +59,11 @@ var TUNE = {
   /* the clock (core/clock KCLOCK, a 72-minute day): the hour it opens at, whether it runs, the speeds offered, the
      day of the year for the sun (Voth's equinox) */
   clock: { hour: 10, running: true, speeds: [1, 2, 4, 8], doy: 80 },
+  /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
+     far each closes the fog in (fogK, rainK, ashK of the way to closeFar metres), how much each dims the sun, the ash
+     haze and the lightning's colours and kick, and the volcano's odds of a large or small eruption each quarter hour */
+  weather: { mode: 'clear', fogK: 0.93, rainK: 0.55, ashK: 0.97, closeFar: 420, rainSun: 0.55, fogSun: 0.3, ashSun: 0.8,
+             ashFog: 0x6b5d49, flash: 0xffd8b8, flashHemi: 1.4, eruptLarge: 0.05, eruptSmall: 0.3 },
   /* park and plaza furniture (39-vc-furnish.js): bench spacing and inset along a park's edges, the areas that earn a
      shrine, corner statues and an obelisk, the plaza's ring of benches round its fountain, the pocket greens' odds */
   parkFurn: { benchEvery: 24, benchInset: 4, shrineInset: 6, cornerInset: 9, statueArea: 20000, statues: 3, shrineArea: 8000, obeliskArea: 70000,

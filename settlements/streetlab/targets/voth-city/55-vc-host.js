@@ -445,8 +445,13 @@ VC.stripCantons = function () {
 
 /* ---------------------------------------------------------------- day and night
    One clock for the page: core/clock's KCLOCK, a 72-minute day (TUNE.clock). It drives:
-   - the sun, by Voth's own sun direction for the hour (21-sky.js skySunDir, lifted into VOTH), with Voth's sky colours
-     (PAL.sky): the sun's strength and colour, the fill turning to the gas giant's planetshine at night, the sky and fog;
+   - the sky: Voth's own (VSKY, 20-stage.js section 5 and 21-sky.js, lifted whole by build.py), a background scene
+     drawn before the city: the volcano dome, the gas giant and its rings, the stars, the sun. Its state drives the
+     city's sun (key direction, colour and strength, eclipses, planetshine), the sky fill and the fog (the dome's horizon).
+     core/atmos's skylight (ATMOS.skylight) captures it as every standard material's reflections;
+   - the weather: core/atmos's modes with its opt-in ash (ATMOS.weather, the Weather select): rain, storm, fog, ashfall
+     and the ash storm. The module draws the rain and the ash; applyHour closes the fog in, dims the sun, browns the
+     haze, veils the dome, and puts the volcano in its violent bake in an ash storm (TUNE.weather);
    - the evening's lights: every lamp head is a core/atmos glow with its own on and off hours (37-vc-light.js), the
      lamp heads and the lighthouse beams dim by day;
    - motion: the vehicles run on the clock's motion time (times TUNE.timeScale), so the speed buttons speed them too.
@@ -454,30 +459,58 @@ VC.stripCantons = function () {
 VC.dayNight = function () {
   var C = VC.clock = KCLOCK.make({ hour: TUNE.clock.hour, running: TUNE.clock.running }), P = VOTH.PAL.sky;
   var hemi = null, fill = null; scene.traverse(function (o) { if (o.isHemisphereLight && !hemi) hemi = o; if (o.isDirectionalLight && o !== sun && !fill) fill = o; });
-  var D0 = { sun: sun.intensity, hemi: hemi && hemi.intensity, hemiC: hemi && hemi.color.clone(), fill: fill && fill.intensity, fillC: fill && fill.color.clone(), bg: scene.background.clone() };
-  var col = function (h) { return new THREE.Color(h); }, cNight = col(P.nightHor), cSunset = col(P.sunset), cLow = col(P.sunLow), cCore = col(P.sunCore), cShine = col(P.shine), cNightZen = col(P.nightZen);
-  var giant = VOTH.altAzToVec(VOTH.SKY.giantAlt, VOTH.SKY.giantAz), sd = new THREE.Vector3(), tmp = new THREE.Color();
+  /* the sky: Voth's own (VSKY, lifted from settlements/voth/src 20-stage.js and 21-sky.js by build.py), a background
+     scene drawn before the city each frame: the volcano dome, the gas giant and its rings, the stars, the sun */
+  var S = VC.sky = VSKY.make(scene, camera, renderer, VOTH.PAL);
+  var drawCity = renderer.render.bind(renderer);
+  renderer.render = function (sc, cam) {
+    if (sc !== scene || cam !== camera || renderer.getRenderTarget()) return drawCity(sc, cam);
+    var ac = renderer.autoClear; renderer.autoClear = false; renderer.clear(); S.render(); renderer.clearDepth(); drawCity(sc, cam); renderer.autoClear = ac;
+  };
+  var D0 = { sun: sun.intensity, hemi: hemi && hemi.intensity, fill: fill && fill.intensity, fillC: fill && fill.color.clone(), near: scene.fog.near, far: scene.fog.far };
+  var cShine = new THREE.Color(P.shine), cAsh = new THREE.Color(TUNE.weather.ashFog), cFlash = new THREE.Color(TUNE.weather.flash), hor = new THREE.Color();
   var ss = function (a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  /* the weather's veil over the dome (which takes no fog), closing in as fog, rain or an ash storm thickens */
+  var veil = new THREE.Mesh(new THREE.SphereGeometry(9000, 32, 16), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.BackSide, fog: false, depthWrite: false }));
+  veil.userData.probeSkip = true; veil.renderOrder = -9; veil.frustumCulled = false; scene.add(veil);
+  VC.W = { rain: 0, fog: 0, ash: 0, flash: 0, wet: 0 };
   VC.applyHour = function (h) {
-    VOTH.skySunDir(h, TUNE.clock.doy, sd);
-    var up = ss(Math.sin(-6 * Math.PI / 180), Math.sin(8 * Math.PI / 180), sd.y), hi = ss(0, 0.4, sd.y), tw = Math.max(0, 1 - Math.abs(sd.y) / 0.2);
-    sun.position.copy(sun.target.position).addScaledVector(sd, 3000); sun.intensity = D0.sun * up; sun.color.copy(cLow).lerp(cCore, hi);
-    if (fill) { fill.position.copy(giant).multiplyScalar(3000); fill.intensity = D0.fill * up + 0.32 * (1 - up); fill.color.copy(cShine).lerp(D0.fillC, up); }
-    if (hemi) { hemi.intensity = D0.hemi * (0.3 + 0.7 * up); hemi.color.copy(cNightZen).lerp(D0.hemiC, up); }
-    tmp.copy(cNight).lerp(D0.bg, up).lerp(cSunset, 0.35 * tw * Math.min(1, up * 2)); scene.background.copy(tmp); if (scene.fog) scene.fog.color.copy(tmp);
+    S.setTime(C.day, h, TUNE.clock.doy); S.update();
+    var K = S.STATE, W = VC.W, X = TUNE.weather, up = K.dayK;
+    var dim = (1 - X.rainSun * W.rain) * (1 - X.fogSun * W.fog) * (1 - X.ashSun * W.ash * W.ash);
+    sun.position.copy(sun.target.position).addScaledVector(K.keyDir, 3000); sun.color.copy(K.keyCol); sun.intensity = D0.sun * Math.min(1.15, K.keyI) * dim;
+    if (fill) { fill.position.copy(S.giantDir).multiplyScalar(3000); fill.intensity = (D0.fill * up + 0.32 * (1 - up)) * (0.5 + 0.5 * dim); fill.color.copy(cShine).lerp(D0.fillC, up); }
+    if (hemi) { hemi.intensity = D0.hemi * (0.3 + 0.7 * up) * (0.6 + 0.4 * dim) + W.flash * X.flashHemi; hemi.color.copy(K.hemiSky); }
+    /* the fog takes the dome's own horizon, browned by ash; it closes in with the weather */
+    hor.copy(S.DOME.uSkyHor.value).convertLinearToSRGB().lerp(cAsh, Math.min(1, W.ash * 0.85)).lerp(cFlash, W.flash * 0.35);
+    var thick = Math.max(W.fog * X.fogK, W.rain * X.rainK, W.ash * W.ash * X.ashK);
+    scene.fog.color.copy(hor); scene.fog.far = D0.far * (1 - thick) + X.closeFar * thick; scene.fog.near = Math.min(scene.fog.far * 0.5, D0.near * (1 - thick) + 20 * thick);
+    veil.position.copy(camera.position); veil.material.color.copy(hor); veil.material.opacity = Math.min(1, ss(0.15, 0.95, thick) + 0.4 * W.ash);
+    /* the volcano: the ash storm forces Voth's 'violent' bake; otherwise it smokes, with a small or large eruption now
+       and then, picked by an integer hash of the clock's quarter hour (deterministic: the same hour, the same sky) */
+    var slot = Math.floor((C.day * 24 + h) * 4), r = (Math.imul(slot ^ 0x5bd1e995, 0x27d4eb2d) >>> 0) / 4294967296;
+    S.volcano(W.ash > 0.6 ? 'violent' : r < X.eruptLarge ? 'large' : r < X.eruptLarge + X.eruptSmall ? 'small' : 'idle');
     var night = typeof ATMOS !== 'undefined' && ATMOS.night ? ATMOS.night(h) : 1 - up;
     (VC.lampMats || []).forEach(function (m) { m.color.setScalar(0.3 + 0.7 * night); });
     if (VC.beaconMat) VC.beaconMat.opacity = TUNE.beaconOpacity * night;
     VC.dayK = up;
   };
-  /* the lamp glows: core/atmos, its clock fed the page's frame time */
+  /* the lamp glows, the weather and the sky's light: core/atmos, its clock fed the page's frame time */
   if (typeof ATMOS !== 'undefined') {
     VC.atmosHooks = [];
     ATMOS.init({ THREE: THREE, scene: scene, camera: camera, hour: function () { return C.hour; }, onFrame: function (fn) { VC.atmosHooks.push(fn); },
       ground: function (x, z) { return TERR.h(x, z); }, seed: 7, err: function (m) { console.warn(m); },
       viewH: function () { return innerHeight; }, pixelRatio: function () { return renderer.getPixelRatio(); } });
     (PLAN.lamps || []).forEach(function (l) { var c = new THREE.Color(TUNE.light.glow[l.kind]); (l.heads || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [c.r, c.g, c.b], TUNE.light.halo[l.kind], l.on, l.off); }); });
+    /* the weather: core/atmos's modes with its opt-in ash (Voth's ash storm); it draws the rain and the ash, the host
+       (applyHour) does what they do to this scene */
+    ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
+    ATMOS.weatherUI($('wx'));
+    /* every standard material reflects the sky as it is now (recaptured as the hour moves) */
+    var gnd = new THREE.Color();
+    ATMOS.skylight({ renderer: renderer, sky: S.scene, scene: scene, ground: function () { return hemi ? gnd.copy(hemi.groundColor).convertSRGBToLinear().multiplyScalar(hemi.intensity) : gnd.setRGB(0.1, 0.08, 0.06); },
+      key: function () { return (VC.W.ash > 0.5 ? 'a' : '') + (S.STATE.ecl > 0.5 ? 'e' : ''); } });
   }
   var last = null, shown = '';
   (window._frameHooks = window._frameHooks || []).unshift(function (now) {
