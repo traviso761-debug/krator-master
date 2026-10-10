@@ -34,7 +34,7 @@ def main():
     refresh = "--refresh" in sys.argv
     cfg = json.load(open(os.path.join(ROOT, "data", "cities", city + ".json")))
     z = cfg.get("terrain", {}).get("zoom", 14)
-    s, w, n, e = cfg["fetch"]["bbox"]
+    s, w, n, e = cfg.get("bounds") or cfg["fetch"]["bbox"]   # the whole of a city that has grown past its first box
     dest = os.path.join(ROOT, "data", "osm", "raw", city, "terrain")
     os.makedirs(dest, exist_ok=True)
     x0, y0 = tile_xy(n, w, z)

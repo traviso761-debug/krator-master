@@ -338,7 +338,7 @@ FURN({
 });
 
 FURN({
-  key: 'hl_rus_pell', name: 'Training pell', culture: 'rustic', tier: 'court', type: 'tool', setting: 'outdoor',
+  key: 'hl_rus_pell', name: 'Training pell', culture: 'rustic', tier: 'court', type: 'tool', task: ['melee-training'], setting: 'outdoor',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 1.2, left: 0.6, right: 0.6 },
   materials: ['timber', 'thatch'], source: 'settlements/highlands/src/81-rus-village.js buildHlRusMuster (pells)',
   w: 0.9, d: 0.3, h: 1.8, variants: 1,
@@ -351,7 +351,7 @@ FURN({
 });
 
 FURN({
-  key: 'hl_rus_target_butt', name: 'Archery butt', culture: 'rustic', tier: 'court', type: 'tool', setting: 'outdoor',
+  key: 'hl_rus_target_butt', name: 'Archery butt', culture: 'rustic', tier: 'court', type: 'tool', task: ['ranged-training'], setting: 'outdoor',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 3.0 },
   materials: ['thatch', 'timber'], source: 'settlements/highlands/src/81-rus-village.js buildHlRusMuster (target butts)',
   w: 1.6, d: 0.98, h: 1.6, variants: 1,
@@ -551,3 +551,7 @@ FURN({
     F.box(0, H - 0.2, D / 2 - 0.04, L - 0.2, 0.14, 0.04, 0, F.shade(c, -0.1), 'wood');    /* the apron */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed rustic_training_<role> */
+FK.set({ culture: 'rustic', tier: 'common', roles: 'training', prefix: 'rustic_training_', S: RUS_COMMON, names: {
+  training_dummy: 'Larch practice post', archery_butt: 'Straw archery butt' } });

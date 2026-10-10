@@ -81,3 +81,7 @@ FURN({
     F.box(0, 0.4, -0.08, 0.5, 0.62, 0.04, 0, F.col('clothVothPurple'), 'cloth');       /* the skirt of the robe */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed voth_training_<role> */
+FK.set({ culture: 'voth', tier: 'common', roles: 'training', prefix: 'voth_training_', S: VOTH_COMMON, names: {
+  training_dummy: 'Cane-wrapped practice post', archery_butt: 'Reed-bundle archery butt' } });

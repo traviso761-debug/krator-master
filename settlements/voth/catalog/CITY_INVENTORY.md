@@ -44,8 +44,8 @@ Coverage: **57287 of 117936** primitives the city emits (48.6%) are inside a cap
 | `voth_city_house_of_healing` | House of Healing | `65-facade.js:4849` houseOfHealing() | 1 | 1 | 131 × 131 × 35 |
 | `voth_city_palace_architecture` | Palace architecture | `50-cantons.js:1055` palaceArchitecture() | 1 | 1 | 416 × 416 × 161 |
 | `voth_city_port_deck_v2` | Port deck | `65-facade.js:3240` portDeckV2() | 1 | 1 | 580 × 416 × 156 |
-| `voth_city_silt_strider_station` | Silt strider station | `65-facade.js:877` siltStriderStation() | 1 | 1 | 26 × 22 × 8 |
-| `voth_city_strider_station_build` | Silt strider station (built) | `66-striders.js:76` striderStationBuild() | 14 | 2 | 44 × 29 × 16 |
+| `voth_city_silt_strider_station` | Elephant bug station | `65-facade.js:877` siltStriderStation() | 1 | 1 | 26 × 22 × 8 |
+| `voth_city_strider_station_build` | Elephant bug station (built) | `66-striders.js:76` striderStationBuild() | 14 | 2 | 44 × 29 × 16 |
 | `voth_city_family_tomb` | Family tomb | `65-facade.js:1377` familyTomb() | 100 | 1 | 6 × 5 × 8 |
 | `voth_city_funerary_gate` | Necropolis gate | `69-district-content.js:342` funeraryGate() | 4 | 1 | 8 × 17 × 10 |
 | `voth_city_funerary_temple` | Funerary temple | `65-facade.js:1410` funeraryTemple() | 1 | 1 | 66 × 74 × 41 |

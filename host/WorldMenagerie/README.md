@@ -2,7 +2,8 @@
 
 Procedural models of places, served to the local network by a small Python server. Ten of them so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland**, **New York** and
-**Venice**, built from OpenStreetMap; **Voth**, a page of its own; and fan work generated from a seed —
+**Venice**, built from OpenStreetMap; **Antigua Guatemala**, also from the map, under three volcanoes, one of
+them erupting; **Voth**, a page of its own; and fan work generated from a seed —
 **City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
 war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
@@ -42,6 +43,10 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
 | `/nyc` | `/nyc.html`, `/newyork`, `/manhattan` | `nyc.html` | New York: massing model |
 | `/venice` | `/venice.html`, `/venezia` | `venice.html` | Venice: massing model |
+| `/rome` | `/rome.html`, `/roma` | `rome.html` | Rome: the historic centre, hills and all, its great buildings modelled |
+| `/tokyo` | `/tokyo.html`, `/東京` | `tokyo.html` | Tokyo: Shinjuku to Ginza from OpenStreetMap, Shibuya Crossing, Meiji Jingū, the Palace, Tokyo Station and Tokyo Tower modelled; a map of the city as it grows |
+| `/fortworth` | `/fortworth.html`, `/fort-worth`, `/cowtown`, `/stockyards` | `fortworth.html` | Fort Worth: downtown, the Stockyards and the Cultural District from OpenStreetMap |
+| `/antigua` | `/antigua.html`, `/antiguaguatemala`, `/fuego`, `/volcanes` | `antigua.html` | Antigua Guatemala: the colonial town from OpenStreetMap on its real ground, under Agua, Acatenango and Fuego |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
 | `/kowloon` | `/kowloon.html`, `/kwc`, `/walledcity` | `kowloon.html` | Kowloon Walled City: massing model |
@@ -61,6 +66,8 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
 | `/beachcity` | `/beachcity.html`, `/beach-city`, `/stevenuniverse`, `/delmarva` | `beachcity.html` | Beach City (fan work) |
 | `/hyrule` | `/hyrule.html`, `/botw`, `/breathofthewild`, `/zelda` | `hyrule.html` | Hyrule, after Breath of the Wild (fan work) |
+| `/oldesthouse` | `/oldesthouse.html`, `/control`, `/fbc`, `/oldest-house` | `oldesthouse.html` | The Oldest House, after Control (fan work) |
+| `/termites` | `/termites.html`, `/termite-mound`, `/mound` | `termites.html` | The Termite Mound: a Macrotermes mound at termite scale |
 | `/europa` | `/europa.html`, `/conamara`, `/ice` | `europa.html` | Conamara Station: on the ice of Europa |
 | `/enterprise` | `/enterprise.html`, `/ncc1701d`, `/galaxy` | `enterprise.html` | Enterprise: Galaxy class (fan work) |
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
@@ -200,10 +207,14 @@ the engine assumes. 7,425 buildings, 5,677 ways and 189 water bodies over 5.2 by
   centre lines the way the trains follow the rails. The engine's own boats want open water and keep a margin
   of clear lake around themselves, which a four-metre canal cannot give them. The gondolas are black, which
   they have been by law since 1562, and carry the ferro on the bow.
-- **Four things that are shapes rather than heights** (`src/venice/landmarks.js`): the Campanile, with its
+- **Five things that are shapes rather than heights** (`src/venice/landmarks.js`): the Campanile, with its
   brick shaft, stone belfry, spire and the gilt angel that turns; the Basilica's five domes over a Greek
-  cross; the Salute, its great dome held down by sixteen scrolls; and the Rialto, one stone arch with two
-  rows of shops standing on it. Everything else is its own mapped footprint.
+  cross; the Salute, its great dome held down by sixteen scrolls; the Rialto, one stone arch with two
+  rows of shops standing on it; and the Doge's Palace on its mapped site - the arcade and the loggia
+  holding up a wall of pink and white lozenges, its pointed windows and balcony, the crenellation, the
+  Rio wing, the courtyard with the Scala dei Giganti and the Porta della Carta. Its mapped wings are dropped
+  with `clearArea` (an outline, so the Basilica beside it keeps its own). Everything else is its own mapped
+  footprint.
 - **What is only in Venice** (`src/venice/life.js`): 960 comignoli, the bell-mouthed chimney pots that are
   that shape because the city is built of wood inside and a spark on a roof took out a sestiere; 1,000
   bricole, the mooring posts driven into the mud — in threes to mark a channel, singly and striped outside
@@ -212,8 +223,331 @@ the engine assumes. 7,425 buildings, 5,677 ways and 189 water bodies over 5.2 by
 - **No terrain.** The city is at sea level and the lagoon is mapped, so the ground is flat by construction
   and the water polygons do the work. `camera: {elMin: -0.35}` lets you look along a canal instead of down
   at it.
+- **Alive, as Rome is**, on the same shared stages in `src/core/`:
+  - `palazzi.js`: low terracotta roofs; the comignoli are lifted clear of them (`life.lift`).
+  - `courts.js`: the corti, kept with `courtyards`, and a vera da pozzo in every campo of 150 m² or more
+    (`courts.campoWells`).
+  - `streetlife.js` with `style: "venice"`: shopfronts and cafés on the calli and campi; Istrian-stone dress and
+    Gothic windows; on every wall in a canal (`water`), the green tide band, water gates and balconies. Smoke rises
+    from a share of the chimneys.
+  - `crowds.js`: walkers on the calli, crossing the bridges on their decks; tourists at San Marco, the Rialto, the
+    Accademia, the Salute; pigeons in the Piazza.
+- **Piazza San Marco** (`piazza` in `landmarks.js`): Tirali's Istrian-stone bands, fitted to the mapped outline, and
+  Florian's and Quadri's orchestras among their tables.
+- **The boats** (`boats.js`) are one instanced mesh per kind: gondolas, with the gondolier in his striped shirt and
+  boater, vaporetti, barges and water taxis. The moored gondolas and the washing are instances too.
+- The lagoon is `lakeColour`, the calli and campi trachyte grey, the plaster `palette` Venetian.
 
 Data: `python3 tools/fetch-osm.py venice`, then `python3 tools/build-osm-city.py venice`.
+
+### `/rome`: Rome
+
+The historic centre from OpenStreetMap on the shared engine, with its real hills: from the Vatican and Castel
+Sant'Angelo across the Tiber to the Lateran, and from Piazza del Popolo past the Forum and the Colosseum to the Pyramid
+of Cestius. 17,766 buildings over 5.8 by 5 km; the ground rises from the Tiber 93 m to the tops of the hills.
+
+- **The great buildings are modelled** (`src/rome/landmarks.js`), from their published dimensions, each placed and
+  turned to its mapped footprint - OpenStreetMap carries 3D parts for most of them, which gave the bearings - and the
+  mapped parts it replaces cleared with `clear` or, where a monument reaches far from its marker, `clearArea`:
+  - the Colosseum: eighty bays round its true ellipse, three arcaded storeys with half-columns in the three orders,
+    the attic with its pilasters, windows and corbels; the outer ring standing on the north only, the buttresses at its
+    broken ends, the second ring ragged on the south; inside, the radial walls, the broken seating vaults with a sector
+    of seats rebuilt, the podium, and the arena floor part-rebuilt over the open hypogeum
+  - the Pantheon: the brick rotunda, the stepped ring and the low dome with its oculus, the intermediate block, the
+    sixteen granite columns of the portico, the inscription on the frieze; the fountain and its obelisk in front
+  - St Peter's: Maderno's front with its giant order, loggia, attic, clocks and thirteen statues, the nave, the Greek
+    cross and its apses, Michelangelo's dome on its drum of paired columns to 136 m, and the four lesser domes; and
+    Bernini's square - the colonnades four deep with their saints, the corridors, the obelisk, both fountains
+  - the Vittoriano, Castel Sant'Angelo and the angels of its bridge, the Trevi Fountain, Sant'Agnese in Agone and the
+    Four Rivers, the Forum's temples and arches, the Arch of Constantine, the Basilica of Maxentius, the Theatre of
+    Marcellus, the Pyramid of Cestius, the Spanish Steps and Trinità dei Monti, Trajan's Column and Marcus Aurelius'
+  - the skyline: sixteen church domes, the campaniles, Sant'Ivo's spiral, the Synagogue's square dome, the Lateran's
+    front and its fifteen statues, and the obelisks
+- **The stone pines and the cypresses** (`src/rome/life.js`) in every mapped park, garden and wood.
+- **Palazzi, not houses.** The map leaves most of the centre without heights, and the build tool's default (9 m) is a
+  suburb's. `defaultHeights` and `heightSpread` in `rome.json` give untagged buildings a palazzo's four to six floors,
+  varied building by building; `ruinZones` keep the Forum and the Palatine low; `facade` gives the walls a palazzo's
+  rhythm, tall storeys and windows wide apart. All three are read by the shared tools only when a city sets them.
+- **Roofs and courtyards** (`src/rome/palazzi.js`): hipped terracotta roofs with chimneys on the simple blocks, tiled
+  slopes and cornices on the rest. `courtyards` keeps the map's inner rings, so a Roman block is open in the middle,
+  windowed inside, its roof sloping away from the court.
+- **Courtyards, fountains, ruins** (`src/core/courts.js`): court floors, wellheads, fountains, citrus trees and palms,
+  pots, porticoes; a basin for every fountain the map names; broken wall tops and strewn drums in the Forum.
+- **Street life** (`src/core/streetlife.js`): in the centre, shopfronts (lit at dusk), awnings, signs, the farmacie's
+  green crosses, café tables on the pedestrian streets and piazze; plinths, string courses, quoins, balconies and
+  flower boxes on the façades; benches, lamps and hedges in the parks, the Pincio's busts, people out on the grass;
+  smoke from a share of the chimneys (points moved on the GPU). Built only near the camera, a few ms a frame.
+- **People and traffic** (`src/core/crowds.js`, `src/core/traffic.js`): walkers on every street, some in pairs, legs
+  swinging with the distance walked; tourists at the sites, strolling or taking photos, kept out of the basins; Fiat
+  500s, Vespas, ATAC buses, trams and trains. Only what is near the camera is moved and drawn.
+- **Campo de' Fiori, the Barcaccia, the Pantheon's fountain** are modelled too; the river gods, horses and statues
+  share helpers in the landmark kit. The compass and the Map button come from `src/core/navmap.js`.
+- **For Firefox**: every instanced tile is culled by its own bounds (`instanceCulling`), trees switch near and far
+  with hysteresis, ways are chained in linear time (`src/core/chains.js`). `#drawstats` in the address puts a tally of
+  draws by stage in the details (`src/core/drawstats.js`); `extraMs` there times each of the page's stages.
+- **The Ponte degli Annibaldi** (`annibaldi` in the landmark kit): Cellini's footbridge over Via degli Annibaldi, placed
+  from its mapped ends (OSM way 24167622, an unnamed footway the road query leaves out), with its own view of the
+  Colosseum. The 12 m elevation grid smears the Oppian spur across the street, so `terrainCuts` carves the cutting
+  back to the street's own profile. The engine reads that only when a city sets it, and keeps the uncut ground as
+  `groundH0`. The model walls the cut and lays its floor.
+- **Via dei Fori Imperiali** is mapped as a service road, which the road query also leaves out. `fetch.extraRoads`
+  fetches named service roads into `roads-extra.json`; `namedService`, `namedServiceMatch` and `roadWidths` make the
+  street-named ones streets, the avenue 26 m wide.
+- **Events** (`src/rome/events.js`, on `src/core/happenings.js`): the Frecce Tricolori over the Vittoriano, a fumata
+  from the Sistine Chapel, the Girandola over Castel Sant'Angelo, coins in the Trevi, *Roman Holiday* on a Vespa down
+  Via dei Fori Imperiali and up the Corso, and the starlings over the Tiber at dusk. A night or dusk event moves the
+  clock. `#event=<name>` fires one on arrival.
+
+Data: `python3 tools/fetch-osm.py rome`, `python3 tools/fetch-terrain.py rome`, then `python3 tools/build-osm-city.py rome`.
+The centre is dense, and the public Overpass server times out on whole tiles when it is busy: fetching a tile in
+smaller pieces and merging them gets through.
+
+### `/tokyo`: Tokyo
+
+Central Tokyo from OpenStreetMap on the shared engine, the first strip of a city that grows outward: Shinjuku's towers
+and Kabukichō, Meiji Jingū's forest, Yoyogi, Shibuya Crossing, Akasaka and Roppongi, the Imperial Palace, Tokyo Station,
+Marunouchi, Ginza and Tokyo Tower - 8 by 5 km, 61,854 buildings, built in under four seconds.
+
+- **Landmarks** (`src/tokyo/landmarks.js`, on the shared kit `src/core/landkit.js`):
+  - Tokyo Tower: the lattice in its eleven bands, the main and top decks, the antenna.
+  - Shibuya Crossing: zebras fitted to the junction's own arms, the diagonals, Hachikō, video screens playing.
+  - Tokyo Station's red-brick Marunouchi building with its domes, cleared over the mapped parts with `clearArea`.
+  - The Diet's stepped tower, Nijūbashi's stone bridge and the Fushimi-yagura, the Wakō clock tower, Kabukichō's gate,
+    Godzilla over the Hotel Gracery, Zōjō-ji's Sanmon, and Meiji Jingū's Ōtorii (turned to its mapped outline).
+- **Street life**: `src/core/streetlife.js` with `style: "tokyo"`. It gives shopfronts and fascias, the odd konbini,
+  vertical kanban glowing in their own colours after dark, vending machines, izakaya lanterns and air-conditioners. The
+  back streets get utility poles and their wires.
+- **Trees**: `src/core/groves.js` fills the woods, parks and gardens: Meiji Jingū's forest, Yoyogi, the palace,
+  Shinjuku Gyoen. Tokyo's woods are `landuse=forest`, which the land query leaves out, so `fetch.extraLand` brings them
+  in `land-extra.json`.
+- **Traffic**: `src/core/traffic.js` (`vehicles`) drives on the left (`side: "left"`). The trains keep to their lines,
+  coloured by name (`lineColours`: 山手線 green, 中央線 orange, 総武線 yellow).
+- **The map**: `src/core/navmap.js` draws the plan from the map data itself. Its "All Tokyo" tab (`navmap.regions`;
+  `#mapall` opens it) shows the strip built so far against the areas to come. Stages can draw live layers on the plan
+  (`api.MAP_LAYERS`).
+
+- **Facades**: the engine's `facadeStyles` (`src/engine/stages/03-blocks.js`, read only when a city sets them). Each
+  style is picked by building type, height and a share, the first that fits winning:
+  - towers over 70 m in glass curtain walls with a specular glint;
+  - apartments with balcony slabs, frosted railings and washing;
+  - offices with ribbon windows;
+  - older mid-rises in brown and beige tile.
+- **Junctions**: zebras across every arm of every junction of real streets (3,389 of them). The main ones get signals
+  on their corners, with Japan's horizontal heads, and white guardrails run along the main roads' kerbs.
+- **Roofs** (`src/tokyo/roofs.js`): red aviation lights blinking on every tower over 60 m, helipads on those over
+  100 m, and the billboards on the mid-rise roofs of Shinjuku, Shibuya and Ginza, lit at night. Tokyo Tower is
+  floodlit orange after dark.
+
+- **The Shuto and the footbridges** (`src/tokyo/streets.js`). The expressway runs on T-shaped concrete piers every
+  30 m, with box girders, parapets, lamps and sound walls, drawn from the decks' own heights. `bridgeOverGround`
+  measures decks from the ground under them; it is needed on a plateau, and the engine reads it only when a city sets it.
+  The 394 footbridges (歩道橋) have steel spans at 5.5 m clearance, stairs at both ends and route signs.
+- **3D balconies** on the south faces of apartment blocks near the camera, and **konbini at their mapped doors** in
+  their brands' colours (873 stores). Both are in `src/core/streetlife.js`, Tokyo style. `fetch.extraFiles` brings in
+  the footbridges and shops as `footbridges-extra.json` and `shops-extra.json`; the build writes them as `footbridges`
+  and `konbini`.
+
+- **Greater Tokyo, streamed** (`src/core/metro.js`, `src/core/metroworker.js`). Around the detailed core, the
+  whole of Greater Tokyo is drawn, from Yokohama to Chiba city and from Haneda to southern Saitama: 3.9 million
+  buildings in 3,477 tiles of 1 km.
+  - Tiles within 2.2 km of the camera are fetched and built in a Web Worker, so the main thread never builds
+    geometry. They carry the ground, land cover, roads and decks, and buildings in the engine's facade styles
+    (`api.BLD_MATS`). A tile left far behind is thrown away.
+  - Beyond that, the skyline blocks show the tall buildings out to 26 km. Under them is a coarse ground tinted from
+    green to a city carpet by how built-up each place is, and a sea at sea level.
+  - Land is taken from the map, not the elevation: eastern Tokyo's zero-metre zones are land. The landmarks outside
+    the core (the Skytree, Sensō-ji, the Asahi flame) are reseated on the tiles' ground when their tile arrives.
+  - `cameraFar` and `farLevel` are city settings that let the region run to the horizon.
+  - Trains run on every rail line in the region (`src/core/metrolife.js`), in their line colours, within 4 km of the
+    camera; outside the core they come from `rail.json.gz`, one file of all the region's rail, so a train runs on
+    across tiles. Each loaded tile also brings its cars (driving on the left, on the main roads) and people walking
+    its streets. They come and go with the tile.
+  - The far ground is cut away under each loaded tile, so it never shows through on a slope. Its city/green tint
+    comes from how much of each tile is roofed as well as how many buildings it has, so the bay islands read as
+    city. `#lifedebug` in the address reports the nearest train, car and person.
+  - The elevation is filtered before anything is laid on it. Around Tokyo the AWS terrain tiles carry the city's
+    surface: towers stand in them as spikes of up to 50 m, and pits of metres lie on flat ground. A grey opening
+    removes raised bumps narrower than about 150 m (buildings, not hills), a small closing fills pits, and a blur
+    smooths the rest. This happens in the tiler (`demOpen`, `demClose`, `demBlur` in `metro`) and in the core
+    (`terrain.filter`, in metres; opt-in, read by `tools/build-osm-city.py`). The datum is taken before filtering,
+    so the two still meet.
+  - The streamed roads follow a smoothed profile (about 60 m either way, 180 m for a deck), never below the ground.
+  - Walls facing a street get shops, by the street's class (most of a main road or a pedestrian street, a third of a
+    residential one): a lit window, an awning, and on taller buildings a vertical sign. The residential streets get
+    utility poles every 30 m with their cables, and vending machines. The signs, windows and machines glow after
+    dark.
+  - The tiles come from `tools/metro-tiler.py`, run with pyosmium in `data/osm/raw/venv`, over Geofabrik's Kantō
+    extract (`data/osm/raw/kanto/`). It writes to `data/metro/tokyo/`: about 133 MB, git-ignored, and rebuilt in about
+    12 minutes. `--write-only` redoes the tiles from the parsed features in a couple of minutes.
+- **The map's "All Tokyo" tab** shows the detailed core and the streamed region.
+
+**Edinburgh** (`edinburgh.html`, `src/edinburgh/`, `data/cities/edinburgh.json`). The Old Town down its ridge from
+the Castle, the New Town across the valley, Holyrood under Arthur's Seat, Calton Hill, Dean Village, and Leith on the
+Forth: 35,000 buildings on their real ground.
+- **The data** came from Geofabrik's Scotland extract, because Overpass timed out on most of the tiles:
+  `tools/pbf-to-overpass.py <city> <extract.osm.pbf>` writes the raw files the builder reads, in Overpass's
+  `out geom` shape, with the same filters as `tools/fetch-osm.py`.
+- **The Castle Rock**: the elevation tiles make it forty metres short. `terrainRaise` (an engine setting: a polygon
+  raised to a height with cliffs round it, or a ramp along a profile) puts the rock and the Esplanade back, so the
+  castle's mapped buildings stand on it. The model adds the curtain walls and the Half Moon Battery. `terrainCuts`
+  lowers the Grassmarket into its hollow.
+- **Landmarks** (`src/edinburgh/landmarks.js`): St Giles' and its crown steeple, the Hub's spire, the Scott Monument,
+  the National, Nelson and Dugald Stewart Monuments on Calton Hill, the Balmoral's clock tower, the Palace of
+  Holyroodhouse's tower front, Holyrood Abbey and the Ross Fountain.
+- **Life**: Lothian's maroon buses and the trams, ScotRail and LNER into Waverley (stopping there), crowds on the
+  Royal Mile and at the sights, and chimney smoke.
+- **Events** (`src/edinburgh/events.js`): the Tattoo's fireworks, the One O'Clock Gun, the haar rolling in off the
+  Forth, and a piper by St Giles'.
+- **Detail**: St Giles' has its buttresses, traceried windows, clock and crocketed crown; the Scott Monument its arches,
+  corner turrets and crocketed spire, with Scott and Maida under it; the National Monument its stylobate, fluted
+  columns and triglyph frieze; the Nelson Monument its castellated base and time ball; Holyroodhouse its windows,
+  chimneys and crowned cupola; the Castle its flags, Mons Meg and the Half Moon Battery's guns. Added: the Royal
+  Scottish Academy and the National Gallery on the Mound, the Camera Obscura, Greyfriars Kirk and Bobby, St Mary's
+  Cathedral's three spires, the Old College dome and its Golden Boy, the City Observatory, and Victoria Street's
+  painted shopfronts.
+- **Crags** (`src/edinburgh/crags.js`): basalt outcrops wherever the ground is steep on the Castle Rock, Arthur's Seat
+  and Calton Hill. Princes Street Gardens are cut down into their valley.
+- **Trees**: Edinburgh maps every back green as a garden, so the engine's park scattering is configurable now
+  (`treeCells`, `treeMinArea`, `treeFar`). Scrub can stay low instead of becoming woodland (`scrub: "low"`, read by
+  `tools/build-osm-city.py`), which leaves Arthur's Seat as grass and gorse.
+- **Roofs and chimneys**: the tenements and terraces are slate-roofed (`pitchAll`, an engine setting: which building
+  types get a pitched roof, and how many of them). `src/edinburgh/oldtown.js` puts chimney stacks with their clay pots
+  on the gables (the engine marks the footprints it roofed, and `api.ROOF` gives the pitch). They are drawn in 500 m
+  tiles within 900 m of the camera. Victoria Street's walls are painted.
+- A landmark's `height` raises the mapped building under it (Chicago's towers use this), so a model's own heights
+  are called `towerH`.
+
+**Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
+Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
+the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts
+(Burnett Plaza 173 m, the Bank of America Tower's stepped top).
+- **The data**: `tools/fetch-osm.py fortworth`, `tools/fetch-terrain.py fortworth` (zoom 14, filtered: the towers
+  stand in the elevation), `tools/build-osm-city.py fortworth`. Detail zones: downtown, the Stockyards, the Cultural
+  District, the Near Southside, TCU.
+- **Downtown's grid** runs 30 degrees off north (Main Street bears 150 from the courthouse), and the models on it face
+  150, 240 or 330.
+- **Landmarks** (`src/fortworth/landmarks.js`): the Tarrant County Courthouse (pink granite, the clock and the dome,
+  facing down Main), Bass Hall and its angels, Sundance Square Plaza's four umbrellas and its jets, the Chisholm Trail
+  mural (on the wall across 4th Street from the plaza: the Jett Building is not named on the map), the Water Gardens'
+  Active Pool in terraces down a nine-metre pit (`terrainCuts` sinks the ground under it), the Kimbell's sixteen
+  cycloid vaults running north and south with the porticoes to the west lawn and the holly grove, the Modern's
+  pavilions on their Y columns in the pond, the Pioneer Tower, the Livestock Exchange, Cowtown Coliseum, Billy Bob's
+  Texas and the Stockyards sign over Exchange Avenue.
+- **The Stockyards** (`src/fortworth/stockyards.js`, `stockyards`): on Exchange Avenue and North Main the parapets are
+  carried up into false fronts (square, stepped, curved), with signboards, a boardwalk awning on posts out over the
+  sidewalk, a hitching rail, and the planks; Exchange Avenue is red brick; the Cowtown Cattlepen Maze is fenced in
+  pens. The working pens behind the Exchange are not on the map, so they are not drawn.
+- **Realism**: the towers' glass and granite, the old blocks' brick with cornices and string courses
+  (`facadeStyles`, `dress`); the bungalows' painted siding, pitched roofs and craftsman porches; North Texas trees
+  (`treeSpecies`: live oak, pecan, cedar elm, crape myrtle, bald cypress) along the streets; awnings on the
+  shopfronts; Trinity Metro's buses, traffic on the right; crowds at Sundance Square, on Exchange Avenue and at the
+  museums.
+- **Events** (`src/fortworth/events.js`): the cattle drive, longhorns and drovers down Exchange Avenue; a thunderstorm
+  off the plains, lightning walking across the city.
+- **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
+  the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
+  Will Rogers Center, the Near Southside, TCU, and the whole city.
+- **Not yet**: TEXRail and the TRE do not run (the engine finds no train lines on the mapped rail).
+
+**Antigua Guatemala** (`antigua.html`, `src/antigua/`, `data/cities/antigua.json`). The old capital of the Kingdom
+of Guatemala in the Panchoy valley at 1530 m, Ciudad Vieja, Jocotenango, San Juan Alotenango and the villages round
+them, and the three volcanoes: Agua (3760 m) to the south, Acatenango (3976 m) and Fuego (3763 m) to the west. The map
+is 25 by 19 km, 25,000 buildings on their real ground, with the whole box a detail zone.
+- **The data**: `tools/fetch-osm.py antigua` (Overpass; slow, a 504 and a 429 on the way, about 20 minutes),
+  `tools/fetch-terrain.py antigua` (zoom 13, about 18 m a pixel), `tools/build-osm-city.py antigua`. The grid is 30 m;
+  the datum (the box's 5th percentile) is 1395 m, so the town stands about 140 m up and Acatenango 2570 m.
+  `terrainLOD` draws the far ground coarser. `extraLand` adds the forests and fincas, `extraRoads` the trails.
+- **The tree line** (`treeLine`, `bareGround`: engine settings, read in 00-start as `bareAt`): the nature reserves are
+  mapped from the foot of each volcano to its crater, and drawn as forest they planted a million trees on Fuego's
+  scoria. Above `treeLine` (metres above the datum), or inside a `bareGround` circle, no wood, reserve or scrub is
+  drawn and no woodland trees are planted. `terrainTints` darken Fuego's cone and barrancas, Acatenango's summits and
+  Agua's rim. A city that sets neither is unchanged.
+- **The volcanoes** (`src/antigua/volcanoes.js`): Fuego's plume, leaning away from the trade wind (`windFrom`); an
+  explosion every few minutes (`every`), a column of ash and, after dark, incandescent blocks rolling down the cone and
+  the crater's glow lighting it; the lava in the barranca at night, found by walking downhill from the crater along
+  `flow`. Acatenango's summit cross and the climbers' camp facing Fuego, its lanterns lit at night. Agua's cross and
+  masts. `api.ctx.fuegoBlast(strength)` fires an explosion.
+- **Landmarks** (`src/antigua/landmarks.js`): `iglesia`, one colonial church in Earthquake Baroque (nave and buttresses,
+  barrel vault, dome, a façade wider than the nave with its white stucco retablo in tiers, squat bell towers), or a
+  ruin of one (roofless, the walls broken, the vault in the nave), used for La Merced, the Cathedral and its ruins, San
+  Francisco el Grande, Escuela de Cristo, El Carmen, Santa Clara and La Recolección; the Arco de Santa Catalina and its
+  clock; the two-storey arcades of the Palacio de los Capitanes Generales and the Ayuntamiento; the Fuente de las
+  Sirenas; Las Capuchinas' round cloister; the Tanque de la Unión; the cross on the Cerro de la Cruz. The three
+  volcanoes, Ciudad Vieja and Alotenango have cards.
+- **The town**: one-storey houses limewashed in ochre, yellow, terracotta, ox-blood, indigo and green, tile roofs to
+  the street, cobbled streets, chicken buses, tuk-tuks and motos, crowds in the Plaza Mayor, under the arch and at La
+  Merced.
+- **Infill** (`src/antigua/infill.js`, `infill`): OpenStreetMap has many of the town's houses but not all, and a block
+  with none mapped read as a lawn. Along every street in `infill.zones` (Antigua and nine towns round it), wherever the
+  frontage is empty (no mapped building, open area, parking lot, landmark or other street), a run is built, 7 to 15 m
+  wide and 11 deep: mostly houses of one storey (`twoStorey` of two, half of those with a wooden balcony) with a flat
+  roof behind and a slope of tile to the street; `parapets` of them behind a moulded parapet instead; `tapias` a
+  garden's wall, tiled on top, with trees and bougainvillea over it. About 10,000, outside the layout fingerprint,
+  drawn within `infill.far`.
+- **The house fronts** (`src/antigua/casas.js`, `casas`): on every wall of a mapped or infill house that faces a street,
+  the zócalo (a dark band at its foot), the zaguán (the big wooden door in its frame), windows behind iron rejas on a
+  sill under a tiled hood, and the alero (the tile eave on its rafters); a garden wall gets its door only. The walls
+  themselves are blank limewash (`facadeStyles`, a new engine texture `limewash`: no windows painted on, so the real
+  ones are not doubled). In two levels, in 300 m tiles: the zócalo, doors, windows and eaves within `casas.farOut`,
+  the bars, sills, hoods and rafters within `casas.far`.
+- **The fincas** (`src/antigua/fincas.js`, `fincas`): the coffee, mapped as `landuse=orchard` (`extraKinds`, a new
+  option of `tools/build-osm-city.py` that adds land kinds the default list leaves out: fincas, milpas, bare rock),
+  planted in rows under inga and gravilea, flat crowns high on bare trunks, a 400 m tile at a time as the camera comes
+  near.
+- **More churches**: Belén, Santa Ana, San Pedro, El Calvario, Santa Teresa, San Felipe de Jesús; the ruins of La
+  Candelaria, Santa Rosa, San Agustín, Los Remedios, the Santa Cruz and Santa Isabel; and the parish churches of
+  Jocotenango, Ciudad Vieja, Alotenango, Santa María de Jesús, San Juan del Obispo, San Gaspar Vivar, San Andrés
+  Ceballos and Pastores. Each church faces the way its mapped footprint says (`_landmarkFacing` in `antigua.json`):
+  along its long axis, toward the end that opens on a street or plaza rather than another building. That turned El
+  Carmen to face east onto 3a Avenida and its market, San Agustín east, San Pedro north, San Felipe west. Where the
+  footprint is square or missing, the church faces its plaza. La Merced's front and towers are covered in white stucco
+  lace (`lace`).
+- **Events** (`src/antigua/events.js`): Fuego in paroxysm, at night from the camp on Acatenango; a Holy Week
+  procession, the anda of Jesús Nazareno on eighty cucuruchos' shoulders, coming down 5a Avenida Norte from La Merced
+  under the arch over its alfombras; cohetes off La Merced; the afternoon cloud cap on Agua.
+- **Views**: the Arco and Agua (the default), the Plaza Mayor, the Cerro de la Cruz, La Merced, the Cathedral's ruins,
+  San Francisco, La Recolección, Fuego from the Acatenango camp, the three volcanoes, Agua from the valley, from Agua's
+  crater, Ciudad Vieja, Alotenango between Agua and Fuego, a finca under Agua, Jocotenango, 5a Avenida Sur at
+  street level, El Carmen and the market, and over the rooftops.
+
+**The photograph on the Ponte degli Annibaldi** (`src/rome/photo.js`, `photo` in `rome.json`): a couple at the railing
+with the Colosseum behind them, the love padlocks round them, on a hazy evening. The figures are stylised. "The
+photograph" among Rome's viewpoints, or `#photo`, opens on it at its hour.
+
+**Tokyo's life, the bay and the seasons.**
+- **Stations** (`src/tokyo/stations.js`): wherever the trains stop (the traffic's `stationDwell` and `stationNear`), a
+  platform runs beside the track for a ten-car train, under a canopy, with its yellow edge line. It goes on the side
+  with no other track and never over another platform. People wait on it by the hour: none in the small hours, a
+  few at midday, and full at the two rushes.
+- **The Shinkansen** (`vehicles.shinkansen`): the Tōkaidō and Tōhoku lines run sixteen-car N700s with their
+  duck-bill noses (traffic's `opts.head`, a second mesh for the end cars), faster, a minute at Tokyo Station. The
+  streamed region runs them white and fast too.
+- **The bay**: the Rainbow Bridge (its towers, cables, two decks and lamps; `clearDecks` takes the mapped
+  expressway's own deck out of the tiles), the Fuji TV building with its sphere, and the Unicorn Gundam, whose frame
+  glows after dark. (Odaiba's Ferris wheel closed in 2022, so it is not here.) Yakatabune and the water buses go up
+  and down the Sumida (`src/tokyo/water.js`, along `rivers.sumida`).
+- **Seasons** (`src/tokyo/seasons.js`): cherries on both banks of the Meguro, along Chidorigafuchi, up Ueno Park and
+  in Sumida Park; ginkgo in Icho Namiki. Spring brings the blossom (lit at night), autumn the gold ginkgo. The season
+  comes from the date, `#season=`, or the button at the bottom left.
+- **Events** (`src/tokyo/events.js`): the Sumidagawa Hanabi, the Sanja Matsuri's mikoshi up Nakamise (`clearPath`
+  clears the streamed buildings out of a landmark's approach), the Shibuya scramble at the rush, and Godzilla's
+  atomic breath.
+
+**The ground and the trains of the other real cities.** New York, Portland, Rome and Chicago have the same
+filter as Tokyo (`terrain.filter`). Their raw map data is not all at hand, so `tools/filter-terrain.py <city>`
+filters a built grid in place; it marks the grid and will not filter it twice. Manhattan had towers standing in its
+ground up to 44 m, and Portland had its towers and Forest Park's canopy. The engine's commuter trains
+(`05-el.js`) used to run at the datum, 0.2 m, wherever the land was, and the light rail and streetcars at 0 off a
+bridge. They now ride the ground, a road deck, or across a mapped rail bridge the chord between its ends (at least
+`railBridge` metres clear of what it crosses, on a deck that is now drawn). They keep to their named line, never a
+yard. Each city sets its livery in `commuter` (`body`, `band`, `cars`, `freight`): Metra in Chicago, Metro-North
+in New York, freight on Portland's Union Pacific and BNSF lines, Trenitalia over Venice's Ponte della Libertà.
+A city whose own traffic runs its trains (`vehicles`: Rome, Tokyo) does without these. `#raildebug` reports where
+the first train is.
+
+Data: `python3 tools/fetch-osm.py tokyo`, `python3 tools/fetch-terrain.py tokyo`, then `python3 tools/build-osm-city.py tokyo`.
+A tower mapped as an outline with only its upper parts (the Docomo Yoyogi building's spire) keeps its outline up to its
+lowest part.
 
 ### `/city17`: City 17
 
@@ -904,7 +1238,8 @@ places, used as references for arrangement only; neither is in the repository. N
   flying a kite in the dark, and the umbrellas and towels go with them - and they come back in the morning; the
   boardwalk, Funland and the town keep their evening crowd.
 - **Events** (`events.js`, on `src/core/happenings.js`: every minute or two one turns up on its own, with a notice
-  and a Go and look button; the Events button fires any of them, and `#event=<name>` fires one on arrival):
+  and a Go and look button; the Events button fires any of them, and takes the camera straight to it (following it
+  if it moves: `fireAndLook`, every scene on happenings.js), and `#event=<name>` fires one on arrival):
   `handship` - the warship, a giant green left hand with three joints in every finger, comes in over the sea, turns
   to aim a fist with the index finger out and fires on the beach from it (a barrage with a kick and a flash at the
   muzzle for each shot, then a charged shot), flicks an escape pod off over the sea with thumb and index finger, lands
@@ -930,6 +1265,62 @@ places, used as references for arrangement only; neither is in the repository. N
 Regenerate with `python3 tools/make-beachcity.py`. It writes the ground, the streets, the houses and the trees for
 the engine (`beachcity-osm.json`) and where each landmark stands and faces, the surf lines and the boardwalk for the
 page (`beachcity-plan.json`). Views and cards are in `beachcity.json`; `#view=<name>` opens one.
+
+### `/oldesthouse`: the Oldest House, after Control
+
+Fan work after Remedy Entertainment's *Control* (2019) and its expansions; nothing of theirs is used. The Federal
+Bureau of Control's headquarters - a windowless brutalist tower in Manhattan, and inside it far more building than
+the outside could hold - built sector by sector in `src/oldesthouse/` and laid out from `data/cities/oldesthouse.json`
+the way the Bureau's blueprints show them: Executive in the middle, Research to the west, Maintenance to the east,
+Containment to the north, Investigations to the south, the Foundation below, the Astral Plane above everything, and
+the tower itself on its street. Like the Infinity Castle it brings its own renderer and camera.
+
+- **The kit** (`kit.js`): one Builder takes every static surface as quads in world metres, one array per material,
+  cut into ~5 m cells. Every light fitting registers itself, and once the sectors are built `bake()` lights each
+  vertex from the fittings near it (and from ambient boxes): pools under the fluorescent panels, the Furnace's gold,
+  the Panopticon's teal, the Astral Plane's white - with no runtime lights. The fabric is unlit and shows its baked
+  colour. Ceilings are their own meshes (`:ceil` keys), so the **cutaway** (X) lifts them and the House reads like
+  its blueprints from above. Furniture and fittings (desks, cubicles, terminals, shelves of files, the Bureau's
+  fluted piers, rails, panels, lamps, pipes, planters) are functions of the builder.
+- **The surfaces** (`mats.js`): board-marked and panelled concrete, the Bureau's red carpet, walnut, terrazzo, tile,
+  grating, black rock, the Ashtray Maze's sunburst paper, the motel's blue, acoustic ceiling tile, filed paper - all
+  painted on canvases when the page opens.
+- **The sectors**: `executive.js`, `research.js`, `maintenance.js`, `containment.js`, `further.js` (the Foundation,
+  Investigations and the Oceanview Motel, the Astral Plane). Each builds its fabric, registers its light, its moving
+  things, its views and cards, its fog zones and its events.
+
+### `/termites`: the Termite Mound
+
+A Macrotermes mound on the Namibian savanna, at the scale of the termites that built it: a worker (about 6 mm) is as
+long as a person is tall, so the scale is 300 to one. Three metres of mound is a 900 m spire of red clay; the grass
+round it stands 100 to 180 m high, the pebbles are the size of houses, and the acacia on the horizon is nearly two
+kilometres tall. Built in `src/termites/` from `data/cities/termites.json` and a seed, with its own renderer.
+
+- **The mound** (`mound.js`): one radius for every height and bearing (broad vertical buttresses, a flared skirt,
+  a lean to the north), its turrets kept off the cut. The hollows are drawn as their own inside surfaces, merged into
+  one mesh: the nest (a ball of flattened chambers and the galleries between them, a third of the chambers placed on
+  the cut), the royal cell, the nurseries, the cupola, the chimney up the axis, the connectives out from it at six
+  levels and the surface conduits under the skin, the base tunnels, eight foraging tunnels out under the savanna to
+  holes in the ground, and the cellar shafts down to damp clay with water standing on their floors. Fungus combs
+  on the chamber floors: folded sponges, finer near the cut where you see them close, with their white nodules.
+  Older mounds across the savanna, worn down to domes, and a young one still a spire.
+- **The cutaway** (X): four clipping planes remove a trench beside the mound (`cut` in the config), and its face is a
+  canvas painted from the same geometry: the clay of the mound, the soil in its layers, and every hollow the cut
+  passes through punched out with a darker lining, so you see into the far halves of the chambers. The mound's axis,
+  the chimney, one connective each way at every level, two foraging tunnels and the cellar lie on the cut. The
+  trench's other walls are painted the same way, so the foraging tunnels that cross them show as lined openings.
+- **The colony** (`life.js`): 1,400 workers walking the galleries on their floors, soldiers at the tunnel mouths,
+  gardeners on the combs, nurses among the eggs and larvae, the queen (26 m, breathing) and the king in the royal
+  cell with her attendants. Some carry: a length of grass home along the foraging tunnels, a clay pellet in the
+  galleries. Foraging parties come out of the holes on the near side, walk worn trails to the grass and carry it
+  home, with soldiers round each hole. Motes show the air: by day up the conduits and down the chimney, by night
+  the other way. Stars at night.
+- **Inside it is dark**: underground or inside the mound, with the cutaway off, the daylight fades and only the
+  lantern you carry is left.
+- **Events**: the swarming (dusk; slits open in the skin and the winged alates pour out), a breach (the soldiers
+  fill it facing out while the workers wall it up from the rim), the first rains (the sky closes in, drops the size
+  of a person fall at their own nine metres a second, and the clay darkens as it soaks and dries again), and a day
+  and a night in forty seconds.
 
 ### `/hyrule`: Hyrule, after Breath of the Wild
 
@@ -1508,6 +1899,12 @@ A cordoned six-kilometre square of West Texas south-east of Odessa, and the hole
   rim loop and the Rim Trail; Gumption Flat Campground; the monorail; the Anodyne extraction works north-east.
   On the park road in: the entrance sign, Caver Coop (the mascot, a plywood cut-out drawn on canvas in this
   project's own hand) and six Anodyne billboards, lit at night.
+- **The desert** (`src/fleshpit/desert.js`): the plain varied with soft patches of pale caliche, red sand and darker
+  ground under the brush; three dust devils wandering it and tumbleweeds rolling downwind. Its plants are the Permian
+  Basin's (`treeSpecies`: honey mesquite, creosote bush, soaptree yucca). The amphitheatre is seven stepped rows round
+  a stage, 20-60 m across, facing the hole (it was drawn with radii of 330 m, a grey slab across the plain). The views
+  that had sunk below the plain when it was raised (the park road, the rim from the visitor center) are back above it,
+  and Down the shaft looks down the axis instead of into the funnel's wall.
 - **The parking lots and the plaza** (`src/fleshpit/surface.js`): three lots - visitor parking west of the
   visitor center, the overflow south of it with the RVs along the back, and Anodyne's works lot out past the
   rim loop - each on a graded pad with its own drive in. Striped stalls in double rows, a drive lane round the
@@ -1896,6 +2293,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
+  oldesthouse/ main.js mats.js kit.js executive.js research.js maintenance.js containment.js further.js   the Oldest House: the kit and its light bake, the surfaces, the sectors
   hyrule/   main.js paint.js flora.js alive.js kit.js biomes.js details.js landmarks.js castle.js villages.js peoples.js wayside.js wonders.js guardian.js divine.js dragons.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
@@ -2288,3 +2686,86 @@ without a login run `sudo loginctl enable-linger $USER` once.
 | `Failed to connect to user scope bus` | you used `sudo`. Drop it. |
 
 See `AUDIT.md` for the architecture audit this layout came from and what is still open.
+
+**The interface, every scene.** "Pause sun" sits in the time bar, beside the clock it stops (the engine's pages and Iziz's).
+The compass, on the pages that have the map (`src/core/navmap.js`), sits at the top of the same right-hand column,
+above the time bar, and the map opens under the column wherever its bottom is; the Flesh Pit's depth gauge does the
+same. `tools/probe.py` reports the interface's layout (`ui`: the box of every fixed or absolute element, every
+button, the time bar and the compass), so an overlap can be checked without a screenshot.
+
+**The sun** rises in the east (+x) and sets in the west (`sunAt` in `src/engine/stages/01-scene.js`). It had them
+the other way round.
+
+**Flight.** Only the real places fly the aeroplane; the fictional scenes have no Fly button and no fly mode (Blame!,
+Infinity Castle, the Oldest House, Termites, Moria, Water 7). In flight the scroll wheel moves the chase camera in and
+out from the aeroplane.
+
+**Facades in the real cities.** Chicago, New York and Portland have their own architecture (`facadeStyles`: glass,
+ribbon windows, terracotta and limestone, balconies, and their own brick), and their flat roofs are tar, gravel and
+membrane rather than the wall's colour (`flatRoofColours`, an engine setting).
+
+**The dress of the buildings** (`src/core/dress.js`, set per city in `C.dress`): what an extruded footprint lacks, put
+back from the footprint: cornices and string courses on flat roofs (on Rome's pitched ones too), New York's water towers
+and fire escapes, bay windows on the street face, dormers along a pitched roof's ridge. Instanced per 500 m tile and drawn
+within `far` of the camera; kept out of the layout fingerprint. Edinburgh, Chicago, Portland, New York and Rome take it.
+Craftsman porches (deck, brick pedestals, columns, rail, steps, a shed or gabled roof) and shopfront awnings with their
+signboards are parts too; any part, and any `facadeStyles` entry, can take `where` (lat/lon boxes) to keep it to a
+neighbourhood. Portland's Arbor Lodge and Kenton use it: painted lap siding (`clapboard`) and porches on the houses,
+awnings along Denver Avenue, and Kenton's Paul Bunyan (`bunyan`, `src/portland/landmarks.js`) at Interstate and Denver.
+
+**Tree species** (`C.treeSpecies`, an engine setting in `src/engine/stages/03b-details.js`): a city may plant its own
+trees instead of the one generic shape. Each species is a shape (`fir`, `cedar`, `round`, `oval`, `oak`, `slender`,
+`small`), a bark colour, foliage colours, a height range and a weight in each place trees go (`street`, `park`, `wood`);
+the crown takes the instance colour and the trunk keeps its bark. Portland plants the region's: Douglas fir, western red
+cedar, bigleaf maple, red alder and Oregon white oak in Forest Park and the parks; maples, purple-leaf plums, cherries and
+dogwoods, sweetgum, London plane and oaks along the streets, after the city's street-tree inventory.
+Rome plants stone pines (`umbrella`), Italian cypresses (`column`), planes, holm oaks and oleander, and keeps the view
+from the Ponte degli Annibaldi open (`C.treeKeepOut`: lat/lon/radius circles no tree is planted in).
+
+**The photograph** (`src/rome/photo.js`, `#photo`): the couple on the Ponte degli Annibaldi, modelled limb by limb
+(limbs between joints, bodies of revolution, painted cloth: his print shirt, her denim with its rip; heads shaped from a sphere - jaw, cheekbones, sockets, nose, lips - with their faces painted on and eyeballs under lids; hair as a shell cut to its hairline), posed as
+they stood; the brown handrail, the padlocks heaped at its foot, the grey setts, Rome's crook lamps. The view opens in the
+photograph's 3:4 frame at a phone's lens (`C.photo`: `t`, `hour`, `camBack`, `eyeH`, `pitch`, `vfov`); it goes when the
+camera leaves the spot.
+
+**Water 7** (`water7.html`, `src/water7/`, `tools/make-water7.py`): fan work after One Piece. The City of Water as a
+fountain of a city: seven tiers to 176 m, their walls the old city buried under the new (arched windows in rows), grand
+stairs down each wall, tan and peach houses under red barrel vaults (`src/core/dress.js`: vaults, bell towers, washing
+lines), the grand canals falling tier to tier and one built as a ramp the yagaras swim up, the Aqua Elevator lifting a
+boat up the Lower Town's wall. The Great Fountain on top: basins on arcades two hundred metres across, a jet of three
+hundred metres and its mist, arcs into the pool, runnels to the canals' heads. Round it all the sea wall
+(`seawall.js`): a ring of dam with its sluices, spillways and tide gauges, lock gates over the docks (`api.LOCKS`), the
+rail gate, bell towers (`api.BELLS`), the low old wall along Back Street, the stone bridge to Scrap Island, spray where
+the swell breaks. The canals are brim-full between stone walls and copings (the terrain's bed is cut narrower than the
+water, so the ten-metre grid's slopes stay under it), the grand canals falling over the quay wall into the moat.
+Scrap Island (`franky`): wrecked hulls half buried, mounds of junk, iron plate, chain and anchors, a salvage crane,
+rocks round the shore; Franky House in every colour with its gold sign and its mechanical arms, cola barrels, the
+Family's flag; Tom's Workers' old office by the bridge; the slipway the Sunny was built on; the King Bulls and the
+Family's houseboat afloat off the landing. The city at work (`work.js`): shipwrights on every lift of every dock's
+scaffold, hammering; pairs carrying planks over the gangways; sawyers, a foreman; Dock One's crowd cheering at the quay;
+barges round the moat, merchantmen at anchor outside the wall, fishing boats under sail, a trader in and out of Dock
+Three; gulls; a market on the Market Terrace (each dock's crew drawn only near the camera: `C.water7.workFar`). Its people (`folk.js`, each clickable): Paulie at Dock One's
+slip, Iceburg walking Fountain Square with his mouse, Franky and the Franky Family at their house, Kokoro, Chimney and
+Gonbe at Shift Station; the yagara rental shop with its tank and its queue; masked revellers along the market; Up
+Town's statues, benches, flower beds and balustrade. Back Street is sunk (`backstreet.js`): its ground under the sea so
+the tide runs in its streets, boardwalks, boarded doors, a tide line, salt on the roofs; the drowned city on the seabed,
+seen when Aqua Laguna draws the sea back. At night (`lights.js`) lanterns on the boats, the market, the cranes, Franky
+House, the fountain's lights cycling, the lighthouse's beam. The canals ripple and the yagaras leave wakes. The tier
+walls stand 15 m out from the steps (the terrain grid's slope stays behind them) with a walk along the top. Events
+added: the Rocketman (out of its brick warehouse, the houseboat harpooned behind), pirates thrown out of Dock One, the
+Puffing Tom arriving; Aqua Laguna brings its storm (grey, fog, rain) first. Sound (`sound.js`, off until the Sound
+button): surf, the fountain, the yards' hammers, gulls, the whistle, the warning bells - all generated, no files. The sea (`ocean.js`) is an ocean: a moving swell, whitecaps, calm in the moat, a tide, and `api.SEA`
+for anything that floats and for Aqua Laguna. Galley-La's seven docks each building a ship (frames, planking, masts,
+scaffolding, slewing cranes); the Puffing Tom, a green-and-red 4-4-0 on paddle wheels, on rails that ride the sea out to
+Shift Station's lighthouse. Events: Aqua Laguna as the story tells it (bells, the draw-back, three waves, the
+Rocketman), a launch at Dock One, the Puffing Tom, a yagara race up the ramp canal, the Sunny's Coup de Burst, a Sea
+King, the Going Merry's farewell in the snow.
+
+**Shiganshina** (`shiganshina.html`, `src/shiganshina/`, `tools/make-shiganshina.py`): fan work after Attack on Titan.
+Wall Maria's southern district in its U of wall (straight sides out from Wall Maria, a rounded end with the outer
+gate; one continuous wall, coursed and buttressed, towers on its corners and the gates closed, so the only way through is
+the Colossal Titan's), the half-timbered town on its grid of lanes (the engine's `timber` facade, chimneys from
+`src/edinburgh/oldtown.js`), the canal's bridges, the market's stalls and well, the gates and the canal, the town, the farms and the Forest of
+Giant Trees inside, the Titans on the plains outside, the Garrison on the walls; the Colossal Titan, the Survey Corps'
+return, vertical manoeuvring.
+

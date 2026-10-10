@@ -280,7 +280,7 @@ const FA_AB_EMU = [
 ANIMAL({
   key: 'marsh-emu', name: 'Marsh emu', group: 'abyss',
   tags: { biomes: ['eastabyss'], koppen: ['X', 'Aw', 'BSh'], aridity: ['subhumid', 'semiarid'], climate: ['tropic'], riparian: 'non', abyssal: true,
-    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    domestic: false, herdedBy: ['nomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',   /* wild; the abyssal nomads keep a few penned for eggs and feathers */
     habitat: ['ground', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
   size: { length: 1.3, height: 1.95 },
   source: [{ build: 'settlements/locus', file: 'src/83-locus-fauna.js', lines: '17, 50-53', note: 'small mobs on the dry hummocks and ridges of the marsh, clear of the town; a static mesh (body, rear shag, neck, blue-grey head, two legs)' }],
@@ -426,7 +426,7 @@ const FA_AB_RLC = [{ skin: 0x4a4e44, belly: 0xb8a888, frill: 0xb84a2a }, { skin:
 ANIMAL({
   key: 'riding-lizard', name: 'Riding lizard', group: 'abyss',
   tags: { biomes: ['eastabyss'], koppen: ['X', 'BWh', 'Aw'], aridity: ['semiarid', 'subhumid', 'arid'], climate: ['tropic', 'hypertropic'], riparian: 'both', abyssal: true,
-    domestic: true, herdedBy: ['locus', 'verge', 'mungo'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['locus', 'verge', 'mungo', 'nomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
   size: { length: 3.05, height: 0.9 },
   source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '311-364', note: 'ported from here (the richer): ridden by Lower Verge\'s people and the nomad squads below the descent (camels above); four looks (skin, belly, frill), a saddle (tack)' },
@@ -476,7 +476,7 @@ ANIMAL({
       });
     }
     A.profile(t => { const q = f(t); return { z: q[2], y: q[1], hw: q[3], hh: q[4] }; });
-    A.anchor('saddle', [0, 0.89 * S, 0.04 * S]); A.anchor('bridle', [0, 0.6 * S, 1.25 * S]); A.anchor('chest', [0, 0.6 * S, 0.6 * S]);
+    A.anchor('saddle', [0, 0.89 * S, 0.04 * S]); A.anchor('bridle', [0, 0.6 * S, 1.25 * S]); A.anchor('chest', [0, 0.6 * S, 0.6 * S]); A.anchor('pack', [0, 0.83 * S, -0.3 * S]);
     A.anchor('tailRoot', [R[4][0], R[4][1], R[4][2]]); A.anchor('headRoot', [hp[0], hp[1], hp[2]]);
   }
 });
@@ -490,7 +490,7 @@ const FA_AB_DROM = [0xc8a878, 0x9a7048, 0xd8c4a0];
 ANIMAL({
   key: 'dromedary', name: 'Dromedary', group: 'abyss',
   tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh', 'BWk'], aridity: ['arid', 'semiarid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['iziz', 'verge', 'yuni'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['iziz', 'verge', 'yuni', 'nomad'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
   size: { length: 2.9, height: 2.31 },
   source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '240-309', note: 'ported from here (the richer): Upper Verge\'s caravans (3 to 5 laden camels, each with its driver) and porters, who lead them down the trail to Lower Verge; ridden by the nomads above the descent; bales, crates and a riding saddle (tack)' },

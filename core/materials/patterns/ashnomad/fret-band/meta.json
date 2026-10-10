@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1764,
+    867
+   ],
+   "seam_after": [
+    0.864,
+    2.953
+   ],
+   "seam_before": [
+    1.408,
+    0.934
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "ashnomad/fret-band",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   2.4,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ashnomad_fret-band.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/ashnomad/fret-band: an appliqu\u00e9 felt band, stepped frets with a hummingbird, a spiral and a stag beetle in yellow and red on black (core/materials/PROMPTS-nomads.md)",
+  "reuse": "the band round every Ash Nomad tent; Zeijani textiles",
+  "sha1": "a93a1228180d466b68a8f69b9bdd7a9fa6767436"
+ }
+}

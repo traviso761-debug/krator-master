@@ -60,3 +60,7 @@ FURN({
    bins, larder, bunk, locker ... in this culture's style sheet, keyed generic_trade_<role> */
 FK.set({ culture: 'generic', tier: 'poor', roles: 'trade', prefix: 'generic_trade_', S: GENERIC_STYLE, names: {
   forge: 'Fieldstone forge', anvil: 'Anvil on a stump', trough: 'Plank trough', stall: 'Plank stall', hayrack: 'Hay rack and manger', display: 'Plank display steps', armour_stand: 'Armour post', weapon_rack: 'Weapon rack', vat: 'Staved vat', still: 'Pot still', bin: 'Grain bins', larder: 'Larder cupboard', bunk: 'Plank bunk', locker: 'Plank locker', lathe: 'Pole lathe', press: 'Screw press', kiln: 'Clay kiln', grindstone: 'Grindstone', barrel: 'Barrel cradle', altar: 'Household altar' } });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed generic_training_<role> */
+FK.set({ culture: 'generic', tier: 'poor', roles: 'training', prefix: 'generic_training_', S: GENERIC_STYLE, names: {
+  training_dummy: 'Straw practice dummy', archery_butt: 'Straw archery butt' } });

@@ -162,3 +162,7 @@ FURN({
     if (F.variant) F.rod(-0.42, 0.3, 0.86, 0.42, 0.3, 0.86, 0.08, F.col('clothRush'), 'cloth');            /* a rolled spare blanket at the foot */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed reedlake_training_<role> */
+FK.set({ culture: 'reedlake', tier: 'common', roles: 'training', prefix: 'reedlake_training_', S: RL_COMMON, names: {
+  training_dummy: 'Reed practice dummy', archery_butt: 'Reed-bale archery butt' } });

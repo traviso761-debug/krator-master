@@ -172,14 +172,33 @@ DEFAULT_H = {"house": 8, "detached": 8, "residential": 11, "apartments": 13, "ga
              "hospital": 25, "university": 18, "parking": 12, "stadium": 25, "train_station": 12, "yes": 9}
 
 
-def height_of(t):
+# A city whose untagged buildings are not suburban can say so: "defaultHeights" in its config overrides DEFAULT_H by
+# type, and "heightSpread" (a fraction) varies those defaults building by building, the same way every build, so a
+# block of untagged palazzi is not one flat slab. Only the defaults move: a height or a level count in the map wins.
+CITY_H = {**DEFAULT_H, **{k: v for k, v in CITY.get("defaultHeights", {}).items() if k != "_"}}
+SPREAD = float(CITY.get("heightSpread", 0))
+ROAD_W = {k: v for k, v in CITY.get("roadWidths", {}).items() if k != "_"}   # a width by name, for a street the tags get wrong
+COURTYARDS = float(CITY.get("courtyards", 0))   # keep a building's inner rings (its courtyards) of at least this many m²; 0 drops them
+# ruins take their own default: anything tagged as ruins or an archaeological site, and - since excavations are
+# often mapped as plain buildings - anything untagged inside a "ruinZones" box ([lat S, lon W, lat N, lon E])
+RUIN_BOXES = [(*xz(b[0], b[1]), *xz(b[2], b[3])) for b in CITY.get("ruinZones", [])]
+def in_ruins(c):
+    return any(min(x0, x1) <= c[0] <= max(x0, x1) and min(z0, z1) <= c[1] <= max(z0, z1) for x0, z0, x1, z1 in RUIN_BOXES)
+
+
+def height_of(t, c=None):
     h = num(t.get("height"))
     lv = num(t.get("building:levels"))
     if h is None and lv is not None:
         h = lv * 3.4 + (1 if lv > 2 else 0.5)
     typ = t.get("building") if t.get("building") not in (None, "yes") else t.get("building:part")
     if h is None:
-        h = DEFAULT_H.get(typ or "yes", 9)
+        ruin = "ruins" in CITY_H and (t.get("historic") in ("ruins", "archaeological_site") or t.get("ruins") == "yes"
+                                      or typ == "ruins" or (typ in (None, "yes") and c is not None and in_ruins(c)))
+        h = CITY_H["ruins"] if ruin else CITY_H.get(typ or "yes", CITY_H["yes"])
+        if SPREAD and c is not None:
+            k = math.sin(c[0] * 12.9898 + c[1] * 78.233) * 43758.5453
+            h *= 1 + SPREAD * (2 * (k - math.floor(k)) - 1)
     mh = num(t.get("min_height"))
     ml = num(t.get("building:min_level"))
     if mh is None and ml is not None:
@@ -232,13 +251,29 @@ def terrain_grid():
         for i in range(nx):
             xx = BX0 + i * step
             hs.append(elev(LAT0 - zz / M_LAT, LON0 + xx / M_LON))
-    water = sorted(hs)[len(hs) // 20]   # the 5th percentile: river or lake level
+    # terrain.filter (metres): where the elevation carries the city's surface (Tokyo's: towers as spikes, pits of
+    # metres on flat ground, and every street laid over them dips), a grey opening takes out what is raised and
+    # narrower than `open`, a closing fills pits narrower than `close`, and a box blur over `blur` smooths the rest
+    water = sorted(hs)[len(hs) // 20]   # the 5th percentile: river or lake level (taken before any filtering)
+    flt = cfg.get("filter")
+    if flt:
+        import numpy as np
+        from scipy import ndimage
+        A = np.array(hs, dtype=np.float32).reshape(nz, nx)
+        cells = lambda m: max(1, int(round(m / step)) | 1)
+        A = ndimage.grey_opening(A, size=cells(flt.get("open", 150)))
+        A = ndimage.grey_closing(A, size=cells(flt.get("close", 60)))
+        A = ndimage.uniform_filter(A, size=cells(flt.get("blur", 48)), mode="nearest")
+        hs = [float(v) for v in A.ravel()]
     # A tidal city's tiles carry the harbour's bathymetry, which is metres of depth nobody will ever see through
     # the water plane, and the odd bad sample a long way below that. The bed is clamped just under the surface.
     floor = -6.0 if CITY.get("seaLevelWater") else -400.0
-    return {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
+    res = {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
             "h": [int(round(max(h - water, floor) * 10)) for h in hs],
             "_": "heights in decimetres above the water level (datum, metres above sea level)"}
+    if flt:
+        res["filtered"] = {k: v for k, v in flt.items() if k != "_"}
+    return res
 
 
 def main():
@@ -307,9 +342,12 @@ def main():
     KIND = [("leisure", "stadium", "stadium"), ("leisure", "pitch", "pitch"), ("leisure", "garden", "garden"), ("leisure", "playground", "play"),
             ("leisure", "golf_course", "golf"), ("leisure", "nature_reserve", "reserve"), ("leisure", "track", "track"), ("leisure", "dog_park", "grass"),
             ("leisure", "ice_rink", "plaza"), ("tourism", "zoo", "zoo"), ("landuse", "cemetery", "cemetery"), ("landuse", "railway", "railyard"),
-            ("natural", "wood", "wood"), ("natural", "scrub", "wood"), ("natural", "sand", "sand"), ("natural", "grassland", "grass"),
+            ("natural", "wood", "wood"), ("landuse", "forest", "wood"), ("natural", "scrub", "scrub" if CITY.get("scrub") == "low" else "wood"), ("natural", "sand", "sand"), ("natural", "grassland", "grass"),
             ("landuse", "grass", "grass"), ("landuse", "recreation_ground", "grass"), ("place", "square", "plaza"), ("highway", "pedestrian", "plaza"),
             ("leisure", "park", "park")]
+    # a city may map land the list above leaves out ("extraKinds": [[key, value, kind], ...]): Antigua's coffee
+    # fincas are landuse=orchard, and without this they are dropped
+    KIND += [tuple(k) for k in CITY.get("extraKinds", [])]
     areas, pois = [], []
     for e in land:
         t = e.get("tags", {})
@@ -378,6 +416,10 @@ def main():
         lanes = num(t.get("lanes"))
         w = WIDTH[hw] if not lanes or hw in ("service", "cycleway", "footway", "path") else max(WIDTH[hw] * 0.7, lanes * 3.3 + 2)
         c = "alley" if hw == "service" else "trail" if hw in ("cycleway", "footway", "path") else hw.replace("_link", "")
+        if hw == "service" and t.get("name") and CITY.get("namedService") and re.match(CITY.get("namedServiceMatch", "."), t["name"]):
+            c = CITY["namedService"]   # a named service road is a street the city closed to traffic (Rome's Via dei Fori Imperiali)
+        if t.get("name") in ROAD_W:
+            w = ROAD_W[t["name"]]
         if c == "trail" and not (t.get("name") or t.get("bicycle") == "designated"):
             continue
         r = {"c": c, "w": round(w, 1), "p": flat(simplify(pts, 0.4))}
@@ -389,6 +431,33 @@ def main():
             r["l"] = int(float(t["layer"])) if re.match(r"^-?\d+(\.\d+)?$", t["layer"]) else 0
         roads.append(r)
     out["roads"] = roads
+
+    # what a city fetched as extraFiles: footbridges (the steel bridges over the main roads, drawn by the page itself)
+    # and convenience stores, by brand (a page puts the right fascia at the right door)
+    if glob.glob(os.path.join(RAW, "footbridges-*.json")):
+        fbs = []
+        for e in load("footbridges"):
+            pts = way_pts(e)
+            if e["type"] == "way" and len(pts) >= 2 and any(in_bounds(p) for p in pts):
+                w = num(e.get("tags", {}).get("width")) or 3.0
+                fbs.append({"p": flat(simplify(pts, 0.3)), "w": round(min(w, 6), 1)})
+        out["footbridges"] = fbs
+    if glob.glob(os.path.join(RAW, "shops-*.json")):
+        BRANDS = (("seven", ("セブン", "7-eleven", "seven")), ("family", ("ファミリーマート", "familymart", "family")), ("lawson", ("ローソン", "lawson")),
+                  ("ministop", ("ミニストップ", "ministop")), ("daily", ("デイリーヤマザキ", "daily")))
+        kon = []
+        for e in load("shops"):
+            t = e.get("tags", {})
+            label = (t.get("brand", "") + " " + t.get("name", "") + " " + t.get("brand:en", "")).lower()
+            b = next((k for k, keys in BRANDS if any(x.lower() in label for x in keys)), "other")
+            if e["type"] == "node":
+                p = xz(e["lat"], e["lon"])
+            else:
+                g = way_pts(e)
+                p = centroid(g) if len(g) >= 3 else (g[0] if g else None)
+            if p and in_bounds(p):
+                kon.append({"x": q(p[0]), "z": q(p[1]), "b": b})
+        out["konbini"] = kon
 
     # ---- rail: the L (elevated where it is a bridge), Metra; stations
     rails, stations = [], []
@@ -426,8 +495,9 @@ def main():
             a = abs(area(o))
             if a < 12:
                 continue
-            h, mh = height_of(t)
-            rec = {"o": o, "h": h, "mh": mh, "t": t, "a": a, "c": centroid(o)}
+            c = centroid(o)
+            h, mh = height_of(t, c)
+            rec = {"o": o, "h": h, "mh": mh, "t": t, "a": a, "c": c, "i": holes}
             (parts if "building:part" in t and "building" not in t else outlines).append(rec)
     # an outline with parts inside is drawn by its parts (Willis Tower's tubes, Hancock's taper)
     grid = {}
@@ -438,9 +508,16 @@ def main():
     for b in outlines:
         gx, gz = int(b["c"][0] // 100), int(b["c"][1] // 100)
         near = [p for dx in (-1, 0, 1) for dz in (-1, 0, 1) for p in grid.get((gx + dx, gz + dz), [])]
-        if any(inside(p["c"], b["o"]) for p in near):
-            dropped_by_parts += 1
-            continue
+        inner = [p for p in near if inside(p["c"], b["o"])]
+        if inner:
+            # parts that all start well above the ground (a spire mapped as parts, the shaft only as the outline): keep
+            # the outline, up to where the lowest part begins, or the tower floats
+            low = min(p["mh"] or 0 for p in inner)
+            if low > 3:
+                b["h"] = min(b["h"], low)
+            else:
+                dropped_by_parts += 1
+                continue
         kept.append(b)
     kept += parts
     buildings, skipped = [], 0
@@ -454,6 +531,11 @@ def main():
         if area(r) < 0:   # counter-clockwise in x/z (so walls face out)
             r = r[::-1]
         rec = {"p": flat(r), "h": round(b["h"], 1)}
+        if COURTYARDS:
+            hs = [ring_simplify(hr, 0.35) for hr in b["i"] if abs(area(hr)) >= COURTYARDS]
+            hs = [hr for hr in hs if len(hr) >= 3]
+            if hs:
+                rec["i"] = [flat(hr) for hr in hs]
         if b["mh"]:
             rec["m"] = round(b["mh"], 1)
         typ = t.get("building") or t.get("building:part")

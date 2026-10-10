@@ -244,7 +244,7 @@ FURN({
 });
 
 FURN({
-  key: 'voth_strider_station', name: "Silt Strider Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
+  key: 'voth_strider_station', name: "Elephant Bug Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
   rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 3 },
   materials: ['timber', 'cloth'],
   w: 10, d: 16, h: 5.6, variants: 1,
@@ -482,7 +482,7 @@ FURN({
   key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', type: 'workstation', setting: 'both',
   rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1 },
   materials: ['timber', 'stone', 'metal', 'glass', 'cloth', 'emissive'],
-  w: 2.5, d: 1.2, h: 1.45, variants: 1,
+  w: 2.5, d: 1.2, h: 1.45, variants: 1, job: 'alchemy',
   build: function (F) {
     const stone = F.col('stoneGrey'), jade = F.col('stoneJade'), metal = F.col('steel'), glass = F.col('glassMist');
     /* bench: top slab, apron and four stub legs */

@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -153,5 +153,45 @@ function world(seed){
  const P=S.populate({prefix:'q'}),homes=S.all('actor').filter(a=>a.role==='clan').map(a=>a.home).join(',');
  ok('a kind means every place of the kind, bounded by beds (kin: 4 beds for 5)',P.byRole.kin===4&&P.homeless.indexOf('kin')>=0,P.byRole.kin===5);
  ok('homes may name place ids; deal:round deals them in turn, past the beds (B,A,B,A,B)',homes==='homeB,homeA,homeB,homeA,homeB'&&P.byRole.clan===5,homes!=='homeB,homeA,homeB,homeA,homeB');}
+// transport routes (77-sim-5r): stops on a layer, a round of dwells and legs, poses as a function of time
+{const {S}=world();
+ S.transport({id:'line',layer:'pedestrian',stops:['homeA','market','homeB'],speed:2,dwell:10,vehicles:2});
+ const R=S.transportBake('line');
+ ok('an open line runs out and back: 4 legs, 8 segments, period 10+80+10+55 twice',R.legs.length===4&&R.segments.length===8&&near(R.period,310,0.01),!near(R.period,310,0.01));
+ ok('a dwell is a segment whose from === to (PLAN.md 4.3)',R.segments[0][2]==='homeA'&&R.segments[0][3]==='homeA'&&R.segments[1][2]==='homeA'&&R.segments[1][3]==='market',R.segments[0][2]!==R.segments[0][3]);
+ const p0=S.vehiclePose('line',0,5),p1=S.vehiclePose('line',0,50);
+ ok('standing at the first stop while it dwells',p0.at==='homeA'&&!p0.moving,p0.moving);
+ ok('80 m along the street 40 s after leaving at 2 m/s',near(p1.x,80,0.5)&&near(p1.z,0,0.5)&&p1.moving&&p1.at===null,!p1.moving);
+ const again=S.vehiclePose('line',0,50);ok('the same t gives the same pose',again.x===p1.x&&again.z===p1.z,again.x!==p1.x);
+ const v1=S.vehiclePose('line',1,50),v0=S.vehiclePose('line',0,50+155);ok('two vehicles are half a round apart',near(v1.x,v0.x)&&near(v1.z,v0.z),!(near(v1.x,v0.x)&&near(v1.z,v0.z)));
+ const wrap=S.vehiclePose('line',0,50+310);ok('the round repeats every period',near(wrap.x,p1.x)&&near(wrap.z,p1.z),!near(wrap.x,p1.x));
+ S.transport({id:'loop',layer:'pedestrian',stops:['homeA','homeB','homeA'],speed:3,dwell:0});const L=S.transportBake('loop');
+ ok('first stop === last makes a loop: no legs back, period 300 m / 3',L.loop&&L.legs.length===2&&near(L.period,100,0.01),!L.loop);
+ S.transport({id:'in',layer:'pedestrian',stops:['port:west','market'],speed:2,dwell:10});const I=S.transportBake('in');
+ ok('no dwell at a port; a vehicle by the port is off the map',I.segments[0][2]==='port:west'&&I.segments[0][2]!==I.segments[0][3]&&S.vehiclePose('in',0,1).offMap,!S.vehiclePose('in',0,1).offMap);
+ S.transport({id:'lost',layer:'pedestrian',stops:['homeA','nowhere']});const F=S.transportBake('lost');
+ ok('an unroutable leg is marked failed and drawn straight',F.legs[0].failed&&near(F.legs[0].path.len,Math.hypot(400,400),0.01),!F.legs[0].failed);
+ ok('stopsServing names the routes that call at a stop',S.stopsServing('market').join()==='line,in',S.stopsServing('market').length!==2);
+ S.load({transports:[{id:'bad',layer:'sky',stops:['homeA','ghost']}]});const pr=S.check();
+ ok('check names an unknown layer and an unknown stop',pr.some(p=>/bad: unknown layer sky/.test(p))&&pr.some(p=>/bad: unknown stop ghost/.test(p)),!pr.length);
+ const ex=S.export();ok('the export carries the routes with their segments',ex.transports.length===5&&ex.transports[0].segments.length===8,!ex.transports);}
+// exclusive berths: two vehicles on an out-and-back line meet at the middle stop; the later one queues
+{const {S}=world();
+ const mk=(id,ex)=>{S.transport({id,layer:'pedestrian',stops:['homeA','market','homeB'],speed:2,dwell:40,vehicles:2,exclusive:ex,queueGap:20});return S.transportBake(id);};
+ mk('free',false);mk('one',true);
+ const both=(id)=>{let n=0,w=0;for(let t=0;t<6000;t+=1){const a=S.vehiclePose(id,0,t),b=S.vehiclePose(id,1,t);if(a.at==='market'&&b.at==='market')n++;if(a.waiting||b.waiting)w++;}return {n,w};};
+ const f=both('free'),o=both('one');
+ ok('without exclusive berths the two vehicles stand at the market together',f.n>0,f.n===0);
+ ok('with them never together, and one waits its turn',o.n===0&&o.w>0,o.n>0);
+ const q=S.vehiclePose('one',1,777),q2=S.vehiclePose('one',1,777);ok('a queued timetable is still a pure function of time',q.x===q2.x&&q.z===q2.z,q.x!==q2.x);
+ S.transport({id:'two',layer:'pedestrian',stops:['homeA','market','homeB'],speed:2,dwell:40,vehicles:2,exclusive:true,berths:2,berthSide:5});S.transportBake('two');
+ const t2=both('two');let side=false;for(let t=0;t<6000&&!side;t++){const a=S.vehiclePose('two',0,t),b=S.vehiclePose('two',1,t);if(a.at==='market'&&b.at==='market')side=Math.hypot(a.x-b.x,a.z-b.z)>9;}
+ ok('with two berths both stand at the stop together, one each side',t2.n>0&&side&&t2.w===0,!side);
+ S.transport({id:'onA',layer:'pedestrian',stops:['homeA','market','homeA'],speed:2,dwell:60,vehicles:2,exclusive:true});S.transport({id:'onB',layer:'pedestrian',stops:['homeB','market','homeB'],speed:2,dwell:60,vehicles:2,exclusive:true});
+ S.transportBake('onA');S.transportBake('onB');const sep=()=>{let n=0;for(let t=0;t<8000;t++){let c=0;['onA','onB'].forEach(id=>{for(let k=0;k<2;k++)if(S.vehiclePose(id,k,t).at==='market')c++;});if(c>1)n++;}return n;};
+ const before=sep();S.transportQueue(['onA','onB']);const after=sep();
+ ok('two lines through one stop share its berth once queued together',before>0&&after===0,after>0);
+ S.transport({id:'hw',layer:'pedestrian',stops:['homeA','homeB'],speed:2,dwell:10,headway:500});const H=S.transportBake('hw');
+ ok('headway sets the number of vehicles (period / headway)',H.vehicles===Math.max(1,Math.round(H.period/500)),H.vehicles===Math.round(H.period/240)&&H.period/240>1.5);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

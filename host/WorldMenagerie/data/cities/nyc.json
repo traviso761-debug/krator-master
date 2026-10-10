@@ -56,7 +56,13 @@
  "terrain": {
   "zoom": 14,
   "step": 20,
-  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
+  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py",
+  "filter": {
+   "open": 150,
+   "close": 36,
+   "blur": 48,
+   "_": "Manhattan's towers stand in the elevation as spikes of up to 44 m: tools/filter-terrain.py, tools/build-osm-city.py"
+  }
  },
  "skylineCentre": [
   40.7549,
@@ -654,5 +660,141 @@
   "steep": "#6a6052",
   "far": "#2f6490"
  },
- "flight": true
+ "flight": true,
+ "commuter": {
+  "body": "#b4b8bc",
+  "band": "#2a3a6a",
+  "cars": 8,
+  "_": "Metro-North and the LIRR: stainless, with dark window bands"
+ },
+ "facadeStyles": [
+  {
+   "tex": "curtain",
+   "when": {
+    "minH": 120,
+    "share": 0.6
+   },
+   "bay": 1.6,
+   "floor": 4.0,
+   "colours": [
+    "#6a7a88",
+    "#8a9aa8",
+    "#4a5a6a",
+    "#9ab0c0",
+    "#5a6a78"
+   ]
+  },
+  {
+   "tex": "tile",
+   "when": {
+    "minH": 40,
+    "maxH": 260,
+    "share": 0.55
+   },
+   "bay": 2.4,
+   "floor": 3.6,
+   "colours": [
+    "#d8cfbf",
+    "#c8bca8",
+    "#b8a890",
+    "#e0d8c8",
+    "#a8907a",
+    "#8a6a58"
+   ]
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial"
+    ],
+    "minH": 40,
+    "share": 0.4
+   },
+   "bay": 3.4,
+   "floor": 3.8,
+   "colours": [
+    "#d8d8d4",
+    "#b8bcc0",
+    "#2a2c30"
+   ]
+  },
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "apartments",
+     "residential"
+    ],
+    "minH": 25,
+    "share": 0.4
+   },
+   "bay": 3.4,
+   "floor": 3.0,
+   "colours": [
+    "#e0dcd4",
+    "#c8c0b0",
+    "#b8a898"
+   ]
+  }
+ ],
+ "palette": {
+  "brick": [
+   "#8a4a3a",
+   "#7a4a3a",
+   "#9a6a50",
+   "#6e4a3e",
+   "#a8826a",
+   "#5e3e34"
+  ],
+  "stone": [
+   "#c8bca8",
+   "#b8a890",
+   "#d8cfbf"
+  ]
+ },
+ "roofColours": [
+  "#4a4a4c",
+  "#56544e",
+  "#3e3e40"
+ ],
+ "_facadeStyles": "the city's own architecture: glass, ribbon windows, terracotta and brick (src/engine/stages/03-blocks.js, facadeStyles)",
+ "flatRoofColours": [
+  "#5e5e5c",
+  "#6e6c68",
+  "#4e4e50",
+  "#8a8884",
+  "#c0bcb4"
+ ],
+ "dress": {
+  "cornice": {
+   "share": 0.7,
+   "minH": 10,
+   "maxH": 80,
+   "depth": 0.75,
+   "height": 1.0
+  },
+  "string": {
+   "at": 4.4
+  },
+  "waterTowers": {
+   "share": 0.14,
+   "minH": 18,
+   "maxH": 70
+  },
+  "fireEscapes": {
+   "share": 0.3,
+   "minH": 12,
+   "maxH": 26,
+   "types": [
+    "apartments",
+    "residential",
+    "yes"
+   ],
+   "floor": 3.1
+  },
+  "far": 650,
+  "_": "src/core/dress.js: cornices, string courses, water towers, fire escapes, dormers, bay windows"
+ }
 }

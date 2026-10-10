@@ -16,16 +16,17 @@ lists (`build.py`: core/rand, core/materials/record, core/tags, core/furnish, co
 
 | Fragment | Prefix | What |
 |---|---|---|
+| `26k-kit.js` | | the kit's identity and look: `KIT` (ids, culture, faction, ground and fog), `SV_LIB` (MAT key -> pack family), `SV_TILE0`, `SV_CLOTH`, `SV_CUT`, `KIT_FALLBACK` (a sheet not yet packed draws as a stand-in), `SVPAL` and `P(k)`. The one fragment a fork rewrites |
 | `10-core.js` | | error panel (and three.js shader errors), the seeded stream (`reseed`, `rng`, `rr`, `pick`), `h3`, `vnoise`, `fbm`, `terrainH`, `FRAME_HOOKS` |
-| `27-mat.js` | | `MAT` per key with the library pack's maps (`SV_LIB`), `TILE` (metres per tile), `matHook` (composable onBeforeCompile hooks with a program key), the cloth flutter and the cut-away hooks, `SVPAL` and `P(k)` |
+| `27-mat.js` | | `MAT` per key with the library pack's maps (`SV_LIB`, 26k-kit.js), `TILE` (metres per tile), `matHook` (composable onBeforeCompile hooks with a program key), the cloth flutter and the cut-away hooks |
 | `30-geo.js` | | the merge-by-material engine (forked from kits/post-apoc): `box cyl cone sph ellip ring beam pole plane4 quad poly prism sector`, and for cloth and beasts `psurf` (a parametric sheet with arc-length UVs), `lathe` (faces out, or `inward`), `tube` (a skin along a curve), `cord`, `sagRope`; `withCloth`, `smokeAt`, `haloAt`, `flushBuckets` |
 | `36-def.js` | | `defBuilding`, `place`, `door`, `REG`, the core/tags registration (`SVTAGS`), `svLife` and `SV_LIFE` |
 | `40-tk-tentkit.js` | tk | the tent shapes: `tkYurt`, `tkBell`, `tkPeaked` (+`tkPeakH`), `tkBlack` (+`tkBlackH`), `tkPavilion`, `tkPolygon`; parts `tkGuy`, `tkStake`, `tkValance`, `tkTassels`, `tkFloor` |
 | `41-tk-dress.js` | tk | interiors as FURNISH calls: `tkRingSeats`, `tkRowSeats`, `tkTea`, `tkHonour`; `tkFace`, `tkAt`, `tkNearDoor`; `tkNoCut`, `tkCutFloor` |
-| `42-ts-small.js` | ts | the five small tents |
+| `42-ts-small.js` | ts | the five small tents; `tsFlags` (a string of prayer flags), `tsFringe` (a valance in turns of colour), `tsWallBand` (a pattern band round a tkPeaked tent's walls) |
 | `44-tl-large.js` | tl | the five large tents |
 | `46-tc-chief.js` | tc | the chief's tent |
-| `48-tt-trade.js` | tt | the shaman's hut, the smithy tent, the supply tent |
+| `48-tt-trade.js` | tt | the shaman's ger, the smithy, the hidemaker's, the supply tent, the cartwright's; `ttOpenGer` (a lattice frame open at the front under a felt roof) |
 | `54-bl-baelu.js` | bl | the Baelu and `blMasonry` (fitted polygonal masonry on any surface `at(u, v, depth)`) |
 | `56-sa-beasts.js` | sa | the animals from `kits/fauna`: `saFauna` (build and place one, its box into the site's), `saLife`, `saTack` (the salamanders' tack against `saKey`, the kit's body profile), `saDef`, the goat and the goat fold, `SA_LIST`, `saFlush`, the frame hook (`KratorFauna.animate`) |
 | `58-cv-wheels.js` | cv | `cvWheel`, `cvChariot`; the chariot, the chariot and pair, the supply cart, the ger cart |

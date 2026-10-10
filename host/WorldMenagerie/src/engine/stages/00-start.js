@@ -67,12 +67,44 @@ const POIS=OSM.pois.map(p=>({name:p.n,x:p.x/10,z:p.z/10,kind:p.k,ang:p.ang||0,w:
 // the ground: a height grid from the elevation tiles, in metres above the water level (y = 0 is the river or lake)
 const TER=(()=>{const t=OSM.terrain;if(!t)return null;const h=new Float32Array(t.h.length);for(let i=0;i<t.h.length;i++)h[i]=t.h[i]/10;
   return {step:t.step,nx:t.nx,nz:t.nz,x0:t.x0/10,z0:t.z0/10,datum:t.datum,h};})();
+// A city may cut the ground where a street runs in a cutting the elevation tiles are too coarse to see (C.terrainCuts:
+// [{line: [[lat, lon, street height], ...], width: m, slope: rise per metre of the sides}]): every grid point near the
+// line comes down to the street's own profile, the sides rising at the slope; nothing is ever raised. TER.h0 keeps the
+// ground as it was, for whatever is built against the cut (groundH0).
+if(TER&&C.terrainCuts){TER.h0=TER.h.slice();TER.cutBoxes=[];
+  for(const cut of C.terrainCuts){const L=cut.line.map(([la,lo,h])=>[...P([la,lo]),h]),hw=(cut.width||12)/2,sl=cut.slope||1.5,reach=hw+30/sl;
+    let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of L){x0=Math.min(x0,x-reach);x1=Math.max(x1,x+reach);z0=Math.min(z0,z-reach);z1=Math.max(z1,z+reach);}
+    TER.cutBoxes.push({x0,x1,z0,z1});
+    const i0=Math.max(0,Math.floor((x0-TER.x0)/TER.step)),i1=Math.min(TER.nx-1,Math.ceil((x1-TER.x0)/TER.step)),j0=Math.max(0,Math.floor((z0-TER.z0)/TER.step)),j1=Math.min(TER.nz-1,Math.ceil((z1-TER.z0)/TER.step));
+    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=TER.x0+i*TER.step,z=TER.z0+j*TER.step;let best=1e9,bh=0;
+      for(let k=0;k+1<L.length;k++){const [ax,az,ah]=L[k],[bx,bz,bh2]=L[k+1],dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l2)),d=Math.hypot(x-ax-dx*t,z-az-dz*t);if(d<best){best=d;bh=ah+(bh2-ah)*t;}}
+      const nh=bh+Math.max(0,best-hw)*sl,k=j*TER.nx+i;if(nh<TER.h[k])TER.h[k]=nh;}}}
+// And the other way: a rock the elevation tiles are too coarse to see (Edinburgh's Castle Rock comes out forty metres
+// short) is raised (C.terrainRaise: [{poly: [[lat, lon], ...], top: height, slope}] - the inside up to the top, the
+// ground round it falling away at the slope, a cliff if it is steep - or {line: [[lat, lon, height], ...], width,
+// slope}, a ramp along a profile). Nothing is ever lowered by these; groundH0 keeps the ground as it was.
+if(TER&&C.terrainRaise){if(!TER.h0)TER.h0=TER.h.slice();
+  const inPoly=(x,z,r)=>{let c=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const [xi,zi]=r[i],[xj,zj]=r[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;};
+  const segD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l2));return [Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t),t];};
+  for(const R of C.terrainRaise){const sl=R.slope||2,pts=(R.poly||R.line).map(p=>[...P([p[0],p[1]]),p[2]]),hw=(R.width||0)/2,reach=hw+(R.reach||60);
+    let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of pts){x0=Math.min(x0,x-reach);x1=Math.max(x1,x+reach);z0=Math.min(z0,z-reach);z1=Math.max(z1,z+reach);}
+    const i0=Math.max(0,Math.floor((x0-TER.x0)/TER.step)),i1=Math.min(TER.nx-1,Math.ceil((x1-TER.x0)/TER.step)),j0=Math.max(0,Math.floor((z0-TER.z0)/TER.step)),j1=Math.min(TER.nz-1,Math.ceil((z1-TER.z0)/TER.step));
+    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=TER.x0+i*TER.step,z=TER.z0+j*TER.step,k=j*TER.nx+i;let nh;
+      if(R.poly){let d=1e9;for(let q=0;q<pts.length;q++)d=Math.min(d,segD(x,z,pts[q],pts[(q+1)%pts.length])[0]);nh=inPoly(x,z,pts)?R.top:R.top-d*sl;}
+      else{let best=1e9,bh=0;for(let q=0;q+1<pts.length;q++){const [d,t]=segD(x,z,pts[q],pts[q+1]);if(d<best){best=d;bh=pts[q][2]+(pts[q+1][2]-pts[q][2])*t;}}nh=bh-Math.max(0,best-hw)*sl;}
+      if(nh>TER.h[k])TER.h[k]=nh;}}}
 function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
   let i=Math.floor(fx),j=Math.floor(fz);i=Math.max(0,Math.min(TER.nx-2,i));j=Math.max(0,Math.min(TER.nz-2,j));
   const tx=Math.max(0,Math.min(1,fx-i)),tz=Math.max(0,Math.min(1,fz-j)),h=TER.h,n=TER.nx;
   return (h[j*n+i]*(1-tx)+h[j*n+i+1]*tx)*(1-tz)+(h[(j+1)*n+i]*(1-tx)+h[(j+1)*n+i+1]*tx)*tz;}
+const groundH0=(x,z)=>{if(!TER||!TER.h0)return groundH(x,z);const h=TER.h;TER.h=TER.h0;try{return groundH(x,z);}finally{TER.h=h;}};   // the ground before any cut
 const groundMin=ring=>{let m=1e9;for(const [x,z] of ring)m=Math.min(m,groundH(x,z));return m===1e9?0:m;};
 ctx.groundH=groundH;
+// C.treeLine (metres above the datum) and C.bareGround ([[lat, lon, radius m], ...]): ground where nothing grows, a
+// volcano's cone above its forest. Woodland is not drawn there and no trees are planted on it (Antigua's volcanoes,
+// whose nature reserves are mapped from the foot of the cone to the crater). A city that sets neither is unchanged.
+const BARE=(C.bareGround||[]).map(([la,lo,r])=>{const [x,z]=P([la,lo]);return [x,z,r];}),TREE_LINE=C.treeLine==null?Infinity:C.treeLine;
+const bareAt=(x,z)=>(TREE_LINE<Infinity&&groundH(x,z)>TREE_LINE+40*Math.sin(x*0.004)*Math.cos(z*0.0035))||BARE.some(([bx,bz,r])=>(x-bx)**2+(z-bz)**2<r*r);
 // water lookups on a 20 m grid, worked out once for the whole map: 0 land, 1 lake, 2 inland water
 const WG=20*Math.ceil(WORLD),WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
 {for(let j=0;j<WNZ;j++){const z=B.z0+(j+0.5)*WG;
@@ -83,8 +115,9 @@ const WG=20*Math.ceil(WORLD),WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=n
  for(const r of ISLANDS)fillRec(bbox(r),(x,z)=>inPoly(x,z,r),0);
  // A sea-level city floods its whole box and lets the ground decide: a cell is only water where the land is not
  // standing above the waterline. Without this every tree, car and street light would think it was in the river.
- const SEA=!!C.seaLevelWater,dry=(x,z)=>SEA&&groundH(x,z)>0.4;
- for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&!dry(x,z)&&inRec(w,x,z),2);}
+ // A lake that carries its own level (w.y: Lake Crescent is 177 m up, over a sea-level map) is dry above that level.
+ const SEA=!!C.seaLevelWater,dry=(x,z,w)=>SEA&&groundH(x,z)>(w.y===undefined?0.4:w.y+0.4);
+ for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&!dry(x,z,w)&&inRec(w,x,z),2);}
 const waterCell=(x,z)=>{const i=Math.floor((x-B.x0)/WG),j=Math.floor((z-B.z0)/WG);if(i<0||j<0||i>=WNX||j>=WNZ)return x>B.x1?1:0;return WGRID[j*WNX+i];};
 const inLake=(x,z)=>waterCell(x,z)===1;
 const inRiver=(x,z)=>waterCell(x,z)===2;
@@ -116,7 +149,7 @@ ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.lengt
 // frame after the orbit controls (07-ui). pushCam returns the function that takes it off again.
 const camStack=[];
 ctx.pushCam=fn=>{camStack.push(fn);return ()=>{const i=camStack.lastIndexOf(fn);if(i>=0)camStack.splice(i,1);};};
-const API={THREE,C,ctx,P,toLatLon,B,WORLD,POIS,AREAS,ROADS,RAILS,STATIONS,WATERWAYS,animHooks,HASH0,
+const API={THREE,C,ctx,P,toLatLon,B,WORLD,OSM,MAP_LAYERS:[],POIS,AREAS,ROADS,RAILS,STATIONS,WATERWAYS,animHooks,HASH0,groundH0,
   groundH,groundMin,inMap,inWater,inLake,inRiver,inPoly,polyArea,segDist,pathDist,bbox,dec,
   roadsNear,districtAt,focusAt,FOCUS,report,section};
 const UI_HOOKS=[];   // an extra that wants a button of its own queues it here; the UI stage runs these once its panels exist

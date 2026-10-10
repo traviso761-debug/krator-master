@@ -8,13 +8,69 @@ Read `README.md` first: it holds the design rules for every build (tagging,
 modularity, the inspector and polygon tools, the standard skybox). `INDEX.md`
 says which build holds what.
 
+## Working rules while the refactor is paused (2026-10-09)
+
+Three evaluations of the repo produced a roadmap; its work is on the branch `full-refactor` (`ROADMAP.md` there,
+and the owner's "Krator Roadmap" doc). It is paused, not abandoned: it will be merged into `main` later. Until
+then, every session on `main` follows these rules, so the merge stays cheap and the bugs it found are not repeated.
+
+**Do not collide with the refactor.**
+- Do not add repo-wide tooling (a test runner, CI workflows, a shared verify harness, LFS rules) or edit
+  `.gitattributes`: `full-refactor` has `tools/test_all.py`, `tools/harness.py`, `tools/check_encoding.py`,
+  `.github/workflows/` and LFS rules for built pages. Ask the owner if you need one of them now.
+- Do not rewrite a verify.py's "Harness helpers" block; `full-refactor` replaced it with an import.
+- Leave these to the refactor unless the owner asks: `kits/catalog/krator-furniture-runtime.js`'s `Batch.absorb`
+  (keeping indices; branch `wip/furniture-indexed`), `core/biome/40-core-place.js`'s `clearOf`/`scatter`/`standAt`
+  (a spatial index; branch `wip/biome-spatial-index`), `core/terrain/` (the terrain field `KFIELD`; branch
+  `refactor/terrain-field`), and Voth's placement mask (on `core/mask` in `full-refactor`).
+
+**Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
+their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
+`kits/catalog/` or a kit other builds vendor, rebuild every build that takes it and commit those pages too. The
+Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
+are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
+`dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
+on purpose and checked.
+
+**Write code that is the same on every machine and in Godot.**
+- Every text-mode `open()` in a build.py names `encoding='utf-8'` (and `newline='\n'` when writing).
+- A path written into a page or a manifest uses `/`, never `os.sep` (`os.path.relpath(...).replace(os.sep, '/')`):
+  Verge's page differed between Windows and Linux builds because of this.
+- New placement draws from `core/rand` (`KRAND`): a tile or cell is seeded from a hash of (world, cell, index,
+  salt), never from how many draws came before it, and never from a `Math.sin` hash.
+- Placement never reads canvas pixels (`getImageData`): use `core/mask` (`KMASK.canvas`). GPU and CPU canvases
+  disagree.
+- A numeric default is `x == null ? d : x`, not `x || d` (0 is a real seed, scale and renderOrder).
+- Everything placed is registered in `core/tags` before it is drawn; a builder draws a record, it does not decide
+  where things go.
+- Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
+  `core/` module, or ask before writing a new one. `GODOT-PLAN.md` section 6 has the full list.
+- A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
+  not a new bespoke pass. Do not write another spatial hash or occupancy grid: `core/city`'s, little-demo's flora
+  buckets and the biome core's planned index are to become one shared module (the refactor's roadmap, section 8).
+- **Voth is Streetlab's city plan** (`settlements/streetlab`, on `core/city`; owner, 2026-10-09). The old page
+  (`settlements/voth`) stays up only as the source things are ported from: port from it, do not add features to it.
+- `core/city` will become the NPC-placement and quest-building tool and, later, the player's settlement builder, so
+  it will run in Godot: keep its data side free of three.js and the DOM, its records keyed by stable ids, its edits
+  kept as deltas by id, and its rules (overlap, frontage, slope) as plain functions on records.
+
+**Known bugs not to build on.** `BIO.iridBarkMat` is defined by five biome kits (two unguarded): never load two of
+them in one page until it is a core material kind. The catalog furniture batch unrolls indexed geometry (1.5 to 6
+times the vertices); do not write new code that depends on that triangle soup. Packed normal maps from
+`tools/textures/pack.py` are lossy (4:2:0, about 11 degrees of error); `full-refactor` packs them lossless, so do
+not tune a material against the current normals.
+
+**Godot is 4.7.2** (the owner's version). Every Godot test passes on it; the Dhelv navigation test (branch
+`claude/zeijani`) fails on 4.5. Run `godot --headless --path godot --import` once in a fresh checkout before a
+`--script` test, so the class names register.
+
 ## Layout
 
 | Path | What |
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
-| `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
+| `kits/ringsea/` | the Ring Sea watercraft kit: 28 vessels, one fragment each |
 | `kits/catalog/` | master catalog: asset engine, 1674 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/ancients-interiors/` | the Ancients' ship interiors (backported from Noah's Regret) on `kits/interiors`: the ship's room kinds, ship's rooms and cabins, fourteen hall recipes in two dresses, each audited; bundled as `KratorAncientsInteriors` (`kit_bundle.bundle()`). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
@@ -26,6 +82,7 @@ says which build holds what.
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
+| `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/streetlab`) is on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
@@ -103,6 +160,8 @@ A fix to one settlement or biome republishes only that build's files. A wider ch
   and rebuild every build that lists them.
 - `core/furnish/` is one shared copy too: after changing it, run `node core/furnish/test-furnish.js`, rebuild the five
   builds that take it, and `python3 core/furnish/fingerprint.py` (every page must read `same`).
+- `core/city/` is one shared copy too: a build lists its fragments by path (`settlements/streetlab/build.py` `CITY_JS`).
+  After changing it, rebuild and verify every build that takes it (today only Streetlab: `verify.py dist/voth-city.html --assert`).
 - `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
   Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and

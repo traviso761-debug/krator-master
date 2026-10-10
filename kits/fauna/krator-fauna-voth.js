@@ -4,7 +4,7 @@
    the ambient seagulls and cliff racers (src/84-fauna.js), the silt strider the strider guild rides (src/79c-strider-model.js:
    the animal only; the howdah, the handler's deck and the hollows carved in the shell are the culture's, left as anchors),
    the arena's tiger and pit lizard (src/78j-life-arena.js) and the giant beetle the ranches keep (src/65k-granary-mills-ranch.js,
-   also fought in the arena).
+   also fought in the arena). Beside it, the staghorn beetle the Ash Nomads ride (first drawn here, in metres).
    UNITS: Voth's world units are not metres. A citizen is 2.94 units = 1.75 m, so one unit is 0.595 m (FA_VO_U); every
    coordinate below is written in the original's units and scaled by it, so a number can be checked against the source.
    Biome: settlement-only animals take the nearest biome, the southwest bay (biomes/swbay: tropic, semiarid to humid).
@@ -548,5 +548,101 @@ ANIMAL({
       });
     }
     A.anchor('pack', P([0, LH + 1.32, abd[2]])); A.anchor('yoke', P([0, LH + 0.6, thx[2]])); A.anchor('lead', P([0, LH, hd[2] + 0.5]));
+  }
+});
+
+/* ====================================================================== the staghorn beetle (first drawn here, 2026-10-07)
+   The Ash Nomads' riding beetle (and the Zeijani of Dhelv's), derived from the giant beetle above: a stag beetle grown to a
+   mount. Metres, not Voth's units. A long glossy carapace (the elytra, 1.56 m, with their seam, under an amber, chestnut or
+   green sheen), the pronotum before it and the broad flat head, the huge forked mandibles like a stag's antlers (an inner
+   tine, a forked tip with an upturned prong), elbowed antennae with clubbed tips, and six long legs that hold the body
+   high: the underside at 0.74 m, the back at 1.5 m, 2.6 m from the elytra's tip to the head's front without the mandibles.
+   The war breed is bigger (1.2) with longer, heavier mandibles. The saddle sits on the top of the back behind the
+   pronotum; the bridle on the head between the mandibles' roots; the tack is the culture's (anchors and the profile). */
+const FA_VO_STAG = [{ shell: 0x16120e, sheen: 0xc07a22, leg: 0x0e0c0a, mand: 0x2a1a10 }, { shell: 0x4e2412, sheen: 0xc8682a, leg: 0x2a140a, mand: 0x5a2a14 },
+  { shell: 0x111611, sheen: 0x3e8a40, leg: 0x0a0d0a, mand: 0x1e2418 }];
+/* the body profile, t from the elytra's tip (0) to the head's front (1): [t, z, y of the centre line, half-width, half-height] */
+const FA_VO_STAG_P = [[0, -1.42, 1.12, .05, .05], [.1, -1.2, 1.12, .5, .28], [.3, -.7, 1.12, .72, .38], [.5, -.15, 1.12, .68, .34], [.58, .1, 1.12, .52, .24],
+  [.7, .4, 1.12, .6, .3], [.82, .75, 1.08, .42, .22], [.9, .95, 1.03, .5, .2], [1, 1.18, 1.0, .32, .12]];
+ANIMAL({
+  key: 'staghorn-beetle', name: 'Staghorn beetle', group: 'voth',
+  tags: { biomes: ['swbay', 'crater-drylands'], koppen: ['BSh', 'BSk', 'Aw'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['ashnomad'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'climbs'] },
+  size: { length: 2.6, height: 1.5 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-voth.js', note: 'first drawn here (2026-10-07), derived from the giant beetle: the Ash Nomads\' mount on the ash plains round the great volcano (no ash-plain biome yet: the southwest bay, which holds the volcano, and the crater drylands stand in); the Zeijani of Dhelv ride it too (not yet a catalog culture, so not in herdedBy)' }],
+  traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { chitin: { amount: 45, note: 'the cast skins of the grub\'s moults and the shell of a beetle that dies: elytra for shields and bowls, the mandibles for blades and tent poles; the Ash Nomads do not eat it' } },
+  life: { maturity: 3, lifespan: 16, litter: 30, gestation: 30, note: 'eggs in rotten wood or dung; three years a grub, then a beetle broken to the saddle in its first season; gestation: incubation' },
+  variants: 3, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black'],
+  breeds: { riding: { scale: 1, mass: 750, role: 'riding mount; light draught (a sledge, a travois)' }, war: { scale: 1.2, mass: 1300, role: 'war mount: bigger mandibles' } },
+  w: 2.95, d: 4.0, h: 1.75,
+  data: { mass: 750, legs: 6, speed: { walk: 1.4, run: 6 }, gait: { type: 'hexapod', freq: 1.3, stride: 0.5 }, grazePitch: 0.25,
+    herd: 'one to a rider, picketed by the tent at night; a band\'s string of ten to forty grazes the scrub under a herder', fleeDistance: 0, aggression: 0.3,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const S = A.S, C = FA_VO_STAG[A.variant] || FA_VO_STAG[0], war = A.breed === 'war', ML = war ? 1.25 : 1;
+    const P = p => [p[0] * S, p[1] * S, p[2] * S], under = faVoShade(C.shell, -0.3);
+    const prof = faVoProf(FA_VO_STAG_P.map(k => k.slice()));
+    /* the gloss: the shell darkening down the flanks, the sheen on the crown of each plate in long streaks */
+    const gloss = (x, y, z, rx, ry, k) => { const up = y / ry; if (up < -0.2) return under;
+      const s = Math.pow(Math.max(0, up), 2.5) * (0.55 + 0.45 * faNoise(x * 9, z * 2.2, k)), c = new THREE.Color(C.shell).lerp(new THREE.Color(C.sheen), 0.42 * s);
+      return [c.r, c.g, c.b]; };
+    /* the elytra: one long dome, the seam down its middle */
+    A.ellip('chitin', 0, 1.12 * S, -0.64 * S, 0.72 * S, 0.38 * S, 0.79 * S, null, { seg: 24,
+      colf: (x, y, z) => Math.abs(x) < 0.018 * S && y > 0 ? faVoShade(C.shell, -0.5) : gloss(x, y, z, 0.72 * S, 0.38 * S, 1) });
+    /* the pronotum: a broad shield, its edges a little flared */
+    A.ellip('chitin', 0, 1.12 * S, 0.43 * S, 0.62 * S, 0.3 * S, 0.36 * S, null, { seg: 20, colf: (x, y, z) => gloss(x, y, z, 0.62 * S, 0.3 * S, 2) });
+    A.ellip('chitin', 0, 0.92 * S, 0.0, 0.42 * S, 0.16 * S, 0.9 * S, under, { seg: 14 });   /* the underside between the legs */
+    /* the head (with the mandibles and antennae): it turns about the pronotum's front */
+    A.part('head', P([0, 1.06, 0.72]), () => {
+      A.ellip('chitin', 0, 1.02 * S, 0.92 * S, 0.56 * S, 0.21 * S, 0.27 * S, null, { seg: 18, colf: (x, y, z) => gloss(x, y, z, 0.56 * S, 0.21 * S, 3) });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.53 * S, 1.05 * S, 0.88 * S, 0.07 * S, 0.07 * S, 0.08 * S, 0x0a0806, { seg: 8 });
+        /* the mandible: out from the head's front corner, forward and outward, then curving in and up to a forked tip; an inner
+           tine halfway along, an upturned prong at the fork (an antler's) */
+        const m = [[0.32, 1.0, 1.06], [0.64, 1.12, 1.06 + 0.3 * ML], [0.8, 1.3, 1.06 + 0.64 * ML], [0.68, 1.44, 1.06 + 0.92 * ML], [0.38, 1.5, 1.06 + 1.04 * ML]].map(q => P([s * q[0], q[1], q[2]]));
+        const mc = faVoSpline(m), mr = (war ? 1.2 : 1) * S;
+        A.tube('chitin', mc, t => { const r = (0.13 - 0.1 * t) * mr; return [r, r * 0.75]; }, 14, 8, null, { caps: true,
+          colf: (t, a) => { const c = new THREE.Color(C.mand).lerp(new THREE.Color(C.sheen), 0.25 * Math.max(0, Math.cos(a)) * (1 - t)); if (t > 0.85) c.multiplyScalar(0.6); return [c.r, c.g, c.b]; } });
+        const p1 = mc(0.5), p2 = mc(0.8), p3 = mc(0.66);
+        A.cone('chitin', p1, [p1[0] - s * 0.28 * S, p1[1] + 0.1 * S, p1[2] + 0.12 * S], 0.06 * mr, 0.008, C.mand, 6);   /* the inner tine */
+        A.cone('chitin', p3, [p3[0] - s * 0.16 * S, p3[1] + 0.02 * S, p3[2] + 0.06 * S], 0.04 * mr, 0.005, C.mand, 5);   /* a smaller tooth */
+        A.cone('chitin', p2, [p2[0] + s * 0.08 * S, p2[1] + 0.2 * S * ML, p2[2] + 0.12 * S], 0.05 * mr, 0.006, C.mand, 6);   /* the upturned prong of the fork */
+        /* the elbowed antenna and its club */
+        const a0 = P([s * 0.38, 1.08, 1.08]), a1 = P([s * 0.58, 1.16, 1.24]), a2 = P([s * 0.66, 1.2, 1.46]);
+        A.tube('chitin', u => u < 0.5 ? [a0[0] + (a1[0] - a0[0]) * u * 2, a0[1] + (a1[1] - a0[1]) * u * 2, a0[2] + (a1[2] - a0[2]) * u * 2]
+          : [a1[0] + (a2[0] - a1[0]) * (u * 2 - 1), a1[1] + (a2[1] - a1[1]) * (u * 2 - 1), a1[2] + (a2[2] - a1[2]) * (u * 2 - 1)], () => [0.022 * S, 0.022 * S], 4, 5, C.leg, { caps: true });
+        A.ellip('chitin', a2[0], a2[1], a2[2], 0.05 * S, 0.035 * S, 0.06 * S, faVoShade(C.sheen, -0.3), { seg: 6 });
+      }
+      A.ellip('mouth', 0, 0.9 * S, 1.12 * S, 0.12 * S, 0.05 * S, 0.06 * S, 0x2a1810, { seg: 8 });   /* the mouthparts under the mandibles' roots */
+    });
+    /* six legs, the giant beetle's: the coxa under the body, the femur rising up and out to a knee, the tibia (spurred) down
+       to the ground well outside the body, the tarsus on the ground; the front pair forward, the middle out, the hind back.
+       [coxa, knee, tibia's end, tarsus tip] in metres */
+    const LEGS = [[[0.3, 0.86, 0.5], [0.82, 1.22, 0.84], [1.05, 0.09, 1.3], [1.12, 0.03, 1.66]],
+      [[0.38, 0.84, 0.0], [1.0, 1.18, 0.05], [1.25, 0.09, 0.12], [1.38, 0.03, 0.42]],
+      [[0.42, 0.84, -0.42], [0.98, 1.14, -0.78], [1.18, 0.09, -1.3], [1.24, 0.03, -1.7]]];
+    const L3 = (a, b) => t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, X = v => P([s * v[0], v[1], v[2]]), [cx, kn, tb, ts] = LEGS[i >> 1].map(X), lg = C.leg, lu = faVoShade(C.leg, 0.12);
+      A.part('leg' + i, cx, () => {
+        A.ellip('chitin', cx[0], cx[1], cx[2], 0.14 * S, 0.11 * S, 0.13 * S, under, { seg: 8 });   /* the coxa */
+        A.tube('chitin', L3(cx, kn), t => [(0.1 - 0.02 * t) * S, (0.13 - 0.03 * t) * S], 4, 8, null, { colf: (t, a) => Math.cos(a) > 0.3 ? lu : lg });   /* the femur */
+        A.ellip('chitin', kn[0], kn[1], kn[2], 0.09 * S, 0.09 * S, 0.09 * S, lg, { seg: 8 });
+        A.tube('chitin', L3(kn, tb), t => { const r = (0.075 - 0.03 * t) * S; return [r, r]; }, 4, 8, lg);   /* the tibia */
+        for (const f of [0.3, 0.55, 0.8]) { const p = L3(kn, tb)(f); A.cone('chitin', p, [p[0] + s * 0.06 * S, p[1] - 0.03 * S, p[2] - 0.1 * S], 0.022 * S, 0.003, lg, 4); }
+        const tr = L3(tb, ts);
+        for (const [f, r] of [[0.12, 0.055], [0.42, 0.05], [0.72, 0.045]]) { const p = tr(f); A.ellip('chitin', p[0], Math.max(p[1], r * S * 0.75), p[2], r * S, r * S * 0.75, r * S * 1.6, lg, { seg: 6, ry: Math.atan2(ts[0] - tb[0], ts[2] - tb[2]) }); }
+        const tip = tr(0.92), dx = ts[0] - tb[0], dz = ts[2] - tb[2], dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
+        for (const k of [-1, 1]) A.cone('chitin', tip, [ts[0] + (ux * 0.1 - uz * k * 0.06) * S, 0.0, ts[2] + (uz * 0.1 + ux * k * 0.06) * S], 0.022 * S, 0.003, lg, 4);
+      });
+    }
+    /* for the tack: the body's profile (t from the elytra's tip to the head's front) and the anchors */
+    A.profile(t => { const q = prof(t); return { z: q[0] * S, y: q[1] * S, hw: q[2] * S, hh: q[3] * S }; });
+    const top = z => 1.12 + 0.38 * Math.sqrt(Math.max(0, 1 - Math.pow((z + 0.64) / 0.79, 2)));   /* the elytra's crown at z */
+    A.anchor('saddle', P([0, top(-0.3), -0.3])); A.anchor('pack', P([0, top(-0.95), -0.95]));
+    A.anchor('bridle', P([0, 1.12, 1.08])); A.anchor('lead', P([0, 0.95, 1.16]));
+    A.anchor('chest', P([0, 1.0, 0.72])); A.anchor('headRoot', P([0, 1.06, 0.72]));
   }
 });

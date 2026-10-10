@@ -140,7 +140,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 1. **Wealth is legible in material.** Each culture has a tiered palette, with poor, common and court tiers in the furniture catalog. Stone and gold go to the top, timber or thatch to the bottom, salvage to the middle and bottom.
 1. **Wealth climbs with height.** Erewhon, Iziz's hills and Yuni's oligarch towers all put the powerful high and the poor and industry low, by the water.
 1. **Caravans.** Caravanserais at Yuni, Iziz, Locus, Shade, Jimjam and the abyss suggest one long-distance trade network across the crater. Major goods include spice, gold, petrol, relics, scrap, and medicines.
-1. **Big beasts do most of the work.** Millipedes turn capstans and are ranched; giant beetles are livestock at Voth; silt striders carry passengers; flyers and riding spiders are ridden.
+1. **Big beasts do most of the work.** Millipedes turn capstans and are ranched; giant beetles are livestock at Voth; elephant bugs carry passengers; flyers and riding spiders are ridden.
 1. **Vehicles are present, but again rare and precious.** Yuni can call on a small fleet of dune buggies; otherwise there are the Izizian mechs, and perhaps a few others here and there, but motor vehicles are otherwise rare. In general, the terrain outside the flat desert limits wheeled vehicles’ utility.
 1. **Firearms:** Present, but not as useful as might seem. The Republic is the most skilled in their production, and generally can make musket and cannon level technology. Though they can maintain ancient automatic weapons, ammunition is vanishingly rare and modern attempts to replicate it, unreliable. Izizian shield technology made projectile weapons of little use as a weapon of war for many centuries; with their downfall, it is beginning to make a comeback.
 
@@ -167,6 +167,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Daranch: a larger agricultural settlement, true center of their experimental breeding program.
 - Blade, Span: wrecked arcologies that are northern Dalab outposts against the machines and mutants of Ancient’s Valley
 - Ledge: an outpost on the eastern Rift, across the Outer Wall. As the Dalab cope well with altitude, they don’t find it too hard to keep supplied.
+- **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
 
@@ -200,6 +201,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - Hook (ancient port city; recently recaptured from Voth)
   - Verge Upper City
 - **The city of Dilihan (NW crater, “The Cut” region) was settled by Izani colonists and is a loyalist stronghold landlocked and cut off from the main empire. The northern lowlands also had many loyalists.**
+- **Language and script.** Izani: English gone Romance with a Star Wars edge (h lost, w > gu, -ng > ñ, prothetic *is-*, final vowels, *-ar*, plurals in *-z*, x = sh). *Izani* = Iziz + *-ian* > *-ani*; *Duxun* = duke's son. 27 straight-cut capitals, the parent of the Vothic letters and used unchanged by the Republic. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 
@@ -222,6 +224,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
+- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland English. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
 
@@ -267,6 +270,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Sign: the **claw** (three talon slashes), green. Skull poles; "simple but not primitive".
 - Barracks are named by **Wing**. Nature shrines: First Bough, Rain Mother, Winged Ones, Deep Root, Green Silence.
 - Ships: a double-hulled voyaging canoe with a flyer's perch; a rookery raft.
+- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks); since Mav, the dialects are levelling into a Council speech on the Quetzal dialect. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.7 The Screamers (north of the central crater; the Hexahedron)
 
@@ -293,6 +297,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The raiders come as a convoy of camel riders every few days; they water and trade.
 - Faith: the **Shrine of the Deep Aquifer**, carved behind the falls. Worship at dawn and dusk.
 - The Khan (caravanserai), camel lines. Sign: **horns**.
+- **Language and script.** **Dasrī**: English gone Arabic (emphatics, ḥ, q, the article *al-* from *all*, plurals by vowel change generalised from *man/men*: *qamal*, *qumūl*). A cousin of the abyssals' Tabist (§6.9), mutually intelligible like Spanish and Italian, with regular differences (p > b, v > f, g > j; th and dh kept). Heavily Yuni-influenced: Yuni loans for trade, oil and rank (*sarfū* from Yuni *servo*); outsiders' *Emir* for Yuni's ruler is the Dasrī form. Letters learned at Yuni, written as a joined caravan hand told apart by dots, short vowels unwritten. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.9 The abyssal people and the Geomancers (eastern Abyss; Locus; Yuni)
 
@@ -310,6 +315,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Their Chapterhouse holds a rock relief-map table, drill cores and a brass gnomon.
   - In Yuni they hold the Cloisters. Culturally "mostly Yuni".
   - Lizard riders patrol in sixes.
+- **Language and script.** The abyssal people speak **Tabist** (they are the *Ibisen*, one *abis*): the same English as Dasrī (§6.8) gone Berber (nouns in *a-*, feminines in *t-…-t*, plurals in *i-…-en* from *oxen*; p > f, v > b, g kept). Mutually intelligible with Dasrī like Spanish and Italian, and as full of Yuni words. Yuni's letters reduced to painted strokes, rings and dots, like Tifinagh. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.10 Reed Lake: the lake people
 
@@ -333,6 +339,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the caravanserai.
 - Sign: the **hyperboloid**, yellow. No ships.
 - Controls Locus, Verge lower city, and an outpost to their north [TBD].
+- **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.12 Voth (SW Bay of Ring Sea)
 
@@ -349,11 +356,12 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Slaves: Nazarites and Wingmen (of the destroyed arcology)
 - **Ancestry canton**: a pyramid necropolis of family tombs and hanging gardens.
 - Palace: "flying buttresses between tiers, skylights and atria, a lot of gold, a teeny bit of porphyry and black trim".
-- Giant beetles are livestock. **Silt striders** carry passengers. **Cliff racers** fly over land.
+- Giant beetles are livestock. **Elephant bugs** carry passengers. **Cliff racers** fly over land.
 - Arena: gladiators from noon to sundown.
 - **Ordinators**: temple guards in green-and-gold armour, about 180 of them. A branch of them forms the secret police. Also purple-robed priests; a crimson-and-gold high priest; grey-robed penitents in threes; monks; pilgrims on shrine circuits.
 - Sign: the **diamond**, ash-white on deep purple. Ships: the Ordinator flagship, chitin biremes, cargo hulks.
 - An embassy (a clan compound) stands in Iziz and Roketstad.
+- **Language and script.** Vothic descends, very distantly, from English; its sounds sit between Purépecha and Morrowind's Dunmer: aspirated stops and affricates (p/ph, t/th, k/kh, tz/tzh, ch/chh), a high central vowel ï, tap r and retroflex rh, a breathed hl, and v, z, dh. Regular changes from English: s- > tz (sun > *tzun*, son > *tzin*: Tzintzun, "Son of the Sun"), st- > tzh, sp- > ph, sk- > kh, sl- > hl, tr- > ch, str- > chh, sh > s, ch/j > sh, f/w > v, final r > rh, final b/d/g devoice, unstressed syllables fall (victory > *Voth*). *-tzan* "realm, place of" is a Chichani survival. The script has 33 letters, Georgian bowls crossed with Daedric blades, in English alphabetical order, each named for a worn-down English word (*Ash*, *Bon* "bone", *Tzun* "sun", *Hlev* "slave"); three marks are systematic: the thorn (aspiration, and hl), the bar (d > dh) and the root (n > ng, r > rh). The full stop is the diamond. Chart, letter names and a transliterator: `lore/tongues-of-krator.html`. [the owner, Oct 2026]
 
 ### 6.13 The Sultanate of Xanadu (East Rift Highlands)
 
@@ -365,11 +373,13 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
   - 20,000 people on a mountain lake.
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
-  - The **Pleasure Dome of the Bay** is a ruined Ancient test dome made whole.
-  - **The Caves of Ice**; the sacred river Alph.
+  - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
+  - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
+- **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
+- **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.14 Jimjam
 
@@ -387,12 +397,14 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - They keep the Ear.
   - Main monastery is at Oidong (far south, over the outer wall.)
   - Rumored to have techniques to speed up and slow down time.
+- **Language.** The Historians keep the most careful English in the crater, in a rounded book hand, with a little Xanadui from Oidong (*sar*, dental th) and Xanadu's evidence grammar as margin marks: seen, said, and (their own) inferred. They keep Coleridge's *Kubla Khan*, which the Sultanate's names come from. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.16 Hykkousoi
 
 - **Hykkousoi**: a seafaring people, Greek + Polynesian + organic. Nacre, olive wood, sea-linen, bronze. Sign: the **wave-sun** in gold. Their fleet includes a 162-oar trireme, a siege hexareme and a pearl-diving mother ship. No buildings yet.
 - **Capital**: Ys, the half-drowned city [ed: under construction]
 - The Hykkousoi's enemies disparage them as fish-men, but in truth, they are more man than fish. This slur comes from their most well-known quality as a people however: the rib-gills most trueborn Hykkousoi have on their back and chest. A bare-chested Hykkousoi sailor has no fear of drowning, and indeed their most sacred sites are said to lie on the bottom of the Ring Sea. They are still men, not fish, though, and prefer the land - they prefer fire-cooked food and unrusted metal the same as others. But their half-drowned capital of Ys is notoriously hard for outlanders to navigate, with its half-drowned streets, and the Amphitriton, the great assembly hall and refuge of their people, is surrounded by water on all sides and virtually unassailable. The Hykkousoi are also notable in their close friendship to molluscs; Hykkousoi pearldivers and mother-of-pearl workers are the finest in the world, and even their buildings seem more grown than built. Ys, that half-drowned city, resembles nothing so much as a collection of reefs and barnacles growing around the still-standing towers of an Ancient city whose name is long-lost. The Hykkousoi are also the finest sailors in the world. Children may ask, why does a man who breathes water need a ship? You may as well ask why a man who has legs needs a horse. Swimming across the Ring Sea would be a fool's errand, particularly given the monsters that lurk in the depths. But the sailors - and pirates - of this nation are well known throughout all the Ring Isles. The Hykkousoi tend to get painful, and ultimately fatal gill-wither if they tarry too long in dry environments; hence they hug the northwest coast. Inland, in the rain shadow of the Inner Wall, their long time enemies, the nomadic Scyvoi dwell. The Vothic conquests to the south have put them both next in line in their march up the coast. For this, they have sought and obtained an alliance with Iziz. There is tension, however, as the Hykkousoi must always make clear they intend alliance, not fealty, much as the Empire would like it otherwise, particularly as it would re-unite them with the landlocked loyalist city of Dilihan. But the Hykkousoi are proud and intend to stay independent. The Hykkousoi indeed have a reputation for headstrong, even fractious. The major settlements - Ys, Tethys, Trigon - have their own proud histories and maintain separate armies, navies and outposts, and jockey for position amongst themselves. Disputes are settled at the Amphitriton, where their leader the Archon presides. The Archon, who is elected by a complicated tradition involving both elections and the casting of lots, is often an inoffensive compromise candidate, but the newly elected Archon, Jathrocles, is young, vigorous, and has his people ready to resist any Vothic invasion.
+- **Language and script.** Hykkousik: Greek-sounding (aspirates, y = ü, long ē ō, *-oi* plural, doubled stops) with a Star Wars edge. *Hykkousoi* = high coast + *-oi*; *Ys* = isles; *Scyvoi* = scythe + *-oi*. Letters copied from the Greek symbols in the drowned records of an Ancient gene-lab at Ys, Dalab's rival: etched and printed, the only records that needed no power. The least electrical people on the Ring Sea; their biotech is grown. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.17 Peoples known only by name or kit
 
@@ -403,6 +415,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
 - **Post-Apoc settlers**: a culture-neutral salvage society. Its kit has a "big man's" house, a shaman hut, prisoner cages and a **Thunderdome** arena. Shop signs are pictographs, not writing. Sign: the **gear**. [ed: this is a generic kit to flesh out settlements esp reclaimed arcologies]
 - **Shining Kingdom**: Northwestern lowlands, populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
+- **The Zeijani and the ash nomads: language.** Brother tongues, cousins of Chichani: on the Throne, before records, the Chichani took to the sea, the Zeijani hid and the ash nomads wandered. Akkadian and Cappadocian in sound (emphatic ṣ ṭ q, θ > š, ð > z, case endings in vowel harmony); the nomads dropped the final *-m* (*ṣunum* / *sunu*). *Zeijanī* = the hidden ones; *Zey'danin* = *Ze-Ṭānin*, the town within (a Zeijani word); *Dhelv* = Vothic for *Delbum* (delve); the nomads are *Andarū*, wanderers. Latin letters chiselled into tuff until every stroke became a wedge. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ## 7. Peoples of Krator (species and kinds)
 
@@ -439,7 +452,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Poured cushions (a llareta grown to Krator's size), and **the Mother Cushion**, one plant over a whole hill; woolbacks (vegetable sheep), thorn cushions, vigil spikes (whole stands flower together, then stand as dead torches), ragbark woods in the gullies, glass towers, hoar cereus; a cushion bog, a frozen tarn, a geyser field.
   - **Pallidine** (a placeholder name): the glass towers' alkaloid. A fungus in the moth larvae that eat the towers' roots makes it a mild, prized tonic (**wormwick**); the wild bees that work the towers carry it whole into their honey (**tower honey**, the dangerous version).
 - **Vale of Xanadu**: "as if somebody kept it". Untrimmed-bonsai habits, petrified-wood colours, fairy rings, cacao, lotus.
-- **Fauna in towns**: millipedes (draught), giant beetles (Voth), silt striders, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
+- **Fauna in towns**: millipedes (draught), giant beetles (Voth), elephant bugs, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
 
 ## 9. The Ring Sea fleets
 

@@ -84,3 +84,7 @@ FURN({
     F.cyl(0, 0.34, 0, 0.012, 0.06, 0, F.shade(gold, 0.15), 'gold');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed xanadu_training_<role> */
+FK.set({ culture: 'xanadu', tier: 'common', roles: 'training', prefix: 'xanadu_training_', S: XAN_COMMON, names: {
+  training_dummy: 'Gilt practice post', archery_butt: 'Silk-ringed archery target' } });

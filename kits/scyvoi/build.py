@@ -71,7 +71,7 @@ VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sk
 FURN_CULTURES = ['scyvoi', 'nomad', 'generic', 'generic-goods']   # the Scyvoi pieces, the Eastern Nomads' for fallbacks, the shared goods
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-fauna-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorFauna')
-FAUNA_GROUPS = ['livestock', 'mounts']   # kits/fauna: the goats and the salamanders
+FAUNA_GROUPS = ['livestock', 'mounts', 'farm']   # kits/fauna: the goats, the salamanders, the bison and the cattle
 
 
 def matlib_pack():

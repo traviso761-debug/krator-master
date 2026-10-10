@@ -8,7 +8,7 @@ x its left (three.js yaw: rotation.y > 0 turns +z toward +x).
 | File | What |
 |---|---|
 | `fauna-core.js` | `ANIMAL({...})` (the registry), `FAUNA_VOCAB`, `FAUNA_YIELDS`, `FAUNA_FAMILIES`, `faHash`/`faNoise` (patches and markings), `faunaFrame` (the part builder below) |
-| `krator-fauna-<group>.js` | the species, one file per group (README's table): livestock, mounts, farm, abyss, desert, bay, hyperjungle, flyers, crawlers, voth. Prefixes: `FA_SAL`, `faFm`, `faAb`, `faDs`, `faBy`, `faHj`, `faFl`, `faCr`, `faVo` |
+| `krator-fauna-<group>.js` | the species, one file per group (README's table): livestock, mounts, farm, abyss, desert, bay, hyperjungle, flyers, crawlers, voth, ash. Prefixes: `FA_SAL`, `faFm`, `faAb`, `faDs`, `faBy`, `faHj`, `faFl`, `faCr`, `faVo`, `faAs` |
 | `krator-fauna-runtime.js` | `KratorFauna`: list, entry, has, build, animate, profile, lifeOf, setTextures, textures, warm, VOCAB, YIELDS |
 | `fauna_bundle.py` | `bundle(groups)`: the closure; `files(groups)`; the packed maps as `FA_TEX` |
 | `src/` | the sheet page (head, vendored sky, 90-sheet, hover inspector, polygon tool) |

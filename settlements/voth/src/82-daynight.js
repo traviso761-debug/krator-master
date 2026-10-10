@@ -232,7 +232,7 @@ if(typeof ROADS !== 'undefined') ROADS.forEach(function(rd){
   if(rd.cls !== 'ring') return;
   for(var i=0;i<rd.pts.length;i+=9) addNightLight(rd.pts[i][0], rd.pts[i][1]);
 });
-/* everything from 72-lanterns.js: clan compound entrances, silt strider
+/* everything from 72-lanterns.js: clan compound entrances, elephant bug
    and ferry stations, intact gates/towers, both ends of every bridge, and
    both ends of every large harbor pier — each already paired with its own
    physical post/bracket fixture there (that file's own header explains
@@ -781,7 +781,7 @@ function dnFormatHour(h){
        straight off LIFE_AVOID_X/Z (78-life.js's own live per-frame
        position array for collision avoidance) — see LANTERN_BOAT_BASE's
        own comment above for why this needs no edit to any of those 5
-       update functions. Ordinators/caravans/water taxis/silt striders
+       update functions. Ordinators/caravans/water taxis/elephant bugs
        track their own reserved slot directly, inside their own update
        function (78-life.js/79-striders.js), via this same nlTrack(). */
     for(var _lbi=0; _lbi<LANTERN_BOAT_N; _lbi++){

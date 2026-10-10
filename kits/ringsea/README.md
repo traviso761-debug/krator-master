@@ -39,6 +39,13 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | 19 | `78-rs-hyk-corbita.js` | Hykkousoi Amphora Corbita | hykkousoi | cargo: round-ship, swan sternpost, amphorae |
 | 20 | `79-rs-xanadu-carrack.js` | Xanadu Bullion Carrack | xanadu | cargo: tiled castles, saffron wheel sails, bullion chests |
 | 21 | `80-rs-iziz-lighter.js` | Iziz Salvage Lighter | iziz-vernacular | cargo: flat lighter of Ancient panels and pipe, A-frame derrick |
+| 22 | `81-rs-voth-junk.js` | Voth Merchant Junk | voth | cargo: the Voth bay junk (78c life ships), dark tarred hull, poop cabin, two raked masts under lavender battened sails |
+| 23 | `82-rs-hyk-galleon.js` | Hykkousoi Sea Galleon | hykkousoi | warship/cargo: Voth's 58 m galleon as a Hykkousoi ship, beakhead, three-tier aftcastle, round ports, square courses and topsails, lateen mizzen |
+| 24 | `83-rs-voth-ferry.js` | Voth Bay Ferry | voth | ferry: the canton ferry (78d), passenger cabin aft under a purple canopy, one square sail |
+| 25 | `84-rs-voth-taxi.js` | Voth Water Taxi | voth | passenger: long slim taxi (78d), high curved prow, striped awning on six posts, boatman at the sweep |
+| 26 | `85-rs-voth-barge.js` | Voth River Barge | voth | cargo: flat 50 m river barge (78d), deckhouse and forecastle house, stacked cargo, derrick, stern sweeps |
+| 27 | `86-rs-voth-pleasure.js` | Voth Pleasure Barge | voth | state: gilded pleasure barge (78d), pavilion under an oxblood roof, canopied foredeck, purple sail |
+| 28 | `87-rs-voth-dhow.js` | Voth Fishing Dhow | voth | fishing: the bay dhow (78e), forward-raked mast under a lateen, fish bin, nets and floats |
 
 `ringsea-islander`, `beast-rider` and `hykkousoi` are culture tags this kit introduced; the rest reuse existing ones. Iron Republic, Dalab and Yuni have no ships here (landlocked or not seafaring).
 

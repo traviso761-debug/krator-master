@@ -252,7 +252,6 @@ async function build(){
     if(held){stopTour();anim=null;return;}
     if(k===BIND.cut){setSection(!S.section);return;}
     if(k===BIND.cutSide){if(S.section)S.side=-S.side;return;}
-    if(k===BIND.fly){S.fly=!S.fly;syncUI();return;}
     if(k==='k'){toggleFind();return;}
     if(k==='p'){tour?endTour():startTour();return;}
     if(k===BIND.close){views.classList.remove('open');vb.setAttribute('aria-expanded','false');}}});
@@ -283,7 +282,7 @@ async function build(){
   const slider=document.createElement('input');slider.type='range';slider.min='0';slider.max='1000';slider.value='500';
   slider.setAttribute('aria-label','Where the cut is');slider.style.cssText='pointer-events:auto;width:min(220px,40vw);align-self:center;accent-color:#c8321f';
   slider.addEventListener('input',()=>{S.at=+slider.value/1000;});ui.appendChild(slider);
-  const flyB=mkBtn('Fly',ui,()=>{S.fly=!S.fly;syncUI();});flyB.title='Fly (F): drag to look, WASD along where you look, Q/E down and up, the wheel for speed';
+  const flyB=document.createElement('button');   // fly mode is not offered in the fictional scenes: no button, no key
   const findB=mkBtn('Find Killy',ui,()=>toggleFind());findB.title='Ring Killy wherever he is, and say how big he is on screen (K)';
   const tourB=mkBtn('Pull back',ui,()=>tour?endTour():startTour());tourB.title='From Killy\'s shoulder to the whole City, a power of ten at a time (P)';
   const cityB=mkBtn('The City',ui,()=>{stopTour();go(S.mode==='city'?VIEWS[CITYV]:VIEWS[0]);});
