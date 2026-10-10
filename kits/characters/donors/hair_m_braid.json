@@ -1,0 +1,10 @@
+{
+ "id": "hair_m_braid",
+ "outfit": "a warrior's hairstyle: shaved sides with a long dark braid down the back",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "a warrior's hairstyle: shaved sides with a long dark braid down the back, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-ba74-7531-9bff-be7d72b391c8",
+ "refine": "01a125fe-b6f5-71fd-8188-0fe23f187d54",
+ "glb": "hair_m_braid.glb"
+}

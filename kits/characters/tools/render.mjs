@@ -19,7 +19,7 @@ await page.setContent('<body style="margin:0;background:#888"></body>');
 await page.addScriptTag(src('three.min.js'));
 await page.addScriptTag(src('GLTFLoader.js'));
 const data = glbs.map(g => fs.readFileSync(g).toString('base64'));
-await page.evaluate(async ({ data, view, W, H }) => {
+await page.evaluate(async ({ data, view, W, H, lift, stack }) => {
   const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   r.setSize(W, H); r.outputEncoding = THREE.sRGBEncoding; document.body.appendChild(r.domElement);
   const sc = new THREE.Scene(); sc.background = new THREE.Color(0x9aa0a6);
@@ -29,7 +29,8 @@ await page.evaluate(async ({ data, view, W, H }) => {
   for (let i = 0; i < n; i++) {
     const buf = Uint8Array.from(atob(data[i]), c => c.charCodeAt(0)).buffer;
     const g = await new Promise((ok, no) => new THREE.GLTFLoader().parse(buf, '', ok, no));
-    g.scene.position.x = (i - (n - 1) / 2) * gap;
+    g.scene.position.x = stack ? 0 : (i - (n - 1) / 2) * gap;   // RENDER_STACK: all at one spot
+    g.scene.position.y = lift;   // RENDER_LIFT: raise a model made round the origin (a Meshy prop) into view
     if (view === 'side' || view === 'headside') g.scene.rotation.y = Math.PI / 2;
     if (view === 'back') g.scene.rotation.y = Math.PI;
     sc.add(g.scene);
@@ -41,6 +42,6 @@ await page.evaluate(async ({ data, view, W, H }) => {
   else { const h = gap * n * H / W / 2; cam.top = Math.max(h, 1); cam.bottom = -cam.top; cam.left = -cam.top * W / H; cam.right = cam.top * W / H; cam.updateProjectionMatrix(); cam.position.set(0, 0.92, 3); }
   cam.lookAt(cam.position.x, cam.position.y, 0);
   r.render(sc, cam);
-}, { data, view, W, H });
+}, { data, view, W, H, lift: +(process.env.RENDER_LIFT || 0), stack: !!process.env.RENDER_STACK });
 await page.screenshot({ path: out });
 await browser.close();

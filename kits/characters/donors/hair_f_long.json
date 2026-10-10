@@ -1,0 +1,10 @@
+{
+ "id": "hair_f_long",
+ "outfit": "long straight dark brown hair falling past the shoulders, a woman's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "long straight dark brown hair falling past the shoulders, a woman's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-ba61-7747-a030-4023374eefee",
+ "refine": "01a125ff-323a-70ae-8899-6e81eee7b109",
+ "glb": "hair_f_long.glb"
+}

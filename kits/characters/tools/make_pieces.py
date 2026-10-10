@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Make the equipment pieces: every donor fitted to one skeleton and cut into slots.
 
-  python3 tools/make_pieces.py            # every donor in data/donors.json -> pieces/<id>.glb, data/outfits.json,
-                                          # data/skeleton.json, pieces/anims.glb
+  python3 tools/make_pieces.py [male|female]    # every donor in data/donors.json, per body (BODIES) ->
+                                                # pieces/<body>/<id>.glb, pieces/<body>/anims.glb,
+                                                # data/<body>/skeleton.json, data/<body>/outfits.json
 
 A donor is a rigged humanoid GLB (a Meshy export: the web app's mixamorig names or the API's Spine02/neck/head_end
 names; NAME_MAP folds them together). For each donor:
@@ -690,12 +691,112 @@ def write_anims(out, c):
     return meta
 
 
-def main():
-    data = os.path.join(HERE, 'data')
-    pieces = os.path.join(HERE, 'pieces')
+# ---- hair and beards: a Meshy prop (hair on a pale mannequin dome) fitted onto a body's base head ----
+HAIR_GAP = 0.003      # how far hair stands off the scalp, at least
+
+
+def dome_split(h):
+    """per triangle: True where it is the mannequin (pale, grey: low saturation, high value at its UV centre)"""
+    img = np.asarray(h.image.resize((512, 512))).astype(float) / 255
+    uv = h.uv[h.tri].mean(1)
+    x = np.clip((uv[:, 0] % 1) * 511, 0, 511).astype(int)
+    y = np.clip((uv[:, 1] % 1) * 511, 0, 511).astype(int)
+    rgb = img[y, x]
+    mx, mn = rgb.max(1), rgb.min(1)
+    sat = (mx - mn) / np.maximum(mx, 1e-6)
+    return (mx > 0.6) & (sat < 0.18)
+
+
+def skull(P, tri, tslot, marks):
+    """the base head's cranium above the brows: centre x, z, top y, width, depth"""
+    hv = np.unique(tri[tslot == SLOTS.index('head')].reshape(-1))
+    Q = P[hv]
+    brow = marks['face_brow_L'][1]
+    cr = Q[Q[:, 1] > brow]
+    return np.array([np.median(cr[:, 0]), (cr[:, 2].max() + cr[:, 2].min()) / 2]), cr[:, 1].max(), \
+        np.ptp(cr[:, 0]), np.ptp(cr[:, 2]), hv
+
+
+def fit_hair(path, head, c, out, name):
+    """hair from `path` fitted onto `head` (the base donor's fitted arrays) and written as a skinned GLB"""
+    from scipy.spatial import cKDTree
+    h = glbio.read_mesh(path)
+    dome = dome_split(h)
+    if dome.mean() < 0.05 or dome.mean() > 0.95:
+        print('  %s: no mannequin found (%.0f%% pale), fitted by its own box' % (name, 100 * dome.mean()))
+    dv = np.unique(h.tri[dome].reshape(-1)) if dome.any() else np.arange(len(h.pos))
+    D = h.pos[dv]
+    P, N, tri, tslot, JT, WT, marks = head
+    ctr, top, width, depth, hv = skull(P, tri, tslot, marks)
+    # the dome's top, width and depth onto the skull's: one scale (hair keeps its proportions), then move
+    s = 0.5 * (width / np.ptp(D[:, 0]) + depth / np.ptp(D[:, 2]))
+    Hp = h.pos * s
+    D = D * s
+    Hp += np.array([ctr[0] - (D[:, 0].max() + D[:, 0].min()) / 2, top - D[:, 1].max(),
+                    ctr[1] - (D[:, 2].max() + D[:, 2].min()) / 2])
+    keep = ~dome
+    used = np.unique(h.tri[keep].reshape(-1))
+    remap = -np.ones(len(Hp), np.int64)
+    remap[used] = np.arange(len(used))
+    Hp, Hn, Huv = Hp[used], h.nrm[used], h.uv[used]
+    htri = remap[h.tri[keep]]
+    # out of the scalp: where a hair vertex is under (or within HAIR_GAP of) the nearest head surface, lift it
+    tree = cKDTree(P[hv])
+    dist, k = tree.query(Hp)
+    near = hv[k]
+    off = ((Hp - P[near]) * N[near]).sum(1)
+    lift = np.clip(HAIR_GAP - off, 0, None) * (dist < 0.03)
+    Hp = Hp + N[near] * lift[:, None]
+    # the head's weights: hair moves with the head, and with the face sliders where it reaches the face
+    JTh, WTh = JT[near], WT[near]
+    write_hair(out, name, c, Hp, Hn, Huv, JTh, WTh, htri, h, marks)
+    return {'triangles': int(len(htri)), 'scale': round(float(s), 4), 'lifted': int((lift > 0).sum())}
+
+
+def write_hair(out, name, c, P, N, UV, JT, WT, tri, src, marks):
+    names, parents, jnodes, W = skeleton_nodes(c, marks)
+    g = glbio.GlbWriter()
+    nodes = [{'name': 'Character', 'children': [1 + parents.index(-1)]}] + [dict(n) for n in jnodes]
+    for n in nodes[1:]:
+        if 'children' in n:
+            n['children'] = [ch + 1 for ch in n['children']]
+    ibm = np.stack([np.linalg.inv(m) for m in W]).transpose(0, 2, 1).astype(np.float32).reshape(-1, 16)
+    g.j['skins'] = [{'joints': list(range(1, 1 + len(names))), 'inverseBindMatrices': g.acc(ibm, 'MAT4'),
+                     'skeleton': 1 + parents.index(-1)}]
+    data = jpeg(src.image, 1024)
+    g.j['images'] = [{'bufferView': g.view(data), 'mimeType': 'image/jpeg'}]
+    g.j['samplers'] = [{'magFilter': 9729, 'minFilter': 9987, 'wrapS': 10497, 'wrapT': 10497}]
+    g.j['textures'] = [{'source': 0, 'sampler': 0}]
+    g.j['materials'] = [{'name': name, 'doubleSided': True,
+                         'pbrMetallicRoughness': {'baseColorTexture': {'index': 0}, 'metallicFactor': 0.0,
+                                                  'roughnessFactor': 0.7}}]
+    WT = renormalise_weights(WT)
+    attrs = {'POSITION': g.acc(P.astype(np.float32), 'VEC3', 34962, minmax=True),
+             'NORMAL': g.acc(N.astype(np.float32), 'VEC3', 34962),
+             'TEXCOORD_0': g.acc(UV.astype(np.float32), 'VEC2', 34962),
+             'JOINTS_0': g.acc(JT.astype(np.uint8), 'VEC4', 34962),
+             'WEIGHTS_0': g.acc(np.round(WT * 255).astype(np.uint8), 'VEC4', 34962, normalized=True)}
+    dt = np.uint16 if len(P) < 65536 else np.uint32
+    g.j['meshes'] = [{'name': name, 'primitives': [{'attributes': attrs, 'material': 0,
+                                                    'indices': g.acc(tri.reshape(-1).astype(dt), 'SCALAR', 34963)}]}]
+    nodes.append({'name': name, 'mesh': 0, 'skin': 0})
+    nodes[0]['children'].append(len(nodes) - 1)
+    g.j['nodes'] = nodes
+    g.j['scenes'], g.j['scene'] = [{'nodes': [0]}], 0
+    open(out, 'wb').write(g.bytes())
+
+
+# the bodies: each has its own canonical skeleton (rest = the donors' fitted pose), donors, pieces, seams and clips.
+# Male is Styv's skeleton; female is the female base model's (Meshy's API rig)
+BODIES = {'male': CANON, 'female': os.path.join(HERE, 'donors', 'base_f.glb')}
+
+
+def make_body(body, canon_path, donors, hair_donors=()):
+    data = os.path.join(HERE, 'data', body)
+    pieces = os.path.join(HERE, 'pieces', body)
     os.makedirs(pieces, exist_ok=True)
-    donors = json.load(open(os.path.join(data, 'donors.json')))
-    c = load(CANON)
+    os.makedirs(data, exist_ok=True)
+    c = load(canon_path)
     c.J = {n: i for i, n in enumerate(c.joints)}
     jnames = list(c.joints) + [f[0] for f in FACE]
     jidx = {n: i for i, n in enumerate(jnames)}
@@ -723,6 +824,7 @@ def main():
     for k, sm in enumerate(SEAMS):
         have = [x[7][k] for x in shifted if x[7][k] is not None]
         ring_target.append((np.median(np.stack([h[0] for h in have]), 0), np.median(np.stack([h[1] for h in have]), 0)))
+    heads = {}
     for dn, d, P, N, dense, ring, tslot, rings in shifted:
         for k, sm in enumerate(SEAMS):
             if rings[k] is not None:
@@ -737,19 +839,45 @@ def main():
         tslot, bands = cut(P, N, d.tri, dense, jnames)
         summary = write_piece(os.path.join(pieces, dn['id'] + '.glb'), dn['id'], c, P, N, d.uv, JT2, WT2,
                               d.tri, tslot, bands, d, marks)
-        outfits.append({'id': dn['id'], 'name': dn['name'], 'glb': 'pieces/%s.glb' % dn['id'],
+        heads[dn['id']] = (P, N, d.tri, tslot, JT2, WT2, marks)
+        outfits.append({'id': dn['id'], 'name': dn['name'], 'glb': 'pieces/%s/%s.glb' % (body, dn['id']),
                         'head': dn.get('head', 'face'),
                         'face': {k: [round(x, 4) for x in v] for k, v in marks.items()},
                         'meshes': summary})
-        print('%-7s %6d verts  neck %+.3f %+.3f  %s' % (dn['id'], len(P), (target - ring)[0], (target - ring)[1],
-                                                       ' '.join('%s:%d' % kv for kv in summary.items())))
+        print('%-6s %-8s %6d verts  neck %+.3f  %s' % (body, dn['id'], len(P), (target - ring)[1],
+                                                     ' '.join('%s:%d' % kv for kv in summary.items())))
+    hair = []
+    base = [d['id'] for d in donors if d.get('head') == 'base']
+    for hd in hair_donors:
+        if not base or not os.path.exists(os.path.join(HERE, hd['glb'])):
+            continue
+        info = fit_hair(os.path.join(HERE, hd['glb']), heads[base[0]], c,
+                        os.path.join(pieces, hd['id'] + '.glb'), hd['id'])
+        hair.append({'id': hd['id'], 'name': hd['name'], 'kind': hd.get('kind', 'hair'),
+                     'glb': 'pieces/%s/%s.glb' % (body, hd['id']), 'on': base[0]})
+        print('%-6s %-14s %s' % (body, hd['id'], info))
     clips = write_anims(os.path.join(pieces, 'anims.glb'), c)
     names, parents, jnodes, W = skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in FACE})
     json.dump({'joints': [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']}
                           for i, n in enumerate(jnodes)],
                'clips': clips}, open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
-    json.dump({'slots': SLOTS, 'bands': [[o, i] for (o, i) in BAND], 'face_joints': [f[0] for f in FACE],
-               'outfits': outfits}, open(os.path.join(data, 'outfits.json'), 'w'), indent=1)
+    json.dump({'body': body, 'slots': SLOTS, 'bands': [[o, i] for (o, i) in BAND], 'face_joints': [f[0] for f in FACE],
+               'outfits': outfits, 'hair': hair}, open(os.path.join(data, 'outfits.json'), 'w'), indent=1)
+    return c, heads
+
+
+def main():
+    donors = json.load(open(os.path.join(HERE, 'data', 'donors.json')))
+    only = sys.argv[1:]
+    for body, canon in BODIES.items():
+        if only and body not in only:
+            continue
+        mine = [d for d in donors if d.get('body', 'male') == body and d.get('kind', 'outfit') == 'outfit']
+        hair = [d for d in donors if d.get('body', 'male') == body and d.get('kind') in ('hair', 'beard')]
+        if not os.path.exists(canon) or not mine:
+            print('%s: skipped (no canon or no donors)' % body)
+            continue
+        make_body(body, canon, mine, hair)
 
 
 if __name__ == '__main__':

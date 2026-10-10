@@ -196,3 +196,45 @@ class GlbWriter:
         out = struct.pack('<III', 0x46546C67, 2, 12 + 8 + len(js) + 8 + len(bin_))
         out += struct.pack('<II', len(js), 0x4E4F534A) + js + struct.pack('<II', len(bin_), 0x004E4942) + bin_
         return out
+
+
+def read_mesh(path):
+    """an unrigged GLB (a Meshy prop): every primitive merged, in world space; .tri, .pos, .nrm, .uv, .image (PIL,
+    the base colour), .material"""
+    j, b = read_glb(open(path, 'rb').read())
+    nodes = j['nodes']
+    parent = {}
+    for i, n in enumerate(nodes):
+        for c in n.get('children', []):
+            parent[c] = i
+
+    def world(i):
+        m = node_matrix(nodes[i])
+        while i in parent:
+            i = parent[i]
+            m = node_matrix(nodes[i]) @ m
+        return m
+    r = Rig()
+    r.json, r.bin, r.path = j, b, path
+    pos, nrm, uv, tri = [], [], [], []
+    base = 0
+    for i, n in enumerate(nodes):
+        if 'mesh' not in n:
+            continue
+        W = world(i)
+        for p in j['meshes'][n['mesh']]['primitives']:
+            A = p['attributes']
+            P = accessor(j, b, A['POSITION']).astype(float)
+            N = accessor(j, b, A['NORMAL']).astype(float) if 'NORMAL' in A else np.zeros_like(P)
+            pos.append(P @ W[:3, :3].T + W[:3, 3])
+            nrm.append(N @ W[:3, :3].T)
+            uv.append(accessor(j, b, A['TEXCOORD_0']))
+            ii = accessor(j, b, p['indices']).reshape(-1).astype(np.int64) if 'indices' in p else np.arange(len(P))
+            tri.append(ii.reshape(-1, 3) + base)
+            base += len(P)
+            r.material = j['materials'][p['material']] if 'material' in p else {}
+    r.pos, r.nrm, r.uv, r.tri = np.concatenate(pos), np.concatenate(nrm), np.concatenate(uv), np.concatenate(tri)
+    r.nrm /= np.maximum(np.linalg.norm(r.nrm, axis=1, keepdims=True), 1e-9)
+    t = r.material.get('pbrMetallicRoughness', {}).get('baseColorTexture')
+    r.image = image(r, t['index']).convert('RGB') if t else None
+    return r

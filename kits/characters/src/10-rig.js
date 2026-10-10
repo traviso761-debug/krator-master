@@ -1,8 +1,10 @@
 /* ==== KCHAR: the character record and its pose. [G data]: no THREE, no DOM. Godot twin: godot/krator/character/kchar.gd ====
-   A character is a record:
-     { slots: { head:'phil', torso:'bronze', hands:'hide', legs:'scout', feet:'bone' },   outfit id per slot (data/outfits.json)
-       sliders: { height:0.3, jaw:-0.5, ... },                                               -1..1, missing = 0 (data/sliders.json)
-       dye: { torso:'#a04030', ... } }                                                       optional colour multiplied into a slot
+   A character is a record (the kit is data/<body>/kit.json, made by tools/make_kit.py):
+     { body:'male',                                        which kit
+       head:'styv', hair:'hair_m_long', beard:null,        a head; hair and a beard only on a bald or base head
+       armour: { torso:'bronze', legs:null, feet:'bone' }, an outfit id per armour slot, or none: the base body shows
+       sliders: { height:0.3, jaw:-0.5, ... },             -1..1, missing = 0 (data/sliders.json)
+       dye: { torso:'#a04030', hair:'#c08040' } }          optional colour multiplied into an armour slot or the hair
    KCHAR.pose(skel, sliders, values, faceRest) turns the slider values into what the renderer sets on the shared skeleton:
      t[i]     the joint's rest offset from its parent (parent frame), replacing the bind one
      s[i]     the joint's skin scale (its own frame): the renderer folds it into that joint's inverse bind matrix, so it
@@ -11,9 +13,9 @@
      lift     metres to raise the hips so the feet stay on the ground when the legs change length
    faceRest: { face_nose:[x,y,z], ... } the equipped head piece's face joints (outfits.json face, in mesh space); they are
    turned into offsets from Head here, since each head was made with its own face.
-   KCHAR.visible(record, outfits) is the list of mesh names to show: each slot's core mesh, plus a band
-   '<slot>~<other>' only where the slot across that cut holds a different outfit.
-   KCHAR.random(seed, sliders, outfits) a record drawn from KRAND (core/rand).
+   KCHAR.parts(record, kit) the meshes to draw: the base body's regions, the head, hair and beard, the armour.
+   KCHAR.hidden(record, kit) per base region, which triangles the worn armour covers (the renderer leaves them out).
+   KCHAR.random(seed, sliders, kit) a record drawn from KRAND (core/rand).
 */
 var KCHAR = (function(){
   function qmul(a, b){ return [a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1], a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],
@@ -89,35 +91,80 @@ var KCHAR = (function(){
     return { t:t, s:s, root:root, lift:lift, n:n };
   }
 
-  function visible(rec, outfits){
-    var out = [], by = {};
-    outfits.outfits.forEach(function(o){ by[o.id] = o; });
-    outfits.slots.forEach(function(slot){
-      var id = rec.slots[slot], o = by[id];
-      if(!o) return;
-      Object.keys(o.meshes).forEach(function(m){
-        var parts = m.split('~');
-        if(parts[0] !== slot) return;
-        if(parts.length === 1 || rec.slots[parts[1]] !== id) out.push({ outfit:id, mesh:m });
+  /* ---- the kit (data/<body>/kit.json): what to draw for a record, and what of the base body to leave out ---- */
+  function key(glb){ return glb.replace(/^pieces\//, '').replace(/\.glb$/, ''); }
+  function byId(list, id){ for(var i=0;i<list.length;i++) if(list[i].id === id) return list[i]; return null; }
+  function headOf(rec, kit){ return byId(kit.heads, rec.head) || byId(kit.heads, kit.base); }
+  function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
+  function hairFor(kit, id, head, kind){
+    for(var i=0;i<kit.hair.length;i++){ var h = kit.hair[i]; if(h.id === id && h.head === head && h.kind === kind) return h; }
+    return null;
+  }
+
+  /* every mesh to draw: { key, mesh, role, slot } (key = the GLB's path under pieces/, without .glb) */
+  function parts(rec, kit){
+    var out = [], head = headOf(rec, kit);
+    kit.regions.forEach(function(r){ out.push({ key:key('pieces/' + kit.body + '/base.glb'), mesh:'base_' + r, role:'base', slot:r }); });
+    out.push({ key:key(head.glb), mesh:'head', role:'head', slot:'head' });
+    if(takesHair(head)){
+      ['hair', 'beard'].forEach(function(kind){
+        var h = rec[kind] && hairFor(kit, rec[kind], head.id, kind);
+        if(h) out.push({ key:key(h.glb), mesh:kind, role:kind, slot:kind });
+      });
+    }
+    var arm = rec.armour || {};
+    ['feet', 'legs', 'torso'].forEach(function(slot){
+      var a = arm[slot] && byId(kit.armour, arm[slot]);
+      if(a && a.slots[slot]) out.push({ key:key(a.glb), mesh:slot, role:'armour', slot:slot });
+    });
+    return out;
+  }
+
+  /* a base64 bitset (make_kit.bits) as an array of 0/1 per triangle */
+  function unbits(b64, n){
+    var bin = atob(b64), out = new Uint8Array(n);
+    for(var i=0;i<n;i++) out[i] = (bin.charCodeAt(i >> 3) >> (i & 7)) & 1;
+    return out;
+  }
+
+  /* per base region, 1 for each triangle some worn armour covers */
+  function hidden(rec, kit){
+    var out = {}, arm = rec.armour || {};
+    kit.regions.forEach(function(r){ out[r] = new Uint8Array(kit.base_tris[r]); });
+    Object.keys(arm).forEach(function(slot){
+      var a = arm[slot] && byId(kit.armour, arm[slot]), s = a && a.slots[slot];
+      if(!s) return;
+      Object.keys(s.hide).forEach(function(r){
+        var b = unbits(s.hide[r], kit.base_tris[r]), o = out[r];
+        for(var i=0;i<b.length;i++) o[i] |= b[i];
       });
     });
     return out;
   }
 
-  function random(seed, sliders, outfits, spread){
-    var st = KRAND.stream(seed), r = st.next, rec = { slots:{}, sliders:{}, dye:{} };
+  function blank(kit){
+    return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
+             sliders:{}, dye:{} };
+  }
+
+  function random(seed, sliders, kit, spread){
+    var st = KRAND.stream(seed), r = st.next, rec = blank(kit);
     spread = spread === undefined ? 0.6 : spread;
-    outfits.slots.forEach(function(slot){ rec.slots[slot] = outfits.outfits[Math.floor(r() * outfits.outfits.length)].id; });
+    function pick(list){ return list[Math.floor(r() * list.length)]; }
+    rec.head = pick(kit.heads).id;
+    var hairs = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'hair'; });
+    var beards = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'beard'; });
+    rec.hair = hairs.length && r() < 0.85 ? pick(hairs).id : null;
+    rec.beard = beards.length && r() < 0.5 ? pick(beards).id : null;
+    ['torso', 'legs', 'feet'].forEach(function(slot){
+      var have = kit.armour.filter(function(a){ return a.slots[slot]; });
+      rec.armour[slot] = have.length && r() < 0.9 ? pick(have).id : null;
+    });
     sliders.sliders.forEach(function(sl){ rec.sliders[sl.id] = Math.round((r() * 2 - 1) * spread * 100) / 100; });
     return rec;
   }
 
-  function blank(outfits, id){
-    var rec = { slots:{}, sliders:{}, dye:{} };
-    outfits.slots.forEach(function(slot){ rec.slots[slot] = id || outfits.outfits[0].id; });
-    return rec;
-  }
-
-  return { pose:pose, visible:visible, random:random, blank:blank, fk:fk };
+  return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+           random:random, blank:blank, fk:fk };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

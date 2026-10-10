@@ -1,0 +1,10 @@
+{
+ "id": "hair_f_curly",
+ "outfit": "big voluminous curly dark hair, a woman's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "big voluminous curly dark hair, a woman's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-ba9d-716f-b8b0-9678b3845742",
+ "refine": "01a12600-620a-715a-8cdd-9872bfe1d2bf",
+ "glb": "hair_f_curly.glb"
+}

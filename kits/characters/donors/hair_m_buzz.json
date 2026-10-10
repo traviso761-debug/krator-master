@@ -1,0 +1,10 @@
+{
+ "id": "hair_m_buzz",
+ "outfit": "very short dark buzz cut hair, close cropped",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "very short dark buzz cut hair, close cropped, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-bb13-7108-8eeb-30d4e7ede61f",
+ "refine": "01a12600-624a-70d7-8d63-d4620afb8cc0",
+ "glb": "hair_m_buzz.glb"
+}

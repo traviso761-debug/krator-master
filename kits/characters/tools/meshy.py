@@ -34,10 +34,12 @@ PROMPTS = {
     'female': {'outfit': ('Full body game character, an adult woman of average athletic build, standing in A-pose, '
                           'stylized realistic, bare head with short dark hair tied back, face visible, wearing {outfit}. '
                           'Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.'),
-               'base': ('Full body game character base model, an adult woman of average athletic build, standing in '
-                        'A-pose, stylized realistic, completely bald smooth head, no hair, no eyebrows piercings or '
-                        'tattoos, neutral calm face, wearing a plain grey fitted sports top and plain grey fitted '
-                        'shorts, barefoot, even neutral skin tone, nothing held.')},
+               # the first try came out with pigtails and a youthful look: say bald and adult more than once
+               'base': ('Full body game character base model of a grown adult woman in her thirties, mature adult '
+                        'face and proportions, average athletic build, standing in A-pose, stylized realistic. Her '
+                        'head is completely shaved bald: smooth bare scalp, no hair at all, no ponytail, no pigtails, '
+                        'no eyebrows piercings or tattoos. Neutral calm expression. Wearing a plain grey fitted sports '
+                        'top and plain grey fitted shorts, barefoot, even neutral skin tone, nothing held.')},
 }
 # a hair or beard piece: no rig; make_pieces.py fits it onto a base head
 PIECE_PROMPT = ('{what}, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow '

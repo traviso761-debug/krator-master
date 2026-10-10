@@ -1,0 +1,10 @@
+{
+ "id": "hair_f_bun",
+ "outfit": "black hair pulled up into a high bun, a woman's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "black hair pulled up into a high bun, a woman's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-bb43-72ca-baf4-4c90d1a77fcc",
+ "refine": "01a125fe-f652-7734-a6b8-790d52a7ce06",
+ "glb": "hair_f_bun.glb"
+}

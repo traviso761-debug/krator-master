@@ -1,0 +1,10 @@
+{
+ "id": "hair_f_braids",
+ "outfit": "two long auburn braids and a braided crown, a woman's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "two long auburn braids and a braided crown, a woman's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-baf4-7713-92b9-4e3d9436dd23",
+ "refine": "01a125fe-fa14-703a-a24b-4de841393f6d",
+ "glb": "hair_f_braids.glb"
+}

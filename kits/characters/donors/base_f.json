@@ -3,9 +3,9 @@
  "outfit": "",
  "body": "female",
  "kind": "base",
- "prompt": "Full body game character base model, an adult woman of average athletic build, standing in A-pose, stylized realistic, completely bald smooth head, no hair, no eyebrows piercings or tattoos, neutral calm face, wearing a plain grey fitted sports top and plain grey fitted shorts, barefoot, even neutral skin tone, nothing held.",
- "preview": "01a125ee-cb26-7390-a762-ea3883aa6b3e",
- "refine": "01a125ef-8c33-74ed-bbdd-a568da635b7e",
- "rig": "01a125f0-4548-7429-bd4f-336ac535de34",
+ "prompt": "Full body game character base model of a grown adult woman in her thirties, mature adult face and proportions, average athletic build, standing in A-pose, stylized realistic. Her head is completely shaved bald: smooth bare scalp, no hair at all, no ponytail, no pigtails, no eyebrows piercings or tattoos. Neutral calm expression. Wearing a plain grey fitted sports top and plain grey fitted shorts, barefoot, even neutral skin tone, nothing held.",
+ "preview": "01a125fd-ba66-7270-9f8f-97b27780cd0f",
+ "refine": "01a125fe-7b59-7733-8c51-2e44e6a2cb13",
+ "rig": "01a125ff-336f-74bd-8e47-778cd227e574",
  "glb": "base_f.glb"
 }

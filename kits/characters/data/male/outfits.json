@@ -1,4 +1,5 @@
 {
+ "body": "male",
  "slots": [
   "head",
   "torso",
@@ -40,145 +41,145 @@
   {
    "id": "styv",
    "name": "Styv's robes",
-   "glb": "pieces/styv.glb",
+   "glb": "pieces/male/styv.glb",
    "head": "face",
    "face": {
     "face_nose": [
      0.0088,
      1.5669,
-     0.0787
+     0.0721
     ],
     "face_mouth": [
      0.0088,
      1.5269,
-     0.0667
+     0.0601
     ],
     "face_chin": [
      0.0088,
      1.4819,
-     0.0487
+     0.0421
     ],
     "face_jaw": [
      0.0088,
      1.5069,
-     0.0037
+     -0.0029
     ],
     "face_eye_L": [
      0.0408,
      1.6019,
-     0.0387
+     0.0321
     ],
     "face_eye_R": [
      -0.0232,
      1.6019,
-     0.0387
+     0.0321
     ],
     "face_brow_L": [
      0.0438,
      1.6219,
-     0.0537
+     0.0471
     ],
     "face_brow_R": [
      -0.0262,
      1.6219,
-     0.0537
+     0.0471
     ],
     "face_cheek_L": [
      0.0588,
      1.5719,
-     0.0287
+     0.0221
     ],
     "face_cheek_R": [
      -0.0412,
      1.5719,
-     0.0287
+     0.0221
     ]
    },
    "meshes": {
     "head": 518,
-    "head~torso": 13,
+    "head~torso": 17,
     "torso": 3560,
-    "torso~legs": 46,
-    "torso~head": 10,
-    "torso~hands": 9,
+    "torso~legs": 56,
+    "torso~head": 12,
+    "torso~hands": 11,
     "hands": 472,
-    "hands~torso": 16,
+    "hands~torso": 17,
     "legs": 5384,
     "legs~torso": 11,
-    "legs~feet": 4,
+    "legs~feet": 3,
     "feet": 322,
-    "feet~legs": 52
+    "feet~legs": 51
    }
   },
   {
    "id": "phil",
    "name": "Phil's coat",
-   "glb": "pieces/phil.glb",
+   "glb": "pieces/male/phil.glb",
    "head": "face",
    "face": {
     "face_nose": [
      -0.0025,
      1.5966,
-     0.0422
+     0.0356
     ],
     "face_mouth": [
      -0.0025,
      1.5566,
-     0.0302
+     0.0236
     ],
     "face_chin": [
      -0.0025,
      1.5116,
-     0.0122
+     0.0056
     ],
     "face_jaw": [
      -0.0025,
      1.5366,
-     -0.0328
+     -0.0394
     ],
     "face_eye_L": [
      0.0295,
      1.6316,
-     0.0022
+     -0.0044
     ],
     "face_eye_R": [
      -0.0345,
      1.6316,
-     0.0022
+     -0.0044
     ],
     "face_brow_L": [
      0.0325,
      1.6516,
-     0.0172
+     0.0106
     ],
     "face_brow_R": [
      -0.0375,
      1.6516,
-     0.0172
+     0.0106
     ],
     "face_cheek_L": [
      0.0475,
      1.6016,
-     -0.0078
+     -0.0144
     ],
     "face_cheek_R": [
      -0.0525,
      1.6016,
-     -0.0078
+     -0.0144
     ]
    },
    "meshes": {
     "head": 3153,
-    "head~torso": 24,
+    "head~torso": 26,
     "torso": 1849,
-    "torso~legs": 74,
-    "torso~head": 24,
-    "torso~hands": 64,
+    "torso~legs": 76,
+    "torso~head": 26,
+    "torso~hands": 66,
     "hands": 326,
-    "hands~torso": 33,
+    "hands~torso": 34,
     "legs": 3926,
-    "legs~torso": 24,
-    "legs~feet": 10,
+    "legs~torso": 31,
+    "legs~feet": 7,
     "feet": 587,
     "feet~legs": 33
    }
@@ -186,294 +187,376 @@
   {
    "id": "hide",
    "name": "Rider's hide",
-   "glb": "pieces/hide.glb",
+   "glb": "pieces/male/hide.glb",
    "head": "helmet",
    "face": {
     "face_nose": [
      -0.0008,
      1.618,
-     0.0021
+     -0.0044
     ],
     "face_mouth": [
      -0.0008,
      1.578,
-     -0.0099
+     -0.0164
     ],
     "face_chin": [
      -0.0008,
      1.533,
-     -0.0279
+     -0.0344
     ],
     "face_jaw": [
      -0.0008,
      1.558,
-     -0.0729
+     -0.0794
     ],
     "face_eye_L": [
      0.0312,
      1.653,
-     -0.0379
+     -0.0444
     ],
     "face_eye_R": [
      -0.0328,
      1.653,
-     -0.0379
+     -0.0444
     ],
     "face_brow_L": [
      0.0342,
      1.673,
-     -0.0229
+     -0.0294
     ],
     "face_brow_R": [
      -0.0358,
      1.673,
-     -0.0229
+     -0.0294
     ],
     "face_cheek_L": [
      0.0492,
      1.623,
-     -0.0479
+     -0.0544
     ],
     "face_cheek_R": [
      -0.0508,
      1.623,
-     -0.0479
+     -0.0544
     ]
    },
    "meshes": {
     "head": 1062,
-    "head~torso": 60,
+    "head~torso": 51,
     "torso": 13124,
-    "torso~legs": 74,
-    "torso~head": 53,
-    "torso~hands": 8,
+    "torso~legs": 64,
+    "torso~head": 47,
+    "torso~hands": 7,
     "hands": 688,
-    "hands~torso": 31,
+    "hands~torso": 39,
     "legs": 9296,
-    "legs~torso": 23,
-    "legs~feet": 39,
+    "legs~torso": 22,
+    "legs~feet": 36,
     "feet": 630,
-    "feet~legs": 75
+    "feet~legs": 80
    }
   },
   {
    "id": "scout",
    "name": "Scout's quilting",
-   "glb": "pieces/scout.glb",
+   "glb": "pieces/male/scout.glb",
    "head": "face",
    "face": {
     "face_nose": [
      -0.0128,
      1.5814,
-     0.0548
+     0.0483
     ],
     "face_mouth": [
      -0.0128,
      1.5414,
-     0.0428
+     0.0363
     ],
     "face_chin": [
      -0.0128,
      1.4964,
-     0.0248
+     0.0183
     ],
     "face_jaw": [
      -0.0128,
      1.5214,
-     -0.0202
+     -0.0267
     ],
     "face_eye_L": [
      0.0192,
      1.6164,
-     0.0148
+     0.0083
     ],
     "face_eye_R": [
      -0.0448,
      1.6164,
-     0.0148
+     0.0083
     ],
     "face_brow_L": [
      0.0222,
      1.6364,
-     0.0298
+     0.0233
     ],
     "face_brow_R": [
      -0.0478,
      1.6364,
-     0.0298
+     0.0233
     ],
     "face_cheek_L": [
      0.0372,
      1.5864,
-     0.0048
+     -0.0017
     ],
     "face_cheek_R": [
      -0.0628,
      1.5864,
-     0.0048
+     -0.0017
     ]
    },
    "meshes": {
     "head": 1841,
-    "head~torso": 96,
+    "head~torso": 86,
     "torso": 7144,
-    "torso~legs": 227,
-    "torso~head": 78,
-    "torso~hands": 23,
+    "torso~legs": 180,
+    "torso~head": 75,
+    "torso~hands": 19,
     "hands": 1284,
-    "hands~torso": 95,
+    "hands~torso": 96,
     "legs": 12353,
     "legs~torso": 22,
-    "legs~feet": 223,
+    "legs~feet": 234,
     "feet": 2258,
-    "feet~legs": 517
+    "feet~legs": 558
    }
   },
   {
    "id": "bone",
    "name": "Bone plate",
-   "glb": "pieces/bone.glb",
+   "glb": "pieces/male/bone.glb",
    "head": "face",
    "face": {
     "face_nose": [
      0.008,
      1.5967,
-     0.1027
+     0.0961
     ],
     "face_mouth": [
      0.008,
      1.5567,
-     0.0907
+     0.0841
     ],
     "face_chin": [
      0.008,
      1.5117,
-     0.0727
+     0.0661
     ],
     "face_jaw": [
      0.008,
      1.5367,
-     0.0277
+     0.0211
     ],
     "face_eye_L": [
      0.04,
      1.6317,
-     0.0627
+     0.0561
     ],
     "face_eye_R": [
      -0.024,
      1.6317,
-     0.0627
+     0.0561
     ],
     "face_brow_L": [
      0.043,
      1.6517,
-     0.0777
+     0.0711
     ],
     "face_brow_R": [
      -0.027,
      1.6517,
-     0.0777
+     0.0711
     ],
     "face_cheek_L": [
      0.058,
      1.6017,
-     0.0527
+     0.0461
     ],
     "face_cheek_R": [
      -0.042,
      1.6017,
-     0.0527
+     0.0461
     ]
    },
    "meshes": {
     "head": 2239,
-    "head~torso": 31,
+    "head~torso": 18,
     "torso": 7946,
-    "torso~legs": 256,
-    "torso~head": 83,
-    "torso~hands": 31,
+    "torso~legs": 323,
+    "torso~head": 62,
+    "torso~hands": 36,
     "hands": 1972,
-    "hands~torso": 100,
+    "hands~torso": 103,
     "legs": 10719,
-    "legs~torso": 75,
-    "legs~feet": 102,
+    "legs~torso": 82,
+    "legs~feet": 100,
     "feet": 1743,
-    "feet~legs": 282
+    "feet~legs": 288
    }
   },
   {
    "id": "bronze",
    "name": "Bronze scale",
-   "glb": "pieces/bronze.glb",
+   "glb": "pieces/male/bronze.glb",
    "head": "face",
    "face": {
     "face_nose": [
      0.0003,
      1.5801,
-     0.0294
+     0.0229
     ],
     "face_mouth": [
      0.0003,
      1.5401,
-     0.0174
+     0.0109
     ],
     "face_chin": [
      0.0003,
      1.4951,
-     -0.0006
+     -0.0071
     ],
     "face_jaw": [
      0.0003,
      1.5201,
-     -0.0456
+     -0.0521
     ],
     "face_eye_L": [
      0.0323,
      1.6151,
-     -0.0106
+     -0.0171
     ],
     "face_eye_R": [
      -0.0317,
      1.6151,
-     -0.0106
+     -0.0171
     ],
     "face_brow_L": [
      0.0353,
      1.6351,
-     0.0044
+     -0.0021
     ],
     "face_brow_R": [
      -0.0347,
      1.6351,
-     0.0044
+     -0.0021
     ],
     "face_cheek_L": [
      0.0503,
      1.5851,
-     -0.0206
+     -0.0271
     ],
     "face_cheek_R": [
      -0.0497,
      1.5851,
-     -0.0206
+     -0.0271
     ]
    },
    "meshes": {
     "head": 1792,
-    "head~torso": 54,
+    "head~torso": 41,
     "torso": 8765,
-    "torso~legs": 134,
-    "torso~head": 34,
-    "torso~hands": 14,
+    "torso~legs": 116,
+    "torso~head": 39,
+    "torso~hands": 15,
     "hands": 1138,
-    "hands~torso": 134,
+    "hands~torso": 137,
     "legs": 11888,
-    "legs~torso": 34,
-    "legs~feet": 66,
+    "legs~torso": 23,
+    "legs~feet": 67,
     "feet": 1310,
-    "feet~legs": 107
+    "feet~legs": 111
    }
+  },
+  {
+   "id": "base_m",
+   "name": "Base",
+   "glb": "pieces/male/base_m.glb",
+   "head": "base",
+   "face": {
+    "face_nose": [
+     -0.0032,
+     1.574,
+     0.0806
+    ],
+    "face_mouth": [
+     -0.0032,
+     1.534,
+     0.0686
+    ],
+    "face_chin": [
+     -0.0032,
+     1.489,
+     0.0506
+    ],
+    "face_jaw": [
+     -0.0032,
+     1.514,
+     0.0056
+    ],
+    "face_eye_L": [
+     0.0288,
+     1.609,
+     0.0406
+    ],
+    "face_eye_R": [
+     -0.0352,
+     1.609,
+     0.0406
+    ],
+    "face_brow_L": [
+     0.0318,
+     1.629,
+     0.0556
+    ],
+    "face_brow_R": [
+     -0.0382,
+     1.629,
+     0.0556
+    ],
+    "face_cheek_L": [
+     0.0468,
+     1.579,
+     0.0306
+    ],
+    "face_cheek_R": [
+     -0.0532,
+     1.579,
+     0.0306
+    ]
+   },
+   "meshes": {
+    "head": 2071,
+    "head~torso": 25,
+    "torso": 6290,
+    "torso~legs": 116,
+    "torso~head": 52,
+    "torso~hands": 63,
+    "hands": 3356,
+    "hands~torso": 59,
+    "legs": 8625,
+    "legs~torso": 33,
+    "legs~feet": 120,
+    "feet": 4484,
+    "feet~legs": 122
+   }
+  }
+ ],
+ "hair": [
+  {
+   "id": "hair_m_short",
+   "name": "Short tousled",
+   "kind": "hair",
+   "glb": "pieces/male/hair_m_short.glb",
+   "on": "base_m"
   }
  ]
 }

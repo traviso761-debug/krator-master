@@ -2,32 +2,186 @@
  {
   "id": "styv",
   "name": "Styv's robes",
-  "glb": "../../settlements/girder/hero/styv.glb"
+  "glb": "../../settlements/girder/hero/styv.glb",
+  "body": "male",
+  "head": "bald",
+  "head_name": "Styv",
+  "kind": "head"
  },
  {
   "id": "phil",
   "name": "Phil's coat",
-  "glb": "../../settlements/girder/hero/phil.glb"
+  "glb": "../../settlements/girder/hero/phil.glb",
+  "body": "male",
+  "head": "hair",
+  "head_name": "Phil",
+  "kind": "head"
  },
  {
   "id": "hide",
   "name": "Rider's hide",
   "glb": "donors/hide.glb",
-  "head": "helmet"
+  "head": "helmet",
+  "body": "male",
+  "head_name": "Horned helm",
+  "kind": "outfit"
  },
  {
   "id": "scout",
   "name": "Scout's quilting",
-  "glb": "donors/scout.glb"
+  "glb": "donors/scout.glb",
+  "body": "male",
+  "head": "hair",
+  "head_name": "Scout",
+  "kind": "outfit"
  },
  {
   "id": "bone",
   "name": "Bone plate",
-  "glb": "donors/bone.glb"
+  "glb": "donors/bone.glb",
+  "body": "male",
+  "head": "hair",
+  "head_name": "Bearded",
+  "kind": "outfit"
  },
  {
   "id": "bronze",
   "name": "Bronze scale",
-  "glb": "donors/bronze.glb"
+  "glb": "donors/bronze.glb",
+  "body": "male",
+  "head": "hair",
+  "head_name": "Clean-cut",
+  "kind": "outfit"
+ },
+ {
+  "id": "base_m",
+  "name": "Base",
+  "glb": "donors/base_m.glb",
+  "body": "male",
+  "head": "base",
+  "head_name": "Base",
+  "kind": "head"
+ },
+ {
+  "id": "f_hide",
+  "name": "Rider's hide",
+  "glb": "donors/f_hide.glb",
+  "body": "female",
+  "head": "hair",
+  "head_name": "Wild",
+  "kind": "outfit"
+ },
+ {
+  "id": "f_scout",
+  "name": "Scout's quilting",
+  "glb": "donors/f_scout.glb",
+  "body": "female",
+  "head": "hair",
+  "head_name": "Scout",
+  "kind": "outfit"
+ },
+ {
+  "id": "f_bone",
+  "name": "Bone plate",
+  "glb": "donors/f_bone.glb",
+  "body": "female",
+  "head": "hair",
+  "head_name": "Topknot",
+  "kind": "outfit"
+ },
+ {
+  "id": "f_bronze",
+  "name": "Bronze scale",
+  "glb": "donors/f_bronze.glb",
+  "body": "female",
+  "head": "hair",
+  "head_name": "High tail",
+  "kind": "outfit"
+ },
+ {
+  "id": "base_f",
+  "name": "Base",
+  "glb": "donors/base_f.glb",
+  "body": "female",
+  "head": "base",
+  "head_name": "Base",
+  "kind": "head"
+ },
+ {
+  "id": "hair_m_short",
+  "name": "Short tousled",
+  "glb": "donors/hair_test.glb",
+  "body": "male",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_m_long",
+  "name": "Low ponytail",
+  "glb": "donors/hair_m_long.glb",
+  "body": "male",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_m_braid",
+  "name": "Shaved, long braid",
+  "glb": "donors/hair_m_braid.glb",
+  "body": "male",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_m_buzz",
+  "name": "Buzz cut",
+  "glb": "donors/hair_m_buzz.glb",
+  "body": "male",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_m_wild",
+  "name": "Wild curls",
+  "glb": "donors/hair_m_wild.glb",
+  "body": "male",
+  "kind": "hair"
+ },
+ {
+  "id": "beard_full",
+  "name": "Full beard",
+  "glb": "donors/beard_test.glb",
+  "body": "male",
+  "kind": "beard"
+ },
+ {
+  "id": "hair_f_long",
+  "name": "Long straight",
+  "glb": "donors/hair_f_long.glb",
+  "body": "female",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_f_braids",
+  "name": "Braids and crown",
+  "glb": "donors/hair_f_braids.glb",
+  "body": "female",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_f_bun",
+  "name": "High bun",
+  "glb": "donors/hair_f_bun.glb",
+  "body": "female",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_f_bob",
+  "name": "Bob with fringe",
+  "glb": "donors/hair_f_bob.glb",
+  "body": "female",
+  "kind": "hair"
+ },
+ {
+  "id": "hair_f_curly",
+  "name": "Big curls",
+  "glb": "donors/hair_f_curly.glb",
+  "body": "female",
+  "kind": "hair"
  }
 ]

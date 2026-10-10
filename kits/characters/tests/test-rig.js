@@ -3,9 +3,9 @@ var path = require('path'), fs = require('fs');
 var HERE = path.join(__dirname, '..');
 require(path.join(HERE, '..', '..', 'core', 'rand', '08-core-rand.js')); global.KRAND = globalThis.KRAND;
 var KCHAR = require(path.join(HERE, 'src', '10-rig.js'));
-var skel = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'skeleton.json')));
+var skel = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'male', 'skeleton.json')));
 var sliders = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'sliders.json')));
-var outfits = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'outfits.json')));
+var kit = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'male', 'kit.json')));
 var fails = 0;
 function ok(c, msg){ if(!c){ fails++; console.log('FAIL', msg); } }
 function near(a, b, e){ return Math.abs(a - b) <= (e || 1e-6); }
@@ -44,7 +44,7 @@ var ph = KCHAR.pose(skel, sliders, { hips:1, shoulders:1, arms:1 }), wh = KCHAR.
 });
 
 // face sliders touch only the face joints and Head; body sliders never touch the face joints
-var faceNames = outfits.face_joints;
+var faceNames = kit.face_joints;
 sliders.sliders.forEach(function(sl){
   var v = {}; v[sl.id] = 1;
   var p = KCHAR.pose(skel, sliders, v), moved = [];
@@ -56,21 +56,35 @@ sliders.sliders.forEach(function(sl){
 });
 
 // a head's face rest positions become offsets from Head that FK puts back where they were
-var o = outfits.outfits[0], pf = KCHAR.pose(skel, sliders, {}, o.face), wf = KCHAR.fk(skel, pf.t);
+var h0 = kit.heads[0], pf = KCHAR.pose(skel, sliders, {}, h0.face), wf = KCHAR.fk(skel, pf.t);
 faceNames.forEach(function(n){
-  ok(o.face[n].every(function(x, a){ return near(x, wf.P[ix[n]][a], 1e-5); }), 'face rest: ' + n);
+  ok(h0.face[n].every(function(x, a){ return near(x, wf.P[ix[n]][a], 1e-5); }), 'face rest: ' + n);
 });
 
-// band visibility: one outfit everywhere shows no bands; a mixed record shows both sides of a mixed cut
-var one = KCHAR.blank(outfits, 'styv');
-ok(KCHAR.visible(one, outfits).every(function(v){ return v.mesh.indexOf('~') < 0; }), 'one outfit: no bands');
-var mix = KCHAR.blank(outfits, 'styv'); mix.slots.legs = 'bronze';
-var vis = KCHAR.visible(mix, outfits).map(function(v){ return v.outfit + ':' + v.mesh; });
-ok(vis.indexOf('styv:torso~legs') >= 0 && vis.indexOf('bronze:legs~torso') >= 0, 'mixed: both bands at the waist ' + vis);
-ok(vis.indexOf('styv:head~torso') < 0, 'mixed: no band at an unmixed cut');
+// parts: a blank record is the base body and its head; hair only on a bald head; armour adds its slot
+var blank = KCHAR.blank(kit), bp = KCHAR.parts(blank, kit);
+ok(bp.length === kit.regions.length + 1 && bp.filter(function(p){ return p.role === 'head'; }).length === 1, 'blank: base regions and a head ' + bp.length);
+var hairy = kit.heads.filter(function(h){ return h.style === 'hair'; })[0], bald = kit.heads.filter(function(h){ return h.style === 'base'; })[0];
+var withHair = KCHAR.blank(kit); withHair.hair = kit.hair.filter(function(h){ return h.head === bald.id && h.kind === 'hair'; })[0].id;
+ok(KCHAR.parts(withHair, kit).some(function(p){ return p.role === 'hair'; }), 'hair on the base head');
+withHair.head = hairy.id;
+ok(!KCHAR.parts(withHair, kit).some(function(p){ return p.role === 'hair'; }), 'no hair on a head that has its own');
+var dressed = KCHAR.blank(kit); dressed.armour = { torso:kit.armour[0].id, legs:kit.armour[1].id, feet:null };
+var dp = KCHAR.parts(dressed, kit);
+ok(dp.filter(function(p){ return p.role === 'armour'; }).length === 2, 'two armour slots worn');
 
-// random is deterministic
-ok(JSON.stringify(KCHAR.random(7, sliders, outfits)) === JSON.stringify(KCHAR.random(7, sliders, outfits)), 'random: same seed, same record');
+// hidden: nothing without armour; a torso piece hides some torso skin and no feet
+var none = KCHAR.hidden(blank, kit);
+ok(Object.keys(none).every(function(r){ return Array.prototype.every.call(none[r], function(x){ return x === 0; }); }), 'no armour, nothing hidden');
+var hid = KCHAR.hidden(dressed, kit), sum = function(a){ var n = 0; for(var i=0;i<a.length;i++) n += a[i]; return n; };
+ok(sum(hid.torso) > 0.3 * kit.base_tris.torso, 'torso armour hides torso skin: ' + sum(hid.torso) + ' of ' + kit.base_tris.torso);
+var top = KCHAR.blank(kit); top.armour = { torso:kit.armour[0].id };
+ok(sum(KCHAR.hidden(top, kit).feet) === 0, 'torso armour hides no foot');
+
+// random is deterministic and only names what the kit has
+var r1 = KCHAR.random(7, sliders, kit);
+ok(JSON.stringify(r1) === JSON.stringify(KCHAR.random(7, sliders, kit)), 'random: same seed, same record');
+ok(kit.heads.some(function(h){ return h.id === r1.head; }), 'random: a real head');
 
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);
