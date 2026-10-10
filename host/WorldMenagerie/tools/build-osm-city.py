@@ -345,6 +345,9 @@ def main():
             ("natural", "wood", "wood"), ("landuse", "forest", "wood"), ("natural", "scrub", "scrub" if CITY.get("scrub") == "low" else "wood"), ("natural", "sand", "sand"), ("natural", "grassland", "grass"),
             ("landuse", "grass", "grass"), ("landuse", "recreation_ground", "grass"), ("place", "square", "plaza"), ("highway", "pedestrian", "plaza"),
             ("leisure", "park", "park")]
+    # a city may map land the list above leaves out ("extraKinds": [[key, value, kind], ...]): Antigua's coffee
+    # fincas are landuse=orchard, and without this they are dropped
+    KIND += [tuple(k) for k in CITY.get("extraKinds", [])]
     areas, pois = [], []
     for e in land:
         t = e.get("tags", {})

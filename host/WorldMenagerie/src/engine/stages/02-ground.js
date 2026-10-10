@@ -25,9 +25,9 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
       const V=r=>r.map(([x,z])=>new THREE.Vector2(x,z));let faces;try{faces=THREE.ShapeUtils.triangulateShape(V(outer),(holes||[]).map(V));}catch(e){return;}const all=outer.concat(...(holes||[]));
       const base=t.p.length/3;for(let i=0;i<all.length;i++){const x=all[i][0],z=all[i][1];t.p.push(x,Y(x,z),z);t.n.push(0,1,0);t.c.push(cl.r,cl.g,cl.b);}for(const f of faces)t.idx.push(base+f[0],base+f[2],base+f[1]);},
     // a big area on a hillside: fill it with a grid of quads that follow the ground, instead of one flat outline
-    gridPoly(rec,cell,off,cl){const {x0,x1,z0,z1}=rec.bb;
+    gridPoly(rec,cell,off,cl,skip){const {x0,x1,z0,z1}=rec.bb;   // skip(x, z): a cell to leave out (bare ground)
       for(let z=z0;z<z1;z+=cell)for(let x=x0;x<x1;x+=cell){const x2=Math.min(x+cell,x1),z2=Math.min(z+cell,z1);
-        if(!inRec(rec,(x+x2)/2,(z+z2)/2))continue;
+        if(!inRec(rec,(x+x2)/2,(z+z2)/2)||(skip&&skip((x+x2)/2,(z+z2)/2)))continue;
         this.quad(this.tile(x,z),[x,groundH(x,z)+off,z],[x,groundH(x,z2)+off,z2],[x2,groundH(x2,z2)+off,z2],[x2,groundH(x2,z)+off,z],cl);}},
     walls(ring,y0,y1,cl){for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length],nx=b[1]-a[1],nz=-(b[0]-a[0]),nl=Math.hypot(nx,nz)||1;
       this.quad(this.tile(a[0],a[1]),[a[0],y1,a[1]],[b[0],y1,b[1]],[b[0],y0,b[1]],[a[0],y0,a[1]],cl,[nx/nl,0,nz/nl]);}},
@@ -185,6 +185,7 @@ section('ground',()=>{
   // A city can retune the land-cover palette: the defaults are a modern map's greens, and on the Pelennor
   // they read as lawns rolled out over the fields.
   const AREA_COL=Object.assign({},{residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'},C.areaColours||{});
+  const WOODY=new Set(['wood','reserve','scrub']);   // what stops at the tree line (bareAt, 00-start)
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
   const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD}),paved=PAVE&&PAVE.plazas?tiledBuffer(paveMat(2),{tile:1000}):null;
   // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
@@ -192,7 +193,7 @@ section('ground',()=>{
     const buf=paved&&a.kind==='plaza'?paved:USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
     // an area that meets a terrain cut follows the ground too, or it would be drawn flat across the cutting
     const cutHit=TER&&TER.cutBoxes&&TER.cutBoxes.some(q=>a.bb.x1>q.x0&&a.bb.x0<q.x1&&a.bb.z1>q.z0&&a.bb.z0<q.z1);
-    if(TER&&(big>4000*WORLD*WORLD||cutHit))buf.gridPoly(a,(big>40000*WORLD*WORLD?25:cutHit?6:12)*WORLD,0.06,c);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
+    if(TER&&(big>4000*WORLD*WORLD||cutHit))buf.gridPoly(a,(big>40000*WORLD*WORLD?25:cutHit?6:12)*WORLD,0.06,c,WOODY.has(a.kind)?bareAt:null);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
   for(const b of BEACHES)detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));
   use.build('land use');land.build('land');detail.build('land detail');if(paved)paved.build('piazze');
 });

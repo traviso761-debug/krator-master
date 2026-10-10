@@ -33,6 +33,8 @@ const bldMats={tower:towerM,low:lowM,blank:blankM};
 //   timber   half-timbering: dark posts and floor beams, braces under the sills, shutters (an old town's houses)
 //   clapboard painted lap siding, a window in its white trim to each bay, the corner boards (a wooden house)
 //   arched   a round-headed window to each bay in its pale surround, shutters either side, a course at each floor
+//   limewash a blank limewashed wall, faintly weathered, no windows: for a city that puts its own doors and windows on
+//            (Antigua's casas.js)
 // `when.where` keeps a style to some lat/lon boxes, [[s, w, n, e], ...] (a neighbourhood's houses).
 // Each texture holds four bays and four floors; `colours` replace a building's own for that style (glass is not
 // painted), and `low` styles are dropped at a distance like the low buildings.
@@ -66,6 +68,8 @@ function styleTex(kind,glow,seed){const N=256,cv=document.createElement('canvas'
         g.fillStyle='#ffffff';g.fillRect(x,y,cw*0.05,rh);g.fillRect(x+cw*0.27,y+rh*0.18,cw*0.46,rh*0.56);g.fillRect(x+cw*0.24,y+rh*0.72,cw*0.52,rh*0.05);}
       const k=lit()?0.4+R()*0.6:0;g.fillStyle=glow?(k?warm(k):'#000'):`rgb(${40+R()*14},${48+R()*14},${56+R()*14})`;g.fillRect(x+cw*0.31,y+rh*0.22,cw*0.38,rh*0.48);
       if(!glow){g.fillStyle='#ffffff';g.fillRect(x+cw*0.31,y+rh*0.43,cw*0.38,rh*0.035);}}   // the sash's meeting rail
+    else if(kind==='limewash'){g.fillStyle=glow?'#000':'#f6f3ec';g.fillRect(x,y,cw,rh);
+      if(!glow)for(let q=0;q<5;q++){g.fillStyle=`rgba(${R()<0.5?'90,80,60':'255,255,250'},${0.04+R()*0.05})`;g.beginPath();g.ellipse(x+R()*cw,y+R()*rh,cw*(0.1+R()*0.25),rh*(0.05+R()*0.15),0,0,Math.PI*2);g.fill();}}   // the lime's blotches and stains
     else{g.fillStyle=glow?'#000':'#f4f2ee';g.fillRect(x,y,cw,rh);if(!glow){g.strokeStyle='rgba(0,0,0,0.06)';for(let q=0;q<rh;q+=6){g.beginPath();g.moveTo(x,y+q);g.lineTo(x+cw,y+q);g.stroke();}}
       const k=lit()?0.35+R()*0.6:0;g.fillStyle=glow?(k?warm(k):'#000'):`rgb(${50+R()*25},${62+R()*25},${78+R()*25})`;g.fillRect(x+cw*0.18,y+rh*0.22,cw*0.64,rh*0.5);}}
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}

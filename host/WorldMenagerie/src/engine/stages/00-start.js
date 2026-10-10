@@ -100,6 +100,11 @@ function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0
 const groundH0=(x,z)=>{if(!TER||!TER.h0)return groundH(x,z);const h=TER.h;TER.h=TER.h0;try{return groundH(x,z);}finally{TER.h=h;}};   // the ground before any cut
 const groundMin=ring=>{let m=1e9;for(const [x,z] of ring)m=Math.min(m,groundH(x,z));return m===1e9?0:m;};
 ctx.groundH=groundH;
+// C.treeLine (metres above the datum) and C.bareGround ([[lat, lon, radius m], ...]): ground where nothing grows, a
+// volcano's cone above its forest. Woodland is not drawn there and no trees are planted on it (Antigua's volcanoes,
+// whose nature reserves are mapped from the foot of the cone to the crater). A city that sets neither is unchanged.
+const BARE=(C.bareGround||[]).map(([la,lo,r])=>{const [x,z]=P([la,lo]);return [x,z,r];}),TREE_LINE=C.treeLine==null?Infinity:C.treeLine;
+const bareAt=(x,z)=>(TREE_LINE<Infinity&&groundH(x,z)>TREE_LINE+40*Math.sin(x*0.004)*Math.cos(z*0.0035))||BARE.some(([bx,bz,r])=>(x-bx)**2+(z-bz)**2<r*r);
 // water lookups on a 20 m grid, worked out once for the whole map: 0 land, 1 lake, 2 inland water
 const WG=20*Math.ceil(WORLD),WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
 {for(let j=0;j<WNZ;j++){const z=B.z0+(j+0.5)*WG;
@@ -110,8 +115,9 @@ const WG=20*Math.ceil(WORLD),WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=n
  for(const r of ISLANDS)fillRec(bbox(r),(x,z)=>inPoly(x,z,r),0);
  // A sea-level city floods its whole box and lets the ground decide: a cell is only water where the land is not
  // standing above the waterline. Without this every tree, car and street light would think it was in the river.
- const SEA=!!C.seaLevelWater,dry=(x,z)=>SEA&&groundH(x,z)>0.4;
- for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&!dry(x,z)&&inRec(w,x,z),2);}
+ // A lake that carries its own level (w.y: Lake Crescent is 177 m up, over a sea-level map) is dry above that level.
+ const SEA=!!C.seaLevelWater,dry=(x,z,w)=>SEA&&groundH(x,z)>(w.y===undefined?0.4:w.y+0.4);
+ for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&!dry(x,z,w)&&inRec(w,x,z),2);}
 const waterCell=(x,z)=>{const i=Math.floor((x-B.x0)/WG),j=Math.floor((z-B.z0)/WG);if(i<0||j<0||i>=WNX||j>=WNZ)return x>B.x1?1:0;return WGRID[j*WNX+i];};
 const inLake=(x,z)=>waterCell(x,z)===1;
 const inRiver=(x,z)=>waterCell(x,z)===2;

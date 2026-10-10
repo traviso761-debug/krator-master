@@ -96,7 +96,7 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
     for(let z=a.bb.z0;z<a.bb.z1;z+=cell)for(let x=a.bb.x0;x<a.bb.x1;x+=cell){
       const R2=hash3(x,z,31);if(R2>(dense?0.72:0.34))continue;
       const px=x+(hash3(x,z,32)-0.5)*cell*0.9,pz=z+(hash3(x,z,33)-0.5)*cell*0.9;
-      if(!inRec(a,px,pz)||!inMap(px,pz,5)||inWater(px,pz)||kept(px,pz))continue;
+      if(!inRec(a,px,pz)||!inMap(px,pz,5)||inWater(px,pz)||kept(px,pz)||bareAt(px,pz))continue;
       if(have.has(Math.floor(px/20)+','+Math.floor(pz/20)))continue;
       if(buildingsAt(px,pz,2).some(b=>inPoly(px,pz,b.ring))||roadsNear(px,pz,1,r=>r.c!=='trail').length)continue;
       const hs=hash3(px,pz,34),h=dense?14+hs*16:8+hs*8;   // conifers on the wooded slopes are tall
