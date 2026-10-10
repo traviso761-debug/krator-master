@@ -2,7 +2,8 @@
 
 Procedural models of places, served to the local network by a small Python server. Ten of them so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland**, **New York** and
-**Venice**, built from OpenStreetMap; **Voth**, a page of its own; and fan work generated from a seed —
+**Venice**, built from OpenStreetMap; **Antigua Guatemala**, also from the map, under three volcanoes, one of
+them erupting; **Voth**, a page of its own; and fan work generated from a seed —
 **City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
 war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
@@ -44,6 +45,8 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/venice` | `/venice.html`, `/venezia` | `venice.html` | Venice: massing model |
 | `/rome` | `/rome.html`, `/roma` | `rome.html` | Rome: the historic centre, hills and all, its great buildings modelled |
 | `/tokyo` | `/tokyo.html`, `/東京` | `tokyo.html` | Tokyo: Shinjuku to Ginza from OpenStreetMap, Shibuya Crossing, Meiji Jingū, the Palace, Tokyo Station and Tokyo Tower modelled; a map of the city as it grows |
+| `/fortworth` | `/fortworth.html`, `/fort-worth`, `/cowtown`, `/stockyards` | `fortworth.html` | Fort Worth: downtown, the Stockyards and the Cultural District from OpenStreetMap |
+| `/antigua` | `/antigua.html`, `/antiguaguatemala`, `/fuego`, `/volcanes` | `antigua.html` | Antigua Guatemala: the colonial town from OpenStreetMap on its real ground, under Agua, Acatenango and Fuego |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
 | `/kowloon` | `/kowloon.html`, `/kwc`, `/walledcity` | `kowloon.html` | Kowloon Walled City: massing model |
@@ -413,6 +416,99 @@ Forth: 35,000 buildings on their real ground.
   tiles within 900 m of the camera. Victoria Street's walls are painted.
 - A landmark's `height` raises the mapped building under it (Chicago's towers use this), so a model's own heights
   are called `towerH`.
+
+**Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
+Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
+the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts
+(Burnett Plaza 173 m, the Bank of America Tower's stepped top).
+- **The data**: `tools/fetch-osm.py fortworth`, `tools/fetch-terrain.py fortworth` (zoom 14, filtered: the towers
+  stand in the elevation), `tools/build-osm-city.py fortworth`. Detail zones: downtown, the Stockyards, the Cultural
+  District, the Near Southside, TCU.
+- **Downtown's grid** runs 30 degrees off north (Main Street bears 150 from the courthouse), and the models on it face
+  150, 240 or 330.
+- **Landmarks** (`src/fortworth/landmarks.js`): the Tarrant County Courthouse (pink granite, the clock and the dome,
+  facing down Main), Bass Hall and its angels, Sundance Square Plaza's four umbrellas and its jets, the Chisholm Trail
+  mural (on the wall across 4th Street from the plaza: the Jett Building is not named on the map), the Water Gardens'
+  Active Pool in terraces down a nine-metre pit (`terrainCuts` sinks the ground under it), the Kimbell's sixteen
+  cycloid vaults running north and south with the porticoes to the west lawn and the holly grove, the Modern's
+  pavilions on their Y columns in the pond, the Pioneer Tower, the Livestock Exchange, Cowtown Coliseum, Billy Bob's
+  Texas and the Stockyards sign over Exchange Avenue.
+- **The Stockyards** (`src/fortworth/stockyards.js`, `stockyards`): on Exchange Avenue and North Main the parapets are
+  carried up into false fronts (square, stepped, curved), with signboards, a boardwalk awning on posts out over the
+  sidewalk, a hitching rail, and the planks; Exchange Avenue is red brick; the Cowtown Cattlepen Maze is fenced in
+  pens. The working pens behind the Exchange are not on the map, so they are not drawn.
+- **Realism**: the towers' glass and granite, the old blocks' brick with cornices and string courses
+  (`facadeStyles`, `dress`); the bungalows' painted siding, pitched roofs and craftsman porches; North Texas trees
+  (`treeSpecies`: live oak, pecan, cedar elm, crape myrtle, bald cypress) along the streets; awnings on the
+  shopfronts; Trinity Metro's buses, traffic on the right; crowds at Sundance Square, on Exchange Avenue and at the
+  museums.
+- **Events** (`src/fortworth/events.js`): the cattle drive, longhorns and drovers down Exchange Avenue; a thunderstorm
+  off the plains, lightning walking across the city.
+- **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
+  the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
+  Will Rogers Center, the Near Southside, TCU, and the whole city.
+- **Not yet**: TEXRail and the TRE do not run (the engine finds no train lines on the mapped rail).
+
+**Antigua Guatemala** (`antigua.html`, `src/antigua/`, `data/cities/antigua.json`). The old capital of the Kingdom
+of Guatemala in the Panchoy valley at 1530 m, Ciudad Vieja, Jocotenango, San Juan Alotenango and the villages round
+them, and the three volcanoes: Agua (3760 m) to the south, Acatenango (3976 m) and Fuego (3763 m) to the west. The map
+is 25 by 19 km, 25,000 buildings on their real ground, with the whole box a detail zone.
+- **The data**: `tools/fetch-osm.py antigua` (Overpass; slow, a 504 and a 429 on the way, about 20 minutes),
+  `tools/fetch-terrain.py antigua` (zoom 13, about 18 m a pixel), `tools/build-osm-city.py antigua`. The grid is 30 m;
+  the datum (the box's 5th percentile) is 1395 m, so the town stands about 140 m up and Acatenango 2570 m.
+  `terrainLOD` draws the far ground coarser. `extraLand` adds the forests and fincas, `extraRoads` the trails.
+- **The tree line** (`treeLine`, `bareGround`: engine settings, read in 00-start as `bareAt`): the nature reserves are
+  mapped from the foot of each volcano to its crater, and drawn as forest they planted a million trees on Fuego's
+  scoria. Above `treeLine` (metres above the datum), or inside a `bareGround` circle, no wood, reserve or scrub is
+  drawn and no woodland trees are planted. `terrainTints` darken Fuego's cone and barrancas, Acatenango's summits and
+  Agua's rim. A city that sets neither is unchanged.
+- **The volcanoes** (`src/antigua/volcanoes.js`): Fuego's plume, leaning away from the trade wind (`windFrom`); an
+  explosion every few minutes (`every`), a column of ash and, after dark, incandescent blocks rolling down the cone and
+  the crater's glow lighting it; the lava in the barranca at night, found by walking downhill from the crater along
+  `flow`. Acatenango's summit cross and the climbers' camp facing Fuego, its lanterns lit at night. Agua's cross and
+  masts. `api.ctx.fuegoBlast(strength)` fires an explosion.
+- **Landmarks** (`src/antigua/landmarks.js`): `iglesia`, one colonial church in Earthquake Baroque (nave and buttresses,
+  barrel vault, dome, a façade wider than the nave with its white stucco retablo in tiers, squat bell towers), or a
+  ruin of one (roofless, the walls broken, the vault in the nave), used for La Merced, the Cathedral and its ruins, San
+  Francisco el Grande, Escuela de Cristo, El Carmen, Santa Clara and La Recolección; the Arco de Santa Catalina and its
+  clock; the two-storey arcades of the Palacio de los Capitanes Generales and the Ayuntamiento; the Fuente de las
+  Sirenas; Las Capuchinas' round cloister; the Tanque de la Unión; the cross on the Cerro de la Cruz. The three
+  volcanoes, Ciudad Vieja and Alotenango have cards.
+- **The town**: one-storey houses limewashed in ochre, yellow, terracotta, ox-blood, indigo and green, tile roofs to
+  the street, cobbled streets, chicken buses, tuk-tuks and motos, crowds in the Plaza Mayor, under the arch and at La
+  Merced.
+- **Infill** (`src/antigua/infill.js`, `infill`): OpenStreetMap has many of the town's houses but not all, and a block
+  with none mapped read as a lawn. Along every street in `infill.zones` (Antigua and nine towns round it), wherever the
+  frontage is empty (no mapped building, open area, parking lot, landmark or other street), a run is built, 7 to 15 m
+  wide and 11 deep: mostly houses of one storey (`twoStorey` of two, half of those with a wooden balcony) with a flat
+  roof behind and a slope of tile to the street; `parapets` of them behind a moulded parapet instead; `tapias` a
+  garden's wall, tiled on top, with trees and bougainvillea over it. About 10,000, outside the layout fingerprint,
+  drawn within `infill.far`.
+- **The house fronts** (`src/antigua/casas.js`, `casas`): on every wall of a mapped or infill house that faces a street,
+  the zócalo (a dark band at its foot), the zaguán (the big wooden door in its frame), windows behind iron rejas on a
+  sill under a tiled hood, and the alero (the tile eave on its rafters); a garden wall gets its door only. The walls
+  themselves are blank limewash (`facadeStyles`, a new engine texture `limewash`: no windows painted on, so the real
+  ones are not doubled). In two levels, in 300 m tiles: the zócalo, doors, windows and eaves within `casas.farOut`,
+  the bars, sills, hoods and rafters within `casas.far`.
+- **The fincas** (`src/antigua/fincas.js`, `fincas`): the coffee, mapped as `landuse=orchard` (`extraKinds`, a new
+  option of `tools/build-osm-city.py` that adds land kinds the default list leaves out: fincas, milpas, bare rock),
+  planted in rows under inga and gravilea, flat crowns high on bare trunks, a 400 m tile at a time as the camera comes
+  near.
+- **More churches**: Belén, Santa Ana, San Pedro, El Calvario, Santa Teresa, San Felipe de Jesús; the ruins of La
+  Candelaria, Santa Rosa, San Agustín, Los Remedios, the Santa Cruz and Santa Isabel; and the parish churches of
+  Jocotenango, Ciudad Vieja, Alotenango, Santa María de Jesús, San Juan del Obispo, San Gaspar Vivar, San Andrés
+  Ceballos and Pastores. Each church faces the way its mapped footprint says (`_landmarkFacing` in `antigua.json`):
+  along its long axis, toward the end that opens on a street or plaza rather than another building. That turned El
+  Carmen to face east onto 3a Avenida and its market, San Agustín east, San Pedro north, San Felipe west. Where the
+  footprint is square or missing, the church faces its plaza. La Merced's front and towers are covered in white stucco
+  lace (`lace`).
+- **Events** (`src/antigua/events.js`): Fuego in paroxysm, at night from the camp on Acatenango; a Holy Week
+  procession, the anda of Jesús Nazareno on eighty cucuruchos' shoulders, coming down 5a Avenida Norte from La Merced
+  under the arch over its alfombras; cohetes off La Merced; the afternoon cloud cap on Agua.
+- **Views**: the Arco and Agua (the default), the Plaza Mayor, the Cerro de la Cruz, La Merced, the Cathedral's ruins,
+  San Francisco, La Recolección, Fuego from the Acatenango camp, the three volcanoes, Agua from the valley, from Agua's
+  crater, Ciudad Vieja, Alotenango between Agua and Fuego, a finca under Agua, Jocotenango, 5a Avenida Sur at
+  street level, El Carmen and the market, and over the rooftops.
 
 **The photograph on the Ponte degli Annibaldi** (`src/rome/photo.js`, `photo` in `rome.json`): a couple at the railing
 with the Colosseum behind them, the love padlocks round them, on a hazy evening. The figures are stylised. "The
