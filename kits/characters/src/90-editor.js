@@ -11,9 +11,16 @@
   var fig, renderer, scene, camera, clock = new THREE.Clock();
 
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
-  function parse(id){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(b64(KCHAR_GLB[id]), '', ok, no); }); }
+  /* a GLB inline (KCHAR_GLB, the single-file page) or fetched from pieces/ beside the page (the artifact copy) */
+  function bytes(id){
+    if(KCHAR_GLB[id]) return Promise.resolve(b64(KCHAR_GLB[id]));
+    /* base64 text: the artifact host serves no binary type that a GLB fits */
+    return fetch('pieces/' + id + '.txt').then(function(r){ if(!r.ok) throw new Error(id + '.txt: ' + r.status); return r.text(); }).then(b64);
+  }
+  function parse(id){ return bytes(id).then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); }); }
+  var ALL = ['anims'].concat(D.outfits.outfits.map(function(o){ return o.id; }));
 
-  Promise.all(Object.keys(KCHAR_GLB).map(function(id){ return parse(id).then(function(g){ return [id, g]; }); }))
+  Promise.all(ALL.map(function(id){ return parse(id).then(function(g){ return [id, g]; }); }))
     .then(function(list){ var g = {}; list.forEach(function(x){ g[x[0]] = x[1]; }); start(g); })
     .catch(function(e){ $('loading').textContent = 'The outfits failed to load: ' + e.message; });
 
@@ -151,6 +158,14 @@
         if(t === 'face') view(true); else if(t === 'body' || t === 'gear') view(false);
       });
     });
+    /* the idle picker: every clip in the idle group (skeleton.json clips); the Idle button plays the one picked */
+    var pick = $('idle-pick');
+    D.skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
+      var o = document.createElement('option'); o.value = c.name; o.textContent = c.label + ' · ' + c.seconds.toFixed(1) + ' s';
+      pick.appendChild(o);
+    });
+    pick.value = 'idle';
+    pick.addEventListener('change', function(){ $('clip-idle').dataset.clip = pick.value; $('clip-idle').click(); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(b){
       b.addEventListener('click', function(){
         fig.play(b.dataset.clip || null);

@@ -572,9 +572,137 @@
   }
  ],
  "clips": [
-  "stretch",
-  "walk",
-  "run",
-  "idle"
+  {
+   "name": "walk",
+   "label": "Walk",
+   "group": "move",
+   "seconds": 1.03
+  },
+  {
+   "name": "run",
+   "label": "Run",
+   "group": "move",
+   "seconds": 0.67
+  },
+  {
+   "name": "stretch",
+   "label": "Stretch",
+   "group": "idle",
+   "seconds": 4.27
+  },
+  {
+   "name": "idle",
+   "label": "Idle",
+   "group": "idle",
+   "seconds": 4.0
+  },
+  {
+   "name": "idle_1",
+   "label": "Idle 1",
+   "group": "idle",
+   "seconds": 1.87
+  },
+  {
+   "name": "idle_2",
+   "label": "Idle 2",
+   "group": "idle",
+   "seconds": 4.27
+  },
+  {
+   "name": "idle_3",
+   "label": "Idle 3",
+   "group": "idle",
+   "seconds": 9.97
+  },
+  {
+   "name": "idle_4",
+   "label": "Idle 4",
+   "group": "idle",
+   "seconds": 13.97
+  },
+  {
+   "name": "idle_5",
+   "label": "Idle 5",
+   "group": "idle",
+   "seconds": 1.8
+  },
+  {
+   "name": "idle_6",
+   "label": "Idle 6",
+   "group": "idle",
+   "seconds": 7.37
+  },
+  {
+   "name": "idle_7",
+   "label": "Idle 7",
+   "group": "idle",
+   "seconds": 8.73
+  },
+  {
+   "name": "idle_8",
+   "label": "Idle 8",
+   "group": "idle",
+   "seconds": 8.0
+  },
+  {
+   "name": "idle_9",
+   "label": "Idle 9",
+   "group": "idle",
+   "seconds": 1.97
+  },
+  {
+   "name": "idle_10",
+   "label": "Idle 10",
+   "group": "idle",
+   "seconds": 3.67
+  },
+  {
+   "name": "idle_11",
+   "label": "Idle 11",
+   "group": "idle",
+   "seconds": 1.83
+  },
+  {
+   "name": "idle_12",
+   "label": "Idle 12",
+   "group": "idle",
+   "seconds": 6.0
+  },
+  {
+   "name": "idle_13",
+   "label": "Idle 13",
+   "group": "idle",
+   "seconds": 11.37
+  },
+  {
+   "name": "idle_14",
+   "label": "Idle 14",
+   "group": "idle",
+   "seconds": 7.5
+  },
+  {
+   "name": "idle_15",
+   "label": "Idle 15",
+   "group": "idle",
+   "seconds": 7.0
+  },
+  {
+   "name": "confused",
+   "label": "Confused Scratch",
+   "group": "idle",
+   "seconds": 11.5
+  },
+  {
+   "name": "dozing",
+   "label": "Dozing Elderly",
+   "group": "idle",
+   "seconds": 10.83
+  },
+  {
+   "name": "mirror",
+   "label": "Mirror Viewing",
+   "group": "idle",
+   "seconds": 7.33
+  }
  ]
 }

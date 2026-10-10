@@ -115,11 +115,39 @@ def donor(did, outfit, body='male', kind='outfit'):
     print('%s: %s (%d KB)' % (did, out, os.path.getsize(out) // 1024))
 
 
+def animations(rig_task, action_ids, out):
+    """Meshy's library actions on one of our rigged donors (its rig task id), in batches of 10 (3 credits each).
+    Writes out_<n>.glb per batch and out.json with the actions; make_pieces.py retargets them onto the skeleton."""
+    jp = out + '.json'
+    rec = json.load(open(jp)) if os.path.exists(jp) else {'rig': rig_task, 'batches': []}
+    lib = {a['action_id']: a for a in call('GET', '/v1/animations/library?action_ids=' + ','.join(map(str, action_ids)))}
+    for n in range(0, len(action_ids), 10):
+        ids = action_ids[n:n + 10]
+        b = next((x for x in rec['batches'] if x['ids'] == ids), None)
+        if b is None:
+            b = {'ids': ids, 'names': [lib[i]['name'] for i in ids],
+                 'task': call('POST', '/v1/animations', {'rig_task_id': rig_task, 'action_ids': ids})['result']}
+            rec['batches'].append(b)
+            json.dump(rec, open(jp, 'w'), indent=1)
+    for k, b in enumerate(rec['batches']):
+        t = wait('/v1/animations', b['task'])
+        b['glb'] = os.path.basename(out) + '_%d.glb' % k
+        urllib.request.urlretrieve(t['result']['animation_glb_url'], os.path.join(os.path.dirname(out), b['glb']))
+        compact_glb.compact(os.path.join(os.path.dirname(out), b['glb']))
+        json.dump(rec, open(jp, 'w'), indent=1)
+        print(b['glb'], b['names'])
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['balance']:
         print(call('GET', '/v1/balance'))
+    elif sys.argv[1:2] == ['anims'] and len(sys.argv) == 5:
+        # python3 tools/meshy.py anims <donor id> <id,id,...> donors/anims/<name>
+        animations(json.load(open(os.path.join(DONORS, sys.argv[2] + '.json')))['rig'],
+                   [int(x) for x in sys.argv[3].split(',')], sys.argv[4])
     elif sys.argv[1:2] == ['donor'] and len(sys.argv) >= 4:
         opt = dict(a.split('=', 1) for a in sys.argv[4:])      # body=female kind=base|piece
         donor(sys.argv[2], sys.argv[3], opt.get('body', 'male'), opt.get('kind', 'outfit'))
     else:
         sys.exit(__doc__)
+

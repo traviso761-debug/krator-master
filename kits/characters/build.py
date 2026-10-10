@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build kits/characters: the character editor page.
 
-  python3 build.py             # dist/characters.html (a whole page) and dist/characters.artifact.html (the same
-                               # without <!doctype>/<html>/<body>, for the artifact host, which adds its own)
+  python3 build.py             # dist/characters.html (a whole page, the GLBs inside) and dist/characters.artifact.html
+                               # (no <!doctype>/<html>/<body>, which the artifact host adds, and no GLBs: it fetches
+                               # dist/pieces/*.txt (the GLBs as base64), published beside it, to stay under the host's 16 MB a page)
   python3 build.py --no-checks # skip the port lint and the node test
 
 The pieces are made beforehand by tools/make_pieces.py (pieces/*.glb, data/*.json); this only packs them. The page is
@@ -57,13 +58,21 @@ def main():
     for k in ('skeleton', 'sliders', 'outfits'):
         inputs['data/%s.json' % k] = read(os.path.join(HERE, 'data', k + '.json'), 'rb')
     body = head + '<script>\n' + '\n'.join(js) + '\n</script>\n'
+    # the artifact host takes 16 MB a page, so its copy fetches the GLBs published beside it (dist/pieces/)
+    lean = [x if not x.startswith('var KCHAR_GLB = ') else 'var KCHAR_GLB = {};' for x in js]
+    art = head + '<script>\n' + '\n'.join(lean) + '\n</script>\n'
     os.makedirs(DIST, exist_ok=True)
     whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
             body + '</body>\n</html>\n'
-    for name, text in (('characters.html', whole), ('characters.artifact.html', body)):
+    for name, text in (('characters.html', whole), ('characters.artifact.html', art)):
         with open(os.path.join(DIST, name), 'w', encoding='utf-8') as f:
             f.write(text)
+    os.makedirs(os.path.join(DIST, 'pieces'), exist_ok=True)
+    for k, rel in glbs.items():
+        # base64 text: the artifact host serves no binary type a GLB fits; the page decodes it
+        with open(os.path.join(DIST, 'pieces', k + '.txt'), 'w') as f:
+            f.write(b64[k])
     if CHECKS:
         script = os.path.join(DIST, '.check.js')
         open(script, 'w').write('\n'.join(js[:1] + js[1:2] + [read(os.path.join(SRC, f)) for f in frags]))

@@ -49,6 +49,9 @@ button, .btn { font: 500 13px/1 var(--body); color: var(--ink); background: tran
 button:hover { background: var(--chip); }
 button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pick { display: flex; align-items: center; }
+.pick select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px 6px; max-width: 150px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 #loading { position: absolute; inset: 0; display: grid; place-items: center; font: 500 15px var(--body); color: var(--muted); }
 
 #panel { min-width: 0; background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; height: 100%; }
@@ -100,9 +103,9 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
       <div class="grp" role="group" aria-label="Animation">
         <button id="clip-none" data-clip="" aria-pressed="false">A-pose</button>
         <button id="clip-idle" data-clip="idle" aria-pressed="true">Idle</button>
+        <label class="pick" for="idle-pick"><span class="sr">Which idle</span><select id="idle-pick"></select></label>
         <button id="clip-walk" data-clip="walk" aria-pressed="false">Walk</button>
         <button id="clip-run" data-clip="run" aria-pressed="false">Run</button>
-        <button id="clip-stretch" data-clip="stretch" aria-pressed="false">Stretch</button>
       </div>
       <div class="grp" role="group" aria-label="View">
         <button id="cam-body" aria-pressed="true">Full figure</button>

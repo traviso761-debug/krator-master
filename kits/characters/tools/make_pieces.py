@@ -527,46 +527,167 @@ def renormalise_weights(WT):
     return (q / 255).astype(np.float32)
 
 
-# the clips in anims.glb: (source GLB, its clip name, the name here). Styv's idle is a big backward stretch, so the
-# standing idle is Phil's; Phil's hips sit lower, so his hips' track is scaled onto Styv's height (hips_scale)
-CLIPS = [(CANON, 'idle', 'stretch'), (CANON, 'walk', 'walk'), (CANON, 'run', 'run'),
-         (os.path.join(ROOT, 'settlements', 'girder', 'hero', 'phil.glb'), 'idle', 'idle')]
+# the clips in anims.glb: (source GLB, its clip name, the name here, the label, the group). Every clip is retargeted
+# (retarget() below), so a clip made on any rig plays on the canonical skeleton. Meshy's library idles were made on
+# the scout donor's API rig by `meshy.py anims` (donors/anims/idles.json lists them).
+STYV_GLB = CANON
+IDLES = os.path.join(HERE, 'donors', 'anims')
+CLIPS = [(STYV_GLB, 'walk', 'walk', 'Walk', 'move'), (STYV_GLB, 'run', 'run', 'Run', 'move'),
+         (STYV_GLB, 'idle', 'stretch', 'Stretch', 'idle')]
+FPS = 30
+
+
+def idle_clips():
+    """the Meshy library idles, from donors/anims/idles.json: 'Idle' -> idle, 'Idle 3' -> idle_3, the rest by name"""
+    jp = os.path.join(IDLES, 'idles.json')
+    if not os.path.exists(jp):
+        return []
+    out = []
+    for b in json.load(open(jp))['batches']:
+        src = os.path.join(IDLES, b['glb'])
+        names = [a['name'] for a in glbio.read_glb(open(src, 'rb').read())[0]['animations']]
+        for clip, label in zip(names, b['names']):
+            key = label.lower().replace(' ', '_') if label.startswith('Idle') else label.split()[0].lower()
+            out.append((src, clip, key, label, 'idle'))
+    return out
+
+
+def _sample(j, b, ch_s, t):
+    inp = glbio.accessor(j, b, ch_s['input']).reshape(-1)
+    out = glbio.accessor(j, b, ch_s['output'])
+    if t <= inp[0]:
+        return out[0].astype(float)
+    if t >= inp[-1]:
+        return out[-1].astype(float)
+    k = int(np.searchsorted(inp, t) - 1)
+    f = (t - inp[k]) / max(inp[k + 1] - inp[k], 1e-9)
+    a, c = out[k].astype(float), out[k + 1].astype(float)
+    if len(a) == 4:
+        if a.dot(c) < 0:
+            c = -c
+        q = a * (1 - f) + c * f
+        return q / np.linalg.norm(q)
+    return a * (1 - f) + c * f
+
+
+def retarget(src, clip, c):
+    """clip `clip` of `src` as (times, {canonical joint: rotations (F,4) local}, hips positions (F,3)).
+    Per frame: each source joint's world delta from its rest, D = W(t) inv(W_rest); the canonical joint's world
+    rotation is D A R_c, where R_c is its rest rotation and A turns the canonical bone onto the source bone's rest
+    direction (so a source rig with arms at 20 degrees and ours at 48 move the arm to the same place). Local rotations
+    follow from the canonical hierarchy; the hips move by the source's hips motion times the height ratio."""
+    j, b = glbio.read_glb(open(src, 'rb').read())
+    nodes = j['nodes']
+    parent = {}
+    for i, n in enumerate(nodes):
+        for ch in n.get('children', []):
+            parent[ch] = i
+    a = [x for x in j['animations'] if x['name'] == clip][0]
+    chans = {}
+    for ch in a['channels']:
+        chans.setdefault(ch['target']['node'], {})[ch['target']['path']] = a['samplers'][ch['sampler']]
+    dur = max(float(glbio.accessor(j, b, s['input']).max()) for d in chans.values() for s in d.values())
+    times = np.arange(0, dur + 1e-6, 1.0 / FPS)
+    r = load(src)
+    skin_nodes = j['skins'][0]['joints']
+    api = any(glbio.short(nodes[nd].get('name', '')) == 'Spine02' for nd in skin_nodes)   # r.joints are renamed already
+    sname = {nd: canon_name(glbio.short(nodes[nd].get('name', '')), api) for nd in skin_nodes}
+    by_canon = {v: k for k, v in sname.items()}
+    k = height(c) / height(r)
+
+    def world_all(override):
+        W = {}
+
+        def w(i):
+            if i in W:
+                return W[i]
+            n = dict(nodes[i])
+            n.update(override.get(i, {}))
+            m = glbio.node_matrix(n)
+            W[i] = (w(parent[i]) @ m) if i in parent else m
+            return W[i]
+        for i in range(len(nodes)):
+            w(i)
+        return W
+
+    W0 = world_all({})
+    rot = lambda m: m[:3, :3] / np.linalg.norm(m[:3, :3], axis=0)
+    # A per canonical joint: canonical rest bone direction onto the source's
+    A = {}
+    order = sorted(range(len(c.joints)), key=lambda i: depth(c, i))
+    for i in order:
+        n = c.joints[i]
+        ch = CHILD.get(n)
+        if n in by_canon and ch and ch in by_canon and ch in c.J and n not in ('Head',):
+            ds = W0[by_canon[ch]][:3, 3] - W0[by_canon[n]][:3, 3]
+            dc = c.jpos[c.J[ch]] - c.jpos[i]
+            A[n] = rot_between(dc, ds)
+        else:
+            p = c.parents[i]
+            A[n] = A[c.joints[p]] if p >= 0 else np.eye(3)
+    rots = {n: [] for n in c.joints if n in by_canon}
+    hips = []
+    for t in times:
+        ov = {}
+        for nd, d in chans.items():
+            o = {}
+            for path, sm in d.items():
+                if path in ('rotation', 'translation'):
+                    o[path] = list(_sample(j, b, sm, t))
+            ov[nd] = o
+        W = world_all(ov)
+        Rt = {}
+        for i in order:
+            n = c.joints[i]
+            if n in by_canon:
+                nd = by_canon[n]
+                D = rot(W[nd]) @ rot(W0[nd]).T
+                Rt[n] = D @ A[n] @ c.jrot[i]
+            else:
+                p = c.parents[i]
+                # no source joint (HandMiddle4, Toe_End): keep its rest offset from the parent
+                Rt[n] = Rt[c.joints[p]] @ (c.jrot[p].T @ c.jrot[i]) if p >= 0 else c.jrot[i]
+        for i in order:
+            n = c.joints[i]
+            if n not in rots:
+                continue
+            p = c.parents[i]
+            L = Rt[c.joints[p]].T @ Rt[n] if p >= 0 else Rt[n]
+            q = glbio.mat_quat(L)
+            prev = rots[n][-1] if rots[n] else None
+            if prev is not None and np.dot(prev, q) < 0:
+                q = -q
+            rots[n].append(q)
+        hn = by_canon['Hips']
+        hips.append(c.jpos[c.J['Hips']] + k * (W[hn][:3, 3] - W0[hn][:3, 3]))
+    return times, {n: np.array(v) for n, v in rots.items()}, np.array(hips)
 
 
 def write_anims(out, c):
-    """canonical skeleton + the CLIPS, translation tracks dropped except the hips'"""
+    """canonical skeleton + every clip, retargeted: rotation tracks, and the hips' translation"""
     names, parents, jnodes, W = skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in FACE})
     g = glbio.GlbWriter()
     nodes = [{'name': 'Character', 'children': [1 + parents.index(-1)]}] + [dict(n) for n in jnodes]
     for n in nodes[1:]:
         if 'children' in n:
             n['children'] = [ch + 1 for ch in n['children']]
-    by = {glbio.short(n.get('name', '')): i + 1 for i, n in enumerate(jnodes)}
-    anims = []
-    for src, clip, name in CLIPS:
-        j, b = glbio.read_glb(open(src, 'rb').read())
-        hips_scale = c.jpos[c.J['Hips']][1] / load(src).jpos[load(src).J['Hips']][1]
-        a = [x for x in j['animations'] if x['name'] == clip][0]
+    by = {n.get('name', ''): i + 1 for i, n in enumerate(jnodes)}
+    anims, meta = [], []
+    for src, clip, name, label, group in CLIPS + idle_clips():
+        times, rots, hips = retarget(src, clip, c)
+        ia = g.acc(times.astype(np.float32), 'SCALAR', minmax=True)
         chans, samps = [], []
-        for ch in a['channels']:
-            nm = glbio.short(j['nodes'][ch['target']['node']].get('name', ''))
-            path = ch['target']['path']
-            if nm not in by or (path == 'translation' and nm != 'Hips') or path == 'scale':
-                continue
-            s = a['samplers'][ch['sampler']]
-            inp = glbio.accessor(j, b, s['input']).astype(np.float32)
-            outp = glbio.accessor(j, b, s['output']).astype(np.float32)
-            if path == 'translation':
-                outp = outp * np.float32(hips_scale)
-            ia = g.acc(inp, 'SCALAR', minmax=True)
-            oa = g.acc(outp, 'VEC4' if path == 'rotation' else 'VEC3')
-            samps.append({'input': ia, 'output': oa, 'interpolation': s.get('interpolation', 'LINEAR')})
-            chans.append({'sampler': len(samps) - 1, 'target': {'node': by[nm], 'path': path}})
+        for n, q in rots.items():
+            samps.append({'input': ia, 'output': g.acc(q.astype(np.float32), 'VEC4'), 'interpolation': 'LINEAR'})
+            chans.append({'sampler': len(samps) - 1, 'target': {'node': by[n], 'path': 'rotation'}})
+        samps.append({'input': ia, 'output': g.acc(hips.astype(np.float32), 'VEC3'), 'interpolation': 'LINEAR'})
+        chans.append({'sampler': len(samps) - 1, 'target': {'node': by['Hips'], 'path': 'translation'}})
         anims.append({'name': name, 'channels': chans, 'samplers': samps})
+        meta.append({'name': name, 'label': label, 'group': group, 'seconds': round(float(times[-1]), 2)})
     g.j['nodes'], g.j['animations'] = nodes, anims
     g.j['scenes'], g.j['scene'] = [{'nodes': [0]}], 0
     open(out, 'wb').write(g.bytes())
-    return [a['name'] for a in anims]
+    return meta
 
 
 def main():

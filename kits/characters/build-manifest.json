@@ -1,18 +1,18 @@
 {
  "core/rand/08-core-rand.js": "4a3aa47f25da4c3f9e0dc101b42fdfb05e7af552",
  "data/outfits.json": "ee9fe8ff347fc16f47fa0e06da16372fbaa80c52",
- "data/skeleton.json": "14a30867e8650c03d621d84a870b71a9f3acdf4b",
+ "data/skeleton.json": "ac50455ff7d09e484896386034301f675a0d66f1",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/characters.html": "5e6465fd78104f78649a29697ce757d642109ef6",
- "pieces/anims.glb": "6c37539ba1f21cba0232f73b4f643eacbb285238",
+ "dist/characters.html": "3755bc06ebf9748e0902f97e3bfa1dc5b0cb58bd",
+ "pieces/anims.glb": "2f7d39f68a039c246c6bab15e743efceb57e5934",
  "pieces/bone.glb": "fb9f4591de98df279939b3d412ffad3f8a751667",
  "pieces/bronze.glb": "432f643135258f530701c6d4864e3eb3e3f04d0c",
  "pieces/hide.glb": "f69fdd86ca8e96de00929da4aac5b8b4488fa714",
  "pieces/phil.glb": "173fc2c00adb005edd7766035531d5605b59f95b",
  "pieces/scout.glb": "6e591e1241a7bb529aa4c2fbbdd8d0bb3314fcb4",
  "pieces/styv.glb": "3101448b10e07094988db26b9b20736d1370399a",
- "src/00-head.html": "338f09dfeb00fd85046c5c57e48b614812a14fd6",
+ "src/00-head.html": "1adab4fb188abf1c6ebb8f760e3d958fc5e7a243",
  "src/10-rig.js": "03cfdce873c71235872516189b374f1e6fc10cab",
  "src/50-figure.js": "c4b8b68de53b97a69d64793a565ba4a8939ec4b5",
- "src/90-editor.js": "20a4c5bdd6d0bb6a348762848917642281156e5f"
+ "src/90-editor.js": "181af2d844dd7e811b5366af985464a9943394e3"
 }
