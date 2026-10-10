@@ -595,6 +595,11 @@ already pure functions of t, and are the model.
 
 ## Testing *(Menagerie)*
 
+- **[web] A route walked by scripted input.** From OhMyGame's QA skill (WhiteTowerAI, GitHub, read 2026-10-10;
+  the rest of it is an agent harness with nothing for Krator): "build success establishes compilation, not a
+  playtest". Krator's verify covers build, logic and the screenshot; the missing kind is interaction. A verify step
+  that sends the walker along a route by scripted keys and asserts the end position and an empty console, on the
+  shared harness when `full-refactor` merges.
 - **[G data]** Layout fingerprints compared with saved goldens, which can prove a refactor changed nothing in
   the world. Refuse an empty fingerprint. Taken over the export, the same fingerprint can check that the Godot
   import placed what three.js built.

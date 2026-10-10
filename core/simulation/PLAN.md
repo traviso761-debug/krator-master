@@ -787,3 +787,33 @@ assert on NAV), and authored entries carry `source: authored` and are never
 overwritten by generation. Generated from the registry and `world/*.json`,
 this would be the natural home for 8.1 and 8.4 and a readable export beside
 `dist/<name>.sim.json`.
+
+### 8.9 Off-screen sites: a catch-up clock and an operation log
+
+Source: the Multihog D&D Framework (MultihogAurelius, GitHub, GPL-3, read 2026-10-10), a
+SillyTavern extension whose "maps that evolve while you are away" are LLM-driven: a model
+reads a site snapshot, the elapsed time and prose "world reports" and emits a JSON
+transaction. Nothing of that core transfers (Krator's rules are data, seeded hashes and a
+Godot runtime), and its code is not taken. Three shapes around it are what carries, and
+they land on gaps this plan already names.
+
+- **A per-site catch-up clock.** Each site stamps when it last advanced. On the next
+  visit, or when an interval elapses, it fast-forwards by a pure `advance(site, dt, seed)`
+  whose magnitude scales with elapsed time; short intervals accumulate rather than reset;
+  at most N sites advance per tick, oldest first, and an unpicked site stays due because its
+  clock is not stamped. This is the mechanic the roadmap's LOD tiers (section 22) and
+  "ruins have their own simulation state" (section 28) need and do not yet specify.
+- **The mutation log is a list of operations.** ADD, MOVE, SET and REMOVE on an actor or
+  asset, and SET on a connection, each carrying `cause`, `actor` and a thread status of
+  `open`, `resolved` or `transformed`. This is the concrete delta shape 8.6 leaves open.
+  Its conservation rules go with it: dead stays dead, movement needs an open connection,
+  geometry is append-only, new assets start unrevealed. Open threads are a cheap source of
+  quest hooks for `core/city`'s NPC and quest tool, beside 8.5.
+- **Pressure, not deltas.** The macro layer (the roadmap's Events, section 29) emits
+  directional pressure; a site realizes it locally on its next advance, and a newer event
+  can supersede an older one. Two small rules alongside: the player's current cell is
+  frozen during an advance, and each asset carries a `knowledge` field so objective state
+  and what the player knows are separate records.
+- **Where an LLM could sit:** only downstream of the log. A "what happened here while you
+  were away" panel, or 8.1's personas, written from the operations with their causes; the
+  log is never written by a model.
