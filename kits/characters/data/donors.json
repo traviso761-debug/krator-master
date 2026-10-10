@@ -1,0 +1,33 @@
+[
+ {
+  "id": "styv",
+  "name": "Styv's robes",
+  "glb": "../../settlements/girder/hero/styv.glb"
+ },
+ {
+  "id": "phil",
+  "name": "Phil's coat",
+  "glb": "../../settlements/girder/hero/phil.glb"
+ },
+ {
+  "id": "hide",
+  "name": "Rider's hide",
+  "glb": "donors/hide.glb",
+  "head": "helmet"
+ },
+ {
+  "id": "scout",
+  "name": "Scout's quilting",
+  "glb": "donors/scout.glb"
+ },
+ {
+  "id": "bone",
+  "name": "Bone plate",
+  "glb": "donors/bone.glb"
+ },
+ {
+  "id": "bronze",
+  "name": "Bronze scale",
+  "glb": "donors/bronze.glb"
+ }
+]

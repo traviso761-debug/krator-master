@@ -1,0 +1,9 @@
+{
+ "id": "scout",
+ "outfit": "jungle scout clothes: a quilted green and tan padded long-sleeved jacket, cloth wraps on the forearms, fabric gloves, rope belt with pouches, loose trousers tucked into wrapped boots",
+ "prompt": "Full body game character, an adult man of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair, clean shaven, face visible, wearing jungle scout clothes: a quilted green and tan padded long-sleeved jacket, cloth wraps on the forearms, fabric gloves, rope belt with pouches, loose trousers tucked into wrapped boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ce-ee16-7589-8c2a-4761ab9cb795",
+ "refine": "01a125cf-eaab-772d-b0ab-39ef4e90bd7c",
+ "rig": "01a125d2-135e-7787-813b-846e3515f442",
+ "glb": "scout.glb"
+}

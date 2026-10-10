@@ -17,6 +17,7 @@ says which build holds what.
 | `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
 | `kits/catalog/` | master catalog: asset engine, 1051 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
+| `kits/characters/` | characters from Meshy outfits: one skeleton, five equipment slots with seam bands, body and face sliders, dye; editor page and Godot twin (`godot/krator/character/`). Read `README.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |

@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 44 | 319 | 129 | 42 | 52 | 15 | 81 | 4 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 44 | 320 | 129 | 42 | 52 | 15 | 82 | 4 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 59 | 714 | 149 | 40 | 10 | 38 | 478 | 9 |  | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 32 | 598 | 122 | 7 | 88 | 42 | 339 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 74 | 1078 | 216 | 19 | 13 | 77 | 752 | 7 |  | yes | yes |
@@ -24,6 +24,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 47 | 1022 | 105 | 13 | 16 | 140 | 748 | 11 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 199 | 2473 | 239 | 34 | 174 | 27 | 1999 | 5 |  | yes | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1330 | 11 | 0 | 10 | 55 | 1255 | 3 |  |  | yes |
+| [`kits/characters`](kits/characters/PORT.md) | 4 | 34 | 6 | 0 | 0 | 22 | 6 | 0 |  |  |  |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
@@ -37,7 +38,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1377 | 18664 | 2545 (14%) | 339 (2%) | 786 (4%) | 1785 (10%) | 13209 (71%) | 201 | | | |
+| **all** | 1381 | 18698 | 2551 (14%) | 339 (2%) | 786 (4%) | 1806 (10%) | 13215 (71%) | 201 | | | |
 
 ## Host-shell copies
 

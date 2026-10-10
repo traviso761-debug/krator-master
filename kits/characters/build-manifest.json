@@ -1,0 +1,18 @@
+{
+ "core/rand/08-core-rand.js": "4a3aa47f25da4c3f9e0dc101b42fdfb05e7af552",
+ "data/outfits.json": "3d8081b9b1744c06b98cd9f190901458c11623e0",
+ "data/skeleton.json": "14a30867e8650c03d621d84a870b71a9f3acdf4b",
+ "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
+ "dist/characters.html": "b52ae19757d7f40d8fa4abd1e667900c9e71af23",
+ "pieces/anims.glb": "6c37539ba1f21cba0232f73b4f643eacbb285238",
+ "pieces/bone.glb": "a09b6b41f370607304ae499a60f0e4cb319a63a5",
+ "pieces/bronze.glb": "c608c8c734c1f27fb30a24e3cfd2f9af1dc17234",
+ "pieces/hide.glb": "e31b018980b7166c160f5b37d42dd49e8bec4076",
+ "pieces/phil.glb": "0e8e00514ed160489d0baac3cc21321ce8b32782",
+ "pieces/scout.glb": "ae0999817f5b2d72972852fd58c9eb5195fac1c1",
+ "pieces/styv.glb": "66cd0a5f8c00f557f33caac69a280add61e239b4",
+ "src/00-head.html": "338f09dfeb00fd85046c5c57e48b614812a14fd6",
+ "src/10-rig.js": "03cfdce873c71235872516189b374f1e6fc10cab",
+ "src/50-figure.js": "c4b8b68de53b97a69d64793a565ba4a8939ec4b5",
+ "src/90-editor.js": "20a4c5bdd6d0bb6a348762848917642281156e5f"
+}
