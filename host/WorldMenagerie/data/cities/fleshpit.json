@@ -380,9 +380,9 @@
   ],
   "Down the shaft": [
    [
-    31.49865,
+    31.49985,
     -102.6,
-    -30
+    70
    ],
    [
     31.5,
@@ -394,12 +394,12 @@
    [
     31.49712,
     -102.62739,
-    70
+    99
    ],
    [
     31.49874,
     -102.6158,
-    30
+    92
    ]
   ],
   "The works at dusk": [
@@ -418,12 +418,12 @@
    [
     31.49766,
     -102.60453,
-    50
+    118
    ],
    [
     31.49946,
     -102.60063,
-    10
+    70
    ]
   ],
   "The pit in section": [
@@ -1056,5 +1056,64 @@
   "#858052",
   "#6e6a44",
   "#77734c"
- ]
+ ],
+ "treeSpecies": [
+  {
+   "name": "honey mesquite",
+   "shape": "round",
+   "bark": "#4a3a2c",
+   "height": [
+    3,
+    6
+   ],
+   "colours": [
+    "#6a7040",
+    "#747a46",
+    "#5e6838"
+   ],
+   "weight": {
+    "street": 50,
+    "park": 40,
+    "wood": 40
+   }
+  },
+  {
+   "name": "creosote bush",
+   "shape": "small",
+   "bark": "#4a4030",
+   "height": [
+    1.2,
+    2.4
+   ],
+   "colours": [
+    "#5a6230",
+    "#646a38",
+    "#525a2e"
+   ],
+   "weight": {
+    "street": 35,
+    "park": 30,
+    "wood": 40
+   }
+  },
+  {
+   "name": "soaptree yucca",
+   "shape": "column",
+   "bark": "#6a6050",
+   "height": [
+    2,
+    4.5
+   ],
+   "colours": [
+    "#8a9a70",
+    "#94a07a"
+   ],
+   "weight": {
+    "street": 15,
+    "park": 15,
+    "wood": 20
+   }
+  }
+ ],
+ "_treeSpecies": "the Permian Basin's own: honey mesquite, creosote bush, soaptree yucca"
 }

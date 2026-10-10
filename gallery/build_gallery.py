@@ -497,6 +497,9 @@ def main():
                  'background:rgba(18,14,58,.85);color:#e8c98a;border:1px solid #c99a55;padding:7px 12px;'
                  'font:14px Georgia,serif;text-decoration:none;border-radius:2px">Open on your phone or tablet</a>\n'
                  % html.escape(share))
+        # and, at the foot of the page, the way to the World Menagerie the same server carries
+        page = page.replace('</footer>', ' · <a href="%s">The World Menagerie &rarr;</a></footer>'
+                            % html.escape(lod.get('menagerie', '/menagerie')), 1)
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
     total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)

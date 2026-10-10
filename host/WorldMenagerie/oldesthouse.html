@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>The Oldest House</title>
+<link rel="stylesheet" href="css/iziz.css">
+<link rel="stylesheet" href="css/chicago.css">
+<style>
+/* the Bureau's own look: white type on near-black, a hard sans, red for what matters */
+html,body{background:#0b0b0d}
+#loading{background:#0b0b0d;color:#e8e6e2;font-family:Helvetica,Arial,sans-serif;letter-spacing:.06em}
+#title{color:#f2f0ec;font-family:Helvetica,Arial,sans-serif;font-weight:700;letter-spacing:.32em}
+#hint{font-family:Helvetica,Arial,sans-serif}
+#ui button,#menagerie a{background:rgba(14,14,16,.86);color:#f2f0ec;border-color:#c8201a;font-family:Helvetica,Arial,sans-serif;letter-spacing:.08em}
+#ui button[aria-pressed="true"],#ui button[aria-expanded="true"]{background:#c8201a;color:#fff}
+#views,#events,#card{background:rgba(10,10,12,.94);border-color:#c8201a;color:#ecebe8;font-family:Helvetica,Arial,sans-serif}
+#views button,#events button{background:rgba(22,22,26,.9);color:#ecebe8;border-color:#5a5a60;font-family:Helvetica,Arial,sans-serif}
+#views .sub{color:#c8201a;font-family:Helvetica,Arial,sans-serif;font-weight:700}
+#events{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 4px);transform:translateX(-50%);box-sizing:border-box;width:min(520px,calc(100% - 20px));max-height:calc(100% - 180px);overflow:auto;display:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;padding:10px;border:1px solid #c8201a;border-radius:2px;z-index:6}
+#events.open{display:grid}
+#events button{padding:8px 10px;font-size:13px;border:1px solid #5a5a60;border-radius:2px;cursor:pointer}
+#timebar{background:rgba(10,10,12,.78);border-color:#c8201a;color:#ecebe8;font-family:Helvetica,Arial,sans-serif;letter-spacing:.1em}
+#card h2{font-family:Helvetica,Arial,sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+canvas{cursor:grab}
+/* the corners in shadow, as every room in the House is */
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(0,0,0,.55) 100%)}
+</style>
+</head>
+<body>
+<div id="loading">the elevator is coming…</div>
+<div id="title">THE OLDEST HOUSE</div>
+<div id="hint"><span class="for-mouse">Drag to look round, right-drag or shift-drag to pan, the wheel to go nearer or further. WASD and Q/E to move, F to fly, X to lift the ceilings. Views takes you to each sector; Events is what the House does.</span><span class="for-touch">Drag to look round, pinch to go nearer or further, two fingers to pan. Views takes you to each sector; Cutaway lifts the ceilings.</span></div>
+<div id="vignette"></div>
+<div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="events" role="dialog" aria-label="Events"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><div id="side"></div><div id="errs"></div>
+<script src="vendor/three/three.min.js"></script>
+<script type="module" src="src/oldesthouse/main.js"></script>
+</body>
+</html>

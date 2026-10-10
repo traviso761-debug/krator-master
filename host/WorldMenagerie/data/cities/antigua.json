@@ -1,0 +1,1703 @@
+{
+ "name": "Antigua Guatemala",
+ "note": "The old capital of the Kingdom of Guatemala from OpenStreetMap, on its real ground in the Panchoy valley: the colonial grid, its ruined churches and convents, and the three volcanoes over it, Agua to the south, Acatenango and Fuego to the west, Fuego smoking.",
+ "origin": [
+  14.5572,
+  -90.7337
+ ],
+ "defaultSeed": 1543,
+ "defaultHour": 9,
+ "bounds": [
+  14.43,
+  -90.92,
+  14.6,
+  -90.69
+ ],
+ "osm": "data/cities/antigua-osm.json",
+ "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles.",
+ "fetch": {
+  "bbox": [
+   14.428,
+   -90.923,
+   14.602,
+   -90.687
+  ],
+  "tiles": {
+   "buildings": [
+    3,
+    3
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    14.43,
+    -90.92,
+    14.6,
+    -90.69
+   ]
+  ],
+  "extraLand": "nwr[\"landuse\"~\"^(forest|farmland|orchard|meadow|farmyard)$\"]({b});nwr[\"natural\"~\"^(bare_rock|scree|heath|volcano|peak)$\"]({b});",
+  "extraRoads": "way[\"highway\"~\"^(track|path)$\"]({b});",
+  "_": "the whole box is a detail zone: the towns round Antigua are small. extraLand: the coffee fincas (orchard and farmland), the cloud forest on the volcanoes and their bare cones; extraRoads: the trails up Acatenango and Agua"
+ },
+ "terrain": {
+  "zoom": 13,
+  "step": 30,
+  "_": "Agua (3760 m), Acatenango (3976 m) and Fuego (3763 m) over the valley at 1530 m: elevation from tools/fetch-terrain.py. Zoom 13 is about 18 m a pixel here, finer than the grid"
+ },
+ "defaultView": "The Arco and Agua",
+ "seaLevelWater": false,
+ "cameraFar": 30000,
+ "fog": 1.4e-05,
+ "terrainLOD": [
+  7000,
+  15000
+ ],
+ "terrainColours": {
+  "low": "#7c8a4a",
+  "high": "#3a6a30",
+  "steep": "#5a5244",
+  "far": "#5a7450"
+ },
+ "terrainTints": [
+  {
+   "at": [
+    14.4753,
+    -90.8806
+   ],
+   "r": 2400,
+   "colour": "#2e2926",
+   "strength": 0.95
+  },
+  {
+   "at": [
+    14.47,
+    -90.865
+   ],
+   "r": 1500,
+   "colour": "#55504a",
+   "strength": 0.7
+  },
+  {
+   "at": [
+    14.5013,
+    -90.8756
+   ],
+   "r": 900,
+   "colour": "#5a5048",
+   "strength": 0.8
+  },
+  {
+   "at": [
+    14.4661,
+    -90.7428
+   ],
+   "r": 500,
+   "colour": "#6a5e48",
+   "strength": 0.6
+  }
+ ],
+ "_terrainTints": "Fuego's cone is black scoria to well below its summit and its barrancas (Las Lajas, Ceniza, Seca) are grey with the flows; Acatenango's summits are grey-brown ash, Agua's rim brown rock",
+ "sky": {
+  "day": {
+   "top": "#3f7cc8",
+   "hor": "#cfe0ec"
+  },
+  "dusk": {
+   "top": "#34406a",
+   "hor": "#e89a5a"
+  },
+  "night": {
+   "top": "#05070f",
+   "hor": "#161c2c"
+  }
+ },
+ "waterColour": "#4a6a6a",
+ "lakeColour": "#3e5c5a",
+ "lakeSheen": "#6a8a88",
+ "defaultHeights": {
+  "_": "Antigua's houses are one storey round a patio, tall-roomed; the law keeps everything under the churches",
+  "yes": 5.5,
+  "house": 5.5,
+  "residential": 6,
+  "detached": 5.5,
+  "apartments": 8,
+  "commercial": 6,
+  "retail": 5.5,
+  "church": 14,
+  "cathedral": 16,
+  "chapel": 10,
+  "public": 8,
+  "office": 8,
+  "hotel": 7,
+  "school": 6,
+  "university": 8,
+  "civic": 8,
+  "government": 8,
+  "ruins": 8,
+  "convent": 9,
+  "monastery": 9,
+  "industrial": 7,
+  "warehouse": 7,
+  "roof": 4,
+  "shed": 3,
+  "garage": 3
+ },
+ "heightSpread": 0.18,
+ "courtyards": 30,
+ "facade": {
+  "bay": 3.8,
+  "floor": 5.0,
+  "shutters": false,
+  "_": "colonial proportions: a tall door and two barred windows to a house, rejas of black iron"
+ },
+ "palette": {
+  "_": "limewash: ochre, yellow, terracotta, ox-blood, indigo, green and white, every house its own",
+  "brick": [
+   "#e0b040",
+   "#d89a3a",
+   "#c8603a",
+   "#9a3a2a",
+   "#e8dcc0",
+   "#4a6a9a",
+   "#6a8a5a",
+   "#e8a87a",
+   "#c8a060",
+   "#f0e6d0",
+   "#b84a3a",
+   "#d8c070"
+  ],
+  "stone": [
+   "#e6dcc6",
+   "#d8c8a8",
+   "#cfc0a0"
+  ]
+ },
+ "pitchAll": {
+  "types": [
+   "yes",
+   "house",
+   "residential",
+   "detached",
+   "commercial",
+   "retail",
+   "hotel",
+   "public",
+   "school",
+   "apartments"
+  ],
+  "share": 0.8,
+  "_": "clay tile roofs, the street front pitched and the back flat"
+ },
+ "roofMaxArea": 2200,
+ "roofMaxHeight": 12,
+ "roofPitch": 0.38,
+ "roofRise": 2.6,
+ "roofColours": [
+  "#a8583a",
+  "#9a4e34",
+  "#b0623e",
+  "#8e4630",
+  "#a05a40"
+ ],
+ "roofStreet": true,
+ "roofFill": 0.7,
+ "flatRoofColours": [
+  "#b8ac98",
+  "#a89c88",
+  "#c4b8a2"
+ ],
+ "rooftops": false,
+ "groundMottle": 0.14,
+ "instanceCulling": true,
+ "paving": {
+  "classes": [
+   "residential",
+   "unclassified",
+   "living_street",
+   "pedestrian",
+   "alley",
+   "service",
+   "tertiary"
+  ],
+  "plazas": true,
+  "metres": 2.2,
+  "_": "cobbles: the town's streets are laid in river stone, the avenues with a flagstone strip down the middle"
+ },
+ "roadColours": {
+  "residential": "#7a7268",
+  "unclassified": "#7a7268",
+  "living_street": "#847a6e",
+  "pedestrian": "#8e8476",
+  "alley": "#766e64",
+  "tertiary": "#6e6860",
+  "primary": "#3e3f42",
+  "secondary": "#45464a",
+  "trunk": "#3a3b3e",
+  "trail": "#8a7a62",
+  "track": "#8a7a62"
+ },
+ "areaColours": {
+  "park": "#4e7a34",
+  "grass": "#5e8a3e",
+  "garden": "#4c7434",
+  "recreation_ground": "#6a8a44",
+  "residential": "#8e8270",
+  "commercial": "#8e8270",
+  "plaza": "#9a8e7a",
+  "scrub": "#5a6a30",
+  "wood": "#2e5428",
+  "farmland": "#7a8a46",
+  "orchard": "#3e6a32",
+  "finca": "#3a5a2c",
+  "farm": "#8a8a4a",
+  "rock": "#5a524a"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "trunk"
+  ],
+  "colour": "#e6e2d8"
+ },
+ "litWindows": 0.4,
+ "streetTrees": 0.15,
+ "parkedCars": 0.4,
+ "traffic": 0,
+ "people": 0.6,
+ "lowRiseFar": 4500,
+ "treeFar": 2200,
+ "scrub": "low",
+ "treeCells": {
+  "garden": 26,
+  "park": 30
+ },
+ "treeMinArea": {
+  "garden": 2500,
+  "park": 1000
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "flight": true,
+ "noBuildingsInWater": true,
+ "dress": {
+  "cornice": {
+   "share": 0.35,
+   "minH": 4,
+   "maxH": 12,
+   "depth": 0.4
+  },
+  "far": 500,
+  "_": "src/core/dress.js: a cornice along the colonial fronts"
+ },
+ "streetlife": {
+  "seed": 1543,
+  "centre": [
+   14.5572,
+   -90.7337,
+   1400
+  ],
+  "far": 500,
+  "shops": 0.55,
+  "flowerBoxes": 0.15,
+  "smoke": 0.04,
+  "_": "src/core/streetlife.js: the tiendas and the cafés, bougainvillea in the window boxes"
+ },
+ "life": {
+  "tile": 600,
+  "seed": 1543,
+  "near": 600,
+  "density": 0.0009,
+  "perArea": 500,
+  "max": 6000
+ },
+ "vehicles": {
+  "seed": 1543,
+  "side": "right",
+  "cars": 12,
+  "mopeds": 10,
+  "buses": 2.4,
+  "trams": 0,
+  "trains": 0,
+  "far": 1000,
+  "carFar": 700,
+  "mopedFar": 450,
+  "maxCars": 1500,
+  "maxMopeds": 600,
+  "maxBuses": 140,
+  "busColours": [
+   "#c83a2a",
+   "#2a6ac8",
+   "#e8b830",
+   "#3a9a4a",
+   "#e86a2a",
+   "#8a3aaa"
+  ],
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#9a2a2a",
+   "#2a4a7a",
+   "#d8d0c0"
+  ],
+  "_": "src/core/traffic.js: tuk-tuks and motos, and the camionetas - the chicken buses, old American school buses painted every colour - on the roads to Ciudad Vieja and Jocotenango"
+ },
+ "crowds": {
+  "seed": 1543,
+  "centre": [
+   14.5572,
+   -90.7337,
+   1500,
+   9
+  ],
+  "pedestrianMul": 2.0,
+  "maxPedestrians": 9000,
+  "keepOut": [],
+  "pedestrians": 12,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    14.55683,
+    -90.73373,
+    50,
+    260
+   ],
+   [
+    14.5598,
+    -90.73424,
+    20,
+    120
+   ],
+   [
+    14.5616,
+    -90.7345,
+    30,
+    140
+   ],
+   [
+    14.55854,
+    -90.73237,
+    30,
+    160
+   ],
+   [
+    14.5647,
+    -90.7316,
+    25,
+    90
+   ],
+   [
+    14.5524,
+    -90.729,
+    30,
+    80
+   ]
+  ],
+  "_": "[lat, lon, radius, people] where people gather: the Plaza Mayor, under the arch, La Merced's atrium, the market, the mirador, San Francisco"
+ },
+ "focus": [
+  {
+   "name": "The Plaza Mayor",
+   "at": [
+    14.55683,
+    -90.73373
+   ],
+   "radius": 250
+  },
+  {
+   "name": "Calle del Arco",
+   "at": [
+    14.5596,
+    -90.73424
+   ],
+   "radius": 150
+  }
+ ],
+ "volcanoes": {
+  "windFrom": 60,
+  "fuego": {
+   "at": [
+    14.4753,
+    -90.8806
+   ],
+   "crater": 90,
+   "flow": 210,
+   "flowLen": 1700,
+   "every": [
+    150,
+    420
+   ],
+   "firstBlast": 30
+  },
+  "acatenango": {
+   "at": [
+    14.5013,
+    -90.8756
+   ],
+   "camp": [
+    14.4985,
+    -90.8738
+   ],
+   "tents": 24
+  },
+  "agua": {
+   "at": [
+    14.4661,
+    -90.7428
+   ],
+   "antennas": [
+    [
+     60,
+     -70,
+     26
+    ],
+    [
+     90,
+     -40,
+     18
+    ],
+    [
+     -30,
+     -95,
+     22
+    ]
+   ]
+  },
+  "_": "src/antigua/volcanoes.js: Fuego's plume and explosions, the lava in its barranca at night, the camp on Acatenango, Agua's crosses and masts. windFrom: the trade wind's bearing (the plume leans away from it)"
+ },
+ "antiguaEvents": {
+  "procession": [
+   [
+    14.5612,
+    -90.73424
+   ],
+   [
+    14.5596,
+    -90.73424
+   ],
+   [
+    14.5574,
+    -90.73422
+   ],
+   [
+    14.5566,
+    -90.73422
+   ]
+  ],
+  "processionSpeed": 1.6,
+  "cohetes": [
+   14.5614,
+   -90.7345
+  ],
+  "campView": [
+   14.4995,
+   -90.8722
+  ],
+  "capView": [
+   14.5572,
+   -90.7337
+  ],
+  "_": "src/antigua/events.js: the procession comes down 5a Avenida Norte from La Merced, under the arch, to the Plaza Mayor"
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "centro": [
+   "Centro Histórico",
+   "#d8a040",
+   6,
+   14,
+   [
+    14.549,
+    -90.745,
+    14.567,
+    -90.722
+   ]
+  ],
+  "jocotenango": [
+   "Jocotenango",
+   "#c87a4a",
+   6,
+   10,
+   [
+    14.567,
+    -90.752,
+    14.585,
+    -90.735
+   ]
+  ],
+  "ciudadvieja": [
+   "Ciudad Vieja",
+   "#b8704a",
+   6,
+   10,
+   [
+    14.518,
+    -90.775,
+    14.535,
+    -90.75
+   ]
+  ],
+  "alotenango": [
+   "Alotenango",
+   "#a8784a",
+   6,
+   10,
+   [
+    14.475,
+    -90.815,
+    14.495,
+    -90.795
+   ]
+  ],
+  "fuego": [
+   "Volcán de Fuego",
+   "#3a332e",
+   0,
+   0,
+   [
+    14.455,
+    -90.905,
+    14.49,
+    -90.86
+   ]
+  ],
+  "acatenango": [
+   "Volcán de Acatenango",
+   "#5a5048",
+   0,
+   0,
+   [
+    14.49,
+    -90.9,
+    14.53,
+    -90.855
+   ]
+  ],
+  "agua": [
+   "Volcán de Agua",
+   "#4a6a3a",
+   0,
+   0,
+   [
+    14.44,
+    -90.775,
+    14.49,
+    -90.71
+   ]
+  ],
+  "outer": [
+   "Sacatepéquez",
+   "#a88a5a",
+   6,
+   10,
+   null
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "Arco de Santa Catalina",
+   "model": "arco",
+   "at": [
+    14.55959,
+    -90.73425
+   ],
+   "face": 0,
+   "replace": [
+    "Arco de Santa Catalina"
+   ],
+   "info": "Built in 1694 so that the nuns of Santa Catalina could cross from one half of their convent to the other without being seen in the street. The clock in its lantern was added in the 19th century. Agua stands at the end of the street behind it."
+  },
+  {
+   "name": "Iglesia de La Merced",
+   "model": "iglesia",
+   "at": [
+    14.5612,
+    -90.73433
+   ],
+   "face": 274,
+   "len": 62,
+   "w": 16,
+   "h": 14,
+   "facadeW": 30,
+   "facadeH": 20,
+   "towerH": 5,
+   "colour": "yellow",
+   "tiers": 3,
+   "replace": [
+    "Iglesia la Merced"
+   ],
+   "info": "Juan de Dios Estrada's church of 1767, the finest of Antigua's Earthquake Baroque: a yellow front covered in white stucco lace, towers kept short and walls thick, and it came through 1773 standing. The great Holy Week processions leave from here.",
+   "lace": true
+  },
+  {
+   "name": "Catedral de San José",
+   "model": "iglesia",
+   "at": [
+    14.55683,
+    -90.73283
+   ],
+   "face": 270,
+   "len": 58,
+   "w": 16,
+   "h": 13,
+   "facadeW": 36,
+   "facadeH": 17,
+   "towerH": 7,
+   "colour": "limewash",
+   "tiers": 2,
+   "replace": [
+    "Catedral de San José"
+   ],
+   "info": "The front of the Cathedral of Santiago (1680), on the east side of the Plaza Mayor. Only its first two bays were roofed again after 1773; behind it the old cathedral's five naves and its 18 domes lie open to the sky."
+  },
+  {
+   "name": "Ruinas de la Catedral",
+   "model": "iglesia",
+   "at": [
+    14.55683,
+    -90.73218
+   ],
+   "face": 270,
+   "len": 66,
+   "w": 34,
+   "h": 15,
+   "ruin": true,
+   "facade": false,
+   "info": "The old cathedral behind the new front: the nave, its aisles and the crossing, roofless since the earthquakes of 1773, the vaults lying where they fell."
+  },
+  {
+   "name": "San Francisco el Grande",
+   "model": "iglesia",
+   "at": [
+    14.55387,
+    -90.72963
+   ],
+   "face": 276,
+   "len": 70,
+   "w": 18,
+   "h": 15,
+   "facadeW": 30,
+   "facadeH": 19,
+   "towerH": 6,
+   "colour": "limewash",
+   "replace": [
+    "Iglesia de San Francisco el Grande"
+   ],
+   "info": "The Franciscans' church, rebuilt in 1960 within the walls of the one of 1702; the tomb of the Santo Hermano Pedro, Central America's first saint, is here. The ruined monastery beside it is a park."
+  },
+  {
+   "name": "Escuela de Cristo",
+   "model": "iglesia",
+   "at": [
+    14.5513,
+    -90.7301
+   ],
+   "face": 270,
+   "len": 44,
+   "w": 14,
+   "h": 12,
+   "facadeW": 22,
+   "facadeH": 15,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 2,
+   "replace": [
+    "Iglesia Escuela de Cristo"
+   ],
+   "info": "The church of the Escuela de Cristo (1730), one of the few in the city that kept its roof through 1773."
+  },
+  {
+   "name": "Iglesia de El Carmen",
+   "model": "iglesia",
+   "at": [
+    14.55882,
+    -90.73244
+   ],
+   "face": 87,
+   "len": 44,
+   "w": 14,
+   "h": 12,
+   "facadeW": 26,
+   "facadeH": 17,
+   "towerH": 4,
+   "colour": "ruinStone",
+   "ruin": true,
+   "replace": [
+    "Iglesia El Carmen"
+   ],
+   "info": "El Carmen (1728): the façade still stands, its columns encrusted with stucco, before a nave that is open to the sky. The market of handicrafts is beside it."
+  },
+  {
+   "name": "Santa Clara",
+   "model": "iglesia",
+   "at": [
+    14.5552,
+    -90.73085
+   ],
+   "face": 270,
+   "len": 50,
+   "w": 14,
+   "h": 13,
+   "facadeW": 24,
+   "facadeH": 16,
+   "towers": 0,
+   "colour": "ruinStone",
+   "ruin": true,
+   "info": "The convent of the Poor Clares (1734), its church front over the Tanque de la Unión: the cloister and its fountain survive, the church does not."
+  },
+  {
+   "name": "La Recolección",
+   "model": "iglesia",
+   "at": [
+    14.56085,
+    -90.7413
+   ],
+   "face": 270,
+   "len": 60,
+   "w": 18,
+   "h": 16,
+   "facadeW": 28,
+   "facadeH": 18,
+   "towers": 0,
+   "colour": "ruinStone",
+   "ruin": true,
+   "info": "The Recollect friars' church, finished in 1717 and thrown down in 1773: great blocks of its vault lie in the nave as they fell. The largest of the ruins."
+  },
+  {
+   "name": "Las Capuchinas",
+   "model": "capuchinas",
+   "at": [
+    14.55985,
+    -90.73155
+   ],
+   "r": 13,
+   "info": "The convent of the Capuchin nuns (1736), the last to be founded in the city. Its round cloister, the Torre del Retiro, is eighteen cells round a court, unique in the Americas."
+  },
+  {
+   "name": "Palacio de los Capitanes Generales",
+   "model": "arcade",
+   "at": [
+    14.5563,
+    -90.73373
+   ],
+   "face": 0,
+   "bays": 18,
+   "bay": 5.6,
+   "d": 14,
+   "colour": "limewash",
+   "info": "The seat of the Captains General, who governed Central America from Chiapas to Costa Rica: its two storeys of arches (1764) close the south side of the Plaza Mayor."
+  },
+  {
+   "name": "Palacio del Ayuntamiento",
+   "model": "arcade",
+   "at": [
+    14.55738,
+    -90.7337
+   ],
+   "face": 180,
+   "bays": 16,
+   "bay": 5.6,
+   "d": 14,
+   "colour": "limewash",
+   "info": "The town hall (1743) on the north side of the Plaza Mayor: its arches are thick enough that it, almost alone, stood through 1773. The Museo de Santiago and the Museo del Libro Antiguo are in it."
+  },
+  {
+   "name": "Fuente de las Sirenas",
+   "model": "sirenas",
+   "at": [
+    14.55682,
+    -90.73375
+   ],
+   "info": "The mermaids' fountain (1739, Diego de Porres) in the middle of the Plaza Mayor: water from their breasts into the basin."
+  },
+  {
+   "name": "Tanque de la Unión",
+   "model": "tanque",
+   "at": [
+    14.55522,
+    -90.73121
+   ],
+   "face": 90,
+   "len": 40,
+   "replace": [
+    "Tanque La Union"
+   ],
+   "info": "The public washing place (1853): basins under arcades, still used for washing clothes, in front of Santa Clara."
+  },
+  {
+   "name": "Cerro de la Cruz",
+   "model": "cruz",
+   "at": [
+    14.5647,
+    -90.7316
+   ],
+   "face": 200,
+   "h": 13,
+   "info": "The great cross on the hill to the north of the town, put up in 1930: the mirador looks down the grid of the town to Agua."
+  },
+  {
+   "name": "Volcán de Fuego",
+   "at": [
+    14.4753,
+    -90.8806
+   ],
+   "info": "3763 m, one of the most active volcanoes on Earth: in eruption almost without a break since 2002, an explosion every few minutes. In June 2018 its pyroclastic flows came down the Barranca Las Lajas and killed hundreds of people in San Miguel Los Lotes."
+  },
+  {
+   "name": "Volcán de Acatenango",
+   "at": [
+    14.5013,
+    -90.8756
+   ],
+   "info": "3976 m, its two summits (Pico Mayor and Yepocapa) joined to Fuego by the La Horqueta saddle. Climbers go up in a day and sleep at about 3600 m to watch Fuego erupt through the night."
+  },
+  {
+   "name": "Volcán de Agua",
+   "at": [
+    14.4661,
+    -90.7428
+   ],
+   "info": "3760 m, the perfect cone over the town. In 1541 a flood of water and mud off its flank buried Santiago in the Almolonga valley, now Ciudad Vieja, and the capital was moved here. Masts and a chapel stand on its crater rim."
+  },
+  {
+   "name": "Ciudad Vieja",
+   "at": [
+    14.52508,
+    -90.76211
+   ],
+   "info": "San Miguel Escobar and Ciudad Vieja, near the site of the second Santiago, which Agua's mudflow destroyed in 1541."
+  },
+  {
+   "name": "San Juan Alotenango",
+   "at": [
+    14.48397,
+    -90.8047
+   ],
+   "info": "The town in the saddle between Agua and Fuego, where the road to the coast crosses the barrancas: the trail up Fuego leaves from here."
+  },
+  {
+   "name": "Nuestra Señora de Belén",
+   "model": "iglesia",
+   "at": [
+    14.55197,
+    -90.72788
+   ],
+   "face": 270,
+   "len": 40,
+   "w": 13,
+   "h": 11,
+   "facadeW": 21,
+   "facadeH": 15,
+   "colour": "limewash",
+   "towers": 1,
+   "replace": [
+    "Iglesia de Nuestra Señora de Belén"
+   ],
+   "info": "The church of the Bethlemite brothers, the order the Santo Hermano Pedro founded to nurse the poor: the first religious order born in the Americas."
+  },
+  {
+   "name": "Santa Ana",
+   "model": "iglesia",
+   "at": [
+    14.54807,
+    -90.72532
+   ],
+   "face": 269,
+   "len": 38,
+   "w": 12,
+   "h": 11,
+   "facadeW": 20,
+   "facadeH": 14,
+   "colour": "yellow",
+   "tiers": 2,
+   "replace": [
+    "Santa Ana"
+   ],
+   "info": "The parish church of the barrio of Santa Ana, on its plaza at the south-east of the town."
+  },
+  {
+   "name": "Iglesia de San Pedro",
+   "model": "iglesia",
+   "at": [
+    14.5551,
+    -90.7323
+   ],
+   "face": 356,
+   "len": 30,
+   "w": 11,
+   "h": 11,
+   "facadeW": 16,
+   "facadeH": 15,
+   "colour": "ochre",
+   "towers": 1,
+   "tiers": 2,
+   "replace": [
+    "Iglesia San Pedro"
+   ],
+   "info": "San Pedro Apóstol (1662), beside the hospital the Hermano Pedro began: one of the few that kept its roof in 1773."
+  },
+  {
+   "name": "El Calvario",
+   "model": "iglesia",
+   "at": [
+    14.54498,
+    -90.72972
+   ],
+   "face": 357,
+   "len": 40,
+   "w": 12,
+   "h": 11,
+   "facadeW": 18,
+   "facadeH": 13,
+   "colour": "rose",
+   "towers": 0,
+   "tiers": 2,
+   "replace": [
+    "Ermita del Santo Calvario"
+   ],
+   "info": "The Calvary chapel at the end of the Alameda del Calvario, where the Stations of the Cross from San Francisco end. The fountain of Santa Teresa in front."
+  },
+  {
+   "name": "Santa Teresa",
+   "model": "iglesia",
+   "at": [
+    14.56017,
+    -90.73287
+   ],
+   "face": 270,
+   "len": 38,
+   "w": 12,
+   "h": 11,
+   "facadeW": 18,
+   "facadeH": 13,
+   "colour": "limewash",
+   "towers": 0,
+   "replace": [
+    "Iglesia de Santa Teresa"
+   ],
+   "info": "The church of the Carmelite nuns (1687), now part of the prison and then a museum."
+  },
+  {
+   "name": "La Candelaria",
+   "model": "iglesia",
+   "at": [
+    14.56329,
+    -90.72876
+   ],
+   "face": 273,
+   "len": 40,
+   "w": 14,
+   "h": 11,
+   "facadeW": 22,
+   "facadeH": 14,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Primer Año Ruinas de la Candelaria"
+   ],
+   "info": "La Candelaria (1550s, rebuilt 1798): its façade, eaten by the weather, at the north-east of the town."
+  },
+  {
+   "name": "Santa Rosa",
+   "model": "iglesia",
+   "at": [
+    14.56095,
+    -90.72838
+   ],
+   "face": 272,
+   "len": 44,
+   "w": 14,
+   "h": 11,
+   "facadeW": 20,
+   "facadeH": 13,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Iglesia de Santa Rosa"
+   ],
+   "info": "The ruined church of Santa Rosa de Lima, in the barrio of the same name."
+  },
+  {
+   "name": "San Agustín",
+   "model": "iglesia",
+   "at": [
+    14.55635,
+    -90.7366
+   ],
+   "face": 92,
+   "len": 46,
+   "w": 16,
+   "h": 11,
+   "facadeW": 24,
+   "facadeH": 15,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Iglesia San Agustín"
+   ],
+   "info": "The Augustinians' church (1657), broken in 1751 and finished off in 1773: a façade and the stumps of the nave."
+  },
+  {
+   "name": "Los Remedios",
+   "model": "iglesia",
+   "at": [
+    14.54863,
+    -90.7294
+   ],
+   "face": 267,
+   "len": 46,
+   "w": 14,
+   "h": 11,
+   "facadeW": 20,
+   "facadeH": 13,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Ermita de Nuestra Señora de Los Remedios"
+   ],
+   "info": "The ruins of Nuestra Señora de los Remedios, on the Calle de los Pasos to El Calvario."
+  },
+  {
+   "name": "La Santa Cruz",
+   "model": "iglesia",
+   "at": [
+    14.55183,
+    -90.72661
+   ],
+   "face": 270,
+   "len": 38,
+   "w": 14,
+   "h": 11,
+   "facadeW": 20,
+   "facadeH": 13,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Ermita de la Santa Cruz"
+   ],
+   "info": "The ermita of the Santa Cruz (1731), a roofless shell on the road east to San Juan del Obispo."
+  },
+  {
+   "name": "Santa Isabel",
+   "model": "iglesia",
+   "at": [
+    14.54547,
+    -90.72742
+   ],
+   "face": 267,
+   "len": 24,
+   "w": 11,
+   "h": 11,
+   "facadeW": 16,
+   "facadeH": 11,
+   "colour": "ruinStone",
+   "ruin": true,
+   "towers": 0,
+   "replace": [
+    "Ermita de Santa Isabel"
+   ],
+   "info": "The ruined ermita of Santa Isabel, at the south-east edge of the town."
+  },
+  {
+   "name": "San Felipe de Jesús",
+   "model": "iglesia",
+   "at": [
+    14.57315,
+    -90.73477
+   ],
+   "face": 265,
+   "len": 44,
+   "w": 14,
+   "h": 11,
+   "facadeW": 24,
+   "facadeH": 17,
+   "colour": "limewash",
+   "towerH": 8,
+   "replace": [
+    "Iglesia de San Felipe"
+   ],
+   "info": "San Felipe de Jesús, north of Antigua: the Cristo Sepultado's church, and the sweet stalls round it."
+  },
+  {
+   "name": "Nuestra Señora de la Asunción, Jocotenango",
+   "model": "iglesia",
+   "at": [
+    14.57483,
+    -90.74093
+   ],
+   "face": 263,
+   "len": 62,
+   "w": 16,
+   "h": 11,
+   "facadeW": 28,
+   "facadeH": 18,
+   "colour": "yellow",
+   "towerH": 6,
+   "replace": [
+    "Templo de la Parroquia Nuestra Señora de la Asunción"
+   ],
+   "info": "Jocotenango's parish church on its plaza, its ochre façade on the road north out of Antigua."
+  },
+  {
+   "name": "Ciudad Vieja: la Inmaculada Concepción",
+   "model": "iglesia",
+   "at": [
+    14.5252,
+    -90.76125
+   ],
+   "face": 270,
+   "len": 44,
+   "w": 14,
+   "h": 11,
+   "facadeW": 24,
+   "facadeH": 16,
+   "colour": "limewash",
+   "clear": [
+    22,
+    0
+   ],
+   "info": "The church of Ciudad Vieja (1534 by tradition, rebuilt), facing the plaza of the town near which Santiago stood until Agua's mudflow in 1541."
+  },
+  {
+   "name": "Dulce Nombre de Jesús, Santa María de Jesús",
+   "model": "iglesia",
+   "at": [
+    14.49387,
+    -90.70921
+   ],
+   "face": 255,
+   "len": 46,
+   "w": 15,
+   "h": 11,
+   "facadeW": 24,
+   "facadeH": 16,
+   "colour": "limewash",
+   "replace": [
+    "Dulce nombre de Jesús"
+   ],
+   "info": "The church of Santa María de Jesús, the Kaqchikel town high on Agua's northern flank, from which the climb to the summit starts."
+  },
+  {
+   "name": "San Juan del Obispo",
+   "model": "iglesia",
+   "at": [
+    14.52347,
+    -90.72804
+   ],
+   "face": 261,
+   "len": 34,
+   "w": 12,
+   "h": 11,
+   "facadeW": 20,
+   "facadeH": 14,
+   "colour": "limewash",
+   "clear": [
+    18,
+    0
+   ],
+   "info": "San Juan del Obispo: the church and the palace Bishop Francisco Marroquín built himself (1547) on the slope of Agua, over the valley."
+  },
+  {
+   "name": "San Gaspar Vivar",
+   "model": "iglesia",
+   "at": [
+    14.53315,
+    -90.73044
+   ],
+   "face": 270,
+   "len": 30,
+   "w": 11,
+   "h": 11,
+   "facadeW": 16,
+   "facadeH": 12,
+   "colour": "limewash",
+   "towers": 1,
+   "replace": [
+    "Iglesia de San Gaspar Vivar"
+   ],
+   "info": "The village church of San Gaspar Vivar, on Agua's lower slope south of Antigua."
+  },
+  {
+   "name": "San Andrés Ceballos",
+   "model": "iglesia",
+   "at": [
+    14.54295,
+    -90.78156
+   ],
+   "face": 199,
+   "len": 30,
+   "w": 11,
+   "h": 11,
+   "facadeW": 16,
+   "facadeH": 12,
+   "colour": "limewash",
+   "towers": 1,
+   "replace": [
+    "Iglesia Católica San Andres Ceballos"
+   ],
+   "info": "San Andrés Ceballos, a village church in the fincas west of Antigua."
+  },
+  {
+   "name": "San Dionisio, Pastores",
+   "model": "iglesia",
+   "at": [
+    14.59188,
+    -90.75502
+   ],
+   "face": 62,
+   "len": 32,
+   "w": 12,
+   "h": 11,
+   "facadeW": 18,
+   "facadeH": 13,
+   "colour": "limewash",
+   "clear": [
+    16,
+    0
+   ],
+   "info": "The church of Pastores, the town of the bootmakers on the road north to Chimaltenango."
+  }
+ ],
+ "views": {
+  "The Arco and Agua": [
+   [
+    14.5605,
+    -90.73424,
+    148.8
+   ],
+   [
+    14.55959,
+    -90.73425,
+    152.3
+   ]
+  ],
+  "The Plaza Mayor": [
+   [
+    14.5576,
+    -90.7346,
+    163.6
+   ],
+   [
+    14.55682,
+    -90.73375,
+    141.4
+   ]
+  ],
+  "From the Cerro de la Cruz": [
+   [
+    14.5652,
+    -90.7313,
+    244.2
+   ],
+   [
+    14.5568,
+    -90.7337,
+    139.4
+   ]
+  ],
+  "La Merced": [
+   [
+    14.5612,
+    -90.7353,
+    145.6
+   ],
+   [
+    14.5612,
+    -90.73468,
+    155.1
+   ]
+  ],
+  "The ruins of the Cathedral": [
+   [
+    14.5578,
+    -90.7318,
+    165.1
+   ],
+   [
+    14.55683,
+    -90.73218,
+    145.2
+   ]
+  ],
+  "San Francisco el Grande": [
+   [
+    14.5541,
+    -90.7316,
+    142.3
+   ],
+   [
+    14.55389,
+    -90.72994,
+    154.0
+   ]
+  ],
+  "La Recolección": [
+   [
+    14.5614,
+    -90.743,
+    152.6
+   ],
+   [
+    14.56085,
+    -90.7413,
+    145.8
+   ]
+  ],
+  "Fuego from the camp on Acatenango": [
+   [
+    14.4995,
+    -90.8722,
+    2429.3
+   ],
+   [
+    14.4753,
+    -90.8806,
+    2412.3
+   ]
+  ],
+  "The three volcanoes": [
+   [
+    14.6,
+    -90.69,
+    3318.5
+   ],
+   [
+    14.49,
+    -90.8,
+    56.7
+   ]
+  ],
+  "Agua from the valley": [
+   [
+    14.5395,
+    -90.73,
+    201.6
+   ],
+   [
+    14.4661,
+    -90.7428,
+    2368.9
+   ]
+  ],
+  "From Agua's crater": [
+   [
+    14.4685,
+    -90.7425,
+    2251.4
+   ],
+   [
+    14.5568,
+    -90.7337,
+    139.4
+   ]
+  ],
+  "Ciudad Vieja": [
+   [
+    14.5262,
+    -90.7633,
+    148.2
+   ],
+   [
+    14.52508,
+    -90.76211,
+    132.6
+   ]
+  ],
+  "Alotenango, between Agua and Fuego": [
+   [
+    14.4885,
+    -90.8,
+    97.6
+   ],
+   [
+    14.4753,
+    -90.8806,
+    2372.3
+   ]
+  ],
+  "A finca under Agua": [
+   [
+    14.54921,
+    -90.73333,
+    166.4
+   ],
+   [
+    14.54861,
+    -90.73273,
+    140.5
+   ]
+  ],
+  "Jocotenango": [
+   [
+    14.5752,
+    -90.7425,
+    153.5
+   ],
+   [
+    14.57481,
+    -90.74093,
+    156.4
+   ]
+  ],
+  "5a Avenida Sur": [
+   [
+    14.5558,
+    -90.73424,
+    141.7
+   ],
+   [
+    14.5535,
+    -90.73424,
+    140.9
+   ]
+  ],
+  "El Carmen and the market": [
+   [
+    14.5587,
+    -90.7317,
+    150.5
+   ],
+   [
+    14.55882,
+    -90.73225,
+    153.3
+   ]
+  ],
+  "Over the rooftops": [
+   [
+    14.5562,
+    -90.7302,
+    184.9
+   ],
+   [
+    14.554,
+    -90.7278,
+    146.2
+   ]
+  ]
+ },
+ "navmap": {
+  "labels": [
+   "Arco de Santa Catalina",
+   "Iglesia de La Merced",
+   "Catedral de San José",
+   "San Francisco el Grande",
+   "La Recolección",
+   "Las Capuchinas",
+   "Fuente de las Sirenas",
+   "Cerro de la Cruz",
+   "Volcán de Fuego",
+   "Volcán de Acatenango",
+   "Volcán de Agua",
+   "Ciudad Vieja",
+   "San Juan Alotenango"
+  ]
+ },
+ "treeLine": 1950,
+ "bareGround": [
+  [
+   14.4753,
+   -90.8806,
+   2100
+  ],
+  [
+   14.5013,
+   -90.8756,
+   650
+  ],
+  [
+   14.4661,
+   -90.7428,
+   350
+  ]
+ ],
+ "_treeLine": "no woodland above 3345 m (1950 above the datum, 1395 m) or on the cones themselves (bareGround: [lat, lon, radius]): Fuego bare far down its flanks, Acatenango's summits, Agua's crater rim. The nature reserves are mapped from the foot of each volcano to its crater, and drawn as forest they put trees on the scoria",
+ "extraKinds": [
+  [
+   "landuse",
+   "orchard",
+   "finca"
+  ],
+  [
+   "landuse",
+   "farmland",
+   "farm"
+  ],
+  [
+   "landuse",
+   "meadow",
+   "grass"
+  ],
+  [
+   "landuse",
+   "farmyard",
+   "farm"
+  ],
+  [
+   "natural",
+   "bare_rock",
+   "rock"
+  ],
+  [
+   "natural",
+   "scree",
+   "rock"
+  ]
+ ],
+ "_extraKinds": "tools/build-osm-city.py: the coffee fincas (orchard), the milpas (farmland) and the bare rock of the summits, which the default land list leaves out",
+ "casas": {
+  "maxH": 11,
+  "far": 250,
+  "_": "src/antigua/casas.js: the zócalo, the zaguán, the windows and the alero out to farOut on every house wall that faces a street, in the infill's zones; the iron rejas, sills, hoods and rafters within far",
+  "farOut": 700
+ },
+ "fincas": {
+  "kind": "finca",
+  "row": 3.6,
+  "bush": 2.4,
+  "shade": 16,
+  "tile": 400,
+  "far": 650,
+  "_": "src/antigua/fincas.js: coffee in rows under gravilea, planted a tile at a time as the camera comes near"
+ },
+ "infill": {
+  "zones": [
+   [
+    14.5572,
+    -90.7337,
+    1500
+   ],
+   [
+    14.5745,
+    -90.741,
+    600
+   ],
+   [
+    14.5251,
+    -90.7621,
+    600
+   ],
+   [
+    14.484,
+    -90.8047,
+    450
+   ],
+   [
+    14.4939,
+    -90.7092,
+    450
+   ],
+   [
+    14.592,
+    -90.7546,
+    450
+   ],
+   [
+    14.5303,
+    -90.74,
+    350
+   ],
+   [
+    14.533,
+    -90.7304,
+    300
+   ],
+   [
+    14.5235,
+    -90.728,
+    300
+   ],
+   [
+    14.5427,
+    -90.7818,
+    300
+   ]
+  ],
+  "width": [
+   7,
+   15
+  ],
+  "depth": 11,
+  "setback": 1.3,
+  "twoStorey": 0.12,
+  "far": 3000,
+  "_": "src/antigua/infill.js: house fronts along every street where the map has none, in Antigua and the towns round it: [lat, lon, radius]",
+  "parapets": 0.25,
+  "tapias": 0.12
+ },
+ "facadeStyles": [
+  {
+   "tex": "limewash",
+   "bay": 3.8,
+   "floor": 5,
+   "low": true,
+   "when": {
+    "maxH": 11,
+    "where": [
+     [
+      14.543,
+      -90.75,
+      14.572,
+      -90.718
+     ],
+     [
+      14.566,
+      -90.752,
+      14.585,
+      -90.73
+     ],
+     [
+      14.515,
+      -90.775,
+      14.535,
+      -90.748
+     ],
+     [
+      14.475,
+      -90.815,
+      14.495,
+      -90.795
+     ],
+     [
+      14.485,
+      -90.72,
+      14.5,
+      -90.7
+     ],
+     [
+      14.585,
+      -90.765,
+      14.6,
+      -90.745
+     ]
+    ]
+   }
+  }
+ ],
+ "_facadeStyles": "the low houses' walls are blank limewash: src/antigua/casas.js puts the doors, the grilled windows and the eaves on the ones that face a street",
+ "_landmarkFacing": "each church's face and centre come from its mapped footprint: the long axis, and the end that opens on a street or a plaza rather than another building. Where both ends score alike (San Francisco, Santa Rosa, Los Remedios, El Calvario, La Candelaria) the face is kept and only turned to the axis; where the footprint is square or missing (Belén, the Cathedral, Escuela de Cristo, Santa Clara, Santa Teresa, La Recolección, Ciudad Vieja, Alotenango, San Gaspar) it is the plaza's side"
+}
