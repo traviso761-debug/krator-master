@@ -69,6 +69,7 @@ not tune a material against the current normals.
 | Path | What |
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
+| `settlements/port/` | **a kit, not a settlement**: the Ancient Port segments and vessels (a sibling of `kits/ancients`), which will build Hook and may be reused on other coasts. Call it the Ancient Port kit |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 28 vessels, one fragment each |
 | `kits/catalog/` | master catalog: asset engine, 1674 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
