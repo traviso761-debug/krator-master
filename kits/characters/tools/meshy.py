@@ -140,9 +140,33 @@ def animations(rig_task, action_ids, out):
         print(b['glb'], b['names'])
 
 
+def retexture(src_id, out_id, prompt):
+    """repaint a donor's mesh from a prompt, keeping its UVs (enable_original_uv), so the new colour map fits the
+    donor's own mesh: clothing painted onto the base body. ~10 credits. Writes donors/<out_id>.glb and .json"""
+    src = json.load(open(os.path.join(DONORS, src_id + '.json')))
+    jp = os.path.join(DONORS, out_id + '.json')
+    rec = json.load(open(jp)) if os.path.exists(jp) else {'id': out_id, 'from': src_id, 'prompt': prompt}
+    save = lambda: json.dump(rec, open(jp, 'w'), indent=1)
+    if 'retexture' not in rec:
+        rec['retexture'] = call('POST', '/v1/retexture', {
+            'input_task_id': src['refine'], 'text_style_prompt': prompt, 'enable_original_uv': True,
+            'enable_pbr': True, 'ai_model': 'latest', 'texture_resolution': '2k', 'target_formats': ['glb']})['result']
+        save()
+    t = wait('/v1/retexture', rec['retexture'])
+    out = os.path.join(DONORS, out_id + '.glb')
+    urllib.request.urlretrieve(t['model_urls']['glb'], out)
+    compact_glb.compact(out)
+    rec['glb'] = out_id + '.glb'
+    save()
+    print('%s: %s (%d KB)' % (out_id, out, os.path.getsize(out) // 1024))
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['balance']:
         print(call('GET', '/v1/balance'))
+    elif sys.argv[1:2] == ['retexture'] and len(sys.argv) == 5:
+        # python3 tools/meshy.py retexture <donor id> <new id> "<what he wears>"
+        retexture(sys.argv[2], sys.argv[3], sys.argv[4])
     elif sys.argv[1:2] == ['anims'] and len(sys.argv) == 5:
         # python3 tools/meshy.py anims <donor id> <id,id,...> donors/anims/<name>
         animations(json.load(open(os.path.join(DONORS, sys.argv[2] + '.json')))['rig'],

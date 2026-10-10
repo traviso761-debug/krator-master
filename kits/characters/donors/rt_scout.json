@@ -1,0 +1,7 @@
+{
+ "id": "rt_scout",
+ "from": "base_m",
+ "prompt": "The same bald man, now dressed: a dark green quilted long-sleeved jacket buttoned closed, khaki canvas trousers, brown leather wraps on the forearms, brown leather lace-up boots. Keep his face, bald head, neck and hands as bare natural skin.",
+ "retexture": "01a12625-4230-75a2-8020-30191b09ced7",
+ "glb": "rt_scout.glb"
+}
