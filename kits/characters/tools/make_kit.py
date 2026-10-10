@@ -166,21 +166,23 @@ def push_out(P, N, base_P, base_N, gap, reach=0.06):
 
 def ray_hits(O, D, A_P, A_tri, reach, step=0.03):
     """for rays O + t D (t in 0..reach), the first triangle of A each meets: (t, triangle index), t = inf if none.
-    Candidates are the triangles near points along the ray (Moller-Trumbore on every pair at once)"""
+    Candidates are the triangles near points along the ray; Moller-Trumbore on every pair at once"""
     a, b, c = A_P[A_tri[:, 0]], A_P[A_tri[:, 1]], A_P[A_tri[:, 2]]
     ctr = (a + b + c) / 3
     rad = np.percentile(np.maximum(np.linalg.norm(a - ctr, axis=1), np.linalg.norm(c - ctr, axis=1)), 98)
     tree = cKDTree(ctr)
-    pairs = set()
+    vis, tis = [], []
     for t in np.arange(0, reach + step, step):
-        for vi, lst in enumerate(tree.query_ball_point(O + D * t, r=step + rad)):
-            pairs.update((vi, x) for x in lst)
+        lst = tree.query_ball_point(O + D * t, r=step + rad)
+        n = np.fromiter((len(x) for x in lst), int, len(lst))
+        vis.append(np.repeat(np.arange(len(O)), n))
+        tis.append(np.concatenate([np.asarray(x, int) for x in lst]) if n.sum() else np.zeros(0, int))
+    key = np.unique(np.concatenate(vis).astype(np.int64) * len(A_tri) + np.concatenate(tis))
+    vi, ti = key // len(A_tri), key % len(A_tri)
     best_t = np.full(len(O), np.inf)
     best_k = np.full(len(O), -1)
-    if not pairs:
+    if not len(vi):
         return best_t, best_k
-    pr = np.array(sorted(pairs))
-    vi, ti = pr[:, 0], pr[:, 1]
     e1, e2 = b[ti] - a[ti], c[ti] - a[ti]
     pv = np.cross(D[vi], e2)
     det = (e1 * pv).sum(1)
@@ -192,17 +194,22 @@ def ray_hits(O, D, A_P, A_tri, reach, step=0.03):
     v = (D[vi] * qv).sum(1) * inv
     t = (e2 * qv).sum(1) * inv
     good = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t > 1e-5) & (t < reach)
-    for k in np.nonzero(good)[0]:
-        if t[k] < best_t[vi[k]]:
-            best_t[vi[k]], best_k[vi[k]] = t[k], ti[k]
+    vi, ti, t = vi[good], ti[good], t[good]
+    order = np.lexsort((t, vi))                      # per ray, nearest first
+    vi, ti, t = vi[order], ti[order], t[order]
+    first = np.r_[True, vi[1:] != vi[:-1]]
+    best_t[vi[first]], best_k[vi[first]] = t[first], ti[first]
     return best_t, best_k
 
 
 class Skin:
     """the base body as a surface to stay outside of"""
 
-    def __init__(self, c, P, tri):
+    def __init__(self, c, P, tri, N=None):
         self.P, self.tri = P, tri
+        used = np.unique(tri.reshape(-1))
+        self.vP = P[used]
+        self.vN = N[used] if N is not None else None
         fn = np.cross(P[tri[:, 1]] - P[tri[:, 0]], P[tri[:, 2]] - P[tri[:, 0]])
         self.fn = fn / np.maximum(np.linalg.norm(fn, axis=1, keepdims=True), 1e-12)
         # bone segments, for an outward direction at any point: away from the nearest bone
@@ -222,6 +229,30 @@ class Skin:
         out = P - q[np.arange(len(P)), k]
         return out / np.maximum(np.linalg.norm(out, axis=1, keepdims=True), 1e-9)
 
+    def push_from_skin(self, A, gap, lateral=0.03, depth=0.08):
+        """the other way round, without rays (the base's own cracks let rays slip out): each skin vertex pushes out
+        the armour vertices just under it (within `lateral` sideways, up to `depth` inside) to `gap` above it"""
+        from_tree = cKDTree(A)
+        lists = from_tree.query_ball_point(self.vP, r=np.hypot(lateral, depth))
+        n = np.fromiter((len(x) for x in lists), int, len(lists))
+        if not n.sum():
+            return A, 0
+        bi = np.repeat(np.arange(len(self.vP)), n)
+        ai = np.concatenate([np.asarray(x, int) for x in lists if len(x)])
+        d = A[ai] - self.vP[bi]
+        off = (d * self.vN[bi]).sum(1)
+        lat = np.linalg.norm(d - off[:, None] * self.vN[bi], axis=1)
+        need = np.where((lat < lateral) & (off < gap) & (off > -depth), gap - off, 0)
+        best = np.zeros(len(A))
+        arg = np.full(len(A), -1)
+        order = np.argsort(need)
+        best[ai[order]] = need[order]                  # the largest need per armour vertex wins (sorted last)
+        arg[ai[order]] = bi[order]
+        m = best > 0
+        A = A.copy()
+        A[m] += self.vN[arg[m]] * best[m][:, None]
+        return A, int(m.sum())
+
     def push(self, P, gap, reach=0.15, passes=2):
         """a vertex is inside the skin when the first skin triangle a ray outward from it meets faces outward (the
         ray is leaving the body); it moves out to that point plus `gap`. A first hit facing inward is another limb
@@ -238,6 +269,23 @@ class Skin:
             if not inside.any():
                 break
         return P, int(moved.sum())
+
+
+def blend_weights(Q, skinP, sJT, sWT, nj, tree, near=0.01, far=0.12):
+    """bone weights for points Q from the skin under them: a point on the skin takes its nearest skin vertex's
+    weights; one hanging off it (a skirt hem between the thighs, a coat tail) blends more skin vertices, out to 32,
+    by inverse distance, so it moves with the hips and both thighs instead of snapping to one leg"""
+    K = 32
+    d, k = tree.query(Q, k=K)
+    d0 = d[:, :1]
+    n = np.clip(1 + ((d0[:, 0] - near) / (far - near) * (K - 1)), 1, K).astype(int)
+    w = 1.0 / np.maximum(d, 1e-4) ** 2
+    w[np.arange(K)[None, :] >= n[:, None]] = 0
+    w /= w.sum(1, keepdims=True)
+    dense = np.zeros((len(Q), nj))
+    for t in range(4):
+        np.add.at(dense, (np.repeat(np.arange(len(Q)), K), sJT[k.reshape(-1), t]), (w * sWT[k, t]).reshape(-1))
+    return mp.top4(dense)
 
 
 def boundary_verts(P, tri):
@@ -286,6 +334,33 @@ def covered(base_P, base_N, base_tri, A_P, A_tri, reach=0.08, back=0.02):
     return np.nonzero(flag[base_tri].all(1))[0]
 
 
+def hems(P, tri_all, sel):
+    """vertices on the real edges of a selection of a mesh's triangles: an edge shared by a selected triangle and an
+    unselected one. Open edges of the mesh itself (Meshy's cracks, pockets, strap shells) are not hems"""
+    w = mp.weld(P)
+    e = lambda T: np.sort(np.concatenate([w[T[:, [0, 1]]], w[T[:, [1, 2]]], w[T[:, [2, 0]]]]), 1)
+    key = lambda E: E[:, 0].astype(np.int64) * (w.max() + 1) + E[:, 1]
+    ka, ks = key(e(tri_all)), key(e(tri_all[sel]))
+    ua, ca = np.unique(ka, return_counts=True)
+    us, cs = np.unique(ks, return_counts=True)
+    shared = np.isin(us, ua[ca >= 2]) & (cs == 1)      # inside the donor, but on the selection's rim
+    rim = us[shared]
+    a, b = rim // (w.max() + 1), rim % (w.max() + 1)
+    return np.nonzero(np.isin(w, np.concatenate([a, b])))[0]
+
+
+def covered_near(base_P, base_tri, A_P, A_tri, rim, reach=0.04, edge=0.02):
+    """base triangles under an armour piece: armour within `reach` of each corner, and each corner more than `edge`
+    from the piece's hems. Rays missed half the time through the cracks in Meshy's garments"""
+    av = np.unique(A_tri.reshape(-1))
+    if not len(av):
+        return np.zeros(0, int)
+    d = cKDTree(A_P[av]).query(base_P)[0]
+    de = cKDTree(A_P[rim]).query(base_P)[0] if len(rim) else np.full(len(base_P), 1e9)
+    ok = (d < reach) & (de > edge)
+    return np.nonzero(ok[base_tri].sum(1) >= 2)[0]
+
+
 def make_body(body, donors):
     data, pieces = os.path.join(HERE, 'data', body), os.path.join(HERE, 'pieces', body)
     os.makedirs(data, exist_ok=True)
@@ -328,7 +403,7 @@ def make_body(body, donors):
     skinP, skinN = bP[base_cover], bN[base_cover]
     skin_tree = cKDTree(skinP)
     bdom = bJT[np.arange(len(bJT)), bWT.argmax(1)]          # each base vertex's main bone
-    skin_surface = Skin(c, bP, bd.tri[np.isin(btslot, [mp.SLOTS.index(r) for r in REGIONS])])
+    skin_surface = Skin(c, bP, bd.tri[np.isin(btslot, [mp.SLOTS.index(r) for r in REGIONS])], bN)
     kit['base_tris'] = {r: int(len(region_tris[r])) for r in REGIONS}
 
     heads = {}
@@ -406,15 +481,20 @@ def make_body(body, donors):
                 continue
             sv = np.unique(d.tri[at].reshape(-1))
             pushed, n_lift = skin_surface.push(Pa[sv], LAYER[slot])
+            pushed, n2 = skin_surface.push_from_skin(pushed, LAYER[slot])
+            n_lift += n2
             Pa[sv] = pushed
             # the base body's weights, from its nearest vertex: armour then bends exactly like the skin under it
             # (the donor's own weights drift centimetres off the base's in a pose, and the skin pokes through)
             JTt, WTt = JTa.copy(), WTa.copy()
-            JTt[sv], WTt[sv] = bJT[base_cover[skin_tree.query(Pa[sv])[1]]], bWT[base_cover[skin_tree.query(Pa[sv])[1]]]
+            JTt[sv], WTt[sv] = blend_weights(Pa[sv], skinP, bJT[base_cover], bWT[base_cover], len(jnames), skin_tree)
             n = w.mesh(slot, Pa, N, d.uv, JTt, WTt, d.tri[at], am)
+            sel = np.zeros(len(d.tri), bool)
+            sel[at] = True
+            rim = hems(P, d.tri, sel)
             hide = {}
             for r in REGIONS:
-                cov = covered(bP, bN, bd.tri[region_tris[r]], Pa, d.tri[at])
+                cov = covered_near(bP, bd.tri[region_tris[r]], Pa, d.tri[at], rim)
                 if (r in ('hands', 'feet') and len(cov) > WHOLE * len(region_tris[r])) or \
                         (r == 'hands' and slot == 'torso' and not bare_hands):
                     cov = np.arange(len(region_tris[r]))     # a glove or a boot: the whole hand or foot goes
