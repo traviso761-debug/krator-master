@@ -89,6 +89,9 @@ Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is abou
 
 ## Water and the sky's light: what to know
 
+- **The plan for all water** (every build's sea, lake, river, fall and pool on one module, the CDLOD mesh, the shore field,
+  the FFT backend) is `WATER.md` beside this file. It is refactor-scale and waits for `full-refactor`.
+
 - **The wave field is in metres and seconds.** `PRESETS.waves.amp` (0.22) is the half-height scale; Voth's swell peaks
   near 0.45 m. A host scales the shading tilt per build with `atmWaveNormal`'s `k`: Voth passes 3x, because WoCC lays
   detail normal maps over this field and Voth has none, so from 200-1500 m up the field is all the texture there is.
