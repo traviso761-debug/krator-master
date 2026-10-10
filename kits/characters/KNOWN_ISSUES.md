@@ -1,7 +1,8 @@
 # kits/characters: known issues
 
-- **Seams between outfits of different bulk.** The bands cover a cut where both pieces are about the same size there.
-  A slim piece next to a bulky one (Styv's bare arm into bronze gauntlets) can still show a step or a sliver.
+- **Loose garments are cinched at the cuts.** Every donor's surface near a cut is morphed onto the median ring there
+  (`SEAMS` in make_pieces.py), so pieces from any two outfits meet. A loose garment at a cut (Styv's robe sash at the
+  waist) gets pulled in and flares out below it. A per-outfit "loose" flag (overlap only, no pull) is not done yet.
 - **The cut follows bone weights, not garments.** Belts, skirts and coat hems weighted to Hips go to the legs slot;
   the bronze outfit's scale skirt is part of its legs.
 - **Face landmarks are found, not placed.** The nose tip comes from the head's front profile; the other nine points

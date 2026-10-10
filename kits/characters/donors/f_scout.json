@@ -1,0 +1,11 @@
+{
+ "id": "f_scout",
+ "outfit": "jungle scout clothes: a quilted green and tan padded long-sleeved jacket, cloth wraps on the forearms, fabric gloves, rope belt with pouches, loose trousers tucked into wrapped boots",
+ "body": "female",
+ "kind": "outfit",
+ "prompt": "Full body game character, an adult woman of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair tied back, face visible, wearing jungle scout clothes: a quilted green and tan padded long-sleeved jacket, cloth wraps on the forearms, fabric gloves, rope belt with pouches, loose trousers tucked into wrapped boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ee-cc87-7021-b863-94833682127f",
+ "refine": "01a125ef-8c37-7429-8308-9f68c80eca9c",
+ "rig": "01a125f0-4464-73e1-add3-dc5d4cbbe1e8",
+ "glb": "f_scout.glb"
+}

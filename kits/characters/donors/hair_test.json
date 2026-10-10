@@ -1,0 +1,10 @@
+{
+ "id": "hair_test",
+ "outfit": "short tousled dark brown hair",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "short tousled dark brown hair, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125ee-cc12-71d2-92a8-1ac6cc330e53",
+ "refine": "01a125f0-fac0-717d-9fec-3e96748554dd",
+ "glb": "hair_test.glb"
+}

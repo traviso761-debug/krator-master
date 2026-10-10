@@ -1,0 +1,11 @@
+{
+ "id": "base_f",
+ "outfit": "",
+ "body": "female",
+ "kind": "base",
+ "prompt": "Full body game character base model, an adult woman of average athletic build, standing in A-pose, stylized realistic, completely bald smooth head, no hair, no eyebrows piercings or tattoos, neutral calm face, wearing a plain grey fitted sports top and plain grey fitted shorts, barefoot, even neutral skin tone, nothing held.",
+ "preview": "01a125ee-cb26-7390-a762-ea3883aa6b3e",
+ "refine": "01a125ef-8c33-74ed-bbdd-a568da635b7e",
+ "rig": "01a125f0-4548-7429-bd4f-336ac535de34",
+ "glb": "base_f.glb"
+}

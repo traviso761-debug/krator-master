@@ -234,6 +234,151 @@ def smooth_normals(P, N, tri):
     return S
 
 
+# how much of the neck-ring shift each joint's vertices take: all of it above the chest, fading to none at the hips,
+# so a donor's own chest stays on its own neck while its neck moves onto everyone else's
+NECK_GAIN = {'Spine': 0.33, 'Spine1': 0.66, 'Spine2': 1.0, 'Neck': 1.0, 'Head': 1.0, 'HeadTop_End': 1.0, 'headfront': 1.0}
+for _s in ('Left', 'Right'):
+    for _b in ('Shoulder', 'Arm', 'ForeArm', 'Hand', 'HandMiddle4'):
+        NECK_GAIN[_s + _b] = 1.0
+
+
+def neck_ring(P, tri, dense, joints):
+    """the centre (x, z) of the seam between the head slot and the torso slot: where the two pieces must meet.
+    Rigs put their spine and neck joints at different depths in the body (Meshy's web rig, Styv's and Phil's, sits
+    6-10 cm further back than its API rig), so matching joints leaves heads in front of or behind other torsos"""
+    sl = np.array([SLOTS.index(SLOT_OF.get(n, 'head')) for n in joints])
+    vs = np.stack([dense[:, sl == s].sum(1) for s in range(len(SLOTS))], 1)
+    tslot = vs[tri].sum(1).argmax(1)
+    w = weld(P)
+    h = np.zeros(w.max() + 1, bool)
+    t = np.zeros(w.max() + 1, bool)
+    h[w[tri[tslot == SLOTS.index('head')]].reshape(-1)] = True
+    t[w[tri[tslot == SLOTS.index('torso')]].reshape(-1)] = True
+    ring = np.nonzero((h & t)[w])[0]
+    return np.array([np.median(P[ring, 0]), np.median(P[ring, 2])]), len(ring)
+
+
+def neck_shift(P, dense, joints, delta):
+    gain = np.array([NECK_GAIN.get(n, 0.0) for n in joints])
+    g = dense @ gain
+    P = P.copy()
+    P[:, 0] += g * delta[0]
+    P[:, 2] += g * delta[1]
+    return P
+
+
+# The seams every pair of pieces must meet at: (name, slot a, slot b, origin joint, axis from, axis to, side, reach m).
+# Each donor's ring at a seam (where its own slot-a and slot-b triangles meet) is measured as a radius and a height
+# round the axis, in bins of angle; the target ring is the median over all donors; every donor's surface within
+# `reach` of its ring (along the surface, both sides) is morphed onto the target, fading out. Any head then ends on
+# the ring every torso starts from, and so on for the waist, wrists and ankles.
+SEAMS = [('neck', 'head', 'torso', 'Neck', 'Neck', 'Head', 0, 0.05),
+         ('waist', 'torso', 'legs', 'Hips', 'Hips', 'Spine', 0, 0.08),
+         ('wrist_L', 'hands', 'torso', 'LeftHand', 'LeftForeArm', 'LeftHand', 1, 0.05),
+         ('wrist_R', 'hands', 'torso', 'RightHand', 'RightForeArm', 'RightHand', -1, 0.05),
+         ('ankle_L', 'feet', 'legs', 'LeftFoot', 'LeftLeg', 'LeftFoot', 1, 0.06),
+         ('ankle_R', 'feet', 'legs', 'RightFoot', 'RightLeg', 'RightFoot', -1, 0.06)]
+BINS = 32
+
+
+def tri_slots(tri, dense, joints):
+    sl = np.array([SLOTS.index(SLOT_OF.get(n, 'head')) for n in joints])
+    vs = np.stack([dense[:, sl == s].sum(1) for s in range(len(SLOTS))], 1)
+    return vs[tri].sum(1).argmax(1)
+
+
+def seam_frame(c, seam):
+    _, _, _, oj, a0, a1, _, _ = seam
+    o = c.jpos[c.J[oj]]
+    ax = c.jpos[c.J[a1]] - c.jpos[c.J[a0]]
+    ax /= np.linalg.norm(ax)
+    ref = np.array([0, 0, 1.0]) if abs(ax[2]) < 0.9 else np.array([1.0, 0, 0])
+    u = ref - ax * ref.dot(ax)
+    u /= np.linalg.norm(u)
+    return o, ax, u, np.cross(ax, u)
+
+
+def polar(P, frame):
+    o, ax, u, v = frame
+    d = P - o
+    h = d @ ax
+    r = d - np.outer(h, ax)
+    return np.arctan2(r @ v, r @ u), np.linalg.norm(r, axis=1), h, r
+
+
+def circ_fill(vals):
+    """bins with no sample take the nearest filled ones, round the circle; then a light smoothing"""
+    ok = ~np.isnan(vals)
+    if ok.sum() < 3:
+        return None
+    idx = np.arange(BINS)
+    good = idx[ok]
+    ext = np.concatenate([good - BINS, good, good + BINS])
+    out = np.interp(idx, ext, np.tile(vals[ok], 3))
+    return (np.roll(out, 1) + 2 * out + np.roll(out, -1)) / 4
+
+
+def seam_ring(P, tri, tslot, frame, seam):
+    """this donor's ring at a seam: (radius per bin, height per bin) or None"""
+    _, a, b, _, _, _, side, _ = seam
+    w = weld(P)
+    ia, ib = SLOTS.index(a), SLOTS.index(b)
+    ha = np.zeros(w.max() + 1, bool)
+    hb = np.zeros(w.max() + 1, bool)
+    ha[w[tri[tslot == ia]].reshape(-1)] = True
+    hb[w[tri[tslot == ib]].reshape(-1)] = True
+    ring = np.nonzero((ha & hb)[w])[0]
+    if side:
+        ring = ring[np.sign(P[ring, 0]) == side]
+    if len(ring) < 8:
+        return None
+    th, r, h, _ = polar(P[ring], frame)
+    k = ((th + np.pi) / (2 * np.pi) * BINS).astype(int) % BINS
+    R = np.full(BINS, np.nan)
+    Hh = np.full(BINS, np.nan)
+    for i in range(BINS):
+        if (k == i).any():
+            R[i] = np.median(r[k == i])
+            Hh[i] = np.median(h[k == i])
+    R, Hh = circ_fill(R), circ_fill(Hh)
+    return None if R is None else (R, Hh, ring)
+
+
+def conform(P, tri, tslot, frame, seam, mine, target):
+    """morph the donor's surface near its ring onto the target ring"""
+    _, a, b, _, _, _, side, reach = seam
+    R0, H0, ring = mine
+    R1, H1 = target
+    w = weld(P)
+    nw = w.max() + 1
+    e = np.concatenate([tri[:, [0, 1]], tri[:, [1, 2]], tri[:, [2, 0]]])
+    ln = np.linalg.norm(P[e[:, 0]] - P[e[:, 1]], axis=1) + 1e-7
+    G = coo_matrix((np.concatenate([ln, ln]), (np.concatenate([w[e[:, 0]], w[e[:, 1]]]),
+                                                np.concatenate([w[e[:, 1]], w[e[:, 0]]]))), shape=(nw, nw)).tocsr()
+    dist = dijkstra(G, indices=np.unique(w[ring]), min_only=True, limit=reach)[w]
+    near = np.isfinite(dist)
+    slot_ok = np.zeros(len(P), bool)
+    for s in (a, b):
+        slot_ok[tri[tslot == SLOTS.index(s)].reshape(-1)] = True
+    sel = np.nonzero(near & slot_ok)[0]
+    if side:
+        sel = sel[np.sign(P[sel, 0]) == side]
+    o, ax, u, v = frame
+    th, r, h, rv = polar(P[sel], frame)
+    x = (th + np.pi) / (2 * np.pi) * BINS - 0.5
+    i0 = np.floor(x).astype(int) % BINS
+    i1 = (i0 + 1) % BINS
+    f = x - np.floor(x)
+    dR = (1 - f) * (R1 - R0)[i0] + f * (R1 - R0)[i1]
+    dH = (1 - f) * (H1 - H0)[i0] + f * (H1 - H0)[i1]
+    t = np.clip(1 - dist[sel] / reach, 0, 1)
+    g = t * t * (3 - 2 * t)
+    rd = rv / np.maximum(r, 1e-6)[:, None]
+    P = P.copy()
+    P[sel] += (g * dR)[:, None] * rd + (g * dH)[:, None] * ax
+    return P
+
+
 def weld(P):
     key = np.round(P / 1e-5).astype(np.int64)
     _, inv = np.unique(key, axis=0, return_inverse=True)
@@ -434,14 +579,34 @@ def main():
     jnames = list(c.joints) + [f[0] for f in FACE]
     jidx = {n: i for i, n in enumerate(jnames)}
     outfits = []
+    fitted = []
     for dn in donors:
-        path = os.path.join(HERE, dn['glb'])
-        d = load(path)
+        d = load(os.path.join(HERE, dn['glb']))
         P, N, JT = fit(d, c)
-        N = smooth_normals(P, N, d.tri)
         dense = np.zeros((len(P), len(jnames)))
         for t in range(4):
             np.add.at(dense, (np.arange(len(P)), JT[:, t]), d.wt[:, t])
+        ring, nring = neck_ring(P, d.tri, dense, jnames)
+        fitted.append((dn, d, P, N, dense, ring))
+    target = np.median(np.stack([f[5] for f in fitted]), 0)
+    # front-back only: bodies are symmetric, and an off-centre collar (Styv's ruff) moves the ring's x without the neck
+    fitted = [f[:5] + (np.array([target[0], f[5][1]]),) for f in fitted]
+    shifted = []
+    frames = [seam_frame(c, sm) for sm in SEAMS]
+    for dn, d, P, N, dense, ring in fitted:
+        P = neck_shift(P, dense, jnames, target - ring)
+        tslot = tri_slots(d.tri, dense, jnames)
+        rings = [seam_ring(P, d.tri, tslot, fr, sm) for sm, fr in zip(SEAMS, frames)]
+        shifted.append((dn, d, P, N, dense, ring, tslot, rings))
+    ring_target = []
+    for k, sm in enumerate(SEAMS):
+        have = [x[7][k] for x in shifted if x[7][k] is not None]
+        ring_target.append((np.median(np.stack([h[0] for h in have]), 0), np.median(np.stack([h[1] for h in have]), 0)))
+    for dn, d, P, N, dense, ring, tslot, rings in shifted:
+        for k, sm in enumerate(SEAMS):
+            if rings[k] is not None:
+                P = conform(P, d.tri, tslot, frames[k], sm, rings[k], ring_target[k])
+        N = smooth_normals(P, N, d.tri)
         marks = face_landmarks(P, dense, c)
         if marks is None:
             sys.exit('make_pieces.py: %s: no face found' % dn['id'])
@@ -455,7 +620,8 @@ def main():
                         'head': dn.get('head', 'face'),
                         'face': {k: [round(x, 4) for x in v] for k, v in marks.items()},
                         'meshes': summary})
-        print('%-7s %6d verts  %s' % (dn['id'], len(P), ' '.join('%s:%d' % kv for kv in summary.items())))
+        print('%-7s %6d verts  neck %+.3f %+.3f  %s' % (dn['id'], len(P), (target - ring)[0], (target - ring)[1],
+                                                       ' '.join('%s:%d' % kv for kv in summary.items())))
     clips = write_anims(os.path.join(pieces, 'anims.glb'), c)
     names, parents, jnodes, W = skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in FACE})
     json.dump({'joints': [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']}

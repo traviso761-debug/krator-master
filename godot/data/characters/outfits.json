@@ -46,68 +46,68 @@
     "face_nose": [
      0.0088,
      1.5669,
-     0.1429
+     0.0787
     ],
     "face_mouth": [
      0.0088,
      1.5269,
-     0.1309
+     0.0667
     ],
     "face_chin": [
      0.0088,
      1.4819,
-     0.1129
+     0.0487
     ],
     "face_jaw": [
      0.0088,
      1.5069,
-     0.0679
+     0.0037
     ],
     "face_eye_L": [
      0.0408,
      1.6019,
-     0.1029
+     0.0387
     ],
     "face_eye_R": [
      -0.0232,
      1.6019,
-     0.1029
+     0.0387
     ],
     "face_brow_L": [
      0.0438,
      1.6219,
-     0.1179
+     0.0537
     ],
     "face_brow_R": [
      -0.0262,
      1.6219,
-     0.1179
+     0.0537
     ],
     "face_cheek_L": [
      0.0588,
      1.5719,
-     0.0929
+     0.0287
     ],
     "face_cheek_R": [
      -0.0412,
      1.5719,
-     0.0929
+     0.0287
     ]
    },
    "meshes": {
     "head": 518,
-    "head~torso": 17,
+    "head~torso": 13,
     "torso": 3560,
-    "torso~legs": 78,
-    "torso~head": 11,
-    "torso~hands": 7,
+    "torso~legs": 46,
+    "torso~head": 10,
+    "torso~hands": 9,
     "hands": 472,
-    "hands~torso": 23,
+    "hands~torso": 16,
     "legs": 5384,
-    "legs~torso": 12,
+    "legs~torso": 11,
     "legs~feet": 4,
     "feet": 322,
-    "feet~legs": 33
+    "feet~legs": 52
    }
   },
   {
@@ -119,68 +119,68 @@
     "face_nose": [
      -0.0025,
      1.5966,
-     0.0641
+     0.0422
     ],
     "face_mouth": [
      -0.0025,
      1.5566,
-     0.0521
+     0.0302
     ],
     "face_chin": [
      -0.0025,
      1.5116,
-     0.0341
+     0.0122
     ],
     "face_jaw": [
      -0.0025,
      1.5366,
-     -0.0109
+     -0.0328
     ],
     "face_eye_L": [
      0.0295,
      1.6316,
-     0.0241
+     0.0022
     ],
     "face_eye_R": [
      -0.0345,
      1.6316,
-     0.0241
+     0.0022
     ],
     "face_brow_L": [
      0.0325,
      1.6516,
-     0.0391
+     0.0172
     ],
     "face_brow_R": [
      -0.0375,
      1.6516,
-     0.0391
+     0.0172
     ],
     "face_cheek_L": [
      0.0475,
      1.6016,
-     0.0141
+     -0.0078
     ],
     "face_cheek_R": [
      -0.0525,
      1.6016,
-     0.0141
+     -0.0078
     ]
    },
    "meshes": {
     "head": 3153,
-    "head~torso": 27,
+    "head~torso": 24,
     "torso": 1849,
-    "torso~legs": 115,
-    "torso~head": 28,
+    "torso~legs": 74,
+    "torso~head": 24,
     "torso~hands": 64,
     "hands": 326,
-    "hands~torso": 36,
+    "hands~torso": 33,
     "legs": 3926,
-    "legs~torso": 23,
-    "legs~feet": 6,
+    "legs~torso": 24,
+    "legs~feet": 10,
     "feet": 587,
-    "feet~legs": 39
+    "feet~legs": 33
    }
   },
   {
@@ -192,68 +192,68 @@
     "face_nose": [
      -0.0008,
      1.618,
-     -0.044
+     0.0021
     ],
     "face_mouth": [
      -0.0008,
      1.578,
-     -0.056
+     -0.0099
     ],
     "face_chin": [
      -0.0008,
      1.533,
-     -0.074
+     -0.0279
     ],
     "face_jaw": [
      -0.0008,
      1.558,
-     -0.119
+     -0.0729
     ],
     "face_eye_L": [
      0.0312,
      1.653,
-     -0.084
+     -0.0379
     ],
     "face_eye_R": [
      -0.0328,
      1.653,
-     -0.084
+     -0.0379
     ],
     "face_brow_L": [
      0.0342,
      1.673,
-     -0.069
+     -0.0229
     ],
     "face_brow_R": [
      -0.0358,
      1.673,
-     -0.069
+     -0.0229
     ],
     "face_cheek_L": [
      0.0492,
      1.623,
-     -0.094
+     -0.0479
     ],
     "face_cheek_R": [
      -0.0508,
      1.623,
-     -0.094
+     -0.0479
     ]
    },
    "meshes": {
     "head": 1062,
-    "head~torso": 68,
+    "head~torso": 60,
     "torso": 13124,
-    "torso~legs": 88,
-    "torso~head": 62,
-    "torso~hands": 13,
+    "torso~legs": 74,
+    "torso~head": 53,
+    "torso~hands": 8,
     "hands": 688,
-    "hands~torso": 44,
+    "hands~torso": 31,
     "legs": 9296,
-    "legs~torso": 24,
-    "legs~feet": 38,
+    "legs~torso": 23,
+    "legs~feet": 39,
     "feet": 630,
-    "feet~legs": 95
+    "feet~legs": 75
    }
   },
   {
@@ -265,68 +265,68 @@
     "face_nose": [
      -0.0128,
      1.5814,
-     0.0614
+     0.0548
     ],
     "face_mouth": [
      -0.0128,
      1.5414,
-     0.0494
+     0.0428
     ],
     "face_chin": [
      -0.0128,
      1.4964,
-     0.0314
+     0.0248
     ],
     "face_jaw": [
      -0.0128,
      1.5214,
-     -0.0136
+     -0.0202
     ],
     "face_eye_L": [
      0.0192,
      1.6164,
-     0.0214
+     0.0148
     ],
     "face_eye_R": [
      -0.0448,
      1.6164,
-     0.0214
+     0.0148
     ],
     "face_brow_L": [
      0.0222,
      1.6364,
-     0.0364
+     0.0298
     ],
     "face_brow_R": [
      -0.0478,
      1.6364,
-     0.0364
+     0.0298
     ],
     "face_cheek_L": [
      0.0372,
      1.5864,
-     0.0114
+     0.0048
     ],
     "face_cheek_R": [
      -0.0628,
      1.5864,
-     0.0114
+     0.0048
     ]
    },
    "meshes": {
     "head": 1841,
-    "head~torso": 106,
+    "head~torso": 96,
     "torso": 7144,
-    "torso~legs": 299,
-    "torso~head": 108,
-    "torso~hands": 17,
+    "torso~legs": 227,
+    "torso~head": 78,
+    "torso~hands": 23,
     "hands": 1284,
-    "hands~torso": 109,
+    "hands~torso": 95,
     "legs": 12353,
-    "legs~torso": 32,
-    "legs~feet": 256,
+    "legs~torso": 22,
+    "legs~feet": 223,
     "feet": 2258,
-    "feet~legs": 657
+    "feet~legs": 517
    }
   },
   {
@@ -338,68 +338,68 @@
     "face_nose": [
      0.008,
      1.5967,
-     0.0961
+     0.1027
     ],
     "face_mouth": [
      0.008,
      1.5567,
-     0.0841
+     0.0907
     ],
     "face_chin": [
      0.008,
      1.5117,
-     0.0661
+     0.0727
     ],
     "face_jaw": [
      0.008,
      1.5367,
-     0.0211
+     0.0277
     ],
     "face_eye_L": [
      0.04,
      1.6317,
-     0.0561
+     0.0627
     ],
     "face_eye_R": [
      -0.024,
      1.6317,
-     0.0561
+     0.0627
     ],
     "face_brow_L": [
      0.043,
      1.6517,
-     0.0711
+     0.0777
     ],
     "face_brow_R": [
      -0.027,
      1.6517,
-     0.0711
+     0.0777
     ],
     "face_cheek_L": [
      0.058,
      1.6017,
-     0.0461
+     0.0527
     ],
     "face_cheek_R": [
      -0.042,
      1.6017,
-     0.0461
+     0.0527
     ]
    },
    "meshes": {
     "head": 2239,
-    "head~torso": 40,
+    "head~torso": 31,
     "torso": 7946,
-    "torso~legs": 308,
-    "torso~head": 63,
-    "torso~hands": 56,
+    "torso~legs": 256,
+    "torso~head": 83,
+    "torso~hands": 31,
     "hands": 1972,
-    "hands~torso": 142,
+    "hands~torso": 100,
     "legs": 10719,
-    "legs~torso": 93,
-    "legs~feet": 94,
+    "legs~torso": 75,
+    "legs~feet": 102,
     "feet": 1743,
-    "feet~legs": 323
+    "feet~legs": 282
    }
   },
   {
@@ -411,68 +411,68 @@
     "face_nose": [
      0.0003,
      1.5801,
-     0.0086
+     0.0294
     ],
     "face_mouth": [
      0.0003,
      1.5401,
-     -0.0034
+     0.0174
     ],
     "face_chin": [
      0.0003,
      1.4951,
-     -0.0214
+     -0.0006
     ],
     "face_jaw": [
      0.0003,
      1.5201,
-     -0.0664
+     -0.0456
     ],
     "face_eye_L": [
      0.0323,
      1.6151,
-     -0.0314
+     -0.0106
     ],
     "face_eye_R": [
      -0.0317,
      1.6151,
-     -0.0314
+     -0.0106
     ],
     "face_brow_L": [
      0.0353,
      1.6351,
-     -0.0164
+     0.0044
     ],
     "face_brow_R": [
      -0.0347,
      1.6351,
-     -0.0164
+     0.0044
     ],
     "face_cheek_L": [
      0.0503,
      1.5851,
-     -0.0414
+     -0.0206
     ],
     "face_cheek_R": [
      -0.0497,
      1.5851,
-     -0.0414
+     -0.0206
     ]
    },
    "meshes": {
     "head": 1792,
-    "head~torso": 37,
+    "head~torso": 54,
     "torso": 8765,
-    "torso~legs": 161,
-    "torso~head": 61,
-    "torso~hands": 23,
+    "torso~legs": 134,
+    "torso~head": 34,
+    "torso~hands": 14,
     "hands": 1138,
-    "hands~torso": 110,
+    "hands~torso": 134,
     "legs": 11888,
-    "legs~torso": 39,
-    "legs~feet": 72,
+    "legs~torso": 34,
+    "legs~feet": 66,
     "feet": 1310,
-    "feet~legs": 125
+    "feet~legs": 107
    }
   }
  ]
