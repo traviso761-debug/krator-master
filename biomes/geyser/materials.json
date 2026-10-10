@@ -1,0 +1,328 @@
+{
+ "build": "geyser",
+ "note": "The geyser kit's adapter onto the material library (core/materials/PLAN.md, The geyser basin). ground.* are the ground's ten library layers (84-host-ground.js), blended per vertex by the kit's thermal record (GEYSER.at): litter under the jungle, grass and moss on the basin's warm meadow, rock on the walls, black sand on the beach and the creek's bed, sinter on the flats, the shields and the run-off's banks (ground.sinter greyed: the owner's sinter carries its own mats, and the mats here are drawn by the temperature), tufa the Stair's travertine, clay the acid field's, mud the pots', mat (the owner's ground.mat.thermal) the detail under the shader's mat bands. Run python3 tools/textures/pack.py biomes/geyser after any change, then python3 build.py. The kit's own slots (BIO.libSwap, 50-biome-geyser-species.js): small (card.heath, one shrub, keep 0) the kanuka's foliage, fern (card.fern.green, one frond) the thermal ferns, lily and lilyb (card.lotus: a pad, a pad in flower, full colour) the kettle lilies, rosette (card.screwpine, one crown from above, keep 0) the stilt pandans' crowns; bark0 (bark.palm) the pandans, bark1 (bark.paperbark) the kanuka, bark2 (fibre.cane) the steam combs' stalks, wood (wood.silver) the snags, glass (glass.frosted) the glass canes, sinter (ground.clay.popcorn: its nodules read as geyserite) the cones and beads. Procedural until the owner's arrive (PROMPTS-ready.md): the strap leaves, the grass, the clubmoss, the streamers, the steam comb's fan, the reeds.",
+ "size": 512,
+ "families": {
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.grass": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.rock": {
+   "lib": "rock.wet.dark",
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.sand.black",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.18,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 1024
+  },
+  "ground.tufa": {
+   "lib": "stone.travertine.tufa",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.86
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 1024
+  },
+  "ground.clay": {
+   "lib": "ground.clay.popcorn",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.0,
+   "specular": 0.4,
+   "mapOnly": true
+  },
+  "ground.mat": {
+   "lib": "ground.mat.thermal",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "small": {
+   "lib": "card.heath",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.333,
+    0.333
+   ]
+  },
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.333,
+    0.0,
+    0.667,
+    0.333
+   ]
+  },
+  "lily": {
+   "lib": "card.lotus",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.333,
+    0.0,
+    0.667,
+    0.333
+   ]
+  },
+  "lilyb": {
+   "lib": "card.lotus",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.333,
+    0.333
+   ]
+  },
+  "rosette": {
+   "lib": "card.screwpine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.5,
+    0.5
+   ]
+  },
+  "bark0": {
+   "lib": "bark.palm",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark1": {
+   "lib": "bark.paperbark",
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark2": {
+   "lib": "fibre.cane",
+   "scale": [
+    0.6,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "wood": {
+   "lib": "wood.silver",
+   "scale": [
+    2.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "glass": {
+   "lib": "glass.frosted",
+   "scale": [
+    0.6,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "sinter": {
+   "lib": "ground.clay.popcorn",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

@@ -953,6 +953,28 @@ The rock here is basalt, not granite, so `rock.granite.tor` does not serve. **Th
 `card.rheumleaf` and `card.ragleaf` keyed from magenta, `card.ichu`, which came with a real transparent background and is not
 keyed); `ground.puna` followed the same day (1125 px). `biomes/ehighlands` uses all ten (`materials.json`, `tex/`).
 
+#### The geyser basin (`biomes/geyser`, 2026-10-07)
+
+The shared geyser kit and its showcase, a basin in the Steampits (`biomes/geyser/NOTES.md`). Library sets used
+(`biomes/geyser/materials.json`): the ground's ten layers `leaf.forest_leaves_02` (the jungle's litter),
+`ground.grass_ground` and `ground.moss002` (the warm meadow), `rock.wet.dark` (the walls), `ground.sand.black` (the
+beach, the creek's bed), `ground.sinter` greyed (keep 0.18: its own mats would double the shader's), `stone.travertine.tufa`
+whitened (the Stair, standing in), `ground.clay.popcorn` (the acid field's clay; its nodules also stand in for the cones'
+geyserite), `ground.brown_mud_02`, `ground.mat.thermal` (detail under the mat bands); the kit's own slots `card.heath`
+(one shrub: the thermal kanuka), `card.fern.green` (one frond: the thermal ferns), `card.lotus` (a pad and a pad in
+flower: the kettle lilies), `card.screwpine` (one crown from above: the stilt pandans), `bark.palm`, `bark.paperbark`,
+`fibre.cane`, `wood.silver` (the snags), `glass.frosted` (the glass canes). **The gaps, prompted in `PROMPTS-ready.md`
+("The geyser basin"):**
+
+| id | Material line | Reuse |
+|---|---|---|
+| `ground.travertine.white` | Travertine terraces seen from above: bright white calcite (#f2f0ea) in scalloped rimstone dams with smooth rounded lips, fine drip ridges on the faces, shallow pale-turquoise water (#9ad8d8) in the pools, faint cream and orange-brown stains. Full colour. | the Stair; any travertine spring, Mammoth-type terraces |
+| `stone.geyserite` | Geyserite seen close up: grey-white silica (#dedad0) in knobbly beaded crusts like cauliflower, a pearly sheen, faint buff and salmon stains. Tintable. | the geysers' cones and beads; spring rims; a silica-crusted snag's sock |
+| `card.streamer` | Card: nine clumps of long silky orange filaments (#e0782a to #f0a040, a few olive-green #7a8a34) combed out straight one way as if by flowing water, base at the bottom of each cell, on magenta. Full colour. | the flame streamers; any thermophile streamer, waterweed in a current |
+| `card.clubmoss` | Card: nine sprigs of nodding clubmoss (Lycopodiella), small upright stems like miniature pine trees, yellow-green needles (#7aa038), a pale nodding cone at each tip, base at the bottom, on magenta. | the clubmoss; any clubmoss or horsetail understorey |
+| `card.steamcomb` | Card: nine fans of very fine pale grey-white filaments (#e4e8e0) radiating from a hub at the bottom of each cell like a sea fan or a comb, beaded with clear water droplets, translucent, on magenta. Full colour. | the steam combs; sea fans, alien filter feeders |
+| `card.strap.pandan` | Card: nine single long strap leaves of a screwpine (Pandanus), each upright from its base at the bottom of the cell to a drooping tip, keeled, its edges finely toothed, glossy green (#4e7432) to yellow-green, on magenta. | the stilt pandans' leaves; screwpines, yuccas, bromeliad leaves |
+
 #### Furniture and city (generic, for every culture)
 
 Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs
