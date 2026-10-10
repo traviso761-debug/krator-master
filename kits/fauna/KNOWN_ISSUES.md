@@ -28,3 +28,12 @@
       `swbay` (the volcano) and `crater-drylands` (burnt steppe); the millipede adds `crater-drylands` for its ash herd. Retag
       them when the biome exists. The Zeijani of Dhelv ride the staghorn beetle too, but are not a catalog culture yet, so
       only `ashnomad` is in its `herdedBy` (a note in its `source` names them).
+- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3;
+      `models/*.json`, `models_pack.py`) are heavy next to the procedural ones: 8.5 to 13 thousand triangles each (the kit's
+      budget is 9 000; `data`/`modelData.budget` is 14 000 for them) and about 1 MB of packed geometry and baked maps apiece, so a
+      bundle that takes the flyers and crawlers grows by about 6 MB. Fine for a few animals a scene; do not herd them. The
+      wing and shoulder joints carry duplicated bands of faces so no seam opens (a few hundred triangles each). Their textures
+      are Meshy's baked maps, not library sets; a perched wing is a rigid fold (the membrane cannot gather); the bat's and
+      quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
+      flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
+

@@ -65,9 +65,78 @@ const KratorFaunaAPI = (function () {
     const m = new THREE.Mesh(g, material(fam)); m.castShadow = fam !== 'eye'; m.receiveShadow = true; m.userData.family = fam;
     return m;
   }
+  /* ---- model variants: a baked model (Meshy) packed by models_pack.py into FA_MODELS, one per entry variant (entry.models:
+       { variant: modelKey }). A model is a tree of nodes (each a part with its own pivot), its clips and three baked maps;
+       it is built into the same shape as any animal: a Group whose userData.parts names the kit's parts (head, tail,
+       leg0..N, wingL/R, wing2L/R, segN), animated by animate() from its clips: idle and rest play 'perch', walk plays 'walk',
+       fly plays 'flap' (or 'glide' when o.glide). Geometry and maps are decoded once per model and shared by every build. */
+  const MODELC = {};
+  function buf64(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u.buffer; }
+  function modelTex(url, srgb) {
+    const t = new THREE.Texture(), img = new Image(); t.flipY = false; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; if (srgb) t.encoding = THREE.sRGBEncoding;
+    TEXST.pending++; img.onload = function () { t.image = img; t.needsUpdate = true; TEXST.pending--; }; img.onerror = function () { TEXST.pending--; };
+    img.src = url; return t;
+  }
+  function modelOf(mkey) {
+    if (MODELC[mkey]) return MODELC[mkey];
+    const M = typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[mkey]; if (!M) throw new Error('KratorFauna: model ' + mkey + ' is not in this bundle');
+    const geo = {};
+    for (const n in M.meshes) {
+      const m = M.meshes[n], p16 = new Uint16Array(buf64(m.pos)), pos = new Float32Array(p16.length), n8 = new Int8Array(buf64(m.nrm)), nrm = new Float32Array(n8.length), u16 = new Uint16Array(buf64(m.uv)), uv = new Float32Array(u16.length);
+      for (let i = 0; i < p16.length; i++) pos[i] = m.min[i % 3] + p16[i] / 65535 * m.size[i % 3];
+      for (let i = 0; i < n8.length; i++) nrm[i] = n8[i] / 127;
+      for (let i = 0; i < u16.length; i++) uv[i] = u16[i] / 65535;
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setIndex(new THREE.BufferAttribute(m.wide ? new Uint32Array(buf64(m.idx)) : new Uint16Array(buf64(m.idx)), 1)); g.computeBoundingSphere(); geo[n] = g;
+    }
+    const mr = modelTex(M.tex.mr, false);
+    const mat = new THREE.MeshStandardMaterial({ map: modelTex(M.tex.map, true), normalMap: modelTex(M.tex.nrm, false), metalnessMap: mr, roughnessMap: mr, metalness: 1, roughness: 1, side: THREE.DoubleSide });
+    const clips = {};
+    for (const cn in M.anims) {
+      const A = M.anims[cn], tr = [];
+      for (const k of A.tracks) { const t = new Float32Array(buf64(k.t)), v = new Float32Array(buf64(k.v));
+        tr.push(k.path === 'quaternion' ? new THREE.QuaternionKeyframeTrack(k.node + '.quaternion', t, v) : new THREE.VectorKeyframeTrack(k.node + (k.path === 'scale' ? '.scale' : '.position'), t, v)); }
+      clips[cn] = new THREE.AnimationClip(cn, A.dur, tr);
+    }
+    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, clips: clips });
+  }
+  function buildModel(E, key, opt) {
+    const v = opt.variant | 0, mc = modelOf(E.models[v]), M = mc.M, S = M.scale, root = new THREE.Group(); root.name = 'fauna:' + key;
+    const top = new THREE.Group(); top.scale.setScalar(S); top.position.set(-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S); root.add(top);
+    const gs = M.nodes.map(nd => { const g = new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+      const geo = mc.geo[nd.name]; if (geo) { const m = new THREE.Mesh(geo, mc.mat); m.castShadow = true; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
+    M.nodes.forEach((nd, i) => (nd.parent < 0 ? top : gs[nd.parent]).add(gs[i]));
+    const P = { legs: [] }, side = s => (s === 'R' ? 1 : 0);
+    M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
+      if ((m = /^leg(\d)([LR])$/.exec(n))) P.legs[2 * +m[1] + side(m[2])] = g;           /* hexapod: leg0L, leg0R, leg1L ... = the kit's order */
+      else if ((m = /^leg([LR])$/.exec(n))) P.legs[side(m[1])] = g;                     /* biped */
+      else if ((m = /^leg(\d+)$/.exec(n))) P.legs[+m[1]] = g;                           /* a chain: front to back, left then right */
+      else if ((m = /^seg(\d+)$/.exec(n))) (P.segs || (P.segs = []))[+m[1]] = g;
+      else if (n === 'head' || n === 'tail' || /^wing2?[LR]$/.test(n)) P[n] = g;
+      else if (n === 'abd') P.tail = g;
+      else if (!P.body && /^(torso|thorax|rig)$/.test(n)) P.body = g; });
+    if (!P.body) P.body = top;
+    const dm = (E.variantDims && E.variantDims[v]) || { w: E.w, d: E.d, h: E.h };
+    let walk = M.anims.walk && M.anims.walk.extras;
+    root.userData = { key: key, name: E.name, variant: v, variantName: E.variantNames[v] || '', breed: null, S: 1, model: E.models[v], tags: E.tags, traits: E.traits, yields: E.yields, life: E.life, data: E.data, size: E.size, source: E.source,
+      anchors: {}, parts: P, tris: M.tris, w: dm.w, d: dm.d, h: dm.h, fauna: true, walkSpeed: walk ? walk.speed * S : 0, walkStride: walk ? walk.stride * S : 0, modelTop: top };
+    const mixer = new THREE.AnimationMixer(top), acts = {};
+    for (const cn in mc.clips) { acts[cn] = mixer.clipAction(mc.clips[cn]); acts[cn].setLoop(THREE.LoopRepeat, Infinity); }
+    root.userData._mx = { mixer: mixer, acts: acts, cur: null, clips: mc.clips };
+    animate(root, 0, 'idle'); return root;
+  }
+  function animateModel(g, t, mode, o) {
+    o = o || {}; const mx = g.userData._mx, has = n => !!mx.acts[n];
+    const cn = mode === 'walk' && has('walk') ? 'walk' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
+    if (mx.cur !== cn) { if (mx.cur) mx.acts[mx.cur].stop(); mx.acts[cn].reset().play(); mx.cur = cn; }
+    const a = mx.acts[cn], dur = mx.clips[cn].duration, tm = t * (o.rate || 1) + (o.phase || 0) / TAU * dur;
+    a.time = ((tm % dur) + dur) % dur; mx.mixer.update(0);
+  }
   function build(key, opt) {
     const E = ANIMAL_BY_KEY[key]; if (!E) throw new Error('KratorFauna.build: no animal ' + key);
     opt = opt || {};
+    if (E.models && E.models[opt.variant | 0]) return buildModel(E, key, opt);
     const A = faunaFrame(E, opt);
     E.build(A);
     const root = new THREE.Group(); root.name = 'fauna:' + key;
@@ -111,6 +180,7 @@ const KratorFaunaAPI = (function () {
                    that snakes) in 'walk' and 'swim', not each segment yawing in place
        idle        { headYaw, headPitch, tailYaw } radians: how far the head looks about and the tail sways at idle */
   function animate(g, t, mode, o) {
+    if (g.userData._mx) return animateModel(g, t, mode, o);   /* a model variant plays its own clips */
     o = o || {}; const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
     const ph = (o.phase || 0), f = gait.freq || 1.5, w = TAU * f * t + ph, type = gait.type || 'quadruped';
     const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
