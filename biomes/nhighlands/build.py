@@ -61,6 +61,12 @@ for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+import host as khost
+CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+khost.resolve(PATH,CORE_HOST)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
 # empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
