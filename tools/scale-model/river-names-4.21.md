@@ -105,12 +105,11 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r920 | Vali Klauda | cloud dry valley | dry valley |  |
 | r890 | Vali Tondar | thunder dry valley | dry valley |  |
 
-## hykkousik (2)
+## hykkousik (1)
 
 | id | name | from the English | kind | flow |
 |---|---|---|---|---|
 | r018 | Ve Mavar Rivar | mother river | river | 283 |
-| r789 | Ve Redd Gyli | red dry valley | dry valley |  |
 
 ## xanadui (31)
 
@@ -265,7 +264,7 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r357 | Hamrbek | hammer stream | river | 26 |
 | r556 | Roketbek | rocket stream | river | 16 |
 
-## riders (29)
+## riders (27)
 
 | id | name | from the English | kind | flow |
 |---|---|---|---|---|
@@ -290,14 +289,12 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r234 | Naat' Baatar | night stream | river | 31 |
 | r244 | Erę Baatar | rain stream | river | 29 |
 | r486 | Khaad Baatar | hard stream | river | 29 |
-| r287 | Są Baatar | sun stream | river | 22 |
-| r299 | Istar Baatar | star stream | river | 21 |
-| r485 | Mų Baatar | moon stream | river | 21 |
-| r484 | Gol Baatar | gold stream | river | 17 |
-| r332 | Bǫ Baatar | bone stream | river | 16 |
-| r523 | Aayą Baatar | iron stream | river | 16 |
-| r775 | Istǫ Khol | stone dry valley | dry valley |  |
-| r871 | Diip Khol | deep dry valley | dry valley |  |
+| r299 | Są Baatar | sun stream | river | 21 |
+| r485 | Istar Baatar | star stream | river | 21 |
+| r484 | Mų Baatar | moon stream | river | 17 |
+| r332 | Gol Baatar | gold stream | river | 16 |
+| r523 | Bǫ Baatar | bone stream | river | 16 |
+| r775 | Aayą Khol | iron dry valley | dry valley |  |
 
 ## dasri (43)
 
@@ -373,3 +370,29 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r240 | Ṣṭūnum Ribarum | stone stream | river | 30 |
 | r322 | Ḫiddanum Ribarum | hidden stream | river | 17 |
 | r329 | Šrūnum Ribarum | throne stream | river | 16 |
+
+## scyvoi (11)
+
+| id | name | from the English | kind | flow |
+|---|---|---|---|---|
+| r201 | Madır Kiriki | mother stream | river | 35 |
+| r287 | Salt Kiriki | salt stream | river | 22 |
+| r347 | Sivift Kiriki | swift stream | river | 12 |
+| r498 | Durum Kiriki | Drum stream | river | 11 |
+| r354 | Bılak Kiriki | black stream | river | 11 |
+| r645 | Ret Gulusu | red dry valley | dry valley |  |
+| r687 | Sant Gulusu | sand dry valley | dry valley |  |
+| r782 | Bitir Gulusu | bitter dry valley | dry valley |  |
+| r789 | Borun Gulusu | burn dry valley | dry valley |  |
+| r860 | Filem Gulusu | flame dry valley | dry valley |  |
+| r871 | Sumok Gulusu | smoke dry valley | dry valley |  |
+
+## screamer (5)
+
+| id | name | from the English | kind | flow |
+|---|---|---|---|---|
+| r601 | Hexahedron Gulch | Hexahedron dry valley | dry valley |  |
+| r672 | Howling Gulch | the caravans' name: the Screamers name nothing | dry valley |  |
+| r682 | Shrieking Gulch | the caravans' name: the Screamers name nothing | dry valley |  |
+| r929 | Wailing Gulch | the caravans' name: the Screamers name nothing | dry valley |  |
+| r896 | Screaming Gulch | the caravans' name: the Screamers name nothing | dry valley |  |

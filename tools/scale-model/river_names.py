@@ -29,7 +29,9 @@ TONGUE = {'Vothic Kingdom': 'vothic', 'Empire of Iziz': 'izani', 'League of Amph
           'Xanadu Sultanate': 'xanadui', 'Vale of Xanadu': 'xanadui', 'Oidong Valley': 'xanadui',
           'Yuni Emirate': 'yuni', 'Yuni Valley': 'yuni', 'Dalab Council': 'dalab', 'Iron Republic': 'republic',
           'Free Clans': 'republic', 'Beast Riders': 'riders', 'Nomad Country': 'dasri', 'e abysss': 'tabist',
-          'Throne/Volcano': 'zeijani'}
+          'Throne/Volcano': 'zeijani', 'Scyvoi': 'scyvoi', 'crater drylands': 'scyvoi', 'Screamer Country': 'screamer'}
+# (the Scyvoi range the crater drylands, both of the regions so named, as well as the polity drawn for them; the Screamers
+# speak no tongue, so their waters carry the plain English the caravans give them)
 
 # English -> the tongue's word, for each descriptor. Keys are the English; a missing key is a word the tongue lacks.
 D_ = {
@@ -82,6 +84,20 @@ D_ = {
  'tabist': dict(salt='Aṣolṭ', stone='Astun', sun='Aṣan', star='Astar', gold='Aguld', bone='Abun', red='Arid',
                 black='Ablak', white='Awayṭ', bitter='Abiṭar', ghost='Agost', fire='Afayar', moon='Amun',
                 sand='Aṣanḍ', mother='Tamaḍart', deep='Adib', old='Awold', camel='Aqamal', thorn='Atorn', oil='Awayl'),
+ 'scyvoi': dict(long='Lon', red='Ret', black='Bılak', white='Vayt', cold='Holt', swift='Sivift', salt='Salt',
+                stone='Suton', sun='San', star='Sıtar', gold='Golt', bone='Bon', reed='Rit', green='Girin', deep='Dip',
+                bright='Bırayt', old='Olt', falls='Fols', mother='Madır', thorn='Sorn', snake='Sınek', wolf='Vulf',
+                ash='Aş', fire='Fayır', moon='Mun', bitter='Bitir', burn='Borun', flame='Filem', smoke='Sumok',
+                grass='Gıras', lizard='Lizirt', scythe='Sıkayt', kopje='Hopi', granite='Gıranıt', hawk='Hok', crow='Hurov',
+                hunter='Hantır', blood='Bılat', storm='Sutorm', wind='Vin', three='Siri', seed='Sit', dry='Dıray',
+                iron='Ayrın', sand='Sant', lost='Los', claw='Hılav', theropod='Seropot', shadow='Şadu', willow='Vilu',
+                yellow='Yelu'),
+ 'screamer': dict(howling='Howling', shrieking='Shrieking', wailing='Wailing', screaming='Screaming',
+                  gibbering='Gibbering', raving='Raving', skull='Skull', bone='Bonepile', gutter='Gutter',
+                  cutthroat='Cutthroat', rawthroat='Rawthroat', blackmaw='Blackmaw', lastcry='Last Cry',
+                  deadman="Dead Man's", gallows='Gallows', hush='Hush', silent='Silent', bleeding='Bleeding',
+                  gnashing='Gnashing', snare='Snare', net="Netter's", lasso='Lasso', punji='Punji', taken="Taken Man's",
+                  noreturn='No-Return', hollow='Hollow-Eye', grinding='Grinding', madwater="Madman's"),
  'zeijani': dict(fire='Pērum', ash='Ašum', sun='Ṣunum', stone='Ṣṭūnum', gold='Guldum', hidden='Ḫiddanum',
                  sky='Ṣqayum', black='Blaqqum', red='Reddum', smoke='Ṣmūkum', bone='Būnum', throne='Šrūnum',
                  deep='Dīppum', hot='Ḫuṭṭum', light='Lētum', dark='Dāqum'),
@@ -126,6 +142,7 @@ W_ = {
  'xanadui': ('Riwā', 'Siṭrīm', 'Ḍrāi'), 'yuni': ('Rivvo', 'Krikki', 'Gulli'), 'dalab': ('riba', 'bruk', 'guli'),
  'republic': ('rivr', 'bek', 'gjel'), 'riders': ('Baatar', 'Baatar', 'Khol'), 'dasri': ('Rīfar', 'Rīfar', 'Wādī'),
  'tabist': ('Aribar', 'Aribar', 'Awadi'), 'zeijani': ('Ribarum', 'Ribarum', 'Gullum'),
+ 'scyvoi': ('Vatırı', 'Kiriki', 'Gulusu'), 'screamer': ('River', 'Creek', 'Gulch'),
 }
 EN_WORD = ('river', 'stream', 'dry valley')
 
@@ -166,7 +183,7 @@ def compose_place(t, place, word):
 # (English place names run through the same changes: Girder is gördar in Tl'aai on the record, Hook loses its h and
 # takes -a with k voiced in Izani, Span loses s- before a stop in Dalab, Strongwall breaks s+t with a vowel in Xanadui)
 PLACE = {'Shade': {'dasri': 'Šayd', 'tabist': 'Tašayt'}, 'Girder': {'riders': 'Gördar'}, 'Hook': {'izani': 'Uga'},
-         'Span': {'dalab': 'Pan'}, 'Drum': {'vothic': 'Drïm'}, 'Torus': {'vothic': 'Tors'}, 'Wing': {'vothic': 'Vink'},
+         'Span': {'dalab': 'Pan'}, 'Drum': {'vothic': 'Drïm', 'scyvoi': 'Durum'}, 'Torus': {'vothic': 'Tors'}, 'Wing': {'vothic': 'Vink'},
          'Longsong': {'xanadui': 'Lõsõ'}, 'Strongwall': {'xanadui': 'Siṭrõwāl'}, 'Cascade': {'republic': 'Kaskejt'},
          'Reed': {'dasri': 'Rīd'}, 'Verge': {'tabist': 'Aberj'}}
 # the pool after the course's own traits, per tongue (each tongue's favourite things first)
@@ -194,6 +211,13 @@ POOL = {
            'moon', 'gold', 'bone', 'stone', 'fire', 'old', 'bitter', 'green', 'white', 'black'],
  'tabist': ['oil', 'ghost', 'camel', 'thorn', 'sand', 'sun', 'star', 'moon', 'gold', 'bone', 'stone', 'fire', 'old',
             'bitter', 'white', 'black'],
+ 'scyvoi': ['burn', 'flame', 'smoke', 'grass', 'lizard', 'scythe', 'kopje', 'granite', 'theropod', 'ash', 'fire',
+            'seed', 'hawk', 'crow', 'claw', 'hunter', 'blood', 'storm', 'wind', 'three', 'shadow', 'willow', 'yellow',
+            'sun', 'star', 'moon', 'gold', 'bone', 'stone', 'iron', 'wolf', 'snake', 'thorn', 'lost', 'old', 'deep',
+            'white', 'black'],
+ 'screamer': ['howling', 'shrieking', 'wailing', 'screaming', 'skull', 'cutthroat', 'blackmaw', 'deadman', 'gibbering',
+              'raving', 'bone', 'gutter', 'rawthroat', 'lastcry', 'gallows', 'hush', 'silent', 'bleeding', 'gnashing',
+              'snare', 'net', 'lasso', 'punji', 'taken', 'noreturn', 'hollow', 'grinding', 'madwater'],
  'zeijani': ['hidden', 'throne', 'ash', 'smoke', 'light', 'dark', 'sun', 'stone', 'gold', 'sky', 'bone', 'hot', 'deep'],
 }
 EN = {'cold2': 'frost'}
@@ -239,15 +263,17 @@ def main():
         sys.exit(__doc__)
     page, rpath, out = sys.argv[1:4]
     lines, li, D = load(page)
-    R = {r['name'].strip(): r for r in json.load(open(rpath, encoding='utf8'))}
+    RL = json.load(open(rpath, encoding='utf8'))
     OW, OH = D['fullW'], D['fullH']
     masks = {}
     for nm in TONGUE:
-        if nm not in R:
+        docs = [r for r in RL if r['name'].strip() == nm]
+        if not docs:
             sys.exit('no region named %r' % nm)
-        im = Image.new('L', (OW, OH), 0)
-        ImageDraw.Draw(im).polygon([tuple(p) for p in R[nm]['points']], fill=1)
-        masks[nm] = np.array(im).astype(bool)
+        for r in docs:
+            im = Image.new('L', (OW, OH), 0)
+            ImageDraw.Draw(im).polygon([tuple(p) for p in r['points']], fill=1)
+            masks[(nm, r['id'])] = np.array(im).astype(bool)
     CL = [c['code'] for c in D['climate']['classes']]
     cls = np.array(Image.open(io.BytesIO(base64.b64decode(D['c']))).convert('L'))
     tm = np.array(Image.open(io.BytesIO(base64.b64decode(D['tm']))).convert('L')).astype(int) - 90
@@ -260,7 +286,7 @@ def main():
             share = sum(at(m, p) for p in r['px']) / len(r['px'])
             if share >= .5 and (best is None or m.sum() < best[1]):
                 best = (nm, m.sum())
-        r['_t'] = TONGUE[best[0]] if best else None
+        r['_t'] = TONGUE[best[0][0]] if best else None
     used = {t: set() for t in W_}
     names = {t: set() for t in W_}
     # rivers by flow, then dry valleys by catchment; the largest river of each tongue is its 'mother'
@@ -296,12 +322,14 @@ def main():
         if name is None:
             clim = [CL[int(at(cls, p))] for p in r['px']]
             temp = [int(at(tm, p)) for p in r['px']]
-            cand = traits(r, clim, temp) + POOL[t]
+            cand = (traits(r, clim, temp) if t != 'screamer' else []) + POOL[t]
             for d in cand:
                 if d in D_[t] and d not in used[t]:
                     used[t].add(d)
                     name = compose(t, D_[t][d], word, r['kind'])
                     gloss = '%s %s' % (EN.get(d, d), EN_WORD[k])
+                    if t == 'screamer':
+                        gloss = "the caravans' name: the Screamers name nothing"
                     break
         if name is None:                                   # the tongue's words are spent: two join
             words = [d for d in POOL[t] + list(D_[t]) if d in D_[t]]

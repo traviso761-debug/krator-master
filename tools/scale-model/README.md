@@ -155,8 +155,9 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   through that tongue's regular changes (Vothic *Tzolt Rivrh* salt river, Izani *Rrivar Rreda*, Dalab *Folriba*,
   Tl'aai *Tl'aa Baatar*, Dasri *Wadi al-Jost*, Xanadui *Alph* for its greatest, Yuni *Saltie Rivvo*...), the word chosen
   from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
-  settlement it passes) and then from each tongue's own pool. 317 of 936 named, each with `tongue` and `gloss`; the
-  rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
+  settlement it passes) and then from each tongue's own pool. 330 of 936 named, each with `tongue` and `gloss`: the
+  Scyvoi's in Boruntun (*Borun Gulusu*, *Madır Kiriki*; the polity and both 'crater drylands'), Screamer Country's in
+  plain English, the caravans' (*Howling Gulch*); the rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
