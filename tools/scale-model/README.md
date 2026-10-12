@@ -157,6 +157,13 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
   settlement it passes) and then from each tongue's own pool. 317 of 936 named, each with `tongue` and `gloss`; the
   rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
+- **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
+  the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
+  away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
+  away). 21 grow, 15 shrink: 286,878 km2 of land would flood and 38,649 km2 of lakebed lie dry. The western level-0
+  lakes are the biggest change: Ancient's Valley's and the SW lowlands' (1, 2) rise to 957 m and join. Kept as
+  `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
+  "Krator Lakes in Balance" artifact. Nothing on the model page changes.
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
