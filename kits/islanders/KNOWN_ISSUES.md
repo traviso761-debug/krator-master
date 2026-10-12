@@ -28,5 +28,17 @@
 ## Scope
 
 - [ ] A kit sheet, not a settlement: no village layout, streets or life layer for people yet (the farm stock carries life
-      data). The harbour's canoes are small stand-ins (`iwCanoe`); the full vessels are in `kits/ringsea`.
+      data). The harbours' canoes and the hulls on the slips are drawn here (`iwCanoe`, `iwHull`, `ieCanoe`, `ieDouble`); the full vessels
+      (the oruwa, karakoa, lakatoi, and the drua, kora-kora and lanong added with this kit) are in `kits/ringsea`.
 - [ ] The page is about 10 MB, nearly all of it the inlined library maps (512 px); in line with the Nomad kits.
+
+## Views and the cut-away
+
+- [ ] The moon discs on the fronts of the West's hall and the chief's house do not open with the cut-away (they are drawn
+      outside it), so in a cut-away view they float in front of the open floor.
+- [ ] The automatic "Palace of Kautoa - eye level" view stands about 74 m out and the rich-houses row in front blocks it
+      (the views come from the vendored `90-scene.js`); use `--cam` for the palace's courts. The trade rows hold 13 buildings
+      each, so their row views are distant.
+- [ ] The ikat cloths on the Kautoa weaver's rail use the stand-in patterns (`patGableE`, `patWeave`, `tapa`): no hinggi sheet yet.
+- [x] The cut-away kept the near half of every raised floor only after the agents' fix (2026-10-12): `isCutFloor` now runs
+      before the piles and the deck in both `iwHouse` and `ieHouse`.

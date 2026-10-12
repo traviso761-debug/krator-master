@@ -26,6 +26,11 @@ front**, x its right. `ry` is three.js rotation.y: the front (+z) turns to (sin 
 | `56-sa-beasts.js` | sa | the fauna kit's pig, hen, duck and water buffalo as `life` defs (`saHerd`), `saFlush` |
 | `57-fl-flora.js` | fl | PLACEHOLDER flora (class `flora`, biome and harvest tags): `fl-coconut`, `fl-banana`, `fl-taro`, `fl-breadfruit`, `fl-paddy`; `flLeaf` |
 | `60-ie-east.js` | ie | `ieHouse(o)` (any Kautoa house from parameters); the nine Kautoa houses |
+| `62-ie-civic.js` | ie | the shared East helpers (`ieRoofE` the East roof on its own, `ieRoofY`, `ieShed`, `ieCutWith`, `ieArch`, `ieSteps`, `ieFurn`, `ieGallery`, `ieSpireTower`, `ieFinial`); the village hall (after the owner's "plaza"), the ceremonial square (after "sumba - square"), the school |
+| `63-ie-trade.js` | ie | `ieGranary`, `ieCanopy`, the turning sails (`IE_MILLS`, `ieMillSails`, `ieMillFlush`, `ieMillBuildWorld`); the farmstead, the smallholding, two granaries, the windmill, the warehouse, the smithy, six shops |
+| `64-ie-harbour.js` | ie | `ieSeaFloor iePile ieWalk ieRing ieHull ieDouble ieCanoe ieSlip`; the fishing dock, the dockyard |
+| `65-ie-defence.js` | ie | `ieWallRun`; the coral wall, the town gate, the watch tower, the barracks |
+| `66-ip-palace.js` | ip | `ipWall ipPave ipSpire`, the hall's roof (`ipSweepF ipSweep ipSweepAt`); the palace of Kautoa (`ip-palace`) and the parts it nests: the great audience hall, the gatehouse, gates, towers, galleries, pavilions, the residence, the shrine, the treasury, the kitchens, granaries, the garden pavilion, the tusk monument |
 | `89-rows.js` | | `FAMILIES` (the sheet's rows; a family with `shore: true` stands on the beach and must be LAST) |
 | `90h-is-shore.js` | | the shore: under the shore row the drawn ground falls to the sea floor (`IS_SEA.floor`), the sand strip, the Ring Sea on the shared wave field; `IS_SEA` (`level` the waterline y = -0.9, `floor` -3.8, `shoreZ`) |
 

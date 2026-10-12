@@ -33,6 +33,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 167 | 30 | 6 | 10 | 33 | 88 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 121 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
+| [`kits/islanders`](kits/islanders/PORT.md) | 33 | 345 | 19 | 6 | 10 | 33 | 277 | 3 | atmos | yes | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
@@ -55,7 +56,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1837 | 24422 | 3920 (16%) | 519 (2%) | 1047 (4%) | 2976 (12%) | 15960 (65%) | 250 | | | |
+| **all** | 1870 | 24767 | 3939 (16%) | 526 (2%) | 1057 (4%) | 3009 (12%) | 16238 (66%) | 253 | | | |
 
 ## Host-shell copies
 
@@ -63,9 +64,9 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `camera` | 22 | 16 | 255 |
-| `probe` | 20 | 15 | 57 |
-| `sky` | 19 | 5 | 407 |
+| `camera` | 23 | 16 | 268 |
+| `probe` | 21 | 15 | 59 |
+| `sky` | 20 | 5 | 417 |
 | `host-stage` | 17 | 17 | 337 |
 | `host-sky` | 17 | 15 | 242 |
 | `host-build` | 17 | 17 | 20 |
