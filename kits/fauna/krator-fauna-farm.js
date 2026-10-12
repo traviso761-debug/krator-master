@@ -778,15 +778,16 @@ ANIMAL({
   yields: { meat: { amount: 90, note: 'a meat cow dressed: the lowlands\' common meat' }, eggs: { amount: 24, note: 'one clutch a year, gathered from the paddock nests: a market food' },
     hide: { amount: 1, hideM2: 2.6, note: 'banded lizard leather: the Dalab boots, belts and saddlery' } },
   life: { maturity: 2, lifespan: 25, litter: 18, gestation: 70, note: 'litter: a clutch; gestation: the days to hatching; a product of the genepriests\' breeding program (Daranch)' },
-  variants: 4, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown'],
+  variants: 5, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown', 'cow, olive with ochre bands (Meshy model)'],
   breeds: { meat: { scale: 1, mass: 240, role: 'the ranch\'s meat herd' }, riding: { scale: 1.3, mass: 520, role: 'the inn\'s riding and pack lizard' } },
   w: 1.57, d: 2.62, h: 0.75,
-  variantDims: [{ w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.95 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.75 }],
+  variantDims: [{ w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.95 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.5, d: 2.45, h: 1.0 }],
+  models: { 4: 'dalab-lizard' }, modelData: { 4: { budget: 12000 } },   /* the Meshy model variant (models/dalab-lizard.json, models_pack.py, rig/qmodel.py: a sprawl rig) */
   data: { mass: 240, legs: 4, speed: { walk: 1.0, run: 5 }, gait: { type: 'sprawl', freq: 0.9, stride: 0.6 }, grazePitch: 0.35, sizeRange: [0.7, 1.5],
     herd: 'a paddock of 4 to 8 with a crested bull', fleeDistance: 2, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
-    const v = A.variant, S = A.S, hide = [0x6a8a3a, 0x7a9a44, 0x9a8a4a, 0x8a4a2a][v], band = [0xd8a838, 0xa8382a, 0x3f9a88, 0xd8a838][v], belly = faFmMix(hide, 0xd8d0a0, 0.45);
+    const v = A.variant, S = A.S, hide = [0x6a8a3a, 0x7a9a44, 0x9a8a4a, 0x8a4a2a, 0x6a8a3a][v], band = [0xd8a838, 0xa8382a, 0x3f9a88, 0xd8a838, 0xd8a838][v], belly = faFmMix(hide, 0xd8d0a0, 0.45);
     const BANDS = [-0.37, -0.12, 0.12, 0.37];
     const skin = (t, a) => { const z = faFmLizKey(t, 1), top = Math.cos(a);
       if (top < -0.55) return belly;

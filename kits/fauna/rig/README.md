@@ -26,4 +26,5 @@ two-bone leg with the foot kept level. The walk is a trot (a hen alternates) wit
 (the belly line, the head and tail cuts, the stride); `--debug cls.png` plots the classification to tune them. Each animal's four
 feet are a little different in height in Meshy's model, so each leg has its own ground. Pack the result with
 `models_pack.py ... --truthful-sides` (the rig already names L the animal's left).
+The Dalab lizard uses the same script in `sprawl` mode (CFG key `sprawl`): the legs are cut by distance from the body's axis, not height, and the IK has a free three-axis hip plus a knee hinging about the leg-plane normal, so the legs go out sideways and then down while each foot stays planted. The horse's cuts use `head_line` (a slanted neck cut, so the chest and shoulders stay in the torso), `head_box`, `head_dup` and `tailx`.
 

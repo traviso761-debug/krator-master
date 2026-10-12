@@ -17,6 +17,7 @@ from common import load, weld_ids, face_components, coo_matrix, connected_compon
 # belly: y below which a face is leg; legx: |x| a leg face must exceed; head: (z, y) the head/neck cut; tail: (z, ymin); zmid: front/hind split
 # stride: walk stride (model units); tris: decimation target; kneefrac: knee height as a fraction down the leg
 CFG = {
+ 'dalab': dict(sprawl=dict(xc=0.17, hw=0.21, zf=0.20, ztail=-0.30, tsplit=-0.12, fh=0.05), head_line=(0.60, 0.05, 0.85, -0.10), belly=-0.2, legx=0.0, head=(0.7, 0.0), tail=(-0.3, -0.6), zmid=0.2, stride=0.30, lift=0.05, tris=8000),
  'cow':   dict(belly=-0.26, legx=0.06, head=(0.58, 0.02), tail=(-0.86, -0.7), zmid=-0.05, stride=0.30, tris=8000),
  'ox':    dict(tymax=-0.02, belly=-0.20, legx=0.03, head=(0.60, 0.00), tail=(-0.86, -0.7), zmid=-0.05, stride=0.28, tris=8000),
  'pig':   dict(belly=-0.18, legx=0.03, head=(0.58, -0.12), tail=(-0.88, -0.2), zmid=0.0, stride=0.22, tris=7000),
@@ -24,7 +25,7 @@ CFG = {
  'goat':  dict(belly=-0.30, legx=0.03, head=(0.52, 0.25), tail=(-0.86, -0.4), zmid=0.0, stride=0.26, tris=7000),
  'dog':   dict(tymax=0.02, belly=-0.24, legx=0.03, head=(0.58, 0.15), tail=(-0.62, -0.6), zmid=0.0, stride=0.30, tris=7000),
  'cat':   dict(tymax=0.0, belly=-0.16, legx=0.07, head=(0.52, 0.05), tail=(-0.62, -0.7), zmid=0.0, stride=0.24, tris=7000),
-'horse': dict(tymax=0.1, belly=-0.12, legx=0.03, head=(0.30, 0.15), tail=(-0.60, -0.6), zmid=0.0, stride=0.30, tris=8500),
+'horse': dict(head_box=[(0.27, 0.6, 0.2, 0.7, 0.4, 0.8)], yawmax=1.0, head_line=(0.28, 0.55, 0.58, 0.30), head_dup=False, tailx=0.3, tymax=0.1, belly=-0.12, legx=0.03, head=(0.30, 0.15), tail=(-0.52, -0.6), zmid=0.0, stride=0.30, tris=8500),
  'buffalo': dict(head_all=0.62, tymax=-0.02, belly=-0.15, legx=0.03, head=(0.55, 0.0), tail=(-0.88, -0.7), zmid=-0.05, stride=0.26, tris=8000),
  'yak':   dict(head_all=0.70, tymax=0.0, belly=-0.50, legx=0.03, head=(0.62, -0.05), tail=(-0.90, -0.6), zmid=0.0, stride=0.22, tris=8000),
  'bison': dict(head_all=0.62, tymax=0.0, belly=-0.30, legx=0.03, head=(0.55, -0.25), tail=(-0.85, -0.7), zmid=-0.05, stride=0.24, tris=8000),
@@ -33,13 +34,30 @@ CFG = {
 }
 
 
+def classify_sprawl(C, c):
+    """A sprawling lizard: the legs go out sideways then down, so the cut is by distance from the body's axis, not by height."""
+    x, y, z = C[:, 0], C[:, 1], C[:, 2]; sp = c['sprawl']; part = np.full(len(C), 'torso', dtype=object)
+    z0, y0, z1, y1 = c['head_line']; part[(z > z0) & (y > y0 + (z - z0) * (y1 - y0) / (z1 - z0))] = 'head'
+    part[z > c['head'][0]] = 'head'
+    part[(z < sp['ztail']) & (part == 'torso')] = 'tail'
+    side = (np.abs(x - sp['xc']) > sp['hw']) & (part == 'torso') & (z > sp['ztail'] - 0.0) & (z < c['head'][0])
+    gy = y[side].min(); 
+    for i in np.where(side)[0]:
+        pi = 0 if z[i] > sp['zf'] else 1; sd = 'L' if x[i] > sp['xc'] else 'R'
+        part[i] = 'leg%d%s%s' % (pi, sd, 'f' if y[i] < gy + sp['fh'] else ('t' if y[i] < sp['tsplit'] else ''))
+    return part
+
+
 def classify(C, c):
+    if 'sprawl' in c: return classify_sprawl(C, c)
     x, y, z = C[:, 0], C[:, 1], C[:, 2]; n = len(C)
     part = np.full(n, 'torso', dtype=object)
     hz, hy = c['head']; part[(z > hz) & (y > hy)] = 'head'
+    if 'head_line' in c:      # a slanted neck cut: the head is above and in front of the line (z0, y0) -> (z1, y1), so the chest and shoulders stay in the torso
+        z0, y0, z1, y1 = c['head_line']; part[:] = 'torso'; part[(z > z0) & (y > y0 + (z - z0) * (y1 - y0) / (z1 - z0))] = 'head'
     if 'head_all' in c: part[z > c['head_all']] = 'head'      # a low muzzle dips below the cut line: everything in front of this z is head
     xc = float(np.median(x[(y > c['belly']) & (np.abs(z) < 0.4)]))
-    tz, tymin = c['tail']; part[(z < tz) & (y > tymin) & (y < c.get('tymax', 9.0)) & (np.abs(x - xc) < 0.16) & (part == 'torso')] = 'tail'
+    tz, tymin = c['tail']; part[(z < tz) & (y > tymin) & (y < c.get('tymax', 9.0)) & (np.abs(x - xc) < c.get('tailx', 0.16)) & (part == 'torso')] = 'tail'
     leg = (y < c['belly']) & (part == 'torso')
     gy = y[leg].min() if leg.any() else y.min(); fh = c.get('foot_h', 0.07)
     pairs = [np.ones(n, bool)] if c['zmid'] is None else [z > c['zmid'], z <= c['zmid']]
@@ -80,11 +98,16 @@ def main():
     cn /= np.linalg.norm(cn, axis=1, keepdims=True) + 1e-9
     cr = corner.reshape(-1, 3, 3); Cc = cr.mean(1)
     part = classify(Cc, c)
+    if a.debug: q = Cc[(part == 'head') & (Cc[:, 0] > 0.30)]; print('   head x>0.30:', len(q), np.round(q.min(0), 2) if len(q) else '', np.round(q.max(0), 2) if len(q) else '')
     # slivers from decimation, long and thin
     e = np.stack([np.linalg.norm(cr[:, 0] - cr[:, 1], axis=1), np.linalg.norm(cr[:, 1] - cr[:, 2], axis=1), np.linalg.norm(cr[:, 2] - cr[:, 0], axis=1)], 1).max(1)
     A = 0.5 * np.linalg.norm(np.cross(cr[:, 1] - cr[:, 0], cr[:, 2] - cr[:, 0]), axis=1); sliver = (e > 0.1) & (e * e / (2 * A + 1e-12) > 14)
     part[sliver] = 'drop'
+    for d0 in c.get('head_box', []):      # a muzzle the slanted neck cut leaves behind: faces inside the box (x0,x1,y0,y1,z0,z1) are head
+        part[(Cc[:, 0] > d0[0]) & (Cc[:, 0] < d0[1]) & (Cc[:, 1] > d0[2]) & (Cc[:, 1] < d0[3]) & (Cc[:, 2] > d0[4]) & (Cc[:, 2] < d0[5]) & (part != 'drop')] = 'head'
     names = sorted(set(part) - {'drop'})
+    if a.debug:
+        for n in names: q = Cc[part == n]; print('   %-7s n=%4d lo %s hi %s' % (n, len(q), np.round(q.min(0), 2), np.round(q.max(0), 2)))
     import collections; print(dict(collections.Counter(part)))
     if a.debug:
         import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
@@ -99,6 +122,7 @@ def main():
     need = 2 if c['zmid'] is None else 4
     assert len(legs) == need, 'found legs %s' % legs
     Z = np.zeros(3)
+    SPR = 'sprawl' in c
     def vp(n): return V2[np.unique(F2[FACES[n]])]
     # ---- pivots
     Ct = vp('torso').mean(0); PIV = {'torso': np.array([0.0, Ct[1], Ct[2]])}; PAR = {}
@@ -107,11 +131,13 @@ def main():
     for l in legs:
         up, sh, ft = vp(l), vp(l + 't'), vp(l + 'f')
         top = up[up[:, 1] >= np.quantile(up[:, 1], 0.9)]; hip = top.mean(0); hip[1] += 0.06
+        if SPR: top = up[np.abs(up[:, 0] - c['sprawl']['xc']) <= np.quantile(np.abs(up[:, 0] - c['sprawl']['xc']), 0.1)]; hip = top.mean(0)      # the arm's root, at the flank
         kn = np.array([sh[:, 0].mean(), sh[sh[:, 1] >= np.quantile(sh[:, 1], 0.9)][:, 1].mean(), sh[:, 2].mean()])
         an = np.array([ft[:, 0].mean(), ft[ft[:, 1] >= np.quantile(ft[:, 1], 0.9)][:, 1].mean(), ft[:, 2].mean()])
+        ka = np.cross(kn - hip, an - kn); ka = ka / (np.linalg.norm(ka) + 1e-12)
         PIV[l] = hip; PIV[l + 't'] = kn; PIV[l + 'f'] = an; PAR[l] = 'torso'; PAR[l + 't'] = l; PAR[l + 'f'] = l + 't'
         sole = ft[np.argmin(ft[:, 1])]; GY[l] = float(sole[1])      # this leg's own ground: Meshy draws the four feet a little differently
-        LEG[l] = dict(gy=GY[l], hip=hip, f=kn - hip, a=an - hip, cf=sole - an, vf=np.vstack([V2[F2[FACES[l]]].reshape(-1, 3)]) - hip,
+        LEG[l] = dict(ka=ka, gy=GY[l], hip=hip, f=kn - hip, a=an - hip, cf=sole - an, vf=np.vstack([V2[F2[FACES[l]]].reshape(-1, 3)]) - hip,
                       vt=V2[F2[FACES[l + 't']]].reshape(-1, 3) - hip, vo=V2[F2[FACES[l + 'f']]].reshape(-1, 3) - hip)
     if 'head' in FACES:
         h = vp('head'); PIV['head'] = h[h[:, 2] <= np.quantile(h[:, 2], 0.06)].mean(0); PAR['head'] = 'torso'
@@ -119,39 +145,46 @@ def main():
         t_ = vp('tail'); PIV['tail'] = t_[t_[:, 2] >= np.quantile(t_[:, 2], 0.94)].mean(0); PAR['tail'] = 'torso'
     # ---- overlap the joins: a band of each neighbour's faces is carried in the part so no seam opens when a joint turns
     SNAP = {k: v.copy() for k, v in FACES.items()}; ADD = {}
-    def overlap(p, q, band):
+    def overlap(p, q, band, into_q=True):
         if p not in SNAP or q not in SNAP: return
         fp, fq = SNAP[p], SNAP[q]; tp, tq = cKDTree(Cc[fp]), cKDTree(Cc[fq])
-        ADD.setdefault(q, []).append(fp[tq.query(Cc[fp])[0] < band]); ADD.setdefault(p, []).append(fq[tp.query(Cc[fq])[0] < band])
+        if into_q: ADD.setdefault(q, []).append(fp[tq.query(Cc[fp])[0] < band])      # p's band rides in q (it shows through when q turns)
+        ADD.setdefault(p, []).append(fq[tp.query(Cc[fq])[0] < band])
     for l in legs: overlap('torso', l, 0.035); overlap(l, l + 't', 0.03); overlap(l + 't', l + 'f', 0.025)
-    overlap('torso', 'head', 0.03); overlap('torso', 'tail', 0.03)
+    overlap('torso', 'head', 0.03, c.get('head_dup', True)); overlap('torso', 'tail', 0.03)
     for k, v in ADD.items(): FACES[k] = np.unique(np.concatenate([FACES[k]] + v))
     ORDER = ['torso'] + [n for n in ('head', 'tail') if n in FACES] + [x for l in legs for x in (l, l + 't', l + 'f')]
     # the head's own yaw: Meshy often turns it a little; the clips carry the correction so it faces +z at rest
     HEADYAW = 0.0
     if 'head' in PIV:
         hv = vp('head'); hc = hv[hv[:, 2] >= np.quantile(hv[:, 2], 0.8)].mean(0) - PIV['head']
-        HEADYAW = float(np.clip(-np.arctan2(hc[0], hc[2]), -0.6, 0.6)); print('head yaw correction %.2f rad' % HEADYAW)
+        HEADYAW = float(np.clip(-np.arctan2(hc[0], hc[2]), -c.get('yawmax', 0.6), c.get('yawmax', 0.6))); print('head yaw correction %.2f rad' % HEADYAW)
     # ---- IK
     X = np.array([1., 0, 0]); Zv = np.array([0, 0, 1.])
     def Rax(u, ang):
         u = np.asarray(u, float); u = u / np.linalg.norm(u); K = np.array([[0, -u[2], u[1]], [u[2], 0, -u[0]], [-u[1], u[0], 0]]); return np.eye(3) + np.sin(ang) * K + (1 - np.cos(ang)) * K @ K
-    def fk(g, th): return Rax(X, th[0]) @ Rax(Zv, th[1]) @ (g['f'] + Rax(X, th[2]) @ (g['a'] - g['f']))
-    LO, HI = np.array([-0.7, -0.3, -0.5]), np.array([0.7, 0.3, 2.0])      # a hock may straighten (a bent hind leg at rest)
+    def Rvec(v):
+        a_ = np.linalg.norm(v); return np.eye(3) if a_ < 1e-12 else Rax(v / a_, a_)
+    def HR(g, th): return Rvec(th[:3]) if SPR else Rax(X, th[0]) @ Rax(Zv, th[1])         # the hip: a sprawl's hip turns freely, a standing leg's swings and abducts
+    def KR(g, th): return Rax(g['ka'], th[3]) if SPR else Rax(X, th[2])                  # the knee hinges about the leg-plane normal (a sprawl) or x
+    def fk(g, th): return HR(g, th) @ (g['f'] + KR(g, th) @ (g['a'] - g['f']))
+    NP = 4 if SPR else 3
+    LO, HI = (np.array([-1.0, -1.0, -1.0, -1.6]), np.array([1.0, 1.0, 1.0, 1.6])) if SPR else (np.array([-0.7, -0.3, -0.5]), np.array([0.7, 0.3, 2.0]))      # a hock may straighten (a bent hind leg at rest)
     def solve1(g, tgt, th):
         for _ in range(40):
             err = tgt - fk(g, th)
             if np.linalg.norm(err) < 1e-6: break
-            Jm = np.zeros((3, 3))
-            for k in range(3): d = th.copy(); d[k] += 1e-4; Jm[:, k] = (fk(g, d) - fk(g, th)) / 1e-4
+            Jm = np.zeros((3, NP))
+            for k in range(NP): d = th.copy(); d[k] += 1e-4; Jm[:, k] = (fk(g, d) - fk(g, th)) / 1e-4
             th = np.clip(th + Jm.T @ np.linalg.solve(Jm @ Jm.T + 1e-4 * np.eye(3), err), LO, HI)
         return th, np.linalg.norm(tgt - fk(g, th))
     def solve(g, tgt, th):
-        cand = [solve1(g, tgt, s0) for s0 in (th, np.array([th[0], 0, 0.1]), np.array([th[0], 0, 0.4]), np.array([th[0], 0, 0.8]))]
+        starts = (th, np.zeros(NP), np.r_[th[:3] * 0, 0.5], np.r_[th[:3] * 0, -0.5]) if SPR else (th, np.array([th[0], 0, 0.1]), np.array([th[0], 0, 0.4]), np.array([th[0], 0, 0.8]))
+        cand = [solve1(g, tgt, s0) for s0 in starts]
         ok = [q for q in cand if q[1] < 1e-3]
         return min(ok, key=lambda q: np.linalg.norm(q[0] - th)) if ok else min(cand, key=lambda q: q[1])
     N_WALK, DUTY = 36, 0.6
-    LIFT = 0.1 * float(np.mean([np.linalg.norm(g['a']) for g in LEG.values()]))      # a hoof clears the ground by about a tenth of the leg
+    LIFT = c.get('lift', 0.1 * float(np.mean([np.linalg.norm(g['a']) for g in LEG.values()])))      # a hoof clears the ground by about a tenth of the leg
     T_WALK = 1.6 if need == 4 else 1.0
     BOB = lambda ph: 0.004 * np.sin(2 * ph)
     GROUP_B = {l for l in legs if (l[3] == 'L') == (l[4] == 'R')}   # a trot: front-left with hind-right, front-right with hind-left (hen: L with R alternate)
@@ -165,11 +198,11 @@ def main():
         else: sw = (u - DUTY) / (1 - DUTY); z = f0[2] - stride / 2 + stride * (0.5 - 0.5 * np.cos(np.pi * sw)); y = gl + off + LIFT * np.sin(np.pi * sw)
         return np.array([f0[0], y, z])
     def lowest(g, th, crouch, ph):
-        R12 = Rax(X, th[0]) @ Rax(Zv, th[1]); R3 = Rax(X, th[2]); ank = fk(g, th)
+        R12 = HR(g, th); R3 = KR(g, th); ank = fk(g, th)
         loc = np.vstack([(R12 @ g['vf'].T).T, (R12 @ (g['f'] + (R3 @ (g['vt'] - g['f']).T).T).T).T, ank + (g['vo'] - g['a'])]) + g['hip']
         return float(loc[:, 1].min() + BOB(ph) - crouch)
     def run(l, g, crouch, stride, pull):
-        th = np.zeros(3); res = {}; worst = 0.0
+        th = np.zeros(NP); res = {}; worst = 0.0
         for rep in range(2):
             for k in range(N_WALK):
                 ph = 2 * np.pi * k / N_WALK; u = (k / N_WALK + (0.5 if l in GROUP_B else 0)) % 1.0
@@ -264,12 +297,16 @@ def main():
         if nm == 'head': return qm(qa([0, 1, 0], HEADYAW), qa(X, (0.7 + 0.1 * np.sin(2 * ph)) if need == 4 else 0.55 * max(0.0, np.sin(2 * ph))))
         if nm == 'tail': return qa([0, 1, 0], 0.15 * np.sin(ph + 1))
         return QI
+    def hq(th):
+        if SPR: a_ = np.linalg.norm(th[:3]); return QI if a_ < 1e-12 else qa(th[:3] / a_, a_)
+        return qm(qa(X, th[0]), qa(Zv, th[1]))
+    def kq(l, th): return qa(LEG[l]['ka'], th[3]) if SPR else qa(X, th[2])
     def walk(nm, ph):
         k = int(round(ph / (2 * np.pi) * N_WALK)) % N_WALK
         if nm.startswith('leg') and nm.endswith('f'):
-            th = WALK[nm[:5]][k]; qt = qm(qm(qa(X, th[0]), qa(Zv, th[1])), qa(X, th[2])); return np.array([-qt[0], -qt[1], -qt[2], qt[3]])
-        if nm.startswith('leg') and nm.endswith('t'): return qa(X, WALK[nm[:5]][k][2])
-        if nm.startswith('leg'): th = WALK[nm][k]; return qm(qa(X, th[0]), qa(Zv, th[1]))
+            th = WALK[nm[:5]][k]; qt = qm(hq(th), kq(nm[:5], th)); return np.array([-qt[0], -qt[1], -qt[2], qt[3]])
+        if nm.startswith('leg') and nm.endswith('t'): return kq(nm[:5], WALK[nm[:5]][k])
+        if nm.startswith('leg'): return hq(WALK[nm][k])
         if nm == 'head': return qm(qa([0, 1, 0], HEADYAW), qa(X, (0.05 if need == 4 else 0.12) * np.sin(2 * ph)))
         if nm == 'tail': return qa([0, 1, 0], 0.18 * np.sin(ph - 0.5))
         return QI

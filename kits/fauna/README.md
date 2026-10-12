@@ -39,7 +39,7 @@ yields and life; **Polygon (P)**.
 
 Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
 cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. Today: the four giant flyers, the draught
-millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison and duck, with the dog and cat (group `pets`) as models only (the Dalab lizard is the one farm animal still procedural only). A model plays its
+millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
 `fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
