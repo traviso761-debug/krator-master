@@ -281,6 +281,11 @@ CITY_CHECK = r"""() => {
       actors: SIM.all ? SIM.all('actor').length : 0, check: SIM.check ? SIM.check() : null,
       walk: R ? VC.simWalkSample(300) : null, d8: R ? VC.simDecideSample(200, 8) : null, d2: R ? VC.simDecideSample(200, 2) : null,
       html: R ? /Phase C/.test(VC.peopleReportHTML()) : false };
+    /* the outside stairs: the walker stands on each sampled one mid-flight at its height (core/walk KWALK) */
+    const St = D.audit && D.audit.stairs, SE = (D.edges || []).filter(e => e.kind === 'stairs');
+    let wk = 0, wkOk = 0; for (let i = 0; i < SE.length; i += Math.max(1, Math.floor(SE.length / 80))) { const a = D.nodes[SE[i].a], b = D.nodes[SE[i].b], y = (a.y + b.y) / 2; wk++;
+      if (KWALK.floorsAt((a.x + b.x) / 2, (a.z + b.z) / 2).some(f => /^stair/.test(f[1].tag) && Math.abs(f[0] - y) < 0.3)) wkOk++; }
+    out.simc.stairs = St ? Object.assign({}, St, { walkerSampled: wk, walkerOk: wkOk }) : null;
   }
   return out;
 }"""
@@ -357,6 +362,7 @@ def verify_city(a, port, rel, sync_playwright):
         for j in pc['byJob']: print('    %s: %d, %d, %s, %d, %s' % (j[0], j[1], j[2], json.dumps(j[3]), j[4], '%d/%d' % (j[5]['p50'], j[5]['p90']) if j[5] else '-'))
     print('  pedestrian layer: %s nodes, %s edges, %s bodies, %s crossings, %s joins, %s reached, %s islands joined, %s plaza hubs, %s ms; cantons %s; off the network %s; canton rooms not joined %s, chinampa huts %s' % (
         au.get('nodes'), au.get('edges'), au.get('bodies'), sc['crossings'], sc['joins'], sc['reached'], sc['islands'], sc['plazas'], sc['ms'], json.dumps(sc['cant']), json.dumps(au.get('far')), au.get('cantonRooms'), au.get('chinampaHuts')))
+    print('  outside stairs and ladders: %s' % json.dumps(sc['stairs']))
     print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))
     for e in errors: print('ERROR', e)
     if a.check:
@@ -377,9 +383,11 @@ def verify_city(a, port, rel, sync_playwright):
             bad.append('new kit models without an interior')
         if sc['err'] or not pc or au.get('bodies') != 1 or au.get('cutOff') or pc['citizens'] != pc['census'] or sc['actors'] != pc['citizens'] + pc['slaves'] or sc['check'] \
                 or pc['unemployed'] > 0.1 * pc['workers'] or not sc['walk'] or sc['walk']['fail'] or not sc['html'] \
-                or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['pinned'] != sc['d2']['asked']:
-            bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s)' % (
-                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2'])))
+                or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['pinned'] != sc['d2']['asked'] \
+                or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
+                or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled']:
+            bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
+                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')

@@ -14,6 +14,7 @@
    off from the city's main body, places whose door is far from any node, by kind. Records only: nothing is drawn. */
 VC.PED = { log: [] };
 
+VC.r2 = function (v) { return Math.round(v * 100) / 100; };
 VC.walkY = function (x, z) { var b = VOTH.lifeBridgeY ? VOTH.lifeBridgeY(x, z) : null; return b != null ? b : Math.max(VOTH.SEA, baseH(x, z)); };
 
 VC.pedNav = function () {
@@ -189,6 +190,49 @@ VC.pedNav = function () {
     cant.causeways++;
   });
   (CANT.doors || []).forEach(function (d) { var n = node(d.x, d.z, d.y, 'door'), j = cantonAt(d.canton, d.x, d.z, d.y, 2.5); if (j >= 0) { edge(n, j, 'landing', d.w); levelNodes[d.canton].push(n); cant.doors++; } else cant.unjoined.push(d.id); });
+  /* ---- the buildings' outside stairs and ladders (the walk records each model's registry makes as it builds: VC.IX.walks,
+     56b's probe; owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): at every standing lot,
+     each a stair (or ladder) edge from its foot to its head; a foot at the lot's ground joins the street nearest it, two
+     ends at one height on one lot (a landing between flights, a terrace or roof both reach) join each other, and the
+     head is where it leads (a roof terrace, an upper door). The first-person walker gets each as a core/walk strip with
+     a landing at its head */
+  var ST = { lots: 0, stairs: 0, ladders: 0, ground: 0, chained: 0, loose: 0, indoor: 0, models: Object.keys((VC.IX && VC.IX.walks) || {}).length, heads: [], kwalk: 0 };
+  var lotStairs = [];
+  hashAll();
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null || !VC.IX || !VC.IX.walks) return;
+    var recs = VC.IX.walks[VC.ixKey(L)]; if (!recs) return;
+    var pose = { x: L.x, y: L.y || 0, z: L.z, ry: L.ry || 0 }, ends = [];
+    recs.forEach(function (r, ri) {
+      var A = VC.ixWorld(pose, { x: r.a[0], y: r.a[2], z: r.a[1] }), B = VC.ixWorld(pose, { x: r.b[0], y: r.b[2], z: r.b[1] });
+      var lad = r.kind === 'ladder', fa = node(A.x, A.z, A.y, lad ? 'ladder' : 'stair'), hb = node(B.x, B.z, B.y, lad ? 'ladder' : 'stair');
+      edge(fa, hb, lad ? 'ladder' : 'stairs', r.w);
+      if (lad) ST.ladders++; else ST.stairs++;
+      ends.push({ n: fa, foot: true, y: A.y, r: ri }, { n: hb, foot: false, y: B.y, r: ri });
+      ST.heads.push(hb);
+      if (typeof KWALK !== 'undefined' && !lad) {
+        KWALK.strip({ a: [A.x, A.z, A.y], b: [B.x, B.z, B.y], w: r.w, name: L.key, tag: 'stair' });
+        var h = Math.max(r.w, 1.2) / 2 + 0.3; KWALK.floor({ rect: [B.x - h, B.x + h, B.z - h, B.z + h], y: B.y, name: L.key, tag: 'stair landing' }); ST.kwalk++;
+      }
+    });
+    ends.forEach(function (e) {
+      var nd = nodes[e.n], mates = ends.filter(function (f) { return f.r !== e.r && Math.abs(f.y - e.y) < T.stairLevelDy && Math.hypot(nodes[f.n].x - nd.x, nodes[f.n].z - nd.z) < T.stairLevel; });
+      mates.forEach(function (f) { if (f.n > e.n) { edge(e.n, f.n, 'landing', 1.2); ST.chained++; } });
+      if (e.foot && e.y - pose.y < T.stairGround) {
+        var j = nearestNode(nd.x, nd.z, T.stairSnap, isStreet); if (j < 0) j = nearestNode(nd.x, nd.z, T.stairFar, isStreet);   /* a farmhouse far off its lane */
+        if (j >= 0) { edge(e.n, j, 'junction', 1.5); ST.ground++; e.ground = true; }
+      } else if (e.foot && !mates.length) e.loose = true;
+    });
+    /* a foot up on a gallery or a roof that no other stair of the lot reaches: reached from inside the house (its own
+       stairs are the interiors' graph, not joined yet): an `indoor` edge to the lot's ground stair foot, else its street */
+    ends.forEach(function (e) {
+      if (!e.loose) return; ST.loose++;
+      var nd = nodes[e.n], g = ends.filter(function (f) { return f.ground; }).sort(function (p, q) { return Math.hypot(nodes[p.n].x - nd.x, nodes[p.n].z - nd.z) - Math.hypot(nodes[q.n].x - nd.x, nodes[q.n].z - nd.z); })[0];
+      var j = g ? g.n : nearestNode(L.x, L.z, T.stairFar, isStreet);
+      if (j >= 0) { edge(e.n, j, 'indoor', 1.2); ST.indoor++; }
+    });
+    ST.lots++;
+  });
   /* a small piece still cut off from the main body (two interior alleys that only meet each other) joins it at its
      nearest node within `reach` m */
   var par = new Int32Array(nodes.length); for (var pi = 0; pi < par.length; pi++) par[pi] = pi;
@@ -197,14 +241,14 @@ VC.pedNav = function () {
   var sz = {}; for (var si = 0; si < par.length; si++) { var rt = fnd(si); sz[rt] = (sz[rt] || 0) + 1; }
   var big = +Object.keys(sz).sort(function (a, b) { return sz[b] - sz[a]; })[0], islands = 0;
   hashAll();
-  Object.keys(sz).forEach(function (rt) {
-    rt = +rt; if (rt === big || sz[rt] > 200) return;
-    var best = null;
-    for (var i = 0; i < nodes.length; i++) { if (fnd(i) !== rt) continue; var j = nearestNode(nodes[i].x, nodes[i].z, T.reach, function (nd, m) { return fnd(m) === big && Math.abs(nd.y - nodes[i].y) < 4; }); if (j >= 0) { var d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z); if (!best || d < best[2]) best = [i, j, d]; } }
+  var members = {}; for (var mi = 0; mi < nodes.length; mi++) { var mr = fnd(mi); if (mr !== big && sz[mr] <= 200) (members[mr] || (members[mr] = [])).push(mi); }
+  Object.keys(members).forEach(function (rt) {
+    rt = +rt; var best = null;
+    members[rt].forEach(function (i) { var j = nearestNode(nodes[i].x, nodes[i].z, T.reach, function (nd, m) { return fnd(m) === big && Math.abs(nd.y - nodes[i].y) < 4; }); if (j >= 0) { var d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z); if (!best || d < best[2]) best = [i, j, d]; } });
     if (best) { edge(best[0], best[1], 'junction', 3); islands++; }
   });
   var live = edges;
-  VC.PED = { nodes: nodes, edges: live, streetNodes: streetNodes, crossings: crossings, joins: joins, reached: reached, islands: islands, plazas: hubs, walkJoins: walkJoins, cant: cant, log: [] };
+  VC.PED = { nodes: nodes, edges: live, streetNodes: streetNodes, crossings: crossings, joins: joins, reached: reached, islands: islands, plazas: hubs, stairs: ST, walkJoins: walkJoins, cant: cant, log: [] };
   SIM.nav.layer('pedestrian', { nodes: nodes, edges: live, yWeight: T.yWeight, cost: T.cost });
   return VC.PED;
 };
@@ -237,5 +281,13 @@ VC.pedAudit = function () {
     far[Q.kind] = (far[Q.kind] || 0) + 1; if (farList.length < 40) farList.push([Q.id, Q.kind, Math.round(dist - (Q.r || 0))]);
   });
   P.audit = { nodes: n, edges: P.edges.length, bodies: bodies, mainNodes: size[main], offMain: off, places: placed, cutOff: cut, far: far, farList: farList, cantonRooms: inside, chinampaHuts: beds };
+  /* the stairs: their heads on the main body (reachable from the street), and a fixed sample of them routed from the
+     city's middle by A* */
+  if (P.stairs) {
+    var S = P.stairs, onMain = S.heads.filter(function (h) { return find(h) === main; }).length, k = Math.max(1, Math.floor(S.heads.length / 60)), ok = 0, tried = 0, c0 = polyCentroid(PLAN.zone);
+    var from = P.nodes[SIM.nav.nearest('pedestrian', c0[0], c0[1])];
+    for (var hi = 0; hi < S.heads.length; hi += k) { var H = P.nodes[S.heads[hi]]; tried++; if (SIM.nav.route('pedestrian', { x: from.x, z: from.z, y: from.y }, { x: H.x, z: H.z, y: H.y, node: H.id })) ok++; }
+    P.audit.stairs = { lots: S.lots, models: S.models, stairs: S.stairs, ladders: S.ladders, groundJoins: S.ground, chained: S.chained, loose: S.loose, indoor: S.indoor, headsOnMain: onMain, heads: S.heads.length, routed: ok, tried: tried, walker: S.kwalk };
+  }
   return P.audit;
 };

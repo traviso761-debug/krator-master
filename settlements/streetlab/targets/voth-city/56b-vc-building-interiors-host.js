@@ -16,12 +16,19 @@ var _ixV = new THREE.Vector3();
 VC.ixProbe = function () {
   var t0 = performance.now(), seen = {}, lodOn = KratorLOD.enabled, n = 0, bb = new THREE.Box3();
   KratorLOD.enabled = false;
+  VC.IX.walks = {};
   PLAN.lots.forEach(function (L) {
-    if (L.died != null || !VC.ixProgram(L)) return;
-    var k = VC.ixKey(L); if (seen[k] || TUNE.ix.shells[k]) return; seen[k] = 1;
+    if (L.died != null) return;
+    var k = VC.ixKey(L); if (seen[k]) return; seen[k] = 1;
     var A = ASSET_BY_KEY[L.key]; if (!A) return;
+    /* the model's stairs and ladders as it builds them (its registry's walkRec: the walk records, phase C), for every
+       standing lot; its shell only where it has a programme and no override */
+    window.KWALK_REC = [];
     var g = buildAsset(L.key, 0, 0, 0, { variant: L.v, seed: 7 + L.v * 13 + L.slot * 101, wealth: HOST.WEALTH[L.cls] == null ? 0.5 : HOST.WEALTH[L.cls] });
+    if (window.KWALK_REC.length) VC.IX.walks[k] = window.KWALK_REC.map(function (r) { return { kind: r.kind, a: r.a.map(VC.r2), b: r.b.map(VC.r2), w: r.w }; });
+    window.KWALK_REC = null;
     if (!g) return;
+    if (!VC.ixProgram(L) || TUNE.ix.shells[k]) { scene.remove(g); var i0 = INSTANCES.indexOf(g); if (i0 >= 0) INSTANCES.splice(i0, 1); g.traverse(function (m) { if (m.geometry) m.geometry.dispose(); }); return; }
     var boxes = []; g.updateMatrixWorld(true);
     g.traverse(function (m) {
       if (!m.isMesh || !m.geometry) return;

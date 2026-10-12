@@ -1977,6 +1977,7 @@ ASSET({
 
       /* external stair + landing up the left flank, and a back buttress */
       const sx = -faceAt(7.1, 5.9, 7.6, 3.0) - 0.4;
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(sx, 0, -1.9), b: P(sx + 0.7, 4.0, 4.0), w: 1.6 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 6; i++) {
         F.box(sx + 0.1 * i, i * 0.62, -1.4 + i * 0.95, 1.6, 0.62, 1.0, 0, shade(c, -0.16), 'stone');
       }
@@ -2415,6 +2416,7 @@ ASSET({
         F.box(p[0] * 7.0, 20.2, p[1] * 5.8, 0.9, 1.1, 0.9, 0, cornice, 'stone');
       });
       /* external stair to a first-floor door on the right flank */
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(11.4, 0.6, 6.05), b: P(11.4, 6.62, -3.0), w: 2.0 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 7; i++) {
         F.box(11.4, 0.6 + i * 0.86, 5.4 - i * 1.25, 2.0, 0.86, 1.3, 0, shade(c, -0.14), 'stone');
       }
@@ -3020,6 +3022,7 @@ ASSET({
     });
 
     /* external stair to the first-floor room door on the right flank */
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(10.4, 0.55, 6.75), b: P(10.2, 7.85, -3.0), w: 1.1 }); }   /* a walk record (the Voth city's stairs are navigable) */
     for (let i = 0; i < 6; i++) {
       F.box(10.4, 0.55 + i * 1.15, 6 - i * 1.4, 1.1, 0.35, 1.5, 0, shade(c, -0.1), 'wood');
       if (i % 2 === 0) F.rod(11.0, 0.9 + i * 1.15, 6 - i * 1.4, 11.0, 2.0 + i * 1.15, 6 - i * 1.4, 0.07, timber, 'metal');
@@ -3392,6 +3395,7 @@ ASSET({
     F.box(0, 3.9, -8.9, 36, 0.3, 1.6, 0, timber, 'wood');
     for (let k = -4; k <= 4; k++) F.box(k * 4.2, 0.5, -8.2, 0.3, 3.4, 0.3, 0, timber, 'wood');
     for (let i = 0; i < 6; i++) F.box(-16.5 + i * 0.9, 0.5 + i * 0.6, -8.0, 0.9, 0.3, 1.4, 0, shade(timber, 0.1), 'wood');
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(-16.95, 0.5, -8.0), b: P(-11.55, 3.8, -8.0), w: 1.4 }); }   /* a walk record (the Voth city's stairs are navigable) */
     [-14, -7, 0, 7, 14].forEach(function (px) { W(px, 0.5, -9.45, 1.4, 2.4, 0); W(px + 2.1, 4.4, -9.45, 1.2, 2.2, 0); W(px, 2.4, -19.55, 1.0, 1.3, 1); W(px, 5.4, -19.55, 1.0, 1.3, 1); });
     [-16.5, -12.5].forEach(function (pz) { W(19.05, 2.4, pz, 1.0, 1.3, 2); W(-19.05, 2.4, pz, 1.0, 1.3, 3); W(19.05, 5.4, pz, 1.0, 1.3, 2); W(-19.05, 5.4, pz, 1.0, 1.3, 3); });
     [-8, -4, 4, 8].forEach(function (px) { W(px, 2.4, 21.05, 1.0, 1.2, 0); W(px, 2.4, 15.95, 1.0, 1.2, 1); });
@@ -6125,6 +6129,16 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
   const GOLD = 0xd0a53c;
 
   /* ================================================================ kit */
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   function kit(F) {
     const K = {};
     const N = [[0, 1], [0, -1], [1, 0], [-1, 0]];
@@ -6276,6 +6290,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
       const n = Math.max(2, Math.round((y1 - y0) / 0.27));
       const rise = (y1 - y0) / n, run = L / n;
       const base = o.base != null ? o.base : y0;
+      walkRec(F, 'stair', x0, y0, z0, x1, y1, z1, wd);
       for (let i = 0; i < n; i++) {
         const c = run * (i + 0.5), top = y0 + rise * (i + 1);
         const cx = ax ? x0 + c : x0, cz = ax ? z0 : z0 + c;
@@ -6305,6 +6320,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
     /* ladder from (x0,y0,z0) to (x1,y1,z1); rails spread along (px,pz) */
     K.ladder = function (x0, y0, z0, x1, y1, z1, px, pz, col) {
       col = col || shade(TIMBER, 0.15);
+      walkRec(F, 'ladder', x0, y0, z0, x1, y1, z1, 0.6);
       [-1, 1].forEach(function (k) {
         F.rod(x0 + k * px * 0.25, y0, z0 + k * pz * 0.25, x1 + k * px * 0.25, y1, z1 + k * pz * 0.25, 0.05, col, 'wood');
       });
@@ -8158,6 +8174,17 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
   const DOOR = 0x1c1a16, TIMBER = 0x4a3a28, IRON = 0x3a2f22, GLOW = 0xffcf87, ROPE = 0x6b5a3a;
   const WATER = 0x3f5e60, BED = 0x2e3430, SOIL = 0x4e4232, HAY = 0xb8a060, GUAR = 0x7a6a50;
 
+  /* ---------------------------------------------------------- the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
+
   /* ---------------------------------------------------------- sub-frame */
   function sub(P, ox, oy, oz, q) {
     const th = (q || 0) * Math.PI / 2;
@@ -8169,6 +8196,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
       G[k] = function (x, y, z, r, h, r2, col, fam) { const p = T(x, z); P[k](p[0], oy + y, p[1], r, h, (r2 || 0) + th, col, fam); };
     });
     G.ball = function (x, y, z, r, col, fam) { const p = T(x, z); P.ball(p[0], oy + y, p[1], r, col, fam); };
+    G.walk = function (kind, ax, ay, az, bx, by, bz, w) { const a = T(ax, az), b = T(bx, bz); walkRec(P, kind, a[0], oy + ay, a[1], b[0], oy + by, b[1], w); };
     G.frustum = function (x, y, z, rb, rt, h, r2, col, fam, sides) { const p = T(x, z); P.frustum(p[0], oy + y, p[1], rb, rt, h, (r2 || 0) + th, col, fam, sides); };
     G.pyrRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.pyrRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
     G.hipRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.hipRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
@@ -8407,6 +8435,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
     /* ladder leaning on face s, foot out from the wall, top 0.9 above y1 */
     K.ladder = function (x, z, y0, y1, s) {
       const n = nrm(s), t = tan(s), foot = 0.75, top = y1 + 0.9;
+      walkRec(G, 'ladder', x + n[0] * foot, y0, z + n[1] * foot, x + n[0] * 0.16, y1, z + n[1] * 0.16, 0.6);
       [-1, 1].forEach(function (k) {
         G.rod(x + t[0] * k * 0.28 + n[0] * foot, y0, z + t[1] * k * 0.28 + n[1] * foot,
           x + t[0] * k * 0.28 + n[0] * 0.16, top, z + t[1] * k * 0.28 + n[1] * 0.16, 0.05, TIMBER, 'wood');
@@ -8427,6 +8456,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
           dx ? tread : width, r * (i + 1), dx ? width : tread, 0, i % 2 ? col : shade(col, 0.04), 'stone');
       }
       const L = n * tread;
+      walkRec(G, 'stair', x, y0, z, x + dx * L, y1, z + dz * L, width);
       /* one long mass inside the flight so it survives the LOD cull of the small treads */
       if (n > 3) {
         G.beam(x + dx * tread * 1.5, y0 + r * 0.9, z + dz * tread * 1.5, x + dx * (L - tread), y1 - r * 1.6, z + dz * (L - tread),
@@ -9800,9 +9830,20 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
       if (e === 'x0') F.box(x0 - 0.16, yt - 0.35, cz, 0.03, 0.38, d + 0.3, 0, vc, 'cloth');
     });
   }
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   /* solid masonry stair rising along an axis: from (x,z) going dir*(axis) */
   function STAIR(F, x, z, axis, dir, y0, y1, wd, col) {
     const n = Math.max(1, Math.round((y1 - y0) / 0.27)), rise = (y1 - y0) / n, run = 0.3;
+    walkRec(F, 'stair', x, y0, z, axis === 'x' ? x + dir * n * run : x, y1, axis === 'x' ? z : z + dir * n * run, wd);
     for (let i = 0; i < n; i++) {
       const t = dir * (i * run + run / 2);
       const hh = rise * (i + 1);
@@ -9814,6 +9855,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
   /* open timber stair: two stringers, treads, newel posts and a hand rail */
   function TSTAIR(F, x, z, axis, dir, y0, y1, wd) {
     const n = Math.max(1, Math.round((y1 - y0) / 0.27)), rise = (y1 - y0) / n, run = 0.3, L = n * run;
+    walkRec(F, 'stair', x, y0, z, axis === 'x' ? x + dir * L : x, y1, axis === 'x' ? z : z + dir * L, wd);
     const ax = axis === 'x', sx = function (t, k) { return ax ? x + dir * t : x + k * wd / 2; },
       sz = function (t, k) { return ax ? z + k * wd / 2 : z + dir * t; };
     [-1, 1].forEach(function (k) {
@@ -9937,6 +9979,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
     }
   }
   function LADDER(F, x0, z0, y0, x1, z1, y1, wd, alongX) {
+    walkRec(F, 'ladder', x0, y0, z0, x1, y1, z1, 0.6);
     const ox = alongX ? wd / 2 : 0, oz = alongX ? 0 : wd / 2;
     [-1, 1].forEach(function (k) { F.rod(x0 + k * ox, y0, z0 + k * oz, x1 + k * ox, y1, z1 + k * oz, 0.045, TIMBER, 'wood'); });
     const n = Math.floor((y1 - y0) / 0.32);
@@ -12870,6 +12913,16 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
 
   /* ------------------------------------------------------------- kit
      Helper closures over one build frame F. */
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   function kit(F) {
     const K = {};
     function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
@@ -12991,6 +13044,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
       o = o || {};
       const n = Math.max(1, Math.round((y1 - y0) / (o.rise || 0.3))), r = (y1 - y0) / n, run = o.run || 0.3;
       const ax = dir[1] === 'x', sg = dir[0] === '+' ? 1 : -1;
+      walkRec(F, 'stair', x, y0, z, ax ? x + sg * n * run : x, y1, ax ? z : z + sg * n * run, w);
       for (let i = 0; i < n; i++) {
         const al = (i + 0.5) * run * sg, top = y0 + (i + 1) * r;
         const bot = o.flying ? top - r - 0.18 : (o.base != null ? o.base : 0);
@@ -13906,6 +13960,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
     bw(2, -3.2, 1.4, 0.6, 1.2);
 
     /* stair up the east face to the roof, balustrade on its outer edge */
+    walkRec(F, 'stair', 2.15, 0, 2.3, 2.15, R, 2.3 - 22 * 0.27, 1.5);
     for (let i = 0; i < 22; i++) {
       const top = (i + 1) * R / 22, z = 2.3 - (i + 0.5) * 0.27;
       const x0 = HX + hf(top) - 0.05, x1 = 2.9;
@@ -14061,6 +14116,7 @@ window.VOTH_CITY_CAPTURE = {"shapes":["box","fr8","fr6","fr3","dome","blob","cyl
       for (let k = 0; k < 5; k++) F.box(4.0 + k * 0.45, HT + 0.95, z, 0.1, 0.5, 0.2, 0, 0x9aa0a0, 'fish');
     });
     /* ladder from the mound to the roof */
+    walkRec(F, 'ladder', 3.6, Y, -2.8, 3.6, HT + 0.8, -3.55, 0.6);
     [3.3, 3.9].forEach(function (x) { F.rod(x, Y, -2.8, x, HT + 0.8, -3.55, 0.05, TIMBER, 'wood'); });
     for (let k = 1; k < 12; k++) {
       const t = k / 12;
@@ -47781,8 +47837,13 @@ var TUNE = {
        horizontal distance when it finds its node (a room on the third terrace is not walked to from the street under
        it). An alley's or a lane's end still dead joins another street within `reach` m; a park walk joins a street it passes
        within `walkTouch` m; each plaza is a hub joined to the street nodes round it. A place whose door stands more than
-       `far` m (past an open place's reach) from its node is listed as off the network */
-    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6 } },
+       `far` m (past an open place's reach) from its node is listed as off the network. The buildings' outside stairs and
+       ladders (their models' walk records): a foot within `stairGround` m of its lot's ground joins the nearest street
+       node within `stairSnap` m; two ends of one lot within `stairLevelDy` m of height and `stairLevel` m apart (a
+       landing, a roof both reach) join; a ladder costs `cost.ladder` times its length. A foot up on a gallery or roof no other stair of its lot reaches
+       is reached through the house (an `indoor` edge to the lot's ground stair, else the street within `stairFar` m) */
+    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6, ladder: 3, indoor: 1.5 },
+           stairGround: 1.2, stairSnap: 40, stairFar: 400, stairLevel: 25, stairLevelDy: 0.6 },
     /* phase C: the citizens (44-vc-sim-people.js). Every home's census residents become actors; TUNE.census.workingShare
        of them work (all of them where the home is a barracks or a dorm: its workplaces cover its residents). Jobs are
        dealt: a home that is also a workplace (a shop, a tavern, a garrison) fills its own first; `liveAt` gives a kind
@@ -55301,6 +55362,7 @@ VC.simWorkAudit = function () {
    off from the city's main body, places whose door is far from any node, by kind. Records only: nothing is drawn. */
 VC.PED = { log: [] };
 
+VC.r2 = function (v) { return Math.round(v * 100) / 100; };
 VC.walkY = function (x, z) { var b = VOTH.lifeBridgeY ? VOTH.lifeBridgeY(x, z) : null; return b != null ? b : Math.max(VOTH.SEA, baseH(x, z)); };
 
 VC.pedNav = function () {
@@ -55476,6 +55538,49 @@ VC.pedNav = function () {
     cant.causeways++;
   });
   (CANT.doors || []).forEach(function (d) { var n = node(d.x, d.z, d.y, 'door'), j = cantonAt(d.canton, d.x, d.z, d.y, 2.5); if (j >= 0) { edge(n, j, 'landing', d.w); levelNodes[d.canton].push(n); cant.doors++; } else cant.unjoined.push(d.id); });
+  /* ---- the buildings' outside stairs and ladders (the walk records each model's registry makes as it builds: VC.IX.walks,
+     56b's probe; owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): at every standing lot,
+     each a stair (or ladder) edge from its foot to its head; a foot at the lot's ground joins the street nearest it, two
+     ends at one height on one lot (a landing between flights, a terrace or roof both reach) join each other, and the
+     head is where it leads (a roof terrace, an upper door). The first-person walker gets each as a core/walk strip with
+     a landing at its head */
+  var ST = { lots: 0, stairs: 0, ladders: 0, ground: 0, chained: 0, loose: 0, indoor: 0, models: Object.keys((VC.IX && VC.IX.walks) || {}).length, heads: [], kwalk: 0 };
+  var lotStairs = [];
+  hashAll();
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null || !VC.IX || !VC.IX.walks) return;
+    var recs = VC.IX.walks[VC.ixKey(L)]; if (!recs) return;
+    var pose = { x: L.x, y: L.y || 0, z: L.z, ry: L.ry || 0 }, ends = [];
+    recs.forEach(function (r, ri) {
+      var A = VC.ixWorld(pose, { x: r.a[0], y: r.a[2], z: r.a[1] }), B = VC.ixWorld(pose, { x: r.b[0], y: r.b[2], z: r.b[1] });
+      var lad = r.kind === 'ladder', fa = node(A.x, A.z, A.y, lad ? 'ladder' : 'stair'), hb = node(B.x, B.z, B.y, lad ? 'ladder' : 'stair');
+      edge(fa, hb, lad ? 'ladder' : 'stairs', r.w);
+      if (lad) ST.ladders++; else ST.stairs++;
+      ends.push({ n: fa, foot: true, y: A.y, r: ri }, { n: hb, foot: false, y: B.y, r: ri });
+      ST.heads.push(hb);
+      if (typeof KWALK !== 'undefined' && !lad) {
+        KWALK.strip({ a: [A.x, A.z, A.y], b: [B.x, B.z, B.y], w: r.w, name: L.key, tag: 'stair' });
+        var h = Math.max(r.w, 1.2) / 2 + 0.3; KWALK.floor({ rect: [B.x - h, B.x + h, B.z - h, B.z + h], y: B.y, name: L.key, tag: 'stair landing' }); ST.kwalk++;
+      }
+    });
+    ends.forEach(function (e) {
+      var nd = nodes[e.n], mates = ends.filter(function (f) { return f.r !== e.r && Math.abs(f.y - e.y) < T.stairLevelDy && Math.hypot(nodes[f.n].x - nd.x, nodes[f.n].z - nd.z) < T.stairLevel; });
+      mates.forEach(function (f) { if (f.n > e.n) { edge(e.n, f.n, 'landing', 1.2); ST.chained++; } });
+      if (e.foot && e.y - pose.y < T.stairGround) {
+        var j = nearestNode(nd.x, nd.z, T.stairSnap, isStreet); if (j < 0) j = nearestNode(nd.x, nd.z, T.stairFar, isStreet);   /* a farmhouse far off its lane */
+        if (j >= 0) { edge(e.n, j, 'junction', 1.5); ST.ground++; e.ground = true; }
+      } else if (e.foot && !mates.length) e.loose = true;
+    });
+    /* a foot up on a gallery or a roof that no other stair of the lot reaches: reached from inside the house (its own
+       stairs are the interiors' graph, not joined yet): an `indoor` edge to the lot's ground stair foot, else its street */
+    ends.forEach(function (e) {
+      if (!e.loose) return; ST.loose++;
+      var nd = nodes[e.n], g = ends.filter(function (f) { return f.ground; }).sort(function (p, q) { return Math.hypot(nodes[p.n].x - nd.x, nodes[p.n].z - nd.z) - Math.hypot(nodes[q.n].x - nd.x, nodes[q.n].z - nd.z); })[0];
+      var j = g ? g.n : nearestNode(L.x, L.z, T.stairFar, isStreet);
+      if (j >= 0) { edge(e.n, j, 'indoor', 1.2); ST.indoor++; }
+    });
+    ST.lots++;
+  });
   /* a small piece still cut off from the main body (two interior alleys that only meet each other) joins it at its
      nearest node within `reach` m */
   var par = new Int32Array(nodes.length); for (var pi = 0; pi < par.length; pi++) par[pi] = pi;
@@ -55484,14 +55589,14 @@ VC.pedNav = function () {
   var sz = {}; for (var si = 0; si < par.length; si++) { var rt = fnd(si); sz[rt] = (sz[rt] || 0) + 1; }
   var big = +Object.keys(sz).sort(function (a, b) { return sz[b] - sz[a]; })[0], islands = 0;
   hashAll();
-  Object.keys(sz).forEach(function (rt) {
-    rt = +rt; if (rt === big || sz[rt] > 200) return;
-    var best = null;
-    for (var i = 0; i < nodes.length; i++) { if (fnd(i) !== rt) continue; var j = nearestNode(nodes[i].x, nodes[i].z, T.reach, function (nd, m) { return fnd(m) === big && Math.abs(nd.y - nodes[i].y) < 4; }); if (j >= 0) { var d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z); if (!best || d < best[2]) best = [i, j, d]; } }
+  var members = {}; for (var mi = 0; mi < nodes.length; mi++) { var mr = fnd(mi); if (mr !== big && sz[mr] <= 200) (members[mr] || (members[mr] = [])).push(mi); }
+  Object.keys(members).forEach(function (rt) {
+    rt = +rt; var best = null;
+    members[rt].forEach(function (i) { var j = nearestNode(nodes[i].x, nodes[i].z, T.reach, function (nd, m) { return fnd(m) === big && Math.abs(nd.y - nodes[i].y) < 4; }); if (j >= 0) { var d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z); if (!best || d < best[2]) best = [i, j, d]; } });
     if (best) { edge(best[0], best[1], 'junction', 3); islands++; }
   });
   var live = edges;
-  VC.PED = { nodes: nodes, edges: live, streetNodes: streetNodes, crossings: crossings, joins: joins, reached: reached, islands: islands, plazas: hubs, walkJoins: walkJoins, cant: cant, log: [] };
+  VC.PED = { nodes: nodes, edges: live, streetNodes: streetNodes, crossings: crossings, joins: joins, reached: reached, islands: islands, plazas: hubs, stairs: ST, walkJoins: walkJoins, cant: cant, log: [] };
   SIM.nav.layer('pedestrian', { nodes: nodes, edges: live, yWeight: T.yWeight, cost: T.cost });
   return VC.PED;
 };
@@ -55524,6 +55629,14 @@ VC.pedAudit = function () {
     far[Q.kind] = (far[Q.kind] || 0) + 1; if (farList.length < 40) farList.push([Q.id, Q.kind, Math.round(dist - (Q.r || 0))]);
   });
   P.audit = { nodes: n, edges: P.edges.length, bodies: bodies, mainNodes: size[main], offMain: off, places: placed, cutOff: cut, far: far, farList: farList, cantonRooms: inside, chinampaHuts: beds };
+  /* the stairs: their heads on the main body (reachable from the street), and a fixed sample of them routed from the
+     city's middle by A* */
+  if (P.stairs) {
+    var S = P.stairs, onMain = S.heads.filter(function (h) { return find(h) === main; }).length, k = Math.max(1, Math.floor(S.heads.length / 60)), ok = 0, tried = 0, c0 = polyCentroid(PLAN.zone);
+    var from = P.nodes[SIM.nav.nearest('pedestrian', c0[0], c0[1])];
+    for (var hi = 0; hi < S.heads.length; hi += k) { var H = P.nodes[S.heads[hi]]; tried++; if (SIM.nav.route('pedestrian', { x: from.x, z: from.z, y: from.y }, { x: H.x, z: H.z, y: H.y, node: H.id })) ok++; }
+    P.audit.stairs = { lots: S.lots, models: S.models, stairs: S.stairs, ladders: S.ladders, groundJoins: S.ground, chained: S.chained, loose: S.loose, indoor: S.indoor, headsOnMain: onMain, heads: S.heads.length, routed: ok, tried: tried, walker: S.kwalk };
+  }
   return P.audit;
 };
 
@@ -57487,12 +57600,19 @@ var _ixV = new THREE.Vector3();
 VC.ixProbe = function () {
   var t0 = performance.now(), seen = {}, lodOn = KratorLOD.enabled, n = 0, bb = new THREE.Box3();
   KratorLOD.enabled = false;
+  VC.IX.walks = {};
   PLAN.lots.forEach(function (L) {
-    if (L.died != null || !VC.ixProgram(L)) return;
-    var k = VC.ixKey(L); if (seen[k] || TUNE.ix.shells[k]) return; seen[k] = 1;
+    if (L.died != null) return;
+    var k = VC.ixKey(L); if (seen[k]) return; seen[k] = 1;
     var A = ASSET_BY_KEY[L.key]; if (!A) return;
+    /* the model's stairs and ladders as it builds them (its registry's walkRec: the walk records, phase C), for every
+       standing lot; its shell only where it has a programme and no override */
+    window.KWALK_REC = [];
     var g = buildAsset(L.key, 0, 0, 0, { variant: L.v, seed: 7 + L.v * 13 + L.slot * 101, wealth: HOST.WEALTH[L.cls] == null ? 0.5 : HOST.WEALTH[L.cls] });
+    if (window.KWALK_REC.length) VC.IX.walks[k] = window.KWALK_REC.map(function (r) { return { kind: r.kind, a: r.a.map(VC.r2), b: r.b.map(VC.r2), w: r.w }; });
+    window.KWALK_REC = null;
     if (!g) return;
+    if (!VC.ixProgram(L) || TUNE.ix.shells[k]) { scene.remove(g); var i0 = INSTANCES.indexOf(g); if (i0 >= 0) INSTANCES.splice(i0, 1); g.traverse(function (m) { if (m.geometry) m.geometry.dispose(); }); return; }
     var boxes = []; g.updateMatrixWorld(true);
     g.traverse(function (m) {
       if (!m.isMesh || !m.geometry) return;

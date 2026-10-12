@@ -215,6 +215,7 @@ ASSET({
 
       /* external stair + landing up the left flank, and a back buttress */
       const sx = -faceAt(7.1, 5.9, 7.6, 3.0) - 0.4;
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(sx, 0, -1.9), b: P(sx + 0.7, 4.0, 4.0), w: 1.6 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 6; i++) {
         F.box(sx + 0.1 * i, i * 0.62, -1.4 + i * 0.95, 1.6, 0.62, 1.0, 0, shade(c, -0.16), 'stone');
       }
@@ -653,6 +654,7 @@ ASSET({
         F.box(p[0] * 7.0, 20.2, p[1] * 5.8, 0.9, 1.1, 0.9, 0, cornice, 'stone');
       });
       /* external stair to a first-floor door on the right flank */
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(11.4, 0.6, 6.05), b: P(11.4, 6.62, -3.0), w: 2.0 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 7; i++) {
         F.box(11.4, 0.6 + i * 0.86, 5.4 - i * 1.25, 2.0, 0.86, 1.3, 0, shade(c, -0.14), 'stone');
       }
@@ -1258,6 +1260,7 @@ ASSET({
     });
 
     /* external stair to the first-floor room door on the right flank */
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(10.4, 0.55, 6.75), b: P(10.2, 7.85, -3.0), w: 1.1 }); }   /* a walk record (the Voth city's stairs are navigable) */
     for (let i = 0; i < 6; i++) {
       F.box(10.4, 0.55 + i * 1.15, 6 - i * 1.4, 1.1, 0.35, 1.5, 0, shade(c, -0.1), 'wood');
       if (i % 2 === 0) F.rod(11.0, 0.9 + i * 1.15, 6 - i * 1.4, 11.0, 2.0 + i * 1.15, 6 - i * 1.4, 0.07, timber, 'metal');
@@ -1630,6 +1633,7 @@ ASSET({
     F.box(0, 3.9, -8.9, 36, 0.3, 1.6, 0, timber, 'wood');
     for (let k = -4; k <= 4; k++) F.box(k * 4.2, 0.5, -8.2, 0.3, 3.4, 0.3, 0, timber, 'wood');
     for (let i = 0; i < 6; i++) F.box(-16.5 + i * 0.9, 0.5 + i * 0.6, -8.0, 0.9, 0.3, 1.4, 0, shade(timber, 0.1), 'wood');
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(-16.95, 0.5, -8.0), b: P(-11.55, 3.8, -8.0), w: 1.4 }); }   /* a walk record (the Voth city's stairs are navigable) */
     [-14, -7, 0, 7, 14].forEach(function (px) { W(px, 0.5, -9.45, 1.4, 2.4, 0); W(px + 2.1, 4.4, -9.45, 1.2, 2.2, 0); W(px, 2.4, -19.55, 1.0, 1.3, 1); W(px, 5.4, -19.55, 1.0, 1.3, 1); });
     [-16.5, -12.5].forEach(function (pz) { W(19.05, 2.4, pz, 1.0, 1.3, 2); W(-19.05, 2.4, pz, 1.0, 1.3, 3); W(19.05, 5.4, pz, 1.0, 1.3, 2); W(-19.05, 5.4, pz, 1.0, 1.3, 3); });
     [-8, -4, 4, 8].forEach(function (px) { W(px, 2.4, 21.05, 1.0, 1.2, 0); W(px, 2.4, 15.95, 1.0, 1.2, 1); });

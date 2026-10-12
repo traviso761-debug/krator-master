@@ -229,9 +229,20 @@
       if (e === 'x0') F.box(x0 - 0.16, yt - 0.35, cz, 0.03, 0.38, d + 0.3, 0, vc, 'cloth');
     });
   }
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   /* solid masonry stair rising along an axis: from (x,z) going dir*(axis) */
   function STAIR(F, x, z, axis, dir, y0, y1, wd, col) {
     const n = Math.max(1, Math.round((y1 - y0) / 0.27)), rise = (y1 - y0) / n, run = 0.3;
+    walkRec(F, 'stair', x, y0, z, axis === 'x' ? x + dir * n * run : x, y1, axis === 'x' ? z : z + dir * n * run, wd);
     for (let i = 0; i < n; i++) {
       const t = dir * (i * run + run / 2);
       const hh = rise * (i + 1);
@@ -243,6 +254,7 @@
   /* open timber stair: two stringers, treads, newel posts and a hand rail */
   function TSTAIR(F, x, z, axis, dir, y0, y1, wd) {
     const n = Math.max(1, Math.round((y1 - y0) / 0.27)), rise = (y1 - y0) / n, run = 0.3, L = n * run;
+    walkRec(F, 'stair', x, y0, z, axis === 'x' ? x + dir * L : x, y1, axis === 'x' ? z : z + dir * L, wd);
     const ax = axis === 'x', sx = function (t, k) { return ax ? x + dir * t : x + k * wd / 2; },
       sz = function (t, k) { return ax ? z + k * wd / 2 : z + dir * t; };
     [-1, 1].forEach(function (k) {
@@ -366,6 +378,7 @@
     }
   }
   function LADDER(F, x0, z0, y0, x1, z1, y1, wd, alongX) {
+    walkRec(F, 'ladder', x0, y0, z0, x1, y1, z1, 0.6);
     const ox = alongX ? wd / 2 : 0, oz = alongX ? 0 : wd / 2;
     [-1, 1].forEach(function (k) { F.rod(x0 + k * ox, y0, z0 + k * oz, x1 + k * ox, y1, z1 + k * oz, 0.045, TIMBER, 'wood'); });
     const n = Math.floor((y1 - y0) / 0.32);

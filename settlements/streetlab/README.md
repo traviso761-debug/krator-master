@@ -451,6 +451,16 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   of work by district, every kind of work's posts filled and how, unfilled, the commutes in metres walked; the pedestrian
   layer's counts and what is off it; an A* check of a sample of the commutes. `verify.py --assert` also asks a sample of
   actors at 8 and at 2 where they go: each worker chooses its work, each sleeper its home.
+* **The outside stairs and ladders** (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): every
+  kit model records each stair and ladder it builds (its registry's `walkRec`; `settlements/voth/catalog/README.md`
+  "Walk records"); the model probe (`VC.ixProbe`) collects them per model, variant and seed slot (`VC.IX.walks`), and
+  `VC.pedNav` puts them at every standing lot: about 6,800 stairs and 4,700 ladders on 6,400 lots, each a `stairs` (or
+  `ladder`, three times the cost) edge from foot to head. A foot at the lot's ground joins its street; two ends of one lot
+  at one height (a landing between flights, a roof both reach) join each other; a foot up on a gallery or roof no other
+  stair reaches is reached through the house (an `indoor` edge, until the buildings' own graphs are joined). Every head
+  is on the main body. The first-person walker gets each stair as a core/walk strip with a landing at its head (not the
+  ladders). `verify.py --assert` routes a sample of the heads from the city's middle and stands the walker on a sample
+  of the stairs mid-flight.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

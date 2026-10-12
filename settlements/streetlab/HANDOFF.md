@@ -4,6 +4,19 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 1, follow-up: the outside stairs are navigable
+
+The owner: "Make sure stairs on house exteriors are also navigable". Every stair and ladder the Voth kit models build on
+their outsides is now a walk record (`settlements/voth/catalog/README.md` "Walk records"): the four Voth registries'
+stair helpers and the hand-built flights of the townhouse, guild hall, tavern, caravanserai and the farmhouse call
+`walkRec`. The city collects them in its model probe and lays them at every lot: 6,826 stairs and 4,715 ladders on 6,365
+lots, every head on the main body of the pedestrian layer; the walker stands on the stairs (core/walk strips). The layer
+is now about 50,700 nodes (27,600 before); the deal is about 4.9 s at load (3 s before), the layer 2.2 s.
+- 1,828 stair feet stand on a gallery or roof that no other outside stair reaches: they are joined through the house
+  (`indoor` edges) until the buildings' own graphs (planBuilding's, with the interior stairs) join the layer.
+- Not records yet: the canton models' own stairs (CANT's flights are), the Voth builders the city calls directly (the
+  monastery, the House of Healing, the shrines), and the ladders for the walker.
+
 ## 2026-10-12: phase C session 1 (branch `Voth-sim`): the walkable city and the citizens
 
 The owner: "continue next step". Done (README "The citizens (phase C)"): the pedestrian layer (`43-vc-sim-nav.js`) and

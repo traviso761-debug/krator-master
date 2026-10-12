@@ -254,8 +254,13 @@ var TUNE = {
        horizontal distance when it finds its node (a room on the third terrace is not walked to from the street under
        it). An alley's or a lane's end still dead joins another street within `reach` m; a park walk joins a street it passes
        within `walkTouch` m; each plaza is a hub joined to the street nodes round it. A place whose door stands more than
-       `far` m (past an open place's reach) from its node is listed as off the network */
-    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6 } },
+       `far` m (past an open place's reach) from its node is listed as off the network. The buildings' outside stairs and
+       ladders (their models' walk records): a foot within `stairGround` m of its lot's ground joins the nearest street
+       node within `stairSnap` m; two ends of one lot within `stairLevelDy` m of height and `stairLevel` m apart (a
+       landing, a roof both reach) join; a ladder costs `cost.ladder` times its length. A foot up on a gallery or roof no other stair of its lot reaches
+       is reached through the house (an `indoor` edge to the lot's ground stair, else the street within `stairFar` m) */
+    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6, ladder: 3, indoor: 1.5 },
+           stairGround: 1.2, stairSnap: 40, stairFar: 400, stairLevel: 25, stairLevelDy: 0.6 },
     /* phase C: the citizens (44-vc-sim-people.js). Every home's census residents become actors; TUNE.census.workingShare
        of them work (all of them where the home is a barracks or a dorm: its workplaces cover its residents). Jobs are
        dealt: a home that is also a workplace (a shop, a tavern, a garrison) fills its own first; `liveAt` gives a kind

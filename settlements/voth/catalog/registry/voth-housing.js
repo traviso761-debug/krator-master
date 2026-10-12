@@ -39,6 +39,16 @@
   const GOLD = 0xd0a53c;
 
   /* ================================================================ kit */
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   function kit(F) {
     const K = {};
     const N = [[0, 1], [0, -1], [1, 0], [-1, 0]];
@@ -190,6 +200,7 @@
       const n = Math.max(2, Math.round((y1 - y0) / 0.27));
       const rise = (y1 - y0) / n, run = L / n;
       const base = o.base != null ? o.base : y0;
+      walkRec(F, 'stair', x0, y0, z0, x1, y1, z1, wd);
       for (let i = 0; i < n; i++) {
         const c = run * (i + 0.5), top = y0 + rise * (i + 1);
         const cx = ax ? x0 + c : x0, cz = ax ? z0 : z0 + c;
@@ -219,6 +230,7 @@
     /* ladder from (x0,y0,z0) to (x1,y1,z1); rails spread along (px,pz) */
     K.ladder = function (x0, y0, z0, x1, y1, z1, px, pz, col) {
       col = col || shade(TIMBER, 0.15);
+      walkRec(F, 'ladder', x0, y0, z0, x1, y1, z1, 0.6);
       [-1, 1].forEach(function (k) {
         F.rod(x0 + k * px * 0.25, y0, z0 + k * pz * 0.25, x1 + k * px * 0.25, y1, z1 + k * pz * 0.25, 0.05, col, 'wood');
       });
