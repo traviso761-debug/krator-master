@@ -13,6 +13,10 @@ references are as of that commit.
 
 ## 0. What main settled while this plan was drafted
 
+> 2026-10-12: the owner's Voth citizen brief (needs, items, economy, guards, monks, the arena, imports) and the phased
+> plan for it are in `settlements/streetlab/SIM-ROADMAP.md`. It is this plan's Phase 2 and Phase 5 done on the Voth
+> city page first; the modules it adds (`77-sim-6-needs.js`, `-items.js`, `-economy.js`, `77-sim-7-lod.js`) are core's.
+
 The survey in §1 was taken on a 1 Oct checkout. Between that and `main` on 2 Oct,
 work landed that changes the plan's assumptions. Each item below is folded into
 the sections that follow.
