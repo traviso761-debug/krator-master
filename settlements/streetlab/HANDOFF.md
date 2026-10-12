@@ -4,6 +4,41 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 1 (branch `Voth-sim`): the walkable city and the citizens
+
+The owner: "continue next step". Done (README "The citizens (phase C)"): the pedestrian layer (`43-vc-sim-nav.js`) and
+every census resident as a SIM actor with a home, a job and a commute (`44-vc-sim-people.js`); core/simulation gained
+`yWeight` layers and `SIM.nav.field` (both tested in `test-sim.js` with their negatives; Shade, Mungo and the example
+rebuilt, their verifies and checks pass).
+
+**What the report says** (the "interiors report" button; `verify.py`):
+- 53,355 citizens (the census) in 8,408 homes: 28,125 of working age, 22,894 at work (6,242 live-in, 16,652 dealt by the
+  walk; median commute 67 m, 90th percentile 1,050 m), 3,217 gentry on their means, **2,014 out of work**: no free post
+  within 3 km walked, in city SE (795), the suburb (677), the farms (311), villages S11 and S12. 633 slaves (70% of the
+  farm, mine and quarry posts) at 281 sites whose quarters are not built.
+- **3,967 posts unfilled**, mostly where few live: the market traders (1,668 at 3 markets), porters (808, the Port
+  deck's warehouses), dockers (444), armourers (224), smiths (243), chinampa growers (218), the coast-guard berth (40),
+  the lighthouses (8), the necropolis (11). Workers (not gentry) number about 24,000 against 27,700 posts: some must stay
+  empty, and the walk decides which.
+- 6,306 residents sleep on the floor (their homes' beds fall short: phase A's shortfall, now slept on).
+
+**Decisions for the owner:**
+- The gentry (rich, manor, clan: 4,271 of working age) take only the professions in `TUNE.sim.people.gentryJobs`; 3,217
+  find none and live on their means. Widen the list, or let them be idle?
+- Slaves are counted apart from the census (633 more people) and sleep at their field, mine or quarry, which has no
+  quarters: build slave quarters (a kit model), or house them in the farmsteads and miners' houses?
+- City SE and the suburb have about 1,500 out of work and no posts within 3 km: more workshops there, a longer
+  `walkMax`, or the strider and ferry lines as a commute (the roadmap's "walk or transit minutes", not done yet)?
+- The chinampa huts hold no census residents: their growers come from the shore (median 865 m). Count the huts as
+  homes (`TUNE.census.live`)?
+
+**Next (phase C session 2):** the week and the rota (`KCLOCK.weekday`, `TUNE.sim.shifts`), the fast test clock, and
+stepping everyone. Before stepping 54,000 actors: `SIM.placesFor` scans every place for each free-time decision (13 ms
+at 20:00; 3.5 ms at 8, mostly routing), so core/simulation needs a spatial index of places (or per-activity fields
+from `SIM.nav.field`, refreshed as places fill) and the stepper's `SIM.STEP_MAX` a look; the embodiment (`77-sim-7-lod`)
+draws only those near the camera. The buildings' own graphs and the canton interiors' join the layer; the chinampa
+huts go on `water` with kayaks.
+
 ## 2026-10-12: phase B session 2 (branch `Voth-sim`): phase B is done
 
 The owner: "Put caravanserai closer to the river gate, at post-avenue stage. Add more work furniture. Do B session 2".

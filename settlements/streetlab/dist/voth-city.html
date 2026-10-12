@@ -47773,7 +47773,39 @@ var TUNE = {
     seatWidth: { table: 0.8, bench: 0.6, seating: 0.6 },
     spotStep: 0.45, spotsMax: 48,
     spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
-    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20 }
+    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20, ferry: 10, station: 14, chinampa: 25, ranch: 18 },
+    /* phase C: the pedestrian layer (43-vc-sim-nav.js). A street is a node every `step` m; a street's end joins the street
+       it meets when it stops within that street's half-width + `snap` m; crossings share a node. A canton terrace is a
+       ring of nodes every `ring` m, a top deck a grid every `deck` m; a park walk's loose end joins a street within
+       `walkSnap` m, a causeway's land end within `landSnap` m. `yWeight`: a point's height counts that many times its
+       horizontal distance when it finds its node (a room on the third terrace is not walked to from the street under
+       it). An alley's or a lane's end still dead joins another street within `reach` m; a park walk joins a street it passes
+       within `walkTouch` m; each plaza is a hub joined to the street nodes round it. A place whose door stands more than
+       `far` m (past an open place's reach) from its node is listed as off the network */
+    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6 } },
+    /* phase C: the citizens (44-vc-sim-people.js). Every home's census residents become actors; TUNE.census.workingShare
+       of them work (all of them where the home is a barracks or a dorm: its workplaces cover its residents). Jobs are
+       dealt: a home that is also a workplace (a shop, a tavern, a garrison) fills its own first; `liveAt` gives a kind
+       of home its trade (a chinampa hut's workers grow its beds); `slaveShare` of the `slaveJobs` workplaces go to slaves
+       (the owner's Q5: 70% of farm and mine labour), housed at the site and counted apart from the census; the rest
+       go to the nearest free worker by the walk (the pedestrian layer, at most `rounds` searches), never past `walkMax`
+       metres walked. `gentry` classes take only `gentryJobs` outside their own house. `wealth` is the owner's Q6
+       recommendation (still open). `sample`: the commutes walked on the pedestrian layer for the report. `sched`: a
+       plain day until session 2 brings the week, the rota and the shifts */
+    people: {
+      walkMax: 3000, rounds: 400,
+      liveAt: { 'chinampa hut': 'chinampa growers' }, notLiveIn: ['household service'],
+      slaveShare: 0.7, slaveJobs: ['farmhands and ploughmen', 'miners', 'quarrymen and masons'],
+      gentry: ['rich', 'manor', 'clan'],
+      gentryJobs: ['guild officers and clerks', 'customs officers and clerks', 'teachers and scholars', 'clerks and officials', 'envoys and embassy staff',
+                   'guild masters and journeymen', 'palace household and officials', 'healers and nurses', 'priests and undertakers', 'temple priests and servants',
+                   'scribes and librarians', 'Ordinator garrison'],
+      wealth: { slave: 0, poor: 0.2, middle: 0.45, shop: 0.5, craft: 0.5, tavern: 0.5, rich: 0.75, manor: 0.9, clan: 0.9, canton: 0.45, other: 0.35 },
+      sample: 600,
+      sched: { worker: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [22, 'SLEEP']],
+               dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']],
+               slave: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [19, 'EAT'], [20, 'SLEEP']] }
+    }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
@@ -52088,7 +52120,7 @@ VC.waterMills = function (rs) {
 };
 /* beetle ranches (Voth's beetleRanch(), 65k, built but never placed): a fenced pen beside about one farmstead in five */
 VC.ranches = function (rs) {
-  var B = VOTH, K = TUNE.country.ranches, made = 0;
+  var B = VOTH, K = TUNE.country.ranches, made = 0; VC.industry.ranchAt = [];
   PLAN.lots.filter(function (L) { return L.died == null && L.cls === 'farm'; }).forEach(function (L) {
     if (!rs.chance(K.perFarm)) return;
     for (var t = 0; t < 12; t++) {
@@ -52096,7 +52128,7 @@ VC.ranches = function (rs) {
       var o = obb(c, [Math.cos(ry), -Math.sin(ry)], 15, 12);
       if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
       VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, {}); });
-      VC.big.push(o); made++; break;
+      VC.big.push(o); VC.industry.ranchAt.push([c[0], c[1]]); made++; break;
     }
   });
   VC.industry.ranches = made;
@@ -52697,10 +52729,15 @@ SL.pass13 = function () {
 // binary heap, a cost and a speed factor per edge kind, `w` per edge so a caravan keeps to roads wide enough for it).
 // A GRID layer (a host's own water or cross-country grid) registers a route function instead and answers the same call.
 //
-//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}})       a graph layer
+//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}, yWeight?})       a graph layer; yWeight: a layer whose
+//                                     levels stack (canton terraces, storeys) finds a point's nearest node by sqrt(dxz^2 + (yWeight*dy)^2)
+//                                     when the point has a y (a room on the third terrace is not walked to from the street under it)
 //   SIM.nav.layer(name, {route:(ax,az,bx,bz,opt)=>{pts:[[x,y,z]...]}|null})      a grid (host) layer
-//   SIM.nav.nearest(layer, x, z, {minW}) -> node index (graph layers)
+//   SIM.nav.nearest(layer, x, z, {minW, y}) -> node index (graph layers; y counts only on a yWeight layer)
 //   SIM.nav.route(layer, from:{x,z,y?,node?}, to:{x,z,y?,node?}, {minW}) -> {pts, cum, len} or null (SIM.routeFail)
+//   SIM.nav.field(layer, [{node, d?}], {max?, minW?}) -> {d: Float64Array, src: Int32Array} (graph layers): every node's
+//                                     cost from the nearest source and which source (an index into the list; -1 past max).
+//                                     One search answers "the nearest free job / well / tavern" for a whole city at once.
 //   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
 (function(root){
   'use strict';
@@ -52718,7 +52755,7 @@ SL.pass13 = function () {
     var adjTo=new Int32Array(adjStart[n]), adjE=new Int32Array(adjStart[n]), fill=new Int32Array(n);
     E.forEach(function(e,ei){ var a=idx[e.a], b=idx[e.b]; adjTo[adjStart[a]+fill[a]]=b; adjE[adjStart[a]+fill[a]++]=ei; adjTo[adjStart[b]+fill[b]]=a; adjE[adjStart[b]+fill[b]++]=ei; });
     var hash={}; N.forEach(function(nd,i){ var k=Math.floor(nd.x/CELL)+','+Math.floor(nd.z/CELL); (hash[k]||(hash[k]=[])).push(i); });
-    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0 };
+    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0, yw:o.yWeight||0 };
     /* the widest edge at each node: a wheeled mover may only start or stop where it fits */
     L.nodeW = new Float32Array(n); E.forEach(function(e){ var w=e.w==null?99:e.w; [idx[e.a],idx[e.b]].forEach(function(j){ if(w>L.nodeW[j]) L.nodeW[j]=w; }); });
     return L;
@@ -52728,14 +52765,15 @@ SL.pass13 = function () {
     layer: function(name, o){ NAVS[name] = o.route ? { name:name, kind:'grid', route:o.route, nearest:o.nearest||null, searches:0 } : graphLayer(name, o); return NAVS[name]; },
     nearest: function(layer, x, z, opt){
       var L=NAVS[layer]; if(!L || L.kind!=='graph') return -1; var minW=(opt&&opt.minW)||0, best=-1, bd=1e18;
+      var yw=L.yw && opt && opt.y!=null ? L.yw : 0, y=yw ? opt.y : 0;   /* a stacked layer: the height counts (the ring bound below still holds: 3D >= 2D) */
       /* rings of hash cells outward; once something is found, a ring further out cannot hold anything nearer
          than r*CELL, so stop when the best is inside that */
       var ci=Math.floor(x/CELL), cj=Math.floor(z/CELL);
       for(var r=0;r<14;r++){
         for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue; var cell=L.hash[i+','+j]; if(!cell) continue;
-          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(d<bd){ bd=d; best=k; } } }
+          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(yw) d+=yw*yw*((nd.y||0)-y)*((nd.y||0)-y); if(d<bd){ bd=d; best=k; } } }
         if(best>=0 && Math.sqrt(bd) <= r*CELL) break; }
-      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(d2<bd){ bd=d2; best=m; } } }
+      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(yw) d2+=yw*yw*((nd2.y||0)-y)*((nd2.y||0)-y); if(d2<bd){ bd=d2; best=m; } } }
       return best;
     },
     /* the node path between two node indices, cached */
@@ -52759,7 +52797,8 @@ SL.pass13 = function () {
       var pts;
       if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, opt); if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
       else {
-        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, opt), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, opt);
+        var oa = L.yw ? { minW:opt.minW, y:from.y } : opt, ob = L.yw ? { minW:opt.minW, y:to.y } : opt;
+        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, oa), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, ob);
         if(s==null || t==null || s<0 || t<0){ SIM.routeFail.push({ layer:layer, why:'no node', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
         var p = SIM.nav.path(layer, s, t, opt.minW);
         if(!p){ SIM.routeFail.push({ layer:layer, why:'no path', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
@@ -52772,6 +52811,17 @@ SL.pass13 = function () {
       if(clean.length===1) clean.push(clean[0].slice());
       var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
       return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
+    },
+    field: function(layer, sources, opt){
+      var L=NAVS[layer]; opt=opt||{}; if(!L || L.kind!=='graph') return null;
+      var N=L.nodes, n=N.length, d=new Float64Array(n).fill(Infinity), src=new Int32Array(n).fill(-1), closed=new Uint8Array(n), h=new Heap(), max=opt.max==null?Infinity:opt.max, minW=opt.minW||0;
+      sources.forEach(function(S, i){ var k=S.node, d0=S.d||0; if(k==null || k<0 || k>=n || d0>max) return; if(d0<d[k]){ d[k]=d0; src[k]=i; h.push(k, d0); } });
+      while(h.k.length){ var c=h.pop(); if(closed[c]) continue; closed[c]=1;
+        for(var q=L.adjStart[c]; q<L.adjStart[c+1]; q++){ var o=L.adjTo[q], e=L.edges[L.adjE[q]]; if(closed[o]) continue;
+          if(minW && e.w!=null && e.w < minW) continue;
+          var len=e.len!=null?e.len:Math.hypot(N[o].x-N[c].x,N[o].z-N[c].z), cst=d[c]+len*(L.cost[e.kind]||1)*(e.cost||1);
+          if(cst<d[o] && cst<=max){ d[o]=cst; src[o]=src[c]; h.push(o, cst); } } }
+      L.searches++; return { d:d, src:src };
     },
     stats: function(){ var o={}; for(var k in NAVS){ var L=NAVS[k]; o[k]={ kind:L.kind, nodes:L.nodes?L.nodes.length:0, edges:L.edges?L.edges.length:0, searches:L.searches, cacheHits:L.hits||0 }; } return o; }
   };
@@ -55087,11 +55137,13 @@ VC.simActs = function () {
 VC.simPlaces = function () {
   if (typeof SIM === 'undefined' || !SIM.place) return 0;
   VC.simActs();
-  var T = TUNE.sim, n = 0, K = TUNE.census, posts = {}, list = VC.SIMB.list = [];
+  var T = TUNE.sim, n = 0, K = TUNE.census, posts = {}, wps = {}, list = VC.SIMB.list = [];
   var hrs = function (kind) { var h = T.hours[kind]; return h ? h.slice() : null; };
   var pullOf = function (kind) { return T.pull[kind] ? Object.assign({}, T.pull[kind]) : null; };
   var reg = function (o) {
-    if (o.job && o.posts) { o.activities.WORK = Math.max(1, Math.round(o.posts)); posts[o.job] = (posts[o.job] || 0) + o.posts; }
+    if (o.job && o.posts) posts[o.job] = (posts[o.job] || 0) + o.posts;
+    if (o.job && (o.posts || o.workplaces)) o.activities.WORK = Math.max(1, Math.round(o.posts || o.workplaces));   /* a place with workplaces and no post still takes its workers (phase C) */
+    if (o.job && o.workplaces) wps[o.job] = (wps[o.job] || 0) + o.workplaces;
     try { SIM.place(o); list.push(o); n++; } catch (e) { VC.SIMB.err = String(e); }
   };
   /* the buildings with an interior */
@@ -55103,6 +55155,7 @@ VC.simPlaces = function () {
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
+    if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
     if (kind === 'tavern') { acts.DRINK = (acts.DRINK || 0) + (acts.EAT || 0); acts.SOCIALIZE = (acts.SOCIALIZE || 0) + (acts.EAT || 0); }
     if (kind === 'healing') acts.HEAL = u.beds;
@@ -55188,10 +55241,22 @@ VC.simPlaces = function () {
     var M = CANT.by[cn]; if (!M) return;
     reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], workplaces: K.cantons[cn][0], r: M.r, tags: ['canton', cn, 'no interior'] });
   });
-  ['chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen', 'elephant bug handlers and station hands', 'envoys and embassy staff', 'healers and nurses',
-   'monks and lay brothers (chapel, fields, coops)'].forEach(function (job) {
-    var have = posts[job] || 0, want = C[job] ? C[job].n : 0; if (want <= have) return;
-    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, workplaces: want - have, tags: ['outdoor', 'aggregate'] });
+  /* the outdoor trades at their own sites (phase C: a citizen walks to them): the ferrymen at the ferry stops, the bug
+     handlers at the strider stations, the chinampa growers at the stilt huts, the herders at the beetle ranches, the
+     orchardmen on the orchard hill; each site an equal share of the census's workplaces */
+  var share = function (job, recs, kind) { var want = C[job] ? C[job].n : 0; if (want && recs.length) outdoor(job, recs, function () { return want / recs.length; }, kind); };
+  var stops = function (k) { return SIM.all('place').filter(function (Q) { return Q.kind === k; }).map(function (Q) { return [Q.door.x, Q.door.z]; }); };
+  share('ferrymen', stops('ferry-stop'), 'ferry');
+  share('elephant bug handlers and station hands', stops('strider-station'), 'station');
+  share('chinampa growers', ((VC.chin && VC.chin.hutList) || []).filter(function (q) { return q[3]; }).map(function (q) { return [q[0], q[1]]; }), 'chinampa');
+  share('beetle herders', IND.ranchAt || [], 'ranch');
+  var OP = TUNE.country.orchard.poly; if (VC.orchardTrees) share('orchardmen', [polyCentroid(OP).concat([Math.abs(polyArea(OP)) / 1e4])], 'orchard');
+  /* what is left of a kind of work with no site of its own: one place at the city's middle, for the workplaces (and the
+     posts) the sites above and the buildings do not already hold */
+  ['envoys and embassy staff', 'healers and nurses', 'monks and lay brothers (chapel, fields, coops)', 'chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen',
+   'elephant bug handlers and station hands'].forEach(function (job) {
+    var want = C[job] ? C[job].n : 0, have = posts[job] || 0, haveW = wps[job] || 0; if (want <= have && want <= haveW) return;
+    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: Math.max(0, want - have), workplaces: Math.max(0, want - haveW), tags: ['outdoor', 'aggregate'] });
   });
   VC.SIMB.places = n; VC.SIMB.posts = posts;
   return n;
@@ -55217,6 +55282,439 @@ VC.simWorkAudit = function () {
   var tot = rows.reduce(function (s, r) { s.workplaces += r.workplaces; s.target += r.target; s.posts += Math.min(r.posts, r.target); return s; }, { workplaces: 0, target: 0, posts: 0 });
   VC.SIMB.audit = { rows: rows, total: tot, short: rows.filter(function (r) { return r.short; }).length };
   return VC.SIMB.audit;
+};
+
+/* ---- targets/voth-city/43-vc-sim-nav.js ---- */
+/* ============================== 5k. THE PEDESTRIAN LAYER (phase C) ============================== */
+/* [G data] The city as a graph a citizen walks (SIM-ROADMAP.md 2.4 item 1): core/simulation's NAV contract
+   ({nodes:[{id,x,y,z,tag}], edges:[{id,a,b,kind,len,w}]}), registered as SIM's `pedestrian` layer.
+   - THE STREETS: every way of the plan (avenues, highways, main and side streets, alleys, the country lanes), a node
+     every TUNE.sim.nav.step m along it. A street that stops at another (a side street at its main street) joins it
+     where it stops; two streets that cross share a node there. A node's height is the ground's, or a bridge deck's.
+   - THE PARKS' WALKS (39-vc-furnish.js VC.parkWalks), their loose ends joined to the nearest street.
+   - THE CANTONS (CANT, targets/voth-site/20-site-cantons.js): each terrace a ring of nodes round its band, each top
+     deck a grid; the Ancestry ramp face by face; the flights (ferry piers, moles, terrace to terrace) as stairs, the
+     bridges between cantons over their arch, the causeways from their canton end to the street at their land end,
+     the canton doors.
+   The layer is `yWeight`ed: a room on a terrace finds its node on that terrace, not on the street under it. A place is
+   walked to from the node nearest its door (SIM.nav.route). VC.pedAudit names what the network leaves out: nodes cut
+   off from the city's main body, places whose door is far from any node, by kind. Records only: nothing is drawn. */
+VC.PED = { log: [] };
+
+VC.walkY = function (x, z) { var b = VOTH.lifeBridgeY ? VOTH.lifeBridgeY(x, z) : null; return b != null ? b : Math.max(VOTH.SEA, baseH(x, z)); };
+
+VC.pedNav = function () {
+  var T = TUNE.sim.nav, nodes = [], edges = [], R2 = function (v) { return Math.round(v * 100) / 100; };
+  var node = function (x, z, y, tag, way) { var i = nodes.length, o = { id: i, x: R2(x), y: R2(y == null ? VC.walkY(x, z) : y), z: R2(z), tag: tag }; if (way != null) o.way = way; nodes.push(o); return i; };
+  var edge = function (a, b, kind, w) {
+    if (a === b) return; var A = nodes[a], B = nodes[b];
+    edges.push({ id: edges.length, a: a, b: b, kind: kind, len: R2(Math.hypot(A.x - B.x, A.z - B.z, A.y - B.y)), w: w });
+  };
+  /* ---- the streets: resampled, then split where another street stops on them or crosses them */
+  var W = PLAN.ways.filter(function (w) { return w.died == null && w.pts && w.pts.length > 1; });
+  var samp = W.map(function (w) {
+    var P = w.pts, out = [[P[0][0], P[0][1]]], acc = 0;
+    for (var i = 1; i < P.length; i++) { acc += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); if (acc >= T.step || i === P.length - 1) { out.push([P[i][0], P[i][1]]); acc = 0; } }
+    return out;
+  });
+  var CELL = 40, segs = {}, key = function (i, j) { return i + ',' + j; };
+  samp.forEach(function (S, wi) {
+    for (var i = 1; i < S.length; i++) {
+      var a = S[i - 1], b = S[i], i0 = Math.floor(Math.min(a[0], b[0]) / CELL), i1 = Math.floor(Math.max(a[0], b[0]) / CELL), j0 = Math.floor(Math.min(a[1], b[1]) / CELL), j1 = Math.floor(Math.max(a[1], b[1]) / CELL);
+      for (var p = i0; p <= i1; p++) for (var q = j0; q <= j1; q++) (segs[key(p, q)] || (segs[key(p, q)] = [])).push([wi, i]);
+    }
+  });
+  var splits = samp.map(function () { return []; });   /* per way: {i: segment, t, n: node} */
+  var addSplit = function (wi, i, t, n) { splits[wi].push({ i: i, t: t, n: n }); };
+  /* crossings: two segments of different ways (or of one way far apart along it) that cross share a node */
+  var seen = {}, crossings = 0, joins = 0;
+  Object.keys(segs).forEach(function (k) {
+    var L = segs[k];
+    for (var x = 0; x < L.length; x++) for (var y = x + 1; y < L.length; y++) {
+      var A = L[x], B = L[y]; if (A[0] === B[0] && Math.abs(A[1] - B[1]) < 2) continue;
+      var id = A[0] < B[0] || (A[0] === B[0] && A[1] < B[1]) ? A.join('.') + '|' + B.join('.') : B.join('.') + '|' + A.join('.'); if (seen[id]) continue; seen[id] = 1;
+      var p = samp[A[0]][A[1] - 1], p2 = samp[A[0]][A[1]], q = samp[B[0]][B[1] - 1], q2 = samp[B[0]][B[1]];
+      var r = [p2[0] - p[0], p2[1] - p[1]], s = [q2[0] - q[0], q2[1] - q[1]], den = r[0] * s[1] - r[1] * s[0]; if (Math.abs(den) < 1e-9) continue;
+      var t = ((q[0] - p[0]) * s[1] - (q[1] - p[1]) * s[0]) / den, u = ((q[0] - p[0]) * r[1] - (q[1] - p[1]) * r[0]) / den;
+      if (t <= 0.001 || t >= 0.999 || u <= 0.001 || u >= 0.999) continue;
+      var n = node(p[0] + r[0] * t, p[1] + r[1] * t, null, 'crossing'); addSplit(A[0], A[1], t, n); addSplit(B[0], B[1], u, n); crossings++;
+    }
+  });
+  /* a street's end that stops at another street joins it there: the nearest point on another way's segments within
+     that way's half-width + snap becomes a node on that way (a split, as a crossing is) */
+  var pend = [], cutAt = {};
+  samp.forEach(function (S, wi) {
+    [0, S.length - 1].forEach(function (ei) {
+      var e = S[ei], ci = Math.floor(e[0] / CELL), cj = Math.floor(e[1] / CELL), best = null;
+      for (var p = ci - 1; p <= ci + 1; p++) for (var q = cj - 1; q <= cj + 1; q++) (segs[key(p, q)] || []).forEach(function (sg) {
+        if (sg[0] === wi) return;
+        var a = samp[sg[0]][sg[1] - 1], b = samp[sg[0]][sg[1]], dx = b[0] - a[0], dz = b[1] - a[1], L2 = dx * dx + dz * dz || 1;
+        var t = Math.max(0, Math.min(1, ((e[0] - a[0]) * dx + (e[1] - a[1]) * dz) / L2)), d = Math.hypot(a[0] + dx * t - e[0], a[1] + dz * t - e[1]);
+        if (d <= W[sg[0]].w / 2 + T.snap && (!best || d < best.d)) best = { sg: sg, t: t, d: d };
+      });
+      if (!best) return;
+      var ck = best.sg.join('.') + '@' + Math.round(best.t * 40), n = cutAt[ck];
+      if (n == null) { var a = samp[best.sg[0]][best.sg[1] - 1], b = samp[best.sg[0]][best.sg[1]]; n = cutAt[ck] = node(a[0] + (b[0] - a[0]) * best.t, a[1] + (b[1] - a[1]) * best.t, null, 'junction'); addSplit(best.sg[0], best.sg[1], best.t, n); }
+      pend.push({ wi: wi, end: ei, n: n, w: W[best.sg[0]].w }); joins++;
+    });
+  });
+  /* the street nodes, in order along each way, with the splits between its samples */
+  var endNode = {};
+  samp.forEach(function (S, wi) {
+    var w = W[wi], sp = splits[wi].sort(function (a, b) { return a.i - b.i || a.t - b.t; }), k = 0, prev = -1;
+    for (var i = 0; i < S.length; i++) {
+      for (; k < sp.length && sp[k].i === i; k++) { edge(prev, sp[k].n, w.cls, w.w); prev = sp[k].n; }
+      var n = node(S[i][0], S[i][1], null, w.cls, w.id); if (prev >= 0) edge(prev, n, w.cls, w.w); prev = n;
+      if (i === 0 || i === S.length - 1) endNode[wi + '.' + i] = n;
+    }
+  });
+  pend.forEach(function (j) { edge(endNode[j.wi + '.' + j.end], j.n, 'junction', j.w); });
+  var streetNodes = nodes.length;
+  /* a node finder over what is built so far (for joins): the nearest node passing a test */
+  var NC = 24, nh = {}, hashAll = function () { nh = {}; nodes.forEach(function (nd, i) { var k = Math.floor(nd.x / NC) + ',' + Math.floor(nd.z / NC); (nh[k] || (nh[k] = [])).push(i); }); };
+  var nearestNode = function (x, z, r, test) {
+    var best = -1, bd = r, ci = Math.floor(x / NC), cj = Math.floor(z / NC), m = Math.ceil(r / NC);
+    for (var p = ci - m; p <= ci + m; p++) for (var q = cj - m; q <= cj + m; q++) (nh[p + ',' + q] || []).forEach(function (i) { var nd = nodes[i]; if (test && !test(nd, i)) return; var d = Math.hypot(nd.x - x, nd.z - z); if (d < bd) { bd = d; best = i; } });
+    return best;
+  };
+  hashAll();
+  var isStreet = function (nd, i) { return i < streetNodes; };
+  var degOf = function () { var d = new Int32Array(nodes.length); edges.forEach(function (e) { d[e.a]++; d[e.b]++; }); return d; };
+  /* an alley's or a lane's end still dead (an interior alley stops at its entrance lot's back, a waterfront lane short of
+     the highway): joined to the nearest node of another street within `reach` m */
+  var dg = degOf(), reached = 0;
+  for (var di = 0; di < streetNodes; di++) {
+    var nd0 = nodes[di]; if (dg[di] !== 1 || (nd0.tag !== 'alley' && nd0.tag !== 'lane')) continue;
+    var jn = nearestNode(nd0.x, nd0.z, T.reach, function (nd, i) { return i < streetNodes && nd.way !== nd0.way && nd.way != null; });
+    if (jn >= 0) { edge(di, jn, 'junction', 3); reached++; }
+  }
+  /* the squares: a hub at each plaza's middle joined to every street node round it (a village's lanes start at its green) */
+  var hubs = 0;
+  PLAN.greens.forEach(function (G) {
+    if (G.kind !== 'plaza' || !G.poly) return;
+    var c = polyCentroid(G.poly), r = 0; G.poly.forEach(function (p) { r = Math.max(r, Math.hypot(p[0] - c[0], p[1] - c[1])); });
+    var near = []; for (var p = Math.floor((c[0] - r - T.snap) / NC); p <= Math.floor((c[0] + r + T.snap) / NC); p++) for (var q = Math.floor((c[1] - r - T.snap) / NC); q <= Math.floor((c[1] + r + T.snap) / NC); q++) (nh[p + ',' + q] || []).forEach(function (i) { if (i < streetNodes && Math.hypot(nodes[i].x - c[0], nodes[i].z - c[1]) <= r + T.snap) near.push(i); });
+    if (near.length < 2) return;
+    var h = node(c[0], c[1], null, 'plaza'); near.forEach(function (i) { edge(h, i, 'plaza', 8); }); hubs++;
+  });
+  /* ---- the parks' walks: their ends merged where they meet, loose ends joined to the nearest street */
+  var wn = {}, walkNode = function (p) { var k = Math.round(p[0] * 2) + ',' + Math.round(p[1] * 2); if (wn[k] == null) wn[k] = node(p[0], p[1], null, 'walk'); return wn[k]; }, deg = {};
+  (VC.parkWalks || []).forEach(function (s) { var a = walkNode(s.a), b = walkNode(s.b); edge(a, b, 'walk', s.w); deg[a] = (deg[a] || 0) + 1; deg[b] = (deg[b] || 0) + 1; });
+  /* a walk's loose end joins the nearest street within walkSnap; a walk that passes within `walkTouch` m of a street joins it
+     there too (a loop round a park has no loose end) */
+  var walkJoins = 0;
+  var walkIds = {}; Object.keys(wn).forEach(function (k) { walkIds[wn[k]] = 1; });
+  Object.keys(wn).forEach(function (k) { var i = wn[k], j = nearestNode(nodes[i].x, nodes[i].z, deg[i] > 1 ? T.walkTouch : T.walkSnap, isStreet); if (j >= 0) { edge(i, j, 'junction', 3); walkJoins++; } });
+  /* a loop that touches no street but runs beside another walk (a park's inner ring): joined to that walk where they pass */
+  hashAll();
+  Object.keys(wn).forEach(function (k) { var i = wn[k], j = nearestNode(nodes[i].x, nodes[i].z, T.walkTouch, function (nd, m) { return walkIds[m] && m !== i && !edges.some(function (e) { return (e.a === i && e.b === m) || (e.b === i && e.a === m); }); }); if (j >= 0) { edge(i, j, 'walk', 3); walkJoins++; } });
+  /* ---- the cantons */
+  var cant = { rings: 0, decks: 0, flights: 0, spans: 0, causeways: 0, doors: 0, unjoined: [] };
+  var levelNodes = {};   /* canton -> [node] with their level's y */
+  (CANT.list || []).forEach(function (M) {
+    var L = levelNodes[M.n] = [];
+    (M.levels || []).forEach(function (lv) {
+      if (lv.ri > 0 && !lv.top) {
+        var h = (lv.ro + lv.ri) / 2, side = 2 * h, per = Math.max(2, Math.round(side / T.ring)), ring = [];
+        for (var sd = 0; sd < 4; sd++) for (var k = 0; k < per; k++) {
+          var t = -h + side * k / per, c = sd === 0 ? [t, -h] : sd === 1 ? [h, t] : sd === 2 ? [-t, h] : [-h, -t];
+          var n = node(M.x + c[0], M.z + c[1], lv.y, 'terrace'); ring.push(n); L.push(n);
+        }
+        for (var r = 0; r < ring.length; r++) edge(ring[r], ring[(r + 1) % ring.length], 'terrace', lv.ro - lv.ri);
+        cant.rings++;
+      } else {
+        var e = lv.ro * 0.92, m = Math.max(1, Math.round(2 * e / T.deck)), grid = [];
+        for (var a = 0; a <= m; a++) for (var b = 0; b <= m; b++) { var g = node(M.x - e + 2 * e * a / m, M.z - e + 2 * e * b / m, lv.y, 'deck'); grid.push(g); L.push(g); if (b) edge(g - 1, g, 'deck', T.deck); if (a) edge(g - (m + 1), g, 'deck', T.deck); }
+        cant.decks++;
+      }
+    });
+    /* the Ancestry spiral: its ramp face by face */
+    if (M.faces && M.faces.length) {
+      var prev = -1;
+      M.faces.forEach(function (F) { var a = node(F.p0[0], F.p0[1], F.y0, 'ramp'), b = node(F.p1[0], F.p1[1], F.y1, 'ramp'); if (prev >= 0) edge(prev, a, 'ramp', M.walkW || 12); edge(a, b, 'ramp', M.walkW || 12); L.push(a, b); prev = b; });
+    }
+  });
+  /* the nearest canton node at a height: on that canton, its y within `dy` */
+  var cantonAt = function (cn, x, z, y, dy) {
+    var pick = function (tol) { var best = -1, bd = Infinity; (levelNodes[cn] || []).forEach(function (i) { var nd = nodes[i]; if (Math.abs(nd.y - y) > tol) return; var d = Math.hypot(nd.x - x, nd.z - z); if (d < bd) { bd = d; best = i; } }); return best; };
+    var b = pick(dy || 1.5); return b >= 0 ? b : pick(3 * (dy || 1.5));   /* the Ancestry ramp: a bridge lands between its nodes */
+  };
+  var flightFoot = {};
+  (CANT.flights || []).forEach(function (f) {
+    var foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'); edge(foot, head, 'stairs', f.w); cant.flights++;
+    var top = cantonAt(f.canton, f.b[0], f.b[1], f.y1); if (top >= 0) edge(head, top, 'landing', f.w); else cant.unjoined.push(f.id + ' head');
+    if (f.kind === 'terrace') { var bot = cantonAt(f.canton, f.a[0], f.a[1], f.y0); if (bot >= 0) edge(foot, bot, 'landing', f.w); else cant.unjoined.push(f.id + ' foot'); }
+    flightFoot[f.id] = foot; levelNodes[f.canton].push(foot, head);
+  });
+  (CANT.spans || []).forEach(function (S) {
+    if (!S.ok) return;
+    var n = Math.max(2, Math.round(S.L / T.step)), prev = -1, first = -1, last = -1;
+    for (var k = 0; k <= n; k++) { var t = k / n, x = S.la[0] + (S.lb[0] - S.la[0]) * t, z = S.la[1] + (S.lb[1] - S.la[1]) * t, nd = node(x, z, CANT.deckY(S, t), 'bridge'); if (prev >= 0) edge(prev, nd, 'bridge', S.w); else first = nd; prev = last = nd; }
+    var A = cantonAt(S.a, S.la[0], S.la[1], S.ya, 2.5), B = cantonAt(S.b, S.lb[0], S.lb[1], S.yb, 2.5);
+    if (A >= 0) edge(first, A, 'landing', S.w); else cant.unjoined.push(S.id + ' at ' + S.a);
+    if (B >= 0) edge(last, B, 'landing', S.w); else cant.unjoined.push(S.id + ' at ' + S.b);
+    cant.spans++;
+  });
+  hashAll();
+  (CANT.causewayList || []).forEach(function (c) {
+    if (!c.pts || c.pts.length < 2) return;
+    var E = c.ends || [], yA = E[0] ? (E[0].flight ? E[0].flight.y0 : E[0].y) : null, yB = E[1] ? (E[1].flight ? E[1].flight.y0 : E[1].y) : null, ids = [];
+    var P = [], len = 0; c.pts.forEach(function (p, i) { if (i) len += Math.hypot(p[0] - c.pts[i - 1][0], p[1] - c.pts[i - 1][1]); P.push([p[0], p[1], len]); });
+    /* resampled along its line, its deck from canton end to land end */
+    var pts = []; P.forEach(function (p, i) { if (!i) { pts.push(p); return; } var q = P[i - 1], m = Math.max(1, Math.round((p[2] - q[2]) / T.step)); for (var k = 1; k <= m; k++) { var t = k / m; pts.push([q[0] + (p[0] - q[0]) * t, q[1] + (p[1] - q[1]) * t, q[2] + (p[2] - q[2]) * t]); } });
+    pts.forEach(function (p) { var t = len ? p[2] / len : 0, ya = yA != null ? yA : VC.walkY(c.pts[0][0], c.pts[0][1]), yb = yB != null ? yB : VC.walkY(p[0], p[1]); ids.push(node(p[0], p[1], ya + (yb - ya) * t, 'causeway')); });
+    for (var i = 1; i < ids.length; i++) edge(ids[i - 1], ids[i], 'causeway', c.width);
+    [0, 1].forEach(function (s) {
+      var end = E[s], at = s ? ids[ids.length - 1] : ids[0];
+      if (end && end.canton) {
+        var to = end.flight && flightFoot[end.flight.id] != null ? flightFoot[end.flight.id] : cantonAt(end.canton, end.x, end.z, end.y, 3);
+        if (to >= 0) edge(at, to, 'landing', c.width); else cant.unjoined.push(c.id + ' at ' + end.canton);
+      } else {
+        var nd = nodes[at], j = nearestNode(nd.x, nd.z, T.landSnap, isStreet); if (j >= 0) edge(at, j, 'junction', c.width); else cant.unjoined.push(c.id + ' land end');
+      }
+    });
+    cant.causeways++;
+  });
+  (CANT.doors || []).forEach(function (d) { var n = node(d.x, d.z, d.y, 'door'), j = cantonAt(d.canton, d.x, d.z, d.y, 2.5); if (j >= 0) { edge(n, j, 'landing', d.w); levelNodes[d.canton].push(n); cant.doors++; } else cant.unjoined.push(d.id); });
+  /* a small piece still cut off from the main body (two interior alleys that only meet each other) joins it at its
+     nearest node within `reach` m */
+  var par = new Int32Array(nodes.length); for (var pi = 0; pi < par.length; pi++) par[pi] = pi;
+  var fnd = function (i) { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+  edges.forEach(function (e) { var a = fnd(e.a), b = fnd(e.b); if (a !== b) par[a] = b; });
+  var sz = {}; for (var si = 0; si < par.length; si++) { var rt = fnd(si); sz[rt] = (sz[rt] || 0) + 1; }
+  var big = +Object.keys(sz).sort(function (a, b) { return sz[b] - sz[a]; })[0], islands = 0;
+  hashAll();
+  Object.keys(sz).forEach(function (rt) {
+    rt = +rt; if (rt === big || sz[rt] > 200) return;
+    var best = null;
+    for (var i = 0; i < nodes.length; i++) { if (fnd(i) !== rt) continue; var j = nearestNode(nodes[i].x, nodes[i].z, T.reach, function (nd, m) { return fnd(m) === big && Math.abs(nd.y - nodes[i].y) < 4; }); if (j >= 0) { var d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z); if (!best || d < best[2]) best = [i, j, d]; } }
+    if (best) { edge(best[0], best[1], 'junction', 3); islands++; }
+  });
+  var live = edges;
+  VC.PED = { nodes: nodes, edges: live, streetNodes: streetNodes, crossings: crossings, joins: joins, reached: reached, islands: islands, plazas: hubs, walkJoins: walkJoins, cant: cant, log: [] };
+  SIM.nav.layer('pedestrian', { nodes: nodes, edges: live, yWeight: T.yWeight, cost: T.cost });
+  return VC.PED;
+};
+
+/* what the network leaves out: its connected bodies (the city's main one and the islands cut off from it, by what their
+   nodes are), and the places whose door is far from their node or whose node is not on the main body */
+VC.pedAudit = function () {
+  var P = VC.PED; if (!P.nodes) return null;
+  var n = P.nodes.length, par = new Int32Array(n); for (var i = 0; i < n; i++) par[i] = i;
+  var find = function (i) { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+  P.edges.forEach(function (e) { var a = find(e.a), b = find(e.b); if (a !== b) par[a] = b; });
+  var size = {}; for (var j = 0; j < n; j++) { var r = find(j); size[r] = (size[r] || 0) + 1; }
+  var main = Object.keys(size).sort(function (a, b) { return size[b] - size[a]; })[0] | 0;
+  var off = {}, bodies = Object.keys(size).length; for (var k = 0; k < n; k++) if (find(k) !== main) off[P.nodes[k].tag] = (off[P.nodes[k].tag] || 0) + 1;
+  P.comp = function (i) { return find(i); }; P.main = main;
+  /* a place's node (SIM.nav.nearest from its door, its height counted) and the step from its door to it (navOff). Far
+     from the network: a door more than `far` m past an open place's reach from its node. Not the network's fault yet:
+     the canton rooms (inside the tiers: the canton interiors' own graph is not joined), the chinampa huts (on the
+     beds, reached by kayak: the water layer's) */
+  var T = TUNE.sim.nav, far = {}, cut = {}, farList = [], placed = 0, inside = 0, beds = 0;
+  SIM.all('place').forEach(function (Q) {
+    if (Q.layer !== 'pedestrian') return; placed++;
+    var d = Q.door || Q, k = SIM.nav.nearest('pedestrian', d.x, d.z, { y: d.y }); if (k < 0) return;
+    var nd = P.nodes[k], dist = Math.hypot(nd.x - d.x, nd.z - d.z);
+    Q.navNode = k; Q.navOff = Math.round(Math.hypot(dist, (nd.y || 0) - (d.y || 0)) * 10) / 10;
+    if (find(k) !== main) { cut[Q.kind] = (cut[Q.kind] || 0) + 1; return; }
+    if (dist - (Q.r || 0) <= T.far) return;
+    if (/^canton-/.test(Q.kind)) { inside++; return; }
+    if (Q.kind === 'chinampa hut') { beds++; return; }
+    far[Q.kind] = (far[Q.kind] || 0) + 1; if (farList.length < 40) farList.push([Q.id, Q.kind, Math.round(dist - (Q.r || 0))]);
+  });
+  P.audit = { nodes: n, edges: P.edges.length, bodies: bodies, mainNodes: size[main], offMain: off, places: placed, cutOff: cut, far: far, farList: farList, cantonRooms: inside, chinampaHuts: beds };
+  return P.audit;
+};
+
+/* ---- targets/voth-city/44-vc-sim-people.js ---- */
+/* ============================== 5l. THE CITIZENS (phase C) ============================== */
+/* [G data] The census's people as SIM actors (SIM-ROADMAP.md 2.4 item 2; the owner's Q1: every one a record). Each home
+   place (42-vc-sim-places.js: a building with residents, a canton room with beds) makes its census residents; a share
+   of them work (TUNE.census.workingShare; all of a barracks' or a dorm's, whose workplaces cover its residents), the
+   rest are its dependants. The jobs are the places' workplaces, dealt (TUNE.sim.people):
+     1. LIVE-IN: a home that is also a workplace fills its own posts first (a shop's family keeps the shop, the garrison
+        its castle), but not the kinds of work that come in from outside (household service);
+     2. A TRADE BY HOME (`liveAt`): a chinampa hut's workers grow the beds round it;
+     3. SLAVES (the owner's Q5): `slaveShare` of the farm, mine and quarry workplaces, housed at the site, counted
+        apart from the census (their quarters are not built: the report says so);
+     4. THE DEAL: every other post to the nearest free workers by the walk on the pedestrian layer (43-vc-sim-nav.js),
+        never past `walkMax`; `gentry` take only `gentryJobs` outside their own house, and those who find none live on
+        their means (not counted out of work).
+   Every actor carries its home, its work (or none), its class and wealth (the owner's Q6 recommendation, still open).
+   VC.PEOPLE is the report: people by class, workers employed and not, posts filled and not by kind of work (with how
+   they were filled), the commutes (metres walked, by class and kind of work); VC.simWalkSample checks them with A*.
+   Schedules are a plain day for now (TUNE.sim.people.sched); the week, the rota and the shifts are session 2's. */
+VC.PEOPLE = null;
+
+VC.simPeople = function () {
+  if (typeof SIM === 'undefined' || !SIM.actor || !VC.PED || !VC.PED.comp) return null;
+  var T = TUNE.sim.people, share = TUNE.census.workingShare, t0 = Date.now();
+  if (!SIM.R.faction.voth) SIM.faction({ id: 'voth' });
+  ['citizens', 'slaves'].forEach(function (o) { if (!SIM.R.org[o]) SIM.org({ id: o, faction: 'voth' }); });
+  var roleOf = function (id, org, sched, name, pin) {
+    if (!SIM.R.role[id]) SIM.role({ id: id, org: org, name: name, sched: sched, prefers: pin });
+    return id;
+  };
+  var pinBoth = { SLEEP: { pin: 'home' }, WORK: { pin: 'work' } };
+  var comp = function (Q) { return Q.navNode != null ? VC.PED.comp(Q.navNode) : -1; };
+  var at = function (Q) { var d = Q.door || Q; return [d.x, d.z]; };
+  /* ---- the homes and their people */
+  var homes = [], places = SIM.all('place');
+  places.forEach(function (P) {
+    var u = P.unit != null ? VC.IX.units[P.unit] : null, res = 0, cls = 'other', kind = P.kind;
+    if (u && u.residents) { res = u.residents; cls = u.cls; kind = u.site || u.cls; }
+    else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; }
+    res = Math.round(res); if (res > 0) homes.push({ P: P, res: res, cls: cls, kind: kind, c: comp(P), xz: at(P) });
+  });
+  var cum = 0, workers = [], deps = [];
+  homes.forEach(function (H) {
+    var w;
+    if (H.P.workplaces >= H.res) w = H.res;                      /* a barracks, a dorm: everyone in it works there */
+    else { var c0 = Math.round(cum * share); cum += H.res; w = Math.round(cum * share) - c0; }
+    H.workers = w;
+    for (var i = 0; i < H.res; i++) (i < w ? workers : deps).push({ H: H, job: null, work: null, how: null });
+  });
+  /* ---- the posts */
+  var free = {}, jobPlaces = [];
+  /* a place's posts are its workplaces rounded so that each kind of work's total is the census's (a jail cell's half a jailer) */
+  var cumJ = {};
+  places.forEach(function (P) { if (P.job && P.workplaces > 0) { var c0 = cumJ[P.job] || 0, c1 = c0 + P.workplaces; cumJ[P.job] = c1; free[P.id] = Math.round(c1) - Math.round(c0); P.posted = free[P.id]; if (free[P.id] > 0) jobPlaces.push(P); } });
+  var take = function (wk, P, how) { wk.job = P.job; wk.work = P.id; wk.how = how; free[P.id]--; };
+  var byHome = {}; workers.forEach(function (wk) { (byHome[wk.H.P.id] || (byHome[wk.H.P.id] = [])).push(wk); });
+  var notLive = T.notLiveIn || [];
+  /* 1. live-in */
+  homes.forEach(function (H) {
+    var P = H.P; if (!free[P.id] || notLive.indexOf(P.job) >= 0) return;
+    (byHome[P.id] || []).forEach(function (wk) { if (free[P.id] > 0 && !wk.job) take(wk, P, 'live-in'); });
+  });
+  /* 2. a trade by home */
+  Object.keys(T.liveAt).forEach(function (kind) {
+    var job = T.liveAt[kind], L = jobPlaces.filter(function (P) { return P.job === job; });
+    homes.forEach(function (H) {
+      if (H.kind !== kind) return;
+      (byHome[H.P.id] || []).forEach(function (wk) {
+        if (wk.job) return; var P = null, bd = Infinity;
+        L.forEach(function (Q) { if (free[Q.id] > 0) { var d = Math.hypot(Q.x - H.xz[0], Q.z - H.xz[1]); if (d < bd) { bd = d; P = Q; } } });
+        if (P) { take(wk, P, 'trade of home'); wk.at = H.P.id; }
+      });
+    });
+  });
+  /* 3. slaves */
+  var slaves = [];
+  jobPlaces.forEach(function (P) {
+    if (T.slaveJobs.indexOf(P.job) < 0) return;
+    var n = Math.round(free[P.id] * T.slaveShare);
+    for (var i = 0; i < n; i++) slaves.push({ P: P });
+    free[P.id] -= n;
+    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.quarters = n; }   /* they sleep at the site: quarters the plan has not built (the report says so) */
+  });
+  /* 4. the deal, by the walk: each round one search over the pedestrian layer from every place with a free post labels
+     every node with its nearest one (SIM.nav.field), and each place takes the workers nearest it among those it labels;
+     a worker whose nearest place filled waits for the next round; past `walkMax` (metres walked, stairs dearer) a worker
+     finds nothing. The gentry search only the places of their kinds of work */
+  var gentry = T.gentry, gj = T.gentryJobs, dealt = 0, rounds = 0, open = workers.filter(function (wk) { return !wk.job && wk.H.P.navNode != null; });
+  open.forEach(function (wk) { wk.gen = gentry.indexOf(wk.H.cls) >= 0; });
+  var src = function (gen) { var L = []; jobPlaces.forEach(function (P) { if (free[P.id] > 0 && P.navNode != null && (!gen || gj.indexOf(P.job) >= 0)) L.push(P); }); return L; };
+  var perRound = [];
+  for (; rounds < T.rounds && open.length; rounds++) {
+    var made = 0, F = {}, S = {}, cand = {};
+    [false, true].forEach(function (gen) {
+      if (!open.some(function (wk) { return wk.gen === gen; })) return;
+      S[gen] = src(gen); F[gen] = SIM.nav.field('pedestrian', S[gen].map(function (P) { return { node: P.navNode, d: P.navOff || 0 }; }), { max: T.walkMax });
+    });
+    open.forEach(function (wk) {
+      var f = F[wk.gen], k = wk.H.P.navNode, si = f ? f.src[k] : -1;
+      if (si < 0) { wk.none = true; return; }
+      var P = S[wk.gen][si], d = f.d[k] + (wk.H.P.navOff || 0); if (d > T.walkMax) { wk.none = true; return; }
+      (cand[P.id] || (cand[P.id] = [])).push([d, wk]);
+    });
+    Object.keys(cand).forEach(function (id) {
+      var P = SIM.R.place[id]; cand[id].sort(function (a, b) { return a[0] - b[0]; });
+      cand[id].forEach(function (c) { if (free[id] > 0) { take(c[1], P, 'dealt'); c[1].d = c[0]; dealt++; made++; } });
+    });
+    open = open.filter(function (wk) { return !wk.job && !wk.none; });
+    perRound.push(made);
+    if (!made) break;
+  }
+  /* ---- the actors */
+  var made = 0, n = 0;
+  workers.forEach(function (wk) {
+    var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', T.sched.dependant, 'of independent means', { SLEEP: { pin: 'home' } }) : roleOf('unemployed', 'citizens', T.sched.dependant, 'out of work', { SLEEP: { pin: 'home' } });
+    var role = wk.job ? roleOf('w.' + wk.job, 'citizens', T.sched.worker, wk.job, pinBoth) : idle;
+    wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at });
+    made++;
+  });
+  deps.forEach(function (d) {
+    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', T.sched.dependant, 'household', { SLEEP: { pin: 'home' } }), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
+    made++;
+  });
+  slaves.forEach(function (s, i) {
+    s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', T.sched.slave, 'enslaved ' + s.P.job, pinBoth), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false });
+  });
+  /* ---- the report */
+  var R = { citizens: made, census: PLAN.census ? PLAN.census.population : null, homes: homes.length, workers: workers.length, dependants: deps.length, slaves: slaves.length,
+    quarters: jobPlaces.filter(function (P) { return P.quarters; }).length, floorSleepers: VC.IX.units.reduce(function (s, u) { return s + (u.floor || 0); }, 0),
+    employed: 0, unemployed: 0, gentry: 0, noneInReach: 0, rounds: rounds, perRound: perRound.filter(function (v, i) { return i < 6 || i % 10 === 0 || i === perRound.length - 1; }), walkMax: T.walkMax, byClass: {}, byJob: {}, how: {}, unfilled: 0, unfilledByJob: {}, ms: 0 };
+  var cls = function (k) { return R.byClass[k] || (R.byClass[k] = { people: 0, workers: 0, employed: 0, commute: [] }); };
+  homes.forEach(function (H) { cls(H.cls).people += H.res; });
+  workers.forEach(function (wk) {
+    var C = cls(wk.H.cls); C.workers++;
+    if (!wk.job) { if (gentry.indexOf(wk.H.cls) >= 0) { R.gentry++; C.gentry = (C.gentry || 0) + 1; } else { R.unemployed++; if (wk.none) R.noneInReach++; } return; }
+    R.employed++; C.employed++; R.how[wk.how] = (R.how[wk.how] || 0) + 1;
+    var J = R.byJob[wk.job] || (R.byJob[wk.job] = { posts: 0, filled: 0, how: {}, commute: [] });
+    J.filled++; J.how[wk.how] = (J.how[wk.how] || 0) + 1;
+    var d = wk.how === 'dealt' ? wk.d : 0;   /* metres walked (stairs dearer); live-in and a trade by home: none */
+    J.commute.push(d); C.commute.push(d); wk.d = d;
+  });
+  slaves.forEach(function (s) { var J = R.byJob[s.P.job] || (R.byJob[s.P.job] = { posts: 0, filled: 0, how: {}, commute: [] }); J.filled++; J.how.slave = (J.how.slave || 0) + 1; });
+  jobPlaces.forEach(function (P) {
+    var J = R.byJob[P.job] || (R.byJob[P.job] = { posts: 0, filled: 0, how: {}, commute: [] }); J.posts += P.posted;
+    if (free[P.id] > 0) { R.unfilled += free[P.id]; var U = R.unfilledByJob[P.job] || (R.unfilledByJob[P.job] = { posts: 0, places: 0, offBody: 0 }); U.posts += free[P.id]; U.places++; if (comp(P) !== VC.PED.main) U.offBody += free[P.id]; }
+  });
+  var stats = function (a) { if (!a.length) return null; var s = a.slice().sort(function (p, q) { return p - q; }), m = 0; s.forEach(function (v) { m += v; });
+    return { n: s.length, mean: Math.round(m / s.length), p50: Math.round(s[s.length >> 1]), p90: Math.round(s[Math.floor(s.length * 0.9)]), max: Math.round(s[s.length - 1]) }; };
+  Object.keys(R.byClass).forEach(function (k) { R.byClass[k].commute = stats(R.byClass[k].commute); });
+  Object.keys(R.byJob).forEach(function (k) { R.byJob[k].commute = stats(R.byJob[k].commute); });
+  R.commute = stats(workers.filter(function (wk) { return wk.job; }).map(function (wk) { return wk.d; }));
+  /* where the out-of-work live, by district (worst first) */
+  var dist = {}; workers.forEach(function (wk) { if (wk.job || gentry.indexOf(wk.H.cls) >= 0) return; var t = (wk.H.P.tags || [])[1] || wk.H.cls; dist[t] = (dist[t] || 0) + 1; });
+  R.unemployedBy = Object.keys(dist).map(function (k) { return [k, dist[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 12);
+  R.ms = Date.now() - t0;
+  VC.PEOPLE = R;
+  return R;
+};
+
+/* a check of the deal against the router: a fixed sample of the dealt workers routed home door to work door by A*
+   (SIM.nav.route); its length against the deal's walk (the field's: they agree but for the stairs' price). Run on demand
+   (the report panel, verify.py): about a second */
+VC.simWalkSample = function (n) {
+  var A = SIM.all('actor').filter(function (a) { return a.how === 'dealt'; }), k = Math.max(1, Math.floor(A.length / (n || TUNE.sim.people.sample))), ok = 0, fail = 0, off = [], walk = [], fails = {}, t1 = Date.now();
+  for (var i = 0; i < A.length; i += k) {
+    var a = A[i], H = SIM.R.place[a.home], P = SIM.R.place[a.work], r = SIM.nav.route('pedestrian', H.door, P.door);
+    if (!r) { fail++; var fk = H.kind + ' to ' + P.kind; fails[fk] = (fails[fk] || 0) + 1; continue; }
+    ok++; walk.push(r.len);
+  }
+  var s = walk.slice().sort(function (p, q) { return p - q; });
+  return { routes: ok + fail, ok: ok, fail: fail, fails: fails, p50: Math.round(s[s.length >> 1] || 0), p90: Math.round(s[Math.floor(s.length * 0.9)] || 0), ms: Date.now() - t1 };
+};
+
+/* a check of the actors' wiring (roles, pins, the layer): a fixed sample asked at an hour what they want and where they
+   go (SIM.decide), then put back as they were (no reservation kept). A worker at 8 should choose its work place; anyone
+   at 2 its home. Returns how many chose as their role pins, how many could not be routed, the decisions' cost */
+VC.simDecideSample = function (n, hour) {
+  var A = SIM.all('actor'), k = Math.max(1, Math.floor(A.length / (n || 200))), out = { asked: 0, chose: 0, pinned: 0, wrong: 0, failed: 0, none: 0, wrongList: [], ms: 0 }, t0 = Date.now();
+  var minute = (SIM.host.day() | 0) * 1440 + hour * 60, t = SIM.time();
+  for (var i = 0; i < A.length; i += k) {
+    var a = A[i], want = SIM.desire(a, minute), pin = want === 'WORK' ? a.work : want === 'SLEEP' ? a.home : null;
+    out.asked++;
+    var P = SIM.decide(a, minute, t);
+    if (!P) out.none++;
+    else { out.chose++; if (pin) { if (P.id === pin) out.pinned++; else { out.wrong++; if (out.wrongList.length < 8) out.wrongList.push([a.id, a.role, want, pin, P.id]); } } if (a.task && a.task.failed) out.failed++; }
+    SIM.release(a); a.task = null; a.place = null; a.activity = null; a.wanted = null; a.since = null; a.mem = {}; a.bad = {};
+  }
+  out.ms = Date.now() - t0;
+  return out;
 };
 
 /* ---- targets/voth-site/50-site-scene.js ---- */
@@ -56647,6 +57145,7 @@ VC.start = function () {
   VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
   VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
   try { VC.simPlaces(); VC.simWorkAudit(); } catch (e) { console.error('sim places: ' + (e.stack || e)); VC.SIMB.error = String(e.stack || e); }   /* 42-vc-sim-places.js */
+  try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */
   VC.ui(); VC.ixUI(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };
 
@@ -57319,12 +57818,41 @@ VC.simReportHTML = function () {
   });
   return h + '</table>';
 };
+/* phase C: the citizens and the pedestrian layer (43-vc-sim-nav.js, 44-vc-sim-people.js) */
+VC.peopleReportHTML = function () {
+  var R = VC.PEOPLE, P = VC.PED || {}, A = P.audit; if (!R) return P.error ? '<span class="bad">' + P.error + '</span>' : '';
+  var f = function (n) { return Math.round(n || 0).toLocaleString(); }, cm = function (c) { return c ? f(c.p50) + ' / ' + f(c.p90) : ''; };
+  var h = '<h2>Phase C: the citizens</h2><div>' + f(R.citizens) + ' citizens as simulation actors (the census: ' + f(R.census) + ') in ' + f(R.homes) + ' homes: ' + f(R.workers) + ' of working age, ' + f(R.dependants) + ' dependants; and ' +
+    f(R.slaves) + ' slaves on the farms, mines and quarries (' + Math.round(TUNE.sim.people.slaveShare * 100) + '% of their labour), outside the census, housed at ' + f(R.quarters) + ' sites whose quarters are not built.</div>';
+  h += '<div>Employed ' + f(R.employed) + ' (' + Object.keys(R.how).map(function (k) { return f(R.how[k]) + ' ' + k; }).join(', ') + '); <span class="' + (R.unemployed ? 'bad' : 'ok') + '">' + f(R.unemployed) + ' out of work</span> (no free post within ' + f(R.walkMax) + ' m walked); ' +
+    f(R.gentry) + ' of the gentry live on their means; ' + f(R.unfilled) + ' posts unfilled. ' + f(R.floorSleepers) + ' residents sleep on the floor (their homes\' beds fall short: phase A). The deal took ' + R.rounds + ' searches of the pedestrian layer and ' + f(R.ms) + ' ms.</div>';
+  h += '<div class="k">Commutes are metres walked on the pedestrian layer (stairs count ' + TUNE.sim.nav.cost.stairs + ' times), live-in work none: all ' + cm(R.commute) + ' m (median / 90th percentile).</div>';
+  if (R.unemployedBy && R.unemployedBy.length) h += '<div>Out of work, by district (worst first): ' + R.unemployedBy.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + '.</div>';
+  h += '<table><tr><th>class</th><th>people</th><th>of working age</th><th>employed</th><th>on their means</th><th>commute m</th></tr>';
+  Object.keys(R.byClass).sort(function (a, b) { return R.byClass[b].people - R.byClass[a].people; }).forEach(function (k) { var C = R.byClass[k];
+    h += '<tr><td>' + k + '</td><td class="n">' + f(C.people) + '</td><td class="n">' + f(C.workers) + '</td><td class="n">' + f(C.employed) + '</td><td class="n">' + f(C.gentry) + '</td><td class="n">' + cm(C.commute) + '</td></tr>'; });
+  h += '</table><table><tr><th>kind of work</th><th>posts</th><th>filled</th><th>how</th><th>unfilled</th><th>commute m</th></tr>';
+  Object.keys(R.byJob).sort(function (a, b) { return R.byJob[b].posts - R.byJob[a].posts; }).forEach(function (k) { var J = R.byJob[k], U = R.unfilledByJob[k];
+    h += '<tr><td>' + k + '</td><td class="n">' + f(J.posts) + '</td><td class="n">' + f(J.filled) + '</td><td>' + Object.keys(J.how).map(function (x) { return f(J.how[x]) + ' ' + x; }).join(', ') + '</td><td class="n ' + (U ? 'bad' : 'ok') + '">' + (U ? f(U.posts) + ' at ' + U.places : '') + '</td><td class="n">' + cm(J.commute) + '</td></tr>'; });
+  h += '</table>';
+  if (A) {
+    var C = P.cant || {};
+    h += '<h2>The pedestrian layer</h2><div>' + f(A.nodes) + ' nodes, ' + f(A.edges) + ' edges in ' + A.bodies + ' connected bod' + (A.bodies === 1 ? 'y' : 'ies') + ': the streets (' + f(P.crossings) + ' crossings, ' + f(P.joins) + ' street ends joined where they meet, ' +
+      f(P.reached) + ' alley and lane ends reached over, ' + f(P.plazas) + ' plazas as hubs), the park walks, the cantons (' + C.rings + ' terraces, ' + C.decks + ' top decks, ' + C.flights + ' flights, ' + C.spans + ' bridges, ' + C.causeways + ' causeways, ' + C.doors + ' doors). Built in ' + f(P.ms) + ' ms.</div>';
+    var far = Object.keys(A.far || {}).map(function (k) { return k + ' ' + A.far[k]; });
+    h += '<div>Off the network (a door more than ' + TUNE.sim.nav.far + ' m past the place\'s reach from its node): ' + (far.length ? far.join(', ') : 'none') + '. Not joined yet: ' + f(A.cantonRooms) + ' canton rooms (inside the tiers: the canton interiors\' own graph), ' +
+      f(A.chinampaHuts) + ' chinampa huts (on the beds: by kayak, the water layer). ' + (C.unjoined && C.unjoined.length ? 'Canton links not joined: ' + C.unjoined.join(', ') + '.' : '') + '</div>';
+    var ws = VC.simWalkSample(200);
+    h += '<div class="k">A* check: ' + ws.ok + ' of ' + ws.routes + ' sampled commutes routed (median ' + f(ws.p50) + ' m, 90th percentile ' + f(ws.p90) + ' m, ' + ws.ms + ' ms).</div>';
+  }
+  return h;
+};
 VC.ixUI = function () {
   VC.ixCutWrap(); VC.ixPickWrap();
   var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
   var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
   var r = $('ly-ixrep'), P = $('ix');
-  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.simReportHTML() + VC.ixReportHTML(); };
+  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.peopleReportHTML() + VC.simReportHTML() + VC.ixReportHTML(); };
   var c = $('ix-close'); if (c) c.onclick = function () { P.style.display = 'none'; if (r) r.classList.remove('on'); };
   window.addEventListener('keydown', function (e) { if (VC.typing(e) || e.ctrlKey || e.metaKey) return; if (e.key === 'n' || e.key === 'N') { VC.ixDensityToggle(); e.preventDefault(); } });
   /* the stats panel's last step: a line on the interiors */
@@ -57334,7 +57862,7 @@ VC.ixUI = function () {
     var R = VC.IX.report; if (!R || HOST.step !== SL.LAST) return;
     var el = $('stats-body'), d = document.createElement('div'); d.className = 'lg';
     d.innerHTML = '<b>interiors</b> ' + R.units.toLocaleString() + ' buildings, ' + R.pieces.toLocaleString() + ' pieces; beds for ' + Math.round(100 * R.have.beds / Math.max(1, R.need.beds)) + '% of the residents\' need, ' +
-      R.short.units.toLocaleString() + ' homes short (<a href="#" id="ix-open" style="color:#e0c98a">report</a>)';
+      R.short.units.toLocaleString() + ' homes short' + (VC.PEOPLE ? '; <b>citizens</b> ' + VC.PEOPLE.citizens.toLocaleString() + ', ' + VC.PEOPLE.employed.toLocaleString() + ' at work, ' + VC.PEOPLE.unemployed.toLocaleString() + ' out of work' : '') + ' (<a href="#" id="ix-open" style="color:#e0c98a">report</a>)';
     el.appendChild(d);
     var a = $('ix-open'); if (a) a.onclick = function (e) { e.preventDefault(); if (r) r.onclick(); };
   };

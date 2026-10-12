@@ -246,7 +246,39 @@ var TUNE = {
     seatWidth: { table: 0.8, bench: 0.6, seating: 0.6 },
     spotStep: 0.45, spotsMax: 48,
     spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
-    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20 }
+    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20, ferry: 10, station: 14, chinampa: 25, ranch: 18 },
+    /* phase C: the pedestrian layer (43-vc-sim-nav.js). A street is a node every `step` m; a street's end joins the street
+       it meets when it stops within that street's half-width + `snap` m; crossings share a node. A canton terrace is a
+       ring of nodes every `ring` m, a top deck a grid every `deck` m; a park walk's loose end joins a street within
+       `walkSnap` m, a causeway's land end within `landSnap` m. `yWeight`: a point's height counts that many times its
+       horizontal distance when it finds its node (a room on the third terrace is not walked to from the street under
+       it). An alley's or a lane's end still dead joins another street within `reach` m; a park walk joins a street it passes
+       within `walkTouch` m; each plaza is a hub joined to the street nodes round it. A place whose door stands more than
+       `far` m (past an open place's reach) from its node is listed as off the network */
+    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6 } },
+    /* phase C: the citizens (44-vc-sim-people.js). Every home's census residents become actors; TUNE.census.workingShare
+       of them work (all of them where the home is a barracks or a dorm: its workplaces cover its residents). Jobs are
+       dealt: a home that is also a workplace (a shop, a tavern, a garrison) fills its own first; `liveAt` gives a kind
+       of home its trade (a chinampa hut's workers grow its beds); `slaveShare` of the `slaveJobs` workplaces go to slaves
+       (the owner's Q5: 70% of farm and mine labour), housed at the site and counted apart from the census; the rest
+       go to the nearest free worker by the walk (the pedestrian layer, at most `rounds` searches), never past `walkMax`
+       metres walked. `gentry` classes take only `gentryJobs` outside their own house. `wealth` is the owner's Q6
+       recommendation (still open). `sample`: the commutes walked on the pedestrian layer for the report. `sched`: a
+       plain day until session 2 brings the week, the rota and the shifts */
+    people: {
+      walkMax: 3000, rounds: 400,
+      liveAt: { 'chinampa hut': 'chinampa growers' }, notLiveIn: ['household service'],
+      slaveShare: 0.7, slaveJobs: ['farmhands and ploughmen', 'miners', 'quarrymen and masons'],
+      gentry: ['rich', 'manor', 'clan'],
+      gentryJobs: ['guild officers and clerks', 'customs officers and clerks', 'teachers and scholars', 'clerks and officials', 'envoys and embassy staff',
+                   'guild masters and journeymen', 'palace household and officials', 'healers and nurses', 'priests and undertakers', 'temple priests and servants',
+                   'scribes and librarians', 'Ordinator garrison'],
+      wealth: { slave: 0, poor: 0.2, middle: 0.45, shop: 0.5, craft: 0.5, tavern: 0.5, rich: 0.75, manor: 0.9, clan: 0.9, canton: 0.45, other: 0.35 },
+      sample: 600,
+      sched: { worker: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [22, 'SLEEP']],
+               dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']],
+               slave: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [19, 'EAT'], [20, 'SLEEP']] }
+    }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },

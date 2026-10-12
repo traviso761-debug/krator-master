@@ -36300,10 +36300,15 @@ var water = (function(){
 // binary heap, a cost and a speed factor per edge kind, `w` per edge so a caravan keeps to roads wide enough for it).
 // A GRID layer (a host's own water or cross-country grid) registers a route function instead and answers the same call.
 //
-//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}})       a graph layer
+//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}, yWeight?})       a graph layer; yWeight: a layer whose
+//                                     levels stack (canton terraces, storeys) finds a point's nearest node by sqrt(dxz^2 + (yWeight*dy)^2)
+//                                     when the point has a y (a room on the third terrace is not walked to from the street under it)
 //   SIM.nav.layer(name, {route:(ax,az,bx,bz,opt)=>{pts:[[x,y,z]...]}|null})      a grid (host) layer
-//   SIM.nav.nearest(layer, x, z, {minW}) -> node index (graph layers)
+//   SIM.nav.nearest(layer, x, z, {minW, y}) -> node index (graph layers; y counts only on a yWeight layer)
 //   SIM.nav.route(layer, from:{x,z,y?,node?}, to:{x,z,y?,node?}, {minW}) -> {pts, cum, len} or null (SIM.routeFail)
+//   SIM.nav.field(layer, [{node, d?}], {max?, minW?}) -> {d: Float64Array, src: Int32Array} (graph layers): every node's
+//                                     cost from the nearest source and which source (an index into the list; -1 past max).
+//                                     One search answers "the nearest free job / well / tavern" for a whole city at once.
 //   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
 (function(root){
   'use strict';
@@ -36321,7 +36326,7 @@ var water = (function(){
     var adjTo=new Int32Array(adjStart[n]), adjE=new Int32Array(adjStart[n]), fill=new Int32Array(n);
     E.forEach(function(e,ei){ var a=idx[e.a], b=idx[e.b]; adjTo[adjStart[a]+fill[a]]=b; adjE[adjStart[a]+fill[a]++]=ei; adjTo[adjStart[b]+fill[b]]=a; adjE[adjStart[b]+fill[b]++]=ei; });
     var hash={}; N.forEach(function(nd,i){ var k=Math.floor(nd.x/CELL)+','+Math.floor(nd.z/CELL); (hash[k]||(hash[k]=[])).push(i); });
-    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0 };
+    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0, yw:o.yWeight||0 };
     /* the widest edge at each node: a wheeled mover may only start or stop where it fits */
     L.nodeW = new Float32Array(n); E.forEach(function(e){ var w=e.w==null?99:e.w; [idx[e.a],idx[e.b]].forEach(function(j){ if(w>L.nodeW[j]) L.nodeW[j]=w; }); });
     return L;
@@ -36331,14 +36336,15 @@ var water = (function(){
     layer: function(name, o){ NAVS[name] = o.route ? { name:name, kind:'grid', route:o.route, nearest:o.nearest||null, searches:0 } : graphLayer(name, o); return NAVS[name]; },
     nearest: function(layer, x, z, opt){
       var L=NAVS[layer]; if(!L || L.kind!=='graph') return -1; var minW=(opt&&opt.minW)||0, best=-1, bd=1e18;
+      var yw=L.yw && opt && opt.y!=null ? L.yw : 0, y=yw ? opt.y : 0;   /* a stacked layer: the height counts (the ring bound below still holds: 3D >= 2D) */
       /* rings of hash cells outward; once something is found, a ring further out cannot hold anything nearer
          than r*CELL, so stop when the best is inside that */
       var ci=Math.floor(x/CELL), cj=Math.floor(z/CELL);
       for(var r=0;r<14;r++){
         for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue; var cell=L.hash[i+','+j]; if(!cell) continue;
-          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(d<bd){ bd=d; best=k; } } }
+          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(yw) d+=yw*yw*((nd.y||0)-y)*((nd.y||0)-y); if(d<bd){ bd=d; best=k; } } }
         if(best>=0 && Math.sqrt(bd) <= r*CELL) break; }
-      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(d2<bd){ bd=d2; best=m; } } }
+      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(yw) d2+=yw*yw*((nd2.y||0)-y)*((nd2.y||0)-y); if(d2<bd){ bd=d2; best=m; } } }
       return best;
     },
     /* the node path between two node indices, cached */
@@ -36362,7 +36368,8 @@ var water = (function(){
       var pts;
       if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, opt); if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
       else {
-        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, opt), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, opt);
+        var oa = L.yw ? { minW:opt.minW, y:from.y } : opt, ob = L.yw ? { minW:opt.minW, y:to.y } : opt;
+        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, oa), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, ob);
         if(s==null || t==null || s<0 || t<0){ SIM.routeFail.push({ layer:layer, why:'no node', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
         var p = SIM.nav.path(layer, s, t, opt.minW);
         if(!p){ SIM.routeFail.push({ layer:layer, why:'no path', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
@@ -36375,6 +36382,17 @@ var water = (function(){
       if(clean.length===1) clean.push(clean[0].slice());
       var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
       return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
+    },
+    field: function(layer, sources, opt){
+      var L=NAVS[layer]; opt=opt||{}; if(!L || L.kind!=='graph') return null;
+      var N=L.nodes, n=N.length, d=new Float64Array(n).fill(Infinity), src=new Int32Array(n).fill(-1), closed=new Uint8Array(n), h=new Heap(), max=opt.max==null?Infinity:opt.max, minW=opt.minW||0;
+      sources.forEach(function(S, i){ var k=S.node, d0=S.d||0; if(k==null || k<0 || k>=n || d0>max) return; if(d0<d[k]){ d[k]=d0; src[k]=i; h.push(k, d0); } });
+      while(h.k.length){ var c=h.pop(); if(closed[c]) continue; closed[c]=1;
+        for(var q=L.adjStart[c]; q<L.adjStart[c+1]; q++){ var o=L.adjTo[q], e=L.edges[L.adjE[q]]; if(closed[o]) continue;
+          if(minW && e.w!=null && e.w < minW) continue;
+          var len=e.len!=null?e.len:Math.hypot(N[o].x-N[c].x,N[o].z-N[c].z), cst=d[c]+len*(L.cost[e.kind]||1)*(e.cost||1);
+          if(cst<d[o] && cst<=max){ d[o]=cst; src[o]=src[c]; h.push(o, cst); } } }
+      L.searches++; return { d:d, src:src };
     },
     stats: function(){ var o={}; for(var k in NAVS){ var L=NAVS[k]; o[k]={ kind:L.kind, nodes:L.nodes?L.nodes.length:0, edges:L.edges?L.edges.length:0, searches:L.searches, cacheHits:L.hits||0 }; } return o; }
   };

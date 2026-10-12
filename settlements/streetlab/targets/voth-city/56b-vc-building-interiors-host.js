@@ -347,12 +347,41 @@ VC.simReportHTML = function () {
   });
   return h + '</table>';
 };
+/* phase C: the citizens and the pedestrian layer (43-vc-sim-nav.js, 44-vc-sim-people.js) */
+VC.peopleReportHTML = function () {
+  var R = VC.PEOPLE, P = VC.PED || {}, A = P.audit; if (!R) return P.error ? '<span class="bad">' + P.error + '</span>' : '';
+  var f = function (n) { return Math.round(n || 0).toLocaleString(); }, cm = function (c) { return c ? f(c.p50) + ' / ' + f(c.p90) : ''; };
+  var h = '<h2>Phase C: the citizens</h2><div>' + f(R.citizens) + ' citizens as simulation actors (the census: ' + f(R.census) + ') in ' + f(R.homes) + ' homes: ' + f(R.workers) + ' of working age, ' + f(R.dependants) + ' dependants; and ' +
+    f(R.slaves) + ' slaves on the farms, mines and quarries (' + Math.round(TUNE.sim.people.slaveShare * 100) + '% of their labour), outside the census, housed at ' + f(R.quarters) + ' sites whose quarters are not built.</div>';
+  h += '<div>Employed ' + f(R.employed) + ' (' + Object.keys(R.how).map(function (k) { return f(R.how[k]) + ' ' + k; }).join(', ') + '); <span class="' + (R.unemployed ? 'bad' : 'ok') + '">' + f(R.unemployed) + ' out of work</span> (no free post within ' + f(R.walkMax) + ' m walked); ' +
+    f(R.gentry) + ' of the gentry live on their means; ' + f(R.unfilled) + ' posts unfilled. ' + f(R.floorSleepers) + ' residents sleep on the floor (their homes\' beds fall short: phase A). The deal took ' + R.rounds + ' searches of the pedestrian layer and ' + f(R.ms) + ' ms.</div>';
+  h += '<div class="k">Commutes are metres walked on the pedestrian layer (stairs count ' + TUNE.sim.nav.cost.stairs + ' times), live-in work none: all ' + cm(R.commute) + ' m (median / 90th percentile).</div>';
+  if (R.unemployedBy && R.unemployedBy.length) h += '<div>Out of work, by district (worst first): ' + R.unemployedBy.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + '.</div>';
+  h += '<table><tr><th>class</th><th>people</th><th>of working age</th><th>employed</th><th>on their means</th><th>commute m</th></tr>';
+  Object.keys(R.byClass).sort(function (a, b) { return R.byClass[b].people - R.byClass[a].people; }).forEach(function (k) { var C = R.byClass[k];
+    h += '<tr><td>' + k + '</td><td class="n">' + f(C.people) + '</td><td class="n">' + f(C.workers) + '</td><td class="n">' + f(C.employed) + '</td><td class="n">' + f(C.gentry) + '</td><td class="n">' + cm(C.commute) + '</td></tr>'; });
+  h += '</table><table><tr><th>kind of work</th><th>posts</th><th>filled</th><th>how</th><th>unfilled</th><th>commute m</th></tr>';
+  Object.keys(R.byJob).sort(function (a, b) { return R.byJob[b].posts - R.byJob[a].posts; }).forEach(function (k) { var J = R.byJob[k], U = R.unfilledByJob[k];
+    h += '<tr><td>' + k + '</td><td class="n">' + f(J.posts) + '</td><td class="n">' + f(J.filled) + '</td><td>' + Object.keys(J.how).map(function (x) { return f(J.how[x]) + ' ' + x; }).join(', ') + '</td><td class="n ' + (U ? 'bad' : 'ok') + '">' + (U ? f(U.posts) + ' at ' + U.places : '') + '</td><td class="n">' + cm(J.commute) + '</td></tr>'; });
+  h += '</table>';
+  if (A) {
+    var C = P.cant || {};
+    h += '<h2>The pedestrian layer</h2><div>' + f(A.nodes) + ' nodes, ' + f(A.edges) + ' edges in ' + A.bodies + ' connected bod' + (A.bodies === 1 ? 'y' : 'ies') + ': the streets (' + f(P.crossings) + ' crossings, ' + f(P.joins) + ' street ends joined where they meet, ' +
+      f(P.reached) + ' alley and lane ends reached over, ' + f(P.plazas) + ' plazas as hubs), the park walks, the cantons (' + C.rings + ' terraces, ' + C.decks + ' top decks, ' + C.flights + ' flights, ' + C.spans + ' bridges, ' + C.causeways + ' causeways, ' + C.doors + ' doors). Built in ' + f(P.ms) + ' ms.</div>';
+    var far = Object.keys(A.far || {}).map(function (k) { return k + ' ' + A.far[k]; });
+    h += '<div>Off the network (a door more than ' + TUNE.sim.nav.far + ' m past the place\'s reach from its node): ' + (far.length ? far.join(', ') : 'none') + '. Not joined yet: ' + f(A.cantonRooms) + ' canton rooms (inside the tiers: the canton interiors\' own graph), ' +
+      f(A.chinampaHuts) + ' chinampa huts (on the beds: by kayak, the water layer). ' + (C.unjoined && C.unjoined.length ? 'Canton links not joined: ' + C.unjoined.join(', ') + '.' : '') + '</div>';
+    var ws = VC.simWalkSample(200);
+    h += '<div class="k">A* check: ' + ws.ok + ' of ' + ws.routes + ' sampled commutes routed (median ' + f(ws.p50) + ' m, 90th percentile ' + f(ws.p90) + ' m, ' + ws.ms + ' ms).</div>';
+  }
+  return h;
+};
 VC.ixUI = function () {
   VC.ixCutWrap(); VC.ixPickWrap();
   var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
   var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
   var r = $('ly-ixrep'), P = $('ix');
-  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.simReportHTML() + VC.ixReportHTML(); };
+  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.peopleReportHTML() + VC.simReportHTML() + VC.ixReportHTML(); };
   var c = $('ix-close'); if (c) c.onclick = function () { P.style.display = 'none'; if (r) r.classList.remove('on'); };
   window.addEventListener('keydown', function (e) { if (VC.typing(e) || e.ctrlKey || e.metaKey) return; if (e.key === 'n' || e.key === 'N') { VC.ixDensityToggle(); e.preventDefault(); } });
   /* the stats panel's last step: a line on the interiors */
@@ -362,7 +391,7 @@ VC.ixUI = function () {
     var R = VC.IX.report; if (!R || HOST.step !== SL.LAST) return;
     var el = $('stats-body'), d = document.createElement('div'); d.className = 'lg';
     d.innerHTML = '<b>interiors</b> ' + R.units.toLocaleString() + ' buildings, ' + R.pieces.toLocaleString() + ' pieces; beds for ' + Math.round(100 * R.have.beds / Math.max(1, R.need.beds)) + '% of the residents\' need, ' +
-      R.short.units.toLocaleString() + ' homes short (<a href="#" id="ix-open" style="color:#e0c98a">report</a>)';
+      R.short.units.toLocaleString() + ' homes short' + (VC.PEOPLE ? '; <b>citizens</b> ' + VC.PEOPLE.citizens.toLocaleString() + ', ' + VC.PEOPLE.employed.toLocaleString() + ' at work, ' + VC.PEOPLE.unemployed.toLocaleString() + ' out of work' : '') + ' (<a href="#" id="ix-open" style="color:#e0c98a">report</a>)';
     el.appendChild(d);
     var a = $('ix-open'); if (a) a.onclick = function (e) { e.preventDefault(); if (r) r.onclick(); };
   };

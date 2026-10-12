@@ -50,7 +50,10 @@ evaluates it.
 
 `pedestrian` (people), `road` (wheels and caravans: routes ask `minW`), `water` (boats), `animal` (riders across
 country), and in time `climb`, `air`, `interior`. A graph layer is `{nodes:[{id,x,y,z,tag}], edges:[{id,a,b,kind,len,w}]}`
-(the NAV contract); a grid layer registers `route(ax,az,bx,bz)` and answers the same call.
+(the NAV contract); a grid layer registers `route(ax,az,bx,bz)` and answers the same call. A graph layer whose levels
+stack (terraces, storeys) passes `yWeight`: a point with a `y` then finds its node by `sqrt(dxz^2 + (yWeight*dy)^2)`
+(Voth's city: 3). `SIM.nav.field(layer, [{node, d}], {max})` searches from many sources at once and labels every node
+with its cost from the nearest and which one (`{d, src}`): Voth's city deals 22,000 jobs with it, one search a round.
 
 ## The export
 

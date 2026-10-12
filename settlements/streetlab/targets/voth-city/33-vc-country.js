@@ -838,7 +838,7 @@ VC.waterMills = function (rs) {
 };
 /* beetle ranches (Voth's beetleRanch(), 65k, built but never placed): a fenced pen beside about one farmstead in five */
 VC.ranches = function (rs) {
-  var B = VOTH, K = TUNE.country.ranches, made = 0;
+  var B = VOTH, K = TUNE.country.ranches, made = 0; VC.industry.ranchAt = [];
   PLAN.lots.filter(function (L) { return L.died == null && L.cls === 'farm'; }).forEach(function (L) {
     if (!rs.chance(K.perFarm)) return;
     for (var t = 0; t < 12; t++) {
@@ -846,7 +846,7 @@ VC.ranches = function (rs) {
       var o = obb(c, [Math.cos(ry), -Math.sin(ry)], 15, 12);
       if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
       VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, {}); });
-      VC.big.push(o); made++; break;
+      VC.big.push(o); VC.industry.ranchAt.push([c[0], c[1]]); made++; break;
     }
   });
   VC.industry.ranches = made;

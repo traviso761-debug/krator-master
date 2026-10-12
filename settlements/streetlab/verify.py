@@ -273,6 +273,15 @@ CITY_CHECK = r"""() => {
       workNoSpot: (S.list || []).filter(o => /^ix\./.test(o.id) && o.posts >= 1 && !(o.spots && o.spots.length)).length,
       sized: (S.list || []).filter(o => /^ix\./.test(o.id) && o.kind === 'tavern').slice(0, 1).map(o => o.activities) };
   }
+  /* phase C (43-vc-sim-nav.js, 44-vc-sim-people.js): the pedestrian layer, the citizens, their jobs and commutes */
+  { const D = VC.PED || {}, R = VC.PEOPLE;
+    out.simc = { err: D.error || null, audit: D.audit || null, ms: D.ms, crossings: D.crossings, joins: D.joins, reached: D.reached, islands: D.islands, plazas: D.plazas, cant: D.cant,
+      people: R ? Object.assign({}, R, { byJob: Object.keys(R.byJob).map(k => [k, R.byJob[k].posts, R.byJob[k].filled, R.byJob[k].how, R.unfilledByJob[k] ? R.unfilledByJob[k].posts : 0, R.byJob[k].commute]),
+        byClass: Object.keys(R.byClass).map(k => [k, R.byClass[k].people, R.byClass[k].workers, R.byClass[k].employed, R.byClass[k].gentry || 0, R.byClass[k].commute]) }) : null,
+      actors: SIM.all ? SIM.all('actor').length : 0, check: SIM.check ? SIM.check() : null,
+      walk: R ? VC.simWalkSample(300) : null, d8: R ? VC.simDecideSample(200, 8) : null, d2: R ? VC.simDecideSample(200, 2) : null,
+      html: R ? /Phase C/.test(VC.peopleReportHTML()) : false };
+  }
   return out;
 }"""
 
@@ -337,6 +346,18 @@ def verify_city(a, port, rel, sync_playwright):
     for w in sb['rows']: print('    %s: %d, %d, %d (%d, %d, %d)%s%s' % (w[0], w[1], w[2], w[3], w[4], w[5], w[6], ' SHORT %d' % w[7] if w[7] else '', ' -> ' + w[8] if w[8] else ''))
     if sb['noPlace']: print('  kinds of work with no place: ' + ', '.join(sb['noPlace']))
     print('  spots: %d places have them, %d in all; buildings with work posts and no spot: %d; a tavern\'s activities %s; density work mode: %s' % (sb['spots'][0], sb['spots'][1], sb['workNoSpot'], json.dumps(sb['sized']), ix.get('densityWork')))
+    sc = r['simc']; pc = sc['people'] or {}; au = sc['audit'] or {}
+    if pc:
+        print('phase C: %d citizens (census %d) in %d homes, %d of working age, %d dependants, %d slaves (quarters not built at %d sites); employed %d %s, out of work %d (none within %d m: %d), gentry on their means %d, posts unfilled %d; %d sleep on the floor; deal %d searches, %d ms' % (
+            pc['citizens'], pc['census'], pc['homes'], pc['workers'], pc['dependants'], pc['slaves'], pc['quarters'], pc['employed'], json.dumps(pc['how']), pc['unemployed'], pc['walkMax'], pc['noneInReach'], pc['gentry'], pc['unfilled'], pc['floorSleepers'], pc['rounds'], pc['ms']))
+        print('  commute m walked (all employed): %s; out of work by district: %s' % (json.dumps(pc['commute']), ', '.join('%s %d' % (x[0], x[1]) for x in pc['unemployedBy'])))
+        print('  by class [class, people, of working age, employed, on their means, commute p50/p90]:')
+        for c in pc['byClass']: print('    %s: %d, %d, %d, %d, %s' % (c[0], c[1], c[2], c[3], c[4], '%d/%d' % (c[5]['p50'], c[5]['p90']) if c[5] else '-'))
+        print('  by kind of work [posts, filled, how, unfilled, commute p50/p90]:')
+        for j in pc['byJob']: print('    %s: %d, %d, %s, %d, %s' % (j[0], j[1], j[2], json.dumps(j[3]), j[4], '%d/%d' % (j[5]['p50'], j[5]['p90']) if j[5] else '-'))
+    print('  pedestrian layer: %s nodes, %s edges, %s bodies, %s crossings, %s joins, %s reached, %s islands joined, %s plaza hubs, %s ms; cantons %s; off the network %s; canton rooms not joined %s, chinampa huts %s' % (
+        au.get('nodes'), au.get('edges'), au.get('bodies'), sc['crossings'], sc['joins'], sc['reached'], sc['islands'], sc['plazas'], sc['ms'], json.dumps(sc['cant']), json.dumps(au.get('far')), au.get('cantonRooms'), au.get('chinampaHuts')))
+    print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))
     for e in errors: print('ERROR', e)
     if a.check:
         bad = []
@@ -354,6 +375,11 @@ def verify_city(a, port, rel, sync_playwright):
             bad.append('interiors of the buildings off the lots: ' + ', '.join(k for k in ('dorm', 'chapel', 'hall', 'shrine', 'lighthouse', 'funerary', 'hut', 'healing') if not st.get(k, {}).get('units')))
         if any(k[7] or not k[4] for k in ix.get('kit', [])) or len(ix.get('kit', [])) < 8:
             bad.append('new kit models without an interior')
+        if sc['err'] or not pc or au.get('bodies') != 1 or au.get('cutOff') or pc['citizens'] != pc['census'] or sc['actors'] != pc['citizens'] + pc['slaves'] or sc['check'] \
+                or pc['unemployed'] > 0.1 * pc['workers'] or not sc['walk'] or sc['walk']['fail'] or not sc['html'] \
+                or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['pinned'] != sc['d2']['asked']:
+            bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s)' % (
+                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')

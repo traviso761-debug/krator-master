@@ -428,6 +428,33 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   workplaces; a short kind is named with its buildings that have the most floor per post (where more posts would go).
   In the report panel (the "interiors report" button) and in `verify.py`'s output.
 
+**The citizens (phase C)** (`43-vc-sim-nav.js`, `44-vc-sim-people.js`; `TUNE.sim.nav`, `TUNE.sim.people`; `SIM-ROADMAP.md`
+2.4). Session 1 made the walkable city and the people in it:
+* **The pedestrian layer** (`VC.pedNav`): core/simulation's NAV graph, registered as SIM's `pedestrian` layer (about 27,600
+  nodes and 35,000 edges, built in about a second at load). Every street of the plan, a node every 20 m, with a shared
+  node where two cross and a junction where one stops at another; a dead alley or lane end reached over to the street
+  behind it; each plaza a hub joined to the streets round it (a village's lanes start at its green); the park walks;
+  the cantons: each terrace a ring of nodes, each top deck a grid, the Ancestry ramp, the flights (stairs cost 1.6
+  times), the bridges over their arch, the causeways from canton to street, the canton doors. The layer is `yWeight`ed
+  (core/simulation's new opt-in): a place on a terrace finds its node on that terrace, not on the street under it.
+  `VC.pedAudit` checks it is one body and lists the places far from it. Not joined yet: the canton rooms (the canton
+  interiors' own graph) and the chinampa huts (by kayak, the water layer).
+* **The people** (`VC.simPeople`): every home's census residents become SIM actors (53,355, the census exactly), half
+  of them of working age (all of a barracks' or a dorm's). The jobs are the places' workplaces, dealt: a home that is
+  also a workplace fills its own posts first (not household service, which comes in from outside); 70% of the farm,
+  mine and quarry posts go to slaves, housed at the site and counted apart from the census (the owner's Q5); every other
+  post to the nearest free workers by the walk on the pedestrian layer (`SIM.nav.field`, core/simulation's new
+  multi-source search: one search labels the whole city with its nearest free post), never past 3 km walked. The gentry
+  (rich, manor, clan) take only the professions (`gentryJobs`) and otherwise live on their means. Each actor carries its
+  home, work, class and wealth (the owner's Q6 recommendation) and a plain day's schedule (session 2 brings the week).
+* **The report** (the "interiors report" button, first section; `verify.py`): people by class, workers employed and out
+  of work by district, every kind of work's posts filled and how, unfilled, the commutes in metres walked; the pedestrian
+  layer's counts and what is off it; an A* check of a sample of the commutes. `verify.py --assert` also asks a sample of
+  actors at 8 and at 2 where they go: each worker chooses its work, each sleeper its home.
+* Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
+  stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
+  with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).
+
 ## Notes
 
 * **Fountain.** The plaza fountain (`sl_fountain`, `core/city/52-city-host-buildings.js`) is a placeholder piece, not a catalog furniture piece.

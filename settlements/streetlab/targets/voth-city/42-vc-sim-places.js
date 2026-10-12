@@ -267,11 +267,13 @@ VC.simActs = function () {
 VC.simPlaces = function () {
   if (typeof SIM === 'undefined' || !SIM.place) return 0;
   VC.simActs();
-  var T = TUNE.sim, n = 0, K = TUNE.census, posts = {}, list = VC.SIMB.list = [];
+  var T = TUNE.sim, n = 0, K = TUNE.census, posts = {}, wps = {}, list = VC.SIMB.list = [];
   var hrs = function (kind) { var h = T.hours[kind]; return h ? h.slice() : null; };
   var pullOf = function (kind) { return T.pull[kind] ? Object.assign({}, T.pull[kind]) : null; };
   var reg = function (o) {
-    if (o.job && o.posts) { o.activities.WORK = Math.max(1, Math.round(o.posts)); posts[o.job] = (posts[o.job] || 0) + o.posts; }
+    if (o.job && o.posts) posts[o.job] = (posts[o.job] || 0) + o.posts;
+    if (o.job && (o.posts || o.workplaces)) o.activities.WORK = Math.max(1, Math.round(o.posts || o.workplaces));   /* a place with workplaces and no post still takes its workers (phase C) */
+    if (o.job && o.workplaces) wps[o.job] = (wps[o.job] || 0) + o.workplaces;
     try { SIM.place(o); list.push(o); n++; } catch (e) { VC.SIMB.err = String(e); }
   };
   /* the buildings with an interior */
@@ -283,6 +285,7 @@ VC.simPlaces = function () {
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
+    if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
     if (kind === 'tavern') { acts.DRINK = (acts.DRINK || 0) + (acts.EAT || 0); acts.SOCIALIZE = (acts.SOCIALIZE || 0) + (acts.EAT || 0); }
     if (kind === 'healing') acts.HEAL = u.beds;
@@ -368,10 +371,22 @@ VC.simPlaces = function () {
     var M = CANT.by[cn]; if (!M) return;
     reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], workplaces: K.cantons[cn][0], r: M.r, tags: ['canton', cn, 'no interior'] });
   });
-  ['chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen', 'elephant bug handlers and station hands', 'envoys and embassy staff', 'healers and nurses',
-   'monks and lay brothers (chapel, fields, coops)'].forEach(function (job) {
-    var have = posts[job] || 0, want = C[job] ? C[job].n : 0; if (want <= have) return;
-    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, workplaces: want - have, tags: ['outdoor', 'aggregate'] });
+  /* the outdoor trades at their own sites (phase C: a citizen walks to them): the ferrymen at the ferry stops, the bug
+     handlers at the strider stations, the chinampa growers at the stilt huts, the herders at the beetle ranches, the
+     orchardmen on the orchard hill; each site an equal share of the census's workplaces */
+  var share = function (job, recs, kind) { var want = C[job] ? C[job].n : 0; if (want && recs.length) outdoor(job, recs, function () { return want / recs.length; }, kind); };
+  var stops = function (k) { return SIM.all('place').filter(function (Q) { return Q.kind === k; }).map(function (Q) { return [Q.door.x, Q.door.z]; }); };
+  share('ferrymen', stops('ferry-stop'), 'ferry');
+  share('elephant bug handlers and station hands', stops('strider-station'), 'station');
+  share('chinampa growers', ((VC.chin && VC.chin.hutList) || []).filter(function (q) { return q[3]; }).map(function (q) { return [q[0], q[1]]; }), 'chinampa');
+  share('beetle herders', IND.ranchAt || [], 'ranch');
+  var OP = TUNE.country.orchard.poly; if (VC.orchardTrees) share('orchardmen', [polyCentroid(OP).concat([Math.abs(polyArea(OP)) / 1e4])], 'orchard');
+  /* what is left of a kind of work with no site of its own: one place at the city's middle, for the workplaces (and the
+     posts) the sites above and the buildings do not already hold */
+  ['envoys and embassy staff', 'healers and nurses', 'monks and lay brothers (chapel, fields, coops)', 'chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen',
+   'elephant bug handlers and station hands'].forEach(function (job) {
+    var want = C[job] ? C[job].n : 0, have = posts[job] || 0, haveW = wps[job] || 0; if (want <= have && want <= haveW) return;
+    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: Math.max(0, want - have), workplaces: Math.max(0, want - haveW), tags: ['outdoor', 'aggregate'] });
   });
   VC.SIMB.places = n; VC.SIMB.posts = posts;
   return n;

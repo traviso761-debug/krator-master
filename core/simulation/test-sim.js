@@ -199,4 +199,18 @@ function world(seed){
  ok('a world\'s own map reads a piece the core does not (a rack as DRAW_TOOLS)',own.DRAW_TOOLS===1&&own.SLEEP===2,base.DRAW_TOOLS!=null);
  ok('a key the map sets to null is no activity there, the rest as the core reads them',own.EAT==null&&base.EAT===1&&base.SLEEP===2,own.EAT===1);}
 
+// a stacked layer: a point's height picks its level (a terrace over a street), only when the layer asks for it
+{world(19);const S=window.SIM, nodes=[{id:'g',x:0,y:0,z:0},{id:'t',x:3,y:20,z:0}];
+ S.nav.layer('stack',{nodes,edges:[],yWeight:3});S.nav.layer('flat',{nodes,edges:[]});
+ const up=S.nav.nearest('stack',0,0,{y:20}), flat=S.nav.nearest('flat',0,0,{y:20}), noY=S.nav.nearest('stack',0,0);
+ ok('on a yWeight layer a point 20 m up finds the terrace node, not the street under it',up===1&&noY===0,up===0);
+ ok('a layer without yWeight ignores the height (as before)',flat===0,flat===1);}
+
+// a field: every node's cost from its nearest source, and which source; nothing past max, nothing off the graph
+{const {S}=world(23);const F=S.nav.field('pedestrian',[{node:0},{node:3,d:5}]);
+ ok('the field labels each node with its nearest source (node 1 from 0 at 50, node 4 from 3 at 5+50+60)',F.src[1]===0&&near(F.d[1],50)&&F.src[4]===1&&near(F.d[4],115),F.src[4]===0);
+ ok('an island node is not reached',F.src[5]===-1&&F.d[5]===Infinity,F.src[5]>=0);
+ const G=S.nav.field('pedestrian',[{node:0}],{max:60});
+ ok('past max nothing is labelled',G.src[1]===0&&G.src[2]===-1,G.src[2]===0);}
+
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);
