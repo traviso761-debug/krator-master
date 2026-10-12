@@ -303,7 +303,7 @@ def walk(nm, ph):
     return QI
 rigT = lambda dy: (lambda ph: [float(RIG[0]), float(RIG[1] + dy(ph)), float(RIG[2])])
 Tf = CFG['T_flap']
-FOLDSC = {n_: [CFG.get('fold_scale', 1.0), 1.0, 1.0] for n_ in ('wingR', 'wingL')} if CFG.get('fold_scale', 1.0) != 1.0 else None
+FOLDSC = {n_: [CFG.get('fold_scale', 1.0), 1.0, CFG.get('fold_chord', 1.0)] for n_ in ('wingR', 'wingL')} if (CFG.get('fold_scale', 1.0) != 1.0 or CFG.get('fold_chord', 1.0) != 1.0) else None
 NTR = None
 if 'tail' in FACES and CFG.get('tail_level') and CFG['pitch'] == 'torso':
     # the tail grows from the pelvis: in flight, once the torso has pitched, it sits at the rump's end behind the shoulders, not above them
