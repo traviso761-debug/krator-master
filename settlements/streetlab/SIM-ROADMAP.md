@@ -6,7 +6,7 @@ roadmap it needs (part 2). It is a Voth-city instance of `core/simulation/PLAN.m
 earlier world-layer roadmap). Nothing here replaces those: new mechanics go into `core/simulation` as modules every
 world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.html`) is the first consumer.
 
-**Open questions for the owner are at the end (part 3). Several change the shape of phase A, so answer them first.**
+**The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A can start.**
 
 ---
 
@@ -204,6 +204,10 @@ fragment and `57-vc-building-interiors-host.js` host fragment), on the interiors
    shortfall units hatched; a legend with the totals. A second mode: workplaces per hectare.
 7. **Report.** `_sim`-style: units, rooms, pieces, beds/stores per unit, shortfalls by class and district, and the job
    table of 1.2 (rows: job types from `TUNE.census`; columns: furniture kinds; cells: capacity, count, where).
+8. **New Voth kit models** (the owner's Q4 answer): a watchhouse, a caravanserai, a coast-guard berth, a weaver's, a
+   tannery, a brewery, a butcher's and a bakery, as kit pieces in the Voth building catalog
+   (`kits/catalog/krator-master-buildings-voth.js`, through `capture.py` where a Voth-page model is the source), each
+   with a shell the interiors planner can read. Placed in phase B.
 
 Acceptance: every building opens in the cutaway; the report's shortfall list is reviewed by the owner; the inspector
 names any piece.
@@ -218,10 +222,10 @@ names any piece.
    type is a report line with the buildings that could take more posts.
 3. **Wells:** `VC.wells` places `voth_well` on plazas, market squares and at ~every 150 m of residential street
    (`TUNE.wells`), private wells in manor and clan courtyards; each a DRINK place.
-4. **Missing buildings**, from existing kits unless the owner wants new models (question Q4): four watchhouses (a
-   `voth_barracks` variant at the east, west and south district centres and in the Fortress), a caravanserai by the
-   land gate (a clan-compound shell with a yard), a coast-guard berth at the Fortress, and the trades the chains need
-   (weaver, tannery, brewer, butcher, bakeries) as `craft` lots whose kit is reassigned.
+4. **Missing buildings** (the owner: new models, made in session A, placed here): four watchhouses at the east, west
+   and south district centres and in the Fortress, a caravanserai by the land gate, a coast-guard berth at the
+   Fortress, and the trades the chains need (weaver, tannery, brewer, butcher, bakeries) as `craft` lots with their own
+   kit pieces.
 5. The job table of 1.2 is produced here in full, in the page and by `verify.py`.
 
 ### 2.4 Phase C: citizens, schedules, needs, happiness (2–3 sessions)
@@ -235,8 +239,12 @@ names any piece.
    52,808 actors as records (question Q1): the decision step is already rate-limited (`SIM.STEP_MAX`), and the page
    embodies only those within `TUNE.sim.embodyR` of the camera (`77-sim-7-lod.js`, PLAN.md Phase 5).
 3. **Schedules and the week.** `KCLOCK` gains `weekday()` (day % 7); roles get `sched` per weekday class (work day,
-   rest day, the day after a worked rest day); shifts per trade in `TUNE.sim.shifts` (farmers, miners 12 h from 06:00;
-   night watch 20:00–04:00; market and essential roles on the rest day).
+   the worker's rota day off (one of days 1–6, dealt by actor index), rest day, the day after a worked rest day); shifts
+   per trade in `TUNE.sim.shifts` (farmers, miners 12 h from 06:00; night watch 20:00–04:00; market and essential
+   roles on the rest day). A `slave` class (70% of farm and mine labour, `TUNE.sim.slaveShare`) housed at the site, no
+   market trips, no material need, its happiness counted apart.
+3b. **The test clock.** `KCLOCK.scale` from the page (a "fast" control: 20× and 60×) with `SIM.step` catching up by
+   simulated minutes, so a week runs in minutes; the census and economy panels sample per day for the stability check.
 4. **Needs** (`core/simulation/77-sim-6-needs.js`): per actor a meter per need, rates per trade and culture
    (`TUNE.sim.needs`), fill tables per activity (the tavern fills eat/drink/socialize/relax by degrees), the
    personality trait as a ±33% multiplier, happiness = f(meters), efficiency = f(happiness), loyalty bands (unrest,
@@ -326,7 +334,30 @@ fragments. They are scheduled after F and each is its own plan when reached:
 
 ---
 
-## Part 3. Questions for the owner (answer before phase A)
+## Part 3. Questions for the owner, and the answers (2026-10-12)
+
+**Answers given:**
+
+- **Q1 Scale: individuals**, all 52,808 as records, and **every one of them stepped by the simulation whether or not it
+  is embodied** (the decision step runs for all; only the embodiment is distance-limited).
+- **Q2 Pace: yes**, keep the 72-minute day and add the fast test clock; it is wanted especially for fast-forwarding
+  weeks to check long-term economic stability (phase E's acceptance runs on it).
+- **Q3 Truth: see the shortfall first.** The census stands through phase A; the report and overlay show how far the
+  beds fall short, and the owner decides after reading it.
+- **Q4 Missing buildings: make models in session A** (new Voth kit pieces for the watchhouse, caravanserai, coast-guard
+  berth, weaver, tannery, brewer, butcher and bakery; placed in phase B).
+- **Q5 Slaves: yes to all of it.** About **70%** of farm and mine labour is enslaved; the Temple's sacrificial captives
+  are the same pool (a `slave` class; the Temple cell draws from it).
+- **Q7 Shops: abstract stock** in phase D.
+- **Q8 The day off: a rota, one day off in the six workdays** (each worker is off on one of days 1–6, so a sixth of the
+  workforce is off on any workday; day 7 is the rest day for all but essential and market workers). The 90% work-post
+  target of 1.2 stands as the capacity rule; the rota's 83% attendance fits under it.
+
+**Still open (the recommendation in the question stands until the owner says otherwise):** Q6 (class wealth bands and
+clothes counts), Q9 (guard numbers and the day/night ratio), Q10 (arena starting stock), Q11 (import ports and the first
+import goods), Q12 (order: phase A next, Palace and Temple when the references arrive).
+
+**The questions as asked:**
 
 **Q1. Scale.** 52,808 citizens as individual records (each a few dozen numbers: fine for the per-minute stepper) with
 only the ~300 nearest embodied, or one record per household (~9,000) with the household's meters shared? *Recommend
