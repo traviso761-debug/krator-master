@@ -179,7 +179,7 @@ FURN({
     F.box(0, 0, -0.1, 2.0, 0.16, 1.2, 0, F.shade(st, -0.1), 'stone');                  /* the stepped base */
     F.box(0, 0.16, -0.25, 1.5, 0.14, 0.8, 0, st, 'stone');
     F.box(0, 0.3, -0.42, 0.9, 1.8, 0.28, 0, lt, 'stone');                              /* the stele */
-    F.frustum(0, 2.1, -0.42, 0.5, 0.24, 0.3, 0, lt, 'stone', 4);                        /* its capstone */
+    F.pyrRoof(0, 2.1, -0.42, 1.0, 0.3, 0.4, 0, lt, 'stone');                            /* its capstone, as deep as the stele */
     F.box(0, 0.85, -0.27, 0.5, 0.8, 0.05, 0, F.shade(st, -0.45), 'stone');             /* the niche */
     F.frustum(0, 0.87, -0.29, 0.1, 0.06, 0.5, 0, F.shade(lt, 0.1), 'stone', 8);        /* the saint */
     F.ball(0, 1.44, -0.29, 0.08, F.shade(lt, 0.14), 'stone');
@@ -192,7 +192,7 @@ FURN({
 FURN({
   key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
   rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
-  materials: ['stone', 'wood', 'cloth', 'emissive'],
+  materials: ['stone', 'wood', 'cloth', 'emissive', 'roof', 'ceramic', 'plaster'],
   w: 1.9, d: 1.9, h: 2.7, variants: 1,
   build: function (F) {
     const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');
