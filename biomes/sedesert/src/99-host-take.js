@@ -1,4 +1,82 @@
-// ================================================================= HOST — probe (window._api)
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
+// 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
+// kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
+// the presets are found on the map rather than typed: the river meanders, and
+// the scrub's stands (candelabra / cardon / Joshua) are an fbm field
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+// one sweep of the map scores every preset at once: the species' own acceptance
+// (SEDESERT.PASSES), nearer the spine preferred
+const ACC=sp=>SEDESERT.PASSES.find(p=>p.sp===sp).accept;
+const SCORES={
+ cand:(Z,x,z,ld)=>ACC(1)(Z,x,z)-ld/6000,
+ card:(Z,x,z,ld)=>ACC(2)(Z,x,z)-ld/6000,
+ josh:(Z,x,z,ld)=>ACC(11)(Z,x,z)-ld/6000,
+ bad:(Z,x,z,ld)=>badK(x,z)*(1-Z.can)*(1-Z.rim)-Z.up*3-ld/4000,   // badK: the host's own badland field
+ quiv:(Z,x,z,ld)=>x>-1800?-1e9:Z.mtn*smooth(.7,.3,Z.up)-ld/8000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-1900;z<=1900;z+=45)for(let x=-2900;x<=2950;x+=45){const Z=SEDESERT.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+const P_CAND=P.cand,P_CARD=P.card,P_JOSH=P.josh,P_BAD=P.bad,P_QUIV=P.quiv;
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+// the fauna nearest a point: a thermal, a flock, a band (the layout the fauna pass left)
+function nearFauna(kind,x,z){const L=(SEDESERT.FAUNA_LAYOUT||{})[kind]||[];let b=null,bd=1e9;for(const f of L){const d=Math.hypot(f.x-x,f.z-z);if(d<bd){bd=d;b=f;}}return b||{x:x,z:z,y0:gh(x,z)+80,r:60,len:80};}
+const TH=nearFauna('thermals',BUTTE.x-200,BUTTE.z-400),FL=nearFauna('flocks',POND.x,POND.z),BD=nearFauna('bands',600,zR(600));
+// the deer herd nearest a coyote loop (2026-10): the camera stands off its far side, at the deer's height
+const HD=(function(){const L=SEDESERT.FAUNA_LAYOUT||{},Hs=L.herds||[],Ps=L.packs||[];let b=null,bd=1e9;
+ for(const H of Hs){let d=1e9;for(const P of Ps)d=Math.min(d,Math.hypot(P.x-H.x,P.z-H.z)-P.r);if(d<bd){bd=d;b=H;}}return b||{x:600,z:zR(600),r:20};})();
+// the nearest built hero of a species to a point, so a preset frames a real tree
+function nearTree(sp,x,z,minH){return SEDESERT.nearestTree(sp,x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*.6,T.z];}
+const rimN=(x,k)=>zR(x)-Wc(x)*(k==null?1.1:k),rimS=(x,k)=>zR(x)+Wc(x)*(k==null?1.1:k);
+const VIEWS={
+ 'The linear oasis':look(400,rimN(400,1.15),10,900,zR(900),4),
+ 'Dragon trees on the rim':atTree(nearTree(0,-150,rimS(-150,1.1)),42,.6),
+ 'Mesquite bosque':atTree(nearTree(6,1100,zR(1100)+10,10),46,2.2,5),
+ 'The wadi gorge':look(-2380,zR(-2380)+26,5,-2650,zR(-2650),12),
+ 'The rain-shadow pond':[POND.x-230,PL+22,POND.z-190,POND.x+20,PL+.5,POND.z+10],
+ 'The butte':look(BUTTE.x-1500,BUTTE.z-650,55,BUTTE.x,BUTTE.z,100),
+ 'Candelabra scrub':atTree(nearTree(1,P_CAND[0],P_CAND[1]),95,2.3),
+ 'Cardon stand':atTree(nearTree(2,P_CARD[0],P_CARD[1]),80,2.0),
+ 'Joshua trees':atTree(nearTree(11,P_JOSH[0],P_JOSH[1]),40,2.6),
+ 'Badlands and hoodoos':look(P_BAD[0]-260,P_BAD[1]+220,60,P_BAD[0]+40,P_BAD[1]-40,12),
+ 'Quiver trees at the wall foot':atTree(nearTree(5,P_QUIV[0],P_QUIV[1]),60,.2,6),
+ 'Trackless red desert':look(600,2250,14,900,2950,8),
+ 'The tower':look(TOWER.x-430,TOWER.z-260,40,TOWER.x,TOWER.z,90),
+ 'Under the tower':look(TOWER.x+40,TOWER.z-70,4,TOWER.x,TOWER.z,80),
+ 'Kites in a thermal':[TH.x-TH.r*2.4,gh(TH.x-TH.r*2.4,TH.z+TH.r,14),TH.z+TH.r,TH.x,TH.y0+10,TH.z],
+ 'Swifts over the water':[FL.x-FL.r*.9,FL.y0+2,FL.z+FL.r*.7,FL.x,FL.y0,FL.z],
+ 'Sand striders':look(BD.x-24,BD.z+18,2.4,BD.x,BD.z,2.2),
+ 'The cataract':[FALL.x+420,FALL.y-110,FALL.z+300,FALL.x+60,FALL.y-260,FALL.z],
+ 'The undercut lip':[LIP.x+150,LIP.floorY+18,LIP.z+110,LIP.x-8,LIP.floorY+24,LIP.z],
+ 'Behind the cataract':[LIP.x-18,LIP.floorY+9,LIP.z-10,LIP.x+300,LIP.floorY-25,LIP.z+28],
+ 'Into the Abyss':[3060,gh(3060,zR(3060)-220,26),zR(3060)-220,3700,-140,zR(3150)+60],
+ 'From afar':look(-2500,2550,360,0,0,40),
+ 'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],
+};
+// the walkers move, so these two presets are getters: each frames the animal where it stands when chosen
+// (one deer of that herd, the nearest coyote loop's leader), from the side at its own height
+const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements;
+ return[e[12]-d*.8,e[13]+d*.28,e[14]+d*.6,e[12],e[13]+d*.1,e[14]];};
+Object.defineProperty(VIEWS,'Mule deer',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{};
+ return animalView('biome:deer',(L.deer||[]).indexOf(HD.deer&&HD.deer[0]),8,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
+Object.defineProperty(VIEWS,'Coyotes',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{},C=L.coyotes||[];let b=-1,bd=1e9;
+ C.forEach((c,i)=>{const d=Math.hypot(c.P.x-HD.x,c.P.z-HD.z);if(!c.back&&d<bd){bd=d;b=i;}});return animalView('biome:coyote',b,6,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ // a plant names itself (the item's label); a bole or a structure names its registered volume
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the tags and the harvest: a tree from its registered volume, a floor plant from the item it clicked
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&SEDESERT.plantOfItem(item),S=best&&best.key&&SEDESERT.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ if(tg)name+='\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+
+  (tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'');
+ return name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
@@ -6,22 +84,6 @@ const BUDGET={
  cls:{pass:7000000,host:900000},
  type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
 };
-function _probePoints(){
- const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
- scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
-  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
-  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
- return pts;}
-function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
- REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
- return REG.map((r,i)=>({name:r.name,n:n[i]}));}
-function nanSweep(){const bad=[];let badInst=0;
- scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
-  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
-  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
- return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
-function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
 // the cataract leaves from rock, its curtain clear of the rock; the cave open under its cap; nothing grows
 // under the cap; no preset camera inside rock; the candles' far spires neither float nor sink
@@ -90,9 +152,18 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fruiting species with no catalog fruit',HCHK.fruit(SEDESERT.SPECIES.map(S=>S.key==='mesquite'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SEDESERT.PLANTS,itemCounts()));
  add('the tunas never drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,Object.assign(itemCounts(),{fruit:0})));
  return R;}
-window._api={BUDGET,REG,hostChecks,hostNegatives,
+// ---------------------------------------------------------------- the page, handed to the host
+KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
+ hint:"The eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type)",
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ // the eye kept over the ground, and out of the carved cap's rock (on top of it)
+ clampCam(cp){const g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
+  if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;},
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
- typeStats,regOccupancy,nanSweep,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
- biome:()=>window._biome};
-window._registered=REG.length;
+ biome:()=>window._biome}});
