@@ -50,7 +50,8 @@ var TUNE = {
      reaches the industry district, the guilds, the clan compounds and wealthy houses within `reach` of a power house, and
      the Palace and Temple interiors, and little else. Everywhere else is lit by lanterns and torches: a fancy lantern
      post in the wealthy streets and on the cantons, a plain lantern post elsewhere, torches in the alleys and poor quarters. */
-  power: { houses: [['voth_generator', 0], ['voth_generator', 1]], gap: 90, look: 60, reach: 650 },
+  power: { houses: [['voth_generator', 0], ['voth_bldg_power_station', 0]],   /* the small fumarole house (voth_generator v1) gave way to the power station (owner, 2026-10-12: "make a larger power house") */
+           gap: 90, look: 60, reach: 650 },
   light: {
     every: { avenue: 30, main: 34, side: 40, alley: 26 },   /* a socket every this many metres of street, sides alternating */
     /* the evening (core/atmos glows): each lamp's on and off hours, drawn in these windows (off past 24 is next morning):
@@ -127,33 +128,34 @@ var TUNE = {
           farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
           shop:       [['shop', 'store'], ['living', 'chamber']],
           craft:      [['workshop', 'store'], ['living', 'chamber']],
-          tavern:     [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          tavern:     [['alehouse', 'kitchen'], ['chamber', 'chamber']],
           warehouse:  [['warehouse', 'office'], ['warehouse']],
-          industrial: [['workshop', 'store'], ['store']],
+          industrial: [['factory', 'store'], ['factory']],
           civic:      [['hall', 'office'], ['office', 'store']],
-          landmark:   [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']]
+          landmark:   [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']]
         },
         /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
         single: {
           poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
           clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
-          tavern: ['tavern', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
+          tavern: ['alehouse', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
-          voth_barracks: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
-          voth_garrison: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_school: [['school', 'office'], ['library', 'study']],
-          voth_bldg_guild_hall: [['guildhall', 'office'], ['office', 'store']],
-          voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
-          voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
-          voth_generator: [['workshop', 'store']],
+          voth_bldg_guild_hall: [['guildhall', 'counting'], ['counting', 'store']],
+          voth_city_customs_house: [['counting', 'warehouse'], ['counting', 'store']],
+          voth_tavern_b: [['alehouse', 'kitchen'], ['chamber', 'chamber']],
+          voth_generator: [['enginehall', 'store'], ['enginehall']],
+          voth_bldg_power_station: [['enginehall', 'enginehall', 'store'], ['enginehall', 'enginehall']],
           voth_mustering_grounds: null,
           /* the citizen simulation's buildings (kits/catalog/krator-master-buildings-voth.js, each with its own `ix` shell) */
-          voth_bldg_watchhouse: [['barracks', 'armoury'], ['office', 'dormitory']],
-          voth_bldg_caravanserai: [['tavern', 'kitchen', 'store'], ['chamber', 'chamber', 'chamber', 'chamber']],
-          voth_bldg_coastguard_berth: [['barracks', 'armoury', 'store'], ['dormitory', 'office']],
+          voth_bldg_watchhouse: [['guardroom', 'armoury'], ['guardroom', 'dormitory']],
+          voth_bldg_caravanserai: [['alehouse', 'kitchen', 'stable'], ['chamber', 'chamber', 'chamber', 'chamber']],
+          voth_bldg_coastguard_berth: [['guardroom', 'armoury', 'store'], ['guardroom', 'office']],
           voth_bldg_weaver: [['weaving', 'store'], ['living', 'chamber']],
           voth_bldg_tannery: [['tanyard', 'store']],
           voth_bldg_brewery: [['brewhouse', 'store', 'tavern'], ['store', 'office']],
@@ -168,7 +170,7 @@ var TUNE = {
            a ward's cots, a shrine's altar, a tomb's sarcophagus) */
         posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'],
         postsIn: { store: ['storage', 'stack'], warehouse: ['storage', 'stack'], ward: ['bed', 'table'], shrine: ['altar', 'shrine'], tomb: ['tomb'],
-                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'] },
+                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'], alehouse: ['table'], stable: ['pen', 'rack'], drillhall: ['weapon'], guardroom: ['weapon', 'table'] },
         /* the buildings off the lots (VC.ixSites): programme per storey, storeys (else from the height), class, residents (a
            TUNE.census.live key) and kind of work [label, TUNE.census.jobs or .live key] as the census counts them. The chinampa
            huts' growers are not housed by the census (it counts their jobs only): the huts' beds are reported as room to spare */
@@ -179,11 +181,12 @@ var TUNE = {
           shrine:     { prog: [['shrine']], storeys: 1, cls: 'shrine', job: ['shrine keepers', 'shrine'] },
           lighthouse: { prog: [['store', 'office'], ['store'], ['study'], ['store']], cls: 'lighthouse', job: ['lighthouse keepers', 'lighthouse'] },
           keeper:     { prog: [['cottage']], storeys: 1, cls: 'lighthouse' },
-          funerary:   { prog: [['shrine', 'tomb', 'office', 'store']], storeys: 1, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
+          funerary:   { prog: [['shrine', 'tomb', 'store'], ['office', 'tomb', 'shrine']], storeys: 2, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
           hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
         },
         dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
+               'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'stable'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
   /* phase B of SIM-ROADMAP.md (42-vc-sim-places.js): the buildings the simulation needs placed, the wells, every building
@@ -192,8 +195,9 @@ var TUNE = {
        `from` classes whose plot holds its model, spread over the city (the farthest from those already taken first);
        `cls` is the class it becomes. The watchhouses take a house near the east, west and south of the city (`at`, a
        fraction of the way from the city's middle to its edge); the central one is the Fortress's armoury. The
-       caravanserai stands by `gate` within `reach` m, on ground rising no more than `slope` across it and within `climb` m
-       of the gate's height (outside the wall where there is such ground, else inside it in place of houses); the coast-guard berth on the water `off` m from the
+       caravanserai stands at step 3 (before the streets) on the free ground nearest the River Gate's site marker within
+       `reach` m: `pad` m round it clear, rising no more than `slope` m, `wallClear` m inside the wall's line, fronting an
+       avenue within `front` m (owner, 2026-10-12: "closer to the river gate, at post-avenue stage"); the coast-guard berth on the water `off` m from the
        Fortress's apron, `clear` radians from its bridges and docks, its deck `deckY` over the sea on a stone footing.
      - wells: on every plaza and market square, every `street` m along the residential streets (`side` m off the kerb, at
        least `gap` m from another well), and one in the yard of every manor and clan compound.
@@ -213,7 +217,7 @@ var TUNE = {
         { key: 'voth_bldg_tannery', n: 3, from: ['industrial', 'warehouse'], cls: 'industrial', plural: 'tanneries' }
       ],
       watch: { key: 'voth_bldg_watchhouse', at: 0.55, dirs: { east: [1, 0], west: [-1, 0], south: [0, 1] }, from: ['middle', 'poor', 'shop', 'craft'] },
-      caravanserai: { key: 'voth_bldg_caravanserai', gate: 'SpiritGate', reach: 420, pad: 3, slope: 6, climb: 12 },
+      caravanserai: { key: 'voth_bldg_caravanserai', gate: 'River Gate', marker: 'H', reach: 500, pad: 3, slope: 6, front: 30, wallClear: 40 },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -227,10 +231,22 @@ var TUNE = {
     },
     hours: { home: null, well: null, shop: [7, 19], craft: [6, 19], tavern: [10, 2], warehouse: [6, 18], industrial: [6, 18], civic: [7, 18], market: [6, 19],
              shrine: [5, 22], chapel: [4, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
-    posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5 },
+    posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5, pen: 1, weapon: 1 },
+    /* a piece's posts in a room of a kind, over `posts` (a tavern's table is half a server, a drill hall's dummy one soldier) */
+    postsIn: { alehouse: { table: 0.5 }, guardroom: { table: 1 }, stable: { pen: 1, rack: 0.5 } },
     target: 0.9,
     /* the soldiers' posts on the wall: at each standing tower and each gate */
-    wallPost: { tower: 4, gate: 12 }
+    wallPost: { tower: 4, gate: 12 },
+    /* the mustering ground's drill: a soldier at drill for every so many m2 */
+    musterPerPost: 10,
+    /* session 2: capacity by size, the metres of a piece's width one person takes (a workbench of 4.4 m takes two), seats
+       round a table (metres of its edge a sitter takes), where people stand (a step before a piece; the kinds whose
+       spots are listed, the work ones first; at most so many a place), an outdoor place's reach by its kind */
+    postWidth: { counter: 1.6, workstation: 2.2, stall: 1.8, loom: 2.4, desk: 1.6, table: 1.4 },
+    seatWidth: { table: 0.8, bench: 0.6, seating: 0.6 },
+    spotStep: 0.45, spotsMax: 48,
+    spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
+    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20 }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },

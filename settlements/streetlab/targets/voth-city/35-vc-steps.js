@@ -8,7 +8,7 @@ SL.LAST = 14;
 SL.TRANSIT = 14;
 SL.layout = function () {
   SL.newPlan(); SL.F = null; SL._items = {}; SL.HASH = new Map(); PLAN.stats.ms = [];
-  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) VC.applyEdits(3); PLAN.stats.ms[k] = Date.now() - t; }
+  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); }   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
   VC.census();                     /* 36-vc-census.js: people and workplaces */

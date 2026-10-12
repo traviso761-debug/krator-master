@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (21 keys / 25 build "looks")
+   Voth — Building Registry (22 keys / 26 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -1894,5 +1894,68 @@ ASSET({
     for (let k = 0; k < 3; k++) F.box(6.0, 0.4 + k * 0.35, -5.4, 3.4, 0.35, 0.9, 0, shade(timber, 0.05 * k), 'wood');
     [[8.5, 0.2], [8.6, 1.1]].forEach(function (p) { F.blob(p[0], 0.4, p[1], 0.45, 0.6, 0, 0xe0d8c8, 'cloth'); });
     F.box(3.0, 0.4, 6.0, 1.4, 1.2, 0.5, 0, timber, 'wood');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_power_station', name: 'Power Station', culture: 'voth', family: 'industrial', types: ['industry', 'infrastructure'],
+  districts: ['industry'], wealth: [0.3, 0.6], w: 46, d: 34, h: 27.5, variants: 1,
+  /* owner, 2026-10-12: "make a larger power house": its turbine hall holds the census's stokers and engineers */
+  ix: { block: [0, -2, 40, 22], y: 0.6, h: 10, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x6e665c, 0x756c60, 0x665e55]), trim = shade(c, -0.18), dark = shade(c, -0.34);
+    const doorC = 0x1c1915, iron = 0x3a3630, copper = 0xa8683a, roofC = 0x4e4a46, glass = 0x2a3a3a, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, glass, 'stone');
+      F.box(cx + n[0] * 0.14, cy - 0.25, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.25, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+      F.box(cx + n[0] * 0.14, cy + wh, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.35, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+    }
+    /* the plinth and the turbine hall: two storeys under a clerestory, pilasters between tall windows */
+    F.box(0, 0, -4, 46, 0.6, 30, 0, dark, 'stone');
+    F.box(0, 0.6, -2, 40, 10, 22, 0, c, 'stone');
+    F.box(0, 5.3, -2, 40.3, 0.3, 22.3, 0, trim, 'stone');
+    F.box(0, 10.6, -2, 40.6, 0.45, 22.6, 0, trim, 'stone');
+    F.box(0, 11.05, -2, 30, 2.4, 6, 0, shade(c, 0.05), 'stone');
+    for (let k = -6; k <= 6; k++) F.box(k * 2.2, 11.6, 1.02, 1.2, 1.3, 0.2, 0, glass, 'stone');
+    F.pyrRoof(0, 11.05, -2, 41, 2.6, 23, 0, roofC, 'roof');
+    F.pyrRoof(0, 13.45, -2, 31, 1.6, 7, 0, shade(roofC, -0.1), 'roof');
+    for (let k = -4; k <= 4; k++) {
+      F.box(k * 4.6, 0.6, 9.1, 0.8, 10, 0.4, 0, trim, 'stone'); F.box(k * 4.6, 0.6, -13.1, 0.8, 10, 0.4, 0, trim, 'stone');
+      if (k < 4) { W(k * 4.6 + 2.3, 1.8, 9.05, 2.4, 2.8, 0); W(k * 4.6 + 2.3, 6.2, 9.05, 2.4, 3.6, 0); W(k * 4.6 + 2.3, 6.2, -13.05, 2.4, 3.6, 1); }
+    }
+    [-9, -4.5, 0, 4.5].forEach(function (pz) { W(20.05, 6.2, pz, 2.4, 3.6, 2); W(-20.05, 6.2, pz, 2.4, 3.6, 3); W(20.05, 1.8, pz, 2.4, 2.8, 2); });
+    /* the great doors on the front, the loading dock and its crane rail */
+    [-6, 6].forEach(function (px) {
+      F.box(px, 0.6, 9.05, 5.2, 6.2, 0.35, 0, dark, 'stone'); F.box(px, 0.6, 9.25, 4.4, 5.6, 0.2, 0, doorC, 'wood');
+      F.box(px, 6.8, 9.2, 5.8, 0.5, 0.8, 0, trim, 'stone');
+    });
+    F.box(0, 0, 11.5, 22, 1.3, 4.6, 0, dark, 'stone');
+    F.box(0, 1.3, 13.5, 22, 0.15, 0.6, 0, iron, 'metal');
+    [-10, 10].forEach(function (px) { F.box(px, 1.3, 11.5, 0.5, 6.5, 0.5, 0, iron, 'metal'); });
+    F.box(0, 7.8, 11.5, 21, 0.5, 0.5, 0, iron, 'metal');
+    F.box(-6, 7.8, 11.5, 1.2, 0.8, 1.0, 0, shade(iron, 0.1), 'metal'); F.rod(-6, 7.8, 11.5, -6, 3.0, 11.5, 0.05, 0x6b5a3a, 'rope');
+    /* the boiler house behind, its two chimneys, the coal bunker */
+    F.box(-11, 0.6, -16.5, 16, 13, 7, 0, shade(c, -0.06), 'stone');
+    F.box(-11, 13.6, -16.5, 16.4, 0.4, 7.4, 0, trim, 'stone');
+    [-15.5, -6.5].forEach(function (px) {
+      F.cyl(px, 0.6, -18.2, 1.5, 26, 0, shade(c, -0.12), 'stone');
+      F.cyl(px, 24.0, -18.2, 1.75, 0.8, 0, trim, 'stone'); F.cyl(px, 26.6, -18.2, 1.2, 0.3, 0, iron, 'metal');
+    });
+    [-16, -11, -6].forEach(function (px) { W(px, 6.5, -20.05, 1.8, 3.0, 1); });
+    F.box(-11, 0.6, -20.6, 8, 2.4, 1.6, 0, iron, 'metal');
+    /* the fumarole vent house and the copper steam mains into the hall */
+    F.box(12, 0.6, -16.5, 9, 6, 7, 0, shade(c, 0.04), 'stone');
+    F.pyrRoof(12, 6.6, -16.5, 9.6, 2.2, 7.6, 0, roofC, 'roof');
+    [9.5, 14.5].forEach(function (px) { F.cyl(px, 0.6, -20.4, 0.55, 9.5, 0, copper, 'metal'); F.cyl(px, 10.1, -20.4, 0.75, 0.5, 0, shade(copper, -0.15), 'metal'); });
+    F.box(12, 4.2, -13.2, 0.9, 0.9, 1.0, 0, copper, 'metal');
+    /* the cooling tanks on the flank, the conduit masts out front with their copper insulators */
+    [[-21, -4], [-21, 3]].forEach(function (p) { F.cyl(p[0], 0.6, p[1], 2.4, 5.5, 0, shade(iron, 0.15), 'metal'); F.cyl(p[0], 6.1, p[1], 2.5, 0.3, 0, iron, 'metal'); });
+    [-18, 18].forEach(function (px) {
+      F.box(px, 0, 12.5, 0.6, 9.5, 0.6, 0, iron, 'metal'); F.box(px, 9.2, 12.5, 4.2, 0.3, 0.4, 0, iron, 'metal');
+      [-1.6, 0, 1.6].forEach(function (dx) { F.cyl(px + dx, 9.5, 12.5, 0.18, 0.6, 0, copper, 'metal'); });
+    });
+    [-3, 3].forEach(function (px) { F.rod(px, 6.6, 9.4, px, 6.6, 10.2, 0.06, iron, 'metal'); F.ball(px, 6.3, 10.2, 0.3, glow, 'glow'); });
   }
 });

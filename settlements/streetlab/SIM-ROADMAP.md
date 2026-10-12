@@ -8,8 +8,9 @@ world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.
 
 **The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A is done but for the Palace and
 Temple (branch `Voth-sim`, sessions 1 and 2, 2026-10-12): every building's interior, the residence rule's report, the
-cutaway on any building, the density overlay, the job table and the eight new kit models. Phase B session 1 is done
-(places, wells, the new buildings placed, the 90% audit). Numbers in `HANDOFF.md`.**
+cutaway on any building, the density overlay, the job table and the eight new kit models. Phase B is done
+(sessions 1 and 2: places with spots and capacities, wells, the new buildings placed, the 90% audit). Phase C is next.
+Numbers in `HANDOFF.md`.**
 
 ---
 
@@ -249,6 +250,10 @@ work posts), the 90% audit, the wells, the new buildings placed, the job table i
 yard wells of manors and clan compounds are a DRINK on the home, not a placed piece (the courtyard is inside the kit
 model); the caravanserai stands inside the Spirit Gate (no level ground outside any gate); the central watchhouse is
 the Fortress's armoury. Numbers and the owner's decisions in `HANDOFF.md`.
+
+**Session 2 (2026-10-12):** the caravanserai by the River Gate at step 3; dense work rooms for the short kinds of work;
+capacity by size, seats, spots, reach; the density overlay's work-post mode; a power station in place of the small power
+house. Phase B is done: every kind of work meets the 90% rule.
 
 ### 2.4 Phase C: citizens, schedules, needs, happiness (2–3 sessions)
 

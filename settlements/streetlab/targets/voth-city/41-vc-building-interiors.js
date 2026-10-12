@@ -60,7 +60,21 @@ VC.ixPrograms = function () {
   P.butchery = { require: [{ need: 'block', types: ['table', 'counter'], n: 1 }, { need: 'meat', types: ['food'], n: 2 }],
     optional: [{ types: ['storage', 'vessel'], roles: IX.FOOD_ROLES, max: 3 }, { types: ['rack'], max: 1 }, { types: ['food'], max: 4 }, LAMP], extra: 4 };
   A.brewhouse = ['workshop', 'store', 'tavern', 'kitchen']; A.weaving = ['workshop', 'hall']; A.tanyard = ['workshop', 'store']; A.butchery = ['kitchen', 'store', 'shop'];
-  ['brewhouse', 'weaving', 'tanyard', 'butchery'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
+  /* the work rooms of the kinds of work the 90% rule found short (owner, 2026-10-12: "add more work furniture"): dense
+     floors of their work pieces, a piece every `extra` m2 (the kit's budget), used only by those buildings' programmes
+     (TUNE.ix.programmes, byKey), so the homes, the shops and the cantons' rooms keep theirs */
+  var SEATS = IX.SEAT_TYPES || ['chair', 'stool', 'bench', 'seating'];
+  P.factory = { require: [{ need: 'benches', types: ['workstation', 'loom'], n: 4 }], optional: [{ types: ['workstation'], max: 10 }, { types: ['loom'], max: 3 }, { types: ['rack', 'storage', 'stack'], max: 4 }, { types: ['bench', 'stool'], max: 2 }, LAMP], extra: 3 };
+  P.enginehall = { require: [{ need: 'works', types: ['workstation', 'stove'], n: 4 }], optional: [{ types: ['workstation'], max: 20 }, { types: ['stove'], max: 3 }, { types: ['rack', 'storage', 'stack'], max: 4 }, LAMP], extra: 3 };
+  P.drillhall = { require: [{ need: 'dummies', types: ['tool'], n: 3 }, { need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['tool'], max: 10 }, { types: ['rack', 'weapon'], max: 6 }, { types: ['bench'], max: 2 }], extra: 4 };
+  P.guardroom = { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'racks', types: ['rack', 'weapon'], n: 2 }, { need: 'table', types: ['table'], n: 1 }],
+    optional: [{ types: ['rack', 'weapon'], max: 6 }, { types: ['desk'], max: 2 }, { types: ['table'], max: 1 }, { types: SEATS, max: 6 }, LAMP], extra: 4 };
+  P.alehouse = { require: [{ need: 'bar', types: ['counter'], n: 1 }, { need: 'tables', types: ['table'], n: 2 }, { need: 'seats', types: SEATS, n: 4 }],
+    optional: [{ types: ['counter'], max: 2 }, { types: ['table'], max: 8 }, { types: SEATS, max: 16 }, { types: ['stove'], max: 1 }, { types: ['storage'], roles: ['barrel'], max: 3 }, { types: ['lamp', 'brazier'], max: 2 }], extra: 4 };
+  P.counting = { require: [{ need: 'desks', types: ['desk'], n: 3 }], optional: [{ types: ['desk'], max: 8 }, { types: ['shelf', 'storage'], max: 3 }, { types: ['chair', 'stool'], max: 8 }, LAMP], extra: 3 };
+  A.factory = ['workshop', 'smithy']; A.enginehall = ['workshop', 'smithy']; A.drillhall = ['training', 'barracks', 'yard', 'court']; A.guardroom = ['barracks', 'office', 'study'];
+  A.alehouse = ['tavern', 'hall']; A.counting = ['office', 'study', 'library'];
+  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 
@@ -361,8 +375,10 @@ VC.ixReport = function () {
     /* the job table: a row per kind of work, a column per furniture kind (its count and where) */
     if (u.job) {
       var J = R.jobs[u.job] || (R.jobs[u.job] = { jobs: 0, units: 0, posts: 0, kinds: {}, where: {} });
-      J.jobs += u.jobs; J.units++; J.posts += u.posts; J.where[u.district] = (J.where[u.district] || 0) + 1;
-      var w = (ty.count && ty.count.work) || {};
+      /* the posts as phase B counts them (42-vc-sim-places.js VC.simPosts: by piece kind and size), else one a piece */
+      var SP = VC.simPosts && ty.pieces ? VC.simPosts(ty.pieces) : null;
+      J.jobs += u.jobs; J.units++; J.posts += SP ? SP.n : u.posts; J.where[u.district] = (J.where[u.district] || 0) + 1;
+      var w = SP ? SP.by : (ty.count && ty.count.work) || {};
       Object.keys(w).forEach(function (f) { var c = J.kinds[f] || (J.kinds[f] = { n: 0, rooms: {} }); c.n += w[f]; });
       (ty.pieces || []).forEach(function (p) { var c = J.kinds[p.type]; if (c && TUNE.ix.work.indexOf(p.kind) >= 0) c.rooms[p.kind] = 1; });
     }
@@ -371,7 +387,7 @@ VC.ixReport = function () {
     var ty = VC.IX.types[k], s = ty.shell ? ty.shell.src : 'none';
     R.shells[s] = (R.shells[s] || 0) + 1; R.dropped += ty.dropped || 0;
   });
-  Object.keys(R.jobs).forEach(function (k) { var J = R.jobs[k]; J.jobs = Math.round(J.jobs); J.target = Math.ceil(J.jobs * 0.9); J.gap = J.posts - J.target; });
+  Object.keys(R.jobs).forEach(function (k) { var J = R.jobs[k]; J.jobs = Math.round(J.jobs); J.posts = Math.round(J.posts); Object.keys(J.kinds).forEach(function (f) { J.kinds[f].n = Math.round(J.kinds[f].n * 10) / 10; }); J.target = Math.ceil(J.jobs * 0.9); J.gap = J.posts - J.target; });
   /* the shell list: what each type was read as, so the owner can name the overrides (TUNE.ix.shells) */
   R.typeList = Object.keys(VC.IX.types).sort().map(function (k) {
     var ty = VC.IX.types[k], sh = ty.shell || {};

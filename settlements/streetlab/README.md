@@ -129,7 +129,8 @@ At the last step the sidebar shows the **census**: an estimate of residents, the
 workplaces by kind of work (rates in `TUNE.census`; the Voth cantons' own people are not counted).
 
 **Power and light** (`37-vc-light.js`, `TUNE.power`, `TUNE.light`; owner, 2026-10-09):
-* Voth's power houses (`voth_generator`: the steam turbine hall and the fumarole vent house) are placed at step 9, on the
+* Voth's power houses (`voth_generator` v0, the steam turbine hall, and `voth_bldg_power_station`, the power station
+  that replaced the small fumarole house on 2026-10-12) are placed at step 9, on the
   avenues and main streets of the industry district, before its lots fill. They stand on HARD ground, as civic lots do,
   and the census staffs them (`TUNE.census.jobs.power`). The generator is no longer one of the random `industrial` pieces.
 * Electric light reaches the industry district, the guilds (guild halls, the Guild canton), the clan compounds and wealthy
@@ -397,10 +398,16 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   take shop, craft and industrial lots whose plot holds their model and whose new footprint clears every other building,
   front kept on the street, spread over the city (each next lot the farthest from those its trade holds). Three
   watchhouses take a house near the east, west and south of the city; the central one is the Fortress's armoury. The
-  caravanserai stands by the Spirit Gate: no gate has level ground outside within 700 m (the wall runs on the hills), so
-  it stands just inside, in place of the houses it overlaps, and may close an alley but never a street, a park or a
-  market. The coast-guard berth stands on the water off the Fortress's apron, clear of every bridge, causeway and pier,
-  on a stone footing. A converted lot counts in the census as its new building (`TUNE.census.byKey`).
+  caravanserai is placed at step 3, right after the avenues (`VC.simCaravanserai`, as the House of Healing is): on the
+  free ground nearest the River Gate's marker, inside the wall's clearance, fronting an avenue, so the streets and lots
+  of steps 6-12 are laid round it (owner, 2026-10-12). The coast-guard berth stands on the water off the Fortress's
+  apron, clear of every bridge, causeway and pier, on a stone footing. A converted lot counts in the census as its new
+  building (`TUNE.census.byKey`).
+* **More work furniture** where the 90% rule fell short (owner, 2026-10-12): dense work rooms used only by those
+  buildings' programmes: `factory` (the industrial lots), `enginehall` (the power houses), `drillhall` (the garrison and
+  barracks), `guardroom` (the watchhouses and the coast-guard berth), `alehouse` (the taverns and the caravanserai),
+  `counting` (the guild hall and the customs house), a stable at the caravanserai, a second storey in the funerary
+  temple; the Granary deck's granaries and the mustering ground are work places too.
 * **The wells** (`VC.wells`, after the park furniture): `voth_well` on the plazas and market squares and every 150 m along
   the residential streets, none within 90 m of another (or of the parks' and the monastery's wells); the manors and clan
   compounds have their own, in their courtyards (a DRINK on the home). They are a 'Wells' district's art: drawn and
@@ -411,6 +418,12 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   core/simulation's `SIM.FURN_ACT`: `SIM.slotsFromFurniture(pieces, map)`), its hours (`TUNE.sim.hours`), its pull for free
   time (`TUNE.sim.pull`) and its work posts with their kind of work (`TUNE.sim.posts` per piece; a canton room's and the
   outdoor work's are the census's).
+* **Session 2:** a piece's capacity by its size (`TUNE.sim.postWidth`: a 4.4 m workbench takes two; `seatWidth`: seats
+  round a table's edge), the places' `spots` (where people stand: a step before each work piece, seat, table and bed,
+  the work ones first, at most 48), an open place's reach `r` and `wander`, and each place's `workplaces`. The density
+  overlay's third mode (n) maps work posts against 90% of the workplaces: warm where short, cool where there is room.
+  The power station (`voth_bldg_power_station`, four engine halls of up to 20 workstations) took the small power
+  house's place, and every kind of work now meets the 90% rule.
 * **The 90% rule** (`VC.simWorkAudit`): for every kind of work the census counts, the posts against 90% of its
   workplaces; a short kind is named with its buildings that have the most floor per post (where more posts would go).
   In the report panel (the "interiors report" button) and in `verify.py`'s output.

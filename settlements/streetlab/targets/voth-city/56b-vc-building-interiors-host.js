@@ -220,6 +220,7 @@ VC.ixPaint = function () {
   var mode = VC.IXD.density; if (!mode || !VC.IX.done) return;
   var cv = VIEW.ovCanvas, S = cv.width, E = VIEW.ext, k = S / (2 * E), ctx = cv.getContext('2d');
   var X = function (x) { return (x + E) * k; }, Z = function (z) { return (z + E) * k; };
+  if (mode === 3) return VC.simPaintWork(ctx, X, Z, k);
   var D = VC.ixDensityGrid(mode);
   Object.keys(D.G).forEach(function (key) {
     var ij = key.split(','), v = D.G[key], t = v >= D.mean ? (v - D.mean) / (D.hi - D.mean) : -(D.mean - v) / D.mean;
@@ -243,7 +244,7 @@ VC.ixPaint = function () {
   var R = VC.IX.report, lg = $('ixlegend');
   if (lg) {
     var what = mode === 1 ? 'residents' : 'workplaces', tot = mode === 1 ? R.residents : VC.IX.units.reduce(function (a, u) { return a + u.jobs; }, 0);
-    lg.innerHTML = '<b>' + (mode === 1 ? 'Residents' : 'Workplaces') + ' per hectare</b> <span class="k">(' + D.c + ' m cells, lot buildings only)</span>' +
+    lg.innerHTML = '<b>' + (mode === 1 ? 'Residents' : 'Workplaces') + ' per hectare</b> <span class="k">(' + D.c + ' m cells, every building with an interior)</span>' +
       '<div class="ramp" style="background:linear-gradient(90deg,' + VC.ixRamp(-1, 1) + ',' + VC.ixRamp(0, 1) + ',' + VC.ixRamp(1, 1) + ')"></div>' +
       '<div class="k" style="display:flex;justify-content:space-between"><span>0</span><span>mean ' + Math.round(D.mean) + '</span><span>' + Math.round(D.hi) + '+</span></div>' +
       '<div>' + tot.toLocaleString() + ' ' + what + ' in ' + VC.IX.units.length.toLocaleString() + ' buildings, ' + D.cells + ' cells</div>' +
@@ -251,9 +252,30 @@ VC.ixPaint = function () {
       '<div class="k">n: next mode</div>';
   }
 };
+/* the third mode (phase B): work posts against the rule's 90% of the workplaces, per cell, over every place with work
+   (42-vc-sim-places.js): warm where the posts fall short, cool where there is room to spare */
+VC.simPaintWork = function (ctx, X, Z, k) {
+  var c = TUNE.ix.density.cell, G = {}, tgt = TUNE.sim.target, P = 0, W = 0, n = 0;
+  (VC.SIMB.list || []).forEach(function (o) {
+    if (!o.job || (!o.posts && !o.workplaces)) return;
+    var key = Math.floor(o.x / c) + ',' + Math.floor(o.z / c), e = G[key] || (G[key] = { p: 0, w: 0 }); e.p += o.posts || 0; e.w += (o.workplaces || 0) * tgt; P += o.posts || 0; W += (o.workplaces || 0) * tgt;
+  });
+  Object.keys(G).forEach(function (key) {
+    var e = G[key], ij = key.split(','), t = !e.w ? -1 : e.p >= e.w ? -Math.min(1, (e.p / e.w - 1)) : Math.min(1, 1 - e.p / e.w);
+    if (e.p < e.w) n++;
+    ctx.fillStyle = VC.ixRamp(t, 0.82); ctx.fillRect(X(+ij[0] * c), Z(+ij[1] * c), c * k + 0.5, c * k + 0.5);
+  });
+  VIEW.ovTex.needsUpdate = true;
+  var lg = $('ixlegend'), A = VC.SIMB.audit || { short: 0 };
+  if (lg) lg.innerHTML = '<b>Work posts against ' + Math.round(tgt * 100) + '% of the workplaces</b> <span class="k">(' + c + ' m cells, every place with work)</span>' +
+    '<div class="ramp" style="background:linear-gradient(90deg,' + VC.ixRamp(-1, 1) + ',' + VC.ixRamp(0, 1) + ',' + VC.ixRamp(1, 1) + ')"></div>' +
+    '<div class="k" style="display:flex;justify-content:space-between"><span>twice the posts</span><span>even</span><span>no posts</span></div>' +
+    '<div>' + Math.round(P).toLocaleString() + ' posts for ' + Math.round(W).toLocaleString() + ' (the rule\'s share of ' + Math.round(W / tgt).toLocaleString() + ' workplaces); ' + n + ' cells short; ' + A.short + ' kinds of work short (the report lists them)</div>' +
+    '<div class="k">n: next mode</div>';
+};
 VC.ixDensityToggle = function () {
-  VC.IXD.density = (VC.IXD.density + 1) % 3;
-  var b = $('ly-density'); if (b) { b.classList.toggle('on', !!VC.IXD.density); b.textContent = ['density (n)', 'density: residents', 'density: workplaces'][VC.IXD.density]; }
+  VC.IXD.density = (VC.IXD.density + 1) % 4;
+  var b = $('ly-density'); if (b) { b.classList.toggle('on', !!VC.IXD.density); b.textContent = ['density (n)', 'density: residents', 'density: workplaces', 'density: work posts'][VC.IXD.density]; }
   var lg = $('ixlegend'); if (lg) lg.style.display = VC.IXD.density ? 'block' : 'none';
   VC.paint();
 };
@@ -292,7 +314,7 @@ VC.ixReportHTML = function () {
   /* the job table */
   var kinds = {}; Object.keys(R.jobs).forEach(function (j) { Object.keys(R.jobs[j].kinds).forEach(function (k) { kinds[k] = (kinds[k] || 0) + R.jobs[j].kinds[k].n; }); });
   var cols = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; });
-  h += '<h2>The job table (the brief, 1.2)</h2><div class="k">A row per kind of work in the lot buildings, a column per furniture kind in their work rooms (' + TUNE.ix.work.join(', ') + '): pieces placed. Workplaces are the census\'s; the 90% target is phase B\'s rule; a piece is counted as one post for now (phase B gives each its capacity). Hover a cell for the rooms.</div>';
+  h += '<h2>The job table (the brief, 1.2)</h2><div class="k">A row per kind of work in the lot buildings, a column per furniture kind in their work rooms (' + TUNE.ix.work.join(', ') + '): the posts they give (TUNE.sim.posts by kind and size, as the 90% table above counts them). Workplaces are the census\'s. The buildings only: the canton rooms and the outdoor work are in the 90% table. Hover a cell for the rooms.</div>';
   h += '<table><tr><th>kind of work</th><th>buildings</th><th>workplaces</th><th>90%</th><th>posts</th>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>where (buildings)</th></tr>';
   Object.keys(R.jobs).sort(function (a, b) { return R.jobs[b].jobs - R.jobs[a].jobs; }).forEach(function (j) {
     var J = R.jobs[j], wh = Object.keys(J.where).sort(function (a, b) { return J.where[b] - J.where[a]; }).slice(0, 4).map(function (w) { return w + ' ' + J.where[w]; }).join(', ');

@@ -10,7 +10,7 @@
         taken. A converted lot keeps its plot; its census entry becomes the new building's (TUNE.census.byKey);
       - the east, west and south watchhouses take a house in those parts of the city; the central watchhouse is the
         Fortress's armoury (its interior, 40-vc-interiors.js);
-      - the caravanserai stands on free, level, dry ground by the land gate (VC.placedLot, as an owner's placed building);
+      - the caravanserai stands by the River Gate, placed at step 3 (VC.simCaravanserai), so the streets work round it;
       - the coast-guard berth stands on the water off the Fortress's apron, clear of every bridge, causeway and pier, on
         a stone footing (a prim group the host draws).
    2. THE WELLS (VC.wells, after the park furniture): voth_well on every plaza and market square, along the residential
@@ -19,7 +19,10 @@
    3. THE PLACES (VC.simPlaces, after the interiors): every building with an interior (VC.IX units), every canton
       room, every well, park, market and burial ground, and the outdoor work (fields, piers, mines...) becomes a
       SIM.place with its activities (its furniture read through TUNE.sim.furnAct over core/simulation's SIM.FURN_ACT),
-      its opening hours, its pull for free time (TUNE.sim.pull), and its work posts with their kind of work.
+      its opening hours, its pull for free time (TUNE.sim.pull), and its work posts with their kind of work. Session 2:
+      a piece's capacity by its size (a long counter takes two), seats round a table, the place's `spots` (where people
+      stand: before its work pieces, seats, tables and beds), an open place's reach `r` and `wander`, its `workplaces`
+      (the census's, for the density overlay's third mode).
    4. THE 90% RULE (VC.simWorkAudit): for every kind of work the census counts, the posts against 90% of its workplaces,
       a short kind named with the buildings that have the most floor to spare for more posts; and the job table.
    Every choice here is ordered by the plan's records; nothing draws a random number. */
@@ -72,7 +75,7 @@ VC.simBuildings = function () {
   VC.SIMB.placed = { trades: {}, watch: [], caravanserai: null, berth: null };
   /* the trades, spread: each next lot the farthest from those this trade holds (the first, the nearest the middle) */
   P.trades.forEach(function (tr) {
-    var cand = PLAN.lots.filter(function (L) { return L.died == null && !L.deck && tr.from.indexOf(L.cls) >= 0 && !taken[L.id] && (!L.country || /village|suburb/.test(L.country)) && VC.simFit(L, tr.key); });
+    var cand = PLAN.lots.filter(function (L) { return L.died == null && !L.deck && !L.power && !L.role && tr.from.indexOf(L.cls) >= 0 && !taken[L.id] && (!L.country || /village|suburb/.test(L.country)) && VC.simFit(L, tr.key); });   /* never a power house, the garrison's, an armoury */
     var got = [];
     for (var k = 0; k < tr.n && cand.length; k++) {
       var best = null, bs = -Infinity;
@@ -93,41 +96,12 @@ VC.simBuildings = function () {
     var d = W.dirs[name], ext = C.lots.map(function (L) { return (L.x - C.c[0]) * d[0] + (L.z - C.c[1]) * d[1]; }).sort(function (a, b) { return a - b; });
     var reach = ext[Math.floor(ext.length * 0.97)] || 0, t = [C.c[0] + d[0] * reach * W.at, C.c[1] + d[1] * reach * W.at];
     var best = null, bd = Infinity;
-    C.lots.forEach(function (L) { if (taken[L.id] || W.from.indexOf(L.cls) < 0) return; var dd = Math.hypot(L.x - t[0], L.z - t[1]); if (dd < bd && VC.simFit(L, W.key)) { bd = dd; best = L; } });
+    C.lots.forEach(function (L) { if (taken[L.id] || L.role || L.power || W.from.indexOf(L.cls) < 0) return; var dd = Math.hypot(L.x - t[0], L.z - t[1]); if (dd < bd && VC.simFit(L, W.key)) { bd = dd; best = L; } });
     if (best && VC.simConvert(best, W.key, 'civic', 'watchhouse')) { taken[best.id] = 1; best.watch = name; VC.SIMB.placed.watch.push({ name: name, lot: best.id }); }
   });
   log.push(VC.SIMB.placed.watch.length + ' watchhouses (' + VC.SIMB.placed.watch.map(function (w) { return w.name; }).join(', ') + '; the central one is the Fortress’s armoury)');
-  /* the caravanserai: the nearest free, level, dry ground to the land gate */
-  var CV = P.caravanserai, G = (VC.wall && VC.wall.gates || []).filter(function (g) { return g.name === CV.gate; })[0], D = SL.dims(CV.key, 0);
-  if (G && D) {
-    /* outside the gate on dry, level ground off the roads and fields near the gate's own height (33-vc-country.js's
-       test); else just inside it, on level ground the street method built on: it takes the place of the houses it
-       overlaps (as an owner's placed building does) and may close an alley, but never a street, a park, a plaza or a
-       market. The nearest wins. (2026-10-12: no gate has level ground outside within 700 m; the wall runs on the hills) */
-    var found = null, gy = baseH(G.x, G.z), cells = [OCC.FREE, OCC.LOT, OCC.ALLEY];   /* a block's alleys may close at its walls; a street never */
-    for (var r = 30; r <= CV.reach && !found; r += 10) for (var a = 0; a < 48 && !found; a++) {
-      var ang = a / 48 * Math.PI * 2, p = [G.x + Math.cos(ang) * r, G.z + Math.sin(ang) * r], f = V.norm([G.x - p[0], G.z - p[1]]);
-      var o = obb(p, V.perp(f), D.w / 2 + CV.pad, D.d / 2 + CV.pad), rel = VC.relief(o);
-      if (rel.hi - rel.lo > CV.slope || rel.lo < 1 || Math.abs((rel.lo + rel.hi) / 2 - gy) > CV.climb) continue;
-      var ok = VC.countryOk(o, { cityPad: 0, road: 4 }), inside = false;
-      if (!ok) {
-        ok = true; inside = true;
-        for (var i = -3; i <= 3 && ok; i++) for (var j = -3; j <= 3 && ok; j++) {
-          var q = V.add(o.c, V.add(V.mul(o.u, o.hw * i / 3), V.mul(o.v, o.hd * j / 3)));
-          if (cells.indexOf(SL.R.at(q[0], q[1])) < 0 || VC.roleAt(q) === 'park' || VC.roleAt(q) === 'plaza' || VC.roleAt(q) === 'market') ok = false;
-        }
-        if (ok && PLAN.lots.some(function (L) { return taken[L.id] && L.died == null && SL.pen(o, L.bo) > 0; })) ok = false;   /* never a trade or watchhouse just placed */
-      }
-      if (ok) found = { p: p, ry: Math.atan2(f[0], f[1]), inside: inside, r: r };
-    }
-    if (found) {
-      var before = PLAN.lots.filter(function (L) { return L.died == null; }).length;
-      var Lc = VC.placedLot({ key: CV.key, v: 0, x: found.p[0], z: found.p[1], ry: found.ry }, 13);
-      if (Lc) { Lc.cls = 'tavern'; Lc.role = 'caravanserai'; Lc.placed = false; VC.SIMB.placed.caravanserai = Lc.id;
-        var gone = before + 1 - PLAN.lots.filter(function (L) { return L.died == null; }).length;
-        log.push('the caravanserai ' + Math.round(found.r) + ' m from the ' + CV.gate + (found.inside ? ', inside the wall' + (gone ? ', in place of ' + gone + ' houses' : '') : ', outside the wall')); }
-    } else log.push('no ground for the caravanserai by the ' + CV.gate);
-  }
+  /* the caravanserai stood at step 3 (VC.simCaravanserai) */
+  if (VC.SIMB.cv) { VC.SIMB.placed.caravanserai = VC.SIMB.cv.lot; log.push(VC.SIMB.cv.log); } else log.push('no caravanserai (' + (VC.SIMB.cvWhy || 'not placed') + ')');
   /* the coast-guard berth: on the water off the Fortress's apron, the side nearest the city first */
   var BT = P.berth, M = CANT.by[BT.canton], DB = SL.dims(BT.key, 0);
   if (M && DB) {
@@ -160,6 +134,48 @@ VC.simBuildings = function () {
   VC.SIMB.log = log;
   SL.note(13, 'the citizens’ buildings: ' + log.join('; '));
   return log;
+};
+
+/* the caravanserai (owner, 2026-10-12: "closer to the river gate, at post-avenue stage"): at step 3, once the avenues are
+   down and before any street or lot, as the House of Healing is (30-vc-site.js VC.placeHealing): the free spot nearest
+   the River Gate's marker where its whole footprint, a margin round it, is open dry ground (no avenue, causeway, landmark
+   or canton), rising no more than `slope` across it, `wallClear` m inside the wall's line (built at step 5), fronting an
+   avenue within `front` m of its wall; its gate turned to that avenue. It joins the plan as an owner's placed building
+   does (VC.placedLot: HARD ground), so the streets and lots of steps 6-12 work round it. */
+VC.simChainD = function (p, C) { var d = Infinity; for (var i = 1; i < C.length; i++) d = Math.min(d, segDist(p, C[i - 1], C[i])); return d; };   /* an open polyline */
+VC.simCaravanserai = function (step) {
+  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i')), D = SL.dims(CV.key, 0), R = SL.R;
+  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
+  if (!M || !D) { VC.SIMB.cvWhy = M ? 'no kit model' : 'no ' + CV.marker + ' marker'; return null; }
+  var hw = D.w / 2 + CV.pad, hd = D.d / 2 + CV.pad, best = null;
+  var footOk = function (c, f) {
+    var u = V.perp(f), lo = Infinity, hi = -Infinity;
+    for (var a = -hw; a <= hw + 0.01; a += hw / 4) for (var b = -hd; b <= hd + 0.01; b += hd / 4) {
+      var p = V.add(c, V.add(V.mul(u, a), V.mul(f, b))), g = baseH(p[0], p[1]); if (g < 1) return false;
+      lo = Math.min(lo, g); hi = Math.max(hi, g);
+      if (R.idx(p[0], p[1]) < 0) return false;
+      var o = R.at(p[0], p[1]); if (o !== OCC.FREE && o !== OCC.RESERVE) return false;
+      if (VC.inCanton(p, 4)) return false;
+      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < CV.wallClear) return false;
+    }
+    return hi - lo <= CV.slope;
+  };
+  for (var r = 0; r <= CV.reach && !best; r += 8) {
+    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
+    for (var i = 0; i < n && !best; i++) {
+      var th = i / n * 2 * Math.PI, c = [M.x + Math.cos(th) * r, M.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
+      if (!q || q.d > hd + CV.front + q.way.w / 2) continue;
+      var f = V.norm(V.sub(q.p, c));
+      if (footOk(c, f)) best = { c: c, f: f, q: q, r: r };
+    }
+  }
+  if (!best) { VC.SIMB.cvWhy = 'no free ground within ' + CV.reach + ' m of the ' + CV.gate + '\u2019s marker'; return null; }
+  var L = VC.placedLot({ key: CV.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
+  if (!L) { VC.SIMB.cvWhy = 'the kit model would not place'; return null; }
+  L.cls = 'tavern'; L.role = 'caravanserai'; L.placed = false;
+  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(best.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (best.q.way.tag || 'an avenue') + ')' };
+  SL.note(step, VC.SIMB.cv.log);
+  return L;
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
@@ -226,9 +242,20 @@ VC.simPosts = function (pieces) {
   pieces.forEach(function (p) {
     if (T.work.indexOf(p.kind) < 0 || p.anchor === 'surface') return;
     if (T.posts.indexOf(p.type) < 0 && (T.postsIn[p.kind] || []).indexOf(p.type) < 0) return;
-    var c = PC[p.type] == null ? 1 : PC[p.type]; n += c; by[p.type] = (by[p.type] || 0) + c;
+    var PK = TUNE.sim.postsIn[p.kind], c = PK && PK[p.type] != null ? PK[p.type] : PC[p.type] == null ? 1 : PC[p.type];
+    c *= VC.simSize(p, TUNE.sim.postWidth[p.type]); n += c; by[p.type] = (by[p.type] || 0) + c;
   });
   return { n: n, by: by };
+};
+/* session 2: a piece's capacity by its size (TUNE.sim.postWidth, seatWidth: the metres of its width one person takes): a
+   long counter or workbench takes more than one; 1 when the kind has no width rule */
+VC.simDims = function (p) { var A = typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]; return A ? entryDims(A, p.v | 0) : { w: 1, d: 1, h: 1 }; };
+VC.simSize = function (p, per) { if (!per || !p.key) return 1; return Math.max(1, Math.floor(VC.simDims(p).w / per + 0.25)); };
+/* where people stand at a piece (in the building's frame): before its front (+z of its own frame), half its depth and a
+   step out; at a table or a bed, along its side */
+VC.simStand = function (p) {
+  var D = VC.simDims(p), out = D.d / 2 + TUNE.sim.spotStep, c = Math.cos(p.ry || 0), s = Math.sin(p.ry || 0);
+  return { x: p.x + s * out, y: p.y, z: p.z + c * out };
 };
 VC.simActs = function () {
   var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL'].indexOf(a) >= 0 }); };
@@ -251,7 +278,9 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
-    var pcs = (ty.pieces || []).map(function (p) { return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor }; });
+    var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
+      var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
+      return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -260,8 +289,13 @@ VC.simPlaces = function () {
     if (u.lot >= 0 && PLAN.lots[u.lot] && PLAN.lots[u.lot].well) acts.DRINK = (acts.DRINK || 0) + 4;   /* the courtyard's own well */
     var P = u.job ? VC.simPosts(ty.pieces || []) : { n: 0 };
     var door = ty.B && ty.B.doors[0] ? VC.ixWorldXZ(u, ty.B.doors[0].at) : [u.x, u.z];
+    /* the spots: where people stand, at the work pieces first, then the seats, tables and beds (TUNE.sim.spotsMax) */
+    var spots = [], R2 = function (v) { return Math.round(v * 100) / 100; }, SP = T.spotTypes;
+    (ty.pieces || []).filter(function (p) { return p.anchor !== 'surface' && SP.indexOf(p.type) >= 0; })
+      .sort(function (a, b) { return SP.indexOf(a.type) - SP.indexOf(b.type); }).slice(0, T.spotsMax)
+      .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
-          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, tags: [u.cls, u.district], unit: u.i });
+          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i });
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -270,7 +304,7 @@ VC.simPlaces = function () {
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
-            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, tags: ['canton', cn] });
+            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn] });
     });
   });
   /* the Fortress's armoury: the central watchhouse (gear drawn at the shift's start) */
@@ -295,12 +329,18 @@ VC.simPlaces = function () {
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }
     if (cnt.stall) { acts.SELL = cnt.stall; acts.BUY = cnt.stall * 4; }
     if (!Object.keys(acts).length) acts.RELAX = Math.max(4, m);
-    reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind),
-          job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
+    /* its spots: before its benches, stalls, shrines and tombs (its art pieces), and its reach: the furniture's spread */
+    var spots = [], rr = 0;
+    D.art.forEach(function (a) { rr = Math.max(rr, Math.hypot(a.x - cx / m, a.z - cz / m)); });
+    D.art.filter(function (a) { return /stall|bench|shrine|altar|well|tomb|sarcoph/.test(a.key); }).slice(0, T.spotsMax).forEach(function (a) {
+      var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); });
+    reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind), spots: spots, r: Math.round(rr), wander: Math.min(30, Math.round(rr / 3)),
+          job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, workplaces: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
-  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: perRec(q, i), tags: ['outdoor'] }); }); };
+  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i); reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: n, workplaces: n,
+    r: q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, wander: T.outdoorR[kind] || 12, tags: ['outdoor'] }); }); };
   var fields = (PLAN.fields || []).filter(function (F) { return F.kind !== 'garden'; });
   outdoor('farmhands and ploughmen', fields.map(function (F) { return [F.bo.c[0], F.bo.c[1], 4 * F.bo.hw * F.bo.hd / 1e4]; }), function (q) { return q[2] * K.jobs.perHectare; }, 'field');
   var P0 = VOTH.PIERS || [], mid = function (q) { return [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2]; };
@@ -312,6 +352,7 @@ VC.simPlaces = function () {
   outdoor('quarrymen and masons', (IND.quarries || []).map(at), function () { return K.jobs.quarry; }, 'quarry');
   outdoor('mushroom growers', (IND.mush || []).map(at), function () { return K.jobs.mushFarm; }, 'mushfarm');
   outdoor('granary keepers and millers', (IND.watermills || []).map(at).concat((VC.windmills || []).map(at)), function (q, i) { return i < (IND.watermills || []).length ? K.jobs.watermill : K.jobs.mill; }, 'mill');
+  outdoor('granary keepers and millers', (VC.granarySites || []).map(at), function () { return K.jobs.granary; }, 'granary');   /* the Granary deck's granaries (33-vc-country.js) */
   /* the rest of the census's outdoor kinds of work: one place each, at the work's middle (the chinampas, the orchards, the
      ranches, the transit, the walls) */
   var C = PLAN.census && PLAN.census.byJob || {}, cc = VC.simCity().c;
@@ -319,16 +360,18 @@ VC.simPlaces = function () {
   var WN = (VC.wall && VC.wall.nodes || []).filter(function (nd) { return nd.kind === 'tower' && !nd.skip && nd.health > 0; });
   outdoor('soldiers', WN.map(function (nd) { return [nd.x, nd.z]; }), function () { return T.wallPost.tower; }, 'tower');
   outdoor('soldiers', (VC.wall && VC.wall.gates || []).map(function (g) { return [g.x, g.z]; }), function () { return T.wallPost.gate; }, 'gate');
+  /* the mustering ground: the soldiers' drill yard, a post every TUNE.sim.musterPerPost m2 of its footprint */
+  PLAN.lots.forEach(function (L) { if (L.died == null && L.role === 'muster') reg({ id: 'work.muster.' + L.id, kind: 'drill', name: 'Mustering ground', x: L.x, z: L.z, y: L.y, activities: { TRAIN: Math.round(L.w * L.d / T.musterPerPost) }, open: [5, 20], job: 'soldiers', posts: Math.round(L.w * L.d / T.musterPerPost), tags: ['outdoor', 'drill'] }); });
   /* the Palace and the Temple wait for their interiors (the owner's references): their staffs at the canton, as the census counts them */
   Object.keys(K.cantons).forEach(function (cn) {
     if (VC.INT && VC.INT.cantons && VC.INT.cantons[cn]) return;
     var M = CANT.by[cn]; if (!M) return;
-    reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], tags: ['canton', cn, 'no interior'] });
+    reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], workplaces: K.cantons[cn][0], r: M.r, tags: ['canton', cn, 'no interior'] });
   });
   ['chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen', 'elephant bug handlers and station hands', 'envoys and embassy staff', 'healers and nurses',
    'monks and lay brothers (chapel, fields, coops)'].forEach(function (job) {
     var have = posts[job] || 0, want = C[job] ? C[job].n : 0; if (want <= have) return;
-    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, tags: ['outdoor', 'aggregate'] });
+    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, workplaces: want - have, tags: ['outdoor', 'aggregate'] });
   });
   VC.SIMB.places = n; VC.SIMB.posts = posts;
   return n;

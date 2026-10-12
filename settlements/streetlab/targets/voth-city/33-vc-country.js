@@ -328,7 +328,7 @@ VC.deckFill = function (dk, mix, rs, n) {
 };
 VC.cantonDecks = function () {
   var B = VOTH, rs = SL.stream(2003), K = TUNE.decks, log = [];
-  VC.decks = {};
+  VC.decks = {}; VC.granarySites = [];
   VC.DECKS.forEach(function (n) { if (B.CIDX[n]) VC.decks[n] = VC.deckOf(n); });
   VC.capture('decks', 2, function () {
     /* Granary: Voth's own granary() (65k-granary-mills-ranch.js, built there but never placed), a yard of them */
@@ -339,6 +339,7 @@ VC.cantonDecks = function () {
         var w = rs.rr(12, 15), d = w * rs.rr(0.75, 0.85), sp = VC.deckSpot(g, w / 2 + 3, d / 2 + 4, function (x, z) { return Math.abs(Math.max(Math.abs(x), Math.abs(z)) - g.use * 0.6) + rs.rr(0, 8); });
         if (!sp) break;
         B.granary(sp.c[0], g.y, sp.c[1], Math.atan2(-sp.f[1], sp.f[0]), null, { w: w, d: d }); g.placed.push(sp.o); gn++;
+        (VC.granarySites = VC.granarySites || []).push([sp.c[0], sp.c[1]]);   /* the granary keepers' work places (42-vc-sim-places.js) */
       }
       VC.granaryCount = gn;
       /* windmills toward the deck's windy edge */

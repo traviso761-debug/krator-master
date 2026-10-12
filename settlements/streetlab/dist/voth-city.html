@@ -75,7 +75,7 @@
   <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it.</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
   <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
@@ -1761,7 +1761,7 @@ const KratorLOD = (function () {
 </script>
 <script>/* kits/catalog/krator-master-buildings-voth.js */
 /* ======================================================================
-   Voth — Building Registry (21 keys / 25 build "looks")
+   Voth — Building Registry (22 keys / 26 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -3656,6 +3656,69 @@ ASSET({
     for (let k = 0; k < 3; k++) F.box(6.0, 0.4 + k * 0.35, -5.4, 3.4, 0.35, 0.9, 0, shade(timber, 0.05 * k), 'wood');
     [[8.5, 0.2], [8.6, 1.1]].forEach(function (p) { F.blob(p[0], 0.4, p[1], 0.45, 0.6, 0, 0xe0d8c8, 'cloth'); });
     F.box(3.0, 0.4, 6.0, 1.4, 1.2, 0.5, 0, timber, 'wood');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_power_station', name: 'Power Station', culture: 'voth', family: 'industrial', types: ['industry', 'infrastructure'],
+  districts: ['industry'], wealth: [0.3, 0.6], w: 46, d: 34, h: 27.5, variants: 1,
+  /* owner, 2026-10-12: "make a larger power house": its turbine hall holds the census's stokers and engineers */
+  ix: { block: [0, -2, 40, 22], y: 0.6, h: 10, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x6e665c, 0x756c60, 0x665e55]), trim = shade(c, -0.18), dark = shade(c, -0.34);
+    const doorC = 0x1c1915, iron = 0x3a3630, copper = 0xa8683a, roofC = 0x4e4a46, glass = 0x2a3a3a, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, glass, 'stone');
+      F.box(cx + n[0] * 0.14, cy - 0.25, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.25, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+      F.box(cx + n[0] * 0.14, cy + wh, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.35, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+    }
+    /* the plinth and the turbine hall: two storeys under a clerestory, pilasters between tall windows */
+    F.box(0, 0, -4, 46, 0.6, 30, 0, dark, 'stone');
+    F.box(0, 0.6, -2, 40, 10, 22, 0, c, 'stone');
+    F.box(0, 5.3, -2, 40.3, 0.3, 22.3, 0, trim, 'stone');
+    F.box(0, 10.6, -2, 40.6, 0.45, 22.6, 0, trim, 'stone');
+    F.box(0, 11.05, -2, 30, 2.4, 6, 0, shade(c, 0.05), 'stone');
+    for (let k = -6; k <= 6; k++) F.box(k * 2.2, 11.6, 1.02, 1.2, 1.3, 0.2, 0, glass, 'stone');
+    F.pyrRoof(0, 11.05, -2, 41, 2.6, 23, 0, roofC, 'roof');
+    F.pyrRoof(0, 13.45, -2, 31, 1.6, 7, 0, shade(roofC, -0.1), 'roof');
+    for (let k = -4; k <= 4; k++) {
+      F.box(k * 4.6, 0.6, 9.1, 0.8, 10, 0.4, 0, trim, 'stone'); F.box(k * 4.6, 0.6, -13.1, 0.8, 10, 0.4, 0, trim, 'stone');
+      if (k < 4) { W(k * 4.6 + 2.3, 1.8, 9.05, 2.4, 2.8, 0); W(k * 4.6 + 2.3, 6.2, 9.05, 2.4, 3.6, 0); W(k * 4.6 + 2.3, 6.2, -13.05, 2.4, 3.6, 1); }
+    }
+    [-9, -4.5, 0, 4.5].forEach(function (pz) { W(20.05, 6.2, pz, 2.4, 3.6, 2); W(-20.05, 6.2, pz, 2.4, 3.6, 3); W(20.05, 1.8, pz, 2.4, 2.8, 2); });
+    /* the great doors on the front, the loading dock and its crane rail */
+    [-6, 6].forEach(function (px) {
+      F.box(px, 0.6, 9.05, 5.2, 6.2, 0.35, 0, dark, 'stone'); F.box(px, 0.6, 9.25, 4.4, 5.6, 0.2, 0, doorC, 'wood');
+      F.box(px, 6.8, 9.2, 5.8, 0.5, 0.8, 0, trim, 'stone');
+    });
+    F.box(0, 0, 11.5, 22, 1.3, 4.6, 0, dark, 'stone');
+    F.box(0, 1.3, 13.5, 22, 0.15, 0.6, 0, iron, 'metal');
+    [-10, 10].forEach(function (px) { F.box(px, 1.3, 11.5, 0.5, 6.5, 0.5, 0, iron, 'metal'); });
+    F.box(0, 7.8, 11.5, 21, 0.5, 0.5, 0, iron, 'metal');
+    F.box(-6, 7.8, 11.5, 1.2, 0.8, 1.0, 0, shade(iron, 0.1), 'metal'); F.rod(-6, 7.8, 11.5, -6, 3.0, 11.5, 0.05, 0x6b5a3a, 'rope');
+    /* the boiler house behind, its two chimneys, the coal bunker */
+    F.box(-11, 0.6, -16.5, 16, 13, 7, 0, shade(c, -0.06), 'stone');
+    F.box(-11, 13.6, -16.5, 16.4, 0.4, 7.4, 0, trim, 'stone');
+    [-15.5, -6.5].forEach(function (px) {
+      F.cyl(px, 0.6, -18.2, 1.5, 26, 0, shade(c, -0.12), 'stone');
+      F.cyl(px, 24.0, -18.2, 1.75, 0.8, 0, trim, 'stone'); F.cyl(px, 26.6, -18.2, 1.2, 0.3, 0, iron, 'metal');
+    });
+    [-16, -11, -6].forEach(function (px) { W(px, 6.5, -20.05, 1.8, 3.0, 1); });
+    F.box(-11, 0.6, -20.6, 8, 2.4, 1.6, 0, iron, 'metal');
+    /* the fumarole vent house and the copper steam mains into the hall */
+    F.box(12, 0.6, -16.5, 9, 6, 7, 0, shade(c, 0.04), 'stone');
+    F.pyrRoof(12, 6.6, -16.5, 9.6, 2.2, 7.6, 0, roofC, 'roof');
+    [9.5, 14.5].forEach(function (px) { F.cyl(px, 0.6, -20.4, 0.55, 9.5, 0, copper, 'metal'); F.cyl(px, 10.1, -20.4, 0.75, 0.5, 0, shade(copper, -0.15), 'metal'); });
+    F.box(12, 4.2, -13.2, 0.9, 0.9, 1.0, 0, copper, 'metal');
+    /* the cooling tanks on the flank, the conduit masts out front with their copper insulators */
+    [[-21, -4], [-21, 3]].forEach(function (p) { F.cyl(p[0], 0.6, p[1], 2.4, 5.5, 0, shade(iron, 0.15), 'metal'); F.cyl(p[0], 6.1, p[1], 2.5, 0.3, 0, iron, 'metal'); });
+    [-18, 18].forEach(function (px) {
+      F.box(px, 0, 12.5, 0.6, 9.5, 0.6, 0, iron, 'metal'); F.box(px, 9.2, 12.5, 4.2, 0.3, 0.4, 0, iron, 'metal');
+      [-1.6, 0, 1.6].forEach(function (dx) { F.cyl(px + dx, 9.5, 12.5, 0.18, 0.6, 0, copper, 'metal'); });
+    });
+    [-3, 3].forEach(function (px) { F.rod(px, 6.6, 9.4, px, 6.6, 10.2, 0.06, iron, 'metal'); F.ball(px, 6.3, 10.2, 0.3, glow, 'glow'); });
   }
 });
 
@@ -47514,7 +47577,8 @@ var TUNE = {
      reaches the industry district, the guilds, the clan compounds and wealthy houses within `reach` of a power house, and
      the Palace and Temple interiors, and little else. Everywhere else is lit by lanterns and torches: a fancy lantern
      post in the wealthy streets and on the cantons, a plain lantern post elsewhere, torches in the alleys and poor quarters. */
-  power: { houses: [['voth_generator', 0], ['voth_generator', 1]], gap: 90, look: 60, reach: 650 },
+  power: { houses: [['voth_generator', 0], ['voth_bldg_power_station', 0]],   /* the small fumarole house (voth_generator v1) gave way to the power station (owner, 2026-10-12: "make a larger power house") */
+           gap: 90, look: 60, reach: 650 },
   light: {
     every: { avenue: 30, main: 34, side: 40, alley: 26 },   /* a socket every this many metres of street, sides alternating */
     /* the evening (core/atmos glows): each lamp's on and off hours, drawn in these windows (off past 24 is next morning):
@@ -47591,33 +47655,34 @@ var TUNE = {
           farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
           shop:       [['shop', 'store'], ['living', 'chamber']],
           craft:      [['workshop', 'store'], ['living', 'chamber']],
-          tavern:     [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          tavern:     [['alehouse', 'kitchen'], ['chamber', 'chamber']],
           warehouse:  [['warehouse', 'office'], ['warehouse']],
-          industrial: [['workshop', 'store'], ['store']],
+          industrial: [['factory', 'store'], ['factory']],
           civic:      [['hall', 'office'], ['office', 'store']],
-          landmark:   [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']]
+          landmark:   [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']]
         },
         /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
         single: {
           poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
           clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
-          tavern: ['tavern', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
+          tavern: ['alehouse', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
-          voth_barracks: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
-          voth_garrison: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_school: [['school', 'office'], ['library', 'study']],
-          voth_bldg_guild_hall: [['guildhall', 'office'], ['office', 'store']],
-          voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
-          voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
-          voth_generator: [['workshop', 'store']],
+          voth_bldg_guild_hall: [['guildhall', 'counting'], ['counting', 'store']],
+          voth_city_customs_house: [['counting', 'warehouse'], ['counting', 'store']],
+          voth_tavern_b: [['alehouse', 'kitchen'], ['chamber', 'chamber']],
+          voth_generator: [['enginehall', 'store'], ['enginehall']],
+          voth_bldg_power_station: [['enginehall', 'enginehall', 'store'], ['enginehall', 'enginehall']],
           voth_mustering_grounds: null,
           /* the citizen simulation's buildings (kits/catalog/krator-master-buildings-voth.js, each with its own `ix` shell) */
-          voth_bldg_watchhouse: [['barracks', 'armoury'], ['office', 'dormitory']],
-          voth_bldg_caravanserai: [['tavern', 'kitchen', 'store'], ['chamber', 'chamber', 'chamber', 'chamber']],
-          voth_bldg_coastguard_berth: [['barracks', 'armoury', 'store'], ['dormitory', 'office']],
+          voth_bldg_watchhouse: [['guardroom', 'armoury'], ['guardroom', 'dormitory']],
+          voth_bldg_caravanserai: [['alehouse', 'kitchen', 'stable'], ['chamber', 'chamber', 'chamber', 'chamber']],
+          voth_bldg_coastguard_berth: [['guardroom', 'armoury', 'store'], ['guardroom', 'office']],
           voth_bldg_weaver: [['weaving', 'store'], ['living', 'chamber']],
           voth_bldg_tannery: [['tanyard', 'store']],
           voth_bldg_brewery: [['brewhouse', 'store', 'tavern'], ['store', 'office']],
@@ -47632,7 +47697,7 @@ var TUNE = {
            a ward's cots, a shrine's altar, a tomb's sarcophagus) */
         posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'],
         postsIn: { store: ['storage', 'stack'], warehouse: ['storage', 'stack'], ward: ['bed', 'table'], shrine: ['altar', 'shrine'], tomb: ['tomb'],
-                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'] },
+                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'], alehouse: ['table'], stable: ['pen', 'rack'], drillhall: ['weapon'], guardroom: ['weapon', 'table'] },
         /* the buildings off the lots (VC.ixSites): programme per storey, storeys (else from the height), class, residents (a
            TUNE.census.live key) and kind of work [label, TUNE.census.jobs or .live key] as the census counts them. The chinampa
            huts' growers are not housed by the census (it counts their jobs only): the huts' beds are reported as room to spare */
@@ -47643,11 +47708,12 @@ var TUNE = {
           shrine:     { prog: [['shrine']], storeys: 1, cls: 'shrine', job: ['shrine keepers', 'shrine'] },
           lighthouse: { prog: [['store', 'office'], ['store'], ['study'], ['store']], cls: 'lighthouse', job: ['lighthouse keepers', 'lighthouse'] },
           keeper:     { prog: [['cottage']], storeys: 1, cls: 'lighthouse' },
-          funerary:   { prog: [['shrine', 'tomb', 'office', 'store']], storeys: 1, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
+          funerary:   { prog: [['shrine', 'tomb', 'store'], ['office', 'tomb', 'shrine']], storeys: 2, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
           hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
         },
         dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
+               'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'stable'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
   /* phase B of SIM-ROADMAP.md (42-vc-sim-places.js): the buildings the simulation needs placed, the wells, every building
@@ -47656,8 +47722,9 @@ var TUNE = {
        `from` classes whose plot holds its model, spread over the city (the farthest from those already taken first);
        `cls` is the class it becomes. The watchhouses take a house near the east, west and south of the city (`at`, a
        fraction of the way from the city's middle to its edge); the central one is the Fortress's armoury. The
-       caravanserai stands by `gate` within `reach` m, on ground rising no more than `slope` across it and within `climb` m
-       of the gate's height (outside the wall where there is such ground, else inside it in place of houses); the coast-guard berth on the water `off` m from the
+       caravanserai stands at step 3 (before the streets) on the free ground nearest the River Gate's site marker within
+       `reach` m: `pad` m round it clear, rising no more than `slope` m, `wallClear` m inside the wall's line, fronting an
+       avenue within `front` m (owner, 2026-10-12: "closer to the river gate, at post-avenue stage"); the coast-guard berth on the water `off` m from the
        Fortress's apron, `clear` radians from its bridges and docks, its deck `deckY` over the sea on a stone footing.
      - wells: on every plaza and market square, every `street` m along the residential streets (`side` m off the kerb, at
        least `gap` m from another well), and one in the yard of every manor and clan compound.
@@ -47677,7 +47744,7 @@ var TUNE = {
         { key: 'voth_bldg_tannery', n: 3, from: ['industrial', 'warehouse'], cls: 'industrial', plural: 'tanneries' }
       ],
       watch: { key: 'voth_bldg_watchhouse', at: 0.55, dirs: { east: [1, 0], west: [-1, 0], south: [0, 1] }, from: ['middle', 'poor', 'shop', 'craft'] },
-      caravanserai: { key: 'voth_bldg_caravanserai', gate: 'SpiritGate', reach: 420, pad: 3, slope: 6, climb: 12 },
+      caravanserai: { key: 'voth_bldg_caravanserai', gate: 'River Gate', marker: 'H', reach: 500, pad: 3, slope: 6, front: 30, wallClear: 40 },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -47691,10 +47758,22 @@ var TUNE = {
     },
     hours: { home: null, well: null, shop: [7, 19], craft: [6, 19], tavern: [10, 2], warehouse: [6, 18], industrial: [6, 18], civic: [7, 18], market: [6, 19],
              shrine: [5, 22], chapel: [4, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
-    posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5 },
+    posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5, pen: 1, weapon: 1 },
+    /* a piece's posts in a room of a kind, over `posts` (a tavern's table is half a server, a drill hall's dummy one soldier) */
+    postsIn: { alehouse: { table: 0.5 }, guardroom: { table: 1 }, stable: { pen: 1, rack: 0.5 } },
     target: 0.9,
     /* the soldiers' posts on the wall: at each standing tower and each gate */
-    wallPost: { tower: 4, gate: 12 }
+    wallPost: { tower: 4, gate: 12 },
+    /* the mustering ground's drill: a soldier at drill for every so many m2 */
+    musterPerPost: 10,
+    /* session 2: capacity by size, the metres of a piece's width one person takes (a workbench of 4.4 m takes two), seats
+       round a table (metres of its edge a sitter takes), where people stand (a step before a piece; the kinds whose
+       spots are listed, the work ones first; at most so many a place), an outdoor place's reach by its kind */
+    postWidth: { counter: 1.6, workstation: 2.2, stall: 1.8, loom: 2.4, desk: 1.6, table: 1.4 },
+    seatWidth: { table: 0.8, bench: 0.6, seating: 0.6 },
+    spotStep: 0.45, spotsMax: 48,
+    spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
+    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20 }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
@@ -51499,7 +51578,7 @@ VC.deckFill = function (dk, mix, rs, n) {
 };
 VC.cantonDecks = function () {
   var B = VOTH, rs = SL.stream(2003), K = TUNE.decks, log = [];
-  VC.decks = {};
+  VC.decks = {}; VC.granarySites = [];
   VC.DECKS.forEach(function (n) { if (B.CIDX[n]) VC.decks[n] = VC.deckOf(n); });
   VC.capture('decks', 2, function () {
     /* Granary: Voth's own granary() (65k-granary-mills-ranch.js, built there but never placed), a yard of them */
@@ -51510,6 +51589,7 @@ VC.cantonDecks = function () {
         var w = rs.rr(12, 15), d = w * rs.rr(0.75, 0.85), sp = VC.deckSpot(g, w / 2 + 3, d / 2 + 4, function (x, z) { return Math.abs(Math.max(Math.abs(x), Math.abs(z)) - g.use * 0.6) + rs.rr(0, 8); });
         if (!sp) break;
         B.granary(sp.c[0], g.y, sp.c[1], Math.atan2(-sp.f[1], sp.f[0]), null, { w: w, d: d }); g.placed.push(sp.o); gn++;
+        (VC.granarySites = VC.granarySites || []).push([sp.c[0], sp.c[1]]);   /* the granary keepers' work places (42-vc-sim-places.js) */
       }
       VC.granaryCount = gn;
       /* windmills toward the deck's windy edge */
@@ -53298,7 +53378,7 @@ SL.LAST = 14;
 SL.TRANSIT = 14;
 SL.layout = function () {
   SL.newPlan(); SL.F = null; SL._items = {}; SL.HASH = new Map(); PLAN.stats.ms = [];
-  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) VC.applyEdits(3); PLAN.stats.ms[k] = Date.now() - t; }
+  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); }   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
   VC.census();                     /* 36-vc-census.js: people and workplaces */
@@ -54387,7 +54467,21 @@ VC.ixPrograms = function () {
   P.butchery = { require: [{ need: 'block', types: ['table', 'counter'], n: 1 }, { need: 'meat', types: ['food'], n: 2 }],
     optional: [{ types: ['storage', 'vessel'], roles: IX.FOOD_ROLES, max: 3 }, { types: ['rack'], max: 1 }, { types: ['food'], max: 4 }, LAMP], extra: 4 };
   A.brewhouse = ['workshop', 'store', 'tavern', 'kitchen']; A.weaving = ['workshop', 'hall']; A.tanyard = ['workshop', 'store']; A.butchery = ['kitchen', 'store', 'shop'];
-  ['brewhouse', 'weaving', 'tanyard', 'butchery'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
+  /* the work rooms of the kinds of work the 90% rule found short (owner, 2026-10-12: "add more work furniture"): dense
+     floors of their work pieces, a piece every `extra` m2 (the kit's budget), used only by those buildings' programmes
+     (TUNE.ix.programmes, byKey), so the homes, the shops and the cantons' rooms keep theirs */
+  var SEATS = IX.SEAT_TYPES || ['chair', 'stool', 'bench', 'seating'];
+  P.factory = { require: [{ need: 'benches', types: ['workstation', 'loom'], n: 4 }], optional: [{ types: ['workstation'], max: 10 }, { types: ['loom'], max: 3 }, { types: ['rack', 'storage', 'stack'], max: 4 }, { types: ['bench', 'stool'], max: 2 }, LAMP], extra: 3 };
+  P.enginehall = { require: [{ need: 'works', types: ['workstation', 'stove'], n: 4 }], optional: [{ types: ['workstation'], max: 20 }, { types: ['stove'], max: 3 }, { types: ['rack', 'storage', 'stack'], max: 4 }, LAMP], extra: 3 };
+  P.drillhall = { require: [{ need: 'dummies', types: ['tool'], n: 3 }, { need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['tool'], max: 10 }, { types: ['rack', 'weapon'], max: 6 }, { types: ['bench'], max: 2 }], extra: 4 };
+  P.guardroom = { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'racks', types: ['rack', 'weapon'], n: 2 }, { need: 'table', types: ['table'], n: 1 }],
+    optional: [{ types: ['rack', 'weapon'], max: 6 }, { types: ['desk'], max: 2 }, { types: ['table'], max: 1 }, { types: SEATS, max: 6 }, LAMP], extra: 4 };
+  P.alehouse = { require: [{ need: 'bar', types: ['counter'], n: 1 }, { need: 'tables', types: ['table'], n: 2 }, { need: 'seats', types: SEATS, n: 4 }],
+    optional: [{ types: ['counter'], max: 2 }, { types: ['table'], max: 8 }, { types: SEATS, max: 16 }, { types: ['stove'], max: 1 }, { types: ['storage'], roles: ['barrel'], max: 3 }, { types: ['lamp', 'brazier'], max: 2 }], extra: 4 };
+  P.counting = { require: [{ need: 'desks', types: ['desk'], n: 3 }], optional: [{ types: ['desk'], max: 8 }, { types: ['shelf', 'storage'], max: 3 }, { types: ['chair', 'stool'], max: 8 }, LAMP], extra: 3 };
+  A.factory = ['workshop', 'smithy']; A.enginehall = ['workshop', 'smithy']; A.drillhall = ['training', 'barracks', 'yard', 'court']; A.guardroom = ['barracks', 'office', 'study'];
+  A.alehouse = ['tavern', 'hall']; A.counting = ['office', 'study', 'library'];
+  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 
@@ -54688,8 +54782,10 @@ VC.ixReport = function () {
     /* the job table: a row per kind of work, a column per furniture kind (its count and where) */
     if (u.job) {
       var J = R.jobs[u.job] || (R.jobs[u.job] = { jobs: 0, units: 0, posts: 0, kinds: {}, where: {} });
-      J.jobs += u.jobs; J.units++; J.posts += u.posts; J.where[u.district] = (J.where[u.district] || 0) + 1;
-      var w = (ty.count && ty.count.work) || {};
+      /* the posts as phase B counts them (42-vc-sim-places.js VC.simPosts: by piece kind and size), else one a piece */
+      var SP = VC.simPosts && ty.pieces ? VC.simPosts(ty.pieces) : null;
+      J.jobs += u.jobs; J.units++; J.posts += SP ? SP.n : u.posts; J.where[u.district] = (J.where[u.district] || 0) + 1;
+      var w = SP ? SP.by : (ty.count && ty.count.work) || {};
       Object.keys(w).forEach(function (f) { var c = J.kinds[f] || (J.kinds[f] = { n: 0, rooms: {} }); c.n += w[f]; });
       (ty.pieces || []).forEach(function (p) { var c = J.kinds[p.type]; if (c && TUNE.ix.work.indexOf(p.kind) >= 0) c.rooms[p.kind] = 1; });
     }
@@ -54698,7 +54794,7 @@ VC.ixReport = function () {
     var ty = VC.IX.types[k], s = ty.shell ? ty.shell.src : 'none';
     R.shells[s] = (R.shells[s] || 0) + 1; R.dropped += ty.dropped || 0;
   });
-  Object.keys(R.jobs).forEach(function (k) { var J = R.jobs[k]; J.jobs = Math.round(J.jobs); J.target = Math.ceil(J.jobs * 0.9); J.gap = J.posts - J.target; });
+  Object.keys(R.jobs).forEach(function (k) { var J = R.jobs[k]; J.jobs = Math.round(J.jobs); J.posts = Math.round(J.posts); Object.keys(J.kinds).forEach(function (f) { J.kinds[f].n = Math.round(J.kinds[f].n * 10) / 10; }); J.target = Math.ceil(J.jobs * 0.9); J.gap = J.posts - J.target; });
   /* the shell list: what each type was read as, so the owner can name the overrides (TUNE.ix.shells) */
   R.typeList = Object.keys(VC.IX.types).sort().map(function (k) {
     var ty = VC.IX.types[k], sh = ty.shell || {};
@@ -54734,7 +54830,7 @@ VC.IX.export = function () {
         taken. A converted lot keeps its plot; its census entry becomes the new building's (TUNE.census.byKey);
       - the east, west and south watchhouses take a house in those parts of the city; the central watchhouse is the
         Fortress's armoury (its interior, 40-vc-interiors.js);
-      - the caravanserai stands on free, level, dry ground by the land gate (VC.placedLot, as an owner's placed building);
+      - the caravanserai stands by the River Gate, placed at step 3 (VC.simCaravanserai), so the streets work round it;
       - the coast-guard berth stands on the water off the Fortress's apron, clear of every bridge, causeway and pier, on
         a stone footing (a prim group the host draws).
    2. THE WELLS (VC.wells, after the park furniture): voth_well on every plaza and market square, along the residential
@@ -54743,7 +54839,10 @@ VC.IX.export = function () {
    3. THE PLACES (VC.simPlaces, after the interiors): every building with an interior (VC.IX units), every canton
       room, every well, park, market and burial ground, and the outdoor work (fields, piers, mines...) becomes a
       SIM.place with its activities (its furniture read through TUNE.sim.furnAct over core/simulation's SIM.FURN_ACT),
-      its opening hours, its pull for free time (TUNE.sim.pull), and its work posts with their kind of work.
+      its opening hours, its pull for free time (TUNE.sim.pull), and its work posts with their kind of work. Session 2:
+      a piece's capacity by its size (a long counter takes two), seats round a table, the place's `spots` (where people
+      stand: before its work pieces, seats, tables and beds), an open place's reach `r` and `wander`, its `workplaces`
+      (the census's, for the density overlay's third mode).
    4. THE 90% RULE (VC.simWorkAudit): for every kind of work the census counts, the posts against 90% of its workplaces,
       a short kind named with the buildings that have the most floor to spare for more posts; and the job table.
    Every choice here is ordered by the plan's records; nothing draws a random number. */
@@ -54796,7 +54895,7 @@ VC.simBuildings = function () {
   VC.SIMB.placed = { trades: {}, watch: [], caravanserai: null, berth: null };
   /* the trades, spread: each next lot the farthest from those this trade holds (the first, the nearest the middle) */
   P.trades.forEach(function (tr) {
-    var cand = PLAN.lots.filter(function (L) { return L.died == null && !L.deck && tr.from.indexOf(L.cls) >= 0 && !taken[L.id] && (!L.country || /village|suburb/.test(L.country)) && VC.simFit(L, tr.key); });
+    var cand = PLAN.lots.filter(function (L) { return L.died == null && !L.deck && !L.power && !L.role && tr.from.indexOf(L.cls) >= 0 && !taken[L.id] && (!L.country || /village|suburb/.test(L.country)) && VC.simFit(L, tr.key); });   /* never a power house, the garrison's, an armoury */
     var got = [];
     for (var k = 0; k < tr.n && cand.length; k++) {
       var best = null, bs = -Infinity;
@@ -54817,41 +54916,12 @@ VC.simBuildings = function () {
     var d = W.dirs[name], ext = C.lots.map(function (L) { return (L.x - C.c[0]) * d[0] + (L.z - C.c[1]) * d[1]; }).sort(function (a, b) { return a - b; });
     var reach = ext[Math.floor(ext.length * 0.97)] || 0, t = [C.c[0] + d[0] * reach * W.at, C.c[1] + d[1] * reach * W.at];
     var best = null, bd = Infinity;
-    C.lots.forEach(function (L) { if (taken[L.id] || W.from.indexOf(L.cls) < 0) return; var dd = Math.hypot(L.x - t[0], L.z - t[1]); if (dd < bd && VC.simFit(L, W.key)) { bd = dd; best = L; } });
+    C.lots.forEach(function (L) { if (taken[L.id] || L.role || L.power || W.from.indexOf(L.cls) < 0) return; var dd = Math.hypot(L.x - t[0], L.z - t[1]); if (dd < bd && VC.simFit(L, W.key)) { bd = dd; best = L; } });
     if (best && VC.simConvert(best, W.key, 'civic', 'watchhouse')) { taken[best.id] = 1; best.watch = name; VC.SIMB.placed.watch.push({ name: name, lot: best.id }); }
   });
   log.push(VC.SIMB.placed.watch.length + ' watchhouses (' + VC.SIMB.placed.watch.map(function (w) { return w.name; }).join(', ') + '; the central one is the Fortress’s armoury)');
-  /* the caravanserai: the nearest free, level, dry ground to the land gate */
-  var CV = P.caravanserai, G = (VC.wall && VC.wall.gates || []).filter(function (g) { return g.name === CV.gate; })[0], D = SL.dims(CV.key, 0);
-  if (G && D) {
-    /* outside the gate on dry, level ground off the roads and fields near the gate's own height (33-vc-country.js's
-       test); else just inside it, on level ground the street method built on: it takes the place of the houses it
-       overlaps (as an owner's placed building does) and may close an alley, but never a street, a park, a plaza or a
-       market. The nearest wins. (2026-10-12: no gate has level ground outside within 700 m; the wall runs on the hills) */
-    var found = null, gy = baseH(G.x, G.z), cells = [OCC.FREE, OCC.LOT, OCC.ALLEY];   /* a block's alleys may close at its walls; a street never */
-    for (var r = 30; r <= CV.reach && !found; r += 10) for (var a = 0; a < 48 && !found; a++) {
-      var ang = a / 48 * Math.PI * 2, p = [G.x + Math.cos(ang) * r, G.z + Math.sin(ang) * r], f = V.norm([G.x - p[0], G.z - p[1]]);
-      var o = obb(p, V.perp(f), D.w / 2 + CV.pad, D.d / 2 + CV.pad), rel = VC.relief(o);
-      if (rel.hi - rel.lo > CV.slope || rel.lo < 1 || Math.abs((rel.lo + rel.hi) / 2 - gy) > CV.climb) continue;
-      var ok = VC.countryOk(o, { cityPad: 0, road: 4 }), inside = false;
-      if (!ok) {
-        ok = true; inside = true;
-        for (var i = -3; i <= 3 && ok; i++) for (var j = -3; j <= 3 && ok; j++) {
-          var q = V.add(o.c, V.add(V.mul(o.u, o.hw * i / 3), V.mul(o.v, o.hd * j / 3)));
-          if (cells.indexOf(SL.R.at(q[0], q[1])) < 0 || VC.roleAt(q) === 'park' || VC.roleAt(q) === 'plaza' || VC.roleAt(q) === 'market') ok = false;
-        }
-        if (ok && PLAN.lots.some(function (L) { return taken[L.id] && L.died == null && SL.pen(o, L.bo) > 0; })) ok = false;   /* never a trade or watchhouse just placed */
-      }
-      if (ok) found = { p: p, ry: Math.atan2(f[0], f[1]), inside: inside, r: r };
-    }
-    if (found) {
-      var before = PLAN.lots.filter(function (L) { return L.died == null; }).length;
-      var Lc = VC.placedLot({ key: CV.key, v: 0, x: found.p[0], z: found.p[1], ry: found.ry }, 13);
-      if (Lc) { Lc.cls = 'tavern'; Lc.role = 'caravanserai'; Lc.placed = false; VC.SIMB.placed.caravanserai = Lc.id;
-        var gone = before + 1 - PLAN.lots.filter(function (L) { return L.died == null; }).length;
-        log.push('the caravanserai ' + Math.round(found.r) + ' m from the ' + CV.gate + (found.inside ? ', inside the wall' + (gone ? ', in place of ' + gone + ' houses' : '') : ', outside the wall')); }
-    } else log.push('no ground for the caravanserai by the ' + CV.gate);
-  }
+  /* the caravanserai stood at step 3 (VC.simCaravanserai) */
+  if (VC.SIMB.cv) { VC.SIMB.placed.caravanserai = VC.SIMB.cv.lot; log.push(VC.SIMB.cv.log); } else log.push('no caravanserai (' + (VC.SIMB.cvWhy || 'not placed') + ')');
   /* the coast-guard berth: on the water off the Fortress's apron, the side nearest the city first */
   var BT = P.berth, M = CANT.by[BT.canton], DB = SL.dims(BT.key, 0);
   if (M && DB) {
@@ -54884,6 +54954,48 @@ VC.simBuildings = function () {
   VC.SIMB.log = log;
   SL.note(13, 'the citizens’ buildings: ' + log.join('; '));
   return log;
+};
+
+/* the caravanserai (owner, 2026-10-12: "closer to the river gate, at post-avenue stage"): at step 3, once the avenues are
+   down and before any street or lot, as the House of Healing is (30-vc-site.js VC.placeHealing): the free spot nearest
+   the River Gate's marker where its whole footprint, a margin round it, is open dry ground (no avenue, causeway, landmark
+   or canton), rising no more than `slope` across it, `wallClear` m inside the wall's line (built at step 5), fronting an
+   avenue within `front` m of its wall; its gate turned to that avenue. It joins the plan as an owner's placed building
+   does (VC.placedLot: HARD ground), so the streets and lots of steps 6-12 work round it. */
+VC.simChainD = function (p, C) { var d = Infinity; for (var i = 1; i < C.length; i++) d = Math.min(d, segDist(p, C[i - 1], C[i])); return d; };   /* an open polyline */
+VC.simCaravanserai = function (step) {
+  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i')), D = SL.dims(CV.key, 0), R = SL.R;
+  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
+  if (!M || !D) { VC.SIMB.cvWhy = M ? 'no kit model' : 'no ' + CV.marker + ' marker'; return null; }
+  var hw = D.w / 2 + CV.pad, hd = D.d / 2 + CV.pad, best = null;
+  var footOk = function (c, f) {
+    var u = V.perp(f), lo = Infinity, hi = -Infinity;
+    for (var a = -hw; a <= hw + 0.01; a += hw / 4) for (var b = -hd; b <= hd + 0.01; b += hd / 4) {
+      var p = V.add(c, V.add(V.mul(u, a), V.mul(f, b))), g = baseH(p[0], p[1]); if (g < 1) return false;
+      lo = Math.min(lo, g); hi = Math.max(hi, g);
+      if (R.idx(p[0], p[1]) < 0) return false;
+      var o = R.at(p[0], p[1]); if (o !== OCC.FREE && o !== OCC.RESERVE) return false;
+      if (VC.inCanton(p, 4)) return false;
+      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < CV.wallClear) return false;
+    }
+    return hi - lo <= CV.slope;
+  };
+  for (var r = 0; r <= CV.reach && !best; r += 8) {
+    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
+    for (var i = 0; i < n && !best; i++) {
+      var th = i / n * 2 * Math.PI, c = [M.x + Math.cos(th) * r, M.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
+      if (!q || q.d > hd + CV.front + q.way.w / 2) continue;
+      var f = V.norm(V.sub(q.p, c));
+      if (footOk(c, f)) best = { c: c, f: f, q: q, r: r };
+    }
+  }
+  if (!best) { VC.SIMB.cvWhy = 'no free ground within ' + CV.reach + ' m of the ' + CV.gate + '\u2019s marker'; return null; }
+  var L = VC.placedLot({ key: CV.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
+  if (!L) { VC.SIMB.cvWhy = 'the kit model would not place'; return null; }
+  L.cls = 'tavern'; L.role = 'caravanserai'; L.placed = false;
+  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(best.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (best.q.way.tag || 'an avenue') + ')' };
+  SL.note(step, VC.SIMB.cv.log);
+  return L;
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
@@ -54950,9 +55062,20 @@ VC.simPosts = function (pieces) {
   pieces.forEach(function (p) {
     if (T.work.indexOf(p.kind) < 0 || p.anchor === 'surface') return;
     if (T.posts.indexOf(p.type) < 0 && (T.postsIn[p.kind] || []).indexOf(p.type) < 0) return;
-    var c = PC[p.type] == null ? 1 : PC[p.type]; n += c; by[p.type] = (by[p.type] || 0) + c;
+    var PK = TUNE.sim.postsIn[p.kind], c = PK && PK[p.type] != null ? PK[p.type] : PC[p.type] == null ? 1 : PC[p.type];
+    c *= VC.simSize(p, TUNE.sim.postWidth[p.type]); n += c; by[p.type] = (by[p.type] || 0) + c;
   });
   return { n: n, by: by };
+};
+/* session 2: a piece's capacity by its size (TUNE.sim.postWidth, seatWidth: the metres of its width one person takes): a
+   long counter or workbench takes more than one; 1 when the kind has no width rule */
+VC.simDims = function (p) { var A = typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]; return A ? entryDims(A, p.v | 0) : { w: 1, d: 1, h: 1 }; };
+VC.simSize = function (p, per) { if (!per || !p.key) return 1; return Math.max(1, Math.floor(VC.simDims(p).w / per + 0.25)); };
+/* where people stand at a piece (in the building's frame): before its front (+z of its own frame), half its depth and a
+   step out; at a table or a bed, along its side */
+VC.simStand = function (p) {
+  var D = VC.simDims(p), out = D.d / 2 + TUNE.sim.spotStep, c = Math.cos(p.ry || 0), s = Math.sin(p.ry || 0);
+  return { x: p.x + s * out, y: p.y, z: p.z + c * out };
 };
 VC.simActs = function () {
   var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL'].indexOf(a) >= 0 }); };
@@ -54975,7 +55098,9 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
-    var pcs = (ty.pieces || []).map(function (p) { return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor }; });
+    var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
+      var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
+      return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -54984,8 +55109,13 @@ VC.simPlaces = function () {
     if (u.lot >= 0 && PLAN.lots[u.lot] && PLAN.lots[u.lot].well) acts.DRINK = (acts.DRINK || 0) + 4;   /* the courtyard's own well */
     var P = u.job ? VC.simPosts(ty.pieces || []) : { n: 0 };
     var door = ty.B && ty.B.doors[0] ? VC.ixWorldXZ(u, ty.B.doors[0].at) : [u.x, u.z];
+    /* the spots: where people stand, at the work pieces first, then the seats, tables and beds (TUNE.sim.spotsMax) */
+    var spots = [], R2 = function (v) { return Math.round(v * 100) / 100; }, SP = T.spotTypes;
+    (ty.pieces || []).filter(function (p) { return p.anchor !== 'surface' && SP.indexOf(p.type) >= 0; })
+      .sort(function (a, b) { return SP.indexOf(a.type) - SP.indexOf(b.type); }).slice(0, T.spotsMax)
+      .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
-          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, tags: [u.cls, u.district], unit: u.i });
+          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i });
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -54994,7 +55124,7 @@ VC.simPlaces = function () {
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
-            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, tags: ['canton', cn] });
+            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn] });
     });
   });
   /* the Fortress's armoury: the central watchhouse (gear drawn at the shift's start) */
@@ -55019,12 +55149,18 @@ VC.simPlaces = function () {
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }
     if (cnt.stall) { acts.SELL = cnt.stall; acts.BUY = cnt.stall * 4; }
     if (!Object.keys(acts).length) acts.RELAX = Math.max(4, m);
-    reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind),
-          job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
+    /* its spots: before its benches, stalls, shrines and tombs (its art pieces), and its reach: the furniture's spread */
+    var spots = [], rr = 0;
+    D.art.forEach(function (a) { rr = Math.max(rr, Math.hypot(a.x - cx / m, a.z - cz / m)); });
+    D.art.filter(function (a) { return /stall|bench|shrine|altar|well|tomb|sarcoph/.test(a.key); }).slice(0, T.spotsMax).forEach(function (a) {
+      var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); });
+    reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind), spots: spots, r: Math.round(rr), wander: Math.min(30, Math.round(rr / 3)),
+          job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, workplaces: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
-  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: perRec(q, i), tags: ['outdoor'] }); }); };
+  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i); reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: n, workplaces: n,
+    r: q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, wander: T.outdoorR[kind] || 12, tags: ['outdoor'] }); }); };
   var fields = (PLAN.fields || []).filter(function (F) { return F.kind !== 'garden'; });
   outdoor('farmhands and ploughmen', fields.map(function (F) { return [F.bo.c[0], F.bo.c[1], 4 * F.bo.hw * F.bo.hd / 1e4]; }), function (q) { return q[2] * K.jobs.perHectare; }, 'field');
   var P0 = VOTH.PIERS || [], mid = function (q) { return [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2]; };
@@ -55036,6 +55172,7 @@ VC.simPlaces = function () {
   outdoor('quarrymen and masons', (IND.quarries || []).map(at), function () { return K.jobs.quarry; }, 'quarry');
   outdoor('mushroom growers', (IND.mush || []).map(at), function () { return K.jobs.mushFarm; }, 'mushfarm');
   outdoor('granary keepers and millers', (IND.watermills || []).map(at).concat((VC.windmills || []).map(at)), function (q, i) { return i < (IND.watermills || []).length ? K.jobs.watermill : K.jobs.mill; }, 'mill');
+  outdoor('granary keepers and millers', (VC.granarySites || []).map(at), function () { return K.jobs.granary; }, 'granary');   /* the Granary deck's granaries (33-vc-country.js) */
   /* the rest of the census's outdoor kinds of work: one place each, at the work's middle (the chinampas, the orchards, the
      ranches, the transit, the walls) */
   var C = PLAN.census && PLAN.census.byJob || {}, cc = VC.simCity().c;
@@ -55043,16 +55180,18 @@ VC.simPlaces = function () {
   var WN = (VC.wall && VC.wall.nodes || []).filter(function (nd) { return nd.kind === 'tower' && !nd.skip && nd.health > 0; });
   outdoor('soldiers', WN.map(function (nd) { return [nd.x, nd.z]; }), function () { return T.wallPost.tower; }, 'tower');
   outdoor('soldiers', (VC.wall && VC.wall.gates || []).map(function (g) { return [g.x, g.z]; }), function () { return T.wallPost.gate; }, 'gate');
+  /* the mustering ground: the soldiers' drill yard, a post every TUNE.sim.musterPerPost m2 of its footprint */
+  PLAN.lots.forEach(function (L) { if (L.died == null && L.role === 'muster') reg({ id: 'work.muster.' + L.id, kind: 'drill', name: 'Mustering ground', x: L.x, z: L.z, y: L.y, activities: { TRAIN: Math.round(L.w * L.d / T.musterPerPost) }, open: [5, 20], job: 'soldiers', posts: Math.round(L.w * L.d / T.musterPerPost), tags: ['outdoor', 'drill'] }); });
   /* the Palace and the Temple wait for their interiors (the owner's references): their staffs at the canton, as the census counts them */
   Object.keys(K.cantons).forEach(function (cn) {
     if (VC.INT && VC.INT.cantons && VC.INT.cantons[cn]) return;
     var M = CANT.by[cn]; if (!M) return;
-    reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], tags: ['canton', cn, 'no interior'] });
+    reg({ id: 'work.canton.' + cn, kind: 'canton', name: cn + ' canton (no interior yet)', x: M.x, z: M.z, y: M.top ? M.top.y : 0, activities: {}, open: [6, 20], job: K.cantons[cn][1], posts: K.cantons[cn][0], workplaces: K.cantons[cn][0], r: M.r, tags: ['canton', cn, 'no interior'] });
   });
   ['chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen', 'elephant bug handlers and station hands', 'envoys and embassy staff', 'healers and nurses',
    'monks and lay brothers (chapel, fields, coops)'].forEach(function (job) {
     var have = posts[job] || 0, want = C[job] ? C[job].n : 0; if (want <= have) return;
-    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, tags: ['outdoor', 'aggregate'] });
+    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: want - have, workplaces: want - have, tags: ['outdoor', 'aggregate'] });
   });
   VC.SIMB.places = n; VC.SIMB.posts = posts;
   return n;
@@ -57053,6 +57192,7 @@ VC.ixPaint = function () {
   var mode = VC.IXD.density; if (!mode || !VC.IX.done) return;
   var cv = VIEW.ovCanvas, S = cv.width, E = VIEW.ext, k = S / (2 * E), ctx = cv.getContext('2d');
   var X = function (x) { return (x + E) * k; }, Z = function (z) { return (z + E) * k; };
+  if (mode === 3) return VC.simPaintWork(ctx, X, Z, k);
   var D = VC.ixDensityGrid(mode);
   Object.keys(D.G).forEach(function (key) {
     var ij = key.split(','), v = D.G[key], t = v >= D.mean ? (v - D.mean) / (D.hi - D.mean) : -(D.mean - v) / D.mean;
@@ -57076,7 +57216,7 @@ VC.ixPaint = function () {
   var R = VC.IX.report, lg = $('ixlegend');
   if (lg) {
     var what = mode === 1 ? 'residents' : 'workplaces', tot = mode === 1 ? R.residents : VC.IX.units.reduce(function (a, u) { return a + u.jobs; }, 0);
-    lg.innerHTML = '<b>' + (mode === 1 ? 'Residents' : 'Workplaces') + ' per hectare</b> <span class="k">(' + D.c + ' m cells, lot buildings only)</span>' +
+    lg.innerHTML = '<b>' + (mode === 1 ? 'Residents' : 'Workplaces') + ' per hectare</b> <span class="k">(' + D.c + ' m cells, every building with an interior)</span>' +
       '<div class="ramp" style="background:linear-gradient(90deg,' + VC.ixRamp(-1, 1) + ',' + VC.ixRamp(0, 1) + ',' + VC.ixRamp(1, 1) + ')"></div>' +
       '<div class="k" style="display:flex;justify-content:space-between"><span>0</span><span>mean ' + Math.round(D.mean) + '</span><span>' + Math.round(D.hi) + '+</span></div>' +
       '<div>' + tot.toLocaleString() + ' ' + what + ' in ' + VC.IX.units.length.toLocaleString() + ' buildings, ' + D.cells + ' cells</div>' +
@@ -57084,9 +57224,30 @@ VC.ixPaint = function () {
       '<div class="k">n: next mode</div>';
   }
 };
+/* the third mode (phase B): work posts against the rule's 90% of the workplaces, per cell, over every place with work
+   (42-vc-sim-places.js): warm where the posts fall short, cool where there is room to spare */
+VC.simPaintWork = function (ctx, X, Z, k) {
+  var c = TUNE.ix.density.cell, G = {}, tgt = TUNE.sim.target, P = 0, W = 0, n = 0;
+  (VC.SIMB.list || []).forEach(function (o) {
+    if (!o.job || (!o.posts && !o.workplaces)) return;
+    var key = Math.floor(o.x / c) + ',' + Math.floor(o.z / c), e = G[key] || (G[key] = { p: 0, w: 0 }); e.p += o.posts || 0; e.w += (o.workplaces || 0) * tgt; P += o.posts || 0; W += (o.workplaces || 0) * tgt;
+  });
+  Object.keys(G).forEach(function (key) {
+    var e = G[key], ij = key.split(','), t = !e.w ? -1 : e.p >= e.w ? -Math.min(1, (e.p / e.w - 1)) : Math.min(1, 1 - e.p / e.w);
+    if (e.p < e.w) n++;
+    ctx.fillStyle = VC.ixRamp(t, 0.82); ctx.fillRect(X(+ij[0] * c), Z(+ij[1] * c), c * k + 0.5, c * k + 0.5);
+  });
+  VIEW.ovTex.needsUpdate = true;
+  var lg = $('ixlegend'), A = VC.SIMB.audit || { short: 0 };
+  if (lg) lg.innerHTML = '<b>Work posts against ' + Math.round(tgt * 100) + '% of the workplaces</b> <span class="k">(' + c + ' m cells, every place with work)</span>' +
+    '<div class="ramp" style="background:linear-gradient(90deg,' + VC.ixRamp(-1, 1) + ',' + VC.ixRamp(0, 1) + ',' + VC.ixRamp(1, 1) + ')"></div>' +
+    '<div class="k" style="display:flex;justify-content:space-between"><span>twice the posts</span><span>even</span><span>no posts</span></div>' +
+    '<div>' + Math.round(P).toLocaleString() + ' posts for ' + Math.round(W).toLocaleString() + ' (the rule\'s share of ' + Math.round(W / tgt).toLocaleString() + ' workplaces); ' + n + ' cells short; ' + A.short + ' kinds of work short (the report lists them)</div>' +
+    '<div class="k">n: next mode</div>';
+};
 VC.ixDensityToggle = function () {
-  VC.IXD.density = (VC.IXD.density + 1) % 3;
-  var b = $('ly-density'); if (b) { b.classList.toggle('on', !!VC.IXD.density); b.textContent = ['density (n)', 'density: residents', 'density: workplaces'][VC.IXD.density]; }
+  VC.IXD.density = (VC.IXD.density + 1) % 4;
+  var b = $('ly-density'); if (b) { b.classList.toggle('on', !!VC.IXD.density); b.textContent = ['density (n)', 'density: residents', 'density: workplaces', 'density: work posts'][VC.IXD.density]; }
   var lg = $('ixlegend'); if (lg) lg.style.display = VC.IXD.density ? 'block' : 'none';
   VC.paint();
 };
@@ -57125,7 +57286,7 @@ VC.ixReportHTML = function () {
   /* the job table */
   var kinds = {}; Object.keys(R.jobs).forEach(function (j) { Object.keys(R.jobs[j].kinds).forEach(function (k) { kinds[k] = (kinds[k] || 0) + R.jobs[j].kinds[k].n; }); });
   var cols = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; });
-  h += '<h2>The job table (the brief, 1.2)</h2><div class="k">A row per kind of work in the lot buildings, a column per furniture kind in their work rooms (' + TUNE.ix.work.join(', ') + '): pieces placed. Workplaces are the census\'s; the 90% target is phase B\'s rule; a piece is counted as one post for now (phase B gives each its capacity). Hover a cell for the rooms.</div>';
+  h += '<h2>The job table (the brief, 1.2)</h2><div class="k">A row per kind of work in the lot buildings, a column per furniture kind in their work rooms (' + TUNE.ix.work.join(', ') + '): the posts they give (TUNE.sim.posts by kind and size, as the 90% table above counts them). Workplaces are the census\'s. The buildings only: the canton rooms and the outdoor work are in the 90% table. Hover a cell for the rooms.</div>';
   h += '<table><tr><th>kind of work</th><th>buildings</th><th>workplaces</th><th>90%</th><th>posts</th>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>where (buildings)</th></tr>';
   Object.keys(R.jobs).sort(function (a, b) { return R.jobs[b].jobs - R.jobs[a].jobs; }).forEach(function (j) {
     var J = R.jobs[j], wh = Object.keys(J.where).sort(function (a, b) { return J.where[b] - J.where[a]; }).slice(0, 4).map(function (w) { return w + ' ' + J.where[w]; }).join(', ');

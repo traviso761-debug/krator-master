@@ -4,6 +4,30 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase B session 2 (branch `Voth-sim`): phase B is done
+
+The owner: "Put caravanserai closer to the river gate, at post-avenue stage. Add more work furniture. Do B session 2".
+- **The caravanserai** is placed at step 3, after the avenues and before any street (`VC.simCaravanserai`, the House of
+  Healing's rule): 280 m from the River Gate's marker, off Avenue 10, in the river port's flat ground; the streets and
+  lots are laid round it, nothing is displaced.
+- **More work furniture:** dense work rooms for the short kinds (`factory`, `enginehall`, `drillhall`, `guardroom`,
+  `alehouse`, `counting`, a stable; the funerary temple on two storeys), the granaries and the mustering ground as work
+  places. A trade no longer converts a lot with a role (a brewery had taken one of the two power houses).
+- **Session 2:** capacity by size, seats round tables, the places' spots (about 110,000 on 8,357 places), reach and
+  wander for the open places, the workplaces per place, the density overlay's work-post mode.
+
+**The power station** (owner: "Make a larger power house and sprinkle it in if needed"): a new kit model,
+`voth_bldg_power_station` (46 x 34 m: a two-storey turbine hall with a clerestory, the boiler house and its two chimneys,
+the fumarole vent house, cooling tanks, conduit masts; `ix` shell 40 x 22 m on two storeys), takes the place of the small
+fumarole house (`voth_generator` v1, 128 m2 inside) in `TUNE.power.houses`; the steam turbine hall (v0) stays. Its
+programme is four engine halls and a store (`TUNE.ix.byKey`), and an engine hall now takes up to 20 workstations (was 12).
+None had to be sprinkled in: the two houses have 274 posts for 260 workplaces.
+
+**The 90% rule now:** every kind of work meets it (24,647 posts for 24,647; 27,366 workplaces).
+
+Plan and furnish takes about 15 s at load now (8 s before): the dense rooms. A bake (as Mav's Refuge's) would bring it
+back if the load matters.
+
 ## 2026-10-12: phase B session 1 (branch `Voth-sim`)
 
 The owner: "start phase B". Done (README "The citizens' places (phase B)"), in `targets/voth-city/42-vc-sim-places.js`:
@@ -24,8 +48,7 @@ guard (24), the caravanserai's grooms (7), the funerary priests (6), guild and c
 the buildings with the most floor per post: where more work furniture would go, or where the census is too generous.
 
 **Decisions for the owner:**
-- The caravanserai: no gate has level ground outside within 700 m; it stands inside, in place of 7 houses (4 rich). Keep
-  it, move it, or name a spot (the editor's placed building does that).
+- ~~The caravanserai~~ moved by the River Gate at step 3 (session 2).
 - The short kinds above: more work furniture, or fewer workplaces in the census (`TUNE.census.jobs`: industrial 15,
   power 130 are the large ones)?
 - The new buildings' census numbers are first guesses (`TUNE.census.byKey`: a watchhouse 24 guards, the berth 40, a
