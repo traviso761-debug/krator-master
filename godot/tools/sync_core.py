@@ -10,13 +10,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GODOT = os.path.dirname(HERE)
 REPO = os.path.dirname(GODOT)
 PAIRS = [(f"core/rand/{f}", f"godot/tests/rand/{f}") for f in ("krand.gd", "krand_test.gd", "golden.json")]
-# kits/characters: the pieces, their data and the pose golden, read at runtime by krator/character/ (res:// cannot
-# reach the kit). make_pieces.py and tests/make-golden.js write the sources.
+# kits/characters: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
+# blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
+# the kit). tests/make-golden.js writes the golden.
 _CH = "kits/characters"
-PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("skeleton", "sliders", "outfits")]
-PAIRS += [(f"{_CH}/tests/golden-pose.json", "godot/data/characters/golden-pose.json")]
-PAIRS += [(f"{_CH}/pieces/{f}", f"godot/data/characters/pieces/{f}")
-          for f in sorted(os.listdir(os.path.join(REPO, _CH, "pieces"))) if f.endswith(".glb")]
+_BODIES = sorted(b for b in os.listdir(os.path.join(REPO, _CH, "data")) if b.startswith("mpfb_"))
+PAIRS += [(f"{_CH}/data/{b}/{f}.json", f"godot/data/characters/{b}/{f}.json") for b in _BODIES for f in ("skeleton", "kit")]
+PAIRS += [(f"{_CH}/data/peoples.json", "godot/data/characters/peoples.json")]
+PAIRS += [(f"{_CH}/tests/golden-mpfb.json", "godot/data/characters/golden-mpfb.json")]
+for _b in _BODIES:
+    _pd = os.path.join(REPO, _CH, "pieces", _b)
+    if os.path.isdir(_pd):
+        PAIRS += [(f"{_CH}/pieces/{_b}/{f}", f"godot/data/characters/pieces/{_b}/{f}")
+                  for f in sorted(os.listdir(_pd)) if f.endswith(".glb") or f.endswith(".gshapes.bin")]
 
 drift = [(a, b) for a, b in PAIRS if not os.path.exists(os.path.join(REPO, b))
          or not filecmp.cmp(os.path.join(REPO, a), os.path.join(REPO, b), shallow=False)]

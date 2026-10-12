@@ -1,8 +1,9 @@
 # kits/characters: known issues
 
-- **The Godot twin is behind.** `godot/krator/character/` reads the Meshy kit format. It needs the MakeHuman kit
-  (items, hide bitsets), the `KMR1` morphs (blend on the CPU or as blend shapes), the joint and inverse-bind deltas,
-  the tint, and `KCHAR.stranger`. `kchar_test.gd` and `tests/make-golden.js` still check the Meshy body.
+- **The Godot twin draws normals from the base.** Its blend shapes move positions only (Godot's relative shapes
+  keep the base normals), where the page re-sums normals after each morph: a heavily reshaped body lights a little
+  flatter in Godot. Its skin is split into 32-37 cover regions (one draw call each); merging the small ones is the
+  next saving there. `godot/data/characters/pieces/` is about 200 MB of copies (`sync_core.py`), gitignored.
 - **Morphs blend linearly.** MakeHuman's macros are piecewise (its age, weight and height targets switch between
   combinations), and its race targets interact with them; a sum of deltas measured one at a time is close, not exact.
   Height's full ends overshoot (2.4 m and 1.3 m), so its slider reaches half way (`REACH` in make_mpfb.py).

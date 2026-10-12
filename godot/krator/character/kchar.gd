@@ -1,14 +1,20 @@
-# KChar: the character record and its pose. The GDScript twin of kits/characters/src/10-rig.js (KCHAR); the two are
-# held together by tests/character/kchar_test.gd against kits/characters/tests/golden-pose.json (written by the JS).
-#   pose(skel, sliders, values, face_rest) -> { t: Array[Vector3], s: Array[Vector3], root: float, lift: float }
-#   visible(rec, outfits) -> Array of { outfit, mesh }
-#   random(seed, sliders, outfits) -> a record drawn from KRand (core/rand)
-# skel, sliders and outfits are the parsed data/skeleton.json, sliders.json and outfits.json. Read 10-rig.js's header
-# for what each field means; nothing here differs.
+# KChar: the character record. The GDScript twin of kits/characters/src/10-rig.js (KCHAR) for the MakeHuman bodies
+# (kit.style "mpfb"); held to it by tests/character/kchar_test.gd against kits/characters/tests/golden-mpfb.json.
+#   morph_weights(rec, kit) -> PackedFloat64Array, one weight per kit.morph.targets entry
+#   morph_joints(skel, kit, w) -> { d: Array[Vector3] (each joint's rest move, model space), t: Array[Vector3] (new rest offsets) }
+#   parts(rec, kit) -> Array of { key, mesh, role, slot }      hidden(rec, kit) -> PackedByteArray, 1 per hidden skin triangle
+#   stranger(seed, kit, people, spread) -> a record drawn from a people's ranges with KRand (core/rand)
+#   blank(kit) -> an empty record
+# skel and kit are the parsed data/mpfb_<body>/skeleton.json and kit.json; people is one entry of data/peoples.json.
+# Read 10-rig.js's comments for what each field means; nothing here differs. (The earlier Meshy kit's pose sliders
+# were not ported: that kit is no longer built by default.)
 class_name KChar
 extends RefCounted
 
 const KRand := preload("res://tests/rand/krand.gd")
+const SLOTS := ["feet", "legs", "torso", "hair", "beard"]
+const RACES := ["african", "asian", "caucasian"]
+const AGE := [-0.6, 0.9]
 
 
 static func _v(a: Array) -> Vector3:
@@ -17,6 +23,11 @@ static func _v(a: Array) -> Vector3:
 
 static func _q(a: Array) -> Quaternion:
 	return Quaternion(a[0], a[1], a[2], a[3])
+
+
+# JS Math.round: halves go up (Godot's round() sends -2.5 to -3)
+static func _round(x: float) -> float:
+	return floor(x + 0.5)
 
 
 static func fk(skel: Dictionary, t: Array) -> Dictionary:
@@ -34,128 +45,205 @@ static func fk(skel: Dictionary, t: Array) -> Dictionary:
 	return {"R": R, "P": P}
 
 
-static func index(skel: Dictionary) -> Dictionary:
-	var ix := {}
+static func key(glb: String) -> String:
+	return glb.trim_prefix("pieces/").trim_suffix(".glb")
+
+
+static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
+	var id = rec.get(slot) if slot == "hair" or slot == "beard" else rec.get("armour", {}).get(slot)
+	if id == null:
+		return null
+	for it in kit["items"]:
+		if it["id"] == id and it["slot"] == slot:
+			return it
+	return null
+
+
+static func parts(rec: Dictionary, kit: Dictionary) -> Array:
+	var out := [{"key": key(kit["base_glb"]), "mesh": "*", "role": "base", "slot": "base"}]
+	for slot in SLOTS:
+		var it = item(rec, kit, slot)
+		if it != null:
+			out.append({"key": key(it["glb"]), "mesh": "*", "role": slot if slot == "hair" or slot == "beard" else "armour", "slot": slot})
+	return out
+
+
+static func unbits(b64: String, n: int) -> PackedByteArray:
+	var raw := Marshalls.base64_to_raw(b64)
+	var out := PackedByteArray()
+	out.resize(n)
+	for i in n:
+		out[i] = (raw[i >> 3] >> (i & 7)) & 1
+	return out
+
+
+static func hidden(rec: Dictionary, kit: Dictionary) -> PackedByteArray:
+	var n: int = int(kit["base_tris"])
+	var o := PackedByteArray()
+	o.resize(n)
+	for slot in SLOTS:
+		var it = item(rec, kit, slot)
+		if it == null or not it.has("hide"):
+			continue
+		var b := unbits(it["hide"], n)
+		for i in n:
+			o[i] |= b[i]
+	return o
+
+
+static func blank(kit: Dictionary) -> Dictionary:
+	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null},
+		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}
+
+
+static func morph_weights(rec: Dictionary, kit: Dictionary) -> PackedFloat64Array:
+	var M: Dictionary = kit["morph"]
+	var w := PackedFloat64Array()
+	w.resize(M["targets"].size())
+	var mv: Dictionary = rec.get("morph", {}) if rec.get("morph") != null else {}
+	for s in M["morphs"]:
+		var v := float(mv.get(s["id"], 0.0)) * float(s.get("reach", 1.0))
+		if v < 0 and s.has("minus"):
+			w[int(s["minus"])] = -v
+		elif v > 0 and s.has("plus"):
+			w[int(s["plus"])] = v
+	var a = rec.get("ancestry")
+	var A: Dictionary = M["ancestry"]
+	if a != null:
+		var total := 0.0
+		for r in RACES:
+			total += maxf(0.0, float(a.get(r, 0.0)))
+		var base: Array = A["base"]
+		var bsum: float = base[0] + base[1] + base[2]
+		if total > 0:
+			for k in RACES.size():
+				var r: String = RACES[k]
+				if A.get(r) != null:
+					w[int(A[r])] = maxf(0.0, float(a.get(r, 0.0))) / total - float(base[k]) / bsum
+	return w
+
+
+static func morph_joints(skel: Dictionary, kit: Dictionary, w: PackedFloat64Array) -> Dictionary:
+	var M: Dictionary = kit["morph"]
 	var J: Array = skel["joints"]
+	var d := []
+	for j in J:
+		d.append(Vector3.ZERO)
+	# float64 sums like the JS, then one Vector3 (float32) per joint
+	var acc := []
+	for j in J:
+		acc.append([0.0, 0.0, 0.0])
+	for t in M["morph_joints"]:
+		var x: float = w[int(t)]
+		if x == 0:
+			continue
+		for r in M["morph_joints"][t]:
+			var v: Array = acc[int(r[0])]
+			v[0] += x * float(r[1])
+			v[1] += x * float(r[2])
+			v[2] += x * float(r[3])
 	for i in J.size():
-		ix[J[i]["name"]] = i
-	return ix
-
-
-static func face_offsets(skel: Dictionary, face_rest) -> Array:
-	var ix := index(skel)
+		d[i] = Vector3(acc[i][0], acc[i][1], acc[i][2])
+	for i in M["follow"]:
+		var p: int = int(J[int(i)]["parent"])
+		if p >= 0:
+			d[int(i)] = d[p]
+	var bind := []
+	for j in J:
+		bind.append(_v(j["t"]))
+	var R: Array = fk(skel, bind)["R"]
 	var t := []
-	for j in skel["joints"]:
-		t.append(_v(j["t"]))
-	if face_rest == null:
-		return t
-	var w := fk(skel, t)
-	var h: int = ix["Head"]
-	var qi: Quaternion = w["R"][h].inverse()
-	for n in face_rest:
-		if ix.has(n):
-			t[ix[n]] = qi * (_v(face_rest[n]) - w["P"][h])
-	return t
-
-
-static func pose(skel: Dictionary, sliders: Dictionary, values: Dictionary, face_rest = null) -> Dictionary:
-	var J: Array = skel["joints"]
-	var ix := index(skel)
-	var bind := face_offsets(skel, face_rest)
-	var t := bind.duplicate()
-	var s := []
-	var kids := []
 	for i in J.size():
-		s.append(Vector3.ONE)
-		kids.append([])
-	for i in J.size():
-		if int(J[i]["parent"]) >= 0:
-			kids[int(J[i]["parent"])].append(i)
-	var root := 1.0
-	for sl in sliders["sliders"]:
-		var v: float = float(values.get(sl["id"], 0.0))
-		if v == 0.0:
-			continue
-		v = clampf(v, -1.0, 1.0)
-		for op in sl["ops"]:
-			if op["op"] == "root":
-				root *= pow(float(op["f"]), v)
-				continue
-			for name in op.get("joints", []):
-				if not ix.has(name):
-					continue
-				var i: int = ix[name]
-				match op["op"]:
-					"scale":
-						s[i] = s[i] * Vector3(pow(op["s"][0], v), pow(op["s"][1], v), pow(op["s"][2], v))
-					"girth":
-						var k := pow(float(op["f"]), v)
-						s[i] = s[i] * Vector3(k, 1.0, k)
-					"len":
-						var k := pow(float(op["f"]), v)
-						s[i] = s[i] * Vector3(1.0, k, 1.0)
-						for c in kids[i]:
-							t[c] = t[c] * k
-					"grow":
-						var k := pow(float(op["f"]), v)
-						for c in _sub(kids, i, []):
-							s[c] = s[c] * k
-							if c != i:
-								t[c] = t[c] * k
-					"move":
-						t[i] = t[i] + _v(op["d"]) * v
-	var lift := 0.0
-	var feet := []
-	for nm in ["LeftFoot", "RightFoot"]:
-		if ix.has(nm):
-			feet.append(ix[nm])
-	if feet.size() > 0:
-		var a0: Array = fk(skel, bind)["P"]
-		var a1: Array = fk(skel, t)["P"]
-		for i in feet:
-			lift += (a0[i].y - a1[i].y) / feet.size()
-	return {"t": t, "s": s, "root": root, "lift": lift}
+		var p: int = int(J[i]["parent"])
+		if p < 0:
+			t.append(bind[i] + d[i])
+		else:
+			t.append(bind[i] + R[p].inverse() * (d[i] - d[p]))
+	return {"d": d, "t": t}
 
 
-static func _sub(kids: Array, i: int, out: Array) -> Array:
-	out.append(i)
-	for c in kids[i]:
-		_sub(kids, c, out)
-	return out
+# ---- peoples ----
+static func _hex(c: String) -> Array:
+	return [c.substr(1, 2).hex_to_int(), c.substr(3, 2).hex_to_int(), c.substr(5, 2).hex_to_int()]
 
 
-static func visible(rec: Dictionary, outfits: Dictionary) -> Array:
-	var out := []
-	var by := {}
-	for o in outfits["outfits"]:
-		by[o["id"]] = o
-	for slot in outfits["slots"]:
-		var id = rec["slots"].get(slot)
-		if not by.has(id):
-			continue
-		for m in by[id]["meshes"]:
-			var parts: PackedStringArray = String(m).split("~")
-			if parts[0] != slot:
-				continue
-			if parts.size() == 1 or rec["slots"].get(parts[1]) != id:
-				out.append({"outfit": id, "mesh": m})
-	return out
+static func _tohex(v: Array) -> String:
+	var s := "#"
+	for x in v:
+		s += "%02x" % int(clampf(_round(x), 0, 255))
+	return s
 
 
-static func random(sd: int, sliders: Dictionary, outfits: Dictionary, spread := 0.6) -> Dictionary:
+static func along(stops: Array, u: float) -> String:
+	if stops.size() == 1:
+		return stops[0]
+	var f := u * (stops.size() - 1)
+	var i: int = mini(stops.size() - 2, int(floor(f)))
+	var k := f - i
+	var a := _hex(stops[i])
+	var b := _hex(stops[i + 1])
+	return _tohex([a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k])
+
+
+static func _mix(x: String, y: String, k: float) -> String:
+	var a := _hex(x)
+	var b := _hex(y)
+	return _tohex([a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k])
+
+
+static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) -> Dictionary:
 	var r = KRand.Stream.new(sd)
-	var rec := {"slots": {}, "sliders": {}, "dye": {}}
-	var list: Array = outfits["outfits"]
-	for slot in outfits["slots"]:
-		rec["slots"][slot] = list[int(floor(r.next() * list.size()))]["id"]
-	for sl in sliders["sliders"]:
-		# floor(x + 0.5) is JS Math.round; Godot's round() sends -2.5 to -3, not -2
-		rec["sliders"][sl["id"]] = floor((r.next() * 2.0 - 1.0) * spread * 100.0 + 0.5) / 100.0
-	return rec
-
-
-static func blank(outfits: Dictionary, id := "") -> Dictionary:
-	var rec := {"slots": {}, "sliders": {}, "dye": {}}
-	for slot in outfits["slots"]:
-		rec["slots"][slot] = id if id != "" else outfits["outfits"][0]["id"]
+	var rec := blank(kit)
+	var P: Dictionary = people if people != null else {}
+	var styles = P.get("styles", {}).get(String(kit["body"]).trim_prefix("mpfb_"))
+	for slot in SLOTS:
+		var have := []
+		for it in kit["items"]:
+			if it["slot"] == slot:
+				have.append(it)
+		if slot == "hair" and styles != null:
+			var pref := []
+			for it in have:
+				if styles.has(it["id"]):
+					pref.append(it)
+			if pref.size() and r.next() < 0.75:
+				have = pref
+		var odds: float = float(P.get("beard", 0.4)) if slot == "beard" else (0.92 if slot == "hair" else 0.9)
+		var id = null
+		if have.size() and r.next() < odds:
+			id = have[int(floor(r.next() * have.size()))]["id"]
+		if slot == "hair" or slot == "beard":
+			rec[slot] = id
+		else:
+			rec["armour"][slot] = id
+	rec["morph"] = {}
+	var bias: Dictionary = P.get("morph", {})
+	for s in kit["morph"]["morphs"]:
+		var v: float
+		if bias.has(s["id"]):
+			var lr: Array = bias[s["id"]]
+			v = lr[0] + (lr[1] - lr[0]) * r.next()
+		elif s["id"] == "age":
+			v = AGE[0] + (AGE[1] - AGE[0]) * r.next()
+		else:
+			v = (r.next() * 2 - 1) * spread * (1.0 if s["group"] == "Face" else 0.8)
+		v = _round(v * 100) / 100
+		if v != 0:
+			rec["morph"][s["id"]] = v
+	var A: Dictionary = P.get("ancestry", {"african": [0, 1], "asian": [0, 1], "caucasian": [0, 1]})
+	rec["ancestry"] = {}
+	for k in RACES:
+		var lr: Array = A.get(k, [0, 0])
+		rec["ancestry"][k] = _round((lr[0] + (lr[1] - lr[0]) * r.next()) * 100) / 100
+	rec["skin"] = along(P.get("skin", ["#f1d2bd", "#c58c63", "#5a3a26"]), r.next())
+	var hairs: Array = P.get("hair", ["#2a1d15", "#5a3a22", "#8a6238", "#c9a35a"])
+	var hair: String = hairs[int(floor(r.next() * hairs.size()))]
+	var age := float(rec["morph"].get("age", 0.0))
+	var grey := float(P.get("grey", 0.45))
+	if age > grey:
+		hair = _mix(hair, "#b8b4ae", minf(1.0, (age - grey) / (1 - grey) * (0.6 + 0.6 * r.next())))
+	rec["hair_color"] = hair
+	var eyes: Array = P.get("eyes", ["#3b2414", "#5a3a22", "#6e5a2e", "#4a5a3a", "#4e6a80"])
+	rec["eye_color"] = eyes[int(floor(r.next() * eyes.size()))]
+	rec["people"] = P.get("id")
 	return rec

@@ -1,6 +1,6 @@
-# kits/characters in Godot: kchar.gd against the JS golden, and a figure built from the pieces.
-#   godot --headless --path godot --script res://tests/character/kchar_test.gd      exits 0 when everything matches
-# The data is vendored into res://data/characters by tools/sync_core.py.
+# kits/characters in Godot: kchar.gd against the JS golden, and a MakeHuman figure built from the pieces.
+#   python3 godot/tools/sync_core.py && godot --headless --path godot --script res://tests/character/kchar_test.gd
+# exits 0 when everything matches. The golden is kits/characters/tests/golden-mpfb.json (make-golden.js).
 extends SceneTree
 
 const DIR := "res://data/characters"
@@ -13,91 +13,146 @@ func ok(c: bool, msg: String) -> void:
 		print("FAIL ", msg)
 
 
-func j(name: String):
-	return JSON.parse_string(FileAccess.get_file_as_string(DIR + "/" + name + ".json"))
+func j(path: String):
+	return JSON.parse_string(FileAccess.get_file_as_string(DIR + "/" + path))
 
 
 func near_v(a: Vector3, b: Array, e := 1e-5) -> bool:
 	return absf(a.x - b[0]) <= e and absf(a.y - b[1]) <= e and absf(a.z - b[2]) <= e
 
 
+# a record from JS against one from GDScript: same keys, same values (floats to 1e-9)
+func same(a, b) -> bool:
+	if a is Dictionary and b is Dictionary:
+		if a.size() != b.size():
+			return false
+		for k in a:
+			if not b.has(k) or not same(a[k], b[k]):
+				return false
+		return true
+	if (a is float or a is int) and (b is float or b is int):
+		return absf(float(a) - float(b)) < 1e-9
+	return a == b
+
+
+# a bone's pose in skeleton space from the local poses (Skeleton3D's own global cache only refreshes on a frame,
+# and this test runs inside _init)
+func glob(sk: Skeleton3D, b: int) -> Transform3D:
+	var t := sk.get_bone_pose(b)
+	var p := sk.get_bone_parent(b)
+	while p >= 0:
+		t = sk.get_bone_pose(p) * t
+		p = sk.get_bone_parent(p)
+	return t
+
+
 func _init() -> void:
-	var skel = j("skeleton")
-	var sliders = j("sliders")
-	var outfits = j("outfits")
-	var golden = j("golden-pose")
-	var faces := {}
-	for o in outfits["outfits"]:
-		faces[o["id"]] = o["face"]
-
-	# 1. the pose, number for number (to float32: Godot's Vector3)
-	for g in golden["poses"]:
-		var p := KChar.pose(skel, sliders, g["values"], faces[g["head"]])
-		var tag := "%s %s" % [g["head"], JSON.stringify(g["values"]).left(40)]
-		ok(absf(p["root"] - g["root"]) < 1e-6, "root " + tag)
-		ok(absf(p["lift"] - g["lift"]) < 1e-6, "lift %f vs %f %s" % [p["lift"], g["lift"], tag])
-		for i in p["t"].size():
-			if not near_v(p["t"][i], g["t"][i]) or not near_v(p["s"][i], g["s"][i], 1e-6):
-				ok(false, "joint %d %s" % [i, tag])
-				break
-
-	# 2. band visibility
-	for g in golden["visible"]:
-		var got := []
-		for v in KChar.visible({"slots": g["slots"]}, outfits):
-			got.append(v["outfit"] + ":" + v["mesh"])
-		ok(got == g["meshes"], "visible %s" % JSON.stringify(g["slots"]))
-
-	# 3. random records: the same KRand stream, the same rounding
-	for g in golden["random"]:
-		var r := KChar.random(int(g["seed"]), sliders, outfits)
-		ok(r["slots"] == g["record"]["slots"], "random slots seed %d" % g["seed"])
-		for k in g["record"]["sliders"]:
-			ok(absf(float(r["sliders"][k]) - float(g["record"]["sliders"][k])) < 1e-9, "random %s seed %d" % [k, g["seed"]])
+	var golden = j("golden-mpfb.json")
+	var peoples := {}
+	for p in j("peoples.json")["peoples"]:
+		peoples[p["id"]] = p
+	for body in golden["bodies"]:
+		var skel = j(body + "/skeleton.json")
+		var kit = j(body + "/kit.json")
+		var g: Dictionary = golden["bodies"][body]
+		# 1. morph weights and the morphed joints
+		for m in g["morphs"]:
+			var w := KChar.morph_weights(m["record"], kit)
+			var tag: String = body + " " + JSON.stringify(m["record"]).left(50)
+			var wok: bool = w.size() == m["w"].size()
+			for i in w.size():
+				wok = wok and absf(w[i] - float(m["w"][i])) < 1e-6   # the JS keeps them in a Float32Array
+			ok(wok, "weights " + tag)
+			var mj := KChar.morph_joints(skel, kit, w)
+			for i in mj["t"].size():
+				if not near_v(mj["t"][i], m["t"][i]) or not near_v(mj["d"][i], m["d"][i]):
+					ok(false, "joint %d %s" % [i, tag])
+					break
+		# 2. strangers: the same KRand stream, the same draws and rounding
+		for s in g["strangers"]:
+			var r := KChar.stranger(int(s["seed"]), kit, peoples.get(s["people"]) if s["people"] != null else null)
+			ok(same(JSON.parse_string(JSON.stringify(r)), s["record"]), "stranger %s seed %d: %s" % [s["people"], s["seed"], JSON.stringify(r).left(160)])
+		# 3. parts and hidden skin
+		for pl in g["parts"]:
+			var got := []
+			for p in KChar.parts(pl["record"], kit):
+				got.append("%s:%s:%s" % [p["key"], p["role"], p["slot"]])
+			ok(got == pl["parts"], "parts " + str(got))
+			var hid := KChar.hidden(pl["record"], kit)
+			var n := 0
+			for x in hid:
+				n += x
+			ok(n == int(pl["hidden"]), "hidden %d vs %d" % [n, pl["hidden"]])
 
 	# 4. a figure from the pieces
-	var fig := KCharFigure.new()
-	fig.load_dir(DIR)
-	root.add_child(fig)
-	var rec := {"slots": {"head": "phil", "torso": "bronze", "hands": "hide", "legs": "scout", "feet": "bone"}, "sliders": {}, "dye": {"torso": "#a04030"}}
-	fig.apply(rec)
-	var shown := 0
-	for mi in fig.skeleton.get_children():
-		if mi is MeshInstance3D and mi.visible:
-			shown += 1
-			ok(mi.skin != null and mi.skin.get_bind_count() > 0, "skin on " + mi.name)
-	ok(shown == KChar.visible(rec, outfits).size(), "figure shows %d meshes" % shown)
-	ok(fig.player.has_animation("walk") and fig.player.has_animation("idle"), "clips retargeted: %s" % fig.player.get_animation_list())
-	# at rest every bone's global pose times its bind pose is identity: the pieces sit where they were fitted
-	var worst := 0.0
-	var worst_at := ""
-	for mi in fig.skeleton.get_children():
-		if not (mi is MeshInstance3D and mi.visible):
-			continue
-		for k in mi.skin.get_bind_count():
-			var b: int = mi.skin.get_bind_bone(k)    # glTF skins bind by index, in skeleton.json order
-			# a face joint carries weights only on the head piece; the others keep their own donor's (unused) place
-			if fig.skeleton.get_bone_name(b).begins_with("face_") and mi.get_meta("slot") != "head":
+	if not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_male"):
+		print("kchar_test: no pieces (run godot/tools/sync_core.py after make_mpfb.py): figure checks skipped")
+	else:
+		var t0 := Time.get_ticks_msec()
+		var fig := KCharFigure.new()
+		fig.load_body(DIR, "mpfb_male")
+		root.add_child(fig)
+		var people = j("peoples.json")["peoples"][0]
+		var rec := KChar.stranger(11, fig.kit, people)
+		rec["armour"] = {"torso": "toigo_fisherman_sweater", "legs": "cortu_cargo_pants", "feet": "culturalibre_hero_boots_1"}
+		rec["morph"]["height"] = 0.8
+		rec["morph"]["weight"] = -0.5
+		fig.apply(rec)
+		print("kchar_test: built and dressed in %d ms" % (Time.get_ticks_msec() - t0))
+		var shown := {}
+		for mi in fig.skeleton.get_children():
+			if mi is MeshInstance3D and mi.visible:
+				shown[mi.get_meta("part")["key"]] = true
+		var want := {}
+		for p in KChar.parts(rec, fig.kit):
+			want[p["key"]] = true
+		ok(shown.keys().size() == want.keys().size(), "figure shows %s, want %s" % [shown.keys(), want.keys()])
+		ok(fig.player.has_animation("walk") and fig.player.has_animation("idle"), "clips: %s" % fig.player.get_animation_list())
+		# the morph reaches the meshes: blend shapes exist and carry the record's weights
+		var base: MeshInstance3D = null
+		for mi in fig.skeleton.get_children():
+			if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base" and mi.mesh.get_blend_shape_count() > 50:
+				base = mi
+		ok(base != null, "a base mesh with the body's blend shapes")
+		if base:
+			var w := KChar.morph_weights(rec, fig.kit)
+			var shapes: PackedInt32Array = base.get_meta("built")["shapes"]
+			var wok := true
+			for s in shapes.size():
+				wok = wok and absf(base.get_blend_shape_value(s) - w[shapes[s]]) < 1e-6
+			ok(wok, "blend shape weights are the record's")
+			# the sweater hides skin: some skin region drawn as nothing, and not all of them
+			var hid := 0
+			for s in base.mesh.get_surface_count():
+				if base.get_surface_override_material(s) == fig._hidden_mat:
+					hid += 1
+			ok(hid > 0 and hid < base.mesh.get_surface_count() - 3, "worn items hide %d of %d base surfaces" % [hid, base.mesh.get_surface_count()])
+		# at rest every bone's global pose times its (moved) bind is the identity: the skinned rest is the morphed mesh
+		fig.rest_pose()
+		var worst := 0.0
+		var worst_at := ""
+		for mi in fig.skeleton.get_children():
+			if not (mi is MeshInstance3D and mi.visible and mi.skin):
 				continue
-			var m: Transform3D = fig.skeleton.get_bone_global_pose(b) * mi.skin.get_bind_pose(k)
-			var e := m.origin.length() + (m.basis.x - Vector3.RIGHT).length()
-			if e > worst:
-				worst = e
-				worst_at = "%s %s" % [mi.name, fig.skeleton.get_bone_name(b)]
-	ok(worst < 1e-3, "rest pose x bind = identity (worst %f at %s)" % [worst, worst_at])
-	# longer legs: the feet stay on the ground
-	var foot := fig.skeleton.find_bone("LeftFoot")
-	var y0 := fig.skeleton.get_bone_global_pose(foot).origin.y
-	rec["sliders"] = {"legs": 1.0}
-	fig.apply(rec)
-	var y1 := fig.skeleton.get_bone_global_pose(foot).origin.y
-	ok(absf(y1 - y0) < 0.005, "legs +1: foot %f -> %f" % [y0, y1])
-	# a clip moves the bones
-	fig.play("walk")
-	var q0 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))
-	fig._process(0.4)
-	var q1 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))
-	ok(not q0.is_equal_approx(q1), "walk moves the thigh")
+			for k in mi.skin.get_bind_count():
+				var b: int = mi.skin.get_bind_bone(k)
+				var m: Transform3D = glob(fig.skeleton, b) * mi.skin.get_bind_pose(k)
+				var e := m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length()
+				if e > worst:
+					worst = e
+					worst_at = "%s %s" % [mi.name, fig.skeleton.get_bone_name(b)]
+		ok(worst < 1e-3, "rest pose x bind = identity (worst %f at %s)" % [worst, worst_at])
+		# taller: the hips rise, the skeleton is lifted or lowered to keep the soles on the ground
+		var hips0 := glob(fig.skeleton, fig._hips).origin.y
+		rec["morph"]["height"] = -0.8
+		fig.apply(rec)
+		var hips1 := glob(fig.skeleton, fig._hips).origin.y
+		ok(hips1 < hips0 - 0.03, "height -0.8 lowers the hips: %f -> %f" % [hips0, hips1])
+		# a clip moves the bones
+		fig.play("walk")
+		var q0 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))
+		fig._process(0.4)
+		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 
 	print("kchar_test: %s" % ("all passed" if fails == 0 else "%d failed" % fails))
 	quit(1 if fails else 0)

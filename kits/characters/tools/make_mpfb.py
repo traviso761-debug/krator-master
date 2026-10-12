@@ -333,6 +333,63 @@ def pack_morphs(entries, npz):
     return b''.join(out)
 
 
+def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
+    """GSH1: what the Godot twin (godot/krator/character/kchar_figure.gd) needs to make a piece's blend shapes without
+    looping over deltas in GDScript. Per mesh (keyed by its first material), the targets that move it and per surface
+    each target's offsets (float32 xyz, in the glTF's vertex order, which Godot's importer keeps: a RELATIVE blend
+    shape in Godot is base + weight * shape). The skin
+    surface (skin_mat) is split into regions by tri_mask (per triangle, the bits of the items that cover it): per
+    region its triangles, the vertices they use (keep) and the shapes over those. Also the skin's 64 lowest vertices
+    and how each target moves them (the ground). Layout: b'GSH1', u32 json length, json, pad to 4, blob."""
+    j, b = glbio.read_glb(open(path, 'rb').read())
+    blob, out = bytearray(), {'meshes': {}}
+
+    def put(arr, dt):
+        while len(blob) % 4:
+            blob.append(0)
+        a = np.ascontiguousarray(arr, dt)
+        off = len(blob)
+        blob.extend(a.tobytes())
+        return off
+    for nd in j['nodes']:
+        k = key(nd.get('name', '')) if 'mesh' in nd else None
+        if k is None:
+            continue
+        D = npz['d_' + k]
+        prims = []
+        for p in j['meshes'][nd['mesh']]['primitives']:
+            mat = j['materials'][p['material']]['name']
+            P = glbio.accessor(j, b, p['attributes']['POSITION']).astype(np.float32)
+            vid = np.rint(glbio.accessor(j, b, p['attributes']['_VIDX']).reshape(-1)).astype(int)
+            T = glbio.accessor(j, b, p['indices']).reshape(-1, 3).astype(int)
+            prims.append((mat, P, vid, T))
+        moved = sorted({t for t in range(D.shape[0]) for _, _, vid, _ in prims if np.abs(D[t, vid]).max() > 2e-4})
+        surfs = []
+        for mat, P, vid, T in prims:
+            parts = [(None, None, None)]
+            if tri_mask is not None and mat == skin_mat:
+                parts = []
+                for m in np.unique(tri_mask):
+                    tris = np.nonzero(tri_mask == m)[0]
+                    keep = np.array(list(dict.fromkeys(T[tris].reshape(-1).tolist())), int)
+                    parts.append((int(m), tris, keep))
+                low = np.argsort(P[:, 1])[:64]
+                out['ground'] = {'y0': [float(x) for x in P[low, 1]],
+                                 'dy': {str(t): [round(float(x), 6) for x in D[t, vid[low], 1]] for t in moved}}
+            for m, tris, keep in parts:
+                sel = keep if keep is not None else np.arange(len(P))
+                sf = {'material': mat, 'n': int(len(sel)), 'region': m,
+                      'pos': [put(D[t, vid[sel]], np.float32) for t in moved]}
+                if keep is not None:
+                    sf['keep'] = put(keep, np.uint32)
+                    sf['tris'] = [put(tris, np.uint32), int(len(tris))]
+                surfs.append(sf)
+        out['meshes'][prims[0][0]] = {'shapes': moved, 'surfaces': surfs}
+    js = json.dumps(out, separators=(',', ':')).encode()
+    js += b' ' * ((-len(js)) % 4)
+    return b'GSH1' + struct.pack('<I', len(js)) + js + bytes(blob)
+
+
 def morph_kit(npz, J):
     """the sliders (kit.morphs), the ancestry triple, and per target the joints that move"""
     targets = [str(t) for t in npz['targets']]
@@ -417,6 +474,18 @@ def main():
         for it in man['items']:
             ents = mesh_entries(os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'])
             open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(ents, npz))
+        # the Godot twin's blend shapes (godot_shapes): the base's skin split by which items cover each triangle
+        tri_mask = np.zeros(len(BT), np.int64)
+        for i, e in enumerate(items):
+            if 'hide' in e:
+                hb = np.unpackbits(np.frombuffer(base64.b64decode(e['hide']), np.uint8), bitorder='little')[:len(BT)]
+                tri_mask[hb.astype(bool)] |= 1 << i
+        open(os.path.join(pieces, 'base.gshapes.bin'), 'wb').write(godot_shapes(
+            os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
+            '_always%d' % always.index(n) if n in always else None, npz, tri_mask, mat))
+        for it in man['items']:
+            open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(
+                os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'], npz))
         morph = True
         print(name, '%.1f MB of morph deltas' % (sum(os.path.getsize(os.path.join(pieces, f)) for f in os.listdir(pieces)
                                           if f.endswith('.morph.bin')) / 1e6))

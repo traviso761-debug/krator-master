@@ -6,7 +6,7 @@
  "data/mpfb_male/skeleton.json": "1a4e9cb67dca7c7ef591ef545a6bc6258c7b93df",
  "data/peoples.json": "f144acdf91d4433d22216a4ebe93aeccb05c7749",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/characters.html": "1450aab8ec6a1ce00a25ca1b9a150b20166fc6c5",
+ "dist/characters.html": "527e4e1354b27bb2d9a741717e69b8368b525538",
  "pieces/mpfb_female/afro01.glb": "2497f44ef900cadd81bfaf702904fc82d32bacb7",
  "pieces/mpfb_female/afro01.morph.bin": "2293b9856115cb3bcdb27248eafd6f7b18bf6036",
  "pieces/mpfb_female/anims.glb": "9026153aa2d77a8cef80d8165026512f63f65ad8",
@@ -132,7 +132,7 @@
  "pieces/mpfb_male/wdg_scruffy_beard.glb": "4493f2c528a0b1d5cd40b5c3e86d68110201cc03",
  "pieces/mpfb_male/wdg_scruffy_beard.morph.bin": "5791d9dd0fad1b27846e0cf206af91953adaae68",
  "src/00-head.html": "3f2f4399dd89b0833216b43862186802f5a302d5",
- "src/10-rig.js": "fa7189bd8f22fc3759e187211f679686514a0c6f",
+ "src/10-rig.js": "4a83ca4f845ed1143efb3d28dfcb7e4118c0ea45",
  "src/50-figure.js": "935a6805c1980a78e3b94f31a63da9e8b55845d7",
  "src/90-editor.js": "2334b9de3973afa8ba413da93db01c48d106fe2d"
 }

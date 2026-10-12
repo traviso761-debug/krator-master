@@ -483,7 +483,7 @@ var KCHAR = (function(){
     function pick(list){ return list[Math.floor(r() * list.length)]; }
     function range(lr){ return lr[0] + (lr[1] - lr[0]) * r(); }
     var styles = (P.styles || {})[kit.body.replace(/^mpfb_/, '')];
-    MPFB_SLOTS.concat(['beard']).forEach(function(slot){
+    MPFB_SLOTS.forEach(function(slot){
       var have = kit.items.filter(function(it){ return it.slot === slot; });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;

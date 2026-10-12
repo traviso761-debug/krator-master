@@ -6,16 +6,16 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 16 (24%) | 0 (0%) | 0 (0%) | 36 (53%) | 15 (23%) |
+| KB | 16 (24%) | 0 (0%) | 0 (0%) | 36 (53%) | 16 (23%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 11.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/10-rig.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-figure.js` | 15.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |  |
-| `src/90-editor.js` | 24.3 | [web] | 13 | 0 | 43 | 25 | 2 | 2 | 0 | 0 | 0 | 0 | 2 |  |
+| `src/10-rig.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/50-figure.js` | 16.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |  |
+| `src/90-editor.js` | 25.0 | [web] | 13 | 0 | 43 | 25 | 2 | 2 | 0 | 0 | 0 | 0 | 1 |  |
 
 ## Notes
 

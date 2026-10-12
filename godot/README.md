@@ -19,7 +19,7 @@ godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather)
-godot --headless --path godot --script res://tests/character/kchar_test.gd   # kits/characters: the pose against the JS golden, a figure from the pieces
+godot --headless --path godot --script res://tests/character/kchar_test.gd   # kits/characters: records and morphs against the JS golden, a MakeHuman figure from the pieces
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
@@ -57,7 +57,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
-| `krator/character/` | `kchar.gd` (the twin of kits/characters' `KCHAR`: pose, visible pieces, records) and `kchar_figure.gd` (a character from the pieces on one Skeleton3D); data in `data/characters/` (`tools/sync_core.py`); `tests/character/kchar_test.gd` checks it against the JS golden, `kchar_shot.gd` draws three |
+| `krator/character/` | `kchar.gd` (the twin of kits/characters' `KCHAR` for the MakeHuman bodies: morph weights and joints, strangers by people, parts, hidden skin) and `kchar_figure.gd` (a character on one Skeleton3D: morphs as shared blend shapes from `<piece>.gshapes.bin`, skin split into cover regions, moved joints and binds, tint, `kchar_eye.gdshader`); data in `data/characters/` (`tools/sync_core.py`: the JSON and golden are tracked, the pieces are copied in and gitignored); `tests/character/kchar_test.gd` checks it against the JS golden, `kchar_shot.gd` draws five strangers |
 | `krator/fly_camera.gd` | the camera |
 | `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield) |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
