@@ -128,6 +128,11 @@ def matlib_pack():
 
 
 PALETTE_FILE = '05-palette.js'
+# PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
+# continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it
+# continues, as one fragment (one PRNG stream, one scope), and the page is the same concatenation either way.
+CONTINUES = {f: '84-flyers.js' for f in ('84a-flyers-routes.js', '84b-flyers-animals.js', '84c-flyers-update.js',
+                                         '84d-flyers-hooks.js')}
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -152,7 +157,19 @@ def strip_head_comments(text):
     return text[i:]
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies):
+    order, bodies = joined(order, bodies)
     errs, seeds = [], {}
     for f in order:
         if not f.endswith('.js') or f in VIRTUAL:

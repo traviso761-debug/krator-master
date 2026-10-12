@@ -28,7 +28,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 10 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `55-arch.js` | 53 **big** | 14. ARCHITECTURE — GIRDER (1) |
-| `56-interiors.js` | 17 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
+| `56-interiors.js` | 18 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
 | `58-overgrowth.js` | 14 | 15. OVERGROWTH — GIRDER (1) |
 | `60-trees.js` | 41 **big** | 14. TREES (1) |
 | `62-jungle.js` | 47 **big** | 15. JUNGLE (Girder) (1) |
@@ -40,7 +40,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-walk.js` | 19 | 25b. WALK MODE (1) |
-| `84-flyers.js` | 91 **big** | 84. FLYERS (1) |
+| `84-flyers.js` | 24 | 84. FLYERS (1) |
+| `84a-flyers-routes.js` | 20 |  |
+| `84b-flyers-animals.js` | 21 |  |
+| `84c-flyers-update.js` | 17 |  |
+| `84d-flyers-hooks.js` | 10 |  |
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |

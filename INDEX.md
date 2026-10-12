@@ -8,7 +8,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 |---|---|---|---|---|
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 47 | 648 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
 | [`settlements/dhelv`](settlements/dhelv/INDEX.md) | 16 | 223 | 59 | Dhelv: the Zeijani's capital, carved into an old spur on the Throne's flank: the hall under its dome, the light wells' grassy floors, the braid of ways, the catacombs and the cistern, the outpost at the west foot; 650 ramblers on core/simulation; the Godot case (godot/: dhelv). |
-| [`settlements/girder`](settlements/girder/INDEX.md) | 32 | 602 | 91 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
+| [`settlements/girder`](settlements/girder/INDEX.md) | 36 | 603 | 61 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 47 | 753 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 54 | 586 | 53 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 424 | 56 |  |
