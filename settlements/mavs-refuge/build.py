@@ -86,6 +86,11 @@ PALETTE_FILE = '05-palette.js'
 DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/record and the pack (no rnd())
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
 DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
+# PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
+# continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it
+# continues, as one fragment (one PRNG stream, one scope), and the page is the same concatenation either way.
+CONTINUES = {f: '84-flyers.js' for f in ('84a-flyers-routes.js', '84b-flyers-animals.js', '84c-flyers-update.js',
+                                         '84d-flyers-hooks.js')}
 
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing
 # KratorFurniture, harvested registry included for the older br_* pieces) and the interiors core with the
@@ -178,7 +183,19 @@ def strip_head_comments(text):
     return text[i:]
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies):
+    order, bodies = joined(order, bodies)
     errs, seeds = [], {}
     for f in order:
         if not f.endswith('.js') or f in VIRTUAL:
