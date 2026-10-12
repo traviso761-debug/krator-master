@@ -265,7 +265,7 @@
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
-  "86d05ad00910"
+  "6de80a247190"
  ],
  "69b-locus-biohost.js": [
   "mungo (overrides locus)",
@@ -409,7 +409,7 @@
  ],
  "89-atmos-0-core.js": [
   "core/atmos",
-  "2d9ce6e7a4ee"
+  "d316939c42f9"
  ],
  "89-atmos-0p-presets.js": [
   "core/atmos",

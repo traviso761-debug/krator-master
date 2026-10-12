@@ -10,7 +10,7 @@ the world's streaming, sky, camera and probe.
                 roads.json and towns.json, written by bake.py (the highways, the towns' placements and ground)
   dist/towns/   each town's tile (bake.py), fetched by the page when the camera comes near
   src/          this world's fragments
-  ../../core/   rand, terrain (relief), biome, atmos (the wave field)
+  ../../core/   rand, terrain (relief), biome, space (KSPACE: keep-clear and scatter), atmos (the wave field)
   ../../biomes/ the kits, read in place: sedesert, eastabyss, hyperjungle, ebadlands
 
   python3 build.py            # dist/little-demo.html
@@ -47,7 +47,7 @@ ORDER = (
     [('src', '00-head.html'), ('gen', '05-world-data.js'),
      ('core/rand', '08-core-rand.js'), ('core/terrain', '38-core-relief.js'),
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
-     ('core/biome', '35-core-anim.js'), ('core/biome', '40-core-place.js'),
+     ('core/biome', '35-core-anim.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('biomes/sedesert/src', '35-core-strata.js'),
      ('src', '41-world-fields.js'), ('src', '42-world-roads.js'), ('src', '45-world-host.js'), ('src', '47-world-kits.js'),

@@ -57,6 +57,9 @@ CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+# core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
+CORE_SPACE=['20-core-space.js']
+CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 # OTHER KITS read in place (biomes/WORLD.md: several kits on one page). The showcase's jungle walls are the hyperjungle's,
 # in its own registry; its fragments keep their numbers' order, slotted before this kit's (the Throne's kipuka does the same)
 HJ=os.path.normpath(os.path.join(HERE,'..','hyperjungle'))
@@ -70,6 +73,8 @@ for f in CORE_TERRAIN:
 for slot,p in KITS.items(): PATH[slot]=os.path.join(HJ,p)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+for f in CORE_SPACE:
+    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 # the material library (core/materials/record, PLAN.md): the record and its browser half, and the packs of the library
