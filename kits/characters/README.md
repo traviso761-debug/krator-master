@@ -38,7 +38,8 @@ from LORE.md's references, there to be changed.
 rebuilds the pieces from here). Blender 4.5 LTS from download.blender.org/release (the Linux tarball runs headless
 as is); MPFB from extensions.blender.org/add-ons/mpfb, installed with
 `blender -b --python-expr "import bpy; bpy.ops.extensions.package_install_files(filepath='mpfb.zip', repo='user_default')"`;
-the packs below from static.makehumancommunity.org/assets/assetpacks. Then per body: `mpfb_build.py` (about 10
+the packs below from static.makehumancommunity.org/assets/assetpacks, and `python3 tools/mpfb_repo.py` for the hair
+and beards that come from the community asset repository instead (it applies the texture-name fixes some need). Then per body: `mpfb_build.py` (about 10
 minutes: it refits every item once per slider end), `make_mpfb.py`, `build.py`.
 
 **Asset packs** (load them into MPFB once: `bpy.ops.mpfb.load_pack(filepath=...)`): makehuman_system_assets, hair01,

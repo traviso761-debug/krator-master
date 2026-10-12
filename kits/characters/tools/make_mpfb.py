@@ -15,7 +15,7 @@ canonical skeleton (data/mpfb_<body>/skeleton.json) and every clip is retargeted
 Each delete group becomes a bitset over the triangles of the base's skin primitive (material 'Human.body'):
 data/mpfb_<body>/kit.json, read by KCHAR (kit.style 'mpfb').
 """
-import base64, io, json, os, struct, subprocess, sys
+import base64, io, json, os, shutil, struct, subprocess, sys
 import numpy as np
 from PIL import Image
 from scipy.spatial import cKDTree
@@ -33,6 +33,9 @@ RY = np.eye(3)
 # the tint the page multiplies in (skin tone, hair colour) needs a neutral texture: skin keeps its detail but its mean
 # becomes grey TINT_MEAN['skin'] (sRGB); hair, brows and beards turn grey with their median at TINT_MEAN['hair']
 TINT_MEAN = {'skin': 0.80, 'hair': 0.72, 'eye': 0.5}
+# items exported but left out: they render broken on this body (the same asset can fit the other one)
+SKIP = {'male': ('culturalibre_hair_13', 'half_bald', 'punkduck_alpha7_long2'), 'female': ('elvs_wavy_bob',)}
+RENAME = {'culturalibre_hair_13': 'Short crop'}     # a label the export got wrong (mpfb_build.py has it right now)
 EYES = 'low-poly'               # the eye mesh's material (MakeHuman's low-poly eyes)
 SKIN_PARTS = ('body', 'nipple', 'lips', 'fingernails', 'toenails', 'ears')     # the base's MakeSkin slots on one texture
 
@@ -41,12 +44,14 @@ def srgb_lin(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
-def iris_mask(rgb):
+def iris_mask(rgb, alpha=None):
     """0..1 per pixel: the irises of a MakeHuman eye texture (two discs, one per eye in its UV layout). Each pupil is a
     dark blob; its iris runs out to where the ring around it turns pale (the sclera)"""
     from scipy import ndimage
     lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32)
     dark = lum < 0.06
+    if alpha is not None:               # a transparent corner (the cornea's disc) is black too: not a pupil
+        dark &= alpha > 0.5
     lab, n = ndimage.label(dark)
     sizes = ndimage.sum(dark, lab, range(1, n + 1))
     H, W = lum.shape
@@ -67,7 +72,7 @@ def neutral(img, role):
     if role == 'eye':
         # the iris turns grey (median TINT_MEAN['eye']) and its mask goes in alpha: the page tints by it, the rest stays
         rgb = a[..., :3]
-        m = iris_mask(rgb)
+        m = iris_mask(rgb, a[..., 3] if a.shape[2] == 4 else None)
         lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32)
         grey = np.clip(lum / max(np.median(lum[m > 0.5]), 0.02) * TINT_MEAN['eye'], 0, 1)
         out = np.concatenate([rgb * (1 - m[..., None]) + grey[..., None] * m[..., None], m[..., None]], 2)
@@ -134,7 +139,7 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
         M = M @ R4.T                                # IBM' = IBM inv(R): vertices and joints both turned by R
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
-    blobs, holes, means = {}, {}, {}
+    blobs, holes, means, soft = {}, {}, {}, {}
     eye_imgs = set()
     for m in j.get('materials', []):
         if EYES in m.get('name', ''):
@@ -156,6 +161,9 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
         if alpha and np.asarray(img)[..., 3].min() >= 250:       # an alpha channel with nothing in it: a JPEG will do
             alpha, img = False, img.convert('RGB')
         holes[ii] = alpha and float((np.asarray(img)[..., 3] < 128).mean()) > 0.02
+        if alpha:                       # strand cards drawn for blending: most of their alpha sits under one half
+            al = np.asarray(img)[..., 3]
+            soft[ii] = float((al > 128).mean()) < 0.4 * float((al > 13).mean())
         means[ii] = np.asarray(img)[..., :3].reshape(-1, 3).mean(0)
         px = 256 if ii in eye_imgs else max_px                    # the eyes are a few centimetres across
         if max(img.size) > px:
@@ -176,6 +184,22 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
             img.save(bio, 'JPEG', quality=86)
             im['mimeType'] = 'image/jpeg'
         blobs[im['bufferView']] = bio.getvalue()
+    # a hair or beard with no texture at all (a solid-colour mesh) gets a flat grey one at the neutral level, so the
+    # page's tint (calibrated on neutral textures) lands as it does on the others
+    flat = [m for m in j.get('materials', []) if role(m.get('name', '')) == 'hair'
+            and 'baseColorTexture' not in m.get('pbrMetallicRoughness', {})]
+    if flat:
+        bio = io.BytesIO()
+        Image.new('L', (4, 4), int(round(TINT_MEAN['hair'] * 255))).save(bio, 'PNG')
+        j['bufferViews'].append({'buffer': 0, 'byteOffset': 0, 'byteLength': 0})
+        blobs[len(j['bufferViews']) - 1] = bio.getvalue()
+        j.setdefault('images', []).append({'bufferView': len(j['bufferViews']) - 1, 'mimeType': 'image/png', 'name': 'flat_grey'})
+        if not j.get('samplers'):
+            j['samplers'] = [{}]
+        j.setdefault('textures', []).append({'source': len(j['images']) - 1, 'sampler': 0})
+        for m in flat:
+            m.setdefault('pbrMetallicRoughness', {})['baseColorTexture'] = {'index': len(j['textures']) - 1}
+            roles[m['name']] = 'hair'
     # Blender 4.5's exporter marks every MakeHuman material BLEND, which three.js sorts as transparent (the skin shows
     # its inside through itself): a texture with real holes (hair cards, lashes, beards) cuts out, the rest is opaque
     # and it sometimes files a colour image (MakeHuman brows: black) as the normal map: a normal map is bluish
@@ -189,7 +213,9 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
         t = m.get('pbrMetallicRoughness', {}).get('baseColorTexture')
         if t is not None and holes.get(j['textures'][t['index']]['source']):
             # brows are soft strokes: at 0.5 only their cores would stay
-            m['alphaMode'], m['alphaCutoff'], m['doubleSided'] = 'MASK', 0.2 if 'eyebrow' in m.get('name', '') else 0.5, True
+            src = j['textures'][t['index']]['source']
+            cut = 0.2 if 'eyebrow' in m.get('name', '') else 0.12 if soft.get(src) and roles.get(m['name']) == 'hair' else 0.5
+            m['alphaMode'], m['alphaCutoff'], m['doubleSided'] = 'MASK', cut, True
         else:
             m.pop('alphaMode', None)
             m.pop('alphaCutoff', None)
@@ -428,6 +454,8 @@ def main():
     name = 'mpfb_' + body
     pieces = os.path.join(HERE, 'pieces', name)
     data = os.path.join(HERE, 'data', name)
+    if os.path.isdir(pieces):          # nothing left over from items no longer in the export
+        shutil.rmtree(pieces)
     os.makedirs(pieces, exist_ok=True)
     os.makedirs(data, exist_ok=True)
     man = json.load(open(os.path.join(src, 'manifest.json')))
@@ -440,11 +468,12 @@ def main():
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     tree = cKDTree(BP)
     items = []
+    man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
     for it in man['items']:
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None)
         roles.update(r)
-        entry = {'id': it['id'], 'name': it['name'], 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
+        entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn

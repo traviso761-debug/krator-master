@@ -197,6 +197,114 @@
    "name": "Hippy",
    "slot": "hair",
    "glb": "pieces/mpfb_female/elvs_lady_hippy_hair.glb"
+  },
+  {
+   "id": "Two_Braided_Cornrows_Female",
+   "name": "Cornrows",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/Two_Braided_Cornrows_Female.glb"
+  },
+  {
+   "id": "AfroPonytail",
+   "name": "Afro ponytail",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/AfroPonytail.glb"
+  },
+  {
+   "id": "Afro_Ponytail_-_Slick_Down",
+   "name": "Slick ponytail",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb"
+  },
+  {
+   "id": "chrissy_piggies_2025",
+   "name": "Pigtails",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/chrissy_piggies_2025.glb"
+  },
+  {
+   "id": "fhair01",
+   "name": "Long straight 2",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/fhair01.glb"
+  },
+  {
+   "id": "southernbelleringlets",
+   "name": "Ringlets",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/southernbelleringlets.glb"
+  },
+  {
+   "id": "brunhilde",
+   "name": "Brunhilde braid",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/brunhilde.glb"
+  },
+  {
+   "id": "fourstrandbraid",
+   "name": "Four-strand braid",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/fourstrandbraid.glb"
+  },
+  {
+   "id": "braided_curly_beads4",
+   "name": "Beaded braid",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/braided_curly_beads4.glb"
+  },
+  {
+   "id": "Messy_Bun",
+   "name": "Messy bun",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/Messy_Bun.glb"
+  },
+  {
+   "id": "elvs_50s_updo",
+   "name": "Updo",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/elvs_50s_updo.glb"
+  },
+  {
+   "id": "elvs_braid_bun",
+   "name": "Braided bun",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/elvs_braid_bun.glb"
+  },
+  {
+   "id": "elvs_island_princess_hair",
+   "name": "Long side part",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/elvs_island_princess_hair.glb"
+  },
+  {
+   "id": "elvs_unkempt_french_braid",
+   "name": "Loose braid",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/elvs_unkempt_french_braid.glb"
+  },
+  {
+   "id": "punkduck_alpha7_curly2",
+   "name": "Curly long",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/punkduck_alpha7_curly2.glb"
+  },
+  {
+   "id": "culturalibre_hair_17",
+   "name": "Long wavy",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/culturalibre_hair_17.glb"
+  },
+  {
+   "id": "o4saken_chinesebob01",
+   "name": "Straight bob",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/o4saken_chinesebob01.glb"
+  },
+  {
+   "id": "culturalibre_hair_13",
+   "name": "Short crop",
+   "slot": "hair",
+   "glb": "pieces/mpfb_female/culturalibre_hair_13.glb"
   }
  ],
  "morph": {
@@ -3747,7 +3855,25 @@
    "Human.elvs_double_mh_braid": "hair",
    "Human.toigo_blunt_bob_with_bangs": "hair",
    "Human.punkduck_alpha7_curly": "hair",
-   "Human.elvs_lady_hippy_hair": "hair"
+   "Human.elvs_lady_hippy_hair": "hair",
+   "Human.Two_Braided_Cornrows_Female": "hair",
+   "Human.AfroPonytail": "hair",
+   "Human.Afro_Ponytail_-_Slick_Down": "hair",
+   "Human.chrissy_piggies_2025": "hair",
+   "Human.fhair01": "hair",
+   "Human.southernbelleringlets": "hair",
+   "Human.brunhilde": "hair",
+   "Human.fourstrandbraid": "hair",
+   "Human.braided_curly_beads4": "hair",
+   "Human.Messy_Bun": "hair",
+   "Human.elvs_50s_updo": "hair",
+   "Human.elvs_braid_bun": "hair",
+   "Human.elvs_island_princess_hair": "hair",
+   "Human.elvs_unkempt_french_braid": "hair",
+   "Human.punkduck_alpha7_curly2": "hair",
+   "Human.culturalibre_hair_17": "hair",
+   "Human.o4saken_chinesebob01": "hair",
+   "Human.culturalibre_hair_13": "hair"
   },
   "gain": {
    "skin": 1.6561,

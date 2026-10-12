@@ -27,7 +27,17 @@ ITEMS = {
                     ('beard', 'Scruffy', 'wdg_scruffy_beard'), ('beard', 'Stubble beard', 'elvs_scruffy_beard1'),
                     ('beard', 'Full beard', 'grinsegold_full_beard'), ('beard', 'Viking beard', 'rehmanpolanski_beard_viking'),
                     ('beard', 'Forked beard', 'grinsegold_beard_sigmund_wip'), ('beard', 'Goatee', 'culturalibre_faun_beard'),
-                    ('beard', 'Viking moustache', 'rehmanpolanski_moustache_viking'), ('beard', 'Moustache', 'grinsegold_moustache')]},
+                    ('beard', 'Viking moustache', 'rehmanpolanski_moustache_viking'), ('beard', 'Moustache', 'grinsegold_moustache'),
+                    ('beard', 'Short beard', 'Beard_Short'), ('beard', 'Goatee', 'Goatee'), ('beard', 'Long goatee', 'Goatee_Long'),
+                    ('beard', 'Light moustache', 'Moustace_Light'), ('beard', 'Thick moustache', 'Moustace_Thick'),
+                    ('beard', 'Mutton chops', 'Mutton_Chops'),
+                    ('hair', 'Low fade', 'Low_Fade'), ('hair', 'Dreads', 'Dreads_with_Fade'),
+                    ('hair', 'Short textured', 'Short_Hair_B'), ('hair', 'Cornrows', 'Two_Braided_Cornrows_Male'),
+                    ('hair', 'Viking undercut', 'scalpviking'), ('hair', 'Short neat', 'mhair02'), ('hair', 'Spiky', 'spiky'),
+                    ('hair', 'Tousled', 'culturalibre_hair_05'), ('hair', 'Close crop', 'culturalibre_hair_14'),
+                    ('hair', 'Comb-over', 'elvs_grump_hair'), ('hair', 'Swept back', 'elvs_maxwell_hair'),
+                    ('hair', 'Four-strand braid', 'fourstrandbraid'), ('hair', 'Beaded braid', 'braided_curly_beads4'),
+                    ('hair', 'Loose braid', 'elvs_unkempt_french_braid')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -43,7 +53,17 @@ ITEMS = {
                     ('hair', 'Afro', 'afro01'), ('hair', 'Bun', 'rehmanpolanski_hair_bun_brown'),
                     ('hair', 'Short', 'short03'), ('hair', 'Afro puffs', 'elvs_micky_afro'), ('hair', 'Long straight', 'o4saken_long01'),
                     ('hair', 'Twin braids', 'elvs_double_mh_braid'), ('hair', 'Bob with bangs', 'toigo_blunt_bob_with_bangs'),
-                    ('hair', 'Curly', 'punkduck_alpha7_curly'), ('hair', 'Hippy', 'elvs_lady_hippy_hair')]},
+                    ('hair', 'Curly', 'punkduck_alpha7_curly'), ('hair', 'Hippy', 'elvs_lady_hippy_hair'),
+                    ('hair', 'Cornrows', 'Two_Braided_Cornrows_Female'), ('hair', 'Afro ponytail', 'AfroPonytail'),
+                    ('hair', 'Slick ponytail', 'Afro_Ponytail_-_Slick_Down'), ('hair', 'Pigtails', 'chrissy_piggies_2025'),
+                    ('hair', 'Long straight 2', 'fhair01'), ('hair', 'Ringlets', 'southernbelleringlets'),
+                    ('hair', 'Brunhilde braid', 'brunhilde'), ('hair', 'Four-strand braid', 'fourstrandbraid'),
+                    ('hair', 'Beaded braid', 'braided_curly_beads4'), ('hair', 'Messy bun', 'Messy_Bun'),
+                    ('hair', 'Updo', 'elvs_50s_updo'), ('hair', 'Braided bun', 'elvs_braid_bun'),
+                    ('hair', 'Long side part', 'elvs_island_princess_hair'),
+                    ('hair', 'Loose braid', 'elvs_unkempt_french_braid'), ('hair', 'Curly long', 'punkduck_alpha7_curly2'),
+                    ('hair', 'Long wavy', 'culturalibre_hair_17'), ('hair', 'Straight bob', 'o4saken_chinesebob01'),
+                    ('hair', 'Short crop', 'culturalibre_hair_13')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -65,7 +85,14 @@ manifest = {'body': body, 'items': []}
 def load(kind, name):
     f = find(kind, name)
     if not f: print('MISSING', name); return None
-    return HumanService.add_mhclo_asset(f, base, asset_type=ATYPE[kind], subdiv_levels=0, material_type='MAKESKIN')
+    try:
+        return HumanService.add_mhclo_asset(f, base, asset_type=ATYPE[kind], subdiv_levels=0, material_type='MAKESKIN')
+    except Exception as e:      # an asset made for another base mesh (its vertex references run past ours)
+        print('FAILED', name, repr(e)[:160])
+        for o in list(bpy.data.objects):
+            if o.name.endswith('.' + name) or o.name == name:
+                bpy.data.objects.remove(o)
+        return None
 always = [o for o in (load(k, n) for k, n in ITEMS['always']) if o]
 loaded = []
 for slot, label, name in ITEMS['items']:
