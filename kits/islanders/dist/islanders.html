@@ -9797,8 +9797,8 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
  /* the piles carry the deck (veranda included); the room's posts run up through the deck */
  if(fy>.35){isPiles(isSpan(-W2+.2,W2-.2,Math.max(2,Math.round(dw/2.1)+1)),isSpan(Dz0+.2,Dz1-.2,Math.max(2,Math.round(dd/2.1)+1)),fy-IS_T,{r:o.pileR||.15,mk:'wood',col:P('wood'),beamY:fy*.5});}
  else box('earth',0,0,dcz,dw+.3,fy+.05,dd+.3,P('earth'));
- isDeck(dw,dd,fy,{z:dcz,col:P('planks'),beam:fy>.35});
  isCutFloor(fy);
+ isDeck(dw,dd,fy,{z:dcz,col:P('planks'),beam:fy>.35});
  isWalls(w,d,fy,wh,o.wallMk||'bamboo',o.wallCol||P('bamboo'),{front:o.front||[{x:0,w:1.0,h:1.8,door:true}],back:o.back||[],left:o.left||[{x:0,w:.6,y:.9,h:.6}],right:o.right||[{x:0,w:.6,y:.9,h:.6}],
   mkf:o.wallMkf,colf:o.wallColf,frame:P('woodD'),shutMk:'bamboo',shutCol:P('bamboo')});
  if(o.facade)W(0,0,d/2+.01,0,()=>{box(o.facade,-w/4-.3,fy+.05,0,w/2-1.1,wh-.15,.03,WHITE);box(o.facade,w/4+.3,fy+.05,0,w/2-1.1,wh-.15,.03,WHITE);});
@@ -9898,6 +9898,651 @@ defBuilding({key:'ie-house-noble',name:'Noble compound (Kautoa)',seed:6023,cut:t
    for(const s of [-1,1])W(s*10,0,-6,0,()=>{isPiles(isSpan(-1.1,1.1,2),isSpan(-1.1,1.1,2),1.8,{r:.12,beams:false});for(const x of [-1.1,1.1])for(const z of [-1.1,1.1])cyl('wood',x,1.4,z,.32,.06,P('woodD'),10);
     isDeck(2.8,2.8,1.95,{col:P('planks'),beam:false});box('bamboo',0,1.95,0,2.4,1.3,2.4,P('bamboo'));isHip({hw:1.9,hd:1.9,eaveY:3.2,topY:6.2,topS:.2,topS2:.06,mk:'thatchR',col:P('thatchE'),th:.2});});
    for(let k=0;k<3;k++)isTomb(-7+k*7,8.6,0,{s:.9,figures:k===1});});}});
+// prefix: ie
+// ================================================================= KAUTOA'S CIVIC BUILDINGS: the village hall, the ceremonial square, the school
+// The East's public buildings speak the houses' language (60-ie-east.js) at a larger scale: golden reed thatch, the tower
+// rising out of a skirt to a short ridge with carved finials, carved ancestor posts in natural timber, woven facades in
+// nested diamonds, megaliths, buffalo horns and the white moon. The village hall follows the owner's "plaza" picture (a
+// great hall lifted on massive carved pillars and arches, a carved balcony round it, swooping horned roofs, here in the
+// East's golden thatch crossed and crowned by its spire); the ceremonial square his "sumba - square" (a paved court shut
+// in by long colonnaded galleries, a tall spire tower at each corner, the great tusks on a stepped platform in the middle).
+// The HELPERS below serve every Kautoa fragment (62-65):
+//   ieRoofE(o)        the East's roof on its own: a skirt (o.hw, o.hd at the eave o.eY) and towers out of it (ieHouse's roof)
+//   ieFinial(k,sp,s)  the finials at a tower ridge's ends ('figure' | 'horns' | 'moon' | 'none')
+//   ieShed(o)         an open shed: a platform, posts round the edge (carved at the front), optional walls, ieRoofE over it
+//   ieCutWith(x,z,y,fn) draw fn with the cut-away centred on a sub-building of a compound (local x, z; its floor y)
+//   ieArch(...)       a carved arch between two pillars, its spandrel filled up to a beam
+//   ieRoofY(rf,x,z)   the underside of an isSaddle roof over (x, z) (where a post meets it)
+//   ieFurn(list)      FURNISH a list of [key, x, y, z, ry, opts]
+// Frame: origin on the ground at the plot centre, +z the front.
+/* o: hw, hd (the eave's half-size), eY (the eave's height), skirtH, skirtS, towerH (0: a plain hip), towerS, topSx, topSz, sq,
+   mk, col, patch, th, nu, towers [[x, z, scale]], facade (a sheet woven up the towers' fronts), finial */
+function ieRoofE(o){const R=Object.assign({skirtH:1.5,skirtS:.5,towerH:7,towerS:.42,topSx:.2,topSz:.05,sq:7,mk:'thatchR',th:.32,finial:'figure'},o),col=R.col||P('thatchE');
+ const hw=R.hw,hd=R.hd,eY=R.eY,sk=eY+R.skirtH,towers=R.towers||(R.towerH>0?[[0,0,1]]:[]);let towerTop=sk+.9;
+ isSpire({hw,hd,sq:R.sq,mk:R.mk,col,patch:R.patch,th:R.th,cap:!towers.length,nu:R.nu,
+  prof:towers.length?[[1,1,eY],[R.skirtS,R.skirtS,sk],[R.skirtS*.62,R.skirtS*.6,sk+.6]]:[[1,1,eY],[R.skirtS*.5,R.skirtS*.15,sk+.9]]});
+ for(const [tx,tz,ts] of towers)W(tx,0,tz,0,()=>{const th_=R.towerH*ts,bs=R.towerS*ts;
+  const sp=isSpire({hw,hd,sq:R.sq,mk:R.mk,col,patch:R.patch?R.patch*.5:0,th:R.th,nu:R.tnu||28,sub:4,
+   prof:[[bs*1.05,bs*1.05,sk-.4],[bs,bs*.92,sk+.3],[bs*.72,bs*.6,sk+th_*.4],[bs*.5,bs*.34,sk+th_*.75],[R.topSx*ts,R.topSz*ts+.02,sk+th_]]});
+  towerTop=Math.max(towerTop,sp.top);
+  if(R.facade)psurf(R.facade,(u,v)=>{const y=sk+.5+v*(th_*.32),t=(y-(sk+.3))/(th_*.4-.3),sx=lerp(bs,bs*.72,clamp(t,0,1))*hw*.86,sz=lerp(bs*.92,bs*.6,clamp(t,0,1))*hd+R.th*.3+.05;
+   return [(u-.5)*2*sx*(1-v*.25),y,sz];},4,6,WHITE,{flip:false});
+  ieFinial(R.finial,sp,R.finS||1);});
+ return {sk,towerTop,hw,hd};}
+/* the finials at both ends of a spire's ridge (sp: isSpire's handle) */
+function ieFinial(kind,sp,s){s=s||1;for(const k of [-1,1]){const fx=k*sp.topW*.85,fy=sp.top+.15;
+ if(kind==='horns')isHorns(fx,fy,0,k>0?-PI/2:PI/2,1.0*s);else if(kind==='moon'){if(k>0)isMoonDisc(0,fy+.6*s,0,0,.5*s);}
+ else if(kind==='figure')isFigure(fx,fy,0,0,.9*s,{mk:'carved'});}}
+/* an open shed. o: w, d (the post grid), plat (a platform's height; o.platMk), postH, step (the post spacing), carved (the front
+   row carved pou), inner (posts inside the grid too), walls {front|back|left|right: a MAT key or 'patch'} (o.wallH, o.opens[side]),
+   over (the roof's overhang), roof (ieRoofE's options). Returns {top, sk, towerTop}. */
+function ieShed(o){const w=o.w,d=o.d,py=o.plat||0,ph=o.postH||2.6,top=py+ph,st=o.step||3,ov=o.over===undefined?.9:o.over;
+ const pc=k=>k==='coral'?P('coral'):k==='bamboo'||k==='mat'?P('bamboo'):k==='earth'?P('earth'):k==='stone'?P('stone'):k==='reclaimed'||k==='planks'?P('planks'):P('rust');
+ if(py>0){isCutFloor(py);box(o.platMk||'stone',0,0,0,w+.7,py,d+.7,pc(o.platMk||'stone'));}
+ const xs=isSpan(-w/2,w/2,Math.max(2,Math.round(w/st)+1)),zs=isSpan(-d/2,d/2,Math.max(2,Math.round(d/st)+1));
+ isNoCut(()=>{for(const x of xs)for(const z of zs){const edge=Math.abs(Math.abs(x)-w/2)<.01||Math.abs(Math.abs(z)-d/2)<.01;if(!edge&&!o.inner)continue;
+   if(o.carved&&z>d/2-.01)isPou(x,py,z,ph,.15,{mk:'carved',n:2});else cyl('wood',x,py,z,.12,ph,P('wood'),8);}
+  for(const s of [-1,1]){box('wood',0,top-.22,s*d/2,w+.3,.22,.2,P('woodD'));box('wood',s*w/2,top-.22,0,.2,.22,d+.3,P('woodD'));}});
+ const wh=o.wallH||ph;
+ for(const [side,x,z,ry,L] of [['front',0,d/2,0,w],['back',0,-d/2,PI,w],['right',w/2,0,PI/2,d],['left',-w/2,0,-PI/2,d]]){const mk=o.walls&&o.walls[side];if(!mk)continue;
+  W(x,0,z,ry,()=>{if(mk==='patch')isPatchWall(L,py,wh,{});else isWall(L,py,wh,mk,pc(mk),(o.opens&&o.opens[side])||[],{frame:P('woodD'),shutMk:'bamboo',shutCol:P('bamboo')});});}
+ const r=ieRoofE(Object.assign({hw:w/2+ov,hd:d/2+ov,eY:top-.05},o.roof||{}));
+ return Object.assign({top},r);}
+/* draw fn with the cut-away centred on local (x, z) and opening above y (a house inside a compound opens about itself) */
+function ieCutWith(x,z,y,fn){const keep=CUTC;if(CUTC[3]){const p=new THREE.Vector3(x,y||0,z).applyMatrix4(CM);CUTC=[p.x,p.z,p.y,1];}try{fn();}finally{CUTC=keep;}}
+/* a carved arch from x0 to x1 along local x at z = 0, springing at ys and rising `rise`, its spandrel filled up to yTop, dz deep,
+   a moulded roll on both faces */
+function ieArch(x0,x1,ys,rise,yTop,dz,mk,col){const cx=(x0+x1)/2,hw=(x1-x0)/2,ax=u=>cx-Math.cos(PI*u)*hw,ay=u=>ys+Math.sin(PI*u)*rise;
+ for(const s of [-1,1]){psurf(mk,(u,v)=>[ax(u),lerp(ay(u),yTop,v),s*dz/2],10,2,col,{flip:s<0});
+  tube(mk,u=>[ax(u),ay(u)+.05,s*(dz/2+.02)],()=>[.08,.08],12,5,col);}
+ psurf(mk,(u,v)=>[ax(u),ay(u),lerp(-dz/2,dz/2,v)],10,1,col);}
+/* the underside of an isSaddle roof (rf) above local (x, z): the nearest sample of its sheet */
+function ieRoofY(rf,x,z){const f=rf.F(z<0?-1:1);let best=1e9,y=0;for(let i=0;i<=40;i++)for(let j=0;j<=20;j++){const p=f(i/40,j/20),dd=(p[0]-x)*(p[0]-x)+(p[2]-z)*(p[2]-z);if(dd<best){best=dd;y=p[1];}}return y-rf.th;}
+/* a solid flight of stone steps from the ground (at local z = run, outward) up to y1 (at z = 0), w wide, at (x, z) turned ry:
+   each step a block down to the ground, carved balustrades along both sides ending in posts. Returns the run. */
+function ieSteps(x,z,ry,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil(y1/.2)),rise=y1/n,go=o.go||.32,run=n*go,cv=P('carvN');
+ W(x,0,z,ry,()=>{for(let i=0;i<n;i++)box('stone',0,0,run-go*(i+.5),w,rise*(i+1),go+.02,P('stone'));
+  if(o.rail!==false)for(const s of [-1,1]){beam('carved',[s*(w/2+.13),.45+.5,run],[s*(w/2+.13),y1+.5,0],.26,cv,false,undefined,1.0);box('carved',s*(w/2+.13),0,run,.4,1.25,.4,cv);
+   box('stone',s*(w/2+.13),0,run/2,.26,.45,run,P('stone'));}});return run;}
+/* FURNISH a list: [key, x, y, z, ry, opts] */
+function ieFurn(list){for(const e of list)FURNISH(e[0],e[1],e[2],e[3],e[4]||0,e[5]);}
+/* ---------------------------------------------------------------- the village hall */
+defBuilding({key:'ie-hall',name:'Village hall (Kautoa)',seed:6101,cut:true,w:29,d:24.5,h:25,budget:400000,
+ tags:{types:['civic'],wealth:'rich',style:'east',role:'village hall'},
+ note:'the village hall (the owner\'s "plaza" picture): a great hall lifted on massive carved pillars and arches, a carved and painted balcony running round it, two horned saddle roofs of golden thatch crossing over it and the spire rising where they meet; a grand stone stair between carved posts, boulders round the pillars',
+ build(o){const FY=3.6,DW=20,DD=14,RW=14,RD=8,WH=3.0,top=FY+WH,col=P('thatchE'),cv=P('carvN');
+  isCutFloor(FY);
+  /* the undercroft: pillars round the deck's edge with arches between them, plain posts inside, the deck on girders */
+  const xs=isSpan(-DW/2+.6,DW/2-.6,6),zs=isSpan(-DD/2+.6,DD/2-.6,4),xe=DW/2-.6,ze=DD/2-.6,yG=FY-.42;
+  const colossal=(x,z)=>Math.abs(Math.abs(z)-ze)<.01&&(Math.abs(Math.abs(x)-xe)<.01||(z>0&&Math.abs(x)<2));
+  isNoCut(()=>{
+   for(const x of xs)for(const z of zs){const edge=Math.abs(Math.abs(x)-xe)<.01||Math.abs(Math.abs(z)-ze)<.01;
+    if(!edge){cyl('wood',x,0,z,.2,yG,P('wood'),10);continue;}
+    sph('stone',x,.1,z,.75,P('stone'),.35,10);
+    if(!colossal(x,z))isPou(x,0,z,yG,.42,{mk:'carved',n:2,col:cv});}
+   for(const [fx,fz,ry,L,ps] of [[0,ze,0,DW,xs],[0,-ze,PI,DW,xs],[xe,0,PI/2,DD,zs],[-xe,0,-PI/2,DD,zs]])W(fx,0,fz,ry,()=>{
+    for(let i=0;i<ps.length-1;i++){const a=ps[i]+.42,b=ps[i+1]-.42;ieArch(a,b,1.5,Math.min((b-a)/2,yG-1.5-.25),yG,.7,'carved',cv);}
+    box('wood',0,yG,0,L+.6,.34,.5,P('woodD'));});
+   for(const z of zs)box('wood',0,yG,z,DW,.3,.3,P('woodD'));
+   isDeck(DW,DD,FY,{col:P('planks'),beam:false});
+   /* the floor's carved edge: a corbelled band under the balcony all round */
+   for(const [fx,fz,ry,L] of [[0,DD/2,0,DW],[0,-DD/2,PI,DW],[DW/2,0,PI/2,DD],[-DW/2,0,-PI/2,DD]])W(fx,0,fz,ry,()=>{box('carved',0,FY-.9,.12,L+.24,.5,.24,cv);box('patGableE',0,FY-.84,.25,L,.38,.02,WHITE);});
+   /* the balcony's parapet: thick carved timber with rounded corners, woven panels on its face, a gap for the stair */
+   const PH=1.05,Rc=1.4,pt=.3,xr=DW/2-Rc,zr=DD/2-Rc;
+   const run=(x0,x1,z,ry)=>W(0,0,0,ry,()=>{const L=x1-x0,cx=(x0+x1)/2;box('carved',cx,FY,z-pt/2,L,PH,pt,cv);box('wood',cx,FY+PH,z-pt/2,L+.04,.1,pt+.14,P('woodD'));
+    box('patGableE',cx,FY+.18,z+.01,L-.3,PH-.38,.02,WHITE);});
+   run(-xr,-1.4,DD/2,0);run(1.4,xr,DD/2,0);run(-xr,xr,DD/2,PI);run(-zr,zr,DW/2,PI/2);run(-zr,zr,DW/2,-PI/2);
+   for(const [sx,sz,a0] of [[1,1,0],[-1,1,PI/2],[-1,-1,PI],[1,-1,PI*1.5]]){sector('carved',sx*xr,sz*zr,Rc-pt,Rc,a0,a0+PI/2,FY,FY+PH,cv,6);sector('wood',sx*xr,sz*zr,Rc-pt-.07,Rc+.07,a0,a0+PI/2,FY+PH,FY+PH+.1,P('woodD'),6);}
+   for(const s of [-1,1])isPou(s*1.4,FY,DD/2-.15,PH+.5,.16,{mk:'carved',n:1,top:'figure'});});
+  /* the hall: plank walls, two doors to the balcony, woven panels */
+  isWalls(RW,RD,FY,WH,'planks',P('woodL'),{front:[{x:-2.4,w:1.4,h:2.4,door:true},{x:2.4,w:1.4,h:2.4,door:true},{x:-5.2,w:.9,y:1,h:1.1},{x:5.2,w:.9,y:1,h:1.1}],
+   back:[{x:-4,w:.9,y:1,h:1.1},{x:4,w:.9,y:1,h:1.1}],left:[{x:-2,w:.9,y:1,h:1.1},{x:2,w:.9,y:1,h:1.1}],right:[{x:-2,w:.9,y:1,h:1.1},{x:2,w:.9,y:1,h:1.1}],frame:P('woodD'),shutMk:'carved',shutCol:cv});
+  for(const [fx,fz,ry,L] of [[0,RD/2+.07,0,RW],[0,-RD/2-.07,PI,RW],[RW/2+.07,0,PI/2,RD],[-RW/2-.07,0,-PI/2,RD]])W(fx,0,fz,ry,()=>box('patGableE',0,top-.62,0,L,.5,.02,WHITE));
+  W(0,0,RD/2+.07,0,()=>{box('patGableE',0,FY+.1,0,2.2,2.2,.02,WHITE);for(const s of [-1,1])box('patGableE',s*6.3,FY+.1,0,1.2,2.2,.02,WHITE);});
+  /* the colossal pillars: from the ground through the balcony to the eave, a flared capital under the roof */
+  const rf=isSaddle({L:RW+2,W:RD+2,eaveY:top-.05,ridgeY:top+4.6,sag:.6,hornRise:4.2,hornOut:3.0,taper:.3,over:2.4,p:3.5,mk:'thatchR',col,th:.34,nu:36,concave:.35});
+  for(const s of [-1,1])rf.gable(s*(RW/2+.02),top,RD/2+.02,'patGableE',{});
+  isNoCut(()=>{for(const x of xs)for(const z of [-ze,ze]){if(!colossal(x,z))continue;const yt=ieRoofY(rf,x,z);sph('stone',x,.1,z,.85,P('stone'),.35,10);
+   isPou(x,0,z,yt-.75,.5,{mk:'carved',n:Math.max(3,Math.round((yt-.75)/1.3)),col:cv});beam('carved',[x,yt-.8,z],[x,yt,z],.5,cv,true,10,.85);}});
+  /* the cross roof (its gables to the front and back) and the spire where the two meet */
+  W(0,0,0,-PI/2,()=>{const cr=isSaddle({L:RD+3,W:8,eaveY:top+.9,ridgeY:top+7.2,sag:.5,hornRise:3.8,hornOut:2.6,taper:.3,over:1.3,p:3.5,mk:'thatchR',col,th:.34,nu:30,concave:.35});
+   for(const s of [-1,1])cr.gable(s*(RD/2+.02),top+.9,4,'patGableE',{});
+   for(const s of [-1,1]){const t=cr.R(s);isMoonDisc(t[0]*.97,t[1]+.55,0,s>0?PI/2:-PI/2,.5);}});
+  const sp=isSpire({hw:3.2,hd:3.2,sq:6,mk:'thatchR',col,th:.3,nu:28,sub:4,prof:[[1,1,top+2.8],[.92,.88,top+5.4],[.66,.52,top+8.9],[.42,.26,top+12.9],[.24,.06,top+16.2]]});
+  psurf('patGableE',(u,v)=>{const y=top+6+v*3.0,t=(y-(top+5.4))/3.5,sx=lerp(.9,.66,clamp(t,0,1))*3.2*.8,sz=lerp(.86,.52,clamp(t,0,1))*3.2+.12;return [(u-.5)*2*sx*(1-v*.2),y,sz];},4,6,WHITE,{flip:false});
+  ieFinial('figure',sp,1);
+  /* the grand stair between carved posts, boulders round the pillars, the moon's flags */
+  isNoCut(()=>{ieSteps(0,DD/2+.02,0,FY,2.4);for(const s of [-1,1]){isPou(s*1.9,0,DD/2+5.4,3.2,.22,{mk:'carved',top:'horns',col:cv});isFlag(s*8.5,DD/2+3,9,{ry:s>0?0:PI});}
+   for(let i=0;i<14;i++){const a=i/14*TAU+rr(-.15,.15),x=Math.cos(a)*rr(11,13),z=Math.sin(a)*rr(8,9.8);if(z>6&&Math.abs(x)<4)continue;sph('stone',x,0,z,rr(.35,.6),P('stone'),rr(.6,.9),8);}});
+  /* the hall's furniture: the chief's seat under the tapestries, benches down both sides, the kava bowls, statues, lamps */
+  ieFurn([['islander_court_throne',0,FY,-RD/2+.6,0],['islander_court_tapestry',-2.6,FY,-RD/2+.14,0],['islander_court_tapestry',2.6,FY,-RD/2+.14,0],
+   ['islander_court_carpet',0,FY,.4,0],['islander_common_kava_bowl',0,FY,.4,0],['islander_common_kava_bowl',-3.6,FY,1,0],['islander_common_kava_bowl',3.6,FY,1,0],
+   ['islander_court_statue',-RW/2+.6,FY,-RD/2+.6,PI/4],['islander_court_statue',RW/2-.6,FY,-RD/2+.6,-PI/4],
+   ['islander_common_banner',-4.2,FY,RD/2-.16,PI],['islander_common_banner',4.2,FY,RD/2-.16,PI]]);
+  for(const s of [-1,1])for(const z of [-2.2,0,2.2])FURNISH('islander_common_bench',s*(RW/2-.35),FY,z,s<0?PI/2:-PI/2,{v:z>0?1:0});
+  for(const x of [-3.2,3.2])FURNISH_HANG('islander_court_hanging',x,top+1.4,.4,0);
+  for(const s of [-1,1])FURNISH('islander_common_bench',s*5,FY,DD/2-1.1,0);}});
+/* ---------------------------------------------------------------- the ceremonial square */
+/* a colonnaded gallery L long, gd deep, along local x, its open side +z (the court): a stone plinth, a coral back wall with
+   a painted band, posts with carved capitals, a gable roof of golden thatch; o.ends [-1, 1] closes those ends with gables */
+function ieGallery(L,gd,o){o=o||{};const ph=o.postH||2.9,pl=.38,cv=P('carvN');
+ box('stone',0,0,0,L,pl,gd,P('stone'));box('coral',0,pl,-gd/2+.25,L,ph+.12,.5,P('coral'));box('patGableE',0,pl+ph-.85,-gd/2+.51,L-.4,.6,.02,WHITE);
+ for(const x of isSpan(-L/2+.45,L/2-.45,Math.max(2,Math.round(L/2.8)+1))){cyl('wood',x,pl,gd/2-.32,.15,ph,P('wood'),8);box('carved',x,pl+ph-.55,gd/2-.32,.46,.46,.46,cv);sph('stone',x,pl,gd/2-.32,.24,P('stone'),.5,8);}
+ box('wood',0,pl+ph-.08,gd/2-.32,L,.26,.26,P('woodD'));
+ const rf=isGabled({L:L-1.2,W:gd,eaveY:pl+ph+.12,ridgeY:pl+ph+2.2,over:.7,mk:'thatchR',col:P('thatchE'),th:.24,nu:Math.max(8,Math.round(L/1.5)),nv:3});
+ for(const s of o.ends||[])rf.gable(s*(L/2-.62),pl+ph+.12,gd/2,'patGableE',{});}
+/* a corner tower: a coral-stone block s x 2 square, bh tall, a painted band, a dark door on the court side, a tall spire */
+function ieSpireTower(s,bh,towerH,doorRy){box('coral',0,0,0,2*s,bh,2*s,P('coral'));box('stone',0,bh,0,2*s+.3,.2,2*s+.3,P('stone'));
+ for(let k=0;k<4;k++)W(0,0,0,k*PI/2,()=>box('patGableE',0,bh-1.5,s+.01,2*s-.8,1.0,.02,WHITE));
+ W(0,0,0,doorRy,()=>{box('plain',0,0,s+.01,1.1,2.1,.02,P('black'));box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
+ return ieRoofE({hw:s+.7,hd:s+.7,eY:bh+.15,skirtH:1.1,skirtS:.62,towerH,towerS:.56,topSx:.14,topSz:.1,sq:4,th:.26,finial:'horns',facade:'patGableE',tnu:24});}
+defBuilding({key:'ie-square',name:'Ceremonial square (Kautoa)',seed:6102,w:58,d:50,h:24,budget:400000,front:{x:0,z:22.5,yaw:0},
+ tags:{types:['plaza','religious','civic'],wealth:'rich',style:'east',role:'ceremonial square'},
+ note:'the ceremonial square (the owner\'s "sumba - square" picture): a paved court shut in by long colonnaded galleries under golden thatch, a tall spire tower at each corner, a gate with carved posts, and in the middle the great tusks rising over a gilded shrine on a stepped stone platform',
+ build(o){const CW=44,CD=36,GD=4.5,gx=CW/2+GD/2,gz=CD/2+GD/2,cv=P('carvN');
+  /* the pavement: stone, crossed by coral causeways from the gate and the side doors to the platform */
+  box('stone',0,0,0,CW+2*GD,.1,CD+2*GD,P('stone'));box('coral',0,.1,CD/4+1.5,3,.03,CD/2-3,P('coral'));box('coral',0,.1,0,CW-1,.03,2.4,P('coral'));
+  /* the galleries */
+  W(gx,0,0,-PI/2,()=>ieGallery(CD-2.6,GD));W(-gx,0,0,PI/2,()=>ieGallery(CD-2.6,GD));W(0,0,-gz,0,()=>ieGallery(CW-3,GD));
+  for(const s of [-1,1])W(s*(CW/4+1.25-.5),0,gz,PI,()=>ieGallery(CW/2-3.5-1.5,GD,{ends:[s>0?1:-1]}));
+  /* the corner towers */
+  for(const [sx,sz] of [[1,1],[-1,1],[1,-1],[-1,-1]])W(sx*gx,0,sz*gz,sz>0?PI:0,()=>ieSpireTower(3.5,5.5,15,0));
+  /* the gate: carved posts, a lintel with figures, a small spire over it */
+  W(0,0,gz,0,()=>{for(const s of [-1,1]){isPou(s*2.6,0,GD/2-.2,4.2,.3,{mk:'carved',n:3,top:'figure',col:cv});isPou(s*2.6,0,-GD/2+.4,4.2,.3,{mk:'carved',n:3,col:cv});}
+   box('carved',0,4.2,GD/2-.2,6,.5,.6,cv);box('carved',0,4.2,-GD/2+.4,6,.5,.6,cv);box('patGableE',0,4.25,GD/2+.11,5.2,.4,.02,WHITE);
+   ieRoofE({hw:3.6,hd:3.2,eY:4.7,skirtH:1.0,skirtS:.6,towerH:6.5,towerS:.42,topSx:.2,topSz:.06,sq:6,th:.24,finial:'moon',facade:'patGableE'});
+   door(0,0,GD/2,0,4.6);});
+  /* the monument: three stone steps, the gilded shrine under a small spire, the great tusks arching over it, menhirs round it */
+  const ty=1.35;for(let k=0;k<3;k++){const s=12-k*2.6;box(k===1?'coral':'stone',0,k*.45,0,s,.45,s,P(k===1?'coral':'stone'));}
+  box('carved',0,ty,0,2.6,1.1,1.8,cv);box('brass',0,ty+1.1,0,2.9,.12,2.1,P('brass'));for(const s of [-1,1])box('brass',0,ty+.3,s*.91,2.2,.5,.02,P('brass'));
+  isSpire({hw:1.5,hd:1.1,sq:5,mk:'thatchR',col:P('thatchE'),th:.12,nu:20,sub:2,prof:[[1,1,ty+1.22],[.5,.42,ty+2.1],[.18,.08,ty+3.5]]});
+  pole('wood',[0,ty+3.4,0],[0,ty+4.2,0],.05,P('woodD'),6);isMoonDisc(0,ty+4.8,0,0,.6);
+  for(const s of [-1,1]){tube('bone',t=>[s*(2.9-2.4*t*t),ty+.1+t*8.2,-.9*Math.sin(PI*t)],t=>{const r=.46*(1-.74*t);return [r,r];},18,10,P('bone'),{caps:true});
+   cyl('brass',s*2.9,ty,0,.52,.4,P('brass'),12);cyl('brass',s*2.88,ty+.75,-.09,.49,.14,P('brass'),12);}
+  for(const [x,z] of [[-5.3,-5.3],[5.3,-5.3],[-5.3,5.3],[5.3,5.3]])isMenhir(x,z,2.4,.32);
+  for(const s of [-1,1]){isPou(s*7.5,0,7.5,3.6,.22,{mk:'carved',top:'horns',col:cv});isTomb(s*12,-8,0,{s:1,figures:true});isFlag(s*7.5,-7.5,10,{ry:s>0?0:PI});}
+  /* the galleries' furniture: benches along the walls, market stalls on feast days, the banners */
+  for(const s of [-1,1]){for(const z of [-10,-4,4,10])FURNISH('islander_common_bench',s*(gx+GD/2-.8),.38,z,s>0?-PI/2:PI/2,{v:z>0?1:0});
+   FURNISH('generic_trade_stall',s*(gx-.4),.38,-14.5,s>0?-PI/2:PI/2);FURNISH('islander_common_banner',s*14,.38,-gz-GD/2+.65,0);}
+  FURNISH('islander_common_kava_bowl',0,1.35,2.2,0,{setting:'outdoor'});FURNISH('generic_trade_altar',0,1.35,-2.4,0,{setting:'outdoor'});}});
+/* ---------------------------------------------------------------- the school */
+defBuilding({key:'ie-school',name:'School (Kautoa)',seed:6103,cut:true,w:22,d:13.5,h:13.5,budget:150000,
+ tags:{types:['civic'],wealth:'middle',style:'east',role:'school'},
+ note:'the village school: a long woven room on piles under a skirt of golden thatch and one spire, windows all round, benches facing the teacher\'s board, books on the teacher\'s desk; a flag and a shade tree in the yard',
+ build(o){const w=9,d=6,fy=1.3;
+  ieHouse({w,d,floorY:fy,wallH:2.3,ver:.9,verFront:1.6,roof:{over:.8,skirtH:1.5,skirtS:.55,towerH:6.2,towerS:.3,topSx:.18,topSz:.05,sq:8},
+   front:[{x:0,w:1.2,h:1.9,door:true},{x:-2.9,w:1.2,y:.8,h:1.0},{x:2.9,w:1.2,y:.8,h:1.0}],back:[{x:-2.4,w:1.2,y:.8,h:1.0},{x:2.4,w:1.2,y:.8,h:1.0}],
+   left:[{x:0,w:1.2,y:.8,h:1.0}],right:[{x:0,w:1.2,y:.8,h:1.0}],wallMk:'bamboo',facade:'patWeave',towerFacade:true,stair:'stair',stairW:1.4,finial:'moon'});
+  /* the room: rows of benches facing the board on the back wall, the teacher's desk with the books, a bookcase */
+  const bh=svfH('islander_common_desk',0,1.1);
+  ieFurn([['islander_common_board',0,fy,-d/2+.12,0],['islander_common_desk',-2.6,fy,-1.75,0],['islander_common_books',-2.8,fy+bh,-1.75,0],['islander_common_books',-2.3,fy+bh,-1.8,.3],
+   ['islander_common_bookcase',w/2-.34,fy,-1.2,-PI/2],['islander_common_stool',-2.6,fy,-2.55,0],['islander_common_books',w/2-.4,fy,1.6,-PI/2]]);
+  for(const z of [-.6,.6,1.8])for(const x of [-1.6,1.6])FURNISH('islander_common_bench',x,fy,z,PI);
+  FURNISH_HANG('islander_common_hanging',0,fy+2.3+.9,0,0);
+  isNoCut(()=>{isFlag(-7.2,6.5,8.5,{ry:PI});place('fl-breadfruit',8.5,-1,.6,{});});}});
+// prefix: ie
+// ================================================================= KAUTOA'S TRADE: farms, granaries, the windmill, the warehouse, the smithy, the shops
+// The working buildings of the East, in the houses' manner (60-ie-east.js) and with the civic helpers (62-ie-civic.js:
+// ieRoofE, ieShed, ieCutWith, ieFurn): the farmsteads (a family uma with its granary, buffalo pen, paddies, pigs and
+// fowl; a poor smallholding mended with scrap), the granaries (raised on posts with rat guards, under a spire), a windmill
+// whose woven sails turn (IE_MILLS below), the warehouse on piles, the smithy (an open forge shed that works salvage iron),
+// and the shops: the market hall, the palm-wine and kava house, the trader's shop, the ikat weaver (Sumba's hinggi), the
+// potter and the chandler. Plants are fl-* defs and animals the fauna kit's, placed with place(..., {sub:'east'}).
+// Frame: origin on the ground at the plot centre, +z the front.
+/* ---------------------------------------------------------------- the granary */
+/* a granary raised on posts: footing stones, a rat guard (a wide wooden disc rats cannot climb past) on every post under the
+   floor, the woven store, the East's roof. o: s (the store's half-size), py (its floor), wh (its walls), n (posts a side),
+   carved, wallMk, facade (woven panels on its front), roof (ieRoofE's options), ladder 'log' | 'ladder' | 'none'. */
+function ieGranary(o){const s=o.s||1.3,py=o.py||1.9,wh=o.wh||1.4,n=o.n||2,ov=o.ov||.55,top=py+wh,xs=isSpan(-s+.18,s-.18,n);
+ isNoCut(()=>{for(const x of xs)for(const z of xs){sph('stone',x,.06,z,.32,P('stone'),.42,8);
+   if(o.carved)isPou(x,0,z,py-IS_T,.15,{mk:'carved',n:1});else cyl('wood',x,0,z,.13,py-IS_T,P('wood'),8);
+   cyl('wood',x,py-.62,z,.42,.06,P('woodD'),14);}
+  for(const z of xs)box('wood',0,py-.42,z,2*s,.2,.2,P('woodD'));
+  if(o.ladder==='ladder')isLadder(0,s+.12,0,py,{});else if(o.ladder!=='none')isLogLadder(0,s+.12,0,py);});
+ isCutFloor(py);
+ isDeck(2*s+.4,2*s+.4,py,{col:P('planks'),beam:false});
+ isWalls(2*s,2*s,py,wh,o.wallMk||'bamboo',o.wallMk==='planks'?P('planks'):P('bamboo'),{front:[{x:0,w:.7,h:Math.min(1.2,wh-.15),door:true}],back:[],left:[],right:[],frame:P('woodD')});
+ if(o.facade)W(0,0,s+.07,0,()=>{for(const k of [-1,1])box(o.facade,k*(s/2+.25),py+.08,0,s-.6,wh-.2,.02,WHITE);});
+ ieRoofE(Object.assign({hw:s+ov,hd:s+ov,eY:top-.05,skirtH:.8,skirtS:.56,towerH:2.6,towerS:.52,topSx:.22,topSz:.06,sq:6,th:.22,finial:'none'},o.roof||{}));
+ return {py,top};}
+defBuilding({key:'ie-granary',name:'Granary (Kautoa)',seed:6203,cut:true,w:4.6,d:4.6,h:7.4,budget:60000,
+ tags:{types:['farm'],wealth:'middle',style:'east',job:'farming',role:'granary'},
+ note:'a family granary: a woven store raised on four posts with wooden rat guards, a little spire of golden thatch, a notched log for a ladder; sacks, jars and baskets of rice inside',
+ build(o){const g=ieGranary({});
+  ieFurn([['generic_sack',-.7,g.py,-.8,.2],['generic_sack',-.2,g.py,-.85,-.3],['generic_sack',.35,g.py,-.85,.5],['generic_storage_jar',.8,g.py,-.4,0],['generic_basket',-.8,g.py,.35,0],['generic_floor_basket',.75,g.py,.4,.6]]);}});
+defBuilding({key:'ie-granary-great',name:'Village granary (Kautoa)',seed:6204,cut:true,w:7.2,d:7.4,h:12.8,budget:90000,
+ tags:{types:['farm','civic'],wealth:'rich',style:'east',job:'farming',role:'village granary'},
+ note:'the village\'s great granary: a store woven in nested diamonds on nine carved posts with rat guards, a tall spire with horns on its ridge; bins, sacks and jars of the harvest',
+ build(o){const g=ieGranary({s:2.6,py:2.3,wh:1.9,n:3,carved:true,facade:'patGableE',roof:{skirtH:1.3,skirtS:.55,towerH:6,towerS:.42,topSx:.2,topSz:.05,th:.26,finial:'horns',facade:'patGableE'}});
+  const y=g.py;ieFurn([['generic_trade_bin',-2.0,y,-1.1,PI/2],['generic_trade_bin',2.0,y,-1.1,-PI/2],['generic_storage_jar',-.4,y,-2.1,0],['generic_storage_jar',.1,y,-2.1,.4],['generic_storage_jar',.6,y,-2.1,.9],
+   ['generic_basket',-1.9,y,1.4,0],['generic_floor_basket',1.9,y,1.4,0]]);
+  for(const [x,z] of [[-1,-.6],[-.5,-.4],[0,-.7],[.5,-.5],[1,-.6],[-.7,.2],[.7,.3]])FURNISH('generic_sack',x,y,z,rr(-.5,.5));}});
+/* ---------------------------------------------------------------- the farms */
+defBuilding({key:'ie-farm',name:'Farmstead (Kautoa)',seed:6201,cut:true,w:33,d:30.5,h:13,budget:220000,
+ tags:{types:['farm','dwelling-single'],wealth:'middle',style:'east',job:'farming',role:'farmstead'},
+ note:'a Kautoan farmstead: the family uma at the back with its tomb, a raised granary, a buffalo pen with its wallow and trough, two rice paddies before the house with ducks on the bunds, taro, bananas and coconut palms, pigs and hens in the yard, the sheaf rack and the winnowing tub',
+ build(o){
+  ieCutWith(-8,-7,1.5,()=>W(-8,0,-7,0,()=>ieHouse({w:5.4,d:4.6,floorY:1.5,wallH:2.0,ver:.8,verFront:1.4,roof:{over:.7,skirtH:1.3,skirtS:.5,towerH:5.4,towerS:.42,topSx:.2,topSz:.05},
+   wallMk:'mat',facade:'patWeave',towerFacade:false,stair:'stair',finial:'figure',tier:'middle',underPig:true,tombs:[[2.6,4.8,0,.7,false]],furn:[['job_winnowing_tub',1.6,.8,0]]})));
+  place('ie-granary',1.5,-9,0,{});
+  isNoCut(()=>{
+   /* the buffalo pen: a bamboo fence with a gate gap, the wallow, the trough and the hay */
+   const px=10.5,pz=-7.5,pw=8,pd=6;
+   for(const [x,z,ry,L] of [[px,pz-pd/2,0,pw],[px-pw/2,pz,PI/2,pd],[px+pw/2,pz,PI/2,pd],[px-pw/4-1,pz+pd/2,0,pw/2-2],[px+pw/4+1,pz+pd/2,0,pw/2-2]])W(x,0,z,ry,()=>isFenceRun(L,1.3));
+   box('earth',px+1.5,0,pz-1.2,3.4,.03,2.2,0x5a4630);box('water',px+1.5,.02,pz-1.2,2.6,.03,1.5,0x4a5a44);});
+  FURNISH('generic_trade_trough',7.4,0,-6,PI/2,{setting:'outdoor'});FURNISH('generic_trade_hayrack',13.4,0,-9.9,0,{setting:'outdoor'});
+  place('buffalo',10,-6.6,.5,{mode:'idle',sub:'east',activity:'REST'});
+  /* the paddies before the house, the gardens and the palms */
+  place('fl-paddy',-7.5,8.6,0,{});place('fl-paddy',3.6,8.6,0,{});place('fl-taro',12.6,7.4,0,{});
+  place('fl-banana',-14,-1,0,{});place('fl-banana',-13.6,3.2,1,{});place('fl-coconut',-11.5,-11.5,0,{});place('fl-coconut',12.6,1.5,0,{});
+  /* the stock and the work of the yard */
+  for(const [k,x,z,r] of [['duck',-2,12.4,1],['duck',1.6,9.2,2.2],['duck',-1.9,5,4],['hen',-1.4,-2.2,1],['hen',-.4,-1.4,2.4],['hen',5.6,-3.4,.6],['pig',4.6,-4.6,2]])place(k,x,z,r,{sub:'east'});
+  ieFurn([['job_sheaf_rack',5.6,0,-11.6,0,{setting:'outdoor'}],['job_winnowing_mat',.5,0,-4.2,.3,{setting:'outdoor'}],['job_winnowing_tub',-1.2,0,-4.8,0,{setting:'outdoor'}],
+   ['generic_floor_basket',1.6,0,-5.0,0,{setting:'outdoor'}],['generic_floor_basket',2.1,0,-4.4,.8,{setting:'outdoor'}]]);}});
+defBuilding({key:'ie-farm-poor',name:'Smallholding (Kautoa)',seed:6202,cut:true,w:26,d:24,h:14.5,budget:150000,
+ tags:{types:['farm','dwelling-single'],wealth:'poor',style:'east',job:'farming',role:'smallholding'},
+ note:'a poor smallholding: a low hut whose skirt is half corrugated iron held down by tyres, walls of salvage, a pig pen of scrap sheets, a little granary, taro beds, bananas and a palm, hens, a drum for water',
+ build(o){
+  ieCutWith(-4,-5,.9,()=>W(-4,0,-5,0,()=>ieHouse({w:4.0,d:3.4,floorY:.9,wallH:1.9,ver:.4,verFront:1.1,posts:'plain',
+   roof:{over:.5,skirtH:1.3,skirtS:.46,towerH:2.6,towerS:.4,topSx:.26,topSz:.06,mk:'thatch',col:P('thatchP'),patch:.55,th:.16},
+   wallMkf:s=>s==='front'?'bamboo':s==='back'?'reclaimed':s==='left'?'corrW':'tin',wallColf:s=>s==='front'?P('bamboo'):s==='back'?P('planks'):s==='left'?P('rust'):P('tin'),
+   stair:'log',finial:'none',tier:'poor',beds:1,furn:[['scrap_poor_stool',.6,.7,0]],extra:(top)=>{for(const [x,z] of [[.9,-.6],[-1.1,.4]])isTyre(x,top+.62,z);}})));
+  ieCutWith(-9.5,4,1.4,()=>W(-9.5,0,4,0,()=>{const g=ieGranary({s:.9,py:1.4,wh:1.1,ov:.45,roof:{skirtH:.6,towerH:1.5,towerS:.5,mk:'thatch',col:P('thatchP'),patch:.4,th:.14}});
+   FURNISH('generic_sack',-.3,g.py,-.3,.3);FURNISH('generic_sack',.3,g.py,-.35,-.2);}));
+  isNoCut(()=>{
+   /* the pig pen: sheets of salvage on posts, a tarp over one corner */
+   const px=5.5,pz=-5;for(const [x,z,ry,L] of [[px,pz-2,0,4.4],[px-2.2,pz,PI/2,4],[px+2.2,pz,PI/2,4],[px+1.2,pz+2,0,2]])W(x,0,z,ry,()=>isPatchWall(L,0,1.0,{}));
+   isTarp([px+.6,1.5,pz-2],[px+2.2,1.5,pz-2],[px+2.2,1.0,pz-.4],[px+.6,1.0,pz-.4],.12,P('tarpB'));
+   isDrum(-1.2,0,-1.6,{col:'galv'});isDrum(-.6,0,-2.1,{col:'drumR'});isScrapHeap(9.5,2,-PI/2);
+   W(0,0,8.2,0,()=>isFenceRun(16,1.0));});
+  place('pig',5.2,-5.5,.4,{sub:'east'});place('pig',6.2,-4.2,2,{sub:'east'});
+  place('fl-taro',2.2,4,0,{});place('fl-taro',7,4,.1,{});place('fl-banana',-10.5,-4.5,0,{});place('fl-banana',9.6,-9.4,2,{});place('fl-coconut',-9.8,-9.8,0,{});
+  place('hen',.6,.8,1,{sub:'east'});place('hen',1.4,1.6,2.6,{sub:'east'});
+  ieFurn([['job_winnowing_mat',-1.4,0,1.6,.2,{setting:'outdoor'}],['job_sheaf_rack',-4,0,4.4,0,{setting:'outdoor'}],['generic_poor_bench',-6.6,0,-1.8,0,{setting:'outdoor'}]]);}});
+/* ---------------------------------------------------------------- the windmill: its sails turn */
+/* IE_MILLS: each mill's sails, drawn into their own buckets in the hub's frame (ieMillSails), flushed after the world is built
+   into a pivot group at the hub (ieMillFlush, wrapped round buildWorld like 91f-furnish.js's furniture pass), and turned
+   every frame about the hub's axis (its local z) with a YXZ Euler: the mill's yaw, the shaft's tilt, then the spin. */
+const IE_MILLS=[];
+function ieMillSails(speed,fn){const B={},keep=GTARGET;IE_MILLS.push({B,H:CM.clone(),speed,pivot:null,e:null});GTARGET=B;try{fn();}finally{GTARGET=keep;}}
+function ieMillFlush(parent){for(const m of IE_MILLS){const inv=m.H.clone().invert(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();m.H.decompose(pos,q,sc);
+ const g=new THREE.Group();g.name='ie-mill-sails';g.position.copy(pos);m.e=new THREE.Euler().setFromQuaternion(q,'YXZ');g.rotation.copy(m.e);
+ for(const mesh of flushBuckets(m.B,g,true)){mesh.geometry.applyMatrix4(inv);mesh.geometry.computeBoundingSphere();}parent.add(g);m.pivot=g;}}
+const ieMillBuildWorld=buildWorld;
+buildWorld=function(){IE_MILLS.length=0;const W0=ieMillBuildWorld();ieMillFlush(WORLD);return W0;};
+FRAME_HOOKS.push(()=>{const t=ANIMU.uTime.value;for(const m of IE_MILLS)if(m.pivot)m.pivot.rotation.set(m.e.x,m.e.y,m.e.z+t*m.speed,'YXZ');});
+defBuilding({key:'ie-windmill',name:'Windmill (Kautoa)',seed:6210,cut:true,w:15,d:9.2,h:17.4,budget:150000,
+ tags:{types:['industry'],wealth:'middle',style:'east',job:'milling',role:'windmill'},
+ note:'the village\'s windmill: a drum of coral stone with the millstones inside, a stage round it, a tapering timber tower clad in woven bamboo, a cap of golden thatch rising to a spire with a carved figure, and six woven sails on bamboo frames that turn in the wind',
+ build(o){const R0=3.0,bh=2.6,th=6.8,rt=.6,R1=R0-.2,hubY=9.9,hubZ=3.75,cv=P('carvN'),da=.25,rAt=y=>lerp(R1,R1*rt,clamp((y-bh)/th,0,1));
+  /* the base: a coral drum with a door to the front, the earth floor, the stage round it */
+  sector('coral',0,0,R0-.5,R0,PI/2+da,PI/2+TAU-da,0,bh,P('coral'),28);sector('coral',0,0,R0-.5,R0,PI/2-da,PI/2+da,2.1,bh,P('coral'),3);
+  for(const s of [-1,1])box('wood',s*.78,0,R0-.25,.14,2.1,.62,P('woodD'));box('wood',0,2.05,R0-.25,1.7,.14,.66,P('woodD'));
+  cyl('earth',0,0,0,R0-.5,.06,P('earth'),20);door(0,0,R0,0,1.4);
+  isNoCut(()=>{sector('planks',0,0,R0-.4,R0+.65,0,TAU,bh-.12,bh+.02,P('planks'),28);
+   for(let k=0;k<16;k++){const a=k/16*TAU,x=Math.cos(a)*(R0+.58),z=Math.sin(a)*(R0+.58);box('wood',x,bh,z,.08,.95,.08,P('woodD'));
+    const a2=(k+1)/16*TAU;beam('wood',[x,bh+.95,z],[Math.cos(a2)*(R0+.58),bh+.95,Math.sin(a2)*(R0+.58)],.06,P('woodD'));}});
+  /* the tower: an octagon of woven bamboo on a timber frame, woven bands, a window to the front */
+  W(0,0,0,PI/8,()=>{cyl('bamboo',0,bh,0,R1,th,P('bamboo'),8,rt);for(const y of [bh+1.3,bh+4.4])cyl('patWeave',0,y,0,rAt(y)+.04,.55,WHITE,8,rAt(y+.55)/rAt(y));});
+  for(let k=0;k<8;k++){const a=k*PI/4+PI/8,s=Math.sin(a),c=Math.cos(a);beam('wood',[s*(R1+.05),bh,c*(R1+.05)],[s*(R1*rt+.05),bh+th,c*(R1*rt+.05)],.15,P('woodD'));}
+  {const y=bh+3,r=rAt(y)*Math.cos(PI/8);box('plain',0,y,r+.02,.55,.75,.04,P('black'));box('wood',0,y-.08,r+.06,.75,.08,.1,P('woodD'));}
+  /* the cap: a skirt of golden thatch and a spire with a figure at each end of its ridge; the windshaft; the tail pole */
+  ieRoofE({hw:2.3,hd:2.3,eY:bh+th-.05,skirtH:.9,skirtS:.6,towerH:3.4,towerS:.55,topSx:.24,topSz:.08,sq:2.6,th:.22,finial:'figure',facade:'patWeave'});
+  isNoCut(()=>{pole('wood',[0,hubY-.33,.4],[0,hubY,hubZ-.2],.16,P('woodD'),8);beam('wood',[0,bh+th+.2,-1.6],[0,bh+.25,-R0-.45],.14,P('woodD'));
+   /* the sails: a carved boss with the moon, six bamboo whips, each with a frame of bars and a woven mat sail */
+   WX(0,hubY,hubZ,0,-.1,0,()=>ieMillSails(.55,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('carved',0,-.25,0,.55,.45,cv,12));isMoonDisc(0,0,.22,0,.36);
+    const r0=1.1,r1=6.5,wid=r=>.75+.45*(r-r0)/(r1-r0);
+    for(let k=0;k<6;k++)WX(0,0,0,0,0,k*TAU/6,()=>{pole('bamboo',[0,.3,0],[0,6.75,0],.075,P('bamboo'),6);
+     for(const r of isSpan(r0,r1,10))pole('bamboo',[-.04,r,.03],[wid(r),r,.03],.025,P('bamboo'),4);pole('bamboo',[wid(r0),r0,.03],[wid(r1),r1,.03],.03,P('bamboo'),4);
+     psurf('mat',(u,v)=>{const r=lerp(r0,r1,v);return [u*wid(r)*.98,r,-.03-.07*Math.sin(PI*u)];},2,8,P('bamboo'));
+     box('patGableE',wid(r1)*.5,r1-.75,-.11,wid(r1)*.8,.55,.02,WHITE);});}));});
+  /* the millers' floor: the millstones, sacks of grain and flour, the winnowing; sacks and a cart at the door */
+  ieFurn([['generic_trade_grindstone',0,0,-1.3,0],['generic_trade_grindstone',-1.3,0,-.2,PI/2],['generic_sack',1.3,0,-.7,.3],['generic_sack',1.6,0,-.05,-.4],['generic_sack',1.35,0,.6,.9],
+   ['job_winnowing_tub',-1.3,0,1.0,0],['generic_floor_basket',.7,0,1.3,0],
+   ['generic_sack',1.2,0,R0+.9,.4,{setting:'outdoor'}],['generic_sack',1.6,0,R0+1.3,-.3,{setting:'outdoor'}],['pa_hand_cart',-3.4,0,3.3,.7,{setting:'outdoor'}]]);}});
+/* ---------------------------------------------------------------- the warehouse */
+defBuilding({key:'ie-warehouse',name:'Warehouse (Kautoa)',seed:6220,cut:true,w:15.6,d:13,h:11.6,budget:150000,
+ tags:{types:['industry'],wealth:'middle',style:'east',job:'warehousing',role:'warehouse'},
+ note:'a merchant\'s warehouse: a long plank store on piles with rat guards, a wide loading veranda and stair, one skirt over it with two towers, a little iron in the thatch; bales, crates, sacks and barrels inside, the tally desk by the door',
+ build(o){const w=12,d=6.4,fy=1.4;
+  const r=ieHouse({w,d,floorY:fy,wallH:2.6,ver:.6,verFront:2.0,posts:'plain',roof:{over:.8,skirtH:1.6,skirtS:.62,towerH:5,towerS:.24,topSx:.12,topSz:.04,sq:9,patch:.12},
+   towers:[[-3.2,0,1],[3.2,0,1]],wallMk:'planks',wallCol:P('planks'),front:[{x:0,w:2.4,h:2.2,door:true},{x:-4,w:.7,y:1.1,h:.6},{x:4,w:.7,y:1.1,h:.6}],back:[],
+   left:[{x:0,w:.7,y:1.1,h:.6}],right:[{x:0,w:.7,y:1.1,h:.6}],stair:'stair',stairW:2.4,finial:'horns'});
+  /* rat guards on the piles (the same grid ieHouse drew) */
+  isNoCut(()=>{const dw=r.W2*2,dd=r.Dz1-r.Dz0;for(const x of isSpan(-r.W2+.2,r.W2-.2,Math.max(2,Math.round(dw/2.1)+1)))for(const z of isSpan(r.Dz0+.2,r.Dz1-.2,Math.max(2,Math.round(dd/2.1)+1)))cyl('wood',x,fy-.55,z,.4,.05,P('woodD'),12);});
+  /* the goods: bales and crates along the back, sacks and barrels, a bin, the tally desk and the strongbox by the door */
+  ieFurn([['job_bales',-5.2,fy,-2.55,0],['job_bales',-4.1,fy,-2.55,.1],['job_bales',-5.2,fy+.82,-2.55,0],['job_bales',-4.6,fy,-1.5,PI/2],
+   ['generic_trade_bin',-5.55,fy,.9,PI/2],['generic_barrel',3.9,fy,-2.65,0],['generic_barrel',4.6,fy,-2.65,0],['generic_barrel',5.3,fy,-2.65,0],['generic_barrel',5.3,fy,-1.95,0],
+   ['islander_common_desk',4.9,fy,1.7,-PI/2],['islander_common_stool',4.1,fy,1.7,PI/2],['generic_strongbox',4.9,fy+svfH('islander_common_desk',0,1.1),1.6,-PI/2]]);
+  for(const x of [-2.6,-1.95,-1.3])for(const k of [0,1])FURNISH('generic_crate',x,fy+k*.42,-2.85,0);
+  for(const [x,z] of [[.3,-2.8],[.75,-2.75],[1.2,-2.8],[1.65,-2.75],[2.1,-2.8],[.5,-2.3],[1.4,-2.3],[-1.6,1.7],[-2.0,2.2]])FURNISH('generic_sack',x,fy,z,rr(-.6,.6));
+  isNoCut(()=>{FURNISH('generic_barrel',-2.2,0,r.Dz1+.8,0,{setting:'outdoor'});FURNISH('generic_barrel',-2.8,0,r.Dz1+1.1,0,{setting:'outdoor'});FURNISH('pa_hand_cart',3.4,0,r.Dz1+1.6,-.2,{setting:'outdoor'});});}});
+/* ---------------------------------------------------------------- the smithy */
+defBuilding({key:'ie-smithy',name:'Smithy (Kautoa)',seed:6230,cut:true,w:11,d:7.8,h:8.6,budget:100000,
+ tags:{types:['industry'],wealth:'middle',style:'east',job:'smithing',role:'smithy'},
+ note:'the smith\'s forge shed: a stone floor under a skirt of soot-darkened thatch mended with iron, a short open spire to draw the smoke, half walls of coral at the back, carved posts at the front; the forge and bellows, the anvil, the quench trough, the grindstone and a rack of blades; a heap of salvage iron outside, the smith\'s stock',
+ build(o){const y=.35,r=ieShed({w:7,d:5.2,plat:y,platMk:'stone',postH:2.5,carved:true,walls:{back:'coral',left:'coral'},wallH:1.5,
+   roof:{skirtH:1.4,skirtS:.48,towerH:3.2,towerS:.4,topSx:.22,topSz:.08,patch:.35,col:jc(0xa08a64,.05),finial:'horns'}});
+  smokeAt(0,r.towerTop+.3,0);door(0,y,2.6,0,2.4);
+  ieFurn([['generic_trade_forge',-1.2,y,-1.95,0],['pa_bellows',-2.9,y,-1.35,0],['generic_fuel',.05,y,-2.25,0],['generic_trade_trough',.85,y,-2.15,0],
+   ['generic_trade_anvil',.3,y,-.55,.3],['generic_trade_grindstone',2.6,y,-1.5,-PI/2],['generic_trade_weapon_rack',-3.25,y,.95,PI/2],['islander_common_workbench',2.75,y,.7,-PI/2],['generic_crate',2.9,y,2.0,0]]);
+  isNoCut(()=>{isScrapHeap(5.3,-.8,-PI/2);isDrum(4.7,0,1.9,{col:'drumB'});isDrum(5.2,0,2.6,{col:'galv',lie:true,ry:.4});});}});
+/* ---------------------------------------------------------------- the shops */
+/* a market canopy at (x, z): four bamboo posts under a little hip of thatch (o.tarp: a tarp instead), w x d */
+function ieCanopy(x,z,w,d,o){o=o||{};W(x,0,z,o.ry||0,()=>{for(const [a,b] of [[-1,-1],[1,-1],[-1,1],[1,1]])pole('bamboo',[a*w/2,0,b*d/2],[a*w/2,2.15,b*d/2],.06,P('bamboo'),6);
+ if(o.tarp)isTarp([-w/2-.2,2.2,-d/2-.2],[w/2+.2,2.2,-d/2-.2],[w/2+.2,2.0,d/2+.2],[-w/2-.2,2.0,d/2+.2],.18,P(o.tarp));
+ else isHip({hw:w/2+.5,hd:d/2+.5,eaveY:2.05,topY:3.4,topS:.2,topS2:.05,mk:'thatchR',col:P('thatchE'),th:.14,nu:20});});}
+defBuilding({key:'ie-market',name:'Market hall (Kautoa)',seed:6240,cut:true,w:18,d:15.5,h:14,budget:150000,
+ tags:{types:['market'],wealth:'middle',style:'east',job:'trading',role:'market'},
+ note:'the market: a long open hall on carved posts under one skirt with three spires (the middle one tallest), the traders\' stalls and tables inside, goods on the counters; canopies of thatch and a tarp before it for the smaller sellers',
+ build(o){const y=.3;ieShed({w:15,d:7.6,plat:y,platMk:'stone',postH:2.8,step:2.5,carved:true,
+   roof:{skirtH:1.6,skirtS:.6,towerH:6,towerS:.22,topSx:.12,topSz:.05,sq:9,towers:[[-4.6,0,1],[0,0,1.25],[4.6,0,1]],finial:'figure',facade:'patWeave'}});
+  door(0,y,3.8,0,3);const dh=y+svfH('generic_trade_display',0,1.1);
+  ieFurn([['generic_trade_stall',-4.6,y,-2.2,0],['generic_trade_stall',0,y,-2.2,0],['generic_trade_stall',4.6,y,-2.2,0],
+   ['generic_trade_display',-3.2,y,2.7,PI],['generic_trade_display',.4,y,2.7,PI],['generic_trade_display',3.6,y,2.7,PI],['islander_common_counter',-6.1,y,1.9,PI/2],
+   ['generic_veg_basket',-3.5,dh,2.7,0],['generic_produce',-2.9,dh,2.75,0],['generic_fish',.2,dh,2.7,0],['generic_fish',.65,dh,2.65,.3],['generic_fruit_bowl',3.4,dh,2.7,0],['generic_veg_basket',3.9,dh,2.7,0],
+   ['generic_floor_basket',-6.4,y,-1.2,0],['generic_floor_basket',6.5,y,-.8,.5],['generic_floor_basket',6.3,y,.2,1]]);
+  isNoCut(()=>{ieCanopy(-6,8,2.4,2.4,{});ieCanopy(0,8.4,4.2,2.2,{tarp:'tarpO'});ieCanopy(6,8,2.4,2.4,{});
+   ieFurn([['generic_trade_display',-6,0,8,0,{setting:'outdoor'}],['generic_produce',-6.2,svfH('generic_trade_display',0,1.1),8,0,{setting:'outdoor'}],
+    ['pa_market_table',0,0,8.4,0,{setting:'outdoor'}],['generic_trade_display',6,0,8,0,{setting:'outdoor'}],['generic_fish',6,svfH('generic_trade_display',0,1.1),8,0,{setting:'outdoor'}],
+    ['generic_floor_basket',-4.4,0,8.6,0,{setting:'outdoor'}]]);});}});
+defBuilding({key:'ie-kava-house',name:'Palm-wine and kava house (Kautoa)',seed:6250,cut:true,w:18,d:19.5,h:13,budget:150000,
+ tags:{types:['tavern'],wealth:'middle',style:'east',job:'brewing',role:'palm-wine and kava house'},
+ note:'the drinking house: a peaked house on low piles with deep verandas for sitting out, buffalo horns on the posts, a woven tower; inside the kava bowls on a rug, benches round the walls, the palm-wine barrels and kegs and the still for sopi; a tapped palm behind, lamps on posts at the steps, a carved post with the moon for a sign',
+ build(o){const fy=1.0,w=7.6,d=5.6;
+  const r=ieHouse({w,d,floorY:fy,wallH:2.2,ver:1.5,verFront:2.8,roof:{over:.9,skirtH:1.5,skirtS:.5,towerH:6.6,towerS:.4,topSx:.2,topSz:.05},
+   wallMk:'bamboo',facade:'patWeave',towerFacade:true,front:[{x:0,w:1.6,h:1.9,door:true},{x:-2.7,w:1.0,y:.6,h:1.0},{x:2.7,w:1.0,y:.6,h:1.0}],
+   stair:'stair',stairW:1.8,finial:'horns',hornPosts:true});
+  const th=svfH('islander_common_low_table',0,.42);
+  ieFurn([['islander_common_rug',0,fy,.3,0],['islander_common_kava_bowl',0,fy,.3,0],['islander_common_low_table',-2.4,fy,1.3,0],['generic_wine',-2.5,fy+th,1.3,0],['generic_wine',-2.25,fy+th,1.25,.4],
+   ['generic_trade_barrel',-.6,fy,-d/2+.48,0],['generic_trade_still',2.6,fy,-d/2+.45,0],['generic_keg',-2.9,fy,-d/2+.3,0],['generic_keg',-2.9,fy+.31,-d/2+.3,.2],
+   ['islander_common_bench',-w/2+.32,fy,-.5,PI/2],['islander_common_bench',w/2-.32,fy,.2,-PI/2],['islander_common_stool',1.3,fy,1.4,PI]]);
+  FURNISH_HANG('islander_common_hanging',0,fy+2.2+.9,0,0);
+  ieFurn([['islander_common_bench',-2.5,fy,r.Dz1-.45,PI],['islander_common_bench',2.5,fy,r.Dz1-.45,PI],['islander_common_kava_bowl',-2.5,fy,d/2+1.3,0],['islander_common_kava_bowl',2.5,fy,d/2+1.3,0]]);
+  isNoCut(()=>{place('fl-coconut',-6.4,-6.2,0,{});for(const s of [-1,1])isLamp(s*1.5,2.1,r.Dz1+1.7,{post:true});isPou(3.4,0,r.Dz1+1.0,2.6,.15,{mk:'carved',top:'moon'});});}});
+defBuilding({key:'ie-trader',name:'Trader\'s shop (Kautoa)',seed:6260,cut:true,w:11.5,d:11.5,h:14,budget:120000,
+ tags:{types:['shop'],wealth:'middle',style:'east',job:'trading',role:'trader'},
+ note:'a trader\'s shop on a raised earth floor: a wide shop window with a counter and a plank shutter propped up as an awning, the spire above, shelves of imported goods, a display, chests and the strongbox; crates and a barrel on the veranda, a carved post with the moon for a sign',
+ build(o){const fy=.3,w=8,d=6,wh=2.6;
+  const r=ieHouse({w,d,floorY:fy,wallH:wh,ver:.6,verFront:2.2,roof:{over:.8,skirtH:1.6,skirtS:.5,towerH:7.5,towerS:.4,topSx:.2,topSz:.05},
+   wallMk:'planks',wallCol:P('woodL'),front:[{x:-1.2,w:3.4,y:.85,h:1.35},{x:2.7,w:1.1,h:2.1,door:true}],back:[{x:0,w:.8,y:1.1,h:.8}],left:[{x:0,w:.8,y:1.1,h:.8}],right:[],
+   stair:'none',finial:'moon'});
+  /* woven panels on the sides, the shutter propped up over the window */
+  for(const s of [-1,1])W(s*(w/2+.07),0,0,s*PI/2,()=>{box('patGableE',-1.7,fy+.1,0,1.4,wh-.3,.02,WHITE);box('patGableE',1.7,fy+.1,0,1.4,wh-.3,.02,WHITE);});
+  isNoCut(()=>{const hy=fy+.85+1.35+.12,zf=d/2+.08;WX(-1.2,hy,zf,0,-.35,0,()=>box('planks',0,-.03,.65,3.6,.06,1.3,P('planks')));
+   for(const s of [-1,1])pole('wood',[-1.2+s*1.6,hy+.34*1.25,zf+.94*1.25],[-1.2+s*1.6,fy+.86,zf+.04],.03,P('woodD'),5);
+   isPou(-4.6,0,r.Dz1+.25,2.6,.14,{mk:'carved',top:'moon'});});
+  const ct=fy+svfH('islander_common_counter',0,1.05);
+  ieFurn([['islander_common_counter',-1.2,fy,d/2-.62,0],['generic_strongbox',-.4,ct,d/2-.62,0],['generic_lamp_oil',-2.0,ct,d/2-.6,0],['generic_tobacco',-1.5,ct,d/2-.62,.2],['generic_spice_box',-1.0,ct,d/2-.62,0],
+   ['islander_common_wall_shelves',-2.2,fy,-d/2+.3,0],['islander_common_wall_shelves',-.6,fy,-d/2+.3,0],['generic_trade_display',w/2-.5,fy,-1.4,-PI/2],['islander_common_chest',-w/2+.4,fy,-1.6,PI/2],
+   ['generic_bottle_crate',1.4,fy,-d/2+.35,0],['generic_crate',2.4,fy,-d/2+.35,0],['generic_crate',2.4,fy+.42,-d/2+.35,.1],['generic_sack',3.4,fy,-2.4,.3],['generic_sack',-3.4,fy,.6,0],
+   ['generic_crate',3.2,fy,d/2+1.1,.3],['generic_barrel',3.9,fy,d/2+1.5,0],['generic_sack',-3.6,fy,d/2+1.3,-.4]]);
+  FURNISH_HANG('islander_common_hanging',.4,fy+wh+.9,0,0);}});
+defBuilding({key:'ie-weaver',name:'Ikat weaver (Kautoa)',seed:6270,cut:true,w:15,d:12.5,h:13,budget:120000,
+ tags:{types:['shop','industry'],wealth:'middle',style:'east',job:'weaving',role:'ikat weaver'},
+ note:'the weavers of hinggi, the East\'s ikat cloth: a woven house on piles with looms on its deep front veranda and inside, the yarn store and the chest of finished cloths; beside it the dye yard, indigo and morinda vats, and cloths drying over a bamboo rail',
+ build(o){const fy=1.3,w=6.4,d=5,wh=2.1;
+  const r=ieHouse({w,d,floorY:fy,wallH:wh,ver:1.2,verFront:2.6,roof:{over:.8,skirtH:1.4,skirtS:.5,towerH:6.4,towerS:.42,topSx:.2,topSz:.05},
+   wallMk:'mat',facade:'patGableE',towerFacade:true,stair:'stair',stairW:1.2,finial:'figure'});
+  ieFurn([['islander_common_loom',-1.7,fy,-1.5,0],['islander_common_rack',1.6,fy,-d/2+.3,0],['islander_common_chest',w/2-.42,fy,.7,-PI/2],['islander_common_store',-w/2+.4,fy,.9,PI/2],
+   ['generic_sewing',.2,fy,-.4,0],['islander_common_stool',-1.7,fy,-.7,PI],
+   ['islander_common_loom',-2.0,fy,d/2+1.4,0],['islander_common_loom',2.0,fy,d/2+1.4,0]]);
+  isNoCut(()=>{ieFurn([['generic_trade_vat',6.2,0,1.1,0,{setting:'outdoor'}],['generic_trade_vat',6.2,0,-.9,.3,{setting:'outdoor'}]]);
+   /* the drying rail: two posts, a bamboo rail, the cloths folded over it */
+   const rx=8.4;for(const z of [-2.6,2.6])pole('bamboo',[rx,0,z],[rx,2.7,z],.06,P('woodL'),6);pole('bamboo',[rx,2.6,-2.7],[rx,2.6,2.7],.05,P('bamboo'),6);
+   const cloth=[['patGableE',WHITE],['tapa',hc(0x2a3a6a)],['patWeave',WHITE],['tapa',P('red')]];
+   cloth.forEach(([mk,c],i)=>{const z=-1.8+i*1.2;for(const s of [-1,1])box(mk,rx+s*.05,.55+(s>0?.2:0),z,.02,2.0-(s>0?.2:0),1.0,c);});});}});
+defBuilding({key:'ie-potter',name:'Potter (Kautoa)',seed:6280,cut:true,w:11,d:7.4,h:7,budget:80000,
+ tags:{types:['shop','industry'],wealth:'poor',style:'east',job:'pottery',role:'potter'},
+ note:'a potter\'s yard: an open shed on an earth floor under a skirt of faded thatch mended with iron, a salvage wall at the back, the bench and the clay bin, jars and crocks for sale on a display; the kiln smoking outside, a heap of clay and a drum of water, jars drying in the sun',
+ build(o){const y=.2;ieShed({w:6.4,d:4.4,plat:y,platMk:'earth',postH:2.3,walls:{back:'patch',left:'bamboo'},wallH:2.2,
+   roof:{skirtH:1.2,skirtS:.5,towerH:2.4,towerS:.4,topSx:.24,topSz:.08,mk:'thatch',col:P('thatchP'),patch:.4,th:.18,finial:'none'}});
+  door(0,y,2.2,0,2.4);const dh=y+svfH('generic_trade_display',0,1.1),bh=y+svfH('islander_common_workbench',0,.9);
+  ieFurn([['islander_common_workbench',-1.2,y,-1.65,0],['generic_poor_stool',-1.2,y,-.95,PI],['generic_trade_bin',-2.75,y,.5,PI/2],['generic_crock',-1.6,bh,-1.65,0],['generic_crock',-1.0,bh,-1.6,.5],
+   ['generic_storage_jar',.6,y,-1.8,0],['generic_storage_jar',1.1,y,-1.75,.5],['generic_storage_jar',.85,y,-1.3,1],['generic_storage_jar',2.6,y,-1.7,0],
+   ['generic_trade_display',1.2,y,1.6,0],['generic_crock',.95,dh,1.6,0],['generic_crock',1.4,dh,1.62,.4],
+   ['generic_trade_kiln',5.0,0,-.6,-PI/2,{setting:'outdoor'}],['generic_storage_jar',1.6,0,3.5,0,{setting:'outdoor'}],['generic_storage_jar',2.2,0,3.6,.4,{setting:'outdoor'}],['generic_storage_jar',2.8,0,3.4,.8,{setting:'outdoor'}]]);
+  smokeAt(5.0,2.2,-.6);
+  isNoCut(()=>{ellip('earth',-4.7,0,1.2,1.0,.5,.85,P('earth'),0,10);isDrum(-4.6,0,-1.3,{col:'galv'});FURNISH('job_winnowing_mat',2.2,0,3.55,0,{setting:'outdoor'});});}});
+defBuilding({key:'ie-chandler',name:'Chandler (Kautoa)',seed:6290,cut:true,w:9.2,d:9.8,h:9.5,budget:80000,
+ tags:{types:['shop'],wealth:'poor',style:'east',job:'trading',role:'chandler'},
+ note:'the chandler who fits out the canoes: a small peaked shop of planks and salvage, its skirt patched with iron, a shop window with a counter of lamp oil and candles, shelves, barrels of pitch and oil; a net frame and a rack of drums outside, a lamp hung at the door',
+ build(o){const fy=.9,w=5.6,d=4.6;
+  const r=ieHouse({w,d,floorY:fy,wallH:2.2,ver:.5,verFront:1.8,posts:'plain',roof:{over:.6,skirtH:1.3,skirtS:.48,towerH:4.2,towerS:.38,topSx:.22,topSz:.06,patch:.3,th:.24},
+   wallMkf:s=>s==='front'?'planks':s==='left'?'corrW':'reclaimed',wallColf:s=>s==='left'?P('rust'):P('planks'),
+   front:[{x:-1.3,w:1.0,h:1.85,door:true},{x:1.2,w:1.7,y:.75,h:1.1}],left:[],right:[{x:0,w:.7,y:1,h:.6}],stair:'stair',stairX:-1.3,stairW:1.0,finial:'none'});
+  const ct=fy+svfH('islander_common_counter',0,1.05);
+  ieFurn([['islander_common_counter',1.2,fy,d/2-.6,0],['generic_lamp_oil',.6,ct,d/2-.6,0],['generic_lamp_oil',1.0,ct,d/2-.58,.3],['generic_candle_supply',1.5,ct,d/2-.62,0],['generic_candle_supply',1.85,ct,d/2-.6,.2],
+   ['islander_common_wall_shelves',-1.0,fy,-d/2+.28,0],['islander_common_wall_shelves',.5,fy,-d/2+.28,0],['generic_barrel',2.2,fy,-1.55,0],['generic_barrel',2.2,fy,-.85,0],
+   ['generic_crate',-2.3,fy,-.4,PI/2],['generic_candle_supply',-2.3,fy+.42,-.4,0],['generic_sack',-2.2,fy,.6,0]]);
+  isNoCut(()=>{FURNISH('job_net_frame',-r.W2-1.0,0,.2,PI/2,{setting:'outdoor'});FURNISH('job_oil_drum_rack',r.W2+1.1,0,.6,-PI/2,{setting:'outdoor'});
+   isLamp(-2.3,fy+1.9,r.Dz1-.1,{});pole('wood',[-2.3,fy+2.07,r.Dz1-.1],[-2.3,fy+2.3,r.Dz1-.1],.015,P('rope'),4);isDrum(-3.6,0,3.2,{col:'drumY'});});}});
+// prefix: ie
+// ================================================================= KAUTOA'S HARBOUR: the fishing dock and the great dockyard
+// Harbour defs stand on the shore row (89-rows.js 'Harbours', 90h-is-shore.js): land at local z > 0, piers over z < 0, the
+// water at IS_SEA.level, every pile driven down to the sea floor (ieSeaFloor). Kautoa was the Ring Sea's great naval power:
+// its dockyard is large and elaborate in the East's manner, after the owner's "islander port" sketch (ring piers round
+// sheltered basins under great roofs, a landmark figure in the basin): two slipways, a long boat shed under a skirt of
+// golden thatch with two spires, a great double-hulled voyaging canoe half built on the open slip under shear legs, the
+// timber yard and the carpenters' shed, a main pier, two ring piers under ring roofs of thatch with a carved moon post in
+// the first basin, a finished voyaging canoe and outrigger canoes moored.
+//   ieSeaFloor(z)   the sea floor under local z (the shoreline at z = 0)
+//   iePile(x,z,y,r) a tarred pile from the floor (driven .3 in) up to y
+//   ieWalk(a,b,w,y) a plank walk from [x, z] a to b, w wide, its deck at y, on pile pairs
+//   ieRing(...)     a ring pier round a basin, a gap for the boats, a ring roof of thatch on posts
+//   ieHull(L,B,dp,o) a Kautoan plank-built hull along z; o.stage 'ribs' | 'half' | 'done'
+//   ieCanoe, ieDouble an outrigger canoe; the double-hulled voyaging canoe (built or on the slip)
+//   ieSlip(xs,z0,z1) the timber ways of a slipway from the yard (z0) down into the sea (z1)
+function ieSeaFloor(z){return z>=1.5?0:IS_SEA.floor*smooth(0,IS_SEA.slope,1.5-z);}
+function iePile(x,z,y,r){const fl=ieSeaFloor(z)-.3;cyl('tarred',x,fl,z,r||.13,y-fl,P('tarred'),8);}
+/* o.step (the pile spacing), o.bollards, o.rail (a rail on both edges) */
+function ieWalk(a,b,w,y,o){o=o||{};const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),cx=(a[0]+b[0])/2,cz=(a[1]+b[1])/2,ax=Math.cos(ry),az=-Math.sin(ry);
+ W(cx,0,cz,ry,()=>{box('planks',0,y-.1,0,w,.1,L,P('planks'));for(const s of [-1,1])box('wood',s*(w/2-.07),y-.34,0,.14,.24,L,P('woodD'));
+  if(o.bollards)for(const z of isSpan(-L/2+.8,L/2-.8,Math.max(2,Math.round(L/4))))for(const s of [-1,1])cyl('wood',s*(w/2-.16),y,z,.11,.45,P('woodD'),8);});
+ const n=Math.max(2,Math.round(L/(o.step||2.4))+1);
+ for(let i=0;i<n;i++){const t=i/(n-1),x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t);for(const s of [-1,1])iePile(x+s*ax*(w/2-.12),z+s*az*(w/2-.12),y-.1);}
+ if(o.rail)for(const s of [-1,1]){const ox=s*ax*(w/2-.05),oz=s*az*(w/2-.05);isRail([a[0]+ox,a[1]+oz],[b[0]+ox,b[1]+oz],y,{h:.9});}}
+/* a ring pier about (cx, cz): its deck from r0 to r1 at y, a gap gw radians wide centred on angle o.ga (default -PI/2: the open
+   sea, -z) for the boats into the basin, piles round both edges, posts carrying a ring roof of golden thatch (o.roof false: none) */
+function ieRing(cx,cz,r0,r1,y,o){o=o||{};const ga=o.ga===undefined?-PI/2:o.ga,gw=o.gw||.55,a0=ga+gw/2,a1=ga+TAU-gw/2,seg=48;
+ sector('planks',cx,cz,r0,r1,a0,a1,y-.12,y,P('planks'),seg);
+ sector('wood',cx,cz,r1-.14,r1+.04,a0,a1,y-.42,y-.12,P('woodD'),seg);sector('wood',cx,cz,r0-.04,r0+.14,a0,a1,y-.42,y-.12,P('woodD'),seg);
+ const np=Math.round((a1-a0)*r1/2.6),at=(i,r)=>{const a=lerp(a0,a1,i/np);return [cx+Math.cos(a)*r,cz+Math.sin(a)*r];};
+ for(let i=0;i<=np;i++)for(const r of [r0+.18,r1-.18]){const p=at(i,r);iePile(p[0],p[1],y-.12,.14);}
+ if(o.roof===false)return;const ph=o.postH||2.6,rm=(r0+r1)/2,ro=r1+.7,ri=r0-.5,yr=y+ph,rh=o.rise||1.9;
+ for(let i=0;i<=np;i+=2)for(const r of [r0+.3,r1-.3]){const p=at(i,r);cyl('wood',p[0],y,p[1],.11,ph+.1,P('wood'),8);}
+ for(const r of [r0+.3,r1-.3])sector('wood',cx,cz,r-.1,r+.1,a0,a1,yr-.12,yr+.08,P('woodD'),seg);
+ const f=(u,v)=>{const a=lerp(a0,a1,u);let r,yy;if(v<.5){const t=v*2;r=lerp(ro,rm,t);yy=lerp(yr,yr+rh,t);}else{const t=(v-.5)*2;r=lerp(rm,ri,t);yy=lerp(yr+rh,yr+.25,t);}return [cx+Math.cos(a)*r,yy,cz+Math.sin(a)*r];};
+ isShell('thatchR',f,seg,6,P('thatchE'),.22,{edges:['v0','v1','u0','u1']});}
+/* a hull along local z, L long, half-beam B, depth dp (the keel at y = 0), its ends rising to carved posts. o.stage: 'ribs' (the
+   keel, the frames and the garboards), 'half' (planked to half its height, the frames standing above), 'done' (planked, the
+   gunwales, a painted band when o.band); o.prow a carved post at each end */
+function ieHull(L,B,dp,o){o=o||{};const st=o.stage||'done',hb=t=>B*Math.pow(Math.sin(PI*clamp(t,.002,.998)),.55),rise=t=>.9*dp*Math.pow(Math.abs(2*t-1),4);
+ const S=(t,ph)=>{const c=1-Math.cos(ph);return [hb(t)*Math.sin(ph),dp*c+rise(t)*(.4+.6*c),(t-.5)*L];};
+ const ph1=st==='done'?PI/2:st==='half'?PI*.3:PI*.09,col=o.col||P('woodD');
+ tube('wood',t=>{const p=S(t,0);return [0,p[1]-.02,p[2]];},()=>[.07,.07],16,5,P('woodD'));
+ psurf('hull',(u,v)=>S(u,lerp(-ph1,ph1,v)),24,8,col,{flip:true});
+ psurf('hull',(u,v)=>{const p=S(u,lerp(-ph1,ph1,v));return [p[0]*.93,p[1]+.05,p[2]];},24,8,P('planks'),{flip:false});
+ if(st!=='done'){for(let k=1;k<12;k++){const t=k/12;tube('wood',s=>{const p=S(t,lerp(-PI/2,PI/2,s));return [p[0]*.97,p[1]+.03,p[2]];},()=>[.045,.06],10,4,P('wood'));}}
+ else{for(const s of [-1,1])tube('wood',t=>{const p=S(t,s*PI/2);return [p[0]*1.01,p[1]+.02,p[2]];},()=>[.06,.06],16,5,P('woodD'));
+  if(o.band)psurf('patGableE',(u,v)=>{const p=S(.08+u*.84,lerp(-PI*.47,-PI*.36,v));return [p[0]*1.015,p[1],p[2]];},16,2,WHITE,{flip:true}),
+   psurf('patGableE',(u,v)=>{const p=S(.08+u*.84,lerp(PI*.36,PI*.47,v));return [p[0]*1.015,p[1],p[2]];},16,2,WHITE,{flip:true});}
+ if(o.prow!==false)for(const e of [-1,1]){const zt=e*(L/2-.06),yt=dp+rise(e>0?1:0)-.25;tube('carved',s=>[0,yt+s*(.7+dp*.5),zt+e*s*.3],s=>[.05,.1*(1-.4*s)],5,6,P('carvN'),{caps:true});}}
+/* an outrigger canoe at (x, y, z) heading ry (y: IS_SEA.level - .25 afloat, a little above the sand when beached) */
+function ieCanoe(x,y,z,ry,o){o=o||{};const L=o.L||6.4;W(x,y,z,ry,()=>{ieHull(L,.42,.55,{stage:'done'});
+ for(const z2 of [-L*.18,L*.18]){beam('wood',[0,.6,z2],[2.1,.45,z2],.05,P('wood'),true,5);pole('wood',[2.1,.12,z2],[2.1,.45,z2],.03,P('woodD'),4);}
+ tube('wood',t=>[2.1,.12,(t-.5)*L*.6],t=>{const r=.11*Math.pow(Math.sin(PI*clamp(t,.03,.97)),.4);return [r,r];},8,6,P('wood'),{caps:true});
+ isMoonDisc(0,.95,L/2-.05,0,.16);beam('wood',[-.3,.75,-.8],[.35,.55,1.6],.03,P('woodL'),true,4);});}
+/* the double-hulled voyaging canoe along local z: two hulls sp apart, crossbeams lashed over them; done: a deck, a deckhouse
+   under a little hip of thatch, the mast with the crab-claw sail furled along its yard, a steering paddle. o.stage / o.stage2
+   the two hulls' stages, o.beams how many crossbeams are in place */
+function ieDouble(o){const L=o.L||16,sp=o.sp||4.4,B=.78,dp=1.15,st=o.stage||'done';
+ for(const s of [-1,1])W(s*sp/2,0,0,0,()=>ieHull(L,B,dp,{stage:s<0?st:(o.stage2||st),band:st==='done'}));
+ const nb=o.beams===undefined?7:o.beams;for(let i=0;i<nb;i++){const z=lerp(-L*.3,L*.3,nb<2?.5:i/(nb-1));box('wood',0,dp+.02,z,sp+2*B+.3,.18,.22,P('woodD'));
+  for(const s of [-1,1])cyl('rope',s*sp/2,dp-.02,z,.17,.26,P('rope'),8);}
+ if(st!=='done')return;
+ box('planks',0,dp+.2,0,sp-.2,.08,L*.62,P('planks'));
+ W(0,dp+.28,-1.2,0,()=>{box('mat',0,0,0,2.0,1.2,2.4,P('bamboo'));isHip({hw:1.45,hd:1.75,eaveY:1.15,topY:2.3,topS:.3,topS2:.05,mk:'thatchR',col:P('thatchE'),th:.12,nu:16});});
+ pole('wood',[0,dp+.28,2.4],[0,dp+8.2,2.4],.13,P('woodD'),8);
+ pole('wood',[0,dp+.6,L*.42],[0,dp+7.6,1.0],.08,P('wood'),6);
+ tube('mat',t=>{const p=[0,lerp(dp+.6,dp+7.6,t),lerp(L*.42,1.0,t)];return [p[0]+.18,p[1],p[2]];},t=>{const r=.08+.16*Math.sin(PI*t);return [r,r];},10,6,P('bamboo'),{caps:true});
+ for(const s of [-1,1])sagRope('rope',[0,dp+8.1,2.4],[s*(sp/2+B),dp+.1,1.2],.3,.02,P('rope'),6);
+ beam('wood',[sp/2-.2,dp+.9,-L*.36],[sp/2+.4,-.3,-L*.5-.6],.07,P('woodD'),true,5);}
+/* a slipway: timber ways at each x of xs from z0 on the land (y .3) down to z1 in the sea, on sleepers and piles */
+function ieSlip(xs,z0,z1){const yOf=z=>z>=1.5?.3:lerp(.3,IS_SEA.level-.9,(1.5-z)/(1.5-z1));
+ for(const x of xs){beam('wood',[x,.3+.12,z0],[x,.3+.12,1.5],.24,P('woodD'));beam('wood',[x,.3+.12,1.5],[x,yOf(z1)+.12,z1],.24,P('woodD'));}
+ const x0=Math.min(...xs)-.4,x1=Math.max(...xs)+.4;
+ for(let z=z0-.6;z>1.5;z-=1.6)box('wood',(x0+x1)/2,0,z,x1-x0,.3,.3,P('wood'));
+ for(let z=1;z>=z1;z-=3){const y=yOf(z);box('wood',(x0+x1)/2,y-.25,z,x1-x0,.25,.3,P('woodD'));for(const x of [x0+.2,x1-.2])iePile(x,z,y-.25,.15);}}
+/* ---------------------------------------------------------------- the fishing dock */
+defBuilding({key:'ie-fishdock',name:'Fishing dock (Kautoa)',seed:6301,w:17,d:31,h:12,budget:150000,
+ tags:{types:['industry','infrastructure'],wealth:'middle',style:'east',job:'fishing',role:'fishing dock'},
+ note:'the Kautoan fishers\' dock: a pier on tarred piles out to a T-head and a side finger, outrigger canoes moored and one hauled up on rollers, a fish shed under a spire of golden thatch on the beach, net frames, the pole rack and the salt',
+ build(o){const y=.5;
+  ieWalk([0,2.6],[0,-14.9],2.4,y,{bollards:true});ieWalk([-5.2,-15.7],[5.2,-15.7],3.2,y,{step:2.6});ieWalk([-.9,-8.2],[-5.6,-8.2],1.6,y);
+  ieCanoe(2.4,IS_SEA.level-.25,-6.2,.04,{});ieCanoe(-3.0,IS_SEA.level-.25,-12.2,PI*.97,{L:5.8});ieCanoe(6.4,IS_SEA.level-.25,-11.0,.1,{});
+  /* one hauled up on the sand on log rollers */
+  for(const z of [3.4,5.2,7])beam('wood',[-6.3,.12,z],[-4.1,.12,z],.12,P('wood'),true,7);ieCanoe(-5.6,.26,5.3,0,{L:5.6});
+  /* the fish shed: an open shed under the East's roof, the trays and the salt under it */
+  W(3,0,9.2,0,()=>{ieShed({w:6,d:4,postH:2.4,step:3,roof:{skirtH:1.1,skirtS:.5,towerH:3.2,towerS:.42,topSx:.22,topSz:.06,th:.24,finial:'horns'}});
+   ieFurn([['job_fish_tray',-1.4,0,-.6,0,{setting:'outdoor'}],['job_fish_tray',1.2,0,-.6,0,{setting:'outdoor'}],['job_salt_tub',-2,0,1.2,0,{setting:'outdoor'}],['generic_barrel',2.2,0,1.2,0,{setting:'outdoor'}]]);});
+  ieFurn([['job_net_frame',-8.4,0,8,PI/2,{setting:'outdoor'}],['job_net_frame',-8.4,0,11.2,PI/2,{setting:'outdoor'}],['job_pole_rack',-2.6,0,13.4,0,{setting:'outdoor'}],
+   ['job_salt_heap',9,0,9.6,0,{setting:'outdoor'}],['job_fish_tray',.9,y,-15.4,0,{setting:'outdoor'}]]);
+  isFlag(4.6,-16.6,6.5,{});isPou(-1.6,0,3.4,2.4,.15,{mk:'carved',top:'moon'});
+  door(0,0,12.5,0,2.4);}});
+/* ---------------------------------------------------------------- the dockyard */
+defBuilding({key:'ie-dockyard',name:'Dockyard (Kautoa)',seed:6302,w:58,d:56,h:18.5,budget:400000,
+ tags:{types:['industry','infrastructure'],wealth:'rich',style:'east',job:'carpentry',role:'dockyard'},
+ note:'the royal dockyard of Kautoa (the owner\'s "islander port" sketch, in the East\'s manner): two slipways, a long boat shed under golden thatch with two spires, a great double-hulled voyaging canoe half built on the open slip under shear legs, the timber yard and the carpenters\' shed; a coral quay, a main pier and two ring piers round sheltered basins under ring roofs of thatch, a great carved moon post in the first basin, a finished voyaging canoe and outrigger canoes moored',
+ build(o){const y=.6,cv=P('carvN');
+  /* the coral quay along the shore (gaps for the slips) */
+  for(const [x0,x1] of [[-28,-20.4],[-15.6,-7],[3,28]])box('coral',(x0+x1)/2,-1.6,1.3,x1-x0,2.0,1.2,P('coral'));
+  /* slip A and the boat shed over it: a hull on its stocks */
+  ieSlip([-19.4,-16.6],19.5,-12);
+  W(-18,0,10.2,0,()=>{ieShed({w:11,d:19,postH:4.2,step:3.2,carved:true,roof:{skirtH:2.0,skirtS:.6,towerH:7,towerS:.3,topSx:.14,topSz:.05,sq:8,th:.28,
+    towers:[[0,-4.6,1],[0,4.6,1]],finial:'horns',facade:'patGableE'}});
+   for(const z of [-4.5,-1.5,1.5,4.5])box('wood',0,.42,z,1.6,.4,.5,P('woodD'));W(0,.8,0,0,()=>ieHull(13,.8,1.2,{stage:'half'}));
+   for(const s of [-1,1])for(const z of [-3,3])beam('wood',[s*1.0,.4,z],[s*.85,1.6,z],.08,P('wood'),true,5);
+   ieFurn([['job_saw_bench',-3.6,0,6.4,PI/2],['islander_common_workbench',4.3,0,6.8,-PI/2],['job_plank_stack',-3.7,0,-5.6,PI/2],['pa_tool_rack',4.9,0,1.2,-PI/2],['generic_crate',4.4,0,-4.6,0]]);});
+  /* slip B in the open: the great voyaging canoe half built on it, scaffolds along it, two shear legs over it */
+  ieSlip([-5.2,-3.4,-.6,1.2],19.5,-12);
+  W(-2.1,.82,9.6,0,()=>ieDouble({L:16,sp:4.6,stage:'half',stage2:'ribs',beams:3}));
+  for(const z of [3.6,7.6,11.6,15.6])for(const x of [-4.4,.2])box('wood',x,.42,z,.5,.4,.9,P('woodD'));
+  for(const s of [-1,1]){const x=s>0?3.6:-7.8;for(const z of isSpan(2.5,16.5,6))for(const dx of [-.5,.5])box('wood',x+dx,0,z,.12,1.5,.12,P('wood'));box('planks',x,1.5,9.5,1.3,.08,14.6,P('planks'));}
+  for(const zf of [5.2,13.4]){const ap=[-2.1,11,zf-1.2];for(const xf of [-9.6,5.4])pole('wood',[xf,0,zf],ap,.16,P('wood'),8);
+   cyl('rope',ap[0],ap[1]-.5,ap[2],.32,.5,P('rope'),8);sagRope('rope',ap,[-2.1,0,zf+6.6],.4,.03,P('rope'),8);beam('wood',[-2.1,-.3,zf+6.6],[-2.1,.6,zf+6.6],.12,P('woodD'));
+   pole('rope',ap,[-2.1,4.0,zf-1.2],.03,P('rope'),5);box('wood',-2.1,3.6,zf-1.2,.3,.4,.2,P('woodD'));beam('planks',[-3.9,3.2,zf-1.2],[-.3,3.2,zf-1.2],.3,P('planks'),false,undefined,.1);}
+  /* the timber yard: plank stacks, saw benches, a log pile; the carpenters' shed */
+  for(let row=0;row<3;row++)for(let k=0;k<4-row;k++){const zz=8.2+row*.27+k*.62+row*.31;beam('wood',[20.2,.3+row*.52,zz],[27,.3+row*.52,zz],.3,P('wood'),true,9);}
+  W(16,0,5.4,0,()=>{ieShed({w:6.4,d:3.4,postH:2.5,step:3.2,walls:{back:'planks'},wallH:2.5,roof:{skirtH:1.1,skirtS:.5,towerH:2.8,towerS:.42,topSx:.22,topSz:.06,th:.22,finial:'none'}});
+   ieFurn([['islander_common_workbench',-1.6,0,-1.1,0],['generic_trade_lathe',1.4,0,-1.2,0],['generic_crate',2.7,0,.6,0],['generic_crate',2.7,0,1.1,.2]]);});
+  ieFurn([['job_plank_stack',12.4,0,18.4,0,{setting:'outdoor'}],['job_plank_stack',18.6,0,18.4,0,{setting:'outdoor'}],['job_plank_stack',12.4,0,15.8,0,{setting:'outdoor'}],
+   ['job_saw_bench',19.6,0,14.4,.2,{setting:'outdoor'}],['job_saw_bench',13.4,0,11.8,0,{setting:'outdoor'}],['pa_tool_rack',24.5,0,13,-PI/2,{setting:'outdoor'}]]);
+  /* the yard's front: a bamboo fence with a gate between carved posts, the moon's flags */
+  for(const [x0,x1] of [[-26,5.6],[10.4,26]])W((x0+x1)/2,0,21.4,0,()=>isFenceRun(x1-x0,1.2));
+  for(const x of [5.8,10.2])isPou(x,0,21.4,3.6,.24,{mk:'carved',top:'horns',col:cv});door(8,0,21.4,0,4.2);
+  for(const x of [3.6,12.4])isFlag(x,20.6,9,{});
+  /* the main pier, the ring piers and the walks between them */
+  ieWalk([12,1],[12,-14],3,y,{bollards:true});ieWalk([-10,.8],[-10,-16.7],2.4,y);
+  ieRing(12,-22,4.6,8,y,{});ieRing(-10,-24,4.2,7.2,y,{});ieWalk([4.1,-22.1],[-2.9,-23.8],2.2,y);
+  /* the great carved moon post in the first basin, on its pile platform */
+  for(const [a,b] of [[-.8,-.8],[.8,-.8],[-.8,.8],[.8,.8]])iePile(12+a,-22+b,y-.1,.16);
+  W(12,0,-22,0,()=>{box('planks',0,y-.12,0,2.2,.12,2.2,P('planks'));
+   isPou(0,y,0,8.4,.38,{mk:'carved',n:6,top:'moon',col:cv});});
+  /* the boats: the finished voyaging canoe at the main pier, outrigger canoes in the basins */
+  W(7.3,IS_SEA.level-.5,-8.5,0,()=>ieDouble({L:14,sp:4.2,stage:'done'}));
+  ieCanoe(9.4,IS_SEA.level-.25,-20.6,.5,{});ieCanoe(14.6,IS_SEA.level-.25,-24.2,-.7,{});ieCanoe(-12,IS_SEA.level-.25,-22.8,1.3,{L:5.6});ieCanoe(-13.4,IS_SEA.level-.25,-6,PI,{});ieCanoe(16.2,IS_SEA.level-.25,-7,.1,{});
+  /* the rings' furniture: the fish market under the first roof, cargo under the second */
+  const rp=(cx,cz,a,r)=>[cx+Math.cos(a)*r,cz+Math.sin(a)*r];
+  for(const [k,cx,cz,a,r] of [['job_fish_tray',12,-22,PI*.1,6.3],['job_fish_tray',12,-22,PI*.3,6.3],['generic_barrel',12,-22,PI*.65,6.4],['job_net_frame',12,-22,PI*.8,6.3],['generic_barrel',12,-22,PI*1.25,6.4],
+   ['generic_crate',-10,-24,PI*.15,5.7],['generic_crate',-10,-24,PI*.32,5.7],['job_bales',-10,-24,PI*.7,5.7],['job_bales',-10,-24,PI*.9,5.7],['generic_barrel',-10,-24,PI*1.15,5.7]]){
+   const p=rp(cx,cz,a,r);FURNISH(k,p[0],y,p[1],Math.atan2(cx-p[0],cz-p[1]));}}});
+// prefix: ie
+// ================================================================= KAUTOA'S DEFENCES: the wall, the gate, the watch tower, the barracks
+// The old kingdom walled its towns in coral stone (the noble compounds' walls, 60-ie-east.js, grown to a rampart) and
+// crowned the stone with a palisade of sharpened stakes, a walkway behind them, buffalo horns hung along it as trophies;
+// the gate is a passage between two coral bastions under a fighting gallery roofed in the East's manner (a skirt of golden
+// thatch and a spire with horns); the watch tower is a braced timber frame with a lookout hut under a spire with the moon;
+// the barracks a long house on piles with two spires and a training yard. The West palisades in plain stakes (isPalisadeRun).
+// Frame: origin on the ground at the plot centre, +z the front (the outside of a wall, the way in through the gate).
+/* a run of wall along local x, L long, its outer face +z: a coral footing and wall, a stone coping, a palisade of sharpened
+   stakes along the outer edge with rails behind, the walkway on top, horns on the palisade every 6 m; o.steps (metres between
+   flights of stone steps up the inner face), o.ends (carved posts at both ends) */
+function ieWallRun(L,o){o=o||{};const H=2.6,T=1.5,cv=P('carvN'),r=.13,ty=H+.14,n=Math.max(2,Math.floor(L/(r*2.1)));
+ box('coral',0,0,0,L+.3,.7,T+.5,P('coral'));box('coral',0,.7,0,L,H-.7,T,P('coral'));box('stone',0,H,0,L+.1,.14,T+.12,P('stone'));
+ for(let i=0;i<n;i++){const x=-L/2+r+i*(L-2*r)/(n-1),hh=1.7+h3(i,L,3)*.35,c=P('wood');cyl('wood',x,ty,T/2-.2,r,hh,c,7);cone('wood',x,ty+hh,T/2-.2,r,.4,c,7);}
+ for(const yy of [ty+.45,ty+1.2])box('wood',0,yy,T/2-.2-r-.07,L,.16,.12,P('woodD'));
+ box('planks',0,ty,-.2,L,.06,T-.75,P('planks'));
+ for(let x=-L/2+3;x<L/2-1;x+=6)isHorns(x,ty+1.45,T/2-.02,0,.9);
+ if(o.steps)for(let x=-L/2+o.steps/2;x<L/2;x+=o.steps)ieSteps(x,-T/2-.02,PI,ty,1.0,{rail:false});
+ if(o.ends)for(const s of [-1,1])isPou(s*(L/2+.25),0,T/2+.35,H+1.6,.2,{mk:'carved',top:'figure',col:cv});}
+defBuilding({key:'ie-wall',name:'Coral wall (Kautoa)',seed:6401,w:25.4,d:7,h:5.6,budget:120000,front:{x:0,z:1.0,yaw:0},
+ tags:{types:['military','infrastructure'],wealth:'middle',style:'east',role:'town wall'},
+ note:'a run of the town wall: battered coral stone on a footing, a stone coping, a palisade of sharpened stakes crowning it with a walkway behind, buffalo horns hung on the stakes, stone steps up the inner face, carved posts at the ends',
+ build(o){ieWallRun(24,{steps:12,ends:true});}});
+defBuilding({key:'ie-gate',name:'Town gate (Kautoa)',seed:6402,w:30.5,d:9,h:16,budget:200000,
+ tags:{types:['military','infrastructure'],wealth:'rich',style:'east',role:'town gate'},
+ note:'the town gate: a passage between two coral bastions painted with woven bands, heavy plank doors swung in, carved lintels; above it a fighting gallery behind a carved parapet under a skirt of golden thatch with a spire and horns; carved posts with horns and standing stones before it, the wall running off either side',
+ build(o){const H=4.2,bw=5,bd=4.4,gw=3.4,cv=P('carvN'),gy=H+.16;
+  /* the bastions and the wall either side */
+  for(const s of [-1,1])W(s*(gw/2+bw/2),0,0,0,()=>{box('coral',0,0,0,bw+.3,.8,bd+.3,P('coral'));box('coral',0,.8,0,bw,H-.8,bd,P('coral'));box('stone',0,H,0,bw+.15,.16,bd+.15,P('stone'));
+   box('patGableE',0,H-1.3,bd/2+.01,bw-.8,.9,.02,WHITE);});
+  for(const s of [-1,1])W(s*(gw/2+bw+4),0,0,0,()=>ieWallRun(8,{}));
+  /* the gateway: carved lintels, the doors swung inward, iron studs */
+  for(const z of [bd/2-.3,-bd/2+.3])box('carved',0,H-.65,z,gw+.6,.65,.55,cv);box('patGableE',0,H-.55,bd/2+.03,gw-.2,.4,.02,WHITE);
+  for(const s of [-1,1])W(s*gw/2,0,bd/2-.7,-s*1.2,()=>{box('planks',-s*gw/4,0,0,gw/2-.06,H-.75,.14,P('woodD'));
+   for(const y of [.6,1.6,2.6])for(const k of [.2,.5,.8])sph('iron',-s*gw/2*k,y,.08,.05,P('iron'),1,6);box('wood',-s*gw/4,1.5,.08,gw/2-.2,.14,.06,P('wood'));});
+  door(0,0,bd/2,0,gw);
+  /* the fighting gallery: a deck over the bastions and the passage, carved posts, a parapet with woven panels, the roof */
+  const GW=gw+2*bw;isDeck(GW,bd+.4,gy+.12,{col:P('planks'),beam:false});
+  for(const x of isSpan(-GW/2+.25,GW/2-.25,5))for(const z of [-bd/2,bd/2])isPou(x,gy+.12,z,2.2,.14,{mk:'carved',n:2,col:cv});
+  for(const [x,z,ry,L] of [[0,bd/2+.1,0,GW],[GW/2+.1,0,PI/2,bd+.4],[-GW/2-.1,0,-PI/2,bd+.4]])W(x,0,z,ry,()=>{box('carved',0,gy+.12,0,L,1.0,.2,cv);box('patGableE',0,gy+.24,.11,L-.6,.7,.02,WHITE);});
+  ieRoofE({hw:GW/2+.8,hd:bd/2+1.0,eY:gy+2.3,skirtH:1.3,skirtS:.55,towerH:7,towerS:.3,topSx:.16,topSz:.05,sq:8,th:.28,finial:'horns',facade:'patGableE'});
+  isLadder(gw/2+bw/2,-bd/2-.25,PI,gy+.12,{});
+  ieFurn([['generic_trade_weapon_rack',-4.6,gy+.12,-bd/2+.35,0],['generic_trade_weapon_rack',4.6,gy+.12,-bd/2+.35,0],['islander_common_bench',0,gy+.12,-bd/2+.4,0],['generic_barrel',-6.2,gy+.12,-1.2,0]]);
+  /* before the gate: carved posts with horns, standing stones, the flags */
+  for(const s of [-1,1]){isPou(s*(gw/2+.55),0,bd/2+.9,4.6,.26,{mk:'carved',top:'horns',col:cv});isMenhir(s*3.6,bd/2+2.2,1.8,.3);isFlag(s*6.2,-bd/2-.6,10.5,{ry:s>0?0:PI});}}});
+defBuilding({key:'ie-watchtower',name:'Watch tower (Kautoa)',seed:6403,cut:true,w:7.6,d:8,h:20.5,budget:120000,front:{x:.8,z:3.9,yaw:0},
+ tags:{types:['military'],wealth:'middle',style:'east',role:'watch tower'},
+ note:'the watch tower: four battered timber legs on footing stones, braced in three tiers, ladders by way of a landing to a lookout platform; a hut with a woven parapet on carved corner posts under a skirt and spire of golden thatch with the moon on its ridge; racks of spears and a chest up there for the watch',
+ build(o){const ph=11,b0=2.3,b1=1.75,cv=P('carvN'),bAt=y=>lerp(b0,b1,y/ph),pt=(sx,sz,y)=>[sx*bAt(y),y,sz*bAt(y)];
+  isNoCut(()=>{for(const [sx,sz] of [[-1,-1],[1,-1],[-1,1],[1,1]]){sph('stone',sx*b0,.1,sz*b0,.45,P('stone'),.5,8);pole('wood',pt(sx,sz,0),pt(sx,sz,ph-.1),.2,P('wood'),8);}
+   const tiers=[.4,3.9,7.4,ph-.25];
+   for(let k=0;k<tiers.length;k++){const y=tiers[k];for(const [a,b] of [[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]],[[-1,1],[-1,-1]]]){
+     beam('wood',pt(a[0],a[1],y),pt(b[0],b[1],y),.14,P('woodD'));
+     if(k<tiers.length-1){const y2=tiers[k+1];beam('wood',pt(a[0],a[1],y),pt(b[0],b[1],y2),.1,P('wood'));beam('wood',pt(b[0],b[1],y),pt(a[0],a[1],y2),.1,P('wood'));}}}
+   for(const [sx,sz] of [[-1,-1],[1,-1],[-1,1],[1,1]])beam('wood',pt(sx,sz,ph-1.6),[sx*2.5,ph-.15,sz*2.5],.12,P('woodD'));
+   /* the landing and the ladders */
+   isDeck(1.5,1.2,5.5,{x:.8,z:2.65,col:P('planks'),beam:false});for(const x of [.15,1.45])pole('wood',[x,5.2,3.2],[x,0,3.5],.06,P('wood'),6);
+   isLadder(.8,3.25,0,5.5,{lean:.7});W(.8,5.5,2.62,0,()=>isLadder(0,0,0,ph-5.5,{lean:.38}));});
+  /* the platform and the lookout hut */
+  isCutFloor(ph);isDeck(5.2,5.2,ph,{col:P('planks')});
+  isWalls(5,5,ph,1.1,'bamboo',P('bamboo'),{front:[],back:[],left:[],right:[]});
+  for(const [x,z,ry,L] of [[0,2.57,0,5],[0,-2.57,PI,5],[2.57,0,PI/2,5],[-2.57,0,-PI/2,5]])W(x,0,z,ry,()=>box('patWeave',0,ph+.08,0,L-.4,.85,.02,WHITE));
+  for(const [sx,sz] of [[-1,-1],[1,-1],[-1,1],[1,1]])isPou(sx*2.42,ph,sz*2.42,2.4,.13,{mk:'carved',n:2,col:cv});
+  ieRoofE({hw:3.2,hd:3.2,eY:ph+2.35,skirtH:1.0,skirtS:.55,towerH:4.0,towerS:.5,topSx:.22,topSz:.07,sq:6,th:.22,finial:'moon'});
+  ieFurn([['generic_trade_weapon_rack',-2.2,ph,.2,PI/2],['islander_common_bench',2.2,ph,0,-PI/2],['islander_common_chest',-1.0,ph,-2.1,0],['generic_barrel',1.5,ph,-1.9,0]]);
+  FURNISH_HANG('islander_common_hanging',0,ph+2.3,0,0);}});
+defBuilding({key:'ie-barracks',name:'Barracks (Kautoa)',seed:6404,cut:true,w:17,d:18.5,h:12.5,budget:150000,
+ tags:{types:['military','dwelling-multi'],wealth:'middle',style:'east',role:'barracks'},
+ note:'the barracks of the war-band: a long plank house on piles under one skirt with two spires, buffalo horns on the veranda posts, two doors and two stairs; bunks along the back wall, lockers, racks of spears and an armour stand; a fenced training yard before it with dummies and an archery butt, the moon flag',
+ build(o){const fy=1.4,w=13,d=6;
+  const r=ieHouse({w,d,floorY:fy,wallH:2.3,ver:.8,verFront:1.6,roof:{over:.8,skirtH:1.5,skirtS:.6,towerH:6,towerS:.24,topSx:.12,topSz:.04,sq:9},
+   towers:[[-3.4,0,1],[3.4,0,1]],wallMk:'planks',wallCol:P('planks'),
+   front:[{x:-3.4,w:1.1,h:1.9,door:true},{x:3.4,w:1.1,h:1.9,door:true},{x:0,w:.8,y:.9,h:.7},{x:-5.6,w:.7,y:.9,h:.7},{x:5.6,w:.7,y:.9,h:.7}],back:[{x:-3,w:.7,y:.9,h:.7},{x:3,w:.7,y:.9,h:.7}],
+   stair:'stair',stairX:-3.4,stairW:1.1,finial:'horns',hornPosts:true});
+  for(const [x,z,ry,L] of [[0,-d/2-.07,PI,w],[w/2+.07,0,PI/2,d],[-w/2-.07,0,-PI/2,d]])W(x,0,z,ry,()=>box('patGableE',0,fy+1.75,0,L-.4,.45,.02,WHITE));
+  isNoCut(()=>isStair(3.4,r.Dz1+.02,0,0,fy,1.1));
+  /* the room: bunks along the back, lockers, the racks and the armour, a table with benches */
+  for(const x of [-5.6,-4.4,-3.2,1.2,2.4,3.6])FURNISH('generic_trade_bunk',x,fy,-d/2+1.12,0);
+  ieFurn([['generic_trade_locker',-1.6,fy,-d/2+.38,0],['generic_trade_locker',-.6,fy,-d/2+.38,0],['generic_trade_weapon_rack',-w/2+.3,fy,1.0,PI/2],['generic_trade_weapon_rack',w/2-.3,fy,1.0,-PI/2],
+   ['generic_trade_armour_stand',5.6,fy,-1.5,-PI/2],['islander_common_low_table',0,fy,1.4,0],['islander_common_bench',-1.2,fy,1.4,PI/2],['islander_common_bench',1.2,fy,1.4,-PI/2]]);
+  FURNISH_HANG('islander_common_hanging',0,fy+2.3+1.0,.6,0);
+  /* the training yard */
+  isNoCut(()=>{box('earth',0,0,10.2,14,.03,6.6,P('earth'));for(const [x,z,ry,L] of [[-7,10.2,PI/2,6.6],[7,10.2,PI/2,6.6],[-4.3,13.5,0,5.4],[4.3,13.5,0,5.4]])W(x,0,z,ry,()=>isFenceRun(L,1.2));
+   isFlag(-6.4,7.6,9,{});});
+  ieFurn([['islander_training_training_dummy',-4,0,10.8,0,{setting:'outdoor'}],['islander_training_training_dummy',-1.6,0,10.8,0,{setting:'outdoor'}],['islander_training_training_dummy',.8,0,10.8,0,{setting:'outdoor'}],
+   ['islander_training_archery_butt',4.8,0,12.4,PI,{setting:'outdoor'}],['generic_trade_weapon_rack',6.3,0,9,-PI/2,{setting:'outdoor'}]]);}});
 // ================================================================= KratorSky — the Krator skybox module (from claude/krator-sky.html, verbatim logic)
 // Canon (krator-notes): tidally-locked moon of a Neptune–Saturn-class giant, 24 h day, ~40° S, giant fixed at
 // altitude 25° azimuth 66° (NE, over Korona), obliquity ~23°, eclipse seasons round each equinox.
@@ -10864,8 +11509,11 @@ const FAMILIES=[
  {name:'Kautoa - poor houses',keys:['ie-hut-scrap','ie-hut-garden','ie-house-shared']},
  {name:'Kautoa - houses',keys:['ie-house-uma','ie-house-twin','ie-house-clan']},
  {name:'Kautoa - rich houses',keys:['ie-house-wealthy','ie-house-great','ie-house-noble']},
+ {name:'Kautoa - civic',keys:['ie-hall','ie-square','ie-school']},
+ {name:'Kautoa - trade',keys:['ie-farm','ie-farm-poor','ie-granary','ie-granary-great','ie-windmill','ie-warehouse','ie-smithy','ie-market','ie-kava-house','ie-trader','ie-weaver','ie-potter','ie-chandler']},
+ {name:'Kautoa - defence',keys:['ie-wall','ie-gate','ie-watchtower','ie-barracks']},
  {name:'Gardens, groves and stock',keys:['fl-paddy','fl-taro','fl-banana','fl-coconut','fl-breadfruit','pig','hen','duck','buffalo']},
- {name:'Harbours',shore:true,keys:['iw-fishdock']}
+ {name:'Harbours',shore:true,keys:['iw-fishdock','ie-fishdock','ie-dockyard']}
 ];
 // ================================================================= SCENE: renderer, the standard Krator sky, ground, layout, (re)building the world
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);

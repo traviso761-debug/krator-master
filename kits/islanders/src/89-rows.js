@@ -9,6 +9,9 @@ const FAMILIES=[
  {name:'Kautoa - poor houses',keys:['ie-hut-scrap','ie-hut-garden','ie-house-shared']},
  {name:'Kautoa - houses',keys:['ie-house-uma','ie-house-twin','ie-house-clan']},
  {name:'Kautoa - rich houses',keys:['ie-house-wealthy','ie-house-great','ie-house-noble']},
+ {name:'Kautoa - civic',keys:['ie-hall','ie-square','ie-school']},
+ {name:'Kautoa - trade',keys:['ie-farm','ie-farm-poor','ie-granary','ie-granary-great','ie-windmill','ie-warehouse','ie-smithy','ie-market','ie-kava-house','ie-trader','ie-weaver','ie-potter','ie-chandler']},
+ {name:'Kautoa - defence',keys:['ie-wall','ie-gate','ie-watchtower','ie-barracks']},
  {name:'Gardens, groves and stock',keys:['fl-paddy','fl-taro','fl-banana','fl-coconut','fl-breadfruit','pig','hen','duck','buffalo']},
- {name:'Harbours',shore:true,keys:['iw-fishdock']}
+ {name:'Harbours',shore:true,keys:['iw-fishdock','ie-fishdock','ie-dockyard']}
 ];

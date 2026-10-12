@@ -18,8 +18,8 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
  /* the piles carry the deck (veranda included); the room's posts run up through the deck */
  if(fy>.35){isPiles(isSpan(-W2+.2,W2-.2,Math.max(2,Math.round(dw/2.1)+1)),isSpan(Dz0+.2,Dz1-.2,Math.max(2,Math.round(dd/2.1)+1)),fy-IS_T,{r:o.pileR||.15,mk:'wood',col:P('wood'),beamY:fy*.5});}
  else box('earth',0,0,dcz,dw+.3,fy+.05,dd+.3,P('earth'));
- isDeck(dw,dd,fy,{z:dcz,col:P('planks'),beam:fy>.35});
  isCutFloor(fy);
+ isDeck(dw,dd,fy,{z:dcz,col:P('planks'),beam:fy>.35});
  isWalls(w,d,fy,wh,o.wallMk||'bamboo',o.wallCol||P('bamboo'),{front:o.front||[{x:0,w:1.0,h:1.8,door:true}],back:o.back||[],left:o.left||[{x:0,w:.6,y:.9,h:.6}],right:o.right||[{x:0,w:.6,y:.9,h:.6}],
   mkf:o.wallMkf,colf:o.wallColf,frame:P('woodD'),shutMk:'bamboo',shutCol:P('bamboo')});
  if(o.facade)W(0,0,d/2+.01,0,()=>{box(o.facade,-w/4-.3,fy+.05,0,w/2-1.1,wh-.15,.03,WHITE);box(o.facade,w/4+.3,fy+.05,0,w/2-1.1,wh-.15,.03,WHITE);});
