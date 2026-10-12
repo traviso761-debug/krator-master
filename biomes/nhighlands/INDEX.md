@@ -31,5 +31,5 @@ From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
 | `88-host-build.js` | 2 |  |
-| `99-host-take.js` | 16 | the inspector's words (52); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (129) |
+| `99-host-take.js` | 17 | the inspector's words (52); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (129) |
 | `99-tail.html` | <1 |  |

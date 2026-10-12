@@ -144,7 +144,7 @@ the preview of what Godot will stream. What it settles of the plan above:
 ## Regions and climate: the biome tool (planned, Travis)
 
 The full map will be built from two painted layers, marked with a biome tool (the polygon
-and path tool in `nhighlands/src/93-host-polytool.js` is the nearest thing in the repo):
+and path tool, now `core/host/94-host-polytool.js`, is the nearest thing in the repo):
 
 - **Regions.** Which kit owns the ground. A kit's weight `w(x,z)` is its region blurred:
   wide at a gradual border, narrow and keyed to height at a steep one.

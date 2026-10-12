@@ -67,6 +67,12 @@ subscribers (a runtime LOD); the hidden layers are hidden; the draw; then the af
 that throws is reported once to `#errs` with its stack and skipped from then on; the rest run. `window._ready` is set right
 after the first frame, as the biome kits' loops did.
 
+**The `TICKS` shim's second argument is motion time.** The biome kits' loops passed `performance.now()/1000`: seconds
+since the page was opened, the build included. The host passes the clock's `t`, seconds of motion since its loop began,
+so the pause and speed buttons and `?t=` reach every tick. A tick that animates by that absolute time (shighlands' mist
+drift, swbay's and nwbay's birds) stands at another phase at a given moment than it did; with motion time frozen
+(dt 0, t 0) the pages draw the same frame as before, which is how the adoptions were proven.
+
 **The clock** is `core/clock`'s `KCLOCK` (`host.py` lists `20-core-clock.js` with the shell): motion time `t` (wind, fauna,
 anything that eases) runs at the speed buttons' rate (pause, 1x to 8x); the world hour is held at `clock.hour` (12) unless
 `?time=run` or the run button (shown when the sky takes an hour). Query: `?hour=7.5` (or `#hour=`), `?time=run`, `?t=12`
@@ -132,7 +138,10 @@ here: nothing in Streetlab was edited (the files and their blobs are in `streetl
 5. Prove it: `verify.py --assert` the same as before, screenshots of two presets the same with `?chrome=0`, the smoke test,
    the baked geometry unchanged (`core/README.md`, "Proving a change").
 
-**Used by** (2026-10-12) every biome kit: `biomes/hyperjungle`, `crater-drylands`, `eastabyss`, `ebadlands`, `ehighlands`,
-`geyser`, `nhighlands`, `nwbay`, `nwlowlands`, `rift`, `sedesert`, `shighlands`, `swbay`, `swlowlands`, `xanadu` and
-`throne` with its ten stations (each station has its own `stations/<name>/99-host-take.js`). The seven that had the
-polygon tool take `94-host-polytool.js`. Next (ROADMAP.md section 10, step 2): Girder.
+**Used by** (2026-10-12) fifteen of the sixteen biome kits: `biomes/hyperjungle`, `crater-drylands`, `eastabyss`,
+`ebadlands`, `ehighlands`, `geyser`, `nhighlands`, `nwbay`, `nwlowlands`, `rift`, `sedesert`, `shighlands`, `swbay`,
+`swlowlands`, `xanadu`. The six of them that had the polygon tool take `94-host-polytool.js`. **Not yet:** `biomes/throne`
+(station 1 and its ten stations, eleven pages, each station with its own `stations/<name>/99-host-take.js`): written,
+built and checked by its own verify on station 1, but not proven page by page, so not committed. The caldera and the
+tube need `draw` (their `HEAT.render`) and the tube its own `clampCam`, which the shell already takes. Next (ROADMAP.md
+section 10, step 1's tail, then step 2): the Throne, then Girder.
