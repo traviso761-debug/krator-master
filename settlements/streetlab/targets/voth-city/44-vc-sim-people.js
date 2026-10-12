@@ -30,9 +30,10 @@ VC.simPeople = function () {
       var S = VC.simWeek(shift), half = org === 'slaves' && WK.slaveRest === 'half' && shift, week = [];
       for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? (half ? 'half' : 'rest') : shift ? 'work' : 'day');
       var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
+      (S.services || []).forEach(function (sv, i) { sc['rest_' + i] = sv; });   /* the rest day with one of the services (an actor's alias picks it) */
       if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
       SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
-                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
+                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' }, WORSHIP: { pin: 'home' } } });   /* WORSHIP at home where it has a shrine (a clan compound's), else the nearest */   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
   };
@@ -121,15 +122,19 @@ VC.simPeople = function () {
   /* ---- the actors */
   /* the week (owner's Q8): each worker's rota day off among the six workdays, dealt by its index */
   var made = 0, n = 0, rota = 0, offDay = function () { var d = rota++ % 6; return d >= WK.rest ? d + 1 : d; };
+  /* the rest day's services (owner, 2026-10-12: "3 with half"): a share of everyone (TUNE.sim.worship.share) is dealt one
+     of the services in turn, the rest keep the rest day at home */
+  var WO = TUNE.sim.worship, ALIAS = WO.at.map(function (h, i) { return { rest: 'rest_' + i }; }), seen = 0, goers = 0;
+  var service = function () { var i = seen++; if (Math.floor((i + 1) * WO.share) > Math.floor(i * WO.share)) return ALIAS[goers++ % ALIAS.length]; return undefined; };
   workers.forEach(function (wk) {
     var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', 'of independent means', null) : roleOf('unemployed', 'citizens', 'out of work', null), role = idle;
     if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
     wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
-                       off: wk.job && WK.rota ? offDay() : undefined });
+                       off: wk.job && WK.rota ? offDay() : undefined, alias: service() });
     made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
+    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
     made++;
   });
   slaves.forEach(function (s, i) {
@@ -214,9 +219,11 @@ VC.simWeek = function (shift) {
   if (shift) {
     var s = shift[0], n = shift[1], w = base(s); for (var i = 0; i < n; i++) w[h(s + i)] = 'WORK'; if (w[h(s + n)] === 'FREE') w[h(s + n)] = 'EAT';
     var o = base(s); [13, 19].forEach(function (k) { if (o[k] === 'FREE') o[k] = 'EAT'; });
-    out.work = free(w); out.off = free(o.slice()); var r = o.slice(); if (r[W.worship] === 'FREE') r[W.worship] = 'WORSHIP'; out.rest = free(r);
+    out.work = free(w); out.off = free(o.slice()); out.rest = free(o.slice());
+    out.services = TUNE.sim.worship.at.map(function (sh) { var r = o.slice(); for (var q = 0; q < 24; q++) { var k = (sh + q) % 24; if (r[k] === 'FREE') { r[k] = 'WORSHIP'; break; } } return free(r); });
   } else {
-    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
+    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; out.rest = d.slice();
+    out.services = TUNE.sim.worship.at.map(function (sh) { var r = d.slice(); for (var q = 0; q < 24; q++) { var k = (sh + q) % 24; if (r[k] !== 'SLEEP' && r[k] !== 'EAT') { r[k] = 'WORSHIP'; break; } } return r; });
   }
   return out;
 };
@@ -227,13 +234,15 @@ VC.simWeek = function (shift) {
    (TUNE.sim.worship.services x attend) how many more of an average shrine, and of the city's largest worship place,
    would hold the rest. The Temple canton's interior (the owner's references) is not counted yet */
 VC.simWorshipNeed = function () {
-  var W = TUNE.sim.week, Wo = TUNE.sim.worship, m = W.rest * 1440 + W.worship * 60, want = 0, room = 0, byKind = {}, sizes = [];
-  SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') want++; });
+  var W = TUNE.sim.week, Wo = TUNE.sim.worship, want = 0, room = 0, byKind = {}, sizes = [], hour = Wo.at[0], perService = {};
+  /* the busiest service: the most who want to worship at once */
+  Wo.at.forEach(function (h) { var m = W.rest * 1440 + h * 60, n = 0; SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') n++; }); perService[h] = n; if (n > want) { want = n; hour = h; } });
   SIM.all('place').forEach(function (P) { var n = SIM.offers(P, 'WORSHIP'); if (!n || P.access === 'private') return; room += n; var k = byKind[P.kind] || (byKind[P.kind] = { places: 0, room: 0 }); k.places++; k.room += n;
     if (/^(shrine|canton-shrine|chapel|funerary)$/.test(P.kind)) sizes.push(n); });
   sizes.sort(function (a, b) { return a - b; });
   var shrine = byKind.shrine ? Math.round(byKind.shrine.room / byKind.shrine.places) : 0, big = sizes.length ? sizes[sizes.length - 1] : 0, opts = [];
-  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(want * at / sv), short = Math.max(0, need - room);
+  var allWant = 0; Object.keys(perService).forEach(function (h) { allWant += perService[h]; });
+  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(allWant / Wo.share * at / sv), short = Math.max(0, need - room);
     opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
-  return { hour: W.worship, want: want, room: room, byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
+  return { hour: hour, want: want, perService: perService, allWant: allWant, room: room, short: Math.max(0, want - room), byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
 };

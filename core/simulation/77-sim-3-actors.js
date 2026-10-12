@@ -19,7 +19,8 @@
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
 //   THE WEEK: a role may carry named schedules `scheds: {work:..., off:..., rest:...}` and `week: [7 names]` (the
 //   schedule each weekday, SIM.weekday(minute) = day % SIM.WEEK); an actor's `off` (a weekday) takes the role's `off`
-//   schedule that day (a rota: each worker its own day off). Without them the role's `sched` holds every day.
+//   schedule that day (a rota: each worker its own day off); an actor's `alias: {name: name}` follows another of the role's
+//   schedules in place of one (its own service hour on the rest day). Without them the role's `sched` holds every day.
 //   SIM.schedOf(actor, minute) -> the 24 hours it follows that day
 //   LAZY ROUTES (SIM.lazy = {layer: {detour}}, opt-in): on such a graph layer a leg is decided without its path: its
 //   duration from the straight line times `detour`, its reachability from the layer's connected bodies; the path is
@@ -52,7 +53,9 @@
   };
   function schedOf(a, minute){
     if(a.sched) return a.sched; var R=SIM.R.role[a.role]; if(!R) return null;
-    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off'; return R.scheds[k] || R.sched; }
+    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off';
+      if(a.alias && a.alias[k] && R.scheds[a.alias[k]]) k=a.alias[k];   /* the actor's own version of that day (its service hour) */
+      return R.scheds[k] || R.sched; }
     return R.sched;
   }
   SIM.schedOf = schedOf;

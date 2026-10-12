@@ -74,7 +74,15 @@ VC.ixPrograms = function () {
   P.counting = { require: [{ need: 'desks', types: ['desk'], n: 3 }], optional: [{ types: ['desk'], max: 8 }, { types: ['shelf', 'storage'], max: 3 }, { types: ['chair', 'stool'], max: 8 }, LAMP], extra: 3 };
   A.factory = ['workshop', 'smithy']; A.enginehall = ['workshop', 'smithy']; A.drillhall = ['training', 'barracks', 'yard', 'court']; A.guardroom = ['barracks', 'office', 'study'];
   A.alehouse = ['tavern', 'hall']; A.counting = ['office', 'study', 'library'];
-  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
+  /* a temple's or a chapel's nave (owner, 2026-10-12): the altar at its head, shrines along it, a few benches; the floor
+     is the congregation's, standing (its room is counted by area: TUNE.sim.worship) */
+  P.nave = { require: [{ need: 'altar', types: ['altar', 'shrine'], n: 1 }], optional: [{ types: ['altar', 'shrine'], max: 6 }, { types: ['bench', 'seating'], max: 12 }, { types: ['lamp', 'brazier'], max: 4 }, LAMP], extra: 30 };
+  A.nave = ['shrine', 'hall', 'temple'];
+  /* a clan compound's own shrine (owner, 2026-10-12: "Clan compounds can also take this furniture shrine"): one of the
+     small yard shrines (kits/catalog voth_shrine_*, role 'yard shrine') and a bench */
+  P.clanshrine = { require: [{ need: 'shrine', types: ['shrine'], roles: ['yard shrine'], n: 1 }], optional: [{ types: ['shrine'], roles: ['yard shrine'], max: 1 }, { types: ['table'], max: 1 }, { types: SEATS, max: 6 }, { types: ['bench'], max: 1 }, LAMP], extra: 6 };
+  A.clanshrine = ['shrine', 'yard', 'court', 'hall'];   /* in a small compound it is the hall too: a table and seats */
+  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'nave', 'clanshrine'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 

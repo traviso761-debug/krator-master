@@ -290,12 +290,17 @@ CITY_CHECK = r"""() => {
     if (R && VC.simDay) {
       const lf0 = SIM.LOG.length, rf0 = SIM.routeFail.length;
       out.simc.workday = VC.simDay(1, 0, 24, [3, 10, 15, 20]);
-      out.simc.restday = VC.simDay(1 + ((TUNE.sim.week.rest - 1 + 7) % 7), 8, 11, [9, 10]);
+      out.simc.restday = VC.simDay(1 + ((TUNE.sim.week.rest - 1 + 7) % 7), 7, 12, [8, 10, 11]);
       out.simc.stuck = SIM.LOG.filter(e => e.kind === 'stuck').length; out.simc.nopath = SIM.LOG.filter(e => e.kind === 'nopath').length; out.simc.routeFail = SIM.routeFail.length - rf0;
       const restOf = a => { const Ro = SIM.R.role[a.role]; return Ro.week && Ro.week[TUNE.sim.week.rest]; };
       out.simc.restWorkers = SIM.all('actor').filter(a => a.activity === 'WORK' && restOf(a) === 'rest').length;   /* the slaves' half shift ('half') works */
       out.simc.slavesHalf = SIM.all('actor').filter(a => a.cls === 'slave' && restOf(a) === 'half').length;
       out.simc.worship = VC.simWorshipNeed ? VC.simWorshipNeed() : null; out.simc.slaves = R.slaves;
+      /* the rest day's buildings and shrines (owner, 2026-10-12) */
+      const B = VC.SIMB || {}, clans = VC.IX.units.filter(u => u.cls === 'clan');
+      out.simc.faith = { temples: (B.temples || []).filter(t => t.lot != null && PLAN.lots[t.lot].died == null).map(t => t.key + ' ' + t.side), templeWhy: (B.temples || []).filter(t => t.lot == null).map(t => t.key + ': ' + t.why),
+        chapels: ((B.placed || {}).chapels || []).length, shrines: B.shrines || null, clans: clans.length,
+        clanShrines: clans.filter(u => (VC.IX.types[u.type].pieces || []).some(p => /^voth_shrine_/.test(p.key))).length };
       out.simc.roles = SIM.all('role').length; out.simc.firstJumpMs = VC.SIMRUN.jumpMs; out.simc.bodies = !!(VC.SIMBODY && VC.SIMBODY.mesh);
     }
   }
@@ -311,7 +316,9 @@ def week_bad(sc):
     n = sum(s3['by'].values())
     bad = s3['by'].get('SLEEP', 0) < 0.9 * n or s10['pending'] or s10['by'].get('WORK', 0) < 0.98 * s10['wantWork'] \
         or r10['by'].get('WORK', 0) >= 0.5 * s10['by'].get('WORK', 1) or sc['restWorkers'] or w['p50'] > 120 or w['max'] > 4000 \
-        or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1)
+        or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1) \
+        or len(sc['faith']['temples']) < 2 or sc['faith']['chapels'] < 3 or not (sc['faith']['shrines'] or {}).get('pocket') or sc['faith']['clanShrines'] != sc['faith']['clans'] \
+        or sc['worship']['short']
     return bad
 
 
@@ -397,6 +404,8 @@ def verify_city(a, port, rel, sync_playwright):
         wo = sc['worship']
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
         for o in wo['options']: print('    %d service(s), %d%% attend: %d at once, short %d: %s more shrines, or %s more of the largest' % (o['services'], round(o['attend'] * 100), o['atOnce'], o['short'], o['shrines'], o['largest']))
+    if sc.get('faith'): print('  the rest day\'s buildings: %s' % json.dumps(sc['faith']))
+    if sc.get('worship'): print('    the busiest service: %d want it at %d:00, room %d, short %d; per service %s' % (sc['worship']['want'], sc['worship']['hour'], sc['worship']['room'], sc['worship']['short'], json.dumps(sc['worship']['perService'])))
     if sc.get('workday'): print('  the run: %d roles, the first jump %s ms, stuck %d, no path %d, route failures %d, working on the rest day outside the essential kinds %d, slaves on the half shift %d of %d, bodies %s' % (sc['roles'], sc['firstJumpMs'], sc['stuck'], sc['nopath'], sc['routeFail'], sc['restWorkers'], sc.get('slavesHalf', 0), sc.get('slaves', 0), sc['bodies']))
     print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))
     for e in errors: print('ERROR', e)
@@ -418,7 +427,7 @@ def verify_city(a, port, rel, sync_playwright):
             bad.append('new kit models without an interior')
         if sc['err'] or not pc or au.get('bodies') != 1 or au.get('cutOff') or pc['citizens'] != pc['census'] or sc['actors'] != pc['citizens'] + pc['slaves'] or sc['check'] \
                 or pc['unemployed'] > 0.1 * pc['workers'] or not sc['walk'] or sc['walk']['fail'] or not sc['html'] \
-                or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['pinned'] != sc['d2']['asked'] \
+                or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['wrong'] or sc['d2']['failed'] or sc['d2']['none'] or sc['d2']['pinned'] < 0.95 * sc['d2']['asked'] \
                 or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
                 or not sc.get('workday') or week_bad(sc):

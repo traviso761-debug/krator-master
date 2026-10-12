@@ -100,6 +100,16 @@ VC.simBuildings = function () {
     if (best && VC.simConvert(best, W.key, 'civic', 'watchhouse')) { taken[best.id] = 1; best.watch = name; VC.SIMB.placed.watch.push({ name: name, lot: best.id }); }
   });
   log.push(VC.SIMB.placed.watch.length + ' watchhouses (' + VC.SIMB.placed.watch.map(function (w) { return w.name; }).join(', ') + '; the central one is the Fortress’s armoury)');
+  /* a chapel in each village (owner, 2026-10-12: "a house size chapel that can go in the villages"): the house nearest its green */
+  var CH = P.chapel; VC.SIMB.placed.chapels = [];
+  PLAN.districts.forEach(function (D) {
+    if (D.kind !== 'village' || !D.poly) return;
+    var g = polyCentroid(D.poly), best = null, bd = Infinity;
+    PLAN.lots.forEach(function (L) { if (L.died != null || taken[L.id] || L.role || !/village/.test(L.country || '')) return; var dd = Math.hypot(L.x - g[0], L.z - g[1]); if (dd < bd && VC.simFit(L, CH.key)) { bd = dd; best = L; } });
+    if (best && VC.simConvert(best, CH.key, 'civic', 'chapel')) { taken[best.id] = 1; VC.SIMB.placed.chapels.push({ village: D.name, lot: best.id, d: Math.round(bd) }); }
+  });
+  log.push(VC.SIMB.placed.chapels.length + ' village chapels (' + VC.SIMB.placed.chapels.map(function (c) { return c.village; }).join(', ') + ')');
+  (VC.SIMB.temples || []).forEach(function (t) { log.push(t.lot != null ? ((ASSET_BY_KEY[t.key] || {}).name + ' on the ' + t.side + ' side') : ('no ' + t.key + ': ' + t.why)); });
   /* the caravanserai stood at step 3 (VC.simCaravanserai) */
   if (VC.SIMB.cv) { VC.SIMB.placed.caravanserai = VC.SIMB.cv.lot; log.push(VC.SIMB.cv.log); } else log.push('no caravanserai (' + (VC.SIMB.cvWhy || 'not placed') + ')');
   /* the coast-guard berth: on the water off the Fortress's apron, the side nearest the city first */
@@ -143,11 +153,13 @@ VC.simBuildings = function () {
    avenue within `front` m of its wall; its gate turned to that avenue. It joins the plan as an owner's placed building
    does (VC.placedLot: HARD ground), so the streets and lots of steps 6-12 work round it. */
 VC.simChainD = function (p, C) { var d = Infinity; for (var i = 1; i < C.length; i++) d = Math.min(d, segDist(p, C[i - 1], C[i])); return d; };   /* an open polyline */
-VC.simCaravanserai = function (step) {
-  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i')), D = SL.dims(CV.key, 0), R = SL.R;
-  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
-  if (!M || !D) { VC.SIMB.cvWhy = M ? 'no kit model' : 'no ' + CV.marker + ' marker'; return null; }
-  var hw = D.w / 2 + CV.pad, hd = D.d / 2 + CV.pad, best = null;
+/* a building placed before the streets (step 3): out from `centre` in rings to `S.reach` m, the first spot whose
+   footprint (S.pad m round the model) is free dry ground, within the raster, off the cantons, `S.wallClear` m from the
+   wall and no steeper than `S.slope` m across, fronting an avenue within `S.front` m (its front to the avenue).
+   -> {L, r, q} or {why} */
+VC.simPrePlace = function (S, centre, step) {
+  var D = SL.dims(S.key, 0), R = SL.R; if (!D) return { why: 'no kit model' };
+  var hw = D.w / 2 + S.pad, hd = D.d / 2 + S.pad, best = null;
   var footOk = function (c, f) {
     var u = V.perp(f), lo = Infinity, hi = -Infinity;
     for (var a = -hw; a <= hw + 0.01; a += hw / 4) for (var b = -hd; b <= hd + 0.01; b += hd / 4) {
@@ -156,26 +168,50 @@ VC.simCaravanserai = function (step) {
       if (R.idx(p[0], p[1]) < 0) return false;
       var o = R.at(p[0], p[1]); if (o !== OCC.FREE && o !== OCC.RESERVE) return false;
       if (VC.inCanton(p, 4)) return false;
-      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < CV.wallClear) return false;
+      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < S.wallClear) return false;
     }
-    return hi - lo <= CV.slope;
+    return hi - lo <= S.slope;
   };
-  for (var r = 0; r <= CV.reach && !best; r += 8) {
+  for (var r = 0; r <= S.reach && !best; r += 8) {
     var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
     for (var i = 0; i < n && !best; i++) {
-      var th = i / n * 2 * Math.PI, c = [M.x + Math.cos(th) * r, M.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
-      if (!q || q.d > hd + CV.front + q.way.w / 2) continue;
+      var th = i / n * 2 * Math.PI, c = [centre[0] + Math.cos(th) * r, centre[1] + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
+      if (!q || q.d > hd + S.front + q.way.w / 2) continue;
       var f = V.norm(V.sub(q.p, c));
       if (footOk(c, f)) best = { c: c, f: f, q: q, r: r };
     }
   }
-  if (!best) { VC.SIMB.cvWhy = 'no free ground within ' + CV.reach + ' m of the ' + CV.gate + '\u2019s marker'; return null; }
-  var L = VC.placedLot({ key: CV.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
-  if (!L) { VC.SIMB.cvWhy = 'the kit model would not place'; return null; }
-  L.cls = 'tavern'; L.role = 'caravanserai'; L.placed = false;
-  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(best.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (best.q.way.tag || 'an avenue') + ')' };
+  if (!best) return { why: 'no free ground within ' + S.reach + ' m' };
+  var L = VC.placedLot({ key: S.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
+  if (!L) return { why: 'the kit model would not place' };
+  L.placed = false;
+  return { L: L, r: best.r, q: best.q };
+};
+VC.simCaravanserai = function (step) {
+  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i'));
+  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
+  if (!M) { VC.SIMB.cvWhy = 'no ' + CV.marker + ' marker'; return null; }
+  var got = VC.simPrePlace(CV, [M.x, M.z], step);
+  if (!got.L) { VC.SIMB.cvWhy = got.why + (got.why === 'no free ground within ' + CV.reach + ' m' ? ' of the ' + CV.gate + '\u2019s marker' : ''); return null; }
+  var L = got.L; L.cls = 'tavern'; L.role = 'caravanserai';
+  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(got.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (got.q.way.tag || 'an avenue') + ')' };
   SL.note(step, VC.SIMB.cv.log);
   return L;
+};
+/* the rest day's two great temples (owner, 2026-10-12: "place one on the west side and one on the southeast side at the
+   pre-street phase"): each searched for out from the point `at` of the way from the city's middle to its edge toward
+   its compass `side` (TUNE.sim.place.temples) */
+VC.simTemples = function (step) {
+  var Z = PLAN.zone, c0 = polyCentroid(Z); VC.SIMB.temples = [];
+  TUNE.sim.place.temples.forEach(function (S) {
+    var d = SITE.COMPASS[S.side], e = 0; while (e < 6000 && inPoly([c0[0] + d[0] * (e + 20), c0[1] + d[1] * (e + 20)], Z)) e += 20;
+    var at = [c0[0] + d[0] * e * S.at, c0[1] + d[1] * e * S.at], got = VC.simPrePlace(S, at, step), name = (ASSET_BY_KEY[S.key] || {}).name || S.key;
+    if (!got.L) { VC.SIMB.temples.push({ key: S.key, side: S.side, why: got.why }); SL.note(step, name + ': ' + got.why + ' (' + S.side + ')'); return; }
+    var L = got.L; L.cls = 'civic'; L.role = 'temple'; L.side = S.side;
+    VC.SIMB.temples.push({ key: S.key, side: S.side, lot: L.id, r: Math.round(got.r) });
+    SL.note(step, name + ' on the ' + S.side + ' side, ' + Math.round(got.r) + ' m from its mark (placed at step ' + step + ', off ' + (got.q.way.tag || 'an avenue') + ')');
+  });
+  return VC.SIMB.temples;
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
@@ -233,6 +269,49 @@ VC.wells = function () {
   return art.length;
 };
 
+/* the small shrines (owner, 2026-10-12: "3 small tomb size shrines as furniture to distribute around parks"): along the
+   big parks' walks every TUNE.sim.place.shrines.walkEvery m, set beside the walk inside the park and clear of its other
+   pieces and plants; one in each pocket park of at least `minArea` m2, at its middle. The big parks' go in their own
+   park's pieces (its SIM place counts them); the pocket parks' in a 'Shrines' set, counted by their green
+   (VC.SIMB.greenShrines). The three kinds dealt in turn by a hash of the spot */
+VC.parkShrines = function () {
+  var S = TUNE.sim.place.shrines, G = 6, H = new Map(), n = { park: 0, pocket: 0 }, art = [];
+  var key = function (x, z) { return Math.floor(x / G) + ',' + Math.floor(z / G); };
+  var mark = function (x, z) { var k = key(x, z); (H.get(k) || H.set(k, []).get(k)).push([x, z]); };
+  var clear = function (x, z, r) { for (var i = -1; i <= 1; i++) for (var j = -1; j <= 1; j++) { var L = H.get((Math.floor(x / G) + i) + ',' + (Math.floor(z / G) + j)); if (L && L.some(function (q) { return Math.hypot(q[0] - x, q[1] - z) < r; })) return false; } return true; };
+  PLAN.districts.forEach(function (D) { (D.art || []).forEach(function (a) { mark(a.x, a.z); }); });
+  (VC.parkFlora || []).forEach(function (f) { if (f && f.x != null) mark(f.x, f.z); });
+  var pick = function (x, z) { return S.keys[KRAND.hash(1717, Math.floor(x), Math.floor(z), 3) % S.keys.length]; };
+  var piece = function (x, z, ry) { var k = pick(x, z); mark(x, z); return { key: k, v: 0, x: x, y: baseH(x, z) - 0.05, z: z, ry: ry, furn: true }; };
+  /* the big parks: along their walks */
+  var byPark = {}; (VC.parkWalks || []).forEach(function (w) { (byPark[w.park] || (byPark[w.park] = [])).push(w); });
+  PLAN.districts.forEach(function (D) {
+    var W = byPark[D.name]; if (!W || !D.poly) return;
+    var acc = S.walkEvery / 2;
+    W.forEach(function (w) {
+      var L = Math.hypot(w.b[0] - w.a[0], w.b[1] - w.a[1]); acc += L; if (acc < S.walkEvery || L < 1) return;
+      var m = [(w.a[0] + w.b[0]) / 2, (w.a[1] + w.b[1]) / 2], t = [(w.b[0] - w.a[0]) / L, (w.b[1] - w.a[1]) / L], nn = [t[1], -t[0]];
+      [1, -1].some(function (sd) {
+        var p = [m[0] + nn[0] * sd * (w.w / 2 + S.off), m[1] + nn[1] * sd * (w.w / 2 + S.off)];
+        if (!inPoly(p, D.poly) || !clear(p[0], p[1], S.clear + 1)) return false;
+        (D.art || (D.art = [])).push(piece(p[0], p[1], Math.atan2(-nn[0] * sd, -nn[1] * sd))); n.park++; acc = 0; return true;
+      });
+    });
+  });
+  /* the pocket parks: one at the middle of each large enough */
+  VC.SIMB.greenShrines = {};
+  PLAN.greens.forEach(function (Gr, gi) {
+    if (Gr.kind !== 'park' || !Gr.poly || Math.abs(polyArea(Gr.poly)) < S.minArea) return;
+    var c = polyCentroid(Gr.poly); if (!inPoly(c, Gr.poly) || !clear(c[0], c[1], S.clear)) return;
+    var a = piece(c[0], c[1], 0); art.push(a); n.pocket++;
+    VC.SIMB.greenShrines[gi] = ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || 3;
+  });
+  if (art.length) PLAN.districts.push({ kind: 'furniture', name: 'Shrines', art: art, born: 14 });
+  VC.SIMB.shrines = n;
+  SL.note(14, 'small shrines: ' + n.park + ' along the big parks\' walks, ' + n.pocket + ' in the pocket parks');
+  return n;
+};
+
 /* ---------------------------------------------------------------- 3. the places */
 VC.SIM_KIND = { poor: 'home', middle: 'home', rich: 'home', manor: 'home', clan: 'home', farm: 'home', monastery: 'home', 'chinampa hut': 'home', keeper: 'home',
                 shop: 'shop', craft: 'craft', tavern: 'tavern', warehouse: 'warehouse', industrial: 'industrial', civic: 'civic', landmark: 'civic',
@@ -280,8 +359,9 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
+    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel')) kind = Lu.role;   /* the rest day's temples and the village chapels */
     var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
-      var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
+      var D = VC.simDims(p), FB = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]) || {}, seats = FB.holds ? FB.holds : SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
@@ -326,14 +406,14 @@ VC.simPlaces = function () {
   /* the open places with furniture: the parks (benches, shrines, the parks' own wells), the markets (stalls), the burial
      ground (tombs), the canton square, the villages' greens: one place per district, at its furniture's middle */
   PLAN.districts.forEach(function (D, di) {
-    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
+    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
     var kind = /market/.test(D.kind) ? 'market' : D.kind === 'funerary' ? 'funerary' : D.kind === 'village' ? 'plaza' : 'park';
-    var cnt = {}, cx = 0, cz = 0, cy = 0;
-    D.art.forEach(function (a) { var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
+    var cnt = {}, cx = 0, cz = 0, cy = 0, holds = 0;
+    D.art.forEach(function (a) { if (/shrine|altar/.test(a.key)) holds += ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || T.worship.holds; var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
       cnt[t] = (cnt[t] || 0) + 1; cx += a.x; cz += a.z; cy += a.y || 0; });
     var m = D.art.length, acts = {};
     if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; acts.IDLE = cnt.bench * 3; }
-    if (cnt.shrine) { acts.WORSHIP = cnt.shrine * 4; acts.CONTEMPLATE = cnt.shrine * 4; }
+    if (cnt.shrine) { acts.WORSHIP = holds; acts.CONTEMPLATE = holds; }   /* each shrine as many as it holds (a wayside shrine TUNE.sim.worship.holds) */
     if (cnt.well) acts.DRINK = cnt.well * 4;
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }
     if (cnt.stall) { acts.SELL = cnt.stall; acts.BUY = cnt.stall * 4; }
@@ -353,6 +433,7 @@ VC.simPlaces = function () {
     var gk = G.kind === 'plaza' ? 'plaza' : G.kind === 'park' ? 'park' : null; if (!gk || !G.poly) return;
     var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
     ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
+    var gs = VC.SIMB.greenShrines && VC.SIMB.greenShrines[gi]; if (gs) { acts.WORSHIP = gs; acts.CONTEMPLATE = gs; }   /* its small shrine */
     if (!Object.keys(acts).length) return;
     var rr = Math.sqrt(area) / 2;
     reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,

@@ -226,6 +226,8 @@ function world(seed){
  const at=(d,h)=>d*1440+h*60;
  ok('on a workday the role works; on its rota day off (day 2) the actor takes the off schedule',S.desire(a,at(1,10))==='WORK'&&S.desire(a,at(2,10))==='SOCIALIZE'&&S.desire(b,at(2,10))==='WORK',S.desire(a,at(2,10))==='WORK');
  ok('the rest day (weekday 6) holds for both; the week repeats (day 9 is weekday 2)',S.desire(a,at(6,10))==='REST'&&S.desire(b,at(6,10))==='REST'&&S.desire(a,at(9,10))==='SOCIALIZE',S.desire(b,at(6,10))==='WORK');
+ const c=S.actor({id:'h3',role:'hand',home:'homeA',alias:{rest:'off'}}),c2=S.actor({id:'h4',role:'hand',home:'homeA',alias:{rest:'nosuch'}});
+ ok('an alias makes the actor follow another of its role\'s schedules that day (rest -> off), an unknown one is ignored',S.desire(c,at(6,10))==='SOCIALIZE'&&S.desire(c2,at(6,10))==='REST',S.desire(c,at(6,10))==='REST');
  let threw=false;try{S.role({id:'bad',org:'folk',scheds:{work:[[0,'SLEEP']]},week:['work']});}catch(e){threw=true;}
  ok('a week that is not seven days throws',threw,!threw);}
 

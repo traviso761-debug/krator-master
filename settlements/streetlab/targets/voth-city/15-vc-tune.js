@@ -124,7 +124,7 @@ var TUNE = {
           middle:     [['living', 'kitchen'], ['chamber', 'chamber']],
           rich:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'study']],
           manor:      [['hall', 'kitchen', 'living', 'study'], ['chamber', 'chamber', 'chamber']],
-          clan:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],
+          clan:       [['clanshrine', 'hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],   /* the clan's own shrine (owner, 2026-10-12) */
           farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
           shop:       [['shop', 'store'], ['living', 'chamber']],
           craft:      [['workshop', 'store'], ['living', 'chamber']],
@@ -137,11 +137,12 @@ var TUNE = {
         /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
         single: {
           poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
-          clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
+          clan: ['clanshrine', 'chamber', 'kitchen', 'chamber', 'chamber'],   /* the small compound: its hall is its shrine room */ farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
           tavern: ['alehouse', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -184,8 +185,8 @@ var TUNE = {
           funerary:   { prog: [['shrine', 'tomb', 'store'], ['office', 'tomb', 'shrine']], storeys: 2, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
           hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
         },
-        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
+        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess', 'clanshrine'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'nave', 'clanshrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
                'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'stable'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
@@ -218,6 +219,16 @@ var TUNE = {
       ],
       watch: { key: 'voth_bldg_watchhouse', at: 0.55, dirs: { east: [1, 0], west: [-1, 0], south: [0, 1] }, from: ['middle', 'poor', 'shop', 'craft'] },
       caravanserai: { key: 'voth_bldg_caravanserai', gate: 'River Gate', marker: 'H', reach: 500, pad: 3, slope: 6, front: 30, wallClear: 40 },
+      /* the rest day's two great temples (owner, 2026-10-12), placed at step 5 (after the wall, before the streets) as the
+         caravanserai is at step 3: searched for out
+         from the point `at` of the way from the city's middle to its edge toward `side`, on free ground off an avenue */
+      temples: [{ key: 'voth_bldg_temple_ash', side: 'W', at: 0.4, reach: 1200, pad: 6, slope: 12, front: 40, wallClear: 40 },
+                { key: 'voth_bldg_temple_tide', side: 'SE', at: 0.5, reach: 900, pad: 6, slope: 8, front: 40, wallClear: 40 }],
+      /* a house-sized chapel in each village: the house nearest its green */
+      chapel: { key: 'voth_bldg_village_chapel' },
+      /* the small shrines (kits/catalog voth_shrine_*): along the big parks' walks every `walkEvery` m, set `off` m beside
+         them; one in each pocket park of at least `minArea` m2, clear of its benches by `clear` m */
+      shrines: { keys: ['voth_shrine_stele', 'voth_shrine_lantern', 'voth_shrine_urn'], walkEvery: 60, off: 3, minArea: 120, clear: 2.5 },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -240,14 +251,17 @@ var TUNE = {
     /* a shrine's, a chapel's, the funerary temple's and a canton shrine room's congregation by its ground floor: one
        worshipper per `m2` square metres (standing), whatever its altars hold; `need` the rest day's worship sizing:
        how many come (share of everyone) and in how many services */
-    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine'], services: [1, 3], attend: [1, 0.5] },
+    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine', 'temple'], services: [1, 3], attend: [1, 0.5], holds: 4,
+               /* the rest day (owner, 2026-10-12: "3 with half"): three services, each citizen dealt one of them or none,
+                  so `attend` of the city comes */
+               at: [8, 11, 17], share: 0.5 },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
-      shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
+      shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, temple: { WORSHIP: 1.6, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
       plaza: { SOCIALIZE: 1.1, RELAX: 0.6 }, well: { DRINK: 1, SOCIALIZE: 0.5 }, healing: { HEAL: 1.5 }
     },
     hours: { home: null, well: null, shop: [7, 19], craft: [6, 19], tavern: [10, 2], warehouse: [6, 18], industrial: [6, 18], civic: [7, 18], market: [6, 19],
-             shrine: [5, 22], chapel: [4, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
+             shrine: [5, 22], chapel: [4, 22], temple: [5, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
     posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5, pen: 1, weapon: 1 },
     /* a piece's posts in a room of a kind, over `posts` (a tavern's table is half a server, a drill hall's dummy one soldier) */
     postsIn: { alehouse: { table: 0.5 }, guardroom: { table: 1 }, stable: { pen: 1, rack: 0.5 } },
@@ -304,10 +318,10 @@ var TUNE = {
        (dealt by its index, so a sixth of the workforce is off on any workday). A shift: [start hour, hours] by kind of
        work (`default` for the rest); `night`: the share of a kind's workers on the night shift [start, hours]. A day's
        schedule is built from the shift: 8 hours' sleep ending an hour before it, a meal then, the shift, a meal, the
-       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day, with
-       WORSHIP at `worship` on the rest day. Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
+       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day; on the rest
+       day a share goes to one of the services (TUNE.sim.worship.at, share). Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
     week: {
-      rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
+      rest: 6, rota: true, slaveRota: false, relaxFrom: 20,
       /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
       fallback: { SOCIALIZE: 'VISIT', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
       /* slaves: the rest day is a half shift (owner, 2026-10-12: "slaves work a half shift on rest day") */
@@ -432,6 +446,8 @@ var TUNE = {
     /* the citizen simulation's buildings (phase B, 42-vc-sim-places.js), by kit key: residents, workplaces, the kind of work
        and where; a converted lot counts as its new building, not its old one */
     byKey: { voth_bldg_watchhouse: { job: 'town guard', jobs: 24, where: 'watchhouses' },
+             voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
+             voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },

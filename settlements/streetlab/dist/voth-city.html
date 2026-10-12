@@ -1761,7 +1761,7 @@ const KratorLOD = (function () {
 </script>
 <script>/* kits/catalog/krator-master-buildings-voth.js */
 /* ======================================================================
-   Voth — Building Registry (22 keys / 26 build "looks")
+   Voth — Building Registry (25 keys / 29 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -3723,6 +3723,145 @@ ASSET({
       [-1.6, 0, 1.6].forEach(function (dx) { F.cyl(px + dx, 9.5, 12.5, 0.18, 0.6, 0, copper, 'metal'); });
     });
     [-3, 3].forEach(function (px) { F.rod(px, 6.6, 9.4, px, 6.6, 10.2, 0.06, iron, 'metal'); F.ball(px, 6.3, 10.2, 0.3, glow, 'glow'); });
+  }
+});
+
+/* ======================================================================
+   The rest day's worship (owner, 2026-10-12: "3 [services] with half [attending]; make 2 new unique temple models to
+   accomodate the halls and place one on the west side and one on the southeast side at the pre-street phase ... Make
+   a house size chapel that can go in the villages"). Each temple's hall is its `ix` block: about 3,500 m2 of floor, a
+   congregation of some 1,400 standing (the Voth city's simulation, 2.5 m2 a worshipper).
+   ====================================================================== */
+ASSET({
+  key: 'voth_bldg_temple_ash', name: 'Temple of the Ash Saints', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common'], wealth: [0.4, 0.9], w: 76, d: 80, h: 46, variants: 1,
+  /* a Velothi stepped temple: the great square hall under three receding tiers and a drummed dome, four fire pylons at
+     its corners, a pillared portico and a broad stair up its plinth */
+  ix: { block: [0, -2, 60, 58], y: 1.6, h: 12, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7f6c, 0x857a66, 0x91866f]), trim = shade(c, -0.16), dark = shade(c, -0.32), lt = shade(c, 0.12);
+    const domeC = 0xa08a4a, doorC = 0x1c1915, fire = 0xffa040, glow = 0xffcf87, gilt = 0xc9a24a;
+    /* the plinth and its stair */
+    F.box(0, 0, -2, 70, 1.6, 68, 0, dark, 'stone');
+    for (let i = 0; i < 6; i++) F.box(0, 0, 33.2 + i * 0.55, 30 - i * 0.6, 1.6 - i * 0.27, 0.6, 0, i % 2 ? trim : shade(trim, 0.04), 'stone');
+    /* the hall: a tapered square block, buttressed, its band of tall windows */
+    F.frustum(0, 1.6, -2, 30, 28.8, 13, 0, c, 'stone', 4);
+    F.box(0, 14.4, -2, 59, 0.6, 59, 0, trim, 'stone');
+    /* the hall's faces lean in from 30 m at its foot to 28.8 m at 13 m: a buttress stands proud of each face every 8 m,
+       a tall window between them set into the face where it stands (r(y) = 30 - 1.2 y / 13 from the hall's centre) */
+    const rAt = function (y) { return 30 - 1.2 * y / 13; }, hz = -2;
+    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(function (n) {
+      const along = n[0] ? [0, 1] : [1, 0];
+      for (let k = -3; k <= 3; k++) {
+        const u = k * 8, rb = rAt(6) + 0.5, bx = n[0] * rb + along[0] * u, bz = hz + n[1] * rb + along[1] * u;
+        F.box(bx, 1.6, bz, n[0] ? 1.4 : 1.6, 12.8, n[0] ? 1.6 : 1.4, 0, trim, 'stone');                      /* the buttress */
+        if (k < 3) {
+          const rw = rAt(8.6) + 0.05, wx = n[0] * rw + along[0] * (u + 4), wz = hz + n[1] * rw + along[1] * (u + 4);
+          F.box(wx, 5.5, wz, n[0] ? 0.7 : 1.8, 6.2, n[0] ? 1.8 : 0.7, 0, 0x2a2622, 'stone');                   /* the window */
+          F.box(wx + n[0] * 0.2, 11.7, wz + n[1] * 0.2, n[0] ? 0.8 : 2.4, 0.4, n[0] ? 2.4 : 0.8, 0, trim, 'stone');
+        }
+      }
+    });
+    /* three receding tiers and the drum */
+    F.frustum(0, 15, -2, 24, 21, 5, 0, shade(c, 0.04), 'stone', 4);
+    F.box(0, 20, -2, 43, 0.5, 43, 0, trim, 'stone');
+    F.frustum(0, 20.5, -2, 18, 15.5, 4.5, 0, shade(c, 0.07), 'stone', 4);
+    F.box(0, 25, -2, 31.5, 0.5, 31.5, 0, trim, 'stone');
+    F.cyl(0, 25.5, -2, 11, 5, 0, lt, 'stone');
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; F.box(Math.sin(a) * 10.9, 26.6, -2 + Math.cos(a) * 10.9, 1.1, 2.6, 0.3, -a, 0x2a2622, 'stone'); }
+    F.cyl(0, 30.5, -2, 11.6, 0.6, 0, trim, 'stone');
+    F.dome(0, 31.1, -2, 11.2, 11, 0, domeC, 'roof');
+    F.cyl(0, 42, -2, 1.2, 1.6, 0, gilt, 'metal'); F.cone(0, 43.6, -2, 1.0, 2.4, 0, gilt, 'metal');
+    /* the four fire pylons at the hall's corners */
+    [[-29, 25], [29, 25], [-29, -29], [29, -29]].forEach(function (p) {
+      F.frustum(p[0], 1.6, p[1], 2.6, 1.7, 22, 0, shade(c, -0.05), 'stone', 4);
+      F.box(p[0], 23.6, p[1], 4.2, 0.5, 4.2, 0, trim, 'stone');
+      F.frustum(p[0], 24.1, p[1], 1.6, 2.2, 1.0, 0, 0x3a3630, 'metal', 8);
+      F.ball(p[0], 25.4, p[1], 1.1, fire, 'glow');
+    });
+    /* the portico: eight pillars, an entablature, the bronze doors */
+    for (let i = 0; i < 8; i++) { const x = -15.75 + i * 4.5; F.cyl(x, 1.6, 31.5, 0.8, 10.4, 0, lt, 'stone'); F.box(x, 1.6, 31.5, 2.0, 0.6, 2.0, 0, trim, 'stone'); }
+    F.box(0, 12, 30.2, 36, 1.4, 5.4, 0, trim, 'stone');
+    F.pyrRoof(0, 13.4, 30.2, 36.4, 3.2, 5.8, 0, shade(domeC, -0.25), 'roof');
+    F.box(0, 1.6, 27.3, 9, 9.5, 0.6, 0, dark, 'stone');
+    F.box(0, 1.6, 27.65, 7.2, 8.6, 0.25, 0, 0x6b4a2a, 'metal');
+    [-1, 1].forEach(function (s) { F.box(s * 7, 1.6, 27.4, 2.4, 6, 0.5, 0, doorC, 'wood'); F.rod(s * 6, 9, 33, s * 6, 7.8, 33, 0.05, 0x3a2f22, 'metal'); F.ball(s * 6, 7.5, 33, 0.35, glow, 'glow'); });
+    /* the sacristy at the back */
+    F.box(0, 1.6, -35, 22, 8, 6, 0, shade(c, -0.04), 'stone');
+    F.box(0, 9.6, -35, 22.4, 0.5, 6.4, 0, trim, 'stone');
+  }
+});
+ASSET({
+  key: 'voth_bldg_temple_tide', name: 'Temple of the Tide Mother', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common', 'harbor'], wealth: [0.4, 0.9], w: 82, d: 76, h: 40, variants: 1,
+  /* a Hlaalu basilica: the long nave and its aisles under copper hip roofs and a clerestory, an apse at the head, a
+     square bell-and-fire tower beside the front, a colonnaded forecourt with a basin */
+  ix: { block: [0, -6, 64, 54], y: 1.2, h: 11, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8ab90, 0xb0a286, 0xc0b398]), trim = shade(c, -0.2), dark = shade(c, -0.38), copper = 0x5f7a5c, wood = 0x5a3e2a, glass = 0x2a3a46, glow = 0xffcf87, gilt = 0xc9a24a;
+    F.box(0, 0, -1.5, 76, 1.2, 75, 0, dark, 'stone');                                  /* the plinth, the forecourt on it */
+    /* the aisles and the nave */
+    F.box(0, 1.2, -6, 64, 9, 54, 0, c, 'stone');
+    F.box(0, 10.2, -6, 64.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 10.7, -6, 66, 4.5, 56, 0, copper, 'roof');
+    F.box(0, 12.2, -6, 24, 9, 54, 0, shade(c, 0.05), 'stone');                          /* the clerestory */
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) { F.box(s * 12.05, 15, -6 + k * 4, 0.3, 3.6, 2.0, 0, glass, 'stone'); });
+    F.box(0, 21.2, -6, 24.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 21.7, -6, 26, 6.5, 56, 0, shade(copper, 0.06), 'roof');
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) {
+      F.box(s * 32.2, 1.2, -6 + k * 4, 0.8, 9, 0.8, 0, trim, 'stone');
+      if (k < 6) { F.box(s * 32.05, 3.2, -4 + k * 4, 0.3, 5.2, 1.8, 0, glass, 'stone'); F.box(s * 32.3, 8.4, -4 + k * 4, 0.6, 0.4, 2.4, 0, trim, 'stone'); }
+    });
+    /* the apse at the head */
+    F.cyl(0, 1.2, -33, 14, 16, 0, shade(c, 0.03), 'stone');
+    F.dome(0, 17.2, -33, 14.4, 7, 0, copper, 'roof');
+    for (let i = 0; i < 9; i++) { const a = Math.PI + (i - 4) * 0.28; F.box(Math.sin(a) * 13.9, 4, -33 + Math.cos(a) * 13.9, 1.4, 6, 0.3, -a, glass, 'stone'); }
+    /* the west front: a gabled screen with a rose window and three doors */
+    F.box(0, 1.2, 21.2, 66, 12, 0.8, 0, shade(c, 0.06), 'stone');
+    F.pyrRoof(0, 13.2, 21.2, 26, 9, 1.2, 0, shade(c, 0.06), 'stone');
+    F.cyl(0, 13, 21.65, 3.2, 0.3, 0, trim, 'stone'); F.cyl(0, 13.1, 21.8, 2.6, 0.2, 0, glass, 'stone');
+    [-14, 0, 14].forEach(function (x, i) { F.box(x, 1.2, 21.65, i === 1 ? 6 : 4, i === 1 ? 8 : 6, 0.3, 0, wood, 'wood'); F.box(x, i === 1 ? 9.2 : 7.2, 21.8, i === 1 ? 7 : 5, 0.6, 0.6, 0, trim, 'stone'); });
+    /* the tower beside the front */
+    F.box(36, 1.2, 14, 10, 28, 10, 0, shade(c, -0.03), 'stone');
+    for (let y = 8; y < 28; y += 7) F.box(36, y, 14, 10.4, 0.4, 10.4, 0, trim, 'stone');
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (n) { F.box(36 + n[0] * 5.05, 23, 14 + n[1] * 5.05, n[0] ? 0.3 : 3, 3.5, n[0] ? 3 : 0.3, 0, 0x2a2622, 'stone'); });
+    F.hipRoof(36, 29.2, 14, 11, 6, 11, 0, copper, 'roof');
+    F.cone(36, 35.2, 14, 0.5, 3, 0, gilt, 'metal'); F.ball(36, 25, 14, 1.0, 0xffa040, 'glow');
+    /* the forecourt: a colonnade on three sides, the basin */
+    for (let i = 0; i <= 10; i++) { const x = -30 + i * 6; F.cyl(x, 1.2, 33.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); }
+    [-1, 1].forEach(function (s) { for (let i = 1; i < 3; i++) F.cyl(s * 30, 1.2, 33.5 - i * 5.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); });
+    F.box(0, 6.2, 33.5, 61, 0.7, 2.2, 0, trim, 'stone');
+    F.cyl(0, 1.2, 27.5, 4, 0.7, 0, trim, 'stone'); F.cyl(0, 1.55, 27.5, 3.5, 0.4, 0, 0x3f5e60, 'water');
+    F.cyl(0, 1.2, 27.5, 0.5, 2.6, 0, shade(c, 0.1), 'stone'); F.ball(0, 4.1, 27.5, 0.6, gilt, 'metal');
+    [-1, 1].forEach(function (s) { F.rod(s * 5, 6.9, 33.5, s * 5, 5.6, 33.5, 0.05, 0x3a2f22, 'metal'); F.ball(s * 5, 5.3, 33.5, 0.35, glow, 'glow'); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_chapel', name: 'Village chapel', culture: 'voth', family: 'religious', types: ['temple', 'dwelling-single'],
+  districts: ['village', 'farm'], wealth: [0, 0.5], w: 14, d: 11, h: 9.5, variants: 1,
+  /* a house-sized chapel for the villages: a plastered nave with a low dome, a bell cote over the door, a porch */
+  ix: { block: [0, -0.5, 11, 8], y: 0.4, h: 4.6, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8a88a, 0xc0b092, 0xae9e80]), trim = shade(c, -0.22), dark = shade(c, -0.36), domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87;
+    F.box(0, 0, -0.5, 12, 0.4, 9, 0, dark, 'stone');
+    F.box(0, 0.4, -0.5, 11, 4.6, 8, 0, c, 'plaster');
+    F.box(0, 5, -0.5, 11.3, 0.3, 8.3, 0, trim, 'stone');
+    F.cyl(0, 5.3, -0.5, 3, 0.8, 0, shade(c, 0.05), 'plaster');
+    F.dome(0, 6.1, -0.5, 3.1, 2.4, 0, domeC, 'roof');
+    F.ball(0, 8.6, -0.5, 0.18, 0xc9a24a, 'metal');
+    /* the bell cote over the door */
+    F.box(0, 5.3, 3.3, 2.4, 2.2, 0.6, 0, shade(c, 0.05), 'plaster');
+    F.box(0, 5.9, 3.3, 1.0, 1.1, 0.7, 0, 0x2a2622, 'stone');
+    F.cyl(0, 6.1, 3.3, 0.32, 0.6, 0, 0x8a6a3a, 'metal');
+    F.pyrRoof(0, 7.5, 3.3, 2.8, 0.9, 1.0, 0, domeC, 'roof');
+    /* the porch and the door */
+    F.box(0, 0.4, 3.55, 2.2, 3.0, 0.15, 0, wood, 'wood');
+    F.box(0, 0.4, 4.6, 4, 0.2, 2.2, 0, trim, 'stone');
+    [-1.6, 1.6].forEach(function (x) { F.box(x, 0.6, 5.4, 0.3, 2.8, 0.3, 0, wood, 'wood'); });
+    F.box(0, 3.4, 4.6, 4.2, 0.25, 2.4, 0, wood, 'wood');
+    F.ball(1.2, 2.9, 3.7, 0.12, glow, 'glow');
+    /* windows down the flanks */
+    [-3, 0, 3].forEach(function (z) { [-1, 1].forEach(function (s) { F.box(s * 5.55, 1.8, z - 0.5, 0.15, 1.8, 0.8, 0, 0x2a2622, 'stone'); F.box(s * 5.62, 3.7, z - 0.5, 0.2, 0.25, 1.1, 0, trim, 'stone'); }); });
   }
 });
 
@@ -20000,7 +20139,7 @@ FURN({
 FURN({
   key: 'voth_ossuary_shelves', name: 'Ossuary niches', culture: 'voth', tier: 'common', type: 'shelf', setting: 'indoor',
   rooms: ['catacomb', 'tomb', 'shrine'], anchor: 'wall', clearance: { front: 0.7 },
-  materials: ['stone', 'ceramic'],
+  materials: ['stone', 'ceramic', 'plaster'],
   w: 2.4, d: 0.6, h: 2.4, variants: 1,
   build: function (F) {
     const st = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), bone = F.col('clothBone');
@@ -20011,6 +20150,71 @@ FURN({
       if ((r + c) % 3) F.frustum(x, y, 0.16, 0.1, 0.07, 0.24, 0, F.shade(ash, ((r * 4 + c) % 3) * 0.05), 'ceramic', 8);   /* its urn */
       else F.ball(x, y + 0.12, 0.17, 0.11, bone, 'plaster');                                  /* or a skull */
     }
+  }
+});
+
+/* ---------------------------------------------------------------- small shrines for the parks and the clan courtyards
+   (owner, 2026-10-12: "make 3 small tomb size shrines as furniture to distribute around parks that 2-3 people can use at
+   a time. Clan compounds can also take this furniture shrine"): each about a sarcophagus's size, `holds` the people who
+   can worship at it at once (the Voth city's simulation reads it); role 'yard shrine' (a clan compound's shrine room
+   asks for one) */
+FURN({
+  key: 'voth_shrine_stele', name: 'Ash-saint stele', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 3,
+  materials: ['stone', 'ceramic', 'metal', 'emissive'],
+  w: 2.0, d: 1.4, h: 2.5, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), lt = F.shade(st, 0.22), ash = F.col('ceramicAsh');
+    F.box(0, 0, -0.1, 2.0, 0.16, 1.2, 0, F.shade(st, -0.1), 'stone');                  /* the stepped base */
+    F.box(0, 0.16, -0.25, 1.5, 0.14, 0.8, 0, st, 'stone');
+    F.box(0, 0.3, -0.42, 0.9, 1.8, 0.28, 0, lt, 'stone');                              /* the stele */
+    F.frustum(0, 2.1, -0.42, 0.5, 0.24, 0.3, 0, lt, 'stone', 4);                        /* its capstone */
+    F.box(0, 0.85, -0.27, 0.5, 0.8, 0.05, 0, F.shade(st, -0.45), 'stone');             /* the niche */
+    F.frustum(0, 0.87, -0.29, 0.1, 0.06, 0.5, 0, F.shade(lt, 0.1), 'stone', 8);        /* the saint */
+    F.ball(0, 1.44, -0.29, 0.08, F.shade(lt, 0.14), 'stone');
+    for (let i = 0; i < 4; i++) F.box(-0.3 + i * 0.2, 1.84, -0.27, 0.1, 0.07, 0.03, 0, F.col('gilt'), 'metal');   /* the glyphs */
+    F.frustum(0, 0.3, 0.18, 0.13, 0.21, 0.18, 0, ash, 'ceramic', 10);                  /* the offering bowl */
+    F.ball(0, 0.53, 0.18, 0.07, F.col('ember'), 'glow');
+    for (const s of [-1, 1]) F.box(s * 0.62, 0, 0.52, 0.42, 0.1, 0.32, 0, F.shade(st, -0.04), 'stone');   /* two kneeling stones */
+  }
+});
+FURN({
+  key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
+  materials: ['stone', 'wood', 'cloth', 'emissive'],
+  w: 1.9, d: 1.9, h: 2.7, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');
+    F.box(0, 0, 0, 1.7, 0.12, 1.7, 0, F.shade(st, -0.08), 'stone');                   /* the paving */
+    for (const x of [-0.72, 0.72]) for (const z of [-0.72, 0.72]) F.box(x, 0.12, z, 0.12, 2.0, 0.12, 0, wd, 'wood');   /* four posts */
+    F.pyrRoof(0, 2.12, 0, 1.9, 0.52, 1.9, 0, F.col('lacquerBlack'), 'roof');            /* the little roof */
+    F.ball(0, 2.66, 0, 0.07, F.col('gilt'), 'metal');
+    F.cyl(0, 0.12, -0.3, 0.13, 0.78, 0, F.shade(st, 0.12), 'stone');                    /* the lantern's column */
+    F.box(0, 0.9, -0.3, 0.42, 0.36, 0.42, 0, F.shade(st, 0.2), 'stone');               /* the lantern */
+    F.box(0, 0.97, -0.08, 0.22, 0.22, 0.02, 0, F.col('flame'), 'glow');
+    F.pyrRoof(0, 1.26, -0.3, 0.56, 0.2, 0.56, 0, F.shade(st, 0.06), 'stone');
+    F.box(0, 0.12, 0.38, 1.0, 0.04, 0.56, 0, cl, 'cloth');                             /* the prayer mat */
+    F.frustum(0.5, 0.12, -0.35, 0.08, 0.06, 0.15, 0, F.col('ceramicAsh'), 'ceramic', 8);   /* incense */
+    F.rod(0.5, 0.27, -0.35, 0.5, 0.47, -0.35, 0.007, F.col('clothBone'), 'plaster');
+  }
+});
+FURN({
+  key: 'voth_shrine_urn', name: 'Ancestor urn shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 3,
+  materials: ['stone', 'ceramic', 'metal', 'emissive'],
+  w: 1.8, d: 1.8, h: 2.5, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), ash = F.col('ceramicAsh');
+    F.cyl(0, 0, 0, 0.9, 0.14, 0, F.shade(st, -0.1), 'stone');                         /* two round steps */
+    F.cyl(0, 0.14, 0, 0.72, 0.14, 0, st, 'stone');
+    for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + Math.PI / 6; F.cyl(Math.sin(a) * 0.56, 0.28, Math.cos(a) * 0.56, 0.07, 1.55, 0, F.shade(st, 0.18), 'stone'); }   /* three columns */
+    F.cyl(0, 1.83, 0, 0.72, 0.12, 0, F.shade(st, 0.1), 'stone');
+    F.dome(0, 1.95, 0, 0.68, 0.46, 0, F.shade(ash, -0.12), 'stone');                   /* the dome */
+    F.ball(0, 2.45, 0, 0.06, F.col('gilt'), 'metal');
+    F.frustum(0, 0.28, 0, 0.2, 0.3, 0.42, 0, ash, 'ceramic', 12);                      /* the great urn */
+    F.frustum(0, 0.7, 0, 0.3, 0.15, 0.24, 0, F.shade(ash, 0.06), 'ceramic', 12);
+    F.cyl(0, 0.94, 0, 0.12, 0.05, 0, F.col('brass'), 'metal');
+    for (const a of [0.4, 2.1, 4.0]) F.ball(Math.sin(a) * 0.4, 0.32, Math.cos(a) * 0.4, 0.04, F.col('flame'), 'glow');   /* candles on the step */
   }
 });
 
@@ -47707,7 +47911,7 @@ var TUNE = {
           middle:     [['living', 'kitchen'], ['chamber', 'chamber']],
           rich:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'study']],
           manor:      [['hall', 'kitchen', 'living', 'study'], ['chamber', 'chamber', 'chamber']],
-          clan:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],
+          clan:       [['clanshrine', 'hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],   /* the clan's own shrine (owner, 2026-10-12) */
           farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
           shop:       [['shop', 'store'], ['living', 'chamber']],
           craft:      [['workshop', 'store'], ['living', 'chamber']],
@@ -47720,11 +47924,12 @@ var TUNE = {
         /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
         single: {
           poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
-          clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
+          clan: ['clanshrine', 'chamber', 'kitchen', 'chamber', 'chamber'],   /* the small compound: its hall is its shrine room */ farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
           tavern: ['alehouse', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -47767,8 +47972,8 @@ var TUNE = {
           funerary:   { prog: [['shrine', 'tomb', 'store'], ['office', 'tomb', 'shrine']], storeys: 2, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
           hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
         },
-        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
+        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess', 'clanshrine'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'nave', 'clanshrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery',
                'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'stable'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
@@ -47801,6 +48006,16 @@ var TUNE = {
       ],
       watch: { key: 'voth_bldg_watchhouse', at: 0.55, dirs: { east: [1, 0], west: [-1, 0], south: [0, 1] }, from: ['middle', 'poor', 'shop', 'craft'] },
       caravanserai: { key: 'voth_bldg_caravanserai', gate: 'River Gate', marker: 'H', reach: 500, pad: 3, slope: 6, front: 30, wallClear: 40 },
+      /* the rest day's two great temples (owner, 2026-10-12), placed at step 5 (after the wall, before the streets) as the
+         caravanserai is at step 3: searched for out
+         from the point `at` of the way from the city's middle to its edge toward `side`, on free ground off an avenue */
+      temples: [{ key: 'voth_bldg_temple_ash', side: 'W', at: 0.4, reach: 1200, pad: 6, slope: 12, front: 40, wallClear: 40 },
+                { key: 'voth_bldg_temple_tide', side: 'SE', at: 0.5, reach: 900, pad: 6, slope: 8, front: 40, wallClear: 40 }],
+      /* a house-sized chapel in each village: the house nearest its green */
+      chapel: { key: 'voth_bldg_village_chapel' },
+      /* the small shrines (kits/catalog voth_shrine_*): along the big parks' walks every `walkEvery` m, set `off` m beside
+         them; one in each pocket park of at least `minArea` m2, clear of its benches by `clear` m */
+      shrines: { keys: ['voth_shrine_stele', 'voth_shrine_lantern', 'voth_shrine_urn'], walkEvery: 60, off: 3, minArea: 120, clear: 2.5 },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -47823,14 +48038,17 @@ var TUNE = {
     /* a shrine's, a chapel's, the funerary temple's and a canton shrine room's congregation by its ground floor: one
        worshipper per `m2` square metres (standing), whatever its altars hold; `need` the rest day's worship sizing:
        how many come (share of everyone) and in how many services */
-    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine'], services: [1, 3], attend: [1, 0.5] },
+    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine', 'temple'], services: [1, 3], attend: [1, 0.5], holds: 4,
+               /* the rest day (owner, 2026-10-12: "3 with half"): three services, each citizen dealt one of them or none,
+                  so `attend` of the city comes */
+               at: [8, 11, 17], share: 0.5 },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
-      shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
+      shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, temple: { WORSHIP: 1.6, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
       plaza: { SOCIALIZE: 1.1, RELAX: 0.6 }, well: { DRINK: 1, SOCIALIZE: 0.5 }, healing: { HEAL: 1.5 }
     },
     hours: { home: null, well: null, shop: [7, 19], craft: [6, 19], tavern: [10, 2], warehouse: [6, 18], industrial: [6, 18], civic: [7, 18], market: [6, 19],
-             shrine: [5, 22], chapel: [4, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
+             shrine: [5, 22], chapel: [4, 22], temple: [5, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
     posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5, pen: 1, weapon: 1 },
     /* a piece's posts in a room of a kind, over `posts` (a tavern's table is half a server, a drill hall's dummy one soldier) */
     postsIn: { alehouse: { table: 0.5 }, guardroom: { table: 1 }, stable: { pen: 1, rack: 0.5 } },
@@ -47887,10 +48105,10 @@ var TUNE = {
        (dealt by its index, so a sixth of the workforce is off on any workday). A shift: [start hour, hours] by kind of
        work (`default` for the rest); `night`: the share of a kind's workers on the night shift [start, hours]. A day's
        schedule is built from the shift: 8 hours' sleep ending an hour before it, a meal then, the shift, a meal, the
-       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day, with
-       WORSHIP at `worship` on the rest day. Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
+       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day; on the rest
+       day a share goes to one of the services (TUNE.sim.worship.at, share). Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
     week: {
-      rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
+      rest: 6, rota: true, slaveRota: false, relaxFrom: 20,
       /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
       fallback: { SOCIALIZE: 'VISIT', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
       /* slaves: the rest day is a half shift (owner, 2026-10-12: "slaves work a half shift on rest day") */
@@ -48015,6 +48233,8 @@ var TUNE = {
     /* the citizen simulation's buildings (phase B, 42-vc-sim-places.js), by kit key: residents, workplaces, the kind of work
        and where; a converted lot counts as its new building, not its old one */
     byKey: { voth_bldg_watchhouse: { job: 'town guard', jobs: 24, where: 'watchhouses' },
+             voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
+             voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },
@@ -52652,7 +52872,8 @@ SL.pass13 = function () {
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
 //   THE WEEK: a role may carry named schedules `scheds: {work:..., off:..., rest:...}` and `week: [7 names]` (the
 //   schedule each weekday, SIM.weekday(minute) = day % SIM.WEEK); an actor's `off` (a weekday) takes the role's `off`
-//   schedule that day (a rota: each worker its own day off). Without them the role's `sched` holds every day.
+//   schedule that day (a rota: each worker its own day off); an actor's `alias: {name: name}` follows another of the role's
+//   schedules in place of one (its own service hour on the rest day). Without them the role's `sched` holds every day.
 //   SIM.schedOf(actor, minute) -> the 24 hours it follows that day
 //   LAZY ROUTES (SIM.lazy = {layer: {detour}}, opt-in): on such a graph layer a leg is decided without its path: its
 //   duration from the straight line times `detour`, its reachability from the layer's connected bodies; the path is
@@ -52685,7 +52906,9 @@ SL.pass13 = function () {
   };
   function schedOf(a, minute){
     if(a.sched) return a.sched; var R=SIM.R.role[a.role]; if(!R) return null;
-    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off'; return R.scheds[k] || R.sched; }
+    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off';
+      if(a.alias && a.alias[k] && R.scheds[a.alias[k]]) k=a.alias[k];   /* the actor's own version of that day (its service hour) */
+      return R.scheds[k] || R.sched; }
     return R.sched;
   }
   SIM.schedOf = schedOf;
@@ -53637,13 +53860,13 @@ SL.LAST = 14;
 SL.TRANSIT = 14;
 SL.layout = function () {
   SL.newPlan(); SL.F = null; SL._items = {}; SL.HASH = new Map(); PLAN.stats.ms = [];
-  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); }   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
+  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); } if (k === 5) VC.simTemples(5);   /* the temples after the highways and the wall, still before the streets */   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
   VC.census();                     /* 36-vc-census.js: people and workplaces */
   VC.lighting();                   /* 37-vc-light.js: power houses' reach, street lamps */
   VC.parkFurniture();              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
-  VC.wells();                      /* 42-vc-sim-places.js: the wells (plazas, market squares, streets, yards) */
+  VC.wells(); VC.parkShrines();                      /* 42-vc-sim-places.js: the wells (plazas, market squares, streets, yards) */
   VC.flora();                      /* 38-vc-flora.js: where the swbay biome may root, and its climate */
   SL.count();
   return PLAN;
@@ -54740,7 +54963,15 @@ VC.ixPrograms = function () {
   P.counting = { require: [{ need: 'desks', types: ['desk'], n: 3 }], optional: [{ types: ['desk'], max: 8 }, { types: ['shelf', 'storage'], max: 3 }, { types: ['chair', 'stool'], max: 8 }, LAMP], extra: 3 };
   A.factory = ['workshop', 'smithy']; A.enginehall = ['workshop', 'smithy']; A.drillhall = ['training', 'barracks', 'yard', 'court']; A.guardroom = ['barracks', 'office', 'study'];
   A.alehouse = ['tavern', 'hall']; A.counting = ['office', 'study', 'library'];
-  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
+  /* a temple's or a chapel's nave (owner, 2026-10-12): the altar at its head, shrines along it, a few benches; the floor
+     is the congregation's, standing (its room is counted by area: TUNE.sim.worship) */
+  P.nave = { require: [{ need: 'altar', types: ['altar', 'shrine'], n: 1 }], optional: [{ types: ['altar', 'shrine'], max: 6 }, { types: ['bench', 'seating'], max: 12 }, { types: ['lamp', 'brazier'], max: 4 }, LAMP], extra: 30 };
+  A.nave = ['shrine', 'hall', 'temple'];
+  /* a clan compound's own shrine (owner, 2026-10-12: "Clan compounds can also take this furniture shrine"): one of the
+     small yard shrines (kits/catalog voth_shrine_*, role 'yard shrine') and a bench */
+  P.clanshrine = { require: [{ need: 'shrine', types: ['shrine'], roles: ['yard shrine'], n: 1 }], optional: [{ types: ['shrine'], roles: ['yard shrine'], max: 1 }, { types: ['table'], max: 1 }, { types: SEATS, max: 6 }, { types: ['bench'], max: 1 }, LAMP], extra: 6 };
+  A.clanshrine = ['shrine', 'yard', 'court', 'hall'];   /* in a small compound it is the hall too: a table and seats */
+  ['brewhouse', 'weaving', 'tanyard', 'butchery', 'factory', 'enginehall', 'drillhall', 'guardroom', 'alehouse', 'counting', 'nave', 'clanshrine'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 
@@ -55179,6 +55410,16 @@ VC.simBuildings = function () {
     if (best && VC.simConvert(best, W.key, 'civic', 'watchhouse')) { taken[best.id] = 1; best.watch = name; VC.SIMB.placed.watch.push({ name: name, lot: best.id }); }
   });
   log.push(VC.SIMB.placed.watch.length + ' watchhouses (' + VC.SIMB.placed.watch.map(function (w) { return w.name; }).join(', ') + '; the central one is the Fortress’s armoury)');
+  /* a chapel in each village (owner, 2026-10-12: "a house size chapel that can go in the villages"): the house nearest its green */
+  var CH = P.chapel; VC.SIMB.placed.chapels = [];
+  PLAN.districts.forEach(function (D) {
+    if (D.kind !== 'village' || !D.poly) return;
+    var g = polyCentroid(D.poly), best = null, bd = Infinity;
+    PLAN.lots.forEach(function (L) { if (L.died != null || taken[L.id] || L.role || !/village/.test(L.country || '')) return; var dd = Math.hypot(L.x - g[0], L.z - g[1]); if (dd < bd && VC.simFit(L, CH.key)) { bd = dd; best = L; } });
+    if (best && VC.simConvert(best, CH.key, 'civic', 'chapel')) { taken[best.id] = 1; VC.SIMB.placed.chapels.push({ village: D.name, lot: best.id, d: Math.round(bd) }); }
+  });
+  log.push(VC.SIMB.placed.chapels.length + ' village chapels (' + VC.SIMB.placed.chapels.map(function (c) { return c.village; }).join(', ') + ')');
+  (VC.SIMB.temples || []).forEach(function (t) { log.push(t.lot != null ? ((ASSET_BY_KEY[t.key] || {}).name + ' on the ' + t.side + ' side') : ('no ' + t.key + ': ' + t.why)); });
   /* the caravanserai stood at step 3 (VC.simCaravanserai) */
   if (VC.SIMB.cv) { VC.SIMB.placed.caravanserai = VC.SIMB.cv.lot; log.push(VC.SIMB.cv.log); } else log.push('no caravanserai (' + (VC.SIMB.cvWhy || 'not placed') + ')');
   /* the coast-guard berth: on the water off the Fortress's apron, the side nearest the city first */
@@ -55222,11 +55463,13 @@ VC.simBuildings = function () {
    avenue within `front` m of its wall; its gate turned to that avenue. It joins the plan as an owner's placed building
    does (VC.placedLot: HARD ground), so the streets and lots of steps 6-12 work round it. */
 VC.simChainD = function (p, C) { var d = Infinity; for (var i = 1; i < C.length; i++) d = Math.min(d, segDist(p, C[i - 1], C[i])); return d; };   /* an open polyline */
-VC.simCaravanserai = function (step) {
-  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i')), D = SL.dims(CV.key, 0), R = SL.R;
-  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
-  if (!M || !D) { VC.SIMB.cvWhy = M ? 'no kit model' : 'no ' + CV.marker + ' marker'; return null; }
-  var hw = D.w / 2 + CV.pad, hd = D.d / 2 + CV.pad, best = null;
+/* a building placed before the streets (step 3): out from `centre` in rings to `S.reach` m, the first spot whose
+   footprint (S.pad m round the model) is free dry ground, within the raster, off the cantons, `S.wallClear` m from the
+   wall and no steeper than `S.slope` m across, fronting an avenue within `S.front` m (its front to the avenue).
+   -> {L, r, q} or {why} */
+VC.simPrePlace = function (S, centre, step) {
+  var D = SL.dims(S.key, 0), R = SL.R; if (!D) return { why: 'no kit model' };
+  var hw = D.w / 2 + S.pad, hd = D.d / 2 + S.pad, best = null;
   var footOk = function (c, f) {
     var u = V.perp(f), lo = Infinity, hi = -Infinity;
     for (var a = -hw; a <= hw + 0.01; a += hw / 4) for (var b = -hd; b <= hd + 0.01; b += hd / 4) {
@@ -55235,26 +55478,50 @@ VC.simCaravanserai = function (step) {
       if (R.idx(p[0], p[1]) < 0) return false;
       var o = R.at(p[0], p[1]); if (o !== OCC.FREE && o !== OCC.RESERVE) return false;
       if (VC.inCanton(p, 4)) return false;
-      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < CV.wallClear) return false;
+      if (VC.wallChain && VC.simChainD(p, VC.wallChain) < S.wallClear) return false;
     }
-    return hi - lo <= CV.slope;
+    return hi - lo <= S.slope;
   };
-  for (var r = 0; r <= CV.reach && !best; r += 8) {
+  for (var r = 0; r <= S.reach && !best; r += 8) {
     var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
     for (var i = 0; i < n && !best; i++) {
-      var th = i / n * 2 * Math.PI, c = [M.x + Math.cos(th) * r, M.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
-      if (!q || q.d > hd + CV.front + q.way.w / 2) continue;
+      var th = i / n * 2 * Math.PI, c = [centre[0] + Math.cos(th) * r, centre[1] + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
+      if (!q || q.d > hd + S.front + q.way.w / 2) continue;
       var f = V.norm(V.sub(q.p, c));
       if (footOk(c, f)) best = { c: c, f: f, q: q, r: r };
     }
   }
-  if (!best) { VC.SIMB.cvWhy = 'no free ground within ' + CV.reach + ' m of the ' + CV.gate + '\u2019s marker'; return null; }
-  var L = VC.placedLot({ key: CV.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
-  if (!L) { VC.SIMB.cvWhy = 'the kit model would not place'; return null; }
-  L.cls = 'tavern'; L.role = 'caravanserai'; L.placed = false;
-  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(best.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (best.q.way.tag || 'an avenue') + ')' };
+  if (!best) return { why: 'no free ground within ' + S.reach + ' m' };
+  var L = VC.placedLot({ key: S.key, v: 0, x: best.c[0], z: best.c[1], ry: Math.atan2(best.f[0], best.f[1]) }, step);
+  if (!L) return { why: 'the kit model would not place' };
+  L.placed = false;
+  return { L: L, r: best.r, q: best.q };
+};
+VC.simCaravanserai = function (step) {
+  var CV = TUNE.sim.place.caravanserai, M = VC.marker(new RegExp('^' + CV.marker + '$', 'i'));
+  VC.SIMB.cv = null; VC.SIMB.cvWhy = null;
+  if (!M) { VC.SIMB.cvWhy = 'no ' + CV.marker + ' marker'; return null; }
+  var got = VC.simPrePlace(CV, [M.x, M.z], step);
+  if (!got.L) { VC.SIMB.cvWhy = got.why + (got.why === 'no free ground within ' + CV.reach + ' m' ? ' of the ' + CV.gate + '\u2019s marker' : ''); return null; }
+  var L = got.L; L.cls = 'tavern'; L.role = 'caravanserai';
+  VC.SIMB.cv = { lot: L.id, log: 'the caravanserai ' + Math.round(got.r) + ' m from the ' + CV.gate + '\u2019s marker (placed at step ' + step + ', off ' + (got.q.way.tag || 'an avenue') + ')' };
   SL.note(step, VC.SIMB.cv.log);
   return L;
+};
+/* the rest day's two great temples (owner, 2026-10-12: "place one on the west side and one on the southeast side at the
+   pre-street phase"): each searched for out from the point `at` of the way from the city's middle to its edge toward
+   its compass `side` (TUNE.sim.place.temples) */
+VC.simTemples = function (step) {
+  var Z = PLAN.zone, c0 = polyCentroid(Z); VC.SIMB.temples = [];
+  TUNE.sim.place.temples.forEach(function (S) {
+    var d = SITE.COMPASS[S.side], e = 0; while (e < 6000 && inPoly([c0[0] + d[0] * (e + 20), c0[1] + d[1] * (e + 20)], Z)) e += 20;
+    var at = [c0[0] + d[0] * e * S.at, c0[1] + d[1] * e * S.at], got = VC.simPrePlace(S, at, step), name = (ASSET_BY_KEY[S.key] || {}).name || S.key;
+    if (!got.L) { VC.SIMB.temples.push({ key: S.key, side: S.side, why: got.why }); SL.note(step, name + ': ' + got.why + ' (' + S.side + ')'); return; }
+    var L = got.L; L.cls = 'civic'; L.role = 'temple'; L.side = S.side;
+    VC.SIMB.temples.push({ key: S.key, side: S.side, lot: L.id, r: Math.round(got.r) });
+    SL.note(step, name + ' on the ' + S.side + ' side, ' + Math.round(got.r) + ' m from its mark (placed at step ' + step + ', off ' + (got.q.way.tag || 'an avenue') + ')');
+  });
+  return VC.SIMB.temples;
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
@@ -55312,6 +55579,49 @@ VC.wells = function () {
   return art.length;
 };
 
+/* the small shrines (owner, 2026-10-12: "3 small tomb size shrines as furniture to distribute around parks"): along the
+   big parks' walks every TUNE.sim.place.shrines.walkEvery m, set beside the walk inside the park and clear of its other
+   pieces and plants; one in each pocket park of at least `minArea` m2, at its middle. The big parks' go in their own
+   park's pieces (its SIM place counts them); the pocket parks' in a 'Shrines' set, counted by their green
+   (VC.SIMB.greenShrines). The three kinds dealt in turn by a hash of the spot */
+VC.parkShrines = function () {
+  var S = TUNE.sim.place.shrines, G = 6, H = new Map(), n = { park: 0, pocket: 0 }, art = [];
+  var key = function (x, z) { return Math.floor(x / G) + ',' + Math.floor(z / G); };
+  var mark = function (x, z) { var k = key(x, z); (H.get(k) || H.set(k, []).get(k)).push([x, z]); };
+  var clear = function (x, z, r) { for (var i = -1; i <= 1; i++) for (var j = -1; j <= 1; j++) { var L = H.get((Math.floor(x / G) + i) + ',' + (Math.floor(z / G) + j)); if (L && L.some(function (q) { return Math.hypot(q[0] - x, q[1] - z) < r; })) return false; } return true; };
+  PLAN.districts.forEach(function (D) { (D.art || []).forEach(function (a) { mark(a.x, a.z); }); });
+  (VC.parkFlora || []).forEach(function (f) { if (f && f.x != null) mark(f.x, f.z); });
+  var pick = function (x, z) { return S.keys[KRAND.hash(1717, Math.floor(x), Math.floor(z), 3) % S.keys.length]; };
+  var piece = function (x, z, ry) { var k = pick(x, z); mark(x, z); return { key: k, v: 0, x: x, y: baseH(x, z) - 0.05, z: z, ry: ry, furn: true }; };
+  /* the big parks: along their walks */
+  var byPark = {}; (VC.parkWalks || []).forEach(function (w) { (byPark[w.park] || (byPark[w.park] = [])).push(w); });
+  PLAN.districts.forEach(function (D) {
+    var W = byPark[D.name]; if (!W || !D.poly) return;
+    var acc = S.walkEvery / 2;
+    W.forEach(function (w) {
+      var L = Math.hypot(w.b[0] - w.a[0], w.b[1] - w.a[1]); acc += L; if (acc < S.walkEvery || L < 1) return;
+      var m = [(w.a[0] + w.b[0]) / 2, (w.a[1] + w.b[1]) / 2], t = [(w.b[0] - w.a[0]) / L, (w.b[1] - w.a[1]) / L], nn = [t[1], -t[0]];
+      [1, -1].some(function (sd) {
+        var p = [m[0] + nn[0] * sd * (w.w / 2 + S.off), m[1] + nn[1] * sd * (w.w / 2 + S.off)];
+        if (!inPoly(p, D.poly) || !clear(p[0], p[1], S.clear + 1)) return false;
+        (D.art || (D.art = [])).push(piece(p[0], p[1], Math.atan2(-nn[0] * sd, -nn[1] * sd))); n.park++; acc = 0; return true;
+      });
+    });
+  });
+  /* the pocket parks: one at the middle of each large enough */
+  VC.SIMB.greenShrines = {};
+  PLAN.greens.forEach(function (Gr, gi) {
+    if (Gr.kind !== 'park' || !Gr.poly || Math.abs(polyArea(Gr.poly)) < S.minArea) return;
+    var c = polyCentroid(Gr.poly); if (!inPoly(c, Gr.poly) || !clear(c[0], c[1], S.clear)) return;
+    var a = piece(c[0], c[1], 0); art.push(a); n.pocket++;
+    VC.SIMB.greenShrines[gi] = ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || 3;
+  });
+  if (art.length) PLAN.districts.push({ kind: 'furniture', name: 'Shrines', art: art, born: 14 });
+  VC.SIMB.shrines = n;
+  SL.note(14, 'small shrines: ' + n.park + ' along the big parks\' walks, ' + n.pocket + ' in the pocket parks');
+  return n;
+};
+
 /* ---------------------------------------------------------------- 3. the places */
 VC.SIM_KIND = { poor: 'home', middle: 'home', rich: 'home', manor: 'home', clan: 'home', farm: 'home', monastery: 'home', 'chinampa hut': 'home', keeper: 'home',
                 shop: 'shop', craft: 'craft', tavern: 'tavern', warehouse: 'warehouse', industrial: 'industrial', civic: 'civic', landmark: 'civic',
@@ -55359,8 +55669,9 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
+    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel')) kind = Lu.role;   /* the rest day's temples and the village chapels */
     var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
-      var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
+      var D = VC.simDims(p), FB = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]) || {}, seats = FB.holds ? FB.holds : SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
@@ -55405,14 +55716,14 @@ VC.simPlaces = function () {
   /* the open places with furniture: the parks (benches, shrines, the parks' own wells), the markets (stalls), the burial
      ground (tombs), the canton square, the villages' greens: one place per district, at its furniture's middle */
   PLAN.districts.forEach(function (D, di) {
-    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
+    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
     var kind = /market/.test(D.kind) ? 'market' : D.kind === 'funerary' ? 'funerary' : D.kind === 'village' ? 'plaza' : 'park';
-    var cnt = {}, cx = 0, cz = 0, cy = 0;
-    D.art.forEach(function (a) { var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
+    var cnt = {}, cx = 0, cz = 0, cy = 0, holds = 0;
+    D.art.forEach(function (a) { if (/shrine|altar/.test(a.key)) holds += ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || T.worship.holds; var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
       cnt[t] = (cnt[t] || 0) + 1; cx += a.x; cz += a.z; cy += a.y || 0; });
     var m = D.art.length, acts = {};
     if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; acts.IDLE = cnt.bench * 3; }
-    if (cnt.shrine) { acts.WORSHIP = cnt.shrine * 4; acts.CONTEMPLATE = cnt.shrine * 4; }
+    if (cnt.shrine) { acts.WORSHIP = holds; acts.CONTEMPLATE = holds; }   /* each shrine as many as it holds (a wayside shrine TUNE.sim.worship.holds) */
     if (cnt.well) acts.DRINK = cnt.well * 4;
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }
     if (cnt.stall) { acts.SELL = cnt.stall; acts.BUY = cnt.stall * 4; }
@@ -55432,6 +55743,7 @@ VC.simPlaces = function () {
     var gk = G.kind === 'plaza' ? 'plaza' : G.kind === 'park' ? 'park' : null; if (!gk || !G.poly) return;
     var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
     ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
+    var gs = VC.SIMB.greenShrines && VC.SIMB.greenShrines[gi]; if (gs) { acts.WORSHIP = gs; acts.CONTEMPLATE = gs; }   /* its small shrine */
     if (!Object.keys(acts).length) return;
     var rr = Math.sqrt(area) / 2;
     reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
@@ -55839,9 +56151,10 @@ VC.simPeople = function () {
       var S = VC.simWeek(shift), half = org === 'slaves' && WK.slaveRest === 'half' && shift, week = [];
       for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? (half ? 'half' : 'rest') : shift ? 'work' : 'day');
       var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
+      (S.services || []).forEach(function (sv, i) { sc['rest_' + i] = sv; });   /* the rest day with one of the services (an actor's alias picks it) */
       if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
       SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
-                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
+                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' }, WORSHIP: { pin: 'home' } } });   /* WORSHIP at home where it has a shrine (a clan compound's), else the nearest */   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
   };
@@ -55930,15 +56243,19 @@ VC.simPeople = function () {
   /* ---- the actors */
   /* the week (owner's Q8): each worker's rota day off among the six workdays, dealt by its index */
   var made = 0, n = 0, rota = 0, offDay = function () { var d = rota++ % 6; return d >= WK.rest ? d + 1 : d; };
+  /* the rest day's services (owner, 2026-10-12: "3 with half"): a share of everyone (TUNE.sim.worship.share) is dealt one
+     of the services in turn, the rest keep the rest day at home */
+  var WO = TUNE.sim.worship, ALIAS = WO.at.map(function (h, i) { return { rest: 'rest_' + i }; }), seen = 0, goers = 0;
+  var service = function () { var i = seen++; if (Math.floor((i + 1) * WO.share) > Math.floor(i * WO.share)) return ALIAS[goers++ % ALIAS.length]; return undefined; };
   workers.forEach(function (wk) {
     var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', 'of independent means', null) : roleOf('unemployed', 'citizens', 'out of work', null), role = idle;
     if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
     wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
-                       off: wk.job && WK.rota ? offDay() : undefined });
+                       off: wk.job && WK.rota ? offDay() : undefined, alias: service() });
     made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
+    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
     made++;
   });
   slaves.forEach(function (s, i) {
@@ -56023,9 +56340,11 @@ VC.simWeek = function (shift) {
   if (shift) {
     var s = shift[0], n = shift[1], w = base(s); for (var i = 0; i < n; i++) w[h(s + i)] = 'WORK'; if (w[h(s + n)] === 'FREE') w[h(s + n)] = 'EAT';
     var o = base(s); [13, 19].forEach(function (k) { if (o[k] === 'FREE') o[k] = 'EAT'; });
-    out.work = free(w); out.off = free(o.slice()); var r = o.slice(); if (r[W.worship] === 'FREE') r[W.worship] = 'WORSHIP'; out.rest = free(r);
+    out.work = free(w); out.off = free(o.slice()); out.rest = free(o.slice());
+    out.services = TUNE.sim.worship.at.map(function (sh) { var r = o.slice(); for (var q = 0; q < 24; q++) { var k = (sh + q) % 24; if (r[k] === 'FREE') { r[k] = 'WORSHIP'; break; } } return free(r); });
   } else {
-    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
+    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; out.rest = d.slice();
+    out.services = TUNE.sim.worship.at.map(function (sh) { var r = d.slice(); for (var q = 0; q < 24; q++) { var k = (sh + q) % 24; if (r[k] !== 'SLEEP' && r[k] !== 'EAT') { r[k] = 'WORSHIP'; break; } } return r; });
   }
   return out;
 };
@@ -56036,15 +56355,17 @@ VC.simWeek = function (shift) {
    (TUNE.sim.worship.services x attend) how many more of an average shrine, and of the city's largest worship place,
    would hold the rest. The Temple canton's interior (the owner's references) is not counted yet */
 VC.simWorshipNeed = function () {
-  var W = TUNE.sim.week, Wo = TUNE.sim.worship, m = W.rest * 1440 + W.worship * 60, want = 0, room = 0, byKind = {}, sizes = [];
-  SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') want++; });
+  var W = TUNE.sim.week, Wo = TUNE.sim.worship, want = 0, room = 0, byKind = {}, sizes = [], hour = Wo.at[0], perService = {};
+  /* the busiest service: the most who want to worship at once */
+  Wo.at.forEach(function (h) { var m = W.rest * 1440 + h * 60, n = 0; SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') n++; }); perService[h] = n; if (n > want) { want = n; hour = h; } });
   SIM.all('place').forEach(function (P) { var n = SIM.offers(P, 'WORSHIP'); if (!n || P.access === 'private') return; room += n; var k = byKind[P.kind] || (byKind[P.kind] = { places: 0, room: 0 }); k.places++; k.room += n;
     if (/^(shrine|canton-shrine|chapel|funerary)$/.test(P.kind)) sizes.push(n); });
   sizes.sort(function (a, b) { return a - b; });
   var shrine = byKind.shrine ? Math.round(byKind.shrine.room / byKind.shrine.places) : 0, big = sizes.length ? sizes[sizes.length - 1] : 0, opts = [];
-  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(want * at / sv), short = Math.max(0, need - room);
+  var allWant = 0; Object.keys(perService).forEach(function (h) { allWant += perService[h]; });
+  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(allWant / Wo.share * at / sv), short = Math.max(0, need - room);
     opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
-  return { hour: W.worship, want: want, room: room, byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
+  return { hour: hour, want: want, perService: perService, allWant: allWant, room: room, short: Math.max(0, want - room), byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
 };
 
 /* ---- targets/voth-site/50-site-scene.js ---- */

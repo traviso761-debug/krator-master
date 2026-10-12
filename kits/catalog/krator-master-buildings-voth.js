@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (22 keys / 26 build "looks")
+   Voth — Building Registry (25 keys / 29 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -1961,5 +1961,144 @@ ASSET({
       [-1.6, 0, 1.6].forEach(function (dx) { F.cyl(px + dx, 9.5, 12.5, 0.18, 0.6, 0, copper, 'metal'); });
     });
     [-3, 3].forEach(function (px) { F.rod(px, 6.6, 9.4, px, 6.6, 10.2, 0.06, iron, 'metal'); F.ball(px, 6.3, 10.2, 0.3, glow, 'glow'); });
+  }
+});
+
+/* ======================================================================
+   The rest day's worship (owner, 2026-10-12: "3 [services] with half [attending]; make 2 new unique temple models to
+   accomodate the halls and place one on the west side and one on the southeast side at the pre-street phase ... Make
+   a house size chapel that can go in the villages"). Each temple's hall is its `ix` block: about 3,500 m2 of floor, a
+   congregation of some 1,400 standing (the Voth city's simulation, 2.5 m2 a worshipper).
+   ====================================================================== */
+ASSET({
+  key: 'voth_bldg_temple_ash', name: 'Temple of the Ash Saints', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common'], wealth: [0.4, 0.9], w: 76, d: 80, h: 46, variants: 1,
+  /* a Velothi stepped temple: the great square hall under three receding tiers and a drummed dome, four fire pylons at
+     its corners, a pillared portico and a broad stair up its plinth */
+  ix: { block: [0, -2, 60, 58], y: 1.6, h: 12, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7f6c, 0x857a66, 0x91866f]), trim = shade(c, -0.16), dark = shade(c, -0.32), lt = shade(c, 0.12);
+    const domeC = 0xa08a4a, doorC = 0x1c1915, fire = 0xffa040, glow = 0xffcf87, gilt = 0xc9a24a;
+    /* the plinth and its stair */
+    F.box(0, 0, -2, 70, 1.6, 68, 0, dark, 'stone');
+    for (let i = 0; i < 6; i++) F.box(0, 0, 33.2 + i * 0.55, 30 - i * 0.6, 1.6 - i * 0.27, 0.6, 0, i % 2 ? trim : shade(trim, 0.04), 'stone');
+    /* the hall: a tapered square block, buttressed, its band of tall windows */
+    F.frustum(0, 1.6, -2, 30, 28.8, 13, 0, c, 'stone', 4);
+    F.box(0, 14.4, -2, 59, 0.6, 59, 0, trim, 'stone');
+    /* the hall's faces lean in from 30 m at its foot to 28.8 m at 13 m: a buttress stands proud of each face every 8 m,
+       a tall window between them set into the face where it stands (r(y) = 30 - 1.2 y / 13 from the hall's centre) */
+    const rAt = function (y) { return 30 - 1.2 * y / 13; }, hz = -2;
+    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(function (n) {
+      const along = n[0] ? [0, 1] : [1, 0];
+      for (let k = -3; k <= 3; k++) {
+        const u = k * 8, rb = rAt(6) + 0.5, bx = n[0] * rb + along[0] * u, bz = hz + n[1] * rb + along[1] * u;
+        F.box(bx, 1.6, bz, n[0] ? 1.4 : 1.6, 12.8, n[0] ? 1.6 : 1.4, 0, trim, 'stone');                      /* the buttress */
+        if (k < 3) {
+          const rw = rAt(8.6) + 0.05, wx = n[0] * rw + along[0] * (u + 4), wz = hz + n[1] * rw + along[1] * (u + 4);
+          F.box(wx, 5.5, wz, n[0] ? 0.7 : 1.8, 6.2, n[0] ? 1.8 : 0.7, 0, 0x2a2622, 'stone');                   /* the window */
+          F.box(wx + n[0] * 0.2, 11.7, wz + n[1] * 0.2, n[0] ? 0.8 : 2.4, 0.4, n[0] ? 2.4 : 0.8, 0, trim, 'stone');
+        }
+      }
+    });
+    /* three receding tiers and the drum */
+    F.frustum(0, 15, -2, 24, 21, 5, 0, shade(c, 0.04), 'stone', 4);
+    F.box(0, 20, -2, 43, 0.5, 43, 0, trim, 'stone');
+    F.frustum(0, 20.5, -2, 18, 15.5, 4.5, 0, shade(c, 0.07), 'stone', 4);
+    F.box(0, 25, -2, 31.5, 0.5, 31.5, 0, trim, 'stone');
+    F.cyl(0, 25.5, -2, 11, 5, 0, lt, 'stone');
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; F.box(Math.sin(a) * 10.9, 26.6, -2 + Math.cos(a) * 10.9, 1.1, 2.6, 0.3, -a, 0x2a2622, 'stone'); }
+    F.cyl(0, 30.5, -2, 11.6, 0.6, 0, trim, 'stone');
+    F.dome(0, 31.1, -2, 11.2, 11, 0, domeC, 'roof');
+    F.cyl(0, 42, -2, 1.2, 1.6, 0, gilt, 'metal'); F.cone(0, 43.6, -2, 1.0, 2.4, 0, gilt, 'metal');
+    /* the four fire pylons at the hall's corners */
+    [[-29, 25], [29, 25], [-29, -29], [29, -29]].forEach(function (p) {
+      F.frustum(p[0], 1.6, p[1], 2.6, 1.7, 22, 0, shade(c, -0.05), 'stone', 4);
+      F.box(p[0], 23.6, p[1], 4.2, 0.5, 4.2, 0, trim, 'stone');
+      F.frustum(p[0], 24.1, p[1], 1.6, 2.2, 1.0, 0, 0x3a3630, 'metal', 8);
+      F.ball(p[0], 25.4, p[1], 1.1, fire, 'glow');
+    });
+    /* the portico: eight pillars, an entablature, the bronze doors */
+    for (let i = 0; i < 8; i++) { const x = -15.75 + i * 4.5; F.cyl(x, 1.6, 31.5, 0.8, 10.4, 0, lt, 'stone'); F.box(x, 1.6, 31.5, 2.0, 0.6, 2.0, 0, trim, 'stone'); }
+    F.box(0, 12, 30.2, 36, 1.4, 5.4, 0, trim, 'stone');
+    F.pyrRoof(0, 13.4, 30.2, 36.4, 3.2, 5.8, 0, shade(domeC, -0.25), 'roof');
+    F.box(0, 1.6, 27.3, 9, 9.5, 0.6, 0, dark, 'stone');
+    F.box(0, 1.6, 27.65, 7.2, 8.6, 0.25, 0, 0x6b4a2a, 'metal');
+    [-1, 1].forEach(function (s) { F.box(s * 7, 1.6, 27.4, 2.4, 6, 0.5, 0, doorC, 'wood'); F.rod(s * 6, 9, 33, s * 6, 7.8, 33, 0.05, 0x3a2f22, 'metal'); F.ball(s * 6, 7.5, 33, 0.35, glow, 'glow'); });
+    /* the sacristy at the back */
+    F.box(0, 1.6, -35, 22, 8, 6, 0, shade(c, -0.04), 'stone');
+    F.box(0, 9.6, -35, 22.4, 0.5, 6.4, 0, trim, 'stone');
+  }
+});
+ASSET({
+  key: 'voth_bldg_temple_tide', name: 'Temple of the Tide Mother', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common', 'harbor'], wealth: [0.4, 0.9], w: 82, d: 76, h: 40, variants: 1,
+  /* a Hlaalu basilica: the long nave and its aisles under copper hip roofs and a clerestory, an apse at the head, a
+     square bell-and-fire tower beside the front, a colonnaded forecourt with a basin */
+  ix: { block: [0, -6, 64, 54], y: 1.2, h: 11, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8ab90, 0xb0a286, 0xc0b398]), trim = shade(c, -0.2), dark = shade(c, -0.38), copper = 0x5f7a5c, wood = 0x5a3e2a, glass = 0x2a3a46, glow = 0xffcf87, gilt = 0xc9a24a;
+    F.box(0, 0, -1.5, 76, 1.2, 75, 0, dark, 'stone');                                  /* the plinth, the forecourt on it */
+    /* the aisles and the nave */
+    F.box(0, 1.2, -6, 64, 9, 54, 0, c, 'stone');
+    F.box(0, 10.2, -6, 64.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 10.7, -6, 66, 4.5, 56, 0, copper, 'roof');
+    F.box(0, 12.2, -6, 24, 9, 54, 0, shade(c, 0.05), 'stone');                          /* the clerestory */
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) { F.box(s * 12.05, 15, -6 + k * 4, 0.3, 3.6, 2.0, 0, glass, 'stone'); });
+    F.box(0, 21.2, -6, 24.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 21.7, -6, 26, 6.5, 56, 0, shade(copper, 0.06), 'roof');
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) {
+      F.box(s * 32.2, 1.2, -6 + k * 4, 0.8, 9, 0.8, 0, trim, 'stone');
+      if (k < 6) { F.box(s * 32.05, 3.2, -4 + k * 4, 0.3, 5.2, 1.8, 0, glass, 'stone'); F.box(s * 32.3, 8.4, -4 + k * 4, 0.6, 0.4, 2.4, 0, trim, 'stone'); }
+    });
+    /* the apse at the head */
+    F.cyl(0, 1.2, -33, 14, 16, 0, shade(c, 0.03), 'stone');
+    F.dome(0, 17.2, -33, 14.4, 7, 0, copper, 'roof');
+    for (let i = 0; i < 9; i++) { const a = Math.PI + (i - 4) * 0.28; F.box(Math.sin(a) * 13.9, 4, -33 + Math.cos(a) * 13.9, 1.4, 6, 0.3, -a, glass, 'stone'); }
+    /* the west front: a gabled screen with a rose window and three doors */
+    F.box(0, 1.2, 21.2, 66, 12, 0.8, 0, shade(c, 0.06), 'stone');
+    F.pyrRoof(0, 13.2, 21.2, 26, 9, 1.2, 0, shade(c, 0.06), 'stone');
+    F.cyl(0, 13, 21.65, 3.2, 0.3, 0, trim, 'stone'); F.cyl(0, 13.1, 21.8, 2.6, 0.2, 0, glass, 'stone');
+    [-14, 0, 14].forEach(function (x, i) { F.box(x, 1.2, 21.65, i === 1 ? 6 : 4, i === 1 ? 8 : 6, 0.3, 0, wood, 'wood'); F.box(x, i === 1 ? 9.2 : 7.2, 21.8, i === 1 ? 7 : 5, 0.6, 0.6, 0, trim, 'stone'); });
+    /* the tower beside the front */
+    F.box(36, 1.2, 14, 10, 28, 10, 0, shade(c, -0.03), 'stone');
+    for (let y = 8; y < 28; y += 7) F.box(36, y, 14, 10.4, 0.4, 10.4, 0, trim, 'stone');
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (n) { F.box(36 + n[0] * 5.05, 23, 14 + n[1] * 5.05, n[0] ? 0.3 : 3, 3.5, n[0] ? 3 : 0.3, 0, 0x2a2622, 'stone'); });
+    F.hipRoof(36, 29.2, 14, 11, 6, 11, 0, copper, 'roof');
+    F.cone(36, 35.2, 14, 0.5, 3, 0, gilt, 'metal'); F.ball(36, 25, 14, 1.0, 0xffa040, 'glow');
+    /* the forecourt: a colonnade on three sides, the basin */
+    for (let i = 0; i <= 10; i++) { const x = -30 + i * 6; F.cyl(x, 1.2, 33.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); }
+    [-1, 1].forEach(function (s) { for (let i = 1; i < 3; i++) F.cyl(s * 30, 1.2, 33.5 - i * 5.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); });
+    F.box(0, 6.2, 33.5, 61, 0.7, 2.2, 0, trim, 'stone');
+    F.cyl(0, 1.2, 27.5, 4, 0.7, 0, trim, 'stone'); F.cyl(0, 1.55, 27.5, 3.5, 0.4, 0, 0x3f5e60, 'water');
+    F.cyl(0, 1.2, 27.5, 0.5, 2.6, 0, shade(c, 0.1), 'stone'); F.ball(0, 4.1, 27.5, 0.6, gilt, 'metal');
+    [-1, 1].forEach(function (s) { F.rod(s * 5, 6.9, 33.5, s * 5, 5.6, 33.5, 0.05, 0x3a2f22, 'metal'); F.ball(s * 5, 5.3, 33.5, 0.35, glow, 'glow'); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_chapel', name: 'Village chapel', culture: 'voth', family: 'religious', types: ['temple', 'dwelling-single'],
+  districts: ['village', 'farm'], wealth: [0, 0.5], w: 14, d: 11, h: 9.5, variants: 1,
+  /* a house-sized chapel for the villages: a plastered nave with a low dome, a bell cote over the door, a porch */
+  ix: { block: [0, -0.5, 11, 8], y: 0.4, h: 4.6, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8a88a, 0xc0b092, 0xae9e80]), trim = shade(c, -0.22), dark = shade(c, -0.36), domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87;
+    F.box(0, 0, -0.5, 12, 0.4, 9, 0, dark, 'stone');
+    F.box(0, 0.4, -0.5, 11, 4.6, 8, 0, c, 'plaster');
+    F.box(0, 5, -0.5, 11.3, 0.3, 8.3, 0, trim, 'stone');
+    F.cyl(0, 5.3, -0.5, 3, 0.8, 0, shade(c, 0.05), 'plaster');
+    F.dome(0, 6.1, -0.5, 3.1, 2.4, 0, domeC, 'roof');
+    F.ball(0, 8.6, -0.5, 0.18, 0xc9a24a, 'metal');
+    /* the bell cote over the door */
+    F.box(0, 5.3, 3.3, 2.4, 2.2, 0.6, 0, shade(c, 0.05), 'plaster');
+    F.box(0, 5.9, 3.3, 1.0, 1.1, 0.7, 0, 0x2a2622, 'stone');
+    F.cyl(0, 6.1, 3.3, 0.32, 0.6, 0, 0x8a6a3a, 'metal');
+    F.pyrRoof(0, 7.5, 3.3, 2.8, 0.9, 1.0, 0, domeC, 'roof');
+    /* the porch and the door */
+    F.box(0, 0.4, 3.55, 2.2, 3.0, 0.15, 0, wood, 'wood');
+    F.box(0, 0.4, 4.6, 4, 0.2, 2.2, 0, trim, 'stone');
+    [-1.6, 1.6].forEach(function (x) { F.box(x, 0.6, 5.4, 0.3, 2.8, 0.3, 0, wood, 'wood'); });
+    F.box(0, 3.4, 4.6, 4.2, 0.25, 2.4, 0, wood, 'wood');
+    F.ball(1.2, 2.9, 3.7, 0.12, glow, 'glow');
+    /* windows down the flanks */
+    [-3, 0, 3].forEach(function (z) { [-1, 1].forEach(function (s) { F.box(s * 5.55, 1.8, z - 0.5, 0.15, 1.8, 0.8, 0, 0x2a2622, 'stone'); F.box(s * 5.62, 3.7, z - 0.5, 0.2, 0.25, 1.1, 0, trim, 'stone'); }); });
   }
 });

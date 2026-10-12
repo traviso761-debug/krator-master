@@ -4,6 +4,27 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 2, follow-up: the temples, the chapels, the small shrines (where we're at)
+
+The owner: "3 with half; make 2 new unique temple models to accomodate the halls and place one on the west side and one
+on the southeast side at the pre-street phase; and make 3 small tomb size shrines as furniture to distribute around parks
+that 2-3 people can use at a time. Clan compounds can also take this furniture shrine. Make a house size chapel that can
+go in the villages. Then let's see where we're at". Done (README "The rest day's worship"):
+- Three services (8, 11, 17) with half the city attending, dealt in turn (an actor's `alias` picks its service).
+- The Temple of the Ash Saints on the west side (placed at step 5, after the wall: at step 3 the highways took it down;
+  the west is hilly, so its search allows 12 m of slope and 1.2 km of reach), the Temple of the Tide Mother on the
+  southeast (328 m from its mark); 1,358 and 1,368 standing.
+- Village chapels in S10, S11 and S12; 193 small shrines (6 along the big parks' walks, 187 in pocket parks); a yard
+  shrine in all 54 clan compounds (the small compound's hall is its shrine room).
+- `voth_ossuary_shelves` named no plaster material for its skulls (the catalog's verify failed on it, before this work):
+  fixed.
+
+**Where we're at** (`verify.py`): at the busiest service (8:00) 7,475 want to worship, room for 8,032 at once (the
+temples 2,726, the canton shrine rooms 3,228, the funerary temple 510, the chapels 459 with the monastery's, the shrines
+526, the small shrines about 580, the clan compounds 224 for their own): nobody is short overall, but 208 at 8:00 and
+576 at 11:00 find no room within 1.5 km (the room is uneven: the cantons hold 40% of it). Socializing at 15:00 on a
+workday: 28,117 out, 5,347 visiting, 571 without. Work: 2,187 out of work, 3,979 posts unfilled (from session 1).
+
 ## 2026-10-12: phase C session 2, follow-up: more company, the slaves' rest day, worship sized
 
 The owner: "More places to socialize; and maybe people can socialize at home with housemates and neighbors too?",

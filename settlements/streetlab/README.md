@@ -482,6 +482,17 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   (`TUNE.sim.week.slaveRest`). A shrine's, chapel's, the funerary temple's and a canton shrine room's congregation is its
   ground floor at 2.5 m2 a worshipper (`TUNE.sim.worship`); `VC.simWorshipNeed` sizes the rest day's worship (in the
   report and `verify.py`).
+* **The rest day's worship** (owner, 2026-10-12: "3 with half; make 2 new unique temple models ... place one on the west
+  side and one on the southeast side at the pre-street phase; and make 3 small tomb size shrines ... Clan compounds can
+  also take this furniture shrine. Make a house size chapel that can go in the villages"): three services (8, 11, 17),
+  half the city dealt one each (core/simulation's actor `alias`: `TUNE.sim.worship.at`, `share`); the Temple of the Ash
+  Saints (a Velothi stepped hall under a drummed dome, fire pylons, a portico) and the Temple of the Tide Mother (a
+  Hlaalu basilica, its tower and forecourt), kits/catalog, placed at step 5 off an avenue on the west and southeast
+  (`VC.simTemples`, the caravanserai's search: `VC.simPrePlace`), each hall about 1,360 standing; a village chapel in
+  each village (the house nearest its green); three small shrines (`voth_shrine_stele`, `_lantern`, `_urn`, kits/catalog
+  furniture, `holds` 2-3) along the big parks' walks and in every pocket park of 120 m2 or more (`VC.parkShrines`), and
+  in every clan compound's shrine room (`clanshrine`, its hall in the small compound). Worship by floor (2.5 m2) and by
+  each shrine's `holds`.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).
