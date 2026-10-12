@@ -32,7 +32,8 @@ RY = np.eye(3)
 
 # the tint the page multiplies in (skin tone, hair colour) needs a neutral texture: skin keeps its detail but its mean
 # becomes grey TINT_MEAN['skin'] (sRGB); hair, brows and beards turn grey with their median at TINT_MEAN['hair']
-TINT_MEAN = {'skin': 0.80, 'hair': 0.72}
+TINT_MEAN = {'skin': 0.80, 'hair': 0.72, 'eye': 0.5}
+EYES = 'low-poly'               # the eye mesh's material (MakeHuman's low-poly eyes)
 SKIN_PARTS = ('body', 'nipple', 'lips', 'fingernails', 'toenails', 'ears')     # the base's MakeSkin slots on one texture
 
 
@@ -40,8 +41,37 @@ def srgb_lin(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
+def iris_mask(rgb):
+    """0..1 per pixel: the irises of a MakeHuman eye texture (two discs, one per eye in its UV layout). Each pupil is a
+    dark blob; its iris runs out to where the ring around it turns pale (the sclera)"""
+    from scipy import ndimage
+    lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    dark = lum < 0.06
+    lab, n = ndimage.label(dark)
+    sizes = ndimage.sum(dark, lab, range(1, n + 1))
+    H, W = lum.shape
+    yy, xx = np.mgrid[:H, :W]
+    mask = np.zeros((H, W), np.float32)
+    step = max(1, H // 256)
+    for k in np.argsort(sizes)[::-1][:2] + 1:
+        cy, cx = ndimage.center_of_mass(dark, lab, k)
+        r = np.hypot(yy - cy, xx - cx)
+        edge = next((q for q in range(int(np.sqrt(sizes[k - 1] / np.pi)), H // 2, step)
+                     if lum[(r >= q) & (r < q + step)].mean() > 0.3), H // 8)
+        mask = np.maximum(mask, np.clip((edge - r) / (0.08 * edge), 0, 1))
+    return mask
+
+
 def neutral(img, role):
     a = np.asarray(img).astype(np.float32) / 255
+    if role == 'eye':
+        # the iris turns grey (median TINT_MEAN['eye']) and its mask goes in alpha: the page tints by it, the rest stays
+        rgb = a[..., :3]
+        m = iris_mask(rgb)
+        lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+        grey = np.clip(lum / max(np.median(lum[m > 0.5]), 0.02) * TINT_MEAN['eye'], 0, 1)
+        out = np.concatenate([rgb * (1 - m[..., None]) + grey[..., None] * m[..., None], m[..., None]], 2)
+        return Image.fromarray(np.rint(out * 255).astype(np.uint8), 'RGBA')
     rgb = a[..., :3]
     seen = (a[..., 3] > 0.5) if a.shape[2] == 4 else (rgb.max(2) > 0.04)
     if role == 'skin':
@@ -105,6 +135,13 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
     blobs, holes, means = {}, {}, {}
+    eye_imgs = set()
+    for m in j.get('materials', []):
+        if EYES in m.get('name', ''):
+            for k in ('baseColorTexture',):
+                t = m.get('pbrMetallicRoughness', {}).get(k)
+                if t is not None:
+                    eye_imgs.add(j['textures'][t['index']]['source'])
     for ii, im in enumerate(j.get('images', [])):
         v = j['bufferViews'][im['bufferView']]
         o = v.get('byteOffset', 0)
@@ -116,14 +153,23 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
             img = Image.open(io.BytesIO(subprocess.run(['convert', '-', 'png:-'], input=raw, capture_output=True, check=True).stdout))
         alpha = img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info)
         img = img.convert('RGBA' if alpha else 'RGB')
+        if alpha and np.asarray(img)[..., 3].min() >= 250:       # an alpha channel with nothing in it: a JPEG will do
+            alpha, img = False, img.convert('RGB')
         holes[ii] = alpha and float((np.asarray(img)[..., 3] < 128).mean()) > 0.02
         means[ii] = np.asarray(img)[..., :3].reshape(-1, 3).mean(0)
-        if max(img.size) > max_px:
-            img = img.resize((max_px, max_px), Image.LANCZOS)
+        px = 256 if ii in eye_imgs else max_px                    # the eyes are a few centimetres across
+        if max(img.size) > px:
+            img = img.resize((px, px), Image.LANCZOS)
         if ii in img_role:
             img = neutral(img, img_role[ii])
         bio = io.BytesIO()
-        if alpha:
+        if img_role.get(ii) == 'eye':                             # the iris mask rides in alpha (the material is opaque)
+            img.save(bio, 'PNG', optimize=True)
+            im['mimeType'] = 'image/png'
+        elif alpha:
+            # hair, brows and beards are grey once neutral (the page tints them): grey + alpha; anything else with
+            # holes keeps its colours in a 256-entry palette
+            img = img.convert('LA') if img_role.get(ii) == 'hair' else img.quantize(256, method=Image.FASTOCTREE)
             img.save(bio, 'PNG', optimize=True)
             im['mimeType'] = 'image/png'
         else:
@@ -330,7 +376,8 @@ def main():
     man = json.load(open(os.path.join(src, 'manifest.json')))
     dg = json.load(open(os.path.join(src, 'delete_groups.json')))
     roles = turn_glb(os.path.join(src, 'base.glb'), os.path.join(pieces, 'base.glb'),
-                     role=lambda m: 'skin' if m.split('.')[-1] in SKIN_PARTS else 'hair' if 'eyebrow' in m else None)
+                     role=lambda m: 'skin' if m.split('.')[-1] in SKIN_PARTS else 'hair' if 'eyebrow' in m else
+                     'eye' if EYES in m else None)
     c = mp.load(os.path.join(pieces, 'base.glb'))
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))

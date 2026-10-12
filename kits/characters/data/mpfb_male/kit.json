@@ -4652,6 +4652,7 @@
    "Human.toenails": "skin",
    "Human.ears": "skin",
    "Human.eyebrow001": "hair",
+   "Human.low-poly": "eye",
    "Human.short02": "hair",
    "Human.cortu_short_messy_hair": "hair",
    "Human.long01": "hair",
@@ -4676,7 +4677,8 @@
   },
   "gain": {
    "skin": 1.6561,
-   "hair": 2.0964
+   "hair": 2.0964,
+   "eye": 4.672
   }
  }
 }

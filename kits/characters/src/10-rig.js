@@ -171,7 +171,7 @@ var KCHAR = (function(){
 
   function blank(kit){
     if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null }, sliders:{},
-                                      morph:{}, ancestry:null, skin:null, hair_color:null, people:null, dye:{} };
+                                      morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{} };
     return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
              sliders:{}, dye:{} };
   }
@@ -235,7 +235,7 @@ var KCHAR = (function(){
   }
 
   /* ---- peoples (data/peoples.json): the range a culture's strangers are drawn from ----
-     people { id, name, ancestry:{ african:[lo,hi], asian:[lo,hi], caucasian:[lo,hi] }, skin:[stops], hair:[colours],
+     people { id, name, ancestry:{ african:[lo,hi], asian:[lo,hi], caucasian:[lo,hi] }, skin:[stops], hair:[colours], eyes:[colours],
               grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] } }
      skin is drawn along its stops (sRGB hex, light to dark), hair from its list; every slider not named in morph is
      drawn from -spread..spread (age from its own default range) */
@@ -275,6 +275,7 @@ var KCHAR = (function(){
     var age = rec.morph.age || 0, grey = P.grey === undefined ? 0.45 : P.grey;
     if(age > grey) hair = mix(hair, '#b8b4ae', Math.min(1, (age - grey) / (1 - grey) * (0.6 + 0.6 * r())));
     rec.hair_color = hair;
+    rec.eye_color = pick(P.eyes || ['#3b2414', '#5a3a22', '#6e5a2e', '#4a5a3a', '#4e6a80']);
     rec.people = P.id || null;
     return rec;
   }

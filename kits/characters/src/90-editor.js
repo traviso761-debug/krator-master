@@ -16,24 +16,33 @@
     female: { body:'female', head:'base_f', hair:'hair_f_braids', beard:null, armour:{ torso:'f_hide', legs:'f_scout', feet:'f_bone' }, sliders:{}, dye:{} }
   };
   start.mpfb_male = { body:'mpfb_male', hair:'short02', beard:'wdg_scruffy_beard', armour:{ torso:'mindfront_kimono', legs:'toigo_harem_pants', feet:'culturalibre_hero_boots_1' },
-                      sliders:{}, morph:{}, ancestry:null, skin:'#c99a74', hair_color:'#3a2a1e', people:null, dye:{} };
+                      sliders:{}, morph:{}, ancestry:null, skin:'#c99a74', hair_color:'#3a2a1e', eye_color:'#5a3a22', people:null, dye:{} };
   start.mpfb_female = { body:'mpfb_female', hair:'braid01', beard:null, armour:{ torso:'toigo_bodice-style_top', legs:'toigo_long_full_skirt', feet:'grinsegold_female_pirate_boots' },
-                        sliders:{}, morph:{}, ancestry:null, skin:'#d9b294', hair_color:'#2c2019', people:null, dye:{} };
+                        sliders:{}, morph:{}, ancestry:null, skin:'#d9b294', hair_color:'#2c2019', eye_color:'#4e6a80', people:null, dye:{} };
   var saved = {};
 
   /* ---- pieces ---- */
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
+  // build.py gzips each piece before base64: unzip it in the browser (a plain one passes through)
+  function gunzip(buf){
+    var u = new Uint8Array(buf);
+    if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
+    return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  }
+  function fetchPiece(key){
+    return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+  }
   var cache = {};
   function load(key){
     if(!cache[key]){
       var bytes = (typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]) ? Promise.resolve(b64(KCHAR_GLB[key])) :
-        fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64);
+        fetchPiece(key);
       cache[key] = bytes.then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
     }
     return cache[key];
   }
   load.raw = function(key){
-    return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64);
+    return fetchPiece(key);
   };
   function thumb(key, mesh){ return 'thumbs/' + key + '__' + mesh + '.png'; }
 
@@ -202,6 +211,7 @@
   /* a MakeHuman body: library items per slot, MPFB's own fitting; the head is the base's, shaped by the morphs */
   var PEOPLE = {}; (D.peoples || []).forEach(function(p){ PEOPLE[p.id] = p; });
   var SKIN_ANY = ['#f3d9c6', '#e2b897', '#c99a74', '#a8764f', '#835735', '#5e3c25', '#3e271a'];
+  var EYES_ANY = ['#1e140c', '#3b2414', '#5a3a22', '#7a5a2a', '#4a5a3a', '#4e6a80', '#6a7a86', '#8a3a1c'];
   var HAIR_ANY = ['#e6d3a3', '#c9a35a', '#a0703d', '#8e4f2a', '#5a3a22', '#2c2019', '#141110', '#9a9894', '#d8d6d2'];
   function swatches(box, label, id, value, list, set){
     var row = document.createElement('div'); row.className = 'dye swatches';
@@ -255,6 +265,8 @@
     swatches(hs, 'Colour', 'hair-pick', rec.hair_color || '#4a3424', (cur ? cur.hair : HAIR_ANY).concat(['#9a9894', '#d8d6d2']).filter(function(c, i, a){ return a.indexOf(c) === i; }),
              function(c){ rec.hair_color = c; apply(); });
     itemChips(headp, kit, 'beard', 'Beard');
+    var es = section(headp, 'Eyes', '');
+    swatches(es, 'Eye colour', 'eye-pick', rec.eye_color || '#5a3a22', cur && cur.eyes ? cur.eyes : EYES_ANY, function(c){ rec.eye_color = c; apply(); });
   }
 
   function vals(){ return D.bodies[body].kit.style === 'mpfb' ? (rec.morph = rec.morph || {}) : rec.sliders; }

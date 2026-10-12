@@ -17,7 +17,8 @@
    are blended on the CPU by KCHAR.morphWeights; its normals are re-summed over the source mesh's vertices (so UV
    seams stay smooth); each joint's rest moves by KCHAR.morphJoints, and its inverse bind by the same amount
    (boneInverses[i] = IBM[i] * T(-d[i])). The feet are kept on the ground from the morphed skin's lowest point.
-   Skin tone and hair colour multiply into the neutral textures make_mpfb made (kit.tint).
+   Skin tone, hair colour and eye colour multiply into the neutral textures make_mpfb made (kit.tint); the eye colour
+   only where the iris mask (the eye texture's alpha) says.
 */
 function KCharFigure(body, sliders, load){
   var self = this, skel = body.skeleton, kit = body.kit, J = skel.joints;
@@ -75,6 +76,7 @@ function KCharFigure(body, sliders, load){
       }
       var m = new THREE.SkinnedMesh(geo, s.material.clone());
       if(m.material.alphaTest > 0) m.material.onBeforeCompile = opaqueCutout;
+      if(kit.tint && kit.tint.roles[s.material.name] === 'eye') irisTint(m.material);
       m.name = id; m.frustumCulled = false; m.castShadow = true;
       m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
       m.bind(new THREE.Skeleton(bones, ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
@@ -88,6 +90,18 @@ function KCharFigure(body, sliders, load){
      texture alpha reaches the page's transparent canvas and the background shows through the hair */
   function opaqueCutout(sh){
     sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', '#include <alphatest_fragment>\n\tdiffuseColor.a = 1.0;');
+  }
+
+  /* the eyes: make_mpfb.py greys the irises and puts their mask in the texture's alpha; the eye colour multiplies in
+     by that mask, so the whites stay white */
+  function irisTint(mat){
+    var u = mat.userData.eyeTint = { value:new THREE.Color(1, 1, 1) };
+    mat.onBeforeCompile = function(sh){
+      sh.uniforms.eyeTint = u;
+      sh.fragmentShader = 'uniform vec3 eyeTint;\n' + sh.fragmentShader.replace('#include <map_fragment>',
+        '#ifdef USE_MAP\n\tvec4 texelColor = mapTexelToLinear( texture2D( map, vUv ) );\n' +
+        '\tdiffuseColor.rgb *= texelColor.rgb * mix( vec3( 1.0 ), eyeTint, texelColor.a );\n#endif');
+    };
   }
 
   var S = new THREE.Matrix4(), T = new THREE.Matrix4();
@@ -183,7 +197,7 @@ function KCharFigure(body, sliders, load){
     for(var i=1;i<P.length;i+=3) if(P[i] < y) y = P[i];
     return y;
   }
-  var tint = new THREE.Color(), DEFAULT_SKIN = '#d6ad8f', DEFAULT_HAIR = '#4a3424';
+  var tint = new THREE.Color(), DEFAULT_SKIN = '#d6ad8f', DEFAULT_HAIR = '#4a3424', DEFAULT_EYE = '#5a3a22';
   function tintOf(hexc, gain){ return tint.set(hexc).convertSRGBToLinear().multiplyScalar(gain); }
 
   /* leave out the triangles of a base region that `hide` (0/1 per triangle) marks */
@@ -247,6 +261,7 @@ function KCharFigure(body, sliders, load){
             }
             if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
+            else if(role === 'eye'){ m.material.color.set('#ffffff'); if(m.material.userData.eyeTint) m.material.userData.eyeTint.value.copy(tintOf(rec.eye_color || DEFAULT_EYE, gain.eye || 1)); }
             else {
               var dye = rec.dye && (part.role === 'armour' ? rec.dye[part.slot] : (part.role === 'hair' || part.role === 'beard') ? rec.dye.hair : null);
               m.material.color.set(dye || '#ffffff');

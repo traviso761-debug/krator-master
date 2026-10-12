@@ -5,7 +5,7 @@ The page needs a web server (it fetches its pieces):  python3 -m http.server -d 
 
   python3 build.py             # dist/characters.html (a whole page, the GLBs inside) and dist/characters.artifact.html
                                # (no <!doctype>/<html>/<body>, which the artifact host adds, and no GLBs: it fetches
-                               # dist/pieces/*.txt (the GLBs as base64), published beside it, to stay under the host's 16 MB a page)
+                               # dist/pieces/*.txt (the GLBs and morph files, gzipped, as base64), published beside it, to stay under the host's 16 MB a page)
   python3 build.py --no-checks # skip the port lint and the node test
   python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
 
@@ -14,7 +14,7 @@ src/00-head.html, then one inline script: core/rand (KRAND), the data (KCHAR_DAT
 (KCHAR_GLB), then src/10-89 and src/90-editor.js. three.js r128 and its GLTFLoader load from the CDN, as in the hero
 build. Deterministic: the same inputs give the same bytes; build-manifest.json holds a sha1 per input.
 """
-import base64, hashlib, json, os, shutil, subprocess, sys
+import base64, gzip, hashlib, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -76,8 +76,8 @@ def main():
             if f.endswith('.glb') or f.endswith('.morph.bin'):         # a piece, or its morph deltas (make_mpfb.py)
                 raw = read(os.path.join(src_dir, f), 'rb')
                 inputs['pieces/%s/%s' % (b, f)] = raw
-                with open(os.path.join(out_dir, f[:-4] + '.txt'), 'w') as o:
-                    o.write(base64.b64encode(raw).decode())
+                with open(os.path.join(out_dir, f[:-4] + '.txt'), 'w') as o:     # gzipped (the page unzips it)
+                    o.write(base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode())
     body = head + '<script>\n' + '\n'.join(js) + '\n</script>\n'
     os.makedirs(DIST, exist_ok=True)
     whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \

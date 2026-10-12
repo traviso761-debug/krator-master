@@ -12,10 +12,9 @@
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below.
-- **Download size.** About 105 MB of pieces (both bodies, every item and its deltas), fetched per item as needed: the
-  base and its deltas are 3.5 MB; dense shoes (flats, pirate boots) are 7-10 MB each with deltas. Dropping or
-  decimating them is the first saving.
-- **Eye colour** is the MakeHuman default brown on every face.
+- **Download size.** About 50 MB of pieces as served (both bodies, every item and its deltas, gzipped; the page
+  unzips them with the browser's DecompressionStream), fetched per item as needed. Dense shoes (flats, pirate boots)
+  are still the heaviest geometry; decimating them in Blender before the morph capture is the next saving.
 - **The peoples are mostly proposals.** Only the Chichani and the Beast Riders come from the owner; the others
   follow LORE.md's real-world references.
 - **Ancestry is MakeHuman's three reference sets** (African, Asian, Caucasian). It moves face and build only; the
