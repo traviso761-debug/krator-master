@@ -5,7 +5,9 @@ kit, what changed upstream since the port was cut, what Yuni changed on its own,
 
 ## How the port is made
 
-`src/61a-ancients-kit.js` is **generated** by `tools/gen_ancients.py`: the kit's helpers, materials and builders,
+`src/61a-ancients-kit.js` and its parts `61a1-` to `61a7-` (the slice cut at section markers, `KIT_CUTS` in the
+generator, so that no file is over ~30 KB; `build.py` joins every `61` file back into one unit) are **generated** by
+`tools/gen_ancients.py`: the kit's helpers, materials and builders,
 wrapped in a private IIFE (own PRNG, own `clamp`/`lerp`/`mesh`...), with a list of textual patches applied
 (each one asserts it matched exactly once, so a kit change that moves a patch's anchor is reported, never
 silently skipped). `61b`-`61e` are copies of Yuni's hand-written `tools/anc_*.js` (the tail, the glue, the asset

@@ -139,8 +139,35 @@ if MISS:
         print('  -', m)
     sys.exit(1)
 assert 'document.getElementById' not in kit
+
+# The kit slice is cut at these section markers (each must start exactly one line of it, in this order) into
+# src/61a-ancients-kit.js and the parts 61a1- ... 61a7-, which sort right after it: none over ~30 KB, so an agent can
+# read one whole (ROADMAP 3.4). build.py joins the 61 files back into one unit; concatenated in filename order they are
+# the slice, byte for byte. When a kit sync moves a marker, move the cut to a neighbouring one.
+KIT_CUTS = [('61a1-ancients-kit-helpers', '// ---------------------------------------------------------------- THE LEAF CARD'),
+            ('61a2-ancients-kit-civic', '// ================================================================= factory additions'),
+            ('61a3-ancients-kit-towers', '// ================================================================= SKYSCRAPERS — three variants'),
+            ('61a4-ancients-kit-towers2', '// ---------------------------------------------------------------- v4: concrete, brick'),
+            ('61a5-ancients-kit-houses', '// ================================================================= HOUSES D/E/F'),
+            ('61a6-ancients-kit-works', '// ================================================================= SKYSCRAPER H — "the Warden"'),
+            ('61a7-ancients-kit-factory', '// ================================================================= FUEL STATION — "the Well"')]
+
+
+def cut_kit(text):
+    out, name = [], '61a-ancients-kit'
+    for nxt, mark in KIT_CUTS:
+        if text.count('\n' + mark) != 1:
+            raise SystemExit('gen_ancients: section marker %r found %d times after the previous cut (want 1): fix KIT_CUTS'
+                             % (mark, text.count('\n' + mark)))
+        i = text.index('\n' + mark) + 1
+        out.append((name, text[:i]))
+        text, name = text[i:], nxt
+    return out + [(name, text)]
+
+
 if CHECK:
-    print('gen_ancients: every patch applies (%d KB of kit)' % (len(kit) // 1024)); sys.exit(0)
+    cut_kit(kit)
+    print('gen_ancients: every patch applies and every cut is found (%d KB of kit)' % (len(kit) // 1024)); sys.exit(0)
 
 pre = """reseed(610001);
 /* ============================== 61. THE ANCIENTS ==============================
@@ -159,7 +186,7 @@ function reportErr(m){ ERR('ancients kit: '+m); }
 """
 # One file per component, so an agent can open the part it needs. build.py joins
 # files that share the 61 prefix back into one unit (one PRNG stream, one scope).
-parts = [('61a-ancients-kit', pre + kit),
+parts = cut_kit(pre + kit) + [
          ('61b-ancients-kit-tail', open(os.path.join(HERE, 'anc_kit_tail.js')).read() + "})();\n"),
          ('61c-ancients-glue', open(os.path.join(HERE, 'anc_glue.js')).read()),
          ('61d-ancients-assets', open(os.path.join(HERE, 'anc_assets.js')).read() + "})();\n"),
@@ -167,6 +194,11 @@ parts = [('61a-ancients-kit', pre + kit),
 old = os.path.join(ROOT, 'src', '61-ancients.js')
 if os.path.exists(old):
     os.remove(old)
+for f in sorted(os.listdir(os.path.join(ROOT, 'src'))):   # a part KIT_CUTS no longer names would be joined in twice
+    if f.startswith('61a') and f.endswith('.js') and f[:-3] not in [n for n, _ in parts]:
+        os.remove(os.path.join(ROOT, 'src', f))
+        print('removed stale src/%s' % f)
 for name, text in parts:
-    open(os.path.join(ROOT, 'src', name + '.js'), 'w').write(text)
+    with open(os.path.join(ROOT, 'src', name + '.js'), 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write(text)
     print('wrote src/%s.js' % name, len(text))
