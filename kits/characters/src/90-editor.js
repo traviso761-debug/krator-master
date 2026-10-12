@@ -6,13 +6,16 @@
 (function(){
   var D = KCHAR_DATA, $ = function(id){ return document.getElementById(id); };
   var SLOT_LABEL = { torso:'Torso & arms', legs:'Legs', feet:'Feet' };
-  var BASE_HEIGHT = { male:1.75, female:1.68 };
+  var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
+  var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'MakeHuman male', mpfb_female:'MakeHuman female' };
   var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
   var start = {
     male:   { body:'male', head:'base_m', hair:'hair_m_long', beard:null, armour:{ torso:'bronze', legs:'scout', feet:'bone' }, sliders:{}, dye:{} },
     female: { body:'female', head:'base_f', hair:'hair_f_braids', beard:null, armour:{ torso:'f_hide', legs:'f_scout', feet:'f_bone' }, sliders:{}, dye:{} }
   };
-  var saved = { male:null, female:null };
+  start.mpfb_male = { body:'mpfb_male', hair:'short02', armour:{ torso:'mindfront_kimono', legs:'toigo_harem_pants', feet:'culturalibre_hero_boots_1' }, sliders:{}, dye:{} };
+  start.mpfb_female = { body:'mpfb_female', hair:'braid01', armour:{ torso:'toigo_bodice-style_top', legs:'toigo_long_full_skirt', feet:'grinsegold_female_pirate_boots' }, sliders:{}, dye:{} };
+  var saved = {};
 
   /* ---- pieces ---- */
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
@@ -60,8 +63,8 @@
     if(fig) fig.dispose();
     fig = new KCharFigure(D.bodies[b], D.sliders, load);
     scene.add(fig.group);
-    rec = saved[b] || JSON.parse(JSON.stringify(start[b]));
-    ['male', 'female'].forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
+    rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
+    Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
     buildPanel();
     var clip = document.querySelector('[data-clip][aria-pressed="true"]');
     $('loading').hidden = false;
@@ -150,6 +153,7 @@
     var kit = D.bodies[body].kit;
     var gear = $('page-gear'), headp = $('page-head');
     gear.innerHTML = ''; headp.innerHTML = '';
+    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); buildSliders(); return; }
     ['torso', 'legs', 'feet'].forEach(function(slot){
       var a = kit.armour.filter(function(x){ return x.slots[slot]; });
       var cur = rec.armour[slot] || null, it = a.filter(function(x){ return x.id === cur; })[0];
@@ -184,6 +188,28 @@
       if(kind === 'hair') dyeRow(s, 'hair');
     });
 
+    buildSliders();
+  }
+
+  /* a MakeHuman body: library items per slot, MPFB's own fitting; the head and face are the base's */
+  function buildMpfb(kit, gear, headp){
+    ['torso', 'legs', 'feet', 'hair'].forEach(function(slot){
+      var page = slot === 'hair' ? headp : gear;
+      var list = kit.items.filter(function(x){ return x.slot === slot; });
+      var cur = slot === 'hair' ? rec.hair : rec.armour[slot];
+      var it = list.filter(function(x){ return x.id === cur; })[0];
+      var s = section(page, slot === 'hair' ? 'Hair' : SLOT_LABEL[slot], it ? it.name : 'None');
+      chips(s, [{ id:null, name:'None', domId:'chip-' + slot + '-none' }].concat(list.map(function(x){
+        return { id:x.id, name:x.name, img:thumb(KCHAR.key(x.glb), 'all'), domId:'chip-' + slot + '-' + x.id };
+      })), cur || null, function(id){ if(slot === 'hair') rec.hair = id; else rec.armour[slot] = id; apply(); buildPanel(); });
+      dyeRow(s, slot);
+    });
+    var gh = document.createElement('p'); gh.className = 'hint';
+    gh.textContent = 'MakeHuman library clothing: each piece was fitted to this body by MPFB and takes its weights from it, and hides the skin it covers. Loose pieces (the kimono, harem trousers, skirts) hang from the body instead of being pushed out of it.';
+    gear.appendChild(gh);
+  }
+
+  function buildSliders(){
     sliderEls = {};
     ['Body', 'Face'].forEach(function(group){
       var page = $('page-' + group.toLowerCase()); page.innerHTML = '';
@@ -223,9 +249,14 @@
         if(t === 'face' || t === 'head') view(true); else if(t === 'body' || t === 'gear') view(false);
       });
     });
-    ['male', 'female'].forEach(function(b){ $('body-' + b).addEventListener('click', function(){ if(b !== body) setBody(b); }); });
+    Object.keys(D.bodies).forEach(function(b){
+      var btn = document.createElement('button'); btn.id = 'body-' + b; btn.textContent = BODY_LABEL[b] || b;
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', function(){ if(b !== body) setBody(b); });
+      $('bodies').appendChild(btn);
+    });
     var pick = $('idle-pick');
-    D.bodies.male.skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
+    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
       var o = document.createElement('option'); o.value = c.name; o.textContent = c.label + ' · ' + c.seconds.toFixed(1) + ' s';
       pick.appendChild(o);
     });
@@ -251,7 +282,7 @@
     $('rec-load').addEventListener('click', function(){
       try {
         var r = JSON.parse($('rec-text').value);
-        if(!D.bodies[r.body]) throw new Error('body must be male or female');
+        if(!D.bodies[r.body]) throw new Error('body must be one of ' + Object.keys(D.bodies).join(', '));
         r.armour = r.armour || {}; r.sliders = r.sliders || {}; r.dye = r.dye || {};
         saved[r.body] = r;
         if(r.body !== body) setBody(r.body); else { rec = r; buildPanel(); apply(); }

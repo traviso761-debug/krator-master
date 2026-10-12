@@ -94,7 +94,16 @@ var KCHAR = (function(){
   /* ---- the kit (data/<body>/kit.json): what to draw for a record, and what of the base body to leave out ---- */
   function key(glb){ return glb.replace(/^pieces\//, '').replace(/\.glb$/, ''); }
   function byId(list, id){ for(var i=0;i<list.length;i++) if(list[i].id === id) return list[i]; return null; }
-  function headOf(rec, kit){ return byId(kit.heads, rec.head) || byId(kit.heads, kit.base); }
+  function headOf(rec, kit){
+    if(kit.style === 'mpfb') return { id:'base', name:'Base', style:'base', face:null };   // the head is the base's
+    return byId(kit.heads, rec.head) || byId(kit.heads, kit.base);
+  }
+  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair'];
+  function mpfbItem(rec, kit, slot){
+    var id = slot === 'hair' ? rec.hair : (rec.armour || {})[slot];
+    var it = id && byId(kit.items, id);
+    return it && it.slot === slot ? it : null;
+  }
   function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
   function hairFor(kit, id, head, kind){
     for(var i=0;i<kit.hair.length;i++){ var h = kit.hair[i]; if(h.id === id && h.head === head && h.kind === kind) return h; }
@@ -104,6 +113,15 @@ var KCHAR = (function(){
   /* every mesh to draw: { key, mesh, role, slot } (key = the GLB's path under pieces/, without .glb) */
   function parts(rec, kit){
     var out = [], head = headOf(rec, kit);
+    if(kit.style === 'mpfb'){
+      /* a MakeHuman body: the base (skin, brows, lashes, nails), then each item; mesh '*' is every mesh in the GLB */
+      out.push({ key:key(kit.base_glb), mesh:'*', role:'base', slot:'base' });
+      MPFB_SLOTS.forEach(function(slot){
+        var it = mpfbItem(rec, kit, slot);
+        if(it) out.push({ key:key(it.glb), mesh:'*', role:slot === 'hair' ? 'hair' : 'armour', slot:slot });
+      });
+      return out;
+    }
     kit.regions.forEach(function(r){ out.push({ key:key('pieces/' + kit.body + '/base.glb'), mesh:'base_' + r, role:'base', slot:r }); });
     out.push({ key:key(head.glb), mesh:'head', role:'head', slot:'head' });
     if(takesHair(head)){
@@ -130,6 +148,15 @@ var KCHAR = (function(){
   /* per base region, 1 for each triangle some worn armour covers */
   function hidden(rec, kit){
     var out = {}, arm = rec.armour || {};
+    if(kit.style === 'mpfb'){
+      var o = new Uint8Array(kit.base_tris);
+      MPFB_SLOTS.forEach(function(slot){
+        var it = mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
+        var b = unbits(it.hide, kit.base_tris);
+        for(var i=0;i<b.length;i++) o[i] |= b[i];
+      });
+      return { base:o };
+    }
     kit.regions.forEach(function(r){ out[r] = new Uint8Array(kit.base_tris[r]); });
     Object.keys(arm).forEach(function(slot){
       var a = arm[slot] && byId(kit.armour, arm[slot]), s = a && a.slots[slot];
@@ -143,6 +170,7 @@ var KCHAR = (function(){
   }
 
   function blank(kit){
+    if(kit.style === 'mpfb') return { body:kit.body, hair:null, armour:{ torso:null, legs:null, feet:null }, sliders:{}, dye:{} };
     return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
              sliders:{}, dye:{} };
   }
@@ -151,6 +179,15 @@ var KCHAR = (function(){
     var st = KRAND.stream(seed), r = st.next, rec = blank(kit);
     spread = spread === undefined ? 0.6 : spread;
     function pick(list){ return list[Math.floor(r() * list.length)]; }
+    if(kit.style === 'mpfb'){
+      MPFB_SLOTS.forEach(function(slot){
+        var have = kit.items.filter(function(it){ return it.slot === slot; });
+        var id = have.length && r() < 0.9 ? pick(have).id : null;
+        if(slot === 'hair') rec.hair = id; else rec.armour[slot] = id;
+      });
+      sliders.sliders.forEach(function(sl){ if(sl.group === 'Body') rec.sliders[sl.id] = Math.round((r() * 2 - 1) * spread * 100) / 100; });
+      return rec;
+    }
     rec.head = pick(kit.heads).id;
     var hairs = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'hair'; });
     var beards = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'beard'; });

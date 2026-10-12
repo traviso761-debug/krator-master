@@ -11,12 +11,19 @@ const { chromium } = createRequire(execSync('npm root -g').toString().trim() + '
 const HERE = path.resolve(process.argv[2] || '.');
 const ROOT = path.resolve(HERE, '..', '..');
 const jobs = [];
-for (const body of ['male', 'female']) {
+for (const body of fs.readdirSync(path.join(HERE, 'data'))) {
   const kp = path.join(HERE, 'data', body, 'kit.json');
   if (!fs.existsSync(kp)) continue;
   const kit = JSON.parse(fs.readFileSync(kp));
   const glb = g => path.join(HERE, g);
   const out = (g, mesh) => path.join(HERE, 'dist', 'thumbs', g.replace(/^pieces\//, '').replace(/\.glb$/, '') + '__' + mesh + '.png');
+  if (kit.style === 'mpfb') {
+    for (const it of kit.items) {
+      const parts = it.slot === 'hair' ? [[glb(kit.base_glb), '*'], [glb(it.glb), '*']] : [[glb(it.glb), '*']];
+      jobs.push({ parts, frame: it.slot === 'hair' ? 'head' : it.slot, out: out(it.glb, 'all') });
+    }
+    continue;
+  }
   for (const h of kit.heads) jobs.push({ parts: [[glb(h.glb), 'head']], frame: 'head', out: out(h.glb, 'head') });
   for (const a of kit.armour) for (const s of Object.keys(a.slots)) jobs.push({ parts: [[glb(a.glb), s]], frame: s, out: out(a.glb, s) });
   for (const h of kit.hair) {
@@ -43,8 +50,9 @@ await page.evaluate(() => {
       if (!cache[b64.length + name]) {
         const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer;
         const g = await new Promise((ok, no) => new THREE.GLTFLoader().parse(buf, '', ok, no));
-        let m = null; g.scene.traverse(o => { if (o.isSkinnedMesh && o.name === name) m = o; });
-        cache[b64.length + name] = m && new THREE.Mesh(m.geometry, m.material);
+        const grp = new THREE.Group();
+        g.scene.traverse(o => { if (o.isSkinnedMesh && (name === '*' || o.name === name)) grp.add(new THREE.Mesh(o.geometry, o.material)); });
+        cache[b64.length + name] = grp.children.length ? grp : null;
       }
       const m = cache[b64.length + name]; if (m) group.add(m.clone());
     }

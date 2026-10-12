@@ -42,23 +42,27 @@ function KCharFigure(body, sliders, load){
     return gltfs[k];
   }
 
-  function mesh(part, g){
-    var id = part.key + '|' + part.mesh;
-    if(live[id]) return live[id];
-    var src = null;
-    g.scene.traverse(function(m){ if(m.isSkinnedMesh && m.name === part.mesh) src = m; });
-    if(!src) return null;
-    var ibm = J.map(function(){ return new THREE.Matrix4(); });
-    src.skeleton.bones.forEach(function(b, k){ var i = byName[b.name]; if(i !== undefined) ibm[i].copy(src.skeleton.boneInverses[k]); });
-    var geo = src.geometry;
-    if(part.role === 'base') geo = geo.clone();          // its index is filtered per record; keep the whole one aside
-    var m = new THREE.SkinnedMesh(geo, src.material.clone());
-    m.name = id; m.frustumCulled = false; m.castShadow = true;
-    m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null };
-    m.bind(new THREE.Skeleton(bones, ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
-    self.inner.add(m);
-    live[id] = m;
-    return m;
+  /* the live meshes of a part: one per skinned mesh in its GLB when part.mesh is '*' (a MakeHuman piece: skin,
+     brows, lashes, nails are separate meshes), else the one named part.mesh */
+  function meshes(part, g){
+    var src = [];
+    g.scene.traverse(function(m){ if(m.isSkinnedMesh && (part.mesh === '*' || m.name === part.mesh)) src.push(m); });
+    return src.map(function(s, n){
+      var id = part.key + '|' + part.mesh + (part.mesh === '*' ? n : '');
+      if(live[id]) return live[id];
+      var ibm = J.map(function(){ return new THREE.Matrix4(); });
+      // three's loader turns 'mixamorig:Hips' into 'mixamorigHips' (MakeHuman's Mixamo rig); skeleton.json says 'Hips'
+      s.skeleton.bones.forEach(function(b, k){ var i = byName[b.name.replace(/^mixamorig:?/, '')]; if(i !== undefined) ibm[i].copy(s.skeleton.boneInverses[k]); });
+      var geo = s.geometry;
+      if(part.role === 'base') geo = geo.clone();          // its index is filtered per record; keep the whole one aside
+      var m = new THREE.SkinnedMesh(geo, s.material.clone());
+      m.name = id; m.frustumCulled = false; m.castShadow = true;
+      m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
+      m.bind(new THREE.Skeleton(bones, ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
+      self.inner.add(m);
+      live[id] = m;
+      return m;
+    });
   }
 
   var S = new THREE.Matrix4();
@@ -82,7 +86,7 @@ function KCharFigure(body, sliders, load){
       if(my !== token) return;              // a newer record came while this one loaded
       self.record = rec;
       var want = {};
-      return Promise.all(parts.map(function(p){ return need(p.key).then(function(g){ var m = mesh(p, g); if(m) want[m.name] = m; }); }))
+      return Promise.all(parts.map(function(p){ return need(p.key).then(function(g){ meshes(p, g).forEach(function(m){ want[m.name] = m; }); }); }))
         .then(function(){
           Object.keys(live).forEach(function(k){ live[k].visible = !!want[k]; });
           var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
@@ -92,7 +96,11 @@ function KCharFigure(body, sliders, load){
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
             skinScale(m, p);
-            if(part.role === 'base') filterBase(m, hide[part.slot]);
+            if(part.role === 'base'){
+              // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
+              if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
+              else if(m.userData.srcMaterial === kit.base_material) filterBase(m, hide.base);
+            }
             var dye = rec.dye && (part.role === 'armour' ? rec.dye[part.slot] : (part.role === 'hair' || part.role === 'beard') ? rec.dye.hair : null);
             m.material.color.set(dye || '#ffffff');
           });

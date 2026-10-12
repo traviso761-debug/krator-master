@@ -55,8 +55,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 #loading { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; font: 500 15px var(--body); color: var(--muted); }
 
 #panel { min-width: 0; background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; height: 100%; }
-#bodies { display: flex; gap: 4px; padding: 12px 16px 0; }
-#bodies button { flex: 1; border: 1px solid var(--line); background: var(--chip); font: 700 14px/1 var(--display); letter-spacing: .03em; padding: 9px; }
+#bodies { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px 16px 0; }
+#bodies button { flex: 1 1 40%; border: 1px solid var(--line); background: var(--chip); font: 700 14px/1 var(--display); letter-spacing: .03em; padding: 9px; }
 #bodies button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 #tabs { display: flex; gap: 2px; padding: 8px 16px 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
 #tabs button { border-radius: 6px 6px 0 0; padding: 10px 10px; font: 700 15px/1 var(--display); letter-spacing: .03em; color: var(--muted); }
@@ -119,10 +119,7 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
     </div>
   </div>
   <aside id="panel">
-    <div id="bodies" role="group" aria-label="Body">
-      <button id="body-male" aria-pressed="true">Male</button>
-      <button id="body-female" aria-pressed="false">Female</button>
-    </div>
+    <div id="bodies" role="group" aria-label="Body"></div>
     <div id="tabs" role="tablist">
       <button role="tab" id="tab-gear" aria-selected="true" aria-controls="page-gear">Gear</button>
       <button role="tab" id="tab-head" aria-selected="false" aria-controls="page-head">Head</button>

@@ -33,7 +33,7 @@ def read(p, mode='r'):
         return f.read()
 
 
-BODIES = ('male', 'female')
+BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json'))))
 
 
 def main():
