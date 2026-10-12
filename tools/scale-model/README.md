@@ -1,7 +1,7 @@
 # Scale model tools
 
 Scripts that edit the **Krator Scale Model** artifact
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.20. The artifact's rasters live inside the page
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.21. The artifact's rasters live inside the page
 (a `DATA` object on one long line); the generator that made them is not in this repo, so these
 scripts edit the decoded rasters directly and write a new page.
 
@@ -110,6 +110,49 @@ overtopped the west dam, which burst into the long-lake trough and the NW lowlan
 
 The scablands' own landforms (coulees, dry falls, potholes, current ripples, gravel bars) are under one 4 km cell:
 they are for the open world to carve along `DATA.floods`, not for the model.
+
+## 4.21: `edit_rivers.py` and `hydro.py` (Oct 2026): the rivers
+
+`edit_rivers.py <4.20 page> <regions.json> <settlements.json> <out page>` audits the valleys (nothing may flow uphill)
+and designates every river and dry valley with its flow and size, for the open world to place. It writes
+`<out>.report.json` (the audit) and `<out>.rivers.png` (the network over the relief map) beside the page. Deterministic;
+about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `rivers-4.21.jpg`.
+
+- **The water** (`hydro.py`): runoff from rain and the mean temperature by Turc's balance (`L = 300 + 25T + 0.05T^3`
+  also taken as open water's evaporation). The airless rim gives nothing; ground whose annual mean is under -10 C
+  carries ice, not rivers.
+- **The routing:** the Ring Sea (-1,500 m) and the oceans at the edge end flow, and so does every lake the model draws
+  below its own spill (as drawn). Every other hollow fills and spills, unless what reaches it is less than its full lake
+  would lose: then it is endorheic and its lake stands where the two balance. A hollow whose only way out is over frozen
+  ground is closed; if it still gains water it is flagged `unbalanced` (its surplus is the owner's to settle).
+- **The audit and the fix:** courses are traced (a river: mean flow 10 m3/s or more; a dry valley: 2,500 km2 of
+  catchment carrying less). Wherever one climbs it is crossing a hollow the 4 km grid holds: no deeper than 150 m, the
+  grid's (a gorge narrower than a cell), and the course is cut through, falling all the way; deeper, a river fills it,
+  so it becomes a lake at its spill (`through lake`). Rounds of routing, cutting and routing again until no course
+  climbs; then it asserts that every course falls (or runs level on water) from its source to its mouth.
+  4.21: 460 hollows on courses, 360 cut (844 cells, 34 m on average), 100 made through lakes (~125,000 km2); 93
+  endorheic lakes balanced (~30,000 km2) and written to the water too.
+- **The Yuni river** keeps its drawn course and the routing is held to it. On the 4.20 heights it climbed four times
+  (49, 135, 11 and 459 m: the escarpment's sharpening raised the lip above Locus after 4.19 cut its bed); its bed is
+  cut to fall all the way.
+- **Beast Riders** (the owner: its river basin lay partly below sea level, better rendered fully as river): the Ring
+  Sea's narrow arms up its valleys (water a 2-cell disc does not fit, 517 cells) become land, and every dry cell of the
+  region below the sea and joined to it (floors to -2,250 m) is raised to run down to the shore at 3 m per km; the
+  painted maps take the land beside them, the temperatures lapse.
+- **What the audit found and left** (the report's `lakes` and `basins`): 26 closed lakes gain water (the level-0 lakes
+  of the west, the rift's terminal seas, the eastern crater) and would rise to spill; 26 lakes stand over their own
+  shore; the south-eastern plateau gains ~1,800 m3/s and has no way out but over the 8 km rim (`unbalanced`): an
+  outlet, a rain shadow or a large lake is the owner's call.
+- **Data:** `DATA.rivers` (each: `id`, `name` (provisional: the smallest region holding most of it), `kind` river or
+  wadi, `order`, `length_km`, `catchment_km2`, `q_mouth_m3s`, `width_m` and `depth_m` at the mouth (w = 4.5 Q^0.5,
+  d = 0.35 Q^0.38; a dry valley's flash-flood bed 3 A^0.35), `to` (the sea, a lake, a basin or the river it joins),
+  `settlements` within 12 km, and per vertex `px` (one per height cell), `bed_m`, `q_m3s`; the Yuni river's drawn
+  course is `drawn_px`). `DATA.basins` (the endorheic and through lakes, `unbalanced` ones), `DATA.hydro` (method and
+  thresholds). The page's readout gains a **river** row (the nearest course within 6 km: its flow and width). Rivers are
+  painted on the satellite and relief maps, wider with flow.
+- `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
+  the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
+  `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
 
 ## Cutting a region out for the open world
 
