@@ -113,9 +113,49 @@ Godot (`godot/krator/biome_import.gd`): a MultiMesh's metadata `krator_record` (
 `tags.json`); a bucket's `krator_records`, `krator_record_ids` and `krator_pieces`. `godot/tests/tags/records_test.gd`
 recomputes every uid of the hyperjungle case in GDScript (`core/tags/ktags.gd`).
 
-| Kit | Sets | Instances | Volumes | Unknown tags |
-|---|---|---|---|---|
-| (filled by the run of 2026-10-12, below) | | | | |
+Every biome page on 2026-10-12 (`KTAGS.page.audit()` after the build; a set holds an item's instances, a volume is a
+registered tree, log, stand, herd or feature):
+
+| Page | Sets | Instances | flora | life | feature | Volumes | Unknown tags |
+|---|---|---|---|---|---|---|---|
+| crater-drylands | 38 | 1,260,261 | 1,244,601 | 0 | 15,660 | 30,227 | 0 |
+| eastabyss | 50 | 864,901 | 861,541 | 1,378 | 1,982 | 3,895 | 0 |
+| ebadlands | 42 | 243,041 | 222,291 | 0 | 20,750 | 220 | 0 |
+| ehighlands | 22 | 663,231 | 640,624 | 0 | 22,607 | 20,056 | 0 |
+| geyser | 45 | 376,169 | 371,072 | 2,238 | 2,859 | 2,106 | 0 |
+| hyperjungle | 28 | 320,125 | 313,864 | 5,358 | 903 | 225 | 0 |
+| nhighlands | 43 | 2,030,582 | 2,014,904 | 0 | 15,678 | 14,095 | 0 |
+| nwbay | 206 | 703,071 | 698,646 | 0 | 4,425 | 4,453 | 0 |
+| nwlowlands | 42 | 668,792 | 666,311 | 0 | 2,481 | 3,042 | 0 |
+| rift | 50 | 1,698,732 | 1,690,462 | 0 | 8,270 | 15,933 | 0 |
+| sedesert | 43 | 545,951 | 512,116 | 2,458 | 31,377 | 3,955 | 0 |
+| shighlands | 38 | 404,388 | 390,126 | 0 | 14,262 | 27,252 | 0 |
+| swbay | 31 | 539,065 | 536,356 | 0 | 2,709 | 2,762 | 0 |
+| swlowlands | 39 | 855,168 | 853,107 | 0 | 2,061 | 3,451 | 0 |
+| throne-ash | 118 | 278,494 | 278,494 | 0 | 0 | 9,586 | 0 |
+| throne-caldera | 6 | 48,997 | 48,841 | 0 | 156 | 12 | 0 |
+| throne-cloud | 56 | 1,713,138 | 1,712,571 | 0 | 567 | 20,685 | 0 |
+| throne-frontier | 69 | 442,596 | 436,341 | 3,456 | 2,799 | 9,710 | 0 |
+| throne-glacier | 31 | 151,279 | 151,276 | 0 | 3 | 3,378 | 0 |
+| throne-isle | 87 | 1,226,672 | 1,226,466 | 0 | 206 | 29,361 | 0 |
+| throne-kipuka | 81 | 724,749 | 719,002 | 1,778 | 3,969 | 10,352 | 0 |
+| throne-savanna | 58 | 786,294 | 763,674 | 0 | 22,620 | 9,769 | 0 |
+| throne-tube | 77 | 12,339 | 11,448 | 0 | 891 | 19 | 0 |
+| throne-vents | 152 | 288,087 | 285,004 | 0 | 3,083 | 7,022 | 0 |
+| throne | 168 | 532,192 | 512,868 | 0 | 19,324 | 8,978 | 0 |
+| xanadu | 52 | 1,415,450 | 1,408,131 | 0 | 7,319 | 10,863 | 0 |
+
+Every instance the core bakes is in a set (the sets' counts equal `BIO.bake`'s, plus `BIO.dynamic` fauna). Not
+registered: what a page draws outside `BIO.put` and `BIO.dynamic`: ebadlands' variant-library trees
+(`86-host-variants.js`, 13,953 instances: host-drawn InstancedMeshes), and the swbay and nwbay fauna, which build their
+own InstancedMeshes (`75-biome-*-fauna.js`); moving them onto `BIO.dynamic` would register them.
+
+**The cost** (2026-10-12, measured on the cloud container under a load average of 20 to 50, so wall times are noisy):
+nothing per instance until bake; then 4 bytes per instance only where LOD splits an item over several meshes (the index
+table: rift 6.8 MB of its 491 MB of buffers, hyperjungle none), and about 340 bytes of heap per registered volume (rift:
++5.3 MB for 15,933 volumes, hyperjungle +0.2 MB). CPU-profiled loads of rift put the tags code at 0.3 to 0.5 s of 72 to
+78 s (under 1 %); the build times of four interleaved pairs per page were within the noise (hyperjungle median 9.5 s
+both ways; rift 55 s before, 64 s after, one pair the other way round).
 
 **Material**: `id`, `kind` (`leaf`: a foliage card with the wind and two-tone hook; `bark`:
 vertex-coloured textured wood; `anim`: an animated fauna body; `plain`: anything else),
