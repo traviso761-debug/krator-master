@@ -34,6 +34,13 @@ them), hair and eye colours, the age at which hair greys, beard odds, slider ran
 preferred hairstyles per body. The Chichani and Beast Rider entries follow the owner's notes; the rest are proposals
 from LORE.md's references, there to be changed.
 
+**Setting up the Blender half** (nothing of it is in the repo, and `pieces/` is gitignored, so a fresh machine
+rebuilds the pieces from here). Blender 4.5 LTS from download.blender.org/release (the Linux tarball runs headless
+as is); MPFB from extensions.blender.org/add-ons/mpfb, installed with
+`blender -b --python-expr "import bpy; bpy.ops.extensions.package_install_files(filepath='mpfb.zip', repo='user_default')"`;
+the packs below from static.makehumancommunity.org/assets/assetpacks. Then per body: `mpfb_build.py` (about 10
+minutes: it refits every item once per slider end), `make_mpfb.py`, `build.py`.
+
 **Asset packs** (load them into MPFB once: `bpy.ops.mpfb.load_pack(filepath=...)`): makehuman_system_assets, hair01,
 eyebrows01, shirts01, pants01, skirts01, dress01, shoes01, suits01 (CC0); bodyparts05 (beards, CC0); hair02, hair03,
 bodyparts06 (CC-BY: `CREDITS.md`).
