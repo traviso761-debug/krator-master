@@ -104,6 +104,30 @@ CHECKS = r'''async () => {
     for (let k = 0; k < 8; k++){ fig.update(0.2); drawn += fig.drawn ? 1 : 0; }   // after the fade from the last clip
     if (drawn < 6) out.props.push(body + ' bow_scan: the string is not drawn');
     await fig.hold({ R:null, L:null });
+    // cloth: a court skirt's chains swing in a walk, stay finite, and keep out of the thighs
+    const sk = kit.items.find(it => it.id.indexOf('noble_skirt') >= 0 && it.cloth);
+    const byName = n => fig.bones.findIndex(b => b.name === n);
+    if (sk) {
+      const r0 = JSON.parse(JSON.stringify(window._kchar.record()));
+      const r2 = JSON.parse(JSON.stringify(r0)); r2.armour.legs = sk.id;
+      await window._kchar.set(r2); await fig.play('walk');
+      let moved = 0, bad = 0, deep = 0;
+      for (let k = 0; k < 60; k++) {
+        fig.update(1 / 30);
+        const st = fig.clothState(), c = Object.values(st.items).find(c => c.on);
+        if (!c) break;
+        c.chains.forEach(ch => ch.x.forEach((x, i) => { if (!isFinite(x.x + x.y + x.z)) bad++; moved = Math.max(moved, x.distanceTo(ch.tw[i])); }));
+        const thighs = st.caps.filter(cp => [byName('LeftUpLeg'), byName('RightUpLeg')].indexOf(cp.a) >= 0);
+        c.chains.forEach(ch => ch.x.forEach(x => thighs.forEach(cp => {
+          const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
+          const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
+          if (x.distanceTo(a.clone().addScaledVector(ab, t)) < cp.r - 0.005) deep++;
+        })));
+      }
+      if (bad || moved < 0.01) out.props.push(body + ' cloth: ' + bad + ' non-finite points, largest swing ' + moved.toFixed(3) + ' m');
+      if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
+      await window._kchar.set(r0);
+    }
     await fig.play(null);
     out.random = out.random && JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0])) === JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0]));
     for (const P of D.peoples) for (let s = 1; s <= 25; s++) {

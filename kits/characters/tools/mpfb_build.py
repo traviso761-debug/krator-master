@@ -151,9 +151,17 @@ def export(objs, fname):
                               export_skins=True, export_animations=False, export_morph=False, export_yup=True,
                               export_image_format='JPEG', export_jpeg_quality=85, export_attributes=True)
 export([base] + always, 'base')
+import shutil
 for slot, label, name, o in loaded:
     export([o], name)
     manifest['items'].append({'slot': slot, 'name': label, 'id': name, 'glb': name + '.glb', 'hides': len(dg.get(name, []))})
+    # a garment's cloth chains (make_garments.py), by its own vertex order, go along for make_mpfb.py
+    side = os.path.join(os.path.dirname(find(KIND[slot], name)), name + '.cloth.json')
+    if os.path.exists(side):
+        shutil.copy(side, os.path.join(OUT, name + '.cloth.json'))
+        manifest['items'][-1]['cloth'] = name + '.cloth.json'
+        if len(o.data.vertices) != json.load(open(side))['verts']:
+            print('CLOTH VERTEX COUNT MISMATCH', name, len(o.data.vertices))
 manifest['always'] = [o.name for o in always]       # meshes inside base.glb besides the skin, in morphs.npz order
 json.dump(manifest, open(os.path.join(OUT, 'manifest.json'), 'w'), indent=1)
 json.dump(dg, open(os.path.join(OUT, 'delete_groups.json'), 'w'))

@@ -21,7 +21,7 @@ var golden = { bodies:{} };
   var g = golden.bodies[body] = { morphs:[], strangers:[], parts:[] };
   recs.forEach(function(r){
     var w = KCHAR.morphWeights(r, kit), mj = KCHAR.morphJoints(skel, kit, w);
-    g.morphs.push({ record:r, w:Array.prototype.slice.call(w), t:mj.t, d:mj.d });
+    g.morphs.push({ record:r, w:Array.prototype.slice.call(w), t:mj.t, d:mj.d, cr:KCHAR.colliders(skel, w).map(function(c){ return c.r; }) });
   });
   peoples.forEach(function(P, k){
     [1, 7919].forEach(function(seed){ g.strangers.push({ people:P.id, seed:seed + k, record:KCHAR.stranger(seed + k, kit, P) }); });

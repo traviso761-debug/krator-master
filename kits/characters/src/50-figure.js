@@ -59,12 +59,15 @@ function KCharFigure(body, sliders, load){
     return src.map(function(s, n){
       var id = part.key + '|' + part.mesh + (part.mesh === '*' ? n : '');
       if(live[id]) return live[id];
-      var ibm = J.map(function(){ return new THREE.Matrix4(); });
+      var cl = clothOf(part), extra = cl ? cl.bones : [];
+      var ibm = J.map(function(){ return new THREE.Matrix4(); }).concat(extra.map(function(){ return new THREE.Matrix4(); }));
       // three's loader turns 'mixamorig:Hips' into 'mixamorigHips' (MakeHuman's Mixamo rig); skeleton.json says 'Hips'
       // the piece's joints by name onto skeleton.json's order; one the skeleton lacks (an exporter's 'neutral_bone' for
-      // unweighted vertices) follows the head
+      // unweighted vertices) follows the head; a garment's cloth joints ('cloth:<item>:<chain>:<bone>', the loader
+      // drops the colons) are its chain bones, after the skeleton's
       var remap = s.skeleton.bones.map(function(b, k){
         var i = byName[b.name.replace(/^mixamorig:?/, '')];
+        if(i === undefined && cl){ var q = cl.byName[clothKey(b.name)]; if(q !== undefined) i = J.length + q; }
         if(i !== undefined) ibm[i].copy(s.skeleton.boneInverses[k]);
         return i === undefined ? -1 : i;
       });
@@ -81,7 +84,8 @@ function KCharFigure(body, sliders, load){
       if(kit.tint && kit.tint.roles[s.material.name] === 'eye') irisTint(m.material);
       m.name = id; m.frustumCulled = false; m.castShadow = true;
       m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
-      m.bind(new THREE.Skeleton(bones, ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
+      m.bind(new THREE.Skeleton(bones.concat(extra), ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
+      if(cl) cl.meshes.push(m);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -109,7 +113,7 @@ function KCharFigure(body, sliders, load){
   var S = new THREE.Matrix4(), T = new THREE.Matrix4();
   function skinScale(m, pose, d){
     var inv = m.skeleton.boneInverses, ibm = m.userData.ibm;
-    for(var i=0;i<inv.length;i++){
+    for(var i=0;i<J.length;i++){
       var s = pose.s[i]; inv[i].copy(S.makeScale(s[0], s[1], s[2]).multiply(ibm[i]));
       if(d) inv[i].multiply(T.makeTranslation(-d[i][0], -d[i][1], -d[i][2]));
     }
@@ -269,6 +273,7 @@ function KCharFigure(body, sliders, load){
               m.material.color.set(dye || '#ffffff');
             }
           });
+          clothRest(want, mpfb ? KCHAR.morphWeights(rec, kit) : null);
           if(!self.action) self.restPose();
         });
     });
@@ -449,6 +454,175 @@ function KCharFigure(body, sliders, load){
     hand.updateMatrixWorld(true);
   }
 
+  /* ---- cloth: a garment's hanging parts as bone chains (kit item cloth, make_mpfb.py cloth_bones) ----
+     Each chain hangs from a spine joint; its points are vertices of the garment, so their rest follows the morph
+     (clothRest reads them off the morphed mesh). Every frame (clothStep) each point is a Verlet particle: the rigid
+     rest it would have riding its joint pulls it by the part's stiffness; gravity (Krator's 7.4 m/s2), the dense
+     lowland air's drag and, for a loop that walks or runs in place, the wind of its root_speed act on it; it keeps its
+     length to the point above, keeps near its neighbours round a skirt, and stays out of the body's capsules
+     (skeleton.json colliders, KCHAR.colliders) and above the floor. Each bone then turns to point at the next
+     particle. fig.cloth = false: the chains hang rigid */
+  this.cloth = true;
+  this.clothState = function(){ return { items:clothItems, caps:caps }; };      // verify.py, the labs
+  var GRAV = 7.4, DRAG = 1.6, DAMP = 0.04, STEP = 1 / 60, PAD = 0.022;
+  var clothItems = {}, itemByKey = {}, caps = [], groundY = 0, clothAcc = 0;
+  (kit.items || []).forEach(function(it){ itemByKey[KCHAR.key(it.glb)] = it; });
+  // a joint's name as three's loader leaves it (PropertyBinding.sanitizeNodeName: no [ ] . : /, spaces to _)
+  function clothKey(n){ return n.replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, ''); }
+  function clothOf(part){
+    var it = itemByKey[part.key];
+    if(!it || !it.cloth) return null;
+    if(clothItems[part.key]) return clothItems[part.key];
+    var c = { item:it, bones:[], byName:{}, meshes:[], chains:[], parts:it.cloth.parts, reset:true };
+    it.cloth.chains.forEach(function(ch, g){
+      var list = [];
+      for(var k = 0; k < ch.pts.length - 1; k++){
+        var b = new THREE.Bone(); b.name = 'cloth:' + it.id + ':' + g + ':' + k;
+        (k === 0 ? bones[byName[ch.parent]] : list[k - 1]).add(b);
+        c.byName[clothKey(b.name)] = c.bones.length;
+        c.bones.push(b); list.push(b);
+      }
+      c.chains.push({ parent:byName[ch.parent], pts:ch.pts, bones:list, p:[], len:[], x:[], xp:[], tw:[], q0:new THREE.Quaternion(),
+                      stiff:0.1 });
+    });
+    c.parts.forEach(function(pt){ pt.chains.forEach(function(g){ c.chains[g].stiff = pt.stiff; }); });
+    clothItems[part.key] = c;
+    return c;
+  }
+  var cM = new THREE.Matrix4(), cM2 = new THREE.Matrix4(), cV = new THREE.Vector3(), cV2 = new THREE.Vector3(), cV3 = new THREE.Vector3(),
+      cQ = new THREE.Quaternion(), cQ2 = new THREE.Quaternion(), cQ3 = new THREE.Quaternion(), cS = new THREE.Vector3();
+  // the chains' rest from the morphed garment: each point at its vertex, each bone's inverse bind T(-p)
+  function clothRest(want, w){
+    caps = w ? KCHAR.colliders(skel, w) : [];
+    Object.keys(clothItems).forEach(function(key){
+      var c = clothItems[key], m = c.meshes.filter(function(x){ return want[x.name]; })[0];
+      c.on = !!m;
+      if(!m) return;
+      var P = m.geometry.attributes.position.array, base = J.length;
+      c.chains.forEach(function(ch){
+        ch.p = ch.pts.map(function(i){ return new THREE.Vector3(P[3*i], P[3*i+1], P[3*i+2]); });
+        ch.len = ch.p.slice(1).map(function(q, k){ return q.distanceTo(ch.p[k]); });
+        var pinv = m.skeleton.boneInverses[ch.parent];
+        ch.bones.forEach(function(b, k){
+          if(k === 0){
+            cM.copy(pinv).multiply(cM2.makeTranslation(ch.p[0].x, ch.p[0].y, ch.p[0].z));
+            cM.decompose(b.position, b.quaternion, cS);
+            ch.q0.copy(b.quaternion);
+          } else { b.position.subVectors(ch.p[k], ch.p[k - 1]); b.quaternion.identity(); }
+          var bi = c.bones.indexOf(b);
+          c.meshes.forEach(function(mm){ mm.skeleton.boneInverses[base + bi].makeTranslation(-ch.p[k].x, -ch.p[k].y, -ch.p[k].z); });
+        });
+      });
+      // neighbours round each part, for the spacing constraint: rest distances between chains' points
+      c.ring = [];
+      c.parts.forEach(function(pt){
+        var g = pt.chains, n = g.length;
+        for(var a = 0; a < (pt.closed ? n : n - 1); a++){
+          var A = c.chains[g[a]], Bc = c.chains[g[(a + 1) % n]], kk = Math.min(A.p.length, Bc.p.length);
+          for(var k = 1; k < kk; k++) c.ring.push([A, Bc, k, A.p[k].distanceTo(Bc.p[k])]);
+        }
+      });
+      c.reset = true;
+    });
+  }
+  function rigidTargets(c, ch){
+    var pb = bones[ch.parent];
+    cM.multiplyMatrices(pb.matrixWorld, c.meshes[0].skeleton.boneInverses[ch.parent]);   // model -> world, riding the joint
+    for(var k = 0; k < ch.p.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.p[k]).applyMatrix4(cM);
+    return cM;
+  }
+  function clothStep(dt){
+    var items = Object.keys(clothItems).map(function(k){ return clothItems[k]; }).filter(function(c){ return c.on && c.chains.length && c.chains[0].p.length; });
+    if(!items.length) return;
+    self.group.updateMatrixWorld(true);
+    var live = self.cloth && dt !== undefined;
+    if(!live){
+      items.forEach(function(c){ c.chains.forEach(function(ch){ ch.bones.forEach(function(b, k){ if(k === 0) b.quaternion.copy(ch.q0); else b.quaternion.identity(); }); }); c.reset = true; });
+      return;
+    }
+    // the body's capsules, in the world, this frame
+    var sc = self.group.getWorldScale(cS).x, W = caps.map(function(cp){
+      return { a:bones[cp.a].getWorldPosition(new THREE.Vector3()), b:bones[cp.b].getWorldPosition(new THREE.Vector3()), r:cp.r * sc + PAD };
+    });
+    groundY = self.group.getWorldPosition(cV3).y + 0.008;
+    // the air: still, or the wind of walking in place
+    var meta0 = self.action && meta[self.action.getClip().name], wind = new THREE.Vector3();
+    if(meta0 && meta0.loop !== false && meta0.root_speed) wind.fromArray(meta0.root_speed).applyQuaternion(self.group.getWorldQuaternion(cQ3)).multiplyScalar(-sc);
+    items.forEach(function(c){
+      c.chains.forEach(function(ch){
+        rigidTargets(c, ch);
+        if(c.reset || ch.x.length !== ch.p.length || ch.tw[0].distanceTo(ch.x[0]) > 0.4){
+          ch.x = ch.tw.map(function(v){ return v.clone(); }); ch.xp = ch.tw.map(function(v){ return v.clone(); });
+        }
+      });
+      c.reset = false;
+    });
+    clothAcc = Math.min(clothAcc + dt, 4 * STEP);
+    var h = STEP;
+    while(clothAcc >= h){
+      clothAcc -= h;
+      items.forEach(function(c){
+        c.chains.forEach(function(ch){
+          var kS = 1 - Math.pow(1 - ch.stiff, h * 60);
+          ch.x[0].copy(ch.tw[0]); ch.xp[0].copy(ch.tw[0]);
+          for(var k = 1; k < ch.x.length; k++){
+            var x = ch.x[k], xp = ch.xp[k];
+            cV.subVectors(x, xp);                                     // velocity x h
+            cV2.copy(wind).multiplyScalar(h).sub(cV).multiplyScalar(DRAG * h);   // drag toward the air's motion
+            cV2.y -= GRAV * h * h;
+            xp.copy(x);
+            x.addScaledVector(cV, 1 - DAMP).add(cV2);
+            x.lerp(ch.tw[k], kS);
+          }
+        });
+        for(var it = 0; it < 2; it++){
+          c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); });
+          c.ring.forEach(function(r){
+            var a = r[0].x[r[2]], b = r[1].x[r[2]], d = a.distanceTo(b), lo = r[3] * 0.6, hi = r[3] * 1.2;
+            if(d > hi || (d < lo && d > 1e-6)){
+              var want = d > hi ? hi : lo, f = (d - want) / d * 0.5;
+              cV.subVectors(b, a).multiplyScalar(f); a.add(cV); b.sub(cV);
+            }
+          });
+          c.chains.forEach(function(ch){
+            for(var k = 1; k < ch.x.length; k++){
+              var x = ch.x[k];
+              W.forEach(function(cp){
+                cV.subVectors(cp.b, cp.a);
+                var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+                cV2.copy(cp.a).addScaledVector(cV, t);
+                var d = x.distanceTo(cV2);
+                if(d < cp.r){ if(d < 1e-6) return; x.sub(cV2).multiplyScalar(cp.r / d).add(cV2); }
+              });
+              if(x.y < groundY) x.y = groundY;
+            }
+          });
+        }
+        c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); });
+      });
+    }
+    // the bones turn to the particles
+    items.forEach(function(c){
+      c.chains.forEach(function(ch){
+        var M = rigidTargets(c, ch);
+        cQ.setFromRotationMatrix(cM2.extractRotation(M));               // the chain's rest rotation in the world
+        var prev = bones[ch.parent].getWorldQuaternion(cQ2);
+        ch.bones.forEach(function(b, k){
+          cV.subVectors(ch.tw[k + 1], ch.tw[k]).normalize();
+          cV2.subVectors(ch.x[k + 1], ch.x[k]).normalize();
+          var Wq = new THREE.Quaternion().setFromUnitVectors(cV, cV2).multiply(cQ);
+          b.quaternion.copy(prev).invert().multiply(Wq);
+          prev = Wq;
+        });
+      });
+    });
+  }
+  function keepLen(ch, k){
+    var a = ch.x[k - 1], x = ch.x[k], L = ch.len[k - 1];
+    cV.subVectors(x, a); var d = cV.length();
+    if(d > 1e-9) x.copy(a).addScaledVector(cV, L / d);
+  }
+
   /* bowString: the string between the bow's limb tips (data/props.json string, in the bow's frame), drawn through
      the right hand's grip point while that is behind the bow and near its middle, and an arrow from there to the bow
      hand once the string is pulled; straight and empty otherwise. The clips hold the bow hand at various turns, so
@@ -506,7 +680,7 @@ function KCharFigure(body, sliders, load){
     }
     self.drawn = !!mid;
   }
-  function afterClip(dt){ grip(); twoHands(dt); bowString(); }
+  function afterClip(dt){ grip(); twoHands(dt); clothStep(dt); bowString(); }
   function hipsMorph(){
     var d = self.morphDelta && self.morphDelta[byName.Hips];
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }

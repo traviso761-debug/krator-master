@@ -93,6 +93,21 @@ feather scales). `--render <dir>` loads the garments back through MPFB and rende
 their strangers and crowds are dressed by class (`record.tier`), and the Cosmetic Lab's Gear tab puts any of the six
 outfits on with one chip.
 
+**Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
+garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
+~12 cm, shorter near the top), from the row where the cloth starts to hang down to the hem, each chain hanging from
+the spine joint above it, and writes them beside the garment (`<id>.cloth.json`). `make_mpfb.py cloth_bones` turns
+them into joints of the garment's GLB ('cloth:<item>:<chain>:<bone>', inverse bind T(-p) at an anchor vertex) and
+weights the cloth below each chain's top to the two chains either side and the bone of its stretch; `kit.json` keeps
+per chain its parent joint and anchor vertices, and `skeleton.json colliders` the body's capsules (thighs, shins,
+pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`). The figure (`50-figure.js`
+cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment, so a broad or tall body's
+skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rigid rest
+by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
+air, with the wind of a walk or run played in place (its `root_speed`), kept to its length, near its neighbours round
+a skirt, out of the capsules and above the floor; each bone then turns to the next point. `fig.cloth = false` hangs
+them rigid (the Animation Lab's Cloth button).
+
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and
 preferred hairstyles per body. The Chichani and Beast Rider entries follow the owner's notes; the rest are proposals

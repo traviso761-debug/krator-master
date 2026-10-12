@@ -268,3 +268,16 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 	rec["eye_color"] = eyes[int(floor(r.next() * eyes.size()))]
 	rec["people"] = P.get("id")
 	return rec
+
+
+# the capsules a garment's cloth chains stay out of, their radii under morph weights w (as KCHAR.colliders)
+static func colliders(skel: Dictionary, w: PackedFloat64Array) -> Array:
+	var out := []
+	for c in skel.get("colliders", []):
+		var r: float = float(c["r"])
+		for t in c.get("dr", {}):
+			var ti := int(t)
+			if ti < w.size():
+				r += w[ti] * float(c["dr"][t])
+		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r)})
+	return out

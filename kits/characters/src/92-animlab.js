@@ -362,6 +362,11 @@
       Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)); })).then(function(){ $('loading').hidden = true; figs.forEach(function(x){ x.f.update(0); }); },
         function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
     });
+    $('cloth').addEventListener('click', function(){
+      var on = $('cloth').getAttribute('aria-pressed') !== 'true';
+      $('cloth').setAttribute('aria-pressed', on);
+      figs.forEach(function(x){ x.f.cloth = on; x.f.update(0); });
+    });
     $('play').addEventListener('click', function(){ setPaused(!paused); });
     $('restart').addEventListener('click', function(){ setTime(0); });
     $('speed').addEventListener('change', function(){ speed = +$('speed').value; });

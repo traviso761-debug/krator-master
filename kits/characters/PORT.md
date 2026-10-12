@@ -24,7 +24,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 - `50-figure.js` [draw]: the morph blend (KMR1 deltas over `_vidx`), the joint and inverse-bind deltas and the tint
   are what the Godot twin needs to match; its `shader` count is the cut-out hook (fragments that pass the alpha test
   are written opaque), which Godot's alpha scissor already does. Its two-handed hold (the left arm's two-bone solve onto
-  a prop's support) and the live bow string are matched in `kchar_figure.gd` (`_two_hands`, `_bow_string`).
+  a prop's support) and the live bow string are matched in `kchar_figure.gd` (`_two_hands`, `_bow_string`), and so
+  is the cloth solver (`_cloth_rest`, `_cloth_step`; GDScript for parity: a game would hand the chains to Godot's own
+  `SpringBoneSimulator3D` with capsule colliders).
 - `90-editor.js` [web]: its `net` lines fetch the pieces (`pieces/<key>.txt`); Godot loads the GLBs as resources.
 - `92-animlab.js` [web]: a review tool, not game code; its `store` lines keep review marks in the browser when the
   page has no shared store (the published lab keeps them in the artifact's db). Nothing of it ports.

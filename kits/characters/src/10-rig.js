@@ -295,6 +295,16 @@ var KCHAR = (function(){
     return rec;
   }
 
+  /* colliders(skel, w): the capsules a garment's cloth chains are kept out of (skeleton.json colliders: per joint
+     pair a base radius and its change per morph target), their radii under morph weights w */
+  function colliders(skel, w){
+    return (skel.colliders || []).map(function(c){
+      var r = c.r;
+      Object.keys(c.dr || {}).forEach(function(t){ r += (w[+t] || 0) * c.dr[t]; });
+      return { a:c.a, b:c.b, r:Math.max(0.01, r) };
+    });
+  }
+
   /* crowd(seed, n, kits, people): n strangers for a city's NPCs (the Cosmetic Lab's batch, tools/npcs.js). kits: the
      bodies to draw from ({ mpfb_male: kit, ... }); each stranger takes one of them at random, and its own seed from
      the crowd's stream, so the same seed gives the same crowd and stranger i does not depend on n */
@@ -311,6 +321,6 @@ var KCHAR = (function(){
 
   return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along, crowd:crowd };
+           along:along, crowd:crowd, colliders:colliders };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

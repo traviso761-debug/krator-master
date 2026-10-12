@@ -140,6 +140,8 @@ def frame(t):
 class Part:
     def __init__(self, name, P, closed, group, paint, uv_len=None):
         self.name, self.P, self.closed, self.group, self.paint = name, P, closed, group, paint
+        # what of it hangs free (cloth_spec): the row each column starts to hang from, and how stiff it is
+        self.cloth = None
 
     def lengths(self):
         P = self.P
@@ -245,7 +247,8 @@ def hull_rows(P, axes, rows):
 
 
 def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=None, rows=None, group_below=None,
-               scale=(1.0, 1.0), ease_bottom=None, iters=3, hang_side=None, points=None, hull_from=None, over_arms=False):
+               scale=(1.0, 1.0), ease_bottom=None, iters=3, hang_side=None, points=None, hull_from=None, over_arms=False,
+               stiff=0.12):
     """rings round the body's vertical axis from z0 (top) down to z1; dense near the shoulders. arc=(a0, a1): only
     that part of the circle (radians, 0 at the back, +pi/2 at the body's left). hang_from: the height cloth falls
     from at the front and back; hang_side: at the sides (lower, under the arms). points=(depth, power): the lower edge
@@ -290,7 +293,10 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
                     d = P[i, j] - axes[i]; d[2] = 0
                     P[i, j] = np.array([axes[i][0], axes[i][1], zn]) + d * (1 + (f - 1) * 0.5 * (top - zs[i]) / max(0.05, top - zs[-1]))
     grp = ['helper-skirt' if (group_below is not None and P[k, :, 2].mean() < group_below) else 'body' for k in range(len(zs))]
-    return Part(name, P, arc is None, grp, paint)
+    part = Part(name, P, arc is None, grp, paint)
+    if start is not None and stiff is not None:
+        part.cloth = {'start': start, 'stiff': stiff}
+    return part
 
 
 def limb_tube(name, a, b, ease, paint, n=20, rows=8, ease_end=None, start_back=0.0, arc=None, group='body', path=None, bvh=None, rmax=0.25):
@@ -348,7 +354,9 @@ def flap(name, top_center, width, length, out, paint, cols=7, rows=10, ease=0.01
     P = np.array(P)
     P = smooth_push(P, False, ease, iters=3)
     grp = ['helper-skirt' if (group_below is not None and P[i, :, 2].mean() < group_below) else 'body' for i in range(rows)]
-    return Part(name, P, False, grp, paint)
+    part = Part(name, P, False, grp, paint)
+    part.cloth = {'start': 0, 'stiff': 0.08}
+    return part
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -428,6 +436,42 @@ def paint_strip(spec, W, H, circ, length):
 
 
 # ---------------------------------------------------------------------------------------------------------------
+SPINE = ('Hips', 'Spine', 'Spine1', 'Spine2')
+
+
+def cloth_spec(p, offset):
+    """the bone chains a hanging part gets (make_mpfb.py turns them into joints): every ~7.5 cm round a tube (~10 cm
+    across a cape or flap) a column becomes a chain, from the row it starts to hang from down to the hem, one bone
+    per ~12 cm, shorter near the top; each chain hangs from the spine joint just above its top"""
+    if not p.cloth: return None
+    R, Cn = p.P.shape[:2]
+    st = p.cloth['start']
+    starts = list(st) if hasattr(st, '__len__') else [st] * Cn
+    circ, _ = p.lengths()
+    if p.closed:
+        n = int(max(8, min(20, round(circ / 0.075))))
+        cols = sorted({int(round(k * Cn / n)) % Cn for k in range(n)})
+    else:
+        n = int(max(2, round(circ / 0.1) + 1))
+        cols = sorted({int(round(x)) for x in np.linspace(0, Cn - 1, n)})
+    chains = []
+    for col in cols:
+        r0 = int(starts[col])
+        if r0 >= R - 1: continue
+        seg = np.linalg.norm(np.diff(p.P[r0:, col], axis=0), axis=1)
+        nseg = int(np.clip(round(seg.sum() / 0.12), 1, 6))
+        # shorter bones near the top, where the thighs push hardest
+        rows = sorted({int(round(r0 + (R - 1 - r0) * u ** 1.5)) for u in np.linspace(0, 1, nseg + 1)})
+        z = p.P[r0, col, 2]
+        parent = 'Hips'
+        for jn in SPINE:
+            if J(jn)[2] <= z + 0.02: parent = jn
+        chains.append({'col': col, 'rows': rows, 'parent': parent})
+    if not chains: return None
+    return {'name': p.name, 'offset': offset, 'rows': R, 'cols': Cn, 'closed': bool(p.closed), 'stiff': p.cloth['stiff'],
+            'chains': chains}
+
+
 def build(gid, label, parts):
     """the parts as one mesh with UVs (one texture strip each), its texture and material, and the .mhclo"""
     me = bpy.data.meshes.new(gid)
@@ -489,7 +533,14 @@ def build(gid, label, parts):
     mhclo.material = gid + '.mhmat'
     ref = ClothesService.get_reference_scale(base)
     mhclo.write_mhclo(os.path.join(d, gid + '.mhclo'), reference_scale=ref, also_export_mhmat=True)
-    print('GARMENT', gid, len(me.vertices), 'verts', len(me.polygons), 'quads ->', d)
+    # the cloth chains, by garment vertex (part offset + row * cols + col): make_mpfb.py adds the bones
+    specs, off = [], 0
+    for p in parts:
+        c = cloth_spec(p, off)
+        if c: specs.append(c)
+        off += p.P.shape[0] * p.P.shape[1]
+    json.dump({'garment': gid, 'verts': off, 'parts': specs}, open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
+    print('GARMENT', gid, len(me.vertices), 'verts', len(me.polygons), 'quads,', sum(len(c['chains']) for c in specs), 'chains ->', d)
     return obj
 
 
@@ -565,7 +616,7 @@ def loincloth(gid, paint_band, paint_flap, length):
 def cape(gid, z1, paint, flare=0.25, span=1.5, ease=0.025, top=None):
     """a cloak over the back: across the shoulders (from 'top', under a mantle), falling to z1"""
     return torso_tube(gid, TOP + 0.01 if top is None else top, z1, ease, paint, n=24, arc=(-span, span), hang_from=SHOULDER - 0.12, flare=flare,
-                      group_below=CROTCH + 0.05, iters=2, over_arms=True)
+                      group_below=CROTCH + 0.05, iters=2, over_arms=True, stiff=0.05)
 
 
 GARMENTS = {}
@@ -620,7 +671,7 @@ def _():
     mantle = P('rust', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'soot'), B('bottom', 0.02, 0.05, 'zigzag', 'ochre', 'rust', 0.05)])
     return [torso_tube('voth_m_trade_xicolli', TOP - 0.01, CROTCH - 0.16, 0.012, body, hang_from=WAIST - 0.03, flare=0.22, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
             torso_tube('voth_m_trade_xicolli_sash', WAIST + 0.035, WAIST - 0.035, 0.024, sash, rows=3, n=40, hull_from=WAIST + 0.1),
-            torso_tube('voth_m_trade_xicolli_mantle', TOP + 0.005, SHOULDER - 0.07, 0.04, mantle, n=44, hang_from=TOP - 0.035, flare=0.55, iters=2, over_arms=True)]
+            torso_tube('voth_m_trade_xicolli_mantle', TOP + 0.005, SHOULDER - 0.07, 0.04, mantle, n=44, hang_from=TOP - 0.035, flare=0.55, iters=2, over_arms=True, stiff=0.35)]
 
 
 @garment('voth_m_trade_kilt', 'legs', 'male', 'Wrap kilt')
@@ -664,7 +715,7 @@ def _():
     cloak = P('purple', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.10),
                                B('bottom', 0.12, 0.135, 'solid', 'gold')])
     return [torso_tube('voth_m_noble_robe', TOP - 0.01, CROTCH - 0.08, 0.012, robe, hang_from=CHEST - 0.08, hang_side=WAIST, flare=0.10, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-            torso_tube('voth_m_noble_robe_mantle', TOP + 0.01, SHOULDER - 0.13, 0.045, mantle, n=48, hang_from=TOP - 0.03, flare=0.7, iters=2, points=(0.06, 2), over_arms=True),
+            torso_tube('voth_m_noble_robe_mantle', TOP + 0.01, SHOULDER - 0.13, 0.045, mantle, n=48, hang_from=TOP - 0.03, flare=0.7, iters=2, points=(0.06, 2), over_arms=True, stiff=0.35),
             torso_tube('voth_m_noble_robe_collar', TOP + 0.06, TOP + 0.005, 0.02, collar, n=32, rows=4, ease_bottom=0.03),
             cape('voth_m_noble_robe_cloak', KNEE - 0.22, cloak, flare=0.22, span=1.2, ease=0.032, top=TOP - 0.035)] + \
         sleeves('voth_m_noble_robe', 'wrist', 0.016, sl, ease_end=0.05, rows=10)
@@ -690,7 +741,7 @@ def _():
                             B('bottom', 0.08, 0.095, 'solid', 'crimson'), B('top', 0.0, 0.03, 'solid', 'crimson')])
     sl = P('purple', 0.04, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.015, 0.06, 'fret', 'gold', 'purple', 0.05)])
     return [torso_tube('voth_f_noble_gown', TOP, HIPS[2] - 0.06, 0.011, bod, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.08, hull_from=CHEST + 0.02),
-            torso_tube('voth_f_noble_gown_quech', TOP + 0.008, SHOULDER - 0.06, 0.045, quech, n=48, hang_from=TOP - 0.03, flare=0.6, iters=2, points=(0.22, 3), over_arms=True)] + \
+            torso_tube('voth_f_noble_gown_quech', TOP + 0.008, SHOULDER - 0.06, 0.045, quech, n=48, hang_from=TOP - 0.03, flare=0.6, iters=2, points=(0.22, 3), over_arms=True, stiff=0.3)] + \
         sleeves('voth_f_noble_gown', 'wrist', 0.014, sl, ease_end=0.06, rows=10)
 
 

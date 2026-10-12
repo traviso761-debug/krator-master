@@ -25,11 +25,11 @@
   fingers), and the arrow only shows while the string is pulled (there is no nocking motion). The supporting hand
   always closes in a fist.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
-  script (`tools/make_garments.py`): no cloth simulation, no folds beyond the hang and flare, flat-shaded strips of
-  texture. In motion it bends with the skin it was matched to. MakeHuman's skirt helper follows each thigh, which
-  parts a skirt like trousers in a stride, so below the crotch `make_mpfb.py skirt_weights` pools most of the legs'
-  pull (shared by both thighs and the hips): the long skirts flare wide at the hem, and a full stride still opens
-  them a little at the front. Nothing billows, and a raised arm can push through a mantle's hem. Sleeves
+  script (`tools/make_garments.py`): no folds beyond the hang and flare, flat-shaded strips of texture. Its hanging parts swing on spring-bone chains (README, Cloth), which are not cloth: no wrinkles or
+  folds, no collision between garments (a mantle can pass through the cape under it), no self-collision, and the
+  cloth between two chains is interpolated, so a thigh in a long stride can still graze through a narrow skirt near
+  the top. The body is a few capsules: a broad chest or belly reads as round. Sleeves and mantles' tops ride the
+  body (no chains), so a raised arm can push through a mantle's hem. Sleeves
   start inside the shoulder, under the tunic. There is no headgear yet (a noble's feathered headdress, a Dunmer hat),
   and the court outfits share one cut per body; more garments are more entries in `GARMENTS`.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman

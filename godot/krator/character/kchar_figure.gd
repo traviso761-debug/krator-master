@@ -249,8 +249,11 @@ func _live_meshes(part: Dictionary) -> Array:
 				for k in skin.get_bind_count():
 					if skin.get_bind_name(k) == "Head":
 						head_bind = skin.get_bind_pose(k)
+				var cl := _cloth_of(part)
 				for k in skin.get_bind_count():
 					var bone := skeleton.find_bone(skin.get_bind_name(k))
+					if bone < 0 and not cl.is_empty():      # a garment's cloth joint: its chain bone
+						bone = int(cl["by_name"].get(_cloth_key(skin.get_bind_name(k)), -1))
 					if bone < 0:          # a bone we lack ('neutral_bone'): ride the head, with its bind
 						bone = _head
 						skin.set_bind_name(k, "Head")
@@ -260,6 +263,8 @@ func _live_meshes(part: Dictionary) -> Array:
 					bind0.append(skin.get_bind_pose(k))
 				mi.skin = skin
 				mi.set_meta("bind0", bind0)
+				if not cl.is_empty():
+					cl["meshes"].append(mi)
 			mi.set_meta("part", part)
 			mi.set_meta("built", b)
 			skeleton.add_child(mi)
@@ -280,7 +285,7 @@ func apply(rec: Dictionary) -> void:
 	var w := KChar.morph_weights(rec, kit)
 	morph = KChar.morph_joints(skel, kit, w)
 	var d: Array = morph["d"]
-	for i in skeleton.get_bone_count():
+	for i in skel["joints"].size():
 		if i != _hips:
 			skeleton.set_bone_pose_position(i, morph["t"][i])
 	# the items worn, as bits of kit.items: their skin regions hide
@@ -321,6 +326,7 @@ func apply(rec: Dictionary) -> void:
 						y += w[shapes[s]] * float(col[k])
 				low = minf(low, y)
 			skeleton.position.y = float(G["y0"][0]) - low
+	_cloth_rest(want, w)
 	if _clip == "":
 		rest_pose()
 
@@ -421,6 +427,7 @@ func hold(want: Dictionary) -> void:
 func _after_clip(dt: float) -> void:
 	_grip()
 	_two_hands(dt)
+	_cloth_step(dt)
 	_bow_string()
 
 
@@ -638,6 +645,226 @@ func _bow_string() -> void:
 		if ar.visible:
 			var to := (Vector3(0, 0.04 * (signf(p.y) if p.y != 0.0 else 1.0), 0) - p).normalized()
 			ar.transform = Transform3D(Basis(Quaternion(Vector3.BACK, to)), p)
+
+
+# ---- cloth (the twin of the cloth section of 50-figure.js) ----
+# A garment's hanging parts are bone chains (kit item 'cloth', make_mpfb.py cloth_bones), added to the skeleton when
+# the garment is first built; each chain's points are vertices of the garment, so their rest follows the morph (read
+# from the blend shapes). Every frame each point is a Verlet particle pulled to its rigid rest by the part's
+# stiffness, under Krator's gravity and the dense air's drag (and the wind of a loop's root_speed), kept to its
+# length, near its neighbours, out of the body's capsules and above the floor; each bone turns to the next particle
+var cloth := true
+const C_GRAV := 7.4
+const C_DRAG := 1.6
+const C_DAMP := 0.04
+const C_STEP := 1.0 / 60.0
+const C_PAD := 0.022
+var _cloth := {}                         # part key -> {item, by_name, chains, parts, meshes, on, reset, ring}
+var _caps := []
+var _cacc := 0.0
+
+
+static func _cloth_key(n: String) -> String:
+	return n.replace(":", "_").replace("/", "_")
+
+
+func _cloth_of(part: Dictionary) -> Dictionary:
+	if _cloth.has(part["key"]):
+		return _cloth[part["key"]]
+	var it = null
+	for x in kit["items"]:
+		if "pieces/%s.glb" % part["key"] == x["glb"] and x.has("cloth"):
+			it = x
+	if it == null:
+		return {}
+	var c := {"item": it, "by_name": {}, "chains": [], "parts": it["cloth"]["parts"], "meshes": [], "on": false, "reset": true, "ring": []}
+	var chs: Array = it["cloth"]["chains"]
+	for g in chs.size():
+		var ch: Dictionary = chs[g]
+		var list := []
+		for k in ch["pts"].size() - 1:
+			var nm := "cloth_%s_%d_%d" % [it["id"], g, k]
+			var b := skeleton.get_bone_count()
+			skeleton.add_bone(nm)
+			skeleton.set_bone_parent(b, skeleton.find_bone(ch["parent"]) if k == 0 else list[k - 1])
+			c["by_name"][nm] = b
+			list.append(b)
+		c["chains"].append({"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bones": list, "p": [], "len": [],
+			"x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1})
+	for pt in c["parts"]:
+		for g in pt["chains"]:
+			c["chains"][int(g)]["stiff"] = float(pt["stiff"])
+	_cloth[part["key"]] = c
+	return c
+
+
+# the chains' rest from the morphed garment (base positions plus the blend shapes' offsets)
+func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
+	_caps = KChar.colliders(skel, w)
+	for key in _cloth:
+		var c: Dictionary = _cloth[key]
+		var mi: MeshInstance3D = null
+		for m in c["meshes"]:
+			if want.has(m):
+				mi = m
+		c["on"] = mi != null
+		if mi == null:
+			continue
+		var b: Dictionary = mi.get_meta("built")
+		var shapes: PackedInt32Array = b["shapes"]
+		var base: PackedVector3Array = mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+		var bsa: Array = mi.mesh.surface_get_blend_shape_arrays(0)
+		var pbind := {}
+		for k in mi.skin.get_bind_count():
+			pbind[mi.skin.get_bind_bone(k)] = mi.skin.get_bind_pose(k)
+		for ch in c["chains"]:
+			var P := []
+			for i in ch["pts"]:
+				var v: Vector3 = base[int(i)]
+				for s in shapes.size():
+					if w[shapes[s]] != 0.0:
+						v += w[shapes[s]] * (bsa[s][Mesh.ARRAY_VERTEX][int(i)] as Vector3)
+				P.append(v)
+			ch["p"] = P
+			ch["len"] = []
+			for k in range(1, P.size()):
+				ch["len"].append((P[k] - P[k - 1]).length())
+			var bones: Array = ch["bones"]
+			for k in bones.size():
+				var t: Transform3D
+				if k == 0:
+					t = (pbind[ch["parent"]] as Transform3D) * Transform3D(Basis(), P[0])
+					ch["q0"] = t.basis.get_rotation_quaternion()
+				else:
+					t = Transform3D(Basis(), P[k] - P[k - 1])
+				skeleton.set_bone_rest(bones[k], t)
+				skeleton.set_bone_pose_position(bones[k], t.origin)
+				skeleton.set_bone_pose_rotation(bones[k], t.basis.get_rotation_quaternion())
+				for m in c["meshes"]:
+					for q in m.skin.get_bind_count():
+						if m.skin.get_bind_bone(q) == bones[k]:
+							m.skin.set_bind_pose(q, Transform3D(Basis(), -P[k]))
+			ch["pbind"] = pbind[ch["parent"]]
+		c["ring"] = []
+		for pt in c["parts"]:
+			var g: Array = pt["chains"]
+			var n := g.size()
+			for a in (n if pt["closed"] else n - 1):
+				var A: Dictionary = c["chains"][int(g[a])]
+				var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
+				for k in range(1, mini(A["p"].size(), Bc["p"].size())):
+					c["ring"].append([A, Bc, k, (A["p"][k] - Bc["p"][k]).length()])
+		c["reset"] = true
+
+
+func _rigid(ch: Dictionary) -> Transform3D:
+	var M: Transform3D = _gp(ch["parent"]) * (ch["pbind"] as Transform3D)
+	var tw := []
+	for p in ch["p"]:
+		tw.append(M * (p as Vector3))
+	ch["tw"] = tw
+	return M
+
+
+func _cloth_step(dt: float) -> void:
+	var items := []
+	for key in _cloth:
+		if _cloth[key]["on"] and _cloth[key]["chains"].size():
+			items.append(_cloth[key])
+	if items.is_empty():
+		return
+	if not cloth or dt < 0.0:
+		for c in items:
+			for ch in c["chains"]:
+				for k in ch["bones"].size():
+					skeleton.set_bone_pose_rotation(ch["bones"][k], ch["q0"] if k == 0 else Quaternion())
+			c["reset"] = true
+		return
+	var W := []
+	for cp in _caps:
+		W.append({"a": _gp(cp["a"]).origin, "b": _gp(cp["b"]).origin, "r": float(cp["r"]) + C_PAD})
+	var ground := 0.008 - skeleton.position.y
+	var wind := Vector3.ZERO
+	for cm in skel.get("clips", []):
+		if cm["name"] == _clip and cm.get("loop", true) and cm.has("root_speed"):
+			wind = -KChar._v(cm["root_speed"])
+	var grav := Vector3(0, -C_GRAV, 0)
+	for c in items:
+		for ch in c["chains"]:
+			_rigid(ch)
+			if c["reset"] or ch["x"].size() != ch["p"].size() or (ch["tw"][0] - ch["x"][0]).length() > 0.4:
+				ch["x"] = ch["tw"].duplicate()
+				ch["xp"] = ch["tw"].duplicate()
+		c["reset"] = false
+	_cacc = minf(_cacc + dt, 4 * C_STEP)
+	var h := C_STEP
+	while _cacc >= h:
+		_cacc -= h
+		for c in items:
+			for ch in c["chains"]:
+				var kS := 1.0 - pow(1.0 - float(ch["stiff"]), h * 60.0)
+				var x: Array = ch["x"]
+				var xp: Array = ch["xp"]
+				x[0] = ch["tw"][0]
+				xp[0] = ch["tw"][0]
+				for k in range(1, x.size()):
+					var v: Vector3 = x[k] - xp[k]
+					var acc: Vector3 = (wind * h - v) * (C_DRAG * h) + grav * h * h
+					xp[k] = x[k]
+					var nx: Vector3 = x[k] + v * (1.0 - C_DAMP) + acc
+					x[k] = nx.lerp(ch["tw"][k], kS)
+			for it in 2:
+				for ch in c["chains"]:
+					_keep_len(ch)
+				for r in c["ring"]:
+					var xa: Array = r[0]["x"]
+					var xb: Array = r[1]["x"]
+					var k: int = r[2]
+					var d: float = (xa[k] - xb[k]).length()
+					var lo: float = r[3] * 0.6
+					var hi: float = r[3] * 1.2
+					if d > hi or (d < lo and d > 1e-6):
+						var want := hi if d > hi else lo
+						var mv: Vector3 = (xb[k] - xa[k]) * ((d - want) / d * 0.5)
+						xa[k] += mv
+						xb[k] -= mv
+				for ch in c["chains"]:
+					var x: Array = ch["x"]
+					for k in range(1, x.size()):
+						var p: Vector3 = x[k]
+						for cp in W:
+							var ab: Vector3 = cp["b"] - cp["a"]
+							var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+							var q: Vector3 = cp["a"] + ab * t
+							var dd := p.distance_to(q)
+							if dd < cp["r"] and dd > 1e-6:
+								p = q + (p - q) * (cp["r"] / dd)
+						if p.y < ground:
+							p.y = ground
+						x[k] = p
+			for ch in c["chains"]:
+				_keep_len(ch)
+	for c in items:
+		for ch in c["chains"]:
+			var M := _rigid(ch)
+			var rq := M.basis.get_rotation_quaternion()
+			var prev := _gp(ch["parent"]).basis.get_rotation_quaternion()
+			var bones: Array = ch["bones"]
+			for k in bones.size():
+				var r0: Vector3 = (ch["tw"][k + 1] - ch["tw"][k]).normalized()
+				var r1: Vector3 = (ch["x"][k + 1] - ch["x"][k]).normalized()
+				var wq := (Quaternion(r0, r1) if r0.dot(r1) < 0.99999 else Quaternion()) * rq
+				skeleton.set_bone_pose_rotation(bones[k], (prev.inverse() * wq).normalized())
+				prev = wq
+
+
+func _keep_len(ch: Dictionary) -> void:
+	var x: Array = ch["x"]
+	for k in range(1, x.size()):
+		var d: Vector3 = x[k] - x[k - 1]
+		var l := d.length()
+		if l > 1e-9:
+			x[k] = x[k - 1] + d * (float(ch["len"][k - 1]) / l)
 
 
 func play(clip: String) -> void:

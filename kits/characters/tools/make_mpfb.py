@@ -90,10 +90,11 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
-    skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). Returns {material name: role} for
-    the materials that got one"""
+    skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). cloth: (item id, its
+    make_garments.py chain spec): bone chains are added (cloth_bones), and what the kit needs of them is put in
+    cloth['out']. Returns {material name: role} for the materials that got one"""
     j, b = glbio.read_glb(open(src, 'rb').read())
     b = bytearray(b)
     roles, img_role = {}, {}
@@ -141,8 +142,11 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None):
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     if skirt is not None:
         skirt_weights(j, b, skirt)
+    cloth_blobs = {}
+    if cloth is not None:
+        cloth['out'] = cloth_bones(j, b, cloth['id'], cloth['spec'], cloth_blobs)
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
-    blobs, holes, means, soft = {}, {}, {}, {}
+    blobs, holes, means, soft = dict(cloth_blobs), {}, {}, {}
     eye_imgs = set()
     for m in j.get('materials', []):
         if EYES in m.get('name', ''):
@@ -326,6 +330,184 @@ def skirt_weights(j, b, y0, band=0.12):
             WW = (np.round(Wf * np.iinfo(dw).max) if aw.get('normalized') else Wf).astype(dw)
             b[oj:oj + JJ.nbytes] = JJ.astype(dj).tobytes()
             b[ow:ow + WW.nbytes] = WW.tobytes()
+
+
+def cloth_bones(j, b, item, spec, blobs):
+    """the garment's hanging parts as bone chains (spec: make_garments.py's, by the garment's own vertex order, which
+    the export keeps as _VIDX). Per chain a joint per bone, named 'cloth:<item>:<chain>:<bone>', a child of the spine
+    joint it hangs from, its inverse bind T(-p) at its anchor vertex; the vertices below each chain's top weighted to
+    the two chains either side of them (by column) and the bone of their stretch (by row), faded in over two rows from
+    the top. Returns the kit entry: per chain its parent joint and anchor vertices (glTF indices, so the page and Godot
+    can read the morphed rest from their own meshes), per part its chains and whether they close round"""
+    node = next((n for n in j['nodes'] if 'mesh' in n and 'skin' in n), None)
+    if node is None:
+        return None
+    skin = j['skins'][node['skin']]
+    prim = j['meshes'][node['mesh']]['primitives'][0]
+    at = prim['attributes']
+    vid_key = '_VIDX' if '_VIDX' in at else next((k for k in at if k.upper() == '_VIDX'), None)
+    P = glbio.accessor(j, bytes(b), at['POSITION']).astype(float)
+    V = np.rint(glbio.accessor(j, bytes(b), at[vid_key])[:, 0]).astype(int)
+    first = {}
+    for gi, v in enumerate(V):
+        first.setdefault(int(v), gi)
+    names = [j['nodes'][k].get('name', '').split(':')[-1] for k in skin['joints']]
+    # the chains, their joints
+    chains, parts_out, new_nodes, new_ibm = [], [], [], []
+    where = {}                                   # garment vertex -> (part, row, col)
+    for pi, part in enumerate(spec['parts']):
+        R, Cn, off = part['rows'], part['cols'], part['offset']
+        for r in range(R):
+            for c in range(Cn):
+                where[off + r * Cn + c] = (pi, r, c)
+        ids = []
+        for ch in part['chains']:
+            pts = [first.get(off + r * Cn + ch['col']) for r in ch['rows']]
+            if any(x is None for x in pts) or ch['parent'] not in names:
+                continue
+            g = len(chains)
+            jidx = []
+            for k in range(len(pts) - 1):
+                nm = 'cloth:%s:%d:%d' % (item, g, k)
+                j['nodes'].append({'name': nm})
+                ni = len(j['nodes']) - 1
+                par = skin['joints'][names.index(ch['parent'])] if k == 0 else new_nodes[-1]
+                j['nodes'][par].setdefault('children', []).append(ni)
+                new_nodes.append(ni)
+                M = np.eye(4)
+                M[:3, 3] = -P[pts[k]]
+                new_ibm.append(M.T.reshape(-1))       # column-major
+                jidx.append(len(skin['joints']) + len(new_nodes) - 1)
+            chains.append({'parent': ch['parent'], 'pts': [int(x) for x in pts], 'part': pi, 'col': ch['col'],
+                           'rows': ch['rows'], 'joints': jidx})
+            ids.append(g)
+        parts_out.append({'closed': part['closed'], 'chains': ids, 'stiff': part['stiff']})
+    if not chains:
+        return None
+    skin['joints'] += new_nodes
+    a = j['accessors'][skin['inverseBindMatrices']]
+    old = glbio.accessor(j, bytes(b), skin['inverseBindMatrices']).reshape(-1, 16)
+    ibm = np.concatenate([old, np.array(new_ibm)]).astype(np.float32)
+    a['count'] = len(ibm)
+    blobs[a['bufferView']] = ibm.tobytes()
+    # the weights
+    aj, aw = j['accessors'][at['JOINTS_0']], j['accessors'][at['WEIGHTS_0']]
+    JJ = glbio.accessor(j, bytes(b), at['JOINTS_0']).astype(int)
+    WW = glbio.accessor(j, bytes(b), at['WEIGHTS_0']).astype(float)
+    by_part = {}
+    for ci, ch in enumerate(chains):
+        by_part.setdefault(ch['part'], []).append(ci)
+
+    def chain_w(ch, r):
+        """one chain's bones for a vertex in row r, and how much the chain has it (0 above its top)"""
+        rows = ch['rows']
+        if r < rows[0]:
+            return {}, 0.0
+        k = len(rows) - 2
+        sfrac = 1.0
+        for q in range(len(rows) - 1):
+            if rows[q] <= r < rows[q + 1]:
+                k, sfrac = q, (r - rows[q]) / max(1, rows[q + 1] - rows[q])
+                break
+        out = {ch['joints'][k]: 1.0}
+        if k > 0 and sfrac < 0.35:
+            bl = (0.35 - sfrac) / 0.35 * 0.5
+            out = {ch['joints'][k]: 1 - bl, ch['joints'][k - 1]: bl}
+        return out, float(np.clip((r - rows[0]) / 2.0, 0, 1))
+    for gi in range(len(P)):
+        w = where.get(int(V[gi]))
+        if w is None or w[0] not in by_part:
+            continue
+        pi, r, c = w
+        Cn = spec['parts'][pi]['cols']
+        cs = sorted(by_part[pi], key=lambda q: chains[q]['col'])
+        cols = [chains[q]['col'] for q in cs]
+        if spec['parts'][pi]['closed']:
+            lo = max([q for q in range(len(cs)) if cols[q] <= c], default=len(cs) - 1)
+            hi = (lo + 1) % len(cs)
+            span = (cols[hi] - cols[lo]) % Cn or Cn
+            t = ((c - cols[lo]) % Cn) / span
+        else:
+            if c <= cols[0]: lo = hi = 0; t = 0.0
+            elif c >= cols[-1]: lo = hi = len(cs) - 1; t = 0.0
+            else:
+                lo = max(q for q in range(len(cs)) if cols[q] <= c); hi = lo + 1
+                t = (c - cols[lo]) / max(1, cols[hi] - cols[lo])
+        wa, fa = chain_w(chains[cs[lo]], r)
+        wb, fb = chain_w(chains[cs[hi]], r)
+        share = (1 - t) * fa + t * fb
+        if share <= 0:
+            continue
+        mix = {}
+        for jj, ww in zip(JJ[gi], WW[gi]):
+            if ww > 0: mix[int(jj)] = mix.get(int(jj), 0) + ww * (1 - share)
+        for d, f, k in ((wa, fa, 1 - t), (wb, fb, t)):
+            for jj, ww in d.items():
+                mix[jj] = mix.get(jj, 0) + ww * f * k
+        top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
+        tot = sum(x for _, x in top) or 1.0
+        top += [(0, 0.0)] * (4 - len(top))
+        JJ[gi] = [q for q, _ in top]
+        WW[gi] = [x / tot for _, x in top]
+    big = JJ.max() > 255
+    jt = np.uint16 if big else glbio.CT[aj['componentType']]
+    if big:
+        aj['componentType'] = 5123
+    blobs[aj['bufferView']] = JJ.astype(jt).tobytes()
+    if aw['componentType'] == 5126:
+        blobs[aw['bufferView']] = WW.astype(np.float32).tobytes()
+    else:
+        dt = glbio.CT[aw['componentType']]
+        blobs[aw['bufferView']] = np.round(WW * np.iinfo(dt).max).astype(dt).tobytes()
+    for k in ('byteStride',):
+        j['bufferViews'][aj['bufferView']].pop(k, None)
+        j['bufferViews'][aw['bufferView']].pop(k, None)
+    return {'chains': [{'parent': ch['parent'], 'pts': ch['pts']} for ch in chains], 'parts': parts_out}
+
+
+# the capsules a garment's chains are kept out of: per joint pair, the base radius and how far each morph target moves
+# it (KCHAR.colliders: r + sum of weight x dr). Measured on the base skin: the vertices nearest each pair's segment
+CAPSULES = [('LeftUpLeg', 'LeftLeg'), ('RightUpLeg', 'RightLeg'), ('LeftLeg', 'LeftFoot'), ('RightLeg', 'RightFoot'),
+            ('Hips', 'Spine1'), ('Spine1', 'Neck'), ('LeftArm', 'LeftForeArm'), ('RightArm', 'RightForeArm'),
+            ('LeftForeArm', 'LeftHand'), ('RightForeArm', 'RightHand')]
+
+
+def colliders(c, J, base_glb, npz):
+    jj, bb = glbio.read_glb(open(base_glb, 'rb').read())
+    prim = next(p for m in jj['meshes'] for p in m['primitives']
+                if 'material' in p and jj['materials'][p['material']]['name'].endswith('.body'))
+    at = prim['attributes']
+    P = glbio.accessor(jj, bb, at['POSITION']).astype(float)
+    V = np.rint(glbio.accessor(jj, bb, at[next(k for k in at if k.upper() == '_VIDX')])[:, 0]).astype(int)
+    A = np.array([c.jpos[c.J[a]] for a, _ in CAPSULES]); B = np.array([c.jpos[c.J[b]] for _, b in CAPSULES])
+
+    def seg(p, a, bq):
+        d = bq - a
+        t = np.clip(((p - a) @ d) / (d @ d), 0, 1)
+        return np.linalg.norm(p - (a + np.outer(t, d)), axis=1), t
+    D = np.stack([seg(P, A[k], B[k])[0] for k in range(len(CAPSULES))], 1)
+    own = D.argmin(1)
+    tgts = list(npz['targets']) if npz is not None else []
+    bones = [glbio.short(str(x)) for x in npz['bones']] if npz is not None else []
+    out = []
+    for k, (a, b2) in enumerate(CAPSULES):
+        d, t = seg(P, A[k], B[k])
+        sel = np.nonzero((own == k) & (t > 0.15) & (t < 0.85))[0]
+        if len(sel) > 60:
+            sel = sel[np.linspace(0, len(sel) - 1, 60).astype(int)]
+        r0 = float(np.quantile(d[sel], 0.65))
+        dr = {}
+        if npz is not None and len(sel):
+            Db = npz['d_base']
+            for ti in range(len(tgts)):
+                dv = Db[ti, V[sel]] @ RY.T
+                da = npz['d_joints'][ti, bones.index(a)] @ RY.T if a in bones else 0
+                db = npz['d_joints'][ti, bones.index(b2)] @ RY.T if b2 in bones else 0
+                r1 = float(np.quantile(seg(P[sel] + dv, A[k] + da, B[k] + db)[0], 0.65))
+                if abs(r1 - r0) > 2e-4:
+                    dr[str(ti)] = round(r1 - r0, 4)
+        out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr})
+    return out
 
 
 def covered(BP, BT, path, out=0.025, inward=0.02):
@@ -599,11 +781,16 @@ def main():
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     for it in man['items']:
+        cl = None
+        if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
+            cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs') else None)
+                     skirt=crotch if it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs') else None, cloth=cl)
         roles.update(r)
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
+        if cl and cl.get('out'):
+            entry['cloth'] = cl['out']
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn
@@ -659,7 +846,9 @@ def main():
         morph = morph_kit(npz, {n['name']: i for i, n in enumerate(jnodes)})
     json.dump({'joints': [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']}
                           for i, n in enumerate(jnodes)], 'clips': clips,
-               'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)})},
+               'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)}),
+               'colliders': colliders(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'),
+                                      npz if morph else None)},
               open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
     json.dump({'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
                'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,

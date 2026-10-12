@@ -63,6 +63,11 @@ func _init() -> void:
 			for i in w.size():
 				wok = wok and absf(w[i] - float(m["w"][i])) < 1e-6   # the JS keeps them in a Float32Array
 			ok(wok, "weights " + tag)
+			var cr := KChar.colliders(skel, w)
+			var crok: bool = cr.size() == m.get("cr", []).size()
+			for i in cr.size():
+				crok = crok and absf(float(cr[i]["r"]) - float(m["cr"][i])) < 1e-6
+			ok(crok, "collider radii " + tag)
 			var mj := KChar.morph_joints(skel, kit, w)
 			for i in mj["t"].size():
 				if not near_v(mj["t"][i], m["t"][i]) or not near_v(mj["d"][i], m["d"][i]):
@@ -178,6 +183,33 @@ func _init() -> void:
 		fig._process(0.3)
 		ok(fig.drawn and fig._bow["arrow"] != null and fig._bow["arrow"].visible, "bow_scan draws the string and nocks an arrow")
 		fig.hold({"R": null, "L": null})
+		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
+		var rec2 := rec.duplicate(true)
+		rec2["armour"] = {"torso": "voth_m_noble_robe", "legs": "voth_m_noble_skirt", "feet": "voth_m_noble_sandals"}
+		fig.apply(rec2)
+		var cb := -1
+		for i in fig.skeleton.get_bone_count():
+			if fig.skeleton.get_bone_name(i).begins_with("cloth_voth_m_noble_skirt"):
+				cb = i
+		ok(cb >= 0, "the court skirt's cloth chains are in the skeleton")
+		if cb >= 0:
+			fig.play("walk")
+			var moved := 0.0
+			var finite := true
+			for k in 40:
+				fig._process(1.0 / 30.0)
+				for i in fig.skeleton.get_bone_count():
+					if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
+						var q := fig.skeleton.get_bone_pose_rotation(i)
+						finite = finite and q.is_finite()
+						moved = maxf(moved, q.angle_to(fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()))
+			ok(finite and moved > 0.05, "cloth swings in a walk (largest turn %.3f rad, finite %s)" % [moved, finite])
+			fig.cloth = false
+			fig._process(1.0 / 30.0)
+			ok(fig.skeleton.get_bone_pose_rotation(cb).is_equal_approx(fig.skeleton.get_bone_rest(cb).basis.get_rotation_quaternion()), "cloth off: the chains hang at rest")
+			fig.cloth = true
+			fig.play("")
+		fig.apply(rec)
 		# a clip moves the bones
 		fig.play("walk")
 		var q0 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))
