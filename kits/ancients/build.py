@@ -203,6 +203,15 @@ DETERMINISTIC = {
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
 }
 
+# PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
+# continues. A part may open in the middle of a builder: the rules read it joined to the fragment it continues, as one
+# fragment, and the page is the same concatenation either way. A new part sorts right after the one before it.
+CONTINUES = {
+    '89b1-arcoindian-cut.js': '89b-arcoindian.js', '89b2-arcoindian-plinth.js': '89b-arcoindian.js',
+    '89c1-arcoindian2-lens.js': '89c-arcoindian2.js', '89c2-arcoindian2-stalk.js': '89c-arcoindian2.js',
+    '89d1-arcube-faces.js': '89d-arcube.js', '89d2-arcube-elevation.js': '89d-arcube.js', '89d3-arcube-ruin.js': '89d-arcube.js',
+}
+
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
@@ -239,7 +248,19 @@ def seeds_claimed(arg):
     return set()      # e.g. reseed(s) inside the definition of reseed itself
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies):
+    order, bodies = joined(order, bodies)
     errs, claims = [], {}
 
     for f in order:

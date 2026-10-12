@@ -89,9 +89,16 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `88y-ancients-matlib.js` | 1 |  |
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 7 |  |
-| `89b-arcoindian.js` | 81 **big** |  |
-| `89c-arcoindian2.js` | 82 **big** |  |
-| `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
+| `89b-arcoindian.js` | 26 |  |
+| `89b1-arcoindian-cut.js` | 28 |  |
+| `89b2-arcoindian-plinth.js` | 27 |  |
+| `89c-arcoindian2.js` | 28 |  |
+| `89c1-arcoindian2-lens.js` | 27 |  |
+| `89c2-arcoindian2-stalk.js` | 27 |  |
+| `89d-arcube.js` | 29 | the dwelling grid (112); krShard (248) |
+| `89d1-arcube-faces.js` | 26 |  |
+| `89d2-arcube-elevation.js` | 18 |  |
+| `89d3-arcube-ruin.js` | 17 |  |
 | `89e-hill.js` | 65 **big** | materials (64); kit (159); the landform and the route (172) |
 | `89f-trigon.js` | 52 **big** |  |
 | `89g-monolith.js` | 49 **big** |  |
