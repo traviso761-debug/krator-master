@@ -43,8 +43,8 @@ def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
-    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'bodies': {}}
-    inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb') for f in ('sliders.json', 'peoples.json')}
+    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'), 'bodies': {}}
+    inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb') for f in ('sliders.json', 'peoples.json', 'clips.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}

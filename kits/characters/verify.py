@@ -13,7 +13,7 @@ through window._kchar:
                bind is the identity for every bone that carries its vertices (the morphed joints and binds agree)
   feet         height -1 and +1, age +1: the lowest skin vertex stays on the ground (within 5 mm)
   morph        height +1 makes the figure taller; weight +1 moves the torso piece's vertices too; no NaN anywhere
-  clips        walk moves the thigh
+  clips        walk moves the thigh; the action clips are there and a play-once clip returns to the idle
   random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
@@ -80,6 +80,12 @@ CHECKS = r'''async () => {
     const thigh = fig.bones.find(b => b.name === 'LeftUpLeg'), q0 = thigh.quaternion.clone();
     fig.update(0.4);
     out.clips = Math.max(out.clips, 1 - Math.abs(q0.dot(thigh.quaternion)));
+    // a play-once clip (data/clips.json loop: false) goes back to the idle when it ends
+    await fig.play('idle'); await fig.play('thrust');
+    for (let k = 0; k < 40; k++) fig.update(0.25);
+    await new Promise(r => setTimeout(r, 30));          // play() swaps the clip once the pieces' promise settles
+    if (!fig.action || fig.action.getClip().name !== 'idle') out.morph.push(body + ': after thrust the figure plays ' + (fig.action && fig.action.getClip().name));
+    if (Object.keys(fig.clips).length < 100) out.morph.push(body + ': only ' + Object.keys(fig.clips).length + ' clips');
     await fig.play(null);
     out.random = out.random && JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0])) === JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0]));
     for (const P of D.peoples) for (let s = 1; s <= 25; s++) {

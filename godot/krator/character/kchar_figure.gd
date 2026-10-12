@@ -36,6 +36,7 @@ var _live := {}                          # "key|n" -> MeshInstance3D
 var _hips := -1
 var _head := -1
 var _clip := ""
+var looping := "idle"                    # the clip a play-once clip returns to
 var _hidden_mat: ShaderMaterial
 
 
@@ -362,13 +363,23 @@ func play(clip: String) -> void:
 		player.stop()
 		rest_pose()
 		return
+	# skeleton.json's clip list says which play once (an attack, a fall): those go back to the last loop when done
+	var once := false
+	for c in skel.get("clips", []):
+		if c["name"] == clip:
+			once = c.get("loop", true) == false
+	if not once:
+		looping = clip
+	player.get_animation(clip).loop_mode = Animation.LOOP_NONE if once else Animation.LOOP_LINEAR
 	player.play(clip, 0.25)
-	player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 
 
 func _process(dt: float) -> void:
 	if _clip == "":
 		return
 	player.advance(dt)
+	if not player.is_playing() and _clip != looping:
+		play(looping)
+		return
 	# the clip writes the hips where the base body's are; the morph moves them
 	skeleton.set_bone_pose_position(_hips, skeleton.get_bone_pose_position(_hips) + morph["d"][_hips])

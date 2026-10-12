@@ -41,6 +41,15 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 CANON = os.path.join(ROOT, 'settlements', 'girder', 'hero', 'styv.glb')
 
 NAME_MAP = {'Spine02': 'Spine', 'Spine01': 'Spine1', 'neck': 'Neck', 'head_end': 'HeadTop_End'}
+# the Unreal-style mannequin Quaternius's Universal Animation Libraries use (CC0 clips, data/clips.json 'ual')
+NAME_MAP.update({'pelvis': 'Hips', 'spine_01': 'Spine', 'spine_02': 'Spine1', 'spine_03': 'Spine2', 'neck_01': 'Neck'})
+for _s, _S in (('l', 'Left'), ('r', 'Right')):
+    NAME_MAP.update({'clavicle_' + _s: _S + 'Shoulder', 'upperarm_' + _s: _S + 'Arm', 'lowerarm_' + _s: _S + 'ForeArm',
+                     'hand_' + _s: _S + 'Hand', 'thigh_' + _s: _S + 'UpLeg', 'calf_' + _s: _S + 'Leg',
+                     'foot_' + _s: _S + 'Foot', 'ball_' + _s: _S + 'ToeBase'})
+    for _f, _F in (('thumb', 'Thumb'), ('index', 'Index'), ('middle', 'Middle'), ('ring', 'Ring'), ('pinky', 'Pinky')):
+        for _k in (1, 2, 3):
+            NAME_MAP['%s_0%d_%s' % (_f, _k, _s)] = '%sHand%s%d' % (_S, _F, _k)
 NAME_MAP_API_SPINE = 'Spine2'      # the API rig's top spine bone is called plain 'Spine'
 
 # the bone each joint points along (its direction and length are fitted); others follow their parent's map
@@ -553,6 +562,29 @@ def idle_clips():
     return out
 
 
+def action_clips():
+    """the clips data/clips.json lists: Meshy library actions (donors/anims/actions.json) and Quaternius's Universal
+    Animation Library clips (donors/anims/UAL*.glb): (src, clip, key, label, group, loop)"""
+    jp, cp = os.path.join(IDLES, 'actions.json'), os.path.join(HERE, 'data', 'clips.json')
+    if not os.path.exists(jp) or not os.path.exists(cp):
+        return []
+    clips = json.load(open(cp))['clips']
+    want = {c['meshy']: c for c in clips if 'meshy' in c}
+    out = []
+    for c in clips:                     # 'ual': '<file>:<clip>' in donors/anims/ (Quaternius, CC0)
+        if 'ual' in c:
+            f, clip = c['ual'].split(':')
+            out.append((os.path.join(IDLES, f), clip, c['key'], c['label'], c['group'], c['loop']))
+    for b in json.load(open(jp))['batches']:
+        src = os.path.join(IDLES, b['glb'])
+        names = [a['name'] for a in glbio.read_glb(open(src, 'rb').read())[0]['animations']]
+        for clip, aid in zip(names, b['ids']):
+            if aid in want:
+                c = want[aid]
+                out.append((src, clip, c['key'], c['label'], c['group'], c['loop']))
+    return out
+
+
 def _sample(j, b, ch_s, t):
     inp = glbio.accessor(j, b, ch_s['input']).reshape(-1)
     out = glbio.accessor(j, b, ch_s['output'])
@@ -674,8 +706,16 @@ def write_anims(out, c):
             n['children'] = [ch + 1 for ch in n['children']]
     by = {n.get('name', ''): i + 1 for i, n in enumerate(jnodes)}
     anims, meta = [], []
-    for src, clip, name, label, group in CLIPS + idle_clips():
+    for src, clip, name, label, group, loop in [x + (True,) for x in CLIPS + idle_clips()] + action_clips():
         times, rots, hips = retarget(src, clip, c)
+        speed = None
+        if loop and len(times) > 1 and times[-1] > 0:
+            # a loop plays in place: the hips' drift over a cycle (root motion: forward, sideways, up a ladder) comes
+            # out, and is kept as a speed (x, y, z m/s) a game moves the character by
+            drift = hips[-1] - hips[0]
+            if np.linalg.norm(drift) > 0.02:
+                hips = hips - np.outer(times / times[-1], drift)
+                speed = [round(float(x), 3) for x in drift / times[-1]]
         ia = g.acc(times.astype(np.float32), 'SCALAR', minmax=True)
         chans, samps = [], []
         for n, q in rots.items():
@@ -684,7 +724,9 @@ def write_anims(out, c):
         samps.append({'input': ia, 'output': g.acc(hips.astype(np.float32), 'VEC3'), 'interpolation': 'LINEAR'})
         chans.append({'sampler': len(samps) - 1, 'target': {'node': by['Hips'], 'path': 'translation'}})
         anims.append({'name': name, 'channels': chans, 'samplers': samps})
-        meta.append({'name': name, 'label': label, 'group': group, 'seconds': round(float(times[-1]), 2)})
+        meta.append({'name': name, 'label': label, 'group': group, 'seconds': round(float(times[-1]), 2), 'loop': loop})
+        if speed:
+            meta[-1]['root_speed'] = speed
     g.j['nodes'], g.j['animations'] = nodes, anims
     g.j['scenes'], g.j['scene'] = [{'nodes': [0]}], 0
     open(out, 'wb').write(g.bytes())

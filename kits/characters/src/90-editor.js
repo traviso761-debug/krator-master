@@ -368,6 +368,19 @@
     });
     pick.value = 'idle';
     pick.addEventListener('change', function(){ $('clip-idle').dataset.clip = pick.value; $('clip-idle').click(); });
+    // the actions (data/clips.json): grouped; a one-shot plays once and goes back to the idle
+    var act = $('act-pick'), meta = {};
+    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.forEach(function(c){ meta[c.name] = c; });
+    ((D.clips && D.clips.groups) || []).forEach(function(g){
+      var og = document.createElement('optgroup'); og.label = g.label;
+      D.clips.clips.filter(function(c){ return c.group === g.id && meta[c.key]; }).forEach(function(c){
+        var o = document.createElement('option'); o.value = c.key; o.textContent = c.label + (c.loop ? '' : ' ·  once');
+        og.appendChild(o);
+      });
+      if(og.children.length) act.appendChild(og);
+    });
+    $('clip-act').dataset.clip = act.value;
+    act.addEventListener('change', function(){ $('clip-act').dataset.clip = act.value; $('clip-act').click(); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(b){
       b.addEventListener('click', function(){
         fig.play(b.dataset.clip || null);

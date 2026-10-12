@@ -108,6 +108,8 @@ func _init() -> void:
 			want[p["key"]] = true
 		ok(shown.keys().size() == want.keys().size(), "figure shows %s, want %s" % [shown.keys(), want.keys()])
 		ok(fig.player.has_animation("walk") and fig.player.has_animation("idle"), "clips: %s" % fig.player.get_animation_list())
+		ok(fig.player.get_animation_list().size() >= 100 and fig.player.has_animation("thrust") and fig.player.has_animation("ual_harvest"),
+			"the action clips (data/clips.json): %d" % fig.player.get_animation_list().size())
 		# the morph reaches the meshes: blend shapes exist and carry the record's weights
 		var base: MeshInstance3D = null
 		for mi in fig.skeleton.get_children():

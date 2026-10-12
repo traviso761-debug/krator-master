@@ -46,5 +46,8 @@ CC-BY 4.0 and need this attribution wherever the page or its pieces are shown.
 | `culturalibre_hair_17` (Long wavy) | hair | female | culturalibre | pack hair03 |
 | `o4saken_chinesebob01` (Straight bob) | hair | female | punkduck | pack hair03 |
 
+Clips: Quaternius's Universal Animation Library 1 and 2 are CC0 (no attribution needed; `donors/anims/UAL_License.txt`).
+The Meshy library clips were generated with the owner's Meshy account.
+
 The page's Record tab carries a short version of this. Adding a CC-BY item means adding a row here and keeping that
 line current.

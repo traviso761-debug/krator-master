@@ -9,7 +9,13 @@
   Height's full ends overshoot (2.4 m and 1.3 m), so its slider reaches half way (`REACH` in make_mpfb.py).
 - **Bone rotations do not follow the morph.** Joints move; their rest rotations stay the base's. The rest pose is
   exact; in motion a heavily reshaped limb bends about the base's axes.
-- **Clips are Styv's and Meshy's**, retargeted: big build changes can push a hand into a hip in motion.
+- **Clips are retargeted** from Styv, Meshy's library and Quaternius's libraries: big build changes can push a hand
+  into a hip in motion, and a clip made for a slight body can clip through a heavy one.
+- **No clip for hoeing, hammering at an anvil or swinging a pickaxe.** Neither library has one; the work group's
+  chop loop, the overhead axe chop and the heavy blunt swing stand in. A spear thrust, a dagger stab and a crossbow
+  shot borrow the sword thrust and the long-gun shot. Mixamo has most of these, but its clips can only be fetched
+  by hand with an Adobe account; Meshy's library may add them.
+- **Hands are empty.** No weapon, tool or prop is attached yet, and the hands do not grip.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below.

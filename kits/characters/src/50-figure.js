@@ -282,12 +282,24 @@ function KCharFigure(body, sliders, load){
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }
   }
 
+  /* play(name): a clip from anims.glb, or null for the bind pose. A clip skeleton.json marks loop: false plays once
+     and then fades back to the last looping clip (the idle by default) */
+  var meta = {}; (skel.clips || []).forEach(function(c){ meta[c.name] = c; });
+  this.looping = 'idle';
+  this.mixer.addEventListener('finished', function(e){
+    if(e.action === self.action) self.play(self.looping);
+  });
   this.play = function(name){
     return ready.then(function(){
       var c = name && self.clips[name];
       if(self.action) self.action.fadeOut(0.25);
       if(!c){ self.action = null; self.mixer.stopAllAction(); self.restPose(); return; }
-      var a = self.mixer.clipAction(c); a.reset().fadeIn(self.action ? 0.25 : 0).play();
+      var once = meta[name] && meta[name].loop === false;
+      if(!once) self.looping = name;
+      var a = self.mixer.clipAction(c);
+      a.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
+      a.clampWhenFinished = once;
+      a.reset().fadeIn(self.action ? 0.25 : 0).play();
       self.action = a;
     });
   };

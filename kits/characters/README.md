@@ -29,6 +29,16 @@ godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 **The record**: `{ body:'mpfb_male', armour:{torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
 morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{slot: '#rrggbb'} }`. Colours are albedo.
 
+**Clips** (`data/clips.json`, about 140 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
+as move, melee, ranged, block and dodge, hit and fall, swim, ladder, daily life and work. Two sources, both retargeted
+onto the rig by `make_pieces.write_anims` (bone directions matched, hips motion scaled by height):
+Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `tools/meshy.py anims`, 3 credits each:
+`donors/anims/actions*.glb`) and Quaternius's Universal Animation Library 1 and 2 (`ual`, CC0:
+`donors/anims/UAL*.glb`, an Unreal-style skeleton mapped by `NAME_MAP`). `loop: false` clips play once and go back
+to the last loop. Loops play in place: their drift over a cycle is taken out and kept as `root_speed` (m/s, in
+`skeleton.json`'s clip list) for a game to move the character by; one-shots (rolls, knockdowns) keep their motion.
+Hands hold nothing: weapons and tools are for a later attachment pass.
+
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and
 preferred hairstyles per body. The Chichani and Beast Rider entries follow the owner's notes; the rest are proposals
@@ -55,6 +65,8 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/50-figure.js` | `KCharFigure`: bones from `skeleton.json`, pieces bound to them, CPU morphs, tint, clips | [draw], twin `kchar_figure.gd` (blend shapes from `<piece>.gshapes.bin`) |
 | `src/90-editor.js` | the stage, camera and panel; `window._kchar` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
+| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop (hand-written) | [G data] |
+| `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
