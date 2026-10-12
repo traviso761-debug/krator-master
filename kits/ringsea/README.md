@@ -1,6 +1,6 @@
 # Ring Sea watercraft
 
-Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding a live swell
+Thirty-one procedural vessels for the Ring Sea, each tagged by culture, riding a live swell
 on one sheet (a Gerstner swell with whitecaps, to the horizon) with their sails and pennants breathing in
 the wind and their oars stroking. The **Under way** button (off by default, so the preset views stay put) sets
 each row sailing a racetrack course with wakes, heeling into the turns and trimming to the wind; off again, they
@@ -46,6 +46,9 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | 26 | `85-rs-voth-barge.js` | Voth River Barge | voth | cargo: flat 50 m river barge (78d), deckhouse and forecastle house, stacked cargo, derrick, stern sweeps |
 | 27 | `86-rs-voth-pleasure.js` | Voth Pleasure Barge | voth | state: gilded pleasure barge (78d), pavilion under an oxblood roof, canopied foredeck, purple sail |
 | 28 | `87-rs-voth-dhow.js` | Voth Fishing Dhow | voth | fishing: the bay dhow (78e), forward-raked mast under a lateen, fish bin, nets and floats |
+| 29 | `88-rs-islander-drua.js` | Islander Drua | ringsea-islander | warship/voyager: the Kautoan great double canoe, 31 m and 25 m hulls under one deck, thatched deckhouse, steering stage, one huge shunting crab-claw of pandanus with the white moon |
+| 30 | `89-rs-islander-korakora.js` | Islander Kora-kora | ringsea-islander | royal war galley of the western isles: tall carved prow (frigate bird) and stern, double outriggers with 54 paddlers, canopied fighting deck, royal parasol, tripod mast and teal tanja |
+| 31 | `89b-rs-islander-lanong.js` | Islander Lanong | ringsea-islander | pirate raider: beamy patchwork hull, scrap-iron plates, bronze swivel guns and a captured Republic gun on the bow platform, two tripod masts with patched tanja sails, trophies (other fleets' shields, a Xanadu swan head, a Voth flag under the moon) |
 
 `ringsea-islander`, `beast-rider` and `hykkousoi` are culture tags this kit introduced; the rest reuse existing ones. Iron Republic, Dalab and Yuni have no ships here (landlocked or not seafaring).
 

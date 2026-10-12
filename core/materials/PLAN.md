@@ -416,6 +416,22 @@ green #3f7a5a, plum #6a2a4a. Lattice strips #c9b06a and #b89c5a; fringe #cbb36e 
 | `patterns/reedlake/fringe` | Flat, front-on decorative panel of loose reed ends hanging from an eave: about seventy thin, slightly curved strands, each hanging straight down from the top edge. Lengths are uneven, between half and full height. Each strand leans a little to one side. The strands are pale straw (#cbb36e) or darker straw (#b39c5c), spread randomly on a plain flat dark background (#1a1614). The strands end ragged and loose. Full colour. The pattern repeats horizontally. |
 | `patterns/reedlake/shield` | Flat, front-on decorative panel of a round painted hide shield, centred in the frame: a thick black (#221c18) rim ring, a madder red (#a8352a) field, and in the middle a large white (#efe4cc) stepped cross (chakana) with a round black dot at its centre. The square corners outside the rim are madder red. Flat, hard-edged paint. Full colour. A single motif, not a repeat. |
 
+#### Islanders
+
+Palette (`kits/islanders/src/28-is-paint.js`, `ISP_C`): red earth #9a2a1e, dark red #6e1a12, black #1e1a18, white #efe6d2,
+ochre #c8922e, sea teal #2a7a7a, sand #c49a5a, bark #8a5a32, cream #e6d8b8. The kit draws every one of these on a canvas
+as a stand-in today (2026-10-12); a packed sheet of the family name in `kits/islanders/materials.json` replaces its
+canvas with no code change (`KIT_HAS`). West = the rumah houses of the western Ring Sea; East = Kautoa (Sumba).
+
+| id | family | Material line |
+|---|---|---|
+| `patterns/islander/gable-west` | `patGableW` | Flat, front-on decorative panel of a painted and lightly carved Batak gable board (gorga): on a red earth (#9a2a1e) ground, pairs of large interlocking spirals drawn as bold black (#1e1a18) lines edged in white (#efe6d2), a white lozenge between each pair with a black diamond at its heart, and toothed borders of black triangles between thin white and black bands. Hand-painted on adzed wood, slightly worn and uneven. The pattern repeats horizontally and vertically. Full colour. |
+| `patterns/islander/gable-east` | `patGableE` | Flat, front-on decorative panel of a woven split-bamboo house facade as on an Ede or Sumba house: a cream (#e6d8b8) woven field in horizontal bands, alternating rows of large nested diamonds in black (#1e1a18) and ochre (#c8922e) with a small dark red (#6e1a12) heart, and rows of triple zigzag lines, thin black bands between the rows, visible weave in every strip. The pattern repeats horizontally. Full colour. |
+| `patterns/islander/kowhaiwhai` | `patBand` | Flat, front-on decorative panel of a Maori kowhaiwhai rafter painting: flowing white (#efe6d2) koru scrolls outlined in black (#1e1a18) on red earth (#9a2a1e), each scroll's stem curling into the next in a continuous running pattern, painted on smooth wood. The pattern repeats horizontally. Full colour. |
+| `patterns/islander/storyboard` | `patStory` | Flat, front-on decorative panel of a Palauan bai storyboard, a carved and painted gable relief in two registers between black and white toothed bands: in the upper register a red canoe with five black paddlers under a white full moon, in the lower one red and white fish and black frigate birds in flight, outlined black (#1e1a18) on an ochre (#c8922e) ground, the relief shallow and hand-cut. The pattern repeats horizontally. Full colour. |
+| `patterns/islander/weave` | `patWeave` | Flat, front-on panel of a woven split-bamboo wall: flat strips about four centimetres wide in a twill, pale natural bamboo (#d8c294) and smoked dark strips (#6a5236) stepping into a pattern of nested diamonds, the strips' edges catching a little light. The pattern repeats in both directions. Full colour. |
+| `patterns/islander/medallion-moon` | `medMoon` | Flat, front-on decorative panel of one round painted emblem, centred, clear margin: the white island moon, a pale full moon (#f6f0e2) with soft grey seas, on a sea-teal (#2a7a7a) disc ringed with white shell discs, inside a black (#1e1a18) ring and an ochre (#c8922e) rim, painted on wood with a little wear. A single motif, not a repeat. Full colour. |
+
 #### Dalab
 
 Palette (`69d-dalab-mat.js`): cream wash #e6d8b8, red ochre #a8382a, turquoise #2f9a8a, gold #d8a838, black #2a2420,
