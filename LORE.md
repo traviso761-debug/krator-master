@@ -408,7 +408,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 ### 6.17 Peoples known only by name or kit
 
-- **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi.
+- **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi; the Kautoan drua (great double canoe), the western isles' kora-kora (royal war galley) and the pirates' lanong.
 - **Lizardmen**: reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Live in the deep Rift. Recently united under a warlord according to traveler tales.
 - **The Giant tribes of the SW**: engineered at Dalab (§6.1). Some rebelled and now live independently in Giant Country.
 - **Salvagers**: crews who refloat Ancient hulls.
@@ -463,7 +463,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 | Xanadu | swan barge, dragon boat, bullion carrack |
 | Iziz | turtle ship, dhoni, wheel galley, salvage lighter |
 | Beast Riders | voyaging canoe, rookery raft |
-| Ring Sea Islanders | oruwa, karakoa, lakatoi |
+| Ring Sea Islanders | oruwa, karakoa, lakatoi, drua (the Kautoan great double canoe), kora-kora (royal war galley of the western isles), lanong (pirate raider) |
 | Salvagers | refloated Ancient steel tug |
 | Not seafaring | the Iron Republic (landlocked), Dalab, Yuni |
 
