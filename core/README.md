@@ -3,10 +3,10 @@
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
 runs on), `terrain/` (the baked terrain field, carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
-dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
+dressing), `water/` (every wet surface: open water on a CDLOD mesh, the CPU twins things float on), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
-(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock) and `tags/` (what a placed
-thing is: ids, class, tags).
+(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
+thing is: ids, class, tags) and `space/` (the one spatial index placement passes share).
 
 ## `materials/`
 
@@ -102,15 +102,16 @@ additions are in it, each marked with the kit it came from:
 | `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
 | `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks (`leafMat`, `barkMat`, the iridescent `iridBarkMat`: the `irid` kind, tints `colA`/`colB`), the wind clock, `BIO.col` |
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
-| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
-| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
+| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear (`BIO.clearOf`, `clearOf3`; both and `scatter`'s spacing read a `core/space` grid when the page loads it), surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
+| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, and keep-clear and scatter on `KSPACE` equal to the linear scans they replaced (frozen in the test), each check with a negative |
 | `test-tags.js` | `node core/biome/test-tags.js`: the biome core on core/tags (one kit built with tags and without: identical meshes; every instance names its set and the uid of its own position; the export's ids), each check with a negative |
 | `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
 | `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
 | `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
 
-**Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
-`build.py`, read from here unless its `src/` has a copy of the same name (none does).
+**Used by** every kit in `biomes/`: each lists the files in `CORE_BIOME` in its
+`build.py`, read from here unless its `src/` has a copy of the same name (none does), and `core/space`'s
+`20-core-space.js` in `CORE_SPACE` beside it (openworld/little-demo lists it in its `ORDER`).
 hyperjungle also lists `35-core-anim.js`, and takes the core's helpers as globals in its
 own `41-hyperjungle-globals.js` (it was written when the core declared them). `build.py`
 stops if any of the four base files is missing (the syntax check cannot see an absent fragment).
@@ -121,6 +122,15 @@ its last: it gets its own registry of items and buckets (two kits may both have 
 its exported functions run in that registry, and material cache keys carry its name
 (`BIO.kitKey`), so two kits' `grass` cannot share one compiled shader. Mesh names stay
 `biome:<name>`; `userData.kit` says whose.
+
+**Keep-clear and scatter read `core/space`** (Oct 2026). `BIO.clearOf`/`clearOf3` read `BIO.host.obstacles` through
+a `KSPACE` grid (24 m cells) that files whatever was pushed since the last query (a swapped array, a shorter one or a
+changed last entry is filed afresh; an entry or a query whose x, z or r is not a number goes to the plain scan; eight
+obstacles or fewer are scanned), and `BIO.scatter` tests its spacing through a grid of cell `minD`, so neither grows
+with the square of the count. The candidates come back in insertion order and take the same test, so the answers are
+the scans' exactly (`test-place.js`, and every kit's baked geometry hashed the same before and after). An obstacle
+changed in place after it was pushed is not seen: push a new one. A page without `core/space` (the settlements that
+read this folder: Yuni, Locus, Mungo, Verge, Dhelv, Streetlab) runs the scans as before.
 
 **Records (core/tags, 2026-10-12).** With `BIO.init({tags: '<build>'})` (and core/rand and core/tags in the build:
 `CORE_TAGS` in each kit's `build.py`) every item a kit puts is one core/tags item set, its instances read from the
@@ -234,7 +244,20 @@ sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behin
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
 reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves), `settlements/girder` (the sky's light) and
 `settlements/locus` with `settlements/mungo` (the lake's waves, shading only); they add `core/atmos` to their `build.py` core
-loop and bind it in `src/90-atmos-host.js`.
+loop and bind it in `src/90-atmos-host.js`. `kits/ringsea` and `biomes/geyser` take its core, presets, wave field and
+skylight for their sea through `core/water`.
+
+## `water/`
+
+One module for every wet surface (`water/README.md`; the plan is `atmos/WATER.md`). `20-core-water.js` ([G data]) is
+`WATER`: six kinds (open, shore, flow, fall, still, wet) as records, their CPU twins (`WATER.heightAt`, `flowAt`,
+`seaLevel`, the floating helper `WATER.ride`) and `export`. `50-core-water-draw.js` draws open water: a CDLOD mesh
+(instanced 17x17 nodes from 8 m leaves, morphing between levels, the root snapped to the camera) on the shared wave field
+plus Gerstner trochoids, one clock (`atmWaveT`), the sky through `ATMOS.skylight`, Jacobian foam with a decay. It needs
+`core/atmos` (`0-core`, `0p-presets`, `a-waves`, `b-skylight`). **Used by** `kits/ringsea` (the roadstead; the kit's
+Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (the sea off the beach). After a change: `node
+core/water/test-water.js` (it runs the shaders' own GLSL against the twins), then rebuild both and run
+`kits/ringsea/verify.py --assert`. Phases 2 to 6 (shore, flow and falls, still and wet, FFT, Godot) are to do.
 
 ## `lod/`
 
@@ -280,6 +303,23 @@ it**: `city/README.md` has the method, the contract, the porting steps and the m
 | `32-city-steps-c.js` | [G data] steps 10-12: side streets, lots and alley entrances, alleys and the infill; a default runner |
 | `50-city-host-streets.js` | [web] streets, the ground overlay, labels, the step slider |
 | `52-city-host-buildings.js` | [web] lots' kit pieces as instanced LOD prototypes; furniture pieces |
+
+## `space/`
+
+One spatial index for every placement pass (ROADMAP.md section 8, "One spatial index, not three"): a uniform grid of
+square cells, `KSPACE` ([G data]: no THREE, no DOM).
+
+| File | What |
+|---|---|
+| `20-core-space.js` | `KSPACE.create({cell})` (no default cell): `insert(item, x, z, r)` files an item under the cells its square `[x-r,x+r]x[z-r,z+r]` touches; `query(x, z, pad, out)` returns every item with `|x-ix| <= ir+pad` and `|z-iz| <= ir+pad`, **in insertion order** (acceptance and the PRNG stream can depend on it), each once, exactly what a linear scan returns; `some(x, z, pad, fn)`, `items`, `size()`, `clear()`. Items wider than 64 cells, non-finite numbers and coordinates beyond 2^20 cells are kept on a list every query reads, and a query wider than the grid is a scan, so the answer never depends on the grid. Coordinates are read once, at insert |
+| `test-space.js` | `node core/space/test-space.js`: query equals a linear scan on random sets (three cell sizes, odd pads and radii), with items inserted between queries, under a disc test, with wide items and far coordinates; each check with a negative |
+
+**Used by** `core/biome` (`BIO.clearOf`, `clearOf3`, `BIO.scatter`: every biome kit lists it in `CORE_SPACE`, and
+openworld/little-demo in its `ORDER`). The biome core falls back to its scans on a page that does not load it.
+
+**To move onto it:** openworld/little-demo's flora buckets (`src/85-world-flora.js`, 24 m buckets of its records) and
+`core/city`'s 40 m hash of building footprints (by the branch that owns `core/city`), each proven by its placement hash
+before and after; `core/walk` keeps its own 16 m hash for now. Its GDScript twin comes with the biome placement port.
 
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
@@ -333,6 +373,17 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 `settlements/shade` (held at noon; its probe steps the simulation with it), `settlements/yuni` (`YCLOCK` in `21-sky.js`
 replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
 panel's rate row) and `simulation/example/`.
+
+## `host/`
+
+The host shell (ROADMAP.md section 10; GODOT-PLAN.md Phase 1), all `[web]`: `90-host-camera.js` (orbit, pan, fly, walk,
+the pin, the depth range), `91-host-loop.js` (`KHOST.take`, the frame loop, which owns the world clock `KCLOCK` and isolates
+each subscriber's errors, the `TICKS` shim, `window._ready`), `92-host-panel.js` (the bar, foldable panels, layers, time
+controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.js` (`window._api`). Streetlab's viewer,
+copied and generalised (Streetlab's own files are the Voth branch's; `sources.py` says when they change). A build lists
+them with `host.py` (`CORE_HOST = khost.SHELL`, which adds `clock/20-core-clock.js`), hands its page to `KHOST.take`, and
+keeps no camera, loop, panel or probe of its own; `94-host-polytool.js` (the inspect, polygon and path tools) is opt-in.
+Read `host/README.md`. **Used by** every biome kit in `biomes/` but the Throne (next).
 
 ## `rand/`
 

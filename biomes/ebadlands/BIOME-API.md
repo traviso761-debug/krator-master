@@ -113,7 +113,7 @@ krator-master-furniture-generic-fruit.js`): pinyon cones, juniper berries, gambe
 spent spikes, canyon grape clusters (vines on cottonwood and maple limbs, grape tangles on the canyon floor, the
 hanging gardens), seeding umbel heads, the stilt pod's head, prickly-pear tunas, moonflower fruit. The probe checks that
 every species with an edible part either names a catalog fruit or is listed as not drawn (`FRUIT_NOT_DRAWN` in
-`91-host-probe.js`: sap, tips, nectar...), and that fruit is drawn on the stage.
+`99-host-take.js`: sap, tips, nectar...), and that fruit is drawn on the stage.
 
 ```
 
@@ -132,8 +132,7 @@ every species with an edible part either names a catalog fruit or is listed as n
 85-host-arcade.js      (host)       the hanging-garden arcade: a test structure for dress()
 86-host-variants.js    (host)       trees as variants: the nursery (grow, harvest) and instance pools by camera distance
 88-host-build.js       (host)       build order: arcade, records, floor, dress, bake, variants
-90-host-camera.js      (host)       presets found from the zones, the inspector (class and tags)
-91-host-probe.js       (host)       window._api: budgets and the host checks with their negatives
-93-host-polytool.js    (host)       polygon and path tool (from nhighlands)
+99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
+                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`.

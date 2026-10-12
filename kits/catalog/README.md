@@ -217,6 +217,79 @@ outbuilding is **furniture**: a catalog piece placed as data and built by the ca
   **The height is the caller's**: `F.furn` does not apply the piece's anchor, so pass the floor, the
   top it stands on, or the beam a hanging piece meets.
 
+### Size-aware segments (2026-10-12, ROADMAP stage 1)
+
+The round primitives used to take fixed segment counts (`mkCyl` 16, `mkCone` 14, `mkDome` 16 x 10, `mkBall` 14 x 10,
+`mkBlob` 10 x 8, `mkEll` 12 x 8, `mkRod` 8), so a 3 cm chair leg had a palace column's. Now (`krator-furniture-core.js`,
+`_fit` and `_ring`) a part of radius r gets the fewest segments that keep its silhouette error (the sagitta, how far
+a facet's middle sits inside the true circle) under the 3.8 mm the 16-sided cylinder already has at r = 0.2 m,
+rounded up to an even count, never under 6 round and never over the old count. So a cylinder of r >= 0.15 m is
+unchanged (a ball or cone from 0.11 m, an ellipsoid from 8 cm, a blob from 5 cm, a rod from 3 cm), 0.05 to 0.15 m
+keeps 50 to 90 % of the count, a 4 cm leg gets 8, and a 2.5 cm spindle, a bead or a finial 6. A sphere's rows follow its count round in the old proportion
+(a 6-round ball is 6 x 4, 36 triangles instead of 252). `KF.setDetail(d)` then scales the count as before, with
+the same floors, so no part ever gets more segments than it had.
+
+- **Radius only.** The count does not grow with a cylinder's length or a dome's height (a dome's rows do): a ring
+  round a leg, a rim on a jar and a dome on a post must keep the count of the part they sit on.
+- **Coaxial parts share a count** (`_ring`): an upright cylinder, cone or dome on the axis of one already built in the
+  same piece, touching it, with a radius within cos(PI / 6) of it, takes that one's count. Two polygons of one count
+  and one turn nest; of different counts, the inner one's corners poke through the outer one's faces (a band 3 %
+  wider than its jar would show the jar's corners). Parts given different turns (`xanadu_common_prayer_wheels`
+  turns each drum at random) can still poke, as they did before at detail 0.5.
+- **Kept at their counts:** lathes and tubes (their callers pass `nu` and `seg`, and their flutes and lobes are drawn
+  by them: the Hykkousoi shell pieces), frustums (`sides` is a shape: a square or hexagonal block), pillows and
+  bolsters (their floors are their silhouette), boxes and beams.
+
+`node kits/catalog/tests/test-segments.js` builds all 2073 pieces at detail 1 and 0.5 and checks that every round part
+is within the old count and the floors and that no coaxial cylinders of one turn poke; it prints the census. Measured
+over the catalog (each piece once, the mean of its variants):
+
+| | detail 1 | detail 0.5 |
+|---|---|---|
+| before | 4 531 285 | 1 593 819 |
+| after | 1 961 154 (57 % less) | 1 343 168 (16 % less) |
+| balls | 2 751 105 -> 505 321 (82 %) | 611 357 -> 398 482 (35 %) |
+| cylinders | 293 909 -> 182 840 (38 %) | 146 955 -> 117 785 (20 %) |
+| blobs, domes, cones, rods | 715 400 -> 502 746 (30 %) | 246 838 -> 238 233 (3 %) |
+
+Most of the catalog's triangles were small balls: beads, studs and rosettes (balls under 2 cm were 48 % of all
+triangles at detail 1; the court beds, friezes and tables carry hundreds). By piece type at detail 1: tables, beds,
+banners and desks 73 to 76 % less, chairs 63 %, storage and shelves about 40 %, rugs, wells and fountains about 0.
+At detail 0.5 (every settlement) the floors already bound most parts, so the saving there is 16 % of the census;
+the furnished pages' own numbers are below.
+
+Furniture triangles on the furnished pages (2026-10-12, headless; the batch's own count: `core/furnish/fingerprint.py`
+`batchTris`, Girder's interiors `window._interiors.tris` once all 353 buildings are furnished, the kits'
+`window._build.furniture.tris`). Placement records, counts, lights and missing keys are the same on every page; only
+the geometry hashes moved.
+
+| Page (detail) | before | after | less |
+|---|---|---|---|
+| Highlands, interiors on (0.5) | 5 568 375 | 4 230 995 | 24.0 % |
+| Highlands, interiors off | 1 022 986 | 771 082 | 24.6 % |
+| Roketstad, interiors off (0.5) | 3 502 168 | 3 346 194 | 4.5 % |
+| Girder, outdoor and interiors (0.5) | 1 495 219 | 1 230 292 | 17.7 % |
+| (Girder interiors alone, 3817 pieces) | 1 388 061 | 1 129 088 | 18.7 % |
+| Mav's Refuge (0.5) | 1 277 994 | 1 218 198 | 4.7 % |
+| Locus, interiors on (0.5) | 1 094 958 | 997 982 | 8.9 % |
+| Abyss kit, interiors on (0.5) | 824 847 | 760 125 | 7.8 % |
+| Locus kit, interiors on (0.5) | 105 228 | 97 032 | 7.8 % |
+| Post-Apoc, interiors on (0.5) | 452 465 | 443 816 | 1.9 % |
+| Zeijani (0.6) | 913 874 | 709 497 | 22.4 % |
+| Desert Nomads (0.6) | 858 714 | 829 608 | 3.4 % |
+| Ash Nomads (0.6) | 743 582 | 654 354 | 12.0 % |
+| Scyvoi (0.6) | 573 582 | 475 195 | 17.2 % |
+| Noah's Regret, the batch (0.5) | 388 811 | 378 228 | 2.7 % |
+| **all of the above** | 17 799 817 | 15 371 516 | **13.6 %** |
+
+So Gemini's 65 to 75 % (ROADMAP claim 18) holds only at detail 1, where the catalog sheet and the interiors demos
+draw: 57 % over the catalog. The settlements already halve the round parts (`setDetail(.5)`), and the 6-segment
+floor then leaves 25 % on a cylinder and 35 % on a small ball; boxes, pillows, beams, lathes and frustums do not
+change. The pages that gain most are the ones rich in beads and turned work (Highlands, Zeijani, Girder's
+interiors); box- and cushion-heavy ones (Post-Apoc, the Desert Nomads, Noah's Regret) barely move. Roketstad with
+its interiors (21 M triangles) did not load headless on a loaded machine (a crash before, a 15-minute timeout after),
+so it is not in the table.
+
 ### Harvested from the kits (2026-10)
 
 Each kit's own furniture, ported into its culture file under a `Harvested from <kit>` header, every

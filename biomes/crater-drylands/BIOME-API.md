@@ -109,10 +109,9 @@ No catalog fruit yet (`KNOWN_ISSUES.md`).
 82-host-sky.js         (host)       the dense-air dome: the Throne far in the SSE, a far wildfire's smoke; the gas giant
 84-host-ground.js      (host)       the fire history with the showcase's fires; the ground painted by the mosaic; the seep
 88-host-build.js       (host)       build order and bake
-90-host-camera.js      (host)       presets found from the burns and the built trees; the inspector (tags, the burn's age)
+99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
+                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 89-host-fire.js        (host)       the live fire: the arrival map as a texture, the plant materials' patch, flames, smoke, the
                                     fire's light, the controls (F, x1/x10/x60, Put it out), the preset; FIREFX
-91-host-probe.js       (host)       window._api: budgets and the host checks with their negatives
-93-host-polytool.js    (host)       polygon and path tool (from nhighlands)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`.

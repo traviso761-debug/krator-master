@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 13 | the land (48); the climate fields (cached below; these are the  (101); the host binding (134) |
 | `50-biome-shigh-species.js` | 46 **big** | palettes (26); the tree species (49); harvest (biomes/FRUIT.md) (92); the small plants (the floor), tagged (111); leaf textures (133); bark textures (191); geometries local to this biome (216); materials (383); the library (materials.json; core/materials/PLAN (405); instanced items (434) |
 | `55-biome-shigh-trees.js` | 32 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (34); spiral helpers (53); keep-clear between trees (80); foliage helpers (87); the builders (102); impostors (the far canopy) (274); the pass (299); the passes (data: species, cell, acceptance from (332); one tree alone (biomes/WORLD.md: trees as varian (350) |
@@ -25,7 +29,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `84-host-ground.js` | 17 | the ground (9); the water (the tarn, the bog pools) (107); THE CLOUD SEA (128); the mist (132) |
 | `88-host-build.js` | 1 |  |
 | `89z-host-atmos.js` | 1 |  |
-| `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 10 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 14 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (61); the page, handed to the host (132) |
 | `99-tail.html` | <1 |  |

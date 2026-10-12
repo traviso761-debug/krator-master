@@ -30,9 +30,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/56-mid.js` | 63.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 298 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-poor.js` | 28.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 153 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-rich.js` | 47.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 212 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59-civic.js` | 84.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 448 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59-civic.js` | 19.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 88 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59a-civic-park.js` | 27.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 133 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59b-civic-library.js` | 28.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 163 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59c-civic-furniture.js` | 9.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-flora.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/61a-ancients-kit.js` | 206.9 | [draw] | 244 | 17 | 0 | 0 | 0 | 179 | 10 | 11 | 0 | 0 | 0 |  |
+| `src/61a-ancients-kit.js` | 28.3 | [draw] | 59 | 9 | 0 | 0 | 0 | 28 | 5 | 6 | 0 | 0 | 0 |  |
+| `src/61a1-ancients-kit-helpers.js` | 20.1 | [draw] | 30 | 1 | 0 | 0 | 0 | 18 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/61a2-ancients-kit-civic.js` | 27.4 | [draw] | 28 | 0 | 0 | 0 | 0 | 35 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/61a3-ancients-kit-towers.js` | 26.3 | [draw] | 18 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/61a4-ancients-kit-towers2.js` | 24.3 | [draw] | 23 | 2 | 0 | 0 | 0 | 13 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/61a5-ancients-kit-houses.js` | 25.1 | [draw] | 46 | 5 | 0 | 0 | 0 | 21 | 5 | 1 | 0 | 0 | 0 |  |
+| `src/61a6-ancients-kit-works.js` | 29.6 | [draw] | 20 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/61a7-ancients-kit-factory.js` | 26.0 | [draw] | 20 | 0 | 0 | 0 | 0 | 29 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61b-ancients-kit-tail.js` | 23.5 | [draw] | 14 | 1 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61c-ancients-glue.js` | 12.8 | [G shader] | 21 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |  |
 | `src/61d-ancients-assets.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |

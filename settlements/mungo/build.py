@@ -87,6 +87,9 @@ DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pac
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}
+# PARTS: Locus's fragments cut at their section markers so they can be read (settlements/locus/build.py CONTINUES)
+# -> the fragment each continues. The rules read a part joined to it, as one fragment, as Locus's build does.
+CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js')}
 
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']
 INTERIOR_SETS_WANT = ['locus', 'abyss', 'reedlake', 'yuni']
@@ -227,7 +230,19 @@ def strip_head_comments(text):
     return text[i:]
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies, origin):
+    order, bodies = joined(order, bodies)
     errs, seeds = [], {}
     for f in order:
         if not f.endswith('.js') or f in VIRTUAL or origin[f].startswith('core/'):

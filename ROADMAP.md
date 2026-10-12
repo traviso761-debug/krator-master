@@ -60,7 +60,7 @@ it and had been fixed before the evaluation was written.
 | 15 | 39 `terrainH` definitions; 26 PRNG/noise implementations; three material vocabularies; four exporters | both | **The plan's own 2026-10-02 counts** (`GODOT-PLAN.md` §1), repeated. Still true in shape, except the exporters: there are now nine `X.export()` entry points in `core/` plus Yuni's and the interiors kit's (section 3.1) | `GODOT-PLAN.md:31-52` |
 | 16 | Draw-call and triangle budgets should become a test | ChatGPT §33 | **Already exists.** About 30 builds define a `BUDGET` (`drawCalls`, `triangles`, `instances`; Girder adds a furniture line) and `verify.py --assert` fails on it. What is missing is the cross-build report and per-class budgets (section 4) | `settlements/girder/src/05-palette.js:157`, `settlements/girder/verify.py:182-264` |
 | 17 | Duplicated files: 132 groups of JS, 297 copies, 13.5 MB; three.min.js in ~20 places; 426 groups of textures, 68 MB | ChatGPT §1 | **Reproduced exactly on the review's scope** (`archive/`, the Menagerie and `godot/data` included). On the source scope: 131 / 295 / 12.9 MB, of which `three.min.js` is 10.3 MB; images 363 / 985 / 59.7 MB, all per-build `tex/` packs. Section 3.1 | this session's census |
-| 18 | The furniture primitives use fixed segments (`mkCyl` 16, `mkDome` 16x10); size-aware tessellation would cut furniture triangles 65-75% | Gemini §4.1 A | **Plausible, unmeasured.** The segment counts are as stated; the saving is a projection. Girder's verify already separates furniture triangles (`furn.tris`), so it can be measured before and after | `kits/catalog/krator-furniture-core.js`, `settlements/girder/verify.py:185-188` |
+| 18 | The furniture primitives use fixed segments (`mkCyl` 16, `mkDome` 16x10); size-aware tessellation would cut furniture triangles 65-75% | Gemini §4.1 A | **Measured 2026-10-12: true at detail 1 only.** Size-aware segments (`_fit`, `_ring` in the core) cut the catalog's census 57 % at detail 1 (small balls were 48 % of it) but 16 % at the settlements' detail 0.5, where the 6-segment floor binds; on the furnished pages 13.6 % (Highlands 24 %, Zeijani 22 %, Girder 18 %, Mav's Refuge 5 %, Post-Apoc 2 %). `kits/catalog/README.md`, "Size-aware segments" | `kits/catalog/krator-furniture-core.js`, `settlements/girder/verify.py:185-188` |
 
 Where the two evaluations disagree with each other: ChatGPT puts the host shell first (P0); Gemini puts it third,
 after bug fixes and geometry. The repo's plan narrowed the shell on 2026-10-02 to the biome kits plus one
@@ -330,7 +330,7 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
     then the cities' placement passes ported onto it, Iziz first; its `city` export section with item 7.
 15. **`core/city` in Godot** (section 8): its GDScript twin with golden tests, edits as an id-keyed overlay, rules as
     shared functions; the base for the NPC and quest tool and, later, the player's settlement builder.
-16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 after item 5; Voth's water when its branch pauses.
+16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 done 2026-10-12 (Ring Sea, geyser); the other Phase 1 takers next; Voth's water when its branch pauses.
 17. **The scripted walk** in the harness (section 9, stage 0j). *Done 2026-10-12.*
 18. **One interface for every settlement** (section 10): `core/edits`, then `core/host` on the biome kits, Girder,
     Iziz, Highlands, fauna mode, then every other settlement; Streetlab and Voth with their branch.
@@ -415,6 +415,11 @@ baseline, and `core/materials/PROMPTS-ready.md`, where the Zeijani prompts stay 
   - **Phase 0** (the README, the API and a node test for the twins) and **Phase 1** (a CDLOD water mesh, the shared
     field, skylight, Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` moved in) are **stage 2f**,
     after the terrain field is merged, since the flow and shore fields are built on it and on `core/mask`.
+    **Done 2026-10-12** (`core/water/`, `node core/water/test-water.js`): the Ring Sea kit and the geyser's sea are
+    on it (Ring Sea `verify.py --assert` holds, hull poses equal `WATER.rideAt`, the GPU surface is within 0.06 mm
+    of the CPU twin). Still to take Phase 1: Noah's Regret, little-demo, Locus, Mungo, Port, Ys, Reed Lake.
+    Depth-buffer absorption is not built yet. Streetlab's page carries the Ring Sea's `rsSeaH`/`rsRide` as aliases
+    of `WATER` that it never calls, so it loads without `core/water`.
   - Phases 2 to 4 (shore, flow and falls, still water and `W.wet`) follow `core/export`; Phase 5 (the FFT backend,
     the ripple sim) is opt-in per sea world; Phase 6 is the Godot side and joins stage 4.
   - Its first takers skip Voth: Voth's water (`settlements/voth/src/75-terrain.js`, and Streetlab's) is in the

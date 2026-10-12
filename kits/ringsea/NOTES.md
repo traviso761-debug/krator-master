@@ -67,3 +67,17 @@ mid-line by a scripted edit swallowed the rest of the line again (syntax error, 
 mast leaves its centre cell empty: the walker's body tests the cell and its four neighbours. Boarding from the water must
 ignore the waterline foam ring and the wales, or the walker stands on them inside the hull.
 
+## 2026-10-12: the sea moves to core/water
+The roadstead is core/water's first open water (`core/water/README.md`, `core/atmos/WATER.md` phases 0 and 1). The kit's
+Gerstner sum, `rsSeaH` and `rsRide` moved into `WATER` (`WATER.PRESETS.swells.ringsea`, `WATER.heightAt`, `WATER.ride`;
+the two kit names stay as one-line aliases). The sea is drawn on the CDLOD water mesh (instanced 17x17 nodes from 8 m
+leaves, split by distance to the camera, morphing between levels), so the swell is displaced wherever the camera is
+instead of fading flat 600 m from the roadstead's centre; plus half the shared wave field (core/atmos) for the chop and
+mid waves; whitecaps from the Jacobian with a 1.8 s decay; the dome and giant reflected through core/atmos's skylight
+(given to the water only, at a fifth: more reads as pale ice from a low camera). One clock: every wave runs whole cycles
+per 600 s and the shaders read `atmWaveT`, ATMOS's clock pinned to the kit's `rsClock()` (so `_api.pause(t)` still
+freezes the sea). The wakes ride `wtrHeight`. `groundM` is now an invisible flat plane for the camera's picks. At the
+"Toward the volcano" view: 233 draw calls before and after, 686k triangles before, 659k after (the sea 115k -> 88k);
+`verify.py --assert` passes before and after (least freeboard 0.07 m -> 0.08 m). The hulls' centres sit 5.5 cm (mean)
+off the sea's height before and 5.4 cm after (the five-sample average); the GLSL height on the GPU is within 0.06 mm of
+`WATER.heightAt`, and the mesh as drawn from each hull's preset view within 6 mm.

@@ -22,20 +22,22 @@ Seeds: 71000 + 100·n per vessel (71000 trireme … 73700 Voth dhow); 79001 is t
   `rsSailEdge rsBamboo rsRope rsPennant rsShield`.
 - Parts: `rsCabin rsVault rsRam rsDragonHead rsScroll`.
 
-## Animation: swell, wind, under way (`40-rs-core.js`, `43-rs-rig.js`, `94-rs-anim.js`)
-One clock `t` (seconds) drives everything; each frame the host sets `RS_U.uTime.value=t`, poses each hull and runs its anims.
-- **Swell**: `rsSwellSet([[A, wavelength, dirDeg, phase, steepness], ...], fade?)` sets Gerstner (trochoidal) waves:
-  a rest point p0 moves to p0 + sum (steep/k) D cos(th) and up by sum A sin(th) (deep-water speed; keep the sum of the
-  steepnesses under 1). `rsSwellD(x0,z0,t)` is the displacement of a rest point (and its Jacobian),
-  `rsSeaH(x,z,t)` the height at a world point (3 Newton steps for the rest point that lands there). `rsSwellGLSL(lod?)`
-  returns the GLSL (declares `uRsTime`): `vec3 rsSwellD(vec2 p0)`, `float rsSwellH(vec2 p)` (2 Newton steps, <1 mm),
-  `vec4 rsSwellNJ(vec2 p0,float mpp)` = world normal and Jacobian (whitecaps where it drops), each wave faded where it
-  is finer than a pixel. `lod {cx,cz,r:[[r0,r1]...]}` fades each wave's displacement with distance (the sea mesh only).
-  The sea (`90-rs-scene.js`) displaces its grid, then shades normal and foam per pixel at the rest point, so the
-  swell reaches the horizon.
-- **Riding**: `rsRide(G, D, x, z, yaw, t, seaH?, heel?)` puts the vessel group on the water: heave is the mean of five samples
-  (amidships, bow and stern at +-0.36 L, both beams at +-0.28 B), pitch and roll are their slopes; `heel` (rad, + =
-  starboard down) is added to the roll. A host world with its own sea passes its own `seaH(x,z,t)`.
+## Animation: the sea, wind, under way (`core/water`, `43-rs-rig.js`, `94-rs-anim.js`)
+One clock `t` (seconds) drives everything; each frame the host pins core/atmos's clock to it (`ATMOS.clock.fixed=t`, then
+ATMOS's hooks), sets `RS_U.uTime.value=t` (the sails' flutter), poses each hull and runs its anims.
+- **The sea is core/water's** (`core/water/README.md`, 2026-10-12): `RS_WATER=WATER.open({swell:'ringsea',field:.5})`,
+  drawn by `WATER.draw` on the CDLOD water mesh (`90-rs-scene.js`). Its four Gerstner waves are
+  `WATER.PRESETS.swells.ringsea` (`[A, wavelength, dirDeg, phase, steepness]`; this kit's `rsSwellSet` list, each now
+  running whole cycles per wave period), plus half the shared wave field (core/atmos) on the one clock. The CPU twin is
+  `WATER.heightAt(x,z,t)` (Newton for the rest point that lands there); the GLSL is `WATER.glsl(RS_WATER)`
+  (`wtrSurface`, `wtrHeight`, `wtrTroNJ`, ...; `WATER.shaderOn(RS_WATER, shader)` puts it in another material: the wakes
+  ride with `wtrHeight`). `rsSwellSet`, `rsSwellD`, `rsSwellGLSL` and `RS_SWELL` are gone: a swell is
+  `WATER.open({swell:[...]})` now.
+- **`rsSeaH(x,z,t)`** = `WATER.heightAt(x,z,t)`.
+- **Riding**: `rsRide(G, D, x, z, yaw, t, seaH?, heel?)` = `WATER.ride(G, D, x, z, yaw, t, heel, seaH)`: heave is the mean of
+  five samples (amidships, bow and stern at +-0.36 L, both beams at +-0.28 B), pitch and roll are their slopes; `heel`
+  (rad, + = starboard down) is added to the roll. A host world with its own sea passes its own `seaH(x,z,t)`. Both names
+  reach `WATER` only when called, so a page that takes the vessels alone (Streetlab's `ringsea.py`) loads without it.
 - **Wind**: sails flutter in the vertex shader (`rsSailWind`), the flutter vector in the sail's colour; it is zero on every
   edge and corner, so sheets, yards and battens stay attached. Pennants (`rsPennant`) flutter by their distance from the root.
 - **Trim**: `rsRig(B, mast, {gain})` ... `rsRigEnd(B)` around a sail's rig (`mast` = `[x,z]`, or `[[base],[head]]` for a

@@ -13,11 +13,15 @@ From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `36-cor
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
 | `45-host-stage.js` | 33 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (162); the ground (172); the water (247) |
 | `50-biome-sedesert-species.js` | 33 **big** | THE WATER COLOUR (18); the tree species (71); harvest (biomes/FRUIT.md) (132); leaf textures (172); bark, rock, wood textures (248); geometries local to this biome (287); materials (341); instanced items (376) |
@@ -29,6 +33,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 11 |  |
-| `91-host-probe.js` | 11 |  |
+| `99-host-take.js` | 17 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (155) |
 | `99-tail.html` | <1 |  |

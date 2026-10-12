@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `41-hyperjungle-globals.js` | <1 |  |
 | `45-host-stage.js` | 5 | terrain (23); the host binding (33) |
 | `50-biome-hyperjungle-species.js` | 28 | harvest (biomes/FRUIT.md) (57); leaf textures (90); bark textures (161); materials (217); the material library (core/materials/PLAN.md) (235); instanced items (261) |
@@ -27,6 +31,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `82-host-sky.js` | 12 |  |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 7 |  |
-| `91-host-probe.js` | 5 | the host's own checks (verify.py runs them when  (27) |
+| `99-host-take.js` | 7 | the inspector's words: a plant or a tree part na (27); the probe's budgets and the kit's own checks (ve (35); the page, handed to the host (68) |
 | `99-tail.html` | <1 |  |

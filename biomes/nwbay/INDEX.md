@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 61 **big** | the bay, the river, the rise (61); the igneous shore (91); the karst (106); the sinkholes (136); the tsingy (161); terrain (203); the host binding (245); the ground (263); the karst stacks (meshes) (338); the tsingy (meshes) (380) |
 | `50-biome-nwbay-species.js` | 50 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (96); harvest (biomes/FRUIT.md) (168); leaf textures (198); bark textures (322); geometries local to this biome (379); materials (445); instanced items (494) |
 | `55-biome-nwbay-trees.js` | 73 **big** | zones from the fields (15); colour (40); polyline helpers (Girder's) (62); keep-clear between trees (71); the karst's edge (78); epiphytes, lianas (90); foliage helpers (109); the builders (122); the Madagascarene flora (Bemaraha, the Spiny For (479); impostors (the far canopy) (554) |
@@ -28,6 +32,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 4 |  |
 | `88-host-build.js` | 2 |  |
-| `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 7 |  |
+| `99-host-take.js` | 13 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (126) |
 | `99-tail.html` | <1 |  |

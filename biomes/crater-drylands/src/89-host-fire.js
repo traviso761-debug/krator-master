@@ -122,14 +122,14 @@ const FIREFX=(function(){
  btn('×1',()=>{st.speed=1;status();},'real time');btn('×10',()=>{st.speed=10;status();});btn('×60',()=>{st.speed=60;status();});
  btn('Put it out',out);
  const lab=document.createElement('span');lab.style.cssText='font:12px ui-monospace,monospace;color:#f0dcc4;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:4px';bar.appendChild(lab);
- document.getElementById('ui').appendChild(bar);
+ // the bar goes in the host's #ui (99-host-take.js hands it over as a control)
  function arm(on){st.armed=on;bArm.style.outline=on?'2px solid #ff8a30':'';renderer.domElement.style.cursor=on?'crosshair':'';status();}
  function status(){lab.textContent=st.armed?'click the ground to light a fire':!st.on?'no fire':'fire '+(st.t/60).toFixed(1)+' min · ×'+st.speed+' · '+(st.active||0)+' flames';}
- addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F')arm(!st.armed);});
+ // F arms it: the host's key (99-host-take.js keys.f), so it does not also walk
  const ray=new THREE.Raycaster();
  function click(cx,cy){ray.setFromCamera(new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1),camera);const h=ray.intersectObject(GROUND,false)[0];arm(false);
   if(!h)return null;const r=light(h.point.x,h.point.z,{t:0});if(!r.ok){lab.textContent='nothing burns there: '+r.why;}return r;}
  status();
- return{light,out,click,presetView,preset:()=>light(st.P.x,st.P.z,{t:PRESET_T,speed:10}),armed:()=>st.armed,
+ return{bar,arm,light,out,click,presetView,preset:()=>light(st.P.x,st.P.z,{t:PRESET_T,speed:10}),armed:()=>st.armed,
   state:(x,z)=>!st.on||!st.run?'unburnt':st.run.state(x,z,st.t),get t(){return st.t;},set t(v){st.t=v;FIREU.uFireT.value=v;refresh();},
   get speed(){return st.speed;},set speed(v){st.speed=v;},get run(){return st.run;},P:st.P,patched:()=>PATCHED.size,pools:{FLAMES,SMOKE},refresh};})();

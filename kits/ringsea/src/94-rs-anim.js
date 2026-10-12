@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- animation: the swell, the wind, the oars, under way
-// One clock t (seconds) drives everything: RS_U.uTime feeds the sea's, the sails' and the flags' vertex shaders,
-// rsRide (40-rs-core.js) poses each hull on the same swell, and each builder's anims (oar strokes, wheels)
+// One clock t (seconds) drives everything: ATMOS's clock is pinned to it (the sea's atmWaveT is t wrapped at the wave period),
+// RS_U.uTime feeds the sails' and the flags' vertex shaders, rsRide (WATER.ride) poses each hull on the same sea, and each builder's anims (oar strokes, wheels)
 // run on it. window._api.pause(t) freezes the clock at t seconds (verify.py shots are then repeatable).
 // Every pose is a pure function of t and of the times the Under way toggle was set (RS_WAY.tOn/tOff).
 //
@@ -49,7 +49,7 @@ function rsWayPose(p,t){const k=rsWayK(t),s=rsWayS(t);
  const fx=-(1-k)+k*lx/L,fz=k*lz/L;
  return{x:c.x,z:c.z,yaw:c.yaw,heel:-RS_WAY.heel*kap*RS_WAY.R*Math.min(1,k),k,trim:RS_WAY.trimMax*Math.sin(ang)*k,flag:Math.atan2(fz,-fx)};}
 
-// ---- the wake: a foam texture (Kelvin arms from the bow, churn from the stern) on a strip that rides the swell
+// ---- the wake: a foam texture (Kelvin arms from the bow, churn from the stern) on a strip that rides the sea (wtrHeight)
 const RS_WAKE=(()=>{const tex=canvasTex(256,512,(g,W,H)=>{g.clearRect(0,0,W,H);   // canvas y = distance astern of the bow, x = across
   const arm=(sd)=>{for(let i=0;i<260;i++){const t=i/260,y=t*H,x=W/2+sd*t*W*.49;const a=.55*(1-t)*(1-t)*Math.min(1,t*14);
     g.fillStyle=`rgba(235,245,248,${a})`;g.beginPath();g.ellipse(x,y,2+t*7,3+t*4,sd*.35,0,TAU);g.fill();
@@ -59,8 +59,8 @@ const RS_WAKE=(()=>{const tex=canvasTex(256,512,(g,W,H)=>{g.clearRect(0,0,W,H); 
    g.fillStyle=`rgba(240,248,250,${a*(.4+.6*h3(i,7,3))})`;g.beginPath();g.arc(x,y,1+h3(i,8,4)*4,0,TAU);g.fill();}});
  tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,opacity:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
- mat.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
-  .replace('#include <project_vertex>','vec4 rsW=modelMatrix*instanceMatrix*vec4(transformed,1.);rsW.y+=rsSwellH(rsW.xz)+.05;vec4 mvPosition=viewMatrix*rsW;gl_Position=projectionMatrix*mvPosition;');};
+ mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+WATER.shaderOn(RS_WATER,sh))   // the sea's chunk: wtrHeight
+  .replace('#include <project_vertex>','vec4 rsW=modelMatrix*instanceMatrix*vec4(transformed,1.);rsW.y+=wtrHeight(rsW.xz)+.05;vec4 mvPosition=viewMatrix*rsW;gl_Position=projectionMatrix*mvPosition;');};
  // unit strip: x from 0 (the bow) to -1 (astern), z +-0.36; scaled per vessel by 2.6 L
  const geo=new THREE.PlaneGeometry(1,.72,24,10);geo.rotateX(-Math.PI/2);geo.translate(-.5,0,0);
  {const uv=geo.attributes.uv,p=geo.attributes.position;for(let i=0;i<p.count;i++)uv.setXY(i,.5+p.getZ(i)/.72,1+p.getX(i));}   // v=1 at the bow (canvas top)
@@ -80,8 +80,8 @@ function rsFleetPose(t){RS_U.uTime.value=t;
    _rsWM.compose(_rsWP,_rsWQ,_rsWS);RS_WAKE.setMatrixAt(i,_rsWM);}});
  const k=rsWayK(t);RS_WAKE.visible=k>.002;if(RS_WAKE.visible){RS_WAKE.instanceMatrix.needsUpdate=true;RS_WAKE.material.opacity=.85*Math.min(1,k);}
  if(RS_LABQ){const a=RS_LABQ.a;RS_LABQ.q.forEach((e,j)=>{if(!e)return;const G=e.p.G;for(let c=0;c<4;c++)a.setXYZ(j*4+c,G.position.x,e.y+G.position.y,G.position.z);});a.needsUpdate=true;}}
-FRAME_HOOKS.push((dt,now)=>{const t=rsClock();rsFleetPose(t);
- TEX.rsWater.offset.x=(t*.004)%1;TEX.rsWater.offset.y=(t*.0025)%1;
+FRAME_HOOKS.push((dt,now)=>{const t=rsClock();ATMOS.clock.fixed=t;for(const f of ATMOS_HOOKS)f(dt);   // core/atmos (the sea's clock, the skylight) on the kit's clock
+ rsFleetPose(t);
  // a preset view of a vessel follows it (translation and turn) while it is under way or running home
  const f=RS_WAY.follow;if(f&&!WALK.on){const w=f.way,l=RS_WAY.last||{x:f.x,z:f.z,yaw:0};
   ctl.target.x+=w.x-l.x;ctl.target.z+=w.z-l.z;const dy=w.yaw-l.yaw;if(dy){const ox=ctl.target.x-w.x,oz=ctl.target.z-w.z,c=Math.cos(dy),s=Math.sin(dy);

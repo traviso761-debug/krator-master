@@ -494,16 +494,19 @@ with `full-refactor`, not on `main` while the refactor is paused.** Thirty-nine 
 wave field, the rest run ten different ripples or static materials, nine clocks never wrap, nothing but the Ring Sea's
 hulls floats, and no water reflects the sky. `WATER.md` section 1 is the table.
 
+- **Phases 0 and 1 started (2026-10-12): `core/water/` exists** (README, data and twins for the six kinds, the node test,
+  open water on the CDLOD mesh with skylight and Jacobian foam); the Ring Sea kit and the geyser basin take it. Next: the
+  rest of Phase 1's takers (WATER.md section 5), then the shore field.
 - **[G data] + [G shader]** `core/water/`: one module with six kinds (open, shore, flow, fall, still, wet), each with
   a data side and a CPU twin (`heightAt`, `flowAt`, `seaLevel`), one clock (`atmWaveT`, whole cycles), skylight
   reflection and depth absorption. A build names its kinds and writes no water shader.
-- **[G native]** A CDLOD water mesh (Halcyon: instanced 17×17 nodes, 13 levels from 8 m): ends ringsea's swell
+- **DONE for ringsea and geyser (2026-10-12), `core/water/50-core-water-draw.js`.** **[G native]** A CDLOD water mesh (Halcyon: instanced 17×17 nodes, 13 levels from 8 m): ends ringsea's swell
   fading past 600 m and Voth's 75 m rim cells. First, and independent of the wave model.
 - **[G data]** A distance-to-shore field (jump-flood on the land mask) driving shoaling, a breaking lip, swash and wet
   sand. The one visible upgrade for every coast.
 - **[G data] + [G shader]** One flow shader for every river ribbon: a flow field from `KRELIEF.river` (its slope is
   stored and unread), advected normals, foam from slope, convergence and bank distance. Falls arc; plunge pools churn.
-- **[G shader]** Foam as the Jacobian with a 1.8 s decay (the Ring Sea kit has the first half).
+- **DONE (2026-10-12, core/water open water).** **[G shader]** Foam as the Jacobian with a 1.8 s decay (the Ring Sea kit has the first half).
 - **[web] now, [G shader] later** The FFT ocean as an opt-in second backend behind `atmos_waves` (three 256²
   cascades, deterministic seed, 76-mode CPU twin), for the worlds whose sea is the subject. After the above.
 - **[web]** A 512² ripple sim for wakes, plunge pools and fountains.

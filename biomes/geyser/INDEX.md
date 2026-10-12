@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 15 | the land before the thermal ground (57); the thermal layout (the showcase's; the kit's re (112) |
 | `46-biome-geyser-layout.js` | 24 | lay out (29); relief (92); the heat and the rest (GEYSER.at) (147); the cycles (186); a site from a point (the open world; the isles) (201) |
 | `47-host-land.js` | 5 | the fields (cached below; these are the definiti (21); the host binding (43) |
@@ -27,9 +31,8 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `70-biome-geyser.js` | 2 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
 | `84-host-ground.js` | 14 | the paint (per vertex) (18); the layers (the library, or procedural without i (40); the meshes (107) |
-| `86-host-water.js` | 6 |  |
+| `86-host-water.js` | 3 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 11 |  |
-| `91-host-probe.js` | 11 |  |
-| `93-host-polytool.js` | 6 |  |
+| `89w-host-sea.js` | 2 |  |
+| `99-host-take.js` | 18 | the inspector's words (47); the probe's budgets and the kit's own checks (ve (62); the page, handed to the host (141) |
 | `99-tail.html` | <1 |  |

@@ -55,10 +55,18 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
 - The showcase is a 5.2 km disc; the regions are 53,000 and 8,000 km². The kopjes, washes and the seep are the
   showcase's own.
-- **Budget**: 17.9M triangles at q=1 (trees ~13.5M, floor ~4.4M; 17.0M before the frill-tree was rebuilt as a frill tree, 2026-10-06), ~35k trees, 40 draw calls (`91-host-probe.js` BUDGET:
+- **Budget**: 17.9M triangles at q=1 (trees ~13.5M, floor ~4.4M; 17.0M before the frill-tree was rebuilt as a frill tree, 2026-10-06), ~35k trees, 40 draw calls (`99-host-take.js` BUDGET:
   18.5M, measured, not a target). The first build measured 30.1M: the LOD spine covered the whole map, so 50k of 51k trees
   were heroes. The spine is now the kopjes, three points on wash A, the seep and the recent burns' real centres (84 adds
   them after the fire model runs). `?q=0.5` builds at half density; `?nobake=1` measures without drawing.
 - **The bloom's carpet is a ground-shader layer** (`84-host-ground.js`, `TEX_CARPET`): flower dots in the drift's colour
   and grass blades, weighted by burn age. The instanced flowers are on top of it. It is flat: close to the ground at a
   low angle the dots read as paint.
+
+## The host (core/host, 2026-10-12)
+
+- [ ] **F arms a fire, not the walk.** The camera, loop, panel and probe are core/host's (`src/99-host-take.js` hands the
+      page to `KHOST.take`; no core/host file is overridden). The host's F walks; this kit hands F to the fire
+      (`keys.f`, 89-host-fire.js's click-to-light), so this page has no walking (a build's keys win over the camera's;
+      walking wants another key, or the fire another). An armed click lights a fire before the inspector
+      or the polygon tool sees it (`click`). The fire's bar sits in the bar's `#ui` after the view select (it was first).

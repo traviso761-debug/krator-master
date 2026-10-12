@@ -84,9 +84,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88y-ancients-matlib.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-arcbeam.js` | 59.3 | [draw] | 37 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89b-arcoindian.js` | 81.3 | [draw] | 59 | 3 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89c-arcoindian2.js` | 81.9 | [draw] | 39 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89d-arcube.js` | 89.4 | [draw] | 81 | 3 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89b-arcoindian.js` | 26.0 | [draw] | 26 | 3 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89b1-arcoindian-cut.js` | 28.5 | [draw] | 18 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89b2-arcoindian-plinth.js` | 26.8 | [draw] | 15 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89c-arcoindian2.js` | 27.8 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89c1-arcoindian2-lens.js` | 26.7 | [draw] | 14 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89c2-arcoindian2-stalk.js` | 27.3 | [draw] | 18 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89d-arcube.js` | 28.5 | [draw] | 39 | 3 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89d1-arcube-faces.js` | 26.2 | [draw] | 25 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89d2-arcube-elevation.js` | 18.0 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89d3-arcube-ruin.js` | 16.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89e-hill.js` | 64.7 | [draw] | 38 | 3 | 0 | 0 | 0 | 6 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/89f-trigon.js` | 52.0 | [draw] | 73 | 4 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89g-monolith.js` | 49.1 | [draw] | 53 | 5 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |

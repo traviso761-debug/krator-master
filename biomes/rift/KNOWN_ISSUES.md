@@ -7,7 +7,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/rift.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
-- [ ] BUDGET. Held vs drawn (the runtime LOD, Oct 2026; 91-host-probe): ceilings of 27M triangles
+- [ ] BUDGET. Held vs drawn (the runtime LOD, Oct 2026; the probe, now 99-host-take): ceilings of 27M triangles
       HELD (in memory, the hero trees' stand-ins included), 17M DRAWN at any one camera and 700 draw
       calls; 19M per pass. Before the runtime LOD the scene held 24.1M and drew all of it from every
       camera in ~64 calls. Now it holds 25.7M (+1.6M: the stand-ins, the small species' far blobs,
@@ -60,7 +60,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] Runtime LOD (Oct 2026, xanadu's port): every hero tree drawn within `RIFT.LOD.tree` (1.2 km)
       of its chunk and as a stand-in impostor past it; the far trees per chunk against the view;
       the floor's bands, logs and dress by range, with a far band standing in for the spine's
-      near and mid bands; `BIO.lodTick` in 90-host-camera; the probe's budget as held / drawn / calls.
+      near and mid bands; `BIO.lodTick` (a view subscriber in 99-host-take since core/host); the probe's budget as held / drawn / calls.
 - [x] The small species become far impostors (`buildFarSmall`, a 20-triangle blob shaped by habit)
       instead of stopping at ~1.3 km from the spine, and stand in for their heroes; the curls,
       pinecones and silver scrub (under a pixel there) do not. The frill and carrot frill

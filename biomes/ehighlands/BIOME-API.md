@@ -81,9 +81,8 @@ EHIGH.canopyH(x,z), COUNTS
 84-host-ground.js      (host)       the ground painted by the fields, the turf's polygons in the shader; the bog's pools, the stream, the frozen tarn
 86-host-geysers.js     (host)       the vents' cones and their steam (one Points mesh); the Old Kettle's eruptions
 88-host-build.js       (host)       build order and bake
-90-host-camera.js      (host)       presets found from the built plants; the inspector (tags, the plant's bearing)
-91-host-probe.js       (host)       window._api: budgets and the host checks with their negatives
-93-host-polytool.js    (host)       polygon and path tool (from nhighlands)
+99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
+                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`. The material library comes in through `materials.json` and
 `tex/` (`tools/textures/pack.py biomes/ehighlands`), as KMAT.pack('ehigh'); without the pack (`?mat=proc`, or an open world)

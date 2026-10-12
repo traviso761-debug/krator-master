@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
 | `45-host-stage.js` | 26 | the land (43); the climate fields (cached below; these are the  (99); the host binding (132); the ground (144); the water (243) |
 | `50-biome-ebadlands-species.js` | 52 **big** | palettes (22); the tree species (58); harvest (biomes/FRUIT.md) (103); the small plants (the floor and the dressing), t (128); leaf textures (154); bark, rock, wood textures (261); geometries local to this biome (303); the library cards (core/materials/PLAN.md, Easte (427); materials (446); instanced items (498) |
@@ -27,7 +31,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-arcade.js` | 5 |  |
 | `86-host-variants.js` | 12 | materials for instancing (the open world's) (20); harvest: what the kit wrote, one geometry per ma (44); growing the variants (67); drawing: one pool of instances per prototype (84) |
 | `88-host-build.js` | 2 |  |
-| `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 11 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 16 | the inspector's words (54); the probe's budgets and the kit's own checks (ve (70); the page, handed to the host (142) |
 | `99-tail.html` | <1 |  |

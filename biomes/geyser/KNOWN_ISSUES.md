@@ -36,3 +36,10 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
   could move onto this kit.
 - [ ] **No fauna.** The owner's plan puts all fauna in one fauna kit (`biomes/README.md`). The hyperjungle's own fauna
   flies over the plateau.
+
+## The host (core/host, 2026-10-12)
+
+- [ ] **G sets off the nearest geyser, not the host's fly-to-pin.** The camera, loop, panel and probe are core/host's
+      (`src/99-host-take.js` hands the page to `KHOST.take`; no core/host file is overridden). The kit's G (and N for
+      night) are handed over as `keys`, which win over the host's keys, so on this page a dropped pin is reached by
+      F (walk from it) only. The timetable (`#tt`) is a host panel of its own ("The geysers", right side).

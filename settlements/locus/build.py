@@ -95,6 +95,11 @@ DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no 
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')} | {'90-atmos-host.js', '20-core-clock.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js'}   # core/atmos: IIFE-scoped, its own PRNG; core/clock
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
+# PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
+# continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it
+# continues, as one fragment (one PRNG stream, one scope), and the page is the same concatenation either way. Mungo
+# (which reads these files by name) and Verge's YKIT bundle (which takes 59-civic.js whole) list the same parts.
+CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js')}
 
 # GENERATED fragments, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure
 # exposing KratorFurniture: the eastabyss culture and its fallback chain, plus the harvested registry for the Yuni
@@ -182,7 +187,19 @@ def strip_head_comments(text):
     return text[i:]
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies):
+    order, bodies = joined(order, bodies)
     errs, seeds = [], {}
     for f in order:
         if not f.endswith('.js') or f in VIRTUAL:

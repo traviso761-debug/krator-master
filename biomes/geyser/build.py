@@ -8,7 +8,8 @@
   47-host-land      HOST: the land with the kit's relief, the fields, the creek, BIO.init
   48a..48f          the HYPERJUNGLE kit, read in place from biomes/hyperjungle/src (the jungle that walls the basin in)
   50..79            THE KIT: species, trees, sinter, floor, the show (water, eruptions, steam), build
-  80..98            HOST (sky, ground, sea and creek, build, camera, probe)
+  80..98            HOST (sky, ground, the creek, build, the sea on core/water, camera, probe)
+  20, 50, 89-atmos   CORE: core/water (data, drawing) and core/atmos (the wave field, the sky's light), read in place
   99-tail.html      closes <script>
 
 The core and the kit never reference a host global except through BIO.host (BIOME-API.md); build.py greps for the
@@ -57,6 +58,9 @@ CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+# core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
+CORE_SPACE=['20-core-space.js']
+CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 # OTHER KITS read in place (biomes/WORLD.md: several kits on one page). The showcase's jungle walls are the hyperjungle's,
 # in its own registry; its fragments keep their numbers' order, slotted before this kit's (the Throne's kipuka does the same)
 HJ=os.path.normpath(os.path.join(HERE,'..','hyperjungle'))
@@ -75,6 +79,24 @@ for f in CORE_BIOME:
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+for f in CORE_SPACE:
+    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
+# (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the sea is a WATER.open surface (89w-host-sea.js)
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_A=os.path.normpath(os.path.join(HERE,'..','..','core','atmos'))
+CORE_WATER=['20-core-water.js','50-core-water-draw.js']
+CORE_W=os.path.normpath(os.path.join(HERE,'..','..','core','water'))
+for f in CORE_ATMOS:
+    if f not in PATH: PATH[f]=os.path.join(CORE_A,f)
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.join(CORE_W,f)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+import host as khost
+CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+khost.resolve(PATH,CORE_HOST)
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 # the material library (core/materials/record, PLAN.md): the record and its browser half, and the packs of the library

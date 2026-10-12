@@ -134,7 +134,7 @@ Then `BIO.bake()` once.
 84-host-ground.js (ideal type)   the ground painted from the fields and NHL.zones, the canopy's shade baked in; the stream
                                  ribbon, the tarn; the mist (sheets and sprites)
 85-host-tower.js, 86-host-pillars.js   the ruined Girder tower and the crag pillars (structures for dress)
-88-host-build.js, 90-host-camera.js, 91-host-probe.js, 93-host-polytool.js   build order, views + inspector, probe, polygon/path tool
+88-host-build.js, 99-host-take.js   build order; views, inspector words and checks handed to core/host (camera, loop, panel, probe, polygon/path tool)
 ```
 
 To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields})`

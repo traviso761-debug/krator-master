@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 15 | the land (47); the climate fields (cached below; these are the  (137); the host binding (169) |
 | `50-biome-ehigh-species.js` | 36 **big** | the giant (29); palettes (38); the tree species (60); harvest (biomes/FRUIT.md) (84); the small plants (the floor), tagged (99); leaf and surface textures (115); bark textures (165); geometries local to this biome (196); materials (297); the library (core/materials/PLAN.md, Eastern hig (328) |
 | `55-biome-ehigh-trees.js` | 27 | zones from the fields (12); colour (the maths is the core's, BIO.col) (43); the lean toward the giant (55); polyline helpers (Girder's) (62); keep-clear between plants (71); helpers (78); the builders (88); the Mother Cushion (196); impostors (the far plants) (221); the pass (250) |
@@ -25,7 +29,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `84-host-ground.js` | 17 | the ground (20); the water (119) |
 | `86-host-geysers.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 8 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 14 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (120) |
 | `99-tail.html` | <1 |  |

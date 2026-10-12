@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 18 | the lake, the ridge, the streams (44); terrain (73); the field cache (100); the host binding (112); the ground (121); the water (177) |
 | `50-biome-rift-species.js` | 60 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (191); leaf textures (244); an iridescent bark (397); bark textures (426); geometries local to this biome (462); materials (553); instanced items (613) |
 | `55-biome-rift-trees.js` | 68 **big** | zones from the fields (20); colour (35); polyline helpers (Girder's) (65); keep-clear between trees (73); foliage helpers (80); the builders (97); impostors (the far canopy) (456); the pass (535) |
@@ -25,6 +29,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `82-host-sky.js` | 16 | the Rift painter (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 6 |  |
-| `91-host-probe.js` | 5 | fruit (biomes/FRUIT.md) (25) |
+| `99-host-take.js` | 7 | the inspector's words (22); the probe's budgets and the kit's own checks (ve (34); fruit (biomes/FRUIT.md) (42); the page, handed to the host (64) |
 | `99-tail.html` | <1 |  |

@@ -105,7 +105,7 @@
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
-  "fc0cf06b5f0e"
+  "949213456277"
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
@@ -141,7 +141,19 @@
  ],
  "59-civic.js": [
   "locus",
-  "9f72c44a9347"
+  "e39e582747f8"
+ ],
+ "59a-civic-park.js": [
+  "locus",
+  "2325d0531216"
+ ],
+ "59b-civic-library.js": [
+  "locus",
+  "55f3b6d8d558"
+ ],
+ "59c-civic-furniture.js": [
+  "locus",
+  "bffa210fcce6"
  ],
  "60-flora.js": [
   "locus",
@@ -237,11 +249,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "42b91ac6b1b8"
+  "567d470d914a"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "736ffdee524f"
+  "606019ae7028"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -265,7 +277,7 @@
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
-  "86d05ad00910"
+  "6de80a247190"
  ],
  "69b-locus-biohost.js": [
   "mungo (overrides locus)",
@@ -409,7 +421,7 @@
  ],
  "89-atmos-0-core.js": [
   "core/atmos",
-  "2d9ce6e7a4ee"
+  "d316939c42f9"
  ],
  "89-atmos-0p-presets.js": [
   "core/atmos",
