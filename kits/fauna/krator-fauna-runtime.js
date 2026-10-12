@@ -69,7 +69,7 @@ const KratorFaunaAPI = (function () {
        { variant: modelKey }). A model is a tree of nodes (each a part with its own pivot), its clips and three baked maps;
        it is built into the same shape as any animal: a Group whose userData.parts names the kit's parts (head, tail,
        leg0..N, wingL/R, wing2L/R, segN), animated by animate() from its clips: idle and rest play 'perch', walk plays 'walk',
-       fly plays 'flap' (or 'glide' when o.glide). Geometry and maps are decoded once per model and shared by every build. */
+       graze plays 'graze' (a head down) where the model has one, fly plays 'flap' (or 'glide' when o.glide). Geometry and maps are decoded once per model and shared by every build. */
   const MODELC = {};
   function buf64(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u.buffer; }
   function modelTex(url, srgb) {
@@ -128,7 +128,7 @@ const KratorFaunaAPI = (function () {
   }
   function animateModel(g, t, mode, o) {
     o = o || {}; const mx = g.userData._mx, has = n => !!mx.acts[n];
-    const cn = mode === 'walk' && has('walk') ? 'walk' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
+    const cn = mode === 'walk' && has('walk') ? 'walk' : mode === 'graze' && has('graze') ? 'graze' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
     if (mx.cur !== cn) { if (mx.cur) mx.acts[mx.cur].stop(); mx.acts[cn].reset().play(); mx.cur = cn; }
     const a = mx.acts[cn], dur = mx.clips[cn].duration, tm = t * (o.rate || 1) + (o.phase || 0) / TAU * dur;
     a.time = ((tm % dur) + dur) % dur; mx.mixer.update(0);
@@ -136,7 +136,7 @@ const KratorFaunaAPI = (function () {
   function build(key, opt) {
     const E = ANIMAL_BY_KEY[key]; if (!E) throw new Error('KratorFauna.build: no animal ' + key);
     opt = opt || {};
-    if (E.models && E.models[opt.variant | 0]) return buildModel(E, key, opt);
+    if (E.models && E.models[opt.variant | 0] && typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[E.models[opt.variant | 0]]) return buildModel(E, key, opt);   /* a bundle without the models draws the procedural build */
     const A = faunaFrame(E, opt);
     E.build(A);
     const root = new THREE.Group(); root.name = 'fauna:' + key;

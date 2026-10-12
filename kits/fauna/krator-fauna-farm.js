@@ -137,10 +137,11 @@ ANIMAL({
     hide: { amount: 1, hideM2: 4.2, note: 'leather: boots, harness, belts' }, horn: { amount: 0.8, note: 'an ox\'s or a highland cow\'s: cups, horn panes, combs' },
     hair: { amount: 0.4, note: 'the highland cow\'s long coat, combed in spring: rope and felt' } },
   life: { maturity: 1.5, lifespan: 20, litter: 1, gestation: 283 },
-  variants: 4, variantNames: ['dairy cow, piebald (Republic)', 'cow, brown (Rustic)', 'ox (the Republic\'s plough ox)', 'highland cow, shaggy red (Painted Men)'],
+  variants: 6, variantNames: ['dairy cow, piebald (Republic)', 'cow, brown (Rustic)', 'ox (the Republic\'s plough ox)', 'highland cow, shaggy red (Painted Men)', 'dairy cow, piebald (Meshy model)', 'ox, red-brown, wide horns (Meshy model)'],
   w: 0.8, d: 2.65, h: 1.65,
-  variantDims: [{ w: 0.8, d: 2.65, h: 1.65 }, { w: 0.8, d: 2.65, h: 1.65 }, { w: 0.95, d: 2.95, h: 2.05 }, { w: 1.3, d: 2.45, h: 1.6 }],
-  data: { mass: [550, 480, 800, 420], legs: 4, speed: { walk: 1.2, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.7 }, grazePitch: 1.2,
+  variantDims: [{ w: 0.8, d: 2.65, h: 1.65 }, { w: 0.8, d: 2.65, h: 1.65 }, { w: 0.95, d: 2.95, h: 2.05 }, { w: 1.3, d: 2.45, h: 1.6 }, { w: 0.85, d: 2.1, h: 1.72 }, { w: 1.1, d: 2.65, h: 1.58 }],
+  models: { 4: 'cow', 5: 'ox' }, modelData: { 4: { budget: 12000 }, 5: { budget: 12000 } },   /* the Meshy model variants (models/*.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [550, 480, 800, 420, 550, 800], legs: 4, speed: { walk: 1.2, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.7 }, grazePitch: 1.2,
     herd: 'a farm\'s few cows and a team of oxen; the Painted Men keep two or three in the byre under the house', fleeDistance: 3, aggression: 0.1,
     /* an ox WORKs in place of the grazing hours: the plough, the cart */
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'MILK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
@@ -507,10 +508,11 @@ ANIMAL({
   yields: { meat: { amount: 25, note: 'a ewe dressed; mutton and the winter\'s salt lamb' }, milk: { amount: 0.6, note: 'the Rustic Clansmen milk their ewes for cheese, about 150 days' },
     wool: { amount: 3, note: 'shorn each summer: the Republic\'s broadcloth, the clansmen\'s homespun' }, hide: { amount: 1, hideM2: 0.8, note: 'sheepskin coats, parchment' } },
   life: { maturity: 1, lifespan: 11, litter: 1.4, gestation: 150 },
-  variants: 3, variantNames: ['ewe, white', 'ewe, black', 'lamb'],
+  variants: 4, variantNames: ['ewe, white', 'ewe, black', 'lamb', 'ewe, cream fleece, dark face (Meshy model)'],
   w: 0.75, d: 1.37, h: 0.98,
-  variantDims: [{ w: 0.75, d: 1.37, h: 0.98 }, { w: 0.75, d: 1.37, h: 0.98 }, { w: 0.45, d: 0.82, h: 0.6 }],
-  data: { mass: [65, 65, 18], legs: 4, speed: { walk: 1.0, run: 7 }, gait: { type: 'quadruped', freq: 1.6, stride: 0.4 }, grazePitch: 0.95,
+  variantDims: [{ w: 0.75, d: 1.37, h: 0.98 }, { w: 0.75, d: 1.37, h: 0.98 }, { w: 0.45, d: 0.82, h: 0.6 }, { w: 0.43, d: 1.06, h: 0.88 }],
+  models: { 3: 'sheep' }, modelData: { 3: { budget: 12000 } },   /* the Meshy model variants (models/*.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [65, 65, 18, 65], legs: 4, speed: { walk: 1.0, run: 7 }, gait: { type: 'quadruped', freq: 1.6, stride: 0.4 }, grazePitch: 0.95,
     herd: 'a fold of 7 to 40 with a shepherd and a dog', fleeDistance: 6, aggression: 0.02,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
@@ -565,10 +567,11 @@ ANIMAL({
   yields: { meat: { amount: 85, note: 'a baconer dressed: hams, sausage, lard; the autumn slaughter' }, hide: { amount: 1, hideM2: 1.3, note: 'pigskin: gloves, saddle seats' },
     hair: { amount: 0.2, note: 'the bristles: brushes' } },
   life: { maturity: 0.8, lifespan: 15, litter: 9, gestation: 114 },
-  variants: 3, variantNames: ['sow, pink', 'hill pig, black (Rustic and Painted Men)', 'piglet'],
+  variants: 4, variantNames: ['sow, pink', 'hill pig, black (Rustic and Painted Men)', 'piglet', 'sow, pink (Meshy model)'],
   w: 0.65, d: 1.56, h: 0.86,
-  variantDims: [{ w: 0.65, d: 1.56, h: 0.86 }, { w: 0.65, d: 1.56, h: 0.9 }, { w: 0.3, d: 0.7, h: 0.4 }],
-  data: { mass: [160, 140, 12], legs: 4, speed: { walk: 0.9, run: 5 }, gait: { type: 'quadruped', freq: 1.8, stride: 0.3 }, grazePitch: 0.8,
+  variantDims: [{ w: 0.65, d: 1.56, h: 0.86 }, { w: 0.65, d: 1.56, h: 0.9 }, { w: 0.3, d: 0.7, h: 0.4 }, { w: 0.55, d: 1.56, h: 0.94 }],
+  models: { 3: 'pig' }, modelData: { 3: { budget: 12000 } },   /* the Meshy model variants (models/*.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [160, 140, 12, 160], legs: 4, speed: { walk: 0.9, run: 5 }, gait: { type: 'quadruped', freq: 1.8, stride: 0.3 }, grazePitch: 0.8,
     herd: 'three or four in a sty; the Painted Men\'s pigs run loose under the houses', fleeDistance: 3, aggression: 0.12,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
@@ -650,10 +653,11 @@ ANIMAL({
   yields: { meat: { amount: 1.2, note: 'a boiling fowl; a cock or a capon 2' }, eggs: { amount: 180, note: 'a laying hen, fewer in winter; none from the cock' },
     feathers: { amount: 0.1, note: 'pillows, fletching' } },
   life: { maturity: 0.5, lifespan: 8, litter: 10, gestation: 21, note: 'litter: a clutch; gestation: the days on the eggs' },
-  variants: 4, variantNames: ['hen, white', 'hen, red-brown', 'hen, dark brown', 'cock'],
+  variants: 5, variantNames: ['hen, white', 'hen, red-brown', 'hen, dark brown', 'cock', 'hen, red-brown (Meshy model)'],
   w: 0.28, d: 0.5, h: 0.48,
-  variantDims: [{ w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.32, d: 0.66, h: 0.66 }],
-  data: { mass: [2, 2, 2, 3], legs: 2, wings: 1, speed: { walk: 0.5, run: 4 }, gait: { type: 'biped', freq: 2.2, stride: 0.12 }, grazePitch: 1.3,
+  variantDims: [{ w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.32, d: 0.66, h: 0.66 }, { w: 0.15, d: 0.34, h: 0.43 }],
+  models: { 4: 'hen' }, modelData: { 4: { wings: 0, budget: 12000 } },   /* the Meshy model variants (models/*.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [2, 2, 2, 3, 2], legs: 2, wings: 1, speed: { walk: 0.5, run: 4 }, gait: { type: 'biped', freq: 2.2, stride: 0.12 }, grazePitch: 1.3,
     herd: 'a flock of 5 to 20 about a farmyard, with one cock', fleeDistance: 2, aggression: 0.05,
     schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'GRAZE', 'GRAZE', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
   build: function (A) {

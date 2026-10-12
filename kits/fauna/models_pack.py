@@ -45,7 +45,7 @@ def jpeg(blob, size, q):
     return 'data:image/jpeg;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
 
 
-SIDE = re.compile(r'^(wing2?|wingO2?|leg\d*|legT\d*|foot)([LR])(t?)$')
+SIDE = re.compile(r'^(wing2?|wingO2?|leg\d*|legT\d*|foot)([LR])([tf]?)$')
 
 
 def main():
@@ -53,6 +53,7 @@ def main():
     ap.add_argument('glb'); ap.add_argument('out')
     ap.add_argument('--key', required=True); ap.add_argument('--group', required=True)
     ap.add_argument('--scale', type=float, required=True, help='metres per model unit')
+    ap.add_argument('--truthful-sides', action='store_true', help='the rig already names L (+x of the animal\'s own centreline) and R: do not rename by absolute x')
     ap.add_argument('--tex', type=int, default=1024, help='base colour and normal map size (px)')
     ap.add_argument('--mrtex', type=int, default=512, help='metallic-roughness map size (px)')
     a = ap.parse_args()
@@ -69,7 +70,7 @@ def main():
     rename = {}
     for i, nd in enumerate(nodes):
         m = SIDE.match(nd['name'])
-        if m:
+        if m and not a.truthful_sides:
             x = world_t(i)[0]
             if abs(x) > 1e-6:
                 rename[nd['name']] = m.group(1) + ('L' if x > 0 else 'R') + m.group(3)
@@ -134,7 +135,7 @@ def main():
         if 'mesh' in nd:
             P = accessor(J, BIN, J['meshes'][nd['mesh']]['primitives'][0]['attributes']['POSITION']).astype(float)
             w = (np.c_[P, np.ones(len(P))] @ world(i).T)[:, :3]; allv.append(w)
-            if names[i].startswith('foot'): footy.append(w[:, 1].min())
+            if names[i].startswith('foot') or re.match(r'^leg\d[LR]f$', names[i]): footy.append(w[:, 1].min())
     if not footy:   # no feet parts: the legs' lowest point
         footy = [(np.c_[accessor(J, BIN, J['meshes'][nd['mesh']]['primitives'][0]['attributes']['POSITION']).astype(float), np.ones(accessor(J, BIN, J['meshes'][nd['mesh']]['primitives'][0]['attributes']['POSITION']).shape[0])] @ world(i).T)[:, 1].min()
                  for i, nd in enumerate(nodes) if 'mesh' in nd and names[i].startswith('leg')]

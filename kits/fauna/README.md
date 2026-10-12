@@ -20,6 +20,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
 | `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
+| `pets` | dog, cat (baked Meshy models only) |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -33,6 +34,16 @@ The sheet: a row per animal, every variant and breed, a 1.75 m figure for scale.
 **Fly (Y)**, **Swim (U)** set what they are all doing (Fly shows an animal's `'fly'` pose build where it has one);
 `?only=key,key` lays out just those; **Night (N)**; **Hover tags (T)** names the animal under the pointer with its tags, traits,
 yields and life; **Polygon (P)**.
+
+## Meshy model variants
+
+Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
+cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. Today: the four giant flyers, the draught
+millipede, and the farm's cow, ox, pig, sheep, goat, hen, with the dog and cat (group `pets`) as models only. A model plays its
+own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
+animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
+`fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
+a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`.
 
 ## What an animal carries (data first)
 

@@ -12,7 +12,8 @@ models_pack.py) and the runtime. Their top-level names stay inside the closure. 
 needs only a global THREE (r128).
 
 A name in `groups` is a FILE SUFFIX: 'livestock' picks krator-fauna-livestock.js. tex=False leaves the detail maps
-out (vertex colours only).
+out (vertex colours only). mdl=True adds the packed baked models of the groups (about 1 MB each; off by default so a build that
+takes the kit does not grow until it asks).
 """
 import base64, json, os
 
@@ -79,7 +80,7 @@ def models(groups=None, on=True):
     return ('const FA_MODELS = {%s};\n' % ',\n'.join(out)) if out else 'const FA_MODELS = null;\n'
 
 
-def bundle(groups=None, tex=True, mdl=True):
+def bundle(groups=None, tex=True, mdl=False):
     fs = files(groups)
     body = ''.join('/* ---- kits/fauna/%s ---- */\n%s\n' % (f, read(f)) for f in fs[:-1])
     body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(tex)
