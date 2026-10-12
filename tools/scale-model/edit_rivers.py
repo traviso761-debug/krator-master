@@ -41,6 +41,7 @@ from edit_dams import set_data   # noqa: E402
 import hydro   # noqa: E402
 
 VERSION = '4.21'
+BARRIER_M = 5000.0     # m: moist air does not cross ground this high; it walls the sealed basins
 IMPORT_KM = 300.0      # km: the rain this near the ocean at the map's edge is the crater's only outside water
 ICE_T = -10.0          # deg C: ground with a colder annual mean is frozen all year
 CLOSED_M = 25.0        # m: a drawn lake whose spill stands this far over its level is closed (ends flow as drawn)
@@ -59,7 +60,12 @@ RIVER_RGB = (63, 111, 134)
 # sea's level and joined to it is raised to `sea` + `lift` + `grade` m per km of its distance up
 # the valley from the shore, so the floors run down to the sea; the painted maps take the colour of the land beside them.
 GRADE = {'Beast Riders': dict(sea=-1500.0, lift=5.0, grade=3.0)}
-ARM_R, ARM_MIN = 2, 4     # the Yuni river's colour on the painted maps (4.19)
+ARM_R, ARM_MIN = 2, 4
+# the lakes the model draws at 0 m in the north basin and the trough below it (the owner: the dams there held lakes at
+# distinctly different heights; the east dam burst first and broke the west one; today they are not joined, and a river
+# runs down each breach channel). Each one's drawn water is taken away and the land routed again: it stands where its
+# own water settles, in its own basin (east lobe 'dam 2', west lobe 'dam', the long-lake trough).
+SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-lake trough': (399, 218)}     # the Yuni river's colour on the painted maps (4.19)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
 UI_ROW = ('    <span>wind</span><span id="rWind">—</span>\n',
@@ -93,15 +99,22 @@ def grid_fields(D):
     gy = np.clip(np.round(np.arange(ny) / sv).astype(int), 0, OH - 1)
     P = (raster(D, 'p', 'L').astype(float) / 255 * 4000)[np.ix_(gy, gx)]
     T = (raster(D, 'tm', 'L').astype(float) - 90)[np.ix_(gy, gx)]
-    G = dict(su=su, sv=sv, h=h, E=E, water=water, whas=whas, wlev=wlev, P=P, T=T)
-    G['evap_k'], G['books'] = closed_books(G)
+    G = dict(su=su, sv=sv, h=h, E=E, water=water, whas=whas, wlev=wlev, P=P, T=T, P_drawn=P)
+    G['evap_k'], G['books'], G['P'] = closed_books(G)
     return G
 
 
 def closed_books(G):
-    """the crater's water books (hydro.calibrate): its only outside water is what the ocean at the map's edge brings,
-    taken as all the rain within IMPORT_KM of that ocean; evaporation is scaled until the rest balances"""
-    E, whas, P, T = G['E'], G['whas'], G['P'], G['T']
+    """the water books, one sealed basin at a time (the owner: a crater sealed by a mostly airless rim, the ocean to the
+    north-west its only outside moisture; the eastern basins walled by airless mountains and very dry).
+
+    The map is cut into basins along ground over BARRIER_M (moist air does not cross it). The basin that touches the
+    ocean at the map's edge, the crater, imports the rain within IMPORT_KM of that ocean; evaporation is scaled (k,
+    hydro.calibrate) until the rest of its books close. Every other basin is sealed: it can rain only what it evaporates.
+    Where the model's rain there is more than that (its generator brought moisture over the rim), the rain the rivers
+    run on is scaled down (s) until the basin's books close at the same k; it is never scaled up. The painted rain map
+    is left as it is. Returns (k, books, the rain the rivers run on)."""
+    E, whas, P, T, wlev = G['E'], G['whas'], G['P'], G['T'], G['wlev']
     air = T > -85
     lab, n = nd.label(whas, structure=np.ones((3, 3)))
     ocean = np.zeros(E.shape, bool)
@@ -110,15 +123,46 @@ def closed_books(G):
         j, i = np.nonzero(m)
         if j.min() == 0 or i.min() == 0 or j.max() == E.shape[0] - 1 or i.max() == E.shape[1] - 1:
             ocean |= m
-    inside = air & ~ocean
+    S = np.where(whas, np.fmax(wlev, E), E)
+    bl, bn = nd.label(air & (S < BARRIER_M), structure=np.ones((3, 3)))
+    sizes = nd.sum(np.ones(E.shape), bl, range(1, bn + 1))
+    big = [k + 1 for k in range(bn) if sizes[k] >= 50]
+    keep = np.isin(bl, big)
+    _, (iy, ix) = nd.distance_transform_edt(~keep, return_indices=True)
+    basin = np.where(air, bl[iy, ix], 0)            # the high ground drains to the basin it stands over
+    main = int(np.bincount(basin[nd.binary_dilation(ocean, iterations=2) & (basin > 0)]).argmax())
+    inside = (basin == main) & ~ocean
     near = inside & (nd.distance_transform_edt(~ocean) * (2 / G['su']) < IMPORT_KM)
     imported = float(P[near].sum()) * 1e-3 * 16.04e6 / hydro.SEC_YR
     k = hydro.calibrate(P, T, inside, whas, imported)
     b0, b1 = hydro.budget(P, T, inside, whas, 1.0), hydro.budget(P, T, inside, whas, k)
-    books = {'import_km': IMPORT_KM, 'imported_m3s': round(imported), 'evap_k': round(k, 3),
-             'turc_alone': {'rain': round(b0[0]), 'land_evap': round(b0[1]), 'water_evap': round(b0[2]), 'left': round(b0[3])},
-             'closed': {'rain': round(b1[0]), 'land_evap': round(b1[1]), 'water_evap': round(b1[2]), 'left': round(b1[3])}}
-    return k, books
+    books = {'barrier_m': BARRIER_M, 'import_km': IMPORT_KM, 'imported_m3s': round(imported), 'evap_k': round(k, 3),
+             'crater': {'turc_alone_left': round(b0[3]), 'rain': round(b1[0]), 'land_evap': round(b1[1]),
+                        'water_evap': round(b1[2]), 'left': round(b1[3])}, 'sealed': []}
+    Pe = P.copy()
+    for bk in big:
+        if bk == main:
+            continue
+        m = basin == bk
+        if m.sum() < 150:
+            continue
+        r0 = hydro.budget(P, T, m, whas, k)
+        s_ = 1.0
+        if r0[3] > 0:
+            lo, hi = 0.0, 1.0
+            for _ in range(40):
+                s_ = (lo + hi) / 2
+                if hydro.budget(P * s_, T, m, whas, k)[3] > 0:
+                    hi = s_
+                else:
+                    lo = s_
+            s_ = lo
+            Pe[m] = P[m] * s_
+        j, i = np.argwhere(m).mean(0)
+        books['sealed'].append({'at_px': [round(i / G['su']), round(j / G['sv'])], 'km2': round(float(m.sum()) * 16.04),
+                                'rain_mm': round(float(P[m].mean())), 'left_m3s': round(r0[3]), 'rain_scale': round(s_, 3)})
+    books['sealed'].sort(key=lambda b: -b['km2'])
+    return k, books, Pe
 
 
 def setup(G):
@@ -220,8 +264,11 @@ def main():
     G['water'] = G['water'] & ~arms
     G['wlev'] = np.where(arms, np.nan, G['wlev'])
     H = setup(G)
-    print('the water books: Turc alone leaves %(left)+d m3/s of rain with nowhere to go;' % G['books']['turc_alone'],
+    print('the water books: in the crater Turc alone leaves %+d m3/s of rain with nowhere to go;' % G['books']['crater']['turc_alone_left'],
           'evaporation x %.2f closes them on %d m3/s from the ocean' % (G['evap_k'], G['books']['imported_m3s']))
+    for b_ in G['books']['sealed']:
+        print('  sealed basin at px %s, %d km2: rain %d mm leaves %+d m3/s; the rivers run on %.0f%% of it' % (
+            b_['at_px'], b_['km2'], b_['rain_mm'], b_['left_m3s'], 100 * b_['rain_scale']))
     report = {'version': VERSION, 'thresholds': {'ice_t': ICE_T, 'q_river_m3s': Q_RIVER, 'a_wadi_km2': A_WADI,
                                                  'min_km': round(MIN_CELLS * KM), 'breach_m': BREACH_M},
               'books': G['books']}
@@ -333,6 +380,56 @@ def main():
         report['yuni_course'] = {'cells': len(path), 'cut_most_m': round(most, 1), 'climbs_on_4_20_m': climbs, 'source_m': round(float(En[path[0]])),
                                  'last_cell_m': round(float(En[path[-1]]))}
         print('Yuni river held to its drawn course: %d cells, its bed cut by up to %.0f m' % (len(path), most))
+    # the lakes resettled where their water stands (SETTLE)
+    dried = np.zeros(E.shape, bool)
+    settled = np.zeros(E.shape, bool)
+    settled_lv = np.zeros(E.shape)
+    report['settled'] = []
+    if SETTLE:
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        flag, picks = np.zeros(E.shape, bool), []
+        for nm, (x, y) in SETTLE.items():
+            j, i = int(round(y * sv)), int(round(x * su))
+            ys, xs = np.nonzero(bl_ > 0)
+            c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
+            m = bl_ == bl_[ys[c], xs[c]]
+            flag |= m
+            picks.append((nm, m))
+        Gx = dict(G, E=En, whas=G['whas'] & ~flag, wlev=np.where(flag, np.nan, G['wlev']))
+        Hx = setup(Gx)
+        print('settling %d lakes' % len(picks))
+        rx = hydro.route(Hx['S'], Hx['term'], Hx['R'], Hx['PL'], Hx['lake'], Hx['frozen'], log=lambda *a: None)
+        for nm, m in picks:
+            new = np.zeros(E.shape, bool)
+            lv = None
+            for e in rx['ends']:
+                if (e['cells'] & nd.binary_dilation(m, iterations=1)).any():
+                    new |= e['cells'] & ~Gx['whas']
+                    lv = e['level']
+            for u in set(np.unique(rx['unit'][m & (rx['unit'] > 0)])):
+                full = (rx['unit'] == u) & (rx['F'] - rx['S'] > 0.5) & ~Gx['whas']
+                if full.any() and not (full & new).any():
+                    new |= full
+                    lv = float(rx['F'][full].max())
+            lab_, _ = nd.label(new | m, structure=np.ones((3, 3)))
+            new &= np.isin(lab_, np.unique(lab_[m]))
+            settled |= new
+            if lv is not None:
+                settled_lv[new] = lv
+            j, i = np.argwhere(m).mean(0)
+            report['settled'].append({'lake': nm, 'at_px': px(round(j), round(i)), 'drawn_level_m': round(float(np.nanmedian(G['wlev'][m]))),
+                                      'drawn_km2': round(float(m.sum() * KM2)), 'level_m': round(lv) if lv is not None else None,
+                                      'km2': round(float(new.sum() * KM2))})
+            print('  %s: drawn at %d m over %d km2, settles at %s m over %d km2' % (
+                nm, report['settled'][-1]['drawn_level_m'], m.sum() * KM2, report['settled'][-1]['level_m'], new.sum() * KM2))
+        joined = nd.label(settled, structure=np.ones((3, 3)))[0]
+        ids = [set(np.unique(joined[settled & nd.binary_dilation(m, iterations=1)])) - {0} for _, m in picks]
+        assert all(not (a & b) for n_, a in enumerate(ids) for b in ids[n_ + 1:]), 'two settled lakes are joined'
+        dried = flag & ~settled
+        G['whas'] = (G['whas'] & ~flag) | settled
+        G['wlev'] = np.where(settled, settled_lv, np.where(flag, np.nan, G['wlev']))
+        G['water'] = G['water'] & ~dried
+        H = setup(G)
     through = np.zeros(E.shape, bool)           # the deep hollows' lakes
     through_lv = np.zeros(E.shape)
     hollows = []
@@ -597,16 +694,20 @@ def main():
     # ---- 6. the page
     s = lines[li]
     rep = {}
-    if (np.abs(En - E) > 0.05).any() or arms.any():
+    if (np.abs(En - E) > 0.05).any() or arms.any() or dried.any():
         h2 = G['h'].copy()
         enc = np.round(np.clip((En - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
         q_ = np.where(np.abs(En - E) > 0.05, enc, (h2[..., 0] << 8) | h2[..., 1])
         h2[..., 0], h2[..., 1] = q_ >> 8, q_ & 255
-        h2[..., 2] = np.where(arms, 0, h2[..., 2])
+        h2[..., 2] = np.where(arms | dried, 0, h2[..., 2])
         rep['h'] = b64(Image.fromarray(h2.astype(np.uint8), 'RGB'), optimize=True)
-    if newlake.any() or arms.any():
+    if newlake.any() or arms.any() or settled.any():
         wl = raster(D, 'wl').astype(np.int64)
-        wl[..., 2] = np.where(arms, 0, wl[..., 2])
+        wl[..., 2] = np.where(arms | dried, 0, wl[..., 2])
+        encs = np.round(np.clip((settled_lv - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
+        wl[..., 0] = np.where(settled, encs >> 8, wl[..., 0])
+        wl[..., 1] = np.where(settled, encs & 255, wl[..., 1])
+        wl[..., 2] = np.where(settled, 255, wl[..., 2])
         encw = np.round(np.clip((newlv - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
         add = newlake & ~G['whas']
         wl[..., 0] = np.where(add, encw >> 8, wl[..., 0])

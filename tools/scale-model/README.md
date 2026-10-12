@@ -121,11 +121,20 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
 - **The water** (`hydro.py`): runoff from rain and the mean temperature by Turc's balance (`L = 300 + 25T + 0.05T^3`
   also taken as open water's evaporation). The airless rim gives nothing; ground whose annual mean is under -10 C
   carries ice, not rivers.
-- **The crater's water books** (the owner: a crater sealed by a mostly airless rim, its only outside moisture from the
-  ocean to the north-west). Everything that rains inside must evaporate inside, or have come from that ocean, taken
-  as all the rain within `IMPORT_KM` (300 km) of it: ~6,300 m3/s. Turc's L alone left ~32,000 m3/s of rain (21%) with
-  nowhere to have come from, and it piled up in the closed basins (the rift's seas rose 400-1,200 m). `hydro.calibrate`
-  scales L until the books close: x1.40. Every flow, lake and course below is on the closed books.
+- **The water books, basin by basin** (the owner: a crater sealed by a mostly airless rim, the ocean to the north-west
+  its only outside moisture; the eastern basins walled by airless mountains and very dry). The map is cut into basins
+  along ground over `BARRIER_M` (5 km: moist air does not cross it). The crater, which touches the ocean, may rain what it
+  evaporates plus the rain within `IMPORT_KM` (300 km) of that ocean (~6,300 m3/s); Turc's L alone left ~19,700 m3/s
+  over that, so L is scaled until the books close (x1.27). Every other basin is sealed: it may rain only what it
+  evaporates, and where the model's rain is more (its generator brought moisture over the rim) the rivers run on less
+  of it: the rift 83%, the eastern crater ring 32%, the NE plateaus 42%, the SE plateau 6%. The painted rain map is
+  left as it is. Before this, the surplus filled the closed basins (the rift's seas rose 400-1,200 m).
+- **The dam lakes settled** (`SETTLE`; the owner: the dams in the north basin held lakes at distinctly different
+  heights; the east dam burst first and broke the west one; today the lakes are not joined, and a river runs down each
+  breach channel). The model drew all three at 0 m. Each one's water is taken away and the land routed again, and it
+  stands where its water settles, in its own basin: the east lake at -64 m (14,568 km2), the west lake at -85 m
+  (4,059 km2), the long-lake trough at 426 m (28,494 km2); asserted not joined. A river runs down each breach: 42 m3/s
+  from the east notch (838 m) into the west lake, 13 m3/s from the west notch (688 m) into the trough.
 - **The routing:** the Ring Sea (-1,500 m) and the oceans at the edge end flow, and so does every lake the model draws
   below its own spill (as drawn). Every other hollow fills and spills, unless what reaches it is less than its full lake
   would lose: then it is endorheic and its lake stands where the two balance. A hollow whose only way out is over frozen
@@ -135,8 +144,7 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   grid's (a gorge narrower than a cell), and the course is cut through, falling all the way; deeper, a river fills it,
   so it becomes a lake at its spill (`through lake`). Rounds of routing, cutting and routing again until no course
   climbs; then it asserts that every course falls (or runs level on water) from its source to its mouth.
-  4.21 (closed books): 740 cells cut (34 m on average), 83 through lakes and 85 endorheic lakes written to the water
-  (~127,000 km2 together); 471 rivers (56 over 100 m3/s) and 394 dry valleys.
+  4.21: 551 cells cut (36 m on average); 408 rivers (41 over 100 m3/s) and 438 dry valleys.
 - **The Yuni river** keeps its drawn course and the routing is held to it. On the 4.20 heights it climbed four times
   (49, 135, 11 and 459 m: the escarpment's sharpening raised the lip above Locus after 4.19 cut its bed); its bed is
   cut to fall all the way.
@@ -160,14 +168,15 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   through that tongue's regular changes (Vothic *Tzolt Rivrh* salt river, Izani *Rrivar Rreda*, Dalab *Folriba*,
   Tl'aai *Tl'aa Baatar*, Dasri *Wadi al-Jost*, Xanadui *Alph* for its greatest, Yuni *Saltie Rivvo*...), the word chosen
   from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
-  settlement it passes) and then from each tongue's own pool. 305 of 865 named, each with `tongue` and `gloss`: the
+  settlement it passes) and then from each tongue's own pool. 312 of 846 named, each with `tongue` and `gloss`: the
   Scyvoi's in Boruntun (*Borun Gulusu*, *Madır Kiriki*; the polity and both 'crater drylands'), Screamer Country's in
   plain English, the caravans' (*Howling Gulch*); the rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). On the closed books 15 grow and 19 shrink (221,291 km2 flooded, 57,035 km2 laid dry); the rift's
-  terminal seas now balance. The western level-0 lakes (1, 2) still rise to 957 m and join: the western ring catches the
+  away). Basin by basin, 14 grow and 16 shrink (174,170 km2 flooded, 48,853 km2 laid dry); the rift's
+  terminal seas and the eastern basins' lakes now balance. The lake at Locus still rises ~590 m: the ranges round the
+  valley of Yuni (4.15-4.17) took 1,000 mm and more of rain from 4.18's recompute, 143 of its 337 m3/s. The western level-0 lakes (1, 2) still rise to 957 m and join: the western ring catches the
   ocean's moisture and is closed below 957 m. An outlet from lake 2 to the Ring Sea would be a canyon 144 km long, up to
   1.2 km deep, through the Inner Wall (the owner's call). Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
