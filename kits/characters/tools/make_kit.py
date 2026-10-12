@@ -195,6 +195,8 @@ def ray_hits(O, D, A_P, A_tri, reach, step=0.03):
     t = (e2 * qv).sum(1) * inv
     good = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t > 1e-5) & (t < reach)
     vi, ti, t = vi[good], ti[good], t[good]
+    if not len(vi):
+        return best_t, best_k
     order = np.lexsort((t, vi))                      # per ray, nearest first
     vi, ti, t = vi[order], ti[order], t[order]
     first = np.r_[True, vi[1:] != vi[:-1]]

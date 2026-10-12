@@ -1,16 +1,22 @@
 # kits/characters: known issues
 
-- **Loose garments are cinched at the cuts.** Every donor's surface near a cut is morphed onto the median ring there
-  (`SEAMS` in make_pieces.py), so pieces from any two outfits meet. A loose garment at a cut (Styv's robe sash at the
-  waist) gets pulled in and flares out below it. A per-outfit "loose" flag (overlap only, no pull) is not done yet.
-- **The cut follows bone weights, not garments.** Belts, skirts and coat hems weighted to Hips go to the legs slot;
-  the bronze outfit's scale skirt is part of its legs.
-- **Face landmarks are found, not placed.** The nose tip comes from the head's front profile; the other nine points
-  are fixed offsets from it. On a head with a big moustache (Styv) or a helmet (hide) they sit a little off, so the
-  face sliders move a slightly different patch. Helmets hide most of what the face sliders do.
-- **Skin shows the donor's own tone.** A head from one outfit and bare hands from another can differ in skin tone.
-- **Hair and beards are part of each head.** No separate hair or beard choice yet.
-- **Mesh density.** Meshy's remesh gives ~25k triangles per donor; the hide donor (fur) is 42k vertices. Fine for a
-  hero, heavy for a crowd.
-- **Clips are Styv's and Phil's**, made for their bodies: big leg or arm sliders can push a hand through a hip or a
-  knee through a skirt in motion.
+- **The Godot twin is behind.** `godot/krator/character/` reads the Meshy kit format. It needs the MakeHuman kit
+  (items, hide bitsets), the `KMR1` morphs (blend on the CPU or as blend shapes), the joint and inverse-bind deltas,
+  the tint, and `KCHAR.stranger`. `kchar_test.gd` and `tests/make-golden.js` still check the Meshy body.
+- **Morphs blend linearly.** MakeHuman's macros are piecewise (its age, weight and height targets switch between
+  combinations), and its race targets interact with them; a sum of deltas measured one at a time is close, not exact.
+  Height's full ends overshoot (2.4 m and 1.3 m), so its slider reaches half way (`REACH` in make_mpfb.py).
+- **Bone rotations do not follow the morph.** Joints move; their rest rotations stay the base's. The rest pose is
+  exact; in motion a heavily reshaped limb bends about the base's axes.
+- **Clips are Styv's and Meshy's**, retargeted: big build changes can push a hand into a hip in motion.
+- **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
+  sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
+  the thighs under it show from below.
+- **Download size.** About 105 MB of pieces (both bodies, every item and its deltas), fetched per item as needed: the
+  base and its deltas are 3.5 MB; dense shoes (flats, pirate boots) are 7-10 MB each with deltas. Dropping or
+  decimating them is the first saving.
+- **Eye colour** is the MakeHuman default brown on every face.
+- **The peoples are mostly proposals.** Only the Chichani and the Beast Riders come from the owner; the others
+  follow LORE.md's real-world references.
+- **Ancestry is MakeHuman's three reference sets** (African, Asian, Caucasian). It moves face and build only; the
+  skin tone is its own setting, so a people can pair any face with any tone (the Chichani, the Dalabites' green).

@@ -6,16 +6,16 @@
 Serves dist/ and loads the page in headless Chromium (software WebGL), with three.js r128 and its GLTFLoader routed to local copies
 (settlements/ys/three.min.js, tools/vendor/GLTFLoader.r128.js): no CDN. Page errors fail the run. --assert checks,
 through window._kchar:
-  pieces       for each body: a blank record shows the base regions and the head; a dressed one (three armour slots,
-               hair on the base head) shows exactly what KCHAR.parts names
-  hide         the torso armour leaves out some of the base torso
-  rest         in the A-pose with no sliders, every visible mesh's bone matrix x inverse bind is the identity for every
-               bone that carries its vertices (the pieces sit where make_kit.py fitted them)
-  feet         leg length +1 and -1 keep the feet on the ground (within 5 mm)
-  scale        height +1 makes the figure taller by the slider's factor
+  pieces       for each body: a blank record shows the base; a dressed one (torso, legs, feet, hair, beard) shows exactly
+               the parts KCHAR.parts names
+  hide         the torso piece leaves out some of the base skin
+  rest         in the A-pose, with no morphs and with a heavy mix of them, every visible mesh's bone matrix x inverse
+               bind is the identity for every bone that carries its vertices (the morphed joints and binds agree)
+  feet         height -1 and +1, age +1: the lowest skin vertex stays on the ground (within 5 mm)
+  morph        height +1 makes the figure taller; weight +1 moves the torso piece's vertices too; no NaN anywhere
   clips        walk moves the thigh
-  random       the same seed gives the same record
---out writes a screenshot of the default figure and of a rolled stranger.
+  random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
+--out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
 
@@ -25,50 +25,74 @@ THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
 
 CHECKS = r'''async () => {
-  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], scale: {}, clips: 0, random: true, hide: [] };
+  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [] };
+  const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
   for (const body of Object.keys(D.bodies)) {
     await K.body(body);
     const fig = window._kchar.fig, kit = D.bodies[body].kit, k2 = window._kchar;
     const shown = () => Object.values(fig.live).filter(m => m.visible);
+    const keys = r => Array.from(new Set(KCHAR.parts(r, kit).map(p => p.key))).sort();
+    const shownKeys = () => Array.from(new Set(shown().map(m => m.userData.part.key))).sort();
     const blank = KCHAR.blank(kit);
     await k2.set(blank); fig.play(null); await new Promise(r => setTimeout(r, 50));
-    if (shown().length !== KCHAR.parts(blank, kit).length) out.pieces.push(body + ' blank shows ' + shown().length);
+    if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(blank))) out.pieces.push(body + ' blank shows ' + shownKeys());
+    const first = slot => (kit.items.find(i => i.slot === slot) || {}).id || null;
     const dressed = KCHAR.blank(kit);
-    dressed.armour = { torso: kit.armour[0].id, legs: kit.armour[1].id, feet: kit.armour[2].id };
-    const bald = kit.heads.find(h => h.style === 'base');
-    dressed.head = bald.id; dressed.hair = (kit.hair.find(h => h.head === bald.id && h.kind === 'hair') || {}).id || null;
+    dressed.armour = { torso: first('torso'), legs: first('legs'), feet: first('feet') };
+    dressed.hair = first('hair'); dressed.beard = first('beard');
     await k2.set(dressed); fig.play(null);
-    const want = KCHAR.parts(dressed, kit).map(p => p.key + '|' + p.mesh).sort(), got = shown().map(m => m.name).sort();
-    if (JSON.stringify(want) !== JSON.stringify(got)) out.pieces.push(body + ' dressed: ' + got.join(','));
-    // the torso armour leaves some base torso out
-    const bt = shown().find(m => m.userData.part.role === 'base' && m.userData.part.slot === 'torso');
-    const full = bt.userData.index0.length, now = bt.geometry.index.count;
-    out.hide.push([body, now, full]);
-    fig.group.updateMatrixWorld(true);
+    if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(dressed))) out.pieces.push(body + ' dressed shows ' + shownKeys());
+    const skin = () => shown().find(m => m.userData.srcMaterial === kit.base_material);
+    out.hide.push([body, skin().geometry.index.count, skin().userData.index0.length]);
     const M = new THREE.Matrix4(), G = ['getX', 'getY', 'getZ', 'getW'];
-    shown().forEach(m => {
-      const used = new Set(), j = m.geometry.attributes.skinIndex, w = m.geometry.attributes.skinWeight;
-      for (let i = 0; i < j.count; i++) for (let c = 0; c < 4; c++) if (w[G[c]](i) > 0) used.add(j[G[c]](i));
-      used.forEach(b => {
-        M.multiplyMatrices(m.skeleton.bones[b].matrixWorld, m.skeleton.boneInverses[b]);
-        const e = M.elements.reduce((s, x, k) => s + Math.abs(x - m.matrixWorld.elements[k]), 0);
-        if (e > out.rest.worst) out.rest = { worst: e, at: body + ' ' + m.name + ' ' + m.skeleton.bones[b].name };
+    const rest = tag => {
+      fig.restPose(); fig.group.updateMatrixWorld(true);
+      shown().forEach(m => {
+        const used = new Set(), j = m.geometry.attributes.skinIndex, w = m.geometry.attributes.skinWeight;
+        for (let i = 0; i < j.count; i++) for (let c = 0; c < 4; c++) if (w[G[c]](i) > 0) used.add(j[G[c]](i));
+        used.forEach(b => {
+          M.multiplyMatrices(m.skeleton.bones[b].matrixWorld, m.skeleton.boneInverses[b]);
+          const e = M.elements.reduce((s, x, k) => s + Math.abs(x - m.matrixWorld.elements[k]), 0);
+          if (!(e <= out.rest.worst)) out.rest = { worst: e, at: body + ' ' + tag + ' ' + m.name + ' ' + m.skeleton.bones[b].name };
+        });
       });
-    });
-    const foot = () => { fig.group.updateMatrixWorld(true); return fig.bones.find(b => b.name === 'LeftFoot').getWorldPosition(new THREE.Vector3()).y; };
-    const y0 = foot();
-    for (const v of [1, -1]) { await k2.set(Object.assign({}, dressed, { sliders: { legs: v } })); out.feet.push(foot() - y0); }
-    const head = () => { fig.group.updateMatrixWorld(true); return fig.headWorld(new THREE.Vector3()).y; };
-    await k2.set(Object.assign({}, dressed, { sliders: { height: 1 } })); const h1 = head();
-    await k2.set(dressed); const h0 = head();
-    out.scale[body] = { ratio: h1 / h0, want: D.sliders.sliders.find(s => s.id === 'height').ops[0].f };
+    };
+    rest('plain');
+    const low = () => { const m = skin(), P = m.geometry.attributes.position.array; let y = 1e9; for (let i = 1; i < P.length; i += 3) y = Math.min(y, P[i]); return y + fig.inner.position.y; };
+    const nan = () => shown().some(m => m.geometry.attributes.position.array.some(x => !isFinite(x)));
+    const torso = () => shown().find(m => m.userData.part.slot === 'torso');
+    const t0 = torso().geometry.attributes.position.array.slice();
+    await k2.set(Object.assign({}, dressed, { morph: { weight: 1 } }));
+    const t1 = torso().geometry.attributes.position.array;
+    let moved = 0; for (let i = 0; i < t0.length; i++) moved = Math.max(moved, Math.abs(t1[i] - t0[i]));
+    if (moved < 0.005) out.morph.push(body + ': weight +1 moved the torso piece ' + moved.toFixed(4) + ' m');
+    const st0 = (await k2.set(dressed), fig.pose.stature);
+    for (const m of [{ height: -1 }, { height: 1 }, { age: 1 }]) {
+      await k2.set(Object.assign({}, dressed, { morph: m })); out.feet.push(low());
+      if (nan()) out.morph.push(body + ' NaN at ' + JSON.stringify(m));
+    }
+    const st1 = (await k2.set(Object.assign({}, dressed, { morph: { height: 1 } })), fig.pose.stature);
+    if (!(st1 > st0 + 0.03)) out.morph.push(body + ': height +1 gave ' + st0.toFixed(3) + ' -> ' + st1.toFixed(3));
+    const heavy = { height: 0.8, weight: -0.7, muscle: 0.9, age: 0.6, proportions: -0.5, 'head-scale-vert-decr-incr': 0.8, 'nose-scale-horiz-decr-incr': -1 };
+    await k2.set(Object.assign({}, dressed, { morph: heavy, ancestry: { african: 0.7, asian: 0.2, caucasian: 0.1 } }));
+    rest('heavy'); out.feet.push(low());
     await fig.play('walk');
     const thigh = fig.bones.find(b => b.name === 'LeftUpLeg'), q0 = thigh.quaternion.clone();
     fig.update(0.4);
     out.clips = Math.max(out.clips, 1 - Math.abs(q0.dot(thigh.quaternion)));
-    out.random = out.random && JSON.stringify(KCHAR.random(5, D.sliders, kit)) === JSON.stringify(KCHAR.random(5, D.sliders, kit));
+    await fig.play(null);
+    out.random = out.random && JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0])) === JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0]));
+    for (const P of D.peoples) for (let s = 1; s <= 25; s++) {
+      const r = KCHAR.stranger(s * 31, kit, P), c = hex(r.skin), st = P.skin.map(hex);
+      for (let k = 0; k < 3; k++) {
+        const lo = Math.min(...st.map(x => x[k])), hi = Math.max(...st.map(x => x[k]));
+        if (c[k] < lo - 1 || c[k] > hi + 1) out.ranges.push(P.id + ' skin ' + r.skin);
+      }
+      for (const a of ['african', 'asian', 'caucasian']) {
+        const [lo, hi] = P.ancestry[a]; if (r.ancestry[a] < lo - 0.006 || r.ancestry[a] > hi + 0.006) out.ranges.push(P.id + ' ' + a + ' ' + r.ancestry[a]);
+      }
+    }
   }
-  await K.body('male');
   return out;
 }'''
 
@@ -109,22 +133,31 @@ async def run(page_path, do_assert, out_dir):
                 fails.append('rest: %(worst).4f at %(at)s' % r['rest'])
             for body, now, full in r['hide']:
                 if not now < full:
-                    fails.append('hide: %s torso armour left all %d base torso indices' % (body, full))
+                    fails.append('hide: %s torso piece left all %d base indices' % (body, full))
             if any(abs(d) > 0.005 for d in r['feet']):
-                fails.append('feet: the foot moved %s m' % r['feet'])
-            for body, sc in r['scale'].items():
-                if abs(sc['ratio'] - sc['want']) > 0.01:
-                    fails.append('scale: %s height +1 gave x%.3f, want x%.3f' % (body, sc['ratio'], sc['want']))
+                fails.append('feet: the lowest skin vertex at %s m' % r['feet'])
+            fails += ['morph: ' + m for m in r['morph']]
             if r['clips'] < 1e-4:
                 fails.append('clips: walk did not move the thigh')
             if not r['random']:
-                fails.append('random: one seed, two records')
+                fails.append('random: one seed, two strangers')
+            if r['ranges']:
+                fails.append('ranges: ' + '; '.join(r['ranges'][:8]))
         if out_dir:
             await pg.click('#tab-record')
             await pg.click('#rec-random')
             await pg.evaluate('window._kchar.ready')
             await pg.wait_for_timeout(1200)
             await pg.screenshot(path=os.path.join(out_dir, 'characters-stranger.png'))
+            await pg.click('#cam-face')
+            for body in ('mpfb_male', 'mpfb_female'):
+                await pg.evaluate('b => window._kchar.body(b)', body)
+                for p in await pg.evaluate('KCHAR_DATA.peoples.map(p => p.id)'):
+                    await pg.evaluate('''([b, p]) => { const kit = KCHAR_DATA.bodies[b].kit, P = KCHAR_DATA.peoples.find(x => x.id === p);
+                        const r = KCHAR.stranger(7, kit, P); r.armour = window._kchar.record().armour; return window._kchar.set(r); }''', [body, p])
+                    await pg.click('#cam-face')
+                    await pg.wait_for_timeout(900)
+                    await pg.screenshot(path=os.path.join(out_dir, 'face-%s-%s.png' % (body.replace('mpfb_', ''), p)))
         await b.close()
     for e in errs:
         print('page error:', e)

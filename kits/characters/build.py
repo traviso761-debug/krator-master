@@ -7,13 +7,14 @@ The page needs a web server (it fetches its pieces):  python3 -m http.server -d 
                                # (no <!doctype>/<html>/<body>, which the artifact host adds, and no GLBs: it fetches
                                # dist/pieces/*.txt (the GLBs as base64), published beside it, to stay under the host's 16 MB a page)
   python3 build.py --no-checks # skip the port lint and the node test
+  python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
 
 The pieces are made beforehand by tools/make_pieces.py (pieces/*.glb, data/*.json); this only packs them. The page is
 src/00-head.html, then one inline script: core/rand (KRAND), the data (KCHAR_DATA) and the GLBs as base64
 (KCHAR_GLB), then src/10-89 and src/90-editor.js. three.js r128 and its GLTFLoader load from the CDN, as in the hero
 build. Deterministic: the same inputs give the same bytes; build-manifest.json holds a sha1 per input.
 """
-import base64, hashlib, json, os, subprocess, sys
+import base64, hashlib, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -33,15 +34,17 @@ def read(p, mode='r'):
         return f.read()
 
 
-BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json'))))
+# the MakeHuman bodies (tools/make_mpfb.py); the earlier Meshy-donor kits (tools/make_kit.py) only with --meshy
+BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json'))
+                      and (b.startswith('mpfb_') or '--meshy' in sys.argv)))
 
 
 def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
-    data = {'sliders': J('sliders.json'), 'bodies': {}}
-    inputs = {'data/sliders.json': read(os.path.join(HERE, 'data', 'sliders.json'), 'rb')}
+    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'bodies': {}}
+    inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb') for f in ('sliders.json', 'peoples.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}
@@ -59,13 +62,18 @@ def main():
         js.append('/* src/%s */\n%s' % (f, t))
     # the pieces go beside the page as base64 text (the artifact host serves no binary type a GLB fits), fetched
     # when a record needs them: dist/pieces/<body>/<name>.txt
+    if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
+        for b in os.listdir(os.path.join(DIST, 'pieces')):
+            if b not in data['bodies']:
+                q = os.path.join(DIST, 'pieces', b)
+                shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     for b in data['bodies']:
         src_dir, out_dir = os.path.join(HERE, 'pieces', b), os.path.join(DIST, 'pieces', b)
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):
             os.remove(os.path.join(out_dir, f))
         for f in sorted(os.listdir(src_dir)):
-            if f.endswith('.glb'):
+            if f.endswith('.glb') or f.endswith('.morph.bin'):         # a piece, or its morph deltas (make_mpfb.py)
                 raw = read(os.path.join(src_dir, f), 'rb')
                 inputs['pieces/%s/%s' % (b, f)] = raw
                 with open(os.path.join(out_dir, f[:-4] + '.txt'), 'w') as o:

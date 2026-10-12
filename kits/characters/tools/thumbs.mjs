@@ -13,14 +13,15 @@ const ROOT = path.resolve(HERE, '..', '..');
 const jobs = [];
 for (const body of fs.readdirSync(path.join(HERE, 'data'))) {
   const kp = path.join(HERE, 'data', body, 'kit.json');
-  if (!fs.existsSync(kp)) continue;
+  if (!fs.existsSync(kp) || !body.startsWith('mpfb_')) continue;      // the bodies build.py packs (not --meshy)
   const kit = JSON.parse(fs.readFileSync(kp));
   const glb = g => path.join(HERE, g);
   const out = (g, mesh) => path.join(HERE, 'dist', 'thumbs', g.replace(/^pieces\//, '').replace(/\.glb$/, '') + '__' + mesh + '.png');
   if (kit.style === 'mpfb') {
     for (const it of kit.items) {
-      const parts = it.slot === 'hair' ? [[glb(kit.base_glb), '*'], [glb(it.glb), '*']] : [[glb(it.glb), '*']];
-      jobs.push({ parts, frame: it.slot === 'hair' ? 'head' : it.slot, out: out(it.glb, 'all') });
+      const head = it.slot === 'hair' || it.slot === 'beard';
+      const parts = head ? [[glb(kit.base_glb), '*'], [glb(it.glb), '*']] : [[glb(it.glb), '*']];
+      jobs.push({ parts, frame: head ? 'head' : it.slot, out: out(it.glb, 'all'), tint: kit.tint });
     }
     continue;
   }
@@ -40,18 +41,28 @@ await page.evaluate(() => {
   const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   r.setSize(160, 160); r.outputEncoding = THREE.sRGBEncoding; document.body.appendChild(r.domElement);
   const sc = new THREE.Scene();
-  sc.add(new THREE.HemisphereLight(0xfff4e0, 0x3a4a3c, 1.0));
-  const l = new THREE.DirectionalLight(0xffe2b8, 0.9); l.position.set(1, 2, 3); sc.add(l);
+  sc.add(new THREE.HemisphereLight(0xfff4e0, 0x3a4a3c, 0.65));
+  const l = new THREE.DirectionalLight(0xffe2b8, 0.75); l.position.set(1, 2, 3); sc.add(l);
   const cam = new THREE.PerspectiveCamera(24, 1, 0.02, 20);
   const cache = {};
-  window.shot = async (parts, frame) => {
+  // a MakeHuman piece's skin and hair textures are neutral (make_mpfb.py): tint them as the page does by default
+  const TINT = { skin: '#d6ad8f', hair: '#4a3424' };
+  window.shot = async (parts, frame, tint) => {
     const group = new THREE.Group();
     for (const [b64, name] of parts) {
       if (!cache[b64.length + name]) {
         const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0)).buffer;
         const g = await new Promise((ok, no) => new THREE.GLTFLoader().parse(buf, '', ok, no));
         const grp = new THREE.Group();
-        g.scene.traverse(o => { if (o.isSkinnedMesh && (name === '*' || o.name === name)) grp.add(new THREE.Mesh(o.geometry, o.material)); });
+        g.scene.traverse(o => {
+          if (!o.isSkinnedMesh || !(name === '*' || o.name === name)) return;
+          const role = tint && tint.roles[o.material.name];
+          if (role) o.material.color.set(TINT[role]).convertSRGBToLinear().multiplyScalar(tint.gain[role]);
+          if (o.material.alphaTest > 0) o.material.onBeforeCompile = sh => {     // as the page does (50-figure.js)
+            sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', '#include <alphatest_fragment>\n\tdiffuseColor.a = 1.0;');
+          };
+          grp.add(new THREE.Mesh(o.geometry, o.material));
+        });
         cache[b64.length + name] = grp.children.length ? grp : null;
       }
       const m = cache[b64.length + name]; if (m) group.add(m.clone());
@@ -70,7 +81,7 @@ await page.evaluate(() => {
 const b64 = {};
 for (const j of jobs) {
   const parts = j.parts.map(([f, m]) => [b64[f] || (b64[f] = fs.readFileSync(f).toString('base64')), m]);
-  const url = await page.evaluate(([p, f]) => window.shot(p, f), [parts, j.frame]);
+  const url = await page.evaluate(([p, f, t]) => window.shot(p, f, t), [parts, j.frame, j.tint || null]);
   fs.mkdirSync(path.dirname(j.out), { recursive: true });
   fs.writeFileSync(j.out, Buffer.from(url.split(',')[1], 'base64'));
 }

@@ -86,5 +86,39 @@ var r1 = KCHAR.random(7, sliders, kit);
 ok(JSON.stringify(r1) === JSON.stringify(KCHAR.random(7, sliders, kit)), 'random: same seed, same record');
 ok(kit.heads.some(function(h){ return h.id === r1.head; }), 'random: a real head');
 
+// ---- a MakeHuman body (data/mpfb_male): morph weights, morphed joints, strangers by people ----
+var mskel = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'mpfb_male', 'skeleton.json')));
+var mkit = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'mpfb_male', 'kit.json')));
+var peoples = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'peoples.json'))).peoples;
+var M = mkit.morph, mb = KCHAR.blank(mkit);
+var w0 = KCHAR.morphWeights(mb, mkit);
+ok(Array.prototype.every.call(w0, function(x){ return x === 0; }), 'morph: a blank record weighs nothing');
+var age = M.morphs.filter(function(s){ return s.id === 'age'; })[0];
+var wa = KCHAR.morphWeights({ morph:{ age:-0.5 } }, mkit);
+ok(near(wa[age.minus], 0.5) && wa[age.plus] === 0, 'morph: age -0.5 weighs its minus end by 0.5');
+var ht = M.morphs.filter(function(s){ return s.id === 'height'; })[0];
+ok(near(KCHAR.morphWeights({ morph:{ height:1 } }, mkit)[ht.plus], ht.reach || 1), 'morph: height +1 weighs by its reach');
+var wb = KCHAR.morphWeights({ ancestry:{ african:M.ancestry.base[0], asian:M.ancestry.base[1], caucasian:M.ancestry.base[2] } }, mkit);
+ok(Array.prototype.every.call(wb, function(x){ return near(x, 0, 1e-6); }), 'morph: the base ancestry weighs nothing');
+var mj0 = KCHAR.morphJoints(mskel, mkit, w0);
+ok(mj0.t.every(function(t, i){ return t.every(function(x, a){ return near(x, mskel.joints[i].t[a], 1e-9); }); }), 'morph: no weights, bind offsets');
+// a morphed joint's world rest is its bind world rest plus its delta
+var wt = KCHAR.morphWeights({ morph:{ height:1, weight:-1 }, ancestry:{ african:1, asian:0, caucasian:0 } }, mkit);
+var mj = KCHAR.morphJoints(mskel, mkit, wt), fb = KCHAR.fk(mskel, mskel.joints.map(function(j){ return j.t; })), fm = KCHAR.fk(mskel, mj.t);
+ok(mskel.joints.every(function(j, i){ return [0, 1, 2].every(function(a){ return near(fm.P[i][a], fb.P[i][a] + mj.d[i][a], 1e-6); }); }), 'morph: world rest = bind + delta');
+ok(mj.d.some(function(d){ return Math.abs(d[1]) > 0.02; }), 'morph: height +1 moves joints');
+// strangers: deterministic, within their people's ranges
+var P0 = peoples[0], s1 = KCHAR.stranger(9, mkit, P0);
+ok(JSON.stringify(s1) === JSON.stringify(KCHAR.stranger(9, mkit, P0)), 'stranger: same seed, same record');
+ok(s1.people === P0.id && /^#[0-9a-f]{6}$/.test(s1.skin) && /^#[0-9a-f]{6}$/.test(s1.hair_color), 'stranger: people, skin and hair colour');
+peoples.forEach(function(P){
+  for(var k=1;k<=10;k++){
+    var r = KCHAR.stranger(k * 13, mkit, P);
+    ['african', 'asian', 'caucasian'].forEach(function(a){ ok(r.ancestry[a] >= P.ancestry[a][0] - 0.006 && r.ancestry[a] <= P.ancestry[a][1] + 0.006, P.id + ' ' + a + ' ' + r.ancestry[a]); });
+    Object.keys(P.morph || {}).forEach(function(m){ var v = r.morph[m] || 0; ok(v >= P.morph[m][0] - 0.006 && v <= P.morph[m][1] + 0.006, P.id + ' ' + m + ' ' + v); });
+    ok(!r.hair || mkit.items.some(function(it){ return it.id === r.hair && it.slot === 'hair'; }), P.id + ': a real hair');
+  }
+});
+
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);

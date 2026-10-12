@@ -98,9 +98,9 @@ var KCHAR = (function(){
     if(kit.style === 'mpfb') return { id:'base', name:'Base', style:'base', face:null };   // the head is the base's
     return byId(kit.heads, rec.head) || byId(kit.heads, kit.base);
   }
-  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair'];
+  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair', 'beard'];
   function mpfbItem(rec, kit, slot){
-    var id = slot === 'hair' ? rec.hair : (rec.armour || {})[slot];
+    var id = (slot === 'hair' || slot === 'beard') ? rec[slot] : (rec.armour || {})[slot];
     var it = id && byId(kit.items, id);
     return it && it.slot === slot ? it : null;
   }
@@ -118,7 +118,7 @@ var KCHAR = (function(){
       out.push({ key:key(kit.base_glb), mesh:'*', role:'base', slot:'base' });
       MPFB_SLOTS.forEach(function(slot){
         var it = mpfbItem(rec, kit, slot);
-        if(it) out.push({ key:key(it.glb), mesh:'*', role:slot === 'hair' ? 'hair' : 'armour', slot:slot });
+        if(it) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
       });
       return out;
     }
@@ -170,7 +170,8 @@ var KCHAR = (function(){
   }
 
   function blank(kit){
-    if(kit.style === 'mpfb') return { body:kit.body, hair:null, armour:{ torso:null, legs:null, feet:null }, sliders:{}, dye:{} };
+    if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null }, sliders:{},
+                                      morph:{}, ancestry:null, skin:null, hair_color:null, people:null, dye:{} };
     return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
              sliders:{}, dye:{} };
   }
@@ -179,15 +180,7 @@ var KCHAR = (function(){
     var st = KRAND.stream(seed), r = st.next, rec = blank(kit);
     spread = spread === undefined ? 0.6 : spread;
     function pick(list){ return list[Math.floor(r() * list.length)]; }
-    if(kit.style === 'mpfb'){
-      MPFB_SLOTS.forEach(function(slot){
-        var have = kit.items.filter(function(it){ return it.slot === slot; });
-        var id = have.length && r() < 0.9 ? pick(have).id : null;
-        if(slot === 'hair') rec.hair = id; else rec.armour[slot] = id;
-      });
-      sliders.sliders.forEach(function(sl){ if(sl.group === 'Body') rec.sliders[sl.id] = Math.round((r() * 2 - 1) * spread * 100) / 100; });
-      return rec;
-    }
+    if(kit.style === 'mpfb') return stranger(seed, kit, null, spread);
     rec.head = pick(kit.heads).id;
     var hairs = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'hair'; });
     var beards = kit.hair.filter(function(h){ return h.head === rec.head && h.kind === 'beard'; });
@@ -201,7 +194,93 @@ var KCHAR = (function(){
     return rec;
   }
 
+  /* ---- a MakeHuman body's morphs (kit.morph, tools/make_mpfb.py) ----
+     rec.morph     { <slider id>: -1..1 }: a slider at v < 0 weighs its minus target by -v, at v > 0 its plus target by v
+                   (times the slider's reach, when it has one)
+     rec.ancestry  { african, asian, caucasian } shares (normalised here): each race target weighs (share - the base's)
+     morphWeights(rec, kit) -> one weight per target (kit.morph.targets)
+     morphJoints(skel, kit, w) -> { d: per joint, how far its rest moves (model space), t: the new rest offsets }
+     The meshes move by the same weights (the figure blends each piece's deltas); the bones keep their bind
+     rotations, so a vertex's skinned rest is exactly its morphed position */
+  var RACES = ['african', 'asian', 'caucasian'];
+  function morphWeights(rec, kit){
+    var M = kit.morph, w = new Float32Array(M.targets.length), mv = rec.morph || {};
+    M.morphs.forEach(function(s){
+      var v = (+mv[s.id] || 0) * (s.reach || 1);
+      if(v < 0 && s.minus !== undefined) w[s.minus] = -v;
+      else if(v > 0 && s.plus !== undefined) w[s.plus] = v;
+    });
+    var a = rec.ancestry, A = M.ancestry;
+    if(a){
+      var sum = RACES.reduce(function(x, r){ return x + Math.max(0, +a[r] || 0); }, 0);
+      var bsum = A.base[0] + A.base[1] + A.base[2];       // MakeHuman's own shares (0.33 each) need not sum to 1
+      if(sum > 0) RACES.forEach(function(r, k){ if(A[r] !== undefined && A[r] !== null) w[A[r]] = Math.max(0, +a[r] || 0) / sum - A.base[k] / bsum; });
+    }
+    return w;
+  }
+  function morphJoints(skel, kit, w){
+    var M = kit.morph, J = skel.joints, d = J.map(function(){ return [0, 0, 0]; });
+    Object.keys(M.morph_joints).forEach(function(t){
+      var x = w[+t]; if(!x) return;
+      M.morph_joints[t].forEach(function(r){ var v = d[r[0]]; v[0] += x * r[1]; v[1] += x * r[2]; v[2] += x * r[3]; });
+    });
+    M.follow.forEach(function(i){ if(J[i].parent >= 0) d[i] = d[J[i].parent].slice(); });
+    var bind = J.map(function(j){ return j.t.slice(); }), R = fk(skel, bind).R;
+    var t = J.map(function(j, i){
+      var p = j.parent; if(p < 0) return [j.t[0] + d[i][0], j.t[1] + d[i][1], j.t[2] + d[i][2]];
+      var o = qrot(qinv(R[p]), [d[i][0] - d[p][0], d[i][1] - d[p][1], d[i][2] - d[p][2]]);
+      return [j.t[0] + o[0], j.t[1] + o[1], j.t[2] + o[2]];
+    });
+    return { d:d, t:t };
+  }
+
+  /* ---- peoples (data/peoples.json): the range a culture's strangers are drawn from ----
+     people { id, name, ancestry:{ african:[lo,hi], asian:[lo,hi], caucasian:[lo,hi] }, skin:[stops], hair:[colours],
+              grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] } }
+     skin is drawn along its stops (sRGB hex, light to dark), hair from its list; every slider not named in morph is
+     drawn from -spread..spread (age from its own default range) */
+  function hex(c){ return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
+  function tohex(v){ return '#' + v.map(function(x){ x = Math.max(0, Math.min(255, Math.round(x))); return (x < 16 ? '0' : '') + x.toString(16); }).join(''); }
+  function along(stops, u){
+    if(stops.length === 1) return stops[0];
+    var f = u * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(f)), k = f - i, a = hex(stops[i]), b = hex(stops[i + 1]);
+    return tohex([0, 1, 2].map(function(c){ return a[c] + (b[c] - a[c]) * k; }));
+  }
+  function mix(a, b, k){ var x = hex(a), y = hex(b); return tohex([0, 1, 2].map(function(c){ return x[c] + (y[c] - x[c]) * k; })); }
+  var AGE = [-0.6, 0.9];
+  function stranger(seed, kit, people, spread){
+    var r = KRAND.stream(seed).next, rec = blank(kit), P = people || {};
+    spread = spread === undefined ? 0.45 : spread;
+    function pick(list){ return list[Math.floor(r() * list.length)]; }
+    function range(lr){ return lr[0] + (lr[1] - lr[0]) * r(); }
+    var styles = (P.styles || {})[kit.body.replace(/^mpfb_/, '')];
+    MPFB_SLOTS.concat(['beard']).forEach(function(slot){
+      var have = kit.items.filter(function(it){ return it.slot === slot; });
+      if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
+      var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
+      var id = have.length && r() < odds ? pick(have).id : null;
+      if(slot === 'hair' || slot === 'beard') rec[slot] = id; else rec.armour[slot] = id;
+    });
+    rec.morph = {};
+    var bias = P.morph || {};
+    kit.morph.morphs.forEach(function(s){
+      var v = bias[s.id] ? range(bias[s.id]) : s.id === 'age' ? range(AGE) : (r() * 2 - 1) * spread * (s.group === 'Face' ? 1 : 0.8);
+      v = Math.round(v * 100) / 100; if(v) rec.morph[s.id] = v;
+    });
+    var A = P.ancestry || { african:[0, 1], asian:[0, 1], caucasian:[0, 1] };
+    rec.ancestry = {};
+    RACES.forEach(function(k){ rec.ancestry[k] = Math.round(range(A[k] || [0, 0]) * 100) / 100; });
+    rec.skin = along(P.skin || ['#f1d2bd', '#c58c63', '#5a3a26'], r());
+    var hair = pick(P.hair || ['#2a1d15', '#5a3a22', '#8a6238', '#c9a35a']);
+    var age = rec.morph.age || 0, grey = P.grey === undefined ? 0.45 : P.grey;
+    if(age > grey) hair = mix(hair, '#b8b4ae', Math.min(1, (age - grey) / (1 - grey) * (0.6 + 0.6 * r())));
+    rec.hair_color = hair;
+    rec.people = P.id || null;
+    return rec;
+  }
+
   return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
-           random:random, blank:blank, fk:fk };
+           random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
+           along:along };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

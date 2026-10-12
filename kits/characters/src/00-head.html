@@ -74,6 +74,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .dye { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .dye input[type=color] { width: 30px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: none; }
 .dye button { padding: 4px 8px; font-size: 12px; }
+.chips.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.chips.tags .chip { width: auto; padding: 5px 9px; }
+.chips.tags .chip span { padding: 0; white-space: nowrap; }
+.swatches { flex-wrap: wrap; gap: 5px; }
+.swatches .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--line); }
+.page > h3 { margin: 14px 0 4px; font-size: 13px; }
 .sl { display: grid; grid-template-columns: minmax(0, 1fr) 52px; gap: 2px 10px; align-items: center; }
 .sl label { font-size: 14px; }
 .sl output { font: 12px var(--mono); text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -101,7 +107,7 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
 <div id="app">
   <div id="stage">
     <div id="loading">Fetching the pieces…</div>
-    <div id="brand"><h1>Rider's Tent</h1><p>Pick a body, a head and hair, then layer armour over it and shape the body and face. Drag to turn, scroll to step closer.</p></div>
+    <div id="brand"><h1>Rider's Tent</h1><p>Pick a people for a stranger, or shape one yourself: clothes, hair and beard, skin and hair colour, body and face. Drag to turn, scroll to step closer.</p></div>
     <div id="stats"></div>
     <div id="bar">
       <div class="grp" role="group" aria-label="Animation">
@@ -132,7 +138,7 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
     <section class="page" id="page-body" role="tabpanel" hidden></section>
     <section class="page" id="page-face" role="tabpanel" hidden></section>
     <section class="page" id="page-record" role="tabpanel" hidden>
-      <p class="hint">The character as data: body, head, hair, the armour in each slot, every slider from −1 to 1, and any dye. The Godot port reads the same record (godot/krator/character/kchar.gd).</p>
+      <p class="hint">The character as data: body, clothes per slot, hair and beard, skin and hair colour, the morph sliders (−1 to 1), ancestry shares, the people it was drawn from, and any dye. A city can store one of these per citizen. Roll a stranger draws from the people picked on the Head tab.</p>
       <div class="row">
         <button id="rec-random">Roll a stranger</button>
         <button id="rec-reset">Reset sliders</button>
@@ -141,6 +147,7 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
       </div>
       <div id="note" role="status"></div>
       <textarea id="rec-text" spellcheck="false" aria-label="Character record"></textarea>
+      <p class="hint credits">Bodies, clothes and most hair: MakeHuman and its community asset packs (CC0), fitted with MPFB2. CC-BY: hair by Elvaerwyn and punkduck, beards by Elvaerwyn and grinsegold (MakeHuman community asset packs hair02, hair03, bodyparts06). See CREDITS.md.</p>
     </section>
   </aside>
 </div>
