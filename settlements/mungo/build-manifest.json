@@ -97,7 +97,7 @@
  ],
  "50-core-tags.js": [
   "core/tags",
-  "3e7a77e8f435"
+  "351884caf5b4"
  ],
  "50-structure.js": [
   "locus",
@@ -109,7 +109,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "8efb35da8c9c"
+  "d5f78e2e5a34"
  ],
  "53-assets.js": [
   "locus",
@@ -265,11 +265,11 @@
  ],
  "69a1-bio-core-head.js": [
   "core/biome",
-  "e2f2fbf0c57f"
+  "306a77c56377"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
-  "a020cb184f85"
+  "af1dcca206dd"
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",

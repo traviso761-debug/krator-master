@@ -9,7 +9,7 @@
  ],
  "10-core-head.js": [
   "core/biome/10-core-head.js",
-  "e2f2fbf0c57f"
+  "306a77c56377"
  ],
  "20-core-clock.js": [
   "core/clock/20-core-clock.js",
@@ -17,7 +17,7 @@
  ],
  "20-core-kit.js": [
   "core/biome/20-core-kit.js",
-  "a020cb184f85"
+  "af1dcca206dd"
  ],
  "20-core-sched.js": [
   "core/sched/20-core-sched.js",
@@ -61,7 +61,7 @@
  ],
  "42-core-export.js": [
   "core/biome/42-core-export.js",
-  "bee0dd7c40f2"
+  "86f6551305e5"
  ],
  "43-core-export-host.js": [
   "core/biome/43-core-export-host.js",
@@ -97,7 +97,7 @@
  ],
  "50-core-tags.js": [
   "core/tags/50-core-tags.js",
-  "3e7a77e8f435"
+  "351884caf5b4"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish/52-core-furnish-draw.js",
@@ -105,7 +105,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags/52-core-tags-vocab.js",
-  "8efb35da8c9c"
+  "d5f78e2e5a34"
  ],
  "53-core-furnish-host.js": [
   "core/furnish/53-core-furnish-host.js",
