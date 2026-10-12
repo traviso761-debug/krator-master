@@ -9,7 +9,7 @@
  ],
  "10-core-head.js": [
   "core/biome/10-core-head.js",
-  "79691236dfbd"
+  "e2f2fbf0c57f"
  ],
  "20-core-clock.js": [
   "core/clock/20-core-clock.js",
@@ -45,7 +45,7 @@
  ],
  "30-core-foliage.js": [
   "core/biome/30-core-foliage.js",
-  "98b0f4e59ec2"
+  "ee0fed9cb7f9"
  ],
  "35-core-strata.js": [
   "biomes/sedesert/src/35-core-strata.js",
@@ -61,7 +61,7 @@
  ],
  "42-core-export.js": [
   "core/biome/42-core-export.js",
-  "8154dcf0508b"
+  "bee0dd7c40f2"
  ],
  "43-core-export-host.js": [
   "core/biome/43-core-export-host.js",
@@ -141,7 +141,7 @@
  ],
  "54f-bio-biome-sedesert-fauna.js": [
   "biomes/sedesert/src/75-biome-sedesert-fauna.js",
-  "b747ff1bdd45"
+  "7f30b8d7258e"
  ],
  "55z-bio-matlib-pack.js": [
   "GENERATED: biomes/eastabyss/tex (maps in verge.tex.js)",
@@ -149,7 +149,7 @@
  ],
  "56a-bio-biome-eastabyss-species.js": [
   "biomes/eastabyss/src/50-biome-eastabyss-species.js",
-  "06712e9e527a"
+  "2e78e1943adf"
  ],
  "56b-bio-biome-eastabyss-trees.js": [
   "biomes/eastabyss/src/55-biome-eastabyss-trees.js",

@@ -233,7 +233,7 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "89142ab3d288"
+  "1d605039a328"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
@@ -253,7 +253,7 @@
  ],
  "69a1-bio-core-head.js": [
   "core/biome",
-  "79691236dfbd"
+  "e2f2fbf0c57f"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
@@ -261,7 +261,7 @@
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "98b0f4e59ec2"
+  "ee0fed9cb7f9"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -273,7 +273,7 @@
  ],
  "69c1-bio-eastabyss-species.js": [
   "biomes/eastabyss/src",
-  "06712e9e527a"
+  "2e78e1943adf"
  ],
  "69c2-bio-eastabyss-trees.js": [
   "biomes/eastabyss/src",
