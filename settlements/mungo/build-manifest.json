@@ -105,7 +105,7 @@
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
-  "fc0cf06b5f0e"
+  "949213456277"
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
@@ -237,11 +237,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "42b91ac6b1b8"
+  "567d470d914a"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "736ffdee524f"
+  "606019ae7028"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
