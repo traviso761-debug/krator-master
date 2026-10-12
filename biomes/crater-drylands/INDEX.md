@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 10 | the land (43); the climate fields (cached below; these are the  (75); the recent fires (the showcase's choice) (97); the host binding (105) |
 | `50-biome-craterdry-species.js` | 44 **big** | palettes (23); the tree species (55); harvest (biomes/FRUIT.md) (89); the small plants (the floor), tagged (110); leaf textures (132); bark, rock, wood textures (219); geometries local to this biome (260); materials (340); the library (core/materials/PLAN.md, Crater dryl (373); instanced items (429) |
 | `52-biome-craterdry-fire.js` | 11 |  |
@@ -26,7 +30,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `84-host-ground.js` | 17 | the ground (22); the water (the seep) (136) |
 | `88-host-build.js` | <1 |  |
 | `89-host-fire.js` | 14 |  |
-| `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 11 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 17 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (66); the page, handed to the host (147) |
 | `99-tail.html` | <1 |  |
