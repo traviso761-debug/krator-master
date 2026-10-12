@@ -302,7 +302,7 @@ CITY_CHECK = r"""() => {
         chapels: ((B.placed || {}).chapels || []).length, shrines: B.shrines || null, clans: clans.length,
         clanShrines: clans.filter(u => (VC.IX.types[u.type].pieces || []).some(p => /^voth_shrine_/.test(p.key))).length,
         villageShrines: (B.villageShrines || []).filter(q => q.lot != null && PLAN.lots[q.lot].died == null && SIM.all('place').some(p => p.kind === 'shrine' && p.activities.WORSHIP > 0 && Math.hypot(p.x - q.x, p.z - q.z) < 25)).length,
-        villageWhy: (B.villageShrines || []).filter(q => q.lot == null).map(q => q.why), worshipShort: B.worshipShort || null };
+        villageWhy: (B.villageShrines || []).filter(q => q.lot == null).map(q => q.why), villageWant: TUNE.sim.place.villageShrine.n, worshipShort: B.worshipShort || null };
       /* the benched squares by the cantons (owner, 2026-10-12): every canton listed has one, each a place with seats, none
          under a standing building */
       const SQ = B.squares || {}, sqBy = {}, sqHit = [];
@@ -327,7 +327,7 @@ def week_bad(sc):
         or r10['by'].get('WORK', 0) >= 0.5 * s10['by'].get('WORK', 1) or sc['restWorkers'] or w['p50'] > 120 or w['max'] > 4000 \
         or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1) \
         or len(sc['faith']['temples']) < 2 or sc['faith']['chapels'] < 3 or not (sc['faith']['shrines'] or {}).get('pocket') or sc['faith']['clanShrines'] != sc['faith']['clans'] \
-        or sc['worship']['short'] or sc['faith'].get('villageShrines', 0) < 2 \
+        or sc['worship']['short'] or sc['faith'].get('villageShrines', 0) < sc['faith'].get('villageWant', 2) \
         or any(not sc['squares']['by'].get(c) for c in sc['squares']['want']) or sc['squares']['hit'] or sc['squares']['places'] != sc['squares']['n']
     return bad
 

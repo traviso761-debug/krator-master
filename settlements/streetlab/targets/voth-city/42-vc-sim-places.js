@@ -302,8 +302,8 @@ VC.simSquares = function (step) {
 /* the village shrines (owner, 2026-10-12): the rest day's worship that found no room was spread over the suburbs, the
    farms, the mines and the clan compounds. As the citizens choose (the nearest place with room), every household's
    worshippers at the busiest service (`attend` of its people, `homes` by class) are given to the nearest place of worship
-   within `walk` m that still has room (a temple or chapel its nave's floor by TUNE.sim.worship.m2, a canton, a landmark
-   shrine or a pocket park's small one `holds`; the clan compounds worship at their own yard shrine and are not counted);
+   within `walk` m that still has room (a temple or chapel its nave's floor by TUNE.sim.worship.m2, a canton, Voth's
+   landmark shrines, the funerary temple, the monastery's chapel or a pocket park's small one `holds`; the clan compounds worship at their own yard shrine and are not counted);
    each shrine goes where the most are left over within `r` m (a `cell` m grid), the next one counting it; a spot with
    no ground counts as served and the next best is tried, up to `retries` times */
 VC.simVillageShrines = function (step) {
@@ -312,10 +312,12 @@ VC.simVillageShrines = function (step) {
   var nave = function (key) { var A = ASSET_BY_KEY[key], b = A && A.ix && A.ix.block; return b ? Math.floor(b[2] * b[3] / m2) : 0; };
   PLAN.lots.forEach(function (L) {
     if (L.died != null) return;
-    var c = L.role === 'temple' || L.role === 'chapel' || L.role === 'shrine' ? nave(L.key) : /funerary/i.test(L.key || '') ? S.holds.funerary : /shrine/i.test(L.key || '') ? S.holds.shrine : 0;
+    var c = L.role === 'temple' || L.role === 'chapel' || L.role === 'shrine' ? nave(L.key) : 0;
     if (c) sites.push([L.x, L.z, c]);
   });
   (CANT.list || []).forEach(function (M) { sites.push([M.x, M.z, S.holds.canton]); });
+  (PLAN.voth || []).forEach(function (q) { if (q.role === 'shrine') sites.push([q.x, q.z, S.holds.shrine]); else if (q.role === 'funeraryTemple') sites.push([q.x, q.z, S.holds.funerary]); });   /* Voth's landmarks */
+  PLAN.districts.forEach(function (D) { if (D.kind === 'monastery' && D.poly) { var c = polyCentroid(D.poly); sites.push([c[0], c[1], S.holds.monastery]); } });   /* its chapel */
   var SH = TUNE.sim.place.shrines;   /* the pocket parks' small shrines to come (VC.parkShrines) */
   PLAN.greens.forEach(function (G) { if (G.kind === 'park' && G.poly && Math.abs(polyArea(G.poly)) >= SH.minArea) { var c = polyCentroid(G.poly); sites.push([c[0], c[1], S.holds.small]); } });
   var homes = PLAN.lots.filter(function (L) { return L.died == null && !L.role && !L.deck && S.homes[L.cls]; })

@@ -236,14 +236,14 @@ var TUNE = {
          its sides every `sideEvery` m and in a ring every `ringEvery` m round its middle */
       squares: { cantons: [['Fortress', 3], ['Market', 3], ['Guild', 2], ['Granary', 2], ['Arsenal', 1], ['Foreign', 1]], w: 34, d: 24, reach: 320, ring: 10,
                  ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 6, gap: 70, slope: 2.5, from: ['poor', 'middle', 'shop', 'craft', 'rich'], edge: 2, ringEvery: 4.2, sideEvery: 4 },
-      /* the village shrines (VC.simVillageShrines): `n`, each where the most of the busiest service's worshippers find no
+      /* the village shrines (VC.simVillageShrines; owner, 2026-10-12: two, then "Put in 6 more"): `n`, each where the most of the busiest service's worshippers find no
          room: a household's `attend` share of its people (`homes` by class) given to the nearest place of worship within
          `walk` m with room left (a temple's or a chapel's nave by its floor, a canton, the funerary temple and the
-         landmark shrines and the pocket parks' small ones `holds`; the clan compounds keep their own), the leftovers summed
+         landmark shrines, the monastery's chapel and the pocket parks' small ones `holds`; the clan compounds keep their own), the leftovers summed
          within `r` m on a `cell` m grid; then the nearest ground within `reach` m (`pad` m round the model, cleared house
          lots of `from`), fronting a way of `ways` within `front` m, `gap` m from another; a spot with no ground is skipped
          (up to `retries` times) */
-      villageShrine: { key: 'voth_bldg_village_shrine', n: 2, retries: 6, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, small: 3 },
+      villageShrine: { key: 'voth_bldg_village_shrine', n: 8, retries: 8, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, monastery: 350, small: 3 },
                        homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
                        reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
