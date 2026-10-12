@@ -150,6 +150,13 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   course is `drawn_px`). `DATA.basins` (the endorheic and through lakes, `unbalanced` ones), `DATA.hydro` (method and
   thresholds). The page's readout gains a **river** row (the nearest course within 6 km: its flow and width). Rivers are
   painted on the satellite and relief maps, wider with flow.
+- **Names** (`river_names.py <4.21 page> <regions.json> <out page>`, run after `edit_rivers.py`): every course lying
+  mostly inside a region whose tongue is on record (`lore/tongues-of-krator.html`) is named in it: English words run
+  through that tongue's regular changes (Vothic *Tzolt Rivrh* salt river, Izani *Rrivar Rreda*, Dalab *Folriba*,
+  Tl'aai *Tl'aa Baatar*, Dasri *Wadi al-Jost*, Xanadui *Alph* for its greatest, Yuni *Saltie Rivvo*...), the word chosen
+  from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
+  settlement it passes) and then from each tongue's own pool. 317 of 936 named, each with `tongue` and `gloss`; the
+  rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
