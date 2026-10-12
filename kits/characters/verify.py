@@ -118,7 +118,7 @@ CHECKS = r'''async () => {
         if (!c) break;
         c.chains.forEach(ch => ch.x.forEach((x, i) => { if (!isFinite(x.x + x.y + x.z)) bad++; moved = Math.max(moved, x.distanceTo(ch.tw[i])); }));
         const thighs = st.caps.filter(cp => [byName('LeftUpLeg'), byName('RightUpLeg')].indexOf(cp.a) >= 0);
-        c.chains.forEach(ch => ch.x.forEach(x => thighs.forEach(cp => {
+        c.chains.forEach(ch => ch.x.forEach((x, i) => i > 0 && thighs.forEach(cp => {     // the top point rides the hips
           const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
           const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
           if (x.distanceTo(a.clone().addScaledVector(ab, t)) < cp.r - 0.005) deep++;

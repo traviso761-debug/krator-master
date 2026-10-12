@@ -584,21 +584,9 @@ function KCharFigure(body, sliders, load){
               cV.subVectors(b, a).multiplyScalar(f); a.add(cV); b.sub(cV);
             }
           });
-          c.chains.forEach(function(ch){
-            for(var k = 1; k < ch.x.length; k++){
-              var x = ch.x[k];
-              W.forEach(function(cp){
-                cV.subVectors(cp.b, cp.a);
-                var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
-                cV2.copy(cp.a).addScaledVector(cV, t);
-                var d = x.distanceTo(cV2);
-                if(d < cp.r){ if(d < 1e-6) return; x.sub(cV2).multiplyScalar(cp.r / d).add(cV2); }
-              });
-              if(x.y < groundY) x.y = groundY;
-            }
-          });
+          c.chains.forEach(function(ch){ collide(ch, W); });
         }
-        c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); });
+        c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); collide(ch, W); });
       });
     }
     // the bones turn to the particles
@@ -616,6 +604,20 @@ function KCharFigure(body, sliders, load){
         });
       });
     });
+  }
+  // out of the capsules and above the floor (last: a point may stretch its bone a little rather than sink in)
+  function collide(ch, W){
+    for(var k = 1; k < ch.x.length; k++){
+      var x = ch.x[k];
+      W.forEach(function(cp){
+        cV.subVectors(cp.b, cp.a);
+        var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+        cV2.copy(cp.a).addScaledVector(cV, t);
+        var d = x.distanceTo(cV2);
+        if(d < cp.r && d > 1e-6) x.sub(cV2).multiplyScalar(cp.r / d).add(cV2);
+      });
+      if(x.y < groundY) x.y = groundY;
+    }
   }
   function keepLen(ch, k){
     var a = ch.x[k - 1], x = ch.x[k], L = ch.len[k - 1];

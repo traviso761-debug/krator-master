@@ -133,6 +133,8 @@ static func _build(glb: String) -> Array:
 		for t in shapes:
 			mesh.add_blend_shape("t%d" % t)
 		var regions := []
+		var verts0 = null                 # the first surface's positions and shape offsets (the cloth chains' rest)
+		var offs0 := []
 		for s in src.get_surface_count():
 			var arrays := src.surface_get_arrays(s)
 			var mat := src.surface_get_material(s)
@@ -168,6 +170,10 @@ static func _build(glb: String) -> Array:
 				var flags := 0
 				if arr[Mesh.ARRAY_BONES] != null and arr[Mesh.ARRAY_BONES].size() == arr[Mesh.ARRAY_VERTEX].size() * 8:
 					flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+				if verts0 == null:
+					verts0 = arr[Mesh.ARRAY_VERTEX]
+					for sh in bs:
+						offs0.append(sh[Mesh.ARRAY_VERTEX])
 				mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, bs, {}, flags)
 				if mat:
 					mesh.surface_set_material(mesh.get_surface_count() - 1, mat)
@@ -184,7 +190,7 @@ static func _build(glb: String) -> Array:
 		for sf in info["surfaces"]:
 			if sf.get("region") != null:
 				ground = H.get("ground")
-		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground})
+		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -307,7 +313,8 @@ func apply(rec: Dictionary) -> void:
 			var bind0: Array = mi.get_meta("bind0")
 			for k in mi.skin.get_bind_count():
 				var bone: int = mi.skin.get_bind_bone(k)
-				mi.skin.set_bind_pose(k, bind0[k] * Transform3D(Basis(), -d[bone]))
+				if bone < d.size():                  # a cloth chain's bind is set by _cloth_rest
+					mi.skin.set_bind_pose(k, bind0[k] * Transform3D(Basis(), -d[bone]))
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var region: int = b["regions"][s]
@@ -712,8 +719,8 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 			continue
 		var b: Dictionary = mi.get_meta("built")
 		var shapes: PackedInt32Array = b["shapes"]
-		var base: PackedVector3Array = mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
-		var bsa: Array = mi.mesh.surface_get_blend_shape_arrays(0)
+		var base: PackedVector3Array = b["verts0"]
+		var offs: Array = b["offs0"]
 		var pbind := {}
 		for k in mi.skin.get_bind_count():
 			pbind[mi.skin.get_bind_bone(k)] = mi.skin.get_bind_pose(k)
@@ -723,7 +730,7 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 				var v: Vector3 = base[int(i)]
 				for s in shapes.size():
 					if w[shapes[s]] != 0.0:
-						v += w[shapes[s]] * (bsa[s][Mesh.ARRAY_VERTEX][int(i)] as Vector3)
+						v += w[shapes[s]] * ((offs[s] as PackedVector3Array)[int(i)])
 				P.append(v)
 			ch["p"] = P
 			ch["len"] = []
@@ -829,21 +836,10 @@ func _cloth_step(dt: float) -> void:
 						xa[k] += mv
 						xb[k] -= mv
 				for ch in c["chains"]:
-					var x: Array = ch["x"]
-					for k in range(1, x.size()):
-						var p: Vector3 = x[k]
-						for cp in W:
-							var ab: Vector3 = cp["b"] - cp["a"]
-							var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
-							var q: Vector3 = cp["a"] + ab * t
-							var dd := p.distance_to(q)
-							if dd < cp["r"] and dd > 1e-6:
-								p = q + (p - q) * (cp["r"] / dd)
-						if p.y < ground:
-							p.y = ground
-						x[k] = p
+					_collide(ch, W, ground)
 			for ch in c["chains"]:
 				_keep_len(ch)
+				_collide(ch, W, ground)
 	for c in items:
 		for ch in c["chains"]:
 			var M := _rigid(ch)
@@ -856,6 +852,22 @@ func _cloth_step(dt: float) -> void:
 				var wq := (Quaternion(r0, r1) if r0.dot(r1) < 0.99999 else Quaternion()) * rq
 				skeleton.set_bone_pose_rotation(bones[k], (prev.inverse() * wq).normalized())
 				prev = wq
+
+
+func _collide(ch: Dictionary, W: Array, ground: float) -> void:
+	var x: Array = ch["x"]
+	for k in range(1, x.size()):
+		var p: Vector3 = x[k]
+		for cp in W:
+			var ab: Vector3 = cp["b"] - cp["a"]
+			var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+			var q: Vector3 = cp["a"] + ab * t
+			var dd := p.distance_to(q)
+			if dd < cp["r"] and dd > 1e-6:
+				p = q + (p - q) * (cp["r"] / dd)
+		if p.y < ground:
+			p.y = ground
+		x[k] = p
 
 
 func _keep_len(ch: Dictionary) -> void:
