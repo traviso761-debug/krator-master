@@ -661,6 +661,9 @@ func play(clip: String) -> void:
 func _process(dt: float) -> void:
 	if _clip == "":
 		return
+	# the hips start from the base body's rest (a clip without a hips position track leaves them there), so the
+	# morph delta below is added once, not once a frame
+	skeleton.set_bone_pose_position(_hips, KChar._v(skel["joints"][_hips]["t"]))
 	player.advance(dt)
 	if not player.is_playing() and _clip != looping:
 		play(looping)

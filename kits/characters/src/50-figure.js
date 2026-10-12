@@ -536,6 +536,9 @@ function KCharFigure(body, sliders, load){
 
   this.update = function(dt){
     if(!self.action) return;
+    // the hips start each frame from the base body's rest: a clip with no hips position track (most in-place loops)
+    // leaves it there, and the morph and lift below are added once, not once a frame
+    self.hips.position.fromArray(J[byName.Hips].t);
     self.mixer.update(dt);
     self.hips.position.y += self.pose.lift;
     hipsMorph();

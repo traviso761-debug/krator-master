@@ -601,7 +601,7 @@ def _():
 @garment('voth_f_peasant_cueitl', 'legs', 'female', 'Wrap skirt')
 def _():
     p = P('maguey', 0.1, [B('bottom', 0.0, 0.03, 'solid', 'earth'), B('top', 0.0, 0.03, 'solid', 'earth')])
-    return [torso_tube('voth_f_peasant_cueitl', WAIST, KNEE - 0.16, 0.007, p, hang_from=CROTCH + 0.06, flare=0.12, group_below=CROTCH + 0.04, rows=16, hull_from=WAIST)]
+    return [torso_tube('voth_f_peasant_cueitl', WAIST, KNEE - 0.16, 0.007, p, hang_from=CROTCH + 0.06, flare=0.2, group_below=CROTCH + 0.04, rows=16, hull_from=WAIST)]
 
 
 for b, sex in (('male', 'm'), ('female', 'f')):
@@ -627,7 +627,7 @@ def _():
 def _():
     p = P('umber', 0.07, [B('bottom', 0.0, 0.015, 'solid', 'ochre'), B('bottom', 0.02, 0.05, 'checks', 'soot', 'umber', 0.025),
                           B('top', 0.0, 0.025, 'solid', 'soot')])
-    return [torso_tube('voth_m_trade_kilt', WAIST + 0.01, KNEE + 0.02, 0.008, p, hang_from=CROTCH + 0.07, flare=0.16, group_below=CROTCH + 0.04, rows=16, hull_from=WAIST)]
+    return [torso_tube('voth_m_trade_kilt', WAIST + 0.01, KNEE + 0.02, 0.008, p, hang_from=CROTCH + 0.07, flare=0.22, group_below=CROTCH + 0.04, rows=16, hull_from=WAIST)]
 
 
 @garment('voth_f_trade_huipil', 'torso', 'female', 'Banded huipil')
@@ -643,7 +643,7 @@ def _():
 def _():
     p = P('indigo', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'cotton'), B('bottom', 0.025, 0.07, 'steps', 'cotton', 'indigo', 0.08),
                            B('top', 0.0, 0.05, 'solid', 'madder'), B('top', 0.012, 0.038, 'zigzag', 'ochre', 'madder', 0.04)])
-    return [torso_tube('voth_f_trade_skirt', WAIST + 0.02, ANKLE + 0.05, 0.007, p, hang_from=CROTCH + 0.06, flare=0.10, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
+    return [torso_tube('voth_f_trade_skirt', WAIST + 0.02, ANKLE + 0.05, 0.007, p, hang_from=CROTCH + 0.06, flare=0.24, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
 
 
 for b, sex in (('male', 'm'), ('female', 'f')):
@@ -677,7 +677,7 @@ def _():
     apron = P('purple', 0.03, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.1),
                                B('top', 0.0, 0.015, 'solid', 'gold')])
     c = spine_at(WAIST - 0.05); h = first_hit(c, np.array([0, -1.0, 0]))
-    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=CROTCH + 0.07, flare=0.12, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
+    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=CROTCH + 0.07, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
             flap('voth_m_noble_skirt_apron', c + np.array([0, -1.0, 0]) * ((h or 0.12) + 0.03), 0.24, WAIST - 0.05 - (KNEE - 0.2), np.array([0, -1.0, 0]),
                  apron, cols=7, rows=14, ease=0.035, group_below=CROTCH + 0.04, sway=0.07)]
 
@@ -700,8 +700,8 @@ def _():
                                 B('top', 0.0, 0.05, 'solid', 'black'), B('top', 0.012, 0.038, 'diamonds', 'gold', 'black', 0.045)])
     over = P('purple', 0.04, [B('bottom', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.012, 0.07, 'fret', 'ash', 'purple', 0.06),
                               B('bottom', 0.07, 0.08, 'solid', 'gold')])
-    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.14, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST),
-            torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.02, 0.02, over, hang_from=CROTCH + 0.04, flare=0.22, group_below=CROTCH + 0.04, rows=14, hull_from=WAIST)]
+    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST),
+            torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.02, 0.02, over, hang_from=CROTCH + 0.04, flare=0.32, group_below=CROTCH + 0.04, rows=14, hull_from=WAIST)]
 
 
 for b, sex in (('male', 'm'), ('female', 'f')):

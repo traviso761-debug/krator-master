@@ -84,7 +84,9 @@ Each garment is built on the body from lofted parts: rings cast out from an axis
 elbow, a foot) to the skin and set off it; below a hang line a ring only grows (cloth falls straight from the chest
 or the hips instead of hugging the waist) and spans hollows (its convex hull: between the breasts, round both legs);
 tunics are fitted to the skin without the arms, so the arms pass through armholes the sleeves cover; mantles and
-capes are fitted over the arms. Rows below the crotch match MakeHuman's skirt helper, so skirts swing with both legs.
+capes are fitted over the arms. Rows below the crotch match MakeHuman's skirt helper, and `make_mpfb.py` pools the
+legs' skin weights below the crotch (`skirt_weights`), so a skirt or a robe's hem swings as one piece instead of
+parting round each thigh.
 The textures are painted in the same script (woven grain, hem bands, step frets, zigzags, the diamond of Voth,
 feather scales). `--render <dir>` loads the garments back through MPFB and renders each class front, side and back.
 `data/peoples.json` gives the Chichani `outfits` per class and `tiers` (60 % peasants, 30 % tradesfolk, 10 % court):

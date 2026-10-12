@@ -90,9 +90,10 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
-    Returns {material name: role} for the materials that got one"""
+    skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). Returns {material name: role} for
+    the materials that got one"""
     j, b = glbio.read_glb(open(src, 'rb').read())
     b = bytearray(b)
     roles, img_role = {}, {}
@@ -138,6 +139,8 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None):
         R4[:3, :3] = RY
         M = M @ R4.T                                # IBM' = IBM inv(R): vertices and joints both turned by R
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
+    if skirt is not None:
+        skirt_weights(j, b, skirt)
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
     blobs, holes, means, soft = {}, {}, {}, {}
     eye_imgs = set()
@@ -263,6 +266,66 @@ def all_triangles(path):
             Ts.append(glbio.accessor(j, b, p['indices']).reshape(-1, 3).astype(int) + n)
             n += len(P)
     return np.concatenate(Ps), np.concatenate(Ts)
+
+
+SKIRT_KEEP = 0.8           # the share of the legs' pull a skirt keeps (split evenly between the thighs)
+SKIRT_POOL = 0.65          # how much of a vertex's own pull gives way to the pooled one (the rest still follows its side's leg)
+
+
+def skirt_weights(j, b, y0, band=0.12):
+    """a garment hanging below the crotch (a skirt, a robe's or a cloak's hem) takes its skin weights from MakeHuman's
+    skirt helper, which follows each thigh: in a stride the cloth parts like trousers. Below y0 (fading in over 'band')
+    the legs' weights are partly pooled (SKIRT_POOL): SKIRT_KEEP of them shared evenly by both thighs (the hem still
+    sways front to back), the rest given to the hips; the remainder still follows its own side's leg, so a stride
+    stretches the cloth instead of splitting it. Edits JOINTS_0 / WEIGHTS_0 in place (b: the GLB's bytearray)"""
+    def arr(ai):
+        a = j['accessors'][ai]
+        v = j['bufferViews'][a['bufferView']]
+        dt = glbio.CT[a['componentType']]
+        n = glbio.NC[a['type']]
+        off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+        if v.get('byteStride') not in (None, np.dtype(dt).itemsize * n):
+            raise SystemExit('make_mpfb.py: strided skin attributes')
+        return a, dt, off, np.frombuffer(b, dt, a['count'] * n, off).reshape(a['count'], n).copy()
+    for ni, node in enumerate(j.get('nodes', [])):
+        if 'mesh' not in node or 'skin' not in node:
+            continue
+        names = [j['nodes'][k].get('name', '') for k in j['skins'][node['skin']]['joints']]
+        idx = lambda key: [k for k, nm in enumerate(names) if nm.split(':')[-1] == key]
+        hips = idx('Hips')
+        lup, rup = idx('LeftUpLeg'), idx('RightUpLeg')
+        chain = {k for key in ('LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase') for k in idx(key)}
+        if not (hips and lup and rup):
+            continue
+        for p in j['meshes'][node['mesh']]['primitives']:
+            at = p['attributes']
+            if 'JOINTS_0' not in at or 'WEIGHTS_0' not in at:
+                continue
+            P = glbio.accessor(j, bytes(b), at['POSITION'])
+            aj, dj, oj, JJ = arr(at['JOINTS_0'])
+            aw, dw, ow, WW = arr(at['WEIGHTS_0'])
+            Wf = WW.astype(np.float64) / (np.iinfo(dw).max if aw.get('normalized') else 1.0)
+            f = np.clip((y0 - P[:, 1]) / band, 0, 1) * SKIRT_POOL
+            for v in np.nonzero(f > 0)[0]:
+                dense = {}
+                for jj, ww in zip(JJ[v], Wf[v]):
+                    if ww > 0: dense[int(jj)] = dense.get(int(jj), 0) + ww
+                legs = sum(w for k, w in dense.items() if k in chain)
+                if legs <= 0:
+                    continue
+                want = {k: w for k, w in dense.items() if k not in chain}
+                want[hips[0]] = want.get(hips[0], 0) + legs * (1 - SKIRT_KEEP)
+                want[lup[0]] = want.get(lup[0], 0) + legs * SKIRT_KEEP / 2
+                want[rup[0]] = want.get(rup[0], 0) + legs * SKIRT_KEEP / 2
+                mix = {k: dense.get(k, 0) * (1 - f[v]) + want.get(k, 0) * f[v] for k in set(dense) | set(want)}
+                top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
+                tot = sum(w for _, w in top) or 1.0
+                top += [(0, 0.0)] * (4 - len(top))
+                JJ[v] = [k for k, _ in top]
+                Wf[v] = [w / tot for _, w in top]
+            WW = (np.round(Wf * np.iinfo(dw).max) if aw.get('normalized') else Wf).astype(dw)
+            b[oj:oj + JJ.nbytes] = JJ.astype(dj).tobytes()
+            b[ow:ow + WW.nbytes] = WW.tobytes()
 
 
 def covered(BP, BT, path, out=0.025, inward=0.02):
@@ -534,9 +597,11 @@ def main():
     tree = cKDTree(BP)
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
+    crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     for it in man['items']:
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
-                     role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None)
+                     role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
+                     skirt=crotch if it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs') else None)
         roles.update(r)
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         pts = np.array(dg.get(it['id'], []), float)
