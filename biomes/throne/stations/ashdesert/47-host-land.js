@@ -55,7 +55,7 @@ const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));_mark('fiel
 const OBSTACLES=[];
 let MASK=(x,z)=>1;
 const SPINE=[[0,0],[HOLLOW.x,HOLLOW.z],[-800,-800],[900,900],[-300,1400],[1300,-200]];HILLS.forEach(H=>SPINE.push([H.x+H.r*.8,H.z+H.r*.3]));YARDANGS.slice(0,3).forEach(Y=>SPINE.push([Y.x,Y.z]));
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-ashdesert',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:47,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:700,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

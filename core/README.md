@@ -104,6 +104,7 @@ additions are in it, each marked with the kit it came from:
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear (`BIO.clearOf`, `clearOf3`; both and `scatter`'s spacing read a `core/space` grid when the page loads it), surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, and keep-clear and scatter on `KSPACE` equal to the linear scans they replaced (frozen in the test), each check with a negative |
+| `test-tags.js` | `node core/biome/test-tags.js`: the biome core on core/tags (one kit built with tags and without: identical meshes; every instance names its set and the uid of its own position; the export's ids), each check with a negative |
 | `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
 | `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
 | `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
@@ -130,6 +131,13 @@ with the square of the count. The candidates come back in insertion order and ta
 the scans' exactly (`test-place.js`, and every kit's baked geometry hashed the same before and after). An obstacle
 changed in place after it was pushed is not seen: push a new one. A page without `core/space` (the settlements that
 read this folder: Yuni, Locus, Mungo, Verge, Dhelv, Streetlab) runs the scans as before.
+
+**Records (core/tags, 2026-10-12).** With `BIO.init({tags: '<build>'})` (and core/rand and core/tags in the build:
+`CORE_TAGS` in each kit's `build.py`) every item a kit puts is one core/tags item set, its instances read from the
+item's own matrices, and every volume a kit registers (`BIO.register`, `BIO.record` from the host's `REGISTER`) a
+record; a baked mesh names its set (`userData.krator`) and `BIO.recordsOf(mesh)` gives each row's uid and index
+(`20-core-kit.js`, "core/tags: what a kit places, as records"; `biomes/GODOT.md`, "Records"). Without `tags` nothing
+runs: the worlds that take this core but not core/tags draw and export exactly as before.
 
 **`BIO.LOD`** is both the runtime LOD's settings (`chunk`, `scale`) and, called, the detail
 radii (sedesert's `BIO.LOD()`, the same as `BIO.radii()`), so sedesert's fragments and

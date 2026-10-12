@@ -26,7 +26,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -110,7 +110,7 @@ KOP.forEach(K=>SPINE.push([K.x,K.z]));
 FIRES.forEach(F=>SPINE.push([F.x+FIRE_WIND[0]*260,F.z+FIRE_WIND[1]*260]));
 for(let x=-1800;x<=1800;x+=1200)SPINE.push([x,zA(x)]);
 SPINE.push([xB(-1400),-1400],[SEEP.x,SEEP.z]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+BIO.init({tags:'crater-drylands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:29,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:[SEEP.x-60,SEEP.z-60,SEEP.x+60,SEEP.z+60]}});

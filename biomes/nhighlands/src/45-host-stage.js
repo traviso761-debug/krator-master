@@ -28,7 +28,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 // FOG: the shape (plain exponential near, saturating far, so the old-growth air is
 // hazy at a few hundred metres and the far lowlands still read) is set where the
@@ -174,7 +174,7 @@ const SPINE=(function(){const o=[];for(let s=S_SRC-100;s>=-4300;s-=880){const p=
  o.push([Math.round(TOWER.x),Math.round(TOWER.z)]);
  [[-350,-560],[1500,560],[3700,-250],[-2600,-760]].forEach(q=>{const p=xzOf(q[0],q[1]);o.push([Math.round(p[0]),Math.round(p[1])]);});
  return o;})();
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+BIO.init({tags:'nhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  mask:(x,z)=>{if(x<TERR.X0+4||x>TERR.X1-4||z<TERR.Z0+4||z>TERR.Z1-4)return 0;   // the map's square: beyond it is the far country
   if(Math.hypot(x-TARN.x,z-TARN.z)<TARN.r+4)return 0;const r=streamNear(x,z);if(r&&r.d<r.w+1.2)return 0;   // the water and its wet edge
   if(r&&r.d<r.w+6&&terrainH(x,z)<r.level+.3)return 0;

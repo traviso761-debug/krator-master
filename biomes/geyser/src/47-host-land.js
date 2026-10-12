@@ -53,7 +53,7 @@ for(let z=-560;z<=260;z+=160)for(let x=-560;x<=560;x+=160)if(basinE(x,z)<.95)SPI
 for(let z=380;z<=shoreZ(STAIR.x0);z+=120)SPINE.push([stairX(z),z]);
 LAYOUT.geysers.forEach(g=>SPINE.push([g.x,g.z]));LAYOUT.springs.slice(0,3).forEach(s=>SPINE.push([s.x,s.z]));
 for(let i=0;i<CREEK.P.length;i+=60)SPINE.push(CREEK.P[i]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'geyser',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:63,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:240,mid:620,far:1800,floor:[200,480]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],stair:[STAIR.x0-260,STAIR.z0+60,STAIR.x0+260,shoreZ(STAIR.x0)+20]}});

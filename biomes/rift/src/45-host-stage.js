@@ -31,7 +31,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
@@ -111,7 +111,7 @@ const FC=(function(){const N=384,S=TERR.R*2.2,a={wet:new Float32Array(N*N),salt:
 const FIELD={wet:(x,z)=>FC.at(FC.a.wet,x,z),salt:(x,z)=>FC.at(FC.a.salt,x,z),upland:(x,z)=>FC.at(FC.a.up,x,z),flow:(x,z)=>FC.at(FC.a.flow,x,z),mist:(x,z)=>FC.at(FC.a.mist,x,z)};
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'rift',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const h=terrainH(x,z);if(h<.12)return 0;const w=h<.6?(h-.12)/.48:1;return w*smooth(1.6,.85,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff
  obstacles:OBSTACLES,ticks:tick,seed:11,
  // the LOD spine: a row of origins along x=0 from the savannah over the ridge to the shore

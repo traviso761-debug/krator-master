@@ -69,7 +69,7 @@ let MASK=(x,z)=>{const t=tubeAt(x,z);if(t){if(t.T===TUBE&&hotK(t.u)>.2)return 0;
  for(const S of SKY){const d=Math.hypot(x-S.x,z-S.z),R=skyR(S,Math.atan2(z-S.z,x-S.x));if(d>R+1.5&&d<R+20)return 1;}return 0;};
 // the LOD spine: down the tube, the passage, the skylights
 const SPINE=[];for(let u=0;u<=TUBE.L;u+=100)SPINE.push(TUBE.P(u));for(let u=0;u<=SIDE.L;u+=60)SPINE.push(SIDE.P(u));SKY.forEach(S=>SPINE.push([S.x,S.z]));
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-tube',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:51,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:700,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

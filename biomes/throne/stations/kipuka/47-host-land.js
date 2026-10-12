@@ -83,7 +83,7 @@ TUBE.sky.forEach((S,i)=>{if(i%2===0)SPINE.push([S.x,S.z]);});
 STREAMS.forEach(S=>{for(let s=-1800;s<=1800;s+=900)SPINE.push(streamPt(S,s));});
 {const F=FLOWS.flows.find(f=>f.key==='new');for(let i=0;i<F.path.length;i+=Math.floor(F.path.length/4))SPINE.push([F.path[i].x,F.path[i].z]);}
 const WWIN=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1];
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-kipuka',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:37,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:WWIN}});

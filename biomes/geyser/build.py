@@ -74,6 +74,11 @@ for f in CORE_TERRAIN:
 for slot,p in KITS.items(): PATH[slot]=os.path.join(HJ,p)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
+# set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
+CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
+for f,d in CORE_TAGS.items():
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water

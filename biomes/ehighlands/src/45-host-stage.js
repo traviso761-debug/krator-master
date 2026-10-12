@@ -29,7 +29,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -175,7 +175,7 @@ for(let x=-1600;x<=1600;x+=800){const z=zF(x)+330;SPINE.push([x,z],[x,z+650]);}
 TORS.forEach(K=>SPINE.push([K.x,K.z]));
 // this year's flowering stand of vigil spikes (the kit flowers its stands together): on the dry slope, between the gullies
 const FLOWERING={x:-120,z:zF(-120)+380,r:280};SPINE.push([FLOWERING.x,FLOWERING.z]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+BIO.init({tags:'ehighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:37,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:300,mid:820,far:2500,floor:[260,640]},
  windows:{water:[TARN.x-TARN.r*1.4,BOG.z-BOG.rz*1.3,BOG.x+BOG.rx*1.1,BOG.z+BOG.rz*1.3],

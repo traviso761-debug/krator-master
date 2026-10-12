@@ -39,6 +39,18 @@ static func build(path: String) -> Node3D:
 	for t in d["textures"]:
 		texrec[t["id"]] = t
 
+	# the page's core/tags registry (tags.json beside the export, core/tags/README.md): each item's set record and each
+	# volume a bucket merges, by id, so a node's ids resolve to records (root meta "tags")
+	var by_id := {}
+	var tp := path.get_base_dir() + "/tags.json"
+	if FileAccess.file_exists(tp):
+		var t = KData.read_json(tp)
+		if t is Dictionary and t.get("format") == "krator-tags":
+			for r in t["records"]:
+				by_id[r["id"]] = r
+			root.set_meta("tags", by_id)
+	var ids := {"items": 0, "items_with_record": 0, "instances": 0, "instances_with_uid": 0, "buckets": 0, "buckets_with_records": 0, "bucket_records": 0, "sets_resolved": 0}
+
 	var items := Node3D.new()
 	items.name = "Items"
 	root.add_child(items)
@@ -63,6 +75,21 @@ static func build(path: String) -> Node3D:
 		_apply_lod(mmi, it, report)
 		mmi.set_meta("krator", {"kit": it["kit"], "name": it["name"], "label": it["label"], "material": m.get("key"),
 			"kind": m["kind"], "dynamic": it["dynamic"], "count": n})
+		# core/tags (biomes/GODOT.md, "Records"): the item set's id, and the side table by instance index: each instance's
+		# uid (KTAGS.uid of its class, key and position) and its index in the set (its id is "<record>#<index>")
+		ids["items"] += 1
+		ids["instances"] += n
+		if it.get("records") is Array and (it["records"] as Array).size() == n:
+			mmi.set_meta("krator_record", it["record"])
+			mmi.set_meta("krator_records", PackedStringArray(it["records"]))
+			mmi.set_meta("krator_index", KData.ints(it["recordIndex"]))
+			if by_id.has(it["record"]):
+				mmi.set_meta("krator_set", by_id[it["record"]])
+				ids["sets_resolved"] += 1
+			ids["items_with_record"] += 1
+			for u in it["records"]:
+				if str(u) != "":
+					ids["instances_with_uid"] += 1
 		if it["dynamic"]:
 			_gap(report, "fauna", "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet")
 		items.add_child(mmi)
@@ -81,12 +108,26 @@ static func build(path: String) -> Node3D:
 		mi.position = origin
 		_apply_lod(mi, b, report)
 		mi.set_meta("krator", {"kit": b["kit"], "name": b["name"], "label": b["label"], "material": m.get("key"), "kind": m["kind"]})
+		ids["buckets"] += 1
+		if b.get("records") is Array:   # the volumes (trees, logs) whose pieces this bucket merges, by uid and by id
+			mi.set_meta("krator_records", PackedStringArray(b["records"]))
+			mi.set_meta("krator_record_ids", PackedStringArray(b["recordIds"]))
+			mi.set_meta("krator_pieces", b.get("pieces", {}))
+			ids["bucket_records"] += (b["records"] as Array).size()
+			if (b["records"] as Array).size() > 0:
+				ids["buckets_with_records"] += 1
 		buckets.add_child(mi)
 		tris += int(b["triangles"])
 
 	report["counts"] = {"items": d["items"].size(), "instances": instances, "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
-	_gap(report, "tags", "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label")
+	report["ids"] = ids
+	if ids["items_with_record"] == 0:
+		_gap(report, "tags", "no ids on items or buckets (an export from a page without BIO.init({tags}), or from before 2026-10-12): nothing to put in node metadata beyond name and label")
+	elif ids["instances_with_uid"] < ids["instances"]:
+		_gap(report, "tags", "%d of %d instances carry no uid" % [ids["instances"] - ids["instances_with_uid"], ids["instances"]])
+	if ids["buckets"] > ids["buckets_with_records"]:
+		_gap(report, "bucket records", "%d of %d buckets name no record: their pieces (boulders, ground cover, structures) lie in no registered volume" % [ids["buckets"] - ids["buckets_with_records"], ids["buckets"]])
 	var look = d["stage"].get("ground") if d.get("stage") is Dictionary else null
 	if d.has("ground") and (d["ground"] as Dictionary).has("field"):
 		# the page's baked field (core/terrain, since 2026-10-08): the terrain mesh on its own grid and a HeightMapShape3D

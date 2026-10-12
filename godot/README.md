@@ -20,6 +20,7 @@ godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
+godot --headless --path godot --script res://tests/tags/records_test.gd   # the hyperjungle case's ids: every MultiMesh instance's uid, recomputed
 godot --headless --path godot --script res://tests/mask/kmask_test.gd   # core/mask's golden grid (exits 0 on pass)
 godot --headless --path godot --script res://tests/terrain/kfield_test.gd        # core/terrain's field: KField against the page's golden samples
 godot --headless --path godot --script res://tests/terrain/field_import_test.gd  # a krator-field to a mesh and HeightMapShape3D collision (rays)
@@ -41,7 +42,7 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather 
 
 | Key | Case | Route | What it tests |
 |---|---|---|---|
-| 1 | `hyperjungle` | `krator-biome` JSON (`BIO.export`) | a 300 m tile round a hero hypertree: DataTexture leaf atlases, the foliage hook (wind, aN normals, prism-gum iridescence), fauna on shader paths |
+| 1 | `hyperjungle` | `krator-biome` JSON (`BIO.export`) | a 300 m tile round a hero hypertree: DataTexture leaf atlases, the foliage hook (wind, aN normals, prism-gum iridescence), fauna on shader paths; since 2026-10-12 every instance's core/tags uid (`krator_records`) and `tags.json` |
 | 2 | `rift` | `krator-biome` JSON | a 300 m tile where every mesh is LOD-chunked; kit hooks with no core kind (iridescent bark, far impostors); 48k instances |
 | 3 | `girder` | glTF from three's `GLTFExporter` | a 60 m region of Girder's centre: the material library's textures, extras, what glTF drops (hooks, instancing, custom attributes) |
 | 4 | `iziz` | `krator-atmos` JSON + glTF | the whole city's atmosphere (lamps, halos, smoke, searchlights, fog banks, 26 prop sets) on the Atmos autoload, over a glTF region of the centre |
@@ -77,7 +78,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
 | `tests/mask/` | copies of `core/mask/kmask.gd` (the mask rasteriser), `kmask_test.gd`, `golden.json`, kept by `tools/sync_core.py` |
 | `tests/terrain/` | copies of `core/terrain/kfield.gd` (`class_name KField`, the field's sampler: the importer uses it from here), `kfield_test.gd`, `golden-field.json`, kept by `tools/sync_core.py`; `field_import_test.gd` (the importer, here only) |
-| `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way |
+| `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way; `records_test.gd` (here only): the hyperjungle case imported, every MultiMesh instance carries a uid, each recomputed in GDScript from its exported matrix, every id resolving in `tags.json`, with negatives |
 | `tests/sim/` | a copy of `core/simulation/ksim.gd` (`KSim`: SIM.at and SIM.pose, the wander's 32-bit hash), kept by `tools/sync_core.py`; its test reads a world's export (`tests/dhelv/`) |
 | `tests/dhelv/` | `dhelv_sim_test.gd` (3906 rows of the page's trace, 0 differ; a negative: legs 10% faster) and `dhelv_nav_test.gd` (the path reaches the temple through the stone door on a braid strand, within 0.8 to 1.15 of DHN's length; a negative: the stone door's floors left out) |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos); `waves_gpu_check.gd`, the wave include drawn on a GPU against the CPU twin (needs a renderer: Xvfb + Compatibility) |

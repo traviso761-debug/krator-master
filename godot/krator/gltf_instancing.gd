@@ -50,6 +50,17 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 	mmi.multimesh = mm
 	mmi.name = gltf_node.resource_name
 	mmi.set_meta("krator_instances", n)
+	# core/tags: the side table the exporter writes in the node's extras (krator_records: one uid per instance, in the
+	# order of the TRS rows above), so the editor's import route keeps it too (krator/gltf_region.gd does the same at runtime)
+	var gi := state.get_nodes().find(gltf_node)
+	if gi >= 0:
+		var ex = (state.json["nodes"][gi] as Dictionary).get("extras", {})
+		if ex is Dictionary and ex.get("krator_records") is Array and (ex["krator_records"] as Array).size() == n:
+			mmi.set_meta("krator_records", PackedStringArray(ex["krator_records"]))
+			if ex.has("krator"):
+				mmi.set_meta("krator_record", str(ex["krator"]))
+			if ex.get("krator_index") is Array:
+				mmi.set_meta("krator_index", PackedInt32Array(ex["krator_index"]))
 	return mmi
 
 

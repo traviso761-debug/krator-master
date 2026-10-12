@@ -251,7 +251,12 @@ and the cross-build report.
   salt)` and never from the stream's history, so Godot can make tile N without tiles 1 to N-1.
 - **c. `core/tags` on the biome kits**, and ids on every exported node: each glTF node's extras carries its
   record id, and each MultiMesh carries a side table of record ids by instance index. Closes the spike's
-  "no mesh names its record yet".
+  "no mesh names its record yet". *Done 2026-10-12:* the biome core registers every item as a core/tags item set (instances read from
+  the kits' own matrices, so no per-instance objects) and every registered volume as a record; `BIO.export` writes a
+  uid per instance aligned with the matrices and a bucket's merged volumes; the glTF exporter writes ids in extras; the
+  importers put them on node metadata; `godot/tests/tags/records_test.gd` recomputes the hyperjungle case's uids in
+  GDScript (`biomes/GODOT.md`, "Records"). Open: a merged mesh that holds many records (Girder's furniture, one batch
+  per material) names none, and Iziz's case is not re-exported; placement records proper wait for the reseeding event (2b).
 - **d. `core/export`**: the `krator-world` container (`items`, `buckets`, `materials`, `textures`, `registry`,
   `terrain`, `atmos`, `fixtures`, `interiors`, `furniture`, `sim`, `convention`), with `EXPORT.register(section,
   fn)` so each module contributes its part, written headless by the harness into `godot/data/`. Keep glTF with
