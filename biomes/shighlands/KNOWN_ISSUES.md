@@ -19,7 +19,7 @@
       `kits/catalog/krator-master-furniture-generic-fruit.js` (biomes/FRUIT.md).
 - [ ] **Not in the open world**: `openworld/` has no southern highlands region yet; the kit's `fog` field must be
       bound by any world that wants the cloud forest (BIOME-API.md).
-- [ ] **The budget is the measured total, 18.5M triangles at q=1** (19.5M ceiling in `91-host-probe.js`). The first build drew
+- [ ] **The budget is the measured total, 18.5M triangles at q=1** (19.5M ceiling in `99-host-take.js`). The first build drew
       79M: the paramo's rosette trees were too many and their whorls too fine. The fixes, should it creep up again: fewer
       rosette trees (`PASSES`), the mid-distance copies of every spiral item (`SHIGH.it`), the detail radii in the host's
       `lod`. Shared trunk variants (a few templates instanced) would save memory, not drawn triangles.
