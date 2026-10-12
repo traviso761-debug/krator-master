@@ -474,27 +474,38 @@ def hands(c, J):
         H[:3, :3] = c.jrot[c.J[S + 'Hand']]
         H[:3, 3] = hand
         L = np.linalg.inv(H) @ G
-        curl = []
-        for f, ang in (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45)), ('Pinky', (74, 80, 45)),
-                       ('Thumb', (20, 30, 25))):
-            for k, a in enumerate(ang):
-                n = S + 'Hand%s%d' % (f, k + 1)
-                if n not in c.J or n not in J:
-                    continue
-                i = c.J[n]
-                ch = S + 'Hand%s%d' % (f, k + 2)
-                d = (c.jpos[c.J[ch]] if ch in c.J else c.jpos[i] + (c.jpos[i] - c.jpos[c.parents[i]])) - c.jpos[i]
-                ax = Y if f != 'Thumb' else np.cross(d / np.linalg.norm(d), X)
-                ax = ax / np.linalg.norm(ax)
-                th = math.radians(a)
-                Gr = rot_axis(ax, th)
-                if (Gr @ d).dot(X) < d.dot(X):          # bend toward the palm, not away
-                    Gr = rot_axis(ax, -th)
-                W = c.jrot[i]
-                curl.append([J[n]] + [round(float(x), 6) for x in glbio.mat_quat(W.T @ Gr @ W)])
+        curls = {}
+        for style, fingers in GRIP_STYLES.items():
+            curl = curls[style] = []
+            for f, ang in fingers:
+                for k, a in enumerate(ang):
+                    n = S + 'Hand%s%d' % (f, k + 1)
+                    if n not in c.J or n not in J:
+                        continue
+                    i = c.J[n]
+                    ch = S + 'Hand%s%d' % (f, k + 2)
+                    d = (c.jpos[c.J[ch]] if ch in c.J else c.jpos[i] + (c.jpos[i] - c.jpos[c.parents[i]])) - c.jpos[i]
+                    ax = Y if f != 'Thumb' else np.cross(d / np.linalg.norm(d), X)
+                    ax = ax / np.linalg.norm(ax)
+                    th = math.radians(a)
+                    Gr = rot_axis(ax, th)
+                    if (Gr @ d).dot(X) < d.dot(X):          # bend toward the palm, not away
+                        Gr = rot_axis(ax, -th)
+                    W = c.jrot[i]
+                    curl.append([J[n]] + [round(float(x), 6) for x in glbio.mat_quat(W.T @ Gr @ W)])
         out[side] = {'bone': J[S + 'Hand'], 'grip': [round(float(x), 6) for x in L[:3, 3]] +
-                     [round(float(x), 6) for x in glbio.mat_quat(L[:3, :3])], 'curl': curl}
+                     [round(float(x), 6) for x in glbio.mat_quat(L[:3, :3])], 'curls': curls,
+                     'arm': [J[S + 'Arm'], J[S + 'ForeArm'], J[S + 'Hand']]}
     return out
+
+
+# per grip style, per finger, how far (degrees) each joint closes: fist round a handle; trigger leaves the index
+# finger along a gun's barrel; wide wraps a cup
+_FIST = (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45)), ('Pinky', (74, 80, 45)),
+         ('Thumb', (20, 30, 25)))
+GRIP_STYLES = {'fist': _FIST,
+               'trigger': (('Index', (14, 22, 10)),) + _FIST[1:],
+               'wide': tuple((f, tuple(round(a * 0.55) for a in ang)) for f, ang in _FIST)}
 
 
 def rot_axis(a, t):

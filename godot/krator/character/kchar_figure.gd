@@ -73,6 +73,9 @@ func load_body(data_dir: String, body_id: String) -> void:
 	player.add_animation_library("", lib)
 	anims.free()
 	morph = KChar.morph_joints(skel, kit, KChar.morph_weights({}, kit))
+	if FileAccess.file_exists(dir + "/props.json"):
+		for p in JSON.parse_string(FileAccess.get_file_as_string(dir + "/props.json"))["props"]:
+			props[p["id"]] = p
 
 
 static func _scene(path: String) -> Node:
@@ -354,41 +357,71 @@ func rest_pose() -> void:
 	for i in J.size():
 		skeleton.set_bone_pose_rotation(i, KChar._q(J[i]["r"]))
 	skeleton.set_bone_pose_position(_hips, morph["t"][_hips])
-	_grip()
+	_after_clip(-1.0)
 
 
 # ---- holding props (data/props.json; the twin of hold() in 50-figure.js) ----
-# hold({"R": "sword", "L": "shield"}): each prop's GLB under a BoneAttachment3D on its hand bone, at the grip frame
-# skeleton.json 'hands' gives (the props are modelled in it); that hand's fingers close round it every frame
-var held := {"R": null, "L": null}
+# hold({"R": "sword", "L": "shield", "both": false}): each prop's GLB under a BoneAttachment3D on its hand bone, at the
+# grip frame skeleton.json 'hands' gives (the props are modelled in it); that hand's fingers close round it every
+# frame in the prop's grip style (fist, trigger, wide). both: the left hand takes hold of the right's prop too, at its
+# support (_two_hands). A prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws
+var held := {"R": null, "L": null, "both": false}
+var props := {}                          # data/props.json by id
+var reach := 0.0                         # how far short of its hold the left hand fell (_two_hands)
+var drawn := false                       # the bow string is pulled
 var _holders := {}
+var _bow := {}
+var _saved: Array[Quaternion] = []
+var _hold2 := 1.0
+const GAP := 0.1
+const MOVE := 0.45
+
+
+func _holder(side: String) -> Node3D:
+	if not _holders.has(side):
+		var h: Dictionary = skel["hands"][side]
+		var att := BoneAttachment3D.new()
+		att.name = "Hold" + side
+		skeleton.add_child(att)
+		att.bone_idx = int(h["bone"])
+		var g := Node3D.new()
+		g.transform = _grip_t(side)
+		att.add_child(g)
+		_holders[side] = g
+	return _holders[side]
+
+
+func _grip_t(side: String) -> Transform3D:
+	var gr: Array = skel["hands"][side]["grip"]
+	return Transform3D(Basis(Quaternion(gr[3], gr[4], gr[5], gr[6])), Vector3(gr[0], gr[1], gr[2]))
 
 
 func hold(want: Dictionary) -> void:
 	if not skel.has("hands"):
 		return
+	held["both"] = bool(want.get("both", false))
 	for side in ["R", "L"]:
 		var id = want.get(side)
 		if held[side] == id:
 			continue
 		held[side] = id
-		if not _holders.has(side):
-			var h: Dictionary = skel["hands"][side]
-			var att := BoneAttachment3D.new()
-			att.name = "Hold" + side
-			skeleton.add_child(att)
-			att.bone_idx = int(h["bone"])
-			var g := Node3D.new()
-			var gr: Array = h["grip"]
-			g.transform = Transform3D(Basis(Quaternion(gr[3], gr[4], gr[5], gr[6])), Vector3(gr[0], gr[1], gr[2]))
-			att.add_child(g)
-			_holders[side] = g
-		var holder: Node3D = _holders[side]
+		var holder := _holder(side)
 		for ch in holder.get_children():
+			holder.remove_child(ch)
 			ch.queue_free()
+		if side == "L":
+			_bow = {}
 		if id != null:
 			holder.add_child(_scene("%s/pieces/props/%s.glb" % [dir, id]))
+			if side == "L" and props.get(id, {}).has("string"):
+				_make_bow(holder, props[id])
+	_after_clip(-1.0)
+
+
+func _after_clip(dt: float) -> void:
 	_grip()
+	_two_hands(dt)
+	_bow_string()
 
 
 func _grip() -> void:
@@ -396,11 +429,215 @@ func _grip() -> void:
 		return
 	var J: Array = skel["joints"]
 	for side in ["R", "L"]:
-		if held[side] == null:
+		var id = held[side]
+		if id == null and side == "L" and _support().size() > 0:
+			id = held["R"]
+		if id == null:
 			continue
-		for c in skel["hands"][side]["curl"]:
+		var h: Dictionary = skel["hands"][side]
+		var style: String = props.get(id, {}).get("grip", "fist") if held[side] != null else "fist"
+		var curl: Array = h["curls"].get(style, h["curls"]["fist"]) if h.has("curls") else h["curl"]
+		for c in curl:
 			var i: int = int(c[0])
 			skeleton.set_bone_pose_rotation(i, KChar._q(J[i]["r"]) * Quaternion(c[1], c[2], c[3], c[4]))
+
+
+# a bone's pose in the skeleton's space, from the local poses (Skeleton3D's global cache refreshes on its own time)
+func _gp(b: int) -> Transform3D:
+	var t := skeleton.get_bone_pose(b)
+	var p := skeleton.get_bone_parent(b)
+	while p >= 0:
+		t = skeleton.get_bone_pose(p) * t
+		p = skeleton.get_bone_parent(p)
+	return t
+
+
+func _support() -> Array:
+	if not held["both"] or held["R"] == null or not _holders.has("R"):
+		return []
+	return props.get(held["R"], {}).get("support", [])
+
+
+# turn bone b by q (in the skeleton's space) about its own origin
+func _turn(b: int, q: Quaternion) -> void:
+	var par := skeleton.get_bone_parent(b)
+	var pq := _gp(par).basis.get_rotation_quaternion() if par >= 0 else Quaternion()
+	skeleton.set_bone_pose_rotation(b, (pq.inverse() * q * pq * skeleton.get_bone_pose_rotation(b)).normalized())
+
+
+# twin of twoHands in 50-figure.js: the left hand onto the right's prop at the point of its support segment nearest
+# where the clip has it (within the arm's reach, a hand's width from the right hand), its handle axis along the
+# segment, fingers away from the shoulder; the right arm brings the prop in when the left cannot reach; a clip that
+# keeps the hands too far apart eases the arms back to its own pose
+func _two_hands(dt: float) -> void:
+	var sp := _support()
+	if sp.is_empty():
+		_hold2 = 1.0
+		return
+	var h: Dictionary = skel["hands"]["L"]
+	var arm: Array = h["arm"]
+	var r_arm: Array = skel["hands"]["R"]["arm"]
+	var up: int = int(arm[0])
+	var fore: int = int(arm[1])
+	var hand: int = int(arm[2])
+	var all := arm + r_arm
+	_saved.clear()
+	for b in all:
+		_saved.append(skeleton.get_bone_pose_rotation(int(b)))
+	var R := _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R")
+	var A := R * Vector3(sp[0], sp[1], sp[2])
+	var B := R * Vector3(sp[3], sp[4], sp[5])
+	var O := R.origin
+	var gl := _grip_t("L")
+	var M := _gp(hand) * gl
+	var S := _gp(up).origin
+	var l1 := _gp(fore).origin.distance_to(S)
+	var l2 := _gp(hand).origin.distance_to(_gp(fore).origin)
+	var far := l1 + l2 + 0.05
+	var Y := B - A
+	var L := Y.length()
+	var t := 0.0
+	if L < 1e-4:
+		Y = R.basis.y.normalized()
+	else:
+		Y /= L
+		t = clampf((M.origin - A).dot(Y), 0.0, L)
+		var ts := (S - A).dot(Y)
+		var off := ((S - A) - Y * ts).length()
+		if off < far:
+			var hw := sqrt(far * far - off * off)
+			t = clampf(t, ts - hw, ts + hw)
+		var o := (O - A).dot(Y)
+		if absf(t - o) < GAP:
+			t = o + GAP if (o + GAP <= L if t >= o else o - GAP < 0.0) else o - GAP
+		t = clampf(t, 0.0, L)
+	var P := A + Y * t
+	if M.basis.y.dot(Y) < 0.0:
+		Y = -Y
+	var Z := (P - S) + M.basis.z.normalized() * 0.3
+	Z -= Y * Z.dot(Y)
+	if Z.length_squared() < 1e-8:
+		Z = R.basis.z
+	Z = Z.normalized()
+	var X := Y.cross(Z)
+	var target := Transform3D(Basis(X, Y, Z), P) * gl.affine_inverse()
+	var W := target.origin
+	var qa := target.basis.get_rotation_quaternion()
+	var dW := W.distance_to(S)
+	if dW > l1 + l2 - 0.01:
+		var d := (S - W).normalized() * minf(dW - (l1 + l2 - 0.01), MOVE)
+		var rh: int = int(r_arm[2])
+		var rt := _gp(rh)
+		_reach_arm(int(r_arm[0]), int(r_arm[1]), rh, rt.origin + d, rt.basis.get_rotation_quaternion())
+		W += d
+	_reach_arm(up, fore, hand, W, qa)
+	reach = _gp(hand).origin.distance_to(W)
+	var want := clampf((0.16 - reach) / 0.1, 0.0, 1.0)
+	_hold2 = want if dt < 0.0 else _hold2 + clampf(want - _hold2, -dt * 4.0, dt * 4.0)
+	if _hold2 < 1.0:
+		for k in all.size():
+			skeleton.set_bone_pose_rotation(int(all[k]), _saved[k].slerp(skeleton.get_bone_pose_rotation(int(all[k])), _hold2))
+
+
+# the two-bone solve: the elbow opens or closes to the distance, the upper arm swings onto the target with the elbow
+# turned back to the side it was on, and the hand turns to q (all in the skeleton's space)
+func _reach_arm(up: int, fore: int, hand: int, w: Vector3, q: Quaternion) -> void:
+	var S := _gp(up).origin
+	var E := _gp(fore).origin
+	var T := _gp(hand).origin
+	var l1 := E.distance_to(S)
+	var l2 := T.distance_to(E)
+	var d := clampf(w.distance_to(S), absf(l1 - l2) + 1e-3, l1 + l2 - 1e-3)
+	var u := S - E
+	var v := T - E
+	var cur := u.angle_to(v)
+	var want := acos(clampf((l1 * l1 + l2 * l2 - d * d) / (2.0 * l1 * l2), -1.0, 1.0))
+	var k := u.cross(v)
+	if k.length_squared() < 1e-10:
+		k = Vector3(0, 0, 1).cross(u)
+	_turn(fore, Quaternion(k.normalized(), want - cur))
+	var pole := E
+	T = _gp(hand).origin
+	_turn(up, Quaternion((T - S).normalized(), (w - S).normalized()))
+	E = _gp(fore).origin
+	var ax := (w - S).normalized()
+	var eu := (E - S) - ax * ax.dot(E - S)
+	var pu := (pole - S) - ax * ax.dot(pole - S)
+	if eu.length_squared() > 1e-8 and pu.length_squared() > 1e-8:
+		var a := eu.angle_to(pu)
+		if eu.cross(pu).dot(ax) < 0.0:
+			a = -a
+		_turn(up, Quaternion(ax, a))
+	var par := skeleton.get_bone_parent(hand)
+	skeleton.set_bone_pose_rotation(hand, (_gp(par).basis.get_rotation_quaternion().inverse() * q).normalized())
+
+
+# twin of bowString: the string between the bow's limb tips through the drawing hand while it is behind the bow and
+# near its middle, the bow turned about its handle to face that hand, and an arrow once the string is pulled
+func _make_bow(holder: Node3D, p: Dictionary) -> void:
+	var pivot := Node3D.new()
+	for ch in holder.get_children():
+		holder.remove_child(ch)
+		pivot.add_child(ch)
+	holder.add_child(pivot)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.85, 0.80, 0.68)
+	mat.roughness = 0.9
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.0025
+	cyl.bottom_radius = 0.0025
+	cyl.height = 1.0
+	cyl.radial_segments = 4
+	cyl.material = mat
+	var s: Array = p["string"]
+	_bow = {"top": Vector3(s[0], s[1], s[2]), "bot": Vector3(s[3], s[4], s[5]), "pivot": pivot, "a": MeshInstance3D.new(),
+		"c": MeshInstance3D.new(), "arrow": null}
+	for k in ["a", "c"]:
+		_bow[k].mesh = cyl
+		pivot.add_child(_bow[k])
+	if p.has("arrow"):
+		var ar := _scene("%s/pieces/props/%s.glb" % [dir, p["arrow"]]) as Node3D
+		ar.visible = false
+		pivot.add_child(ar)
+		_bow["arrow"] = ar
+
+
+func _span(m: MeshInstance3D, a: Vector3, b: Vector3) -> void:
+	var d := b - a
+	var n := maxf(d.length(), 1e-4)
+	m.transform = Transform3D(Basis(Quaternion(Vector3.UP, d / n)) * Basis.from_scale(Vector3(1, n, 1)), (a + b) * 0.5)
+
+
+func _bow_string() -> void:
+	drawn = false
+	if _bow.is_empty():
+		return
+	var top: Vector3 = _bow["top"]
+	var bot: Vector3 = _bow["bot"]
+	var rest := (top.z + bot.z) * 0.5
+	var pivot: Node3D = _bow["pivot"]
+	var lh := _gp(int(skel["hands"]["L"]["bone"])) * _grip_t("L")
+	var rp := _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R").origin
+	var p := lh.affine_inverse() * rp                          # the drawing hand in the bow hand's grip frame
+	var n := Vector2(p.x, p.z).length()
+	var turn := 0.0
+	if absf(p.y) < 0.35 and n > 0.12 and n < 0.95:
+		turn = atan2(-p.x, -p.z)
+	pivot.transform = Transform3D(Basis(Vector3.UP, turn), Vector3.ZERO)
+	p = p.rotated(Vector3.UP, -turn)
+	drawn = turn != 0.0 and p.z < rest - 0.02
+	if drawn:
+		_span(_bow["a"], top, p)
+		_span(_bow["c"], p, bot)
+	else:
+		_span(_bow["a"], top, bot)
+	_bow["c"].visible = drawn
+	var ar = _bow["arrow"]
+	if ar != null:
+		ar.visible = drawn and p.z < -0.2
+		if ar.visible:
+			var to := (Vector3(0, 0.04 * (signf(p.y) if p.y != 0.0 else 1.0), 0) - p).normalized()
+			ar.transform = Transform3D(Basis(Quaternion(Vector3.BACK, to)), p)
 
 
 func play(clip: String) -> void:
@@ -430,4 +667,4 @@ func _process(dt: float) -> void:
 		return
 	# the clip writes the hips where the base body's are; the morph moves them
 	skeleton.set_bone_pose_position(_hips, skeleton.get_bone_pose_position(_hips) + morph["d"][_hips])
-	_grip()
+	_after_clip(dt)

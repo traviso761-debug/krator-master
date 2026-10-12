@@ -14,6 +14,8 @@ through window._kchar:
   feet         height -1 and +1, age +1: the lowest skin vertex stays on the ground (within 5 mm)
   morph        height +1 makes the figure taller; weight +1 moves the torso piece's vertices too; no NaN anywhere
   clips        walk moves the thigh; the action clips are there and a play-once clip returns to the idle
+  props        in every clip whose two_hands names a prop, the left hand reaches that prop's support (data/props.json);
+               the bow's string is drawn in bow_scan
   random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
@@ -25,7 +27,7 @@ THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
 
 CHECKS = r'''async () => {
-  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [] };
+  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [] };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
   for (const body of Object.keys(D.bodies)) {
     await K.body(body);
@@ -86,6 +88,19 @@ CHECKS = r'''async () => {
     await new Promise(r => setTimeout(r, 30));          // play() swaps the clip once the pieces' promise settles
     if (!fig.action || fig.action.getClip().name !== 'idle') out.morph.push(body + ': after thrust the figure plays ' + (fig.action && fig.action.getClip().name));
     if (Object.keys(fig.clips).length < 100) out.morph.push(body + ': only ' + Object.keys(fig.clips).length + ' clips');
+    // props: where a clip says two_hands, the left hand holds the right's prop (short by under 3 cm in most frames);
+    // the bow's string is drawn in the aim-and-scan loop
+    for (const c of D.clips.clips.filter(c => c.two_hands)) for (const p of c.two_hands) {
+      await fig.hold({ R:p, L:null, both:true }); await fig.play(c.key);
+      let miss = 0;
+      for (let k = 0; k < 12; k++){ fig.update(0.1); if (fig.reach > 0.03) miss++; }
+      if (miss > 3) out.props.push(body + ' ' + c.key + ' ' + p + ': the left hand misses in ' + miss + ' of 12 frames');
+    }
+    await fig.hold({ R:null, L:'bow' }); await fig.play('bow_scan');
+    let drawn = 0;
+    for (let k = 0; k < 8; k++){ fig.update(0.2); drawn += fig.drawn ? 1 : 0; }   // after the fade from the last clip
+    if (drawn < 6) out.props.push(body + ' bow_scan: the string is not drawn');
+    await fig.hold({ R:null, L:null });
     await fig.play(null);
     out.random = out.random && JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0])) === JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0]));
     for (const P of D.peoples) for (let s = 1; s <= 25; s++) {
@@ -145,6 +160,7 @@ async def run(page_path, do_assert, out_dir):
             fails += ['morph: ' + m for m in r['morph']]
             if r['clips'] < 1e-4:
                 fails.append('clips: walk did not move the thigh')
+            fails += ['props: ' + m for m in r['props']]
             if not r['random']:
                 fails.append('random: one seed, two strangers')
             if r['ranges']:

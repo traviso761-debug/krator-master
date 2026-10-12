@@ -9,7 +9,8 @@
                          armour covers (KCHAR.hidden), poses the skeleton (KCHAR.pose) and dyes the armour and hair
    fig.play(name)        a clip from the body's anims.glb, or null for the bind (A) pose
    fig.update(dt)        once a frame
-   fig.hold({R, L})      props in the hands (ids from data/props.json), or null
+   fig.hold({R, L, both}) props in the hands (ids from data/props.json, which the page puts in KCharFigure.props), or
+                         null; both: the left hand also holds the right's prop at its support (a clip's two_hands)
    fig.headWorld(v3)     the head joint's world position
    The bones are built from skeleton.json, so every piece binds to the same objects. Each piece keeps its own Skeleton
    (same bones, its own inverse binds): a slider's skin scale goes in as boneInverses[i] = S(s[i]) * IBM[i], scaling
@@ -277,14 +278,17 @@ function KCharFigure(body, sliders, load){
     bones.forEach(function(b, i){ b.quaternion.fromArray(J[i].r); });
     self.hips.position.fromArray(self.pose.t[byName.Hips]);
     self.hips.position.y += self.pose.lift;
-    grip();
+    afterClip();
   };
 
   /* ---- holding props (data/props.json, tools/make_props.py) ----
      hold({ R:'sword', L:'shield' }): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
-     gives (the props are modelled in it), and that hand's fingers close round it: their local rotation becomes the
-     rest one times the curl, every frame after the clip (a clip's own finger motion gives way to the grip) */
-  var held = { R:null, L:null }, holders = {}, propCache = {}, curlQ = new THREE.Quaternion();
+     gives (the props are modelled in it), and that hand's fingers close round it in the prop's grip style (fist,
+     trigger, wide): their local rotation becomes the rest one times the curl, every frame after the clip (a clip's own
+     finger motion gives way to the grip). With both, the left hand takes hold of the right's prop too (twoHands); a
+     prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws it (bowString) */
+  var held = { R:null, L:null, both:false }, holders = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  function prop(id){ return (id && KCharFigure.props[id]) || {}; }
   function holder(side){
     if(!holders[side]){
       var h = skel.hands[side], g = new THREE.Group();
@@ -294,21 +298,28 @@ function KCharFigure(body, sliders, load){
     }
     return holders[side];
   }
+  function propScene(id){
+    if(!propCache[id]) propCache[id] = load('props/' + id).then(function(gl){ return gl.scene; });
+    return propCache[id];
+  }
   this.hold = function(want){
     if(!skel.hands) return Promise.resolve();
+    held.both = !!(want && want.both);
     return Promise.all(['R', 'L'].map(function(side){
       var id = (want && want[side]) || null;
       if(held[side] === id) return null;
       held[side] = id;
       var g = holder(side);
       while(g.children.length) g.remove(g.children[0]);
+      if(side === 'L') bow = null;
       if(!id) return null;
-      if(!propCache[id]) propCache[id] = load('props/' + id).then(function(gl){ return gl.scene; });
-      return propCache[id].then(function(scene){
+      return propScene(id).then(function(scene){
         if(held[side] !== id) return;
         var m = scene.clone(true);
         m.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
         g.add(m);
+        var p = prop(id);
+        if(side === 'L' && p.string) return makeBow(g, p);
       });
     }));
   };
@@ -316,12 +327,186 @@ function KCharFigure(body, sliders, load){
   function grip(){
     if(!skel.hands) return;
     ['R', 'L'].forEach(function(side){
-      if(!held[side]) return;
-      skel.hands[side].curl.forEach(function(c){
+      var id = held[side] || (side === 'L' && held.both && support() ? held.R : null);
+      if(!id) return;
+      var h = skel.hands[side], style = held[side] ? prop(id).grip : 'fist';
+      var curl = h.curls ? h.curls[style] || h.curls.fist : h.curl;
+      curl.forEach(function(c){
         bones[c[0]].quaternion.fromArray(J[c[0]].r).multiply(curlQ.set(c[1], c[2], c[3], c[4]));
       });
     });
   }
+
+  /* twoHands: the left hand onto the right's prop. Its support is a segment of the handle (in the prop's frame); the
+     hand's grip frame goes to the point of it nearest where the clip has the hand (kept a hand's width from the right
+     one), its handle axis along the segment, thumb the way the clip has it, and turned round the segment so the
+     fingers point away from the shoulder. The arm reaches it with a two-bone solve (upper arm and forearm; the elbow
+     stays on the side the clip bends it), and the hand turns to the grip */
+  var V = function(){ return new THREE.Vector3(); }, Q = function(){ return new THREE.Quaternion(); };
+  var tA = V(), tB = V(), tO = V(), tP = V(), tX = V(), tY = V(), tZ = V(), tS = V(), tE = V(), tW = V(), tT = V(),
+      tU = V(), tV = V(), tK = V(), tM = new THREE.Matrix4(), tM2 = new THREE.Matrix4(), tGL = null,
+      qA = Q(), qB = Q(), qC = Q(), qD = Q(), GAP = 0.1;
+  this.reach = 0;
+  function support(){ var s = held.R && prop(held.R).support; return held.both && s && holders.R ? s : null; }
+  function turnWorld(b, q){            // turn bone b by world rotation q about its own origin
+    b.parent.getWorldQuaternion(qB);
+    qC.copy(qB).invert().multiply(q).multiply(qB);
+    b.quaternion.premultiply(qC);
+    b.updateMatrixWorld(true);
+  }
+  var saved = [Q(), Q(), Q(), Q(), Q(), Q()], hold2 = 1, tD = V(), tR = V(), qR = Q(), MOVE = 0.45;
+  function twoHands(dt){
+    var sp = support();
+    if(!sp){ hold2 = 1; return; }
+    var h = skel.hands.L, arm = h.arm || [byName.LeftArm, byName.LeftForeArm, byName.LeftHand];
+    var up = bones[arm[0]], fore = bones[arm[1]], hand = bones[arm[2]];
+    self.group.updateMatrixWorld(true);
+    if(!tGL) tGL = new THREE.Matrix4().compose(V().fromArray(h.grip), Q().fromArray(h.grip.slice(3, 7)), V().set(1, 1, 1));
+    var R = holders.R.matrixWorld;
+    tA.fromArray(sp, 0).applyMatrix4(R); tB.fromArray(sp, 3).applyMatrix4(R);
+    tO.setFromMatrixPosition(R);
+    // where the clip has the left hand's grip, and the segment's point nearest it
+    tM.multiplyMatrices(hand.matrixWorld, tGL);
+    tP.setFromMatrixPosition(tM);
+    up.getWorldPosition(tS); fore.getWorldPosition(tE); hand.getWorldPosition(tT);
+    var l1 = tE.distanceTo(tS), l2 = tT.distanceTo(tE), far = l1 + l2 + 0.05;
+    for(var k = 0; k < 3; k++) saved[k].copy(bones[arm[k]].quaternion);
+    tY.subVectors(tB, tA);
+    var L = tY.length(), t = 0;
+    if(L < 1e-4) tY.setFromMatrixColumn(R, 1).normalize();
+    else {
+      tY.divideScalar(L);
+      t = THREE.MathUtils.clamp(tT.subVectors(tP, tA).dot(tY), 0, L);
+      // but within the arm's reach when some of the segment is: the stretch of it round the shoulder's nearest point
+      var ts = tT.subVectors(tS, tA).dot(tY), off = tT.addScaledVector(tY, -ts).length();
+      if(off < far){ var hw = Math.sqrt(far * far - off * off); t = THREE.MathUtils.clamp(t, ts - hw, ts + hw); }
+      var o = tT.subVectors(tO, tA).dot(tY);                  // the right hand's place on it
+      if(Math.abs(t - o) < GAP) t = (t >= o ? o + GAP <= L : o - GAP < 0) ? o + GAP : o - GAP;
+      t = THREE.MathUtils.clamp(t, 0, L);
+    }
+    tP.copy(tA).addScaledVector(tY, t);
+    // the frame: Y along the handle (the clip's thumb side), Z (the fingers) away from the shoulder, X = Y x Z
+    tX.setFromMatrixColumn(tM, 1);
+    if(tX.dot(tY) < 0) tY.negate();
+    tZ.subVectors(tP, tS).addScaledVector(tX.setFromMatrixColumn(tM, 2).normalize(), 0.3);
+    tZ.addScaledVector(tY, -tZ.dot(tY));
+    if(tZ.lengthSq() < 1e-8) tZ.setFromMatrixColumn(R, 2);
+    tZ.normalize();
+    tX.crossVectors(tY, tZ);
+    tM2.makeBasis(tX, tY, tZ).setPosition(tP);
+    tM.copy(tGL).invert();
+    tM2.multiply(tM);                                         // the hand bone's world frame there
+    tW.setFromMatrixPosition(tM2);
+    qA.setFromRotationMatrix(tM2);
+    // too far for the left arm: the right brings the prop toward the left shoulder by the shortfall (up to MOVE),
+    // keeping its turn, and both arms reach
+    var dW = tW.distanceTo(tS), lim = l1 + l2 - 0.01, rArm = skel.hands.R.arm;
+    if(rArm) for(k = 0; k < 3; k++) saved[3 + k].copy(bones[rArm[k]].quaternion);
+    if(dW > lim && rArm){
+      tD.subVectors(tS, tW).normalize().multiplyScalar(Math.min(dW - lim, MOVE));
+      var rh = bones[rArm[2]];
+      reachArm(bones[rArm[0]], bones[rArm[1]], rh, rh.getWorldPosition(tR).add(tD), rh.getWorldQuaternion(qR));
+      tW.add(tD);
+    }
+    reachArm(up, fore, hand, tW, qA);
+    self.reach = hand.getWorldPosition(tT).distanceTo(tW);   // how far short the hand fell (0: it holds on)
+    // a clip that keeps the hands too far apart for both to hold: the arms go back to the clip's pose (eased, so
+    // they do not snap) rather than reach out stiff toward the handle
+    var want2 = THREE.MathUtils.clamp((0.16 - self.reach) / 0.1, 0, 1);
+    hold2 = dt === undefined ? want2 : hold2 + THREE.MathUtils.clamp(want2 - hold2, -dt * 4, dt * 4);
+    if(hold2 < 1){
+      var all = rArm ? arm.concat(rArm) : arm;
+      for(k = 0; k < all.length; k++) bones[all[k]].quaternion.copy(saved[k].slerp(bones[all[k]].quaternion, hold2));
+      self.bones[0].updateMatrixWorld(true);
+    }
+  }
+  // the two-bone solve: open or close the elbow to the distance, swing the upper arm onto the target with the elbow
+  // turned back to the side it was on, and turn the hand to q (world)
+  var sS = V(), sE = V(), sT = V(), sU = V(), sV = V(), sK = V(), sPole = V(), sQ = Q();
+  function reachArm(up, fore, hand, w, q){
+    up.getWorldPosition(sS); fore.getWorldPosition(sE); hand.getWorldPosition(sT);
+    var l1 = sE.distanceTo(sS), l2 = sT.distanceTo(sE);
+    var d = THREE.MathUtils.clamp(w.distanceTo(sS), Math.abs(l1 - l2) + 1e-3, l1 + l2 - 1e-3);
+    sU.subVectors(sS, sE); sV.subVectors(sT, sE);
+    var cur = sU.angleTo(sV), want = Math.acos(THREE.MathUtils.clamp((l1 * l1 + l2 * l2 - d * d) / (2 * l1 * l2), -1, 1));
+    sK.crossVectors(sU, sV);
+    if(sK.lengthSq() < 1e-10) sK.set(0, 0, 1).cross(sU);
+    turnWorld(fore, qD.setFromAxisAngle(sK.normalize(), want - cur));
+    sPole.copy(sE);
+    hand.getWorldPosition(sT);
+    turnWorld(up, qD.setFromUnitVectors(sU.subVectors(sT, sS).normalize(), sV.subVectors(w, sS).normalize()));
+    fore.getWorldPosition(sE);
+    sK.copy(sV);                                              // shoulder -> target
+    sU.subVectors(sE, sS); sU.addScaledVector(sK, -sK.dot(sU));
+    sPole.sub(sS); sPole.addScaledVector(sK, -sK.dot(sPole));
+    if(sU.lengthSq() > 1e-8 && sPole.lengthSq() > 1e-8){
+      var a = sU.angleTo(sPole);
+      if(sT.crossVectors(sU, sPole).dot(sK) < 0) a = -a;
+      turnWorld(up, qD.setFromAxisAngle(sK, a));
+    }
+    hand.parent.getWorldQuaternion(sQ);
+    hand.quaternion.copy(sQ.invert().multiply(q));
+    hand.updateMatrixWorld(true);
+  }
+
+  /* bowString: the string between the bow's limb tips (data/props.json string, in the bow's frame), drawn through
+     the right hand's grip point while that is behind the bow and near its middle, and an arrow from there to the bow
+     hand once the string is pulled; straight and empty otherwise. The clips hold the bow hand at various turns, so
+     the bow turns about its own handle to face the drawing hand */
+  var bow = null, sMat = new THREE.MeshStandardMaterial({ color:0xd9ccad, roughness:0.9 });
+  function makeBow(g, p){
+    var cyl = new THREE.CylinderGeometry(0.0025, 0.0025, 1, 4, 1, true), pivot = new THREE.Group();
+    while(g.children.length) pivot.add(g.children[0]);
+    g.add(pivot);
+    var b = { top:V().fromArray(p.string, 0), bot:V().fromArray(p.string, 3), a:new THREE.Mesh(cyl, sMat),
+              c:new THREE.Mesh(cyl, sMat), arrow:null, pivot:pivot, turn:0 };
+    pivot.add(b.a); pivot.add(b.c);
+    bow = b;
+    bowString();
+    return p.arrow ? propScene(p.arrow).then(function(scene){
+      if(bow !== b) return;
+      b.arrow = scene.clone(true); b.arrow.visible = false; pivot.add(b.arrow);
+    }) : null;
+  }
+  var yAx = new THREE.Vector3(0, 1, 0), zAx = new THREE.Vector3(0, 0, 1);
+  function span(m, a, b){
+    tU.subVectors(b, a);
+    m.position.addVectors(a, b).multiplyScalar(0.5);
+    m.scale.set(1, Math.max(1e-4, tU.length()), 1);
+    m.quaternion.setFromUnitVectors(yAx, tU.normalize());
+  }
+  function bowString(){
+    if(!bow) return;
+    var mid = null, rest = (bow.top.z + bow.bot.z) / 2;
+    if(skel.hands.R){
+      self.group.updateMatrixWorld(true);
+      tP.setFromMatrixPosition(holder('R').matrixWorld);
+      bow.pivot.parent.worldToLocal(tP);                      // the drawing hand in the bow hand's grip frame
+      var n = Math.hypot(tP.x, tP.z), turn = 0;
+      if(Math.abs(tP.y) < 0.35 && n > 0.12 && n < 0.95) turn = Math.atan2(-tP.x, -tP.z);
+      bow.turn = turn;
+      bow.pivot.quaternion.setFromAxisAngle(yAx, turn);
+      tP.applyAxisAngle(yAx, -turn);                          // into the turned bow's frame
+      if(turn !== 0 && tP.z < rest - 0.02) mid = tP;
+    }
+    if(mid){
+      span(bow.a, bow.top, mid); span(bow.c, mid, bow.bot);
+      bow.c.visible = true;
+    } else {
+      span(bow.a, bow.top, bow.bot);
+      bow.c.visible = false;
+    }
+    if(bow.arrow){
+      var drawn = mid && mid.z < -0.2;
+      bow.arrow.visible = !!drawn;
+      if(drawn){
+        bow.arrow.position.copy(mid);
+        bow.arrow.quaternion.setFromUnitVectors(zAx, tV.set(0, 0.04 * Math.sign(mid.y || 1), 0).sub(mid).normalize());
+      }
+    }
+    self.drawn = !!mid;
+  }
+  function afterClip(dt){ grip(); twoHands(dt); bowString(); }
   function hipsMorph(){
     var d = self.morphDelta && self.morphDelta[byName.Hips];
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }
@@ -354,10 +539,11 @@ function KCharFigure(body, sliders, load){
     self.mixer.update(dt);
     self.hips.position.y += self.pose.lift;
     hipsMorph();
-    grip();
+    afterClip(dt);
   };
 
   this.headWorld = function(v){ return self.headBone.getWorldPosition(v); };
 
   this.dispose = function(){ self.mixer.stopAllAction(); self.group.parent && self.group.parent.remove(self.group); };
 }
+KCharFigure.props = {};      // data/props.json by id (the page fills it)

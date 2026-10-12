@@ -1,5 +1,5 @@
 # Five strangers from kits/characters' MakeHuman bodies, drawn by Godot and saved as a PNG: one per people, both
-# bodies, the middle one mid-walk. On a machine with no display:
+# bodies, holding props in clips (a drawn bow, a two-handed hoe and rifle). On a machine with no display:
 #   xvfb-run -a -s "-screen 0 1400x800x24" godot --path godot --rendering-method gl_compatibility \
 #     --rendering-driver opengl3 --script res://tests/character/kchar_shot.gd -- --out=/abs/path.png [--face]
 extends SceneTree
@@ -8,7 +8,7 @@ const DIR := "res://data/characters"
 var frames := 0
 var out := "user://kchar_shot.png"
 var face := false
-var walker: KCharFigure
+var walkers: Array[KCharFigure] = []
 
 
 func _init() -> void:
@@ -28,10 +28,10 @@ func _init() -> void:
 		fig.position = Vector3((i - 2) * (0.42 if face else 0.95), 0, 0)
 		root.add_child(fig)
 		fig.apply(KChar.stranger(cast[i][2], fig.kit, peoples[cast[i][1]]))
-		fig.hold([{"R": "sword", "L": "shield"}, {"L": "bow"}, {"R": "axe"}, {"R": "spear"}, {"R": "rifle"}][i])
-		if i == 2 and not face:
-			fig.play("walk")
-			walker = fig
+		fig.hold([{"R": "sword", "L": "shield"}, {"L": "bow"}, {"R": "axe"}, {"R": "hoe", "both": true}, {"R": "rifle", "both": true}][i])
+		if not face:
+			fig.play(["idle", "bow_scan", "walk", "ual_chop", "walk_shoot"][i])
+			walkers.append(fig)
 	var cam := Camera3D.new()
 	cam.fov = 30
 	root.add_child(cam)
@@ -55,8 +55,8 @@ func _init() -> void:
 
 func _process(dt: float) -> bool:
 	frames += 1
-	if walker:
-		walker._process(1.0 / 30.0)
+	for w in walkers:
+		w._process(1.0 / 30.0)
 	if frames == 24:
 		root.get_viewport().get_texture().get_image().save_png(out)
 		print("saved ", out)

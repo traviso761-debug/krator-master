@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 16 (22%) | 0 (0%) | 0 (0%) | 39 (53%) | 18 (25%) |
+| KB | 16 (19%) | 0 (0%) | 0 (0%) | 39 (47%) | 29 (34%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,12 +14,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 11.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-rig.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-figure.js` | 18.5 | [draw] | 14 | 0 | 0 | 1 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |  |
-| `src/90-editor.js` | 27.6 | [web] | 13 | 0 | 49 | 27 | 2 | 2 | 0 | 0 | 0 | 0 | 1 |  |
+| `src/50-figure.js` | 28.7 | [draw] | 29 | 0 | 0 | 1 | 0 | 1 | 4 | 0 | 0 | 0 | 0 |  |
+| `src/90-editor.js` | 27.7 | [web] | 13 | 0 | 49 | 27 | 2 | 2 | 0 | 0 | 0 | 0 | 1 |  |
 
 ## Notes
 
 - `50-figure.js` [draw]: the morph blend (KMR1 deltas over `_vidx`), the joint and inverse-bind deltas and the tint
   are what the Godot twin needs to match; its `shader` count is the cut-out hook (fragments that pass the alpha test
-  are written opaque), which Godot's alpha scissor already does.
+  are written opaque), which Godot's alpha scissor already does. Its two-handed hold (the left arm's two-bone solve onto
+  a prop's support) and the live bow string are matched in `kchar_figure.gd` (`_two_hands`, `_bow_string`).
 - `90-editor.js` [web]: its `net` lines fetch the pieces (`pieces/<key>.txt`); Godot loads the GLBs as resources.

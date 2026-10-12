@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip: the chop loop, the overhead chop and the heavy swing stand in. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first.",
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip: the chop loop, the overhead chop and the heavy swing stand in. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
  "groups": [
   {
    "id": "move",
@@ -169,7 +169,10 @@
      "sword",
      "spear"
     ]
-   }
+   },
+   "two_hands": [
+    "spear"
+   ]
   },
   {
    "key": "slash_charged",
@@ -185,7 +188,11 @@
      "dagger",
      "warhammer"
     ]
-   }
+   },
+   "two_hands": [
+    "axe",
+    "warhammer"
+   ]
   },
   {
    "key": "combo",
@@ -217,7 +224,13 @@
      "pickaxe",
      "sword"
     ]
-   }
+   },
+   "two_hands": [
+    "axe",
+    "warhammer",
+    "mace",
+    "pickaxe"
+   ]
   },
   {
    "key": "axe_spin",
@@ -248,7 +261,12 @@
      "axe",
      "hammer"
     ]
-   }
+   },
+   "two_hands": [
+    "mace",
+    "warhammer",
+    "axe"
+   ]
   },
   {
    "key": "spear_walk",
@@ -260,7 +278,10 @@
     "R": [
      "spear"
     ]
-   }
+   },
+   "two_hands": [
+    "spear"
+   ]
   },
   {
    "key": "shield_push",
@@ -340,7 +361,11 @@
      "rifle",
      "crossbow"
     ]
-   }
+   },
+   "two_hands": [
+    "rifle",
+    "crossbow"
+   ]
   },
   {
    "key": "pistol_draw",
@@ -403,7 +428,11 @@
      "rifle",
      "crossbow"
     ]
-   }
+   },
+   "two_hands": [
+    "rifle",
+    "crossbow"
+   ]
   },
   {
    "key": "throw",
@@ -474,7 +503,13 @@
      "dagger",
      "warhammer"
     ]
-   }
+   },
+   "two_hands": [
+    "sword",
+    "axe",
+    "mace",
+    "warhammer"
+   ]
   },
   {
    "key": "dodge_step",
@@ -791,7 +826,12 @@
      "hoe",
      "hammer"
     ]
-   }
+   },
+   "two_hands": [
+    "axe",
+    "pickaxe",
+    "hoe"
+   ]
   },
   {
    "key": "ual_repair",

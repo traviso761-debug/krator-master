@@ -156,6 +156,27 @@ func _init() -> void:
 		var idx2 := fig.skeleton.find_bone("RightHandIndex2")
 		var rest_q := KChar._q(fig.skel["joints"][idx2]["r"])
 		ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) > 0.5, "the right index finger curls round the grip")
+		# a pistol: the trigger finger stays straighter than the others
+		fig.hold({"R": "pistol", "L": null})
+		var mid2 := fig.skeleton.find_bone("RightHandMiddle2")
+		ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) < 0.6 * fig.skeleton.get_bone_pose_rotation(mid2).angle_to(KChar._q(fig.skel["joints"][mid2]["r"])),
+			"the pistol's trigger finger stays out of the fist")
+		# two hands: in the hoe chop and the long-gun shot the left hand holds the right's prop at its support
+		for c in [["ual_chop", "hoe"], ["gun_shot", "rifle"], ["spear_walk", "spear"]]:
+			fig.hold({"R": c[1], "L": null, "both": true})
+			fig.play(c[0])
+			var worst2 := 0.0
+			for k in 8:
+				fig._process(0.11)
+				worst2 = maxf(worst2, fig.reach)
+			var hl: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("LeftHand")).origin
+			var hr: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("RightHand")).origin
+			ok(worst2 < 0.03 and hl.distance_to(hr) > 0.08, "%s: the left hand holds the %s (short by %.3f m, hands %.2f m apart)" % [c[0], c[1], worst2, hl.distance_to(hr)])
+		# the bow: drawn in the aim-and-scan loop, its arrow shown
+		fig.hold({"R": null, "L": "bow"})
+		fig.play("bow_scan")
+		fig._process(0.3)
+		ok(fig.drawn and fig._bow["arrow"] != null and fig._bow["arrow"].visible, "bow_scan draws the string and nocks an arrow")
 		fig.hold({"R": null, "L": null})
 		# a clip moves the bones
 		fig.play("walk")

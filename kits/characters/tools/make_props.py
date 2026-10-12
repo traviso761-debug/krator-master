@@ -176,7 +176,7 @@ def bow(m):
     up = [(0, y, -0.09 * (y / 0.72) ** 2) for y in np.linspace(0.06, 0.72, 8)]
     arc(m, 'darkwood', up, 0.012)
     arc(m, 'darkwood', [(x, -y, z) for x, y, z in up], 0.012)
-    arc(m, 'string', [(0, 0.72, -0.09), (0, 0, -0.10), (0, -0.72, -0.09)], 0.002, 4)
+    # no string: the figure draws it live between STRING's two ends, through the drawing hand when there is one
 
 
 def crossbow(m):
@@ -247,12 +247,34 @@ def torch(m):
     m.loft('flame', [ring((0, 0.38, 0), 'y', 0.03, 6), ring((0, 0.52, 0), 'y', 0.003, 6)])
 
 
+def arrow(m):
+    # not held in a grip: the figure lays it from the drawing hand (its nock, at the origin) toward the bow, along +Z
+    rod(m, 'wood', 'z', (0, 0, 0.0), (0, 0, 0.72), 0.004, n=6)
+    m.loft('iron', [ring((0, 0, 0.71), 'z', 0.008, 4, phase=math.pi / 4), ring((0, 0, 0.78), 'z', 0.0005, 4, phase=math.pi / 4)])
+    for a in (0, 2 * math.pi / 3, 4 * math.pi / 3):
+        d = np.array([math.cos(a), math.sin(a), 0])
+        q = [np.array([0, 0, 0.02]), d * 0.016 + [0, 0, 0.03], d * 0.016 + [0, 0, 0.1], np.array([0, 0, 0.11])]
+        m.quad('paint', *q)
+
+
+# where the left hand may hold a two-handed prop, when the clip says two_hands: a segment of its handle ([x0, y0, z0,
+# x1, y1, z1] in the prop's frame). The figure slides the hand along it to the point nearest where the clip has the
+# hand, and turns it round the segment as little as it can; a gun's segment runs along the fore-stock
+SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pickaxe': [0, -0.12, 0, 0, 0.5, 0],
+           'axe': [0, -0.12, 0, 0, 0.45, 0], 'warhammer': [0, -0.1, 0, 0, 0.5, 0], 'mace': [0, -0.1, 0, 0, 0.38, 0],
+           'sword': [0, -0.1, 0, 0, -0.1, 0],
+           'rifle': [0, 0.06, 0.16, 0, 0.06, 0.42], 'crossbow': [0, 0.075, 0.1, 0, 0.075, 0.3]}
+# how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
+GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide'}
+STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
+
 PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('axe', 'Axe', 'R', axe),
          ('mace', 'Mace', 'R', mace), ('warhammer', 'War hammer', 'R', warhammer), ('spear', 'Spear', 'R', spear),
          ('shield', 'Shield', 'L', shield), ('bow', 'Bow', 'L', bow), ('crossbow', 'Crossbow', 'R', crossbow),
          ('rifle', 'Rifle', 'R', rifle), ('pistol', 'Pistol', 'R', pistol), ('pickaxe', 'Pickaxe', 'R', pickaxe),
          ('hoe', 'Hoe', 'R', hoe), ('hammer', 'Hammer', 'R', hammer), ('bucket', 'Bucket', 'R', bucket),
-         ('cup', 'Cup', 'R', cup), ('lantern', 'Lantern', 'L', lantern), ('torch', 'Torch', 'L', torch)]
+         ('cup', 'Cup', 'R', cup), ('lantern', 'Lantern', 'L', lantern), ('torch', 'Torch', 'L', torch),
+         ('arrow', 'Arrow', 'R', arrow)]
 
 
 def write(path, m):
@@ -291,10 +313,17 @@ def main():
         m = Mesh()
         build(m)
         write(os.path.join(OUT, pid + '.glb'), m)
-        out.append({'id': pid, 'label': label, 'hand': hand, 'glb': 'pieces/props/%s.glb' % pid})
+        out.append({'id': pid, 'label': label, 'hand': hand, 'glb': 'pieces/props/%s.glb' % pid, 'grip': GRIP.get(pid, 'fist')})
+        if pid in SUPPORT:
+            out[-1]['support'] = SUPPORT[pid]
+        if pid in STRING:
+            out[-1]['string'], out[-1]['arrow'] = STRING[pid], 'arrow'
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
     json.dump({'about': 'Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where '
-               'the fingers point, +X out of the palm; hand R or L. data/clips.json hold says which clip holds what.',
+               'the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). '
+               'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '
+               'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). '
+               'data/clips.json hold says which clip holds what.',
                'props': out}, open(os.path.join(HERE, 'data', 'props.json'), 'w'), indent=1)
 
 

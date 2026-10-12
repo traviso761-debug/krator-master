@@ -15,10 +15,15 @@
   chop loop, the overhead axe chop and the heavy blunt swing stand in. A spear thrust, a dagger stab and a crossbow
   shot borrow the sword thrust and the long-gun shot. Mixamo has most of these, but its clips can only be fetched
   by hand with an Adobe account; Meshy's library may add them.
-- **Props are simple and one-handed.** They are built from primitives, flat shaded. A two-handed weapon (spear,
-  rifle, hoe, war hammer) is held by the right hand only; the left hand follows the clip, which was made for some
-  other weapon (or none) and may not meet the shaft. A bow has no arrow; the right hand draws an empty string.
-  The grip is one closed-hand pose for every prop, so a pistol's trigger finger wraps the grip with the others.
+- **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
+  shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
+  none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one
+  hand can look cramped, and when the left arm falls short the right hand is pulled in (up to 45 cm), which narrows
+  the clip's swing. The elbow keeps the clip's side, which is not always the natural one. A spear thrust at full
+  extension still leaves the left hand short for a moment (it eases off and back). The bow turns about its handle to
+  face the drawing hand rather than the bow hand turning; the draw has no pinch pose (the right hand keeps the clip's
+  fingers), and the arrow only shows while the string is pulled (there is no nocking motion). The supporting hand
+  always closes in a fist.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below.

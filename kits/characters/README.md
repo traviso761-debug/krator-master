@@ -39,12 +39,25 @@ to the last loop. Loops play in place: their drift over a cycle is taken out and
 `skeleton.json`'s clip list) for a game to move the character by; one-shots (rolls, knockdowns) keep their motion.
 **Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
-bucket, cup, lantern, torch), each modelled in the grip frame: +Y along the handle out past the index finger, +Z the
-way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest hand
-(skeleton.json `hands`: the grip in the hand bone's space, and per finger joint the rotation that closes the hand)
-and a clip's `hold` in `data/clips.json` names the props each hand may take, default first. `fig.hold({R, L})` hangs
-the GLBs under the hand bones and curls those fingers after every frame of the clip; the page's Holding picker swaps
-the right hand's prop among the clip's choices.
+bucket, cup, lantern, torch) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
+finger, +Z the way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest
+hand (skeleton.json `hands`: the grip in the hand bone's space, the arm's three bones, and per grip style, per finger
+joint, the rotation that closes the hand: `fist` round a handle, `trigger` with the index finger along a gun, `wide`
+round a cup; a prop's `grip` picks one). A clip's `hold` in `data/clips.json` names the props each hand may take,
+default first; `fig.hold({R, L, both})` hangs the GLBs under the hand bones and curls those fingers after every frame
+of the clip; the page's Holding picker swaps the right hand's prop among the clip's choices.
+
+*Two hands.* A clip's `two_hands` names the props the left hand also holds in it (the spear, the rifle and crossbow,
+the hoe, the axe, the war hammer and the mace in the clips made for them, and the two-handed parry). A prop's
+`support` is a segment of its handle; each frame the left hand goes to the point of it nearest where the clip has the
+hand (within the arm's reach, a hand's width from the right hand), turned round the handle so its fingers point away
+from the shoulder, and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
+arm there. When the left arm cannot reach, the right brings the prop toward the left shoulder by the shortfall (up to
+45 cm) and both reach; if the hands are still too far apart the arms ease back to the clip's own pose
+(`fig.reach` says how far short the hand fell).
+*The bow* has no modelled string: the figure draws it between the limb tips (`string`), through the right hand while
+that hand is behind the bow and near its middle, turns the bow about its handle to face the drawing hand, and nocks
+the arrow once the string is pulled (`fig.drawn`).
 
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and
@@ -72,8 +85,8 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/50-figure.js` | `KCharFigure`: bones from `skeleton.json`, pieces bound to them, CPU morphs, tint, clips | [draw], twin `kchar_figure.gd` (blend shapes from `<piece>.gshapes.bin`) |
 | `src/90-editor.js` | the stage, camera and panel; `window._kchar` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
-| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold (hand-written) | [G data] |
-| `data/props.json`, `tools/make_props.py` | the hand-held props and the script that builds them | [G data] |
+| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
+| `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |

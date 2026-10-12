@@ -1,113 +1,219 @@
 {
- "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. data/clips.json hold says which clip holds what.",
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). data/clips.json hold says which clip holds what.",
  "props": [
   {
    "id": "sword",
    "label": "Sword",
    "hand": "R",
-   "glb": "pieces/props/sword.glb"
+   "glb": "pieces/props/sword.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.1,
+    0,
+    0,
+    -0.1,
+    0
+   ]
   },
   {
    "id": "dagger",
    "label": "Dagger",
    "hand": "R",
-   "glb": "pieces/props/dagger.glb"
+   "glb": "pieces/props/dagger.glb",
+   "grip": "fist"
   },
   {
    "id": "axe",
    "label": "Axe",
    "hand": "R",
-   "glb": "pieces/props/axe.glb"
+   "glb": "pieces/props/axe.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.12,
+    0,
+    0,
+    0.45,
+    0
+   ]
   },
   {
    "id": "mace",
    "label": "Mace",
    "hand": "R",
-   "glb": "pieces/props/mace.glb"
+   "glb": "pieces/props/mace.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.1,
+    0,
+    0,
+    0.38,
+    0
+   ]
   },
   {
    "id": "warhammer",
    "label": "War hammer",
    "hand": "R",
-   "glb": "pieces/props/warhammer.glb"
+   "glb": "pieces/props/warhammer.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.1,
+    0,
+    0,
+    0.5,
+    0
+   ]
   },
   {
    "id": "spear",
    "label": "Spear",
    "hand": "R",
-   "glb": "pieces/props/spear.glb"
+   "glb": "pieces/props/spear.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.3,
+    0,
+    0,
+    1.0,
+    0
+   ]
   },
   {
    "id": "shield",
    "label": "Shield",
    "hand": "L",
-   "glb": "pieces/props/shield.glb"
+   "glb": "pieces/props/shield.glb",
+   "grip": "fist"
   },
   {
    "id": "bow",
    "label": "Bow",
    "hand": "L",
-   "glb": "pieces/props/bow.glb"
+   "glb": "pieces/props/bow.glb",
+   "grip": "fist",
+   "string": [
+    0,
+    0.72,
+    -0.09,
+    0,
+    -0.72,
+    -0.09
+   ],
+   "arrow": "arrow"
   },
   {
    "id": "crossbow",
    "label": "Crossbow",
    "hand": "R",
-   "glb": "pieces/props/crossbow.glb"
+   "glb": "pieces/props/crossbow.glb",
+   "grip": "trigger",
+   "support": [
+    0,
+    0.075,
+    0.1,
+    0,
+    0.075,
+    0.3
+   ]
   },
   {
    "id": "rifle",
    "label": "Rifle",
    "hand": "R",
-   "glb": "pieces/props/rifle.glb"
+   "glb": "pieces/props/rifle.glb",
+   "grip": "trigger",
+   "support": [
+    0,
+    0.06,
+    0.16,
+    0,
+    0.06,
+    0.42
+   ]
   },
   {
    "id": "pistol",
    "label": "Pistol",
    "hand": "R",
-   "glb": "pieces/props/pistol.glb"
+   "glb": "pieces/props/pistol.glb",
+   "grip": "trigger"
   },
   {
    "id": "pickaxe",
    "label": "Pickaxe",
    "hand": "R",
-   "glb": "pieces/props/pickaxe.glb"
+   "glb": "pieces/props/pickaxe.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.12,
+    0,
+    0,
+    0.5,
+    0
+   ]
   },
   {
    "id": "hoe",
    "label": "Hoe",
    "hand": "R",
-   "glb": "pieces/props/hoe.glb"
+   "glb": "pieces/props/hoe.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    -0.4,
+    0,
+    0,
+    0.9,
+    0
+   ]
   },
   {
    "id": "hammer",
    "label": "Hammer",
    "hand": "R",
-   "glb": "pieces/props/hammer.glb"
+   "glb": "pieces/props/hammer.glb",
+   "grip": "fist"
   },
   {
    "id": "bucket",
    "label": "Bucket",
    "hand": "R",
-   "glb": "pieces/props/bucket.glb"
+   "glb": "pieces/props/bucket.glb",
+   "grip": "fist"
   },
   {
    "id": "cup",
    "label": "Cup",
    "hand": "R",
-   "glb": "pieces/props/cup.glb"
+   "glb": "pieces/props/cup.glb",
+   "grip": "wide"
   },
   {
    "id": "lantern",
    "label": "Lantern",
    "hand": "L",
-   "glb": "pieces/props/lantern.glb"
+   "glb": "pieces/props/lantern.glb",
+   "grip": "fist"
   },
   {
    "id": "torch",
    "label": "Torch",
    "hand": "L",
-   "glb": "pieces/props/torch.glb"
+   "glb": "pieces/props/torch.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "arrow",
+   "label": "Arrow",
+   "hand": "R",
+   "glb": "pieces/props/arrow.glb",
+   "grip": "fist"
   }
  ]
 }

@@ -390,6 +390,7 @@
     // picker swaps the right hand's prop among them, or empties the hands
     var holdPick = $('hold-pick'), PROP = {}, holdChoice = null;
     (D.props || []).forEach(function(p){ PROP[p.id] = p; });
+    KCharFigure.props = PROP;
     var clipInfo = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ clipInfo[c.key] = c; });
     function holdFor(name){
       var h = (clipInfo[name] && clipInfo[name].hold) || {}, side = h.R ? 'R' : h.L ? 'L' : null;
@@ -406,6 +407,7 @@
       if(pick !== ''){
         if(h.R) want.R = side === 'R' ? pick : h.R[0];
         if(h.L) want.L = side === 'L' ? pick : h.L[0];
+        want.both = !!(want.R && clipInfo[name].two_hands && clipInfo[name].two_hands.indexOf(want.R) >= 0);
       }
       fig.hold(want);
     }
