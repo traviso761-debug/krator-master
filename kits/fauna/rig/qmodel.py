@@ -173,7 +173,7 @@ def main():
     WALK = None
     for mult in (1.0, 0.8, 0.6, 0.45, 0.3, 0.2):
         stride = c['stride'] * mult
-        for crouch in np.linspace(0.0, 0.3, 9) * leglen:
+        for crouch in np.linspace(0.0, 0.15, 16) * leglen:
             tmp = {}; ok = True
             for l, g in LEG.items():
                 for pull in (1.0, 0.9, 0.8):
