@@ -27,8 +27,9 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `70-biome-geyser.js` | 2 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
 | `84-host-ground.js` | 14 | the paint (per vertex) (18); the layers (the library, or procedural without i (40); the meshes (107) |
-| `86-host-water.js` | 6 |  |
+| `86-host-water.js` | 3 |  |
 | `88-host-build.js` | 1 |  |
+| `89w-host-sea.js` | 2 |  |
 | `90-host-camera.js` | 11 |  |
 | `91-host-probe.js` | 11 |  |
 | `93-host-polytool.js` | 6 |  |

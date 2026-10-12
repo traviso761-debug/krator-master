@@ -62,7 +62,8 @@ V.group.position.set(x, 0, z); V.group.rotation.y = heading; scene.add(V.group);
 // optional: V.group.userData.rsU.uRsTrim.value = rig angle (rad), .uRsFlag.value = pennant swing (0 = as built)
 ```
 
-`seaH(x,z,t)` is your sea's height; leave it out to ride the kit's own swell (`rsSeaH`). `RS_U.uTime` drives the sails' and pennants' flutter.
+`seaH(x,z,t)` is your sea's height; leave it out to ride `WATER.heightAt` (core/water: `rsRide` is `WATER.ride` and `rsSeaH`
+is `WATER.heightAt` since 2026-10-12, so the world needs core/water and an open surface for that). `RS_U.uTime` drives the sails' and pennants' flutter.
 For a life layer, `95-rs-deck.js` (`rsDeckData`) turns any placed vessel into deck heights, a walk outline and obstacles.
 
 See `API.md` for the vessel frame and the builders.

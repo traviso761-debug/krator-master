@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (+ core/materials/*) into dist/ringsea.html: the Ring Sea watercraft kit.
+"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Ring Sea watercraft kit.
 
 Rules it enforces (the same ones the Ancients-lineage builds use):
 
@@ -79,6 +79,13 @@ OUT = 'ringsea'
 RECORD = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '45x-matlib-pack.js'
+# the shared atmosphere (core/atmos/README.md): its core, presets, the open-water wave field and the sky's light, which the
+# sea takes through core/water; and core/water itself (core/water/README.md): the data side (WATER: the open surface, the
+# CPU twins, WATER.ride) and the drawing side (the CDLOD water mesh). Listed by name, like core/materials/record above.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED = re.compile(r'\breseed\(\s*(\d+)\s*\)')
@@ -126,6 +133,8 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(CORE, f) for f in CORE_FILES}
     paths.update({f: os.path.join(RECORD, f) for f in RECORD_FILES})
+    paths.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS})
+    paths.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER})
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack

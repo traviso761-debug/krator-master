@@ -3,7 +3,7 @@
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
 runs on), `terrain/` (the baked terrain field, carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
-dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
+dressing), `water/` (every wet surface: open water on a CDLOD mesh, the CPU twins things float on), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
 (the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
 thing is: ids, class, tags) and `space/` (the one spatial index placement passes share).
@@ -236,7 +236,20 @@ sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behin
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
 reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves), `settlements/girder` (the sky's light) and
 `settlements/locus` with `settlements/mungo` (the lake's waves, shading only); they add `core/atmos` to their `build.py` core
-loop and bind it in `src/90-atmos-host.js`.
+loop and bind it in `src/90-atmos-host.js`. `kits/ringsea` and `biomes/geyser` take its core, presets, wave field and
+skylight for their sea through `core/water`.
+
+## `water/`
+
+One module for every wet surface (`water/README.md`; the plan is `atmos/WATER.md`). `20-core-water.js` ([G data]) is
+`WATER`: six kinds (open, shore, flow, fall, still, wet) as records, their CPU twins (`WATER.heightAt`, `flowAt`,
+`seaLevel`, the floating helper `WATER.ride`) and `export`. `50-core-water-draw.js` draws open water: a CDLOD mesh
+(instanced 17x17 nodes from 8 m leaves, morphing between levels, the root snapped to the camera) on the shared wave field
+plus Gerstner trochoids, one clock (`atmWaveT`), the sky through `ATMOS.skylight`, Jacobian foam with a decay. It needs
+`core/atmos` (`0-core`, `0p-presets`, `a-waves`, `b-skylight`). **Used by** `kits/ringsea` (the roadstead; the kit's
+Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (the sea off the beach). After a change: `node
+core/water/test-water.js` (it runs the shaders' own GLSL against the twins), then rebuild both and run
+`kits/ringsea/verify.py --assert`. Phases 2 to 6 (shore, flow and falls, still and wet, FFT, Godot) are to do.
 
 ## `lod/`
 

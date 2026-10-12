@@ -107,3 +107,12 @@ python3 ../../tools/textures/pack.py biomes/geyser   # (from the repo root) afte
 
 The page reads its library maps from the sidecar files beside it (publish them with the page); `--inline-packs` puts
 them back in the page. `?q=0.5` builds at half density; `?nojungle`, `?nofauna`, `?nobake` as in the other kits.
+
+## 2026-10-12: the sea on core/water
+The sea off the beach is core/water's open water (`core/water/README.md`; `src/89w-host-sea.js`, after core/atmos loads):
+the Ring Sea kit's swell and half the shared wave field on the one clock, drawn on the CDLOD water mesh south of z=560,
+the bed baked from `terrainH` (the shallows' teal-green over the black sand, a surf lap under 1.4 m, the swell calmed to
+nothing at the waterline, the fade over the sand), the dome and the giant in the water through core/atmos's skylight.
+`86-host-water.js` keeps the creek (Phase 3 of `core/atmos/WATER.md` puts it on the flow shader). From the beach looking
+east along the coast (`?q=0.5&nojungle&nofauna`, the plants hidden): 28 draw calls before and after, 1.87M triangles
+before and 1.83M after (the sea's shore grid and far ring became 115 CDLOD nodes).
