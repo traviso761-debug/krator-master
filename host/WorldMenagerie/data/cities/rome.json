@@ -1,0 +1,2165 @@
+{
+ "name": "Rome",
+ "note": "The historic centre of Rome from OpenStreetMap, on the shared engine, with its real hills: inside the Aurelian Walls from the Vatican and Castel Sant'Angelo across the Tiber to the Lateran, and from Piazza del Popolo down past the Forum and the Colosseum to the Baths of Caracalla. The buildings that are shapes rather than heights - the Colosseum, the Pantheon, St Peter's, the domes - are modelled in src/rome/landmarks.js from their published dimensions. Data (c) OpenStreetMap contributors, ODbL.",
+ "origin": [
+  41.8955,
+  12.48
+ ],
+ "defaultSeed": 753,
+ "defaultHour": 15.8,
+ "defaultView": "Over the Forum to the Colosseum",
+ "bounds": [
+  41.872,
+  12.443,
+  41.917,
+  12.513
+ ],
+ "osm": "data/cities/rome-osm.json",
+ "attribution": "Rome: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles (SRTM). Built by tools/build-osm-city.py.",
+ "flight": true,
+ "fetch": {
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});",
+  "bbox": [
+   41.872,
+   12.443,
+   41.917,
+   12.513
+  ],
+  "tiles": {
+   "buildings": [
+    4,
+    4
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    41.872,
+    12.443,
+    41.917,
+    12.513
+   ]
+  ],
+  "_": "the whole centre is a detail zone: every building is kept"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 12,
+  "_": "the seven hills, the Janiculum and the Pincian: elevation from tools/fetch-terrain.py",
+  "filter": {
+   "open": 150,
+   "close": 36,
+   "blur": 48,
+   "_": "the elevation carries the city's roofs and domes, up to 16 m: tools/filter-terrain.py, tools/build-osm-city.py"
+  }
+ },
+ "defaultHeights": {
+  "_": "Rome's untagged buildings are palazzi of four to six floors, not houses: see tools/build-osm-city.py",
+  "yes": 19,
+  "apartments": 21,
+  "residential": 19,
+  "house": 14,
+  "commercial": 18,
+  "retail": 12,
+  "church": 22,
+  "public": 20,
+  "office": 20,
+  "hotel": 21,
+  "school": 16,
+  "university": 18,
+  "civic": 18,
+  "government": 20,
+  "palace": 24,
+  "chapel": 12,
+  "garage": 4,
+  "garages": 4,
+  "roof": 5,
+  "shed": 3,
+  "ruins": 7,
+  "temple": 12,
+  "arch": 15,
+  "triumphal_arch": 21
+ },
+ "heightSpread": 0.2,
+ "facade": {
+  "bay": 4.8,
+  "floor": 4.4,
+  "shutters": true,
+  "_": "palazzo proportions: tall storeys, windows wide apart, stone frames and shutters"
+ },
+ "ruinZones": [
+  [
+   41.8905,
+   12.4835,
+   41.8935,
+   12.489
+  ],
+  [
+   41.8925,
+   12.484,
+   41.8955,
+   12.4895
+  ],
+  [
+   41.8868,
+   12.4838,
+   41.8915,
+   12.4905
+  ]
+ ],
+ "sky": {
+  "day": {
+   "top": "#5f8cc0",
+   "hor": "#e6dcc6"
+  },
+  "dusk": {
+   "top": "#34406a",
+   "hor": "#e8935a"
+  },
+  "night": {
+   "top": "#080c18",
+   "hor": "#222838"
+  }
+ },
+ "fog": 2.4e-05,
+ "terrainColours": {
+  "low": "#a89a80",
+  "high": "#7d8a5a",
+  "steep": "#8a7a62",
+  "far": "#7d8a86"
+ },
+ "waterColour": "#5a7066",
+ "litWindows": 0.7,
+ "streetTrees": 0.5,
+ "parkedCars": 0.4,
+ "traffic": 0,
+ "people": 1.0,
+ "lowRiseFar": 4000,
+ "bridgeDeck": 14,
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "campomarzio": [
+   "Campo Marzio",
+   "#d29a6a",
+   16,
+   30,
+   [
+    41.897,
+    12.468,
+    41.908,
+    12.486
+   ]
+  ],
+  "monti": [
+   "Monti",
+   "#c98e62",
+   15,
+   28,
+   [
+    41.889,
+    12.484,
+    41.902,
+    12.502
+   ]
+  ],
+  "trastevere": [
+   "Trastevere",
+   "#d08a5c",
+   13,
+   24,
+   [
+    41.881,
+    12.462,
+    41.894,
+    12.478
+   ]
+  ],
+  "borgo": [
+   "Borgo and Prati",
+   "#d9b48a",
+   18,
+   30,
+   [
+    41.899,
+    12.452,
+    41.915,
+    12.472
+   ]
+  ],
+  "esquilino": [
+   "Esquilino",
+   "#cfae86",
+   20,
+   32,
+   [
+    41.893,
+    12.496,
+    41.903,
+    12.513
+   ]
+  ],
+  "outer": [
+   "Rome",
+   "#cf9e72",
+   15,
+   28,
+   [
+    41.872,
+    12.443,
+    41.917,
+    12.513
+   ]
+  ]
+ },
+ "focus": [
+  {
+   "name": "Piazza Navona",
+   "at": [
+    41.8992,
+    12.4731
+   ],
+   "radius": 260
+  },
+  {
+   "name": "The Pantheon",
+   "at": [
+    41.8986,
+    12.4768
+   ],
+   "radius": 220
+  },
+  {
+   "name": "Trevi",
+   "at": [
+    41.9009,
+    12.4833
+   ],
+   "radius": 200
+  },
+  {
+   "name": "Campo de' Fiori",
+   "at": [
+    41.8956,
+    12.4722
+   ],
+   "radius": 180,
+   "parked": false
+  }
+ ],
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "landmarks": [
+  {
+   "name": "The Colosseum",
+   "aka": [
+    "Colosseo",
+    "Flavian Amphitheatre"
+   ],
+   "at": [
+    41.890206,
+    12.492324
+   ],
+   "model": "colosseum",
+   "axis": 110,
+   "survive": [
+    290,
+    110
+   ],
+   "clear": [
+    95,
+    0
+   ],
+   "info": "The Flavian Amphitheatre, finished in AD 80: an ellipse 189 by 156 m and 48 m high, eighty arches round, for fifty thousand people. Half its outer ring came down in the earthquake of 1349 and became the city's palaces."
+  },
+  {
+   "name": "The Pantheon",
+   "at": [
+    41.8989232,
+    12.4768038
+   ],
+   "model": "pantheon",
+   "face": 356.5,
+   "info": "Hadrian's temple to all the gods, about AD 125: a dome of unreinforced concrete 43.3 m across, open to the sky at the oculus, as high as it is wide. The inscription names Agrippa, who built the temple it replaced.",
+   "clearArea": {
+    "poly": [
+     [
+      41.89825,
+      12.4764721
+     ],
+     [
+      41.8982851,
+      12.477243
+     ],
+     [
+      41.8990665,
+      12.4771789
+     ],
+     [
+      41.8990314,
+      12.476408
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "St Peter's Basilica",
+   "aka": [
+    "Basilica di San Pietro"
+   ],
+   "at": [
+    41.902157,
+    12.454993
+   ],
+   "model": "stpeters",
+   "face": 90,
+   "info": "The basilica over the tomb of St Peter, 1506 to 1626: Bramante, Raphael, Sangallo, Michelangelo (the dome), Maderno (the nave and the front), Bernini. 136.6 m to the cross on the lantern, the tallest dome in the world.",
+   "clearArea": {
+    "poly": [
+     [
+      41.9028949,
+      12.4523621
+     ],
+     [
+      41.9014191,
+      12.4523621
+     ],
+     [
+      41.9014191,
+      12.4550895
+     ],
+     [
+      41.9028949,
+      12.4550895
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "St Peter's Square",
+   "aka": [
+    "Piazza San Pietro"
+   ],
+   "at": [
+    41.90224,
+    12.4573
+   ],
+   "model": "stpeterssquare",
+   "face": 90,
+   "clear": [
+    118,
+    0
+   ],
+   "info": "Bernini's oval, 1656 to 1667: two arms of colonnade four columns deep - 284 columns, 140 saints on the balustrade - reaching out, he said, like the arms of the Church. The obelisk in the middle came from Egypt under Caligula."
+  },
+  {
+   "name": "Altare della Patria",
+   "aka": [
+    "Vittoriano"
+   ],
+   "at": [
+    41.8947483,
+    12.4829812
+   ],
+   "model": "vittoriano",
+   "face": 342.3,
+   "info": "The monument to Victor Emmanuel II, first king of Italy, 1885 to 1935: white Botticino marble, 135 m wide and 81 m high to its quadrigas. Romans call it the wedding cake, or the typewriter.",
+   "clearArea": {
+    "poly": [
+     [
+      41.8936667,
+      12.4824054
+     ],
+     [
+      41.8941154,
+      12.4842909
+     ],
+     [
+      41.8951269,
+      12.4838579
+     ],
+     [
+      41.8946783,
+      12.4819724
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Castel Sant'Angelo",
+   "at": [
+    41.90313,
+    12.46627
+   ],
+   "model": "castel",
+   "face": 42,
+   "clear": [
+    82,
+    0
+   ],
+   "info": "Hadrian's mausoleum, AD 139; then a fortress, a papal refuge and a prison. The bronze archangel on top commemorates the vision of 590 that ended a plague.",
+   "side": 104
+  },
+  {
+   "name": "Ponte Sant'Angelo",
+   "at": [
+    41.90184,
+    12.46663
+   ],
+   "model": "bridgeangels",
+   "info": "Hadrian's bridge to his tomb, AD 134, with Bernini's ten angels carrying the instruments of the Passion, 1669."
+  },
+  {
+   "name": "The Trevi Fountain",
+   "aka": [
+    "Fontana di Trevi"
+   ],
+   "at": [
+    41.901037,
+    12.4833679
+   ],
+   "model": "trevi",
+   "face": 140.6,
+   "info": "Salvi's fountain, 1732 to 1762, at the end of the Aqua Virgo, an aqueduct of 19 BC that still runs. A coin over the shoulder, and you will come back to Rome."
+  },
+  {
+   "name": "Sant'Agnese in Agone",
+   "at": [
+    41.898784,
+    12.472789
+   ],
+   "model": "agnese",
+   "face": 90,
+   "clear": [
+    32,
+    0
+   ],
+   "info": "Borromini's church on Piazza Navona, 1652 to 1672, its front curving in between two bell towers, across from Bernini's fountain."
+  },
+  {
+   "name": "Fountain of the Four Rivers",
+   "aka": [
+    "Fontana dei Quattro Fiumi"
+   ],
+   "at": [
+    41.899,
+    12.47308
+   ],
+   "model": "fourrivers",
+   "face": 0,
+   "info": "Bernini, 1651: the Nile, the Ganges, the Danube and the Plata on a hollow rock, carrying an Egyptian-style obelisk made in Rome for Domitian."
+  },
+  {
+   "name": "Campo de' Fiori",
+   "at": [
+    41.89561,
+    12.47224
+   ],
+   "model": "campo",
+   "info": "The market every morning but Sunday; in the middle, the hooded Giordano Bruno (Ettore Ferrari, 1889), where he was burned in 1600."
+  },
+  {
+   "name": "Ponte degli Annibaldi",
+   "at": [
+    41.8920114,
+    12.49186075
+   ],
+   "model": "annibaldi",
+   "ends": [
+    [
+     41.8920817,
+     12.4919557
+    ],
+    [
+     41.8919411,
+     12.4917658
+    ]
+   ],
+   "deck": [
+    24.7,
+    23.8
+   ],
+   "radius": 123,
+   "width": 4.2,
+   "cut": {
+    "line": [
+     [
+      41.891554,
+      12.492028,
+      17.9
+     ],
+     [
+      41.892758,
+      12.491539,
+      18.2
+     ],
+     [
+      41.894101,
+      12.491007,
+      18.6
+     ]
+    ],
+    "width": 22
+   },
+   "info": "Francesco Cellini with Insula: a footbridge over Via degli Annibaldi that puts back the line of Via della Polveriera, cut by the street in the last century. The view of the Colosseum from it is the postcard one."
+  },
+  {
+   "name": "Fontana del Pantheon",
+   "at": [
+    41.89915,
+    12.47685
+   ],
+   "model": "rotondafountain",
+   "face": 356.5,
+   "info": "Giacomo della Porta, 1575; Clement XI set the obelisk of Rameses II (the Macuteo) on it in 1711."
+  },
+  {
+   "name": "Fontana della Barcaccia",
+   "at": [
+    41.905803,
+    12.482252
+   ],
+   "model": "barcaccia",
+   "face": 120,
+   "info": "Pietro and Gian Lorenzo Bernini, 1629: a half-sunk boat at the foot of the Spanish Steps, low because the Acqua Vergine has little head."
+  },
+  {
+   "name": "Temple of Saturn",
+   "at": [
+    41.892498,
+    12.484193
+   ],
+   "model": "temple",
+   "face": 25.6,
+   "temple": {
+    "cols": [
+     [
+      -10,
+      0
+     ],
+     [
+      -6,
+      0
+     ],
+     [
+      -2,
+      0
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      6,
+      0
+     ],
+     [
+      10,
+      0
+     ],
+     [
+      -10,
+      -4.4
+     ],
+     [
+      10,
+      -4.4
+     ]
+    ],
+    "h": 11,
+    "r": 0.72,
+    "order": "ionic",
+    "stone": "granite",
+    "podium": [
+     23,
+     22,
+     5
+    ],
+    "entab": [
+     [
+      -10,
+      0,
+      10,
+      0
+     ],
+     [
+      -10,
+      0,
+      -10,
+      -4.4
+     ],
+     [
+      10,
+      0,
+      10,
+      -4.4
+     ]
+    ]
+   },
+   "info": "Eight columns of the temple of Saturn, rebuilt after a fire in the fourth century; the state treasury was kept in its podium.",
+   "clear": [
+    14,
+    0
+   ]
+  },
+  {
+   "name": "Temple of Castor and Pollux",
+   "at": [
+    41.89195,
+    12.48573
+   ],
+   "model": "temple",
+   "face": 350,
+   "temple": {
+    "cols": [
+     [
+      -3.2,
+      0
+     ],
+     [
+      0,
+      0
+     ],
+     [
+      3.2,
+      0
+     ]
+    ],
+    "h": 12.5,
+    "r": 0.74,
+    "order": "corinthian",
+    "podium": [
+     16,
+     20,
+     7
+    ],
+    "entab": [
+     [
+      -3.2,
+      0,
+      3.2,
+      0
+     ]
+    ]
+   },
+   "info": "Three Corinthian columns on a podium seven metres high: what is left of the temple of the Dioscuri, rebuilt by Tiberius in AD 6."
+  },
+  {
+   "name": "Temple of Vespasian",
+   "at": [
+    41.89283,
+    12.48413
+   ],
+   "model": "temple",
+   "face": 60,
+   "temple": {
+    "cols": [
+     [
+      -2.4,
+      0
+     ],
+     [
+      0,
+      0
+     ],
+     [
+      2.4,
+      -1.6
+     ]
+    ],
+    "h": 15.2,
+    "r": 0.75,
+    "order": "corinthian",
+    "entab": [
+     [
+      -2.4,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   "info": "Three columns at the foot of the Capitoline, the corner of a temple to the deified Vespasian."
+  },
+  {
+   "name": "Temple of Antoninus and Faustina",
+   "at": [
+    41.8921392,
+    12.4866863
+   ],
+   "model": "temple",
+   "face": 212.5,
+   "temple": {
+    "cols": [
+     [
+      -8,
+      0
+     ],
+     [
+      -4.8,
+      0
+     ],
+     [
+      -1.6,
+      0
+     ],
+     [
+      1.6,
+      0
+     ],
+     [
+      4.8,
+      0
+     ],
+     [
+      8,
+      0
+     ],
+     [
+      -8,
+      -3.4
+     ],
+     [
+      8,
+      -3.4
+     ],
+     [
+      -8,
+      -6.8
+     ],
+     [
+      8,
+      -6.8
+     ]
+    ],
+    "h": 17,
+    "r": 0.8,
+    "order": "corinthian",
+    "stone": "granite",
+    "podium": [
+     20,
+     30,
+     4
+    ],
+    "entab": [
+     [
+      -8,
+      0,
+      8,
+      0
+     ]
+    ]
+   },
+   "info": "Built by Antoninus Pius for his wife in AD 141, a church since the seventh century: San Lorenzo in Miranda's baroque front stands behind the ancient portico.",
+   "clear": [
+    20,
+    0
+   ]
+  },
+  {
+   "name": "Arch of Septimius Severus",
+   "at": [
+    41.892833,
+    12.484738
+   ],
+   "model": "arch",
+   "face": 126.5,
+   "arch": {
+    "w": 23.3,
+    "d": 11.2,
+    "h": 20.9,
+    "bays": 3,
+    "colK": "marble"
+   },
+   "clear": [
+    12,
+    0
+   ],
+   "info": "AD 203, for the emperor's victories over the Parthians: three arches, the columns standing free on their pedestals."
+  },
+  {
+   "name": "Arch of Titus",
+   "at": [
+    41.890672,
+    12.488584
+   ],
+   "model": "arch",
+   "face": 292.6,
+   "arch": {
+    "w": 13.5,
+    "d": 4.75,
+    "h": 15.4,
+    "bays": 1
+   },
+   "clear": [
+    8,
+    0
+   ],
+   "info": "About AD 81, for the sack of Jerusalem; inside the arch the spoils of the Temple, the menorah carried in triumph."
+  },
+  {
+   "name": "Arch of Constantine",
+   "at": [
+    41.889762,
+    12.490667
+   ],
+   "model": "arch",
+   "face": 13,
+   "arch": {
+    "w": 25.9,
+    "d": 7.4,
+    "h": 21,
+    "bays": 3,
+    "statues": true,
+    "colK": "granite"
+   },
+   "clear": [
+    14,
+    0
+   ],
+   "info": "AD 315, for Constantine's victory at the Milvian Bridge, built half from the reliefs of older monuments; the Dacian prisoners on the attic came from Trajan's."
+  },
+  {
+   "name": "Basilica of Maxentius",
+   "at": [
+    41.892017,
+    12.488718
+   ],
+   "model": "maxentius",
+   "face": 217.7,
+   "clear": [
+    48,
+    0
+   ],
+   "info": "Begun by Maxentius and finished by Constantine: three of its great coffered vaults still stand, twenty metres across."
+  },
+  {
+   "name": "Trajan's Column",
+   "at": [
+    41.89577,
+    12.4843
+   ],
+   "model": "column",
+   "column": [
+    29.8,
+    3.7,
+    6.2
+   ],
+   "info": "AD 113: a spiral frieze two hundred metres long winds twenty-three times up the shaft, the story of the Dacian wars in 2,600 figures. St Peter on top since 1587."
+  },
+  {
+   "name": "Column of Marcus Aurelius",
+   "at": [
+    41.90094,
+    12.47999
+   ],
+   "model": "column",
+   "column": [
+    29.6,
+    3.7,
+    10.2
+   ],
+   "info": "Piazza Colonna, after AD 180: the Marcomannic wars wound up its shaft; St Paul on top since 1589."
+  },
+  {
+   "name": "Theatre of Marcellus",
+   "at": [
+    41.8915998,
+    12.4791658
+   ],
+   "model": "marcellus",
+   "face": 48,
+   "r": 64,
+   "arc": [
+    35,
+    145
+   ],
+   "clear": [
+    74,
+    0
+   ],
+   "info": "Finished by Augustus in 13 BC and named for his nephew: the arcades are the model the Colosseum followed. The Orsini built a palazzo into the top in the sixteenth century."
+  },
+  {
+   "name": "Pyramid of Cestius",
+   "at": [
+    41.876449,
+    12.480854
+   ],
+   "model": "pyramid",
+   "face": 0,
+   "clear": [
+    22,
+    0
+   ],
+   "info": "The tomb of the magistrate Gaius Cestius, about 12 BC, built in 330 days in the Egyptian fashion and later set into the Aurelian Walls."
+  },
+  {
+   "name": "The Spanish Steps",
+   "aka": [
+    "Scalinata di Trinità dei Monti"
+   ],
+   "at": [
+    41.905833,
+    12.482353
+   ],
+   "model": "steps",
+   "top": [
+    41.90608,
+    12.48318
+   ],
+   "info": "135 steps from Piazza di Spagna to Trinità dei Monti, 1723 to 1725, paid for by a French diplomat; the Barcaccia at their foot, the obelisk at their top."
+  },
+  {
+   "name": "Obelisk of Piazza del Popolo",
+   "aka": [
+    "Flaminio obelisk"
+   ],
+   "at": [
+    41.91074,
+    12.47634
+   ],
+   "model": "obelisk",
+   "obelisk": [
+    24,
+    2.6,
+    12
+   ],
+   "fountainRing": 15,
+   "info": "Ramesses II's obelisk from Heliopolis, brought to Rome by Augustus for the Circus Maximus, set up here in 1589."
+  },
+  {
+   "name": "Lateran Obelisk",
+   "at": [
+    41.8871,
+    12.50464
+   ],
+   "model": "obelisk",
+   "obelisk": [
+    32.2,
+    2.9,
+    13.5
+   ],
+   "info": "The tallest obelisk in the world: Thutmose III's, from Karnak, 32 m of red granite, brought to Rome in 357 for the Circus Maximus."
+  },
+  {
+   "name": "Obelisk of Montecitorio",
+   "at": [
+    41.90076,
+    12.47844
+   ],
+   "model": "obelisk",
+   "obelisk": [
+    21.8,
+    2.4,
+    12
+   ],
+   "info": "Psammetichus II's obelisk, which Augustus used as the pointer of a great sundial on the Campus Martius."
+  },
+  {
+   "name": "Esquiline Obelisk",
+   "at": [
+    41.8979,
+    12.49768
+   ],
+   "model": "obelisk",
+   "obelisk": [
+    14.8,
+    1.6,
+    10.7
+   ],
+   "info": "One of a pair that stood at the mausoleum of Augustus; the other is on the Quirinal."
+  },
+  {
+   "name": "Quirinal Obelisk",
+   "at": [
+    41.89955,
+    12.48736
+   ],
+   "model": "obelisk",
+   "obelisk": [
+    14.6,
+    1.6,
+    9
+   ],
+   "info": "The other of Augustus's pair, between the Dioscuri and their horses."
+  },
+  {
+   "name": "Sant'Andrea della Valle",
+   "at": [
+    41.89589,
+    12.47387
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 9.6,
+    "drum": 9,
+    "hs": 1.2,
+    "lantern": 10,
+    "ribs": 16
+   },
+   "info": "The second highest dome in Rome after St Peter's (1622), and the setting of the first act of Tosca."
+  },
+  {
+   "name": "Il Gesù",
+   "at": [
+    41.89593,
+    12.47986
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 8,
+    "drum": 6,
+    "hs": 1.15,
+    "lantern": 7
+   },
+   "info": "The mother church of the Jesuits, 1568 to 1580, the model for baroque churches everywhere."
+  },
+  {
+   "name": "Santi Ambrogio e Carlo al Corso",
+   "at": [
+    41.90545,
+    12.47807
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 9,
+    "drum": 9,
+    "hs": 1.2,
+    "lantern": 8,
+    "ribs": 16
+   },
+   "info": "Pietro da Cortona's dome, 1668, on the Corso: the third largest in Rome."
+  },
+  {
+   "name": "Santa Maria di Loreto",
+   "at": [
+    41.89595,
+    12.48397
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6,
+    "drum": 6,
+    "hs": 1.15,
+    "lantern": 6,
+    "bays": 8
+   },
+   "info": "One of the twin domes beside Trajan's Column, by Antonio da Sangallo the Younger."
+  },
+  {
+   "name": "Santissimo Nome di Maria al Foro Traiano",
+   "at": [
+    41.89628,
+    12.48426
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6,
+    "drum": 5,
+    "hs": 1.1,
+    "lantern": 5
+   },
+   "info": "The other twin dome at Trajan's Forum, 1736."
+  },
+  {
+   "name": "San Carlo ai Catinari",
+   "at": [
+    41.89412,
+    12.47465
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 7,
+    "drum": 6,
+    "hs": 1.1,
+    "lantern": 6
+   },
+   "info": "The Barnabites' church, 1612 to 1620, named for the basin makers of the street."
+  },
+  {
+   "name": "Santi Luca e Martina",
+   "at": [
+    41.89332,
+    12.48474
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6.5,
+    "drum": 5,
+    "hs": 1.1,
+    "lantern": 5
+   },
+   "info": "Pietro da Cortona's church over the Forum, his own burial place."
+  },
+  {
+   "name": "San Giovanni dei Fiorentini",
+   "at": [
+    41.89965,
+    12.46562
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 8,
+    "drum": 7,
+    "hs": 1.2,
+    "lantern": 7,
+    "ribs": 12
+   },
+   "info": "The Florentines' church at the bend of the Tiber, its dome by Carlo Maderno."
+  },
+  {
+   "name": "Santa Maria in Vallicella",
+   "aka": [
+    "Chiesa Nuova"
+   ],
+   "at": [
+    41.8987,
+    12.46975
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 8,
+    "drum": 6,
+    "hs": 1.15,
+    "lantern": 6
+   },
+   "info": "St Philip Neri's Chiesa Nuova, 1575 to 1606, with Rubens's altarpieces."
+  },
+  {
+   "name": "Santa Maria dei Miracoli",
+   "at": [
+    41.91002,
+    12.47675
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6,
+    "drum": 5,
+    "hs": 1.1,
+    "lantern": 4.5,
+    "bays": 8
+   },
+   "info": "One of the twin churches at the head of the Corso, facing Piazza del Popolo."
+  },
+  {
+   "name": "Santa Maria in Montesanto",
+   "at": [
+    41.91003,
+    12.47786
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6.2,
+    "drum": 5,
+    "hs": 1.15,
+    "lantern": 4.5,
+    "bays": 12
+   },
+   "info": "The other twin, its dome twelve-sided because its site is narrower."
+  },
+  {
+   "name": "Santa Maria del Popolo",
+   "at": [
+    41.91143,
+    12.4764
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 5.5,
+    "drum": 4,
+    "hs": 1.1,
+    "lantern": 4
+   },
+   "info": "With Caravaggio's Conversion of St Paul and Crucifixion of St Peter in the Cerasi chapel."
+  },
+  {
+   "name": "Santa Maria Maggiore",
+   "at": [
+    41.89759,
+    12.49831
+   ],
+   "model": "cupola",
+   "cupola": {
+    "r": 6,
+    "drum": 6,
+    "hs": 1.15,
+    "lantern": 5
+   },
+   "info": "One of the four papal basilicas, fifth century, its mosaics the oldest of the Virgin in Rome; one of its two chapel domes."
+  },
+  {
+   "name": "Campanile of Santa Maria Maggiore",
+   "at": [
+    41.89786,
+    12.49838
+   ],
+   "model": "campanile",
+   "campanile": {
+    "h": 75,
+    "w": 9,
+    "stages": 6,
+    "clock": true
+   },
+   "info": "The tallest bell tower in Rome, 75 m, 1377."
+  },
+  {
+   "name": "Santa Maria in Trastevere",
+   "at": [
+    41.88953,
+    12.46974
+   ],
+   "model": "campanile",
+   "campanile": {
+    "h": 34,
+    "w": 6,
+    "stages": 4,
+    "clock": true
+   },
+   "info": "Perhaps the first church in Rome dedicated to the Virgin; the Romanesque tower and the mosaics on the front are twelfth century."
+  },
+  {
+   "name": "Santa Maria in Cosmedin",
+   "at": [
+    41.8882,
+    12.4817
+   ],
+   "model": "campanile",
+   "campanile": {
+    "h": 34,
+    "w": 6,
+    "stages": 5
+   },
+   "info": "The Greek community's church, with the Bocca della Verità in its portico and a Romanesque tower of seven storeys."
+  },
+  {
+   "name": "Santi Giovanni e Paolo",
+   "at": [
+    41.8856,
+    12.49235
+   ],
+   "model": "campanile",
+   "campanile": {
+    "h": 45,
+    "w": 7,
+    "stages": 5
+   },
+   "info": "On the Caelian, its twelfth-century tower standing on the foundations of the temple of Claudius."
+  },
+  {
+   "name": "Sant'Ivo alla Sapienza",
+   "at": [
+    41.89805,
+    12.47465
+   ],
+   "model": "santivo",
+   "info": "Borromini's chapel of the old university, 1642 to 1660: a star of David plan, and a spiral lantern climbing to a flame."
+  },
+  {
+   "name": "The Great Synagogue",
+   "aka": [
+    "Tempio Maggiore"
+   ],
+   "at": [
+    41.89197,
+    12.4776
+   ],
+   "model": "synagogue",
+   "face": 200,
+   "info": "Rome's synagogue, 1904, its square dome the only one of its kind in the city."
+  },
+  {
+   "name": "San Giovanni in Laterano",
+   "at": [
+    41.88585,
+    12.5057
+   ],
+   "model": "lateran",
+   "face": 100,
+   "info": "The cathedral of Rome - not St Peter's - and the mother of all churches; Galilei's front of 1735 carries fifteen statues seven metres high."
+  },
+  {
+   "name": "Ponte Sant'Angelo (the arches)",
+   "road": "Ponte Sant'Angelo",
+   "at": [
+    41.90189,
+    12.46646
+   ],
+   "model": "stonebridge",
+   "arches": 5,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Sisto",
+   "road": "Ponte Sisto",
+   "at": [
+    41.89235,
+    12.47077
+   ],
+   "model": "stonebridge",
+   "arches": 4,
+   "info": "Sixtus IV's bridge of 1479, with its round eye in the middle pier to let the floods through."
+  },
+  {
+   "name": "Ponte Fabricio",
+   "road": "Ponte Fabricio",
+   "at": [
+    41.89109,
+    12.47826
+   ],
+   "model": "stonebridge",
+   "arches": 2,
+   "info": "62 BC, and still carrying people over to the island: the oldest Roman bridge in the city in its first form."
+  },
+  {
+   "name": "Ponte Cestio",
+   "road": "Ponte Cestio",
+   "at": [
+    41.89004,
+    12.47732
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "From the island to Trastevere; Roman, rebuilt in the 1890s with its middle arch from the old stones."
+  },
+  {
+   "name": "Ponte Garibaldi",
+   "road": "Ponte Garibaldi",
+   "at": [
+    41.89107,
+    12.47452
+   ],
+   "model": "stonebridge",
+   "arches": 2,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Palatino",
+   "road": "Ponte Palatino",
+   "at": [
+    41.88912,
+    12.47898
+   ],
+   "model": "stonebridge",
+   "arches": 5,
+   "info": "1890, beside the stump of Ponte Rotto."
+  },
+  {
+   "name": "Ponte Umberto Primo",
+   "road": "Ponte Umberto Primo",
+   "at": [
+    41.90266,
+    12.47134
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Vittorio Emanuele Secondo",
+   "road": "Ponte Vittorio Emanuele Secondo",
+   "at": [
+    41.90115,
+    12.46435
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Cavour",
+   "road": "Ponte Cavour",
+   "at": [
+    41.90498,
+    12.47429
+   ],
+   "model": "stonebridge",
+   "arches": 5,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Giuseppe Mazzini",
+   "road": "Ponte Giuseppe Mazzini",
+   "at": [
+    41.89606,
+    12.466
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Principe Amedeo Savoia Aosta",
+   "road": "Ponte Principe Amedeo Savoia Aosta",
+   "at": [
+    41.89975,
+    12.46346
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Regina Margherita",
+   "road": "Ponte Regina Margherita",
+   "at": [
+    41.90973,
+    12.47238
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Sublicio",
+   "road": "Ponte Sublicio",
+   "at": [
+    41.88307,
+    12.47542
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Testaccio",
+   "road": "Ponte Testaccio",
+   "at": [
+    41.87541,
+    12.47048
+   ],
+   "model": "stonebridge",
+   "arches": 1,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Giacomo Matteotti",
+   "road": "Ponte Giacomo Matteotti",
+   "at": [
+    41.91441,
+    12.47084
+   ],
+   "model": "stonebridge",
+   "arches": 3,
+   "info": "A bridge over the Tiber, its arches and piers under the mapped deck."
+  },
+  {
+   "name": "Ponte Rotto",
+   "aka": [
+    "Pons Aemilius",
+    "Ponte Emilio"
+   ],
+   "at": [
+    41.88934,
+    12.479387
+   ],
+   "model": "pontrotto",
+   "face": 75.8,
+   "info": "The Pons Aemilius of 179 BC, the first stone bridge over the Tiber; carried off by the floods time after time, it has stood as one broken arch in the river since 1598."
+  }
+ ],
+ "views": {
+  "Over the Forum to the Colosseum": [
+   [
+    41.8915,
+    12.487,
+    80.0
+   ],
+   [
+    41.890206,
+    12.492324,
+    22.0
+   ]
+  ],
+  "The Colosseum from the Ponte degli Annibaldi": [
+   [
+    41.89204,
+    12.4919,
+    26.4
+   ],
+   [
+    41.890206,
+    12.492324,
+    22.0
+   ]
+  ],
+  "The Colosseum": [
+   [
+    41.8916,
+    12.4942,
+    66.0
+   ],
+   [
+    41.890206,
+    12.492324,
+    22.0
+   ]
+  ],
+  "Inside the Colosseum": [
+   [
+    41.8905,
+    12.49165,
+    46.0
+   ],
+   [
+    41.8901,
+    12.4927,
+    6.0
+   ]
+  ],
+  "The Forum": [
+   [
+    41.893,
+    12.484,
+    42.0
+   ],
+   [
+    41.89195,
+    12.4866,
+    10.0
+   ]
+  ],
+  "The Pantheon": [
+   [
+    41.89935,
+    12.4768,
+    14.0
+   ],
+   [
+    41.898555,
+    12.476834,
+    21.9
+   ]
+  ],
+  "Piazza Navona": [
+   [
+    41.9006,
+    12.4732,
+    40.0
+   ],
+   [
+    41.8988,
+    12.4729,
+    8.0
+   ]
+  ],
+  "The Trevi Fountain": [
+   [
+    41.900759,
+    12.483674,
+    16.0
+   ],
+   [
+    41.901037,
+    12.4833679,
+    12.1
+   ]
+  ],
+  "The Spanish Steps": [
+   [
+    41.905719,
+    12.481973,
+    17.9
+   ],
+   [
+    41.90608,
+    12.48318,
+    30
+   ]
+  ],
+  "Piazza Venezia and the Vittoriano": [
+   [
+    41.8968,
+    12.4824,
+    45.0
+   ],
+   [
+    41.89462,
+    12.48325,
+    40.0
+   ]
+  ],
+  "St Peter's from the Tiber": [
+   [
+    41.9015,
+    12.47,
+    130.0
+   ],
+   [
+    41.90219,
+    12.45334,
+    70.0
+   ]
+  ],
+  "St Peter's Square": [
+   [
+    41.9022,
+    12.4605,
+    41.9
+   ],
+   [
+    41.9022,
+    12.455,
+    42.1
+   ]
+  ],
+  "Castel Sant'Angelo and the bridge": [
+   [
+    41.9008,
+    12.4672,
+    35.0
+   ],
+   [
+    41.90306,
+    12.46628,
+    25.0
+   ]
+  ],
+  "From the Janiculum": [
+   [
+    41.8912,
+    12.4638,
+    120.0
+   ],
+   [
+    41.8985,
+    12.48,
+    40.1
+   ]
+  ],
+  "From the Pincian": [
+   [
+    41.9114,
+    12.4786,
+    80.0
+   ],
+   [
+    41.9022,
+    12.458,
+    60.1
+   ]
+  ],
+  "Over the roofs": [
+   [
+    41.884,
+    12.456,
+    700.0
+   ],
+   [
+    41.897,
+    12.482,
+    20.0
+   ]
+  ],
+  "Overview": [
+   [
+    41.86,
+    12.44,
+    2200
+   ],
+   [
+    41.895,
+    12.478,
+    10.0
+   ]
+  ]
+ },
+ "life": {
+  "tile": 600,
+  "seed": 753,
+  "near": 600,
+  "density": 0.0011,
+  "perArea": 500,
+  "cypress": 0.12,
+  "max": 8000
+ },
+ "rooftops": false,
+ "palette": {
+  "_": "Rome's walls are stucco, not brick: ochre, yellow, terracotta, pink, cream; and travertine",
+  "brick": [
+   "#d9a564",
+   "#c98a52",
+   "#e0b878",
+   "#c27a50",
+   "#d6936c",
+   "#e3c08c",
+   "#b8714a",
+   "#d89c7a"
+  ],
+  "stone": [
+   "#e2d6bf",
+   "#d8cbb0",
+   "#e9dfcb",
+   "#cfc2a6",
+   "#ddd0b6"
+  ]
+ },
+ "navmap": {
+  "labels": [
+   "The Colosseum",
+   "Ponte degli Annibaldi",
+   "The Pantheon",
+   "St Peter's Basilica",
+   "St Peter's Square",
+   "Castel Sant'Angelo",
+   "Altare della Patria",
+   "The Trevi Fountain",
+   "Sant'Agnese in Agone",
+   "The Spanish Steps",
+   "Basilica of Maxentius",
+   "Theatre of Marcellus",
+   "Pyramid of Cestius",
+   "San Giovanni in Laterano",
+   "Trajan's Column",
+   "Santa Maria Maggiore",
+   "Ponte Rotto"
+  ]
+ },
+ "groundMottle": 0.1,
+ "lakeColour": "#3e6a5e",
+ "lakeSheen": "#6a8a80",
+ "_lakeColour": "the Tiber is green; the fountain basins the map draws as water take it too",
+ "instanceCulling": true,
+ "terrainCuts": [
+  {
+   "line": [
+    [
+     41.891554,
+     12.492028,
+     17.9
+    ],
+    [
+     41.892758,
+     12.491539,
+     18.2
+    ],
+    [
+     41.894101,
+     12.491007,
+     18.6
+    ]
+   ],
+   "width": 34,
+   "slope": 2.5,
+   "_": "Via degli Annibaldi in its cutting through the Oppian spur, under the Ponte degli Annibaldi: the 12 m elevation grid smears the hill over it"
+  }
+ ],
+ "namedService": "pedestrian",
+ "namedServiceMatch": "^(Via|Viale|Piazza|Largo|Lungotevere) ",
+ "roadWidths": {
+  "Via dei Fori Imperiali": 26,
+  "_": "the avenue is mapped as a service road with no width"
+ },
+ "romeEvents": {
+  "vespaWaypoints": [
+   [
+    41.89115,
+    12.490895
+   ],
+   [
+    41.895473,
+    12.483233
+   ],
+   [
+    41.8959,
+    12.4824
+   ],
+   [
+    41.8962,
+    12.48195
+   ],
+   [
+    41.9096,
+    12.4768
+   ]
+  ],
+  "_": "src/rome/events.js: the Vespa rides from the Colosseum down Via dei Fori Imperiali, round Piazza Venezia and up the Corso"
+ },
+ "courtyards": 40,
+ "streetlife": {
+  "seed": 1870,
+  "parks": {
+   "busts": [
+    41.9112,
+    12.479,
+    420
+   ],
+   "picnicArea": 1300
+  },
+  "centre": [
+   41.8995,
+   12.4785,
+   2200
+  ],
+  "far": 550,
+  "shops": 0.62,
+  "flowerBoxes": 0.12,
+  "smoke": 0.05,
+  "_": "src/core/streetlife.js: shopfronts, cafés, façade dress, chimney smoke"
+ },
+ "courts": {
+  "seed": 40,
+  "fountainModels": [
+   "trevi",
+   "fourrivers",
+   "rotondafountain",
+   "barcaccia"
+  ],
+  "bigFountains": [
+   "Fontana del Moro",
+   "Fontana del Nettuno"
+  ],
+  "far": 900,
+  "minCourt": 40,
+  "strew": 0.22,
+  "_": "src/core/courts.js: courtyard floors, wells, fountains, pots and porticoes; the named fountains; the ruins strewn"
+ },
+ "crowds": {
+  "seed": 1990,
+  "centre": [
+   41.8995,
+   12.4785,
+   2000,
+   9
+  ],
+  "pedestrianMul": 2.5,
+  "maxPedestrians": 15000,
+  "keepOut": [
+   [
+    41.900911,
+    12.483334,
+    12
+   ],
+   [
+    41.901037,
+    12.48354,
+    12
+   ],
+   [
+    41.899,
+    12.47308,
+    20
+   ],
+   [
+    41.89915,
+    12.47685,
+    8
+   ],
+   [
+    41.905803,
+    12.482252,
+    8.5
+   ],
+   [
+    41.898109,
+    12.473148,
+    7
+   ],
+   [
+    41.899798,
+    12.47302,
+    7
+   ],
+   [
+    41.89201,
+    12.49186,
+    7
+   ]
+  ],
+  "pedestrians": 14,
+  "far": 320,
+  "touristFar": 420,
+  "piece": 300,
+  "_sites": "[lat, lon, radius, how many, and for a model with no mapped footprint the radius to keep clear of]",
+  "sites": [
+   [
+    41.90093,
+    12.48331,
+    24,
+    240
+   ],
+   [
+    41.899,
+    12.47308,
+    95,
+    280
+   ],
+   [
+    41.89915,
+    12.47685,
+    32,
+    150
+   ],
+   [
+    41.9059,
+    12.4829,
+    38,
+    180
+   ],
+   [
+    41.9056,
+    12.4823,
+    40,
+    100
+   ],
+   [
+    41.890206,
+    12.492324,
+    150,
+    320,
+    100
+   ],
+   [
+    41.90224,
+    12.4573,
+    95,
+    420
+   ],
+   [
+    41.8959,
+    12.4825,
+    60,
+    140
+   ],
+   [
+    41.8956,
+    12.4722,
+    40,
+    130
+   ],
+   [
+    41.892,
+    12.486,
+    85,
+    150
+   ],
+   [
+    41.91074,
+    12.47634,
+    80,
+    130
+   ]
+  ]
+ },
+ "vehicles": {
+  "seed": 2753,
+  "cars": 22,
+  "mopeds": 26,
+  "buses": 1.6,
+  "trams": 2.2,
+  "trains": 0.35,
+  "far": 1300,
+  "carFar": 1000,
+  "mopedFar": 600,
+  "railFar": 2000,
+  "maxCars": 2500,
+  "maxMopeds": 2500,
+  "maxBuses": 120,
+  "maxTrams": 40,
+  "_": "src/core/traffic.js: per km of route, capped; only those within far metres are moved and drawn"
+ },
+ "palazzi": {
+  "tile": 800,
+  "pitch": 24,
+  "eave": 0.6,
+  "band": 5,
+  "corniceFar": 800,
+  "cornice": "#e8dfcf",
+  "chimney": "#9a5a3e",
+  "roofColours": [
+   "#b8623c",
+   "#a95434",
+   "#c0704a",
+   "#9c4e32",
+   "#b46a48"
+  ]
+ },
+ "paving": {
+  "classes": [
+   "residential",
+   "unclassified",
+   "living_street",
+   "pedestrian",
+   "alley",
+   "service"
+  ],
+  "plazas": true,
+  "metres": 3.2,
+  "_": "sampietrini: basalt setts in fan arcs, laid by world position (see src/engine/stages/02-ground.js)"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk"
+  ],
+  "colour": "#e6e2d8"
+ },
+ "tramTracks": true,
+ "noBuildingsInWater": true,
+ "roadColours": {
+  "trail": "#c4b48e",
+  "residential": "#b4ac9f",
+  "unclassified": "#b4ac9f",
+  "living_street": "#b8b0a3",
+  "pedestrian": "#c2b9ab",
+  "alley": "#ada598",
+  "primary": "#4a4b4e",
+  "secondary": "#4c4d50",
+  "tertiary": "#505154"
+ },
+ "areaColours": {
+  "plaza": "#a39a8c",
+  "park": "#5c7240",
+  "grass": "#64743f",
+  "garden": "#52703a",
+  "recreation_ground": "#64743f",
+  "residential": "#a59d8f",
+  "commercial": "#a39b8d",
+  "_": "Rome's blocks are stone to the walls: no yards, so land use reads as paving, not grass"
+ },
+ "photo": {
+  "t": 0.62,
+  "hour": 14.8,
+  "camBack": 2.25,
+  "_": "src/rome/photo.js: the photograph on the Ponte degli Annibaldi; #photo opens on it, in its 3:4 frame",
+  "eyeH": 1.42,
+  "pitch": -2,
+  "vfov": 74
+ },
+ "dress": {
+  "cornice": {
+   "share": 0.9,
+   "minH": 8,
+   "maxH": 40,
+   "depth": 1.1,
+   "height": 1.2,
+   "pitched": true
+  },
+  "string": {
+   "at": 5.0
+  },
+  "far": 650,
+  "_": "src/core/dress.js: cornices, string courses, water towers, fire escapes, dormers, bay windows"
+ },
+ "treeSpecies": [
+  {
+   "name": "stone pine",
+   "shape": "umbrella",
+   "bark": "#6a4a36",
+   "height": [
+    14,
+    22
+   ],
+   "colours": [
+    "#3a5a32",
+    "#42633a",
+    "#35532e"
+   ],
+   "weight": {
+    "street": 22,
+    "park": 40,
+    "wood": 35
+   }
+  },
+  {
+   "name": "Italian cypress",
+   "shape": "column",
+   "bark": "#4a3a2c",
+   "height": [
+    12,
+    20
+   ],
+   "colours": [
+    "#26402a",
+    "#2c4a2e"
+   ],
+   "weight": {
+    "street": 5,
+    "park": 14,
+    "wood": 10
+   }
+  },
+  {
+   "name": "London plane",
+   "shape": "round",
+   "bark": "#a8a088",
+   "height": [
+    16,
+    26
+   ],
+   "colours": [
+    "#5a7e3c",
+    "#62863e",
+    "#54763a"
+   ],
+   "weight": {
+    "street": 35,
+    "park": 14,
+    "wood": 5
+   }
+  },
+  {
+   "name": "holm oak",
+   "shape": "round",
+   "bark": "#4a4238",
+   "height": [
+    10,
+    16
+   ],
+   "colours": [
+    "#34502c",
+    "#3a562e",
+    "#2f4a28"
+   ],
+   "weight": {
+    "street": 20,
+    "park": 20,
+    "wood": 40
+   }
+  },
+  {
+   "name": "oleander and bay",
+   "shape": "small",
+   "bark": "#5a4a3a",
+   "height": [
+    3,
+    5
+   ],
+   "colours": [
+    "#4a6e36",
+    "#527438"
+   ],
+   "weight": {
+    "street": 12,
+    "park": 12,
+    "wood": 0
+   }
+  }
+ ],
+ "_treeSpecies": "Rome's trees: the stone pine and the cypress, the planes along the Tiber, holm oaks on the hills, oleander and bay in the gardens",
+ "treeKeepOut": [
+  [
+   41.89201,
+   12.49186,
+   45
+  ]
+ ],
+ "_treeKeepOut": "the Ponte degli Annibaldi: the photograph's view of the Colosseum stays open"
+}

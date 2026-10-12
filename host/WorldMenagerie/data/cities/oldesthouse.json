@@ -1,0 +1,54 @@
+{
+ "_": "The Oldest House (fan work after Remedy Entertainment's Control). Metres; x east, z south, y up; north is -z. Each sector is built by its module (src/oldesthouse/) round its 'at', inside its 'box' (relative to 'at'). The sectors are laid out round the Executive Sector the way the Bureau's blueprints show them: Research west, Maintenance east, Containment north, Investigations south, the Foundation below, the Astral Plane far above, and the tower on its street to the south.",
+ "name": "The Oldest House",
+ "seed": 11,
+ "fog": {
+  "color": "#141416",
+  "density": 0.0045
+ },
+ "ambient": [0.34, 0.33, 0.33],
+ "sectors": {
+  "executive": {
+   "at": [0, 0, 0],
+   "box": [[-160, 0, -160], [160, 70, 160]]
+  },
+  "street": {
+   "at": [0, 0, 1700],
+   "box": [[-200, 0, -200], [200, 220, 200]]
+  },
+  "research": {
+   "at": [-560, 0, 0],
+   "box": [[-180, -10, -440], [180, 80, 180]]
+  },
+  "maintenance": {
+   "at": [560, -20, 0],
+   "box": [[-180, -60, -180], [180, 80, 180]]
+  },
+  "containment": {
+   "at": [0, -20, -560],
+   "box": [[-180, -40, -180], [180, 100, 180]]
+  },
+  "investigations": {
+   "at": [0, 0, 560],
+   "box": [[-160, 0, -160], [160, 50, 160]]
+  },
+  "foundation": {
+   "at": [0, -320, 0],
+   "box": [[-260, -140, -260], [260, 0, 260]]
+  },
+  "astral": {
+   "at": [0, 1100, 0],
+   "box": [[-500, -300, -500], [500, 300, 500]]
+  },
+  "further": {
+   "at": [0, 0, 0]
+  }
+ },
+ "cards": {
+  "house": {
+   "h": "The Oldest House",
+   "p": "Headquarters of the Federal Bureau of Control: a brutalist tower in Manhattan that passers-by somehow never notice, and inside it far more building than the outside could hold. It is a Place of Power, and it rearranges itself. Here are its sectors as the Bureau's blueprints lay them out - Executive in the middle; Research to the west; Maintenance to the east; Containment to the north; Investigations to the south; the Foundation below; the Astral Plane above everything.",
+   "sub": "Fan work after Remedy Entertainment's Control. X lifts and lowers the ceilings."
+  }
+ }
+}

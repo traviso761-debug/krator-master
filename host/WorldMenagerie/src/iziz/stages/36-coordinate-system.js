@@ -29,7 +29,7 @@ const tsl=document.getElementById('tslider'),tlab=document.getElementById('tlabe
 const dsel=document.getElementById('daylen');ctx.setDayLen=v=>{const h=hourNow(clockPaused?pausedAt:performance.now()-clockOffset);DAY=v;setHour(h);dsel.value=String(v);};dsel.addEventListener('change',()=>{ctx.setDayLen(+dsel.value);if(ctx.saveSettings)ctx.saveSettings();});
 tsl.addEventListener('pointerdown',()=>{dragging=true;});addEventListener('pointerup',()=>{dragging=false;});addEventListener('pointercancel',()=>{dragging=false;});tsl.addEventListener('change',()=>{dragging=false;});tsl.addEventListener('input',()=>{setHour(parseFloat(tsl.value));});
 let tbT=0,tbTxt='';animHooks.push(now=>{if(now-tbT<200)return;tbT=now;const h=ctx.hour||0;if(!dragging)tsl.value=h.toFixed(2);const t=`${String(Math.floor(h)).padStart(2,'0')}:${String(Math.floor((h%1)*60)).padStart(2,'0')}`;if(t!==tbTxt){tbTxt=t;tlab.textContent=t;}});
-const pb=document.createElement('button');pb.textContent='Pause sun';pb.onclick=()=>{if(!clockPaused){clockPaused=true;pausedAt=performance.now()-clockOffset;pb.textContent='Resume sun';}else{clockPaused=false;clockOffset=performance.now()-pausedAt;pb.textContent='Pause sun';}};document.getElementById('ui').appendChild(pb);ctx.pauseBtn=pb;
+const pb=document.createElement('button');pb.textContent='Pause sun';pb.onclick=()=>{if(!clockPaused){clockPaused=true;pausedAt=performance.now()-clockOffset;pb.textContent='Resume sun';}else{clockPaused=false;clockOffset=performance.now()-pausedAt;pb.textContent='Pause sun';}};(document.getElementById('timebar')||document.getElementById('ui')).appendChild(pb);ctx.pauseBtn=pb;   // beside the clock it stops
 });
 await stage('evening');
 section('evening',()=>{

@@ -1,0 +1,325 @@
+{
+ "_": "A Macrotermes mound on the Namibian savanna at termite scale: metres in the scene are the real millimetres times C.scale/1000 (a 6 mm worker is 1.8 m). x east, z south, y up; the mound stands at the origin. The cutaway removes the box x 0..cut.length, |z| < cut.half, so views of it look from +x (yaw about 1.3).",
+ "name": "The Termite Mound",
+ "seed": 7,
+ "scale": 300,
+ "hour": 10,
+ "fog": {
+  "density": 0.00012
+ },
+ "sky": {
+  "day": ["#5c8ed0", "#e6d6b8"],
+  "dusk": ["#39406e", "#f09050"],
+  "night": ["#05070f", "#141826"]
+ },
+ "mound": {
+  "height": 900,
+  "base": 300,
+  "lean": [0, -0.05],
+  "_turrets": "[distance from the axis, bearing, height, base radius]; kept off the cut (|x| greater than the radius)",
+  "turrets": [[175, 3.45, 330, 62], [165, 2.55, 260, 55], [180, 0.35, 300, 58]],
+  "connectives": [200, 300, 400, 500, 600, 700],
+  "sectionColour": "#b86a40"
+ },
+ "nest": {
+  "at": [0, -50, 0],
+  "r": 220,
+  "chambers": 230,
+  "size": [11, 22],
+  "onCut": 0.33,
+  "gallery": 2.2
+ },
+ "foraging": {
+  "count": 8,
+  "min": 700,
+  "max": 1500
+ },
+ "cellar": {
+  "depth": -420
+ },
+ "cut": {
+  "length": 1400,
+  "half": 650,
+  "floor": -500
+ },
+ "hollowColours": {
+  "gallery": "#7a5638",
+  "royal": "#9c7650",
+  "chimney": "#6e4a30",
+  "conduit": "#6a442a",
+  "damp": "#3e3028"
+ },
+ "comb": {
+  "colour": "#cdb48c"
+ },
+ "savanna": {
+  "radius": 7000,
+  "tufts": 900,
+  "grassFrom": 480,
+  "grassTo": 3600,
+  "pebbles": 700,
+  "grass": ["#8f8a3e", "#d2b866"],
+  "acacia": [3200, -4100, 1900],
+  "others": [[-2600, 1500, 520, 520, 1], [1900, 3300, 340, 420, 1], [-4200, -2200, 780, 330, 0], [3900, 800, 260, 380, 1]],
+  "_others": "other mounds: [x, z, height, base radius, worn (1: an old one worn to a dome)]"
+ },
+ "life": {
+  "workers": 1400,
+  "soldiers": 160,
+  "attendants": 46,
+  "motes": 900,
+  "alates": 320,
+  "queenLength": 26,
+  "alateScale": 3.5
+ },
+ "breach": {
+  "y": 230,
+  "th": 0.95,
+  "r": 15
+ },
+ "views": [
+   {
+    "name": "The mound on the savanna",
+    "group": "Outside",
+    "t": [0, 300, 0],
+    "d": 2300,
+    "yaw": 0.6,
+    "pitch": 0.12,
+    "card": "mound"
+   },
+   {
+    "name": "Among the grass",
+    "group": "Outside",
+    "t": [0, 120, 0],
+    "d": 900,
+    "yaw": 1.0,
+    "pitch": 0.02,
+    "card": "grass"
+   },
+   {
+    "name": "A foraging party",
+    "group": "Outside",
+    "anchor": "forage",
+    "t": [0, 25, 0],
+    "d": 140,
+    "yaw": 0.0,
+    "pitch": 0.3,
+    "card": "foraging"
+   },
+   {
+    "name": "From above",
+    "group": "Outside",
+    "t": [0, 450, 0],
+    "d": 2600,
+    "yaw": 0.3,
+    "pitch": 1.2,
+    "card": "mound"
+   },
+   {
+    "name": "The cutaway",
+    "group": "Inside",
+    "t": [0, 180, 0],
+    "d": 2100,
+    "yaw": 1.35,
+    "pitch": 0.12,
+    "card": "cutaway",
+    "cut": true
+   },
+   {
+    "name": "The nest",
+    "group": "Inside",
+    "t": [0, -50, 0],
+    "d": 620,
+    "yaw": 1.4,
+    "pitch": 0.1,
+    "card": "nest",
+    "cut": true
+   },
+   {
+    "name": "The fungus gardens",
+    "group": "Inside",
+    "t": [0, -30, 0],
+    "d": 160,
+    "yaw": 1.5,
+    "pitch": 0.15,
+    "card": "gardens",
+    "cut": true
+   },
+   {
+    "name": "The royal cell",
+    "group": "Inside",
+    "t": [0, -72, 0],
+    "d": 90,
+    "yaw": 1.45,
+    "pitch": 0.25,
+    "card": "royal",
+    "cut": true
+   },
+   {
+    "name": "Beside the queen",
+    "group": "Inside",
+    "t": [-3, -79, 0],
+    "d": 20,
+    "yaw": 1.2,
+    "pitch": 0.35,
+    "card": "royal"
+   },
+   {
+    "name": "The chimney",
+    "group": "Inside",
+    "t": [0, 450, 0],
+    "d": 1100,
+    "yaw": 1.4,
+    "pitch": 0.05,
+    "card": "chimney",
+    "cut": true
+   },
+   {
+    "name": "Up the chimney",
+    "group": "Inside",
+    "t": [0, 420, 0],
+    "d": 26,
+    "yaw": 0.4,
+    "pitch": -1.4,
+    "card": "chimney",
+    "anchor": "chimney"
+   },
+   {
+    "name": "The cellar",
+    "group": "Inside",
+    "t": [0, -400, 0],
+    "d": 500,
+    "yaw": 1.4,
+    "pitch": 0.1,
+    "card": "cellar",
+    "cut": true
+   }
+ ],
+ "eventViews": {
+  "swarm": {
+   "t": [57, 450, 124],
+   "d": 330,
+   "yaw": 0.37,
+   "pitch": 0.08
+  },
+  "breach": {
+   "t": [145, 230, 177],
+   "d": 90,
+   "yaw": 0.62,
+   "pitch": 0.15
+  },
+  "day": {
+   "t": [0, 350, 0],
+   "d": 1500,
+   "yaw": 1.35,
+   "pitch": 0.1,
+   "cut": true
+  },
+  "rain": {
+   "t": [0, 200, 0],
+   "d": 760,
+   "yaw": 0.9,
+   "pitch": 0.05
+  }
+ },
+ "places": [
+   {
+    "name": "the royal cell",
+    "at": [0, -72, 0],
+    "r": 40
+   },
+   {
+    "name": "the cellar",
+    "at": [0, -420, 0],
+    "r": 130
+   },
+   {
+    "name": "the nest",
+    "at": [0, -50, 0],
+    "r": 220
+   },
+   {
+    "name": "inside the mound",
+    "at": [0, 320, 0],
+    "r": 330
+   }
+ ],
+ "cards": {
+  "mound": {
+   "h": "The termite mound",
+   "p": "A Macrotermes mound on the Namibian savanna: three metres of clay, built a pellet at a time, here as the termites themselves would see it if they could see - a spire of red earth 900 m high, leaning a little to the north where the sun is. The colony lives below it, not in it. The mound is the colony's lung.",
+   "sub": "Scale: a 6 mm worker is as long as a person is tall (300 to 1). X cuts it in half."
+  },
+  "grass": {
+   "h": "The grass",
+   "p": "Savanna grass, half a metre of it, stands a hundred and fifty metres high at this scale, and the pebbles are the size of houses. The acacia on the horizon is two kilometres tall. The workers cut the grass and carry it home underground, to feed not themselves but their fungus.",
+   "sub": "The savanna"
+  },
+  "cutaway": {
+   "h": "In section",
+   "p": "The near half of the mound and the ground cut away, down to the cellar. Below the spire, mostly underground, the nest: a ball of chambers and galleries. Up the middle, the chimney. Out from it, the connectives, branching into the surface conduits just under the skin. Out under the savanna, the foraging tunnels; down below, the shafts to the cellar.",
+   "sub": "X puts the mound back"
+  },
+  "nest": {
+   "h": "The nest",
+   "p": "Several hundred metres of chambers and galleries at ground level, most of it below. The chambers are low and flat; the galleries between them are just wide enough for two workers to pass. A million termites live here, blind, in the dark, and the temperature stays within a degree or two all year.",
+   "sub": "Inside the mound"
+  },
+  "gardens": {
+   "h": "The fungus gardens",
+   "p": "The combs on the chamber floors are chewed grass and wood, shaped into a sponge for a fungus, Termitomyces, that grows nowhere else. The workers eat the white nodules it puts out. The fungus does the digesting the termites cannot, and the whole mound is built to keep it at the temperature and humidity it wants.",
+   "sub": "Inside the nest"
+  },
+  "royal": {
+   "h": "The royal cell",
+   "p": "A low wide chamber near the bottom of the nest, its doorways too small for her: the queen, her body swollen to many times its first size, lays an egg every few seconds for years. The king stays beside her. Workers feed her, groom her and carry the eggs away to the nurseries round the cell.",
+   "sub": "The heart of the colony"
+  },
+  "chimney": {
+   "h": "The chimney",
+   "p": "A broad shaft up the middle of the mound, closed at the top. From it the connectives run out to just under the skin, where they branch into the surface conduits. The air the colony breathes moves through these, warmed and cooled through the porous wall: the mound is a lung, not a chimney.",
+   "sub": "Inside the mound"
+  },
+  "cellar": {
+   "h": "The cellar",
+   "p": "Shafts from the bottom of the nest down to damp clay, metres below ground - a hundred and more here. The colony mines water from it and carries the wet soil up to build with and to keep the nest from drying out.",
+   "sub": "Below the nest"
+  },
+  "swarm": {
+   "h": "The swarming",
+   "p": "Once a year, after the first rains, at dusk: the workers open slits in the skin and the winged alates - the future kings and queens - pour out into the evening and fly. Almost all of them are eaten. The few pairs that land, shed their wings and dig in begin a new mound.",
+   "sub": "Events: the swarming"
+  },
+  "breach": {
+   "h": "A breach",
+   "p": "Something has broken through the skin. The soldiers come first and fill the hole, heads out, mandibles ready; behind them the workers bring wet pellets and wall it up from the rim inward, and in a few hours it is as if nothing had happened.",
+   "sub": "Events: a breach"
+  },
+  "breathing": {
+   "h": "A day and a night",
+   "p": "By day the sun warms the skin first: the air in the surface conduits warms and rises, and the air in the chimney sinks. At night the skin cools first and the flow turns round, rising up the chimney and sinking at the edges. Once a day the mound breathes out and in, and the nest gets its fresh air. The motes show which way it is going.",
+   "sub": "Events: a day and a night, in forty seconds"
+  },
+  "foraging": {
+   "h": "A foraging party",
+   "p": "Out of a hole in the ground hundreds of metres from the mound, along a trail worn into the sand, to a tuft of grass: the workers cut it into lengths and carry it home underground. They do not eat it. It goes to the gardens, to feed the fungus that feeds them. Soldiers stand round the hole, facing out.",
+   "sub": "The savanna"
+  },
+  "rain": {
+   "h": "The first rains",
+   "p": "The sky closes in and the drops come down, each as big as a person at this scale, at their own nine metres a second. The clay drinks it and darkens. The workers build at night after rain, when the clay is soft; and after the first rains of the year, at dusk, the colony swarms.",
+   "sub": "Events: the first rains"
+  }
+ },
+ "rain": {
+  "drops": 4200,
+  "radius": 340,
+  "size": 2.2,
+  "fall": 9
+ },
+ "foragers": {
+  "parties": 3,
+  "each": 70,
+  "trail": [180, 420]
+ }
+}

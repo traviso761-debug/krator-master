@@ -1,7 +1,9 @@
 {
- "lots": 145,
- "lotHash": "09827f76ef31f87ddf31d40d79c778c7273b522fe8dfc98191a78fb9314cf1d3",
+ "lots": 146,
+ "lotHash": "1bfbe411a00a79fdb2b8cf5984eb54931d3f3983f5840acdb3c80f8203cb7bfe",
  "doors": null,
  "doorHash": null,
- "seed": 1976
+ "page": "fleshpit.html",
+ "seed": null,
+ "hash": "seed=1976"
 }

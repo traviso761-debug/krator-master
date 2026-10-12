@@ -60,7 +60,7 @@ export function walk(api){
     if(held&&W.tour){W.tour=null;status();}
     if(held)return;
     if(k==='m')toggleMap();
-    if(k==='f'&&W.mode!=='orbit')setMode(W.mode==='walk'?'fly':'walk');}});
+    }});   // F no longer flies: the fictional scenes have no fly mode
   let saved=null;const CAM=C.camera||{};
   function take(ctl){if(!saved){saved={near:camera.near};camera.near=0.25;camera.updateProjectionMatrix();}ctl.elMin=-1.45;ctl.elMax=1.45;}
   function leave(){const ctl=W.ctl;W.mode='orbit';W.tour=null;
@@ -156,7 +156,7 @@ export function walk(api){
     el.addEventListener('pointerdown',()=>{if(W.tour){W.tour=null;status();}});
     UI.bWalk=mkBtn('Walk',ui,()=>{if(W.mode==='walk')leave();else if(W.mode==='fly')setMode('walk');else enterWalk();});
     UI.bWalk.title='Walk the halls at a Dwarf\'s eye height: W A S D, drag to look, Shift to hurry, Esc to stop';
-    UI.bFly=mkBtn('Fly',ui,()=>{if(W.mode==='fly')leave();else if(W.mode==='walk')setMode('fly');else{const p=camera.position;W.x=p.x;W.y=p.y-EYE;W.z=p.z;W.pending=()=>setMode('fly');}});
+    UI.bFly=document.createElement('button');(()=>{if(W.mode==='fly')leave();else if(W.mode==='walk')setMode('fly');else{const p=camera.position;W.x=p.x;W.y=p.y-EYE;W.z=p.z;W.pending=()=>setMode('fly');}});
     UI.bFly.title='Fly anywhere, through the rock if you like: W A S D along the look, Q and E down and up';
     UI.bMap=mkBtn('Map',ui,()=>toggleMap());UI.bMap.title='The plan of the city (M): click a floor to walk there';
     const panel=document.createElement('div');panel.id='moriamap';panel.style.cssText='position:fixed;left:10px;bottom:40px;display:none;flex-direction:column;gap:4px;z-index:6;background:rgba(10,10,12,.9);border:1px solid #5e5a52;padding:6px;font:11px Helvetica,Arial,sans-serif;color:#e6e2d8;max-width:'+(CW+2)+'px';
@@ -178,7 +178,7 @@ export function walk(api){
     // the address
     const h=HASH0||'',w=/(^|&)walk(=([a-z0-9]+))?(&|$)/.exec(h),t=/(^|&)tour=([a-z]+)/.exec(h);
     if(/(^|&)map(&|$)/.test(h))toggleMap(true);
-    if(t)startTour(t[2]);else if(w)(w[3]&&PLACES[w[3]]?goPlace(w[3]):enterWalk());else if(/(^|&)fly(&|$)/.test(h))UI.bFly.click();});
+    if(t)startTour(t[2]);else if(w)(w[3]&&PLACES[w[3]]?goPlace(w[3]):enterWalk());;});
   ctx.walk={W,PLACES,TOURS,floorsAt,goPlace,startTour,leave};
   ctx.details=Object.assign(ctx.details||{},{walkFloors:FL.length,walkBlocks:BL.length});
 }

@@ -25,9 +25,9 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
       const V=r=>r.map(([x,z])=>new THREE.Vector2(x,z));let faces;try{faces=THREE.ShapeUtils.triangulateShape(V(outer),(holes||[]).map(V));}catch(e){return;}const all=outer.concat(...(holes||[]));
       const base=t.p.length/3;for(let i=0;i<all.length;i++){const x=all[i][0],z=all[i][1];t.p.push(x,Y(x,z),z);t.n.push(0,1,0);t.c.push(cl.r,cl.g,cl.b);}for(const f of faces)t.idx.push(base+f[0],base+f[2],base+f[1]);},
     // a big area on a hillside: fill it with a grid of quads that follow the ground, instead of one flat outline
-    gridPoly(rec,cell,off,cl){const {x0,x1,z0,z1}=rec.bb;
+    gridPoly(rec,cell,off,cl,skip){const {x0,x1,z0,z1}=rec.bb;   // skip(x, z): a cell to leave out (bare ground)
       for(let z=z0;z<z1;z+=cell)for(let x=x0;x<x1;x+=cell){const x2=Math.min(x+cell,x1),z2=Math.min(z+cell,z1);
-        if(!inRec(rec,(x+x2)/2,(z+z2)/2))continue;
+        if(!inRec(rec,(x+x2)/2,(z+z2)/2)||(skip&&skip((x+x2)/2,(z+z2)/2)))continue;
         this.quad(this.tile(x,z),[x,groundH(x,z)+off,z],[x,groundH(x,z2)+off,z2],[x2,groundH(x2,z2)+off,z2],[x2,groundH(x2,z)+off,z],cl);}},
     walls(ring,y0,y1,cl){for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length],nx=b[1]-a[1],nz=-(b[0]-a[0]),nl=Math.hypot(nx,nz)||1;
       this.quad(this.tile(a[0],a[1]),[a[0],y1,a[1]],[b[0],y1,b[1]],[b[0],y0,b[1]],[a[0],y0,a[1]],cl,[nx/nl,0,nz/nl]);}},
@@ -48,7 +48,32 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
         g.setAttribute('color',new THREE.Float32BufferAttribute(t.c,3));g.setIndex(t.idx);g.computeBoundingSphere();const m=new THREE.Mesh(g,material);m.receiveShadow=true;m.userData.noShadow=!opts.cast;if(opts.cast)m.castShadow=true;m.name=name||'';if(opts.far){m.userData.far=opts.far;FAR_MESHES.push(m);}scene.add(m);out.push(m);}return out;}};}
 const col=h=>new THREE.Color(h);
 const gY=off=>(x,z)=>groundH(x,z)+off;   // a height that follows the ground
-const groundMat=off=>new THREE.MeshLambertMaterial({vertexColors:true,polygonOffset:true,polygonOffsetFactor:-off,polygonOffsetUnits:-off*2});
+// A city may mottle its ground ("groundMottle": strength, e.g. 0.12): lighter and darker patches by world position, on
+// the scale of a few metres and of tens, so a big lawn reads as grass worn and lush rather than one flat sheet of paint
+const MOTTLE=+C.groundMottle||0;
+const groundMat=off=>{const m=new THREE.MeshLambertMaterial({vertexColors:true,polygonOffset:true,polygonOffsetFactor:-off,polygonOffsetUnits:-off*2});
+  if(MOTTLE){m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vGw;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGw=(modelMatrix*vec4(transformed,1.0)).xz;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vGw;\nfloat gHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\nfloat gNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(gHash(i),gHash(i+vec2(1,0)),f.x),mix(gHash(i+vec2(0,1)),gHash(i+vec2(1,1)),f.x),f.y);}')
+      .replace('#include <color_fragment>','#include <color_fragment>\n{float n=gNoise(vGw*0.21)*0.55+gNoise(vGw*0.037)*0.45;float g=step(vColor.r+0.02,vColor.g);diffuseColor.rgb*=1.0+('+MOTTLE.toFixed(3)+'*(1.0+g))*(n-0.5)*2.0;}');};m.customProgramCacheKey=()=>'mottle'+off;}
+  return m;};
+// A city's paving (C.paving: {classes: [road classes], plazas: true, metres: m}): the ground carries no texture
+// coordinates, so a paving texture is laid by world position instead - seamless across streets, junctions and
+// squares - and multiplied into the ground's own colour. The one pattern so far is Rome's sampietrini: basalt setts
+// in fan arcs, the joints pale.
+const PAVE=C.paving||null;
+function settTex(){const N=512,cv=document.createElement('canvas');cv.width=cv.height=N;const g=cv.getContext('2d'),R=mkRng(1871);g.fillStyle='#cfc8bb';g.fillRect(0,0,N,N);
+  const F=N/4;   // a fan every quarter tile: arcs of setts round a point on the fan's lower edge
+  for(let fy=-1;fy<=4;fy++)for(let fx=-1;fx<=4;fx++){const ox=fx*F+(fy%2?F/2:0),oy=fy*F;
+    for(let ring=1;ring<=9;ring++){const rr=ring*F/9.2,n=Math.max(3,Math.round(Math.PI*rr/(F/10)));
+      for(let k=0;k<n;k++){const a=Math.PI*(k+0.5)/n,cx=ox+F/2+Math.cos(a)*rr,cy=oy+F-Math.sin(a)*rr,s=F/12.5,v=0.78+R()*0.3;
+        g.save();g.translate(((cx%N)+N)%N,((cy%N)+N)%N);g.rotate(-a);g.fillStyle=`rgb(${Math.round(118*v)},${Math.round(113*v)},${Math.round(106*v)})`;g.fillRect(-s/2,-s/2,s*0.9,s*0.9);g.restore();}}}
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
+function worldMapped(mat,tex,metres){mat.onBeforeCompile=sh=>{sh.uniforms.pavTex={value:tex};sh.uniforms.pavScale={value:1/metres};
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vPavXZ;').replace('#include <begin_vertex>','#include <begin_vertex>\nvPavXZ=(modelMatrix*vec4(transformed,1.0)).xz;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D pavTex;uniform float pavScale;varying vec2 vPavXZ;').replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=texture2D(pavTex,vPavXZ*pavScale).rgb*1.35;');};
+  mat.customProgramCacheKey=()=>'paved';return mat;}
+const PAVE_TEX=PAVE?settTex():null,PAVE_CLASSES=new Set(PAVE?PAVE.classes||[]:[]);
+const paveMat=off=>worldMapped(groundMat(off),PAVE_TEX,PAVE.metres||3.2);
 const stoneM=new THREE.MeshLambertMaterial({color:0xbdb5a6}),steelM=new THREE.MeshLambertMaterial({color:0x6b6f75});
 section('ground',()=>{
   // the land underneath everything, then the land cover, big areas first so the details paint over them
@@ -160,14 +185,17 @@ section('ground',()=>{
   // A city can retune the land-cover palette: the defaults are a modern map's greens, and on the Pelennor
   // they read as lawns rolled out over the fields.
   const AREA_COL=Object.assign({},{residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'},C.areaColours||{});
+  const WOODY=new Set(['wood','reserve','scrub']);   // what stops at the tree line (bareAt, 00-start)
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
-  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD});
+  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD}),paved=PAVE&&PAVE.plazas?tiledBuffer(paveMat(2),{tile:1000}):null;
   // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
   for(const a of AREAS){let c=col(AREA_COL[a.kind]||'#6a9a52');if(a.kind==='residential'){const h=hash3(a.bb.x0,a.bb.z0,11);c=c.clone().offsetHSL(0,(h-0.5)*0.06,(h-0.5)*0.05);}
-    const buf=USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
-    if(TER&&big>4000*WORLD*WORLD)buf.gridPoly(a,(big>40000*WORLD*WORLD?25:12)*WORLD,0.06,c);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
+    const buf=paved&&a.kind==='plaza'?paved:USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
+    // an area that meets a terrain cut follows the ground too, or it would be drawn flat across the cutting
+    const cutHit=TER&&TER.cutBoxes&&TER.cutBoxes.some(q=>a.bb.x1>q.x0&&a.bb.x0<q.x1&&a.bb.z1>q.z0&&a.bb.z0<q.z1);
+    if(TER&&(big>4000*WORLD*WORLD||cutHit))buf.gridPoly(a,(big>40000*WORLD*WORLD?25:cutHit?6:12)*WORLD,0.06,c,WOODY.has(a.kind)?bareAt:null);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
   for(const b of BEACHES)detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));
-  use.build('land use');land.build('land');detail.build('land detail');
+  use.build('land use');land.build('land');detail.build('land detail');if(paved)paved.build('piazze');
 });
 // water: the lake with the real shore (islands cut out), the river, lagoons and harbour basins
 // A sea-level city's water is one sheet the size of the map, so a bright specular spreads right across it and
@@ -221,7 +249,9 @@ const BRIDGE_H=Object.entries(C.bridgeHeights||{}).map(([re,h])=>[new RegExp(re,
    const ramp=Math.min(H>10?160:30,r.len*0.4),c0=(ends.get(vk(r.pts[0]))||0)>1,c1=(ends.get(vk(r.pts[r.pts.length-1]))||0)>1;
    const firstWet=wetAt.indexOf(true),lastWet=wetAt.lastIndexOf(true);
    r.ys=cum.map((s,i)=>{const gh=groundH(r.pts[i][0],r.pts[i][1]);if(firstWet>=0&&i>=firstWet&&i<=lastWet+1)return Math.max(H,gh+2);
-     const a=c0?1:smooth(0,ramp,s),b=c1?1:smooth(0,ramp,r.len-s);return Math.max(gh+0.6,H*Math.min(a,b));});   // over land the deck meets the hillside it lands on
+     const a=c0?1:smooth(0,ramp,s),b=c1?1:smooth(0,ramp,r.len-s);
+     // a city on a plateau (C.bridgeOverGround) measures a deck from the ground under it, not from the water's level
+     return C.bridgeOverGround?gh+Math.max(0.6,H*Math.min(a,b)):Math.max(gh+0.6,H*Math.min(a,b));});   // over land the deck meets the hillside it lands on
    r.deck=H;}}
 const deckY=r=>r.deck||0;
 // the deck height at any point along a road segment
@@ -231,6 +261,7 @@ const BRIDGES=[],PIERS_AT=[];
 // break a polyline into pieces of at most `step` metres so it can follow the ground
 function resample(pts,step){const out=[];for(let i=0;i+1<pts.length;i++){const [ax,az]=pts[i],[bx,bz]=pts[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L/step));for(let k=0;k<n;k++){const u=k/n;out.push([ax+(bx-ax)*u,az+(bz-az)*u]);}}out.push(pts[pts.length-1]);return out;}
 section('streets',()=>{
+  const pavedRoad=PAVE?tiledBuffer(paveMat(5)):null,marks=C.laneMarkings?tiledBuffer(groundMat(6),{tile:1000,far:2500*WORLD}):null,LANE=new Set(C.laneMarkings?C.laneMarkings.classes||['primary','secondary','trunk']:[]),markC=col((C.laneMarkings||{}).colour||'#e6e2d8');
   const walk=tiledBuffer(groundMat(4),{tile:1000,far:3000*WORLD}),road=tiledBuffer(groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000*WORLD}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
   const walkC=col('#a39f95'),namedTrail=col('#7f8a8c'),TRAIL_PALE=nameRe(C.trails);   // the city's named trails are paler
   for(const r of ROADS){const y=deckY(r),c=col(ROAD_COL[r.c]||'#48494d');
@@ -245,8 +276,16 @@ section('streets',()=>{
     // a city whose roads have no pavements (sidewalks: false) - a paved plain, a mountain track - leaves the pale
     // strip out; drawn under Isengard's roads it put a white edge along every one
     if(WALKED.has(r.c)&&C.sidewalks!==false)walk.ribbon(pts,r.w+5,gY(0.06),walkC);
-    (r.c==='alley'?walk:road).ribbon(pts,r.w,gY(0.08),c);}
+    (pavedRoad&&PAVE_CLASSES.has(r.c)?pavedRoad:r.c==='alley'?walk:road).ribbon(pts,r.w,gY(0.08),c);
+    // lane markings on the main roads: a dashed centre line, a solid line a little in from each edge
+    if(marks&&LANE.has(r.c)&&r.w>=7){const off=(p,i,d)=>{const a=p[Math.max(0,i-1)],b=p[Math.min(p.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return [p[i][0]-dz/l*d,p[i][1]+dx/l*d];};
+      for(const sd of [-1,1])marks.ribbon(pts.map((_,i)=>off(pts,i,sd*(r.w/2-0.5))),0.14,gY(0.1),markC);
+      let run=0;for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let u=(6-run%6)%6;u+3<=L;u+=6){const t0=u/L,t1=(u+3)/L;marks.ribbon([[a[0]+(b[0]-a[0])*t0,a[1]+(b[1]-a[1])*t0],[a[0]+(b[0]-a[0])*t1,a[1]+(b[1]-a[1])*t1]],0.15,gY(0.1),markC);}run+=L;}}}
   const rail=tiledBuffer(groundMat(4));for(const r of RAILS)if(!r.elevated&&r.type==='rail')rail.ribbon(TER?resample(r.pts,14):r.pts,5,gY(0.07),col('#5a534a'));
+  if(pavedRoad)pavedRoad.build('paved streets');if(marks)marks.build('lane markings');
+  // tram tracks: a pair of steel rails along each mapped tram line, set into the street
+  if(C.tramTracks){const tt=tiledBuffer(groundMat(6),{tile:1000,far:2000*WORLD}),steel=col('#8c8e92');for(const r of RAILS){if(r.type!=='tram'||r.elevated)continue;const p=TER?resample(r.pts,8):r.pts;
+      for(const sd of [-1,1]){const q=p.map((_,i)=>{const a=p[Math.max(0,i-1)],b=p[Math.min(p.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return [p[i][0]-dz/l*sd*0.72,p[i][1]+dx/l*sd*0.72];});tt.ribbon(q,0.11,gY(0.11),steel);}}tt.build('tram tracks');}
   walk.build('sidewalks');road.build('streets');trail.build('trails');deck.build('bridges');rail.build('rail');
   {const pm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),new THREE.MeshLambertMaterial({color:0x8a8680}),Math.max(1,PIERS_AT.length)),d=new THREE.Object3D();
    PIERS_AT.forEach(([x,z,top,a,w,g],i)=>{const foot=Math.min(g,0)-1;d.position.set(x,foot,z);d.rotation.set(0,-a,0);d.scale.set(2,Math.max(1,top-foot),Math.max(3,w*0.45));d.updateMatrix();pm.setMatrixAt(i,d.matrix);});pm.count=PIERS_AT.length;scene.add(pm);ctx.details=Object.assign(ctx.details||{},{bridgePiers:PIERS_AT.length});}

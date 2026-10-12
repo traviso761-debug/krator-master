@@ -1,0 +1,1247 @@
+{
+ "name": "Fort Worth",
+ "note": "Where the West begins: Fort Worth from OpenStreetMap, on its real ground along the Trinity - downtown and Sundance Square, the Stockyards to the north where the cattle are still driven down Exchange Avenue, the Cultural District's museums to the west, the Near Southside, and TCU.",
+ "origin": [
+  32.7555,
+  -97.3308
+ ],
+ "defaultSeed": 1849,
+ "defaultHour": 16,
+ "bounds": [
+  32.7,
+  -97.405,
+  32.8,
+  -97.295
+ ],
+ "osm": "data/cities/fortworth-osm.json",
+ "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles.",
+ "fetch": {
+  "bbox": [
+   32.698,
+   -97.408,
+   32.802,
+   -97.292
+  ],
+  "tiles": {
+   "buildings": [
+    4,
+    4
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    32.745,
+    -97.345,
+    32.765,
+    -97.318
+   ],
+   [
+    32.782,
+    -97.358,
+    32.796,
+    -97.336
+   ],
+   [
+    32.74,
+    -97.375,
+    32.758,
+    -97.355
+   ],
+   [
+    32.728,
+    -97.34,
+    32.746,
+    -97.315
+   ],
+   [
+    32.703,
+    -97.375,
+    32.718,
+    -97.355
+   ]
+  ],
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});",
+  "_": "detail zones (everything kept): downtown and Sundance Square, the Stockyards, the Cultural District, the Near Southside, TCU; elsewhere the tall and large buildings"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 25,
+  "_": "the Trinity's bluffs under downtown and the Stockyards: elevation from tools/fetch-terrain.py",
+  "filter": {
+   "open": 120,
+   "close": 36,
+   "blur": 40,
+   "_": "the towers and the trees stand in the elevation"
+  }
+ },
+ "seaLevelWater": false,
+ "fog": 5.5e-05,
+ "sky": {
+  "day": {
+   "top": "#4a7ec0",
+   "hor": "#e2e4dc"
+  },
+  "dusk": {
+   "top": "#2c3a66",
+   "hor": "#f0a060"
+  },
+  "night": {
+   "top": "#05070f",
+   "hor": "#1c2030"
+  }
+ },
+ "terrainColours": {
+  "low": "#8a9060",
+  "high": "#6a7a48",
+  "steep": "#8a7a5a",
+  "far": "#8a8a68"
+ },
+ "waterColour": "#4a6a5a",
+ "lakeColour": "#4a6a5a",
+ "lakeSheen": "#7a9a8a",
+ "defaultHeights": {
+  "_": "Fort Worth's untagged buildings: one-storey houses, low commercial strips, warehouses; downtown has its heights mapped",
+  "yes": 6,
+  "house": 6,
+  "detached": 6,
+  "residential": 7,
+  "apartments": 12,
+  "commercial": 7,
+  "retail": 6,
+  "industrial": 9,
+  "warehouse": 9,
+  "church": 14,
+  "school": 9,
+  "office": 14,
+  "hotel": 20,
+  "garage": 3.2,
+  "garages": 3.2,
+  "shed": 2.8,
+  "roof": 5,
+  "university": 14,
+  "hospital": 24,
+  "civic": 12,
+  "public": 10,
+  "parking": 12
+ },
+ "heightSpread": 0.15,
+ "facade": {
+  "bay": 3.4,
+  "floor": 3.6,
+  "shutters": false
+ },
+ "facadeStyles": [
+  {
+   "tex": "curtain",
+   "when": {
+    "minH": 110,
+    "share": 0.7
+   },
+   "bay": 1.6,
+   "floor": 4.0,
+   "colours": [
+    "#2a3a3a",
+    "#1e2a2c",
+    "#3a4a4e",
+    "#2c3640",
+    "#5a6a70"
+   ],
+   "_": "the towers: Burnett Plaza's black-green glass, the City Center towers' tinted curtain walls"
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial",
+     "yes"
+    ],
+    "minH": 35,
+    "share": 0.5
+   },
+   "bay": 3.4,
+   "floor": 3.9,
+   "colours": [
+    "#2a2c30",
+    "#d8d0bc",
+    "#c8bca4",
+    "#a89c88"
+   ]
+  },
+  {
+   "tex": "tile",
+   "when": {
+    "types": [
+     "yes",
+     "commercial",
+     "office",
+     "retail",
+     "hotel",
+     "apartments"
+    ],
+    "minH": 14,
+    "maxH": 110,
+    "share": 0.6
+   },
+   "bay": 2.8,
+   "floor": 3.8,
+   "colours": [
+    "#c8b8a0",
+    "#b8a890",
+    "#d8ccb4",
+    "#a89884",
+    "#8a5a44"
+   ],
+   "_": "granite and limestone mid-rises, and the brick of the old commercial blocks"
+  },
+  {
+   "tex": "clapboard",
+   "when": {
+    "types": [
+     "house",
+     "detached",
+     "residential",
+     "yes"
+    ],
+    "maxH": 9,
+    "share": 0.55,
+    "where": [
+     [
+      32.7,
+      -97.405,
+      32.745,
+      -97.295
+     ],
+     [
+      32.765,
+      -97.405,
+      32.8,
+      -97.295
+     ]
+    ]
+   },
+   "bay": 3.6,
+   "floor": 3.2,
+   "low": true,
+   "colours": [
+    "#e8e4d8",
+    "#d8d0bc",
+    "#c8d0c8",
+    "#e8dcc0",
+    "#b8c4c8",
+    "#d8c8a8",
+    "#a8b4a0"
+   ],
+   "_": "the bungalows of Fairmount, Ryan Place, Arlington Heights: painted siding"
+  }
+ ],
+ "palette": {
+  "_": "tan brick and limestone, the red brick of Sundance Square and the Near Southside warehouses",
+  "brick": [
+   "#a8583a",
+   "#9a4e34",
+   "#b8704a",
+   "#8a4a34",
+   "#c8a078",
+   "#b89470",
+   "#d8c0a0",
+   "#a88a6a"
+  ],
+  "stone": [
+   "#d8ccb4",
+   "#c8bca4",
+   "#e0d8c4"
+  ]
+ },
+ "pitchAll": {
+  "types": [
+   "house",
+   "detached",
+   "residential",
+   "yes"
+  ],
+  "share": 0.9,
+  "maxH": 10,
+  "_": "every house a pitched roof"
+ },
+ "roofMaxArea": 420,
+ "roofMaxHeight": 10,
+ "roofPitch": 0.42,
+ "roofRise": 3.2,
+ "roofColours": [
+  "#5a5a58",
+  "#4a4a4c",
+  "#6a6460",
+  "#7a6a5a",
+  "#3e4246",
+  "#8a7a6a"
+ ],
+ "flatRoofColours": [
+  "#9a9a96",
+  "#b8b4ac",
+  "#8a8884",
+  "#c8c4bc"
+ ],
+ "rooftops": true,
+ "groundMottle": 0.12,
+ "instanceCulling": true,
+ "paving": {
+  "classes": [
+   "pedestrian"
+  ],
+  "plazas": true,
+  "metres": 2.4
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk",
+   "motorway"
+  ],
+  "colour": "#e8e4d8"
+ },
+ "roadColours": {
+  "residential": "#55565a",
+  "unclassified": "#55565a",
+  "primary": "#3e3f42",
+  "secondary": "#404144",
+  "tertiary": "#46474a",
+  "motorway": "#3a3b3e",
+  "trunk": "#3a3b3e",
+  "pedestrian": "#a86a4a",
+  "trail": "#b8a888"
+ },
+ "areaColours": {
+  "park": "#6a8a44",
+  "grass": "#7a9a4e",
+  "garden": "#5a8a40",
+  "recreation_ground": "#7a9a4e",
+  "residential": "#7a8458",
+  "commercial": "#8a8678",
+  "industrial": "#8a847a",
+  "parking": "#5a5b5e",
+  "cemetery": "#6a8a4a",
+  "golf": "#6a9a4a"
+ },
+ "treeSpecies": [
+  {
+   "name": "live oak",
+   "shape": "oak",
+   "bark": "#4a4038",
+   "height": [
+    9,
+    15
+   ],
+   "colours": [
+    "#3a5228",
+    "#42592c",
+    "#34482a",
+    "#4a6030"
+   ],
+   "weight": {
+    "street": 40,
+    "park": 35,
+    "wood": 20
+   }
+  },
+  {
+   "name": "pecan",
+   "shape": "round",
+   "bark": "#5a4a3a",
+   "height": [
+    16,
+    26
+   ],
+   "colours": [
+    "#4e6e34",
+    "#567638",
+    "#486630"
+   ],
+   "weight": {
+    "street": 15,
+    "park": 20,
+    "wood": 35
+   }
+  },
+  {
+   "name": "cedar elm",
+   "shape": "oval",
+   "bark": "#5a4a40",
+   "height": [
+    10,
+    16
+   ],
+   "colours": [
+    "#4a6a30",
+    "#52722e"
+   ],
+   "weight": {
+    "street": 20,
+    "park": 15,
+    "wood": 30
+   }
+  },
+  {
+   "name": "crape myrtle",
+   "shape": "small",
+   "bark": "#8a7a6a",
+   "height": [
+    3,
+    6
+   ],
+   "colours": [
+    "#c85a8a",
+    "#d8789a",
+    "#e8e0e8",
+    "#a83a6a"
+   ],
+   "weight": {
+    "street": 18,
+    "park": 8,
+    "wood": 0
+   }
+  },
+  {
+   "name": "bald cypress",
+   "shape": "fir",
+   "bark": "#6a5040",
+   "height": [
+    14,
+    22
+   ],
+   "colours": [
+    "#5a7a3a",
+    "#628240"
+   ],
+   "weight": {
+    "street": 3,
+    "park": 12,
+    "wood": 10
+   }
+  }
+ ],
+ "_treeSpecies": "North Texas: live oaks over the streets of the old neighbourhoods, pecans and cedar elms along the Trinity, crape myrtle in every yard, bald cypress at the Water Gardens",
+ "streetTrees": 0.75,
+ "treeFar": 2400,
+ "treeCells": {
+  "park": 24,
+  "garden": 26
+ },
+ "litWindows": 0.55,
+ "parkedCars": 0.6,
+ "traffic": 0,
+ "people": 0.6,
+ "lowRiseFar": 5000,
+ "flight": true,
+ "dress": {
+  "cornice": {
+   "share": 0.55,
+   "minH": 7,
+   "maxH": 60,
+   "depth": 0.5,
+   "where": [
+    [
+     32.745,
+     -97.345,
+     32.765,
+     -97.318
+    ],
+    [
+     32.728,
+     -97.34,
+     32.746,
+     -97.315
+    ],
+    [
+     32.782,
+     -97.358,
+     32.796,
+     -97.336
+    ]
+   ]
+  },
+  "string": {
+   "at": 4.4,
+   "where": [
+    [
+     32.745,
+     -97.345,
+     32.765,
+     -97.318
+    ],
+    [
+     32.728,
+     -97.34,
+     32.746,
+     -97.315
+    ]
+   ]
+  },
+  "porches": {
+   "share": 0.7,
+   "types": [
+    "house",
+    "detached",
+    "residential",
+    "yes"
+   ],
+   "maxH": 9,
+   "where": [
+    [
+     32.7,
+     -97.405,
+     32.745,
+     -97.295
+    ],
+    [
+     32.765,
+     -97.405,
+     32.8,
+     -97.295
+    ]
+   ]
+  },
+  "awnings": {
+   "share": 0.4,
+   "types": [
+    "commercial",
+    "retail",
+    "yes"
+   ],
+   "maxH": 14,
+   "colours": [
+    "#2a4a6a",
+    "#6a2a2a",
+    "#2a5a3a",
+    "#c8a040",
+    "#3a3a3a"
+   ],
+   "where": [
+    [
+     32.745,
+     -97.345,
+     32.765,
+     -97.318
+    ],
+    [
+     32.728,
+     -97.34,
+     32.746,
+     -97.315
+    ],
+    [
+     32.703,
+     -97.375,
+     32.718,
+     -97.355
+    ]
+   ]
+  },
+  "far": 700,
+  "_": "src/core/dress.js: cornices and string courses on the old brick blocks; craftsman porches on the bungalows; awnings on the shopfronts"
+ },
+ "streetlife": {
+  "seed": 1849,
+  "centre": [
+   32.7555,
+   -97.3308,
+   3500
+  ],
+  "far": 550,
+  "shops": 0.55,
+  "flowerBoxes": 0.03,
+  "smoke": 0.02
+ },
+ "life": {
+  "tile": 600,
+  "seed": 1849,
+  "near": 600,
+  "density": 0.0008,
+  "perArea": 500,
+  "max": 6000
+ },
+ "vehicles": {
+  "seed": 1849,
+  "side": "right",
+  "cars": 30,
+  "mopeds": 0,
+  "buses": 1.6,
+  "trams": 0,
+  "trains": 0.6,
+  "trainCars": 5,
+  "far": 1400,
+  "carFar": 1000,
+  "railFar": 2500,
+  "maxCars": 3500,
+  "maxBuses": 150,
+  "maxTrains": 20,
+  "stationDwell": 40,
+  "stationNear": 120,
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#9a2a2a",
+   "#2a4a7a",
+   "#d8d0c0",
+   "#5a6a5a",
+   "#3a3a3e"
+  ],
+  "busColours": [
+   "#f2f2f0",
+   "#2a5aa8"
+  ],
+  "trainColours": [
+   "#6a2a5a",
+   "#c8c8c8"
+  ],
+  "_": "src/core/traffic.js: Trinity Metro's buses; TEXRail (maroon) and the Trinity Railway Express on their lines through Central Station and T&P"
+ },
+ "crowds": {
+  "seed": 1849,
+  "centre": [
+   32.7555,
+   -97.3308,
+   2500,
+   9
+  ],
+  "pedestrianMul": 1.4,
+  "maxPedestrians": 9000,
+  "keepOut": [],
+  "pedestrians": 10,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    32.7535,
+    -97.3316,
+    50,
+    240
+   ],
+   [
+    32.7888,
+    -97.348,
+    60,
+    260
+   ],
+   [
+    32.7472,
+    -97.3264,
+    40,
+    90
+   ],
+   [
+    32.7486,
+    -97.3649,
+    40,
+    70
+   ],
+   [
+    32.7493,
+    -97.3631,
+    40,
+    60
+   ],
+   [
+    32.7581,
+    -97.3329,
+    30,
+    60
+   ],
+   [
+    32.7432,
+    -97.3675,
+    50,
+    90
+   ]
+  ],
+  "_": "[lat, lon, radius, people]: Sundance Square, Exchange Avenue, the Water Gardens, the Kimbell, the Modern, the courthouse, Dickies Arena"
+ },
+ "stockyards": {
+  "zone": [
+   32.784,
+   -97.356,
+   32.793,
+   -97.342
+  ],
+  "western": "^(East |West )?Exchange Avenue$|^North Main Street$",
+  "brick": "^(East |West )?Exchange Avenue$",
+  "far": 900,
+  "_": "src/fortworth/stockyards.js: false fronts and boardwalks on Exchange Avenue and North Main, its brick, and the pens (set from the map)",
+  "pens": {
+   "poly": [
+    [
+     32.7893,
+     -97.34552
+    ],
+    [
+     32.7893,
+     -97.34525
+    ],
+    [
+     32.78898,
+     -97.34525
+    ],
+    [
+     32.78898,
+     -97.34552
+    ]
+   ],
+   "cell": [
+    4.5,
+    6
+   ],
+   "turn": 0
+  },
+  "_pens": "the pens are built at the mapped Cowtown Cattlepen Maze: the working pens behind the Exchange are not on the map, so they are not invented here"
+ },
+ "fortworthEvents": {
+  "drive": [
+   [
+    32.78886,
+    -97.3442
+   ],
+   [
+    32.78887,
+    -97.34914
+   ],
+   [
+    32.78888,
+    -97.34977
+   ],
+   [
+    32.78892,
+    -97.352
+   ]
+  ],
+  "_": "src/fortworth/events.js: the cattle drive's route down Exchange Avenue (set from the map)"
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "downtown": [
+   "Downtown",
+   "#9a8a7a",
+   14,
+   180,
+   [
+    32.745,
+    -97.345,
+    32.765,
+    -97.318
+   ]
+  ],
+  "stockyards": [
+   "The Stockyards",
+   "#a87a5a",
+   6,
+   14,
+   [
+    32.782,
+    -97.36,
+    32.796,
+    -97.335
+   ]
+  ],
+  "cultural": [
+   "The Cultural District",
+   "#b8ac98",
+   8,
+   63,
+   [
+    32.738,
+    -97.378,
+    32.756,
+    -97.355
+   ]
+  ],
+  "southside": [
+   "Near Southside",
+   "#a86a4a",
+   8,
+   30,
+   [
+    32.725,
+    -97.342,
+    32.746,
+    -97.312
+   ]
+  ],
+  "tcu": [
+   "TCU",
+   "#6a4a8a",
+   10,
+   40,
+   [
+    32.7,
+    -97.38,
+    32.718,
+    -97.352
+   ]
+  ],
+  "outer": [
+   "Fort Worth",
+   "#8a8a7a",
+   6,
+   14,
+   null
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "Tarrant County Courthouse",
+   "model": "courthouse",
+   "at": [
+    32.75748,
+    -97.33319
+   ],
+   "face": 150,
+   "replace": [
+    "Tarrant County Courthouse"
+   ],
+   "info": "Pink Texas granite, 1895, on the bluff over the Trinity where Camp Worth stood in 1849: the county built it so grand that the voters threw out the commissioners who paid for it. Main Street runs south from its steps to the Water Gardens."
+  },
+  {
+   "name": "Bass Performance Hall",
+   "model": "bass",
+   "at": [
+    32.75476,
+    -97.32976
+   ],
+   "face": 240,
+   "replace": [
+    "Bass Performance Hall"
+   ],
+   "info": "1998, built with private money and no public funds: a limestone hall for the symphony, the opera and the Van Cliburn competition, its two twelve-metre angels blowing their trumpets from the front."
+  },
+  {
+   "name": "Sundance Square Plaza",
+   "model": "umbrellas",
+   "at": [
+    32.75481,
+    -97.33141
+   ],
+   "info": "The square at the heart of downtown, opened in 2013 where there were parking lots: four great shade umbrellas, fountains to run through, and a Christmas tree in December. Named for the Sundance Kid, who hid out in Hell's Half Acre with Butch Cassidy.",
+   "face": 331
+  },
+  {
+   "name": "The Chisholm Trail mural",
+   "model": "mural",
+   "at": [
+    32.75427,
+    -97.33168
+   ],
+   "face": 331,
+   "w": 24,
+   "h": 14,
+   "info": "Richard Haas's trompe-l'oeil of 1985 on the Jett Building: the cattle drive crossing the Trinity on the Chisholm Trail, which came through Fort Worth on its way from Texas to the Kansas railheads.",
+   "_at": "on the wall across 4th Street from the plaza, facing it; the Jett Building is not named on the map"
+  },
+  {
+   "name": "Fort Worth Water Gardens",
+   "model": "watergardens",
+   "at": [
+    32.74694,
+    -97.32722
+   ],
+   "face": 330,
+   "info": "Philip Johnson's, 1974: a 'cooling oasis in a concrete jungle'. The Active Pool pours down terraces of concrete into a square pit you can walk down into; the Quiet Pool is still, and the Aerating Pool's jets dance.",
+   "ground": 27.8
+  },
+  {
+   "name": "Kimbell Art Museum",
+   "model": "kimbell",
+   "at": [
+    32.74858,
+    -97.36518
+   ],
+   "face": 180,
+   "replace": [
+    "Kimbell Art Museum"
+   ],
+   "info": "Louis Kahn's, 1972, perhaps the finest museum building in America: sixteen cycloid vaults of concrete, each open along its crown so that daylight runs down the silver underside of the vault onto the paintings.",
+   "_face": "the vaults run north and south (the footprint is 97 m that way) and the porticoes open west onto the lawn: face 180 turns the model's rows north-south with its porticoes (its -x end) to the west"
+  },
+  {
+   "name": "Modern Art Museum of Fort Worth",
+   "model": "modern",
+   "at": [
+    32.74934,
+    -97.36298
+   ],
+   "face": 270,
+   "replace": [
+    "Modern Art Museum of Fort Worth"
+   ],
+   "info": "Tadao Ando's, 2002: five long glass-and-concrete pavilions standing in a reflecting pond under flat roofs on Y-shaped columns, across the street from the Kimbell."
+  },
+  {
+   "name": "Pioneer Tower",
+   "model": "pioneer",
+   "at": [
+    32.74618,
+    -97.3664
+   ],
+   "h": 63,
+   "info": "The Art Deco tower of the Will Rogers Memorial Center, 1936, built for the Texas Centennial between the coliseum and the auditorium. The Fort Worth Stock Show and Rodeo is held round it every January."
+  },
+  {
+   "name": "Livestock Exchange Building",
+   "model": "exchange",
+   "at": [
+    32.78858,
+    -97.34694
+   ],
+   "face": 0,
+   "info": "1902, the 'Wall Street of the West': the cattle trading offices of the Fort Worth Stockyards, Mission Revival in white stucco under red tile. More than a million head a year were sold here at the market's height."
+  },
+  {
+   "name": "Cowtown Coliseum",
+   "model": "coliseum",
+   "at": [
+    32.78961,
+    -97.34769
+   ],
+   "face": 180,
+   "replace": [
+    "Cowtown Coliseum"
+   ],
+   "info": "1908: the world's first indoor rodeo was held here in 1918, and the first live radio broadcast of one. Enrico Caruso sang here; so did Elvis. Rodeo every weekend."
+  },
+  {
+   "name": "Billy Bob's Texas",
+   "model": "billybobs",
+   "at": [
+    32.79107,
+    -97.34773
+   ],
+   "face": 270,
+   "w": 131,
+   "d": 72,
+   "replace": [
+    "Billy Bob's Texas"
+   ],
+   "info": "The world's largest honky-tonk, in a cattle barn of 1910: a hundred thousand square feet, an arena for live bull riding, and room for six thousand."
+  },
+  {
+   "name": "Fort Worth Stockyards sign",
+   "model": "sign",
+   "at": [
+    32.78887,
+    -97.3488
+   ],
+   "face": 90,
+   "w": 22,
+   "info": "Over East Exchange Avenue at North Main Street: the arch you drive under into the Stockyards National Historic District."
+  },
+  {
+   "name": "Burnett Plaza",
+   "at": [
+    32.75045,
+    -97.33454
+   ],
+   "info": "567 ft (173 m), 1983: the tallest building in Fort Worth, dark glass on a granite base, named for Samuel Burk Burnett, the rancher whose fortune built much of downtown."
+  },
+  {
+   "name": "Bank of America Tower",
+   "at": [
+    32.75602,
+    -97.33063
+   ],
+   "info": "City Center Tower II, 1984, 167 m: the Bass brothers' towers, their tops stepped back in notches, the pair that defines the skyline from the Trinity."
+  },
+  {
+   "name": "777 Main",
+   "at": [
+    32.75316,
+    -97.32971
+   ],
+   "info": "Formerly Carter Burgess Plaza and the Continental Plaza, 1982: 160 m of granite and glass."
+  },
+  {
+   "name": "Fort Worth Central Station",
+   "at": [
+    32.7527,
+    -97.32647
+   ],
+   "info": "The transit hub: TEXRail to DFW Airport and the Trinity Railway Express to Dallas, Amtrak's Texas Eagle and Heartland Flyer, and the buses."
+  },
+  {
+   "name": "Texas and Pacific Terminal",
+   "at": [
+    32.74573,
+    -97.32863
+   ],
+   "info": "1931, Art Deco, the T&P Railway's passenger station and its office block; the trains of TEXRail and the TRE still stop at its platforms."
+  },
+  {
+   "name": "Dickies Arena",
+   "at": [
+    32.74106,
+    -97.36849
+   ],
+   "info": "2019, home of the Stock Show's rodeo: a domed arena in a Spanish Colonial and Art Deco dress to match the Will Rogers buildings round it."
+  },
+  {
+   "name": "Robert Carr Chapel",
+   "at": [
+    32.71014,
+    -97.35982
+   ],
+   "info": "TCU's chapel, 1953, its white steeple over the campus quadrangle."
+  }
+ ],
+ "views": {
+  "Downtown from the Trinity": [
+   [
+    32.765,
+    -97.342,
+    27.1
+   ],
+   [
+    32.754,
+    -97.332,
+    118.3
+   ]
+  ],
+  "Sundance Square": [
+   [
+    32.7553,
+    -97.3315,
+    35.9
+   ],
+   [
+    32.75427,
+    -97.33168,
+    37.3
+   ]
+  ],
+  "Main Street to the courthouse": [
+   [
+    32.7548,
+    -97.33135,
+    31.5
+   ],
+   [
+    32.75748,
+    -97.33319,
+    47.6
+   ]
+  ],
+  "The Tarrant County Courthouse": [
+   [
+    32.75593,
+    -97.33213,
+    45.5
+   ],
+   [
+    32.75748,
+    -97.33319,
+    51.6
+   ]
+  ],
+  "The Water Gardens": [
+   [
+    32.74745,
+    -97.3269,
+    41.2
+   ],
+   [
+    32.74694,
+    -97.32722,
+    23.8
+   ]
+  ],
+  "The skyline at dusk": [
+   [
+    32.74,
+    -97.315,
+    142.4
+   ],
+   [
+    32.754,
+    -97.333,
+    108.9
+   ]
+  ],
+  "Exchange Avenue": [
+   [
+    32.78884,
+    -97.3498,
+    13.0
+   ],
+   [
+    32.78886,
+    -97.345,
+    10.3
+   ]
+  ],
+  "The Stockyards": [
+   [
+    32.787,
+    -97.351,
+    58.4
+   ],
+   [
+    32.7893,
+    -97.3475,
+    5.7
+   ]
+  ],
+  "The Kimbell": [
+   [
+    32.7484,
+    -97.36578,
+    20.9
+   ],
+   [
+    32.74858,
+    -97.36518,
+    23.1
+   ]
+  ],
+  "The Modern": [
+   [
+    32.7498,
+    -97.3655,
+    25.3
+   ],
+   [
+    32.74934,
+    -97.36298,
+    18.5
+   ]
+  ],
+  "The Cultural District": [
+   [
+    32.752,
+    -97.372,
+    146.6
+   ],
+   [
+    32.746,
+    -97.364,
+    17.4
+   ]
+  ],
+  "The Will Rogers Center": [
+   [
+    32.748,
+    -97.368,
+    66.0
+   ],
+   [
+    32.74618,
+    -97.3664,
+    60.1
+   ]
+  ],
+  "Near Southside": [
+   [
+    32.736,
+    -97.333,
+    94.6
+   ],
+   [
+    32.732,
+    -97.325,
+    33.4
+   ]
+  ],
+  "TCU": [
+   [
+    32.715,
+    -97.355,
+    98.8
+   ],
+   [
+    32.71,
+    -97.362,
+    44.7
+   ]
+  ],
+  "The whole city": [
+   [
+    32.685,
+    -97.35,
+    2247.7
+   ],
+   [
+    32.755,
+    -97.34,
+    15.3
+   ]
+  ]
+ },
+ "defaultView": "Downtown from the Trinity",
+ "navmap": {
+  "labels": [
+   "Tarrant County Courthouse",
+   "Bass Performance Hall",
+   "Sundance Square Plaza",
+   "Fort Worth Water Gardens",
+   "Kimbell Art Museum",
+   "Modern Art Museum of Fort Worth",
+   "Pioneer Tower",
+   "Livestock Exchange Building",
+   "Cowtown Coliseum",
+   "Billy Bob's Texas",
+   "Burnett Plaza",
+   "Fort Worth Central Station",
+   "Dickies Arena"
+  ]
+ },
+ "_sky": "a hazy Texas summer sky, the horizon pale with heat",
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "_downtownGrid": "downtown's streets run 30 degrees off north (Main Street bears 150 from the courthouse), so its models face 150, 240 or 330",
+ "terrainCuts": [
+  {
+   "line": [
+    [
+     32.74706,
+     -97.3273,
+     18.6
+    ],
+    [
+     32.74682,
+     -97.32714,
+     18.6
+    ]
+   ],
+   "width": 40,
+   "slope": 3.0,
+   "_": "the Water Gardens' Active Pool, sunk nine metres below the street"
+  }
+ ],
+ "treeKeepOut": [
+  [
+   32.74694,
+   -97.32722,
+   70
+  ],
+  [
+   32.74858,
+   -97.36518,
+   60
+  ]
+ ],
+ "_treeKeepOut": "no park trees in the Water Gardens' pools or on the Kimbell's vaults (each model brings its own planting)"
+}

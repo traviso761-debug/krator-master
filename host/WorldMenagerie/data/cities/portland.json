@@ -9,17 +9,17 @@
  "defaultView": "Skyline from the east bank",
  "bounds": [
   45.492,
-  -122.72,
-  45.544,
-  -122.636
+  -122.775,
+  45.6,
+  -122.634
  ],
  "osm": "data/cities/portland-osm.json",
  "fetch": {
   "bbox": [
    45.49,
-   -122.722,
-   45.546,
-   -122.634
+   -122.777,
+   45.602,
+   -122.632
   ],
   "tiles": {
    "buildings": [
@@ -34,12 +34,12 @@
   "detailZones": [
    [
     45.49,
-    -122.722,
-    45.546,
-    -122.634
+    -122.777,
+    45.602,
+    -122.632
    ]
   ],
-  "_": "the whole map is a detail zone: every building is kept"
+  "_": "the whole map is a detail zone: downtown, the Pearl, the east side and North Portland (St Johns, Kenton, Arbor Lodge, Overlook, Mississippi, Boise)"
  },
  "riverTours": "Willamette",
  "riverBoats": {
@@ -200,12 +200,34 @@
     "Big Pink"
    ],
    "at": [
-    45.52244,
-    -122.67617
+    45.522742,
+    -122.675954
    ],
    "height": 166,
-   "info": "111 SW 5th Ave \u00b7 1983 \u00b7 166 m. 'Big Pink', for the pink granite and glass that glows at sunset.",
-   "colour": "#b8857a"
+   "model": "bigpink",
+   "plan": [
+    [
+     45.5225803,
+     -122.6757205
+    ],
+    [
+     45.5229096,
+     -122.6755435
+    ],
+    [
+     45.5229078,
+     -122.6761794
+    ],
+    [
+     45.5225758,
+     -122.6763564
+    ]
+   ],
+   "clear": [
+    25,
+    100
+   ],
+   "info": "111 SW 5th Ave \u00b7 1983 \u00b7 166 m. 'Big Pink', for the pink granite and glass that glows at sunset."
   },
   {
    "name": "Wells Fargo Center",
@@ -597,6 +619,32 @@
    "h": 2549,
    "crater": true,
    "info": "85 km north-east \u00b7 2,549 m since the 1980 eruption took off its top."
+  },
+  {
+   "name": "Saint Johns Bridge",
+   "model": "suspension",
+   "at": [
+    45.5853,
+    -122.7648
+   ],
+   "towerH": 124,
+   "span": 370,
+   "side": 130,
+   "info": "David Steinman's suspension bridge, 1931: its Gothic towers 124 m high and painted verdigris green, the deck 62 m over the Willamette. The tallest bridge in Portland and, they say, its most beautiful."
+  },
+  {
+   "name": "Paul Bunyan",
+   "model": "bunyan",
+   "at": [
+    45.58383,
+    -122.68662
+   ],
+   "face": -20,
+   "clear": [
+    6,
+    0
+   ],
+   "info": "Kenton's Paul Bunyan: thirty-one feet of painted concrete over steel, put up in 1959 for the Oregon Centennial where Interstate Avenue meets Denver, the gateway to the Kenton business district. On the National Register since 2009."
   }
  ],
  "views": {
@@ -743,6 +791,66 @@
     -122.68,
     0
    ]
+  ],
+  "St Johns Bridge": [
+   [
+    45.58764,
+    -122.75904,
+    70
+   ],
+   [
+    45.5853,
+    -122.7648,
+    70
+   ]
+  ],
+  "Kenton and Paul Bunyan": [
+   [
+    45.583737,
+    -122.686981,
+    31.2
+   ],
+   [
+    45.58383,
+    -122.686621,
+    23.2
+   ]
+  ],
+  "Arbor Lodge": [
+   [
+    45.573477,
+    -122.69315,
+    93.7
+   ],
+   [
+    45.5728,
+    -122.6905,
+    49.7
+   ]
+  ],
+  "Denver Avenue, Kenton": [
+   [
+    45.58365,
+    -122.68688,
+    27.0
+   ],
+   [
+    45.5815,
+    -122.6869,
+    23.0
+   ]
+  ],
+  "Arbor Lodge, North Bryant Street": [
+   [
+    45.57355,
+    -122.69291,
+    51.0
+   ],
+   [
+    45.57355,
+    -122.6915,
+    49.3
+   ]
   ]
  },
  "trails": "Eastbank Esplanade|Waterfront|Springwater|Tilikum|Hawthorne Bridge|Steel Bridge",
@@ -757,12 +865,19 @@
   "Burnside Bridge": 20,
   "Morrison Bridge": 19,
   "Hawthorne Bridge": 16,
-  "Tilikum Crossing": 23
+  "Tilikum Crossing": 23,
+  "Saint Johns Bridge": 62
  },
  "terrain": {
   "zoom": 14,
   "step": 15,
-  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
+  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py",
+  "filter": {
+   "open": 150,
+   "close": 36,
+   "blur": 48,
+   "_": "downtown's towers and Forest Park's canopy stand in the elevation: tools/filter-terrain.py, tools/build-osm-city.py"
+  }
  },
  "terrainColours": {
   "low": "#666a50",
@@ -770,5 +885,453 @@
   "steep": "#6a6052",
   "far": "#76837c"
  },
- "flight": true
+ "flight": true,
+ "commuter": {
+  "freight": true,
+  "cars": 16,
+  "_": "the mapped main lines are Union Pacific's and BNSF's: freight"
+ },
+ "facadeStyles": [
+  {
+   "tex": "clapboard",
+   "when": {
+    "types": [
+     "detached",
+     "house",
+     "residential",
+     "yes",
+     "apartments"
+    ],
+    "maxH": 12,
+    "where": [
+     [
+      45.5665,
+      -122.7005,
+      45.5775,
+      -122.6815
+     ],
+     [
+      45.5775,
+      -122.7005,
+      45.596,
+      -122.67
+     ]
+    ]
+   },
+   "bay": 2.6,
+   "floor": 3.0,
+   "low": true,
+   "colours": [
+    "#8a9a7a",
+    "#c8b890",
+    "#6a7a8a",
+    "#e8e4d8",
+    "#a8604a",
+    "#d8c890",
+    "#5a6a5a",
+    "#b8a890",
+    "#7a8a9a",
+    "#f0ece0",
+    "#9a7a5a",
+    "#4a5a6a"
+   ],
+   "_": "Arbor Lodge and Kenton: craftsman bungalows and old-Portland foursquares in painted lap siding"
+  },
+  {
+   "tex": "curtain",
+   "when": {
+    "minH": 70,
+    "share": 0.5
+   },
+   "bay": 1.6,
+   "floor": 4.0,
+   "colours": [
+    "#4a6a7a",
+    "#6a8a98",
+    "#3a5060",
+    "#8aa0ac"
+   ]
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial"
+    ],
+    "minH": 25,
+    "share": 0.4
+   },
+   "bay": 3.4,
+   "floor": 3.8,
+   "colours": [
+    "#c8c4bc",
+    "#e0dcd4",
+    "#8a8a8c"
+   ]
+  },
+  {
+   "tex": "tile",
+   "when": {
+    "types": [
+     "yes",
+     "commercial",
+     "industrial",
+     "warehouse",
+     "retail"
+    ],
+    "minH": 10,
+    "maxH": 70,
+    "share": 0.5
+   },
+   "bay": 3.0,
+   "floor": 4.0,
+   "low": true,
+   "colours": [
+    "#8a4a3a",
+    "#9a5a44",
+    "#c8b8a0",
+    "#a86a50",
+    "#7a4a3a"
+   ]
+  },
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "apartments",
+     "residential"
+    ],
+    "minH": 15
+   },
+   "bay": 3.4,
+   "floor": 3.0,
+   "colours": [
+    "#d8d4cc",
+    "#a8b0b4",
+    "#c8b8a0",
+    "#8a9a9c"
+   ]
+  }
+ ],
+ "palette": {
+  "brick": [
+   "#8a4a3a",
+   "#9a5a44",
+   "#a86a50",
+   "#7a4a3a"
+  ],
+  "stone": [
+   "#d0c8b8",
+   "#c0b8a8"
+  ]
+ },
+ "roofColours": [
+  "#4a4a4c",
+  "#5a5450",
+  "#3e4448",
+  "#6a5a4a"
+ ],
+ "_facadeStyles": "the city's own architecture: glass, ribbon windows, terracotta and brick (src/engine/stages/03-blocks.js, facadeStyles)",
+ "flatRoofColours": [
+  "#5e5e5c",
+  "#6e6c68",
+  "#4e4e50",
+  "#8a8884",
+  "#b8b4ac"
+ ],
+ "dress": {
+  "cornice": {
+   "share": 0.5,
+   "minH": 8,
+   "maxH": 40,
+   "depth": 0.5
+  },
+  "bays": {
+   "share": 0.35,
+   "types": [
+    "house",
+    "residential",
+    "detached",
+    "apartments"
+   ],
+   "maxH": 14,
+   "height": 5
+  },
+  "dormers": {
+   "share": 0.3,
+   "every": 5
+  },
+  "far": 650,
+  "_": "src/core/dress.js: cornices, string courses, water towers, fire escapes, dormers, bay windows",
+  "porches": {
+   "share": 0.8,
+   "types": [
+    "detached",
+    "house",
+    "residential",
+    "yes"
+   ],
+   "maxH": 11,
+   "where": [
+    [
+     45.5665,
+     -122.7005,
+     45.5775,
+     -122.6815
+    ],
+    [
+     45.5775,
+     -122.7005,
+     45.596,
+     -122.67
+    ]
+   ],
+   "gable": 0.35,
+   "roof": "#4a4e54",
+   "pedestal": "#8a4a3a"
+  },
+  "awnings": {
+   "share": 0.85,
+   "types": [
+    "retail",
+    "commercial",
+    "yes"
+   ],
+   "maxH": 12,
+   "where": [
+    [
+     45.581,
+     -122.688,
+     45.586,
+     -122.6845
+    ],
+    [
+     45.576,
+     -122.699,
+     45.5785,
+     -122.68
+    ]
+   ],
+   "colours": [
+    "#2a4a3a",
+    "#7a2a2a",
+    "#2a3a5a",
+    "#5a4a2a",
+    "#3a3a3a"
+   ]
+  }
+ },
+ "treeSpecies": [
+  {
+   "name": "Douglas fir",
+   "shape": "fir",
+   "bark": "#4a3628",
+   "height": [
+    22,
+    48
+   ],
+   "colours": [
+    "#2a4a32",
+    "#2f5236",
+    "#26442e",
+    "#34573a"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 32,
+    "wood": 52
+   }
+  },
+  {
+   "name": "western red cedar",
+   "shape": "cedar",
+   "bark": "#7a4a30",
+   "height": [
+    16,
+    34
+   ],
+   "colours": [
+    "#3e5e30",
+    "#466834",
+    "#38582e"
+   ],
+   "weight": {
+    "street": 2,
+    "park": 10,
+    "wood": 16
+   }
+  },
+  {
+   "name": "bigleaf maple",
+   "shape": "round",
+   "bark": "#5a5244",
+   "height": [
+    14,
+    24
+   ],
+   "colours": [
+    "#4e7a34",
+    "#58843a",
+    "#4a7030"
+   ],
+   "weight": {
+    "street": 6,
+    "park": 16,
+    "wood": 16
+   }
+  },
+  {
+   "name": "red alder",
+   "shape": "slender",
+   "bark": "#b4b0a4",
+   "height": [
+    12,
+    22
+   ],
+   "colours": [
+    "#5a8a3e",
+    "#64923f",
+    "#52803a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 4,
+    "wood": 12
+   }
+  },
+  {
+   "name": "Oregon white oak",
+   "shape": "oak",
+   "bark": "#4a4238",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#3e5e30",
+    "#466632",
+    "#3a5a2e"
+   ],
+   "weight": {
+    "street": 3,
+    "park": 10,
+    "wood": 4
+   }
+  },
+  {
+   "name": "Norway and red maple",
+   "shape": "round",
+   "bark": "#5a5046",
+   "height": [
+    8,
+    15
+   ],
+   "colours": [
+    "#4a7a36",
+    "#3e6e30",
+    "#567e3a",
+    "#6a8a3a"
+   ],
+   "weight": {
+    "street": 30,
+    "park": 10,
+    "wood": 0
+   }
+  },
+  {
+   "name": "purple-leaf plum",
+   "shape": "small",
+   "bark": "#3a2e2a",
+   "height": [
+    5,
+    8
+   ],
+   "colours": [
+    "#5a2c38",
+    "#6a3442",
+    "#4e2632"
+   ],
+   "weight": {
+    "street": 16,
+    "park": 2,
+    "wood": 0
+   }
+  },
+  {
+   "name": "flowering cherry and dogwood",
+   "shape": "small",
+   "bark": "#5a4038",
+   "height": [
+    5,
+    8
+   ],
+   "colours": [
+    "#5a8a40",
+    "#62903e",
+    "#4e7e38"
+   ],
+   "weight": {
+    "street": 10,
+    "park": 4,
+    "wood": 0
+   }
+  },
+  {
+   "name": "sweetgum",
+   "shape": "oval",
+   "bark": "#4e463c",
+   "height": [
+    12,
+    20
+   ],
+   "colours": [
+    "#3e6a32",
+    "#467236",
+    "#36602e"
+   ],
+   "weight": {
+    "street": 12,
+    "park": 5,
+    "wood": 0
+   }
+  },
+  {
+   "name": "London plane",
+   "shape": "round",
+   "bark": "#a8a088",
+   "height": [
+    14,
+    24
+   ],
+   "colours": [
+    "#5a8240",
+    "#4e7a3a"
+   ],
+   "weight": {
+    "street": 9,
+    "park": 6,
+    "wood": 0
+   }
+  },
+  {
+   "name": "pin and red oak",
+   "shape": "oval",
+   "bark": "#4a4036",
+   "height": [
+    12,
+    20
+   ],
+   "colours": [
+    "#355e2e",
+    "#3e662f"
+   ],
+   "weight": {
+    "street": 8,
+    "park": 5,
+    "wood": 0
+   }
+  }
+ ],
+ "_treeSpecies": "the Portland area's trees, weighted after the city's street-tree inventory (maples, plums and cherries, sweetgum, plane, oak; Douglas fir in older yards) and its parks and Forest Park (Douglas fir, western red cedar, bigleaf maple, red alder, Oregon white oak)"
 }

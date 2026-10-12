@@ -237,6 +237,9 @@ millipedes), `worlds/scyvoi.html` replaced (13.3 MB: Tibetan appliqué tents and
 and cattle), `worlds/fauna.html` (0.8 MB: 51 species) and `worlds/krator-catalog.html` (1.6 MB: 1932 pieces, the Ash Nomads, the
 desert nomads' pieces, training furniture) replaced, from `main` at b5badc0c. The live index (version 67) was kept: the two cards
 added after Scyvoi, the Scyvoi, Fauna and Master catalog cards updated. One publish call; about 228 MB.
+Version 69 (2026-10-10): `worlds/geyser.html` added (the geyser basin, `biomes/geyser`: 0.4 MB and its two sidecars,
+`geyser.tex.geyser.js` and `geyser.tex.hyperjungle.js`, 6.2 MB in all), from `main` at 4c1a53d9. The live index (version 68)
+was kept, its card added after the Eastern highlands. One publish call. The Voth item below is still pending.
 Pending (2026-10-09): `ENTRIES` renames the first Voth's card "Voth - old" and adds "Voth - new", the city plan on
 `core/city` (`settlements/streetlab/dist/voth-city.html`, 6.8 MB, as `worlds/voth-new.html`). Not yet published: publish the
 index (edited from the live version 68: the Voth card renamed, the new card after it) and the one page, in one call.

@@ -26,6 +26,7 @@ scale Krator map for rough placement, not in this repo.
 | *in progress* northwest bay | `nwbay` | nhighlands (steep) |
 | eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
+| the Steampits (and every geyser field: the West Ring's isles, the Throne's) | `geyser` | hyperjungle (it walls the basins in; the showcase loads it), the abyssal savanna (XV) between the basins, the Ring Sea coast. A shared kit: a world lays out each field from its own data or from a scale-model point (`GEYSER.cluster`) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
