@@ -15,7 +15,7 @@ canonical skeleton (data/mpfb_<body>/skeleton.json) and every clip is retargeted
 Each delete group becomes a bitset over the triangles of the base's skin primitive (material 'Human.body'):
 data/mpfb_<body>/kit.json, read by KCHAR (kit.style 'mpfb').
 """
-import base64, io, json, os, shutil, struct, subprocess, sys
+import base64, io, json, math, os, shutil, struct, subprocess, sys
 import numpy as np
 from PIL import Image
 from scipy.spatial import cKDTree
@@ -449,6 +449,60 @@ def morph_kit(npz, J):
             'morph_joints': joints, 'follow': follow}
 
 
+def hands(c, J):
+    """per hand, what the figure needs to hold a prop (tools/make_props.py): the grip frame in the hand bone's own
+    space (origin in the closed hand, +Y along the handle out past the index finger, +Z the way the fingers point,
+    +X out of the palm) and, per finger joint, the local rotation that closes the hand round a handle"""
+    out = {}
+    for side, S in (('R', 'Right'), ('L', 'Left')):
+        P = lambda n: c.jpos[c.J[S + n]]
+        hand = P('Hand')
+        knuck = np.mean([P('Hand' + f + '1') for f in ('Index', 'Middle', 'Ring', 'Pinky')], 0)
+        Y = P('HandIndex1') - P('HandPinky1')
+        Y /= np.linalg.norm(Y)
+        Z = knuck - hand
+        Z -= Y * Y.dot(Z)
+        Z /= np.linalg.norm(Z)
+        X = np.cross(Y, Z)
+        if X.dot(P('HandMiddle3') - P('HandMiddle1')) < 0:      # the fingers curl toward the palm: that side is +X
+            Y, X = -Y, -X
+        o = 0.45 * hand + 0.55 * knuck + 0.028 * X
+        G = np.eye(4)
+        G[:3, :3] = np.stack([X, Y, Z], 1)
+        G[:3, 3] = o
+        H = np.eye(4)
+        H[:3, :3] = c.jrot[c.J[S + 'Hand']]
+        H[:3, 3] = hand
+        L = np.linalg.inv(H) @ G
+        curl = []
+        for f, ang in (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45)), ('Pinky', (74, 80, 45)),
+                       ('Thumb', (20, 30, 25))):
+            for k, a in enumerate(ang):
+                n = S + 'Hand%s%d' % (f, k + 1)
+                if n not in c.J or n not in J:
+                    continue
+                i = c.J[n]
+                ch = S + 'Hand%s%d' % (f, k + 2)
+                d = (c.jpos[c.J[ch]] if ch in c.J else c.jpos[i] + (c.jpos[i] - c.jpos[c.parents[i]])) - c.jpos[i]
+                ax = Y if f != 'Thumb' else np.cross(d / np.linalg.norm(d), X)
+                ax = ax / np.linalg.norm(ax)
+                th = math.radians(a)
+                Gr = rot_axis(ax, th)
+                if (Gr @ d).dot(X) < d.dot(X):          # bend toward the palm, not away
+                    Gr = rot_axis(ax, -th)
+                W = c.jrot[i]
+                curl.append([J[n]] + [round(float(x), 6) for x in glbio.mat_quat(W.T @ Gr @ W)])
+        out[side] = {'bone': J[S + 'Hand'], 'grip': [round(float(x), 6) for x in L[:3, 3]] +
+                     [round(float(x), 6) for x in glbio.mat_quat(L[:3, :3])], 'curl': curl}
+    return out
+
+
+def rot_axis(a, t):
+    a = a / np.linalg.norm(a)
+    K = np.array([[0, -a[2], a[1]], [a[2], 0, -a[0]], [-a[1], a[0], 0]])
+    return np.eye(3) + math.sin(t) * K + (1 - math.cos(t)) * K @ K
+
+
 def main():
     body, src = sys.argv[1], sys.argv[2]
     name = 'mpfb_' + body
@@ -523,7 +577,8 @@ def main():
     if morph:
         morph = morph_kit(npz, {n['name']: i for i, n in enumerate(jnodes)})
     json.dump({'joints': [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']}
-                          for i, n in enumerate(jnodes)], 'clips': clips},
+                          for i, n in enumerate(jnodes)], 'clips': clips,
+               'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)})},
               open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
     json.dump({'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
                'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,

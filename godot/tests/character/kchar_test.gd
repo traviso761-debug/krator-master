@@ -150,6 +150,13 @@ func _init() -> void:
 		fig.apply(rec)
 		var hips1 := glob(fig.skeleton, fig._hips).origin.y
 		ok(hips1 < hips0 - 0.03, "height -0.8 lowers the hips: %f -> %f" % [hips0, hips1])
+		# props: a sword in the right hand under its bone, and that hand's fingers closed
+		fig.hold({"R": "sword", "L": "shield"})
+		ok(fig._holders.has("R") and fig._holders["R"].get_child_count() == 1 and fig._holders["L"].get_child_count() == 1, "sword and shield held")
+		var idx2 := fig.skeleton.find_bone("RightHandIndex2")
+		var rest_q := KChar._q(fig.skel["joints"][idx2]["r"])
+		ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) > 0.5, "the right index finger curls round the grip")
+		fig.hold({"R": null, "L": null})
 		# a clip moves the bones
 		fig.play("walk")
 		var q0 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))

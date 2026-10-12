@@ -16,7 +16,10 @@ PAIRS = [(f"core/rand/{f}", f"godot/tests/rand/{f}") for f in ("krand.gd", "kran
 _CH = "kits/characters"
 _BODIES = sorted(b for b in os.listdir(os.path.join(REPO, _CH, "data")) if b.startswith("mpfb_"))
 PAIRS += [(f"{_CH}/data/{b}/{f}.json", f"godot/data/characters/{b}/{f}.json") for b in _BODIES for f in ("skeleton", "kit")]
-PAIRS += [(f"{_CH}/data/peoples.json", "godot/data/characters/peoples.json")]
+PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props")]
+PAIRS += [(f"{_CH}/pieces/props/{f}", f"godot/data/characters/pieces/props/{f}")
+          for f in sorted(os.listdir(os.path.join(REPO, _CH, "pieces", "props")))
+          if os.path.isdir(os.path.join(REPO, _CH, "pieces", "props")) and f.endswith(".glb")]
 PAIRS += [(f"{_CH}/tests/golden-mpfb.json", "godot/data/characters/golden-mpfb.json")]
 for _b in _BODIES:
     _pd = os.path.join(REPO, _CH, "pieces", _b)

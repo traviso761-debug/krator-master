@@ -28,6 +28,7 @@ func _init() -> void:
 		fig.position = Vector3((i - 2) * (0.42 if face else 0.95), 0, 0)
 		root.add_child(fig)
 		fig.apply(KChar.stranger(cast[i][2], fig.kit, peoples[cast[i][1]]))
+		fig.hold([{"R": "sword", "L": "shield"}, {"L": "bow"}, {"R": "axe"}, {"R": "spear"}, {"R": "rifle"}][i])
 		if i == 2 and not face:
 			fig.play("walk")
 			walker = fig

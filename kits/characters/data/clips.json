@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip: the chop loop, the overhead chop and the heavy swing stand in.",
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip: the chop loop, the overhead chop and the heavy swing stand in. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first.",
  "groups": [
   {
    "id": "move",
@@ -72,7 +72,12 @@
    "meshy": 552,
    "label": "Carry bucket",
    "group": "move",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "bucket"
+    ]
+   }
   },
   {
    "key": "crouch_walk",
@@ -93,154 +98,312 @@
    "meshy": 89,
    "label": "Combat stance",
    "group": "melee",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "attack",
    "meshy": 4,
    "label": "Attack",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "slash_left",
    "meshy": 97,
    "label": "Slash left",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "slash_right",
    "meshy": 219,
    "label": "Slash right",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "thrust",
    "meshy": 240,
    "label": "Thrust / stab",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "dagger",
+     "sword",
+     "spear"
+    ]
+   }
   },
   {
    "key": "slash_charged",
    "meshy": 242,
    "label": "Charged slash",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "combo",
    "meshy": 92,
    "label": "Double combo",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "axe_chop",
    "meshy": 237,
    "label": "Overhead chop (axe)",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "axe",
+     "warhammer",
+     "mace",
+     "pickaxe",
+     "sword"
+    ]
+   }
   },
   {
    "key": "axe_spin",
    "meshy": 238,
    "label": "Spinning axe attack",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "axe",
+     "warhammer",
+     "mace",
+     "pickaxe",
+     "sword"
+    ]
+   }
   },
   {
    "key": "blunt_swing",
    "meshy": 128,
    "label": "Heavy blunt swing",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "mace",
+     "warhammer",
+     "axe",
+     "hammer"
+    ]
+   }
   },
   {
    "key": "spear_walk",
    "meshy": 560,
    "label": "Spear advance",
    "group": "melee",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "spear"
+    ]
+   }
   },
   {
    "key": "shield_push",
    "meshy": 220,
    "label": "Shield bash",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
   },
   {
    "key": "bow_shot",
    "meshy": 224,
    "label": "Bow shot",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
   },
   {
    "key": "bow_draw",
    "meshy": 222,
    "label": "Draw from quiver and shoot",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
   },
   {
    "key": "bow_walk",
    "meshy": 228,
    "label": "Walk with bow drawn",
    "group": "ranged",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
   },
   {
    "key": "bow_scan",
    "meshy": 231,
    "label": "Bow aim and scan",
    "group": "ranged",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
   },
   {
    "key": "gun_shot",
    "meshy": 104,
    "label": "Long gun shot",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
   },
   {
    "key": "pistol_draw",
    "meshy": 232,
    "label": "Pistol quick draw",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "pistol_shot",
    "meshy": 236,
    "label": "Draw and shoot (side)",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "reload",
    "meshy": 170,
    "label": "Reload (standing)",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
   },
   {
    "key": "reload_kneel",
    "meshy": 165,
    "label": "Reload (kneeling)",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
   },
   {
    "key": "walk_shoot",
    "meshy": 234,
    "label": "Walk while shooting",
    "group": "ranged",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
   },
   {
    "key": "throw",
@@ -254,28 +417,64 @@
    "meshy": 138,
    "label": "Block",
    "group": "defend",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "block_2",
    "meshy": 139,
    "label": "Block 2",
    "group": "defend",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "parry",
    "meshy": 147,
    "label": "Parry",
    "group": "defend",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "parry_2h",
    "meshy": 149,
    "label": "Two-handed parry",
    "group": "defend",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "dodge_step",
@@ -478,14 +677,24 @@
    "meshy": 343,
    "label": "Sit and drink",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
   },
   {
    "key": "drink",
    "meshy": 342,
    "label": "Drink",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
   },
   {
    "key": "lie_bed",
@@ -562,28 +771,51 @@
    "ual": "UAL2_Standard.glb:Farm_Watering",
    "label": "Water plants",
    "group": "work",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "bucket"
+    ]
+   }
   },
   {
    "key": "ual_chop",
    "ual": "UAL2_Standard.glb:TreeChopping_Loop",
    "label": "Chop (axe, pickaxe, hoe)",
    "group": "work",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "axe",
+     "pickaxe",
+     "hoe",
+     "hammer"
+    ]
+   }
   },
   {
    "key": "ual_repair",
    "ual": "UAL1_Standard.glb:Fixing_Kneeling",
    "label": "Repair (kneeling)",
    "group": "work",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
   },
   {
    "key": "ual_interact",
    "ual": "UAL1_Standard.glb:Interact",
    "label": "Work at bench / use",
    "group": "work",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
   },
   {
    "key": "ual_pickup_table",
@@ -611,35 +843,60 @@
    "ual": "UAL2_Standard.glb:Consume",
    "label": "Eat",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
   },
   {
    "key": "ual_pistol_idle",
    "ual": "UAL1_Standard.glb:Pistol_Idle_Loop",
    "label": "Pistol stance",
    "group": "ranged",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "ual_pistol_aim",
    "ual": "UAL1_Standard.glb:Pistol_Aim_Neutral",
    "label": "Pistol aim",
    "group": "ranged",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "ual_pistol_shoot",
    "ual": "UAL1_Standard.glb:Pistol_Shoot",
    "label": "Pistol shot",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "ual_pistol_reload",
    "ual": "UAL1_Standard.glb:Pistol_Reload",
    "label": "Pistol reload",
    "group": "ranged",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
   },
   {
    "key": "ual_throw",
@@ -653,49 +910,112 @@
    "ual": "UAL1_Standard.glb:Sword_Idle",
    "label": "Sword stance",
    "group": "melee",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_a",
    "ual": "UAL2_Standard.glb:Sword_Regular_A",
    "label": "Sword cut A",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_b",
    "ual": "UAL2_Standard.glb:Sword_Regular_B",
    "label": "Sword cut B",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_c",
    "ual": "UAL2_Standard.glb:Sword_Regular_C",
    "label": "Sword cut C",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_combo",
    "ual": "UAL2_Standard.glb:Sword_Regular_Combo",
    "label": "Sword combo",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_heavy",
    "ual": "UAL2_Standard.glb:Sword_Heavy_Combo",
    "label": "Heavy sword combo",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_sword_dash",
    "ual": "UAL2_Standard.glb:Sword_Dash",
    "label": "Lunge",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_punch",
@@ -709,21 +1029,54 @@
    "ual": "UAL2_Standard.glb:Shield_OneShot",
    "label": "Shield strike",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
   },
   {
    "key": "ual_sword_block",
    "ual": "UAL2_Standard.glb:Sword_Block",
    "label": "Sword block",
    "group": "defend",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
   },
   {
    "key": "ual_shield_up",
    "ual": "UAL2_Standard.glb:Idle_Shield_Loop",
    "label": "Shield raised",
    "group": "defend",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
   },
   {
    "key": "ual_roll",
@@ -863,7 +1216,13 @@
    "ual": "UAL2_Standard.glb:Idle_Lantern_Loop",
    "label": "Hold lantern",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "L": [
+     "lantern",
+     "torch"
+    ]
+   }
   },
   {
    "key": "ual_drive",

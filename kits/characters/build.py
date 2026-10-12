@@ -43,8 +43,10 @@ def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
-    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'), 'bodies': {}}
-    inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb') for f in ('sliders.json', 'peoples.json', 'clips.json')}
+    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'),
+            'props': J('props.json')['props'], 'bodies': {}}
+    inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb')
+              for f in ('sliders.json', 'peoples.json', 'clips.json', 'props.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}
@@ -64,10 +66,10 @@ def main():
     # when a record needs them: dist/pieces/<body>/<name>.txt
     if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
         for b in os.listdir(os.path.join(DIST, 'pieces')):
-            if b not in data['bodies']:
+            if b not in data['bodies'] and b != 'props':
                 q = os.path.join(DIST, 'pieces', b)
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
-    for b in data['bodies']:
+    for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
         src_dir, out_dir = os.path.join(HERE, 'pieces', b), os.path.join(DIST, 'pieces', b)
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):

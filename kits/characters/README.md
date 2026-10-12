@@ -37,7 +37,14 @@ Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `t
 `donors/anims/UAL*.glb`, an Unreal-style skeleton mapped by `NAME_MAP`). `loop: false` clips play once and go back
 to the last loop. Loops play in place: their drift over a cycle is taken out and kept as `root_speed` (m/s, in
 `skeleton.json`'s clip list) for a game to move the character by; one-shots (rolls, knockdowns) keep their motion.
-Hands hold nothing: weapons and tools are for a later attachment pass.
+**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
+primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
+bucket, cup, lantern, torch), each modelled in the grip frame: +Y along the handle out past the index finger, +Z the
+way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest hand
+(skeleton.json `hands`: the grip in the hand bone's space, and per finger joint the rotation that closes the hand)
+and a clip's `hold` in `data/clips.json` names the props each hand may take, default first. `fig.hold({R, L})` hangs
+the GLBs under the hand bones and curls those fingers after every frame of the clip; the page's Holding picker swaps
+the right hand's prop among the clip's choices.
 
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and
@@ -65,7 +72,8 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/50-figure.js` | `KCharFigure`: bones from `skeleton.json`, pieces bound to them, CPU morphs, tint, clips | [draw], twin `kchar_figure.gd` (blend shapes from `<piece>.gshapes.bin`) |
 | `src/90-editor.js` | the stage, camera and panel; `window._kchar` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
-| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop (hand-written) | [G data] |
+| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold (hand-written) | [G data] |
+| `data/props.json`, `tools/make_props.py` | the hand-held props and the script that builds them | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |

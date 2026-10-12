@@ -354,6 +354,53 @@ func rest_pose() -> void:
 	for i in J.size():
 		skeleton.set_bone_pose_rotation(i, KChar._q(J[i]["r"]))
 	skeleton.set_bone_pose_position(_hips, morph["t"][_hips])
+	_grip()
+
+
+# ---- holding props (data/props.json; the twin of hold() in 50-figure.js) ----
+# hold({"R": "sword", "L": "shield"}): each prop's GLB under a BoneAttachment3D on its hand bone, at the grip frame
+# skeleton.json 'hands' gives (the props are modelled in it); that hand's fingers close round it every frame
+var held := {"R": null, "L": null}
+var _holders := {}
+
+
+func hold(want: Dictionary) -> void:
+	if not skel.has("hands"):
+		return
+	for side in ["R", "L"]:
+		var id = want.get(side)
+		if held[side] == id:
+			continue
+		held[side] = id
+		if not _holders.has(side):
+			var h: Dictionary = skel["hands"][side]
+			var att := BoneAttachment3D.new()
+			att.name = "Hold" + side
+			skeleton.add_child(att)
+			att.bone_idx = int(h["bone"])
+			var g := Node3D.new()
+			var gr: Array = h["grip"]
+			g.transform = Transform3D(Basis(Quaternion(gr[3], gr[4], gr[5], gr[6])), Vector3(gr[0], gr[1], gr[2]))
+			att.add_child(g)
+			_holders[side] = g
+		var holder: Node3D = _holders[side]
+		for ch in holder.get_children():
+			ch.queue_free()
+		if id != null:
+			holder.add_child(_scene("%s/pieces/props/%s.glb" % [dir, id]))
+	_grip()
+
+
+func _grip() -> void:
+	if not skel.has("hands"):
+		return
+	var J: Array = skel["joints"]
+	for side in ["R", "L"]:
+		if held[side] == null:
+			continue
+		for c in skel["hands"][side]["curl"]:
+			var i: int = int(c[0])
+			skeleton.set_bone_pose_rotation(i, KChar._q(J[i]["r"]) * Quaternion(c[1], c[2], c[3], c[4]))
 
 
 func play(clip: String) -> void:
@@ -383,3 +430,4 @@ func _process(dt: float) -> void:
 		return
 	# the clip writes the hips where the base body's are; the morph moves them
 	skeleton.set_bone_pose_position(_hips, skeleton.get_bone_pose_position(_hips) + morph["d"][_hips])
+	_grip()

@@ -85,8 +85,12 @@
     buildPanel();
     var clip = document.querySelector('[data-clip][aria-pressed="true"]');
     $('loading').hidden = false;
-    var done = apply().then(function(){ $('loading').hidden = true; return fig.play(clip ? clip.dataset.clip || null : 'idle'); });
-    window._kchar = { fig:fig, ready:done, record:function(){ return rec; },
+    var done = apply().then(function(){
+      $('loading').hidden = true;
+      if(window._kcharHold) window._kcharHold(clip ? clip.dataset.clip || '' : 'idle');
+      return fig.play(clip ? clip.dataset.clip || null : 'idle');
+    });
+    window._kchar = { fig:fig, ready:done, record:function(){ return rec; }, cam:cam,
                       set:function(r){ rec = r; buildPanel(); return apply(); }, body:setBody };
     return done;
   }
@@ -107,8 +111,9 @@
     var k = 1 - Math.pow(0.001, dt);
     cam.dist += (cam.want.dist - cam.dist) * k; cam.ty += (cam.want.ty - cam.ty) * k; cam.pitch += (cam.want.pitch - cam.pitch) * k;
     var cp = Math.cos(cam.pitch);
-    camera.position.set(Math.sin(cam.yaw) * cp * cam.dist, cam.ty + Math.sin(cam.pitch) * cam.dist, Math.cos(cam.yaw) * cp * cam.dist);
-    camera.lookAt(0, cam.ty, 0);
+    var tx = cam.at ? cam.at[0] : 0, tz = cam.at ? cam.at[2] : 0, ty = cam.at ? cam.at[1] : cam.ty;   // cam.at: verify.py's close-ups
+    camera.position.set(tx + Math.sin(cam.yaw) * cp * cam.dist, ty + Math.sin(cam.pitch) * cam.dist, tz + Math.cos(cam.yaw) * cp * cam.dist);
+    camera.lookAt(tx, ty, tz);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
@@ -381,8 +386,38 @@
     });
     $('clip-act').dataset.clip = act.value;
     act.addEventListener('change', function(){ $('clip-act').dataset.clip = act.value; $('clip-act').click(); });
+    // what the hands hold: a clip's data/clips.json 'hold' (per hand, the props it may take, default first); the
+    // picker swaps the right hand's prop among them, or empties the hands
+    var holdPick = $('hold-pick'), PROP = {}, holdChoice = null;
+    (D.props || []).forEach(function(p){ PROP[p.id] = p; });
+    var clipInfo = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ clipInfo[c.key] = c; });
+    function holdFor(name){
+      var h = (clipInfo[name] && clipInfo[name].hold) || {}, side = h.R ? 'R' : h.L ? 'L' : null;
+      holdPick.innerHTML = '';
+      var none = document.createElement('option'); none.value = ''; none.textContent = side ? 'Empty hands' : 'Nothing to hold';
+      holdPick.appendChild(none);
+      (side ? h[side] : []).forEach(function(id){
+        var o = document.createElement('option'); o.value = id; o.textContent = (PROP[id] || { label:id }).label; holdPick.appendChild(o);
+      });
+      var pick = side && holdChoice !== '' ? (h[side].indexOf(holdChoice) >= 0 ? holdChoice : h[side][0]) : '';
+      holdPick.value = pick || '';
+      holdPick.disabled = !side;
+      var want = { R:null, L:null };
+      if(pick !== ''){
+        if(h.R) want.R = side === 'R' ? pick : h.R[0];
+        if(h.L) want.L = side === 'L' ? pick : h.L[0];
+      }
+      fig.hold(want);
+    }
+    holdPick.addEventListener('change', function(){
+      holdChoice = holdPick.value;
+      var on = document.querySelector('[data-clip][aria-pressed="true"]');
+      holdFor(on ? on.dataset.clip : '');
+    });
+    window._kcharHold = holdFor;
     Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(b){
       b.addEventListener('click', function(){
+        holdFor(b.dataset.clip || '');
         fig.play(b.dataset.clip || null);
         Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(o){ o.setAttribute('aria-pressed', o === b); });
       });

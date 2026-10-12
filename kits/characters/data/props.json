@@ -1,0 +1,113 @@
+{
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. data/clips.json hold says which clip holds what.",
+ "props": [
+  {
+   "id": "sword",
+   "label": "Sword",
+   "hand": "R",
+   "glb": "pieces/props/sword.glb"
+  },
+  {
+   "id": "dagger",
+   "label": "Dagger",
+   "hand": "R",
+   "glb": "pieces/props/dagger.glb"
+  },
+  {
+   "id": "axe",
+   "label": "Axe",
+   "hand": "R",
+   "glb": "pieces/props/axe.glb"
+  },
+  {
+   "id": "mace",
+   "label": "Mace",
+   "hand": "R",
+   "glb": "pieces/props/mace.glb"
+  },
+  {
+   "id": "warhammer",
+   "label": "War hammer",
+   "hand": "R",
+   "glb": "pieces/props/warhammer.glb"
+  },
+  {
+   "id": "spear",
+   "label": "Spear",
+   "hand": "R",
+   "glb": "pieces/props/spear.glb"
+  },
+  {
+   "id": "shield",
+   "label": "Shield",
+   "hand": "L",
+   "glb": "pieces/props/shield.glb"
+  },
+  {
+   "id": "bow",
+   "label": "Bow",
+   "hand": "L",
+   "glb": "pieces/props/bow.glb"
+  },
+  {
+   "id": "crossbow",
+   "label": "Crossbow",
+   "hand": "R",
+   "glb": "pieces/props/crossbow.glb"
+  },
+  {
+   "id": "rifle",
+   "label": "Rifle",
+   "hand": "R",
+   "glb": "pieces/props/rifle.glb"
+  },
+  {
+   "id": "pistol",
+   "label": "Pistol",
+   "hand": "R",
+   "glb": "pieces/props/pistol.glb"
+  },
+  {
+   "id": "pickaxe",
+   "label": "Pickaxe",
+   "hand": "R",
+   "glb": "pieces/props/pickaxe.glb"
+  },
+  {
+   "id": "hoe",
+   "label": "Hoe",
+   "hand": "R",
+   "glb": "pieces/props/hoe.glb"
+  },
+  {
+   "id": "hammer",
+   "label": "Hammer",
+   "hand": "R",
+   "glb": "pieces/props/hammer.glb"
+  },
+  {
+   "id": "bucket",
+   "label": "Bucket",
+   "hand": "R",
+   "glb": "pieces/props/bucket.glb"
+  },
+  {
+   "id": "cup",
+   "label": "Cup",
+   "hand": "R",
+   "glb": "pieces/props/cup.glb"
+  },
+  {
+   "id": "lantern",
+   "label": "Lantern",
+   "hand": "L",
+   "glb": "pieces/props/lantern.glb"
+  },
+  {
+   "id": "torch",
+   "label": "Torch",
+   "hand": "L",
+   "glb": "pieces/props/torch.glb"
+  }
+ ]
+}

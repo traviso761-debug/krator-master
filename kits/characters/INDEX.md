@@ -15,7 +15,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 11 |  |
+| `00-head.html` | 12 |  |
 | `10-rig.js` | 16 | KCHAR: the character record and its pose. [G dat (1) |
-| `50-figure.js` | 17 | KCharFigure: one body's character, drawn from ki (1) |
-| `90-editor.js` | 26 | the editor page: stage, camera, panel. [web] (ho (1) |
+| `50-figure.js` | 18 | KCharFigure: one body's character, drawn from ki (1) |
+| `90-editor.js` | 28 | the editor page: stage, camera, panel. [web] (ho (1) |

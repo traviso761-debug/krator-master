@@ -9,6 +9,7 @@
                          armour covers (KCHAR.hidden), poses the skeleton (KCHAR.pose) and dyes the armour and hair
    fig.play(name)        a clip from the body's anims.glb, or null for the bind (A) pose
    fig.update(dt)        once a frame
+   fig.hold({R, L})      props in the hands (ids from data/props.json), or null
    fig.headWorld(v3)     the head joint's world position
    The bones are built from skeleton.json, so every piece binds to the same objects. Each piece keeps its own Skeleton
    (same bones, its own inverse binds): a slider's skin scale goes in as boneInverses[i] = S(s[i]) * IBM[i], scaling
@@ -276,7 +277,51 @@ function KCharFigure(body, sliders, load){
     bones.forEach(function(b, i){ b.quaternion.fromArray(J[i].r); });
     self.hips.position.fromArray(self.pose.t[byName.Hips]);
     self.hips.position.y += self.pose.lift;
+    grip();
   };
+
+  /* ---- holding props (data/props.json, tools/make_props.py) ----
+     hold({ R:'sword', L:'shield' }): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
+     gives (the props are modelled in it), and that hand's fingers close round it: their local rotation becomes the
+     rest one times the curl, every frame after the clip (a clip's own finger motion gives way to the grip) */
+  var held = { R:null, L:null }, holders = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  function holder(side){
+    if(!holders[side]){
+      var h = skel.hands[side], g = new THREE.Group();
+      g.position.fromArray(h.grip.slice(0, 3)); g.quaternion.fromArray(h.grip.slice(3, 7));
+      bones[h.bone].add(g);
+      holders[side] = g;
+    }
+    return holders[side];
+  }
+  this.hold = function(want){
+    if(!skel.hands) return Promise.resolve();
+    return Promise.all(['R', 'L'].map(function(side){
+      var id = (want && want[side]) || null;
+      if(held[side] === id) return null;
+      held[side] = id;
+      var g = holder(side);
+      while(g.children.length) g.remove(g.children[0]);
+      if(!id) return null;
+      if(!propCache[id]) propCache[id] = load('props/' + id).then(function(gl){ return gl.scene; });
+      return propCache[id].then(function(scene){
+        if(held[side] !== id) return;
+        var m = scene.clone(true);
+        m.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
+        g.add(m);
+      });
+    }));
+  };
+  this.held = held;
+  function grip(){
+    if(!skel.hands) return;
+    ['R', 'L'].forEach(function(side){
+      if(!held[side]) return;
+      skel.hands[side].curl.forEach(function(c){
+        bones[c[0]].quaternion.fromArray(J[c[0]].r).multiply(curlQ.set(c[1], c[2], c[3], c[4]));
+      });
+    });
+  }
   function hipsMorph(){
     var d = self.morphDelta && self.morphDelta[byName.Hips];
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }
@@ -309,6 +354,7 @@ function KCharFigure(body, sliders, load){
     self.mixer.update(dt);
     self.hips.position.y += self.pose.lift;
     hipsMorph();
+    grip();
   };
 
   this.headWorld = function(v){ return self.headBone.getWorldPosition(v); };
