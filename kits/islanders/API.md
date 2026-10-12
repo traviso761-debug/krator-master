@@ -19,6 +19,10 @@ front**, x its right. `ry` is three.js rotation.y: the front (+z) turns to (sin 
 | `41-is-roof.js` | is | the roofs: `isSaddle` (the West: sagging ridge, horns, gable panels via its `gable()`), `isSpire` (the East: a rounded-rectangle profile roof), `isHip`, `isGabled`; `isShell` (a thick roof sheet), `isSheet`, `isPatchMk` (scrap patching: `patch` 0..1) |
 | `42-is-dress.js` | is | `IS_FURN` (the furniture keys per tier), `isDim(key)`, `isFurnRoom(w, d, y, tier, o)` |
 | `50-iw-west.js` | iw | `iwHouse(o)` (any West house from parameters), `iwOpen(L, n, doorX)`; the nine West houses |
+| `52-iw-civic.js` | iw | the shared West helpers (`iwArch iwArcade iwPavilion iwSpikes iwShield iwGong iwUprightGong iwPaving iwGrandStair iwDrum`); the assembly hall (after hall.jpg), the ceremonial square, the school |
+| `53-iw-trade.js` | iw | `iwSpinner` (geometry in its own buckets, flushed after the build into a group turned about a hub axis by a frame hook: the windmill's sails), `iwRangkiang` (a rice barn), `iwLesung`, `iwWoodpile`; the two farms, the two granaries, the windmill, the warehouse, the smithy, six shops (market hall, kava house, shophouse, weaver, potter, boat-chandler) |
+| `54-iw-harbour.js` | iw | `iwFloorAt iwPier iwCanoe iwHull iwSlip iwShearLegs iwRingPier`; the fishing dock, the dockyard, the harbour warehouse |
+| `55-iw-defence.js` | iw | `iwStakes iwLogTower`; the palisade, the gate, the watch tower, the barracks |
 | `56-sa-beasts.js` | sa | the fauna kit's pig, hen, duck and water buffalo as `life` defs (`saHerd`), `saFlush` |
 | `57-fl-flora.js` | fl | PLACEHOLDER flora (class `flora`, biome and harvest tags): `fl-coconut`, `fl-banana`, `fl-taro`, `fl-breadfruit`, `fl-paddy`; `flLeaf` |
 | `60-ie-east.js` | ie | `ieHouse(o)` (any Kautoa house from parameters); the nine Kautoa houses |
