@@ -17,8 +17,8 @@
    "sha256": "8bccadfc77721d5239b2d9c6bdffe59792afe347fb9bfbeaf8b22f667b4d5c02"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 402502,
-   "sha256": "7187f4922f30fae6c0062d6aff791538fe0c19da902d287a52382e4ad2d6df96"
+   "bytes": 463841,
+   "sha256": "0f0f8e241e623c49c0ce079dffaf1c1168fa49f5e531ccc0e337a1d12195320b"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 4245015,
@@ -317,8 +317,8 @@
    "sha256": "9fd8e53b56b4d0b2f7f3f98553b27f1310b6fd6b9724191601db77574845c981"
   },
   "kits/ringsea/dist/ringsea.html": {
-   "bytes": 6645562,
-   "sha256": "96f101a81623d71e1101ce8fc292d7d93815631c1bfee4894d00a49775b0d95c"
+   "bytes": 6701590,
+   "sha256": "81d95f07a9d113f551a8a855baf55dcfb487cb9c68002306ac511b18a84734f0"
   },
   "kits/scyvoi/dist/scyvoi.html": {
    "bytes": 33920516,
@@ -565,8 +565,8 @@
    "sha256": "d460fcbeaaa8d1bd7bf8b5555f2b8ce2c6785ee0d32b894315630adb158407fd"
   },
   "settlements/streetlab/dist/voth-city.html": {
-   "bytes": 8251824,
-   "sha256": "2e9fde676d11753b7b80afaefe6f486aead38ff892dbfccf536f1dfe651c4ff0"
+   "bytes": 8247165,
+   "sha256": "c28302f78ef63616a1effc8ff2dea81258f02012e294cdbae6cf3c6e052706cf"
   },
   "settlements/streetlab/dist/voth-site.html": {
    "bytes": 3596217,

@@ -325,7 +325,7 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
     then the cities' placement passes ported onto it, Iziz first; its `city` export section with item 7.
 15. **`core/city` in Godot** (section 8): its GDScript twin with golden tests, edits as an id-keyed overlay, rules as
     shared functions; the base for the NPC and quest tool and, later, the player's settlement builder.
-16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 after item 5; Voth's water when its branch pauses.
+16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 done 2026-10-12 (Ring Sea, geyser); the other Phase 1 takers next; Voth's water when its branch pauses.
 17. **The scripted walk** in the harness (section 9, stage 0j). *Done 2026-10-12.*
 18. **One interface for every settlement** (section 10): `core/edits`, then `core/host` on the biome kits, Girder,
     Iziz, Highlands, fauna mode, then every other settlement; Streetlab and Voth with their branch.
@@ -410,6 +410,11 @@ baseline, and `core/materials/PROMPTS-ready.md`, where the Zeijani prompts stay 
   - **Phase 0** (the README, the API and a node test for the twins) and **Phase 1** (a CDLOD water mesh, the shared
     field, skylight, Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` moved in) are **stage 2f**,
     after the terrain field is merged, since the flow and shore fields are built on it and on `core/mask`.
+    **Done 2026-10-12** (`core/water/`, `node core/water/test-water.js`): the Ring Sea kit and the geyser's sea are
+    on it (Ring Sea `verify.py --assert` holds, hull poses equal `WATER.rideAt`, the GPU surface is within 0.06 mm
+    of the CPU twin). Still to take Phase 1: Noah's Regret, little-demo, Locus, Mungo, Port, Ys, Reed Lake.
+    Depth-buffer absorption is not built yet. Streetlab's page carries the Ring Sea's `rsSeaH`/`rsRide` as aliases
+    of `WATER` that it never calls, so it loads without `core/water`.
   - Phases 2 to 4 (shore, flow and falls, still water and `W.wet`) follow `core/export`; Phase 5 (the FFT backend,
     the ripple sim) is opt-in per sea world; Phase 6 is the Godot side and joins stage 4.
   - Its first takers skip Voth: Voth's water (`settlements/voth/src/75-terrain.js`, and Streetlab's) is in the
