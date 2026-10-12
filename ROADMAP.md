@@ -491,8 +491,8 @@ and sheet, 97 minimap (moved from `core/minimap/88a`), 98 edit modes (emit opera
 
 | Step | What | Sessions |
 |---|---|---|
-| 0 | `core/edits` and its node test; the Streetlab converter's round trip; the save route; record the Streetlab file hashes the host is copied from, checked read-only at each session's start | 1 |
-| 1 | camera, loop, panel and probe on hyperjungle, then the other fifteen biome kits (their only host contact is `BIO.init`) | 2 |
+| 0 | **Done 2026-10-12.** `core/edits` and its node test; the Streetlab converter's round trip; the save route; record the Streetlab file hashes the host is copied from, checked read-only at each session's start | 1 |
+| 1 | camera, loop, panel and probe on hyperjungle, then the other fifteen biome kits (their only host contact is `BIO.init`). **Done 2026-10-12 for fifteen kits** (`core/host/README.md`; verify unchanged, chrome-hidden shots identical, smoke clean); the Throne and its ten stations are written but unproven (each page loaded in 30-60 min on a loaded box) | 2 |
 | 2 | Girder (the Voth lineage, not Voth): inspector, marks, picture menu, minimap, edit modes (place, remove, flora), cutaway on its interiors | 2 |
 | 3 | Iziz (the Ancients lineage, full registry), then Highlands (the same camera) | 2 |
 | 4 | fauna mode (`kits/fauna`) and ground brushes on `KFIELD` | 1 |
