@@ -18,7 +18,7 @@ const SVF=KFURN.create(Object.assign(KFURN.flags(false),{
   for(const L of (r.lights||[])){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
    const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:L.x,y:L.y,z:L.z,r:c.r,g:c.g,b:c.b,big:fire});}}}));
 SVF.WEALTH={};   // a def's 0..1 wealth for its furniture (its tags.wealth name, or .5)
-function svfNewBatch(){KFURN.useBatch(SVF,KratorFurniture,null);SVF.placed=[];SVF.missing={};SVF.cfg.tags=SVTAGS;}
+function svfNewBatch(){KFURN.useBatch(SVF,KratorFurniture,null,{indexed:true});SVF.placed=[];SVF.missing={};SVF.cfg.tags=SVTAGS;}
 function svfWealth(rec){const w=rec&&rec.tags&&rec.tags.wealth;return w==='rich'?.9:w==='poor'?.25:w==='middle'?.55:.55;}
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};if(!CURREC){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(PLACE_DRY)return null;lry=lry||0;

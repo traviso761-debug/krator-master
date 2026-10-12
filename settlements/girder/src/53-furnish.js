@@ -34,7 +34,7 @@ var GFURN = KFURN.create(Object.assign(KFURN.flags(true), {
     if(!o.noLight) gfLights(b, 0.7); }
 }));
 Object.assign(GFURN, { cur: null, ixPlaced: [], residenceFails: [], ms: 0 });
-KFURN.useBatch(GFURN, KratorFurniture, KratorInteriors);
+KFURN.useBatch(GFURN, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
 if(!GFURN.on) GFURN.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
   return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; };
 function gfAt(owner, id, f, y, wealth){ GFURN.cur = { owner:owner, id:id, f:f||null, y:y||0, wealth:wealth==null?0.45:wealth }; return GFURN.cur; }

@@ -5,8 +5,9 @@
 // Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
 // six copies shared.
 //
-//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
-//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.useBatch(R, KF, KI, opt)       -> R.batch (a KratorFurniture batch, KF.batch(opt): { indexed: true } keeps the
+//                                           pieces' indices) and R.adapter (KratorInteriors' runtime adapter over it,
+//                                           for the interiors hook); call again for a fresh batch
 //   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
 //                                           sets KratorFurniture's detail for this piece and restores it
 //   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
@@ -14,7 +15,7 @@
 (function(){
 'use strict';
 if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
-KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.useBatch = function(R, KF, KI, opt){ R.batch = KF.batch(opt); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
 KFURN.drawRec = function(R, rec, wealth, opt){
   const KF = R.KF, d = opt && opt.detail;
   if(d != null) KF.setDetail(d);

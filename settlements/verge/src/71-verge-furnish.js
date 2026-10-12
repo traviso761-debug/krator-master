@@ -17,7 +17,7 @@ const VFURN=(function(){
   draw:(rec,ctx,o,A)=>{const r=KFURN.drawRec(F,rec,ctx.wealth!=null?ctx.wealth:.5);if(r.error)reportErr('furniture '+rec.key+': '+r.error);
    r.lights.forEach(l=>{F.lamps.push([l.x,l.y,l.z,o.lamp?o.lamp[0]:l.intensity,o.lamp?o.lamp[1]:l.distance]);});}}));
  Object.assign(F,{stack:[],deferred:0,lamps:[],interiorsOn:!/[?&]interiors=0\b/.test(location.search),queue:[],done:0,pieces:0,groups:[]});
- KFURN.useBatch(F,KratorFurniture,KratorInteriors);
+ KFURN.useBatch(F,KratorFurniture,KratorInteriors,{indexed:true});
  // the interior-set item for a building of this key and variant: '<key>' for variant 0, '<key>#<n>' for another.
  // Each kit's own rule for a variant with no '#n' item: the Iziz Vernacular's variants change only their seed
  // (colours and picks, never the shell), so they take variant 0's rooms (kits/interiors/sets/iziz.js: '#n where a
@@ -45,7 +45,7 @@ function vergeInteriorsTick(){const F=VFURN;if(!F.interiorsOn||!F.queue.length)r
  F.queue.sort((a,b)=>Math.hypot(b.x-cp.x,b.z-cp.z)-Math.hypot(a.x-cp.x,a.z-cp.z));     // the nearest at the end: pop() takes it
  const R=QS.has('furnishR')?+QS.get('furnishR'):320;
  if(!F.queue.length||Math.hypot(F.queue[F.queue.length-1].x-cp.x,F.queue[F.queue.length-1].z-cp.z)>R)return;   // only what the camera is near
- let n=0;KFURN.useBatch(F,KratorFurniture,KratorInteriors);
+ let n=0;KFURN.useBatch(F,KratorFurniture,KratorInteriors,{indexed:true});
  while(F.queue.length&&Math.hypot(F.queue[F.queue.length-1].x-cp.x,F.queue[F.queue.length-1].z-cp.z)<=R&&performance.now()-t0<(QS.has('furnishMs')?+QS.get('furnishMs'):28)){const B=F.queue.pop();
   try{const fi=F.interior(B.item,B.x,B.z,B.ry,F.adapter,{baseY:B.y,prefix:B.id+'.'}),r=fi.result;B.rec.interior=fi.summary;F.pieces+=fi.summary.pieces;
    r.inst.rooms.forEach(R=>{const P=r.plans[R.id];(P&&P.lights||[]).forEach(l=>F.lamps.push([l.x,l.y,l.z,l.intensity||.7,l.distance||10]));});}
