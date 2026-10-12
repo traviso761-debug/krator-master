@@ -75,6 +75,43 @@ let _target = null;
    get fewer segments. Boxes, and frustums of 8 sides or fewer (square and hexagonal blocks), never change. */
 let _LOD = 1;
 function _seg(n, min) { return _LOD === 1 ? n : Math.max(min, Math.round(n * _LOD)); }
+/* SIZE-AWARE SEGMENTS (2026-10, ROADMAP stage 1): a round part gets the segments its size needs, not the palace
+   column's. _SAG is the silhouette error (the sagitta, how far a facet's middle sits inside the true circle) the
+   catalog's own 16-sided cylinder has at r = 0.2 m, 3.8 mm; a part of radius r gets the fewest segments that keep
+   its error under that, rounded up to an even count, never under `floor` (6 round: a spindle still reads as turned)
+   and never over the default n. So a cylinder of r >= 0.15 m is unchanged, 0.05 to 0.15 m keeps 50 to 90 % of the
+   default, a 4 cm leg gets 8 and a 2.5 cm spindle, a bead or a finial the floor (kits/catalog/README.md has the
+   census). The count depends on the radius only, never on a cylinder's length or a dome's height: a ring round a leg
+   and a dome on a post keep the count of the part they sit on, so their rims meet as before. Then setDetail scales it as it always did (_seg). What keeps its count: lathes and tubes (their
+   callers give nu and seg, and flutes and lobes are drawn by them), frustums (`sides` is a shape: square, hexagon),
+   pillows and bolsters (their floors are their silhouette), boxes and beams. */
+const _SAG = 0.2 * (1 - Math.cos(Math.PI / 16));
+function _fit(n, r, floor) {
+  if (n <= floor) return n;
+  const k = r > _SAG ? Math.ceil(Math.PI / Math.acos(1 - _SAG / r)) : floor;
+  return Math.min(n, Math.max(floor, k + (k & 1)));
+}
+function _segR(n, min, r, floor) { return _seg(_fit(n, r, floor == null ? 6 : floor), min); }
+/* Coaxial parts share a count. A band round a leg, a rim on a jar or a dome on a post has a radius within a few per
+   cent of the part it sits on; were their counts to differ, the inner part's corners would poke through the outer
+   one's flat faces. So an upright cylinder, cone or dome on the same axis as one already built in this piece, touching
+   it, with a radius within cos(PI / 6) of it (the only ratios that can poke), takes that one's count (capped at its own
+   default): two polygons of one count and one turn nest. Only parts in the same piece (_target) are matched. */
+let _ringT = null, _rings = [];
+function _ring(n, r, x, y0, y1, z, ry) {
+  if (!_target) return n;
+  if (_ringT !== _target) { _ringT = _target; _rings = []; }
+  let k = n;
+  for (const q of _rings) {
+    if (Math.abs(q.x - x) > 1e-4 || Math.abs(q.z - z) > 1e-4 || q.ry !== ry || y0 > q.y1 + 1e-4 || q.y0 > y1 + 1e-4) continue;
+    const a = Math.min(r, q.r) / Math.max(r, q.r, 1e-9);
+    if (a > 0.866) { k = q.n; break; }
+  }
+  _rings.push({ x: x, z: z, y0: y0, y1: y1, r: r, n: k, ry: ry });
+  return k;
+}
+/* a sphere's rows follow its count round, in the default's proportion (rows of n0 x m0 for n round) */
+function _rows(n0, m0, n, min) { return _seg(Math.max(min, Math.round(m0 * n / n0)), min); }
 function _add(m) { (_target || scene).add(m); return m; }
 function mkBox(x, y, z, w, h, d, ry, color, family) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), Math.max(h, 0.02), Math.max(d, 0.02)), mat(color, family));
@@ -82,31 +119,36 @@ function mkBox(x, y, z, w, h, d, ry, color, family) {
   return _add(m);
 }
 function mkCyl(x, y, z, r, h, ry, color, family) {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.01), Math.max(r, 0.01), Math.max(h, 0.02), _seg(16, 6)), mat(color, family));
+  const n = Math.min(16, _ring(_fit(16, r, 6), r, x, y, y + h, z, ry || 0));
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.01), Math.max(r, 0.01), Math.max(h, 0.02), _seg(n, 6)), mat(color, family));
   m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkCone(x, y, z, r, h, ry, color, family) {
-  const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(r, 0.01), Math.max(h, 0.02), _seg(14, 6)), mat(color, family));
+  const n = Math.min(14, _ring(_fit(14, r, 6), r, x, y, y, z, ry || 0));   /* only its base meets anything */
+  const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(r, 0.01), Math.max(h, 0.02), _seg(n, 6)), mat(color, family));
   m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkDome(x, y, z, r, h, ry, color, family) {
-  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(16, 6), _seg(10, 3), 0, TAU, 0, Math.PI / 2);
+  const nr = Math.min(16, _ring(_fit(16, r, 6), r, x, y, y, z, ry || 0));   /* round by its radius and its rim's neighbour, rows by its radius or height */
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(nr, 6), _rows(16, 10, _fit(16, Math.max(r, h), 6), 3), 0, TAU, 0, Math.PI / 2);
   geo.scale(1, Math.max(h, 0.02) / Math.max(r, 0.02), 1);
   const m = new THREE.Mesh(geo, mat(color, family));
   m.position.set(x, y, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkBlob(x, y, z, r, h, ry, color, family) {
-  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(10, 6), _seg(8, 4));
+  const nr = _fit(10, Math.max(r, h / 2), 6);
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(nr, 6), _rows(10, 8, nr, 4));
   geo.scale(1, Math.max(h, 0.02) / (2 * Math.max(r, 0.02)), 1);
   const m = new THREE.Mesh(geo, mat(color, family));
   m.position.set(x, y, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkBall(x, y, z, r, color, family) {
-  const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(r, 0.02), _seg(14, 6), _seg(10, 4)), mat(color, family));
+  const nr = _fit(14, r, 6);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(r, 0.02), _seg(nr, 6), _rows(14, 10, nr, 4)), mat(color, family));
   m.position.set(x, y, z);
   return _add(m);
 }
@@ -121,7 +163,7 @@ function mkBeam(ax, ay, az, bx, by, bz, w, d, color, family) {
 function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   const dx = bx - ax, dy = by - ay, dz = bz - az;
   const len = Math.max(Math.hypot(dx, dy, dz), 0.02);
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, _seg(8, 4)), mat(color, family));
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, _segR(8, 4, r)), mat(color, family));
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
@@ -158,7 +200,8 @@ function _surfGeo(nu, nv, fn, rev) {
   return geo;
 }
 function mkEll(x, y, z, rx, ry, rz, ry2, color, family) {
-  const geo = new THREE.SphereGeometry(0.5, _seg(12, 6), _seg(8, 4));
+  const nr = _fit(12, Math.max(rx, ry, rz), 6);
+  const geo = new THREE.SphereGeometry(0.5, _seg(nr, 6), _rows(12, 8, nr, 4));
   geo.scale(Math.max(rx, 0.01) * 2, Math.max(ry, 0.01) * 2, Math.max(rz, 0.01) * 2);
   const m = new THREE.Mesh(geo, mat(color, family));
   m.position.set(x, y, z); m.rotation.y = ry2 || 0;

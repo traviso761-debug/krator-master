@@ -19,10 +19,10 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `inspector.js` | 19 |  |
 | `krator-asset-engine.js` | 11 |  |
-| `krator-furniture-core.js` | 70 **big** |  |
+| `krator-furniture-core.js` | 73 **big** |  |
 | `krator-furniture-detail.js` | 4 |  |
 | `krator-furniture-kit.js` | 139 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
-| `krator-furniture-runtime.js` | 10 |  |
+| `krator-furniture-runtime.js` | 14 |  |
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
 | `krator-master-furniture-ashnomad.js` | 120 **big** | Seating (390); Tables and vessels (514); Storage (658); Light (840); Textiles and screens (934); Fire (1009); Riders and herders (1090); Work: the chitin-cutters (1226); Tanning: the hide and chitin worker (job tanning (1325); Smithy (1419) |
