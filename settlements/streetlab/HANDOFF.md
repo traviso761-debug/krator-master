@@ -4,6 +4,27 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 2, follow-up: benched squares, village shrines, the bread oven
+
+The owner: "Add a couple village size shrines and benched squares for that overflow. Fix the oven." Done (README
+"Benched squares and village shrines"):
+- The overflow, mapped by home: the afternoon's company-seekers with nowhere to go were almost all the cantons' people
+  (Market, Granary, Fortress, Guild, Arsenal, Foreign); the rest day's short worshippers the farms, the suburbs, city
+  NE and SE, the mines.
+- 12 benched squares at the cantons' feet (Fortress 3 from its causeway's land end, Market 3, Guild 2, Granary 2,
+  Arsenal 1, Foreign 1), 34 x 24 m on 30 cleared house lots, 27 benches each round a well, about 258 places each.
+- Two village shrines (`voth_bldg_village_shrine`, a new kit model: a walled precinct, a pillared hall, a forecourt),
+  81 each, placed where an estimate of the citizens' choice leaves the most without room.
+- `voth_bread_oven` stood 0.30 m behind its wall and 0.20 m over its height: its dome and flue are inside its box now
+  (the catalog's verify passes every page). `voth_shrine_lantern` named its materials by the catalog's keys.
+
+**Where we're at** (`verify.py`): at 15:00 on a workday 31,002 socialize out (28,117 before), 2,601 visit at home
+(5,347), 275 go without (571). The rest day's worship: 209 short at 8:00 (208 before), 528 at 11:00 (576). Both
+shrines fill, but the shortfall is spread thin: farms about 150, suburbs 140, city NE 100, city SE 95, the mines 75. My
+estimate (`worshipShort` 2,237 before, 1,030 after) overstates the clan compounds' east: the first shrine stands there.
+Fixing the rest takes either about six more village shrines placed from the simulation's own map, or letting the farms'
+households worship at the village chapels and their homes.
+
 ## 2026-10-12: phase C session 2, follow-up: the temples, the chapels, the small shrines (where we're at)
 
 The owner: "3 with half; make 2 new unique temple models to accomodate the halls and place one on the west side and one

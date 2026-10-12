@@ -142,7 +142,7 @@ var TUNE = {
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
-          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']],
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -229,6 +229,23 @@ var TUNE = {
       /* the small shrines (kits/catalog voth_shrine_*): along the big parks' walks every `walkEvery` m, set `off` m beside
          them; one in each pocket park of at least `minArea` m2, clear of its benches by `clear` m */
       shrines: { keys: ['voth_shrine_stele', 'voth_shrine_lantern', 'voth_shrine_urn'], walkEvery: 60, off: 3, minArea: 120, clear: 2.5 },
+      /* the benched squares by the cantons whose people found nowhere to sit with company (VC.simSquares): [canton, how
+         many], each `w` x `d` m on cleared house lots of `from`, out from the canton's apron to `reach` m in rings of `ring`
+         m (and from the land end of each causeway it has), fronting a way of `ways` within `front` m, `gap` m apart, no
+         steeper than `slope` m; benches `edge` m in from
+         its sides every `sideEvery` m and in a ring every `ringEvery` m round its middle */
+      squares: { cantons: [['Fortress', 3], ['Market', 3], ['Guild', 2], ['Granary', 2], ['Arsenal', 1], ['Foreign', 1]], w: 34, d: 24, reach: 320, ring: 10,
+                 ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 6, gap: 70, slope: 2.5, from: ['poor', 'middle', 'shop', 'craft', 'rich'], edge: 2, ringEvery: 4.2, sideEvery: 4 },
+      /* the village shrines (VC.simVillageShrines): `n`, each where the most of the busiest service's worshippers find no
+         room: a household's `attend` share of its people (`homes` by class) given to the nearest place of worship within
+         `walk` m with room left (a temple's or a chapel's nave by its floor, a canton, the funerary temple and the
+         landmark shrines and the pocket parks' small ones `holds`; the clan compounds keep their own), the leftovers summed
+         within `r` m on a `cell` m grid; then the nearest ground within `reach` m (`pad` m round the model, cleared house
+         lots of `from`), fronting a way of `ways` within `front` m, `gap` m from another; a spot with no ground is skipped
+         (up to `retries` times) */
+      villageShrine: { key: 'voth_bldg_village_shrine', n: 2, retries: 6, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, small: 3 },
+                       homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
+                       reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -448,6 +465,7 @@ var TUNE = {
     byKey: { voth_bldg_watchhouse: { job: 'town guard', jobs: 24, where: 'watchhouses' },
              voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
              voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
+             voth_bldg_village_shrine: { job: 'shrine keepers', jobs: 2, live: 1, where: 'village shrines' },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },

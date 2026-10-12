@@ -493,6 +493,17 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   furniture, `holds` 2-3) along the big parks' walks and in every pocket park of 120 m2 or more (`VC.parkShrines`), and
   in every clan compound's shrine room (`clanshrine`, its hall in the small compound). Worship by floor (2.5 m2) and by
   each shrine's `holds`.
+* **Benched squares and village shrines** (owner, 2026-10-12: "Add a couple village size shrines and benched squares
+  for that overflow"): the overflow was the cantons' people (nowhere within reach to sit with company on a working
+  afternoon) and the rest day's worshippers in the suburbs, farms and mines. `VC.simSquares` (`TUNE.sim.place.squares`)
+  clears a few house lots at each canton's foot (out from its apron, or from its causeway's land end: the Fortress) for
+  34 x 24 m squares fronting a street: a ring of 10 benches round the well `VC.wells` sets in the middle, benches along
+  the three inner sides, braziers at the corners (27 benches); each is a plaza green (standing room by area) whose
+  benches add seats (`Benched square (<canton>)`). `VC.simVillageShrines` (`TUNE.sim.place.villageShrine`) places the
+  `voth_bldg_village_shrine` (kits/catalog: a walled precinct, a pillared hall with a lantern cupola, a forecourt with a
+  stele, an offering basin and braziers; its nave holds 81) where the most worshippers are left without room when each
+  household's are given to the nearest place with room within 1.5 km, as the citizens choose (`VC.simClearable`,
+  `VC.simClearSpot`: the cleared ground both use).
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

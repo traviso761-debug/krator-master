@@ -180,7 +180,7 @@ VC.parkFurniture = function () {
   /* the pocket parks and the small plazas the street method left */
   var pockets = record('pocket greens furniture', 12), np = 0;
   PLAN.greens.forEach(function (G) {
-    if (G.kind !== 'park' && G.kind !== 'plaza') return;
+    if ((G.kind !== 'park' && G.kind !== 'plaza') || G.square) return;   /* a benched square has its own (42-vc-sim-places.js) */
     var poly = G.poly, mid = G.art ? [G.art.x, G.art.z] : polyCentroid(poly);
     if (G.art) placed.push(obb(mid, [1, 0], T.pocketFountain, T.pocketFountain));
     var want = G.kind === 'park' ? T.pocketBench : T.plazaBench;

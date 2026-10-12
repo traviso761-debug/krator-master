@@ -300,7 +300,16 @@ CITY_CHECK = r"""() => {
       const B = VC.SIMB || {}, clans = VC.IX.units.filter(u => u.cls === 'clan');
       out.simc.faith = { temples: (B.temples || []).filter(t => t.lot != null && PLAN.lots[t.lot].died == null).map(t => t.key + ' ' + t.side), templeWhy: (B.temples || []).filter(t => t.lot == null).map(t => t.key + ': ' + t.why),
         chapels: ((B.placed || {}).chapels || []).length, shrines: B.shrines || null, clans: clans.length,
-        clanShrines: clans.filter(u => (VC.IX.types[u.type].pieces || []).some(p => /^voth_shrine_/.test(p.key))).length };
+        clanShrines: clans.filter(u => (VC.IX.types[u.type].pieces || []).some(p => /^voth_shrine_/.test(p.key))).length,
+        villageShrines: (B.villageShrines || []).filter(q => q.lot != null && PLAN.lots[q.lot].died == null && SIM.all('place').some(p => p.kind === 'shrine' && p.activities.WORSHIP > 0 && Math.hypot(p.x - q.x, p.z - q.z) < 25)).length,
+        villageWhy: (B.villageShrines || []).filter(q => q.lot == null).map(q => q.why), worshipShort: B.worshipShort || null };
+      /* the benched squares by the cantons (owner, 2026-10-12): every canton listed has one, each a place with seats, none
+         under a standing building */
+      const SQ = B.squares || {}, sqBy = {}, sqHit = [];
+      Object.keys(SQ).forEach(gid => { const G = PLAN.greens[gid], o = obb(polyCentroid(G.poly), V.norm(V.sub(G.poly[1], G.poly[0])), V.dist(G.poly[0], G.poly[1]) / 2 - 0.5, V.dist(G.poly[1], G.poly[2]) / 2 - 0.5);
+        sqBy[SQ[gid].canton] = (sqBy[SQ[gid].canton] || 0) + 1;
+        PLAN.lots.forEach(L => { if (L.died == null && L.bo && Math.hypot(L.x - o.c[0], L.z - o.c[1]) < 80 && SL.pen(o, L.bo) > 0.3) sqHit.push(gid + ':' + L.id); }); });
+      out.simc.squares = { by: sqBy, want: TUNE.sim.place.squares.cantons.map(c => c[0]), hit: sqHit.slice(0, 10), places: SIM.all('place').filter(p => /^Benched square/.test(p.name || '') && p.activities.SOCIALIZE > 0 && (p.spots || []).length).length, n: Object.keys(SQ).length };
       out.simc.roles = SIM.all('role').length; out.simc.firstJumpMs = VC.SIMRUN.jumpMs; out.simc.bodies = !!(VC.SIMBODY && VC.SIMBODY.mesh);
     }
   }
@@ -318,7 +327,8 @@ def week_bad(sc):
         or r10['by'].get('WORK', 0) >= 0.5 * s10['by'].get('WORK', 1) or sc['restWorkers'] or w['p50'] > 120 or w['max'] > 4000 \
         or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1) \
         or len(sc['faith']['temples']) < 2 or sc['faith']['chapels'] < 3 or not (sc['faith']['shrines'] or {}).get('pocket') or sc['faith']['clanShrines'] != sc['faith']['clans'] \
-        or sc['worship']['short']
+        or sc['worship']['short'] or sc['faith'].get('villageShrines', 0) < 2 \
+        or any(not sc['squares']['by'].get(c) for c in sc['squares']['want']) or sc['squares']['hit'] or sc['squares']['places'] != sc['squares']['n']
     return bad
 
 
@@ -405,6 +415,7 @@ def verify_city(a, port, rel, sync_playwright):
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
         for o in wo['options']: print('    %d service(s), %d%% attend: %d at once, short %d: %s more shrines, or %s more of the largest' % (o['services'], round(o['attend'] * 100), o['atOnce'], o['short'], o['shrines'], o['largest']))
     if sc.get('faith'): print('  the rest day\'s buildings: %s' % json.dumps(sc['faith']))
+    if sc.get('squares'): print('  benched squares by the cantons: %s' % json.dumps(sc['squares']))
     if sc.get('worship'): print('    the busiest service: %d want it at %d:00, room %d, short %d; per service %s' % (sc['worship']['want'], sc['worship']['hour'], sc['worship']['room'], sc['worship']['short'], json.dumps(sc['worship']['perService'])))
     if sc.get('workday'): print('  the run: %d roles, the first jump %s ms, stuck %d, no path %d, route failures %d, working on the rest day outside the essential kinds %d, slaves on the half shift %d of %d, bodies %s' % (sc['roles'], sc['firstJumpMs'], sc['stuck'], sc['nopath'], sc['routeFail'], sc['restWorkers'], sc.get('slavesHalf', 0), sc.get('slaves', 0), sc['bodies']))
     print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))

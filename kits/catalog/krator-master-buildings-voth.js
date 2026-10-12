@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (25 keys / 29 build "looks")
+   Voth — Building Registry (26 keys / 30 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -2100,5 +2100,58 @@ ASSET({
     F.ball(1.2, 2.9, 3.7, 0.12, glow, 'glow');
     /* windows down the flanks */
     [-3, 0, 3].forEach(function (z) { [-1, 1].forEach(function (s) { F.box(s * 5.55, 1.8, z - 0.5, 0.15, 1.8, 0.8, 0, 0x2a2622, 'stone'); F.box(s * 5.62, 3.7, z - 0.5, 0.2, 0.25, 1.1, 0, trim, 'stone'); }); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_shrine', name: 'Village shrine', culture: 'voth', family: 'religious', types: ['temple'],
+  districts: ['village', 'farm', 'poor', 'common'], wealth: [0, 0.6], w: 26, d: 22, h: 12, variants: 1,
+  /* a village-sized shrine (owner, 2026-10-12: "a couple village size shrines" for the rest day's overflow): a walled
+     precinct on a low platform, a pillared hall at its back under a hipped roof and a lantern cupola, the forecourt
+     before it with a stele, an offering basin and two braziers, a gate in its front wall */
+  ix: { block: [0, -4.5, 20.6, 10.6], y: 0.5, h: 5.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb4a284, 0xbcab8c, 0xa99878]), trim = shade(c, -0.22), dark = shade(c, -0.38), roofC = 0x7c5a3a, domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87, gilt = 0xc9a24a, soot = 0x2a2622;
+    F.box(0, 0, 0, 26, 0.5, 22, 0, dark, 'stone');                                        /* the platform */
+    /* the hall */
+    F.box(0, 0.5, -4.5, 22, 5.5, 12, 0, c, 'plaster');
+    F.box(0, 0.5, -4.5, 22.4, 0.5, 12.4, 0, trim, 'stone');                               /* its plinth course */
+    F.box(0, 6, -4.5, 22.6, 0.4, 12.6, 0, trim, 'stone');                                 /* the cornice */
+    F.pyrRoof(0, 6.4, -4.5, 22.6, 2.6, 12.6, 0, roofC, 'roof');
+    F.cyl(0, 8.1, -4.5, 1.5, 1.4, 0, shade(c, 0.05), 'plaster');                           /* the lantern cupola */
+    [0, 1, 2, 3, 4, 5].forEach(function (i) { const a = i / 6 * TAU; F.box(Math.cos(a) * 1.5, 8.5, -4.5 + Math.sin(a) * 1.5, 0.35, 0.6, 0.12, -(a + TAU / 4), glow, 'glow'); });
+    F.dome(0, 9.5, -4.5, 1.6, 1.4, 0, domeC, 'roof');
+    F.ball(0, 11.1, -4.5, 0.22, gilt, 'metal');
+    /* pilasters and windows on the flanks and the back */
+    [-1, 1].forEach(function (s) {
+      [-9, -4.5, 0].forEach(function (z) { F.box(s * 11.05, 0.5, z, 0.3, 5.5, 0.7, 0, trim, 'stone'); });
+      [-6.75, -2.25].forEach(function (z) { F.box(s * 11.05, 2.2, z, 0.15, 2.0, 1.2, 0, soot, 'stone'); F.box(s * 11.12, 4.4, z, 0.2, 0.25, 1.6, 0, trim, 'stone'); });
+    });
+    [-8, -4, 0, 4, 8].forEach(function (x) { F.box(x, 0.5, -10.55, 0.7, 5.5, 0.3, 0, trim, 'stone'); });
+    [-6, -2, 2, 6].forEach(function (x) { F.box(x, 2.2, -10.55, 1.2, 2.0, 0.15, 0, soot, 'stone'); F.box(x, 4.4, -10.62, 1.6, 0.25, 0.2, 0, trim, 'stone'); });
+    /* the portico: four columns, a deep lintel, the door between */
+    [-6, -2, 2, 6].forEach(function (x) { F.cyl(x, 0.5, 2.9, 0.38, 4.7, 0, shade(c, 0.08), 'stone'); F.box(x, 5.2, 2.9, 1.0, 0.25, 1.0, 0, trim, 'stone'); });
+    F.box(0, 5.45, 2.2, 15, 0.55, 2.4, 0, trim, 'stone');
+    F.box(0, 6.0, 2.2, 15.4, 0.3, 2.7, 0, dark, 'stone');
+    F.box(0, 0.5, 1.58, 3.0, 3.8, 0.15, 0, wood, 'wood');
+    F.box(0, 4.3, 1.58, 3.6, 0.5, 0.2, 0, trim, 'stone');
+    [-1, 1].forEach(function (s) { F.ball(s * 2.2, 3.4, 1.8, 0.16, glow, 'glow'); });
+    /* the forecourt's walls and its gate */
+    [-1, 1].forEach(function (s) {
+      F.box(s * 12.6, 0.5, 6.2, 0.6, 1.2, 9.2, 0, c, 'plaster'); F.box(s * 12.6, 1.7, 6.2, 0.8, 0.15, 9.4, 0, trim, 'stone');
+      F.box(s * 8.25, 0.5, 10.6, 8.1, 1.2, 0.6, 0, c, 'plaster'); F.box(s * 8.25, 1.7, 10.6, 8.3, 0.15, 0.8, 0, trim, 'stone');
+      F.box(s * 3.9, 0.5, 10.6, 0.9, 2.6, 0.9, 0, trim, 'stone');                       /* the gate posts, a lamp on each */
+      F.box(s * 3.9, 3.1, 10.6, 1.1, 0.2, 1.1, 0, dark, 'stone');
+      F.ball(s * 3.9, 3.55, 10.6, 0.3, glow, 'glow');
+    });
+    /* the stele, the offering basin, two braziers */
+    F.box(0, 0.5, 6.0, 1.6, 0.4, 1.0, 0, dark, 'stone');
+    F.box(0, 0.9, 6.0, 1.0, 2.6, 0.45, 0, shade(c, 0.12), 'stone');
+    F.pyrRoof(0, 3.5, 6.0, 1.2, 0.5, 0.65, 0, trim, 'stone');
+    F.box(0, 2.6, 6.24, 0.5, 0.5, 0.05, 0, gilt, 'metal');
+    F.cyl(0, 0.5, 8.3, 1.0, 0.55, 0, trim, 'stone'); F.cyl(0, 1.0, 8.3, 0.8, 0.08, 0, 0x3f5e60, 'water');
+    [-1, 1].forEach(function (s) {
+      F.cyl(s * 5, 0.5, 6.5, 0.22, 1.3, 0, 0x3a2f22, 'metal'); F.cyl(s * 5, 1.8, 6.5, 0.5, 0.25, 0, 0x3a2f22, 'metal');
+      F.ball(s * 5, 2.15, 6.5, 0.3, glow, 'glow');
+    });
   }
 });

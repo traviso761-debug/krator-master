@@ -104,12 +104,12 @@ FURN({
   build: function (F) {
     const br = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), soot = F.shade(br, -0.6);
     F.box(0, 0, -0.1, 2.6, 0.9, 1.7, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
-    F.frustum(0, 0.9, -0.15, 1.1, 0.75, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome */
-    F.ball(0, 1.82, -0.15, 0.62, F.shade(ash, -0.08), 'ceramic');
-    F.box(0, 0.95, 0.58, 0.9, 0.62, 0.18, 0, soot, 'stone');                               /* the mouth */
-    F.box(0, 1.0, 0.6, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
-    F.box(0, 1.6, 0.66, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
-    F.cyl(0.62, 2.0, -0.55, 0.14, 0.5, 0, soot, 'stone');                                  /* the flue */
+    F.frustum(0, 0.9, -0.03, 0.9, 0.62, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome, inside the back plane */
+    F.ball(0, 1.78, -0.03, 0.5, F.shade(ash, -0.08), 'ceramic');
+    F.box(0, 0.95, 0.8, 0.9, 0.62, 0.18, 0, soot, 'stone');                                /* the mouth */
+    F.box(0, 1.0, 0.82, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
+    F.box(0, 1.6, 0.86, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
+    F.cyl(0.5, 1.75, -0.5, 0.14, 0.52, 0, soot, 'stone');                                  /* the flue */
     F.box(-1.05, 0.9, 0.4, 0.5, 0.06, 0.9, 0, F.col('timberWalnut'), 'wood');               /* the peel rest and a peel */
     F.box(-1.05, 0.96, 0.25, 0.32, 0.03, 0.32, 0, F.col('timberWalnut'), 'wood');
     F.lamp(0, 1.0, 0.8, 0.6, 4);
@@ -192,7 +192,7 @@ FURN({
 FURN({
   key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
   rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
-  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster'],
+  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster', 'metal'],
   w: 1.9, d: 1.9, h: 2.7, variants: 1,
   build: function (F) {
     const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');

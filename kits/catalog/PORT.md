@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 41 (2%) | 0 (0%) | 10 (1%) | 59 (3%) | 1744 (94%) |
+| KB | 41 (2%) | 0 (0%) | 10 (1%) | 59 (3%) | 1748 (94%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,7 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-furniture-kit.js` | 138.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 659 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-furniture-runtime.js` | 8.4 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-beast-rider.js` | 69.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 508 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-buildings-voth.js` | 118.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 870 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-buildings-voth.js` | 122.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 902 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-ashnomad.js` | 119.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 608 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-beast-rider.js` | 71.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 322 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-eastabyss.js` | 57.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 277 | 0 | 0 | 0 | 0 | 0 |  |

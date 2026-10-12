@@ -1761,7 +1761,7 @@ const KratorLOD = (function () {
 </script>
 <script>/* kits/catalog/krator-master-buildings-voth.js */
 /* ======================================================================
-   Voth — Building Registry (25 keys / 29 build "looks")
+   Voth — Building Registry (26 keys / 30 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -3862,6 +3862,59 @@ ASSET({
     F.ball(1.2, 2.9, 3.7, 0.12, glow, 'glow');
     /* windows down the flanks */
     [-3, 0, 3].forEach(function (z) { [-1, 1].forEach(function (s) { F.box(s * 5.55, 1.8, z - 0.5, 0.15, 1.8, 0.8, 0, 0x2a2622, 'stone'); F.box(s * 5.62, 3.7, z - 0.5, 0.2, 0.25, 1.1, 0, trim, 'stone'); }); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_shrine', name: 'Village shrine', culture: 'voth', family: 'religious', types: ['temple'],
+  districts: ['village', 'farm', 'poor', 'common'], wealth: [0, 0.6], w: 26, d: 22, h: 12, variants: 1,
+  /* a village-sized shrine (owner, 2026-10-12: "a couple village size shrines" for the rest day's overflow): a walled
+     precinct on a low platform, a pillared hall at its back under a hipped roof and a lantern cupola, the forecourt
+     before it with a stele, an offering basin and two braziers, a gate in its front wall */
+  ix: { block: [0, -4.5, 20.6, 10.6], y: 0.5, h: 5.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb4a284, 0xbcab8c, 0xa99878]), trim = shade(c, -0.22), dark = shade(c, -0.38), roofC = 0x7c5a3a, domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87, gilt = 0xc9a24a, soot = 0x2a2622;
+    F.box(0, 0, 0, 26, 0.5, 22, 0, dark, 'stone');                                        /* the platform */
+    /* the hall */
+    F.box(0, 0.5, -4.5, 22, 5.5, 12, 0, c, 'plaster');
+    F.box(0, 0.5, -4.5, 22.4, 0.5, 12.4, 0, trim, 'stone');                               /* its plinth course */
+    F.box(0, 6, -4.5, 22.6, 0.4, 12.6, 0, trim, 'stone');                                 /* the cornice */
+    F.pyrRoof(0, 6.4, -4.5, 22.6, 2.6, 12.6, 0, roofC, 'roof');
+    F.cyl(0, 8.1, -4.5, 1.5, 1.4, 0, shade(c, 0.05), 'plaster');                           /* the lantern cupola */
+    [0, 1, 2, 3, 4, 5].forEach(function (i) { const a = i / 6 * TAU; F.box(Math.cos(a) * 1.5, 8.5, -4.5 + Math.sin(a) * 1.5, 0.35, 0.6, 0.12, -(a + TAU / 4), glow, 'glow'); });
+    F.dome(0, 9.5, -4.5, 1.6, 1.4, 0, domeC, 'roof');
+    F.ball(0, 11.1, -4.5, 0.22, gilt, 'metal');
+    /* pilasters and windows on the flanks and the back */
+    [-1, 1].forEach(function (s) {
+      [-9, -4.5, 0].forEach(function (z) { F.box(s * 11.05, 0.5, z, 0.3, 5.5, 0.7, 0, trim, 'stone'); });
+      [-6.75, -2.25].forEach(function (z) { F.box(s * 11.05, 2.2, z, 0.15, 2.0, 1.2, 0, soot, 'stone'); F.box(s * 11.12, 4.4, z, 0.2, 0.25, 1.6, 0, trim, 'stone'); });
+    });
+    [-8, -4, 0, 4, 8].forEach(function (x) { F.box(x, 0.5, -10.55, 0.7, 5.5, 0.3, 0, trim, 'stone'); });
+    [-6, -2, 2, 6].forEach(function (x) { F.box(x, 2.2, -10.55, 1.2, 2.0, 0.15, 0, soot, 'stone'); F.box(x, 4.4, -10.62, 1.6, 0.25, 0.2, 0, trim, 'stone'); });
+    /* the portico: four columns, a deep lintel, the door between */
+    [-6, -2, 2, 6].forEach(function (x) { F.cyl(x, 0.5, 2.9, 0.38, 4.7, 0, shade(c, 0.08), 'stone'); F.box(x, 5.2, 2.9, 1.0, 0.25, 1.0, 0, trim, 'stone'); });
+    F.box(0, 5.45, 2.2, 15, 0.55, 2.4, 0, trim, 'stone');
+    F.box(0, 6.0, 2.2, 15.4, 0.3, 2.7, 0, dark, 'stone');
+    F.box(0, 0.5, 1.58, 3.0, 3.8, 0.15, 0, wood, 'wood');
+    F.box(0, 4.3, 1.58, 3.6, 0.5, 0.2, 0, trim, 'stone');
+    [-1, 1].forEach(function (s) { F.ball(s * 2.2, 3.4, 1.8, 0.16, glow, 'glow'); });
+    /* the forecourt's walls and its gate */
+    [-1, 1].forEach(function (s) {
+      F.box(s * 12.6, 0.5, 6.2, 0.6, 1.2, 9.2, 0, c, 'plaster'); F.box(s * 12.6, 1.7, 6.2, 0.8, 0.15, 9.4, 0, trim, 'stone');
+      F.box(s * 8.25, 0.5, 10.6, 8.1, 1.2, 0.6, 0, c, 'plaster'); F.box(s * 8.25, 1.7, 10.6, 8.3, 0.15, 0.8, 0, trim, 'stone');
+      F.box(s * 3.9, 0.5, 10.6, 0.9, 2.6, 0.9, 0, trim, 'stone');                       /* the gate posts, a lamp on each */
+      F.box(s * 3.9, 3.1, 10.6, 1.1, 0.2, 1.1, 0, dark, 'stone');
+      F.ball(s * 3.9, 3.55, 10.6, 0.3, glow, 'glow');
+    });
+    /* the stele, the offering basin, two braziers */
+    F.box(0, 0.5, 6.0, 1.6, 0.4, 1.0, 0, dark, 'stone');
+    F.box(0, 0.9, 6.0, 1.0, 2.6, 0.45, 0, shade(c, 0.12), 'stone');
+    F.pyrRoof(0, 3.5, 6.0, 1.2, 0.5, 0.65, 0, trim, 'stone');
+    F.box(0, 2.6, 6.24, 0.5, 0.5, 0.05, 0, gilt, 'metal');
+    F.cyl(0, 0.5, 8.3, 1.0, 0.55, 0, trim, 'stone'); F.cyl(0, 1.0, 8.3, 0.8, 0.08, 0, 0x3f5e60, 'water');
+    [-1, 1].forEach(function (s) {
+      F.cyl(s * 5, 0.5, 6.5, 0.22, 1.3, 0, 0x3a2f22, 'metal'); F.cyl(s * 5, 1.8, 6.5, 0.5, 0.25, 0, 0x3a2f22, 'metal');
+      F.ball(s * 5, 2.15, 6.5, 0.3, glow, 'glow');
+    });
   }
 });
 
@@ -20093,12 +20146,12 @@ FURN({
   build: function (F) {
     const br = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), soot = F.shade(br, -0.6);
     F.box(0, 0, -0.1, 2.6, 0.9, 1.7, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
-    F.frustum(0, 0.9, -0.15, 1.1, 0.75, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome */
-    F.ball(0, 1.82, -0.15, 0.62, F.shade(ash, -0.08), 'ceramic');
-    F.box(0, 0.95, 0.58, 0.9, 0.62, 0.18, 0, soot, 'stone');                               /* the mouth */
-    F.box(0, 1.0, 0.6, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
-    F.box(0, 1.6, 0.66, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
-    F.cyl(0.62, 2.0, -0.55, 0.14, 0.5, 0, soot, 'stone');                                  /* the flue */
+    F.frustum(0, 0.9, -0.03, 0.9, 0.62, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome, inside the back plane */
+    F.ball(0, 1.78, -0.03, 0.5, F.shade(ash, -0.08), 'ceramic');
+    F.box(0, 0.95, 0.8, 0.9, 0.62, 0.18, 0, soot, 'stone');                                /* the mouth */
+    F.box(0, 1.0, 0.82, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
+    F.box(0, 1.6, 0.86, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
+    F.cyl(0.5, 1.75, -0.5, 0.14, 0.52, 0, soot, 'stone');                                  /* the flue */
     F.box(-1.05, 0.9, 0.4, 0.5, 0.06, 0.9, 0, F.col('timberWalnut'), 'wood');               /* the peel rest and a peel */
     F.box(-1.05, 0.96, 0.25, 0.32, 0.03, 0.32, 0, F.col('timberWalnut'), 'wood');
     F.lamp(0, 1.0, 0.8, 0.6, 4);
@@ -20181,7 +20234,7 @@ FURN({
 FURN({
   key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
   rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
-  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster'],
+  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster', 'metal'],
   w: 1.9, d: 1.9, h: 2.7, variants: 1,
   build: function (F) {
     const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');
@@ -47929,7 +47982,7 @@ var TUNE = {
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
-          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']],
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -48016,6 +48069,23 @@ var TUNE = {
       /* the small shrines (kits/catalog voth_shrine_*): along the big parks' walks every `walkEvery` m, set `off` m beside
          them; one in each pocket park of at least `minArea` m2, clear of its benches by `clear` m */
       shrines: { keys: ['voth_shrine_stele', 'voth_shrine_lantern', 'voth_shrine_urn'], walkEvery: 60, off: 3, minArea: 120, clear: 2.5 },
+      /* the benched squares by the cantons whose people found nowhere to sit with company (VC.simSquares): [canton, how
+         many], each `w` x `d` m on cleared house lots of `from`, out from the canton's apron to `reach` m in rings of `ring`
+         m (and from the land end of each causeway it has), fronting a way of `ways` within `front` m, `gap` m apart, no
+         steeper than `slope` m; benches `edge` m in from
+         its sides every `sideEvery` m and in a ring every `ringEvery` m round its middle */
+      squares: { cantons: [['Fortress', 3], ['Market', 3], ['Guild', 2], ['Granary', 2], ['Arsenal', 1], ['Foreign', 1]], w: 34, d: 24, reach: 320, ring: 10,
+                 ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 6, gap: 70, slope: 2.5, from: ['poor', 'middle', 'shop', 'craft', 'rich'], edge: 2, ringEvery: 4.2, sideEvery: 4 },
+      /* the village shrines (VC.simVillageShrines): `n`, each where the most of the busiest service's worshippers find no
+         room: a household's `attend` share of its people (`homes` by class) given to the nearest place of worship within
+         `walk` m with room left (a temple's or a chapel's nave by its floor, a canton, the funerary temple and the
+         landmark shrines and the pocket parks' small ones `holds`; the clan compounds keep their own), the leftovers summed
+         within `r` m on a `cell` m grid; then the nearest ground within `reach` m (`pad` m round the model, cleared house
+         lots of `from`), fronting a way of `ways` within `front` m, `gap` m from another; a spot with no ground is skipped
+         (up to `retries` times) */
+      villageShrine: { key: 'voth_bldg_village_shrine', n: 2, retries: 6, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, small: 3 },
+                       homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
+                       reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -48235,6 +48305,7 @@ var TUNE = {
     byKey: { voth_bldg_watchhouse: { job: 'town guard', jobs: 24, where: 'watchhouses' },
              voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
              voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
+             voth_bldg_village_shrine: { job: 'shrine keepers', jobs: 2, live: 1, where: 'village shrines' },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },
@@ -53863,6 +53934,7 @@ SL.layout = function () {
   for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); } if (k === 5) VC.simTemples(5);   /* the temples after the highways and the wall, still before the streets */   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
+  VC.simSquares(12); VC.simVillageShrines(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow) */
   VC.census();                     /* 36-vc-census.js: people and workplaces */
   VC.lighting();                   /* 37-vc-light.js: power houses' reach, street lamps */
   VC.parkFurniture();              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
@@ -54464,7 +54536,7 @@ VC.parkFurniture = function () {
   /* the pocket parks and the small plazas the street method left */
   var pockets = record('pocket greens furniture', 12), np = 0;
   PLAN.greens.forEach(function (G) {
-    if (G.kind !== 'park' && G.kind !== 'plaza') return;
+    if ((G.kind !== 'park' && G.kind !== 'plaza') || G.square) return;   /* a benched square has its own (42-vc-sim-places.js) */
     var poly = G.poly, mid = G.art ? [G.art.x, G.art.z] : polyCentroid(poly);
     if (G.art) placed.push(obb(mid, [1, 0], T.pocketFountain, T.pocketFountain));
     var want = G.kind === 'park' ? T.pocketBench : T.plazaBench;
@@ -55525,6 +55597,145 @@ VC.simTemples = function (step) {
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
+/* a footprint cleared of houses (phase C, owner 2026-10-12: "village size shrines and benched squares for that
+   overflow"): ground no street, alley, landmark, canton, field, farmstead or station is on, dry and no steeper than
+   `S.slope` m across, where every lot it overlaps (its plot grown 1.5 m) is a plain house or shop of `S.from` (no role,
+   no power house, not on a deck): -> those lots, or null */
+VC.simClearable = function (o, S) {
+  var R = SL.R, lo = Infinity, hi = -Infinity, pts = [], U = o.u, Vv = [-o.u[1], o.u[0]];
+  for (var a = -1; a <= 1.001; a += 0.25) for (var b = -1; b <= 1.001; b += 0.25) pts.push([o.c[0] + U[0] * a * o.hw + Vv[0] * b * o.hd, o.c[1] + U[1] * a * o.hw + Vv[1] * b * o.hd]);
+  for (var i = 0; i < pts.length; i++) {
+    var p = pts[i], g = baseH(p[0], p[1]); if (g < 1) return null; lo = Math.min(lo, g); hi = Math.max(hi, g);
+    if (VC.inCanton(p, 6)) return null;
+    if (VC.inCity(p, 0)) { var oc = R.at(p[0], p[1]); if (oc !== OCC.FREE && oc !== OCC.LOT && oc !== OCC.GREEN) return null; }
+    else if (VC.roadNear(p, 1.5)) return null;
+  }
+  if (hi - lo > S.slope) return null;
+  if (VC.fieldHit(o) || VC.anyHit(o, VC.big || [], 1) || VC.anyHit(o, VC.platforms || [], 4)) return null;
+  if ((VC.stationPts || []).some(function (q) { return V.dist(q, o.c) < Math.max(o.hw, o.hd) + 20; })) return null;
+  var g2 = VC.grow(o, 1.5), take = [], bad = false, x0 = Math.floor(o.c[0] / 40), z0 = Math.floor(o.c[1] / 40), rr = Math.ceil(Math.max(o.hw, o.hd) / 40) + 1;
+  for (var dx = -rr; dx <= rr && !bad; dx++) for (var dz = -rr; dz <= rr && !bad; dz++) {
+    var list = SL.HASH.get((x0 + dx) + ',' + (z0 + dz)); if (!list) continue;
+    list.forEach(function (L) {
+      if (bad || L.died != null || !L.bo || SL.pen(g2, L.bo) <= 0.1 || take.indexOf(L) >= 0) return;
+      if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; else take.push(L);
+    });
+  }
+  return bad ? null : take;
+};
+/* out from `centre` in rings to `S.reach` m (from `S.r0`): the first footprint W x D whose front faces the nearest way of
+   `S.ways` within `S.front` m and that VC.simClearable passes, at least `S.gap` m from those in `away` -> {o, f, take, r} */
+VC.simClearSpot = function (centre, W, D, S, away) {
+  for (var r = S.r0 || 0; r <= S.reach; r += S.ring || 10) {
+    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / (S.ring || 10))) : 1;
+    for (var i = 0; i < n; i++) {
+      var th = i / n * 2 * Math.PI, c = [centre[0] + Math.cos(th) * r, centre[1] + Math.sin(th) * r];
+      if ((away || []).some(function (q) { return V.dist(q, c) < S.gap; })) continue;
+      var q = VC.nearestWayPt(c, S.ways); if (!q || q.d < D / 2 + q.way.w / 2 + 1 || q.d > D / 2 + q.way.w / 2 + S.front) continue;
+      var f = V.norm(V.sub(q.p, c)), o = obb(c, V.perp(f), W / 2, D / 2), take = VC.simClearable(o, S);
+      if (take) return { o: o, f: f, take: take, r: r, q: q };
+    }
+  }
+  return null;
+};
+/* the benched squares (owner, 2026-10-12): the cantons' people found nowhere to sit with company on a working afternoon
+   (the census by home, phase C: Market, Granary, Fortress, Guild, Arsenal, Foreign). At each canton's foot, out from its
+   apron, `n` squares of `w` x `d` m on cleared house lots fronting a street: a ring of benches round the well VC.wells
+   sets at its middle, benches along its three inner sides, braziers at its corners. Each is a plaza green (its standing
+   room by its area, TUNE.sim.greens) and its benches seats (VC.simPlaces) */
+VC.simSquares = function (step) {
+  var S = TUNE.sim.place.squares, made = [], art = [], log = [];
+  VC.SIMB.squares = {};
+  S.cantons.forEach(function (cn) {
+    var M = CANT.by[cn[0]]; if (!M) { log.push('no canton ' + cn[0]); return; }
+    var got = 0, away = made.map(function (m) { return m.c; }), ro = M.apron ? M.apron.ro : M.r;
+    /* out from its apron, then from the land end of each causeway it has (a canton out on the water: the Fortress) */
+    var from = [{ c: [M.x, M.z], r0: ro + S.d / 2 + 4, reach: ro + S.reach }];
+    (CANT.causewayList || []).forEach(function (cw) { var E = cw.ends || []; [0, 1].forEach(function (e) { if (E[e] && E[e].canton === cn[0] && !(E[1 - e] && E[1 - e].canton) && cw.pts && cw.pts.length > 1) from.push({ c: e ? cw.pts[0] : cw.pts[cw.pts.length - 1], r0: 0, reach: S.reach }); }); });
+    for (var k = 0; k < cn[1]; k++) {
+      var sp = null;
+      for (var fi = 0; fi < from.length && !sp; fi++) sp = VC.simClearSpot(from[fi].c, S.w, S.d, { r0: from[fi].r0, reach: from[fi].reach, ring: S.ring, ways: S.ways, front: S.front, gap: S.gap, slope: S.slope, from: S.from }, away);
+      if (!sp) break;
+      sp.take.forEach(function (L) { SL.killLot(L, step); });
+      var o = sp.o, poly = obbCorners(o), G = SL.addGreen('plaza', poly, step, 0.5, 'poor', null);
+      G.square = cn[0]; G.art = null;
+      var mid = o.c, f = sp.f, u = o.u, benches = 0, put = function (key, v, p, ry) { art.push({ key: key, v: v, x: p[0], y: baseH(p[0], p[1]) - 0.05, z: p[1], ry: ry, furn: true, square: G.id }); };
+      var face = function (p) { return Math.atan2(mid[0] - p[0], mid[1] - p[1]); };
+      /* the ring round the middle */
+      var rr = Math.min(o.hw, o.hd) - S.edge - 3, nr = Math.max(6, Math.floor(2 * Math.PI * rr / S.ringEvery));
+      for (var i = 0; i < nr; i++) { var th = (i + 0.5) / nr * 2 * Math.PI, p = [mid[0] + Math.cos(th) * rr, mid[1] + Math.sin(th) * rr]; put('voth_bench', 1, p, face(p)); benches++; }
+      /* the sides but the street's: inset `edge` m, facing in */
+      [[-1, 0], [1, 0], [0, -1]].forEach(function (sd) {
+        var along = sd[0] ? f : u, half = sd[0] ? o.hd : o.hw, at = V.add(mid, sd[0] ? V.mul(u, sd[0] * (o.hw - S.edge)) : V.mul(f, -(o.hd - S.edge)));
+        var inw = sd[0] ? V.mul(u, -sd[0]) : f, ry = Math.atan2(inw[0], inw[1]);
+        for (var t = -half + S.edge + 2; t <= half - S.edge - 2 + 0.01; t += S.sideEvery) { put('voth_bench', 0, V.add(at, V.mul(along, t)), ry); benches++; }
+      });
+      poly.forEach(function (c) { var p = V.add(c, V.mul(V.norm(V.sub(mid, c)), 2.2)); put('voth_street_brazier', 0, p, 0); });
+      VC.SIMB.squares[G.id] = { canton: cn[0], benches: benches, area: Math.round(4 * o.hw * o.hd), took: sp.take.length };
+      made.push({ c: mid, canton: cn[0], green: G.id }); away.push(mid); got++;
+    }
+    log.push(cn[0] + ' ' + got + (got < cn[1] ? ' of ' + cn[1] : ''));
+  });
+  if (art.length) PLAN.districts.push({ kind: 'furniture', name: 'Benched squares', art: art, born: step });
+  var took = Object.keys(VC.SIMB.squares).reduce(function (n, k) { return n + VC.SIMB.squares[k].took; }, 0);
+  SL.note(step, 'benched squares by the cantons: ' + made.length + ' (' + log.join(', ') + '), ' + art.filter(function (a) { return a.key === 'voth_bench'; }).length + ' benches, on ' + took + ' cleared house lots');
+  return made;
+};
+/* the village shrines (owner, 2026-10-12): the rest day's worship that found no room was spread over the suburbs, the
+   farms, the mines and the clan compounds. As the citizens choose (the nearest place with room), every household's
+   worshippers at the busiest service (`attend` of its people, `homes` by class) are given to the nearest place of worship
+   within `walk` m that still has room (a temple or chapel its nave's floor by TUNE.sim.worship.m2, a canton, a landmark
+   shrine or a pocket park's small one `holds`; the clan compounds worship at their own yard shrine and are not counted);
+   each shrine goes where the most are left over within `r` m (a `cell` m grid), the next one counting it; a spot with
+   no ground counts as served and the next best is tried, up to `retries` times */
+VC.simVillageShrines = function (step) {
+  var S = TUNE.sim.place.villageShrine, D = SL.dims(S.key, 0), sites = [], out = [], m2 = TUNE.sim.worship.m2;
+  if (!D) return out;
+  var nave = function (key) { var A = ASSET_BY_KEY[key], b = A && A.ix && A.ix.block; return b ? Math.floor(b[2] * b[3] / m2) : 0; };
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null) return;
+    var c = L.role === 'temple' || L.role === 'chapel' || L.role === 'shrine' ? nave(L.key) : /funerary/i.test(L.key || '') ? S.holds.funerary : /shrine/i.test(L.key || '') ? S.holds.shrine : 0;
+    if (c) sites.push([L.x, L.z, c]);
+  });
+  (CANT.list || []).forEach(function (M) { sites.push([M.x, M.z, S.holds.canton]); });
+  var SH = TUNE.sim.place.shrines;   /* the pocket parks' small shrines to come (VC.parkShrines) */
+  PLAN.greens.forEach(function (G) { if (G.kind === 'park' && G.poly && Math.abs(polyArea(G.poly)) >= SH.minArea) { var c = polyCentroid(G.poly); sites.push([c[0], c[1], S.holds.small]); } });
+  var homes = PLAN.lots.filter(function (L) { return L.died == null && !L.role && !L.deck && S.homes[L.cls]; })
+    .map(function (L) { return [L.x, L.z, S.homes[L.cls] * S.attend]; });
+  var left = function () {
+    var room = sites.map(function (q) { return q[2]; }), want = homes.map(function (h) { return h[2]; }), pairs = [];
+    homes.forEach(function (h, hi) { sites.forEach(function (q, si) { var d = Math.hypot(q[0] - h[0], q[1] - h[1]); if (d < S.walk) pairs.push([d, hi, si]); }); });
+    pairs.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2]; });
+    pairs.forEach(function (p) { var t = Math.min(want[p[1]], room[p[2]]); if (t > 0) { want[p[1]] -= t; room[p[2]] -= t; } });
+    return want;
+  };
+  var short0 = 0, placed = 0;
+  for (var k = 0; k < S.n + S.retries && placed < S.n; k++) {
+    var want = left(), score = new Map(), rc = Math.ceil(S.r / S.cell);
+    if (!k) short0 = Math.round(want.reduce(function (a, b) { return a + b; }, 0));
+    homes.forEach(function (h, hi) {
+      if (want[hi] < 0.01) return;
+      var gx = Math.round(h[0] / S.cell), gz = Math.round(h[1] / S.cell);
+      for (var x = gx - rc; x <= gx + rc; x++) for (var z = gz - rc; z <= gz + rc; z++) if (Math.hypot(x * S.cell - h[0], z * S.cell - h[1]) < S.r) { var kk = x + ',' + z; score.set(kk, (score.get(kk) || 0) + want[hi]); }
+    });
+    var best = null, bs = 0; score.forEach(function (v, kk) { if (v > bs + 1e-9 || (Math.abs(v - bs) <= 1e-9 && best && kk < best)) { bs = v; best = kk; } });
+    if (!best) break;
+    var gc = best.split(',').map(function (t) { return +t * S.cell; });
+    var sp = VC.simClearSpot(gc, D.w + 2 * S.pad, D.d + 2 * S.pad, S, out.filter(function (q) { return q.lot != null; }).map(function (q) { return [q.x, q.z]; }));
+    if (!sp) { out.push({ why: 'no ground near ' + gc.map(Math.round).join(', '), x: gc[0], z: gc[1] }); sites.push([gc[0], gc[1], 1e9]); continue; }   /* that spot counted as served, so the next looks elsewhere */
+    var L = VC.placedLot({ key: S.key, v: 0, x: sp.o.c[0], z: sp.o.c[1], ry: Math.atan2(sp.f[0], sp.f[1]) }, step);
+    if (!L) break;
+    L.placed = false; L.cls = 'civic'; L.role = 'shrine';
+    sites.push([L.x, L.z, nave(S.key)]);
+    out.push({ lot: L.id, x: Math.round(L.x), z: Math.round(L.z), left: Math.round(bs), took: sp.take.length, where: (VC.roleAt ? VC.roleAt([L.x, L.z]) : '') || 'country' }); placed++;
+  }
+  var short1 = Math.round(left().reduce(function (a, b) { return a + b; }, 0));
+  VC.SIMB.villageShrines = out; VC.SIMB.worshipShort = [short0, short1];
+  SL.note(step, 'village shrines: ' + out.map(function (q) { return q.lot != null ? 'at ' + q.x + ', ' + q.z + ' (' + q.where + ', ' + q.left + ' worshippers without room within ' + S.r + ' m, ' + q.took + ' house lots cleared)' : q.why; }).join('; ') +
+    '; the busiest service’s estimate without room: ' + short0 + ' before, ' + short1 + ' after');
+  return out;
+};
+
 VC.wells = function () {
   var T = TUNE.sim.wells, art = [], H = new Map(), cs = T.gap;
   var near = function (p) { var gx = Math.floor(p[0] / cs), gz = Math.floor(p[1] / cs);
@@ -55669,7 +55880,7 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
-    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel')) kind = Lu.role;   /* the rest day's temples and the village chapels */
+    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel' || Lu.role === 'shrine')) kind = Lu.role;   /* and the village shrines */   /* the rest day's temples and the village chapels */
     var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
       var D = VC.simDims(p), FB = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]) || {}, seats = FB.holds ? FB.holds : SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
@@ -55716,7 +55927,7 @@ VC.simPlaces = function () {
   /* the open places with furniture: the parks (benches, shrines, the parks' own wells), the markets (stalls), the burial
      ground (tombs), the canton square, the villages' greens: one place per district, at its furniture's middle */
   PLAN.districts.forEach(function (D, di) {
-    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
+    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'Benched squares' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
     var kind = /market/.test(D.kind) ? 'market' : D.kind === 'funerary' ? 'funerary' : D.kind === 'village' ? 'plaza' : 'park';
     var cnt = {}, cx = 0, cz = 0, cy = 0, holds = 0;
     D.art.forEach(function (a) { if (/shrine|altar/.test(a.key)) holds += ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || T.worship.holds; var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
@@ -55744,10 +55955,17 @@ VC.simPlaces = function () {
     var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
     ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
     var gs = VC.SIMB.greenShrines && VC.SIMB.greenShrines[gi]; if (gs) { acts.WORSHIP = gs; acts.CONTEMPLATE = gs; }   /* its small shrine */
+    /* a benched square by a canton (VC.simSquares): its benches seats besides its standing room, its spots before them */
+    var SQ = G.square && VC.SIMB.squares && VC.SIMB.squares[G.id], spots = null;
+    if (SQ) {
+      acts.SOCIALIZE = (acts.SOCIALIZE || 0) + SQ.benches * 2; acts.RELAX = (acts.RELAX || 0) + SQ.benches * 3; acts.IDLE = (acts.IDLE || 0) + SQ.benches * 2;
+      spots = [];
+      PLAN.districts.forEach(function (D) { if (D.name === 'Benched squares') D.art.forEach(function (a) { if (a.square === G.id && /bench/.test(a.key) && spots.length < T.spotsMax) { var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); } }); });
+    }
     if (!Object.keys(acts).length) return;
     var rr = Math.sqrt(area) / 2;
-    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
-          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, tags: [G.district || gk] });
+    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: SQ ? 'Benched square (' + G.square + ')' : gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
+          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, spots: spots || undefined, tags: SQ ? [G.square + ' canton', 'benched square'] : [G.district || gk] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */

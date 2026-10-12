@@ -215,6 +215,145 @@ VC.simTemples = function (step) {
 };
 
 /* ---------------------------------------------------------------- 2. the wells */
+/* a footprint cleared of houses (phase C, owner 2026-10-12: "village size shrines and benched squares for that
+   overflow"): ground no street, alley, landmark, canton, field, farmstead or station is on, dry and no steeper than
+   `S.slope` m across, where every lot it overlaps (its plot grown 1.5 m) is a plain house or shop of `S.from` (no role,
+   no power house, not on a deck): -> those lots, or null */
+VC.simClearable = function (o, S) {
+  var R = SL.R, lo = Infinity, hi = -Infinity, pts = [], U = o.u, Vv = [-o.u[1], o.u[0]];
+  for (var a = -1; a <= 1.001; a += 0.25) for (var b = -1; b <= 1.001; b += 0.25) pts.push([o.c[0] + U[0] * a * o.hw + Vv[0] * b * o.hd, o.c[1] + U[1] * a * o.hw + Vv[1] * b * o.hd]);
+  for (var i = 0; i < pts.length; i++) {
+    var p = pts[i], g = baseH(p[0], p[1]); if (g < 1) return null; lo = Math.min(lo, g); hi = Math.max(hi, g);
+    if (VC.inCanton(p, 6)) return null;
+    if (VC.inCity(p, 0)) { var oc = R.at(p[0], p[1]); if (oc !== OCC.FREE && oc !== OCC.LOT && oc !== OCC.GREEN) return null; }
+    else if (VC.roadNear(p, 1.5)) return null;
+  }
+  if (hi - lo > S.slope) return null;
+  if (VC.fieldHit(o) || VC.anyHit(o, VC.big || [], 1) || VC.anyHit(o, VC.platforms || [], 4)) return null;
+  if ((VC.stationPts || []).some(function (q) { return V.dist(q, o.c) < Math.max(o.hw, o.hd) + 20; })) return null;
+  var g2 = VC.grow(o, 1.5), take = [], bad = false, x0 = Math.floor(o.c[0] / 40), z0 = Math.floor(o.c[1] / 40), rr = Math.ceil(Math.max(o.hw, o.hd) / 40) + 1;
+  for (var dx = -rr; dx <= rr && !bad; dx++) for (var dz = -rr; dz <= rr && !bad; dz++) {
+    var list = SL.HASH.get((x0 + dx) + ',' + (z0 + dz)); if (!list) continue;
+    list.forEach(function (L) {
+      if (bad || L.died != null || !L.bo || SL.pen(g2, L.bo) <= 0.1 || take.indexOf(L) >= 0) return;
+      if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; else take.push(L);
+    });
+  }
+  return bad ? null : take;
+};
+/* out from `centre` in rings to `S.reach` m (from `S.r0`): the first footprint W x D whose front faces the nearest way of
+   `S.ways` within `S.front` m and that VC.simClearable passes, at least `S.gap` m from those in `away` -> {o, f, take, r} */
+VC.simClearSpot = function (centre, W, D, S, away) {
+  for (var r = S.r0 || 0; r <= S.reach; r += S.ring || 10) {
+    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / (S.ring || 10))) : 1;
+    for (var i = 0; i < n; i++) {
+      var th = i / n * 2 * Math.PI, c = [centre[0] + Math.cos(th) * r, centre[1] + Math.sin(th) * r];
+      if ((away || []).some(function (q) { return V.dist(q, c) < S.gap; })) continue;
+      var q = VC.nearestWayPt(c, S.ways); if (!q || q.d < D / 2 + q.way.w / 2 + 1 || q.d > D / 2 + q.way.w / 2 + S.front) continue;
+      var f = V.norm(V.sub(q.p, c)), o = obb(c, V.perp(f), W / 2, D / 2), take = VC.simClearable(o, S);
+      if (take) return { o: o, f: f, take: take, r: r, q: q };
+    }
+  }
+  return null;
+};
+/* the benched squares (owner, 2026-10-12): the cantons' people found nowhere to sit with company on a working afternoon
+   (the census by home, phase C: Market, Granary, Fortress, Guild, Arsenal, Foreign). At each canton's foot, out from its
+   apron, `n` squares of `w` x `d` m on cleared house lots fronting a street: a ring of benches round the well VC.wells
+   sets at its middle, benches along its three inner sides, braziers at its corners. Each is a plaza green (its standing
+   room by its area, TUNE.sim.greens) and its benches seats (VC.simPlaces) */
+VC.simSquares = function (step) {
+  var S = TUNE.sim.place.squares, made = [], art = [], log = [];
+  VC.SIMB.squares = {};
+  S.cantons.forEach(function (cn) {
+    var M = CANT.by[cn[0]]; if (!M) { log.push('no canton ' + cn[0]); return; }
+    var got = 0, away = made.map(function (m) { return m.c; }), ro = M.apron ? M.apron.ro : M.r;
+    /* out from its apron, then from the land end of each causeway it has (a canton out on the water: the Fortress) */
+    var from = [{ c: [M.x, M.z], r0: ro + S.d / 2 + 4, reach: ro + S.reach }];
+    (CANT.causewayList || []).forEach(function (cw) { var E = cw.ends || []; [0, 1].forEach(function (e) { if (E[e] && E[e].canton === cn[0] && !(E[1 - e] && E[1 - e].canton) && cw.pts && cw.pts.length > 1) from.push({ c: e ? cw.pts[0] : cw.pts[cw.pts.length - 1], r0: 0, reach: S.reach }); }); });
+    for (var k = 0; k < cn[1]; k++) {
+      var sp = null;
+      for (var fi = 0; fi < from.length && !sp; fi++) sp = VC.simClearSpot(from[fi].c, S.w, S.d, { r0: from[fi].r0, reach: from[fi].reach, ring: S.ring, ways: S.ways, front: S.front, gap: S.gap, slope: S.slope, from: S.from }, away);
+      if (!sp) break;
+      sp.take.forEach(function (L) { SL.killLot(L, step); });
+      var o = sp.o, poly = obbCorners(o), G = SL.addGreen('plaza', poly, step, 0.5, 'poor', null);
+      G.square = cn[0]; G.art = null;
+      var mid = o.c, f = sp.f, u = o.u, benches = 0, put = function (key, v, p, ry) { art.push({ key: key, v: v, x: p[0], y: baseH(p[0], p[1]) - 0.05, z: p[1], ry: ry, furn: true, square: G.id }); };
+      var face = function (p) { return Math.atan2(mid[0] - p[0], mid[1] - p[1]); };
+      /* the ring round the middle */
+      var rr = Math.min(o.hw, o.hd) - S.edge - 3, nr = Math.max(6, Math.floor(2 * Math.PI * rr / S.ringEvery));
+      for (var i = 0; i < nr; i++) { var th = (i + 0.5) / nr * 2 * Math.PI, p = [mid[0] + Math.cos(th) * rr, mid[1] + Math.sin(th) * rr]; put('voth_bench', 1, p, face(p)); benches++; }
+      /* the sides but the street's: inset `edge` m, facing in */
+      [[-1, 0], [1, 0], [0, -1]].forEach(function (sd) {
+        var along = sd[0] ? f : u, half = sd[0] ? o.hd : o.hw, at = V.add(mid, sd[0] ? V.mul(u, sd[0] * (o.hw - S.edge)) : V.mul(f, -(o.hd - S.edge)));
+        var inw = sd[0] ? V.mul(u, -sd[0]) : f, ry = Math.atan2(inw[0], inw[1]);
+        for (var t = -half + S.edge + 2; t <= half - S.edge - 2 + 0.01; t += S.sideEvery) { put('voth_bench', 0, V.add(at, V.mul(along, t)), ry); benches++; }
+      });
+      poly.forEach(function (c) { var p = V.add(c, V.mul(V.norm(V.sub(mid, c)), 2.2)); put('voth_street_brazier', 0, p, 0); });
+      VC.SIMB.squares[G.id] = { canton: cn[0], benches: benches, area: Math.round(4 * o.hw * o.hd), took: sp.take.length };
+      made.push({ c: mid, canton: cn[0], green: G.id }); away.push(mid); got++;
+    }
+    log.push(cn[0] + ' ' + got + (got < cn[1] ? ' of ' + cn[1] : ''));
+  });
+  if (art.length) PLAN.districts.push({ kind: 'furniture', name: 'Benched squares', art: art, born: step });
+  var took = Object.keys(VC.SIMB.squares).reduce(function (n, k) { return n + VC.SIMB.squares[k].took; }, 0);
+  SL.note(step, 'benched squares by the cantons: ' + made.length + ' (' + log.join(', ') + '), ' + art.filter(function (a) { return a.key === 'voth_bench'; }).length + ' benches, on ' + took + ' cleared house lots');
+  return made;
+};
+/* the village shrines (owner, 2026-10-12): the rest day's worship that found no room was spread over the suburbs, the
+   farms, the mines and the clan compounds. As the citizens choose (the nearest place with room), every household's
+   worshippers at the busiest service (`attend` of its people, `homes` by class) are given to the nearest place of worship
+   within `walk` m that still has room (a temple or chapel its nave's floor by TUNE.sim.worship.m2, a canton, a landmark
+   shrine or a pocket park's small one `holds`; the clan compounds worship at their own yard shrine and are not counted);
+   each shrine goes where the most are left over within `r` m (a `cell` m grid), the next one counting it; a spot with
+   no ground counts as served and the next best is tried, up to `retries` times */
+VC.simVillageShrines = function (step) {
+  var S = TUNE.sim.place.villageShrine, D = SL.dims(S.key, 0), sites = [], out = [], m2 = TUNE.sim.worship.m2;
+  if (!D) return out;
+  var nave = function (key) { var A = ASSET_BY_KEY[key], b = A && A.ix && A.ix.block; return b ? Math.floor(b[2] * b[3] / m2) : 0; };
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null) return;
+    var c = L.role === 'temple' || L.role === 'chapel' || L.role === 'shrine' ? nave(L.key) : /funerary/i.test(L.key || '') ? S.holds.funerary : /shrine/i.test(L.key || '') ? S.holds.shrine : 0;
+    if (c) sites.push([L.x, L.z, c]);
+  });
+  (CANT.list || []).forEach(function (M) { sites.push([M.x, M.z, S.holds.canton]); });
+  var SH = TUNE.sim.place.shrines;   /* the pocket parks' small shrines to come (VC.parkShrines) */
+  PLAN.greens.forEach(function (G) { if (G.kind === 'park' && G.poly && Math.abs(polyArea(G.poly)) >= SH.minArea) { var c = polyCentroid(G.poly); sites.push([c[0], c[1], S.holds.small]); } });
+  var homes = PLAN.lots.filter(function (L) { return L.died == null && !L.role && !L.deck && S.homes[L.cls]; })
+    .map(function (L) { return [L.x, L.z, S.homes[L.cls] * S.attend]; });
+  var left = function () {
+    var room = sites.map(function (q) { return q[2]; }), want = homes.map(function (h) { return h[2]; }), pairs = [];
+    homes.forEach(function (h, hi) { sites.forEach(function (q, si) { var d = Math.hypot(q[0] - h[0], q[1] - h[1]); if (d < S.walk) pairs.push([d, hi, si]); }); });
+    pairs.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2]; });
+    pairs.forEach(function (p) { var t = Math.min(want[p[1]], room[p[2]]); if (t > 0) { want[p[1]] -= t; room[p[2]] -= t; } });
+    return want;
+  };
+  var short0 = 0, placed = 0;
+  for (var k = 0; k < S.n + S.retries && placed < S.n; k++) {
+    var want = left(), score = new Map(), rc = Math.ceil(S.r / S.cell);
+    if (!k) short0 = Math.round(want.reduce(function (a, b) { return a + b; }, 0));
+    homes.forEach(function (h, hi) {
+      if (want[hi] < 0.01) return;
+      var gx = Math.round(h[0] / S.cell), gz = Math.round(h[1] / S.cell);
+      for (var x = gx - rc; x <= gx + rc; x++) for (var z = gz - rc; z <= gz + rc; z++) if (Math.hypot(x * S.cell - h[0], z * S.cell - h[1]) < S.r) { var kk = x + ',' + z; score.set(kk, (score.get(kk) || 0) + want[hi]); }
+    });
+    var best = null, bs = 0; score.forEach(function (v, kk) { if (v > bs + 1e-9 || (Math.abs(v - bs) <= 1e-9 && best && kk < best)) { bs = v; best = kk; } });
+    if (!best) break;
+    var gc = best.split(',').map(function (t) { return +t * S.cell; });
+    var sp = VC.simClearSpot(gc, D.w + 2 * S.pad, D.d + 2 * S.pad, S, out.filter(function (q) { return q.lot != null; }).map(function (q) { return [q.x, q.z]; }));
+    if (!sp) { out.push({ why: 'no ground near ' + gc.map(Math.round).join(', '), x: gc[0], z: gc[1] }); sites.push([gc[0], gc[1], 1e9]); continue; }   /* that spot counted as served, so the next looks elsewhere */
+    var L = VC.placedLot({ key: S.key, v: 0, x: sp.o.c[0], z: sp.o.c[1], ry: Math.atan2(sp.f[0], sp.f[1]) }, step);
+    if (!L) break;
+    L.placed = false; L.cls = 'civic'; L.role = 'shrine';
+    sites.push([L.x, L.z, nave(S.key)]);
+    out.push({ lot: L.id, x: Math.round(L.x), z: Math.round(L.z), left: Math.round(bs), took: sp.take.length, where: (VC.roleAt ? VC.roleAt([L.x, L.z]) : '') || 'country' }); placed++;
+  }
+  var short1 = Math.round(left().reduce(function (a, b) { return a + b; }, 0));
+  VC.SIMB.villageShrines = out; VC.SIMB.worshipShort = [short0, short1];
+  SL.note(step, 'village shrines: ' + out.map(function (q) { return q.lot != null ? 'at ' + q.x + ', ' + q.z + ' (' + q.where + ', ' + q.left + ' worshippers without room within ' + S.r + ' m, ' + q.took + ' house lots cleared)' : q.why; }).join('; ') +
+    '; the busiest service’s estimate without room: ' + short0 + ' before, ' + short1 + ' after');
+  return out;
+};
+
 VC.wells = function () {
   var T = TUNE.sim.wells, art = [], H = new Map(), cs = T.gap;
   var near = function (p) { var gx = Math.floor(p[0] / cs), gz = Math.floor(p[1] / cs);
@@ -359,7 +498,7 @@ VC.simPlaces = function () {
   VC.IX.units.forEach(function (u) {
     var ty = VC.IX.types[u.type]; if (!ty) return;
     var kind = u.residents && !u.job ? 'home' : (VC.SIM_KIND[u.site || u.cls] || u.cls);
-    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel')) kind = Lu.role;   /* the rest day's temples and the village chapels */
+    var Lu = u.lot >= 0 ? PLAN.lots[u.lot] : null; if (Lu && (Lu.role === 'temple' || Lu.role === 'chapel' || Lu.role === 'shrine')) kind = Lu.role;   /* and the village shrines */   /* the rest day's temples and the village chapels */
     var SW = T.seatWidth, pcs = (ty.pieces || []).map(function (p) {
       var D = VC.simDims(p), FB = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]) || {}, seats = FB.holds ? FB.holds : SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
@@ -406,7 +545,7 @@ VC.simPlaces = function () {
   /* the open places with furniture: the parks (benches, shrines, the parks' own wells), the markets (stalls), the burial
      ground (tombs), the canton square, the villages' greens: one place per district, at its furniture's middle */
   PLAN.districts.forEach(function (D, di) {
-    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
+    if (!D.art || !D.art.length || D.name === 'Wells' || D.name === 'Shrines' || D.name === 'Benched squares' || D.name === 'House of Healing furnishings' || D.kind === 'chinampa huts') return;
     var kind = /market/.test(D.kind) ? 'market' : D.kind === 'funerary' ? 'funerary' : D.kind === 'village' ? 'plaza' : 'park';
     var cnt = {}, cx = 0, cz = 0, cy = 0, holds = 0;
     D.art.forEach(function (a) { if (/shrine|altar/.test(a.key)) holds += ((typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}).holds || T.worship.holds; var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
@@ -434,10 +573,17 @@ VC.simPlaces = function () {
     var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
     ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
     var gs = VC.SIMB.greenShrines && VC.SIMB.greenShrines[gi]; if (gs) { acts.WORSHIP = gs; acts.CONTEMPLATE = gs; }   /* its small shrine */
+    /* a benched square by a canton (VC.simSquares): its benches seats besides its standing room, its spots before them */
+    var SQ = G.square && VC.SIMB.squares && VC.SIMB.squares[G.id], spots = null;
+    if (SQ) {
+      acts.SOCIALIZE = (acts.SOCIALIZE || 0) + SQ.benches * 2; acts.RELAX = (acts.RELAX || 0) + SQ.benches * 3; acts.IDLE = (acts.IDLE || 0) + SQ.benches * 2;
+      spots = [];
+      PLAN.districts.forEach(function (D) { if (D.name === 'Benched squares') D.art.forEach(function (a) { if (a.square === G.id && /bench/.test(a.key) && spots.length < T.spotsMax) { var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); } }); });
+    }
     if (!Object.keys(acts).length) return;
     var rr = Math.sqrt(area) / 2;
-    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
-          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, tags: [G.district || gk] });
+    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: SQ ? 'Benched square (' + G.square + ')' : gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
+          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, spots: spots || undefined, tags: SQ ? [G.square + ' canton', 'benched square'] : [G.district || gk] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
