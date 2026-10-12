@@ -21,7 +21,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `40-rs-core.js` | 18 | ring sea: units, compass, the vessel frame (1); registry (9); materials (16); merge buckets (25); primitives (vessel frame, into a bucket) (92); the swell, the wind, riding (133) |
+| `40-rs-core.js` | 14 | ring sea: units, compass, the vessel frame (1); registry (9); materials (16); merge buckets (25); primitives (vessel frame, into a bucket) (92); the swell, riding: core/water (133) |
 | `41-rs-tex.js` | 11 | ring sea textures (surfaces) (1); ring sea materials (36); sail textures (51); culture symbols and liveries (74) |
 | `42-rs-hull.js` | 6 | ring sea hull (1) |
 | `43-rs-rig.js` | 11 | ring sea rig: oars and paddles (1); sails (25); spars, rigging, flags (79) |
@@ -55,7 +55,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `85-rs-voth-barge.js` | 3 | vessel: Voth River Barge (1) |
 | `86-rs-voth-pleasure.js` | 4 | vessel: Voth Pleasure Barge (1) |
 | `87-rs-voth-dhow.js` | 3 | vessel: Voth Fishing Dhow (1) |
-| `90-rs-scene.js` | 9 | scene (the Ring Sea roadstead) (1) |
+| `90-rs-scene.js` | 8 | scene (the Ring Sea roadstead) (1) |
 | `91-rs-probe.js` | 13 | probe (window._api): the Ancients-kit contract,  (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
