@@ -7,7 +7,7 @@ name, out = sys.argv[1], sys.argv[2]
 CFG = {
  'quetzal3': dict(split=0.47, armpit_wing_to_torso=False, tail_level=1.0, fold_scale=0.55, overlaps=[('torso', 'neck', 0.03), ('neck', 'head', 0.025), ('torso', 'midsheet', 0.03, 'a>b'), ('wingR', 'midsheet', 0.03), ('wingL', 'midsheet', 0.03)], src='img_quetzal3.glb', classify=fcfg.quetzal, total=9500, wings=3200, lead=(2, +1), flap_axis=(0, 0, 1), pitch='torso', fly_pitch=1.3, sheet_cap=-0.07,
                   T_flap=1.4, amp=(0.55, 0.32), lag=0.6, T_walk=1.6, stride=0.12, lift=0.03, fold=dict(inner=(-1.15, 0.45), outer=(2.6, 0.0))),
- 'bat': dict(shelf=(0.14, 0.17, 0.23, 0.0012), back_prune=-0.035, torso_trim=(0.22, 0.08), back_squash=(-0.04, 0.2, 0.2, -0.25), split=0.46, fold_scale=0.5, arm=0.1, armpit_wing_to_torso=False, perch_head=0.35, src='img_bat.glb', classify=fcfg.bat, total=9500, wings=3600, lead=(1, +1), flap_axis=(0, 1, 0), pitch='whole', fly_pitch=1.45,
+ 'bat': dict(squash_yhi=0.5, head_spikes=(0.15, 4.0), squash_out=0.30, shelf=(0.14, 0.17, 0.23, 0.0012), back_prune=-0.035, torso_trim=(0.22, 0.08), back_squash=(-0.035, 0.0, 0.2, -0.25), split=0.46, fold_scale=0.5, arm=0.1, armpit_wing_to_torso=False, perch_head=0.35, src='img_bat.glb', classify=fcfg.bat, total=9500, wings=3600, lead=(1, +1), flap_axis=(0, 1, 0), pitch='whole', fly_pitch=1.45,
              T_flap=0.5, amp=(0.55, 0.5), lag=1.0, T_walk=0.9, stride=0.10, lift=0.03, fold=dict(inner=(-1.4, -0.9), outer=(-0.15, -0.5))),
  'archaeopteryx': dict(split=0.50, src='img_archaeopteryx.glb', classify=fcfg.archaeopteryx, total=9500, wings=3200, lead=(2, +1), flap_axis=(0, 0, 1), pitch='torso', fly_pitch=0.6,
                        T_flap=0.35, amp=(0.6, 0.45), lag=0.8, T_walk=0.9, stride=0.14, lift=0.04, fold=dict(inner=(-1.2, 0.3), outer=(-0.3, 1.3))),
@@ -45,8 +45,10 @@ cn /= np.linalg.norm(cn, axis=1, keepdims=True) + 1e-9
 
 # ---- 2b. close the cavity behind the body: the back wall stands ~0.06 behind the body shell; squash that depth (UVs already taken)
 if CFG.get('back_squash'):
-    z0, k, hw, ylo = CFG['back_squash']; m_ = (V2[:, 2] < z0) & (np.abs(V2[:, 0]) < hw) & (V2[:, 1] > ylo)
-    w_ = np.clip(1 - (np.abs(V2[m_, 0]) - hw * 0.6) / (hw * 0.4), 0, 1)       # blend out toward the sides so nothing tears
+    z0, k, hw, ylo = CFG['back_squash']; hw_out = CFG.get('squash_out', hw); m_ = (V2[:, 2] < z0) & (np.abs(V2[:, 0]) < hw_out) & (V2[:, 1] > ylo)
+    w_ = np.clip(1 - (np.abs(V2[m_, 0]) - hw * 0.7) / (hw_out - hw * 0.7), 0, 1)       # a long, gentle blend out toward the sides, so no triangle tilts into a plank
+    yh = CFG.get('squash_yhi')
+    if yh: w_ = w_ * np.clip((yh - V2[m_, 1]) / 0.05, 0, 1)       # and out toward the head, so the nape is left as it was
     V2[m_, 2] = V2[m_, 2] * (1 - w_) + (z0 + (V2[m_, 2] - z0) * k) * w_
     print('back squash moved', int(m_.sum()), 'verts')
 # ---- 3. parts of the decimated mesh

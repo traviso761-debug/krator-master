@@ -165,6 +165,14 @@ for k_ in list(FACES):
     bad_ = (L_ > (CFG.get('torso_spurs', (0, 0))[0] if strict else CFG.get('sliver_len', 0.08))) & (L_ * L_ / (2 * A_ + 1e-12) > (CFG['torso_spurs'][1] if strict else 12))
     _tot += int(bad_.sum()); FACES[k_] = FACES[k_][~bad_]
 print('slivers removed:', _tot)
+if CFG.get('head_back') is not None and 'head' in FACES:      # the head's own rear shell shows through the flattened back wall: drop it, the wall closes the back
+    _hc = cr[FACES['head']].mean(1); _bad = (_hc[:, 2] < CFG['head_back']) & (np.abs(_hc[:, 0]) < 0.2) & (_hc[:, 1] < 0.36)
+    FACES['head'] = FACES['head'][~_bad]; print('head rear shell faces removed:', int(_bad.sum()))
+if CFG.get('head_spikes') and 'head' in FACES:      # tufts stretched into long thin spikes at the back of the head
+    _L, _as = CFG['head_spikes']; _tr = cr[FACES['head']]
+    _e = np.stack([np.linalg.norm(_tr[:, 0] - _tr[:, 1], axis=1), np.linalg.norm(_tr[:, 1] - _tr[:, 2], axis=1), np.linalg.norm(_tr[:, 2] - _tr[:, 0], axis=1)], 1).max(1)
+    _a = 0.5 * np.linalg.norm(np.cross(_tr[:, 1] - _tr[:, 0], _tr[:, 2] - _tr[:, 0]), axis=1); _bad = (_e > _L) & (_e * _e / (2 * _a + 1e-12) > _as)
+    FACES['head'] = FACES['head'][~_bad]; print('head spike faces removed:', int(_bad.sum()))
 if CFG.get('shelf'):      # the shelf left along the classification cut (tiny flat faces at the shoulder top, edge-on in side view)
     _x0, _y0, _y1, _ar = CFG['shelf']; _t = FACES['torso']; _tr = cr[_t]; _c = _tr.mean(1)
     _a = 0.5 * np.linalg.norm(np.cross(_tr[:, 1] - _tr[:, 0], _tr[:, 2] - _tr[:, 0]), axis=1)
