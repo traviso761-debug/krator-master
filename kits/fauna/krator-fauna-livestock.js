@@ -23,7 +23,7 @@ ANIMAL({
   life: { maturity: 0.7, lifespan: 12, litter: 1.6, gestation: 150 },
   variants: 5, variantNames: ['billy, black', 'nanny, brown', 'kid', 'nanny, piebald', 'goat, brown and white (Meshy model)'],
   w: 0.8, d: 1.3, h: 1.3,
-  variantDims: [{ w: 0.8, d: 1.3, h: 1.3 }, { w: 0.55, d: 1.25, h: 1.15 }, { w: 0.34, d: 0.72, h: 0.66 }, { w: 0.55, d: 1.25, h: 1.15 }, { w: 0.3, d: 1.0, h: 0.92 }],
+  variantDims: [{ w: 0.8, d: 1.3, h: 1.3 }, { w: 0.55, d: 1.25, h: 1.15 }, { w: 0.34, d: 0.72, h: 0.66 }, { w: 0.55, d: 1.25, h: 1.15 }, { w: 0.34, d: 1.0, h: 0.92 }],
   models: { 4: 'goat' }, modelData: { 4: { budget: 12000 } },   /* the Meshy model variants (models/*.json, models_pack.py, rig/qmodel.py) */
   data: { mass: [70, 45, 15, 45, 50], legs: 4, speed: { walk: 1.1, run: 6 }, gait: { type: 'quadruped', freq: 1.7, stride: 0.42 }, grazePitch: 1.0,
     herd: 'a flock of 10 to 40 with a herder and dogs', fleeDistance: 4, aggression: 0.15,
