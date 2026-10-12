@@ -72,6 +72,12 @@ for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+import host as khost
+CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+khost.resolve(PATH,CORE_HOST)
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE_A,f)
 # the syntax check cannot see a core fragment that is simply absent

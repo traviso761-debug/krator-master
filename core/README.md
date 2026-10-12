@@ -366,6 +366,17 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
 panel's rate row) and `simulation/example/`.
 
+## `host/`
+
+The host shell (ROADMAP.md section 10; GODOT-PLAN.md Phase 1), all `[web]`: `90-host-camera.js` (orbit, pan, fly, walk,
+the pin, the depth range), `91-host-loop.js` (`KHOST.take`, the frame loop, which owns the world clock `KCLOCK` and isolates
+each subscriber's errors, the `TICKS` shim, `window._ready`), `92-host-panel.js` (the bar, foldable panels, layers, time
+controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.js` (`window._api`). Streetlab's viewer,
+copied and generalised (Streetlab's own files are the Voth branch's; `sources.py` says when they change). A build lists
+them with `host.py` (`CORE_HOST = khost.SHELL`, which adds `clock/20-core-clock.js`), hands its page to `KHOST.take`, and
+keeps no camera, loop, panel or probe of its own; `94-host-polytool.js` (the inspect, polygon and path tools) is opt-in.
+Read `host/README.md`. **Used by** every biome kit in `biomes/` but the Throne (next).
+
 ## `rand/`
 
 `KRAND` (`GODOT-PLAN.md`, Phase 2, item 1): the generator, hash and noise a Godot port reproduces bit for bit.

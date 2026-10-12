@@ -1,26 +1,79 @@
-// ================================================================= HOST — probe (window._api)
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
+// 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
+// kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
+// the presets are FOUND on the map rather than typed: one sweep scores every preset by the kit's own zones,
+// nearer the LOD spine preferred, and a tree preset frames the nearest built hero of its species
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+const ACC=sp=>EBADLANDS.PASSES.find(p=>p.sp===sp).accept;
+const SCORES={
+ waste:(Z,x,z,ld)=>Z.waste*(1-Z.vent)-ld/3000,
+ bad:(Z,x,z,ld)=>badK(x,z)*smooth(.35,.15,Z.wet)*(1-Z.can)-ld/4000,
+ green:(Z,x,z,ld)=>badK(x,z)*Z.vale*2+Z.vale-ld/4000,
+ steppe:(Z,x,z,ld)=>Z.steppe*(1-Z.rimZ)-ld/4000,
+ vale:(Z,x,z,ld)=>Z.vale*(1-badK(x,z))-ld/4000,
+ pine:(Z,x,z,ld)=>Z.pine-ld/4000,
+ boreal:(Z,x,z,ld)=>Z.boreal*(1-Z.rock)-ld/4000,
+ tundra:(Z,x,z,ld)=>Z.tundra*smooth(.99,.9,Z.cold)-ld/4000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-3000;z<=3000;z+=50)for(let x=-3000;x<=3100;x+=50){const Z=EBADLANDS.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const SPI=k=>EBADLANDS.SPECIES.indexOf(EBADLANDS.byKey[k]);
+function nearTree(key,x,z,minH){return EBADLANDS.nearestTree(SPI(key),x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*.6,T.z];}
+const CX=-200,rimN=(x,k)=>zR(x)-Wc(x,0)*(k==null?1.5:k);
+const POOL0=POOLS[0];
+const VIEWS={
+ 'Zion, the river in the canyon':look(150,zR(150)+30,3,-350,zR(-350),12),
+ 'From afar':look(-3300,3300,700,600,0,200),
+ // from just outside the north wall's top, looking across and down to the floor on the far side
+ 'The canyon from the rim':[CX,gh(CX,rimN(CX,1.4),28),rimN(CX,1.4),CX-260,floorC(CX-260)+4,zR(CX-260)+Wc(CX-260,0)*.45],
+ 'Sulphur flats':[POOL0[0]-150,POOLL[0]+16,POOL0[1]+120,POOL0[0],POOLL[0]+1,POOL0[1]],
+ 'Stilt pods at the vents':atTree(nearTree('stiltpod',VENTS.x,VENTS.z),26,.8,2),
+ 'Ember crowns and sunspires':atTree(nearTree('embercrown',P.waste[0],P.waste[1]),38,2.4,3),
+ 'Needle bloom stand':atTree(nearTree('needlebloom',P.waste[0],P.waste[1]),14,1.2,2),
+ 'Needle bloom close-up':(function(){const T=nearTree('needlebloom',P.waste[0],P.waste[1],6);return[T.x+Math.cos(1.2)*4.5,T.y0+T.H*.85,T.z+Math.sin(1.2)*4.5,T.x,T.y0+T.H*.85,T.z];})(),
+ 'Painted badlands':look(P.bad[0]-260,P.bad[1]+180,40,P.bad[0]+60,P.bad[1]-60,10),
+ 'Green badlands':look(P.green[0]-220,P.green[1]-160,30,P.green[0]+60,P.green[1]+40,6),
+ 'Sagebrush and pinyon-juniper':atTree(nearTree('juniper',P.steppe[0],P.steppe[1]),22,2.0,2.5),
+ 'Rose weepers and giant umbels':atTree(nearTree('weeper',P.vale[0],P.vale[1]),30,1.4,2.5),
+ 'Cottonwoods on the floodplain':atTree(nearTree('cottonwood',-1600,zR(-1600)),45,1.8,3),
+ 'Ponderosa and aspen':atTree(nearTree('ponderosa',P.pine[0],P.pine[1],20),48,3.2,3),
+ 'Aspen grove':atTree(nearTree('aspen',P.pine[0],P.pine[1]),22,.4,2),
+ 'Spruce close-up':(function(){const T=nearTree('spruce',P.boreal[0],P.boreal[1],18),a=Math.atan2(-T.z,-T.x)+.4;return atTree(T,16,a,3);})(),
+ 'Spruce-fir forest':(function(){const T=nearTree('spruce',P.boreal[0],P.boreal[1],18),a=Math.atan2(-T.z,-T.x)+.4;return atTree(T,75,a,12);})(),
+ 'The tarn':[TARN.x-TARN.r*1.15,Math.max(TARNL+5,gh(TARN.x-TARN.r*1.15,TARN.z+TARN.r*.75,3)),TARN.z+TARN.r*.75,TARN.x+TARN.r*.6,TARNL+30,TARN.z-TARN.r*.5],
+ 'The treeline, krummholz and bristlecones':atTree(nearTree('bristlecone',P.tundra[0],P.tundra[1]),22,3.4,2),
+ 'The hanging garden':(function(){const A=ARCADE,p=A.W(-6,-A.dep/2-16),t=A.W(1,0);return[p[0],A.y0+4.5,p[1],t[0],A.y0+6.5,t[1]];})(),
+ 'Hanging garden close-up':(function(){const A=ARCADE,p=A.W(-3,-A.dep/2-5),t=A.W(2,-A.dep/2-1);return[p[0],A.y0+3.2,p[1],t[0],A.y0+5.5,t[1]];})(),
+ 'Fruit: pinyon, juniper, prickly pear':atTree(nearTree('pinyon',P.steppe[0],P.steppe[1]),9,2.2,1.6),
+ 'The ice and the airless rim':look(2450,1100,320,3300,-400,0),
+};
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ // a plant names itself (the item's label); a bole or a structure names its registered volume
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the classification and the tags (README.md, DEV TOOLS): a plant is flora of this kit, with its species' tags
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&EBADLANDS.plantOfItem(item);
+ const S=o.userData.species?EBADLANDS.byKey[o.userData.species]:(best&&best.key&&EBADLANDS.byKey[best.key]),tg=S?S.tags:(PLT?PLT.tags:null);
+ if(o.userData.species)name=S.name+'  ·  a variant ('+o.name.replace('variant:','')+')';
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ const cls=S||isItem?'flora · eastern badlands'+(S&&S.alien?' · alien':''):'terrain / water';
+ return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · Koppen '+tg.koppen.join(' '):'')+
+  (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
+  '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
  showcase:{tris:19500000,calls:700},   // scene triangles DRAWN at the camera (variants: the level by the camera); calls: one per variant pool part on this 6.8 km map (KNOWN_ISSUES), not a target
  cls:{pass:16000000,host:900000},
  type:{'badlands/trees':'pass','badlands/floor':'pass','badlands/dress':'pass','badlands/nursery':'pass','host':'host'},
 };
-function _probePoints(){
- const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
- scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
-  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
-  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
- return pts;}
-function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
- REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
- return REG.map((r,i)=>({name:r.name,n:n[i]}));}
-function nanSweep(){const bad=[];let badInst=0;
- scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
-  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
-  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
- return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
-function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // the instanced items only (what the kit roots): a mesh's bounding-box centre is not a plant. The kit's hanging
 // things (weeper strands, stilt-pod tendrils) and the floor's flat mats are origins too, all at or above the ground.
 // species that yield something edible the kit does not draw as a catalog fruit (sap, tips, nectar...): named, not hidden
@@ -86,15 +139,23 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fruiting species with no catalog fruit',HCHK.fruit(EBADLANDS.SPECIES.map(S=>S.key==='pinyon'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),EBADLANDS.PLANTS,P));
  add('a camera under the canyon floor',HCHK.camerasOut([{view:'under',x:x,y:floorC(x)-5,z:zR(x)}]));
  return R;}
-window._api={BUDGET,REG,hostChecks,hostNegatives,
+// ---------------------------------------------------------------- the page, handed to the host
+// the tree variants (VARIANTS) follow the eye, after the camera is placed
+KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.take({build:'ebadlands',title:'Krator biome — the eastern badlands',
+ hint:'The eastern badlands: sulphur flats and the hot waste in the north, painted badlands, a Zion canyon through the sagebrush plateau, green valleys in the south, pine, spruce-fir and tundra up to the ice of the outer rim (ideal type)',
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
  // with variants the triangles drawn are the baked floor and dressing plus the instanced trees at this camera (the
  // nursery's grown prototypes are geometry, not what is drawn)
  get totals(){const t=BIO.totals(),nu=BIO.stats['badlands/nursery'],v=window._variants&&typeof VARIANTS!=='undefined'?VARIANTS.stats:null;
   return {tris:t.tris-(nu?nu.tris:0)+(v?v.tris:0),inst:t.inst-(nu?nu.inst:0)+(v?v.drawn:0),meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  variants:()=>typeof VARIANTS!=='undefined'?VARIANTS.stats:null,
- typeStats,regOccupancy,nanSweep,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome,
  // the climate at a point, for the probe and for --eval: the fields and the kit's zones
- at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=EBADLANDS.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
-window._registered=REG.length;
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=EBADLANDS.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});

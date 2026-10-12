@@ -88,9 +88,8 @@ No fauna (the owner's plan: one fauna kit for every biome, `biomes/README.md`). 
 84-host-ground.js     (host)       the ground painted by zone; the tarn and the bog pools; the mist
 88-host-build.js      (host)       the mirror request, build order and bake
 89z-host-atmos.js     (host)       core/atmos bound (ATMOS.init); the cloud sea as ATMOS.cloudDeck (core/atmos/GODOT.md)
-90-host-camera.js     (host)       presets found from the zones and the built trees; the inspector (spiral, hand, fog)
-91-host-probe.js      (host)       window._api: budgets and the host checks with their negatives
-93-host-polytool.js   (host)       polygon and path tool (from nhighlands)
+99-host-take.js       (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
+                                   the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`; the atmosphere's core, presets, export and cloud deck
 (`core/atmos/`) through `CORE_ATMOS`. `window._api.atmos()` is `ATMOS.export()`: the deck's record for a game engine.

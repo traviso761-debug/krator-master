@@ -1,26 +1,75 @@
-// ================================================================= HOST — probe (window._api)
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
+// 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
+// kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
+// the presets are FOUND on the map rather than typed: the recent burns where the fire model actually put them, and a
+// tree preset frames the nearest built hero of its species (of a given burn age when it matters)
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const SPI=k=>CRATERDRY.SPECIES.indexOf(CRATERDRY.byKey[k]);
+// the recent fire closest to an age (years), where it burned
+const burnOf=ago=>{let b=null;for(const f of FIRE.fires)if(f.cx!=null&&(!b||Math.abs(f.ago-ago)<Math.abs(b.ago-ago)))b=f;return b||{cx:0,cz:0,rad:300,ago};};
+// the best point of a stage near the spine (scored by the zones on a 50 m sweep)
+const SCORES={
+ char:(Z,ld)=>Z.char-ld/3000,bloom:(Z,ld)=>Z.bloom*smooth(1.8,1.1,Math.abs(Z.age-1.2))-ld/3000,regrow:(Z,ld)=>Z.regrow-ld/3000,
+ mature:(Z,ld)=>Z.mature*(1-Z.wash)-ld/3000,wash:(Z,ld)=>Z.wash-ld/3000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-2400;z<=2400;z+=50)for(let x=-2400;x<=2400;x+=50){if(Math.hypot(x,z)>2350)continue;const Z=CRATERDRY.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+function nearTree(key,x,z,minH,age){return CRATERDRY.nearestTree(SPI(key),x,z,minH,age?{age}:null)||CRATERDRY.nearestTree(SPI(key),x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.6:ty),T.z];}
+// from a point, looking a given way across the ground
+const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
+const B0=burnOf(.05),B1=burnOf(.4),B2=burnOf(1.1),B4=burnOf(3.6),K0=KOP[0];
+const VIEWS={
+ 'The bloom':across(B2.cx-Math.cos(.4)*B2.rad*.45,B2.cz-Math.sin(.4)*B2.rad*.45,.4,B2.rad*.8,3.2,1),
+ 'The mosaic from above':look(-2500,2300,900,300,-300,0),
+ 'A fresh burn, three weeks old':across(B0.cx-B0.rad*.5,B0.cz+B0.rad*.3,-.5,B0.rad*.9,4,2),
+ 'Fire lilies in the char':(function(){const x=B1.cx,z=B1.cz;return[x,gh(x,z,1.4),z,x+8,gh(x+8,z+3,.1),z+3];})(),
+ 'Sword spires in flower':atTree(nearTree('swordspire',B2.cx,B2.cz,0,[.3,2.6]),7,1.0,1.4,.55),
+ 'A burst frill-tree and its seedlings':atTree(nearTree('frill',B1.cx,B1.cz,0,[.3,4]),16,2.2,3,.4),
+ 'Prism mallee resprouting':atTree(nearTree('prismmallee',B2.cx,B2.cz,0,[.3,3]),7,.6,1.5,.3),
+ 'Prism mallee':atTree(nearTree('prismmallee',P.mature[0],P.mature[1],8,[8,99]),11,1.8,2.2),
+ 'Pyre pillars':atTree(nearTree('pillar',P.mature[0],P.mature[1],18),34,2.6,3,.55),
+ 'Pyre pillars after a burn':atTree(nearTree('pillar',B0.cx,B0.cz,14,[0,1]),30,.9,3,.5),
+ 'Parasol pines over the char':atTree(nearTree('parasolpine',B0.cx,B0.cz,0,[0,1.5]),42,2.0,4,.6),
+ 'Regrowth: broom and young chaparral':across(B4.cx-B4.rad*.4,B4.cz,0,B4.rad*.7,2.6,1),
+ 'The old scrub':across(P.mature[0]-60,P.mature[1]-40,.6,160,3,2),
+ 'The Scyvoi Rock':look(K0.x+K0.r*2.2,K0.z+K0.r*1.4,12,K0.x,K0.z,K0.h*.5),
+ 'On the kopje: aloes and jade':atTree(nearTree('treealoe',K0.x,K0.z),16,1.4,6,.5),
+ 'Pincushion trees':atTree(nearTree('pincushion',K0.x,K0.z),14,2.4,2.4),
+ 'Ghost gums in the wash':atTree(nearTree('ghostgum',P.wash[0],P.wash[1],20),40,1.3,3,.5),
+ 'The seep':[SEEP.x+SEEP.r*3.2,SEEPL+4,SEEP.z+SEEP.r*2.2,SEEP.x,SEEPL+1,SEEP.z],
+ 'From afar':look(-2300,-2200,120,600,600,30),
+ // the live fire (89): this view lights it, four minutes in, and frames its front from the side
+ 'A wildfire running':FIREFX.presetView(),
+};
+const VIEW_ACT={'A wildfire running':()=>FIREFX.preset()};
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ // a plant names itself (the item's label); a bole or a structure names its registered volume
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the classification and the tags (README.md, DEV TOOLS): a plant is flora of this kit, with its species' tags
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&CRATERDRY.plantOfItem(item);
+ const S=best&&best.key&&CRATERDRY.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ const cls=S||isItem?'flora · crater drylands'+(S&&S.alien?' · alien':''):'terrain / water';
+ // the ground's own fire history at the point: when it last burned, and which fire
+ const fa=CRATERDRY.fireAt(p.x,p.z),burn=fa.age>=CRATERDRY.NEVER?'no fire in the record':'last burned '+ageLabel(fa.age)+' ago';
+ return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · fire: '+tg.fire+' · Koppen '+tg.koppen.join(' '):'')+
+  (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
+  '\n'+burn+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
  showcase:{tris:18500000,calls:120},   // measured 17.9M at q=1 on this 5.2 km map (KNOWN_ISSUES; 17.0M before the frill-tree became a frill tree, 2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'craterdry/trees':'pass','craterdry/floor':'pass','craterdry/fire':'host','host':'host'},
 };
-function _probePoints(){
- const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
- scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
-  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
-  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
- return pts;}
-function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
- REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
- return REG.map((r,i)=>({name:r.name,n:n[i]}));}
-function nanSweep(){const bad=[];let badInst=0;
- scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
-  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
-  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
- return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
-function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // species that yield something edible the kit does not draw as a catalog fruit (nectar, pith, sour leaves): named, not hidden
@@ -95,13 +144,25 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('no plant material patched',HCHK.patched(0));
  add('a camera under the seep',HCHK.camerasOut([{view:'under',x:SEEP.x,y:SEEPL-5,z:SEEP.z}]));
  return R;}
-window._api={BUDGET,REG,hostChecks,hostNegatives,
+// ---------------------------------------------------------------- the page, handed to the host
+// the tree variants (VARIANTS) follow the eye, after the camera is placed
+KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands',
+ hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). F arms a fire: click the ground to light it",
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ onView:k=>{if(VIEW_ACT[k])VIEW_ACT[k]();},                        // 'A wildfire running' lights the preset fire
+ // the fire's controls (89-host-fire.js): its bar after the view select, F arms a click-to-light (it wins over walking),
+ // and an armed click lights a fire instead of inspecting
+ controls:[FIREFX.bar],keys:{f:()=>FIREFX.arm(!FIREFX.armed())},click:(x,y)=>FIREFX.armed()?(FIREFX.click(x,y),true):false,
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
- typeStats,regOccupancy,nanSweep,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome,
  fireFx:FIREFX,
  fire:()=>({fires:FIRE.fires.map(f=>({ago:+f.ago.toFixed(2),x:f.x|0,z:f.z|0,frac:+f.frac.toFixed(3),cells:f.cells,failed:!!f.failed})),shares:FIRE.shares()}),
  // the climate at a point, for the probe and for --eval: the fields, the burn and the kit's zones
- at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),age:FIRE.ageAt(x,z),front:FIRE.frontAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=CRATERDRY.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
-window._registered=REG.length;
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),age:FIRE.ageAt(x,z),front:FIRE.frontAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=CRATERDRY.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});

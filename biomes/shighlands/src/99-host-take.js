@@ -1,26 +1,70 @@
-// ================================================================= HOST — probe (window._api)
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
+// 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
+// kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
+// the presets are FOUND on the map rather than typed: the best point of each zone near the spine, and a tree preset
+// frames the nearest built hero of its species
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const SPI=k=>SHIGH.SPECIES.indexOf(SHIGH.byKey[k]);
+const SCORES={
+ forest:(Z,ld)=>Z.forest*(1-Z.ravine)-ld/3000,ravine:(Z,ld)=>Z.ravine*Z.forest-ld/3000,elfin:(Z,ld)=>Z.elfin-ld/3000,
+ paramo:(Z,ld)=>Z.paramo*(1-Z.crag)-ld/3000,bog:(Z,ld)=>Z.bog-ld/3000,dry:(Z,ld)=>Z.dry-ld/3000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-2400;z<=2400;z+=50)for(let x=-2400;x<=2400;x+=50){if(Math.hypot(x,z)>2350)continue;if(BIO.mask(x,z)<=0)continue;const Z=SHIGH.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+function nearTree(key,x,z,minH,hand){return SHIGH.nearestTree(SPI(key),x,z,minH,hand?{hand}:null)||SHIGH.nearestTree(SPI(key),x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.6:ty),T.z];}
+// from a point, looking a given way across the ground
+const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
+const W0=TOR[0],MIR=SHIGH.mirrorAt[0]||{x:0,z:-1200};
+// over the rim: from the paramo's edge, looking north over the cloud forest to the cloud sea and the Throne
+const RIMX=-300,RIMZ=rimZ(-300);
+const VIEWS={
+ 'The paramo':(function(){const T=nearTree('groundsel',P.paramo[0],P.paramo[1],5.5);return atTree(T,34,2.3,2.4,.25);})(),
+ 'Above the cloud sea':(function(){const z=RIMZ+150;return[RIMX,gh(RIMX,z,22),z,RIMX-80,CLOUD_Y+30,RIMZ-700];})(),
+ 'The cloud forest':across(P.forest[0],P.forest[1],-1.2,60,2,5),
+ 'Spiral trumpets':atTree(nearTree('trumpet',P.forest[0],P.forest[1],16),26,.8,3,.6),
+ 'A volute tree':atTree(nearTree('volute',P.forest[0],P.forest[1],20),42,2.4,6,.7),
+ 'Crozier tree ferns in a ravine':atTree(nearTree('crozier',P.ravine[0],P.ravine[1],5),9,1.6,1.8,.8),
+ 'Screw palms by the stream':atTree(nearTree('screwpine',P.ravine[0],P.ravine[1],8),18,2.2,2,.55),
+ 'The mirror-handed coilbark':atTree(nearTree('coilbark',MIR.x,MIR.z,0,-1),20,1.2,2.2,.45),
+ 'Coilbark':atTree(nearTree('coilbark',P.elfin[0],P.elfin[1],10),22,.4,2.5,.5),
+ 'Begonias and fiddleheads':(function(){const x=P.forest[0]+12,z=P.forest[1]+8;return[x,gh(x,z,1.3),z,x+4,gh(x+4,z-3,.1),z-3];})(),
+ 'A ruffle-crown':atTree(nearTree('ruffle',P.paramo[0],P.paramo[1],8),15,2.0,3,.85),
+ 'A spiral frill tree':atTree(nearTree('frill',P.elfin[0],P.elfin[1],18),26,1.1,4,.55),
+ 'Giant groundsels':atTree(nearTree('groundsel',P.paramo[0],P.paramo[1],5),14,-.6,1.8,.6),
+ 'Lobelias in the bog':atTree(nearTree('lobelia',P.bog[0],P.bog[1],3.5),9,1.0,1.3,.5),
+ 'Spiral aloes on the dry side':(function(){const T=nearTree('aloe',P.dry[0],P.dry[1]);return atTree(T,2.4,.7,1.5,.1);})(),
+ 'Corkscrew cereus':atTree(nearTree('cereus',P.dry[0],P.dry[1],4.5),12,2.6,2,.6),
+ 'The Whorl Stone':look(W0.x+W0.r*2.3,W0.z+W0.r*1.2,14,W0.x,W0.z,W0.h*.5),
+ 'The tarn':(function(){const x=TARN.x+TARN.r*2.6,z=TARN.z+TARN.r*1.8;return[x,Math.max(gh(x,z,3),TARNL+9),z,TARN.x,TARNL+1,TARN.z];})(),
+ 'From afar':look(-2300,2300,160,300,-900,40),
+};
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the classification and the tags (README.md, DEV TOOLS): a plant is flora of this kit, with its species' tags
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&SHIGH.plantOfItem(item);
+ const S=best&&best.key&&SHIGH.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ const cls=S||isItem?'flora · southern highlands'+(S&&S.alien?' · alien':''):'terrain / water';
+ const hand=best&&best.hand!=null?(best.hand<0?'  ·  MIRROR-HANDED':'  ·  right-handed'):'';
+ return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · spiral: '+tg.spiral+hand+' · Koppen '+tg.koppen.join(' '):'')+
+  (S&&S.how?'\n'+S.how:'')+
+  (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
+  '\nin cloud '+(FIELD.fog(p.x,p.z)*100|0)+'% of days\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
  showcase:{tris:19500000,calls:120},   // measured 18.5M at q=1 on this 5.2 km map (2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'shigh/trees':'pass','shigh/floor':'pass','host':'host'},
 };
-function _probePoints(){
- const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
- scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
-  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
-  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
- return pts;}
-function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
- REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
- return REG.map((r,i)=>({name:r.name,n:n[i]}));}
-function nanSweep(){const bad=[];let badInst=0;
- scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
-  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
-  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
- return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
-function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
@@ -85,13 +129,19 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a deck that rises out of its band',HCHK.clouddeck(ATMOS.fx,(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)+60));
  add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARNL-5,z:TARN.z}]));
  return R;}
-window._api={BUDGET,REG,hostChecks,hostNegatives,
+// ---------------------------------------------------------------- the page, handed to the host
+KHOST.take({build:'shighlands',title:'Krator biome — the southern highlands',
+ hint:"The southern highlands: the spiral biome. A cloud forest on the Inner Wall's scarp where the cloud sea laps against it, and above the cloud a paramo of giant rosettes; every plant grows in a spiral, and every spiral turns the same way (ideal type)",
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
- typeStats,regOccupancy,nanSweep,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome,
  // the atmosphere's export (core/atmos/GODOT.md): the cloud deck's record and its presets, for the Godot importer
  atmos:()=>ATMOS.export(),
  // the climate at a point, for the probe and for --eval: the fields and the kit's zones
- at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=SHIGH.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
-window._registered=REG.length;
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=SHIGH.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});

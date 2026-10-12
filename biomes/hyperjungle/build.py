@@ -5,7 +5,8 @@
   10..49            BIOME CORE  (biome-core: engine-independent kit)
   50..79            BIOME LEAVES (hyperjungle species, trees, fauna, understorey, dressing)
   45-host-stage     HOST binding (renderer, terrain, BIO.init) -- must run before 50
-  80..98            HOST (sky, tower, build, camera, probe)
+  80..98            HOST (sky, tower, build); 90-95 the host shell from core/host (CORE_HOST)
+  99-host-take      the page handed to the shell: views, inspector words, probe checks (KHOST.take)
   99-tail.html      closes <script>
 
 The core and the biome leaf never reference a host global except through
@@ -68,6 +69,12 @@ for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+import host as khost
+CORE_HOST=khost.SHELL
+khost.resolve(PATH,CORE_HOST)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
 # empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).

@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 19 | the axis, the sea, the river (38); terrain (68); the climate fields (92); the host binding (108); the ground (117); the water (163); the road (204) |
 | `50-biome-nwlowlands-species.js` | 60 **big** | palettes (28); the species (82); harvest (biomes/FRUIT.md) (136); leaf textures (170); TWO-TONE BARK (308); geometries local to this biome (468); materials (520); instanced items (583) |
 | `55-biome-nwlowlands-trees.js` | 42 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
@@ -25,6 +29,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `82-host-sky.js` | 13 | the walls (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 5 |  |
+| `99-host-take.js` | 9 | the inspector's words (44); the probe's budgets and the kit's own checks (ve (54); the page, handed to the host (87) |
 | `99-tail.html` | <1 |  |

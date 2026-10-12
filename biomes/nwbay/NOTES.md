@@ -108,7 +108,7 @@ GLINTS under the epiphyte-laden crowns. The herd, the stalker, the gliders and t
 moths went with the savannah and the fungoid canopy.
 
 ## Verification
-`verify.py` is swbay's harness plus the biome's own invariants from `91-host-probe.js`:
+`verify.py` is swbay's harness plus the biome's own invariants from `99-host-take.js` (`extra`; it was `91-host-probe.js` before core/host):
 `height-ceiling` (no tree over NWBAY.TEMPLE_H), `nothing-on-a-cliff-face` (no tree where
 karst is .03–.9), `figs-on-the-karst` (every fig on karst > .9), `nothing-rooted-under-water`
 (no non-mangrove with its foot below −1.9 m). three.min.js is found beside another build

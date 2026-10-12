@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 23 | the bay, the river, the rise (53); terrain (80); the host binding (100); the ground (111); the water (156); the far country (214) |
 | `50-biome-swbay-species.js` | 37 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (312); an iridescent foliage (364); materials (368); instanced items (411) |
 | `55-biome-swbay-trees.js` | 53 **big** | zones from the fields (23); colour (35); polyline helpers (Girder's) (57); keep-clear between trees (66); epiphytes (73); foliage helpers (88); the builders (100); impostors (the far canopy) (388); the pass (431); one tree where a world puts it (484) |
@@ -27,6 +31,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 5 |  |
+| `99-host-take.js` | 8 | the inspector's words (38); the probe's budgets and the kit's own checks (ve (48); the page, handed to the host (81) |
 | `99-tail.html` | <1 |  |
