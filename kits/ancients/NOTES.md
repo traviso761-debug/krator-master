@@ -1138,3 +1138,9 @@ defines them.
 
 Scene triangles (budget classes `hostSky` 100 k and `hostMid` 50 k, added by the target): Facet 63/69/80/88/76 k
 (d0/1/2/3/4), Bastion 59/55/75/78/70 k, Arcades 31/27/38 k (d0/1/3), Stalks 25/33/40 k, Bell Hall 19/27/32 k.
+
+## The Bole's window cells on a glassless drum (2026-10-12)
+`8aj-alt-a-bole.js`: the drums' window cells stood at `rD + .25`, right for the intact glass (at `rD`) but 1.3 m off the
+dark drum (`.97 rD`) once the glass is gone, so at decay 1-3 they floated in a ring off the face. They stand on the drum
+now (`.97 rD + .1`). Found when Ys made the Bole a host; every page rebuilt (the source is in all of them), `alt-towers`
+and the kit sheet pass `--assert`.

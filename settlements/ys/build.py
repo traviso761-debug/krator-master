@@ -176,7 +176,7 @@ for _f in VENDORED_IZIZ_FQ + VENDORED_HL + VENDORED_DROWNED:
     TARGET_ONLY[_f] = ('city',)
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
-           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
            '8al-alt-01-office-terrace.js', '8al-alt-06-library.js',
            '82-apartments.js', '42-offices.js', '66-office-c.js'}   # the Ys branch draws one building of each, holed for the ways in
 

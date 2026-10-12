@@ -330,9 +330,9 @@
   "sha1": "eba9d0e600ec"
  },
  "8aj-alt-a-bole.js": {
-  "adapted": false,
+  "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "4ab8a97e9e2b"
+  "sha1": "b31618fba489"
  },
  "8aj-alt-b-stack.js": {
   "adapted": true,

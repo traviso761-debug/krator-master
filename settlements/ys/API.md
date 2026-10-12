@@ -125,6 +125,9 @@ hykLight(lx,ly,lz,{...,bracket:[lx,ly,lz]})            // a tube from an anchor 
 - `floors`: plate k's top is at `y0 + k*pitch + top` in the builder's own y (`first` replaces `k*pitch+top` for
   k = 0), plus the sink. A pod's floor is a plate's top, but pods round one host may take different plates. A pod between
   plates is possible only where the host has no projecting plate rings: a ring crosses its door.
+  A type whose plates are far apart (the Bole's trays, 30 m) gives its interior `storey` (4.2), which the floors pass
+  (88a) uses for a plan's height instead of `pitch`. A type with `crest(yl)` (the Trays, the Bole) seats one pod on each
+  of the bearings it returns for that plate, and its host is a shelf host (below).
 - **Ways in.** A host must be declared with at least one way: `{a (bearing), y (the plate's top, world), R}`.
   The adapted builders cut that pod's hole through the skin and the lining (`52-sky-abc ysWallHole`), and the
   matching `hykAccrete` pod (`into:true`, same `a` and `R`, `y` optional) is bedded a fifth into the face with a
@@ -412,6 +415,7 @@ lays a 1.5 m stone pad under the footprint, stamps every REG volume the builder 
 `DOORS` into `MARKS` door records; the accounting is `TSTAT 'foreign:<culture>'`, one `n` per building (`BUDGET.cls.foreign`).
 Before the bake, `ysFqMerge` takes this pass's kit instances out of `KIT.items` and merges them into one vertex-coloured
 mesh per material (the night kit and transparent items stay instanced). `FURNISH` (the Highlands kit's catalog furniture)
-is a stub here. Every dwelling filled gets a room (`ysFqRoom(fill, bid, name)`, a `ysRoom` bedroom on the residence's
+is a stub here. Every other building filled (the trade buildings, the embassy, the chapterhouse) gets the rooms `YS_FQ_ROOMS[key]` lists
+(`ysFqRooms`: `[kind, cx, cz, W, D, floor y, h, door, spots]`, local to the builder, +z the front). Every dwelling filled gets a room (`ysFqRoom(fill, bid, name)`, a `ysRoom` bedroom on the residence's
 body, `YS_FQ_BODY[key] = [cx, cz, W, D, floorY]`, the door at the front; spots `bed`, `store`, `food`): `window._foreign.rooms`. `_api.city.foreign()` → `window._foreign` (counts per culture and key, the embassy and the chapterhouse,
 door marks, the merge). Presets `The foreign quarter`, `The Voth embassy`, `The Historians' chapterhouse`, `The Republican plots`.

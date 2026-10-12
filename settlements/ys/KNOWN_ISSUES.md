@@ -17,6 +17,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   way-in holes), a cut body draws a torn top over its last tray when `YS_CUT` is set (Oct 12 2026: the core and the next
   band's lining standing 2–12 m, ragged, a few mullions, a sagged wedge of the next tray). Hash noise only (`fbm`, the
   lathe's `jag`): the builder's stream is unchanged, and the kit's own paths are untouched.
+- `8aj-alt-a-bole.js` (from `kits/ancients/src`, Oct 12 2026): the Bole as a host. `/* YS */` hooks, typeof-guarded like
+  the Pierced Stack's: with `ysCutY(d)` every rib ends in a ragged stub a few metres over the cut, the core snaps 9 m over
+  it, the trays stop at the cut (the last is the roof), no saucer stands or falls; `ysWallHole` cuts the way-in pods'
+  holes through the drums; with `YS_CUT` set the ground disc, apron, rubble, moss, trees and figures are left out (under
+  the sea). The kit's own paths are untouched.
 - `92-camera.js` (from `settlements/iziz/src`): the Ys standard pack: a seventh preset element is the hour,
   `n` toggles noon/night, the camera and walker stay above the sea, the inspector names ground and sea, and
   the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
@@ -62,8 +67,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       120 draw calls, so Ys sets `BIO.host.bakeBark` (an option added upstream, default off) after binding: the bark is
       baked per material as before. Set after `BIO.init` because it keeps only the host keys it knows. The kit's new
       Madagascarene zones (`tsingy`, `hollow`) read zero here: Ys's karst is towers, not blades, so they stay unbound.
-- [ ] (Oct 12 2026) **The Bole** is still not a host: six twisted ribs carrying trays, no wall for a pod to root in; a host
+- [x] (Oct 12 2026) **The Bole** is still not a host: six twisted ribs carrying trays, no wall for a pod to root in; a host
       spec needs a way for a pod to grip a rib (a saddle on the rib, or pods only on the trays), a design call.
+      *Done Oct 12: pods only on the trays (`HOSTSPEC_BOLE`): a pod stands on a tray's deck and roots in the glazed drum of
+      the tray above, at one of six crests midway between the ribs. One stands, by hand, in the outer bay ("The Bole
+      stump", cut at 186 m: 10 pods on five trays); it is in no random pool, so no other host moved.*
 - [ ] Phase 0 terrain is the port's tensor grid sized for a coast along x: 10 m cells only within ~900 m of the
       origin, 90 m cells beyond. Phase 3 replaces it with the Ys terrain mesh (regular cells over the 3.2 km map,
       a far-country mesh for the volcano and the Inner Wall).
@@ -72,12 +80,16 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 5 2026) No nature scatter on the natural ground until the NW-bay biome is bound (phase 3). Bound: `biomes/nwbay`
       vendored as `src/86-bio-*.js`, the host binding in `targets/city/86-bio-45-city-init.js` and `89-city-biome.js`
       (NOTES.md "The biome bound", API.md "The biome").
-- [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) carry no ROOM records until
+- [x] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) carry no ROOM records until
       their own kits register them (DESIGN §7). Built since Oct 5 2026 (88c-city-foreign.js): door marks only, the
       Highlands houses' and the embassy's estimated at the middle of the front (their helpers record no door).
       *Oct 12: every foreign residence has a room with its bed, store and food spots (88c ysFqRoom, from the builder's
       main body; estimated, `est:true`). Still open: the trade buildings (shops, tavern, workshops, warehouse, market),
-      the embassy and the chapterhouse have no rooms.*
+      the embassy and the chapterhouse have no rooms.* *Oct 12, later: they have them (`YS_FQ_ROOMS`, read off the
+      builders' constants: the shop units, the tavern hall and its three inn rooms, the workshops, the smithy, the market's
+      stalls, the warehouse and its office, the embassy's hall, envoy's chamber, tower study, kitchen and domed hall, the
+      chapterhouse's reading hall, archive and scriptorium; 37 rooms in 14 buildings, `foreign-trade-rooms`). Estimated, not
+      read off partitions.*
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
 - [x] (Oct 5 2026) The ground painter was the port's (red soil in patches, dry grass). Re-keyed to the bay's jungle floor
       (`ysGroundLush`, 84-city-geo.js); the farms' soil paint is softened half-way to it. The city's land blocks read as

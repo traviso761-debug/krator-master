@@ -71,7 +71,12 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
    for(const st of streets)if(ysPlHit(f.box,st)){onSt++;if(bad.length<4)bad.push(f.key+' on '+st.tag);break;}}
   const comp=[F.embassy,F.chapterhouse].filter(Boolean);for(const c of comp){const B=(c===F.embassy?YS_FQ.embassy:YS_FQ.chapterhouse).box;for(const st of streets)if(ysPlHit(B,st)){onSt++;if(bad.length<4)bad.push('compound on '+st.tag);break;}}
   const by=F.byCulture||{};const cultures=['iziz','republic','voth'].filter(c=>fills.some(s=>s.fill.culture===c&&s.fill.drawn));
-  R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn)&&(F.rooms||0)>=100,
+   // every foreign building that is not a residence (the shops, the tavern, the workshops, the warehouse, the market, the embassy,
+  // the chapterhouse) has its rooms with their spots (88c YS_FQ_ROOMS; Oct 12 2026)
+  {const all=fills.map(s=>s.fill).concat(YS_FQ.embassy&&!fills.some(s=>s.fill===YS_FQ.embassy)?[YS_FQ.embassy]:[]).filter(f=>f.drawn&&VERN.defs[f.key]&&!/dwelling/.test((VERN.defs[f.key].tags.type||[]).join(' ')));
+   const miss=all.filter(f=>!YS_FQ_ROOMS[f.key]).map(f=>f.key);const bids=new Set(all.map(f=>f.bld));const sp=SPOTS.filter(o=>o.est&&ROOMS[o.room]&&bids.has(ROOMS[o.room].bld)).length;
+   R.push({name:'foreign-trade-rooms',ok:!miss.length&&(F.tradeBlds||0)===all.length&&sp>0,detail:(F.tradeBlds||0)+' of '+all.length+' trade and civic buildings with rooms ('+(F.tradeRooms||0)+' rooms, '+sp+' spots)'+(miss.length?'; no rooms for '+[...new Set(miss)].join(', '):'')});}
+ R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn)&&(F.rooms||0)>=100,
    detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse'||s.kind==='embassy').length+' slots filled, '+(F.rooms||0)+' residences with a room ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
     +(bad.length?'; '+(out+onSt)+' bad: '+bad.join(' | '):'; every one inside its slot and off the streets')+(nd?'; '+nd+' not drawn':'')
     +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+(F.embassy.cleared?', '+F.embassy.cleared+' lane houses cleared':', on its square')+')':'not drawn'):'NOT PLACED')

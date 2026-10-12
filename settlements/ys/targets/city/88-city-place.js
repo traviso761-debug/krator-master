@@ -100,8 +100,8 @@ for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)ysPlTake(ysPlStrip
 // bearing, where it may be cut, how it stands, where pods may go. Mirrored from the vendored kit (52-sky-abc, 56-sky-d,
 // 71-sky-h) like ysHostMembers; re-read them if the kit changes. Travis's list (Oct 2 2026) leaves out B (lobes), F, I, J
 // and the arcologies but the Pierced Stack and the Bole; C carries its body 150 m up on legs, E is a glass lens behind a
-// diagrid with no wall to root a pod in. A, D and H are here; the Pierced Stack and the Bole wait on the alternates'
-// helpers (KNOWN_ISSUES.md).
+// diagrid with no wall to root a pod in. A, D and H are here; the Pierced Stack and the rest in 69i-host-ancients
+// (the Bole since Oct 12 2026: pods on its trays, placed once by hand below).
 //  plate(k)  the top of plate k, builder y        rAt(yl,th)  the face radius at builder y, local bearing (null: a mean)
 //  sink      'plate': sunk so plate k0 is near the L2 datum (A's plates start 64 m up); 'seabed': it stands on the bed
 //  bearings  local bearings for n pods            avoid(yl,h)  true where a pod of height h at plate yl hits the host's own
@@ -368,6 +368,9 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // Travis (Oct 5 2026): two skyscraper stumps of types not yet standing, on the land quarter's points he named
  ysPlHostAt(165.3,117.0,'skyF',{host:{cutRange:[82,130],tall:true},name:'The Trays stump at the head'});   /* Travis: Sky F, not the Tripod */
  ysPlHostAt(47.7,495.4,'skyE',{reach:84,capScale:.72,host:{cutRange:[80,124],tall:true},name:'The Lens stump by the river'});   /* a tight spot between the river's valley and the grid's edge: the cap at 72 % (the lens narrows as it rises) */   /* the river's valley (2.6 widths) takes the point itself */
+ // the Bole (Oct 12 2026: the last arcology type not standing): a stump in the outer bay, the widest open water clear of
+ // the east shallows' ruins, the harbours and the spans (a 136 m box: its lowest tray reaches 66 m out)
+ ysPlHostAt(1160,-250,'altBole',{reach:24,wealth:'middle',name:'The Bole stump'});
  // Travis (Oct 5 2026): the open strip east of the inner quarter, (304, 36) to (163, 603), 70 m wide: small reclaimed Ancients
  // (the Undulant villas and the Office B towers, the only podded types under 45 m across) every 52 m along its middle, each
  // with a few Hykkousoi houses round it

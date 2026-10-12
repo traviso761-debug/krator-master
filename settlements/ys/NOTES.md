@@ -663,3 +663,22 @@ first time). The kit sheet and the mock pass `--assert`.
 Seen and left: the river's waterline is a saw-tooth where the flat sheet meets the terrain's 10 m triangles (the phase-0
 grid; KNOWN_ISSUES). Not done: the karst overhangs (`core/terrain` is the refactor's), the textures the library lacks
 (the owner's to find or generate), the Bole as a host, rooms in the foreign trade buildings.
+## The Bole as a host, the rest of the foreign rooms (Oct 12 2026, Travis)
+**The Bole** (`HOSTSPEC_BOLE`, 69i; hooks in the vendored `8aj-alt-a-bole.js`, now `ADAPTED`). Its seven trays each carry a
+glazed drum of rooms under them, so a pod is the Trays' kind: it stands on a tray's deck and roots in the drum of the tray
+above (`rAt` is that drum's radius), its back door through the drum (`ysWallHole`), one pod to a crest, the crests midway
+between the six ribs at that height (they climb the rim and turn .55 rad in 260 m), so no pod meets a rib. The cut snaps
+to a tray's top and keeps the trays whose decks are deep enough for a pod (30, 22, 16, 12 m from tray 0 up). Cut, the
+builder ends each rib in a ragged stub over the cut, snaps the core, stops at the cut tray and draws no saucer; under the
+sea it draws no ground. The floors pass lays one 4.2 m storey in each drum (`T.storey`), not a 30 m one. It stands once,
+placed by hand (`ysPlHostAt(1160, -250)`: the widest open water clear of the east shallows' ruins, the harbours and the
+spans, found with a placement harness): "The Bole stump", cut at 186 m, 10 pods on five trays, one more bridge in the
+graph (32 spans). It is in no random pool, so no other host, building or ruin moved (929 buildings as before).
+**The foreign rooms, the rest** (`YS_FQ_ROOMS`, 88c): every foreign building that is not a residence gets its rooms read off
+its builder's constants, each room a rectangle on the body with its door and its spots: the shop row's three units
+(counter, store), the tavern's hall (hearth, counter, food, three tables with their seats) and three inn rooms above, the
+carpenter's and the potter's workshops, the smithy (forge, anvil, bench, store), the market canopy's sixteen stalls, the
+warehouse and its office, the embassy's reception hall, envoy's chamber, tower study, kitchen and domed hall, the
+chapterhouse's reading hall, archive and scriptorium. Every spot clears its room's walls, its door's swing and every
+other spot by the city's own rule (`spots-fit-their-rooms`, checked offline first), every bedroom has its bed, food and
+store. `foreign-trade-rooms`: 14 of 14 buildings, 37 rooms.

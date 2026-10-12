@@ -55,7 +55,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69h-host-c-arcades.js` | 10 |  |
 | `69h-host-d-stalks.js` | 9 |  |
 | `69h-host-e-bellhall.js` | 13 |  |
-| `69i-host-ancients.js` | 13 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
+| `69i-host-ancients.js` | 14 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
 | `69j-host-offices.js` | 6 | the specs (28) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
@@ -113,7 +113,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `86-bio-75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (67) |
 | `89-lab.js` | 7 |  |
 | `89m-sky-k.js` | 42 **big** |  |
-| `8aj-alt-a-bole.js` | 15 | THE BOLE (74) |
+| `8aj-alt-a-bole.js` | 16 | THE BOLE (74) |
 | `8aj-alt-b-stack.js` | 10 |  |
 | `8aj-alt-c-hotel.js` | 8 |  |
 | `8ak-alt-a-houses.js` | 25 | helpers (27) |
@@ -136,6 +136,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `77-voth-townhouses.js`, `84-city-geo.js`, `84b-city-shore.js`, `86-bio-45-city-init.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88-city-sunk.js`, `88a-city-floors.js`, `88b-city-draw.js`, `88c-city-foreign.js`, `89-city-biome.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 275 |
+| `city` | `77-voth-townhouses.js`, `84-city-geo.js`, `84b-city-shore.js`, `86-bio-45-city-init.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88-city-sunk.js`, `88a-city-floors.js`, `88b-city-draw.js`, `88c-city-foreign.js`, `89-city-biome.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 281 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

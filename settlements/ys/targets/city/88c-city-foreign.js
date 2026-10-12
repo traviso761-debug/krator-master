@@ -60,6 +60,37 @@ function ysFqRoom(f,bid,name){const B=YS_FQ_BODY[f.key];if(!B)return null;const 
   doors:[{at:W2(0,hz+.2),w:1.1,to:'street'}],windows:[],culture:f.culture,wealth:/rich/.test(f.key)?.8:/mid/.test(f.key)?.5:.2,residence:true,est:true});
  if(!rm)return null;const sp=(kind,lx,lz,w,d)=>{const p=W2(lx,lz);return ysSpot({room:rm.id,bld:bid,kind,x:p[0],z:p[1],ry:f.ry,w,d,est:true});};
  sp('bed',-hx+1.2,-hz+.6,2.1,1.0);sp('store',hx-.7,-hz+.45,1.2,.7);sp('food',hx-.5,0,.8,.8);return rm;}
+// the trade buildings, the embassy and the chapterhouse (Oct 12 2026): their rooms read off the builders' own constants
+// (71-vern-trade, 75-port-embassy, 76-port-chapterhouse; re-read them if those change), local to the building, +z the
+// front: key -> [[kind, cx, cz, W, D, floor y, h, [door x, door z, w, to], [[spot kind, x, z, w, d, ry], ...]], ...].
+// Kinds are the Ys kit's own (a shop unit is a 'store', as 71-hyk-shops's; a hearth room a 'hall'). Estimated (`est:true`).
+const YS_FQ_ROOMS=(()=>{const R={};const row=(n,x0,dx,z,k,w,d)=>Array.from({length:n},(_,i)=>[k,x0+i*dx,z,w,d]);
+ R.vern_shops=[-4.6,0,4.6].map(x=>['store',x,0,4.3,7.1,.3,3.3,[x+1.55,3.7,.9,'street'],[['counter',x-.7,2.7,2.2,.7],['store',x-1.4,-3.0,1.2,.7]]]);
+ R.vern_tavern=[['tavern',0,0,15.6,9.6,.35,4,[0,5,1.5,'street'],[['hearth',-6,-4.2,1,1],['counter',4,-3.8,2.4,.7],['food',5.6,-4.2,.8,.8]]
+   .concat(...[-4.5,0,4.5].map(x=>[['table',x,-.5,1.2,1.2],['seat',x,-2,1.2,.9],['seat',x,1,1.2,.9]]))]]
+  .concat([-5.2,0,5.2].map(x=>['bedroom',x,-2.3,5,4.8,4.65,2.6,[x,.2,.9,'gallery'],[['bed',x-1,-4.1,2.1,1],['store',x+1.7,-4.2,1.2,.7],['food',x+1.8,-2.2,.8,.8]]]));
+ R.vern_workshop_a=[['workshop',0,0,8.7,6.7,.2,3.4,[0,3.5,3,'street'],[['work',-2.4,1.8,3.2,.9],['work',2.4,2.2,2.4,.8],['store',3.3,-.7,.7,2]]]];
+ R.vern_workshop_b=[['workshop',0,0,7.7,6.7,.3,3.2,[2.4,3.5,1,'street'],[['counter',-1.2,3,3.2,.6],['work',1.2,-1.2,1,1],['store',-2.8,-2.6,1.2,.7],['store',2.8,-2.6,1.2,.7]]]];
+ R.vern_smithy=[['workshop',0,0,10.4,7.4,.2,3.8,[0,4,4,'street'],[['hearth',-2.6,-2.4,2.8,2],['work',.6,-.4,1.1,.6],['work',3.6,-2.8,3,.9],['store',-2.6,.2,1.6,1]]]];
+ R.vern_market=[['court',0,0,24,17,.05,5,[0,8.5,4,'street'],row(5,-9.4,4.7,-5.1,'stall',2.4,1.6).concat(row(5,-9.4,4.7,5.1,'stall',2.4,1.6),row(3,-8,8,-1.6,'stall',2.4,1.6),row(3,-8,8,1.6,'stall',2.4,1.6))]];
+ R.vern_warehouse=[['store',0,0,21.6,11.6,.9,5.2,[0,6,2.2,'street'],row(10,-9,2,-5.2,'store',1.2,.7).concat([['work',8,4.5,1.2,.7]])],
+  ['hall',-13.6,3.5,4.2,4.4,0,3,[-13.6,5.9,1,'street'],[['table',-13.6,3.5,1.2,1.2],['store',-12.4,1.9,1.2,.7],['hearth',-15,1.8,.8,.8]]]];
+ R.port_voth_embassy=[['hall',7.2,-8.6,11.3,8,.75,6,[4.8,-4,1.7,'court'],[['table',7.2,-8.6,2.4,1.2],['seat',7.2,-10.4,1.2,.9],['seat',7.2,-6.8,1.2,.9],['hearth',11,-11.4,1,1],['store',2.4,-11.8,1.2,.7]]],
+  ['bedroom',7.2,-8.6,8.6,6,6.75,4.8,[7.2,-5.6,.9,'stair'],[['bed',4.4,-10.8,2.1,1],['store',10.4,-11,1.2,.7],['food',6.8,-10.8,.8,.8],['table',9.4,-7.6,1.2,1.2],['seat',9.4,-6.2,1.2,.9]]],
+  ['library',-10,-8.5,4.4,4.4,1.35,6,[-10,-6.3,1.7,'court'],[['table',-10.6,-9.2,1.2,1.2],['seat',-8.6,-9.6,1.2,.9],['store',-11.75,-7.6,.7,1.2]]],
+  ['hall',13,4,5,5.8,.35,3.4,[10.5,4,1,'court'],[['hearth',11.2,1.8,1,1],['food',14.5,2.5,.8,.8],['table',13,5,1.2,1.2],['store',14.8,6.4,1.2,.7]]],
+  ['hall',-11,4.5,7.8,6.4,.75,5.6,[-7.2,4.5,1.6,'court'],[['table',-11,4.5,2.4,1.2],['seat',-11,2.4,2,.9],['seat',-11,6.6,2,.9],['shrine',-14.2,4.5,.8,1]]]];
+ R.port_order_chapterhouse=[['library',0,-8.5,20,9.4,.45,8.6,[0,-3.6,2.4,'court'],[-7.5,-3.5,3.5,7.5].map(x=>['table',x,-8,2.4,1.2]).concat([-7.5,-3.5,3.5,7.5].map(x=>['seat',x,-5.7,2.4,.9]),
+   row(7,-9,3,-12.6,'store',1.2,.7),[['shrine',0,-10.8,1,.8]])],
+  ['library',-15.3,1.5,4.6,10.4,.45,4.6,[-12.9,1.5,1.2,'court'],row(7,-3,1.5,0,'store',.7,1.2).map(r=>[r[0],-16.9,r[1],r[3],r[4]]).concat([['table',-15,5.5,1.2,1.2]])],
+  ['workshop',15.3,1.5,4.6,10.4,.45,4.6,[12.9,1.5,1.2,'court'],[-3,0,3,6].map(z=>['table',16.6,z,1,1.2]).concat([-3,0,3,6].map(z=>['seat',14.9,z,.9,1.2]),[['store',13.6,-2.9,.7,1.2]])]];
+ return R;})();
+function ysFqRooms(f,bid,name){const L=YS_FQ_ROOMS[f.key];if(!L)return 0;const s=f.scale||1,W2=(x,z)=>loc(f.x,f.z,x*s,z*s,f.ry);let n=0;
+ for(const [kind,cx,cz,W,D,fy,h,dr,spots] of L){const hx=W/2,hz=D/2;
+  const rm=ysRoom({building:name,bld:bid,key:f.key,kind,poly:[[-hx,-hz],[hx,-hz],[hx,hz],[-hx,hz]].map(p=>W2(cx+p[0],cz+p[1])),y:f.y+fy*s,h:h*s,
+   doors:[{at:W2(dr[0],dr[1]),w:dr[2],to:dr[3]}],windows:[],culture:f.culture,wealth:/rich|embassy|chapterhouse/.test(f.key)?.8:.5,residence:kind==='bedroom',est:true});
+  if(!rm)continue;n++;for(const [k,x,z,w,d,ry] of spots){const p=W2(x,z);ysSpot({room:rm.id,bld:bid,kind:k,x:p[0],z:p[1],ry:f.ry+(ry||0),w,d,est:true});}}
+ return n;}
 // ---------------------------------------------------------------- at load: the records
 (function(){const FQ=LAYOUT.blocks.filter(b=>b.use==='foreign').sort((p,q)=>Math.hypot(p.x-CITY.HEAD[0],p.z-CITY.HEAD[1])-Math.hypot(q.x-CITY.HEAD[0],q.z-CITY.HEAD[1]));
  const cultureOf={};FQ.forEach((b,i)=>{cultureOf[b.i+','+b.j]=i<2?'iziz':i<4?'republic':'voth';});   /* 88's rule: Iziz nearest the market, then the Republic, Voth furthest */
@@ -109,6 +140,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();window.DOORS=window.DOO
    if(DOORS.length===d0){const dd=(f.rot?f.w:f.d)/2*f.scale;DOORS.push({x:f.x+Math.sin(f.ry)*dd,z:f.z+Math.cos(f.ry)*dd,ry:f.ry,y:f.y,key:f.key,est:true});YS_FQ.estDoors++;}   /* no door recorded (the Highlands' own door helper, the embassy's gate): the middle of the front */
    for(let i=d0;i<DOORS.length;i++){const d=DOORS[i];ysMark({bld:bid,key:f.key,kind:'door',est:!!d.est,x:d.x,y:d.y,z:d.z,nx:Math.sin(d.ry),nz:Math.cos(d.ry),w:1.6,h:2.4,level:'ground',culture:f.culture,step:[d.x+Math.sin(d.ry),d.z+Math.cos(d.ry)],thresh:[d.x-Math.sin(d.ry),d.z-Math.cos(d.ry)]});doors++;}
    if(/dwelling/.test(((D.tags&&D.tags.type)||[]).join(' '))&&ysFqRoom(f,bid,L+' '+D.name))YS_FQ.rooms=(YS_FQ.rooms||0)+1;   /* a residence's room and its spots */
+   else{const nr=ysFqRooms(f,bid,(/^(Voth|Chapterhouse|Order)/.test(D.name)?'':L+' ')+D.name);if(nr){YS_FQ.tradeRooms=(YS_FQ.tradeRooms||0)+nr;YS_FQ.tradeBlds=(YS_FQ.tradeBlds||0)+1;}}   /* the trade buildings', the embassy's and the chapterhouse's rooms */
    f.G=G;f.drawn=true;built++;}else fail++;
   TSTAT.cur=null;};
  for(const s of PLACE.slots)if(s.fill)place(s.fill);
@@ -116,7 +148,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();window.DOORS=window.DOO
  if(YS_FQ.chapterhouse&&!YS_FQ.chapterhouse.drawn)place(YS_FQ.chapterhouse);
  for(const n in KIT.items){const a=n0[n]||0,b=KIT.items[n].length;if(b>a)YS_FQ.items[n]=[a,b];}   /* this pass's instances, per kit item: merged before the bake */
  const tris={};for(const k in TSTAT.by)if(/^foreign:/.test(k))tris[k.split('/')[0].slice(8)]=Math.round(TSTAT.by[k].tris);
- window._foreign={filled:YS_FQ.filled,rooms:YS_FQ.rooms||0,kept:YS_FQ.kept,dropped:YS_FQ.dropped,lanesCleared:YS_FQ.lanesCleared,byCulture:YS_FQ.byCulture,byKey:YS_FQ.byKey,built,fail,doors,tris,
+ window._foreign={filled:YS_FQ.filled,rooms:YS_FQ.rooms||0,tradeRooms:YS_FQ.tradeRooms||0,tradeBlds:YS_FQ.tradeBlds||0,kept:YS_FQ.kept,dropped:YS_FQ.dropped,lanesCleared:YS_FQ.lanesCleared,byCulture:YS_FQ.byCulture,byKey:YS_FQ.byKey,built,fail,doors,tris,
   embassy:YS_FQ.embassy?{x:Math.round(YS_FQ.embassy.x),z:Math.round(YS_FQ.embassy.z),block:YS_FQ.embassy.block,cleared:YS_FQ.embassy.cleared,drawn:!!YS_FQ.embassy.drawn}:null,
   chapterhouse:YS_FQ.chapterhouse?{x:Math.round(YS_FQ.chapterhouse.x),z:Math.round(YS_FQ.chapterhouse.z),block:YS_FQ.chapterhouse.block,onSquare:!YS_FQ.chapterhouse.compound,drawn:!!YS_FQ.chapterhouse.drawn}:null,
   estimatedDoors:YS_FQ.estDoors,furnishSkipped:Object.values(YS_FQ.furnish).reduce((a,b)=>a+b,0),ms:Math.round(performance.now()-t0)};});

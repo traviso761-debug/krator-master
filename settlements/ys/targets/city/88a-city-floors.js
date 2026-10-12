@@ -16,7 +16,7 @@ const FLOORS={plans:[],rooms:0,spots:0,stairs:[]};
   const cs=Math.cos(h.ry),sn=Math.sin(h.ry);const W=(lx,lz)=>[h.x+lx*cs+lz*sn,h.z-lx*sn+lz*cs];   // builder frame -> world
   // the floor table at this host: plate k at T.plate(k) builder y; the subdivided span is the pods' plates widened by two
   const plate=k=>T.plate(k)+h.sink;const kOf=y=>{let best=0,bd=1e9;for(let k=0;k<400;k++){const d=Math.abs(plate(k)-y);if(d<bd){bd=d;best=k;}if(plate(k)>y+50)break;}return best;};
-  const podK=h.pods.map(p=>kOf(p.y));const k0=Math.min(...podK)-2,k1=Math.max(...podK)+2;const H=T.floors.pitch-.6;
+  const podK=h.pods.map(p=>kOf(p.y));const k0=Math.min(...podK)-2,k1=Math.max(...podK)+2;const H=(T.storey||T.floors.pitch)-.6;   /* a type whose plates are far apart (the Bole's trays) gives its storey */
   const shopKs=new Set(h.pods.filter(p=>/shop|tavern|market/.test(p.key)).map(p=>kOf(p.y)));
   const ways=h.pods.filter(p=>p.into).map(p=>({k:kOf(p.y),th:p.a+h.ry}));   // local bearing of each way-in pod's back door
   // the cores a floor is laid round: one at the axis, or the Stalks' three

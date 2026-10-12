@@ -120,4 +120,19 @@ const HOSTSPEC_LIBRARY={name:'the Ancient Library',key:'altLibrary',builder:'bui
 
 // the ones the city places (the placer's pools name the keys; a key not here is skipped). The Undulant house waits
 // on the placer's `lo` (its plates are under the 18 m colonnade rule); Sky J (the Whorl) is not vendored: see NOTES.md.
-const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_SKYF,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT];
+// the Bole: six ribs twisting up from an 88 m root splay to a 30 m waist, carrying seven planted trays (tray k's deck at
+// 36 + 30 k, out to rad(y) + 3.5) with a glazed drum of rooms under each (radius .7 of the tray's, 28 m tall); 8aj-alt-a-bole.
+// A pod stands on a tray's deck and roots in the drum of the tray above, its back door through that drum (ysWallHole); the
+// six crests are the bearings midway between the ribs at that height (the ribs climb the rim and turn .55 rad in 260 m),
+// one pod to a crest. The cut snaps to a tray's top (Y0 + 30 n), so the stump's roof is its last tray; only the lower trays'
+// decks (30, 22, 16, 12 m deep from tray 0 up) take a pod, hence the cuts. The floors pass lays one 4.2 m storey (`storey`)
+// in each drum at its tray, not a 30 m one.
+const HBO={Y0:36,P:30,HR:260,rad:y=>{const t=clamp(y/260,0,1);return 15+73*Math.pow(1-t,3)+22*t*t;}};
+HBO.rD=k=>(HBO.rad(HBO.Y0+HBO.P*k)+3.5)*.7;
+const HOSTSPEC_BOLE={name:'the Bole',key:'altBole',builder:'buildAltBole',H:345,Y0:HBO.Y0,podium:70,cap:68,shaped:false,square:false,
+ floors:{y0:HBO.Y0,pitch:HBO.P,top:0,first:0},storey:4.2,k0:0,plate:k=>HBO.Y0+HBO.P*k,
+ rAt:(yl,th)=>{if(yl<HBO.Y0-1)return HBO.rD(0)*.97;const m=Math.floor((yl-HBO.Y0+1)/HBO.P);if(m>=6)return 11.5-2.5*yl/332;return HBO.rD(m+1)*.97;},   /* the drum over the plate (a metre under a deck counts as above it) */
+ cuts:{tall:[186,216],mid:[156,186],low:[126,156],land:[126,156]},crownY:345,sink:'seabed',minY:9,
+ bearings:(st,n)=>anhFaces([0,1,2,3,4,5].map(i=>i/6*TAU+.3+TAU/12+.55*96/HBO.HR),st,n,.2,.04),
+ crest:yl=>[0,1,2,3,4,5].map(i=>i/6*TAU+.3+TAU/12+.55*(yl+4)/HBO.HR),podsPlus:3};
+const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_SKYF,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT,HOSTSPEC_BOLE];
