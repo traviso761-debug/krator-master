@@ -132,6 +132,7 @@ YS_AFTER.push(function(scene){const t0=performance.now();
    eye:()=>[camera.position.x,camera.position.y,camera.position.z],err:m=>reportErr('biome: '+m),
    // the biome's passes are budgeted as their own types under the 'biome' class (93z-city-api sets it)
    stat:(k,tris,inst)=>{const key='biome/'+(String(k).split('/')[1]||'core');const t=TSTAT.by[key]||(TSTAT.by[key]={tris:0,inst:0,meshes:0});t.tris+=tris;t.inst+=inst;}});
+  BIO.host.bakeBark=true;   /* the tree variants' bark merged per material (56-variants: one instanced item per variant part cost 120 draw calls); BIO.init keeps only the keys it knows */
   BIO.setSun([sun.position.x,sun.position.y,sun.position.z]);
   const r0=REG.length;
   const out=NWBAY.build({R:YS_BIO.R,quality:YS_BIO.Q,bayHue:YS_BIO.HUE,fauna:true})||{};

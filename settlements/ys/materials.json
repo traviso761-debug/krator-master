@@ -794,6 +794,19 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "hkCloth": {
+   "lib": "cloth.seaweed",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.8
+   },
+   "roughLift": 0.2,
+   "specular": 0.12
   }
  }
 }

@@ -163,6 +163,11 @@ The fauna needs `ticks` and `scene` at build time (it adds its own meshes and up
 every frame); a host without `ticks` gets frozen animals, one without `eye` animates
 everything whatever the range.
 
+A host may set `bakeBark: true` (Ys does: its city spends its draw calls elsewhere): the variants are grown the same,
+but a placed tree's bark is baked into the kit's buckets through the tree's transform instead of being one instance of
+the variant's bark item, so the bark draws merged per material as before the variants (the leaves and the rest stay
+instanced). Default off.
+
 ## Tags (project rule)
 
 Every species record carries `tags:{climate:'hypertropic'|'tropic'|'temperate'|'cold',

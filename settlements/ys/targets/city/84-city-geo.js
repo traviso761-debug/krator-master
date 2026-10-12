@@ -96,7 +96,8 @@ function ysRiverY(x,z,g){const R=CITY.RIVER,pr=ysRiverProfile();const best=ysRiv
  if(best.d>w*2.6)return g;   /* the valley 2.6 widths wide (Travis: it read as a ditch) */
  const k=Math.min(pr.bed.length-1,Math.round(s/pr.DS));const bed=pr.bed[k];const f=s-pr.start[k];
  const lip=f<8?R.rise*.55*(1-f/8):0;   // the rimstone lip at the downstream edge
- const bank=clamp((best.d-w*.5)/(w*2.1),0,1);const bk=bank*bank*(3-2*bank);
+ const ss=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};   /* Oct 12 2026: steep banks by the channel (70 % of the depth within .6 w), the rest by 2.6 w: before, the bank rose over the whole 2.6 w and the river lay on a flat */
+ const bk=.7*ss((best.d-w*.55)/(w*.6))+.3*ss((best.d-w*1.15)/(w*1.45));
  const floor=bed+lip;const carved=floor+(g-floor)*bk;return Math.min(g,carved);}
 // the natural ground before any stamp: a wandering shore, a beach, a hinterland rising gently toward the Inner Wall,
 // a seabed falling to ~30 m in the bay; the stacks stand on it and the river is carved through it. Continuous everywhere.

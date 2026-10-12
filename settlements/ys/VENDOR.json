@@ -77,7 +77,7 @@
  "58-sky-f.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "af69d732fd7f"
+  "sha1": "731723e8a63b"
  },
  "62-robotics.js": {
   "adapted": false,
@@ -272,7 +272,7 @@
  "86-bio-20-core-kit.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "63ac32089b6d"
+  "sha1": "a020cb184f85"
  },
  "86-bio-30-core-foliage.js": {
   "adapted": false,
@@ -287,17 +287,22 @@
  "86-bio-50-biome-nwbay-species.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "dadea35c1f2f"
+  "sha1": "a526009b7901"
  },
  "86-bio-55-biome-nwbay-trees.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "27c802404418"
+  "sha1": "a1762aa0e75c"
+ },
+ "86-bio-56-biome-nwbay-variants.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "31dac8a160de"
  },
  "86-bio-60-biome-nwbay-floor.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "ce3c7c1ddd5f"
+  "sha1": "f88984b83e8a"
  },
  "86-bio-65-biome-nwbay-dress.js": {
   "adapted": false,
@@ -325,9 +330,9 @@
   "sha1": "eba9d0e600ec"
  },
  "8aj-alt-a-bole.js": {
-  "adapted": false,
+  "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "4ab8a97e9e2b"
+  "sha1": "b31618fba489"
  },
  "8aj-alt-b-stack.js": {
   "adapted": true,
@@ -354,10 +359,25 @@
   "from": "kits/ancients/src",
   "sha1": "cf81ad0dbe00"
  },
+ "8al-alt-05-bunker.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "37eebf10e044"
+ },
  "8al-alt-06-library.js": {
   "adapted": true,
   "from": "kits/ancients/src",
   "sha1": "0d059975e84e"
+ },
+ "8al-alt-10-police.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "fa471e24b6e5"
+ },
+ "8al-alt-11-hospital.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "032bf368eab4"
  },
  "92-camera.js": {
   "adapted": true,

@@ -74,8 +74,11 @@ const HOSTSPEC_SKYF={name:'the Trays',key:'skyF',builder:'buildSkyF',H:HSF.H,Y0:
  floors:{y0:22,pitch:12,top:0,first:0},k0:0,plate:k=>22+12*k,
  rAt:(yl,th)=>{if(yl<HSF.Y0)return 11;const m=Math.floor((yl-HSF.Y0+1)/HSF.TS),t=clamp((HSF.Y0+HSF.TS*m)/HSF.H,0,1),R=(28*(1-.2*t)+6*Math.sin(Math.PI*t))*.72;   // the band a metre under a plate counts as the one above it (the slab)
   return th==null?R:R*(1+.22*Math.cos(3*(th-(m+1)*.14)));},
- cuts:{tall:[178,250],mid:[118,166],low:[58,106],land:[58,130]},crownY:290,sink:'seabed',minY:9,lo:21,
- bearings:(st,n)=>anhFaces([.7,.7+TAU/3,.7+2*TAU/3],st,n,.4,.06)};   // the crests of a mid-stump band (k = 5); a storey turns them .14
+ cuts:{tall:[118,154],mid:[94,130],low:[58,94],land:[58,106]},crownY:290,sink:'seabed',minY:9,lo:21,   /* Travis (Oct 5 2026): every Trays a stump; at 178-250 of 290 it read whole */
+ bearings:(st,n)=>anhFaces([.7,.7+TAU/3,.7+2*TAU/3],st,n,.4,.06),   // the crests of a mid-stump band (k = 5); a storey turns them .14
+ // the lobe crests of the band standing on plate yl (builder y): the placer stands each pod on one, one pod to a crest
+ // (Travis, Oct 5 2026: every Trays a stump carrying pods on its trays), and gives the type four more pods than its wealth's
+ crest:yl=>{const a=(Math.floor((yl-HSF.Y0+1)/HSF.TS)+1)*.14;return [a,a+TAU/3,a+2*TAU/3];},podsPlus:4};
 // the Attraction: thirteen fluted parabolic spires on an arcaded podium 14 m tall (the kit's 74 m podium shrunk to 54, its
 // turrets riding in with it: a land block takes a cap of 68 at most); pods on the central spire between the four great
 // spires (the diagonals), off its ring balconies every 18 m. The slabs are Ys's (8aj-alt-c-hotel hook).
@@ -117,4 +120,19 @@ const HOSTSPEC_LIBRARY={name:'the Ancient Library',key:'altLibrary',builder:'bui
 
 // the ones the city places (the placer's pools name the keys; a key not here is skipped). The Undulant house waits
 // on the placer's `lo` (its plates are under the 18 m colonnade rule); Sky J (the Whorl) is not vendored: see NOTES.md.
-const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_SKYF,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT];
+// the Bole: six ribs twisting up from an 88 m root splay to a 30 m waist, carrying seven planted trays (tray k's deck at
+// 36 + 30 k, out to rad(y) + 3.5) with a glazed drum of rooms under each (radius .7 of the tray's, 28 m tall); 8aj-alt-a-bole.
+// A pod stands on a tray's deck and roots in the drum of the tray above, its back door through that drum (ysWallHole); the
+// six crests are the bearings midway between the ribs at that height (the ribs climb the rim and turn .55 rad in 260 m),
+// one pod to a crest. The cut snaps to a tray's top (Y0 + 30 n), so the stump's roof is its last tray; only the lower trays'
+// decks (30, 22, 16, 12 m deep from tray 0 up) take a pod, hence the cuts. The floors pass lays one 4.2 m storey (`storey`)
+// in each drum at its tray, not a 30 m one.
+const HBO={Y0:36,P:30,HR:260,rad:y=>{const t=clamp(y/260,0,1);return 15+73*Math.pow(1-t,3)+22*t*t;}};
+HBO.rD=k=>(HBO.rad(HBO.Y0+HBO.P*k)+3.5)*.7;
+const HOSTSPEC_BOLE={name:'the Bole',key:'altBole',builder:'buildAltBole',H:345,Y0:HBO.Y0,podium:70,cap:68,shaped:false,square:false,
+ floors:{y0:HBO.Y0,pitch:HBO.P,top:0,first:0},storey:4.2,k0:0,plate:k=>HBO.Y0+HBO.P*k,
+ rAt:(yl,th)=>{if(yl<HBO.Y0-1)return HBO.rD(0)*.97;const m=Math.floor((yl-HBO.Y0+1)/HBO.P);if(m>=6)return 11.5-2.5*yl/332;return HBO.rD(m+1)*.97;},   /* the drum over the plate (a metre under a deck counts as above it) */
+ cuts:{tall:[186,216],mid:[156,186],low:[126,156],land:[126,156]},crownY:345,sink:'seabed',minY:9,
+ bearings:(st,n)=>anhFaces([0,1,2,3,4,5].map(i=>i/6*TAU+.3+TAU/12+.55*96/HBO.HR),st,n,.2,.04),
+ crest:yl=>[0,1,2,3,4,5].map(i=>i/6*TAU+.3+TAU/12+.55*(yl+4)/HBO.HR),podsPlus:3};
+const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_SKYF,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT,HOSTSPEC_BOLE];

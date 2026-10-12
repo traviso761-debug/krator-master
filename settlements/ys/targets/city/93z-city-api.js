@@ -48,7 +48,18 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
   const pt=PLACE.hosts.filter(h=>/Trays stump at the head|Lens stump by the river|sunk Terrace Wedge/.test(h.n));R.push({name:'point-hosts',ok:pt.length===4&&pt.every(h=>h.drawn&&h.pods.length>0),detail:pt.map(h=>h.n+' ('+Math.round(h.x)+','+Math.round(h.z)+') '+h.pods.length+' pods'+(SPANS.list.some(e=>e.na===h.n||e.nb===h.n)?', bridged':h.land?'':', unbridged')).join(' | ')||'none'});
   const wc=PLACE.blds.find(r=>r.key==='hyk_wet_cells');const nd=CITY.STACKS.find(s=>/Needle/.test(s.n));R.push({name:'wet-cells-at-the-needle',ok:!!(wc&&nd&&Math.hypot(wc.x-nd.x,wc.z-nd.z)<nd.r+30&&wc.sink>2),detail:wc?'at ('+Math.round(wc.x)+','+Math.round(wc.z)+'), rock '+wc.sink.toFixed(1)+' m to the bed':'not placed'});}
  {const sh=PLACE.hosts.filter(h=>/strip ring/.test(h.n)||(h.block&&/^9\d,0$|^1\d\d,0$/.test(h.block)&&!/Trays|Lens stump|sunk Terrace/.test(h.n)));R.push({name:'strip-hosts',ok:(PLACE.strip||0)>=6&&sh.every(h=>h.drawn&&h.pods.length>0),detail:(PLACE.strip||0)+' small reclaimed Ancients on the strip east of the inner quarter: '+sh.map(h=>h.type).join(', ')});}
- {const RU=PLACE.ruins||[];R.push({name:'ruins-in-the-east-shallows',ok:RU.length>=3&&RU.every(r=>r.drawn&&r.sink<-6),detail:RU.length?RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)+' m, '+r.h+' m tall').join(' | '):'none placed'});}
+ {const RU=(PLACE.ruins||[]).filter(r=>!r.grid);R.push({name:'ruins-in-the-east-shallows',ok:RU.length>=3&&RU.every(r=>r.drawn&&r.sink<-6),detail:RU.length?RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)+' m, '+r.h+' m tall').join(' | '):'none placed'});}
+ // Travis's three open items (Oct 5 2026): the drowned grid's sunk ruins (88-city-sunk), every Trays a podded stump, the
+ // central region infilled (88 section 6)
+ {const RU=(PLACE.ruins||[]).filter(r=>r.grid);const water=r=>[[r.site.cx,r.site.cz]].concat(ysPlBoxPoly(r.site)).some(p=>{const g=ysBlockIJ(p[0],p[1]),b=ysBlock(Math.round(g[0]),Math.round(g[1]));return b&&b.use==='water';});
+  const bad=RU.filter(r=>!r.drawn||r.sink>-6||water(r));const kinds=new Set(RU.map(r=>r.key));
+  R.push({name:'ruins-in-the-drowned-grid',ok:RU.length>=6&&kinds.size>=4&&!bad.length,detail:RU.length+' sunk ruins of '+kinds.size+' kinds'+(bad.length?', '+bad.length+' bad: '+bad.map(r=>r.name).join(' | '):'')+': '+RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)).join(' | ')});}
+ {const F=PLACE.hosts.filter(h=>h.type==='skyF');const bad=F.filter(h=>h.full||h.cutY==null||h.cutY>160||!h.drawn||h.pods.length<3||h.pods.some(p=>!p.drawn));
+  R.push({name:'trays-are-podded-stumps',ok:F.length>0&&!bad.length,detail:F.map(h=>h.n+' cut '+h.cutY+' of 290, '+h.pods.length+' pods on '+new Set(h.pods.map(p=>p.y)).size+' trays').join(' | ')+(bad.length?' | BAD: '+bad.map(h=>h.n).join(', '):'')});}
+ {const bad=[];let n=0;for(const h of PLACE.hosts){const P=FLOORS.plans.filter(p=>p.host===h.n&&p.cores.some(c=>c.key==='0,0'));if(P.length<2)continue;n++;
+   const S=FLOORS.stairs.filter(t=>t.host===h.n&&t.drawn);if(S.length<P.length-1)bad.push(h.n+' '+S.length+'/'+(P.length-1));}
+  R.push({name:'host-floors-linked-by-stairs',ok:!bad.length&&FLOORS.stairs.length>0,detail:bad.length?bad.length+' hosts short: '+bad.slice(0,4).join(' | '):FLOORS.stairs.length+' newel stairs link the inhabited floors of '+n+' hosts'});}
+ {const I=PLACE.blds.filter(r=>r.why==='central infill');R.push({name:'central-infill',ok:I.length>=150&&I.every(r=>r.drawn),detail:I.length+' small buildings infilled in the central region, '+I.filter(r=>!r.drawn).length+' not drawn'});}
  R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
  // the foreign quarter (88c-city-foreign.js): at least 100 slots filled with a foreign building, each inside its slot's box
@@ -60,10 +71,15 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
    for(const st of streets)if(ysPlHit(f.box,st)){onSt++;if(bad.length<4)bad.push(f.key+' on '+st.tag);break;}}
   const comp=[F.embassy,F.chapterhouse].filter(Boolean);for(const c of comp){const B=(c===F.embassy?YS_FQ.embassy:YS_FQ.chapterhouse).box;for(const st of streets)if(ysPlHit(B,st)){onSt++;if(bad.length<4)bad.push('compound on '+st.tag);break;}}
   const by=F.byCulture||{};const cultures=['iziz','republic','voth'].filter(c=>fills.some(s=>s.fill.culture===c&&s.fill.drawn));
-  R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn),
-   detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse').length+' slots filled ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
+   // every foreign building that is not a residence (the shops, the tavern, the workshops, the warehouse, the market, the embassy,
+  // the chapterhouse) has its rooms with their spots (88c YS_FQ_ROOMS; Oct 12 2026)
+  {const all=fills.map(s=>s.fill).concat(YS_FQ.embassy&&!fills.some(s=>s.fill===YS_FQ.embassy)?[YS_FQ.embassy]:[]).filter(f=>f.drawn&&VERN.defs[f.key]&&!/dwelling/.test((VERN.defs[f.key].tags.type||[]).join(' ')));
+   const miss=all.filter(f=>!YS_FQ_ROOMS[f.key]).map(f=>f.key);const bids=new Set(all.map(f=>f.bld));const sp=SPOTS.filter(o=>o.est&&ROOMS[o.room]&&bids.has(ROOMS[o.room].bld)).length;
+   R.push({name:'foreign-trade-rooms',ok:!miss.length&&(F.tradeBlds||0)===all.length&&sp>0,detail:(F.tradeBlds||0)+' of '+all.length+' trade and civic buildings with rooms ('+(F.tradeRooms||0)+' rooms, '+sp+' spots)'+(miss.length?'; no rooms for '+[...new Set(miss)].join(', '):'')});}
+ R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn)&&(F.rooms||0)>=100,
+   detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse'||s.kind==='embassy').length+' slots filled, '+(F.rooms||0)+' residences with a room ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
     +(bad.length?'; '+(out+onSt)+' bad: '+bad.join(' | '):'; every one inside its slot and off the streets')+(nd?'; '+nd+' not drawn':'')
-    +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+', '+F.embassy.cleared+' lane houses cleared)':'not drawn'):'NOT PLACED')
+    +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+(F.embassy.cleared?', '+F.embassy.cleared+' lane houses cleared':', on its square')+')':'not drawn'):'NOT PLACED')
     +'; chapterhouse '+(F.chapterhouse?(F.chapterhouse.drawn?'at '+F.chapterhouse.x+','+F.chapterhouse.z+(F.chapterhouse.onSquare?' on its square':' in block '+F.chapterhouse.block):'not drawn'):'NOT PLACED')
     +'; '+(F.doors||0)+' door marks; merge '+(F.merge?F.merge.instances+' instances into '+F.merge.meshes+' meshes':'none')});}
  // the biome (89-city-biome.js, BIOME-API.md): bound and rooted where the mask allows; the biome's own invariants

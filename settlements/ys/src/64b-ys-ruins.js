@@ -19,7 +19,7 @@ function ysPlaceRuin(scene,o){const d=o.d==null?4:o.d,dk=d>0?1:0;const B=typeof 
  const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
  let H=null;try{H=withFlatGround(()=>B(G,0,0,dk));}catch(e){reportErr('ruin '+o.key+' '+e.stack);}
  HOLES=1;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
- for(const n of ['trunk','leafCard'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    /* a plant is never part of a building */
+ for(const n of ['trunk','leafCard','figB','figH'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    /* a plant is never part of a building, and nobody stands on the seabed (the kit's figures) */
  const T=YS_RUIN_TYPES.find(t=>t.key===o.key)||null;const kind=T?T.kind:'civic';
  for(let i=r0;i<REG.length;i++){const r=REG[i];r.cls='ruin';r.key=o.key;r.id=i;
   r.tags=Object.assign({culture:'ancients',type:[kind],wealth:'civic',decay:d,ruin:o.name||o.key},r.tags||{});}
@@ -51,4 +51,21 @@ const YS_RUIN_TYPES=[
  {key:'ruinGovernment',name:'the Assembly',builder:'buildGovernment',kind:'civic',w:210,d:260,h:95,r:150,cx:0,cz:20},
  // the Vault: a windowless battered box 260 x 140 x 62 on a berm, its south-east corner caved to the server floors, deep
  // cooling fins on the long faces, chillers and stacks on the roof, the substation yard east
- {key:'ruinDataCenter',name:'the Vault',builder:'buildDataCenter',kind:'industrial',w:390,d:380,h:110,r:220,cx:10,cz:10}];
+ {key:'ruinDataCenter',name:'the Vault',builder:'buildDataCenter',kind:'industrial',w:390,d:380,h:110,r:220,cx:10,cz:10},
+ // the kit's smaller civic alternates (Travis, Oct 5 2026: more ruins in the drowned grid between the stumps), for the
+ // drowned grid's pass only (`gridOnly`: the east shallows' pass keeps its eight)
+ // the Bastion Drum: a flared concrete drum open to the sky through an oculus, slit bands, four stairs between wedge
+ // buttresses to doors at 15 m, a stepped precinct wall; its south-east lip burst down to the slits, a buttress fallen
+ {key:'ruinDrum',name:'the Bastion Drum',builder:'buildAltBunker',kind:'civic',w:160,d:160,h:34,r:80,gridOnly:true},
+ // the Watch Cup: a blind stem carrying a cup of three trays stepping out, in a palisade of stepped slabs; the cup's
+ // south-east corner broken off at the stem's foot, a run of the palisade flat
+ {key:'ruinCup',name:'the Watch Cup',builder:'buildAltPolice',kind:'civic',w:108,d:108,h:40,r:54,gridOnly:true},
+ // the Linked Blocks: a dark clinic tower burnt at the head, the ward cubes on pilotis with the top one slid off to the
+ // east, the long front wing and its ambulance canopy
+ {key:'ruinLinked',name:'the Linked Blocks',builder:'buildAltHospital',kind:'civic',w:188,d:186,h:88,r:94,cz:9,gridOnly:true}];
+// the standing mass of each (what rises 6 m over its own ground: not the aprons, berms and forecourts), off the vendored
+// builders at decay 1 (Oct 12 2026), as {w, d, cx, cz}: the drowned grid's pass (targets/city/88-city-sunk.js) keeps it
+// clear of the hosts and the spans and lets the flat parts lie on the bed under the water
+{const C={ruinPolice:[123,93,-4,-11],ruinLibrary:[123,58,32,0],ruinLab:[150,71,39,0],ruinBunker:[119,138,-4,2],ruinHospital:[162,115,0,2],
+  ruinHotel:[144,81,0,12],ruinGovernment:[184,189,0,2],ruinDrum:[118,118,0,0],ruinCup:[78,78,0,0],ruinLinked:[164,86,12,20]};
+ for(const T of YS_RUIN_TYPES)if(C[T.key]){const [w,d,cx,cz]=C[T.key];T.core={w,d,cx,cz};}}

@@ -52,6 +52,20 @@ function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
     stripRing(0,y+TS-3.3,0,R*.7,dx,20);}
    else{const fm=mesh(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(11*PS,trayR(th),v);return[r*Math.cos(th),0,r*Math.sin(th)];},64,3,{uS:16,vS:2,hole:holeFn(1,68+k,null,1.5)}),MAT.concreteR,P,6,y+TS-6,4);fm.rotation.set(.35,0,.25);}}
   meshMerged(trays,CONC(dx),P);meshMerged(darks,MAT.dark,P);
+  if(ysOn&&cut!=null&&dx>0){/* YS: a stump's torn top (Travis, Oct 5 2026: a Trays stump cut at a tray read as a whole tower). The core
+    and the next band's lining stand 2-12 m over the last tray, torn ragged, a few mullions with them, and a wedge of the next
+    tray hangs on where the core stands tallest. Hash noise only (fbm, lathe's jag), so the builder's stream is unchanged. */
+   const k=k0+Math.round(L/TS),R=RT(y0+L),ang=k*.14,trayR=th=>R*(1+.22*Math.cos(3*(th-ang))),sd=k+3;
+   for(const [r,M] of [[11*PS,CONC(dx)],[9.5*PS,MAT.guts]])mesh(lathe({rFn:()=>r,H:12,cut:7,jag:5,seed:sd,nu:32,nv:4}),M,P,0,L,0);
+   const lh=u=>1.2+6*fbm(u*5,k,73,2);
+   mesh(gridSurface((u,v)=>{const th=u*TAU,r=trayR(th)*.72;return [r*Math.cos(th),L+.2+v*lh(u),r*Math.sin(th)];},64,2,{hole:(u,v)=>fbm(u*9,k,74,2)<.45}),MAT.dark,P);
+   for(let j=0;j<18;j++){const th=j/18*TAU,h=8*fbm(j*.9,k,75,2)-2;if(h<1.2)continue;const r=trayR(th)*.82;kput('mullR',[r*Math.cos(th),L+h/2,r*Math.sin(th)],qEuler(0,-th,0),[.8*PS,h,.8*PS],null);}
+   let ub=0,hb=-1;for(let i=0;i<32;i++){const h=fbm(i/32*7+sd,2.3,sd*.7,3);if(h>hb){hb=h;ub=i/32;}}const tc=ub*TAU,yT=L+Math.min(TS-1.2,7+5*(hb*2-1)-.2);   /* the wedge: where the core stub is tallest, its top on the stub's torn edge (sagged) */
+   const ro=(u)=>{const th=tc+(u*2-1)*.65,t=u*2-1;return 11*PS+(trayR(th)-11*PS)*(.3+.55*fbm(th*3,k,76,2))*(1-t*t*.85);};
+   const wpt=(u,r,y)=>{const th=tc+(u*2-1)*.65;return [r*Math.cos(th),y,r*Math.sin(th)];};
+   mesh(gridSurface((u,v)=>wpt(u,lerp(10.6*PS,ro(u),v),yT),16,3,{}),CONC(dx),P);
+   mesh(gridSurface((u,v)=>wpt(u,lerp(10.6*PS,ro(u),v),yT-2.2),16,3,{}),CONC(dx),P);
+   mesh(gridSurface((u,v)=>wpt(u,ro(u),yT-2.2+v*2.2),16,1,{}),CONC(dx),P);}
   if(cut==null){mesh(lathe({rFn:y=>13*PS*Math.sqrt(clamp(1-Math.pow(y/10,2),0,1)),H:10,nu:32,nv:6}),CONC(dx),P,0,L,0);kput(dx>0?'ringR':'ringW',[0,L+3,0],qEuler(Math.PI/2,0,0),[15*PS,15*PS,4*PS],null);if(dx===0)kput('finial',[0,L+13,0],null,[3*PS,5,3*PS],null);}};
  bodyGroup(G,Y0,d,dd,build,Y0+TS*5,RT(Y0+60));
  if(!noPlinth&&!(ysOn&&YS_CUT.noPlinth))figures(-PR,PR*1.28,6,6);   /* YS: no figures round a plinth that is not drawn */

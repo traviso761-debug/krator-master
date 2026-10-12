@@ -19,7 +19,7 @@ function FURN(o){if(!o||!o.key){reportErr('FURN: no key');return null;}if(FURN_B
 // the primitives, one kdef per shape and material family (shell matte, nacre, bone, weed cloth, lens glass, barnacle, dark).
 // Called from the end of 60-hyk-mat.js: the Hykkousoi materials do not exist when this fragment loads.
 function hykFurnKitDefs(){const G={box:new THREE.BoxGeometry(1,1,1),cyl:new THREE.CylinderGeometry(.5,.5,1,14),cone:new THREE.CylinderGeometry(0,.5,1,14),ball:new THREE.SphereGeometry(.5,14,10),dome:new THREE.SphereGeometry(.5,14,8,0,TAU,0,Math.PI/2)};
- const M={shell:'hkFloorI',nacre:'hkNacreI',bone:'hkBoneI',weed:'hkWeedI',lens:'hkLens',barn:'hkBarnI',dark:'guts'};
+ const M={shell:'hkFloorI',nacre:'hkNacreI',bone:'hkBoneI',weed:'hkClothI',lens:'hkLens',barn:'hkBarnI',dark:'guts'};   /* weed: the cloth pair (60-hyk-mat, Oct 12 2026) */
  for(const g in G)for(const m in M){const mat=MAT[M[m]];if(!mat){reportErr('furniture: no material '+M[m]);continue;}kdef('furn_'+g+'_'+m,G[g],mat);}}
 function furnFrame(x,z,ry,opt){opt=opt||{};const F={x,z,ry:ry||0,y:opt.y!=null?opt.y:terrainH(x,z),seed:opt.seed||1,variant:opt.variant||0,wealth:opt.wealth==null?.5:opt.wealth,name:opt.name||''};
  let st=(F.seed*2654435761)>>>0;F.rnd=()=>{st=(Math.imul(st,1664525)+1013904223)>>>0;return st/4294967296;};
@@ -36,7 +36,7 @@ function furnFrame(x,z,ry,opt){opt=opt||{};const F={x,z,ry:ry||0,y:opt.y!=null?o
  F.blob=(lx,ly,lz,rx,ry2,rz,col,m,rot)=>{const p=F.P(lx,ly,lz);kput('furn_ball_'+mk(m),p,q(rot),[rx*2,ry2*2,rz*2],col);};
  F.dome=(lx,ly,lz,r,h,col,m)=>{const p=F.P(lx,ly,lz);kput('furn_dome_'+mk(m),p,null,[r*2,h*2,r*2],col);};
  // merged shell surfaces, in world space: a lathe (profile [[r,y],...] bottom to top about a vertical axis at lx,lz) and a tube
- const matOf=m=>({shell:'hkFloor',nacre:'hkNacre',bone:'hkBone',weed:'hkWeed',lens:'hkLens',barn:'hkBarn',dark:'guts'})[m||'shell']||'hkFloor';
+ const matOf=m=>({shell:'hkFloor',nacre:'hkNacre',bone:'hkBone',weed:'hkCloth',lens:'hkLens',barn:'hkBarn',dark:'guts'})[m||'shell']||'hkFloor';
  // lathe options pass through to hykLathe (lobes flute rings noise twist tilt ops flip); scale:[sx,sz] stretches the lathe
  // about its axis before the put (an oval basin); flip winds the surface inward (a bowl's inner skin: draw the profile twice)
  F.lathe=(lx,lz,prof,col,m,o)=>{o=o||{};const H=prof[prof.length-1][1]-prof[0][1];const y0=prof[0][1];const rAt=y=>{const yy=y0+y;for(let i=1;i<prof.length;i++){if(yy<=prof[i][1]){const a=prof[i-1],b=prof[i];const t=(yy-a[1])/Math.max(1e-6,b[1]-a[1]);return a[0]+(b[0]-a[0])*t;}}return prof[prof.length-1][0];};

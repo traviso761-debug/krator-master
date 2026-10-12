@@ -37,7 +37,7 @@ function hykAgriField(G,o){reseed(30850+(o.v|0));
    hykPut('hkShell',hykMilFlare([px,.0,pz],[0,1,0],pr+.1,.6,{col:cream}));}}
  // the tool shed: a barnacle cone in the far corner, its door toward the field
  {const SX=-15.5,SZ=8.5;const sh={cx:SX,cz:SZ,rb:2.8,rt:1.8,h:3.6,dir:0,tilt:.18,mat:'hkBarn',col:grey,fluteN:14,seed:5,ventK:.22};const L=hykMilConeL(sh);sh.L=L;
-  const ops=[];{const q=hykMilLatheAt(L,0,FY+1.1-L.yBase);ops.push({p:q.p,n:q.n,r:1.0,ky:1.1,kind:'door'});}{const q=hykMilLatheAt(L,Math.PI/2+.7,2.2);ops.push({p:q.p,n:q.n,r:.3,kind:'window'});}
+  const ops=[];{const q=hykLatheAt(L,0,FY+1.1-L.yBase);ops.push({p:q.p,n:q.n,r:1.0,ky:1.1,kind:'door'});}{const q=hykLatheAt(L,Math.PI/2+.7,2.2);ops.push({p:q.p,n:q.n,r:.3,kind:'window'});}
   sh.ops=ops;hykMilCone(sh);for(const op of ops){if(op.kind==='door')hykDoor(op,{level:'ground'});else hykWin(op,{});}
   hykFloor(SX,SZ,FY,2.45,{});
   const room=hykRoom('store',hykCirclePoly(SX,SZ,2.2,12),FY,2.8,{doors:[[SX+L.rFn(FY+1.1-L.yBase),SZ,2.0]],wealth:.15});
@@ -56,18 +56,18 @@ function hykAgriFarmByre(G,o){reseed(30860+(o.v|0));
  const byre={cx:BX,cz:BZ,rb:3.1,rt:2.3,h:3.1,dir:Math.PI/2,tilt:.22,mat:'hkBarn',col:grey,fluteN:18,seed:6,vent:false};const Lb=hykMilConeL(byre);byre.L=Lb;
  const dy=FY+1.1-Lh.yBase;const thS=Math.atan2(SZ-HZ,SX-HX),thH=Math.atan2(HZ-SZ,HX-SX);
  // the hall: the front door, the door into the sleeping cone, windows
- const hops=[];{const q=hykMilLatheAt(Lh,Math.PI/2,dy);hops.push({p:q.p,n:q.n,r:1.0,ky:1.1,kind:'door'});}{const q=hykMilLatheAt(Lh,thS,FY+1.08-Lh.yBase);hops.push({p:q.p,n:q.n,r:1.0,ky:1.08,kind:'pass'});}
- for(const [th,y,r] of [[Math.PI/2+1.3,2.4,.36],[Math.PI/2-1.25,2.5,.34],[-Math.PI/2,2.7,.32]]){const q=hykMilLatheAt(Lh,th,y);hops.push({p:q.p,n:q.n,r,kind:'window'});}
+ const hops=[];{const q=hykLatheAt(Lh,Math.PI/2,dy);hops.push({p:q.p,n:q.n,r:1.0,ky:1.1,kind:'door'});}{const q=hykLatheAt(Lh,thS,FY+1.08-Lh.yBase);hops.push({p:q.p,n:q.n,r:1.0,ky:1.08,kind:'pass'});}
+ for(const [th,y,r] of [[Math.PI/2+1.3,2.4,.36],[Math.PI/2-1.25,2.5,.34],[-Math.PI/2,2.7,.32]]){const q=hykLatheAt(Lh,th,y);hops.push({p:q.p,n:q.n,r,kind:'window'});}
  hall.ops=hops;hykMilCone(hall);for(const op of hops){if(op.kind==='door')hykDoor(op,{level:'ground'});else if(op.kind==='pass')hykDoor(op,{level:'ground',room:'hall',depth:.5});else hykWin(op,{});}
  hykFloor(HX,HZ,FY,3.2,{});
  // the sleeping cone, opened toward the hall; a fillet where the two shells meet
- const sops=[];{const q=hykMilLatheAt(Ls,thH,FY+1.08-Ls.yBase);sops.push({p:q.p,n:q.n,r:1.0,ky:1.08,kind:'pass'});}
- for(const [th,y,r] of [[Math.PI,1.9,.32],[Math.PI/2+.5,2.0,.28]]){const q=hykMilLatheAt(Ls,th,y);sops.push({p:q.p,n:q.n,r,kind:'window'});}
+ const sops=[];{const q=hykLatheAt(Ls,thH,FY+1.08-Ls.yBase);sops.push({p:q.p,n:q.n,r:1.0,ky:1.08,kind:'pass'});}
+ for(const [th,y,r] of [[Math.PI,1.9,.32],[Math.PI/2+.5,2.0,.28]]){const q=hykLatheAt(Ls,th,y);sops.push({p:q.p,n:q.n,r,kind:'window'});}
  sleep.ops=sops;hykMilCone(sleep);for(const op of sops){if(op.kind==='pass')hykDoor(op,{level:'ground',room:'bedroom',depth:.5});else hykWin(op,{});}
  hykFloor(SX,SZ,FY,2.35,{});
  {const r=Lh.rFn(1.8)-.25;hykPut('hkBarn',hykMilFlare([HX+r*Math.cos(thS),1.5,HZ+r*Math.sin(thS)],[Math.cos(thS),0,Math.sin(thS)],1.8,.9,{col:grey2}));}
  // the byre: the wide low door, a slit window, the fillet onto the hall
- const bops=[];{const q=hykMilLatheAt(Lb,Math.PI/2,FY+1.08-Lb.yBase);bops.push({p:q.p,n:q.n,r:1.2,ky:.95,kind:'door'});}{const q=hykMilLatheAt(Lb,0,1.8);bops.push({p:q.p,n:q.n,r:.3,kind:'window'});}
+ const bops=[];{const q=hykLatheAt(Lb,Math.PI/2,FY+1.08-Lb.yBase);bops.push({p:q.p,n:q.n,r:1.2,ky:.95,kind:'door'});}{const q=hykLatheAt(Lb,0,1.8);bops.push({p:q.p,n:q.n,r:.3,kind:'window'});}
  byre.ops=bops;hykMilCone(byre);for(const op of bops){if(op.kind==='door')hykDoor(op,{level:'ground'});else hykWin(op,{open:true});}
  hykFloor(BX,BZ,FY,2.7,{col:hC(0x6a5a48)});
  {const thB=Math.atan2(BZ-HZ,BX-HX);const r=Lh.rFn(1.4)-.25;hykPut('hkBarn',hykMilFlare([HX+r*Math.cos(thB),1.2,HZ+r*Math.sin(thB)],[Math.cos(thB),0,Math.sin(thB)],2.0,1.0,{col:grey}));}
@@ -106,7 +106,7 @@ function hykAgriFarmRack(G,o){reseed(30870+(o.v|0));
   hykDoor({p:[.9,FY+1.08,1.0],n:[1,0,0],r:.95,ky:1.12},{level:'ground',room:'bedroom',depth:.3});}
  // the grain cone on the back corner, a hatch in its flank, filleted onto the pod
  {const GX=-6.4,GZ=-1.6;const gr={cx:GX,cz:GZ,rb:1.7,rt:1.1,h:2.8,dir:Math.PI,tilt:.2,mat:'hkBarn',col:grey2,fluteN:12,seed:8,ventK:.25};const Lg=hykMilConeL(gr);gr.L=Lg;
-  const ops=[];{const q=hykMilLatheAt(Lg,Math.PI/2,1.5);ops.push({p:q.p,n:q.n,r:.36,kind:'window'});}gr.ops=ops;hykMilCone(gr);for(const op of ops)hykWin(op,{open:true});
+  const ops=[];{const q=hykLatheAt(Lg,Math.PI/2,1.5);ops.push({p:q.p,n:q.n,r:.36,kind:'window'});}gr.ops=ops;hykMilCone(gr);for(const op of ops)hykWin(op,{open:true});
   hykPut('hkBarn',hykMilFlare([-4.75,1.0,GZ],[-1,0,0],1.3,.7,{col:grey2}));}
  // the drying yard: three bone racks hung with salt-fish strips, a low wall round them
  for(const rx of [7.0,8.6,10.2]){for(const z of [-1.4,1.4]){kput('hkPost',[rx,1.05,z],null,[.05,2.1,.05],bone);kput('hkBall',[rx,2.12,z],null,[.09,.08,.09],bone);hykPut('hkBone',hykMilFlare([rx,.02,z],[0,1,0],.05,.22,{col:bone}));}

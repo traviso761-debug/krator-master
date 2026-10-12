@@ -4,8 +4,10 @@ The half-drowned capital of the Hykkousoi, on the ruins of an Ancient city at th
 north-west bay of the Ring Sea. **Phases 0–3 are built: the harness, the mockup, the Hykkousoi kit (`dist/kit.html`, `--assert` green)
 and the city (`dist/ys.html`): the layout, shore and nav in `targets/city`, the placement pass (`88-city-place.js` records,
 `88b-city-draw.js` draws them), twenty Ancient host types with grown pods, the bridge graph, the harbours and moles, the
-river, the north-west bay biome on the land and the karst, and the building editor (the Edit button). Phase 4 (the record
-and the gallery) is in `NOTES.md`'s last rounds; the foreign quarter's own kits are the last phase 3 piece.**
+river, the north-west bay biome on the land and the karst, the building editor (the Edit button) and the foreign quarter
+(the Iziz Vernacular, the Republican dwellings, the Voth embassy and townhouses, the Historians' chapterhouse). Phase 4
+(the record and the gallery) and Travis's follow-ups (the central infill, every Trays a podded stump, the drowned grid's
+ruins: Oct 12 2026) are in `NOTES.md`'s last rounds.**
 
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)

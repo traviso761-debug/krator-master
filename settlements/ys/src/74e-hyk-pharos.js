@@ -52,7 +52,7 @@ function buildHykPharosCrown(G,o){reseed(30680+(o.v|0));
  hykTideRail(0,zL,RG-.45,yL+1.15,0,TAU,{col:cBone});
  // ---- the lantern: a nacre drum of eight lenses, a lens dome, a spire; the beacon on its pedestal inside
  const LR=4.0,LH=4.4;const LL={H:LH,yBase:yL,cx:0,cz:zL,rFn:y=>LR*(1+.04*Math.sin(y*1.6)),nu:64,nv:12,rings:{n:3,amp:.02},col:cNac};
- const lops=[];for(let i=0;i<8;i++){const q=hykTideAt(LL,i/8*TAU+Math.PI/8,2.3);q.r=.95;q.ky=1.1;lops.push(q);}LL.ops=lops;
+ const lops=[];for(let i=0;i<8;i++){const q=hykLatheAt(LL,i/8*TAU+Math.PI/8,2.3);q.r=.95;q.ky=1.1;lops.push(q);}LL.ops=lops;
  hykPut('hkNacre',hykLathe(LL));hykPut('hkIn',hykLathe(Object.assign({},LL,{rFn:y=>LL.rFn(y)*.9,flip:true,col:cIn,ops:lops.map(q=>({p:[q.p[0]*.95,q.p[1],zL+(q.p[2]-zL)*.95],r:q.r,ky:q.ky}))})),true);
  for(const q of lops){hykWin(q,{nacre:true,open:true,depth:.7});kput('hkLens',[q.p[0]-q.n[0]*.2,q.p[1],q.p[2]-q.n[2]*.2],qFacing(q.n),[q.r*.9,q.r*.9*q.ky,.42],cLens);}
  kput('hkLipN',[0,yL+.03,zL],qEuler(Math.PI/2,0,0),[LR*1.07,LR*1.07,1.1],cNac);
@@ -83,6 +83,11 @@ function buildHykPharosCrown(G,o){reseed(30680+(o.v|0));
   if(bw.y<top+5){const t=G.worldToLocal(new THREE.Vector3(bw.x,top+6,bw.z));const f=[0,CY+CH+4.0,zL];
    hykPut('hkNacre',hykTube([f,[(f[0]+t.x)/2,(f[1]+t.y)/2,(f[2]+t.z)/2],[t.x,t.y,t.z]],u=>.5-.25*u,{seg:8,col:cNac}));
    for(let i=1;i<=3;i++){const u=i/4;hykPut('hkNacre',hykDisc(f[0]+(t.x-f[0])*u,f[1]+(t.y-f[1])*u,f[2]+(t.z-f[2])*u,1.1,{col:cNac,lobes:{n:5,amp:.1},sag:.1,nu:12}));}   /* three collars up the mast */
+   /* three stays from the mast's upper collar down to the crown's shoulders, each sagging a little and knuckled where it
+      roots (Oct 12 2026: the mast was a plain pole); hash-free, no draw from the stream */
+   {const m=[f[0]+(t.x-f[0])*.75,f[1]+(t.y-f[1])*.75,f[2]+(t.z-f[2])*.75];for(let k=0;k<3;k++){const q=pod.surf(((k/3+.08)%1+1)%1,.8,1.0),a=[q[0],q[1],q[2]+cz];
+     const mid=[(m[0]+a[0])/2,(m[1]+a[1])/2-Math.hypot(m[0]-a[0],m[2]-a[2])*.06,(m[2]+a[2])/2];
+     hykPut('hkNacre',hykTube([m,mid,a],u=>.16-.05*u,{seg:6,col:cNac}));kput('hkBall',a,null,[.32,.26,.32],cNac);}}
    beam.position.copy(t);}}}
  let ang=rng()*TAU;const mat=beam.children[0].material;
  window.YS_TICKS=window.YS_TICKS||[];window.YS_TICKS.push(function(dt){ang+=(dt||.016)*TAU/5;beam.rotation.y=ang;mat.opacity=(typeof YS_NIGHT!=='undefined'&&YS_NIGHT)?.55:.2;});

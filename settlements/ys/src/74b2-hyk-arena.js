@@ -7,7 +7,7 @@
 // stand against the wall on the diagonals; the games-master's tribune, a nacre pod on a bastion, sits on the back of
 // the ring and looks down the arena to the gate, its spire the Arena's crown. No bridge head: the Arena stands on the
 // ground and is entered by its gate alone. Reuses the Amphitriton's annulus, band, radial wall, rail, pad, water and
-// lamp-post helpers, and 74c's hykTideAt (a lathe point ON its lobes and flutes).
+// lamp-post helpers, and 74c's hykLatheAt (a lathe point ON its lobes and flutes).
 function hykArenaPodEl(P,y){const s=clamp((y-P.cy)/P.b,-.999,.999);return Math.asin(Math.sign(s)*Math.pow(Math.abs(s),1/(P.e1||1)));}
 function buildHykArena(G,o){reseed(30690+(o.v|0));
  const col=hC(hPick(HPAL.shell)),colW=hC(hPick(HPAL.shellWarm)),nac=hC(hPick(HPAL.nacre)),bone=hC(hPick(HPAL.bone)),teal=hC(hPick(HPAL.teal)),flo=hC(hPick(HPAL.floor)),poolC=hC(hPick(HPAL.teal),.85);
@@ -19,8 +19,8 @@ function buildHykArena(G,o){reseed(30690+(o.v|0));
  // walk; above it the parapet (outer and inner faces, the cap, a lip) with open embrasures, gapped at
  // the back where the tribunal sits on the walk
  const wallL={H:WY+.6,yBase:-.6,cx:0,cz:0,rFn:y=>RO+1.8*Math.pow(clamp(1-y/4.5,0,1),2),lobes:LOB,flute:{n:54,amp:.01,sharp:1.3},rings:{n:4,amp:.012},noise:{amp:.006,su:6,sv:1.5,seed:41},nu:160,nv:12,col:colW};
- const gate=Object.assign(hykTideAt(wallL,FR,2.75+.6),{r:2.5,ky:1.1,kind:'door'});
- const arc=[];for(let i=0;i<24;i++){const th=i/24*TAU+TAU/48;if(Math.abs(ANG(th,FR))<.3||TOW.some(t=>Math.abs(ANG(th,t))<.2))continue;arc.push(Object.assign(hykTideAt(wallL,th,6.2+.6),{r:1.0,ky:1.45,kind:'window'}));}
+ const gate=Object.assign(hykLatheAt(wallL,FR,2.75+.6),{r:2.5,ky:1.1,kind:'door'});
+ const arc=[];for(let i=0;i<24;i++){const th=i/24*TAU+TAU/48;if(Math.abs(ANG(th,FR))<.3||TOW.some(t=>Math.abs(ANG(th,t))<.2))continue;arc.push(Object.assign(hykLatheAt(wallL,th,6.2+.6),{r:1.0,ky:1.45,kind:'window'}));}
  wallL.ops=[gate].concat(arc);hykPut('hkShell',hykLathe(wallL));for(const w of arc)hykWin(w,{depth:.9});
  hykDoor(gate,{level:'ground',nacre:true,depth:1.4,name:'the Arena gate'});
  // the wall's inner face where the cutting bares it (the lathe is one-sided): over the gate, holed for it
@@ -59,7 +59,7 @@ function buildHykArena(G,o){reseed(30690+(o.v|0));
  // ---- the towers: urchin spires on the diagonals, standing against the wall, rooted with a flare, slit-lit near the top
  const TR=4.6,TH0=31;for(const a of TOW){const cx=(RO+TR*.7)*Math.cos(a),cz=(RO+TR*.7)*Math.sin(a);
   const tl={H:TH0,yBase:-.6,cx,cz,rFn:y=>TR*Math.pow(Math.max(0,1-y/TH0),.72)+.3+1.2*Math.pow(clamp(1-y/3,0,1),2),flute:{n:9,amp:.12,sharp:1.3},twist:.7,rings:{n:6,amp:.02},noise:{amp:.02,su:4,sv:2,seed:(a*10|0)+50},nu:54,nv:30,col};
-  const tw=[0,1,2].map(i=>{const t=hykTideAt(tl,a+(i-1)*.9,17+i*2.6);return Object.assign(t,{r:.36,ky:1.6,kind:'window'});});tl.ops=tw;
+  const tw=[0,1,2].map(i=>{const t=hykLatheAt(tl,a+(i-1)*.9,17+i*2.6);return Object.assign(t,{r:.36,ky:1.6,kind:'window'});});tl.ops=tw;
   hykPut('hkShell',hykLathe(tl));for(const w of tw)hykWin(w,{lit:true,depth:.5});
   kput('hkBall',[cx,TH0-.4,cz],null,[.55,.7,.55],nac);}
  // ---- the tribune: a bastion drum on the back of the ring, the nacre pod on it opening onto the wall-walk and the
@@ -80,7 +80,7 @@ function buildHykArena(G,o){reseed(30690+(o.v|0));
  const hall=hykRoom('hall',poly,WY+.06,7.5,{doors:[[0,HZ+P.c*.93,5.6,'street']],wealth:1});
  hykSpot(hall,'seat',0,HZ-3.3,0,1.2,1.0);hykSpot(hall,'table',0,HZ-.6,0,2.4,1.1);hykSpot(hall,'shrine',-4.3,HZ-2.4,Math.PI/2,.7,.5);hykSpot(hall,'seat',4.1,HZ-2.0,-Math.PI/2,1.0,.9);
  // ---- lamps (civic: lit): either side of the gate, posts round the wall-walk, the tribune's door, the pool
- for(const s of [-1,1]){const an=hykTideAt(wallL,FR+s*.11,4.6+.6);hykLight(an.p[0]+an.n[0]*.45,an.p[1]+.1,an.p[2]+an.n[2]*.45,{r:.24,nacre:true,level:'ground',bracket:an.p});}
+ for(const s of [-1,1]){const an=hykLatheAt(wallL,FR+s*.11,4.6+.6);hykLight(an.p[0]+an.n[0]*.45,an.p[1]+.1,an.p[2]+an.n[2]*.45,{r:.24,nacre:true,level:'ground',bracket:an.p});}
  for(let i=0;i<10;i++){const a=i/10*TAU+.31;if(Math.abs(ANG(a,-Math.PI/2))<.4)continue;const r=tIn(0)+.6;hykAmphLampPost(r*Math.cos(a),WY,r*Math.sin(a),{level:'L1'});}
  for(const s of [-1,1]){const q=pod.surf(((s*.42/TAU)%1+1)%1,clamp((dEl+.12)/Math.PI+.5,.02,.98));const p=[q[0],q[1]+WY,q[2]+HZ];const n=[q[0],q[1]-P.cy,q[2]];const l=Math.hypot(n[0],n[1],n[2])||1;hykLight(p[0]+n[0]/l*.45,p[1]+.1,p[2]+n[2]/l*.45,{r:.22,nacre:true,level:'L1',bracket:p});}
  for(let i=0;i<4;i++){const a=i/4*TAU+Math.PI/4;hykAmphLampPost((PR+1.2)*Math.cos(a),FY,(PR+1.2)*Math.sin(a),{cool:true,bare:true,level:'ground'});}

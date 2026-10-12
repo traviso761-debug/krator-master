@@ -50,17 +50,26 @@ function hykHoleOf(ops){if(!ops||!ops.length)return null;return (u,v,p)=>{for(co
 // (openings, see hykHoleOf), flip}. Base at yBase, axis y, outward normals.
 function hykLathe(o){const H=o.H,nu=o.nu||48,nv=o.nv||24,yB=o.yBase||0,cx=o.cx||0,cz=o.cz||0;
  const hAt=th=>H*(o.tilt?1-o.tilt.amp*.5*(1+Math.cos(th-(o.tilt.dir||0))):1);
- const rAt=(th,y,u)=>{let r=o.rFn(y);
-  if(o.lobes)r*=1+o.lobes.amp*Math.cos(o.lobes.n*th+(o.lobes.ph||0));
-  if(o.flute)r*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*th+(o.twist||0)*y),o.flute.sharp||2);
-  if(o.rings)r*=1+o.rings.amp*Math.sin(y/H*o.rings.n*TAU);
-  if(o.noise)r*=1+o.noise.amp*(fbm(u*(o.noise.su||3)+(o.noise.seed||0),y/(o.noise.sv||2),o.noise.seed||1,2)-.5)*2;
-  return Math.max(0,r);};
+ const rAt=(th,y,u)=>hykLatheR(o,th,y,u);
  const fn=(u,v)=>{const th=u*TAU;const y=v*hAt(th);const r=rAt(th,y,u);return [cx+r*Math.cos(th),yB+y,cz+r*Math.sin(th)];};
  return hykSurf(fn,nu,nv,{col:o.col,uS:TAU*o.rFn(H*.5)/4,vS:H/4,flip:o.flip,hole:hykHoleOf(o.ops)});}
-// a point and outward normal on a lathe at azimuth th and height y (for its openings)
-function hykLatheAt(o,th,y){const cx=o.cx||0,cz=o.cz||0,yB=o.yBase||0;const r=o.rFn(y);const e=.05;const r2=o.rFn(y+e);const dr=(r2-r)/e;
- const n=new THREE.Vector3(Math.cos(th),-dr,Math.sin(th)).normalize();return {p:[cx+r*Math.cos(th),yB+y,cz+r*Math.sin(th)],n:[n.x,n.y,n.z]};}
+// the lathe's radius at azimuth th and height y (above yBase) with its lobes, flutes, rings and noise: the one formula the
+// surface and every point on it share. u is the surface's own 0..1 parameter (the lathe passes it, so its seam stays
+// as it was); a caller gives an angle only and u is that angle's turn, 0..1
+function hykLatheR(o,th,y,u){let r=o.rFn(y);if(u==null)u=((th/TAU)%1+1)%1;const H=o.H;
+ if(o.lobes)r*=1+o.lobes.amp*Math.cos(o.lobes.n*th+(o.lobes.ph||0));
+ if(o.flute)r*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*th+(o.twist||0)*y),o.flute.sharp||2);
+ if(o.rings)r*=1+o.rings.amp*Math.sin(y/H*o.rings.n*TAU);
+ if(o.noise)r*=1+o.noise.amp*(fbm(u*(o.noise.su||3)+(o.noise.seed||0),y/(o.noise.sv||2),o.noise.seed||1,2)-.5)*2;
+ return Math.max(0,r);}
+// a point and outward normal ON a lathe at azimuth th (from +x toward +z) and height y, for its openings, lips and lamps
+// (Oct 12 2026: this read the bare profile, so on a lobed, fluted or ringed shell a lip floated or sank; the housing,
+// the Tides, the military and the shops each carried a corrected copy, retired for this one)
+function hykLatheAt(o,th,y){const cx=o.cx||0,cz=o.cz||0,yB=o.yBase||0;th=((th%TAU)+TAU)%TAU;
+ const r=hykLatheR(o,th,y),e=.04,et=.012;const ry=hykLatheR(o,th,y+e),rt=hykLatheR(o,th+et,y);
+ const P=[cx+r*Math.cos(th),yB+y,cz+r*Math.sin(th)];
+ const n=new THREE.Vector3().crossVectors(new THREE.Vector3(rt*Math.cos(th+et)-r*Math.cos(th),0,rt*Math.sin(th+et)-r*Math.sin(th)),new THREE.Vector3((ry-r)*Math.cos(th),e,(ry-r)*Math.sin(th))).normalize();
+ if(n.x*Math.cos(th)+n.z*Math.sin(th)<0)n.negate();return {p:P,n:[n.x,n.y,n.z]};}
 // ---------------------------------------------------------------- pod: a superellipsoid with real openings
 // o:{a,b,c (semi-axes x,y,z), e1 (vertical exponent), e2 (horizontal), cy (centre height; default sits the pod on y=0),
 // squash (flatten the underside), nu,nv, noise, col, openings:[{th,el,r,ky,kind}] (th azimuth from +z toward +x, el

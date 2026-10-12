@@ -130,12 +130,12 @@ function hykSpanStairSpiral(cx,cz,rAt,y0,y1,o){o=o||{};const w=o.w||1.1,rise=.19
   kput('hkTread',[cx+rc*cs,y-.06,cz+rc*sn],qEuler(0,-a,0),[w,.12,run*1.08],col);
   rail.push([cx+ro*cs,y+.95,cz+ro*sn]);str.push([cx+(r+.1+w*.82)*cs,y-.24,cz+(r+.1+w*.82)*sn]);
   if(i%7===0)kput('hkPost',[cx+ro*cs,y+.45,cz+ro*sn],null,[.05,.95,.05],col);
-  if(i%6===3&&i<nst){const fp=[cx+(rf+.05)*cs,y-1.2,cz+(rf+.05)*sn];const nrm=[cs,0,sn];const under=[cx+(r+.1+w*.7)*cs,y-.26,cz+(r+.1+w*.7)*sn];
+  if(!o.bare&&i%6===3&&i<nst){const fp=[cx+(rf+.05)*cs,y-1.2,cz+(rf+.05)*sn];const nrm=[cs,0,sn];const under=[cx+(r+.1+w*.7)*cs,y-.26,cz+(r+.1+w*.7)*sn];
    const dl=Math.hypot(under[0]-fp[0],under[1]-fp[1],under[2]-fp[2]);const mid=[(under[0]+fp[0])/2,(under[1]+fp[1])/2-Math.min(1.2,dl*.12),(under[2]+fp[2])/2];
    hykPut('hkBone',hykTube([under,mid,[fp[0]+cs*.4,fp[1]+.05,fp[2]+sn*.4],fp,[fp[0]-cs*.5,fp[1],fp[2]-sn*.5]],(t)=>(.15-.04*t)*(1+.22*Math.max(0,Math.cos(t*Math.max(2,Math.round(dl/1.6))*TAU))),{seg:7,col}));
    hykPut('hkBone',hykFlare(fp,nrm,.16,.4,{col}));kput('hkBall',[fp[0]+cs*.4,fp[1],fp[2]+sn*.4],null,[.2,.2,.2],col);kput('hkBall',under,null,[.2,.18,.2],col);}
   last={a,y,r};a+=dir*run/rc;y-=rise;}
- if(rail.length>2){hykPut('hkBone',hykTube(rail,()=>.07,{seg:6,col}));hykPut('hkBone',hykTube(str,(t)=>.13*(1+.25*Math.max(0,Math.cos(t*nst/3*TAU))),{seg:7,col}));}
+ if(rail.length>2){const sg=o.bare?4:6;hykPut('hkBone',hykTube(rail,()=>.07,{seg:sg,col}));hykPut('hkBone',hykTube(str,(t)=>.13*(1+.25*Math.max(0,Math.cos(t*nst/3*TAU))),{seg:sg+1,col}));}
  return {a1:last.a,y1:last.y,r1:last.r};}
 // ---------------------------------------------------------------- the ladder
 // A bone ladder from (x,z) at y0 up to y1 with a cage: two knuckled stringers, rungs, hoops joined by bars from 2.4 m

@@ -584,3 +584,101 @@ kits' door records into marks; the embassy and the chapterhouse, bigger than any
 culture's blocks. 133 of 133 plots filled (45 Iziz, 48 Republic, 41 Voth, the chapterhouse); the pass's kit instances
 are merged into one mesh per material before the bake (draw calls 215 of 220). The plots were sized before the kits came
 and do not fit them well: see KNOWN_ISSUES. API.md "The foreign quarter".
+
+## Travis's three open items (Oct 12 2026): the central infill, every Trays a podded stump, the drowned grid's ruins
+**The central infill** (section 6 of the placer, last of it, so it takes only what every other pass left): `YS_CENTRAL` is
+the inner quarter's polygon (93z) carried east to the shore; candidates on an 8 m lattice of the city grid, in the
+stream's order, jittered 2 m; the small pool of the block a point falls in (the industry lanes' pool on an industry block,
+nothing on a farm, the river mouth or the arena); each house faces the nearest street along the grid, else the next, and
+its box carries a 3 m dooryard in front, so no later house stands against its door. Three candidates in ten keep a 16 m
+yard open instead. At one in eight the pass put 280 buildings and 4.4 M triangles in, and the city stood at 29.1 M of
+its 30 M; at three in ten it is 181 buildings, the inner quarter 469 against the coast quarter's 220 (`central-infill`,
+`inner-quarter-density`). The Voth embassy and the Historians' chapterhouse (88c) find their compounds at load, after the
+infill, so their search may clear infill houses as it clears the lane's (a lane house costs 4, an infill house 1, at
+most 3 lane houses and 12 in all): the embassy moved from (59, −284) to (78, −370) and clears one lane house, the
+chapterhouse from (194, 48) to (92, 141), both in their blocks.
+**Every Trays a podded stump** (`HOSTSPEC_SKYF`): the cuts are 118–154 m (tall), 94–130 (mid), 58–94 (low), 58–106 (land)
+of the tower's 290, so the tall pool's Trays at (1,3) stands 145 m, not 229; a cut body draws a torn top over its last
+tray (58-sky-f, `YS_CUT` only: the core and the next band's lining standing 2–12 m and ragged, a few mullions, a sagged
+wedge of the next tray where the core stands tallest; hash noise, so the builder's stream is unchanged); the type takes
+four more pods than its wealth's (`podsPlus`), and each stands on a crest of its own tray (`crest`, one pod to a crest),
+so a pod no longer sits up to .6 rad off a crest away from the stump's middle. Both Trays carry 9 pods: (1,3) one on each
+of nine trays from 13 to 109 m, the head's on five trays (`trays-are-podded-stumps`). Every other host's own pods are
+unchanged to the record; the bridge graph's pods moved on three hosts (the Facet (2,−3), the half-sunk Pierced Stacks 3
+and 5), since the infill took ground a shore landing had stood on: 31 spans as before, every node reaching the shore,
+66 piers (62).
+**The drowned grid's ruins** (`88-city-sunk.js`, after the bridge graph, so a ruin keeps out of the spans rather than the
+spans routing round it): Travis's three (the Redoubt, the Terraces, the Cloister) whole, then the kit's smaller civic
+alternates, vendored for the city alone (`8al-alt-11-hospital` the Linked Blocks, `8al-alt-05-bunker` the Bastion Drum,
+`8al-alt-10-police` the Watch Cup). A type's standing mass (what rises 6 m over its own ground, `YS_RUIN_TYPES[].core`,
+measured off the builders at decay 1 in a harness that stops the page after the placer) is kept 6 m clear of everything
+but the water lines and of a 20 m corridor on every span; the aprons, berms and forecourts lie on the bed, clear of the
+other ruins and of the hosts' bodies (their caps at 80 %), every corner in the water, the middle 6 m deep, none of it
+where ships work (the harbours' basins, the aquaculture pens, the river mouth, the headland's batteries, the harbour
+approach) nor in the Amphitriton's block. Eight stand: the Redoubt south of the Pharos (bed −22.6 m: its cut cupola and
+the sagging AA batteries over the water), the Terraces by the Needle (−28.7), the Linked Blocks north-east (−27.3), five
+Watch Cups among the stumps; the Cloister, the Bastion Drum and the Assembly found no gap (`ruins-in-the-drowned-grid`).
+Tried and dropped: Yuni's Cloisters (its ranges are four 4 m storeys, so on any bed the grid offers only its drum and a
+stair tower showed), and a first rule that let a ruin stand in a harbour's water (a Watch Cup took the military
+harbour's seaward corner, across a ship shed's approach). The ruins' plain meshes are merged with the hosts' now, and
+the kit's figures are no longer drawn on a drowned forecourt.
+**Numbers** (`verify.py dist/ys.html --assert`): error panel clean, 39 invariants green; 27.56 M of 30 M scene triangles
+(24.41 M before), 196 of 220 draw calls at the opening (208 before: the ruins merged), the Overview 233, still over its soft 220 as it
+was (244); the kit sheet and the mock pass
+`--assert` too. **The vendor manifest** hashes a file's bytes with CRLF read as LF now (the committed one was written on
+a Windows checkout, so every Linux build rewrote all of it).
+## The gaps, the polish, the housekeeping (Oct 12 2026, Travis: "work on 2, 3, 4")
+**The foreign quarter.** A slot may carry a `wish` (a builder key): the fill takes it whole when it fits, else the pool as
+before. The Voth embassy and the Historians' chapterhouse no longer clear lane houses at load: the placer seats each as a
+compound (`ysPlCompound`, 88) in the first block of its culture with no host, trying every side of the block at five
+shifts, with the building behind a 26 × 21 m square (`street:square`) and an approach strip to the street, and the foreign
+lanes are laid round it. Each foreign plot is sized to a builder of its culture's set picked by the block's wealth (`PL_FOREIGN`,
+`ysPlForeignPick`) and carries it as its wish: fixed 12-20 m plots had fitted a third of the sets' builders. Every dwelling the pass fills gets a room (`ysFqRoom`: the residence's body from `YS_FQ_BODY`,
+a bedroom polygon inset .3, the door at the front, a bed, a store and a food spot), so the life layer can put someone in
+it (`foreign` invariant: 100 or more).
+**The water's edges.** The moles carry bollards every 16 m and a ladder every 55 m (`hykSpanLadder`, framed by the new
+`ysInFrame`), none by a pier, a quay or a span's foot. Roads and canal streets follow the drawn surface (`ysMeshH`, the
+port mesh's own triangle, not the analytic height), lifted by kind; a canal street lies on its bed and is broken under a
+host, a ruin site and a mole. The river's sheet is 95 % of the channel and its banks ease in two steps (`ysRiverY`), so
+the bank no longer shows a step at the waterline.
+**The hosts.** Floors of one core are linked by newel stairs (`FLOORS.stairs`, 88a: consecutive inhabited plans sharing a
+core; drawn bare by 88b, the treads round a fluted newel, `host-floors-linked-by-stairs`). A shelf host (the Trays) drops
+any kit item a grown-on pod put below its own floor (`HYK.placeOn`). The Pharos's mast carries three stays.
+**The polish.** One lathe radius (`hykLatheR`, `hykLatheAt` on the skin with its normal) replaces the four copies in the
+housing, the tides, the military and the shops. Cloth is the library's `cloth.seaweed` (`hkCloth`, materials.json) with a
+procedural fallback. An open bowl (`hykFurnDish` without `fill`) is hollow: the rim cut and an inner lathe. The cliff stair
+marches the drawn surface from 24 m inside the edge to 16 m past it.
+**The biome, re-vendored.** `src/86-bio-*` match `biomes/nwbay` again, including the tree variants
+(`86-bio-56-biome-nwbay-variants.js`). The variants put each species' bark as its own mesh, so the biome drew 169 calls;
+upstream now takes `BIO.host.bakeBark` (set by 89 after `BIO.init`, which drops keys it does not know), stamping the bark
+into the floor's buckets: 50 calls.
+**Draw calls.** Before the bake, a kit item with 60 instances or fewer, none owned by a building, is merged per material
+(`ysMergeSparseKit`, 88b; `window._sparseKit`). Most sparse items are a building's (the editor hides them by owner), so
+it takes only three. What did the work: every host's foam ring was a mesh of its own (34 calls at the Overview); they are
+one mesh now (`HYK_FOAM`, 64). The core stairs first cost 2.24 M triangles (the open-air spiral's bone brackets on each
+of 324 stairs); drawn bare they are 364 k, budgeted per host.
+**Numbers** (`verify.py dist/ys.html --assert`): error panel clean, 40 invariants green, nothing over; 28.43 M of 30 M
+scene triangles (27.56 M before), 187 of 220 draw calls at the opening (196), the Overview 203 (233: under its 220 for the
+first time). The kit sheet and the mock pass `--assert`.
+Seen and left: the river's waterline is a saw-tooth where the flat sheet meets the terrain's 10 m triangles (the phase-0
+grid; KNOWN_ISSUES). Not done: the karst overhangs (`core/terrain` is the refactor's), the textures the library lacks
+(the owner's to find or generate), the Bole as a host, rooms in the foreign trade buildings.
+## The Bole as a host, the rest of the foreign rooms (Oct 12 2026, Travis)
+**The Bole** (`HOSTSPEC_BOLE`, 69i; hooks in the vendored `8aj-alt-a-bole.js`, now `ADAPTED`). Its seven trays each carry a
+glazed drum of rooms under them, so a pod is the Trays' kind: it stands on a tray's deck and roots in the drum of the tray
+above (`rAt` is that drum's radius), its back door through the drum (`ysWallHole`), one pod to a crest, the crests midway
+between the six ribs at that height (they climb the rim and turn .55 rad in 260 m), so no pod meets a rib. The cut snaps
+to a tray's top and keeps the trays whose decks are deep enough for a pod (30, 22, 16, 12 m from tray 0 up). Cut, the
+builder ends each rib in a ragged stub over the cut, snaps the core, stops at the cut tray and draws no saucer; under the
+sea it draws no ground. The floors pass lays one 4.2 m storey in each drum (`T.storey`), not a 30 m one. It stands once,
+placed by hand (`ysPlHostAt(1160, -250)`: the widest open water clear of the east shallows' ruins, the harbours and the
+spans, found with a placement harness): "The Bole stump", cut at 186 m, 10 pods on five trays, one more bridge in the
+graph (32 spans). It is in no random pool, so no other host, building or ruin moved (929 buildings as before).
+**The foreign rooms, the rest** (`YS_FQ_ROOMS`, 88c): every foreign building that is not a residence gets its rooms read off
+its builder's constants, each room a rectangle on the body with its door and its spots: the shop row's three units
+(counter, store), the tavern's hall (hearth, counter, food, three tables with their seats) and three inn rooms above, the
+carpenter's and the potter's workshops, the smithy (forge, anvil, bench, store), the market canopy's sixteen stalls, the
+warehouse and its office, the embassy's reception hall, envoy's chamber, tower study, kitchen and domed hall, the
+chapterhouse's reading hall, archive and scriptorium. Every spot clears its room's walls, its door's swing and every
+other spot by the city's own rule (`spots-fit-their-rooms`, checked offline first), every bedroom has its bed, food and
+store. `foreign-trade-rooms`: 14 of 14 buildings, 37 rooms.

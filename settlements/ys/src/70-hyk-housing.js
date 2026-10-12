@@ -5,21 +5,9 @@
 // every room through hykRoom + hykSpot. No box anywhere. Seeds 30300–30399, six apart (fifteen builders in one block
 // cannot sit eight apart; the sheet builds v = 0 only).
 // ---------------------------------------------------------------- shared helpers (prefix hykHouse…)
-// the modulated radius of a lathe (61's own formula without the geometry), so an opening sits ON a fluted or lobed shell
-function hykHouseLatheR(o,th,y){let r=o.rFn(y);const u=th/TAU,H=o.H;
- if(o.lobes)r*=1+o.lobes.amp*Math.cos(o.lobes.n*th+(o.lobes.ph||0));
- if(o.flute)r*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*th+(o.twist||0)*y),o.flute.sharp||2);
- if(o.rings)r*=1+o.rings.amp*Math.sin(y/H*o.rings.n*TAU);
- if(o.noise)r*=1+o.noise.amp*(fbm(u*(o.noise.su||3)+(o.noise.seed||0),y/(o.noise.sv||2),o.noise.seed||1,2)-.5)*2;
- return Math.max(0,r);}
-// a point and outward normal on a modulated lathe at azimuth th (from +x toward +z; the front is PI/2) and height y
-function hykHouseLatheAt(o,th,y){const cx=o.cx||0,cz=o.cz||0,yB=o.yBase||0;th=((th%TAU)+TAU)%TAU;
- const r=hykHouseLatheR(o,th,y),e=.04,et=.012;const ry=hykHouseLatheR(o,th,y+e),rt=hykHouseLatheR(o,th+et,y);
- const P=[cx+r*Math.cos(th),yB+y,cz+r*Math.sin(th)];
- const n=new THREE.Vector3().crossVectors(new THREE.Vector3(rt*Math.cos(th+et)-r*Math.cos(th),0,rt*Math.sin(th+et)-r*Math.sin(th)),new THREE.Vector3((ry-r)*Math.cos(th),e,(ry-r)*Math.sin(th))).normalize();
- if(n.x*Math.cos(th)+n.z*Math.sin(th)<0)n.negate();return {p:P,n:[n.x,n.y,n.z]};}
+// the lathe's modulated radius and a point on its skin: 61's hykLatheR and hykLatheAt (this fragment's copies retired Oct 12 2026)
 // an opening record on a lathe: push it into L.ops before the lathe is built
-function hykHouseOp(L,th,y,r,ky,kind){const a=hykHouseLatheAt(L,th,y);return {p:a.p,n:a.n,r,ky:ky||1,kind:kind||'window'};}
+function hykHouseOp(L,th,y,r,ky,kind){const a=hykLatheAt(L,th,y);return {p:a.p,n:a.n,r,ky:ky||1,kind:kind||'window'};}
 // a lathe body: the shell, its inner skin (wound inward, into the interior bucket) and the fillet into the ground
 function hykHouseLathe(L,mat,o){o=o||{};hykPut(mat,hykLathe(L));
  if(o.inner!==false){const k=o.k||.92;hykPut('hkIn',hykLathe(Object.assign({},L,{rFn:y=>L.rFn(y)*k,flip:true,col:o.inCol||hC(hPick(HPAL.shell),.88),noise:null})),true);}
@@ -236,7 +224,7 @@ function hykHouseMid3(G,o){reseed(30330+(o.v|0));const col=hC(hPick(HPAL.shell))
  const F=Math.PI/2;L.ops=[hykHouseOp(L,F,1.3,1.05,1.12,'door'),hykHouseOp(L,0,2.6,.5,1),hykHouseOp(L,.7,3.9,.38,1),hykHouseOp(L,F,3.8,.45,1),hykHouseOp(L,Math.PI,4.2,.4,1),hykHouseOp(L,-F+.6,2.2,.42,1)];
  hykHouseLathe(L,'hkShell',{flare:1.3});hykHouseLatheOpenings(L,{});hykFloor(0,0,.12,R*.9,{});
  const w0=hykW(0,0,0);const oy=HYK.cur?(HYK.cur.o.y||0):0;const top=H+.12;const a0=hykHouseWorldA(-F);
- const rAt=y=>hykHouseLatheR(L,0,clamp(y-oy,0,H))*(1+L.lobes.amp)+.02;
+ const rAt=y=>hykLatheR(L,0,clamp(y-oy,0,H))*(1+L.lobes.amp)+.02;
  hykHouseWorld(()=>{hykPad(w0[0],oy+top,w0[2],R*1.0,{col:col2,mat:'hkShell',own:'Stair drum',lobes:8,rail:{a0,gap:.42,col:bone}});
   hykStairSpiral(w0[0],w0[2],rAt,oy+top-.19,oy+.19,{a0,dir:1,w:1.1,col:bone});});
  hykHouseDome(0,0,top+.02,1.5,1.2,'hkShell',col2,{rows:[{y:.45,n:8,s:.22}],spire:1.1,spireR:.3,twist:1.2});
@@ -319,11 +307,11 @@ function hykHouseRich2(G,o){reseed(30342+(o.v|0));const col=hC(hPick(HPAL.nacre)
  hykHouseLathe(L,'hkNacre',{flare:1.5,k:.93});for(const op of L.ops){if(op.kind==='door')hykDoor(op,{level:'ground',nacre:true});else if(op.kind==='pass')hykHousePass(op,true);else hykWin(op,{nacre:true,lit:true});}
  hykFloor(0,0,.12,R*.92,{});hykHouseSpire(0,0,H-.5,4.2,1.1,'hkNacre',col,{n:9,amp:.13,twist:.6});
  // the spines: long on the shoulder at each lobe crest, shorter in a ring above, each rooted in the shell along its normal
- for(let i=0;i<10;i++){const th=i/10*TAU-Math.PI/10;const a=hykHouseLatheAt(L,th,3.9);hykHouseSpike(a.p,[a.n[0],a.n[1]+.35,a.n[2]],2.6,.26,col2);}
- for(let i=0;i<10;i++){const th=(i+.5)/10*TAU-Math.PI/10;const a=hykHouseLatheAt(L,th,5.3);hykHouseSpike(a.p,[a.n[0],a.n[1]+.5,a.n[2]],1.6,.18,col2);}
- for(let i=0;i<6;i++){const th=i/6*TAU;const a=hykHouseLatheAt(L,th,6.2);hykHouseSpike(a.p,[a.n[0],a.n[1]+.8,a.n[2]],1.0,.12,col2);}
+ for(let i=0;i<10;i++){const th=i/10*TAU-Math.PI/10;const a=hykLatheAt(L,th,3.9);hykHouseSpike(a.p,[a.n[0],a.n[1]+.35,a.n[2]],2.6,.26,col2);}
+ for(let i=0;i<10;i++){const th=(i+.5)/10*TAU-Math.PI/10;const a=hykLatheAt(L,th,5.3);hykHouseSpike(a.p,[a.n[0],a.n[1]+.5,a.n[2]],1.6,.18,col2);}
+ for(let i=0;i<6;i++){const th=i/6*TAU;const a=hykLatheAt(L,th,6.2);hykHouseSpike(a.p,[a.n[0],a.n[1]+.8,a.n[2]],1.0,.12,col2);}
  // the buds: the sleeping pod and the study grown onto the flanks, the shrine niche at the back, each with a collar
- const bud=(th,Rb,b,ops,colB,seed)=>{const a=hykHouseLatheAt(L,th,1.2);const d=R*.97+Rb*.72;const cx=Math.cos(th)*d,cz=Math.sin(th)*d;
+ const bud=(th,Rb,b,ops,colB,seed)=>{const a=hykLatheAt(L,th,1.2);const d=R*.97+Rb*.72;const cx=Math.cos(th)*d,cz=Math.sin(th)*d;
   const P={a:Rb,b,c:Rb,e1:.9,e2:.92,nu:44,nv:24,noise:{amp:.028,su:4,sv:3,seed},col:colB,hollow:{t:.08,col:hC(hPick(HPAL.shell),.9)}};
   const thP=Math.atan2(a.p[0]-cx,a.p[2]-cz);P.openings=[{th:thP,el:hykHousePodEl(P,.12+(ops.r||1.0)),r:ops.r||1.0,ky:ops.ky||1.1,kind:'pass'}].concat(ops.wins.map(w=>({th:thP+w[0],el:w[1],r:w[2],kind:'window'})));
   const pod=hykHousePod(P,'hkNacre',cx,cz,{flare:Rb*.3});for(const op of pod.openings){if(op.kind==='pass')hykHousePass(op,true);else hykWin(op,{nacre:true,lit:true});}
@@ -332,8 +320,8 @@ function hykHouseRich2(G,o){reseed(30342+(o.v|0));const col=hC(hPick(HPAL.nacre)
  const N=bud(shA,1.6,1.7,{r:.8,ky:1.0,wins:[[Math.PI,.5,.3]]},col2,16);
  hykPut('hkFloor',hykDisc(0,.03,R+3.6,4.2,{col:hC(hPick(HPAL.floor),.88),lobes:{n:9,amp:.06}}));
  // pearls: either side of the door on the shell, one over the hearth, one on the sleeping pod
- for(const s of [-1,1]){const a=hykHouseLatheAt(L,F+s*.42,2.6);hykHouseLamp(a.p,a.n,{nacre:true});}
- {const a=hykHouseLatheAt(L,F+Math.PI,2.8);hykHouseLamp([a.p[0]*.9,a.p[1],a.p[2]*.9],[-a.n[0],.3,-a.n[2]],{nacre:true,d:.4});}
+ for(const s of [-1,1]){const a=hykLatheAt(L,F+s*.42,2.6);hykHouseLamp(a.p,a.n,{nacre:true});}
+ {const a=hykLatheAt(L,F+Math.PI,2.8);hykHouseLamp([a.p[0]*.9,a.p[1],a.p[2]*.9],[-a.n[0],.3,-a.n[2]],{nacre:true,d:.4});}
  hykHouseLamp(B.pod.at(B.thP+1.1,.35),B.pod.out(B.thP+1.1,.35),{nacre:true});
  const hall=hykRoom('hall',hykCirclePoly(0,0,4.3,18),.12,5.8,{doors:[[0,R,2.2],[B.wall[0],B.wall[2],2.0,'bedroom'],[S.wall[0],S.wall[2],1.8,'library'],[N.wall[0],N.wall[2],1.6,'shrine']],wealth:.9});
  hykHouseHallSpots(hall,0,0,0,1,1.05,{});hykSpot(hall,'seat',1.6,1.9,-.5,1.0,.9);
@@ -417,7 +405,7 @@ function hykPodPoor2(G,o){reseed(30360+(o.v|0));const col=hC(hPick(HPAL.barnacle
  hykHouseLathe(L,'hkBarn',{flare:false,k:.92,inCol:hC(hPick(HPAL.barnacle),.85)});for(const op of L.ops){if(op.kind==='door')hykDoor(op,{level:o.level});else hykWin(op,{});}
  hykPut('hkBarn',hykFlare([0,1.6,.02],[0,0,1],3.0,1.2,{col}));kput('hkLens',[0,T-.35,cz],null,.34,hC(hPick(HPAL.lens)));
  hykFloor(0,cz,.05,2.45,{});
- for(let i=0;i<5;i++){const th=rr(-1.2,Math.PI+1.2);const y=rr(.3,.9);const r=hykHouseLatheR(L,th,y)*.98;const h=rr(.35,.9);kput('hkDrip',[r*Math.cos(th),y-D-h/2+.2,cz+r*Math.sin(th)],qEuler(Math.PI,0,0),[h*.28,h,h*.28],col);}
+ for(let i=0;i<5;i++){const th=rr(-1.2,Math.PI+1.2);const y=rr(.3,.9);const r=hykLatheR(L,th,y)*.98;const h=rr(.35,.9);kput('hkDrip',[r*Math.cos(th),y-D-h/2+.2,cz+r*Math.sin(th)],qEuler(Math.PI,0,0),[h*.28,h,h*.28],col);}
  // the small drop beside it, rooted alike
  {const R2=1.5,D2=1.0,H2=2.5;const L2={H:H2,cx:R+1.5,cz:o.faceZ(R+1.5,0)+R2*.35,yBase:.9-D2,rFn:y=>R2*prof(y/H2)+.03,nu:28,nv:16,noise:{amp:.03,su:4,sv:2,seed:6},col:col2,ops:[]};
   L2.ops=[hykHouseOp(L2,Math.PI/2,D2+.7,.3,1)];hykPut('hkBarn',hykLathe(L2));hykWin(L2.ops[0],{});hykPut('hkBarn',hykFlare([R+1.5,.9+.5,o.faceZ(R+1.5,0)+.02],[0,0,1],R2*.85,R2*.5,{col:col2}));}

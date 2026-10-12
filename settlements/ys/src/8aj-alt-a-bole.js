@@ -87,11 +87,12 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,brk=d===1||d===2,rec=d===2,skin=SHELL(d);
  const SK=[],DK=[],LW=[],GL=[],GU=[];
- REGISTER({name:'The Bole ('+ALT_STATE[d]+')',x:0,z:0,r:100,h:345});
+ const ysS=(typeof YS_CUT!=='undefined'&&YS_CUT)||null,ysc=(typeof ysCutY==='function')?ysCutY(d):null;   /* YS: a host (Ys HOSTSPEC_BOLE): cut at a tray's top, its way-in pods through the drums, no ground under the sea */
+ REGISTER({name:'The Bole ('+ALT_STATE[d]+')',x:0,z:0,r:100,h:ysc!=null?ysc+12:345});
  // the rib radius from the axis at height y: root splay, waist, spread to the crown
  const HR=260,rad=y=>{const t=clamp(y/HR,0,1);return 15+73*Math.pow(1-t,3)+22*t*t;};
  const SAU=[{x:-38,z:-20,y:262,R:70},{x:42,z:-8,y:286,R:56},{x:-4,z:38,y:310,R:46}];
- const fallen=brk?2:-1;                      // the top saucer comes down in the ruin
+ const fallen=brk&&ysc==null?2:-1;                      // the top saucer comes down in the ruin (YS: a cut stump has none: the crown is gone)
  // THE RIBS
  const NR=6,ribs=[];
  for(let i=0;i<NR;i++){const a0=i/NR*TAU+.3,pts=[];
@@ -99,15 +100,16 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
   const S=SAU[i%3],P=pts[pts.length-1],ea=a0+1.1;
   const E=[S.x+S.R*.55*Math.cos(ea),S.y-7,S.z+S.R*.55*Math.sin(ea)],C=[P[0]*1.05,P[1]+40,P[2]*1.05];
   let nb=16;if(i%3===fallen)nb=9;             // a torn stub where its saucer used to be
+  if(ysc!=null){const top=ysc+4+3*((i*7)%5);while(pts.length>2&&pts[pts.length-1][1]>top)pts.pop();nb=0;}   /* YS: every rib a ragged stub a few metres over the cut */
   for(let k=1;k<=nb;k++){const t=k/16,u=1-t;pts.push([u*u*P[0]+2*u*t*C[0]+t*t*E[0],u*u*P[1]+2*u*t*C[1]+t*t*E[1],u*u*P[2]+2*u*t*C[2]+t*t*E[2]]);}
   ribs.push(pts);
   SK.push(altSweep(pts,v=>2.2+1.3*(1-v)+3.4*Math.pow(1-v,7),10));
   // the root foot: a pad where each rib meets the ground
   kput(dd?'boxCR':'boxC',[pts[0][0],.8,pts[0][2]],qEuler(0,-a0,0),[14,1.6,10],null);
-  if(i%3===fallen){const T=pts[pts.length-1];kput('plateR',[T[0],T[1]-3,T[2]],qEuler(rr(-.6,.6),rr(0,3),rr(-.6,.6)),[3,7,1],null);
+  if(i%3===fallen||ysc!=null){const T=pts[pts.length-1];kput('plateR',[T[0],T[1]-3,T[2]],qEuler(rr(-.6,.6),rr(0,3),rr(-.6,.6)),[3,7,1],null);
    altRope(T,[T[0]+rr(-4,4),T[1]-rr(18,40),T[2]+rr(-4,4)],.3);}}
  // THE CORE: fluted, through all three saucers to a lantern; snapped in the ruin
- const CH=brk?296:332,coreR=y=>11.5-2.5*y/332;
+ const CH=ysc!=null?ysc+9:brk?296:332,coreR=y=>11.5-2.5*y/332;   /* YS: the core snapped over the cut */
  const hc=holeFn(dd*.6,9803,brk?CH:null,1.4);
  SK.push(lathe({rFn:coreR,H:332,cut:CH,jag:brk?6:0,flutes:12,amp:.07,nu:48,nv:30,seed:9804,hole:hc}));
  GU.push(lathe({rFn:y=>coreR(y)*.9,H:332,cut:CH-2,nu:24,nv:4}));
@@ -118,7 +120,7 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
   kput('ringW',[0,333,0],qEuler(Math.PI/2,0,0),[12,12,12],null);}
  // THE TRAYS: deck, lawn, parapet and a glazed drum of rooms under each
  const TR=[];
- for(let k=0;k<7;k++){const y=36+k*30,r=rad(y)+3.5,rD=r*.7,hf=holeFn(dd*.7,9805+k*3,null,1.1);
+ for(let k=0;k<7;k++){const y=36+k*30,r=rad(y)+3.5,rD=r*.7,hf=holeFn(dd*.7,9805+k*3,null,1.1);if(ysc!=null&&y>ysc+.5)break;   /* YS: the cut tray is the stump's roof */
   TR.push({y,r,rD});
   const ann=(yy)=>gridSurface((u,v)=>{const th=u*TAU,rr2=lerp(rD-1,r,v);return[rr2*Math.cos(th),yy,rr2*Math.sin(th)];},56,3,
    {uS:r*TAU/8,vS:2,hole:hf&&brk?(u,v)=>hf(u,v*40+k*9):null});
@@ -130,11 +132,14 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
    {uS:6,vS:1,hole:hf&&brk?(u,v)=>hf(u,v*40+k*9):null}));
   // the drum under it, 28 m of rooms: glass and lit cells intact, dark and holed in the ruin
   {const h0=k===0?0:y-30+.2,h1=y-1.8;
-   const dr=lathe({rFn:()=>rD*.97,H:h1-h0,nu:40,nv:6,hole:brk?holeFn(.8,9806+k,null,1.5):null});dr.translate(0,h0,0);DK.push(dr);
+   const dh=brk?holeFn(.8,9806+k,null,1.5):null,ysh=(typeof ysWallHole==='function')?ysWallHole(dh,h0):dh;   /* YS: a way-in pod's hole through the drum */
+   const dr=lathe({rFn:()=>rD*.97,H:h1-h0,nu:40,nv:6,hole:ysh});dr.translate(0,h0,0);DK.push(dr);
    if(!dd){const g=lathe({rFn:()=>rD,H:h1-h0,nu:40,nv:2});g.translate(0,h0,0);GL.push(g);}
    for(let yy=h0+2.6;yy<h1-1;yy+=4.2){if(brk)kput('slab',[0,yy-1.6,0],null,[rD*.96,.5,rD*.96],new THREE.Color(0x2a2622));
-    const n=Math.round(rD*TAU/5);for(let j=0;j<n;j++){const th=(j+.5)/n*TAU;if(brk&&rng()<.35)continue;
-     altWin([(rD+.25)*Math.cos(th),yy,(rD+.25)*Math.sin(th)],[Math.cos(th),0,Math.sin(th)],2.6,1.9,d);}
+    // the cells on the face: the glass (rD) when intact, else the drum itself (.97 rD): at rD + .25 they stood 1.3 m off a
+    // glassless drum (Oct 12 2026)
+    const n=Math.round(rD*TAU/5),rw=dd?rD*.97+.1:rD+.25;for(let j=0;j<n;j++){const th=(j+.5)/n*TAU;if(brk&&rng()<.35)continue;
+     altWin([rw*Math.cos(th),yy,rw*Math.sin(th)],[Math.cos(th),0,Math.sin(th)],2.6,1.9,d);}
     if(!dd)for(let j=0;j<n;j+=2){const th=j/n*TAU;kput('mullW',[(rD+.3)*Math.cos(th),yy,(rD+.3)*Math.sin(th)],qEuler(0,-th,0),[1,4.2,1],null);}}}
   // trees on the lawn: trimmed intact, a thicket in the ruin
   const nt=brk?16:9;for(let j=0;j<nt;j++){const th=rng()*TAU,rr2=rr(rD+3,r-2.5);
@@ -150,6 +155,7 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
   L.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(14,R-2,v);return[ox+r*Math.cos(th),oy+.75,oz+r*Math.sin(th)];},48,3,{uS:6,vS:3,hole}));
   return{A,L};};
  SAU.forEach((S,i)=>{
+  if(ysc!=null)return;   /* YS: a stump carries no saucers */
   if(i===fallen){
    // down on the plain to the south-east, on its edge in its own crater of rubble
    const F=new THREE.Group();F.rotation.set(.32,.6,-.22);F.position.set(150,0,95);G.add(F);
@@ -175,15 +181,15 @@ function buildAltBole(scene,gx,gz,d){reseed(9802+d);KOFF=[gx,0,gz];
   for(let j=0;j<24;j++){const th=j/24*TAU;kput(dd?'postR':'postW',[(S.R-.6)*Math.cos(th),2.6,(S.R-.6)*Math.sin(th)],null,[.25,1.4,.25],null);}
   endGroupXF();
   REGISTER({name:'The Bole: canopy saucer '+(i+1),x:S.x,y:S.y-12,z:S.z,r:S.R,h:16});});
- // the ground: a stone disc between the roots, an apron, people
- kput(SLABC(d),[0,.6,0],null,[96,1.2,96],null);
- apron(G,0,0,96,128,dd,1.2);
+ // the ground: a stone disc between the roots, an apron, people (YS: none under the sea)
+ if(!ysS){kput(SLABC(d),[0,.6,0],null,[96,1.2,96],null);
+ apron(G,0,0,96,128,dd,1.2);}
  meshMerged(SK,skin,G);meshMerged(DK,MAT.dark,G);meshMerged(GU,MAT.guts,G);
  if(LW.length)meshMerged(LW,dd?MAT.turfR:MAT.lawn,G);
  if(GL.length)meshMerged(GL,MAT.glass,G);
- if(brk){rubbleRing(0,0,0,26,110,170,4.5);scatterMoss(0,0,0,30,150,120,4);vinesFromLedge(SK,0,0,0,140,24,0,0);
-  trees(0,0,100,220,40);stainsFromLedge(SK,0,0,0,40,18,0,0);}
- else{trees(0,0,130,200,16);figures(0,118,10,14);}
+ if(brk){if(!ysS){rubbleRing(0,0,0,26,110,170,4.5);scatterMoss(0,0,0,30,150,120,4);}vinesFromLedge(SK,0,0,0,140,24,0,0);
+  if(!ysS)trees(0,0,100,220,40);stainsFromLedge(SK,0,0,0,40,18,0,0);}
+ else if(!ysS){trees(0,0,130,200,16);figures(0,118,10,14);}
  if(rec){
   KOFF=[gx,0,gz];altReclaim(G,260,30,'altBole');
   // hoists from the first saucer and from the trays to the ground, ladders up two ribs
