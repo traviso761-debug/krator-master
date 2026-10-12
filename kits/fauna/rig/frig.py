@@ -165,6 +165,23 @@ for k_ in list(FACES):
     bad_ = (L_ > (CFG.get('torso_spurs', (0, 0))[0] if strict else CFG.get('sliver_len', 0.08))) & (L_ * L_ / (2 * A_ + 1e-12) > (CFG['torso_spurs'][1] if strict else 12))
     _tot += int(bad_.sum()); FACES[k_] = FACES[k_][~bad_]
 print('slivers removed:', _tot)
+if CFG.get('shelf'):      # the shelf left along the classification cut (tiny flat faces at the shoulder top, edge-on in side view)
+    _x0, _y0, _y1, _ar = CFG['shelf']; _t = FACES['torso']; _tr = cr[_t]; _c = _tr.mean(1)
+    _a = 0.5 * np.linalg.norm(np.cross(_tr[:, 1] - _tr[:, 0], _tr[:, 2] - _tr[:, 0]), axis=1)
+    _bad = (np.abs(_c[:, 0]) > _x0) & (_c[:, 1] > _y0) & (_c[:, 1] < _y1) & (_a < _ar)
+    FACES['torso'] = _t[~_bad]; print('shoulder shelf faces removed:', int(_bad.sum()))
+if CFG.get('back_prune') is not None:      # spurs on the back (seen in side view): thin shards at the neck, long horizontal slivers low on the back; the chest is left alone
+    _n = 0
+    for k_ in ('torso', 'head'):
+        if k_ not in FACES: continue
+        t_ = cr[FACES[k_]]; c_ = t_.mean(1) + PIV[k_] * 0      # pivots are local offsets; the back test uses the model's own frame
+        e_ = np.stack([np.linalg.norm(t_[:, 0] - t_[:, 1], axis=1), np.linalg.norm(t_[:, 1] - t_[:, 2], axis=1), np.linalg.norm(t_[:, 2] - t_[:, 0], axis=1)], 1).max(1)
+        A_ = 0.5 * np.linalg.norm(np.cross(t_[:, 1] - t_[:, 0], t_[:, 2] - t_[:, 0]), axis=1); as_ = e_ * e_ / (2 * A_ + 1e-12)
+        back_ = c_[:, 2] < CFG['back_prune']
+        tip_ = (t_[:, :, 2].min(1) < CFG['back_prune'] - 0.01) & (e_ > 0.03) & (as_ > 6)      # a thin face whose tip reaches back past the line
+        bad_ = tip_ | back_ & (((as_ > 8) & (e_ > 0.1)) | ((as_ > 12) & (e_ > 0.04)) | ((k_ == 'head') & (as_ > 20) & (e_ > 0.02)))
+        _n += int(bad_.sum()); FACES[k_] = FACES[k_][~bad_]
+    print('back spur faces pruned:', _n)
 if CFG.get('torso_trim'):      # shoulder spurs: torso faces with a vertex out past the body's width (the wing covers beyond it)
     _x, _y = CFG['torso_trim']; _t = FACES['torso']; _tr = cr[_t]; _bad = (np.abs(_tr[:, :, 0]).max(1) > _x) & (_tr[:, :, 1].mean(1) > _y)
     FACES['torso'] = _t[~_bad]; print('spur faces trimmed:', int(_bad.sum()))

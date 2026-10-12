@@ -7,7 +7,7 @@ name, out = sys.argv[1], sys.argv[2]
 CFG = {
  'quetzal3': dict(split=0.47, armpit_wing_to_torso=False, tail_level=1.0, fold_scale=0.55, overlaps=[('torso', 'neck', 0.03), ('neck', 'head', 0.025), ('torso', 'midsheet', 0.03, 'a>b'), ('wingR', 'midsheet', 0.03), ('wingL', 'midsheet', 0.03)], src='img_quetzal3.glb', classify=fcfg.quetzal, total=9500, wings=3200, lead=(2, +1), flap_axis=(0, 0, 1), pitch='torso', fly_pitch=1.3, sheet_cap=-0.07,
                   T_flap=1.4, amp=(0.55, 0.32), lag=0.6, T_walk=1.6, stride=0.12, lift=0.03, fold=dict(inner=(-1.15, 0.45), outer=(2.6, 0.0))),
- 'bat': dict(torso_trim=(0.22, 0.08), back_squash=(-0.04, 0.2, 0.2, -0.25), split=0.46, fold_scale=0.5, arm=0.1, armpit_wing_to_torso=False, perch_head=0.35, src='img_bat.glb', classify=fcfg.bat, total=9500, wings=3600, lead=(1, +1), flap_axis=(0, 1, 0), pitch='whole', fly_pitch=1.45,
+ 'bat': dict(shelf=(0.14, 0.17, 0.23, 0.0012), back_prune=-0.035, torso_trim=(0.22, 0.08), back_squash=(-0.04, 0.2, 0.2, -0.25), split=0.46, fold_scale=0.5, arm=0.1, armpit_wing_to_torso=False, perch_head=0.35, src='img_bat.glb', classify=fcfg.bat, total=9500, wings=3600, lead=(1, +1), flap_axis=(0, 1, 0), pitch='whole', fly_pitch=1.45,
              T_flap=0.5, amp=(0.55, 0.5), lag=1.0, T_walk=0.9, stride=0.10, lift=0.03, fold=dict(inner=(-1.4, -0.9), outer=(-0.15, -0.5))),
  'archaeopteryx': dict(split=0.50, src='img_archaeopteryx.glb', classify=fcfg.archaeopteryx, total=9500, wings=3200, lead=(2, +1), flap_axis=(0, 0, 1), pitch='torso', fly_pitch=0.6,
                        T_flap=0.35, amp=(0.6, 0.45), lag=0.8, T_walk=0.9, stride=0.14, lift=0.04, fold=dict(inner=(-1.2, 0.3), outer=(-0.3, 1.3))),
