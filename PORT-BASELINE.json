@@ -513,16 +513,16 @@
    "sha256": "b5f81a7f0946feb0aec9f5f9a492d842f7bdea591ab4ad3c7cf7115a9051597e"
   },
   "settlements/ys/dist/kit.html": {
-   "bytes": 5176867,
-   "sha256": "364ac01b1eec65614a91724ccd0094eff19aaffd0928ea4f69aa845fcaf9a9c6"
+   "bytes": 1284750,
+   "sha256": "aa444f4483b73e830fb8e0257d7675da0c4c864928db7ea57d1177dd37ccc9a5"
   },
   "settlements/ys/dist/mock.html": {
-   "bytes": 5192296,
-   "sha256": "f9aa8a6923c9500b10bcc68c2fba3d2ab069689059d8ffe928982ff9177f003a"
+   "bytes": 1300179,
+   "sha256": "56aab641794227c7ad5b345effe7069d6f0da115da97abca6e7ef572c27f759a"
   },
   "settlements/ys/dist/ys.html": {
-   "bytes": 5865746,
-   "sha256": "80268a8074400dde0f1e2ad5ab743314527570fc4b8a31c39757a689a4eb35bd"
+   "bytes": 2001969,
+   "sha256": "a9599e1dbc4e103e44392f6c18253bc1c6ae6eba99ca6a5e26d86facadbff28e"
   },
   "settlements/yuni/yuni-assets.html": {
    "bytes": 7794348,

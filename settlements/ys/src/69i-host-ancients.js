@@ -74,8 +74,11 @@ const HOSTSPEC_SKYF={name:'the Trays',key:'skyF',builder:'buildSkyF',H:HSF.H,Y0:
  floors:{y0:22,pitch:12,top:0,first:0},k0:0,plate:k=>22+12*k,
  rAt:(yl,th)=>{if(yl<HSF.Y0)return 11;const m=Math.floor((yl-HSF.Y0+1)/HSF.TS),t=clamp((HSF.Y0+HSF.TS*m)/HSF.H,0,1),R=(28*(1-.2*t)+6*Math.sin(Math.PI*t))*.72;   // the band a metre under a plate counts as the one above it (the slab)
   return th==null?R:R*(1+.22*Math.cos(3*(th-(m+1)*.14)));},
- cuts:{tall:[178,250],mid:[118,166],low:[58,106],land:[58,130]},crownY:290,sink:'seabed',minY:9,lo:21,
- bearings:(st,n)=>anhFaces([.7,.7+TAU/3,.7+2*TAU/3],st,n,.4,.06)};   // the crests of a mid-stump band (k = 5); a storey turns them .14
+ cuts:{tall:[118,154],mid:[94,130],low:[58,94],land:[58,106]},crownY:290,sink:'seabed',minY:9,lo:21,   /* Travis (Oct 5 2026): every Trays a stump; at 178-250 of 290 it read whole */
+ bearings:(st,n)=>anhFaces([.7,.7+TAU/3,.7+2*TAU/3],st,n,.4,.06),   // the crests of a mid-stump band (k = 5); a storey turns them .14
+ // the lobe crests of the band standing on plate yl (builder y): the placer stands each pod on one, one pod to a crest
+ // (Travis, Oct 5 2026: every Trays a stump carrying pods on its trays), and gives the type four more pods than its wealth's
+ crest:yl=>{const a=(Math.floor((yl-HSF.Y0+1)/HSF.TS)+1)*.14;return [a,a+TAU/3,a+2*TAU/3];},podsPlus:4};
 // the Attraction: thirteen fluted parabolic spires on an arcaded podium 14 m tall (the kit's 74 m podium shrunk to 54, its
 // turrets riding in with it: a land block takes a cap of 68 at most); pods on the central spire between the four great
 // spires (the diagonals), off its ring balconies every 18 m. The slabs are Ys's (8aj-alt-c-hotel hook).

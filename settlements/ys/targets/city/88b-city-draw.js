@@ -110,8 +110,9 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   const host=HOSTS.find(x=>x.n===P.host);if(host){const fl=host.floors.find(f=>Math.abs(f.y-P.y)<.6);if(fl){fl.kind='inhabited';fl.use=Math.max(fl.use||0,.5);fl.rooms=P.rooms;}}}
  window._floors={plans:FLOORS.plans.length,rooms:FLOORS.rooms,spots:FLOORS.spots,walls:nw};
  // the Ancients builders draw a host as a dozen plain meshes (skin, lining, ribbons, plinth...), so thirty hosts were two
- // hundred draw calls: every host's static opaque meshes are merged across the city, one mesh per material and layout
- window._cityMerge=ysMergeHostMeshes(scene,PLACE.hosts.filter(h=>h.G).map(h=>h.G));
+ // hundred draw calls: every host's static opaque meshes are merged across the city, one mesh per material and layout;
+ // the ruins' with them (their builders are the same lineage's, a dozen plain meshes each)
+ window._cityMerge=ysMergeHostMeshes(scene,PLACE.hosts.filter(h=>h.G).map(h=>h.G).concat((PLACE.ruins||[]).filter(r=>r.G).map(r=>r.G)));
  window._city={blds:PLACE.blds.length,hosts:HOSTS.length,pods:PLACE.hosts.reduce((s,h)=>s+h.pods.length,0),slots:PLACE.slots.length,fail,ms:Math.round(performance.now()-t0)};
 });
 // merge the plain meshes under the given groups by material (and attribute layout) into world-space meshes on the scene;

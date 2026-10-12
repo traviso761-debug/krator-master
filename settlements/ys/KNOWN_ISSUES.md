@@ -13,6 +13,10 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   shrinks `skyPlinth` to `YS_CUT.podium` (apron and plinth decor dropped); `ysWallHole` adds the way-in pods'
   holes to the body's hole predicate (skin, lining, window cells and lobe bands all share it) on A, B and C.
   Three helpers at the top and seven one-line edits; the kit's intact and toppled paths are untouched.
+- `58-sky-f.js` (from `kits/ancients/src`): besides the Oct 5 host hooks (every tray standing, the core to the ground, the
+  way-in holes), a cut body draws a torn top over its last tray when `YS_CUT` is set (Oct 12 2026: the core and the next
+  band's lining standing 2–12 m, ragged, a few mullions, a sagged wedge of the next tray). Hash noise only (`fbm`, the
+  lathe's `jag`): the builder's stream is unchanged, and the kit's own paths are untouched.
 - `92-camera.js` (from `settlements/iziz/src`): the Ys standard pack: a seventh preset element is the hour,
   `n` toggles noon/night, the camera and walker stay above the sea, the inspector names ground and sea, and
   the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
@@ -25,15 +29,32 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   re-vendor is a plain copy; a new name clash shows up as the build's duplicate-name error.
 
 ## Open
-- [ ] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
+- [x] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
       blocks, the strip and the shore still has gaps where nothing stands (the lanes' quarters that refused a villa, the
       edges of the land blocks toward the water). A pass with the small pool, as the strip's ring houses are placed.
-- [ ] (Travis, Oct 5 2026) **Every Sky F must be the stump-plus-pods version**: a Trays tower drawn whole or without pods
+      *Done (Oct 12 2026):* section 6 of the placer, `YS_CENTRAL` (NOTES.md "Travis's three open items"); 181 small
+      buildings, three candidates in ten kept as 16 m yards. Open: see "The central infill" below.
+- [x] (Travis, Oct 5 2026) **Every Sky F must be the stump-plus-pods version**: a Trays tower drawn whole or without pods
       (the tall pool's cut at 178–250 m reads as a whole tower; a stump whose pods failed) is wrong; cut them lower and
-      make sure each carries pods on its trays.
-- [ ] (Travis, Oct 5 2026) **More ruined buildings in the drowned area**: beyond the three civic ruins in the east polygon,
+      make sure each carries pods on its trays. *Done (Oct 12 2026):* cuts 118–154 (tall) and lower, a torn top over the
+      last tray, four more pods each, one to a tray's crest (`trays-are-podded-stumps`).
+- [x] (Travis, Oct 5 2026) **More ruined buildings in the drowned area**: beyond the three civic ruins in the east polygon,
       the drowned grid between the stumps wants more fully-ruined, un-podded Ancient kit buildings (the hospital, the hotel,
-      the bunker, the smaller civic pieces) standing on the bed with their lower floors under water.
+      the bunker, the smaller civic pieces) standing on the bed with their lower floors under water. *Done (Oct 12 2026):*
+      `88-city-sunk.js`, eight more (the Redoubt, the Terraces, the Linked Blocks for the hospital, five Watch Cups;
+      `ruins-in-the-drowned-grid`). Open: see "The sunk ruins" below.
+- [ ] (Oct 12 2026) **The central infill** faces each house to the nearest street along the grid, so a house in a quarter's
+      middle can face a street 30–50 m off across its neighbours' backs (its 3 m dooryard is kept clear, nothing more);
+      there are no paths to the infill's doors and no courts: a courtyard ring (`ysPlFront` `inward`) per quarter would read
+      as planned. The yards are left to chance, not laid out. Its 2.85 M triangles put the city at about 27.4 M of 30 M.
+- [ ] (Oct 12 2026) **The sunk ruins** keep their standing mass (`YS_RUIN_TYPES[].core`, measured off the builders at decay 1)
+      6 m clear of everything and 10 m clear of every span's line, but their aprons, berms and forecourts lie on the bed
+      under 15–29 m of water and may pass under a host's cap (not its body at 80 %). The kit's Cloister (the hospital Travis
+      named), the Bastion Drum and the Assembly found no gap clear of the hosts, the spans and the harbours' water (refused,
+      `PLACE.refused`); the Linked Blocks stands for the hospital. The Vault is not tried. They stand round the grid's edges
+      and in its north (the Linked Blocks and the Watch Cups among the stumps there, the Terraces by the Needle, the Redoubt
+      south of the Pharos): the grid's middle between the Amphitriton's neighbours has no gap their standing mass fits.
+      Not podded, no door marks, as in the east. Which of two types that fit the same gap gets it is the list's order.
 - [ ] Phase 0 terrain is the port's tensor grid sized for a coast along x: 10 m cells only within ~900 m of the
       origin, 90 m cells beyond. Phase 3 replaces it with the Ys terrain mesh (regular cells over the 3.2 km map,
       a far-country mesh for the volcano and the Inner Wall).
@@ -237,7 +258,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       ruin: it would float over the stem).
 - [ ] (Oct 5 2026) The ruins in the east shallows: the polygon takes only the ruins that fit it with their footprint
       clear (the Vault, 390 m, and the Assembly, 210 × 260, never fit); a ruin's registry volumes are the kit's (`cls:'ruin'`),
-      with no door marks; their meshes are not merged with the hosts' (`ysMergeHostMeshes` could take `YS_RUINS`).
+      with no door marks. *Merged with the hosts' meshes since Oct 12 2026 (`ysMergeHostMeshes`); the kit's figures are no
+      longer drawn on a ruin's drowned forecourt.*
 - [ ] (Oct 5 2026) The river's strip rides 35 cm over the terrain mesh wherever the heightfield has not carved the valley
       to the bed (the valley is missing over much of the farmland, e.g. at (-300, 330), and the cells are 90 m past 900 m
       from the origin): there the water lies on the grass as a sheet, not in a valley. The carve (`ysRiverY`) and the
@@ -246,6 +268,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The Trays (`skyF`): a pod that is not a way in is centred on its plate, so its lower half sinks into the
       tray slab and shows as a bump under the tray, and its lily pad lies inside the slab; bearings are the crests of the
       middle band, and the lobes turn .14 rad a storey, so a pod far from the stump's middle sits up to .6 rad off a crest.
+      *The bearings are fixed (Oct 12 2026): each pod stands on a crest of its own tray (`T.crest`, one pod to a crest); the
+      sinking into the slab is still open.*
 - [ ] (Oct 5 2026) The Pharos's mast is a plain nacre pole, 50–60 m from the crown's finial to over the Warden's spire; it
       wants stays or a cage. The beam's cone still clips the spire's finial when the crown stands on the spire's own side.
 - [x] (Oct 5 2026) The Wet Cells' rock read pale on the barnacle set. Travis's `rock.wet.dark` set is bound to a new pair

@@ -34,7 +34,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
 | `57-sky-e.js` | 4 |  |
-| `58-sky-f.js` | 6 |  |
+| `58-sky-f.js` | 7 |  |
 | `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (101) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 15 | the surface builder (35); lathe: the shell body (47); pod: a superellipsoid with real openings (64); conch: a tapering tube along a log spiral (83); tube along a polyline (parallel-transport frames (99); fillet: roots a shell into a face or the ground (113); disc: floors, landings, lily pads (normal up unl (120) |
@@ -42,7 +42,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `62-robotics.js` | 8 |  |
 | `64-houses-def.js` | 9 |  |
 | `64-hyk-accrete.js` | 16 | the tideline: crust, weed, barnacle specks, foam (62); accretion: pods grown onto a host's face (76) |
-| `64b-ys-ruins.js` | 6 |  |
+| `64b-ys-ruins.js` | 7 |  |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
 | `66-office-c.js` | 5 |  |
@@ -55,7 +55,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69h-host-c-arcades.js` | 10 |  |
 | `69h-host-d-stalks.js` | 9 |  |
 | `69h-host-e-bellhall.js` | 13 |  |
-| `69i-host-ancients.js` | 12 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
+| `69i-host-ancients.js` | 13 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
 | `69j-host-offices.js` | 6 | the specs (28) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
@@ -118,7 +118,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ak-alt-a-houses.js` | 25 | helpers (27) |
 | `8al-alt-00-lib.js` | 10 |  |
 | `8al-alt-01-office-terrace.js` | 7 |  |
+| `8al-alt-05-bunker.js` | 5 |  |
 | `8al-alt-06-library.js` | 7 |  |
+| `8al-alt-10-police.js` | 5 |  |
+| `8al-alt-11-hospital.js` | 5 |  |
 | `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (34) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
 | `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
@@ -132,6 +135,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `77-voth-townhouses.js`, `84-city-geo.js`, `84b-city-shore.js`, `86-bio-45-city-init.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `88c-city-foreign.js`, `89-city-biome.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 248 |
+| `city` | `77-voth-townhouses.js`, `84-city-geo.js`, `84b-city-shore.js`, `86-bio-45-city-init.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88-city-sunk.js`, `88a-city-floors.js`, `88b-city-draw.js`, `88c-city-foreign.js`, `89-city-biome.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 258 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

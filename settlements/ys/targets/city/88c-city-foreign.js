@@ -58,16 +58,16 @@ function ysFqFill(slot,f,st,culture){const ry=slot.ry+(f.rot?(st.chance(.5)?Math
   YS_FQ.byKey[f.key]=(YS_FQ.byKey[f.key]||0)+1;YS_FQ.byCulture[culture]=(YS_FQ.byCulture[culture]||0)+1;YS_FQ.filled++;
   if(slot.kind==='chapterhouse')YS_FQ.chapterhouse=slot.fill;}
  // a compound (the embassy; the chapterhouse when 88 found no square): behind a lane of one of its culture's blocks,
- // facing the lane, where only that lane's small houses are in the way. Candidates: each quarter of each block, the
+ // facing the lane, where only that lane's small houses and the central infill are in the way. Candidates: each quarter of each block, the
  // box's near edge 22..43 m from the block's axis (the lane runs along it), its centre 32..64 m along the lane; the
  // one that clears the fewest houses wins, ties to the first (block order, quarter order, nearest the lane)
  const byBox=new Map();for(const r of PLACE.blds)byBox.set(r.box,r);
  function compound(key,blocks,culture,name){const D=VERN.defs[key];if(!D||!blocks.length)return null;let best=null;
   search:for(const b of blocks)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]])for(const uo of [22,25,28,31,34,37,40,43])for(const vo of [48,40,56,32,64]){
    const c=ysPlAt(b,qu*(uo+D.d/2+1),qv*vo);const ry=ysPlFacing(-qu*PL_U[0],-qu*PL_U[1]);const B=ysPlBox(c[0],c[1],D.w/2+1,D.d/2+1,ry,'foreign:'+key);
-   const cl=ysFqClashes(B);const recs=cl.map(o=>byBox.get(o));if(recs.some(r=>!r||r.why!=='foreign quarter lane'))continue;
+   const cl=ysFqClashes(B);const recs=cl.map(o=>byBox.get(o));if(recs.some(r=>!r||!/^(foreign quarter lane|central infill)$/.test(r.why)))continue;   /* only the lane's houses and the infill (88 section 6) give way */
    const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B,{slope:3});PLACE.refused=n0;if(y==null)continue;
-   if(recs.length>3)continue;const score=recs.length*4+(uo-22)/3;   /* a house cleared costs what 12 m of setback costs */
+   const lane=recs.filter(r=>r.why==='foreign quarter lane').length;if(lane>3||recs.length>12)continue;const score=lane*4+(recs.length-lane)+(uo-22)/3;   /* a lane house cleared costs what 12 m of setback costs, an infill house a quarter of that */
    if(!best||score<best.score)best={b,B,recs,y,ry,x:c[0],z:c[1],score};if(!best.score)break search;}
   if(!best)return null;for(const r of best.recs)if(ysFqDrop(r))YS_FQ.lanesCleared++;ysPlTake(best.B);
   const st=KRAND.stream(KRAND.child(KRAND.cell(YS_FQ.SEED,best.b.i,best.b.j),key));

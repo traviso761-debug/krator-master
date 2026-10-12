@@ -584,3 +584,46 @@ kits' door records into marks; the embassy and the chapterhouse, bigger than any
 culture's blocks. 133 of 133 plots filled (45 Iziz, 48 Republic, 41 Voth, the chapterhouse); the pass's kit instances
 are merged into one mesh per material before the bake (draw calls 215 of 220). The plots were sized before the kits came
 and do not fit them well: see KNOWN_ISSUES. API.md "The foreign quarter".
+
+## Travis's three open items (Oct 12 2026): the central infill, every Trays a podded stump, the drowned grid's ruins
+**The central infill** (section 6 of the placer, last of it, so it takes only what every other pass left): `YS_CENTRAL` is
+the inner quarter's polygon (93z) carried east to the shore; candidates on an 8 m lattice of the city grid, in the
+stream's order, jittered 2 m; the small pool of the block a point falls in (the industry lanes' pool on an industry block,
+nothing on a farm, the river mouth or the arena); each house faces the nearest street along the grid, else the next, and
+its box carries a 3 m dooryard in front, so no later house stands against its door. Three candidates in ten keep a 16 m
+yard open instead. At one in eight the pass put 280 buildings and 4.4 M triangles in, and the city stood at 29.1 M of
+its 30 M; at three in ten it is 181 buildings, the inner quarter 469 against the coast quarter's 220 (`central-infill`,
+`inner-quarter-density`). The Voth embassy and the Historians' chapterhouse (88c) find their compounds at load, after the
+infill, so their search may clear infill houses as it clears the lane's (a lane house costs 4, an infill house 1, at
+most 3 lane houses and 12 in all): the embassy moved from (59, −284) to (78, −370) and clears one lane house, the
+chapterhouse from (194, 48) to (92, 141), both in their blocks.
+**Every Trays a podded stump** (`HOSTSPEC_SKYF`): the cuts are 118–154 m (tall), 94–130 (mid), 58–94 (low), 58–106 (land)
+of the tower's 290, so the tall pool's Trays at (1,3) stands 145 m, not 229; a cut body draws a torn top over its last
+tray (58-sky-f, `YS_CUT` only: the core and the next band's lining standing 2–12 m and ragged, a few mullions, a sagged
+wedge of the next tray where the core stands tallest; hash noise, so the builder's stream is unchanged); the type takes
+four more pods than its wealth's (`podsPlus`), and each stands on a crest of its own tray (`crest`, one pod to a crest),
+so a pod no longer sits up to .6 rad off a crest away from the stump's middle. Both Trays carry 9 pods: (1,3) one on each
+of nine trays from 13 to 109 m, the head's on five trays (`trays-are-podded-stumps`). Every other host's own pods are
+unchanged to the record; the bridge graph's pods moved on three hosts (the Facet (2,−3), the half-sunk Pierced Stacks 3
+and 5), since the infill took ground a shore landing had stood on: 31 spans as before, every node reaching the shore,
+66 piers (62).
+**The drowned grid's ruins** (`88-city-sunk.js`, after the bridge graph, so a ruin keeps out of the spans rather than the
+spans routing round it): Travis's three (the Redoubt, the Terraces, the Cloister) whole, then the kit's smaller civic
+alternates, vendored for the city alone (`8al-alt-11-hospital` the Linked Blocks, `8al-alt-05-bunker` the Bastion Drum,
+`8al-alt-10-police` the Watch Cup). A type's standing mass (what rises 6 m over its own ground, `YS_RUIN_TYPES[].core`,
+measured off the builders at decay 1 in a harness that stops the page after the placer) is kept 6 m clear of everything
+but the water lines and of a 20 m corridor on every span; the aprons, berms and forecourts lie on the bed, clear of the
+other ruins and of the hosts' bodies (their caps at 80 %), every corner in the water, the middle 6 m deep, none of it
+where ships work (the harbours' basins, the aquaculture pens, the river mouth, the headland's batteries, the harbour
+approach) nor in the Amphitriton's block. Eight stand: the Redoubt south of the Pharos (bed −22.6 m: its cut cupola and
+the sagging AA batteries over the water), the Terraces by the Needle (−28.7), the Linked Blocks north-east (−27.3), five
+Watch Cups among the stumps; the Cloister, the Bastion Drum and the Assembly found no gap (`ruins-in-the-drowned-grid`).
+Tried and dropped: Yuni's Cloisters (its ranges are four 4 m storeys, so on any bed the grid offers only its drum and a
+stair tower showed), and a first rule that let a ruin stand in a harbour's water (a Watch Cup took the military
+harbour's seaward corner, across a ship shed's approach). The ruins' plain meshes are merged with the hosts' now, and
+the kit's figures are no longer drawn on a drowned forecourt.
+**Numbers** (`verify.py dist/ys.html --assert`): error panel clean, 39 invariants green; 27.56 M of 30 M scene triangles
+(24.41 M before), 196 of 220 draw calls at the opening (208 before: the ruins merged), the Overview 233, still over its soft 220 as it
+was (244); the kit sheet and the mock pass
+`--assert` too. **The vendor manifest** hashes a file's bytes with CRLF read as LF now (the committed one was written on
+a Windows checkout, so every Linux build rewrote all of it).

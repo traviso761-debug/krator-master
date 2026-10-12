@@ -159,6 +159,9 @@ const PL_PODN={poor:4,middle:5,rich:6,full:8};
 const PL_QUARTER={n:0,library:false};   // the quarter hosts placed so far (two offices first, then the Library)
 const YS_RUINS_POLY=[[1153.1,290.4],[1162.2,-13.0],[899.0,-56.8],[813.2,392.1],[931.2,584.5],[1157.9,485.7]];   // Travis: the ruined shallows east of the Amphitriton
 const YS_BAND=[[471.5,-122.0],[851.4,-728.1],[875.6,-644.6],[718.0,-34.6],[530.7,-106.1]];   // Travis: the half-sunk Ancients' strip
+// the central region (Travis, Oct 5 2026: "the open ground between the inner quarter's blocks, the strip and the shore"):
+// the inner quarter's polygon (93z inner-quarter-density) carried east to the shore; the infill's ground test keeps it on land
+const YS_CENTRAL=[[-52.3,-445.6],[-178.0,378.3],[166.1,647.4],[240,660],[340,330],[460,-100],[590,-380],[466.6,-328.8]];
 // one host record: the type, the cut snapped to a storey, how it stands (sunk for A, on the bed for D and H), its plates
 // (world y) and its pods spread over them (different plates, a few apart, every pod's floor a plate's top)
 function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);const cls=o.full?'full':o.land?'land':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];if(!T)return ysPlRefuse('no host type for '+cls);
@@ -174,14 +177,19 @@ function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);c
  rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
  for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+(T.lo!=null?T.lo:(/^mid/.test(T.key)?4:18)):T.minY;   /* a mid-rise has a terrace, not a colonnade, at its foot */if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
  // the pods: the way in first, then the wealth pool; bearings from the type, plates stepped about a base
- const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth];const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
+ const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth]+(T.podsPlus||0);const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
  while(keys.length<n)keys.push(ysPlPick(st,PL_PODS[b.wealth]));
  const TH=T.bearings(st,keys.length),Pl=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=o.land?0:Math.min(Pl.length-1,Math.max(0,Math.round(Pl.length*(o.full?.18:.35))));   // a land host's pods at ground scale: the lowest plates
  const ok=(k,D)=>Pl[k]+D.h+2<=top&&!(T.avoid&&T.avoid(Pl[k]-sink,D.h));
  const place=(key,i)=>{const D=HYK.defs[key];if(!D||!Pl.length)return false;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,Pl.length-1);
   const isCrown=o.crown&&key===o.crown;if(isCrown){k=Pl.length-1;while(k>0&&T.avoid&&T.avoid(Pl[k]-sink,D.h))k--;}   /* the crown on the top plate, over the cut if need be (Travis: at the actual top; its beam is hoisted over the spire) */
-  if(!isCrown&&!ok(k,D)){let best=-1;for(let d=1;d<Pl.length;d++){for(const q of [k-d,k+d])if(q>=0&&q<Pl.length&&ok(q,D)){best=q;break;}if(best>=0)break;}if(best<0)return false;k=best;}   // the pod clears the cut and the host's own ledges
-  const y=Pl[k];const a=TH[i]-ry;const into=!!D.into;   // an into def is drawn only as a way in (the kit sheet tests it so: the Urchin pod's other layout puts its store in the door swing)
+  // a type with crests (the Trays, `T.crest`): the pod stands on its tray's crest nearest its bearing that no pod on that
+  // plate holds; any other type keeps its bearing
+  const crestOf=q=>{if(!T.crest)return TH[i];const da=(p,c)=>Math.abs(Math.atan2(Math.sin(p-c),Math.cos(p-c)));
+   return T.crest(Pl[q]-sink).sort((p,c)=>da(p,TH[i])-da(c,TH[i])).find(c=>!rec.pods.some(p=>Math.abs(p.y-Pl[q])<1&&da(p.a+ry,c)<.5));};
+  const fine=q=>ok(q,D)&&crestOf(q)!=null;
+  if(!isCrown&&!fine(k)){let best=-1;for(let d=1;d<Pl.length;d++){for(const q of [k-d,k+d])if(q>=0&&q<Pl.length&&fine(q)){best=q;break;}if(best>=0)break;}if(best<0)return false;k=best;}   // the pod clears the cut and the host's own ledges
+  const y=Pl[k];const a=(isCrown?TH[i]:crestOf(k))-ry;const into=!!D.into;   // an into def is drawn only as a way in (the kit sheet tests it so: the Urchin pod's other layout puts its store in the door swing)
   rec.pods.push({key,a:+a.toFixed(4),y,level:y>=20?'L2':'L1',into,wealth:D.tags.wealth});if(into)rec.ways.push({a:+a.toFixed(4),y,R:D.w/2});ysPlCount(key);return true;};
  // the way in first: if the wealth's way-in pod fits no plate, the smallest one (every host needs a way in)
  keys.forEach((key,i)=>{if(!place(key,i)&&i===0)place('hyk_pod_poor_1',0);});
@@ -361,7 +369,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  if(typeof YS_RUIN_TYPES!=='undefined'){const P=YS_RUINS_POLY;const st=ysPlStream('ruins',{i:80,j:0});
   const inP=(x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
   const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);const grid=[];for(let x=Math.min(...xs);x<=Math.max(...xs);x+=25)for(let z=Math.min(...zs);z<=Math.max(...zs);z+=25)if(inP(x,z))grid.push([x,z,st.next()]);
-  grid.sort((p,q)=>p[2]-q[2]);const types=YS_RUIN_TYPES.slice().sort((p,q)=>p.w*p.d-q.w*q.d);
+  grid.sort((p,q)=>p[2]-q[2]);const types=YS_RUIN_TYPES.filter(T=>!T.gridOnly).sort((p,q)=>p.w*p.d-q.w*q.d);   /* the alternates are the drowned grid's (88-city-sunk) */
   for(const T of types){const ry=st.range(0,TAU);let got=null;
    for(const [x,z] of grid){const cx=T.cx||0,cz=T.cz||0;const mx=x+cx*Math.cos(ry)+cz*Math.sin(ry),mz=z-cx*Math.sin(ry)+cz*Math.cos(ry);   /* the footprint's middle (the builder's frame turned ry) */
     const Bx=ysPlBox(mx,mz,T.w/2+4,T.d/2+4,ry,'ruin '+T.key);if(ysPlClash(Bx,/^street/))continue;
@@ -495,6 +503,31 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
    const A={x:best.mx+nx*5,y:low.y,z:best.mz+nz*5},B={x:best.mx-nx*.6,y:high.y,z:best.mz-nz*.6};ysPlTake(ysPlBox((A.x+B.x)/2,(A.z+B.z)/2,1.6,3.5,Math.atan2(B.x-A.x,B.z-A.z),'flight'));low.stairs.push({A,B});};
   flight(m,mu);
   if(st.chance(.5)){const top=ysPlOrganic(st,up.c[0],up.c[1],13,{n:10,amp:.25,off:6});const mt=ysPlMole(nm+', the knoll',top.poly,6.9,0,{wall:true,star:top.c});flight(mu,mt);}}
+ // ---- 6. the central infill (Travis, Oct 5 2026: the gaps between the inner quarter's blocks, the strip and the shore,
+ // the lanes' quarters that refused a villa, the land blocks' edges toward the water), last, so it only takes what every
+ // other pass left. Candidates on an 8 m lattice of the city grid over YS_CENTRAL, in the stream's order, jittered 2 m;
+ // the small pool of the block a point falls in (the industry lanes' pool on an industry block; none on a farm or the
+ // river mouth); each house faces the nearest street along the grid, else the next nearest, and its box carries a 3 m
+ // dooryard in front so a later house cannot stand against its door. Three candidates in ten keep a 16 m yard open
+ // instead (not reserved: the biome may plant it); at one in eight the infill was 280 buildings and 4.4 M triangles, the
+ // city 29.1 M of its 30 M.
+ {const st=ysPlStream('central infill');const P=YS_CENTRAL,H=CITY.HEAD;const uv=p=>[(p[0]-H[0])*PL_U[0]+(p[1]-H[1])*PL_U[1],(p[0]-H[0])*PL_V[0]+(p[1]-H[1])*PL_V[1]];
+  const us=P.map(uv),u0=Math.min(...us.map(q=>q[0])),u1=Math.max(...us.map(q=>q[0])),v0=Math.min(...us.map(q=>q[1])),v1=Math.max(...us.map(q=>q[1]));
+  const cands=[];for(let u=u0;u<=u1;u+=8)for(let v=v0;v<=v1;v+=8){const x=H[0]+PL_U[0]*u+PL_V[0]*v,z=H[1]+PL_U[1]*u+PL_V[1]*v;if(ysPlInPoly(P,x,z))cands.push([x,z,st.next()]);}
+  cands.sort((p,q)=>p[2]-q[2]);
+  const DIRS=[PL_U,[-PL_U[0],-PL_U[1]],PL_V,[-PL_V[0],-PL_V[1]]],notStreet=/^(?!street|highway)/;
+  const streetAlong=(x,z,n)=>{for(let t=6;t<=60;t+=6)if(ysPlClash(ysPlBox(x+n[0]*t,z+n[1]*t,1.5,1.5,0,'probe'),notStreet))return t;return 1e9;};
+  const yards=[];let n=0;
+  for(const [cx,cz] of cands){const x=cx+st.range(-2,2),z=cz+st.range(-2,2);
+   if(ysPlClash(ysPlBox(x,z,2.5,2.5,0,'probe'))||yards.some(Y=>ysPlHit(ysPlBox(x,z,2.5,2.5,0,'probe'),Y)))continue;
+   const g=ysBlockIJ(x,z),b=ysBlock(Math.round(g[0]),Math.round(g[1]));if(!b||/^(farm|river_mouth|arena)$/.test(b.use))continue;
+   if(st.chance(.3)){yards.push(ysPlBox(x,z,8,8,PL_RY,'yard'));continue;}
+   const pool=b.use==='industry'?PL_INDUSTRY_SMALL:PL_SMALL[b.wealth]||PL_SMALL.middle;const key=ysPlPick(st,pool),D=HYK.defs[key];
+   const order=DIRS.map(d=>[d,streetAlong(x,z,d)+st.next()]).sort((p,q)=>p[1]-q[1]);
+   for(const [d] of order){const ry=ysPlFacing(d[0],d[1]);const B=ysPlBox(x+d[0]*1.5,z+d[1]*1.5,D.w/2+1,D.d/2+2.5,ry,key);
+    if(ysPlClash(B)||yards.some(Y=>ysPlHit(B,Y)))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B);PLACE.refused=n0;if(y==null)break;
+    ysPlBld(key,B,y,'central infill',b,st,{x,z});n++;break;}}
+  PLACE.infill=n;}
 })();
 if(typeof ysApplyEdits==='function')ysApplyEdits();   // 86-city-edits: Travis's hand placements and deletions (the editor, 94), the last word on PLACE.blds
 // counters for _api.city.place() and the probe

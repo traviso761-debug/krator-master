@@ -75,7 +75,7 @@ def matlib_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return '/* no tex/pack.json: Ys runs on its procedural textures */\nKMAT.pack(\'ys\', {});\n'
-    pack = json.load(open(pj))
+    pack = json.load(open(pj, encoding='utf-8'))
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
@@ -108,6 +108,9 @@ def srcpath(f, base=None):
 
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
+# the smaller civic ruins for the drowned grid between the stumps (Travis, Oct 5 2026; targets/city/88-city-sunk.js): the
+# kit's alternates (the Bastion Drum, the Watch Cup, the Linked Blocks), the city target alone
+VENDORED_DROWNED = ['8al-alt-05-bunker.js', '8al-alt-10-police.js', '8al-alt-11-hospital.js']
 for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.js', '71-sky-h.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
            '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html',
            # the podded Ancient stumps (Oct 5 2026): Sky E and K, the alternates (the Pierced Stack, the Attraction, the
@@ -117,7 +120,8 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
            # the original offices and apartments as land hosts (69j-host-offices.js) and the civic and industrial ruins
            # in the shallows (64b-ys-ruins.js), with the helpers they need (64-houses-def: domRoom; 80-aa-battery)
            '82-apartments.js', '66-office-c.js', '64-houses-def.js', '80-aa-battery.js', '62-robotics.js',   # 62: civMergeGeo for the Assembly's hoods
-           '46-bunker.js', '48-library.js', '73-police.js', '74-hospital.js', '75-hotel.js', '79-government.js', '89-lab.js', '72-datacenter.js']:
+           '46-bunker.js', '48-library.js', '73-police.js', '74-hospital.js', '75-hotel.js', '79-government.js', '89-lab.js', '72-datacenter.js'] \
+        + VENDORED_DROWNED:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
@@ -168,7 +172,7 @@ for _b in BIO_VENDORED:
 # src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
 # foreign kits.
 TARGET_ONLY = {'86-bio-': ('city',)}
-for _f in VENDORED_IZIZ_FQ + VENDORED_HL:
+for _f in VENDORED_IZIZ_FQ + VENDORED_HL + VENDORED_DROWNED:
     TARGET_ONLY[_f] = ('city',)
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
@@ -187,7 +191,7 @@ DETERMINISTIC = {
     '35-furn-frame.js', '84-kit-geo.js', '87-city-layout.js', '84b-city-shore.js', '87b-city-nav.js', '87c-city-paint.js',
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
-    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
+    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js', '88-city-sunk.js',
     '86-city-edits.js', '94-city-editor.js',   # the edits as data, and the live editor (no builder, no reseed)
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '26-matlib-pack.js', '79z-ys-matlib.js', '86-bio-00-matlib-pack.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
@@ -326,7 +330,7 @@ def build_one(target, do_checks):
     html = _mp.write_sidecar(SIDE, html, DIST, 'ys.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
-    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8', newline='\n') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order}, fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -336,10 +340,10 @@ def vendor_manifest():
     for f in sorted(VENDORED):
         p = srcpath(f)
         if os.path.exists(p):
-            with open(p, 'rb') as fh:
-                out[f] = {'sha1': hashlib.sha1(fh.read()).hexdigest()[:12], 'from': VENDORED[f],
+            with open(p, 'rb') as fh:   # CRLF read as LF: a Windows checkout writes the same manifest (tools/port_baseline.py read_lf)
+                out[f] = {'sha1': hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12], 'from': VENDORED[f],
                           'adapted': f in ADAPTED}
-    with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out
 
@@ -382,7 +386,7 @@ def main():
         order, html, out = build_one(target, do_checks)
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
-        with open(chk, 'w', encoding='utf-8') as fh:
+        with open(chk, 'w', encoding='utf-8', newline='\n') as fh:
             fh.write(body)
         try:
             r = subprocess.run(['node', '--check', chk], capture_output=True, text=True)
