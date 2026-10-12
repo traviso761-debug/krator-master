@@ -34,10 +34,11 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 167 | 30 | 6 | 10 | 33 | 88 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 234 | 121 | 0 | 10 | 66 | 37 | 1 |  |  | yes |
+| [`kits/islanders`](kits/islanders/PORT.md) | 33 | 345 | 19 | 6 | 10 | 33 | 277 | 3 | atmos | yes | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
-| [`kits/ringsea`](kits/ringsea/PORT.md) | 45 | 250 | 1 | 6 | 0 | 48 | 195 | 1 | atmos | yes | yes |
+| [`kits/ringsea`](kits/ringsea/PORT.md) | 48 | 280 | 1 | 6 | 0 | 48 | 225 | 1 | atmos | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 26 | 192 | 6 | 6 | 10 | 33 | 137 | 2 | atmos | yes | yes |
 | [`kits/zeijani`](kits/zeijani/PORT.md) | 30 | 270 | 5 | 33 | 10 | 75 | 148 | 3 | atmos | yes | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 13 | 184 | 27 | 17 | 13 | 43 | 84 | 3 | biome | yes | yes |
@@ -57,7 +58,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1910 | 25326 | 4277 (17%) | 567 (2%) | 1058 (4%) | 3180 (13%) | 16244 (64%) | 259 | | | |
+| **all** | 1946 | 25701 | 4296 (17%) | 573 (2%) | 1068 (4%) | 3213 (13%) | 16551 (64%) | 262 | | | |
 
 ## Host-shell copies
 
@@ -65,9 +66,9 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `camera` | 23 | 17 | 272 |
-| `probe` | 21 | 16 | 84 |
-| `sky` | 20 | 5 | 417 |
+| `camera` | 24 | 17 | 285 |
+| `probe` | 22 | 16 | 86 |
+| `sky` | 21 | 5 | 426 |
 | `host-stage` | 17 | 17 | 341 |
 | `host-sky` | 17 | 15 | 242 |
 | `host-build` | 17 | 17 | 20 |

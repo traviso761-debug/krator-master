@@ -304,6 +304,10 @@
    "bytes": 246684,
    "sha256": "17696bb38182de72fc6ce6a2ef0803bfe7c25c2474240f97e3d86e63bb1cc20e"
   },
+  "kits/islanders/dist/islanders.html": {
+   "bytes": 25959597,
+   "sha256": "70384722b1ca19b49cc49240770fb4b7a3bfb42840c57047232f9ead2aa3812a"
+  },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1635633,
    "sha256": "9249b619de5386d4149434808432627d1517ce669cfad83a4a24d63d1ba688a6"
@@ -317,8 +321,8 @@
    "sha256": "f9701dafce16a2368b773834bfb4553aef2c49af7607a03429705b351615b35c"
   },
   "kits/ringsea/dist/ringsea.html": {
-   "bytes": 6701590,
-   "sha256": "81d95f07a9d113f551a8a855baf55dcfb487cb9c68002306ac511b18a84734f0"
+   "bytes": 6732290,
+   "sha256": "f6d8dc48e634968f217e16009798eab8e5048885e1f1d9e5a0653ddaac74489a"
   },
   "kits/scyvoi/dist/scyvoi.html": {
    "bytes": 33931953,
