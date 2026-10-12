@@ -241,6 +241,23 @@ CITY_CHECK = r"""() => {
     out.furnish = { pieces: furn, walks: (VC.parkWalks || []).length, parkFlora: (VC.parkFlora || []).length }; }
   out.vessels = VC.vesselStats || {};
   out.floraEdit = { tracked: VC.FL.list.length, unmapped: VC.FL.list.filter(e => !e.hide.length).length };
+  /* every lot building's interior (41-vc-building-interiors.js): the report, and one unit of each type drawn (the cutaway's group) */
+  { const R = VC.IX.report, want = alive.filter(L => VC.ixProgram(L)).length;
+    out.ix = R ? { err: VC.IX.error || null, want, units: R.units, types: R.types, rooms: R.rooms, pieces: R.pieces, residents: R.residents, homes: R.homes, need: R.need, have: R.have,
+      short: R.short, shells: R.shells, failed: R.failed, dropped: R.dropped, ms: [VC.IXD.probeMs, VC.IXD.planMs],
+      byClass: Object.keys(R.byClass).map(k => [k, R.byClass[k].homes, R.byClass[k].residents, R.byClass[k].need, R.byClass[k].beds, R.byClass[k].short, R.byClass[k].shortResidents]),
+      byDistrict: Object.keys(R.byDistrict).sort((a, b) => R.byDistrict[b].shortResidents - R.byDistrict[a].shortResidents).slice(0, 12).map(k => [k, R.byDistrict[k].homes, R.byDistrict[k].residents, R.byDistrict[k].shortResidents]),
+      jobs: Object.keys(R.jobs).map(k => [k, R.jobs[k].units, R.jobs[k].jobs, R.jobs[k].target, R.jobs[k].posts, Object.keys(R.jobs[k].kinds).map(f => f + ' ' + R.jobs[k].kinds[f].n).join(', ')]),
+      fallback: R.typeList.filter(t => t.shell === 'fallback').map(t => t.type) } : { err: VC.IX.error || 'no report' };
+    if (R) {
+      const seen = {}, drawErr = []; let drawn = 0;
+      VC.IX.units.forEach(u => { if (seen[u.type] || drawn >= 12) return; seen[u.type] = 1; try { const g = VC.ixDraw(u.i); if (!g || !g.userData.stats.rooms) drawErr.push(u.type); else drawn++; VC.ixShow(u.i, false); } catch (e) { drawErr.push(u.type + ': ' + e.message); } });
+      const u = VC.IX.units.find(q => q.residents && q.short == null && VC.IX.types[q.type].storeys > 1);
+      if (u) { VC.cutTo(u.i, 1); out.ix.cut = { unit: u.i, storey: VC.INTD.cut.storey, shown: VC.IXD.groups[u.i].visible, bar: document.getElementById('cut-storey').innerText.trim().slice(0, 120) }; VC.cutOff(); out.ix.cut.off = !VC.IXD.groups[u.i].visible; }
+      out.ix.drawn = drawn; out.ix.drawErr = drawErr;
+      VC.ixDensityToggle(); out.ix.density = document.getElementById('ixlegend').innerText.split('\n')[0]; VC.ixDensityToggle(); VC.ixDensityToggle();
+    }
+  }
   return out;
 }"""
 
@@ -277,11 +294,29 @@ def verify_city(a, port, rel, sync_playwright):
     print('walks: interiors', json.dumps(r['walkInt']), '; outside', json.dumps(r['walkOut']))
     print('canton bridges', json.dumps(r['spans']), '; cantons whose flights failed', r['cantonFlights'])
     print('interiors', r['interiors'], '; park and market furniture', json.dumps(r['furnish']), '; vessels', json.dumps(r['vessels']), '; flora editor', json.dumps(r['floraEdit']))
+    ix = r['ix']
+    if ix.get('units'):
+        pc = lambda a, b: '%d%%' % round(100 * a / b) if b else '-'
+        print('interiors: %d buildings (%d with a programme) of %d types, %d rooms, %d pieces; probe %s ms, plan and furnish %s ms; shells %s; fallback shells: %s' %
+              (ix['units'], ix['want'], ix['types'], ix['rooms'], ix['pieces'], ix['ms'][0], ix['ms'][1], json.dumps(ix['shells']), ', '.join(ix['fallback']) or 'none'))
+        print('  homes %d, residents %d; beds %d of %d (%s), item stores %d (%s), food stores %d (%s); %d homes short, %d short of beds, about %d residents without a bed; %d without a dining room' %
+              (ix['homes'], ix['residents'], ix['have']['beds'], ix['need']['beds'], pc(ix['have']['beds'], ix['need']['beds']), ix['have']['items'], pc(ix['have']['items'], ix['need']['items']),
+               ix['have']['food'], pc(ix['have']['food'], ix['need']['food']), ix['short']['units'], ix['short']['bedUnits'], ix['short']['residents'], ix['short']['dining']))
+        print('  by class [class, homes, residents, beds needed, beds held, homes short, residents without a bed]: ' + '; '.join(' '.join(str(x) for x in c) for c in ix['byClass']))
+        print('  by district, worst first [district, homes, residents, residents without a bed]: ' + '; '.join(' '.join(str(x) for x in c) for c in ix['byDistrict']))
+        print('  job table [kind of work, buildings, workplaces, 90%, posts: furniture kinds]:')
+        for j in ix['jobs']: print('    %s: %d buildings, %d workplaces, target %d, %d posts%s (%s)' % (j[0], j[1], j[2], j[3], j[4], '' if j[4] >= j[3] else ' SHORT', j[5]))
+        print('  drawn %d types, errors %s; cutaway %s; density %s' % (ix.get('drawn', 0), ix.get('drawErr'), json.dumps(ix.get('cut')), ix.get('density')))
+    else:
+        print('interiors: ' + str(ix.get('err')))
     for e in errors: print('ERROR', e)
     if a.check:
         bad = []
         if r['err'] or errors: bad.append('page errors')
         if r['failed']: bad.append('kit pieces failed')
+        c = ix.get('cut') or {}
+        if ix.get('err') or not ix.get('units') or ix['units'] < ix['want'] or ix['failed'] or ix.get('drawErr') or not c.get('shown') or not c.get('off') or not ix['have']['beds'] or len(ix['jobs']) < 8:
+            bad.append('building interiors (VC.IX)')
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')

@@ -348,6 +348,34 @@ that kit's own code, sealed like the embassies (about 100 KB of its source, proc
 
 The moored ones are records (`VC.MOOR`), each scaled to its berth's length and drawn as one InstancedMesh per mesh of its model (`VC.drawVessels`). Their sails flutter on the kit's clock.
 
+**Every building's interior** (`41-vc-building-interiors.js` records, `56b-vc-building-interiors-host.js` draws; `TUNE.ix`;
+phase A of `SIM-ROADMAP.md`, the owner's brief of 2026-10-12). Every standing lot building gets rooms and furniture, and the
+homes are checked against the brief's rule: per 2 residents a bed, an item store and a food store, and a dining or
+entertaining room where the plan allows. Residents are the census's (`TUNE.census.live`); a home that falls short is
+**reported, not forced** (the owner's answer to Q3).
+
+* **Types, not lots.** A lot draws a kit model (key, variant, slot), so every lot with the same model and programme has the
+  same building. It is planned and furnished once, in the model's frame, and placed by each lot's pose: 8,050 buildings are
+  111 types, about 6 s at load (no bake needed).
+* **The shell** is read off the kit model (`VC.ixProbe` builds it once and hands its boxes to `VC.ixShellFrom`): the main
+  block (the biggest volume that spans head height, stands on the ground and is not a thin wall; a round one as the square
+  inside it), its floor on any plinth, storeys of `TUNE.ix.storeyH`, the street door mid-front. A model with no such block
+  takes `TUNE.ix.fallback` of its footprint and is listed in the report; `TUNE.ix.shells` overrides any `key|v|slot`.
+* **The programme** is by lot class (`TUNE.ix.programmes`, per storey, the last repeated upward; `TUNE.ix.single` for a
+  one-storey building), or by kit key (`TUNE.ix.byKey`: barracks, school, guild hall, customs house, smithy). A home's
+  bedrooms are `chamber`s: a bed and a chest, then as many more beds (`TUNE.ix.chamber`) and stores as the room holds.
+* **Furnished** by `kits/interiors` (`planBuilding`, `furnishRoom`) from the catalog, as the cantons are; a home that fails the
+  residence rule is furnished again with another seed (three tries).
+* **The cutaway (x)** now opens the building nearest the middle of the view when no canton is nearer: the same planes and
+  storey keys, its walls with their doors and windows, stairs and furniture drawn the first time it is opened. The inspector
+  names its pieces.
+* **The density overlay (n)**: residents per hectare on 50 m cells (a diverging ramp round the city's mean), the homes short
+  of beds hatched; again for workplaces per hectare; again for off. Its legend has the totals.
+* **The report** (the "interiors report" button, and `verify.py`'s output): beds, item and food stores needed and held;
+  the shortfall by lot class and by district; the job table of the brief's 1.2 (a row per kind of work, a column per
+  furniture kind, with the census's workplaces, the 90% target and the posts placed); every type with its shell, storeys,
+  rooms and counts. `VC.ixSlots(i)` is what phase B's places will read; `VC.IX.export()` is all of it as JSON.
+
 ## Notes
 
 * **Fountain.** The plaza fountain (`sl_fountain`, `core/city/52-city-host-buildings.js`) is a placeholder piece, not a catalog furniture piece.

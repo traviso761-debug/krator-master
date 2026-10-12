@@ -135,16 +135,17 @@ VC.buildMonastery = function (d) {
     put('hall', (hw * 1.05 + span + 1.2) / 2 + 2, Math.max(hd, span) * 0.55 + 2, function (c) { return V.dist(c.p, gateP) + (c.de < 30 ? 400 : 0); },
       function (c, y, ry) { B.monasteryAssemblyHall(c[0], c[1], y, hw, hd, B.rr(30, 34), ry, col, {}); },
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
-    /* dormitories round the chapel (owner: more of them) */
+    }
+    /* dormitories round the chapel, or round Voth's compound (owner: more of them; they were inside the branch above, so
+       with the compound placed none were added: 2 dormitories of TUNE.monastery.dorms 6, 2026-10-12) */
     var ds = counts.compound || 1, dw = fx * 0.20 * 1.5 * ds, dd = fz * 0.17 * 2.0 * ds, roof = B.shade(B.GREYC[1], -0.05);   /* round Voth's compound: at its scale */
     for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
       function (c, y, ry) { B.shed(c[0], y, c[1], fx * 0.22, fz * 0.15, B.rr(9, 12), ry, col); });
-    /* the well at the heart of the cluster */
-    put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
-    }
+    /* the well at the heart of the cluster (the compound has its own) */
+    if (!counts.compound) put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
     /* pens and coops between the buildings and the fields */
     var ring = function (f) { return function (c) { return Math.abs(c.de / maxDe - f) * 300 + B.rr(0, 60); }; };
     for (var p2 = 0; p2 < M.pens; p2++) put('pen', MO.penW / 2 + 3, MO.penD / 2 + 3, ring(0.45), function (c, y, ry) { B.monasteryPen(c[0], y, c[1], MO.penW / 2, MO.penD / 2, ry); });
@@ -245,11 +246,53 @@ VC.deckOf = function (n) {
 /* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
    deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
    just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+/* what the host strips from the captured cantons (55-vc-host.js VC.stripCantons), as a Set of capture records: the
+   generic deck buildings of the four plain rim cantons, the Port's shed() warehouses. The deck test below skips them,
+   since the deck is laid out again where they stood (they were counted as standing there, so no deck building fit:
+   2026-10-12, 0 granaries, 0 barracks and 0 embassy plots). Read once, before the host filters the capture. */
+VC.stripSet = function () {
+  if (VC._strip) return VC._strip;
+  var S = VC._strip = new Set(), D = typeof VOTH_CITY_CAPTURE !== "undefined" ? VOTH_CITY_CAPTURE : null; if (!D) return S;
+  VC.DECKS.forEach(function (n) {
+    var c = VOTH.CIDX[n], vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!c || !v) return;
+    var pl = null; v.r.forEach(function (q) { if (q[0] !== 9 && (!pl || q[5] * q[7] > pl[5] * pl[7])) pl = q; });
+    var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), hw = c.r * 0.97 * Math.pow(0.86, c.tiers), dy = c.top + 0.12 * c.tiers - bed;
+    v.r.forEach(function (q) {
+      if (q[0] === 9 || q[3] < dy - 1.5) return;
+      var lx = q[2] - pl[2], lz = q[4] - pl[4], shape = D.shapes[q[0]];
+      if (q[5] * q[7] > 2000) return;                                           /* the paving slab */
+      if (Math.max(Math.abs(lx), Math.abs(lz)) > hw * 0.95) return;               /* the parapets */
+      if (Math.hypot(lx, lz) < 7 && (shape === 'cyl' || shape === 'fr3')) return;  /* the obelisk */
+      S.add(q);
+    });
+  });
+  /* the Port canton's shed() warehouses (Voth's portDeckV2: deck and quays): each is found by its fr8 roof and the
+     body box under it, and goes with its cornice and door; the lighthouse, the guild hall, the stairs, the piers and
+     the crane stay */
+  var pv = D.entries.voth_city_canton_port && D.entries.voth_city_canton_port[0];
+  if (pv) {
+    var R0 = pv.r, regions = [];
+    R0.forEach(function (q) {
+      if (q[0] === 9 || D.shapes[q[0]] !== 'fr8' || D.fams[q[1]] !== 'roof') return;
+      var body = R0.filter(function (b) { return b !== q && b[0] !== 9 && D.shapes[b[0]] === 'box' && Math.abs(b[2] - q[2]) < 0.05 && Math.abs(b[4] - q[4]) < 0.05 && Math.abs(b[5] * 1.02 - q[5]) < 0.3; })[0];
+      if (body) regions.push({ c: [q[2], q[4]], ry: q[8], hw: q[5] / 2 + 1.5, hd: q[7] / 2 + 1.5, y0: body[3] - 0.5, y1: q[3] + q[6] + 0.5 });
+    });
+    R0.forEach(function (q) {
+      if (q[0] === 9) return;
+      if (regions.some(function (g) {
+        if (q[3] < g.y0 || q[3] > g.y1) return false;
+        var dx = q[2] - g.c[0], dz = q[4] - g.c[1], cs = Math.cos(g.ry), sn = Math.sin(g.ry), lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
+        return Math.abs(lx) <= g.hw && Math.abs(lz) <= g.hd;
+      })) S.add(q);
+    });
+  }
+  return S;
+};
 VC.capturedHit = function (n, o, y) {
   var M = CANT.by[n]; if (!M) return false;
-  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {}, gone = VC.stripSet();
   return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
-    if (P.M !== M || cut[P.k]) return false;
+    if (P.M !== M || cut[P.k] || gone.has(P.q)) return false;
     var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
     return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
   });

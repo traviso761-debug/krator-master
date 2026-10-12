@@ -1,8 +1,54 @@
-# Streetlab: handoff (2026-10-09)
+# Streetlab: handoff (2026-10-09; the citizen simulation from 2026-10-12)
 
 This note lets a new session take over the Voth city plan work. Read it with `README.md` (the design and every tool), `INDEX.md`
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
+
+## 2026-10-12: the citizen simulation, phase A session 1 (branch `Voth-sim`)
+
+The work is `SIM-ROADMAP.md` (the owner's brief, the phases, the answers). Phase A, session 1 is done; what is left of
+phase A is at the end of this section.
+
+**Done (README "Every building's interior"):**
+- `targets/voth-city/41-vc-building-interiors.js` ([G data], `VC.IX`): every standing lot building (8,050) gets an
+  interior. It is planned and furnished once per kit model and programme (111 types, about 6 s at load, no bake needed),
+  placed by each lot's pose. Shells are read off the kit models (`VC.ixShellFrom`); programmes are `TUNE.ix`. Residents
+  come from the census, and the residence rule (per 2 residents a bed, an item store and a food store, and a dining
+  room) is checked per home. A shortfall is a record and a report line, never forced (Q3).
+- `targets/voth-city/56b-vc-building-interiors-host.js` ([web]): the model probe, the drawing, the cutaway (x) on any
+  building, the inspector on its pieces, the density overlay (n), the "interiors report" panel with the job table.
+- `verify.py` prints the report (totals, by class, by district, the job table, the fallback shells) and asserts: every
+  lot with a programme has a unit, no type fails, one unit of each of 12 types draws, the cutaway opens and closes a
+  building, the density legend shows.
+
+**What the report says (for the owner to read, Q3):** beds for 81% of the need (21,188 of 26,299); item stores 80%,
+food stores 63%; 4,320 of 7,449 homes short of something, 2,255 short of beds, about 9,800 of 46,672 lot-building
+residents without a bed. The poor (7 to a house), middle (5) and shop (5) classes and the clan compounds (40) fall
+short; rich, manor and tavern homes hold their people. Workplaces: soldiers, household service, innkeepers, industrial
+and power-house work have fewer posts than 90% of their workplaces (phase B gives each piece its capacity, so these
+are provisional). 18 types read a fallback shell (listed in the report): name overrides in `TUNE.ix.shells` or improve
+`VC.ixShellFrom` for them.
+
+**Fixed on the way (they were failing `verify.py` on `main`):**
+- **The canton decks were empty** (0 granaries, 0 barracks, 0 embassy plots, 2 shops): `VC.capturedHit` (commit 6086ed22,
+  never checked in the page) counted the generic deck buildings that `VC.stripCantons` removes at draw time. The strip is
+  now one data function, `VC.stripSet` (33-vc-country.js), which both use. Decks now hold 9 granaries, a barracks and 8
+  armouries, 16 shops, 22 + 6 Port warehouses and 4 embassies.
+- **The monastery had 2 dormitories of 6**: the extra dormitories and stores were inside the branch that runs only when
+  Voth's compound is *not* placed. Now 6 dormitories and 2 stores (the census gains their monks).
+
+**Still failing `verify.py --assert` (not caused here; left for the owner):**
+- Embassies 4 of 6: Dalab and Yuni do not fit on the Foreign deck. Every spot left is blocked by the stair house, the four
+  embassies and Voth's own stone rails at the deck's corners (kept by the strip, rightly). A design call: smaller embassy
+  plots (`TUNE.decks.embassySize`), letting them turn, or another deck.
+- The Arena interior walk ("ledge" at 28.7 m) and the Fortress walk ("blocked interior:Fortress" at -357, -776) fail as
+  they did before this session.
+
+**Left of phase A (session 2):** interiors for the buildings that are not lots (the chinampa huts, the monastery's
+dormitories, the shrines, the lighthouse, the funerary temple, the House of Healing: they are Voth builders' prims, so
+each needs a shell table); the new Voth kit models of Q4 (watchhouse, caravanserai, coast-guard berth, weaver, tannery,
+brewery, butcher, bakery); overrides for the fallback shells; the Palace and Temple when the references arrive. A bake
+(roadmap A.4) is not needed for the lots; it may be for the unique buildings.
 
 ## State
 
@@ -130,9 +176,8 @@ walks, the vessels and the flora editor's mapping.
 
 ## The owner's to-do list for the next session (in the order given)
 
-**2026-10-12: the next work is the citizen simulation.** Its brief (as a spec), its phases and the open questions are in
-`SIM-ROADMAP.md` in this folder; phase A (interiors for every building, the density overlay) starts once the owner answers
-part 3 there. The list below is the earlier session's.
+**2026-10-12: the work is the citizen simulation** (`SIM-ROADMAP.md`; phase A session 1 is done, see the top of this
+file). The list below is the earlier session's.
 1. ~~**River gate terrain**~~ **done 2026-10-09:** `VC.levelGate` (`30-vc-site.js`) cuts and fills a level pad under any gate on a slope, at the road's height, meeting the ground at `TUNE.wall.padSlope`. It edits TERR's delta and SL.ground. The River Gate was cut 7.1 m; the Harbor and Spirit gates got pads too (the step 5 log lists them).
 2. ~~**The swbay biome**~~ **done 2026-10-09** (README "The flora").
    - The parks have the jungle; 110 trees in 14.7 ha, sparse. Raise `TUNE.flora.quality` if the owner wants more: it raises the savannah too.

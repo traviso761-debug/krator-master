@@ -56,6 +56,15 @@
   .pnl.min > :not(.pnl-min){display:none!important}
   .pnl.min::before{content:attr(data-title);color:#e0c98a;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
   #marks .mk-q{font-size:11.5px;color:#e0c98a;margin:2px 0 0 14px}
+  #ix{left:50%;top:60px;transform:translateX(-50%);width:min(960px,calc(100vw - 28px));max-height:calc(100vh - 90px);overflow:auto;display:none}
+  #ix table{border-collapse:collapse;margin:6px 0 10px;font-size:11.5px}
+  #ix th{text-align:left;color:#e0c98a;font-weight:normal;padding:3px 8px 3px 0;border-bottom:1px solid rgba(255,255,255,0.15);vertical-align:bottom}
+  #ix td{padding:2px 8px 2px 0;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top}
+  #ix td.n{text-align:right;font-variant-numeric:tabular-nums}
+  #ix .bad{color:#ff9a7a} #ix .ok{color:#9fd49a}
+  #ix h2{font-size:12.5px;color:#e0c98a;margin:10px 0 2px;font-weight:normal;letter-spacing:.04em;text-transform:uppercase}
+  #ixlegend{left:14px;bottom:14px;display:none;width:min(300px,calc(100vw - 28px))}
+  #ixlegend .ramp{height:10px;border-radius:3px;margin:4px 0 2px}
   @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
 </style>
 </head>
@@ -66,7 +75,7 @@
   <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it.</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button> <span id="cut-status" class="k"></span><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
   <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
@@ -74,6 +83,8 @@
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
 <div id="tip" class="pnl"></div>
+<div id="ix" class="pnl" data-title="Interiors report"><b>Interiors report</b> <span class="k">(every lot building: 41-vc-building-interiors.js)</span> <button id="ix-close" style="float:right">&#10005;</button><div id="ix-body"></div></div>
+<div id="ixlegend" class="pnl"></div>
 <div id="cutbar" class="pnl"><b>Cutaway</b> <select id="cut-canton" title="the canton"></select>
   <button id="cut-down" title="the storey below (PageDown or [)">&#9660; down</button><span id="cut-storey"></span><button id="cut-up" title="the storey above (PageUp or ])">up &#9650;</button><button id="cut-close" title="leave the cutaway (x)">&#10005;</button>
   <span class="k">storeys: the buttons, PageUp / PageDown, [ and ], or the mouse wheel with Shift &middot; x leaves</span></div>
@@ -47184,6 +47195,57 @@ var TUNE = {
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
                   point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
                lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
+  /* every building's interior (41-vc-building-interiors.js VC.IX, phase A of SIM-ROADMAP.md): the residence rule (per `per`
+     residents one bed, one item store and one food store; a bunk counts as two beds), the storey height a shell is cut into
+     and the most storeys, how a shell is read off a kit model (the main block: spans head height `head`, at least `minArea`
+     m2 and `minSide` m thick, standing within `base` m of the ground; else a fallback `fallback` of the model's footprint),
+     the placer's cell, the programmes (lot class -> room kinds per storey, the last repeated upward; `key` matches a kit
+     key first), the room kinds that are homes and the ones that are work, the density overlay's cell, and the overrides
+     of shells the reading gets wrong ({ key|v|slot: { poly: [[x, z], ...] local, y, h } or { skip: why } }) */
+  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 1.6, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
+        wealth: { poor: 0.15, middle: 0.45, rich: 0.75, manor: 0.9, shop: 0.5, craft: 0.5, tavern: 0.5, clan: 0.9, farm: 0.3, civic: 0.6,
+                             warehouse: 0.35, industrial: 0.3, landmark: 0.6 },
+        /* a home's bedrooms are `chamber`s (VC.ixPrograms): a bed and a chest, and as many more beds and stores as the room holds */
+        programmes: {
+          poor:       [['cottage', 'chamber'], ['chamber', 'chamber']],
+          middle:     [['living', 'kitchen'], ['chamber', 'chamber']],
+          rich:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'study']],
+          manor:      [['hall', 'kitchen', 'living', 'study'], ['chamber', 'chamber', 'chamber']],
+          clan:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],
+          farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
+          shop:       [['shop', 'store'], ['living', 'chamber']],
+          craft:      [['workshop', 'store'], ['living', 'chamber']],
+          tavern:     [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          warehouse:  [['warehouse', 'office'], ['warehouse']],
+          industrial: [['workshop', 'store'], ['store']],
+          civic:      [['hall', 'office'], ['office', 'store']],
+          landmark:   [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']]
+        },
+        /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
+        single: {
+          poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
+          clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
+          tavern: ['tavern', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
+        },
+        chamber: { beds: 4, stores: 2 },
+        byKey: {
+          voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
+          voth_barracks: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_garrison: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_school: [['school', 'office'], ['library', 'study']],
+          voth_bldg_guild_hall: [['guildhall', 'office'], ['office', 'store']],
+          voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
+          voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          voth_generator: [['workshop', 'store']],
+          voth_mustering_grounds: null
+        },
+        home: ['cottage', 'bedroom', 'chamber', 'living', 'dormitory', 'hall', 'kitchen'],
+        /* a work post (the job table's posts): a piece of these kinds in a work room; storage and stacks only in a store or warehouse */
+        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'], postsStore: ['storage', 'stack'],
+        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study'],
+        density: { cell: 50, hatch: '#d24b3a' },
+        shells: {} },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
@@ -50779,16 +50841,17 @@ VC.buildMonastery = function (d) {
     put('hall', (hw * 1.05 + span + 1.2) / 2 + 2, Math.max(hd, span) * 0.55 + 2, function (c) { return V.dist(c.p, gateP) + (c.de < 30 ? 400 : 0); },
       function (c, y, ry) { B.monasteryAssemblyHall(c[0], c[1], y, hw, hd, B.rr(30, 34), ry, col, {}); },
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
-    /* dormitories round the chapel (owner: more of them) */
+    }
+    /* dormitories round the chapel, or round Voth's compound (owner: more of them; they were inside the branch above, so
+       with the compound placed none were added: 2 dormitories of TUNE.monastery.dorms 6, 2026-10-12) */
     var ds = counts.compound || 1, dw = fx * 0.20 * 1.5 * ds, dd = fz * 0.17 * 2.0 * ds, roof = B.shade(B.GREYC[1], -0.05);   /* round Voth's compound: at its scale */
     for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
       function (c, y, ry) { B.shed(c[0], y, c[1], fx * 0.22, fz * 0.15, B.rr(9, 12), ry, col); });
-    /* the well at the heart of the cluster */
-    put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
-    }
+    /* the well at the heart of the cluster (the compound has its own) */
+    if (!counts.compound) put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
     /* pens and coops between the buildings and the fields */
     var ring = function (f) { return function (c) { return Math.abs(c.de / maxDe - f) * 300 + B.rr(0, 60); }; };
     for (var p2 = 0; p2 < M.pens; p2++) put('pen', MO.penW / 2 + 3, MO.penD / 2 + 3, ring(0.45), function (c, y, ry) { B.monasteryPen(c[0], y, c[1], MO.penW / 2, MO.penD / 2, ry); });
@@ -50889,11 +50952,53 @@ VC.deckOf = function (n) {
 /* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
    deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
    just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+/* what the host strips from the captured cantons (55-vc-host.js VC.stripCantons), as a Set of capture records: the
+   generic deck buildings of the four plain rim cantons, the Port's shed() warehouses. The deck test below skips them,
+   since the deck is laid out again where they stood (they were counted as standing there, so no deck building fit:
+   2026-10-12, 0 granaries, 0 barracks and 0 embassy plots). Read once, before the host filters the capture. */
+VC.stripSet = function () {
+  if (VC._strip) return VC._strip;
+  var S = VC._strip = new Set(), D = typeof VOTH_CITY_CAPTURE !== "undefined" ? VOTH_CITY_CAPTURE : null; if (!D) return S;
+  VC.DECKS.forEach(function (n) {
+    var c = VOTH.CIDX[n], vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!c || !v) return;
+    var pl = null; v.r.forEach(function (q) { if (q[0] !== 9 && (!pl || q[5] * q[7] > pl[5] * pl[7])) pl = q; });
+    var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), hw = c.r * 0.97 * Math.pow(0.86, c.tiers), dy = c.top + 0.12 * c.tiers - bed;
+    v.r.forEach(function (q) {
+      if (q[0] === 9 || q[3] < dy - 1.5) return;
+      var lx = q[2] - pl[2], lz = q[4] - pl[4], shape = D.shapes[q[0]];
+      if (q[5] * q[7] > 2000) return;                                           /* the paving slab */
+      if (Math.max(Math.abs(lx), Math.abs(lz)) > hw * 0.95) return;               /* the parapets */
+      if (Math.hypot(lx, lz) < 7 && (shape === 'cyl' || shape === 'fr3')) return;  /* the obelisk */
+      S.add(q);
+    });
+  });
+  /* the Port canton's shed() warehouses (Voth's portDeckV2: deck and quays): each is found by its fr8 roof and the
+     body box under it, and goes with its cornice and door; the lighthouse, the guild hall, the stairs, the piers and
+     the crane stay */
+  var pv = D.entries.voth_city_canton_port && D.entries.voth_city_canton_port[0];
+  if (pv) {
+    var R0 = pv.r, regions = [];
+    R0.forEach(function (q) {
+      if (q[0] === 9 || D.shapes[q[0]] !== 'fr8' || D.fams[q[1]] !== 'roof') return;
+      var body = R0.filter(function (b) { return b !== q && b[0] !== 9 && D.shapes[b[0]] === 'box' && Math.abs(b[2] - q[2]) < 0.05 && Math.abs(b[4] - q[4]) < 0.05 && Math.abs(b[5] * 1.02 - q[5]) < 0.3; })[0];
+      if (body) regions.push({ c: [q[2], q[4]], ry: q[8], hw: q[5] / 2 + 1.5, hd: q[7] / 2 + 1.5, y0: body[3] - 0.5, y1: q[3] + q[6] + 0.5 });
+    });
+    R0.forEach(function (q) {
+      if (q[0] === 9) return;
+      if (regions.some(function (g) {
+        if (q[3] < g.y0 || q[3] > g.y1) return false;
+        var dx = q[2] - g.c[0], dz = q[4] - g.c[1], cs = Math.cos(g.ry), sn = Math.sin(g.ry), lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
+        return Math.abs(lx) <= g.hw && Math.abs(lz) <= g.hd;
+      })) S.add(q);
+    });
+  }
+  return S;
+};
 VC.capturedHit = function (n, o, y) {
   var M = CANT.by[n]; if (!M) return false;
-  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {}, gone = VC.stripSet();
   return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
-    if (P.M !== M || cut[P.k]) return false;
+    if (P.M !== M || cut[P.k] || gone.has(P.q)) return false;
     var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
     return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
   });
@@ -53746,6 +53851,299 @@ VC.intEntrances = function () {
   });
 };
 
+/* ---- targets/voth-city/41-vc-building-interiors.js ---- */
+/* ============================== 5i. EVERY BUILDING'S INTERIOR (VC.IX) ============================== */
+/* [G data] Phase A of the citizen simulation (SIM-ROADMAP.md 2.2; the owner's brief of 2026-10-12, 1.1): every lot
+   building gets an interior, each holds pieces for its purpose, and a home holds, per TUNE.ix.per (2) residents, a bed,
+   an item store and a food store, with a dining or entertaining room where the plan allows. A home too small for its
+   residents is REPORTED, never forced (the owner's Q3: the census stands; the shortfall is shown first).
+
+   THE TYPES. A lot draws a Voth kit model (key, variant, slot: 52-city-host-buildings.js builds each once), so every lot
+   with the same model and the same programme has the same building: it is planned and furnished ONCE, in the model's own
+   frame (origin at the footprint's middle on the ground, +z the front: the catalog's frame), and placed on each lot by
+   the lot's pose. 8,000 lots are about 110 types; the whole city's interiors are computed at load, no bake needed.
+
+   THE SHELL of a type is read off its kit model (VC.ixShellFrom: the model's main block, the biggest volume that spans
+   head height, stands on the ground and is not a thin wall; a round one as the square inside it), from the boxes the host hands
+   in (56b-vc-building-interiors-host.js VC.ixProbe builds the model once and lists its meshes' boxes). The storeys are its
+   height cut at TUNE.ix.storeyH; the street door is the middle of its front face. A model with no such block takes
+   TUNE.ix.fallback of its footprint, and TUNE.ix.shells overrides any key|v|slot. Godot reads the same records: the
+   host's box lists are the only browser step, and VC.IX.export() writes the shells out with everything else.
+
+   THE PLAN AND THE PIECES: kits/interiors (API.md 7) planBuilding cuts the shell into the programme's rooms
+   (TUNE.ix.programmes by lot class, TUNE.ix.byKey by kit key; a storey that cannot hold its rooms loses its last one,
+   a second try), furnishRoom furnishes each room from the catalog (Voth, then Iziz and generic). A home that fails the
+   residence rule is furnished again with another seed (three tries), as Mav's Refuge does.
+
+   THE UNITS: each standing lot with a programme, its type, its pose, its residents (TUNE.census.live by class, as the
+   census counts them: VC.ixResidents), what it needs and what it holds, and its shortfall. VC.ixReport() sums them by
+   class and by district, and the job table of the brief's 1.2: a row per kind of work, a column per furniture kind.
+   Nothing here draws from Math.random: the planner and the placer are seeded. */
+VC.IX = { units: [], types: {}, boxes: {}, report: null, ms: 0, done: false };
+
+VC.ixKey = function (L) { return L.key + '|' + (L.v | 0) + '|' + (L.slot | 0); };
+/* the lot's class as the programmes name it, and its programme (null: no interior) */
+VC.ixClass = function (L) { return L.role === 'garrison' ? 'landmark' : L.role === 'muster' ? null : L.cls; };
+VC.ixProgram = function (L) {
+  var T = TUNE.ix, c = VC.ixClass(L); if (!c) return null;
+  if (Object.prototype.hasOwnProperty.call(T.byKey, L.key)) return T.byKey[L.key] ? { id: L.key, p: T.byKey[L.key], one: T.single[L.key] || T.single[c] || null } : null;
+  return T.programmes[c] ? { id: c, p: T.programmes[c], one: T.single[c] || null } : null;
+};
+/* the room kinds the lot buildings add to kits/interiors (beside the cantons', 56-vc-interiors-host.js VC.intPrograms):
+   a `chamber`, a home's bedroom that takes as many beds and stores as it holds (TUNE.ix.chamber), from the pieces that
+   furnish a bedroom or a dormitory */
+VC.ixPrograms = function () {
+  var IX = (VC.intPrograms && VC.intPrograms()) || (typeof KratorInteriors !== "undefined" ? KratorInteriors : null);
+  if (!IX || IX.PROGRAMS.chamber) return IX;
+  var C = TUNE.ix.chamber;
+  IX.PROGRAMS.chamber = { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: IX.ITEM_ROLES, n: 1 }],
+    optional: [{ types: ['bed'], max: C.beds - 1 }, { types: ['storage'], roles: IX.ITEM_ROLES, max: C.stores }, { types: ['storage', 'vessel', 'stack'], roles: IX.FOOD_ROLES, max: C.stores },
+               { types: ['lamp'], max: 1 }, { types: ['chair', 'stool'], max: 1 }], extra: 3 };
+  IX.KIND_ALIAS.chamber = ['bedroom', 'dormitory'];
+  IX.KIND_WEIGHT.chamber = 1.3;
+  return IX;
+};
+
+/* ---------------------------------------------------------------- residents and jobs, as the census counts them (36) */
+VC.ixResidents = function (L) {
+  var K = TUNE.census;
+  if (L.cls === 'clan') return K.live.clan;
+  if (L.cls === 'farm') return L.w * L.d > 6000 ? K.live.bigFarm : K.live.farm;
+  if (L.role === 'garrison') return K.live.garrison;
+  if (L.role === 'muster' || L.power) return 0;
+  if (L.cls === 'civic') return /barracks/.test(L.key) ? K.live.barracks : 0;
+  return K.live[L.cls] || 0;
+};
+/* [kind of work, workplaces] of a lot (the census's labels), or null */
+VC.ixJob = function (L) {
+  var K = TUNE.census;
+  if (L.cls === 'clan') return ['household service', K.jobs.clanService];
+  if (L.cls === 'farm') return null;
+  if (L.role === 'garrison') return ['soldiers', K.jobs.garrison];
+  if (L.role === 'muster') return null;
+  if (L.power) return ['power-house stokers and engineers', K.jobs.power];
+  if (L.cls === 'civic') {
+    if (/barracks/.test(L.key)) return ['soldiers', K.jobs.barracks];
+    if (/school/.test(L.key)) return ['teachers and scholars', K.jobs.school];
+    if (/guild/.test(L.key)) return ['guild officers and clerks', K.jobs.guild];
+    if (/customs/.test(L.key)) return ['customs officers and clerks', K.jobs.customs];
+    if (/tavern/.test(L.key)) return ['innkeepers and servers', K.jobs.tavern];
+    return null;
+  }
+  var j = K.jobs[L.cls]; if (!j) return null;
+  return [{ shop: 'shopkeepers and assistants', craft: 'smiths and craftsmen', tavern: 'innkeepers and servers', warehouse: L.role === 'armoury' ? 'armourers and quartermasters' : 'porters and warehousemen',
+            industrial: 'industrial workers', rich: 'household service', manor: 'household service' }[L.cls] || L.cls, j];
+};
+/* where a lot stands, for the report: its country place, its canton deck, the named site district round it, or the
+   city's sector from the Palace (N, NE, ...) */
+VC.ixDistrict = function (L) {
+  if (L.country) return L.country;
+  if (L.deck) return L.deck + ' deck';
+  var p = [L.x, L.z], best = null, ba = Infinity;
+  PLAN.site.forEach(function (d) {
+    if (!d.name || d.role === 'zone' || d.role === 'wall' || d.role === 'misc' || d.role === 'nochin') return;
+    if (inPoly(p, d.poly)) { var a = Math.abs(polyArea(d.poly)); if (a < ba) { ba = a; best = d.name; } }
+  });
+  if (best) return best;
+  var c = VOTH.CIDX.Palace || { x: 0, z: 0 }, a8 = Math.round((Math.atan2(L.x - c.x, -(L.z - c.z)) / (Math.PI / 4) + 8)) % 8;
+  return 'city ' + ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][a8];
+};
+
+/* ---------------------------------------------------------------- the shell, from a model's boxes */
+/* boxes: [{ x, z, w, d, y0, h, round }] in the model's frame (ry 0); dims: the catalog's { w, d, h }. Returns
+   { poly, y, h, src: 'block' | 'round' | 'fallback' } with poly in the model's frame */
+VC.ixShellFrom = function (boxes, dims) {
+  var T = TUNE.ix, R3 = function (v) { return Math.round(v * 1000) / 1000; };
+  var cand = (boxes || []).filter(function (b) {
+    return b.y0 < T.base && b.y0 + b.h >= T.head && b.w * b.d >= T.minArea && Math.min(b.w, b.d) >= T.minSide &&
+      b.w <= dims.w + 0.5 && b.d <= dims.d + 0.5;
+  }).sort(function (a, b) { return b.w * b.d * b.h - a.w * a.d * a.h || a.x - b.x || a.z - b.z; });
+  var M = cand[0];
+  if (!M) {
+    var fw = dims.w * T.fallback, fd = dims.d * T.fallback;
+    return { poly: [[-fw / 2, -fd / 2], [fw / 2, -fd / 2], [fw / 2, fd / 2], [-fw / 2, fd / 2]].map(function (p) { return [R3(p[0]), R3(p[1])]; }),
+             y: 0, h: Math.max(T.storeyH, dims.h * 0.5), src: 'fallback' };
+  }
+  /* the floor: the top of a plinth under the block (a low box at least the block's footprint), else the block's foot */
+  var y = M.y0;
+  (boxes || []).forEach(function (b) {
+    if (b.y0 < 0.3 && b.h < 1.4 && b.y0 + b.h > y && b.w >= M.w - 0.2 && b.d >= M.d - 0.2 && Math.abs(b.x - M.x) < 0.6 && Math.abs(b.z - M.z) < 0.6) y = b.y0 + b.h;
+  });
+  /* a round block (a drum, a tower) is shelled as the square inside it: the planner cuts a circle into slivers the
+     placer cannot furnish (a 270 m2 drum came out as 30 m2 of rooms); the square keeps 64% of the floor */
+  var hw = M.w / 2, hd = M.d / 2;
+  if (M.round) hw = hd = Math.min(M.w, M.d) / 2 * Math.SQRT1_2;
+  var poly = [[M.x - hw, M.z - hd], [M.x + hw, M.z - hd], [M.x + hw, M.z + hd], [M.x - hw, M.z + hd]].map(function (p) { return [R3(p[0]), R3(p[1])]; });
+  return { poly: poly, y: R3(y), h: R3(M.y0 + M.h - y), src: M.round ? 'round' : 'block' };
+};
+VC.ixShell = function (k) {
+  var o = TUNE.ix.shells[k]; if (o) return o.skip ? null : Object.assign({ src: 'override' }, o);
+  var B = VC.IX.boxes[k]; if (!B) return null;
+  return VC.ixShellFrom(B.boxes, B.dims);
+};
+
+/* ---------------------------------------------------------------- a type: planned and furnished once, in the model's frame */
+VC.ixType = function (L) {
+  var pg = VC.ixProgram(L); if (!pg) return null;
+  var k = VC.ixKey(L), tk = k + '|' + pg.id;
+  if (VC.IX.types[tk]) return VC.IX.types[tk];
+  var T = TUNE.ix, IX = VC.ixPrograms(), sh = VC.ixShell(k);
+  var ty = VC.IX.types[tk] = { id: tk, key: L.key, v: L.v | 0, slot: L.slot | 0, prog: pg.id, cls: VC.ixClass(L), shell: sh, units: 0, dwelling: false };
+  if (!sh || !IX || typeof furnishRoom === 'undefined') { ty.fail = sh ? 'no interiors kit' : 'no shell'; return ty; }
+  var n = Math.max(1, Math.min(T.maxStoreys, Math.floor((sh.h + 0.2) / T.storeyH))), lh = sh.h / n - T.slab;
+  var xs = sh.poly.map(function (p) { return p[0]; }), zs = sh.poly.map(function (p) { return p[1]; });
+  var front = Math.max.apply(null, zs), mid = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+  var wealth = T.wealth[ty.cls] == null ? 0.5 : T.wealth[ty.cls];
+  var shell = { id: 'ix.' + tk, poly: sh.poly, y: sh.y, levels: [], doors: [{ at: [mid, front], w: 1.2 }], culture: 'voth', wealth: wealth,
+                wall: T.wall, partition: 0.12, slab: T.slab, roof: 'flat' };
+  for (var l = 0; l < n; l++) shell.levels.push({ h: Math.max(2.4, lh) });
+  var per = function (prog, trim) { return function (lv) { var e = prog[Math.min(lv, prog.length - 1)].slice(); return e.slice(0, Math.max(1, e.length - (trim || 0))); }; };
+  var opts = { seed: 0, register: false, door: 0.9, minWidth: 2.0 }, B = null, dropped = null;
+  for (var t = 0; t < 3; t++) {
+    var Bt; try { Bt = IX.planBuilding(shell, n === 1 && pg.one ? per([pg.one], t) : per(pg.p, t), opts); } catch (e) { ty.fail = 'plan: ' + e.message; break; }
+    var dr = (Bt.report.dropped || []).length;
+    if (!B || dr < dropped) { B = Bt; dropped = dr; ty.trim = t; }
+    if (!dr) break;
+  }
+  if (!B) return ty;
+  ty.B = B; ty.storeys = n; ty.dropped = dropped;
+  var home = T.home, kinds = B.rooms.map(function (R) { return R.kind; });
+  ty.dwelling = VC.ixResidents(L) > 0 && kinds.some(function (q) { return home.indexOf(q) >= 0; });
+  var cat = VC.IX.cat || (VC.IX.cat = (VC.INTD && VC.INTD.catalog) || IX.catalogAdapter()), best = null;   /* the cantons' adapter when it is made (its cache) */
+  for (var att = 0; att < 3; att++) {
+    var pieces = [], missing = [];
+    B.rooms.forEach(function (R, ri) {
+      var plan; try { plan = furnishRoom(R, cat, { seed: att * 101, cell: T.cell, backtrack: 6, passes: 2 }); } catch (e) { missing.push(R.kind + ': ' + e.message); return; }
+      (plan.report && plan.report.missing || []).forEach(function (m) { missing.push(R.kind + ':' + m.need); });
+      plan.placements.forEach(function (p) {
+        pieces.push({ key: p.key, v: p.variant | 0, seed: p.seed, x: p.x, y: p.y, z: p.z, ry: p.ry || 0, type: p.type, catRole: p.catRole || null, anchor: p.anchor, room: ri, level: R.level | 0, kind: R.kind });
+      });
+    });
+    var c = VC.ixCount(pieces);
+    if (!best || c.score > best.c.score) best = { pieces: pieces, missing: missing, c: c, seed: att * 101 };
+    if (!ty.dwelling || (c.beds && c.items && c.food)) break;
+  }
+  ty.pieces = best.pieces; ty.missing = best.missing; ty.count = best.c; ty.seed = best.seed;
+  ty.rooms = kinds; ty.floorArea = B.levels.reduce(function (s, Lv) { return s + Math.abs(polyArea(Lv.inner || Lv.outer || sh.poly)); }, 0);
+  return ty;
+};
+/* a type's beds (a bunk is two), item and food stores (kits/interiors' roles, as its residence rule counts them), dining
+   rooms, and work pieces by furniture kind in its work rooms */
+VC.ixCount = function (pieces) {
+  var IX = (typeof KratorInteriors !== "undefined" ? KratorInteriors : null) || {}, FOOD = IX.FOOD_ROLES || [], ITEM = IX.ITEM_ROLES || [], T = TUNE.ix;
+  var o = { beds: 0, items: 0, food: 0, dining: 0, work: {}, posts: 0 }, dine = {};
+  pieces.forEach(function (p) {
+    if (p.type === 'bed') o.beds += p.catRole === 'bunk' ? 2 : 1;
+    if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') o.food++;
+    if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') o.items++;
+    if (p.type === 'table' && T.dining.indexOf(p.kind) >= 0) dine[p.room] = 1;
+    if (T.work.indexOf(p.kind) >= 0 && p.anchor !== 'surface' && (T.posts.indexOf(p.type) >= 0 || ((p.kind === 'store' || p.kind === 'warehouse') && T.postsStore.indexOf(p.type) >= 0))) {
+      o.work[p.type] = (o.work[p.type] || 0) + 1; o.posts++;
+    }
+  });
+  o.dining = Object.keys(dine).length;
+  o.score = Math.min(o.beds, 1) + Math.min(o.items, 1) + Math.min(o.food, 1) + o.beds * 0.01;
+  return o;
+};
+
+/* ---------------------------------------------------------------- the units: every standing lot with a programme */
+VC.ixPlanAll = function () {
+  var t0 = Date.now(), T = TUNE.ix;
+  VC.IX.units = []; VC.IX.types = {};
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null) return;
+    var ty = VC.ixType(L); if (!ty) return;
+    ty.units++;
+    var res = VC.ixResidents(L), need = Math.ceil(res / T.per), C = ty.count || { beds: 0, items: 0, food: 0, dining: 0, posts: 0 }, job = VC.ixJob(L);
+    var u = { i: VC.IX.units.length, lot: L.id, type: ty.id, cls: ty.cls, key: L.key, x: L.x, y: L.y, z: L.z, ry: L.ry, district: VC.ixDistrict(L),
+              residents: res, need: need, beds: C.beds, items: C.items, food: C.food, dining: C.dining, job: job ? job[0] : null, jobs: job ? job[1] : 0, posts: C.posts };
+    if (res > 0) {
+      var s = {};
+      if (C.beds < need) s.beds = need - C.beds;
+      if (C.items < need) s.items = need - C.items;
+      if (C.food < need) s.food = need - C.food;
+      if (!C.dining) s.dining = 1;
+      if (Object.keys(s).length) u.short = s;
+    }
+    if (ty.fail) u.fail = ty.fail;
+    L.ix = u.i;
+    VC.IX.units.push(u);
+  });
+  VC.IX.ms = Math.round(Date.now() - t0);
+  VC.IX.done = true;
+  return VC.IX.units.length;
+};
+/* a unit's piece in world space: the type's local piece by the lot's pose (the catalog's frame: +z front, turned by ry) */
+VC.ixWorld = function (u, p) {
+  var c = Math.cos(u.ry), s = Math.sin(u.ry);
+  return { x: u.x + p.x * c + p.z * s, y: u.y + p.y, z: u.z - p.x * s + p.z * c, ry: u.ry + (p.ry || 0) };
+};
+VC.ixWorldXZ = function (u, q) { var c = Math.cos(u.ry), s = Math.sin(u.ry); return [u.x + q[0] * c + q[1] * s, u.z - q[0] * s + q[1] * c]; };
+/* what the simulation reads of a unit (phase B makes these SIM places): its rooms and pieces in world space, its activities */
+VC.ixSlots = function (i) {
+  var u = VC.IX.units[i], ty = u && VC.IX.types[u.type]; if (!ty || !ty.B) return null;
+  var ps = ty.pieces.map(function (p, n) { var w = VC.ixWorld(u, p); return { id: 'ix.' + i + '/' + n, key: p.key, type: p.type, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, role: p.catRole, x: w.x, y: w.y, z: w.z, ry: w.ry, level: p.level, room: p.room, roomKind: p.kind }; });
+  return { unit: u, door: VC.ixWorldXZ(u, ty.B.doors[0] ? ty.B.doors[0].at : [0, 0]), pieces: ps, acts: SIM.slotsFromFurniture ? SIM.slotsFromFurniture(ps) : {} };
+};
+
+/* ---------------------------------------------------------------- the report (SIM-ROADMAP 2.2 item 7) */
+VC.ixReport = function () {
+  var U = VC.IX.units, R = { units: U.length, types: Object.keys(VC.IX.types).length, rooms: 0, pieces: 0, residents: 0, homes: 0, ms: VC.IX.ms,
+    need: { beds: 0, items: 0, food: 0 }, have: { beds: 0, items: 0, food: 0 }, short: { units: 0, bedUnits: 0, beds: 0, items: 0, food: 0, dining: 0, residents: 0 },
+    byClass: {}, byDistrict: {}, shells: {}, jobs: {}, failed: [], dropped: 0 };
+  var add = function (o, k, u) {
+    var e = o[k] || (o[k] = { units: 0, homes: 0, residents: 0, beds: 0, need: 0, short: 0, shortResidents: 0, missingBeds: 0 });
+    e.units++; if (u.residents) { e.homes++; e.residents += u.residents; e.beds += Math.min(u.beds, u.need); e.need += u.need; }
+    if (u.short) { e.short++; e.missingBeds += u.short.beds || 0; if (u.short.beds) e.shortResidents += Math.min(u.residents, (u.short.beds || 0) * TUNE.ix.per); }
+  };
+  U.forEach(function (u) {
+    var ty = VC.IX.types[u.type];
+    R.rooms += ty.rooms ? ty.rooms.length : 0; R.pieces += ty.pieces ? ty.pieces.length : 0;
+    if (u.residents) {
+      R.homes++; R.residents += u.residents;
+      ['beds', 'items', 'food'].forEach(function (k) { R.need[k] += u.need; R.have[k] += Math.min(u[k], u.need); });
+    }
+    if (u.short) {
+      R.short.units++; ['beds', 'items', 'food', 'dining'].forEach(function (k) { R.short[k] += u.short[k] || 0; });
+      if (u.short.beds) { R.short.bedUnits++; R.short.residents += Math.min(u.residents, u.short.beds * TUNE.ix.per); }
+    }
+    add(R.byClass, u.cls, u); add(R.byDistrict, u.district, u);
+    if (u.fail && R.failed.indexOf(u.type + ': ' + u.fail) < 0) R.failed.push(u.type + ': ' + u.fail);
+    /* the job table: a row per kind of work, a column per furniture kind (its count and where) */
+    if (u.job) {
+      var J = R.jobs[u.job] || (R.jobs[u.job] = { jobs: 0, units: 0, posts: 0, kinds: {}, where: {} });
+      J.jobs += u.jobs; J.units++; J.posts += u.posts; J.where[u.district] = (J.where[u.district] || 0) + 1;
+      var w = (ty.count && ty.count.work) || {};
+      Object.keys(w).forEach(function (f) { var c = J.kinds[f] || (J.kinds[f] = { n: 0, rooms: {} }); c.n += w[f]; });
+      (ty.pieces || []).forEach(function (p) { var c = J.kinds[p.type]; if (c && TUNE.ix.work.indexOf(p.kind) >= 0) c.rooms[p.kind] = 1; });
+    }
+  });
+  Object.keys(VC.IX.types).forEach(function (k) {
+    var ty = VC.IX.types[k], s = ty.shell ? ty.shell.src : 'none';
+    R.shells[s] = (R.shells[s] || 0) + 1; R.dropped += ty.dropped || 0;
+  });
+  Object.keys(R.jobs).forEach(function (k) { var J = R.jobs[k]; J.jobs = Math.round(J.jobs); J.target = Math.ceil(J.jobs * 0.9); J.gap = J.posts - J.target; });
+  /* the shell list: what each type was read as, so the owner can name the overrides (TUNE.ix.shells) */
+  R.typeList = Object.keys(VC.IX.types).sort().map(function (k) {
+    var ty = VC.IX.types[k], sh = ty.shell || {};
+    return { type: k, units: ty.units, shell: sh.src || 'none', storeys: ty.storeys || 0, rooms: (ty.rooms || []).join(' '), beds: ty.count ? ty.count.beds : 0,
+             items: ty.count ? ty.count.items : 0, food: ty.count ? ty.count.food : 0, posts: ty.count ? ty.count.posts : 0, dropped: ty.dropped || 0, fail: ty.fail || null };
+  });
+  VC.IX.report = R;
+  return R;
+};
+/* everything as plain JSON (types in the model's frame, units with their poses): the export Godot reads */
+VC.IX.export = function () {
+  var types = {};
+  Object.keys(VC.IX.types).forEach(function (k) {
+    var ty = VC.IX.types[k];
+    types[k] = { key: ty.key, v: ty.v, slot: ty.slot, prog: ty.prog, cls: ty.cls, shell: ty.shell, storeys: ty.storeys, rooms: ty.rooms, count: ty.count, fail: ty.fail || null,
+                 plan: ty.B && (typeof KratorInteriors !== "undefined" ? KratorInteriors : null) && KratorInteriors.exportBuilding ? KratorInteriors.exportBuilding(ty.B) : null,
+                 pieces: (ty.pieces || []).map(function (p) { return [p.key, p.v, p.seed, Math.round(p.x * 100) / 100, Math.round(p.y * 100) / 100, Math.round(p.z * 100) / 100, Math.round(p.ry * 1000) / 1000, p.room]; }) };
+  });
+  return { what: 'Voth city: every lot building\'s interior (41-vc-building-interiors.js)', types: types, units: VC.IX.units };
+};
+
 /* ---- targets/voth-site/50-site-scene.js ---- */
 /* ============================== 2. THE SCENE: VOTH'S GROUND, WATER AND CANTONS ============================== */
 /* [draw] The engine page (kits/catalog/krator-asset-engine.js) made scene, camera, renderer and controls.
@@ -55060,42 +55458,11 @@ VC.panels = function () {
    33-vc-country.js lays the decks out again. */
 VC.stripCantons = function () {
   var D = window.VOTH_CITY_CAPTURE; if (!D) return 0;
-  var gone = 0;
-  VC.DECKS.forEach(function (n) {
-    var c = VOTH.CIDX[n], vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!c || !v) return;
-    var pl = null; v.r.forEach(function (q) { if (q[0] !== 9 && (!pl || q[5] * q[7] > pl[5] * pl[7])) pl = q; });
-    var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), hw = c.r * 0.97 * Math.pow(0.86, c.tiers), dy = c.top + 0.12 * c.tiers - bed, n0 = v.r.length;
-    v.r = v.r.filter(function (q) {
-      if (q[0] === 9 || q[3] < dy - 1.5) return true;
-      var lx = q[2] - pl[2], lz = q[4] - pl[4], shape = D.shapes[q[0]];
-      if (q[5] * q[7] > 2000) return true;                                           /* the paving slab */
-      if (Math.max(Math.abs(lx), Math.abs(lz)) > hw * 0.95) return true;               /* the parapets */
-      if (Math.hypot(lx, lz) < 7 && (shape === 'cyl' || shape === 'fr3')) return true;  /* the obelisk */
-      return false;
-    });
-    gone += n0 - v.r.length;
+  var S = VC.stripSet(), gone = 0;   /* the records that go (33-vc-country.js): the decks' generic buildings, the Port's sheds */
+  VC.DECKS.concat(['Port']).forEach(function (n) {
+    var vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!v) return;
+    var n0 = v.r.length; v.r = v.r.filter(function (q) { return !S.has(q); }); gone += n0 - v.r.length;
   });
-  /* the Port canton's shed() warehouses (Voth's portDeckV2: deck and quays): each is found by its fr8 roof and the
-     body box under it, and goes with its cornice and door; the lighthouse, the guild hall, the stairs, the piers and
-     the crane stay */
-  var pv = D.entries.voth_city_canton_port && D.entries.voth_city_canton_port[0];
-  if (pv) {
-    var R0 = pv.r, n1 = R0.length, regions = [];
-    R0.forEach(function (q) {
-      if (q[0] === 9 || D.shapes[q[0]] !== 'fr8' || D.fams[q[1]] !== 'roof') return;
-      var body = R0.filter(function (b) { return b !== q && b[0] !== 9 && D.shapes[b[0]] === 'box' && Math.abs(b[2] - q[2]) < 0.05 && Math.abs(b[4] - q[4]) < 0.05 && Math.abs(b[5] * 1.02 - q[5]) < 0.3; })[0];
-      if (body) regions.push({ c: [q[2], q[4]], ry: q[8], hw: q[5] / 2 + 1.5, hd: q[7] / 2 + 1.5, y0: body[3] - 0.5, y1: q[3] + q[6] + 0.5 });
-    });
-    pv.r = R0.filter(function (q) {
-      if (q[0] === 9) return true;
-      return !regions.some(function (g) {
-        if (q[3] < g.y0 || q[3] > g.y1) return false;
-        var dx = q[2] - g.c[0], dz = q[4] - g.c[1], cs = Math.cos(g.ry), sn = Math.sin(g.ry), lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
-        return Math.abs(lx) <= g.hw && Math.abs(lz) <= g.hd;
-      });
-    });
-    gone += n1 - pv.r.length;
-  }
   return gone;
 };
 
@@ -55203,7 +55570,8 @@ VC.start = function () {
   /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
   Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
   VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
-  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
+  VC.ui(); VC.ixUI(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };
 
 /* ---- targets/voth-city/56-vc-interiors-host.js ---- */
@@ -55523,6 +55891,318 @@ VC.cutUI = function () {
       VC.INTD.walkIn = inside; if (inside) VC.showInterior(inside, true, null);
     }
   });
+};
+
+/* ---- targets/voth-city/56b-vc-building-interiors-host.js ---- */
+/* ============================== 6c. HOST: EVERY BUILDING'S INTERIOR, THE DENSITY OVERLAY, THE REPORT ============================== */
+/* [draw] The browser side of 41-vc-building-interiors.js (VC.IX):
+   - VC.ixProbe: each kit model a lot draws is built once at the origin (its LOD off) and its meshes' boxes handed to the
+     data side, which reads its shell off them (VC.ixShellFrom). Then VC.ixPlanAll plans and furnishes every type.
+   - VC.ixDraw: a unit's interior, drawn the first time it is cut away: its floors, its walls with their door and window
+     gaps, its stairs, its furniture (one InstancedMesh per piece and part, per storey), in a group posed as the lot.
+   - The cutaway (x) opens the building nearest the middle of the view when it is nearer than any canton: the same
+     clipping planes, the box the building's footprint; the storey keys and buttons step it.
+   - The density overlay (n): residents per hectare on a TUNE.ix.density.cell grid, a diverging ramp round the city's
+     mean, the homes short of beds hatched; again for workplaces per hectare; again for off.
+   - The report (the "interiors report" button): totals, the shortfall by class and district, the job table, the types. */
+VC.IXD = { groups: {}, protos: {}, density: 0, cut: null };
+
+/* ---------------------------------------------------------------- the shells: each model's boxes */
+VC.ixProbe = function () {
+  var t0 = performance.now(), seen = {}, lodOn = KratorLOD.enabled, n = 0, bb = new THREE.Box3();
+  KratorLOD.enabled = false;
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null || !VC.ixProgram(L)) return;
+    var k = VC.ixKey(L); if (seen[k] || TUNE.ix.shells[k]) return; seen[k] = 1;
+    var A = ASSET_BY_KEY[L.key]; if (!A) return;
+    var g = buildAsset(L.key, 0, 0, 0, { variant: L.v, seed: 7 + L.v * 13 + L.slot * 101, wealth: HOST.WEALTH[L.cls] == null ? 0.5 : HOST.WEALTH[L.cls] });
+    if (!g) return;
+    var boxes = []; g.updateMatrixWorld(true);
+    g.traverse(function (m) {
+      if (!m.isMesh || !m.geometry) return;
+      bb.setFromObject(m); var w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, h = bb.max.y - bb.min.y;
+      if (w * d < 4 && h > 1.5) return;
+      var t = m.geometry.type, round = /Cylinder|Lathe|Circle|Sphere/.test(t);
+      boxes.push({ x: (bb.max.x + bb.min.x) / 2, z: (bb.max.z + bb.min.z) / 2, w: w, d: d, y0: bb.min.y, h: h, round: round });
+    });
+    scene.remove(g); var i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);
+    g.traverse(function (m) { if (m.geometry) m.geometry.dispose(); });
+    VC.IX.boxes[k] = { boxes: boxes, dims: entryDims(A, L.v | 0) }; n++;
+  });
+  KratorLOD.enabled = lodOn;
+  VC.IXD.probeMs = Math.round(performance.now() - t0); VC.IXD.probed = n;
+  return n;
+};
+VC.ixStart = function () {
+  try {
+    VC.ixProbe();
+    var t0 = performance.now(); VC.ixPlanAll(); VC.IXD.planMs = Math.round(performance.now() - t0);
+    VC.ixReport();
+  } catch (e) { console.error('interiors: ' + (e.stack || e)); VC.IX.error = String(e.stack || e); }
+};
+
+/* ---------------------------------------------------------------- drawing one unit's interior (in the lot's frame) */
+VC.ixFurnProto = function (key, v, wealth) {
+  var pk = key + '|' + v, Pr = VC.IXD.protos[pk];
+  if (Pr) return Pr;
+  var fg = buildFurn(key, 0, 0, 0, { variant: v, seed: 11, y: 0, wealth: wealth });
+  if (!fg || fg.userData.error) { if (fg) { scene.remove(fg); var i0 = INSTANCES.indexOf(fg); if (i0 >= 0) INSTANCES.splice(i0, 1); } return (VC.IXD.protos[pk] = { bad: true }); }
+  var parts = [], lights = []; fg.updateMatrixWorld(true);
+  fg.traverse(function (o) { if (o.isPointLight) lights.push(o); }); lights.forEach(function (l) { if (l.parent) l.parent.remove(l); });
+  fg.traverse(function (o) { if (o.isMesh) parts.push({ geo: o.geometry.clone().applyMatrix4(o.matrixWorld), mat: o.material }); });
+  scene.remove(fg); var i1 = INSTANCES.indexOf(fg); if (i1 >= 0) INSTANCES.splice(i1, 1);
+  return (VC.IXD.protos[pk] = { parts: parts });
+};
+VC.ixDraw = function (i) {
+  if (VC.IXD.groups[i]) return VC.IXD.groups[i];
+  var u = VC.IX.units[i], ty = u && VC.IX.types[u.type]; if (!ty || !ty.B) return null;
+  var B = ty.B, g = new THREE.Group(); g.userData = { kind: 'interior', unit: i, storeys: {} };
+  g.position.set(u.x, u.y + TUNE.interiors.lift, u.z); g.rotation.y = u.ry; g.visible = false; scene.add(g);
+  var mat = VC.intMat(), wallC = new THREE.Color(0xd8c9a6), floorC = new THREE.Color(0x8a6a4c), stepC = new THREE.Color(0xa79b82);
+  var boxes = {}, add = function (lv, b, col) { (boxes[lv] = boxes[lv] || []).push([b, col]); };
+  /* walls: a box per stretch between openings (a door's gap to its head, a window's below its sill and above its head) */
+  B.walls.forEach(function (W) {
+    var ax = W.a[0], az = W.a[1], L = Math.hypot(W.b[0] - ax, W.b[1] - az); if (L < 0.05) return;
+    var ux = (W.b[0] - ax) / L, uz = (W.b[1] - az) / L, cuts = (W.openings || []).map(function (o) { return [o.u - o.w / 2, o.u + o.w / 2, o]; }).sort(function (a, b) { return a[0] - b[0]; });
+    var piece = function (s0, s1, y0, y1) { if (s1 - s0 < 0.02 || y1 - y0 < 0.02) return; add(W.level, { s0: s0, s1: s1, ax: ax, az: az, ux: ux, uz: uz, t: W.thick, y0: y0, y1: y1 }, wallC); };
+    var s = 0, top = W.y + W.h;
+    cuts.forEach(function (c) {
+      piece(s, Math.max(s, c[0]), W.y, top);
+      var o = c[2], oy0 = W.y + (o.y0 == null ? 0 : o.y0), oy1 = W.y + (o.y1 == null ? 2.1 : o.y1);
+      piece(c[0], c[1], W.y, Math.max(W.y, oy0)); piece(c[0], c[1], Math.min(top, oy1), top);
+      s = Math.max(s, c[1]);
+    });
+    piece(s, L, W.y, top);
+  });
+  /* stairs: treads along the flight */
+  (B.stairs || []).forEach(function (S) {
+    var foot = S.foot, top = S.top; if (!foot || !top) return;
+    var n = Math.max(2, S.risers || Math.round((S.y1 - S.y0) / 0.19)), fx = foot[0], fz = foot[1], L = Math.hypot(top[0] - fx, top[1] - fz) || S.run || 3, ux = (top[0] - fx) / L, uz = (top[1] - fz) / L;
+    for (var k = 0; k < n; k++) { var t = (k + 0.5) / n; add(S.from | 0, { s0: L * k / n, s1: L * (k + 1) / n, ax: fx, az: fz, ux: ux, uz: uz, t: S.w || 1, y0: S.y0, y1: S.y0 + (S.y1 - S.y0) * (k + 1) / n }, stepC); }
+  });
+  var geo = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0), pos = new THREE.Vector3(), sc = new THREE.Vector3();
+  Object.keys(boxes).forEach(function (lv) {
+    var Ls = boxes[lv], IM = new THREE.InstancedMesh(geo, mat, Ls.length);
+    Ls.forEach(function (e, j) {
+      var b = e[0], len = b.s1 - b.s0, m = (b.s0 + b.s1) / 2;
+      q.setFromAxisAngle(Y, Math.atan2(-b.uz, b.ux)); pos.set(b.ax + b.ux * m, b.y0, b.az + b.uz * m); sc.set(len, b.y1 - b.y0, b.t);
+      m4.compose(pos, q, sc); IM.setMatrixAt(j, m4); IM.setColorAt(j, e[1]);
+    });
+    IM.userData = { kind: 'interior', unit: i, storey: +lv, probeSkip: true }; g.add(IM); (g.userData.storeys[lv] = g.userData.storeys[lv] || []).push(IM);
+  });
+  /* floors: each storey's outline as a thin slab (the stair's well left open) */
+  (B.floors || []).forEach(function (F) {
+    var sh = new THREE.Shape(F.poly.map(function (p) { return new THREE.Vector2(p[0], -p[1]); }));
+    (F.holes || []).forEach(function (h) { sh.holes.push(new THREE.Path(h.map(function (p) { return new THREE.Vector2(p[0], -p[1]); }))); });
+    var fg = new THREE.ShapeGeometry(sh); fg.rotateX(-Math.PI / 2); fg.translate(0, F.y + 0.01, 0);
+    var fm = new THREE.Mesh(fg, new THREE.MeshStandardMaterial({ color: floorC, roughness: 0.95, side: THREE.DoubleSide }));
+    fm.userData = { kind: 'interior', unit: i, storey: F.level, probeSkip: true }; g.add(fm); (g.userData.storeys[F.level] = g.userData.storeys[F.level] || []).push(fm);
+  });
+  /* the furniture */
+  var by = {}, wealth = TUNE.ix.wealth[ty.cls] == null ? 0.5 : TUNE.ix.wealth[ty.cls];
+  ty.pieces.forEach(function (p, n) { var k = p.key + '|' + p.v + '|' + p.level; (by[k] = by[k] || []).push(Object.assign({ n: n }, p)); });
+  var nF = 0, one = new THREE.Vector3(1, 1, 1);
+  Object.keys(by).forEach(function (k) {
+    var items = by[k], Pr = VC.ixFurnProto(items[0].key, items[0].v, wealth); if (Pr.bad) return;
+    Pr.parts.forEach(function (part) {
+      var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
+      items.forEach(function (p, j) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(j, m4); });
+      IM.userData = { kind: 'furniture', unit: i, storey: items[0].level, probeSkip: true, items: items };
+      g.add(IM); (g.userData.storeys[items[0].level] = g.userData.storeys[items[0].level] || []).push(IM);
+    });
+    nF += items.length;
+  });
+  g.userData.stats = { rooms: B.rooms.length, furniture: nF, storeys: B.levels.length };
+  if (VC.INTD.planes) g.traverse(function (o) { var ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach(function (m) { if (m.clippingPlanes !== VC.INTD.planes) { m.clippingPlanes = VC.INTD.planes; m.clipIntersection = true; m.clipShadows = true; m.needsUpdate = true; } }); });
+  VC.IXD.groups[i] = g;
+  return g;
+};
+VC.ixShow = function (i, on, upTo) {
+  var g = on ? VC.ixDraw(i) : VC.IXD.groups[i]; if (!g) return;
+  g.visible = !!on;
+  if (on) Object.keys(g.userData.storeys).forEach(function (s) { g.userData.storeys[s].forEach(function (m) { m.visible = upTo == null || +s <= upTo; }); });
+};
+
+/* ---------------------------------------------------------------- the cutaway on any building (56-vc-interiors-host.js) */
+VC.ixUnitBox = function (u) {
+  var ty = VC.IX.types[u.type], P = ty.shell.poly.map(function (p) { return VC.ixWorldXZ(u, p); });
+  return P.reduce(function (b, p) { return [Math.min(b[0], p[0]), Math.max(b[1], p[0]), Math.min(b[2], p[1]), Math.max(b[3], p[1])]; }, [1e9, -1e9, 1e9, -1e9]);
+};
+VC.cutUnit = function (i, storey) {
+  var C = VC.INTD.cut, u = VC.IX.units[i], ty = u && VC.IX.types[u.type]; if (!ty || !ty.B) return;
+  if (C.canton) { VC.showInterior(C.canton, false); C.canton = null; }
+  if (C.unit != null && C.unit !== i) VC.ixShow(C.unit, false);
+  var Lv = ty.B.levels, s = Math.max(0, Math.min(Lv.length - 1, storey | 0));
+  C.unit = i; C.storey = s; C.on = true;
+  VC.cutPlanes(); VC.ixDraw(i);
+  var b = VC.ixUnitBox(u), m = 0.6, fy = u.y + Lv[s].y;
+  VC.cutBox([b[0] - m, b[1] + m, b[2] - m, b[3] + m, fy + Math.min(TUNE.interiors.cutAt, Lv[s].h - 0.3)]);
+  VC.ixShow(i, true, s);
+  VC.cutBar();
+};
+VC.ixCutWrap = function () {
+  var cutTo = VC.cutTo, cutOff = VC.cutOff, cutBar = VC.cutBar, cutPick = VC.cutPick;
+  VC.cutTo = function (cn, storey) {
+    var C = VC.INTD.cut;
+    if (typeof cn === 'number') return VC.cutUnit(cn, storey);
+    if (cn == null && C.unit != null) return VC.cutUnit(C.unit, storey);
+    if (C.unit != null) { VC.ixShow(C.unit, false); C.unit = null; }
+    return cutTo(cn, storey);
+  };
+  VC.cutOff = function () { var C = VC.INTD.cut; if (C.unit != null) { VC.ixShow(C.unit, false); C.unit = null; } return cutOff(); };
+  VC.cutBar = function () {
+    var C = VC.INTD.cut; if (C.unit == null || !C.on) return cutBar();
+    var bar = $('cutbar'); if (!bar) return; bar.style.display = 'block';
+    var u = VC.IX.units[C.unit], ty = VC.IX.types[u.type], Lv = ty.B.levels, A = ASSET_BY_KEY[u.key] || {}, n = Lv.length;
+    var rk = ty.B.rooms.filter(function (R) { return R.level === C.storey; }).map(function (R) { return R.kind; }).join(', ');
+    $('cut-storey').innerHTML = ' <b>' + (A.name || u.key) + '</b> (' + u.cls + ', ' + u.district + ') storey <b>' + (C.storey + 1) + '</b> of ' + n + ' <span class="k" style="display:inline">' + rk +
+      (u.residents ? ' &middot; ' + u.residents + ' residents, ' + u.beds + ' beds of ' + u.need + (u.short ? ' <b style="color:#ff9a7a">short</b>' : '') : '') + '</span> ';
+    $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= n - 1;
+    $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= n - 1 ? 0.35 : 1;
+    $('cut-canton').value = '';
+    var e = $('cut-status'); if (e) e.textContent = (A.name || u.key) + ', storey ' + (C.storey + 1) + ' of ' + n;
+  };
+  /* the building whose footprint holds the view's middle (or the nearest within 12 m) when no canton's is nearer */
+  VC.cutPick = function () {
+    var t = ctl.target, cn = cutPick(), best = null, bd = 12;
+    if (cn) { var M = VC.INT.cantons[cn].M; if (Math.hypot(M.x - t.x, M.z - t.z) < (M.apron ? M.apron.ro : M.r)) return cn; }
+    VC.IX.units.forEach(function (u) { if (Math.abs(u.x - t.x) > 40 || Math.abs(u.z - t.z) > 40) return; var d = Math.hypot(u.x - t.x, u.z - t.z); if (d < bd && VC.IX.types[u.type].B) { bd = d; best = u.i; } });
+    return best != null ? best : cn;
+  };
+  var sel = $('cut-canton');
+  if (sel && !sel.querySelector('option[value=""]')) { var o = document.createElement('option'); o.value = ''; o.textContent = 'a building'; o.disabled = true; sel.insertBefore(o, sel.firstChild); }
+};
+/* the inspector: a shown building's furniture too (55-vc-host.js VC.pickFurn) */
+VC.ixPickWrap = function () {
+  var pick = VC.pickFurn;
+  VC.pickFurn = function (r) {
+    var best = pick(r), rc = new THREE.Raycaster(); rc.ray.copy(r);
+    Object.keys(VC.IXD.groups).forEach(function (i) {
+      var g = VC.IXD.groups[i]; if (!g.visible) return;
+      g.children.forEach(function (m) {
+        if (!m.visible || !m.userData.items) return;
+        var hit = rc.intersectObject(m, false)[0]; if (!hit || (best && hit.distance >= best.d)) return;
+        var p = m.userData.items[hit.instanceId]; if (!p) return;
+        var u = VC.IX.units[i], A = ASSET_BY_KEY[u.key] || {};
+        best = { d: hit.distance, key: p.key, v: p.v || 0, where: (A.name || u.key) + ', ' + p.kind + ', storey ' + (p.level + 1) };
+      });
+    });
+    return best;
+  };
+};
+
+/* ---------------------------------------------------------------- the density overlay (n) */
+VC.ixDensityGrid = function (mode) {
+  var c = TUNE.ix.density.cell, G = {}, ha = c * c / 1e4;
+  VC.IX.units.forEach(function (u) {
+    var v = mode === 1 ? u.residents : u.jobs; if (!v) return;
+    var k = Math.floor(u.x / c) + ',' + Math.floor(u.z / c); G[k] = (G[k] || 0) + v / ha;
+  });
+  var vals = Object.keys(G).map(function (k) { return G[k]; }), mean = vals.reduce(function (a, b) { return a + b; }, 0) / Math.max(1, vals.length);
+  var sorted = vals.slice().sort(function (a, b) { return a - b; }), hi = sorted[Math.floor(sorted.length * 0.97)] || 1;
+  return { G: G, c: c, mean: mean, hi: Math.max(hi, mean * 1.5), cells: vals.length };
+};
+/* the diverging ramp (blue under the mean, orange over it), t in -1..1 */
+VC.ixRamp = function (t, a) {
+  var lo = [43, 108, 176], mid = [238, 232, 216], hiC = [214, 96, 34], s = Math.max(-1, Math.min(1, t)), e = s < 0 ? lo : hiC, k = Math.abs(s);
+  return 'rgba(' + Math.round(mid[0] + (e[0] - mid[0]) * k) + ',' + Math.round(mid[1] + (e[1] - mid[1]) * k) + ',' + Math.round(mid[2] + (e[2] - mid[2]) * k) + ',' + a + ')';
+};
+VC.ixPaint = function () {
+  var mode = VC.IXD.density; if (!mode || !VC.IX.done) return;
+  var cv = VIEW.ovCanvas, S = cv.width, E = VIEW.ext, k = S / (2 * E), ctx = cv.getContext('2d');
+  var X = function (x) { return (x + E) * k; }, Z = function (z) { return (z + E) * k; };
+  var D = VC.ixDensityGrid(mode);
+  Object.keys(D.G).forEach(function (key) {
+    var ij = key.split(','), v = D.G[key], t = v >= D.mean ? (v - D.mean) / (D.hi - D.mean) : -(D.mean - v) / D.mean;
+    ctx.fillStyle = VC.ixRamp(t, 0.82); ctx.fillRect(X(+ij[0] * D.c), Z(+ij[1] * D.c), D.c * k + 0.5, D.c * k + 0.5);
+  });
+  /* the homes short of beds: their lots, hatched */
+  if (mode === 1) {
+    ctx.strokeStyle = TUNE.ix.density.hatch; ctx.lineWidth = Math.max(1, k * 0.8);
+    VC.IX.units.forEach(function (u) {
+      if (!u.short || !u.short.beds) return;
+      var L = PLAN.lots[u.lot], C = obbCorners(L.lot); ctx.beginPath(); C.forEach(function (p, j) { if (j) ctx.lineTo(X(p[0]), Z(p[1])); else ctx.moveTo(X(p[0]), Z(p[1])); }); ctx.closePath();
+      ctx.save(); ctx.clip(); ctx.beginPath();
+      var x0 = Math.min.apply(null, C.map(function (p) { return X(p[0]); })), x1 = Math.max.apply(null, C.map(function (p) { return X(p[0]); }));
+      var z0 = Math.min.apply(null, C.map(function (p) { return Z(p[1]); })), z1 = Math.max.apply(null, C.map(function (p) { return Z(p[1]); })), st = Math.max(2, k * 3);
+      for (var x = x0 - (z1 - z0); x < x1; x += st) { ctx.moveTo(x, z1); ctx.lineTo(x + (z1 - z0), z0); }
+      ctx.stroke(); ctx.restore();
+    });
+  }
+  VIEW.ovTex.needsUpdate = true;
+  var R = VC.IX.report, lg = $('ixlegend');
+  if (lg) {
+    var what = mode === 1 ? 'residents' : 'workplaces', tot = mode === 1 ? R.residents : VC.IX.units.reduce(function (a, u) { return a + u.jobs; }, 0);
+    lg.innerHTML = '<b>' + (mode === 1 ? 'Residents' : 'Workplaces') + ' per hectare</b> <span class="k">(' + D.c + ' m cells, lot buildings only)</span>' +
+      '<div class="ramp" style="background:linear-gradient(90deg,' + VC.ixRamp(-1, 1) + ',' + VC.ixRamp(0, 1) + ',' + VC.ixRamp(1, 1) + ')"></div>' +
+      '<div class="k" style="display:flex;justify-content:space-between"><span>0</span><span>mean ' + Math.round(D.mean) + '</span><span>' + Math.round(D.hi) + '+</span></div>' +
+      '<div>' + tot.toLocaleString() + ' ' + what + ' in ' + VC.IX.units.length.toLocaleString() + ' buildings, ' + D.cells + ' cells</div>' +
+      (mode === 1 ? '<div><i style="background:' + TUNE.ix.density.hatch + '"></i>hatched: homes short of beds (' + R.short.bedUnits + ' homes, ' + R.short.residents.toLocaleString() + ' residents without a bed)</div>' : '') +
+      '<div class="k">n: next mode</div>';
+  }
+};
+VC.ixDensityToggle = function () {
+  VC.IXD.density = (VC.IXD.density + 1) % 3;
+  var b = $('ly-density'); if (b) { b.classList.toggle('on', !!VC.IXD.density); b.textContent = ['density (n)', 'density: residents', 'density: workplaces'][VC.IXD.density]; }
+  var lg = $('ixlegend'); if (lg) lg.style.display = VC.IXD.density ? 'block' : 'none';
+  VC.paint();
+};
+
+/* ---------------------------------------------------------------- the report panel */
+VC.ixReportHTML = function () {
+  var R = VC.IX.report; if (!R) return VC.IX.error ? '<span class="bad">' + VC.IX.error + '</span>' : 'not computed';
+  var f = function (n) { return Math.round(n).toLocaleString(); }, pc = function (a, b) { return b ? Math.round(100 * a / b) + '%' : '-'; };
+  var h = '<div class="k">' + f(R.units) + ' buildings of ' + R.types + ' types (a type: one kit model and programme, planned and furnished once) &middot; ' + f(R.rooms) + ' rooms &middot; ' + f(R.pieces) + ' pieces &middot; probe ' + VC.IXD.probeMs + ' ms, plan and furnish ' + VC.IXD.planMs + ' ms</div>';
+  h += '<h2>Homes against the residence rule</h2><div class="k">per ' + TUNE.ix.per + ' residents a bed, an item store and a food store; a dining or entertaining room where the plan allows. Residents are the census\'s (TUNE.census.live); the shortfall is reported, not forced.</div>';
+  h += '<table><tr><th></th><th>needed</th><th>held</th><th>met</th></tr>';
+  ['beds', 'items', 'food'].forEach(function (k) { h += '<tr><td>' + { beds: 'beds', items: 'item stores', food: 'food stores' }[k] + '</td><td class="n">' + f(R.need[k]) + '</td><td class="n">' + f(R.have[k]) + '</td><td class="n ' + (R.have[k] < R.need[k] ? 'bad' : 'ok') + '">' + pc(R.have[k], R.need[k]) + '</td></tr>'; });
+  h += '<tr><td>homes with a dining room</td><td class="n">' + f(R.homes) + '</td><td class="n">' + f(R.homes - R.short.dining) + '</td><td class="n">' + pc(R.homes - R.short.dining, R.homes) + '</td></tr></table>';
+  h += '<div>' + f(R.short.units) + ' of ' + f(R.homes) + ' homes fall short; about <b>' + f(R.short.residents) + '</b> of ' + f(R.residents) + ' residents have no bed.</div>';
+  var tbl = function (o, title) {
+    var keys = Object.keys(o).sort(function (a, b) { return o[b].missingBeds - o[a].missingBeds || o[b].residents - o[a].residents; });
+    var t = '<h2>' + title + '</h2><table><tr><th></th><th>buildings</th><th>homes</th><th>residents</th><th>beds needed</th><th>beds held</th><th>homes short</th><th>residents without a bed</th></tr>';
+    keys.forEach(function (k) { var e = o[k]; t += '<tr><td>' + k + '</td><td class="n">' + f(e.units) + '</td><td class="n">' + f(e.homes) + '</td><td class="n">' + f(e.residents) + '</td><td class="n">' + f(e.need) + '</td><td class="n">' + f(e.beds) + '</td><td class="n ' + (e.short ? 'bad' : '') + '">' + f(e.short) + '</td><td class="n ' + (e.shortResidents ? 'bad' : '') + '">' + f(e.shortResidents) + '</td></tr>'; });
+    return t + '</table>';
+  };
+  h += tbl(R.byClass, 'By lot class') + tbl(R.byDistrict, 'By district');
+  /* the job table */
+  var kinds = {}; Object.keys(R.jobs).forEach(function (j) { Object.keys(R.jobs[j].kinds).forEach(function (k) { kinds[k] = (kinds[k] || 0) + R.jobs[j].kinds[k].n; }); });
+  var cols = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; });
+  h += '<h2>The job table (the brief, 1.2)</h2><div class="k">A row per kind of work in the lot buildings, a column per furniture kind in their work rooms (' + TUNE.ix.work.join(', ') + '): pieces placed. Workplaces are the census\'s; the 90% target is phase B\'s rule; a piece is counted as one post for now (phase B gives each its capacity). Hover a cell for the rooms.</div>';
+  h += '<table><tr><th>kind of work</th><th>buildings</th><th>workplaces</th><th>90%</th><th>posts</th>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>where (buildings)</th></tr>';
+  Object.keys(R.jobs).sort(function (a, b) { return R.jobs[b].jobs - R.jobs[a].jobs; }).forEach(function (j) {
+    var J = R.jobs[j], wh = Object.keys(J.where).sort(function (a, b) { return J.where[b] - J.where[a]; }).slice(0, 4).map(function (w) { return w + ' ' + J.where[w]; }).join(', ');
+    h += '<tr><td>' + j + '</td><td class="n">' + f(J.units) + '</td><td class="n">' + f(J.jobs) + '</td><td class="n">' + f(J.target) + '</td><td class="n ' + (J.gap < 0 ? 'bad' : 'ok') + '">' + f(J.posts) + '</td>' +
+      cols.map(function (c) { var e = J.kinds[c]; return '<td class="n" title="' + (e ? Object.keys(e.rooms).join(', ') : '') + '">' + (e ? f(e.n) : '') + '</td>'; }).join('') + '<td class="k">' + wh + '</td></tr>';
+  });
+  h += '</table>';
+  /* the types: what each shell was read as, so the overrides can be named */
+  h += '<h2>The types</h2><div class="k">shell: block (the model\'s main box), round (its main drum), fallback (' + Math.round(TUNE.ix.fallback * 100) + '% of the model\'s footprint: name an override in TUNE.ix.shells), override. ' +
+    Object.keys(R.shells).map(function (k) { return k + ' ' + R.shells[k]; }).join(', ') + (R.failed.length ? ' &middot; <span class="bad">failed: ' + R.failed.join('; ') + '</span>' : '') + '</div>';
+  h += '<table><tr><th>type</th><th>buildings</th><th>shell</th><th>storeys</th><th>rooms</th><th>beds</th><th>items</th><th>food</th><th>posts</th><th>dropped</th></tr>';
+  R.typeList.forEach(function (t) { h += '<tr><td>' + t.type + '</td><td class="n">' + t.units + '</td><td class="' + (t.shell === 'fallback' ? 'bad' : '') + '">' + t.shell + '</td><td class="n">' + t.storeys + '</td><td>' + t.rooms + '</td><td class="n">' + t.beds + '</td><td class="n">' + t.items + '</td><td class="n">' + t.food + '</td><td class="n">' + t.posts + '</td><td class="n">' + (t.dropped || '') + '</td></tr>'; });
+  return h + '</table>';
+};
+VC.ixUI = function () {
+  VC.ixCutWrap(); VC.ixPickWrap();
+  var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
+  var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
+  var r = $('ly-ixrep'), P = $('ix');
+  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.ixReportHTML(); };
+  var c = $('ix-close'); if (c) c.onclick = function () { P.style.display = 'none'; if (r) r.classList.remove('on'); };
+  window.addEventListener('keydown', function (e) { if (VC.typing(e) || e.ctrlKey || e.metaKey) return; if (e.key === 'n' || e.key === 'N') { VC.ixDensityToggle(); e.preventDefault(); } });
+  /* the stats panel's last step: a line on the interiors */
+  var stats = VC.stats;
+  VC.stats = function () {
+    stats();
+    var R = VC.IX.report; if (!R || HOST.step !== SL.LAST) return;
+    var el = $('stats-body'), d = document.createElement('div'); d.className = 'lg';
+    d.innerHTML = '<b>interiors</b> ' + R.units.toLocaleString() + ' buildings, ' + R.pieces.toLocaleString() + ' pieces; beds for ' + Math.round(100 * R.have.beds / Math.max(1, R.need.beds)) + '% of the residents\' need, ' +
+      R.short.units.toLocaleString() + ' homes short (<a href="#" id="ix-open" style="color:#e0c98a">report</a>)';
+    el.appendChild(d);
+    var a = $('ix-open'); if (a) a.onclick = function (e) { e.preventDefault(); if (r) r.onclick(); };
+  };
+  VC.stats();
 };
 
 /* ---- targets/voth-city/57-vc-marks.js ---- */

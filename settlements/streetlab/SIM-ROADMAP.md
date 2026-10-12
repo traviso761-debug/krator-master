@@ -6,7 +6,9 @@ roadmap it needs (part 2). It is a Voth-city instance of `core/simulation/PLAN.m
 earlier world-layer roadmap). Nothing here replaces those: new mechanics go into `core/simulation` as modules every
 world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.html`) is the first consumer.
 
-**The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A can start.**
+**The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A session 1 is done (branch `Voth-sim`,
+2026-10-12): every lot building's interior, the residence rule's report, the cutaway on any building, the density overlay
+and the job table. Its numbers and what is left of phase A are in `HANDOFF.md`.**
 
 ---
 
@@ -212,6 +214,14 @@ fragment and `57-vc-building-interiors-host.js` host fragment), on the interiors
 Acceptance: every building opens in the cutaway; the report's shortfall list is reviewed by the owner; the inspector
 names any piece.
 
+**Session 1 (2026-10-12), what was built and how it differs from the plan above:** `41-vc-building-interiors.js` and
+`56b-vc-building-interiors-host.js` (not 57: that number was taken). Items 1 (for the lots), 2, 3, 5, 6 and 7 are done.
+Item 4, the bake, turned out unnecessary for the lots: a lot's building is its kit model, so the city's 8,050 buildings
+are 111 types, each planned and furnished once in the model's frame (about 6 s at load). The shell comes from the model's
+boxes (the main block; round blocks as their inscribed square; a fallback of 60% of the footprint for 18 types, listed).
+A home's bedrooms are `chamber`s that take up to four beds and their stores. Left: item 1 for the non-lot buildings,
+item 8 (the new models), the fallback overrides, the Palace and Temple.
+
 ### 2.3 Phase B: places, work posts, wells and the missing buildings (1–2 sessions)
 
 1. Every unit becomes a `SIM.place` with activities from its furniture (`SIM.slotsFromFurniture`, extended: `rack` →
@@ -409,8 +419,9 @@ overlay are cheap and could ride phase A).
 
 - The Port's "disconnected dock": three Voth-lifted harbour piers root in water near (759,−588), (767,−654), (788,−785);
   trim or reconnect them (`VC.inCanton` now stops city piers short of the cantons; Voth's own `PIERS` are not re-tested).
-- `python3 verify.py dist/voth-city.html --assert` and `dist/voth-site.html --assert` have not been run since the
-  farms change; `PORT-BASELINE.json` is behind the later builds. Run both and refresh the two streetlab rows.
+- ~~Run both verifies and refresh the two streetlab baseline rows~~ done 2026-10-12: the site page passes; the city page
+  failed on the empty decks and the monastery (both fixed) and still fails on two embassies and the Arena and Fortress
+  walks (`HANDOFF.md`). The two streetlab rows of `PORT-BASELINE.json` are refreshed; 91 other pages differ from it.
 - Screenshots not yet taken: the Fortress (black, flames, dome drums, dungeon storey), the Arena gateway and beasts,
   the Port decks, the shoreline, the park grass, the House of Healing, the monastery compound, interior lights at night.
 - README/HANDOFF do not yet describe the Fortress dress, dungeon, gateway wings and beasts, regild, dome drums, homes,

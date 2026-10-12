@@ -107,6 +107,57 @@ var TUNE = {
                /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
                   point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
                lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
+  /* every building's interior (41-vc-building-interiors.js VC.IX, phase A of SIM-ROADMAP.md): the residence rule (per `per`
+     residents one bed, one item store and one food store; a bunk counts as two beds), the storey height a shell is cut into
+     and the most storeys, how a shell is read off a kit model (the main block: spans head height `head`, at least `minArea`
+     m2 and `minSide` m thick, standing within `base` m of the ground; else a fallback `fallback` of the model's footprint),
+     the placer's cell, the programmes (lot class -> room kinds per storey, the last repeated upward; `key` matches a kit
+     key first), the room kinds that are homes and the ones that are work, the density overlay's cell, and the overrides
+     of shells the reading gets wrong ({ key|v|slot: { poly: [[x, z], ...] local, y, h } or { skip: why } }) */
+  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 1.6, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
+        wealth: { poor: 0.15, middle: 0.45, rich: 0.75, manor: 0.9, shop: 0.5, craft: 0.5, tavern: 0.5, clan: 0.9, farm: 0.3, civic: 0.6,
+                             warehouse: 0.35, industrial: 0.3, landmark: 0.6 },
+        /* a home's bedrooms are `chamber`s (VC.ixPrograms): a bed and a chest, and as many more beds and stores as the room holds */
+        programmes: {
+          poor:       [['cottage', 'chamber'], ['chamber', 'chamber']],
+          middle:     [['living', 'kitchen'], ['chamber', 'chamber']],
+          rich:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'study']],
+          manor:      [['hall', 'kitchen', 'living', 'study'], ['chamber', 'chamber', 'chamber']],
+          clan:       [['hall', 'kitchen', 'living'], ['chamber', 'chamber', 'chamber']],
+          farm:       [['living', 'kitchen', 'store'], ['chamber', 'chamber']],
+          shop:       [['shop', 'store'], ['living', 'chamber']],
+          craft:      [['workshop', 'store'], ['living', 'chamber']],
+          tavern:     [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          warehouse:  [['warehouse', 'office'], ['warehouse']],
+          industrial: [['workshop', 'store'], ['store']],
+          civic:      [['hall', 'office'], ['office', 'store']],
+          landmark:   [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']]
+        },
+        /* a one-storey building of a class: its programme in one (the family's rooms behind the shop, as Mav's Refuge's) */
+        single: {
+          poor: ['cottage', 'chamber'], middle: ['living', 'chamber', 'kitchen'], rich: ['hall', 'chamber', 'kitchen', 'chamber'], manor: ['hall', 'chamber', 'kitchen', 'chamber', 'study', 'chamber'],
+          clan: ['hall', 'chamber', 'kitchen', 'chamber', 'chamber'], farm: ['living', 'chamber', 'kitchen', 'store'], shop: ['shop', 'cottage'], craft: ['workshop', 'cottage'],
+          tavern: ['tavern', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
+        },
+        chamber: { beds: 4, stores: 2 },
+        byKey: {
+          voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
+          voth_barracks: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_garrison: [['barracks', 'mess', 'armoury'], ['dormitory', 'dormitory']],
+          voth_school: [['school', 'office'], ['library', 'study']],
+          voth_bldg_guild_hall: [['guildhall', 'office'], ['office', 'store']],
+          voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
+          voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
+          voth_generator: [['workshop', 'store']],
+          voth_mustering_grounds: null
+        },
+        home: ['cottage', 'bedroom', 'chamber', 'living', 'dormitory', 'hall', 'kitchen'],
+        /* a work post (the job table's posts): a piece of these kinds in a work room; storage and stacks only in a store or warehouse */
+        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'], postsStore: ['storage', 'stack'],
+        dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study'],
+        density: { cell: 50, hatch: '#d24b3a' },
+        shells: {} },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
