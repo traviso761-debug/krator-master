@@ -326,7 +326,9 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 15. **`core/city` in Godot** (section 8): its GDScript twin with golden tests, edits as an id-keyed overlay, rules as
     shared functions; the base for the NPC and quest tool and, later, the player's settlement builder.
 16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 after item 5; Voth's water when its branch pauses.
-17. **The scripted walk** in the harness (section 9, stage 0j).
+17. **The scripted walk** in the harness (section 9, stage 0j). *Done 2026-10-12.*
+18. **One interface for every settlement** (section 10): `core/edits`, then `core/host` on the biome kits, Girder,
+    Iziz, Highlands, fauna mode, then every other settlement; Streetlab and Voth with their branch.
 
 ## 7. Decisions and open questions
 
@@ -442,6 +444,64 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
 3. Stage 2: merge `refactor/terrain-field`; `BIO.iridBarkMat` as a core material kind; `core/tags` on the biome kits
    with ids on exported nodes; `core/export`; then `core/water` phases 0 and 1.
 4. Stage 0h, the fragment splits, outside the Voth branch's area, whenever a session has room.
+
+## 10. One interface for every settlement: Streetlab's viewer and editor as `core/host` (owner, 2026-10-12)
+
+**The directive.** Streetlab's Voth city plan and site editor is the most complete viewer and editor in the repo; every
+settlement takes it. This is the roadmap's stage 3 (`GODOT-PLAN.md` Phase 1, "one host shell") with Streetlab as the
+template instead of a shell written from scratch. Because the Voth and simulation branch is still changing Streetlab,
+the interface is **copied and generalised into `core/host/`**; Streetlab's own files are not edited, and it switches to
+`core/host` when that branch pauses (a note maps its `VC.*` calls to `KHOST.*`).
+
+**What it is** (inventory from the source, 2026-10-12): the bar with layers, legend and export; foldable panels;
+orbit, pan, fly and walk with a pin and a ledge guard; a depth range that follows the camera; the inspector; the
+cutaway with its storey bar; the picture menu (thumbnails drawn off screen); place, turn and delete buildings; the
+street painter and align-to-street (these two need `core/city`); the flora editor (select, delete, plant); marks
+(areas, lines, points, measured; they supersede the polytools); a paths view; `KCLOCK` time controls, sky lighting,
+`ATMOS` weather and lamp glows; stats and census panels; the site editor's areas, markers, lines and ground brushes;
+the minimap; save, undo, draft, import and export of edits. **There is no fauna editor**: fauna placement is new work
+on the same path (`kits/fauna`).
+
+**Two things change on the way in.**
+- **Edits become an id-keyed operation log**, `core/edits/40-core-edits.js` ([G data], a node test, later a GDScript
+  twin): `{format:'krator-edits/1', build, ops:[{op: ADD | MOVE | SET | REMOVE, id, target:{uid, class, key, at},
+  rec, cause, thread}]}`, the shape of `core/simulation/PLAN.md` 8.9, so the owner's edits, the player's builds and
+  the simulation's changes are one log (section 9). Targets resolve by `KTAGS` uid, falling back to position within a
+  tolerance until `core/city` registers its lots. Undo is the inverse operation. Today's Streetlab edits match deletions
+  by position and keep undo as closures; a converter reads its file read-only. Ys has a third editor format
+  (`settlements/ys/targets/city/94-city-editor.js`); it converts the same way.
+- **The host reads a contract, never a build's globals.** `KHOST.take({scene, ground, registry, exporters, views,
+  sky?, layers?, phases?, stats?, pick?, palette?, edits?, cutaway?, paths?})` returns `{clock, camera}`; host code
+  never reads `PLAN`, `SL`, `VOTH` or `VC`. A build without a piece of data loses only that feature (no registry: the
+  inspector shows coordinates; no palette: no place mode; no `core/city`: no street painter; no `BIO` hooks: no flora
+  mode; no server: edits go to a download or the clipboard). Each `verify.py` keeps working: `setView` and the view
+  buttons stay.
+
+**Layout.** `core/host/` 90 camera, 91 loop (owns `KCLOCK`, shims `TICKS`, `FRAME_HOOKS`, `_frameHooks`, isolates
+errors, sets `_ready`), 92 panel, 93 inspect (reads `KTAGS.page`), 94 marks, 95 probe (`window._api`), 96 picture menu
+and sheet, 97 minimap (moved from `core/minimap/88a`), 98 edit modes (emit operations only; the build previews them),
+99 cutaway; `host.py` lists the files and inlines a build's edits; `tools/edits/serve.py` gains a save route.
+
+**Order, for every settlement** (the owner asked for all of them, so the tail is scheduled, not "when next touched"):
+
+| Step | What | Sessions |
+|---|---|---|
+| 0 | `core/edits` and its node test; the Streetlab converter's round trip; the save route; record the Streetlab file hashes the host is copied from, checked read-only at each session's start | 1 |
+| 1 | camera, loop, panel and probe on hyperjungle, then the other fifteen biome kits (their only host contact is `BIO.init`) | 2 |
+| 2 | Girder (the Voth lineage, not Voth): inspector, marks, picture menu, minimap, edit modes (place, remove, flora), cutaway on its interiors | 2 |
+| 3 | Iziz (the Ancients lineage, full registry), then Highlands (the same camera) | 2 |
+| 4 | fauna mode (`kits/fauna`) and ground brushes on `KFIELD` | 1 |
+| 5 | every other settlement and kit sheet: Dalab, Xanadu, Reed Lake, Screamers, Jimjam, Mav's Refuge, Yuni, Locus, Mungo, Shade, Verge, Noah's Regret, Ys, Dhelv, the kits | about half a session each |
+| 6 | Streetlab and Voth onto it, with the Voth branch, when it pauses | with that branch |
+
+Each step is proven by screenshots with the chrome hidden matching the old ones, `verify.py --assert` unchanged, the
+scripted walk, and a baseline that moves only for the adopted pages.
+
+**Risks.** Streetlab keeps changing, so features are ported by hand from recorded versions. The full interface is about
+70 to 90 KB per page; the editor, picture menu and cutaway are opt-in. Builds disagree on camera angles (Girder's theta
+from +x, Iziz's from +z), on frame hooks (four conventions) and on keys (Q/E, F, G, [ ], b, x, p, i): the host has one
+keymap and leaves Alt+click to `tools/edits`. The host is `[web]` and is not ported to Godot; the operation log is plain
+data, so Godot's tools read and write the same log.
 
 ## Appendix: how this evaluation was made
 
