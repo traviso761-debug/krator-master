@@ -33,7 +33,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
@@ -183,7 +183,7 @@ const FIELD={wet:(x,z)=>FC.at(FC.a.wet,x,z),salt:(x,z)=>0,upland:(x,z)=>FC.at(FC
 const OBSTACLES=[];
 // the LOD spine: the promontory, the river from the mouth up to the fountain, the vale, both green flanks
 const SPINE=[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700],[-1080,1020]];   // the last: the western uplands' ridge
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'xanadu',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const rv=riverNear(x,z);if(rv){const g=RIV.gorgeK(rv.s),kf=mix(.06,.35,g);if(rv.d<RIV.halfW(rv.s)+.8*.65/kf+1.5)return 0;}   // the river's channel and its water
  const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
  obstacles:OBSTACLES,ticks:tick,seed:23,

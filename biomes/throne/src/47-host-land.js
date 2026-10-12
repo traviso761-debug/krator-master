@@ -95,7 +95,7 @@ TUBE.sky.forEach((S,i)=>{if(i%2===0)SPINE.push([S.x,S.z]);});
 for(let z=-2000;z<=2000;z+=800){let bx=0,bd=9;for(let x=-2400;x<=2400;x+=40){const d=Math.abs(plumeAt(x,z)-.5);if(d<bd){bd=d;bx=x;}}SPINE.push([bx,z]);}
 GULLY.forEach(G=>{for(let s=-1600;s<=1600;s+=800){const x=G.x+DN[0]*s,z=G.z+DN[1]*s;SPINE.push([x+PERP[0]*G.amp*Math.sin(s*G.f+G.ph),z+PERP[1]*G.amp*Math.sin(s*G.f+G.ph)]);}});
 const WWIN=(function(){let x0=PIT.x-PIT.r,z0=PIT.z-PIT.r,x1=PIT.x+PIT.r,z1=PIT.z+PIT.r;POOLS.forEach(P=>{x0=Math.min(x0,P.x-P.r*2);z0=Math.min(z0,P.z-P.r*2);x1=Math.max(x1,P.x+P.r*2);z1=Math.max(z1,P.z+P.r*2);});return[x0-20,z0-20,x1+20,z1+20];})();
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+BIO.init({tags:'throne',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:31,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:WWIN}});

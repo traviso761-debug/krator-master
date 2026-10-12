@@ -79,8 +79,18 @@
    settings: CATALOG_SETTINGS.concat(['room']),
    jobs: CATALOG_JOBS,
    sets: ['generic', 'scrap'],
-   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
-   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine). The biome kits (2026-10-12) add Cwb (shighlands)
+   // and the scale model's own classes: XA (abyssal hypertropic jungle) and XV (abyssal savanna: geyser), HF (the
+   // hyperalpine frost) and O (airless: ebadlands, the Throne's summit)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Cwa', 'Cwb', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF',
+     'X', 'H', 'XA', 'XV', 'HF', 'O'],
+   // the root README's flora and fauna tags (biomes/README.md): the kits' TAGS and every species' and animal's tags.
+   // climate and aridity take a name or a range of two ('arid..humid', 'tropic..cold': VOCAB.ranges)
+   climates: ['hypertropic', 'tropic', 'subtropic', 'temperate', 'montane', 'cold', 'polar'],
+   aridities: ['arid', 'semiarid', 'mild', 'subhumid', 'humid'],
+   riparians: ['yes', 'no', 'both'],
+   riparianAlias: { non: 'no', riparian: 'yes' },   // kits/fauna's spellings
+   ranges: { climate: true, aridity: true },
    // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
    doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
    lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame', 'glow-fungus', 'daylight'],
@@ -89,7 +99,13 @@
      job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
      role: 'free', quarter: 'free', part: 'free', finish: 'free', rock: 'free', level: 'free', district: 'free', destination: 'free', stalls: 'free', canopies: 'free',
-     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object',
+     // flora and fauna (the biome kits, 2026-10-12): the climate band, aridity, abyssal, riparian; an animal's diet
+     climate: 'climates', aridity: 'aridities', abyssal: 'bool', riparian: 'riparians', diet: 'free',
+     // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
+     // ehighlands' growth form, geyser's and the Throne's origin (earth, krator, native, dead), geyser's heat and the
+     // Throne's plume (where it lives: against the springs; shoulder, seam, plume, vent), shighlands' spiral habit
+     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

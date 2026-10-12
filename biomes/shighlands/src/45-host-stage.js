@@ -30,7 +30,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -142,7 +142,7 @@ BOGS.forEach(B=>SPINE.push([B.x,B.z]));
 SPINE.push([0,600],[-1000,1100],[1300,1500],[1800,2000],[600,1900]);
 // the mask: nothing roots in the water, nor under the cloud deck (that ground is the hyperjungle's, and not drawn)
 function rootMask(x,z){const h=terrainH(x,z);if(h<CLOUD_Y-12)return 0;const d=h-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
+BIO.init({tags:'shighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
  obstacles:OBSTACLES,ticks:tick,seed:47,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:230,mid:560,far:2400,floor:[180,440]},
  windows:{water:[TARN.x-180,TARN.z-180,TARN.x+180,TARN.z+180]}});

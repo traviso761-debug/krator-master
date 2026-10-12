@@ -12,6 +12,10 @@
 // into one mesh instead, the instance colour baked into vertex colours. What that loses
 // (per-instance attributes such as a foliage normal, shader hooks, ShaderMaterials) is counted in `dropped`, which
 // the spike's gap list reads. Nothing here changes the page's scene.
+// core/tags ids (2026-10-12) go in each node's extras where a record exists: `krator` (the record the node draws; a
+// biome item's set id), `krator_uid` (a single record's uid), and for a MultiMesh `krator_records` (one uid per instance,
+// in the order of the EXT_mesh_gpu_instancing rows) and `krator_index` (each instance's index in its set). A mesh that
+// merges many records (a furniture batch per material) names none; stats.records counts what was written.
 (function(){
 'use strict';
 const T=THREE;
@@ -23,6 +27,11 @@ const shown=o=>{for(let p=o;p;p=p.parent)if(p.visible===false)return false;retur
 // the originals it keeps with full detail and every tag, so only the originals are exported (Godot's own LOD does the rest)
 const lodCopy=o=>{for(let p=o;p;p=p.parent)if(p.userData&&p.userData.lodCopy)return true;return false;};
 function triCount(g){return (g.index?g.index.count:g.attributes.position.count)/3;}
+// core/tags: what a node names. An instanced mesh of a biome page draws an item set (BIO.recordsOf: the set's id and a
+// uid per row); any other mesh names its record by userData.krator (a record id in KTAGS.page), on itself or an ancestor
+const recordsOf=o=>(o.isInstancedMesh&&typeof BIO!=='undefined'&&BIO.recordsOf)?BIO.recordsOf(o):null;
+function recordOf(o){const T=typeof KTAGS!=='undefined'&&KTAGS.page;if(!T)return null;
+ for(let p=o;p;p=p.parent){const id=p.userData&&p.userData.krator;if(typeof id==='string'){const r=T.get(id);if(r)return r;}}return null;}
 
 const KSPIKE={};
 KSPIKE.count=function(box){const s={meshes:0,instanced:0,instances:0,triangles:0},v=new T.Vector3(),M=new T.Matrix4();
@@ -112,18 +121,19 @@ function addInstancing(ab,table){
  o.setUint32(20+js.length,nb.length,true);o.setUint32(24+js.length,0x004E4942,true);out.set(nb,28+js.length);return out.buffer;}
 
 KSPIKE.gltf=function(box,opt){opt=opt||{};const dropped={},mats=new Map(),root=new T.Group(),M=new T.Matrix4(),W=new T.Matrix4(),v=new T.Vector3(),ic=new T.Color();
- const instancing=opt.instancing!==false,itable={},q=new T.Quaternion(),sc=new T.Vector3(),I4=new T.Matrix4();let ninst=0,nimesh=0;
+ const instancing=opt.instancing!==false,itable={},q=new T.Quaternion(),sc=new T.Vector3(),I4=new T.Matrix4();let ninst=0,nimesh=0;const recN={nodes:0,instances:0};
  root.name=opt.name||'region';root.userData={krator_spike:{box,page:location.pathname,convention:'metres, +Y up, x east, z south (glTF)'}};
  scene.updateMatrixWorld(true);let n=0,tris=0;
  scene.traverse(o=>{if(!isDrawn(o)||!shown(o))return;if(lodCopy(o)){dropped.lodCopies=(dropped.lodCopies||0)+1;return;}if(Array.isArray(o.material)){dropped.multiMaterial=(dropped.multiMaterial||0)+1;return;}
   const g=o.geometry,hasN=!!g.attributes.normal,hasU=!!g.attributes.uv,extra=Object.keys(g.attributes).filter(k=>!['position','normal','uv','color','uv2'].includes(k));
   if(extra.length){dropped.attributes=dropped.attributes||{};for(const k of extra)dropped.attributes[k]=(dropped.attributes[k]||0)+1;}
   const out={pos:[],nor:[],uv:[],col:[]};
-  let inst=null;
+  let inst=null;const RS=recordsOf(o),U=RS?[]:null,UI=RS?[]:null;
   if(o.isInstancedMesh&&instancing){const T3=[],R4=[],S3=[],C3=[];   // the base geometry once; the instances as TRS
    for(let i=0;i<o.count;i++){o.getMatrixAt(i,M);W.multiplyMatrices(o.matrixWorld,M);v.setFromMatrixPosition(W);if(!inBox(box,v.x,v.z))continue;
     W.decompose(v,q,sc);T3.push(v.x,v.y,v.z);R4.push(q.x,q.y,q.z,q.w);S3.push(sc.x,sc.y,sc.z);
-    if(o.instanceColor){ic.fromArray(o.instanceColor.array,i*3);C3.push(ic.r,ic.g,ic.b);}}
+    if(o.instanceColor){ic.fromArray(o.instanceColor.array,i*3);C3.push(ic.r,ic.g,ic.b);}
+    if(RS){U.push(KTAGS.hex(RS.uid32(i)));UI.push(RS.index(i));}}   // the instance's uid, in the order of the TRS rows
    if(!T3.length)return;bake(g,I4,null,[1,1,1],out);
    inst={t:new Float32Array(T3),r:new Float32Array(R4),s:new Float32Array(S3),c:C3.length?new Float32Array(C3):null};}
   else if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,M);W.multiplyMatrices(o.matrixWorld,M);v.setFromMatrixPosition(W);if(!inBox(box,v.x,v.z))continue;
@@ -136,10 +146,16 @@ KSPIKE.gltf=function(box,opt){opt=opt||{};const dropped={},mats=new Map(),root=n
   const mesh=new T.Mesh(toGeo(out,hasN,hasU),exportMat(o.material,vc,dropped,mats));
   mesh.name=(o.name||o.parent&&o.parent.name||o.material.name||'mesh').replace(/[^\w.:-]/g,'_')+'_'+(n++);
   const ud={};for(const k in o.userData){const x=o.userData[k];if(x==null||typeof x!=='object'||Array.isArray(x)||Object.getPrototypeOf(x)===Object.prototype)ud[k]=x;}
-  if(o.isInstancedMesh)ud.krator_instanced=inst?'EXT_mesh_gpu_instancing':'merged';mesh.userData=ud;
+  if(o.isInstancedMesh)ud.krator_instanced=inst?'EXT_mesh_gpu_instancing':'merged';
+  // core/tags ids in the extras: krator (the record the node draws: a set's id for a MultiMesh), krator_uid (a single
+  // record's uid), krator_records (a MultiMesh's side table: one uid per instance, in instance order) and krator_index
+  // (each instance's index in its set: its id is '<krator>#<index>')
+  if(inst&&RS){ud.krator=RS.set;ud.krator_records=U;ud.krator_index=UI;recN.nodes++;recN.instances+=U.length;}
+  else if(!o.isInstancedMesh){const rec=recordOf(o);if(rec){ud.krator=rec.id;ud.krator_uid=rec.uid;recN.nodes++;}}
+  mesh.userData=ud;
   if(inst){itable[mesh.name]=inst;ninst+=inst.t.length/3;nimesh++;tris+=out.pos.length/9*inst.t.length/3;}else tris+=out.pos.length/9;
   root.add(mesh);});
- const stats={meshes:n,triangles:tris,materials:mats.size,instancedMeshes:nimesh,instances:ninst};
+ const stats={meshes:n,triangles:tris,materials:mats.size,instancedMeshes:nimesh,instances:ninst,records:recN};
  return new Promise((res,rej)=>{try{new T.GLTFExporter().parse(root,ab0=>{const ab=instancing?addInstancing(ab0,itable):ab0,u=new Uint8Array(ab);let s='';const K=0x8000;
    for(let i=0;i<u.length;i+=K)s+=String.fromCharCode.apply(null,u.subarray(i,i+K));res({b64:btoa(s),bytes:u.length,stats,dropped});},
    {binary:true,onlyVisible:true,maxTextureSize:opt.maxTextureSize||1024});}catch(e){rej(e);}});};

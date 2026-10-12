@@ -56,7 +56,7 @@ const SPINE=[[FAN.cx(-1200),-1200],[FAN.cx(0),0],[FAN.cx(1200),1200],[BURN.x,BUR
 KOPJES.forEach(K=>SPINE.push([K.x,K.z]));POOLS.slice(0,6).forEach(P=>SPINE.push([P.x,P.z]));
 // and where the cameras stand in the grass (the tall grass is thick only near the spine)
 SPINE.push([-900,500],[-860,-100],[200,2250],[-500,1500],[FAN.cx(-300)-FAN.W(-300)*1.3,-50]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-savanna',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:46,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:240,mid:560,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

@@ -109,7 +109,7 @@ let MASK=waterMask;
 // the LOD spine: the basin, the camp, the landing, the lagoon, the trail
 const SPINE=[[BASIN.x,BASIN.z],[CAMP.x,CAMP.z],[LANDING.x,LANDING.z],[LAGOON.x,LAGOON.z],[GEYSERS[0].x,GEYSERS[0].z],[POOLS[0].x,POOLS[0].z]];
 TRAILS.forEach(T=>{for(let i=0;i<T.pts.length;i+=10)SPINE.push(T.pts[i]);});
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-isle',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:44,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

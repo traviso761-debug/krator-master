@@ -28,6 +28,7 @@ static func build(path: String) -> Node3D:
 	var json: Dictionary = state.json
 	var nodes: Array = json.get("nodes", [])
 	var with_extras := 0
+	var ids := {"nodes_with_id": 0, "instances_with_id": 0, "misaligned": 0}
 	for i in nodes.size():
 		var nd: Dictionary = nodes[i]
 		if not nd.has("extras"):
@@ -40,6 +41,22 @@ static func build(path: String) -> Node3D:
 			continue
 		gn.set_meta("extras", nd["extras"])
 		with_extras += 1
+		# core/tags ids (godot/tools/spike_export.js): the record the node draws, a single record's uid, and a
+		# MultiMesh's side table of uids by instance index (with each instance's index in its set)
+		var ex: Dictionary = nd["extras"]
+		if ex.has("krator") and ex["krator"] is String:
+			gn.set_meta("krator_record", ex["krator"])
+			ids["nodes_with_id"] += 1
+		if ex.has("krator_uid"):
+			gn.set_meta("krator_uid", str(ex["krator_uid"]))
+		if ex.get("krator_records") is Array:
+			var u := PackedStringArray(ex["krator_records"])
+			gn.set_meta("krator_records", u)
+			if ex.get("krator_index") is Array:
+				gn.set_meta("krator_index", PackedInt32Array(ex["krator_index"]))
+			ids["instances_with_id"] += u.size()
+			if gn is MultiMeshInstance3D and (gn as MultiMeshInstance3D).multimesh and (gn as MultiMeshInstance3D).multimesh.instance_count != u.size():
+				ids["misaligned"] += 1
 	# core/lod's render copies (extras.lodCopy): a page draws them in place of the originals, which it keeps in the scene
 	# (on a layer the camera skips) with full detail and every tag. Both reach the glTF, so drawn together they
 	# z-fight; the originals stay, and Godot's own LOD (visibility ranges, mesh LOD) takes the copies' job.
@@ -120,7 +137,7 @@ static func build(path: String) -> Node3D:
 		if dd.get("dataTextures", 0) > 0:
 			report["gaps"]["DataTexture"] = "%d DataTextures could not be written as images" % dd["dataTextures"]
 	if instanced > 0:
-		report["gaps"]["instancing"] = "%d instanced meshes (%d instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags" % [instanced, instances]
+		report["gaps"]["instancing"] = "%d instanced meshes (%d instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, and a uid each (meta krator_records) where the page placed them as core/tags item sets (%d instances)" % [instanced, instances, ids["instances_with_id"]]
 	else:
 		report["gaps"]["instancing"] = "no instancing in this file: every InstancedMesh arrived merged into one mesh (an export without EXT_mesh_gpu_instancing)"
 	if unlit > 0:
@@ -142,7 +159,11 @@ static func build(path: String) -> Node3D:
 				cls[r["class"]] = cls.get(r["class"], 0) + 1
 			root.set_meta("tags", by)
 			report["tags"] = {"build": t.get("build"), "records": by.size(), "classes": cls}
-			report["gaps"]["tag nodes"] = "the core/tags records arrive as data (root meta 'tags', %d records); no mesh names its record yet: the exporter has to write each record's id into its node's extras" % by.size()
+			if ids["nodes_with_id"] == 0:
+				report["gaps"]["tag nodes"] = "the core/tags records arrive as data (root meta 'tags', %d records), but no node names one: every mesh in this region merges records (a furniture batch per material) or has none, and the exporter writes ids only on a node that is one record or an instanced set" % by.size()
+	report["ids"] = ids
+	if ids["misaligned"] > 0:
+		report["gaps"]["records side table"] = "%d MultiMeshes whose krator_records do not match their instance count" % ids["misaligned"]
 	root.set_meta("report", report)
 	return root
 

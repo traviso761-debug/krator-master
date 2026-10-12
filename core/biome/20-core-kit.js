@@ -26,7 +26,7 @@ BIO.kit=function(name){name=name||'';const prev=BIO.kitName;if(name===prev)retur
 BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];if(typeof f!=='function'||f._kit!=null)continue;
   const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
  return api;};
-BIO.kitEnd=function(api){const name=BIO.kitName;if(api)BIO.kitWrap(name,api);BIO.kit('');return api;};
+BIO.kitEnd=function(api){const name=BIO.kitName;if(api){BIO.kitWrap(name,api);BIO.kits[name].api=api;}BIO.kit('');return api;};   // api: what core/tags reads the kit's TAGS, species and plants from
 // a material cache key in the current kit's name ('' adds nothing)
 BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
 BIO.kit('');
@@ -43,10 +43,12 @@ BIO.F32=F32;BIO.Store=F32;
 // x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
 const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
  if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
+// opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
+// (BIO.tagItem, below) would guess wrong
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
  const g=geo.index?geo.toNonIndexed():geo;
- BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
+ BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
@@ -70,7 +72,8 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
   for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
- it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);};
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
+ if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def);};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
@@ -226,10 +229,12 @@ BIO.indexedGeo=indexedGeo;
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
+ BIO._tagCheck();
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh)
   const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
+  const base=def.n0||0;   // core/tags: the item set's index of this store's first instance (a second bake continues it)
   for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
    const mA=new Float32Array(n*16),cA=new Float32Array(n*3),nA=it.n.length?new Float32Array(n*3):null,c2A=it.c2.length?new Float32Array(n*3):null;let y0=1e9,y1=-1e9;
    const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
@@ -240,9 +245,12 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
    im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
+   if(def.set){   // core/tags: the mesh names its item set, and which of the set's instances it draws (idx null: in order from base)
+    const ident=G.size===1;let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
+    im.userData.krator=def.set.id;im.krator={set:def.set.id,idx:sx,base};def.parts.push({im,idx:sx,base,n});}
    if(key)_lodEntry(im,key,y0,y1);
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
-  R.items[name]=newItem(def.attrs);}
+  def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
   const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
   for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
@@ -262,8 +270,89 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
 BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
  const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);
- scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);return im;};
+ scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);
+ if(BIO.host.tags)BIO._tagDynamic(name,im,opt);
+ return im;};
 BIO.tick=function(fn){BIO.host.ticks(fn);};
+
+// ---------------------------------------------------------------- core/tags: what a kit places, as records
+// With BIO.init({tags}) (a KTAGS registry, or a build name: the core makes KTAGS.create({build}) at first use and
+// makes it KTAGS.page), every item a kit puts is ONE record of core/tags, an item set (core/tags/README.md, "Item
+// sets"; PROPOSAL.md, Decisions 5): class flora, life or feature, key the item's name, tags the kit's (biome, its
+// TAGS, the species' or plant's harvest...). Its instances are not copied: the set's table reads the item's own
+// instance matrices (the store until bake, the baked meshes after), so instance i of 'flora_00012' is
+// 'flora_00012#i', at its matrix's position, with the uid KTAGS.uid(class, key, that position). A volume a kit
+// registers (BIO.register, or the host's REGISTER calling BIO.record: a tree, a log, a herd) is a plain record.
+// Without tags none of this runs and nothing is stored.
+// The registry is made at first use, so core/tags may load after the host's BIO.init (a kit's build.py lists it among the
+// 50s): a volume registered before it loads waits in _pending (with the kit current then), an item's set is made at
+// its next put (its table reads the item's whole store, so it misses nothing). Bake says so if it never loaded.
+let _pending=[];
+BIO.tagReg=function(){const h=BIO.host;if(!h||!h.tags)return null;if(typeof h.tags==='object')return h.tags;
+ const K=typeof KTAGS!=='undefined'?KTAGS:null;
+ if(!K||!K.VOCAB)return null;
+ const T=K.create({build:typeof h.tags==='string'?h.tags:'biome'});if(!K.page)K.page=T;h.tags=T;
+ const P=_pending;_pending=[];P.forEach(q=>_record(T,q.o,q.kit));return T;};
+BIO._tagCheck=function(){if(BIO.host&&BIO.host.tags&&!BIO.tagReg())BIO.err('BIO.init({tags}): core/tags is not loaded (list 08-core-rand.js and core/tags in build.py)');};
+// the core's rule for an item's class: an animal (an anim material, a path in aP0, or put by a fauna pass) is life;
+// a stone (BIO.MINERAL) a feature; everything else flora. BIO.def's opt.cls overrides it
+BIO.MINERAL=/^(boulder[A-Z]?|stone|hoodoo|bead|mound|chimney)$/;
+const _isAnim=(def)=>{const b=def.mat&&def.mat.userData&&def.mat.userData.bio;return !!(b&&b.kind==='anim')||!!(def.attrs&&def.attrs.indexOf('aP0')>=0);};
+// what the kit says about an item or a key: its species (speciesOfItem, byKey, SPECIES), plant (plantOfItem, PLANTS) or
+// animal (FAUNA, by key: the item's name or the volume's key)
+function _kitInfo(kit,item,key){const R=BIO.kits[kit],api=R&&R.api;if(!api)return {api:null,S:null,P:null,pk:null,animal:false};let S=null,P=null,pk=null,animal=false;
+ const fauna=k=>{const f=Array.isArray(api.FAUNA)?api.FAUNA.find(f=>f&&f.key===k)||null:null;if(f)animal=true;return f;};
+ try{if(item!=null){if(api.speciesOfItem)S=api.speciesOfItem(item)||null;if(!S&&api.plantOfItem)P=api.plantOfItem(item)||null;if(!S&&!P)S=fauna(item);}
+  if(key!=null&&!S){S=(api.byKey&&api.byKey[key])||(Array.isArray(api.SPECIES)?api.SPECIES.find(s=>s&&s.key===key):null)||fauna(key)||null;}}catch(e){}
+ if(P&&api.PLANTS)for(const k in api.PLANTS)if(api.PLANTS[k]===P){pk=k;break;}
+ return {api,S,P,pk,animal};}
+// the tags: biome (the kit), the kit's TAGS, the species' or plant's own (harvest, Köppen...), then the given ones
+function _tagsOf(kit,T,info,extra){const t={biome:kit||T.build};const add=o=>{if(o&&typeof o==='object')for(const k in o)if(o[k]!==undefined&&typeof o[k]!=='function')t[k]=o[k];};
+ add(info.api&&info.api.TAGS);const F=info.S||info.P;if(F)add(F.tags);add(extra);return t;}
+// a set's table over the item's instance matrices: before bake the item's store, after it the baked meshes (an inverse
+// map from set index to mesh and row, made on first use after each bake)
+function _itemTable(R,name,def){
+ const where=i=>{const n0=def.n0||0;if(i>=n0){const it=R.items[name];return {a:it.m.a,o:(i-n0)*16};}
+  if(!def.inv||def.inv.n!==n0){const part=new Uint16Array(n0),row=new Uint32Array(n0);
+   def.parts.forEach((p,k)=>{for(let j=0;j<p.n;j++){const s=p.idx?p.idx[j]:p.base+j;part[s]=k;row[s]=j;}});def.inv={n:n0,part,row};}
+  return {a:def.parts[def.inv.part[i]].im.instanceMatrix.array,o:def.inv.row[i]*16};};
+ return _matTable(()=>(def.n0||0)+(R.items[name]?R.items[name].count:0),where,def);}
+// the table every set shares: position, ry (three's YXZ yaw of the matrix) and the unit geometry's box scaled
+function _matTable(count,where,def){
+ const ext=()=>{if(!def.ext){const g=def.geo;if(!g.boundingBox)g.computeBoundingBox();const b=g.boundingBox;def.ext=[b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z];}return def.ext;};
+ return {get n(){return count();},
+  pos(i,out){const w=where(i),a=w.a,o=w.o;out=out||[];out[0]=a[o+12];out[1]=a[o+13];out[2]=a[o+14];return out;},
+  ry(i){const w=where(i);return Math.atan2(w.a[w.o+8],w.a[w.o+10]);},
+  size(i,out){const w=where(i),a=w.a,o=w.o,e=ext();out=out||[];
+   out[0]=Math.hypot(a[o],a[o+1],a[o+2])*e[0];out[1]=Math.hypot(a[o+8],a[o+9],a[o+10])*e[2];out[2]=Math.hypot(a[o+4],a[o+5],a[o+6])*e[1];return out;}};}
+function _setRecord(T,name,def,kit,dyn){const info=_kitInfo(kit,name,null),F=info.S||info.P;
+ const cls=def.cls||(dyn||info.animal||_isAnim(def)||/\/fauna$/.test(BIO.cur||'')?'life':BIO.MINERAL.test(name)?'feature':'flora');
+ const kind=def.kind||(cls==='feature'?'rock':info.S&&info.S.key?info.S.key:info.pk||name);
+ return {'class':cls,kind,key:name,name:F&&F.name?F.name:def.label,at:[0,0,0],tags:_tagsOf(kit,T,info,def.tags),frag:'core/biome'};}
+BIO._tagItem=function(name,def){const T=BIO.tagReg();if(!T)return;const kit=BIO.kitName||'',R=BIO.kits[kit];
+ def.parts=def.parts||[];
+ try{def.set=T.addSet(_setRecord(T,name,def,kit,false),_itemTable(R,name,def));}catch(e){def.set=false;BIO.err('core/tags: item '+name+': '+e.message);}};
+BIO._tagDynamic=function(name,im,opt){const T=BIO.tagReg();if(!T)return;const kit=BIO.kitName||'';
+ const def={geo:im.geometry,mat:im.material,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,attrs:null};
+ const A=im.instanceMatrix.array;
+ try{const set=T.addSet(_setRecord(T,name,def,kit,true),_matTable(()=>im.count,i=>({a:A,o:i*16}),def));
+  im.userData.krator=set.id;im.krator={set:set.id,idx:null,base:0};}catch(e){BIO.err('core/tags: dynamic '+name+': '+e.message);}};
+// a registered volume (BIO.register, or a host's REGISTER: {name, key, kind, x, y, z, r, h, tags}) as a record:
+// a tree, a stand or a log is flora, a herd or flock (kind 'fauna') life, a species key the kit knows flora, the
+// rest (springs, thermals, the map) a feature. Once per object: BIO.register and the REGISTER it calls may both send it
+const _recorded=typeof WeakSet!=='undefined'?new WeakSet():null;
+BIO.record=function(o){if(!BIO.host||!BIO.host.tags||!o||typeof o!=='object')return null;if(_recorded){if(_recorded.has(o))return null;_recorded.add(o);}
+ const T=BIO.tagReg(),kit=BIO.kitName||'';if(!T){_pending.push({o,kit});return null;}return _record(T,o,kit);};
+function _record(T,o,kit){const info=_kitInfo(kit,null,o.key),k=o.kind;
+ const cls=o.cls||o['class']||(k==='fauna'||info.animal?'life':(k==='tree'||k==='stand'||k==='log'||k==='flora'||info.S)?'flora':'feature');
+ const rec={'class':cls,kind:cls==='life'?(o.key||o.name||null):(info.S&&info.S.key)||k||null,key:o.key!=null?o.key:(o.name||null),name:o.name||null,
+  at:[o.x||0,o.y||0,o.z||0],tags:_tagsOf(kit,T,info,o.tags),frag:'core/biome'};
+ if(o.r!=null){rec.r=o.r;if(o.h!=null)rec.h=o.h;}
+ try{return T.add(rec);}catch(e){BIO.err('core/tags: register '+(o.name||o.key)+': '+e.message);return null;}}
+// for an exporter: the records a baked mesh draws, by its row: {set, n, uid32(j), index(j)} or null
+BIO.recordsOf=function(m){const T=BIO.tagReg(),k=m&&m.krator;if(!T||!k)return null;const set=T.get(k.set);if(!set)return null;
+ const h=[KTAGS.str32(set['class']),KTAGS.str32(set.key)],A=m.instanceMatrix.array;
+ return {set:set.id,record:set,n:m.count,index:j=>k.idx?k.idx[j]:k.base+j,uid32:j=>KTAGS.uid32(h[0],h[1],A[j*16+12],A[j*16+13],A[j*16+14])};};
 
 Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 })();

@@ -40,7 +40,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
@@ -102,7 +102,7 @@ const OBSTACLES=[];
 // the LOD spine: along the diagonal from the bay's mouth to the NE highlands,
 // with two points out along the shore so the jungle ring keeps its detail
 const spine=[[650,0],[1200,0],[1750,0],[2350,0],[3000,0],[3700,0],[1150,-620]].map(P=>[BAY.c[0]+(P[0]+P[1])*SQ,BAY.c[1]+(P[1]-P[0])*SQ]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'swbay',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const h=terrainH(x,z),m=h<.12?0:h<.6?(h-.12)/.48:1;return m*smooth(7,15,riverD(x,z));},   // nothing rooted under water, nor in the river's channel up the slope
  obstacles:OBSTACLES,ticks:tick,seed:11,
  origin:spine,center:CENTER,

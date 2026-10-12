@@ -64,6 +64,37 @@ matches, the order id names.
 **An instance** of an item's record (a plant in a scattered item) is `flora_00012#37` (`KTAGS.instanceId`): the
 record's id and the instance's index. An instance has no record; its tags are the item's (Decisions 5).
 
+## Item sets
+
+An item placed many times (a biome kit's foliage clump, boulder or dart: tens of thousands of instances on a page) is
+one record, an **item set**, and its instances are rows of a table the registry reads but does not copy (2026-10-12,
+for the biome kits; Decisions 5):
+
+```
+const S = T.addSet({ class: 'flora', kind: 'fern', key: 'frond', name: 'Fern', at: [0, 0, 0], tags }, table)
+                                  -> an ordinary record (its own id and uid) with set: true and count
+T.instance(S, 37)                 -> { id: 'flora_00012#37', uid, class, kind, key, name, parent: S.id, at, ry, size, tags }
+T.get('flora_00012#37')           -> the same
+T.uidOf(S, i), T.uid32Of(S, i)    -> instance i's uid (8 hex digits; the u32), T.uids(S) -> all of them, a Uint32Array
+T.count(S), T.sets(), T.isSet(r), T.table(S)
+```
+
+- **The table** is anything with `n` (a number, or a getter) and `pos(i, out)` -> `[x, y, z]`; `ry(i)` and
+  `size(i, out)` -> `[w, d, h]` are optional. `KTAGS.table()` is a growable typed-array one (`push(x, y, z, ry, w, d, h)`);
+  core/biome passes a reader over its own instance matrices, so a plant costs the registry nothing.
+- **An instance's `at`** is its position exactly as the table stores it (no 4-decimal rounding), and its uid is
+  `KTAGS.uid(class, key, at)` of the set's class and key, so `T.instance(S, i).uid` always recomputes from the
+  instance's own fields. A float32 table gives float32 positions: Godot reads the same floats from the export's
+  matrices and gets the same uid (`godot/tests/tags/records_test.gd`).
+- The set's own `at` is what the build gives (core/biome: `[0, 0, 0]`): its uid names the item, not a place.
+- **The instance record is built on demand** and shares the set's `tags` object. The table is read, not copied: a
+  moving animal's instance answers where it is now, so its uid is where it stood when asked. Its order id
+  (`life_00003#2`) is what names it.
+- `audit()` adds `sets`, `instances` and `instancesByClass` when the registry has a set (a registry without sets keeps
+  its old shape). `export()` writes each set with its `count`; `export({ instances: true })` adds each set's `table`
+  (`at`, `ry`, `size`, `uid` as plain arrays) on a copy, for a small registry or a test. A page's export leaves the
+  tables out: the meshes' side tables carry the uids (`biomes/GODOT.md`, "Records").
+
 ## Tags
 
 Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key against `VOCAB.keys`:
@@ -77,6 +108,10 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `door`, `light` | Yuni's `DOOR_STYLES`, `LIGHT_KINDS` |
 | `lit` | a boolean |
 | `harvest` | an object `{ wood, edible: [], medicinal }` |
+| `climate`, `aridity` | the root README's flora bands: `hypertropic tropic subtropic temperate montane cold polar`; `arid semiarid mild subhumid humid`; or a range of two, `arid..humid` (`VOCAB.ranges`) |
+| `abyssal`, `riparian` | a boolean; `yes`, `no`, `both` (kits/fauna's `non` and `riparian` map onto `no` and `yes`) |
+| `diet` | free (an animal's: `fish`, `grass`...) |
+| `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
@@ -135,7 +170,10 @@ The vocabulary took Iziz's older spellings as input aliases (2026-10-05): the ke
 **`KTAGS.page`** is the page's registry, set by the build where it creates it, so an exporter or a probe finds it
 without knowing the build (`KTAGS.page.export()`, `KTAGS.page.audit()`).
 
+| The 16 biome kits and the Throne's 10 stations | 2026-10-12 | core/biome (`20-core-kit.js`, "core/tags: what a kit places, as records"): the host passes `BIO.init({ tags: '<build>' })` and the core makes the registry (`KTAGS.page`) at first use. Every item a kit puts is an item set (class `flora`, `life` for an animal, `feature` kind `rock` for a stone; key the item's name; tags the biome, the kit's `TAGS`, its species', plant's or animal's own: harvest, Köppen, diet), read from the item's own instance matrices; `BIO.dynamic` fauna too. Every volume a kit registers (`BIO.register`, or the host's `REGISTER`, which now calls `BIO.record`: trees, logs, herds) is a plain record. Hyperjungle: 28 sets holding 320,125 instances and 225 volumes, zero unknowns; every kit reads zero unknowns (the numbers per kit are in `biomes/GODOT.md`, "Records") |
+
 A build lists `core/rand` and `core/tags` the way it lists `core/lod` (its `build.py`: `RAND_DIR`, `TAGS_DIR`, the
-fragment names in `DETERMINISTIC`). Next (PROPOSAL.md, "Order of adoption"): the biome kits, once
-placement writes plant records (the reseeding event). `godot/tools/export_spike.py` writes any page's `KTAGS.page` as
-`tags.json`; the glTF importer keeps it as data (root meta `tags`) until the exporter names each mesh's record.
+fragment names in `DETERMINISTIC`; a biome kit: `CORE_TAGS`). `godot/tools/export_spike.py` writes any page's
+`KTAGS.page` as `tags.json`. Every export node now names its record where one exists: a biome item its set and a uid
+per instance, a bucket the volumes it merges (`BIO.export`), a glTF node its record in its extras and a MultiMesh a
+`krator_records` side table (`godot/tools/spike_export.js`); the Godot importers put them on node metadata.

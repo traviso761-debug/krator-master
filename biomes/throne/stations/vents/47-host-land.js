@@ -103,7 +103,7 @@ let MASK=(x,z)=>hotAt(x,z)>.35?0:waterMask(x,z);
 const SPINE=[];for(let u=-2200;u<=2200;u+=600)SPINE.push(upAt(u,GRABEN.pw(u)));
 CONES.forEach(C=>SPINE.push([C.x,C.z]));SPINE.push([MARSH.x,MARSH.z],upAt(MARSH.u+260,MARSH.p),upAt(MARSH.u-260,MARSH.p));POOLS.slice(0,3).forEach(P=>SPINE.push([P.x,P.z]));
 for(let u=1600;u>=-1600;u-=640)SPINE.push(upAt(u,valL(u)));HOLLOWS.forEach(H=>SPINE.push([H.x,H.z]));
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-vents',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:48,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:700,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

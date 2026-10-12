@@ -17,6 +17,10 @@
 //   T.export()               -> { format: 'krator-tags', version: 1, build, convention, vocab, records }
 //   KTAGS.uid(cls, key, at)  -> the position hash, 8 hex digits (README.md, "The uid": Godot reproduces it)
 //   KTAGS.instanceId(id, i)  -> 'flora_00012#37': an instance of an item's record (an instance has no record)
+//   T.addSet(rec, table)     -> an item set: one record (set: true, count) for an item placed many times; its
+//                               instances are rows of `table` (KTAGS.table(), or a build's own reader)
+//   T.instance(set, i)       -> instance i as a record, built on demand ({id: 'flora_00012#37', uid, at, ry, size, tags...});
+//                               T.get('flora_00012#37') does the same. T.uids(set) -> every instance's uid (Uint32Array)
 //   KTAGS.norm(tags)         -> { tags, problems }: the input mapping (aliases, wealth names) and the checks
 //
 // The record: { id, uid, class, kind, key, name, parent, at: [x,y,z], ry, size: [w,d,h] | r (+ h), tags, note, src }
@@ -50,11 +54,38 @@
    return h | 0;
  }
  K.str32 = str32;
- K.uid = function(cls, key, at){
-   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
-   return ('0000000' + u.toString(16)).slice(-8);
- };
+ // the uid as a u32, from the class's and key's str32 (hashed once per item set, not once per instance)
+ K.uid32 = function(c32, k32, x, y, z){ return krand().hash(0, c32, k32, x * 10 + 0.5, y * 10 + 0.5, z * 10 + 0.5); };
+ K.hex = function(u){ return ('0000000' + (u >>> 0).toString(16)).slice(-8); };
+ K.uid = function(cls, key, at){ return K.hex(K.uid32(str32(cls), str32(key), at[0], at[1], at[2])); };
  K.instanceId = function(id, i){ return id + '#' + i; };
+
+ // ---- the instance table of an item set (Decisions 5; README.md, "Item sets"). Anything with
+ //   n               the instance count (a number, or a function returning it)
+ //   pos(i, out)     -> out = [x, y, z], the instance's base centre as stored (no rounding: its uid is made from it)
+ //   ry(i)           -> radians about +Y (optional, 0)
+ //   size(i, out)    -> out = [w, d, h], full extents in its own frame (optional)
+ // KTAGS.table() is a growable typed-array one (push(x, y, z, ry, w, d, h) -> the index); a build that keeps its
+ // instances elsewhere passes its own reader (core/biome reads its instance matrices: a plant costs the registry nothing).
+ K.table = function(){
+   var cap = 64, P = new Float32Array(cap * 3), R = new Float32Array(cap), S = new Float32Array(cap * 3);
+   var t = { n: 0 };
+   t.push = function(x, y, z, ry, w, d, h){
+     if (t.n === cap) {
+       cap *= 2;
+       var p2 = new Float32Array(cap * 3), r2 = new Float32Array(cap), s2 = new Float32Array(cap * 3);
+       p2.set(P); r2.set(R); s2.set(S); P = p2; R = r2; S = s2;
+     }
+     var i = t.n++;
+     P[i * 3] = x; P[i * 3 + 1] = y; P[i * 3 + 2] = z; R[i] = ry || 0;
+     S[i * 3] = w || 0; S[i * 3 + 1] = d || 0; S[i * 3 + 2] = h || 0;
+     return i;
+   };
+   t.pos = function(i, out){ out = out || []; out[0] = P[i * 3]; out[1] = P[i * 3 + 1]; out[2] = P[i * 3 + 2]; return out; };
+   t.ry = function(i){ return R[i]; };
+   t.size = function(i, out){ out = out || []; out[0] = S[i * 3]; out[1] = S[i * 3 + 1]; out[2] = S[i * 3 + 2]; return out; };
+   return t;
+ };
 
  // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
  // value stays on the record as given and is reported as a problem, which audit() counts.
@@ -81,6 +112,7 @@
      out.types = ty;
    }
    if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
+   if (typeof out.riparian === 'string' && V.riparianAlias && V.riparianAlias[out.riparian]) out.riparian = V.riparianAlias[out.riparian];
    for (k in out) {
      var rule = V.keys[k], v = out[k];
      if (!rule) { problems.push({ key: k }); continue; }
@@ -89,6 +121,10 @@
      if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
      var list = V[rule];
      if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (V.ranges && V.ranges[k] && typeof v === 'string' && /^[^.]+\.\.[^.]+$/.test(v)) {   // a range: 'arid..humid'
+       var ends = v.split('..');
+       if (list.indexOf(ends[0]) < 0 || list.indexOf(ends[1]) < 0) problems.push({ key: k, value: v });
+     }
      else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
    }
    return { tags: out, problems: problems };
@@ -145,7 +181,57 @@
      if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
      return make(rec, parentId);
    };
-   T.get = function(id){ return byId[id] || null; };
+
+   // ---- item sets: one record for an item, its instances rows of a table (README.md, "Item sets") ----
+   // An instance has no record of its own (Decisions 5): T.instance builds one on demand, with the id
+   // 'flora_00012#37', the set's class, kind, key, name and tags (shared, not copied), and the uid of its own position.
+   var tables = {}, hashes = {}, _p = [0, 0, 0], _s = [0, 0, 0];
+   T.addSet = function(rec, table){
+     if (!table || table.pos == null) throw new Error('core/tags: addSet needs an instance table (KTAGS.table() or a reader)');
+     var o = make(rec, null);
+     o.set = true; o.count = 0;
+     tables[o.id] = table; hashes[o.id] = [str32(o['class']), str32(o.key)];
+     return o;
+   };
+   function setOf(s){
+     var r = typeof s === 'string' ? byId[s] : s;
+     if (!r || !tables[r.id]) throw new Error('core/tags: not an item set: ' + (r && r.id || s));
+     return r;
+   }
+   function countOf(r){ var t = tables[r.id]; return (r.count = typeof t.n === 'function' ? t.n() : t.n); }
+   T.isSet = function(s){ var r = typeof s === 'string' ? byId[s] : s; return !!(r && tables[r.id]); };
+   T.sets = function(){ var out = []; for (var i = 0; i < recs.length; i++) if (tables[recs[i].id]) out.push(recs[i]); return out; };
+   T.table = function(s){ return tables[setOf(s).id]; };
+   T.count = function(s){ return countOf(setOf(s)); };
+   // the uid of instance i (u32; KTAGS.hex makes it the 8 digits), from its position as the table stores it
+   T.uid32Of = function(s, i){
+     var r = setOf(s), h = hashes[r.id], p = tables[r.id].pos(i, _p);
+     return K.uid32(h[0], h[1], p[0], p[1], p[2]);
+   };
+   T.uidOf = function(s, i){ return K.hex(T.uid32Of(s, i)); };
+   // every instance's uid, in instance order: a Uint32Array (or into out)
+   T.uids = function(s, out){
+     var r = setOf(s), n = countOf(r), t = tables[r.id], h = hashes[r.id];
+     out = out || new Uint32Array(n);
+     for (var i = 0; i < n; i++) { var p = t.pos(i, _p); out[i] = K.uid32(h[0], h[1], p[0], p[1], p[2]); }
+     return out;
+   };
+   T.instance = function(s, i){
+     var r = setOf(s), t = tables[r.id];
+     i = +i;
+     if (!(i >= 0 && i < countOf(r) && i === Math.floor(i))) return null;
+     var p = t.pos(i, [0, 0, 0]);
+     var o = { id: K.instanceId(r.id, i), uid: T.uidOf(r, i), 'class': r['class'], kind: r.kind, key: r.key, name: r.name,
+       parent: r.id, at: p, ry: r4(t.ry ? t.ry(i) : 0) };
+     if (t.size) o.size = t.size(i, [0, 0, 0]).map(r4);
+     o.tags = r.tags;
+     return o;
+   };
+   T.get = function(id){
+     if (byId[id]) return byId[id];
+     var m = /^(.+)#(\d+)$/.exec(id);   // an instance id: built from its set
+     return m && byId[m[1]] && tables[m[1]] ? T.instance(m[1], +m[2]) : null;
+   };
    T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
 
    function tagMatch(r, want){
@@ -217,14 +303,36 @@
          if (!r.tags.culture) a.missingCulture++;
          if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
        }
+       if (tables[r.id]) {   // an item set: its instances, by class (the keys appear only in a registry that has sets)
+         var c = countOf(r);
+         a.sets = (a.sets || 0) + 1; a.instances = (a.instances || 0) + c;
+         a.instancesByClass = a.instancesByClass || {};
+         a.instancesByClass[r['class']] = (a.instancesByClass[r['class']] || 0) + c;
+       }
      }
      return a;
    };
 
-   T.export = function(){
+   // opt.instances: each set also carries its table as plain arrays (at, ry, size, uid), for a small registry or a
+   // test; a page's export leaves them out (its meshes' side tables carry the uids: biomes/GODOT.md)
+   T.export = function(opt){
+     var out = recs;
+     for (var i = 0; i < recs.length; i++) if (tables[recs[i].id]) countOf(recs[i]);
+     if (opt && opt.instances) out = recs.map(function(r){
+       if (!tables[r.id]) return r;
+       var t = tables[r.id], n = r.count, tb = { at: [], ry: [], size: t.size ? [] : null, uid: [] }, k, o = {};
+       for (k in r) o[k] = r[k];
+       for (var j = 0; j < n; j++) {
+         var p = t.pos(j, _p); tb.at.push(p[0], p[1], p[2]); tb.ry.push(r4(t.ry ? t.ry(j) : 0));
+         if (t.size) { var s = t.size(j, _s); tb.size.push(r4(s[0]), r4(s[1]), r4(s[2])); }
+         tb.uid.push(T.uidOf(r, j));
+       }
+       o.table = tb;
+       return o;
+     });
      return { format: 'krator-tags', version: 1, build: T.build,
        convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
-       vocab: K.VOCAB, records: recs };
+       vocab: K.VOCAB, records: out };
    };
    return T;
  };

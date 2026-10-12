@@ -58,7 +58,7 @@ const SPINE=[];for(let a=Math.PI-1.1;a<=Math.PI+1.1;a+=.22){const r=crestR(a);SP
 // the penitentes' best patch (the cameras' and the detail's): the highest 'pen' on the plateau, well inside the map, toward the rim
 const PEN=(function(){let b={x:-1300,z:0,v:0};for(let z=-2000;z<=2000;z+=40)for(let x=-2300;x<=200;x+=40){if(Math.hypot(x,z)>1700)continue;const v=FIELD.pen(x,z)-Math.hypot(x+900,z)*.0002;if(v>b.v)b={x,z,v};}return b;})();
 SPINE.push([LAKE.x,LAKE.z],[-900,-200],[-1500,600],[-1300,-900],[PEN.x,PEN.z]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-caldera',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:50,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:700,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

@@ -62,7 +62,8 @@ not convert it. `convention.colours` says this per table (since 2026-10-05).
 | `buckets` | one record per merged mesh (below) |
 | `materials` | one record per material (below) |
 | `textures` | one record per texture: `id`, `wrap`, `repeat`, `flipY`, `size`, `png` (a data URL, encoded by the host's `BIO.texPNG`), or `error` saying why there is no image |
-| `stats` | counts: items, instances, buckets, triangles |
+| `stats` | counts: items, instances, buckets, triangles; with core/tags, `records` (items and instances that carry ids, buckets that name records) |
+| `tags` | with core/tags: `{build, format}`, the page's registry (`KTAGS.page`), which `godot/tools/export_spike.py` writes beside the export as `tags.json` |
 
 Typed arrays are `{type, n, b64}`: the array's bytes, base64. `Float32Array`,
 `Uint16Array` and `Uint32Array` occur.
@@ -72,11 +73,49 @@ Typed arrays are `{type, n, b64}`: the array's bytes, base64. `Float32Array`,
 frame), `geometry` (the unit mesh once: `position`, `normal`, `uv`, `color` if any,
 `index` if any), `matrices` (16 floats an instance), `colours` (3 an instance), `extras`
 (per-instance attributes: `aN` the foliage normal, 3; `aC2` the second colour, 3; `aP0`,
-`aP1` a fauna path, 4 each).
+`aP1` a fauna path, 4 each). With core/tags: `record`, `recordClass`, `recordKey`, `records`, `recordIndex` (below).
 
 **Bucket**: `name` (the family), `kit`, `label`, `material`, `lod`, `triangles`,
 `geometry` (indexed `position`, `normal`, `uv`, `color`; a tile keeps the whole vertex list
-and only the triangles inside it, so an importer drops unused vertices).
+and only the triangles inside it, so an importer drops unused vertices). With core/tags: `records`, `recordIds`,
+`pieces` (below).
+
+## Records (core/tags, 2026-10-12)
+
+Every biome page registers what it places in core/tags (`core/tags/README.md`, "Item sets"; the host passes
+`BIO.init({tags: '<build>'})`, and `build.py` lists core/rand and core/tags in `CORE_TAGS`):
+
+- **An item is one record, an item set**: class `flora`, `life` (an anim material, a path in `aP0`, an item put by a
+  fauna pass, a kit's `FAUNA` key, every `BIO.dynamic` mesh) or `feature` (kind `rock`: `BIO.MINERAL`, the boulders,
+  stones, hoodoos, beads, mounds and chimneys); key the item's name; kind its species', plant's or animal's key
+  (`speciesOfItem`, `plantOfItem`, `FAUNA`) or the item's name; tags the biome (the kit), the kit's `TAGS` and the
+  species', plant's or animal's own (harvest, Köppen, diet). `BIO.def(name, geo, mat, {cls, kind, tags})` overrides.
+- **Its instances are not copied**: instance `i` (in put order, over every bake) is `<set id>#i`, at the position in
+  its matrix, with the uid `KTAGS.uid(class, key, position)`, the position as the float32 the matrix holds.
+- **A registered volume** (`BIO.register`, or the host's `REGISTER`, which calls `BIO.record`: a tree, a stand, a log,
+  a herd) is a plain record: `flora` for kind `tree`, `stand`, `log` or a kit species' key, `life` for kind `fauna`
+  or a `FAUNA` key, else `feature` (a spring, a thermal, the map's own volume); `r` and `h` its cylinder.
+
+In the export:
+
+- **An item** carries `record` (its set's id), `recordClass` and `recordKey` (enough to recompute a uid without
+  `tags.json`), and a side table aligned with `matrices`: `records`, each instance's uid (8 hex digits), and
+  `recordIndex` (Uint32Array), its index in the set, so its id is `record + '#' + recordIndex[j]`. A tile keeps the
+  rows of the instances it keeps.
+- **A bucket** carries `records` (uids) and `recordIds`: the volumes its pieces belong to, once each (a piece, a
+  connected run of triangles, belongs to the smallest flora or life volume whose disc holds its foot and whose height
+  span, 3 m under to 5 m over, holds the foot's height), and `pieces: {n, unowned}` (pieces in no volume: boulders
+  and ground cover merged into buckets, logs no kit registers).
+- `opt.records: false` leaves the ids out. A page without core/tags exports as before.
+
+Godot (`godot/krator/biome_import.gd`): a MultiMesh's metadata `krator_record` (the set id), `krator_records`
+(PackedStringArray, by instance index), `krator_index` (PackedInt32Array) and `krator_set` (the set's record from
+`tags.json`); a bucket's `krator_records`, `krator_record_ids` and `krator_pieces`. `godot/tests/tags/records_test.gd`
+recomputes every uid of the hyperjungle case in GDScript (`core/tags/ktags.gd`).
+
+| Kit | Sets | Instances | Volumes | Unknown tags |
+|---|---|---|---|---|
+| (filled by the run of 2026-10-12, below) | | | | |
 
 **Material**: `id`, `kind` (`leaf`: a foliage card with the wind and two-tone hook; `bark`:
 vertex-coloured textured wood; `anim`: an animated fauna body; `plain`: anything else),
@@ -142,8 +181,9 @@ on the ground (`hooked`), fog written in a ShaderMaterial, and anything a page c
   seven for every kit, in the shared library (`core/godot/shaders/`, `GODOT-PLAN.md` Phase 3). Wind and time come from the atmosphere's global shader parameters
   (`atm_time`, `atm_wind`, `atm_gust_amp`: `core/atmos/GODOT.md`), so the forest and the
   smoke share one wind.
-- **Tags** (species, class, harvest, Köppen) are not in the export yet: the inspector's
-  registry is the host's. They will travel as each node's glTF extras, as Yuni's do.
+- **Ids**: each MultiMesh keeps its instances' uids as a side table (`krator_records` metadata, by instance index) and
+  names its item set (`krator_record`); the records themselves (species, class, harvest, Köppen) are `tags.json`
+  ("Records" above).
 
 ## What a port is tested against
 
@@ -182,7 +222,8 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
   export's `ground`, since 2026-10-05.)*
 - Trees as a variant library by default, with hero trees opt-in per record (`hero`, set by a
   site or a hero zone) and baked per tile; a preview switch between all heroes and opt-in only.
-- Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).
+- ~~Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).~~ Done 2026-10-12
+  ("Records"); placement records proper (species, seed, no LOD level) still wait for the reseeding event.
 - The kits' shader hooks as core material kinds (named as data since 2026-10-05; the hook code is still each
   kit's); materials on the plan's shared vocabulary. *(`convention.colours` per table: done 2026-10-05.)*
 - `BIO.download()` moved to the host (`core/host`): the export's one browser line. *(Split out to `core/biome/43-core-export-host.js` [web] 2026-10-03; it joins `core/host/` in Phase 1.)*

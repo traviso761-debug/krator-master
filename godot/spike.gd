@@ -221,6 +221,39 @@ func _print_report(name: String, r: Dictionary) -> void:
 		print("  gap [%s] %s" % [k, r["gaps"][k]])
 
 
+# The drawn nodes (MeshInstance3D, MultiMeshInstance3D) under n0 and how many name a core/tags record: a node by its meta
+# krator_record, krator_uid or a non-empty krator_records (a bucket's merged volumes), or the yuni case's "krator" record;
+# a MultiMesh's instances by its side table (krator_records uids, or the yuni case's "records")
+func _count_ids(n0: Node) -> Dictionary:
+	var c := {"nodes": 0, "nodes_with_id": 0, "multimeshes": 0, "instances": 0, "instances_with_id": 0}
+	var stack: Array[Node] = [n0]
+	while stack.size() > 0:
+		var n: Node = stack.pop_back()
+		for ch in n.get_children():
+			stack.append(ch)
+		if n is MultiMeshInstance3D and (n as MultiMeshInstance3D).multimesh:
+			var k: int = (n as MultiMeshInstance3D).multimesh.instance_count
+			c["nodes"] += 1
+			c["multimeshes"] += 1
+			c["instances"] += k
+			var side = n.get_meta("krator_records") if n.has_meta("krator_records") else (n.get_meta("records") if n.has_meta("records") else [])
+			var named := 0
+			if side != null:
+				for u in side:
+					if (u is String and u != "") or (u is Dictionary and (u as Dictionary).has("id")):
+						named += 1
+			c["instances_with_id"] += mini(named, k)
+			if n.has_meta("krator_record") or named > 0:
+				c["nodes_with_id"] += 1
+		elif n is MeshInstance3D:
+			c["nodes"] += 1
+			var rec = n.get_meta("krator") if n.has_meta("krator") else null
+			var side = n.get_meta("krator_records", PackedStringArray())
+			if n.has_meta("krator_record") or n.has_meta("krator_uid") or side.size() > 0 or (rec is Dictionary and (rec as Dictionary).has("id")):
+				c["nodes_with_id"] += 1
+	return c
+
+
 func _check_all() -> void:
 	var ok := true
 	var only = _args().get("case", "")
@@ -235,6 +268,8 @@ func _check_all() -> void:
 		if r.get("gaps", {}).has("load") or r.get("gaps", {}).has("format"):
 			ok = false
 		await get_tree().process_frame
+		r["id_coverage"] = _count_ids(world)   # how many drawn nodes and instances name their core/tags record
+		print("  ids: ", JSON.stringify(r["id_coverage"]))
 		if ground and ground.has_meta("field"):   # a krator-field: rays onto its HeightMapShape3D against KField.h
 			await get_tree().physics_frame
 			await get_tree().physics_frame

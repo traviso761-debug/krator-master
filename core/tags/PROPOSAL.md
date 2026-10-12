@@ -134,7 +134,8 @@ Each existing registry gets a one-line forward into `T.add`, and keeps working a
 5. **The biome kits**, once placement writes plant records (the reseeding event): flora and fauna get ids and
    Köppen tags.
 
-Steps 1 and 2 are each about a session, with tests. Step 5 waits for the reseeding event.
+Steps 1 and 2 are each about a session, with tests. Step 5 waits for the reseeding event. *(2026-10-12: step 5 done before the reseeding event, as item sets over the
+kits' own instance matrices: `README.md`, "Item sets". The reseeding event moves the plants, not the records' shape.)*
 
 ## Decisions (Travis, 2026-10-05)
 

@@ -518,6 +518,12 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
 4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`). *Partly
    answered 2026-10-05:* `core/tags` exists and Yuni's records arrive as node metadata (`tags.json`); the biome kits
    adopt it last, once placement writes plant records (an item's record, `flora_00012#37` per instance).
+   *Closed 2026-10-12 for the re-exported cases (ROADMAP stage 2c):* the biome kits register what they place
+   (`core/tags/README.md`, "Item sets"); every biome item names its set and carries a uid per instance aligned with
+   its matrices, every bucket the volumes it merges (`biomes/GODOT.md`, "Records"); glTF nodes carry their record in
+   their extras and a MultiMesh a `krator_records` side table; the importers put them on node metadata, and
+   `spike.gd --check` writes each case's `id_coverage`. A node that merges many records (Girder's furniture batch, one
+   per material) still names none; Iziz's case is not re-exported yet.
 5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
    `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags. *Compensated 2026-10-05:* `BIO.export` writes
    a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it. *Answered

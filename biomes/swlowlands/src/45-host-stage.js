@@ -31,7 +31,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
@@ -115,7 +115,7 @@ const FIELD={
 function W_R(x,z){return riverW(x,z);}
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'swlowlands',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{if(roadD(x,z)<11.5)return 0;const h=terrainH(x,z);return h<.12?0:h<.6?(h-.12)/.48:1;},   // nothing on the road or its mown verges   // nothing rooted under water (the mangrove pass asks past the mask itself)
  obstacles:OBSTACLES,ticks:tick,seed:11,
  // the LOD spine: a row of origins down the NW -> SE axis, sea to hills

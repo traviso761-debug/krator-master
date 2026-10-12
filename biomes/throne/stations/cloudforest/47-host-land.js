@@ -84,7 +84,7 @@ let MASK=waterMask;
 // the LOD spine: the trail, the falls, the saddle (the cloud hides what is farther: the LOD is short)
 const SPINE=[];TRAILS.forEach(T=>{for(let i=0;i<T.pts.length;i+=8)SPINE.push(T.pts[i]);});
 RAVINES.forEach(V=>(V.steps||[]).forEach(S=>SPINE.push([S.x,ravC(V,S.x)])));SPINE.push([RIDGE.saddle.x,RIDGE.zc(RIDGE.saddle.x)]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-cloudforest',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:45,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:190,mid:430,far:1500,floor:[180,420]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

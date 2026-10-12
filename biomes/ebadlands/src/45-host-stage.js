@@ -29,7 +29,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -135,7 +135,7 @@ const OBSTACLES=[];
 const SPINE=[[VENTS.x,VENTS.z],[-2500,-900],[-2600,1500],[-1700,2600],[-1200,zR(-1200)]];
 for(let x=-600;x<=2900;x+=700)SPINE.push([x,zR(x)]);
 SPINE.push([300,-900],[600,1500],[1700,-300],[2050,900],[TARN.x,TARN.z],[2900,-200],[3150,700]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+BIO.init({tags:'ebadlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:13,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:400,mid:1000,far:2600,floor:[360,880]},
  windows:{water:[-TERR.R,-TERR.R,TERR.R,TERR.R]}});

@@ -100,7 +100,7 @@ FIELDS.forEach(F=>SPINE.push([F.x,F.z]));
 for(let i=0;i<ROAD.pts.length;i+=8)SPINE.push(ROAD.pts[i]);
 TRAILS.forEach(T=>{SPINE.push(T.pts[T.pts.length-1],T.pts[Math.floor(T.pts.length*.75)]);});
 {const b=xzOf(BAY.u,BAY.p);SPINE.push(b);}
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-frontier',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:41,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});

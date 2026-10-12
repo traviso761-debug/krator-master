@@ -144,12 +144,65 @@ ok(K.label(bench) === want.bench, 'label: the bench\n' + K.label(bench));
 ok(K.label(tree, 37) === want.tree, 'label: a plant instance\n' + K.label(tree, 37));
 ok(K.label(Object.assign({}, deer, { note: 'shy' })).split('\n')[3] === 'shy', 'label: a note is appended');
 
+// ---- the flora and fauna vocabulary (the biome kits, 2026-10-12) ----
+ok(P({ climate: 'tropic', aridity: 'humid', abyssal: false, riparian: 'both', diet: 'fish' }) === '' &&
+  P({ climate: 'balmy' }) === 'climate:balmy', 'climate: a band name passes, an unknown one is a problem');
+ok(P({ climate: 'tropic..cold', aridity: 'arid..humid' }) === '' && P({ climate: 'tropic..balmy' }) === 'climate:tropic..balmy' &&
+  P({ wealth: 'poor..rich' }) === 'wealth:poor..rich', 'a range of two bands passes for climate and aridity only');
+ok(P({ abyssal: true }) === '' && P({ abyssal: 'yes' }) === 'abyssal:yes', 'abyssal is a boolean');
+ok(N({ riparian: 'non' }).riparian === 'no' && N({ riparian: 'riparian' }).riparian === 'yes' && P({ riparian: 'often' }) === 'riparian:often',
+  'riparian: yes, no, both (kits/fauna\'s non and riparian map onto them)');
+ok(P({ koppen: ['XA', 'XV', 'HF', 'O', 'Cwb'] }) === '' && P({ koppen: ['XQ'] }) === 'koppen:XQ', 'koppen: the scale model\'s own classes');
+ok(P({ fire: 'pyrophyte', form: 'cushion', origin: 'native', heat: 'splash', plume: 'vent', spiral: 'whorl' }) === '' && P({ flame: 'x' }) === 'flame',
+  'the kits\' own species traits are free keys (fire, form, origin, heat, plume, spiral); a near miss is still unknown');
+
+// ---- item sets (Decisions 5): one record for an item, its instances rows of a table ----
+const TS = K.create({ build: 'sets' });
+const tb = K.table();
+const fern = TS.addSet({ class: 'flora', kind: 'fern', key: 'frond', name: 'Fern', at: [0, 0, 0], tags: { biome: 'hyperjungle', climate: 'hypertropic' } }, tb);
+const pts = [[1.04, 0, -1.05], [12.25, 3.5, 7.75], [-300.125, 41.0625, 2.5]];
+pts.forEach((p, i) => tb.push(p[0], p[1], p[2], i * 0.5, 1, 1, 2 + i));
+ok(fern.id === 'flora_00000' && fern.set === true && TS.count(fern) === 3 && TS.isSet(fern) && !TS.isSet(TS.add({ class: 'flora', key: 'x' })),
+  'addSet: one record, set: true, its count read from the table');
+const f32 = v => Math.fround(v);
+const in1 = TS.instance(fern, 1);
+ok(in1.id === 'flora_00000#1' && in1.parent === 'flora_00000' && in1.tags === fern.tags && in1.ry === 0.5 && in1.size.join() === '1,1,3',
+  'T.instance builds instance 1: id <set>#1, the set\'s tags (shared), its own ry and size');
+ok(in1.at.join() === [f32(12.25), f32(3.5), f32(7.75)].join() && in1.uid === K.uid('flora', 'frond', in1.at),
+  'an instance\'s at is its position as the table stores it (float32 here), and uid = KTAGS.uid(class, key, at)');
+const all = TS.uids(fern);
+ok(all.length === 3 && K.hex(all[2]) === K.uid('flora', 'frond', [f32(-300.125), f32(41.0625), f32(2.5)]) && TS.uidOf(fern, 0) === K.hex(all[0]),
+  'T.uids: every instance\'s uid as a Uint32Array, the same as uidOf');
+ok(TS.get('flora_00000#2').uid === K.hex(all[2]) && TS.get('flora_00000#3') === null && TS.get('flora_00001#0') === null,
+  'T.get finds an instance by its id; past the end, or on a record that is not a set, it is null');
+ok(TS.uidOf(fern, 0) !== TS.uidOf(fern, 1) && K.uid('flora', 'frond', [f32(1.04) + 0.1, 0, f32(-1.05)]) !== TS.uidOf(fern, 0),
+  'negative: two instances, or one moved 10 cm, have different uids');
+ok(throws(() => TS.addSet({ class: 'flora', key: 'y' })) && throws(() => TS.instance('flora_00001', 0)),
+  'negative: a set needs a table; an ordinary record is not a set');
+// a table that is only a reader (a build's own instance store): n as a getter, pos and nothing else
+const store = new Float32Array([5, 0, 5, 6, 0, 6]);
+const reader = { get n(){ return store.length / 3; }, pos: (i, o) => { o[0] = store[i * 3]; o[1] = store[i * 3 + 1]; o[2] = store[i * 3 + 2]; return o; } };
+const herd = TS.addSet({ class: 'life', kind: 'deer', key: 'deer', at: [0, 0, 0], tags: { biome: 'sedesert', diet: 'browse' } }, reader);
+ok(herd.id === 'life_00000' && TS.instance(herd, 1).uid === K.uid('life', 'deer', [6, 0, 6]) && TS.instance(herd, 1).size === undefined && TS.instance(herd, 0).ry === 0,
+  'a reader table: n as a getter and pos alone (no ry or size: 0 and none)');
+store[3] = 60;
+ok(TS.instance(herd, 1).uid === K.uid('life', 'deer', [60, 0, 6]), 'the table is read, not copied: a moved instance answers where it is now');
+const au = TS.audit();
+ok(au.sets === 2 && au.instances === 5 && au.instancesByClass.flora === 3 && au.instancesByClass.life === 2 && au.records === 3 && au.unknown === 0,
+  'audit: sets and instances by class (' + JSON.stringify(au.instancesByClass) + ')');
+ok(T.audit().sets === undefined && T.audit().instances === undefined, 'audit: a registry with no sets keeps its old shape');
+const exs = TS.export(), exi = TS.export({ instances: true });
+ok(exs.records[0].count === 3 && exs.records[0].table === undefined && exi.records[0].table.uid.length === 3 &&
+  exi.records[0].table.uid[1] === in1.uid && exi.records[0].table.at.length === 9 && exi.records[0].table.size.length === 9 &&
+  exi.records[1].table === undefined && exs.records[0] === fern && exi.records[0] !== fern,
+  'export: a set carries its count; with {instances: true} its table as plain arrays, on a copy');
+
 // the export, and its digest
 const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 21, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = '1aa3363';   // 2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd)
+const DIGEST = '803f4891';   // 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

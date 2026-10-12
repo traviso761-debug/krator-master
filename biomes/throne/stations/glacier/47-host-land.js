@@ -89,7 +89,7 @@ const SPINE=[];for(let u=-2300;u<=2300;u+=600)SPINE.push(upAt(u,GL.pg(u)));
 SPINE.push([SHELF.x,SHELF.z]);CAVES.forEach(C=>SPINE.push([C.x,C.z]));SPINE.push(upAt(GL.SNOUT-120,GL.pg(GL.SNOUT)));
 for(let u=BREACH_U-200;u>-2500;u-=500)SPINE.push(upAt(u,riverC(u)));
 SPINE.push(upAt(-1800,riverC(-1800)-260),upAt(-2100,riverC(-2100)+300),upAt(-1600,riverC(-1600)+420));
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+BIO.init({tags:'throne-glacier',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:49,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:700,far:2400,floor:[230,560]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1]}});
