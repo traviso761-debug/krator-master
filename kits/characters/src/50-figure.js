@@ -86,7 +86,7 @@ function KCharFigure(body, sliders, load){
       m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
       m.bind(new THREE.Skeleton(bones.concat(extra), ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
       if(cl) cl.meshes.push(m);
-      if((itemByKey[part.key] || {}).loose) pushOut(m.material);
+      if((itemByKey[part.key] || {}).loose) pushOut(m.material, part.slot === 'torso' ? 0.012 : 0);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -608,7 +608,9 @@ function KCharFigure(body, sliders, load){
     });
   }
   // out of the capsules and above the floor (last: a point may stretch its bone a little rather than sink in)
+  var hipW = new THREE.Vector3(), cO = new THREE.Vector3();
   function collide(ch, W){
+    bones[byName.Hips].getWorldPosition(hipW);
     for(var k = 1; k < ch.x.length; k++){
       var x = ch.x[k];
       W.forEach(function(cp){
@@ -616,7 +618,13 @@ function KCharFigure(body, sliders, load){
         var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
         cV2.copy(cp.a).addScaledVector(cV, t);
         var d = x.distanceTo(cV2);
-        if(d < cp.r && d > 1e-6) x.sub(cV2).multiplyScalar(cp.r / d).add(cV2);
+        if(d < cp.r && d > 1e-6){
+          // out the side away from the body's axis: cloth never ends up behind a limb
+          cV.subVectors(x, cV2);
+          cO.set(cV2.x - hipW.x, 0, cV2.z - hipW.z);
+          if(cO.lengthSq() > 1e-8){ cO.normalize(); var cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+          x.copy(cV2).addScaledVector(cV.normalize(), cp.r);
+        }
       });
       if(x.y < groundY) x.y = groundY;
     }
@@ -655,35 +663,47 @@ function KCharFigure(body, sliders, load){
 
   /* pushOut: a garment that hangs loose over the legs (kit item loose: skirts, robes, the kimono) has each vertex
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
-     The capsules (legCaps) are the body's, in the figure's inner space, padded by the cloth's thickness */
-  var pushU = { kcA:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
-                kcB:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) } };
-  function pushOut(mat){
-    var prev = mat.onBeforeCompile;
+     The capsules (legCaps: thighs, shins, feet) are the body's, in the figure's inner space, padded by the cloth's
+     thickness, and a torso garment by 1.2 cm more, so a robe's hem lies over the skirt it covers. The push is a soft
+     shell, not a projection: a vertex d from the bone within r + 4 cm lands at r + d * 4 cm / (r + 4 cm), so two
+     tiers of one skirt keep their order instead of meeting on one surface */
+  var pushU = { kcA:{ value:[0, 1, 2, 3, 4, 5].map(function(){ return new THREE.Vector4(); }) },
+                kcB:{ value:[0, 1, 2, 3, 4, 5].map(function(){ return new THREE.Vector4(); }) }, kcH:{ value:new THREE.Vector3() } };
+  function pushOut(mat, pad){
+    var prev = mat.onBeforeCompile, padU = { value:pad || 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
-      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB;
-      sh.vertexShader = 'uniform vec4 kcA[4];\nuniform vec4 kcB[4];\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 4; ci++){\n' +
-        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float cr = kcA[ci].w;\n' +
+      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
+      // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
+      // cloth behind the knee
+      sh.vertexShader = 'uniform vec4 kcA[6];\nuniform vec4 kcB[6];\nuniform vec3 kcH;\nuniform float kcP;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 6; ci++){\n\t\tif(kcA[ci].w <= 0.0) continue;\n' +
+        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float cr = kcA[ci].w + kcP, cR = cr + 0.04;\n' +
         '\t\tfloat ct = clamp(dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), 0.0, 1.0);\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
-        '\t\tif(cl < cr && cl > 1e-5) transformed = cq + cd * (cr / cl);\n\t}');
+        '\t\tif(cl < cR && cl > 1e-5){\n' +
+        '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
+        '\t\t\tif(cl < cr && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
+        '\t\t\ttransformed = cq + normalize(cd) * (cr + cl * 0.04 / cR);\n\t\t}\n\t}');
     };
     mat.customProgramCacheKey = function(){ return 'kchar-push'; };
     mat.needsUpdate = true;
   }
-  var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot']], legInv = new THREE.Matrix4();
+  var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot'],
+              ['LeftFoot', 'LeftToeBase'], ['RightFoot', 'RightToeBase']], legInv = new THREE.Matrix4();
   function legCaps(){
     if(!caps.length) return;
     self.inner.updateMatrixWorld(true);
     legInv.copy(self.inner.matrixWorld).invert();
     LEGS.forEach(function(lg, i){
-      var a = byName[lg[0]], b = byName[lg[1]], cp = caps.filter(function(c){ return c.a === a && c.b === b; })[0];
-      if(!cp) return;
+      // a foot has no collider of its own: it takes its shin's radius
+      var a = byName[lg[0]], b = byName[lg[1]], sh = i < 4 ? a : byName[LEGS[i - 2][0]];
+      var cp = caps.filter(function(c){ return c.a === sh && c.b === (i < 4 ? b : a); })[0];
+      if(!cp || b === undefined) return;
       bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
-      pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.014); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
+      pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
     });
+    bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
   }
 
   /* bodyFix: clips retargeted from slighter bodies can put a hand in a broad body's hip or a thigh through the

@@ -363,6 +363,8 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		pm.shader = PUSH_SHADER
 		pm.set_shader_parameter("tex", m2.albedo_texture)
 		pm.set_shader_parameter("albedo", Color(dye0) if dye0 != null else Color.WHITE)
+		# a torso garment pushes 1.2 cm further, so a robe's hem lies over the skirt it covers (as pushOut in 50-figure.js)
+		pm.set_shader_parameter("kcP", 0.012 if part["slot"] == "torso" else 0.0)
 		_push_mats.append(pm)
 		return pm
 	if role == "skin":
@@ -875,6 +877,7 @@ func _cloth_step(dt: float) -> void:
 
 func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 	var x: Array = ch["x"]
+	var hip := _gp(_hips).origin
 	for k in range(1, x.size()):
 		var p: Vector3 = x[k]
 		for cp in W:
@@ -883,7 +886,14 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 			var q: Vector3 = cp["a"] + ab * t
 			var dd := p.distance_to(q)
 			if dd < cp["r"] and dd > 1e-6:
-				p = q + (p - q) * (cp["r"] / dd)
+				var d := p - q
+				var o := Vector3(q.x - hip.x, 0.0, q.z - hip.z)
+				if o.length_squared() > 1e-8:
+					o = o.normalized()
+					var sd := d.dot(o)
+					if sd < 0.0:
+						d -= 2.0 * sd * o
+				p = q + d.normalized() * float(cp["r"])
 		if p.y < ground:
 			p.y = ground
 		x[k] = p
@@ -943,20 +953,30 @@ func _leg_caps() -> void:
 		return
 	var A := []
 	var Bv := []
-	for lg in [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"]]:
-		var a := skeleton.find_bone(lg[0])
-		var b := skeleton.find_bone(lg[1])
+	var legs := [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"],
+		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"]]
+	for i in legs.size():
+		var a := skeleton.find_bone(legs[i][0])
+		var b := skeleton.find_bone(legs[i][1])
+		# a foot has no collider of its own: it takes its shin's radius
+		var ca := a if i < 4 else skeleton.find_bone(legs[i - 2][0])
+		var cb := b if i < 4 else a
 		var r := 0.0
 		for cp in _caps:
-			if cp["a"] == a and cp["b"] == b:
-				r = float(cp["r"]) + 0.014
+			if cp["a"] == ca and cp["b"] == cb:
+				r = float(cp["r"]) + 0.01
+		if b < 0:
+			r = 0.0
+			b = a
 		var pa := _gp(a).origin
 		var pb := _gp(b).origin
 		A.append(Vector4(pa.x, pa.y, pa.z, r))
 		Bv.append(Vector4(pb.x, pb.y, pb.z, 0.0))
+	var hip := _gp(_hips).origin
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)
 		pm.set_shader_parameter("kcB", Bv)
+		pm.set_shader_parameter("kcH", hip)
 
 
 # an elbow or hand inside the pelvis, chest or its own thigh turns its upper arm or forearm out; two thighs that

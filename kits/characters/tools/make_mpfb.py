@@ -332,6 +332,36 @@ def skirt_weights(j, b, y0, band=0.12):
             b[ow:ow + WW.nbytes] = WW.tobytes()
 
 
+def cover_weights(P, V, where, spec, JJ, WW):
+    """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1): each of its vertices the outer
+    part covers takes the nearest outer vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm
+    from it, so where the two overlap they move as one and the under-tier cannot swing through"""
+    layer = [pt.get('layer', 0) for pt in spec['parts']]
+    part = np.array([where.get(int(v), (-1,))[0] for v in V])
+    for po in [q for q in range(len(layer)) if layer[q] == 1]:
+        O = np.nonzero(part == po)[0]
+        if not len(O):
+            continue
+        hem = P[O, 1].min()
+        for pi in [q for q in range(len(layer)) if layer[q] == 0]:
+            for gi in np.nonzero(part == pi)[0]:
+                d = np.linalg.norm(P[O] - P[gi], axis=1)
+                k = int(np.argmin(d))
+                f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
+                if f <= 0:
+                    continue
+                mix = {}
+                for jj, ww in zip(JJ[gi], WW[gi]):
+                    mix[int(jj)] = mix.get(int(jj), 0) + ww * (1 - f)
+                for jj, ww in zip(JJ[O[k]], WW[O[k]]):
+                    mix[int(jj)] = mix.get(int(jj), 0) + ww * f
+                top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
+                tot = sum(x for _, x in top) or 1.0
+                top += [(0, 0.0)] * (4 - len(top))
+                JJ[gi] = [q for q, _ in top]
+                WW[gi] = [x / tot for _, x in top]
+
+
 def cloth_bones(j, b, item, spec, blobs):
     """the garment's hanging parts as bone chains (spec: make_garments.py's, by the garment's own vertex order, which
     the export keeps as _VIDX). Per chain a joint per bone, named 'cloth:<item>:<chain>:<bone>', a child of the spine
@@ -449,6 +479,7 @@ def cloth_bones(j, b, item, spec, blobs):
         top += [(0, 0.0)] * (4 - len(top))
         JJ[gi] = [q for q, _ in top]
         WW[gi] = [x / tot for _, x in top]
+    cover_weights(P, V, where, spec, JJ, WW)
     big = JJ.max() > 255
     jt = np.uint16 if big else glbio.CT[aj['componentType']]
     if big:
@@ -797,6 +828,8 @@ def main():
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
+        if it['id'].startswith('voth_'):
+            entry['culture'] = 'chichani'  # a stranger of another people never draws it (KCHAR.stranger)
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
         if it['id'] in LOOSE or (it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs')):

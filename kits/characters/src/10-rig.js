@@ -273,7 +273,8 @@ var KCHAR = (function(){
         return;
       }
       if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
-      var have = kit.items.filter(function(it){ return it.slot === slot; });
+      // a culture's own clothes (kit item culture) go only to its people's strangers
+      var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id); });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
       var id = have.length && r() < odds ? pick(have).id : null;

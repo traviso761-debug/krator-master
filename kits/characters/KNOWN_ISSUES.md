@@ -21,17 +21,19 @@
   hand can look cramped, and when the left arm falls short the right hand is pulled in (up to 45 cm), which narrows
   the clip's swing. The elbow keeps the clip's side, which is not always the natural one. A spear thrust at full
   extension still leaves the left hand short for a moment (it eases off and back). The bow turns about its handle to
-  face the drawing hand rather than the bow hand turning; the draw has no pinch pose (the right hand keeps the clip's
-  fingers), and the arrow only shows while the string is pulled (there is no nocking motion). The supporting hand
-  always closes in a fist.
+  face the drawing hand rather than the bow hand turning; the drawing hand's pinch is one fixed pose, and the arrow
+  only shows while the string is pulled (there is no nocking motion). The supporting hand always closes in a fist.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
-  script (`tools/make_garments.py`): no folds beyond the hang and flare, flat-shaded strips of texture. Its hanging parts swing on spring-bone chains (README, Cloth), which are not cloth: no wrinkles or
-  folds, no collision between garments (a mantle can pass through the cape under it), no self-collision, and the
-  cloth between two chains is interpolated, so a thigh in a long stride can still graze through a narrow skirt near
-  the top. The body is a few capsules: a broad chest or belly reads as round. Sleeves and mantles' tops ride the
-  body (no chains), so a raised arm can push through a mantle's hem. Sleeves
-  start inside the shoulder, under the tunic. There is no headgear yet (a noble's feathered headdress, a Dunmer hat),
-  and the court outfits share one cut per body; more garments are more entries in `GARMENTS`.
+  script (`tools/make_garments.py`): no folds beyond the hang and flare, flat-shaded strips of texture, and the
+  court outfits share one cut per body. Its hanging parts swing on spring-bone chains (README, Cloth), which are not
+  cloth: no wrinkles, no self-collision, and layers are kept apart only at the chain points (a cape over a hem over
+  a skirt, README). Between chains the cloth is interpolated; the GPU push (README, Clipping) keeps the legs inside
+  a loose garment, but it is a soft shell round six capsules, so a heavy thigh's front can still graze a tight
+  skirt's top, and a raised arm can push through a mantle's hem (sleeves and mantles' tops ride the body). With
+  cloth off (the lab's Cloth toggle) a long skirt falls back to plain skinning and opens like trousers in a stride.
+  The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
+- **A people's clothes are tagged with its culture** (`culture` in the kit, Voth items `chichani`): a random
+  stranger of another people never draws them, but the editor's pickers still offer every item to every body.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below.

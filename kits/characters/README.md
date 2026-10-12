@@ -40,7 +40,7 @@ godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
 | 5. Pages | `src/90-editor.js`, `src/92-animlab.js` | The Cosmetic Lab: Gear (clothes, dye), Head (people, skin tone, hair, hair colour, beard, eye colour), Body (ancestry, build), Face (35 sliders), Record (the record as text, roll a stranger, strangers in bulk). The Animation Lab: six figures, the clips, review marks. |
 
-**The record**: `{ body:'mpfb_male', armour:{torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
+**The record**: `{ body:'mpfb_male', armour:{head, torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
 morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{slot: '#rrggbb'} }`. Colours are albedo.
 
 **Clips** (`data/clips.json`, about 140 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
@@ -80,6 +80,10 @@ banded hems and step frets (a sashed xicolli over a wrap kilt under a shoulder m
 skirt; heeled sandals laced up the shin), and the court in Voth's purple and ash-white with crimson, gold and quetzal
 green (a robe with bell sleeves, a feathered mantle, a gold collar and a cloak over a long skirt and apron; a huipil
 under a pointed quechquemitl cape over a two-tier skirt; gilded sandals and greaves). Aztec cut, Dunmer layering.
+Headgear is its own slot (`head`): tradesfolk wear a wrapped head cloth with a hanging tail (it hides the hair: kit
+item `covers_hair`), the court a gold band with a quetzal-feather fan that sways. Headgear only comes with a people's
+outfit; a random stranger never draws it. Every Voth item carries `culture: 'chichani'` in the kit, so only Chichani
+strangers draw them (`KCHAR.stranger`).
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its
 elbow, a foot) to the skin and set off it; below a hang line a ring only grows (cloth falls straight from the chest
 or the hips instead of hugging the waist) and spans hollows (its convex hull: between the breasts, round both legs);
@@ -89,7 +93,7 @@ legs' skin weights below the crotch (`skirt_weights`), so a skirt or a robe's he
 parting round each thigh.
 The textures are painted in the same script (woven grain, hem bands, step frets, zigzags, the diamond of Voth,
 feather scales). `--render <dir>` loads the garments back through MPFB and renders each class front, side and back.
-`data/peoples.json` gives the Chichani `outfits` per class and `tiers` (60 % peasants, 30 % tradesfolk, 10 % court):
+`data/peoples.json` gives the Chichani `outfits` per class (torso, legs, feet and, above the peasants, head) and `tiers` (60 % peasants, 30 % tradesfolk, 10 % court):
 their strangers and crowds are dressed by class (`record.tier`), and the Cosmetic Lab's Gear tab puts any of the six
 outfits on with one chip.
 
@@ -106,7 +110,20 @@ skirt hangs from its own hips, then runs every chain point as a Verlet particle 
 by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
 air, with the wind of a walk or run played in place (its `root_speed`), kept to its length, near its neighbours round
 a skirt, out of the capsules and above the floor; each bone then turns to the next point. `fig.cloth = false` hangs
-them rigid (the Animation Lab's Cloth button).
+them rigid (the Animation Lab's Cloth button). Each part has a `layer` (0 a skirt, 1 a robe's hem, a flap or a
+skirt's over-tier, 2 a cape, a mantle or headgear): a chain point stays 3 cm outside the lower layers' chains near it,
+measured out from the body's axis (`layered`). Inside one garment a skirt under an over-tier or apron goes further:
+`make_mpfb.py cover_weights` gives each covered vertex the weights of the outer part's nearest vertex, so where the
+two overlap they move as one and cannot cross.
+
+**Clipping** (both runtimes, every frame after the clip): a garment marked `loose` in the kit (the Voth tunics, robes
+and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
+skinning (`pushOut` / `kchar_push.gdshader`), so a knee cannot come through between two chains. The push is a soft
+shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
+keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
+torso garment's shell is 1.2 cm wider, so a robe's hem lies over the skirt under it. The chains collide the same way.
+`bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
+thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and

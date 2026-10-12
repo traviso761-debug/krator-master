@@ -796,7 +796,9 @@ def _():
     over = P('purple', 0.04, [B('bottom', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.012, 0.07, 'fret', 'ash', 'purple', 0.06),
                               B('bottom', 0.07, 0.08, 'solid', 'gold')])
     return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST),
-            torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.02, 0.02, over, hang_from=CROTCH + 0.04, flare=0.32, group_below=CROTCH + 0.04, rows=14, hull_from=WAIST)]
+            torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.16, 0.02, over, hang_from=CROTCH + 0.04, flare=0.32, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST,
+                       layer=1)]   # outside the under-skirt (layered() in 50-figure.js); to mid-shin, so a stride's knee
+                                   # moves inside it rather than catching its hem
 
 
 for b, sex in (('male', 'm'), ('female', 'f')):

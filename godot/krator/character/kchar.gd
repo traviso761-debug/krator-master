@@ -223,8 +223,8 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 			rec["armour"]["head"] = null
 			continue
 		var have := []
-		for it in kit["items"]:
-			if it["slot"] == slot:
+		for it in kit["items"]:            # a culture's own clothes go only to its people's strangers
+			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")):
 				have.append(it)
 		if slot == "hair" and styles != null:
 			var pref := []
