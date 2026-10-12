@@ -4,6 +4,31 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 2 (branch `Voth-sim`): the week, running
+
+The owner: "Ok continue build" (and, mid-session, "Items like chairs, stools could be a good target for idle and beds etc
+for rest"). Done (README "Session 2: the week, running"): roadmap 2.4 items 3 and 3b, and the stepping of everyone.
+- Shifts per kind of work, nights for a third of the guards, soldiers, stokers and jailers, the rest day (day 7) for all
+  but 23 essential kinds, a rota day off for every worker; 59 roles. Seats offer IDLE (and RELAX), beds REST; houses are
+  private. The clock has 20x and 60x; the near citizens are drawn.
+- core/simulation: `scheds`/`week`/`off`, the place grid per activity (exact nearest-first; the example's decision hash
+  is unchanged), lazy paths, `access: 'private'`, `SIM.REACH`, `SIM.nav.body`, a batched log; `test-sim.js` checks each
+  with its negative. Shade, Mungo and the example rebuilt; their verifies and checks pass.
+
+**What a workday says** (`verify.py`, `VC.simDay`): at 3:00 52,781 asleep and the night shift (927) at work; at 10:00
+18,774 at work (everyone who wants to), 33,521 idle at home; **at 15:00 29,114 want company and find no free place
+within 1.5 km** (the plazas, parks, wells and taverns hold about 5,000 at once): the largest deficit so far; at 20:00
+36,000 relax at home. The rest day: 6,602 at work (only the essential kinds). A step costs 29 ms (median: every actor is
+asked), 0.8 s at most (6,000 decisions at a shift change); the decisions left waiting clear within about 7 minutes.
+WORSHIP on the rest day finds 78 places' worth of room: the shrines and chapels are few.
+
+**Decisions for the owner:** more places to socialise (taverns, plazas with benches, a bath house?) or fewer hours out;
+temples and shrines for the rest day; the slaves' rest day (now off).
+
+**Next (phase C session 3):** needs and happiness (`77-sim-6-needs.js`: meters, fill tables, the personality trait,
+happiness and efficiency), the resolver's "meter x pull" choice of free time, and the census panel's needs and
+deficits. The buildings' own graphs and the canton interiors on the layer; the chinampa huts on `water`.
+
 ## 2026-10-12: phase C session 1, follow-up: the outside stairs are navigable
 
 The owner: "Make sure stairs on house exteriors are also navigable". Every stair and ladder the Voth kit models build on

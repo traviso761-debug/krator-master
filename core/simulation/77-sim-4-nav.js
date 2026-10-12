@@ -13,6 +13,7 @@
 //   SIM.nav.field(layer, [{node, d?}], {max?, minW?}) -> {d: Float64Array, src: Int32Array} (graph layers): every node's
 //                                     cost from the nearest source and which source (an index into the list; -1 past max).
 //                                     One search answers "the nearest free job / well / tavern" for a whole city at once.
+//   SIM.nav.body(layer, node) -> the connected body the node lies on (graph layers; one label per body, found once)
 //   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
 (function(root){
   'use strict';
@@ -86,6 +87,14 @@
       if(clean.length===1) clean.push(clean[0].slice());
       var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
       return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
+    },
+    body: function(layer, k){
+      var L=NAVS[layer]; if(!L || L.kind!=='graph' || k==null || k<0) return -1;
+      if(!L.body){ var n=L.nodes.length, p=new Int32Array(n); for(var i=0;i<n;i++) p[i]=i;
+        var f=function(i){ while(p[i]!==i){ p[i]=p[p[i]]; i=p[i]; } return i; };
+        L.edges.forEach(function(e){ var a=f(L.idx[e.a]), b=f(L.idx[e.b]); if(a!==b) p[a]=b; });
+        for(var j=0;j<n;j++) p[j]=f(j); L.body=p; }
+      return L.body[k];
     },
     field: function(layer, sources, opt){
       var L=NAVS[layer]; opt=opt||{}; if(!L || L.kind!=='graph') return null;

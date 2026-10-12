@@ -22,11 +22,19 @@ VC.simPeople = function () {
   var T = TUNE.sim.people, share = TUNE.census.workingShare, t0 = Date.now();
   if (!SIM.R.faction.voth) SIM.faction({ id: 'voth' });
   ['citizens', 'slaves'].forEach(function (o) { if (!SIM.R.org[o]) SIM.org({ id: o, faction: 'voth' }); });
-  var roleOf = function (id, org, sched, name, pin) {
-    if (!SIM.R.role[id]) SIM.role({ id: id, org: org, name: name, sched: sched, prefers: pin });
+  var WK = TUNE.sim.week;
+  /* a role of a kind of work on a shift: its work, off and rest days (VC.simWeek), its week (essential kinds work the
+     rest day), its pins (sleep and eat at home, work at work) */
+  var roleOf = function (id, org, name, shift, essential) {
+    if (!SIM.R.role[id]) {
+      var S = VC.simWeek(shift), week = []; for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? 'rest' : shift ? 'work' : 'day');
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest }, week: week, shift: shift, essential: !!essential,
+                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
+    }
     return id;
   };
-  var pinBoth = { SLEEP: { pin: 'home' }, WORK: { pin: 'work' } };
+  var shiftOf = function (job) { return WK.shifts[job] || WK.shifts.default; };
+  var nightN = {}, isNight = function (job) { var N = WK.night[job]; if (!N) return false; var i = nightN[job] = (nightN[job] || 0) + 1; return Math.floor(i * N[0]) > Math.floor((i - 1) * N[0]); };
   var comp = function (Q) { return Q.navNode != null ? VC.PED.comp(Q.navNode) : -1; };
   var at = function (Q) { var d = Q.door || Q; return [d.x, d.z]; };
   /* ---- the homes and their people */
@@ -108,19 +116,22 @@ VC.simPeople = function () {
     if (!made) break;
   }
   /* ---- the actors */
-  var made = 0, n = 0;
+  /* the week (owner's Q8): each worker's rota day off among the six workdays, dealt by its index */
+  var made = 0, n = 0, rota = 0, offDay = function () { var d = rota++ % 6; return d >= WK.rest ? d + 1 : d; };
   workers.forEach(function (wk) {
-    var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', T.sched.dependant, 'of independent means', { SLEEP: { pin: 'home' } }) : roleOf('unemployed', 'citizens', T.sched.dependant, 'out of work', { SLEEP: { pin: 'home' } });
-    var role = wk.job ? roleOf('w.' + wk.job, 'citizens', T.sched.worker, wk.job, pinBoth) : idle;
-    wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at });
+    var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', 'of independent means', null) : roleOf('unemployed', 'citizens', 'out of work', null), role = idle;
+    if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
+    wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
+                       off: wk.job && WK.rota ? offDay() : undefined });
     made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', T.sched.dependant, 'household', { SLEEP: { pin: 'home' } }), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
+    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
     made++;
   });
   slaves.forEach(function (s, i) {
-    s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', T.sched.slave, 'enslaved ' + s.P.job, pinBoth), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false });
+    s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', 'enslaved ' + s.P.job, WK.slaveShift, false), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false,
+                         off: WK.slaveRota ? offDay() : undefined });
   });
   /* ---- the report */
   var R = { citizens: made, census: PLAN.census ? PLAN.census.population : null, homes: homes.length, workers: workers.length, dependants: deps.length, slaves: slaves.length,
@@ -151,6 +162,7 @@ VC.simPeople = function () {
   var dist = {}; workers.forEach(function (wk) { if (wk.job || gentry.indexOf(wk.H.cls) >= 0) return; var t = (wk.H.P.tags || [])[1] || wk.H.cls; dist[t] = (dist[t] || 0) + 1; });
   R.unemployedBy = Object.keys(dist).map(function (k) { return [k, dist[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 12);
   R.ms = Date.now() - t0;
+  if (SIM.placesChanged) SIM.placesChanged();   /* the slaves' quarters added SLEEP to their sites: the place grids rebuild */
   VC.PEOPLE = R;
   return R;
 };
@@ -184,5 +196,24 @@ VC.simDecideSample = function (n, hour) {
     SIM.release(a); a.task = null; a.place = null; a.activity = null; a.wanted = null; a.since = null; a.mem = {}; a.bad = {};
   }
   out.ms = Date.now() - t0;
+  return out;
+};
+
+/* a shift's days as 24-hour schedules: `work` (8 hours' sleep ending an hour before the shift, a meal then, the shift,
+   a meal, the rest free: SOCIALIZE, RELAX from TUNE.sim.week.relaxFrom), `off` (the same sleep, the day free, meals at
+   the wake hour, 13 and 19), `rest` (the off day with WORSHIP at TUNE.sim.week.worship); with no shift (dependants,
+   the gentry, the out of work) `day` is TUNE.sim.people.sched.dependant and `rest` it with the worship */
+VC.simWeek = function (shift) {
+  var W = TUNE.sim.week, h = function (v) { return ((v % 24) + 24) % 24; };
+  var free = function (a, from) { for (var k = 0; k < 24; k++) if (a[k] === 'FREE') a[k] = (k >= W.relaxFrom || k < 4) ? 'RELAX' : 'SOCIALIZE'; return a; };
+  var base = function (s) { var a = []; for (var k = 0; k < 24; k++) a.push('FREE'); for (var q = 0; q < 8; q++) a[h(s - 9 + q)] = 'SLEEP'; a[h(s - 1)] = 'EAT'; return a; };
+  var out = {};
+  if (shift) {
+    var s = shift[0], n = shift[1], w = base(s); for (var i = 0; i < n; i++) w[h(s + i)] = 'WORK'; if (w[h(s + n)] === 'FREE') w[h(s + n)] = 'EAT';
+    var o = base(s); [13, 19].forEach(function (k) { if (o[k] === 'FREE') o[k] = 'EAT'; });
+    out.work = free(w); out.off = free(o.slice()); var r = o.slice(); if (r[W.worship] === 'FREE') r[W.worship] = 'WORSHIP'; out.rest = free(r);
+  } else {
+    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
+  }
   return out;
 };

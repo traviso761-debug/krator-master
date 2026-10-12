@@ -286,9 +286,30 @@ CITY_CHECK = r"""() => {
     let wk = 0, wkOk = 0; for (let i = 0; i < SE.length; i += Math.max(1, Math.floor(SE.length / 80))) { const a = D.nodes[SE[i].a], b = D.nodes[SE[i].b], y = (a.y + b.y) / 2; wk++;
       if (KWALK.floorsAt((a.x + b.x) / 2, (a.z + b.z) / 2).some(f => /^stair/.test(f[1].tag) && Math.abs(f[0] - y) < 0.3)) wkOk++; }
     out.simc.stairs = St ? Object.assign({}, St, { walkerSampled: wk, walkerOk: wkOk }) : null;
+    /* phase C session 2: the week run headless: a workday (day 1) through, the rest day's morning; who is essential */
+    if (R && VC.simDay) {
+      const lf0 = SIM.LOG.length, rf0 = SIM.routeFail.length;
+      out.simc.workday = VC.simDay(1, 0, 24, [3, 10, 15, 20]);
+      out.simc.restday = VC.simDay(1 + ((TUNE.sim.week.rest - 1 + 7) % 7), 8, 11, [10]);
+      out.simc.stuck = SIM.LOG.filter(e => e.kind === 'stuck').length; out.simc.nopath = SIM.LOG.filter(e => e.kind === 'nopath').length; out.simc.routeFail = SIM.routeFail.length - rf0;
+      out.simc.restWorkers = SIM.all('actor').filter(a => a.activity === 'WORK' && !SIM.R.role[a.role].essential && SIM.R.role[a.role].week).length;
+      out.simc.roles = SIM.all('role').length; out.simc.firstJumpMs = VC.SIMRUN.jumpMs; out.simc.bodies = !!(VC.SIMBODY && VC.SIMBODY.mesh);
+    }
   }
   return out;
 }"""
+
+
+def week_bad(sc):
+    """phase C session 2: a workday and the rest day, run headless: asleep at 3, everyone who wants to work at work by 10
+    with nothing waiting, the rest day's work only the essential kinds' (fewer than half the workday's), the steps
+    bounded, nothing stuck or unroutable"""
+    w, r = sc['workday'], sc['restday']; s3, s10, r10 = w['samples'].get('3') or w['samples'].get(3), w['samples'].get('10') or w['samples'].get(10), r['samples'].get('10') or r['samples'].get(10)
+    n = sum(s3['by'].values())
+    bad = s3['by'].get('SLEEP', 0) < 0.9 * n or s10['pending'] or s10['by'].get('WORK', 0) < 0.98 * s10['wantWork'] \
+        or r10['by'].get('WORK', 0) >= 0.5 * s10['by'].get('WORK', 1) or sc['restWorkers'] or w['p50'] > 120 or w['max'] > 4000 \
+        or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies']
+    return bad
 
 
 def verify_city(a, port, rel, sync_playwright):
@@ -363,6 +384,13 @@ def verify_city(a, port, rel, sync_playwright):
     print('  pedestrian layer: %s nodes, %s edges, %s bodies, %s crossings, %s joins, %s reached, %s islands joined, %s plaza hubs, %s ms; cantons %s; off the network %s; canton rooms not joined %s, chinampa huts %s' % (
         au.get('nodes'), au.get('edges'), au.get('bodies'), sc['crossings'], sc['joins'], sc['reached'], sc['islands'], sc['plazas'], sc['ms'], json.dumps(sc['cant']), json.dumps(au.get('far')), au.get('cantonRooms'), au.get('chinampaHuts')))
     print('  outside stairs and ladders: %s' % json.dumps(sc['stairs']))
+    for k in ('workday', 'restday'):
+        d = sc.get(k)
+        if d:
+            print('  %s (day %d, weekday %d): steps p50 %s ms, p90 %s, max %s; slowest %s' % (k, d['day'], d['weekday'], d['p50'], d['p90'], d['max'], d['top']))
+            for h, c in sorted(d['samples'].items(), key=lambda kv: int(kv[0])):
+                print('    %s:00 %s; wanted, not had %s; waiting %d; walking %d; want to work %d' % (h, json.dumps(c['by']), json.dumps(c['unmet']), c['pending'], c['moving'], c['wantWork']))
+    if sc.get('workday'): print('  the run: %d roles, the first jump %s ms, stuck %d, no path %d, route failures %d, working on the rest day outside the essential kinds %d, bodies %s' % (sc['roles'], sc['firstJumpMs'], sc['stuck'], sc['nopath'], sc['routeFail'], sc['restWorkers'], sc['bodies']))
     print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))
     for e in errors: print('ERROR', e)
     if a.check:
@@ -385,7 +413,8 @@ def verify_city(a, port, rel, sync_playwright):
                 or pc['unemployed'] > 0.1 * pc['workers'] or not sc['walk'] or sc['walk']['fail'] or not sc['html'] \
                 or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['pinned'] != sc['d2']['asked'] \
                 or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
-                or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled']:
+                or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
+                or not sc.get('workday') or week_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
                 au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')

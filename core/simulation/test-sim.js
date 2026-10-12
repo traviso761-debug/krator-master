@@ -49,7 +49,9 @@ function world(seed){
  ok('a friendly faction is friendly, org to org through their factions',S.stance('folk','riders')==='friendly',S.stance('folk','riders')==='hostile');
  ok('an unknown pair is neutral; a faction is allied with itself',S.stance('riders','band')==='neutral'&&S.stance('folk','folk')==='allied',S.stance('riders','band')!=='neutral');
  const P=S.get('place','market');P.org='folk';
- ok('a public place lets a friendly org in and keeps a hostile one out',S.welcome('riders',P)&&!S.welcome('band',P),!S.welcome('riders',P));}
+ ok('a public place lets a friendly org in and keeps a hostile one out',S.welcome('riders',P)&&!S.welcome('band',P),!S.welcome('riders',P));
+ const H=S.get('place','homeA');H.access='private';
+ ok('a private place lets in its own people only',S.welcome(S.get('actor','f1'),H)&&!S.welcome(S.get('actor','f2'),H),S.welcome(S.get('actor','f2'),H));}
 
 // 3. the resolver and the slots
 {const {S,clock}=world();
@@ -212,5 +214,41 @@ function world(seed){
  ok('an island node is not reached',F.src[5]===-1&&F.d[5]===Infinity,F.src[5]>=0);
  const G=S.nav.field('pedestrian',[{node:0}],{max:60});
  ok('past max nothing is labelled',G.src[1]===0&&G.src[2]===-1,G.src[2]===0);}
+
+// the week: named schedules by weekday, an actor's rota day off
+{const {S}=world(29);
+ S.activity({id:'WORK'});
+ S.role({id:'hand',org:'folk',scheds:{work:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[22,'SLEEP']],off:[[0,'SLEEP'],[8,'SOCIALIZE'],[22,'SLEEP']],rest:[[0,'SLEEP'],[9,'REST'],[22,'SLEEP']]},week:['work','work','work','work','work','work','rest']});
+ const a=S.actor({id:'h1',role:'hand',home:'homeA',off:2}),b=S.actor({id:'h2',role:'hand',home:'homeB'});
+ const at=(d,h)=>d*1440+h*60;
+ ok('on a workday the role works; on its rota day off (day 2) the actor takes the off schedule',S.desire(a,at(1,10))==='WORK'&&S.desire(a,at(2,10))==='SOCIALIZE'&&S.desire(b,at(2,10))==='WORK',S.desire(a,at(2,10))==='WORK');
+ ok('the rest day (weekday 6) holds for both; the week repeats (day 9 is weekday 2)',S.desire(a,at(6,10))==='REST'&&S.desire(b,at(6,10))==='REST'&&S.desire(a,at(9,10))==='SOCIALIZE',S.desire(b,at(6,10))==='WORK');
+ let threw=false;try{S.role({id:'bad',org:'folk',scheds:{work:[[0,'SLEEP']]},week:['work']});}catch(e){threw=true;}
+ ok('a week that is not seven days throws',threw,!threw);}
+
+// the place grid: limit and near give exactly the first places of the full nearest-first list
+{const {S}=world(31);let same=0,tried=0,longer=0;
+ for(let i=0;i<400;i++) S.place({id:'g'+i,kind:i%3?'shop':'inn',x:((i*7919)%2003)-1000,z:((i*104729)%1999)-1000,activities:{BUY:1+(i%4),SOCIALIZE:i%5}});
+ for(let k=0;k<60;k++){const nr=[((k*389)%1800)-900,((k*733)%1800)-900],act=k%2?'BUY':'SOCIALIZE',kinds=k%3?null:['inn'];
+  const full=S.placesFor(act,null,null,{near:nr,kinds}),lim=S.placesFor(act,null,null,{near:nr,kinds,limit:4});tried++;
+  if(full.length>4) longer++; if(lim.length===Math.min(4,full.length)&&lim.every((P,j)=>P===full[j])) same++;}
+ ok('the grid gives the first places of the full list, every time',same===tried,same<tried);
+ ok('and the full list is longer (the grid looked at fewer)',longer>0,longer===0);
+ const far=S.placesFor('BUY',null,null,{near:[0,0],limit:50,maxR:150}),all=S.placesFor('BUY',null,null,{near:[0,0],limit:50});
+ ok('maxR returns nothing farther than it',far.every(P=>Math.hypot(P.x,P.z)<=150)&&far.length<all.length,far.length===all.length);
+ ok('an activity no place offers is answered at once, empty',S.placesFor('FLY',null,null,{near:[0,0],limit:3}).length===0,false);}
+
+// lazy routes: decided without the path, found when first asked, the arrival kept; an island still cannot be chosen
+{const {S,clock}=world(37);S.lazy={pedestrian:{detour:1.35}};
+ clock.h=6;clock.t=0;S.step();
+ const a=S.get('actor','f1'),T=a.task,L=T.legs[0];
+ ok('a lazy leg has no path at decision time, its duration from the straight line',L.route===null&&!!L.lazy&&near(T.dur,(150*1.35+0.5)/a.speed,0.01),L.route!==null);
+ const mid=S.pose(a,T.t0+T.dur/2);
+ ok('posing it finds the path (150 m) and keeps the arrival: half way at half the time',L.route&&near(L.route.len,150,0.01)&&near(mid.x,75,0.5)&&near(T.arrive,T.t0+T.dur,1e-6),!L.route);
+ const nowhere=S.get('place','nowhere'),f=S.leg('pedestrian',{x:0,z:0},nowhere.door,1.3,'walk',0);
+ ok('a place on another body is unreachable without searching (the bodies differ)',f===null,f!==null);
+ const b=S.get('actor','f2'),Tb=b.task,Lb=Tb.legs[0],q=S.pose(b,Tb.t0+Tb.dur/2,{cheap:true});
+ ok('a cheap pose (a decision asking where its actor is) reads the straight line and leaves the path unfound',Lb.route===null&&Number.isFinite(q.x),Lb.route!==null);
+ S.pose(b,Tb.t0+Tb.dur/2);ok('a drawn pose finds it',Lb.route!==null,Lb.route===null);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

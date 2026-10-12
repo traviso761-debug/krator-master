@@ -63,7 +63,7 @@ var TUNE = {
   },
   /* the clock (core/clock KCLOCK, a 72-minute day): the hour it opens at, whether it runs, the speeds offered, the
      day of the year for the sun (Voth's equinox) */
-  clock: { hour: 10, running: true, speeds: [1, 2, 4, 8], doy: 80 },
+  clock: { hour: 10, running: true, speeds: [1, 2, 4, 8, 20, 60], doy: 80 },   /* 20x and 60x: the test clock (phase C: a day in 3.6 or 1.2 minutes) */
   /* the chinampas drawn again (31b-vc-chinampa.js): a bed's top over the water (a marsh bed's lower), stakes a side,
      crop rows, the crops' shares, maize and amaranth heights, the odds of a mature bed (with the biome's trees on its
      banks: up to `trees`, crown ferns or splay shrubs, heights), of a canoe and of a plank; reeds on a marsh bed, bank
@@ -224,6 +224,12 @@ var TUNE = {
     furnAct: { rack: 'DRAW_TOOLS', weapon: 'DRAW_TOOLS', well: 'DRINK', stall: 'SELL', counter: 'KEEP_SHOP', altar: 'WORSHIP', shrine: 'WORSHIP',
                tomb: 'HONOUR', bench: 'RELAX', seating: 'SOCIALIZE', chair: 'EAT', stool: 'DRINK', loom: 'WEAVE', workstation: 'CRAFT', stove: 'COOK',
                desk: 'STUDY', bed: 'SLEEP', larder: 'STORE_FOOD', store: 'STORE_FOOD', chest: 'STORE', tool: 'TRAIN' },
+    /* what a piece offers besides (owner, 2026-10-12: "items like chairs, stools could be a good target for idle and
+       beds etc for rest"): a seat takes someone idling (a chair or a bench seat also someone relaxing), a bed someone
+       resting; at home first (the roles pin IDLE and REST to the home), else the nearest */
+    /* the canton rooms that are someone's home (private: their own people only) */
+    privateRooms: ['cottage', 'bedroom', 'living', 'cell'],
+    alsoAct: { chair: ['IDLE', 'RELAX'], stool: ['IDLE'], bench: ['IDLE'], seating: ['IDLE', 'RELAX'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
       shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
@@ -280,10 +286,40 @@ var TUNE = {
                    'scribes and librarians', 'Ordinator garrison'],
       wealth: { slave: 0, poor: 0.2, middle: 0.45, shop: 0.5, craft: 0.5, tavern: 0.5, rich: 0.75, manor: 0.9, clan: 0.9, canton: 0.45, other: 0.35 },
       sample: 600,
-      sched: { worker: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [22, 'SLEEP']],
-               dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']],
-               slave: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [19, 'EAT'], [20, 'SLEEP']] }
-    }
+      sched: { dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']] }
+    },
+    /* phase C session 2: the week (owner's Q8). Days 0-6, `rest` the rest day (the brief's day 7): all but the
+       `essential` kinds of work (and the market) have it off; every worker also has a rota day off among the other six
+       (dealt by its index, so a sixth of the workforce is off on any workday). A shift: [start hour, hours] by kind of
+       work (`default` for the rest); `night`: the share of a kind's workers on the night shift [start, hours]. A day's
+       schedule is built from the shift: 8 hours' sleep ending an hour before it, a meal then, the shift, a meal, the
+       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day, with
+       WORSHIP at `worship` on the rest day. Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
+    week: {
+      rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
+      /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
+      fallback: { SOCIALIZE: 'IDLE', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      shifts: { default: [7, 10], 'farmhands and ploughmen': [6, 12], miners: [6, 12], 'quarrymen and masons': [6, 12], 'mushroom growers': [6, 12],
+                'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
+                'innkeepers and servers': [10, 12], 'innkeepers and grooms': [8, 12], 'market traders': [7, 11], 'dockers and stevedores': [6, 11],
+                'monks and lay brothers (chapel, fields, coops)': [5, 11], 'household service': [6, 12] },
+      night: { 'town guard': [0.34, 20, 8], soldiers: [0.34, 20, 8], 'Ordinator garrison': [0.34, 20, 8], 'coast guard': [0.34, 20, 8], 'power-house stokers and engineers': [0.34, 20, 8],
+               jailers: [0.34, 20, 8], 'lighthouse keepers': [0.5, 20, 8] },
+      essential: ['soldiers', 'town guard', 'Ordinator garrison', 'coast guard', 'power-house stokers and engineers', 'innkeepers and servers', 'innkeepers and grooms',
+                  'market traders', 'healers and nurses', 'ferrymen', 'elephant bug handlers and station hands', 'household service', 'cooks and bakers', 'bakers',
+                  'temple priests and servants', 'shrine keepers', 'priests and undertakers', 'jailers', 'lighthouse keepers', 'palace household and officials',
+                  'monks and lay brothers (chapel, fields, coops)', 'gladiators and arena keepers', 'beetle herders'],
+      slaveShift: [6, 12]
+    },
+    /* running the simulation in the page (56c-vc-citizens-host.js): the pedestrian layer is lazy (a leg is decided from
+       the straight line times `detour`, its path found when it is drawn); at most `stepMax` decisions a simulated minute;
+       a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
+       re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH). The census is sampled at `samples` hours each day (the fast clock's stability check) */
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500 },
+    /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
+       orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
+    embody: { r: 220, max: 1500, every: 400, dist: 600,
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },

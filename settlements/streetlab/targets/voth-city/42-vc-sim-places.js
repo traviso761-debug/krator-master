@@ -284,6 +284,7 @@ VC.simPlaces = function () {
       var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
+    pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -298,7 +299,8 @@ VC.simPlaces = function () {
       .sort(function (a, b) { return SP.indexOf(a.type) - SP.indexOf(b.type); }).slice(0, T.spotsMax)
       .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
-          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i });
+          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i, indoor: true,
+          access: kind === 'home' ? 'private' : undefined });   /* a house: its own people only (phase C) */
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -307,7 +309,8 @@ VC.simPlaces = function () {
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
-            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn] });
+            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn], indoor: true,
+            access: TUNE.sim.privateRooms.indexOf(r.kind) >= 0 ? 'private' : undefined });
     });
   });
   /* the Fortress's armoury: the central watchhouse (gear drawn at the shift's start) */
@@ -326,7 +329,7 @@ VC.simPlaces = function () {
     D.art.forEach(function (a) { var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
       cnt[t] = (cnt[t] || 0) + 1; cx += a.x; cz += a.z; cy += a.y || 0; });
     var m = D.art.length, acts = {};
-    if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; }
+    if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; acts.IDLE = cnt.bench * 3; }
     if (cnt.shrine) { acts.WORSHIP = cnt.shrine * 4; acts.CONTEMPLATE = cnt.shrine * 4; }
     if (cnt.well) acts.DRINK = cnt.well * 4;
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }

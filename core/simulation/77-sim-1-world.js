@@ -34,6 +34,7 @@
     if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
     if(acc==='org') return org===place.org;
     if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
+    if(acc==='private') return typeof who!=='string' && (who.home===place.id || who.work===place.id);   /* a home: its own people only */
     return false;
   };
 })(typeof window!=='undefined'?window:globalThis);

@@ -17,13 +17,27 @@
 //   SIM.step()                                          one simulated minute (the host calls it as the world minute advances)
 //   SIM.jump()                                          the clock jumped: everyone is re-placed from the schedule (a share mid-trip)
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
+//   THE WEEK: a role may carry named schedules `scheds: {work:..., off:..., rest:...}` and `week: [7 names]` (the
+//   schedule each weekday, SIM.weekday(minute) = day % SIM.WEEK); an actor's `off` (a weekday) takes the role's `off`
+//   schedule that day (a rota: each worker its own day off). Without them the role's `sched` holds every day.
+//   SIM.schedOf(actor, minute) -> the 24 hours it follows that day
+//   LAZY ROUTES (SIM.lazy = {layer: {detour}}, opt-in): on such a graph layer a leg is decided without its path: its
+//   duration from the straight line times `detour`, its reachability from the layer's connected bodies; the path is
+//   found the first time something asks where on it the actor is (SIM.legRoute: the embodiment, near the camera), and
+//   walked at the speed that keeps the arrival. A city of 50,000 decides in microseconds what it draws for hundreds.
 (function(root){
   'use strict';
   var SIM = root.SIM;
   SIM.STEP_MAX = 260;           /* decisions per simulated minute; the rest wait a minute (rotating start) */
+  SIM.REACH = null;             /* a world's limit (metres) on how far an actor looks for a place (a role's prefers.reach overrides); null: no limit */
   SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
   SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
-  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched); o.prefers=o.prefers||{}; return SIM.add('role', o); };
+  SIM.WEEK = 7;
+  SIM.weekday = function(minute){ var d=Math.floor((minute==null?SIM.minute():minute)/1440); return ((d % SIM.WEEK) + SIM.WEEK) % SIM.WEEK; };
+  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched);
+    if(o.scheds){ for(var k in o.scheds) o.scheds[k]=SIM.sched(o.scheds[k]); if(!o.sched) o.sched=o.scheds.work || o.scheds[Object.keys(o.scheds)[0]]; }
+    if(o.week && o.week.length!==SIM.WEEK) throw new Error('SIM.role '+o.id+': week needs '+SIM.WEEK+' schedule names');
+    o.prefers=o.prefers||{}; return SIM.add('role', o); };
   SIM.port = function(o){ o.layer=o.layer||'pedestrian'; return SIM.add('port', o); };
   SIM.group = function(o){ o.members=o.members||[]; return SIM.add('group', o); };
   SIM.event = function(o){ o.fired=0; o.next=null; return SIM.add('event', o); };
@@ -36,13 +50,18 @@
     o.k = SIM.order.actor.length;
     return SIM.add('actor', o);
   };
-  function schedOf(a){ return a.sched || SIM.R.role[a.role].sched; }
+  function schedOf(a, minute){
+    if(a.sched) return a.sched; var R=SIM.R.role[a.role]; if(!R) return null;
+    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off'; return R.scheds[k] || R.sched; }
+    return R.sched;
+  }
+  SIM.schedOf = schedOf;
   function hourOf(m){ return Math.floor((m%1440)/60); }
 
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
-    var s=schedOf(a); return s ? s[hourOf(minute==null?SIM.minute():minute)] : 'IDLE';
+    var m=minute==null?SIM.minute():minute, s=schedOf(a, m); return s ? s[hourOf(m)] : 'IDLE';
   };
   function placeXZ(P){ return [P.x, P.z]; }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? placeXZ(H) : (a.at || [0,0]); }
@@ -53,7 +72,7 @@
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
     var m=a.mem[act]; if(m){ P=SIM.R.place[m]; if(P && SIM.isOpen(P,act,hour) && (SIM.free(P,act)>0 || P.who[a.id]===act)) return P; }
-    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad });
+    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad, limit:pref.spread||3, maxR:pref.reach!=null ? pref.reach : SIM.REACH });
     if(c.length){ /* the nearest few, one picked from SIM.rng so a crowd spreads over a district's taverns and shops */
       var k=Math.min(c.length, pref.spread||3); return c[Math.floor(SIM.rng.next()*k)]; }
     return null;
@@ -65,7 +84,7 @@
     minute = minute==null ? SIM.minute() : minute; t = t==null ? SIM.time() : t;
     var hour=hourOf(minute), want=SIM.desire(a, minute), R=SIM.R.role[a.role];
     var chain=[want].concat((R.fallback&&R.fallback[want]) ? [R.fallback[want]] : []).concat(SIM.FALLBACK);
-    var from=SIM.pose(a, t), P=null, act=want, task=null;
+    var from=SIM.pose(a, t, { cheap:true }), P=null, act=want, task=null;
     a.bad = a.bad || {};
     for(var i=0; i<chain.length && !task; i++){ act=chain[i];
       /* a place the actor cannot reach is struck off for it and the next one tried (three at most per activity) */
@@ -94,9 +113,27 @@
     return { x:P.x+Math.cos(ang)*rr, z:P.z+Math.sin(ang)*rr, y:P.y };
   }
   function leg(layer, from, to, speed, mode, minW){
+    var Z=SIM.lazy && SIM.lazy[layer], NL=SIM.nav.layers[layer];
+    if(Z && NL && NL.kind==='graph'){
+      /* lazy: reachable when both ends' nodes lie on one body; the duration from the straight line */
+      var s=SIM.nav.nearest(layer, from.x, from.z, NL.yw ? { minW:minW||0, y:from.y } : { minW:minW||0 }), t=SIM.nav.nearest(layer, to.x, to.z, NL.yw ? { minW:minW||0, y:to.y } : { minW:minW||0 });
+      if(s<0 || t<0 || SIM.nav.body(layer, s)!==SIM.nav.body(layer, t)){ SIM.routeFail.push({ layer:layer, why:'no path (bodies)', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
+      var d=Math.hypot(to.x-from.x, to.z-from.z)*(Z.detour||1.35)+0.5;
+      return { route:null, lazy:{ from:{x:from.x,z:from.z,y:from.y}, to:{x:to.x,z:to.z,y:to.y}, minW:minW||0 }, speed:speed, mode:mode, layer:layer, dur:d/speed };
+    }
     var r=SIM.nav.route(layer, from, to, { minW:minW||0 }); if(!r) return null;
     return { route:r, speed:speed, mode:mode, layer:layer, dur:r.len/speed };
   }
+  SIM.leg = leg;
+  /* a lazy leg's path, found when first asked; walked at the speed that keeps its arrival (a straight line if, against
+     the bodies' say, no path is found) */
+  SIM.legRoute = function(L){
+    if(L.route || !L.lazy) return L.route;
+    var z=L.lazy, r=SIM.nav.route(L.layer, z.from, z.to, { minW:z.minW });
+    if(!r){ var a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]); r={ pts:[a,b], cum:[0,len], len:len, layer:L.layer, straight:true }; }
+    L.route=r; L.speed = L.dur>0 ? r.len/L.dur : L.speed; SIM.lazyResolved=(SIM.lazyResolved||0)+1;
+    return r;
+  };
   /* the legs to a place: walk (or ride / drive) on the actor's layer; a place on another layer is reached through a
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){

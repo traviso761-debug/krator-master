@@ -461,6 +461,20 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   is on the main body. The first-person walker gets each stair as a core/walk strip with a landing at its head (not the
   ladders). `verify.py --assert` routes a sample of the heads from the city's middle and stands the walker on a sample
   of the stairs mid-flight.
+* **Session 2: the week, running** (`56c-vc-citizens-host.js`; `TUNE.sim.week`, `TUNE.sim.run`, `TUNE.sim.embody`):
+  every citizen is stepped once a simulated minute from the frame loop (the owner's Q1), on the page's clock; the hour
+  slider re-places everyone. Each kind of work has a shift (`TUNE.sim.week.shifts`, a share on nights for the guards,
+  soldiers, stokers and jailers), and each role three days built from it: `work` (8 hours' sleep ending an hour before
+  the shift, a meal, the shift, a meal, free time), `off` and `rest` (core/simulation's new `scheds` and `week`). Day 7 is
+  the rest day for all but the essential kinds; every worker has a rota day off among the other six (the owner's Q8).
+  Free time: SOCIALIZE out, RELAX, IDLE and REST at home (a chair or a bed: `TUNE.sim.alsoAct`, the owner's "chairs,
+  stools could be a good target for idle and beds etc for rest"); a house is private (`access: 'private'`). The clock
+  has 20x and 60x. The citizens near the view are drawn (up to 1,500 within 220 m: a figure whose tunic says what
+  they are doing). The census is sampled at 3, 10, 15 and 20 each day; the report's "The week, running" shows now,
+  the samples, and what people wanted and did not get. `verify.py --assert` runs a workday and the rest day's morning
+  headless (`VC.simDay`). To keep 54,000 decisions cheap, core/simulation gained a place grid per activity (exact
+  nearest-first, an empty answer remembered for the minute), lazy paths (decided from the straight line, found when
+  drawn), `SIM.REACH`, and a batched log.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

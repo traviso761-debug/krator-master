@@ -269,13 +269,20 @@ house. Phase B is done: every kind of work meets the 90% rule.
    embodies only those within `TUNE.sim.embodyR` of the camera (`77-sim-7-lod.js`, PLAN.md Phase 5).
    **Session 1 (2026-10-12): done** (`44-vc-sim-people.js`): 53,355 actors and 633 slaves, homes from the places, jobs
    dealt by the walk (`SIM.nav.field`), a report; nobody is stepped yet (the embodiment and the stepper are session 2's).
+   **Session 2 (2026-10-12): everyone stepped and the near ones drawn** (`56c-vc-citizens-host.js`); the LOD tiers are not
+   needed: a decision costs tens of microseconds with lazy paths and the place grids.
 3. **Schedules and the week.** `KCLOCK` gains `weekday()` (day % 7); roles get `sched` per weekday class (work day,
    the worker's rota day off (one of days 1–6, dealt by actor index), rest day, the day after a worked rest day); shifts
    per trade in `TUNE.sim.shifts` (farmers, miners 12 h from 06:00; night watch 20:00–04:00; market and essential
    roles on the rest day). A `slave` class (70% of farm and mine labour, `TUNE.sim.slaveShare`) housed at the site, no
    market trips, no material need, its happiness counted apart.
+   **Session 2 (2026-10-12): done** without touching core/clock (`SIM.weekday`; `TUNE.sim.week`; core/simulation's
+   `scheds`/`week`/`off`); the day after a worked rest day is not modelled. Slaves work the farm shift and have the rest
+   day off, no rota (`slaveRota`).
 3b. **The test clock.** `KCLOCK.scale` from the page (a "fast" control: 20× and 60×) with `SIM.step` catching up by
    simulated minutes, so a week runs in minutes; the census and economy panels sample per day for the stability check.
+   **Session 2 (2026-10-12): done** (20x, 60x; the census sampled at four hours a day; `VC.simDay` runs a day headless in
+   about 90 s).
 4. **Needs** (`core/simulation/77-sim-6-needs.js`): per actor a meter per need, rates per trade and culture
    (`TUNE.sim.needs`), fill tables per activity (the tavern fills eat/drink/socialize/relax by degrees), the
    personality trait as a ±33% multiplier, happiness = f(meters), efficiency = f(happiness), loyalty bands (unrest,

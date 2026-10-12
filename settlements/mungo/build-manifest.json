@@ -317,27 +317,27 @@
  ],
  "77-sim-0-core.js": [
   "core/simulation",
-  "5ae9d87a20e8"
+  "45b83188a90f"
  ],
  "77-sim-1-world.js": [
   "core/simulation",
-  "79c5fc81d299"
+  "ecfbc291da5d"
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "916332d4586b"
+  "d54245525615"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "4ae598bae761"
+  "7bdef2e4fc10"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
-  "c2ea6282b058"
+  "108dd86a902f"
  ],
  "77-sim-5-motion.js": [
   "core/simulation",
-  "d21ceb29b27c"
+  "801fcdb8f066"
  ],
  "77-sim-5r-routes.js": [
   "core/simulation",

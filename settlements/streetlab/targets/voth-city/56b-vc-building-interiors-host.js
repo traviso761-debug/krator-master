@@ -371,6 +371,20 @@ VC.peopleReportHTML = function () {
   Object.keys(R.byJob).sort(function (a, b) { return R.byJob[b].posts - R.byJob[a].posts; }).forEach(function (k) { var J = R.byJob[k], U = R.unfilledByJob[k];
     h += '<tr><td>' + k + '</td><td class="n">' + f(J.posts) + '</td><td class="n">' + f(J.filled) + '</td><td>' + Object.keys(J.how).map(function (x) { return f(J.how[x]) + ' ' + x; }).join(', ') + '</td><td class="n ' + (U ? 'bad' : 'ok') + '">' + (U ? f(U.posts) + ' at ' + U.places : '') + '</td><td class="n">' + cm(J.commute) + '</td></tr>'; });
   h += '</table>';
+  /* the run (56c): the week, now, and the day's samples */
+  if (VC.SIMRUN && VC.SIMRUN.steps != null && typeof SIM !== 'undefined') {
+    var S = VC.SIMRUN, W = TUNE.sim.week, now = VC.simCensusNow(), ms = S.ms.slice().sort(function (a, b) { return a - b; }), roles = SIM.all('role');
+    var u = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; };
+    h += '<h2>The week, running</h2><div>Every citizen is stepped once a simulated minute (at most ' + f(TUNE.sim.run.stepMax) + ' decisions a minute; a walk is decided from the straight line and its path found when it is drawn). ' +
+      'Day ' + (W.rest + 1) + ' is the rest day for all but ' + W.essential.length + ' essential kinds of work; every worker has a rota day off among the other six. ' + roles.length + ' roles on ' +
+      roles.filter(function (r) { return r.shift; }).length + ' shifts. Steps so far ' + f(S.steps) + ', median ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms; the last jump ' + f(S.jumpMs) + ' ms.</div>';
+    h += '<div>Now (day ' + (SIM.weekday() + 1) + ' of 7): ' + u(now.by) + '; walking ' + f(now.moving) + '; decisions waiting ' + f(now.pending) + '. <span class="bad">Wanted and not had: ' + u(now.unmet) + '</span> (the free-time places are full or farther than ' + f(TUNE.sim.run.reach) + ' m).</div>';
+    var days = Object.keys(S.days); if (days.length) {
+      h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
+      days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });
+      h += '</table>';
+    }
+  }
   if (A) {
     var C = P.cant || {};
     h += '<h2>The pedestrian layer</h2><div>' + f(A.nodes) + ' nodes, ' + f(A.edges) + ' edges in ' + A.bodies + ' connected bod' + (A.bodies === 1 ? 'y' : 'ies') + ': the streets (' + f(P.crossings) + ' crossings, ' + f(P.joins) + ' street ends joined where they meet, ' +

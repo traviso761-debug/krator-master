@@ -76,7 +76,7 @@
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
   <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
-  <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br>
+  <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
   <div id="legend" class="lg"></div>
@@ -47646,7 +47646,7 @@ var TUNE = {
   },
   /* the clock (core/clock KCLOCK, a 72-minute day): the hour it opens at, whether it runs, the speeds offered, the
      day of the year for the sun (Voth's equinox) */
-  clock: { hour: 10, running: true, speeds: [1, 2, 4, 8], doy: 80 },
+  clock: { hour: 10, running: true, speeds: [1, 2, 4, 8, 20, 60], doy: 80 },   /* 20x and 60x: the test clock (phase C: a day in 3.6 or 1.2 minutes) */
   /* the chinampas drawn again (31b-vc-chinampa.js): a bed's top over the water (a marsh bed's lower), stakes a side,
      crop rows, the crops' shares, maize and amaranth heights, the odds of a mature bed (with the biome's trees on its
      banks: up to `trees`, crown ferns or splay shrubs, heights), of a canoe and of a plank; reeds on a marsh bed, bank
@@ -47807,6 +47807,12 @@ var TUNE = {
     furnAct: { rack: 'DRAW_TOOLS', weapon: 'DRAW_TOOLS', well: 'DRINK', stall: 'SELL', counter: 'KEEP_SHOP', altar: 'WORSHIP', shrine: 'WORSHIP',
                tomb: 'HONOUR', bench: 'RELAX', seating: 'SOCIALIZE', chair: 'EAT', stool: 'DRINK', loom: 'WEAVE', workstation: 'CRAFT', stove: 'COOK',
                desk: 'STUDY', bed: 'SLEEP', larder: 'STORE_FOOD', store: 'STORE_FOOD', chest: 'STORE', tool: 'TRAIN' },
+    /* what a piece offers besides (owner, 2026-10-12: "items like chairs, stools could be a good target for idle and
+       beds etc for rest"): a seat takes someone idling (a chair or a bench seat also someone relaxing), a bed someone
+       resting; at home first (the roles pin IDLE and REST to the home), else the nearest */
+    /* the canton rooms that are someone's home (private: their own people only) */
+    privateRooms: ['cottage', 'bedroom', 'living', 'cell'],
+    alsoAct: { chair: ['IDLE', 'RELAX'], stool: ['IDLE'], bench: ['IDLE'], seating: ['IDLE', 'RELAX'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
       shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
@@ -47863,10 +47869,40 @@ var TUNE = {
                    'scribes and librarians', 'Ordinator garrison'],
       wealth: { slave: 0, poor: 0.2, middle: 0.45, shop: 0.5, craft: 0.5, tavern: 0.5, rich: 0.75, manor: 0.9, clan: 0.9, canton: 0.45, other: 0.35 },
       sample: 600,
-      sched: { worker: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [22, 'SLEEP']],
-               dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']],
-               slave: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [19, 'EAT'], [20, 'SLEEP']] }
-    }
+      sched: { dependant: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [12, 'EAT'], [13, 'SOCIALIZE'], [18, 'EAT'], [19, 'RELAX'], [22, 'SLEEP']] }
+    },
+    /* phase C session 2: the week (owner's Q8). Days 0-6, `rest` the rest day (the brief's day 7): all but the
+       `essential` kinds of work (and the market) have it off; every worker also has a rota day off among the other six
+       (dealt by its index, so a sixth of the workforce is off on any workday). A shift: [start hour, hours] by kind of
+       work (`default` for the rest); `night`: the share of a kind's workers on the night shift [start, hours]. A day's
+       schedule is built from the shift: 8 hours' sleep ending an hour before it, a meal then, the shift, a meal, the
+       rest free (SOCIALIZE, then RELAX from `relaxFrom`); an off or rest day keeps the sleep and frees the day, with
+       WORSHIP at `worship` on the rest day. Slaves: the farm shift, the rest day off, no rota (`slaveRota`) */
+    week: {
+      rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
+      /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
+      fallback: { SOCIALIZE: 'IDLE', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      shifts: { default: [7, 10], 'farmhands and ploughmen': [6, 12], miners: [6, 12], 'quarrymen and masons': [6, 12], 'mushroom growers': [6, 12],
+                'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
+                'innkeepers and servers': [10, 12], 'innkeepers and grooms': [8, 12], 'market traders': [7, 11], 'dockers and stevedores': [6, 11],
+                'monks and lay brothers (chapel, fields, coops)': [5, 11], 'household service': [6, 12] },
+      night: { 'town guard': [0.34, 20, 8], soldiers: [0.34, 20, 8], 'Ordinator garrison': [0.34, 20, 8], 'coast guard': [0.34, 20, 8], 'power-house stokers and engineers': [0.34, 20, 8],
+               jailers: [0.34, 20, 8], 'lighthouse keepers': [0.5, 20, 8] },
+      essential: ['soldiers', 'town guard', 'Ordinator garrison', 'coast guard', 'power-house stokers and engineers', 'innkeepers and servers', 'innkeepers and grooms',
+                  'market traders', 'healers and nurses', 'ferrymen', 'elephant bug handlers and station hands', 'household service', 'cooks and bakers', 'bakers',
+                  'temple priests and servants', 'shrine keepers', 'priests and undertakers', 'jailers', 'lighthouse keepers', 'palace household and officials',
+                  'monks and lay brothers (chapel, fields, coops)', 'gladiators and arena keepers', 'beetle herders'],
+      slaveShift: [6, 12]
+    },
+    /* running the simulation in the page (56c-vc-citizens-host.js): the pedestrian layer is lazy (a leg is decided from
+       the straight line times `detour`, its path found when it is drawn); at most `stepMax` decisions a simulated minute;
+       a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
+       re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH). The census is sampled at `samples` hours each day (the fast clock's stability check) */
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500 },
+    /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
+       orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
+    embody: { r: 220, max: 1500, every: 400, dist: 600,
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
@@ -52322,7 +52358,7 @@ SL.pass13 = function () {
 //   SIM.load(json)                the hand-edited overlay (PLAN.md 4.2): a record with a known id overrides it field by
 //                                 field, a new id is added, {id, remove:true} deletes; then every reference is checked
 //   SIM.check()                   unknown references -> SIM.problems (and the host's err), returns the list
-//   SIM.logEvent(kind, data)      the decision log (a ring of SIM.LOG_MAX), what the export carries
+//   SIM.logEvent(kind, data)      the decision log (the last SIM.LOG_MAX, trimmed when it passes 1.25 times that), what the export carries
 (function(root){
   'use strict';
   var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port','transport'];
@@ -52365,11 +52401,11 @@ SL.pass13 = function () {
     if(!SIM.R[kind]) throw new Error('SIM.add: unknown kind '+kind);
     if(!rec || rec.id==null) throw new Error('SIM.add('+kind+'): a record needs an id');
     if(SIM.R[kind][rec.id]) throw new Error('SIM.add('+kind+'): duplicate id '+rec.id);
-    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); return rec;
+    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; return rec;
   };
   SIM.get = function(kind, id){ return SIM.R[kind] ? SIM.R[kind][id] : undefined; };
   SIM.all = function(kind){ var R=SIM.R[kind]; return SIM.order[kind].filter(function(id){ return R[id]; }).map(function(id){ return R[id]; }); };
-  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; };
+  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; };
 
   /* the overlay: what a hand-edited world/*.json says wins over what the geometry registered */
   var PLURAL = { activities:'activity', factions:'faction', orgs:'org', organizations:'org', relations:'relation', presence:'presence',
@@ -52406,7 +52442,9 @@ SL.pass13 = function () {
     SIM.all('org').forEach(function(o){ need(!o.faction || F[o.faction], 'org '+o.id+': unknown faction '+o.faction); });
     SIM.all('relation').forEach(function(r){ need(F[r.a]||O[r.a], 'relation: unknown party '+r.a); need(F[r.b]||O[r.b], 'relation: unknown party '+r.b); });
     SIM.all('place').forEach(function(p){ Object.keys(p.activities||{}).forEach(function(a){ need(A[a], 'place '+p.id+': unknown activity '+a); }); need(!p.org || O[p.org], 'place '+p.id+': unknown org '+p.org); });
-    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); }); });
+    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); });
+      Object.keys(r.scheds||{}).forEach(function(k){ (r.scheds[k]||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' ('+k+') at '+h+':00: unknown activity '+a); }); });
+      (r.week||[]).forEach(function(k){ need(r.scheds && r.scheds[k], 'role '+r.id+': its week names an unknown schedule '+k); }); });
     SIM.all('actor').forEach(function(a){ need(Ro[a.role], 'actor '+a.id+': unknown role '+a.role); need(!a.home || P[a.home], 'actor '+a.id+': unknown home '+a.home); need(!a.work || P[a.work], 'actor '+a.id+': unknown work place '+a.work); });
     SIM.all('event').forEach(function(e){ (e.from||[]).concat(Array.isArray(e.to)?e.to:[]).forEach(function(p){ need(SIM.R.port[p], 'event '+e.id+': unknown port '+p); }); need(!e.to || Array.isArray(e.to) || e.to==='other', 'event '+e.id+': to must be a port list or "other"'); (e.legs||[]).forEach(function(l){ need(A[l.activity], 'event '+e.id+': unknown activity '+l.activity); }); });
     SIM.all('transport').forEach(function(t){ need(SIM.nav.layers[t.layer], 'transport '+t.id+': unknown layer '+t.layer); need(!t.faction || F[t.faction], 'transport '+t.id+': unknown faction '+t.faction); need(!t.org || O[t.org], 'transport '+t.id+': unknown org '+t.org);
@@ -52417,7 +52455,7 @@ SL.pass13 = function () {
 
   SIM.logEvent = function(kind, data){
     var e = { m:SIM.minute(), kind:kind }; if(data) for(var k in data) e[k]=data[k];
-    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);
+    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX * 1.25) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);   /* trimmed in batches: a busy minute logs thousands */
     return e;
   };
   root.SIM = SIM;
@@ -52460,6 +52498,7 @@ SL.pass13 = function () {
     if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
     if(acc==='org') return org===place.org;
     if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
+    if(acc==='private') return typeof who!=='string' && (who.home===place.id || who.work===place.id);   /* a home: its own people only */
     return false;
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -52478,8 +52517,14 @@ SL.pass13 = function () {
 //              are one person's room. Without it each activity's slots stand alone)})
 //   SIM.offers(P, act) -> slots (0 if not offered)            SIM.isOpen(P, act, hour)
 //   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
-//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...]}) -> candidates, nearest first, open, free and
-//                                 letting the actor in (SIM.welcome)
+//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit}) -> candidates, nearest first, open, free
+//                                 and letting the actor in (SIM.welcome). With `limit` and `near` (and no ids) only the
+//                                 nearest `limit` are returned, found on a grid of the places (rings out from `near`):
+//                                 exactly the first `limit` of the full list, without looking at every place (a grid per
+//                                 activity; a host that changes places' activities after searching calls SIM.placesChanged());
+//                                 `maxR` (metres) stops the search there (nothing farther is returned). An EMPTY answer is
+//                                 remembered for the rest of the simulated minute for its grid cell, activity, hour, kinds
+//                                 and org (a crowd of 20,000 finding every tavern full asks once per cell, not once each)
 //   SIM.slotsFromFurniture(pieces, map?) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3);
 //                                 map: a world's own {job|type|role: ACT} over SIM.FURN_ACT
 (function(root){
@@ -52507,18 +52552,53 @@ SL.pass13 = function () {
     var s=a.slot; if(!s) return; var P=SIM.R.place[s.place]; a.slot=null; if(!P) return;
     P.occ[s.act] = Math.max(0, (P.occ[s.act]||0) - 1); delete P.who[a.id];
   };
+  function passes(P, act, actor, hour, opt){
+    if(!SIM.offers(P, act)) return false;
+    if(opt.kinds && opt.kinds.indexOf(P.kind)<0) return false;
+    if(opt.exclude && opt.exclude[P.id]) return false;
+    if(hour!=null && !SIM.isOpen(P, act, hour)) return false;
+    if(!opt.ignoreSlots && SIM.free(P, act) <= 0) return false;
+    if(actor && SIM.welcome && !SIM.welcome(actor, P)) return false;
+    return true;
+  }
+  function byNear(near){ return function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); }; }
+  /* a grid per activity of the places offering it, rebuilt when places are added or removed, or when a host says their
+     activities changed (SIM.placesChanged()); a place with a `bias` makes the nearest-first order not a distance, so
+     the grid stands aside. An activity no place offers is answered at once. A private place (a home) is not on the grids:
+     its own people reach it by their pins (it lets no one else in) */
+  var GRIDS={}, GSIG=null, GCELL=120, EMPTY={ m:null, k:{} };
+  SIM.placesChanged = function(){ SIM.placeVersion=(SIM.placeVersion||0)+1; EMPTY={ m:null, k:{} }; };
+  function grid(act){
+    var sig=SIM.order.place.length+':'+(SIM.placeVersion||0);
+    if(GSIG!==sig){ GRIDS={}; GSIG=sig; }
+    if(GRIDS[act]) return GRIDS[act];
+    var G={ cells:{}, n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
+    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || P.access==='private') return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
+      if(P.bias) G.bias=true; G.x0=Math.min(G.x0,P.x); G.x1=Math.max(G.x1,P.x); G.z0=Math.min(G.z0,P.z); G.z1=Math.max(G.z1,P.z); });
+    return (GRIDS[act]=G);
+  }
   SIM.placesFor = function(act, actor, hour, opt){
-    opt = opt || {}; var out=[], near=opt.near, kinds=opt.kinds, ids=opt.ids;
+    opt = opt || {}; var out=[], near=opt.near, ids=opt.ids;
+    if(opt.limit && near && !ids){ var G=grid(act); if(!G.n) return out; if(!G.bias){
+      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR;
+        var mm=SIM.host ? SIM.minute() : 0; if(EMPTY.m!==mm){ EMPTY={ m:mm, k:{} }; } if(EMPTY.k[ek]) return out; }
+      /* rings of cells out from `near`: once `limit` are found, a ring whose inner edge lies past the limit-th distance
+         cannot change the first `limit`, so stop there */
+      var ci=Math.floor(near[0]/GCELL), cj=Math.floor(near[1]/GCELL), D=function(P){ return Math.hypot(P.x-near[0], P.z-near[1]); };
+      var rmax=Math.ceil(Math.max(Math.abs(near[0]-G.x0), Math.abs(near[0]-G.x1), Math.abs(near[1]-G.z0), Math.abs(near[1]-G.z1))/GCELL)+1;
+      for(var r=0;r<=rmax;r++){
+        for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue;
+          var C=G.cells[i+','+j]; if(!C) continue; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }
+        if(out.length>=opt.limit){ out.sort(byNear(near)); if(D(out[opt.limit-1]) < r*GCELL) break; }
+        if(opt.maxR!=null && r*GCELL > opt.maxR) break;
+      }
+      out.sort(byNear(near)); if(opt.maxR!=null) out=out.filter(function(P){ return D(P) <= opt.maxR; });
+      if(!out.length && ek) EMPTY.k[ek]=1;
+      return out.slice(0, opt.limit);
+    } }
     var list = ids ? ids.map(function(id){ return SIM.R.place[id]; }).filter(Boolean) : SIM.all('place');
-    for(var i=0;i<list.length;i++){ var P=list[i];
-      if(!SIM.offers(P, act)) continue;
-      if(kinds && kinds.indexOf(P.kind)<0) continue;
-      if(opt.exclude && opt.exclude[P.id]) continue;
-      if(hour!=null && !SIM.isOpen(P, act, hour)) continue;
-      if(!opt.ignoreSlots && SIM.free(P, act) <= 0) continue;
-      if(actor && SIM.welcome && !SIM.welcome(actor, P)) continue;
-      out.push(P); }
-    if(near) out.sort(function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); });
+    for(var k=0;k<list.length;k++) if(passes(list[k], act, actor, hour, opt)) out.push(list[k]);
+    if(near) out.sort(byNear(near));
     return out;
   };
   /* furniture -> slots. A catalog piece carries `job` (FURN_JOBS) or a `type` / interiors walker target type */
@@ -52554,13 +52634,27 @@ SL.pass13 = function () {
 //   SIM.step()                                          one simulated minute (the host calls it as the world minute advances)
 //   SIM.jump()                                          the clock jumped: everyone is re-placed from the schedule (a share mid-trip)
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
+//   THE WEEK: a role may carry named schedules `scheds: {work:..., off:..., rest:...}` and `week: [7 names]` (the
+//   schedule each weekday, SIM.weekday(minute) = day % SIM.WEEK); an actor's `off` (a weekday) takes the role's `off`
+//   schedule that day (a rota: each worker its own day off). Without them the role's `sched` holds every day.
+//   SIM.schedOf(actor, minute) -> the 24 hours it follows that day
+//   LAZY ROUTES (SIM.lazy = {layer: {detour}}, opt-in): on such a graph layer a leg is decided without its path: its
+//   duration from the straight line times `detour`, its reachability from the layer's connected bodies; the path is
+//   found the first time something asks where on it the actor is (SIM.legRoute: the embodiment, near the camera), and
+//   walked at the speed that keeps the arrival. A city of 50,000 decides in microseconds what it draws for hundreds.
 (function(root){
   'use strict';
   var SIM = root.SIM;
   SIM.STEP_MAX = 260;           /* decisions per simulated minute; the rest wait a minute (rotating start) */
+  SIM.REACH = null;             /* a world's limit (metres) on how far an actor looks for a place (a role's prefers.reach overrides); null: no limit */
   SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
   SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
-  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched); o.prefers=o.prefers||{}; return SIM.add('role', o); };
+  SIM.WEEK = 7;
+  SIM.weekday = function(minute){ var d=Math.floor((minute==null?SIM.minute():minute)/1440); return ((d % SIM.WEEK) + SIM.WEEK) % SIM.WEEK; };
+  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched);
+    if(o.scheds){ for(var k in o.scheds) o.scheds[k]=SIM.sched(o.scheds[k]); if(!o.sched) o.sched=o.scheds.work || o.scheds[Object.keys(o.scheds)[0]]; }
+    if(o.week && o.week.length!==SIM.WEEK) throw new Error('SIM.role '+o.id+': week needs '+SIM.WEEK+' schedule names');
+    o.prefers=o.prefers||{}; return SIM.add('role', o); };
   SIM.port = function(o){ o.layer=o.layer||'pedestrian'; return SIM.add('port', o); };
   SIM.group = function(o){ o.members=o.members||[]; return SIM.add('group', o); };
   SIM.event = function(o){ o.fired=0; o.next=null; return SIM.add('event', o); };
@@ -52573,13 +52667,18 @@ SL.pass13 = function () {
     o.k = SIM.order.actor.length;
     return SIM.add('actor', o);
   };
-  function schedOf(a){ return a.sched || SIM.R.role[a.role].sched; }
+  function schedOf(a, minute){
+    if(a.sched) return a.sched; var R=SIM.R.role[a.role]; if(!R) return null;
+    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off'; return R.scheds[k] || R.sched; }
+    return R.sched;
+  }
+  SIM.schedOf = schedOf;
   function hourOf(m){ return Math.floor((m%1440)/60); }
 
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
-    var s=schedOf(a); return s ? s[hourOf(minute==null?SIM.minute():minute)] : 'IDLE';
+    var m=minute==null?SIM.minute():minute, s=schedOf(a, m); return s ? s[hourOf(m)] : 'IDLE';
   };
   function placeXZ(P){ return [P.x, P.z]; }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? placeXZ(H) : (a.at || [0,0]); }
@@ -52590,7 +52689,7 @@ SL.pass13 = function () {
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
     var m=a.mem[act]; if(m){ P=SIM.R.place[m]; if(P && SIM.isOpen(P,act,hour) && (SIM.free(P,act)>0 || P.who[a.id]===act)) return P; }
-    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad });
+    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad, limit:pref.spread||3, maxR:pref.reach!=null ? pref.reach : SIM.REACH });
     if(c.length){ /* the nearest few, one picked from SIM.rng so a crowd spreads over a district's taverns and shops */
       var k=Math.min(c.length, pref.spread||3); return c[Math.floor(SIM.rng.next()*k)]; }
     return null;
@@ -52602,7 +52701,7 @@ SL.pass13 = function () {
     minute = minute==null ? SIM.minute() : minute; t = t==null ? SIM.time() : t;
     var hour=hourOf(minute), want=SIM.desire(a, minute), R=SIM.R.role[a.role];
     var chain=[want].concat((R.fallback&&R.fallback[want]) ? [R.fallback[want]] : []).concat(SIM.FALLBACK);
-    var from=SIM.pose(a, t), P=null, act=want, task=null;
+    var from=SIM.pose(a, t, { cheap:true }), P=null, act=want, task=null;
     a.bad = a.bad || {};
     for(var i=0; i<chain.length && !task; i++){ act=chain[i];
       /* a place the actor cannot reach is struck off for it and the next one tried (three at most per activity) */
@@ -52631,9 +52730,27 @@ SL.pass13 = function () {
     return { x:P.x+Math.cos(ang)*rr, z:P.z+Math.sin(ang)*rr, y:P.y };
   }
   function leg(layer, from, to, speed, mode, minW){
+    var Z=SIM.lazy && SIM.lazy[layer], NL=SIM.nav.layers[layer];
+    if(Z && NL && NL.kind==='graph'){
+      /* lazy: reachable when both ends' nodes lie on one body; the duration from the straight line */
+      var s=SIM.nav.nearest(layer, from.x, from.z, NL.yw ? { minW:minW||0, y:from.y } : { minW:minW||0 }), t=SIM.nav.nearest(layer, to.x, to.z, NL.yw ? { minW:minW||0, y:to.y } : { minW:minW||0 });
+      if(s<0 || t<0 || SIM.nav.body(layer, s)!==SIM.nav.body(layer, t)){ SIM.routeFail.push({ layer:layer, why:'no path (bodies)', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
+      var d=Math.hypot(to.x-from.x, to.z-from.z)*(Z.detour||1.35)+0.5;
+      return { route:null, lazy:{ from:{x:from.x,z:from.z,y:from.y}, to:{x:to.x,z:to.z,y:to.y}, minW:minW||0 }, speed:speed, mode:mode, layer:layer, dur:d/speed };
+    }
     var r=SIM.nav.route(layer, from, to, { minW:minW||0 }); if(!r) return null;
     return { route:r, speed:speed, mode:mode, layer:layer, dur:r.len/speed };
   }
+  SIM.leg = leg;
+  /* a lazy leg's path, found when first asked; walked at the speed that keeps its arrival (a straight line if, against
+     the bodies' say, no path is found) */
+  SIM.legRoute = function(L){
+    if(L.route || !L.lazy) return L.route;
+    var z=L.lazy, r=SIM.nav.route(L.layer, z.from, z.to, { minW:z.minW });
+    if(!r){ var a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]); r={ pts:[a,b], cum:[0,len], len:len, layer:L.layer, straight:true }; }
+    L.route=r; L.speed = L.dur>0 ? r.len/L.dur : L.speed; SIM.lazyResolved=(SIM.lazyResolved||0)+1;
+    return r;
+  };
   /* the legs to a place: walk (or ride / drive) on the actor's layer; a place on another layer is reached through a
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){
@@ -52799,6 +52916,7 @@ SL.pass13 = function () {
 //   SIM.nav.field(layer, [{node, d?}], {max?, minW?}) -> {d: Float64Array, src: Int32Array} (graph layers): every node's
 //                                     cost from the nearest source and which source (an index into the list; -1 past max).
 //                                     One search answers "the nearest free job / well / tavern" for a whole city at once.
+//   SIM.nav.body(layer, node) -> the connected body the node lies on (graph layers; one label per body, found once)
 //   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
 (function(root){
   'use strict';
@@ -52873,6 +52991,14 @@ SL.pass13 = function () {
       var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
       return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
     },
+    body: function(layer, k){
+      var L=NAVS[layer]; if(!L || L.kind!=='graph' || k==null || k<0) return -1;
+      if(!L.body){ var n=L.nodes.length, p=new Int32Array(n); for(var i=0;i<n;i++) p[i]=i;
+        var f=function(i){ while(p[i]!==i){ p[i]=p[p[i]]; i=p[i]; } return i; };
+        L.edges.forEach(function(e){ var a=f(L.idx[e.a]), b=f(L.idx[e.b]); if(a!==b) p[a]=b; });
+        for(var j=0;j<n;j++) p[j]=f(j); L.body=p; }
+      return L.body[k];
+    },
     field: function(layer, sources, opt){
       var L=NAVS[layer]; opt=opt||{}; if(!L || L.kind!=='graph') return null;
       var N=L.nodes, n=N.length, d=new Float64Array(n).fill(Infinity), src=new Int32Array(n).fill(-1), closed=new Uint8Array(n), h=new Heap(), max=opt.max==null?Infinity:opt.max, minW=opt.minW||0;
@@ -52909,8 +53035,12 @@ SL.pass13 = function () {
   };
   function seg(P, i, u){ var a=P[Math.max(0,Math.min(i,P.length-1))], b=P[Math.max(0,Math.min(i+1,P.length-1))], dx=b[0]-a[0], dz=b[2]-a[2], L=Math.hypot(dx,dz)||1;
     return { x:a[0]+dx*u, y:a[1]+(b[1]-a[1])*u, z:a[2]+dz*u, tx:dx/L, tz:dz/L }; }
+  function straight(L){ var z=L.lazy, a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]), d=L.dur*L.speed||len;
+    return { pts:[a,b], cum:[0,d], len:d }; }   /* the straight line stretched to the leg's length, so the fraction along it is the time's */
   function h32(a,b){ var h=Math.imul((a|0)^0x9E3779B1, 0x85ebca6b) ^ Math.imul(b|0, 0xc2b2ae35); h^=h>>>15; h=Math.imul(h,0x27d4eb2d); h^=h>>>13; return (h>>>0)/4294967296; }
-  SIM.pose = function(a, t){
+  /* opt.cheap: a lazy leg not yet resolved is read as its straight line (a decision asking where its actor is now does
+     not search a path no one will see) */
+  SIM.pose = function(a, t, opt){
     var o={ x:0, y:0, z:0, h:a.h0||0, moving:false, hidden:false, mode:'walk', act:a.activity, leg:-1 };
     var T=a.task;
     if(!T){ var p=a.pos; if(!p){ var H=SIM.R.place[a.home]; p = H ? H.door : { x:(a.at||[0,0])[0], y:0, z:(a.at||[0,0])[1] }; o.hidden = !!H; }
@@ -52918,13 +53048,15 @@ SL.pass13 = function () {
     var dt=t-T.t0;
     for(var i=0;i<T.legs.length;i++){ var L=T.legs[i];
       if(dt < L.dur){                    /* a group member trails `back` metres behind its leader, and stops there */
-        var s=Math.max(0, Math.min(dt*L.speed, L.route.len) - (L.back||0)), q=SIM.at(L.route, s);
-        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<L.route.len; o.mode=L.mode; o.leg=i;
+        var Rt=L.route || (opt && opt.cheap ? straight(L) : SIM.legRoute(L));   /* a lazy leg finds its path now (77-sim-3-actors.js) */
+        var s=Math.max(0, Math.min(dt*L.speed, Rt.len) - (L.back||0)), q=SIM.at(Rt, s);
+        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<Rt.len; o.mode=L.mode; o.leg=i;
         if(!a.present) o.hidden=true; return o; }
       dt -= L.dur; }
     /* arrived: at the spot (behind the leader for a group, so a caravan does not stand in one place) */
     var sp=T.spot, lastL=T.legs[T.legs.length-1], back=lastL?(lastL.back||0):0, side=lastL?(lastL.side||0):0, tx=0, tz=1;
-    if(lastL){ var e=SIM.at(lastL.route, lastL.route.len); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode; }
+    if(lastL && lastL.route){ var e=SIM.at(lastL.route, lastL.route.len); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode; }
+    else if(lastL && lastL.lazy){ var lz=lastL.lazy, ddx=lz.to.x-lz.from.x, ddz=lz.to.z-lz.from.z, dl=Math.hypot(ddx,ddz)||1; tx=ddx/dl; tz=ddz/dl; o.h=Math.atan2(tx,tz); o.mode=lastL.mode; }   /* arrived by a path never asked for */
     o.x = sp.x - tx*back - tz*side; o.z = sp.z - tz*back + tx*side; o.y = sp.y||0;
     var W=T.wander; if(W>0 && !T.indoor){ var P=SIM.WANDER.period, k=a.k||0, c=Math.floor((t+k*3.7)/P), u=((t+k*3.7)/P)-c;
       var ax=(h32(k,c)-0.5)*2*W, az=(h32(k+7919,c)-0.5)*2*W, bx=(h32(k,c+1)-0.5)*2*W, bz=(h32(k+7919,c+1)-0.5)*2*W, f=u<0.55?0:(u-0.55)/0.45, sm=f*f*(3-2*f);
@@ -55215,6 +55347,7 @@ VC.simPlaces = function () {
       var D = VC.simDims(p), seats = SW[p.type] ? (p.type === 'table' ? Math.max(2, Math.floor(2 * (D.w + D.d) / SW.table)) : VC.simSize(p, SW[p.type])) : 1;
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
+    pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -55229,7 +55362,8 @@ VC.simPlaces = function () {
       .sort(function (a, b) { return SP.indexOf(a.type) - SP.indexOf(b.type); }).slice(0, T.spotsMax)
       .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
-          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i });
+          activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i, indoor: true,
+          access: kind === 'home' ? 'private' : undefined });   /* a house: its own people only (phase C) */
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -55238,7 +55372,8 @@ VC.simPlaces = function () {
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
-            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn] });
+            open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn], indoor: true,
+            access: TUNE.sim.privateRooms.indexOf(r.kind) >= 0 ? 'private' : undefined });
     });
   });
   /* the Fortress's armoury: the central watchhouse (gear drawn at the shift's start) */
@@ -55257,7 +55392,7 @@ VC.simPlaces = function () {
     D.art.forEach(function (a) { var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {}; var t = /stall/.test(a.key) ? 'stall' : /well/.test(a.key) ? 'well' : /tomb|sarcoph|ossuar|grave/.test(a.key) ? 'tomb' : /shrine|altar/.test(a.key) ? 'shrine' : /bench/.test(a.key) ? 'bench' : F.type || 'other';
       cnt[t] = (cnt[t] || 0) + 1; cx += a.x; cz += a.z; cy += a.y || 0; });
     var m = D.art.length, acts = {};
-    if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; }
+    if (cnt.bench) { acts.RELAX = cnt.bench * 3; acts.SOCIALIZE = cnt.bench * 2; acts.IDLE = cnt.bench * 3; }
     if (cnt.shrine) { acts.WORSHIP = cnt.shrine * 4; acts.CONTEMPLATE = cnt.shrine * 4; }
     if (cnt.well) acts.DRINK = cnt.well * 4;
     if (cnt.tomb) { acts.HONOUR = Math.max(10, Math.round(cnt.tomb / 4)); acts.CONTEMPLATE = (acts.CONTEMPLATE || 0) + acts.HONOUR; }
@@ -55665,11 +55800,19 @@ VC.simPeople = function () {
   var T = TUNE.sim.people, share = TUNE.census.workingShare, t0 = Date.now();
   if (!SIM.R.faction.voth) SIM.faction({ id: 'voth' });
   ['citizens', 'slaves'].forEach(function (o) { if (!SIM.R.org[o]) SIM.org({ id: o, faction: 'voth' }); });
-  var roleOf = function (id, org, sched, name, pin) {
-    if (!SIM.R.role[id]) SIM.role({ id: id, org: org, name: name, sched: sched, prefers: pin });
+  var WK = TUNE.sim.week;
+  /* a role of a kind of work on a shift: its work, off and rest days (VC.simWeek), its week (essential kinds work the
+     rest day), its pins (sleep and eat at home, work at work) */
+  var roleOf = function (id, org, name, shift, essential) {
+    if (!SIM.R.role[id]) {
+      var S = VC.simWeek(shift), week = []; for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? 'rest' : shift ? 'work' : 'day');
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest }, week: week, shift: shift, essential: !!essential,
+                 prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
+    }
     return id;
   };
-  var pinBoth = { SLEEP: { pin: 'home' }, WORK: { pin: 'work' } };
+  var shiftOf = function (job) { return WK.shifts[job] || WK.shifts.default; };
+  var nightN = {}, isNight = function (job) { var N = WK.night[job]; if (!N) return false; var i = nightN[job] = (nightN[job] || 0) + 1; return Math.floor(i * N[0]) > Math.floor((i - 1) * N[0]); };
   var comp = function (Q) { return Q.navNode != null ? VC.PED.comp(Q.navNode) : -1; };
   var at = function (Q) { var d = Q.door || Q; return [d.x, d.z]; };
   /* ---- the homes and their people */
@@ -55751,19 +55894,22 @@ VC.simPeople = function () {
     if (!made) break;
   }
   /* ---- the actors */
-  var made = 0, n = 0;
+  /* the week (owner's Q8): each worker's rota day off among the six workdays, dealt by its index */
+  var made = 0, n = 0, rota = 0, offDay = function () { var d = rota++ % 6; return d >= WK.rest ? d + 1 : d; };
   workers.forEach(function (wk) {
-    var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', T.sched.dependant, 'of independent means', { SLEEP: { pin: 'home' } }) : roleOf('unemployed', 'citizens', T.sched.dependant, 'out of work', { SLEEP: { pin: 'home' } });
-    var role = wk.job ? roleOf('w.' + wk.job, 'citizens', T.sched.worker, wk.job, pinBoth) : idle;
-    wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at });
+    var H = wk.H, idle = gentry.indexOf(H.cls) >= 0 ? roleOf('gentry', 'citizens', 'of independent means', null) : roleOf('unemployed', 'citizens', 'out of work', null), role = idle;
+    if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
+    wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
+                       off: wk.job && WK.rota ? offDay() : undefined });
     made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', T.sched.dependant, 'household', { SLEEP: { pin: 'home' } }), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
+    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other });
     made++;
   });
   slaves.forEach(function (s, i) {
-    s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', T.sched.slave, 'enslaved ' + s.P.job, pinBoth), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false });
+    s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', 'enslaved ' + s.P.job, WK.slaveShift, false), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false,
+                         off: WK.slaveRota ? offDay() : undefined });
   });
   /* ---- the report */
   var R = { citizens: made, census: PLAN.census ? PLAN.census.population : null, homes: homes.length, workers: workers.length, dependants: deps.length, slaves: slaves.length,
@@ -55794,6 +55940,7 @@ VC.simPeople = function () {
   var dist = {}; workers.forEach(function (wk) { if (wk.job || gentry.indexOf(wk.H.cls) >= 0) return; var t = (wk.H.P.tags || [])[1] || wk.H.cls; dist[t] = (dist[t] || 0) + 1; });
   R.unemployedBy = Object.keys(dist).map(function (k) { return [k, dist[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 12);
   R.ms = Date.now() - t0;
+  if (SIM.placesChanged) SIM.placesChanged();   /* the slaves' quarters added SLEEP to their sites: the place grids rebuild */
   VC.PEOPLE = R;
   return R;
 };
@@ -55827,6 +55974,25 @@ VC.simDecideSample = function (n, hour) {
     SIM.release(a); a.task = null; a.place = null; a.activity = null; a.wanted = null; a.since = null; a.mem = {}; a.bad = {};
   }
   out.ms = Date.now() - t0;
+  return out;
+};
+
+/* a shift's days as 24-hour schedules: `work` (8 hours' sleep ending an hour before the shift, a meal then, the shift,
+   a meal, the rest free: SOCIALIZE, RELAX from TUNE.sim.week.relaxFrom), `off` (the same sleep, the day free, meals at
+   the wake hour, 13 and 19), `rest` (the off day with WORSHIP at TUNE.sim.week.worship); with no shift (dependants,
+   the gentry, the out of work) `day` is TUNE.sim.people.sched.dependant and `rest` it with the worship */
+VC.simWeek = function (shift) {
+  var W = TUNE.sim.week, h = function (v) { return ((v % 24) + 24) % 24; };
+  var free = function (a, from) { for (var k = 0; k < 24; k++) if (a[k] === 'FREE') a[k] = (k >= W.relaxFrom || k < 4) ? 'RELAX' : 'SOCIALIZE'; return a; };
+  var base = function (s) { var a = []; for (var k = 0; k < 24; k++) a.push('FREE'); for (var q = 0; q < 8; q++) a[h(s - 9 + q)] = 'SLEEP'; a[h(s - 1)] = 'EAT'; return a; };
+  var out = {};
+  if (shift) {
+    var s = shift[0], n = shift[1], w = base(s); for (var i = 0; i < n; i++) w[h(s + i)] = 'WORK'; if (w[h(s + n)] === 'FREE') w[h(s + n)] = 'EAT';
+    var o = base(s); [13, 19].forEach(function (k) { if (o[k] === 'FREE') o[k] = 'EAT'; });
+    out.work = free(w); out.off = free(o.slice()); var r = o.slice(); if (r[W.worship] === 'FREE') r[W.worship] = 'WORSHIP'; out.rest = free(r);
+  } else {
+    var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
+  }
   return out;
 };
 
@@ -57259,7 +57425,9 @@ VC.start = function () {
   VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
   try { VC.simPlaces(); VC.simWorkAudit(); } catch (e) { console.error('sim places: ' + (e.stack || e)); VC.SIMB.error = String(e.stack || e); }   /* 42-vc-sim-places.js */
   try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */
-  VC.ui(); VC.ixUI(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  VC.ui(); VC.ixUI(); VC.clockUI();
+  try { VC.simRun(); VC.simBodies(); } catch (e) { console.error('sim run: ' + (e.stack || e)); VC.SIMRUN.error = String(e.stack || e); }   /* 56c-vc-citizens-host.js */
+  VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };
 
 /* ---- targets/voth-city/56-vc-interiors-host.js ---- */
@@ -57955,6 +58123,20 @@ VC.peopleReportHTML = function () {
   Object.keys(R.byJob).sort(function (a, b) { return R.byJob[b].posts - R.byJob[a].posts; }).forEach(function (k) { var J = R.byJob[k], U = R.unfilledByJob[k];
     h += '<tr><td>' + k + '</td><td class="n">' + f(J.posts) + '</td><td class="n">' + f(J.filled) + '</td><td>' + Object.keys(J.how).map(function (x) { return f(J.how[x]) + ' ' + x; }).join(', ') + '</td><td class="n ' + (U ? 'bad' : 'ok') + '">' + (U ? f(U.posts) + ' at ' + U.places : '') + '</td><td class="n">' + cm(J.commute) + '</td></tr>'; });
   h += '</table>';
+  /* the run (56c): the week, now, and the day's samples */
+  if (VC.SIMRUN && VC.SIMRUN.steps != null && typeof SIM !== 'undefined') {
+    var S = VC.SIMRUN, W = TUNE.sim.week, now = VC.simCensusNow(), ms = S.ms.slice().sort(function (a, b) { return a - b; }), roles = SIM.all('role');
+    var u = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; };
+    h += '<h2>The week, running</h2><div>Every citizen is stepped once a simulated minute (at most ' + f(TUNE.sim.run.stepMax) + ' decisions a minute; a walk is decided from the straight line and its path found when it is drawn). ' +
+      'Day ' + (W.rest + 1) + ' is the rest day for all but ' + W.essential.length + ' essential kinds of work; every worker has a rota day off among the other six. ' + roles.length + ' roles on ' +
+      roles.filter(function (r) { return r.shift; }).length + ' shifts. Steps so far ' + f(S.steps) + ', median ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms; the last jump ' + f(S.jumpMs) + ' ms.</div>';
+    h += '<div>Now (day ' + (SIM.weekday() + 1) + ' of 7): ' + u(now.by) + '; walking ' + f(now.moving) + '; decisions waiting ' + f(now.pending) + '. <span class="bad">Wanted and not had: ' + u(now.unmet) + '</span> (the free-time places are full or farther than ' + f(TUNE.sim.run.reach) + ' m).</div>';
+    var days = Object.keys(S.days); if (days.length) {
+      h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
+      days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });
+      h += '</table>';
+    }
+  }
   if (A) {
     var C = P.cant || {};
     h += '<h2>The pedestrian layer</h2><div>' + f(A.nodes) + ' nodes, ' + f(A.edges) + ' edges in ' + A.bodies + ' connected bod' + (A.bodies === 1 ? 'y' : 'ies') + ': the streets (' + f(P.crossings) + ' crossings, ' + f(P.joins) + ' street ends joined where they meet, ' +
@@ -57987,6 +58169,119 @@ VC.ixUI = function () {
     var a = $('ix-open'); if (a) a.onclick = function (e) { e.preventDefault(); if (r) r.onclick(); };
   };
   VC.stats();
+};
+
+/* ---- targets/voth-city/56c-vc-citizens-host.js ---- */
+/* ============================== 6d. HOST: THE CITIZENS RUN, AND THE ONES NEAR THE CAMERA DRAWN ============================== */
+/* [draw] The browser side of 44-vc-sim-people.js (phase C session 2; SIM-ROADMAP.md 2.4 items 3 and 3b):
+   - THE RUN (VC.simRun): every actor is stepped (the owner's Q1): SIM.step() once per simulated minute from the frame
+     loop, at most TUNE.sim.run.catchUp minutes a frame when the clock runs fast; a jump of the hour slider re-places
+     everyone (SIM.jump). The pedestrian layer is lazy (core/simulation SIM.lazy): a decision costs microseconds and
+     the path is found only when the walker is drawn. The census is sampled at TUNE.sim.run.samples hours every day
+     (VC.SIMRUN.days: the fast clock's stability check), each step's cost is kept.
+   - THE BODIES (VC.simBodies): the citizens within TUNE.sim.embody.r of the view's centre (the orbit target, or the
+     walker), the nearest TUNE.sim.embody.max of them, as instanced figures posed by SIM.pose; hidden indoors; the
+     tunic by what they are doing (TUNE.sim.embody.colours). Drawn only when the view is close (TUNE.sim.embody.dist).
+   - The clock bar's line: at work, asleep, out and about, walking, the step's cost. */
+VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
+
+VC.simCensusNow = function () {
+  var A = SIM.all('actor'), out = { actors: A.length, by: {}, unmet: {}, moving: 0, indoors: 0, pending: 0, stuck: 0 }, minute = SIM.minute(), t = SIM.time();
+  for (var i = 0; i < A.length; i++) {
+    var a = A[i], k = a.activity || 'none'; out.by[k] = (out.by[k] || 0) + 1;
+    if (a.task) { if (t < a.task.arrive) out.moving++; else if (a.task.indoor) out.indoors++; }
+    if (a.present && SIM.desire(a, minute) !== a.wanted) out.pending++;
+    else if (a.wanted && a.activity && a.activity !== a.wanted) out.unmet[a.wanted] = (out.unmet[a.wanted] || 0) + 1;   /* wanted, not had: the deficit */
+    if (!a.task) out.stuck++;
+  }
+  return out;
+};
+
+VC.simRun = function () {
+  if (typeof SIM === 'undefined' || !VC.PEOPLE || !VC.clock) return;
+  var R = TUNE.sim.run, C = VC.clock, S = VC.SIMRUN;
+  SIM.lazy = { pedestrian: { detour: R.detour } }; SIM.STEP_MAX = R.stepMax; SIM.REACH = R.reach;
+  var t0 = performance.now(); SIM.jump(); S.jumpMs = Math.round(performance.now() - t0); S.jumps++; S.last = SIM.minute();
+  var sampled = {};
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    var m = SIM.minute();
+    if (S.last == null || m < S.last || m - S.last > R.jumpGap) { var tj = performance.now(); SIM.jump(); S.jumpMs = Math.round(performance.now() - tj); S.jumps++; S.last = m; return; }
+    var n = Math.min(R.catchUp, m - S.last); if (n <= 0) return;
+    for (var i = 0; i < n; i++) { var ts = performance.now(); SIM.step(); S.ms.push(performance.now() - ts); S.steps++; if (S.ms.length > 300) S.ms.shift(); }
+    S.last = m;
+    /* the day's samples: at each sample hour, once */
+    var day = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+    if (R.samples.indexOf(h) >= 0 && !sampled[day + ':' + h]) { sampled[day + ':' + h] = 1; (S.days[day] || (S.days[day] = {}))[h] = VC.simCensusNow(); }
+  });
+  /* the clock bar's line, once a second */
+  var el = $('clk-sim'), lastTxt = 0;
+  if (el) (window._frameHooks = window._frameHooks || []).push(function (now) {
+    if (now - lastTxt < 1000) return; lastTxt = now;
+    var c = VC.simCensusNow(), b = c.by, ms = S.ms.slice().sort(function (p, q) { return p - q; }), f = function (v) { return (v || 0).toLocaleString(); };
+    el.textContent = 'day ' + (SIM.weekday() + 1) + ' of 7 · at work ' + f(b.WORK) + ' · asleep ' + f(b.SLEEP) + ' · walking ' + f(c.moving) + ' · step ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms';
+  });
+};
+
+/* ---------------------------------------------------------------- the bodies near the camera */
+VC.simBodies = function () {
+  if (typeof SIM === 'undefined' || !VC.PEOPLE) return;
+  var E = TUNE.sim.embody, box = function (w, h, d, x, y, z) { var g = new THREE.BoxGeometry(w, h, d); g.translate(x, y, z); return g; };
+  /* a person, 1.75 m, feet at 0, facing +z: legs and head in fixed colours, the tunic and arms take the instance colour */
+  var parts = [[box(0.15, 0.82, 0.17, -0.1, 0.41, 0), 0x3a3026], [box(0.15, 0.82, 0.17, 0.1, 0.41, 0), 0x3a3026], [box(0.44, 0.62, 0.26, 0, 1.13, 0), 0xffffff],
+    [box(0.11, 0.58, 0.13, -0.29, 1.12, 0), 0xffffff], [box(0.11, 0.58, 0.13, 0.29, 1.12, 0), 0xffffff], [box(0.24, 0.26, 0.25, 0, 1.6, 0), 0xb08a6a]];
+  var pos = [], nor = [], col = [], c = new THREE.Color();
+  parts.forEach(function (p) { var g = p[0].toNonIndexed(), P = g.attributes.position.array, N = g.attributes.normal.array; c.setHex(p[1]).convertSRGBToLinear();
+    for (var i = 0; i < P.length; i++) { pos.push(P[i]); nor.push(N[i]); } for (var k = 0; k < P.length / 3; k++) col.push(c.r, c.g, c.b); });
+  var G = new THREE.BufferGeometry(); G.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); G.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); G.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  var M = new THREE.InstancedMesh(G, new THREE.MeshLambertMaterial({ vertexColors: true }), E.max);
+  M.instanceMatrix.setUsage(THREE.DynamicDrawUsage); M.count = 0; M.frustumCulled = false; M.userData.probeSkip = true; scene.add(M);
+  var B = VC.SIMBODY = { mesh: M, list: [], shown: 0, resolved: 0, at: 0 };
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), p3 = new THREE.Vector3(), s3 = new THREE.Vector3(1, 1, 1), cc = new THREE.Color(), cols = {};
+  Object.keys(E.colours).forEach(function (k) { cols[k] = new THREE.Color(E.colours[k]).convertSRGBToLinear(); });
+  /* where an actor is, cheaply (for picking who is near): at its spot once arrived (null when indoors), on the straight
+     line of its trip while moving, at home with no task */
+  var where = function (a, t) {
+    if (!a.present) return null; var T = a.task;
+    if (!T) { var H = SIM.R.place[a.home]; return H ? null : null; }
+    if (t >= T.arrive) return T.indoor ? null : T.spot;
+    var L0 = T.legs[0], L1 = T.legs[T.legs.length - 1]; if (!L0) return T.spot;
+    var A = L0.lazy ? L0.lazy.from : L0.route.pts[0], f = T.dur > 0 ? (t - T.t0) / T.dur : 1, x0 = A.x != null ? A.x : A[0], z0 = A.z != null ? A.z : A[2];
+    return { x: x0 + (T.spot.x - x0) * f, z: z0 + (T.spot.z - z0) * f };
+  };
+  (window._frameHooks = window._frameHooks || []).push(function (now) {
+    var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; return; }
+    var cx = ctl.walk ? camera.position.x : ctl.target.x, cz = ctl.walk ? camera.position.z : ctl.target.z, t = SIM.time();
+    if (now - B.at > E.every) {     /* who is near: refreshed a few times a second */
+      B.at = now; var A = SIM.all('actor'), near = [], r2 = E.r * E.r;
+      for (var i = 0; i < A.length; i++) { var w = where(A[i], t); if (!w) continue; var d = (w.x - cx) * (w.x - cx) + (w.z - cz) * (w.z - cz); if (d < r2) near.push([d, A[i]]); }
+      near.sort(function (p, q2) { return p[0] - q2[0]; }); B.list = near.slice(0, E.max).map(function (x) { return x[1]; });
+    }
+    var n = 0;
+    for (var j = 0; j < B.list.length; j++) {
+      var a = B.list[j], P = SIM.pose(a, t); if (P.hidden) continue;
+      e.set(0, P.h || 0, 0); q.setFromEuler(e); p3.set(P.x, P.y, P.z); m4.compose(p3, q, s3); M.setMatrixAt(n, m4);
+      M.setColorAt(n, cols[P.moving ? 'moving' : a.activity] || cols.other); n++;
+    }
+    M.count = n; B.shown = n; M.instanceMatrix.needsUpdate = true; if (M.instanceColor) M.instanceColor.needsUpdate = true;
+    B.resolved = SIM.lazyResolved || 0;
+  });
+};
+
+/* a day run headless (verify.py, the report's check): the clock held, every minute of `day` stepped from `h0` to `h1`
+   with the motion clock moved on 3 s a minute, the census at `at` hours: what everyone does, what they wanted and did
+   not get, the decisions still waiting, how many wanted to work and how many do; the steps' cost */
+VC.simDay = function (day, h0, h1, at) {
+  var C = VC.clock, run = C.running; C.run(false); C.day = day; C.set(h0); SIM.jump();
+  var ms = [], out = { day: day, weekday: SIM.weekday(), samples: {}, top: [] }, wantWork = function () { var n = 0, m = SIM.minute(); SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORK') n++; }); return n; };
+  for (var m = h0 * 60; m < h1 * 60; m++) {
+    C.hour = m / 60; VC.motionT = (VC.motionT || 0) + 3;
+    var ts = performance.now(), made = SIM.step(), d = performance.now() - ts; ms.push(d); out.top.push([m, Math.round(d), made]);
+    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
+  }
+  ms.sort(function (a, b) { return a - b; }); out.top.sort(function (a, b) { return b[1] - a[1]; }); out.top = out.top.slice(0, 5);
+  out.p50 = Math.round(ms[ms.length >> 1]); out.p90 = Math.round(ms[Math.floor(ms.length * 0.9)]); out.max = Math.round(ms[ms.length - 1]);
+  VC.SIMRUN.last = SIM.minute(); C.run(run);
+  return out;
 };
 
 /* ---- targets/voth-city/57-vc-marks.js ---- */
