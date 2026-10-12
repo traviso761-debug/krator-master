@@ -86,6 +86,7 @@ function KCharFigure(body, sliders, load){
       m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
       m.bind(new THREE.Skeleton(bones.concat(extra), ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
       if(cl) cl.meshes.push(m);
+      if((itemByKey[part.key] || {}).loose) pushOut(m.material);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -485,7 +486,7 @@ function KCharFigure(body, sliders, load){
       c.chains.push({ parent:byName[ch.parent], pts:ch.pts, bones:list, p:[], len:[], x:[], xp:[], tw:[], q0:new THREE.Quaternion(),
                       stiff:0.1 });
     });
-    c.parts.forEach(function(pt){ pt.chains.forEach(function(g){ c.chains[g].stiff = pt.stiff; }); });
+    c.parts.forEach(function(pt){ pt.chains.forEach(function(g){ c.chains[g].stiff = pt.stiff; c.chains[g].layer = pt.layer || 0; }); });
     clothItems[part.key] = c;
     return c;
   }
@@ -587,6 +588,7 @@ function KCharFigure(body, sliders, load){
           c.chains.forEach(function(ch){ collide(ch, W); });
         }
         c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); collide(ch, W); });
+        layered(c, items);
       });
     }
     // the bones turn to the particles
@@ -623,6 +625,109 @@ function KCharFigure(body, sliders, load){
     var a = ch.x[k - 1], x = ch.x[k], L = ch.len[k - 1];
     cV.subVectors(x, a); var d = cV.length();
     if(d > 1e-9) x.copy(a).addScaledVector(cV, L / d);
+  }
+
+  /* layered: a cape, a cloak or a mantle (layer 2) lies over a robe's hem or a flap (1), which lies over a skirt (0):
+     a chain point stays outside the lower layers' chains near it, measured out from the body's vertical axis */
+  var LGAP = 0.03;
+  function layered(c, items){
+    var hip = bones[byName.Hips].getWorldPosition(cV3), segs = [];
+    items.forEach(function(o){ o.chains.forEach(function(ch){ for(var k = 0; k + 1 < ch.x.length; k++) segs.push([ch.x[k], ch.x[k + 1], ch.layer || 0]); }); });
+    c.chains.forEach(function(ch){
+      var L = ch.layer || 0;
+      if(!L) return;
+      for(var k = 1; k < ch.x.length; k++){
+        var x = ch.x[k], best = null, bd = 0.14;
+        segs.forEach(function(sg){
+          if(sg[2] >= L) return;
+          cV.subVectors(sg[1], sg[0]);
+          var t = THREE.MathUtils.clamp(cV2.subVectors(x, sg[0]).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+          cV2.copy(sg[0]).addScaledVector(cV, t);
+          var d = x.distanceTo(cV2);
+          if(d < bd){ bd = d; best = cV2.clone(); }
+        });
+        if(!best) continue;
+        var rx = x.x - hip.x, rz = x.z - hip.z, r = Math.hypot(rx, rz), rq = Math.hypot(best.x - hip.x, best.z - hip.z) + LGAP;
+        if(r < rq && r > 1e-4){ x.x = hip.x + rx / r * rq; x.z = hip.z + rz / r * rq; }
+      }
+    });
+  }
+
+  /* pushOut: a garment that hangs loose over the legs (kit item loose: skirts, robes, the kimono) has each vertex
+     pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
+     The capsules (legCaps) are the body's, in the figure's inner space, padded by the cloth's thickness */
+  var pushU = { kcA:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
+                kcB:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) } };
+  function pushOut(mat){
+    var prev = mat.onBeforeCompile;
+    mat.onBeforeCompile = function(sh, r){
+      if(prev) prev(sh, r);
+      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB;
+      sh.vertexShader = 'uniform vec4 kcA[4];\nuniform vec4 kcB[4];\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 4; ci++){\n' +
+        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float cr = kcA[ci].w;\n' +
+        '\t\tfloat ct = clamp(dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), 0.0, 1.0);\n' +
+        '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
+        '\t\tif(cl < cr && cl > 1e-5) transformed = cq + cd * (cr / cl);\n\t}');
+    };
+    mat.customProgramCacheKey = function(){ return 'kchar-push'; };
+    mat.needsUpdate = true;
+  }
+  var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot']], legInv = new THREE.Matrix4();
+  function legCaps(){
+    if(!caps.length) return;
+    self.inner.updateMatrixWorld(true);
+    legInv.copy(self.inner.matrixWorld).invert();
+    LEGS.forEach(function(lg, i){
+      var a = byName[lg[0]], b = byName[lg[1]], cp = caps.filter(function(c){ return c.a === a && c.b === b; })[0];
+      if(!cp) return;
+      bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
+      pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.014); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
+    });
+  }
+
+  /* bodyFix: clips retargeted from slighter bodies can put a hand in a broad body's hip or a thigh through the
+     other: after the clip, an elbow or a hand inside the pelvis, chest or its own side's thigh turns its upper arm or
+     forearm out until it clears; two thighs that overlap each turn out by half */
+  var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftUpLeg'], ['RightArm', 'RightForeArm', 'RightHand', 'RightUpLeg']], fV = new THREE.Vector3(), fW = new THREE.Vector3();
+  function depth(p, cp, out){
+    var a = bones[cp.a].getWorldPosition(fV), b = bones[cp.b].getWorldPosition(fW);
+    cV.subVectors(b, a);
+    var t = THREE.MathUtils.clamp(cV2.subVectors(p, a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+    out.copy(a).addScaledVector(cV, t);
+    var d = p.distanceTo(out);
+    out.subVectors(p, out).divideScalar(Math.max(d, 1e-6));    // the way out
+    return cp.r + 0.012 - d;
+  }
+  function bodyFix(){
+    if(!caps.length || !self.action) return;
+    self.group.updateMatrixWorld(true);
+    var sc = self.group.getWorldScale(cS).x, out = new THREE.Vector3(), q = new THREE.Quaternion();
+    var body = caps.filter(function(c){ return c.a === byName.Hips || c.a === byName.Spine1; });
+    ARMS.forEach(function(arm){
+      var s0 = bones[byName[arm[0]]], s1 = bones[byName[arm[1]]], s2 = bones[byName[arm[2]]];
+      var thigh = caps.filter(function(c){ return c.a === byName[arm[3]]; });
+      [[s0, s1], [s1, s2]].forEach(function(pr){
+        var pivot = pr[0].getWorldPosition(new THREE.Vector3()), p = pr[1].getWorldPosition(new THREE.Vector3()), worst = 0, way = new THREE.Vector3();
+        body.concat(thigh).forEach(function(cp){ var dd = depth(p, { a:cp.a, b:cp.b, r:cp.r * sc }, out); if(dd > worst){ worst = dd; way.copy(out); } });
+        if(worst <= 0) return;
+        var to = p.clone().addScaledVector(way, worst);
+        q.setFromUnitVectors(p.clone().sub(pivot).normalize(), to.sub(pivot).normalize());
+        turnWorld(pr[0], q);
+      });
+    });
+    // the thighs: closest points of the two segments
+    var tl = caps.filter(function(c){ return c.a === byName.LeftUpLeg; })[0], tr = caps.filter(function(c){ return c.a === byName.RightUpLeg; })[0];
+    if(!tl || !tr) return;
+    var hl = bones[tl.a].getWorldPosition(new THREE.Vector3()), kl = bones[tl.b].getWorldPosition(new THREE.Vector3());
+    var hr = bones[tr.a].getWorldPosition(new THREE.Vector3()), kr = bones[tr.b].getWorldPosition(new THREE.Vector3());
+    var need = (tl.r + tr.r) * sc + 0.004, gap = kl.distanceTo(kr);
+    if(gap >= need) return;
+    var sep = kl.clone().sub(kr); sep.y = 0;
+    if(sep.lengthSq() < 1e-8) sep.set(1, 0, 0);
+    sep.normalize().multiplyScalar((need - gap) / 2);
+    q.setFromUnitVectors(kl.clone().sub(hl).normalize(), kl.clone().add(sep).sub(hl).normalize()); turnWorld(bones[tl.a], q);
+    q.setFromUnitVectors(kr.clone().sub(hr).normalize(), kr.clone().sub(sep).sub(hr).normalize()); turnWorld(bones[tr.a], q);
   }
 
   /* bowString: the string between the bow's limb tips (data/props.json string, in the bow's frame), drawn through
@@ -681,8 +786,11 @@ function KCharFigure(body, sliders, load){
       }
     }
     self.drawn = !!mid;
+    // the drawing hand hooks three fingers on the string
+    var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
+    if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
-  function afterClip(dt){ grip(); twoHands(dt); clothStep(dt); bowString(); }
+  function afterClip(dt){ bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
   function hipsMorph(){
     var d = self.morphDelta && self.morphDelta[byName.Hips];
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }

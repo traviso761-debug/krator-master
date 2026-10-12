@@ -44,7 +44,8 @@ ITEMS = {
                     ('torso', 'Voth artisan xicolli', 'voth_m_trade_xicolli'), ('legs', 'Voth wrap kilt', 'voth_m_trade_kilt'),
                     ('feet', 'Voth heeled sandals', 'voth_m_trade_sandals'),
                     ('torso', 'Voth court robe', 'voth_m_noble_robe'), ('legs', 'Voth court skirt', 'voth_m_noble_skirt'),
-                    ('feet', 'Voth gilded sandals', 'voth_m_noble_sandals')]},
+                    ('feet', 'Voth gilded sandals', 'voth_m_noble_sandals'),
+                    ('head', 'Voth head wrap', 'voth_m_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_m_noble_headdress')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -76,9 +77,10 @@ ITEMS = {
                     ('torso', 'Voth banded huipil', 'voth_f_trade_huipil'), ('legs', 'Voth ankle skirt', 'voth_f_trade_skirt'),
                     ('feet', 'Voth heeled sandals', 'voth_f_trade_sandals'),
                     ('torso', 'Voth court huipil', 'voth_f_noble_gown'), ('legs', 'Voth court skirt', 'voth_f_noble_skirt'),
-                    ('feet', 'Voth gilded sandals', 'voth_f_noble_sandals')]},
+                    ('feet', 'Voth gilded sandals', 'voth_f_noble_sandals'),
+                    ('head', 'Voth head wrap', 'voth_f_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_f_noble_headdress')]},
 }[body]
-KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
+KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
 ATYPE = {'clothes': 'Clothes', 'hair': 'Hair', 'eyebrows': 'Eyebrows', 'eyelashes': 'Eyelashes', 'eyes': 'Eyes'}
 def find(kind, name):

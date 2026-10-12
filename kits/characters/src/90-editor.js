@@ -9,7 +9,7 @@
 */
 (function(){
   var D = KCHAR_DATA, $ = function(id){ return document.getElementById(id); };
-  var SLOT_LABEL = { torso:'Torso & arms', legs:'Legs', feet:'Feet' };
+  var SLOT_LABEL = { head:'Headgear', torso:'Torso & arms', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
   var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman' };
   var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
@@ -261,17 +261,17 @@
     });
     if(!list.length) return;
     var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
-    var cur = list.filter(function(x){ return ['torso', 'legs', 'feet'].every(function(sl){ return (rec.armour[sl] || null) === (x.set[sl] && has(x.set[sl]) ? x.set[sl] : null); }); })[0];
+    var cur = list.filter(function(x){ return ['head', 'torso', 'legs', 'feet'].every(function(sl){ return (rec.armour[sl] || null) === (x.set[sl] && has(x.set[sl]) ? x.set[sl] : null); }); })[0];
     var s = section(gear, 'Outfits', cur ? cur.name : 'Mixed');
     chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-outfit-' + x.id.replace('.', '-') }; }), cur ? cur.id : null, function(id){
       var x = list.filter(function(y){ return y.id === id; })[0];
-      ['torso', 'legs', 'feet'].forEach(function(sl){ rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null; });
+      ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null; });
       apply(); buildPanel();
     }, true);
   }
   function buildMpfb(kit, gear, headp){
     outfitChips(kit, gear);
-    ['torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
+    ['head', 'torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
     var gh = document.createElement('p'); gh.className = 'hint';
     gh.textContent = 'MakeHuman library clothing: MPFB fitted each piece to this body, it takes its weights from the body, and it hides the skin it covers. Loose pieces (the kimono, harem trousers, skirts) hang from the body. The body and face sliders reshape the clothes with it.';
     gear.appendChild(gh);

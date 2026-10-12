@@ -98,7 +98,7 @@ var KCHAR = (function(){
     if(kit.style === 'mpfb') return { id:'base', name:'Base', style:'base', face:null };   // the head is the base's
     return byId(kit.heads, rec.head) || byId(kit.heads, kit.base);
   }
-  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair', 'beard'];
+  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair', 'beard', 'head'];   // head last: older strangers draw the same
   function mpfbItem(rec, kit, slot){
     var id = (slot === 'hair' || slot === 'beard') ? rec[slot] : (rec.armour || {})[slot];
     var it = id && byId(kit.items, id);
@@ -116,9 +116,11 @@ var KCHAR = (function(){
     if(kit.style === 'mpfb'){
       /* a MakeHuman body: the base (skin, brows, lashes, nails), then each item; mesh '*' is every mesh in the GLB */
       out.push({ key:key(kit.base_glb), mesh:'*', role:'base', slot:'base' });
+      // headgear that covers the hair (kit item covers_hair: a head wrap) leaves the hair out
+      var hat = mpfbItem(rec, kit, 'head');
       MPFB_SLOTS.forEach(function(slot){
         var it = mpfbItem(rec, kit, slot);
-        if(it) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
+        if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
       });
       return out;
     }
@@ -170,7 +172,7 @@ var KCHAR = (function(){
   }
 
   function blank(kit){
-    if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null }, sliders:{},
+    if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null, head:null }, sliders:{},
                                       morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{} };
     return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
              sliders:{}, dye:{} };
@@ -270,6 +272,7 @@ var KCHAR = (function(){
         rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot; }) ? want : null;
         return;
       }
+      if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
       var have = kit.items.filter(function(it){ return it.slot === slot; });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;

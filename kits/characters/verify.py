@@ -128,6 +128,33 @@ CHECKS = r'''async () => {
       if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
       await window._kchar.set(r0);
     }
+    // a heavy body: after the clip, no elbow or hand sits inside the pelvis, chest or its own thigh (bodyFix)
+    {
+      const r0 = JSON.parse(JSON.stringify(window._kchar.record()));
+      const r3 = JSON.parse(JSON.stringify(r0)); r3.morph = { weight:1, muscle:1 };
+      await window._kchar.set(r3);
+      const bi = n => fig.bones.findIndex(b => b.name === n);
+      let deep = 0, worst = 0;
+      for (const clip of ['idle', 'walk', 'ual_sword_idle', 'combat_idle']) {
+        await fig.play(clip);
+        for (let k = 0; k < 20; k++) {
+          fig.update(1 / 15);
+          const caps = fig.clothState().caps;
+          [['LeftForeArm', 'LeftHand', 'LeftUpLeg'], ['RightForeArm', 'RightHand', 'RightUpLeg']].forEach(arm => [arm[0], arm[1]].forEach(n => {
+            const p = fig.bones[bi(n)].getWorldPosition(new THREE.Vector3());
+            caps.filter(cp => cp.a === bi('Hips') || cp.a === bi('Spine1') || cp.a === bi(arm[2])).forEach(cp => {
+              const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
+              const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, p.clone().sub(a).dot(ab) / ab.lengthSq()));
+              const d = cp.r - p.distanceTo(a.clone().addScaledVector(ab, t));
+              if (d > 0.006) deep++;
+              worst = Math.max(worst, d);
+            });
+          }));
+        }
+      }
+      if (deep) out.props.push(body + ' heavy body: ' + deep + ' elbow or hand frames inside the body (worst ' + worst.toFixed(3) + ' m)');
+      await window._kchar.set(r0);
+    }
     await fig.play(null);
     out.random = out.random && JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0])) === JSON.stringify(KCHAR.stranger(5, kit, D.peoples[0]));
     for (const P of D.peoples) for (let s = 1; s <= 25; s++) {

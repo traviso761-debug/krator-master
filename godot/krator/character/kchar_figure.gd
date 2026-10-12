@@ -21,6 +21,7 @@ extends Node3D
 
 const EYE_SHADER := preload("res://krator/character/kchar_eye.gdshader")
 const HIDDEN_SHADER := preload("res://krator/character/kchar_hidden.gdshader")
+const PUSH_SHADER := preload("res://krator/character/kchar_push.gdshader")
 
 static var _cache := {}                  # piece path -> Array of built meshes (see _build)
 
@@ -282,6 +283,7 @@ func _live_meshes(part: Dictionary) -> Array:
 
 func apply(rec: Dictionary) -> void:
 	record = rec
+	_push_mats.clear()
 	var want := {}
 	for p in KChar.parts(rec, kit):
 		for mi in _live_meshes(p):
@@ -355,6 +357,14 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		sm.set_shader_parameter("tint", Vector3(c.r * g, c.g * g, c.b * g))
 		return sm
 	var m2 := mat.duplicate() as BaseMaterial3D
+	if _is_loose(part):
+		var dye0 = rec.get("dye", {}).get(part["slot"])
+		var pm := ShaderMaterial.new()
+		pm.shader = PUSH_SHADER
+		pm.set_shader_parameter("tex", m2.albedo_texture)
+		pm.set_shader_parameter("albedo", Color(dye0) if dye0 != null else Color.WHITE)
+		_push_mats.append(pm)
+		return pm
 	if role == "skin":
 		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
 	elif role == "hair":
@@ -432,9 +442,11 @@ func hold(want: Dictionary) -> void:
 
 
 func _after_clip(dt: float) -> void:
+	_body_fix()
 	_grip()
 	_two_hands(dt)
 	_cloth_step(dt)
+	_leg_caps()
 	_bow_string()
 
 
@@ -640,6 +652,11 @@ func _bow_string() -> void:
 	pivot.transform = Transform3D(Basis(Vector3.UP, turn), Vector3.ZERO)
 	p = p.rotated(Vector3.UP, -turn)
 	drawn = turn != 0.0 and p.z < rest - 0.02
+	var hR: Dictionary = skel["hands"]["R"]
+	if drawn and held["R"] == null and hR.has("curls") and hR["curls"].has("draw"):
+		var J: Array = skel["joints"]
+		for cq in hR["curls"]["draw"]:
+			skeleton.set_bone_pose_rotation(int(cq[0]), KChar._q(J[int(cq[0])]["r"]) * Quaternion(cq[1], cq[2], cq[3], cq[4]))
 	if drawn:
 		_span(_bow["a"], top, p)
 		_span(_bow["c"], p, bot)
@@ -701,6 +718,7 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 	for pt in c["parts"]:
 		for g in pt["chains"]:
 			c["chains"][int(g)]["stiff"] = float(pt["stiff"])
+			c["chains"][int(g)]["layer"] = int(pt.get("layer", 0))
 	_cloth[part["key"]] = c
 	return c
 
@@ -840,6 +858,7 @@ func _cloth_step(dt: float) -> void:
 			for ch in c["chains"]:
 				_keep_len(ch)
 				_collide(ch, W, ground)
+			_layered(c, items)
 	for c in items:
 		for ch in c["chains"]:
 			var M := _rigid(ch)
@@ -868,6 +887,135 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 		if p.y < ground:
 			p.y = ground
 		x[k] = p
+
+
+# a cape or mantle (layer 2) stays outside a hem or flap (1), which stays outside a skirt (0): measured out from the
+# body's vertical axis, against the lower layers' chain segments near it (as layered() in 50-figure.js)
+func _layered(c: Dictionary, items: Array) -> void:
+	var hip := _gp(_hips).origin
+	var segs := []
+	for o in items:
+		for ch in o["chains"]:
+			for k in ch["x"].size() - 1:
+				segs.append([ch["x"][k], ch["x"][k + 1], int(ch.get("layer", 0))])
+	for ch in c["chains"]:
+		var L: int = int(ch.get("layer", 0))
+		if L == 0:
+			continue
+		var x: Array = ch["x"]
+		for k in range(1, x.size()):
+			var p: Vector3 = x[k]
+			var best = null
+			var bd := 0.14
+			for sg in segs:
+				if sg[2] >= L:
+					continue
+				var ab: Vector3 = sg[1] - sg[0]
+				var t := clampf((p - sg[0]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+				var q: Vector3 = sg[0] + ab * t
+				var d := p.distance_to(q)
+				if d < bd:
+					bd = d
+					best = q
+			if best == null:
+				continue
+			var r := Vector2(p.x - hip.x, p.z - hip.z).length()
+			var rq := Vector2(best.x - hip.x, best.z - hip.z).length() + 0.03
+			if r < rq and r > 1e-4:
+				p.x = hip.x + (p.x - hip.x) / r * rq
+				p.z = hip.z + (p.z - hip.z) / r * rq
+				x[k] = p
+
+
+# ---- loose garments pushed out of the legs (kchar_push.gdshader), and the body kept out of itself ----
+var _push_mats := []
+
+
+func _is_loose(part: Dictionary) -> bool:
+	for x in kit["items"]:
+		if "pieces/%s.glb" % part["key"] == x["glb"]:
+			return x.get("loose", false)
+	return false
+
+
+func _leg_caps() -> void:
+	if _push_mats.is_empty() or _caps.is_empty():
+		return
+	var A := []
+	var Bv := []
+	for lg in [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"]]:
+		var a := skeleton.find_bone(lg[0])
+		var b := skeleton.find_bone(lg[1])
+		var r := 0.0
+		for cp in _caps:
+			if cp["a"] == a and cp["b"] == b:
+				r = float(cp["r"]) + 0.014
+		var pa := _gp(a).origin
+		var pb := _gp(b).origin
+		A.append(Vector4(pa.x, pa.y, pa.z, r))
+		Bv.append(Vector4(pb.x, pb.y, pb.z, 0.0))
+	for pm in _push_mats:
+		pm.set_shader_parameter("kcA", A)
+		pm.set_shader_parameter("kcB", Bv)
+
+
+# an elbow or hand inside the pelvis, chest or its own thigh turns its upper arm or forearm out; two thighs that
+# overlap each turn out by half (as bodyFix() in 50-figure.js)
+func _body_fix() -> void:
+	if _caps.is_empty() or _clip == "":
+		return
+	var hips_i := skeleton.find_bone("Hips")
+	var sp1 := skeleton.find_bone("Spine1")
+	for arm in [["LeftArm", "LeftForeArm", "LeftHand", "LeftUpLeg"], ["RightArm", "RightForeArm", "RightHand", "RightUpLeg"]]:
+		var b0 := skeleton.find_bone(arm[0])
+		var b1 := skeleton.find_bone(arm[1])
+		var b2 := skeleton.find_bone(arm[2])
+		var th := skeleton.find_bone(arm[3])
+		for pr in [[b0, b1], [b1, b2]]:
+			var pivot := _gp(pr[0]).origin
+			var p := _gp(pr[1]).origin
+			var worst := 0.0
+			var way := Vector3.ZERO
+			for cp in _caps:
+				if cp["a"] != hips_i and cp["a"] != sp1 and cp["a"] != th:
+					continue
+				var a := _gp(cp["a"]).origin
+				var ab := _gp(cp["b"]).origin - a
+				var t := clampf((p - a).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+				var q := a + ab * t
+				var d := p.distance_to(q)
+				var dd := float(cp["r"]) + 0.012 - d
+				if dd > worst:
+					worst = dd
+					way = (p - q) / maxf(d, 1e-6)
+			if worst <= 0.0:
+				continue
+			var to := p + way * worst
+			_turn(pr[0], Quaternion((p - pivot).normalized(), (to - pivot).normalized()))
+	var tl = null
+	var tr = null
+	for cp in _caps:
+		if cp["a"] == skeleton.find_bone("LeftUpLeg"):
+			tl = cp
+		if cp["a"] == skeleton.find_bone("RightUpLeg"):
+			tr = cp
+	if tl == null or tr == null:
+		return
+	var hl := _gp(tl["a"]).origin
+	var kl := _gp(tl["b"]).origin
+	var hr := _gp(tr["a"]).origin
+	var kr := _gp(tr["b"]).origin
+	var need := float(tl["r"]) + float(tr["r"]) + 0.004
+	var gap := kl.distance_to(kr)
+	if gap >= need:
+		return
+	var sep := kl - kr
+	sep.y = 0.0
+	if sep.length_squared() < 1e-8:
+		sep = Vector3(1, 0, 0)
+	sep = sep.normalized() * ((need - gap) / 2.0)
+	_turn(tl["a"], Quaternion((kl - hl).normalized(), (kl + sep - hl).normalized()))
+	_turn(tr["a"], Quaternion((kr - hr).normalized(), (kr - sep - hr).normalized()))
 
 
 func _keep_len(ch: Dictionary) -> void:

@@ -248,7 +248,7 @@ def hull_rows(P, axes, rows):
 
 def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=None, rows=None, group_below=None,
                scale=(1.0, 1.0), ease_bottom=None, iters=3, hang_side=None, points=None, hull_from=None, over_arms=False,
-               stiff=0.12):
+               stiff=0.12, layer=None):
     """rings round the body's vertical axis from z0 (top) down to z1; dense near the shoulders. arc=(a0, a1): only
     that part of the circle (radians, 0 at the back, +pi/2 at the body's left). hang_from: the height cloth falls
     from at the front and back; hang_side: at the sides (lower, under the arms). points=(depth, power): the lower edge
@@ -296,6 +296,7 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
     part = Part(name, P, arc is None, grp, paint)
     if start is not None and stiff is not None:
         part.cloth = {'start': start, 'stiff': stiff}
+        if layer is not None: part.cloth['layer'] = layer
     return part
 
 
@@ -355,7 +356,7 @@ def flap(name, top_center, width, length, out, paint, cols=7, rows=10, ease=0.01
     P = smooth_push(P, False, ease, iters=3)
     grp = ['helper-skirt' if (group_below is not None and P[i, :, 2].mean() < group_below) else 'body' for i in range(rows)]
     part = Part(name, P, False, grp, paint)
-    part.cloth = {'start': 0, 'stiff': 0.08}
+    part.cloth = {'start': 0, 'stiff': 0.08, 'layer': 1}
     return part
 
 
@@ -439,10 +440,12 @@ def paint_strip(spec, W, H, circ, length):
 SPINE = ('Hips', 'Spine', 'Spine1', 'Spine2')
 
 
-def cloth_spec(p, offset):
+def cloth_spec(p, offset, slot):
     """the bone chains a hanging part gets (make_mpfb.py turns them into joints): every ~7.5 cm round a tube (~10 cm
     across a cape or flap) a column becomes a chain, from the row it starts to hang from down to the hem, one bone
-    per ~12 cm, shorter near the top; each chain hangs from the spine joint just above its top"""
+    per ~12 cm, shorter near the top; each chain hangs from the spine joint just above its top (the head's, for
+    headgear). Its layer says what it lies over: 0 a skirt, 1 a tunic's or robe's hem and flaps, 2 capes, cloaks and
+    mantles (the figure keeps a layer's chains outside the lower layers')"""
     if not p.cloth: return None
     R, Cn = p.P.shape[:2]
     st = p.cloth['start']
@@ -466,13 +469,14 @@ def cloth_spec(p, offset):
         parent = 'Hips'
         for jn in SPINE:
             if J(jn)[2] <= z + 0.02: parent = jn
+        if slot == 'head': parent = 'Head'
         chains.append({'col': col, 'rows': rows, 'parent': parent})
     if not chains: return None
     return {'name': p.name, 'offset': offset, 'rows': R, 'cols': Cn, 'closed': bool(p.closed), 'stiff': p.cloth['stiff'],
-            'chains': chains}
+            'layer': p.cloth.get('layer', 1 if slot == 'torso' else 2 if slot == 'head' else 0), 'chains': chains}
 
 
-def build(gid, label, parts):
+def build(gid, label, parts, slot='torso'):
     """the parts as one mesh with UVs (one texture strip each), its texture and material, and the .mhclo"""
     me = bpy.data.meshes.new(gid)
     bm = bmesh.new()
@@ -536,7 +540,7 @@ def build(gid, label, parts):
     # the cloth chains, by garment vertex (part offset + row * cols + col): make_mpfb.py adds the bones
     specs, off = [], 0
     for p in parts:
-        c = cloth_spec(p, off)
+        c = cloth_spec(p, off, slot)
         if c: specs.append(c)
         off += p.P.shape[0] * p.P.shape[1]
     json.dump({'garment': gid, 'verts': off, 'parts': specs}, open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
@@ -616,7 +620,47 @@ def loincloth(gid, paint_band, paint_flap, length):
 def cape(gid, z1, paint, flare=0.25, span=1.5, ease=0.025, top=None):
     """a cloak over the back: across the shoulders (from 'top', under a mantle), falling to z1"""
     return torso_tube(gid, TOP + 0.01 if top is None else top, z1, ease, paint, n=24, arc=(-span, span), hang_from=SHOULDER - 0.12, flare=flare,
-                      group_below=CROTCH + 0.05, iters=2, over_arms=True, stiff=0.05)
+                      group_below=CROTCH + 0.05, iters=2, over_arms=True, stiff=0.05, layer=2)
+
+
+def head_rings(name, f0, f1, ease, paint, n=32, rows=4, apex=False, scale=(1.0, 1.0)):
+    """rings round the head's axis (Head joint to the crown) from fraction f0 to f1 of the way up; apex: the last row
+    closes over the crown (a cap)"""
+    a, b = J('Head'), J('Head', 'tail')
+    t = (b - a) / np.linalg.norm(b - a)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    fs = np.linspace(f0, f1, rows)
+    P = np.array([ring_points(a + (b - a) * f, x, y, angles, ease, rmin=0.03, rmax=0.2, scale=scale) for f in fs])
+    if apex:
+        c = a + (b - a) * f1
+        P[-1] = c + (P[-1] - c) * 0.25 + t * ease
+        P[-2] = c + (P[-2] - c) * 0.7 + t * ease * 0.7 + (P[-2] - c) * 0.0
+    P = smooth_push(P, True, ease, iters=2)
+    return Part(name, P, True, ['body'] * rows, paint)
+
+
+def fan(name, r0, r1, spread, paint, rows=7, cols=13, tilt=0.35, back=0.07, curl=0.18, stiff=0.6):
+    """a feather fan standing behind the head (a quetzal headdress): rows outward from r0 to r1 (metres), cols across
+    +-spread radians, leaning back by tilt; its feathers are cloth chains, stiff, so they shiver rather than droop"""
+    a, b = J('Head'), J('Head', 'tail')
+    up = (b - a) / np.linalg.norm(b - a)
+    bk = np.array([0, 1.0, 0]) - up * up[1]; bk /= np.linalg.norm(bk)
+    side = np.cross(up, bk); side /= np.linalg.norm(side)
+    up2 = up * math.cos(tilt) + bk * math.sin(tilt)
+    c = a + (b - a) * 0.62 + bk * back
+    P = []
+    for i in range(rows):
+        r = r0 + (r1 - r0) * i / (rows - 1)
+        row = []
+        for j in range(cols):
+            an = -spread + 2 * spread * j / (cols - 1)
+            row.append(c + side * math.sin(an) * r + up2 * math.cos(an) * r + bk * curl * (r - r0) ** 2 / max(1e-6, r1 - r0))
+        P.append(row)
+    part = Part(name, np.array(P), False, ['body'] * rows, paint)
+    part.cloth = {'start': 0, 'stiff': stiff, 'layer': 2}
+    return part
 
 
 GARMENTS = {}
@@ -671,7 +715,7 @@ def _():
     mantle = P('rust', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'soot'), B('bottom', 0.02, 0.05, 'zigzag', 'ochre', 'rust', 0.05)])
     return [torso_tube('voth_m_trade_xicolli', TOP - 0.01, CROTCH - 0.16, 0.012, body, hang_from=WAIST - 0.03, flare=0.22, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
             torso_tube('voth_m_trade_xicolli_sash', WAIST + 0.035, WAIST - 0.035, 0.024, sash, rows=3, n=40, hull_from=WAIST + 0.1),
-            torso_tube('voth_m_trade_xicolli_mantle', TOP + 0.005, SHOULDER - 0.07, 0.04, mantle, n=44, hang_from=TOP - 0.035, flare=0.55, iters=2, over_arms=True, stiff=0.35)]
+            torso_tube('voth_m_trade_xicolli_mantle', TOP + 0.005, SHOULDER - 0.07, 0.04, mantle, n=44, hang_from=TOP - 0.035, flare=0.55, iters=2, over_arms=True, stiff=0.35, layer=2)]
 
 
 @garment('voth_m_trade_kilt', 'legs', 'male', 'Wrap kilt')
@@ -715,7 +759,7 @@ def _():
     cloak = P('purple', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.10),
                                B('bottom', 0.12, 0.135, 'solid', 'gold')])
     return [torso_tube('voth_m_noble_robe', TOP - 0.01, CROTCH - 0.08, 0.012, robe, hang_from=CHEST - 0.08, hang_side=WAIST, flare=0.10, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-            torso_tube('voth_m_noble_robe_mantle', TOP + 0.01, SHOULDER - 0.13, 0.045, mantle, n=48, hang_from=TOP - 0.03, flare=0.7, iters=2, points=(0.06, 2), over_arms=True, stiff=0.35),
+            torso_tube('voth_m_noble_robe_mantle', TOP + 0.01, SHOULDER - 0.13, 0.045, mantle, n=48, hang_from=TOP - 0.03, flare=0.7, iters=2, points=(0.06, 2), over_arms=True, stiff=0.35, layer=2),
             torso_tube('voth_m_noble_robe_collar', TOP + 0.06, TOP + 0.005, 0.02, collar, n=32, rows=4, ease_bottom=0.03),
             cape('voth_m_noble_robe_cloak', KNEE - 0.22, cloak, flare=0.22, span=1.2, ease=0.032, top=TOP - 0.035)] + \
         sleeves('voth_m_noble_robe', 'wrist', 0.016, sl, ease_end=0.05, rows=10)
@@ -741,7 +785,7 @@ def _():
                             B('bottom', 0.08, 0.095, 'solid', 'crimson'), B('top', 0.0, 0.03, 'solid', 'crimson')])
     sl = P('purple', 0.04, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.015, 0.06, 'fret', 'gold', 'purple', 0.05)])
     return [torso_tube('voth_f_noble_gown', TOP, HIPS[2] - 0.06, 0.011, bod, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.08, hull_from=CHEST + 0.02),
-            torso_tube('voth_f_noble_gown_quech', TOP + 0.008, SHOULDER - 0.06, 0.045, quech, n=48, hang_from=TOP - 0.03, flare=0.6, iters=2, points=(0.22, 3), over_arms=True, stiff=0.3)] + \
+            torso_tube('voth_f_noble_gown_quech', TOP + 0.008, SHOULDER - 0.06, 0.045, quech, n=48, hang_from=TOP - 0.03, flare=0.6, iters=2, points=(0.22, 3), over_arms=True, stiff=0.3, layer=2)] + \
         sleeves('voth_f_noble_gown', 'wrist', 0.014, sl, ease_end=0.06, rows=10)
 
 
@@ -763,6 +807,34 @@ for b, sex in (('male', 'm'), ('female', 'f')):
     GARMENTS['voth_%s_noble_sandals' % sex] = ('feet', b, 'Gilded sandals and greaves', _mk)
 
 
+# ---- headgear: the court's quetzal feathers on a gold band, the trades' head wrap with a tail down the back ----
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _mk(sex=sex):
+        band = P('gold', 0.03, [B('top', 0.0, 0.006, 'solid', 'black'), B('bottom', 0.0, 0.006, 'solid', 'black'),
+                                B('top', 0.008, 0.028, 'diamonds', 'jade', 'gold', 0.035)])
+        feathers = P('quetzal', 0.04, [B('top', 0.0, 0.04, 'solid', 'gold'), B('top', 0.04, 0.07, 'dots', 'crimson', 'gold', 0.03),
+                                       B('top', 0.07, 0.09, 'solid', 'crimson'), B('bottom', 0.0, 0.05, 'feather', 'teal', 'quetzal', 0.035),
+                                       B('top', 0.09, 0.30, 'stripes', 'jade', 'quetzal', 0.0)])
+        big = sex == 'm'
+        return [head_rings('voth_%s_noble_headdress_band' % sex, 0.6, 0.72, 0.03, band, n=36, rows=3),
+                fan('voth_%s_noble_headdress' % sex, 0.07, 0.40 if big else 0.27, 1.25 if big else 1.05, feathers,
+                    cols=15 if big else 11)]
+    GARMENTS['voth_%s_noble_headdress' % sex] = ('head', b, 'Quetzal headdress', _mk)
+
+    def _mk2(sex=sex):
+        wrap = P('indigo' if sex == 'm' else 'madder', 0.08, [B('bottom', 0.0, 0.012, 'solid', 'ochre'),
+                                                              B('bottom', 0.014, 0.04, 'zigzag', 'ochre', 'indigo' if sex == 'm' else 'madder', 0.04)])
+        tail = P('indigo' if sex == 'm' else 'madder', 0.08, [B('bottom', 0.0, 0.02, 'solid', 'ochre'), B('bottom', 0.025, 0.05, 'steps', 'ochre', 'indigo' if sex == 'm' else 'madder', 0.05)])
+        a, bt = J('Head'), J('Head', 'tail')
+        c = a + (bt - a) * 0.55
+        h = first_hit(c, np.array([0, 1.0, 0]))
+        top = c + np.array([0, 1.0, 0]) * ((h or 0.1) + 0.035)
+        t = flap('voth_%s_trade_wrap_tail' % sex, top, 0.09, 0.30, np.array([0, 1.0, 0]), tail, cols=4, rows=8, ease=0.03, sway=0.02)
+        t.cloth['layer'] = 2
+        return [head_rings('voth_%s_trade_wrap' % sex, 0.5, 1.0, 0.03, wrap, n=32, rows=9, apex=True), t]
+    GARMENTS['voth_%s_trade_wrap' % sex] = ('head', b, 'Head wrap', _mk2)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # the xref cache MPFB's matching reads (made once per machine)
 cache = LocationService.get_user_cache('basemesh_xref')
@@ -772,7 +844,7 @@ if not os.path.exists(cache) or not os.listdir(cache):
 made = {}
 for gid, (slot, body, label, fn) in GARMENTS.items():
     if body != BODY or (ONLY and gid not in ONLY): continue
-    o = build(gid, label, fn())
+    o = build(gid, label, fn(), slot)
     if o: made[gid] = {'slot': slot, 'label': label}
 print('MADE', json.dumps(made))
 

@@ -63,7 +63,7 @@
     Object.keys(r.armour).forEach(function(s){ if(!kit.items.some(function(it){ return it.id === r.armour[s]; })) r.armour[s] = null; });
     if(!kit.items.some(function(it){ return it.id === r.hair; })) r.hair = null;
     var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && d.p.outfits[c.body.replace(/^mpfb_/, '')][d.tier];
-    if(set) ['torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
+    if(set) ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
     r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
     r.ancestry = null;
     return r;

@@ -381,7 +381,7 @@ def cloth_bones(j, b, item, spec, blobs):
             chains.append({'parent': ch['parent'], 'pts': [int(x) for x in pts], 'part': pi, 'col': ch['col'],
                            'rows': ch['rows'], 'joints': jidx})
             ids.append(g)
-        parts_out.append({'closed': part['closed'], 'chains': ids, 'stiff': part['stiff']})
+        parts_out.append({'closed': part['closed'], 'chains': ids, 'stiff': part['stiff'], 'layer': part.get('layer', 0)})
     if not chains:
         return None
     skin['joints'] += new_nodes
@@ -748,7 +748,13 @@ def hands(c, J):
 # finger along a gun's barrel; wide wraps a cup
 _FIST = (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45)), ('Pinky', (74, 80, 45)),
          ('Thumb', (20, 30, 25)))
+# headgear that covers the hair (KCHAR.parts leaves the hair out), and library items that hang loose over the legs
+COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap'}
+LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
 GRIP_STYLES = {'fist': _FIST,
+               # a bow drawn with three fingers on the string, the thumb and little finger tucked
+               'draw': (('Index', (30, 40, 25)), ('Middle', (32, 42, 25)), ('Ring', (40, 50, 30)), ('Pinky', (75, 85, 50)),
+                        ('Thumb', (25, 35, 30))),
                'trigger': (('Index', (14, 22, 10)),) + _FIST[1:],
                'wide': tuple((f, tuple(round(a * 0.55) for a in ang)) for f, ang in _FIST)}
 
@@ -791,6 +797,10 @@ def main():
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
+        if it['id'] in COVERS_HAIR:
+            entry['covers_hair'] = True
+        if it['id'] in LOOSE or (it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs')):
+            entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn

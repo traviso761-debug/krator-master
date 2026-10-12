@@ -12,7 +12,7 @@ class_name KChar
 extends RefCounted
 
 const KRand := preload("res://tests/rand/krand.gd")
-const SLOTS := ["feet", "legs", "torso", "hair", "beard"]
+const SLOTS := ["feet", "legs", "torso", "hair", "beard", "head"]
 const RACES := ["african", "asian", "caucasian"]
 const AGE := [-0.6, 0.9]
 
@@ -61,9 +61,10 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 
 static func parts(rec: Dictionary, kit: Dictionary) -> Array:
 	var out := [{"key": key(kit["base_glb"]), "mesh": "*", "role": "base", "slot": "base"}]
+	var hat = item(rec, kit, "head")
 	for slot in SLOTS:
 		var it = item(rec, kit, slot)
-		if it != null:
+		if it != null and not (slot == "hair" and hat != null and hat.get("covers_hair", false)):
 			out.append({"key": key(it["glb"]), "mesh": "*", "role": slot if slot == "hair" or slot == "beard" else "armour", "slot": slot})
 	return out
 
@@ -92,7 +93,7 @@ static func hidden(rec: Dictionary, kit: Dictionary) -> PackedByteArray:
 
 
 static func blank(kit: Dictionary) -> Dictionary:
-	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null},
+	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null, "head": null},
 		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}
 
 
@@ -217,6 +218,9 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 				if want != null and it["id"] == want and it["slot"] == slot:
 					ok = true
 			rec["armour"][slot] = want if ok else null
+			continue
+		if slot == "head":                 # headgear only comes with a people's outfit
+			rec["armour"]["head"] = null
 			continue
 		var have := []
 		for it in kit["items"]:
