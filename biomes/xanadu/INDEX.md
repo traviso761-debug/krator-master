@@ -18,7 +18,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 18 | the map (46); the sacred river (100); terrain (133); the climate fields (151); the field cache (18 m lattice; terrainH stays ex (174); the host binding (182) |
 | `46-host-ground.js` | 11 | the lake (71); the river (97) |
-| `50-biome-xanadu-species.js` | 61 **big** | THE LAKE COLOUR (21); the tree species (74); harvest (biomes/FRUIT.md) (184); leaf and flower textures (247); an iridescent bark (shared hook; the Rift kit's) (395); bark textures (408); geometries local to this biome (457); materials (550); instanced items (610) |
+| `50-biome-xanadu-species.js` | 60 **big** | THE LAKE COLOUR (21); the tree species (74); harvest (biomes/FRUIT.md) (184); leaf and flower textures (247); an iridescent bark (395); bark textures (398); geometries local to this biome (447); materials (540); instanced items (600) |
 | `55-biome-xanadu-trees.js` | 67 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (506); the pass (538); one tree at a point (additive, for a world's gar (626) |
 | `60-biome-xanadu-floor.js` | 20 | small plants (34); the zone planters (99); the pass (166) |
 | `65-biome-xanadu-dress.js` | 5 |  |

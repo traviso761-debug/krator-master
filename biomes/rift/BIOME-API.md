@@ -15,7 +15,8 @@ biome needed (an eastern-abyss or hyperjungle fragment runs unchanged on it):
 - `BIO.fieldDefault` now also carries `flow` and `mist` (both 0), so a biome may read
   `BIO.field('mist',x,z)` on a host that never heard of a cloud forest.
 - `BIO.iridBarkMat(tex,key,colA,colB)` takes the two colours of the shift (the eastern
-  abyss's red-green is the default), so several species can shimmer differently.
+  abyss's red-green is the default), so several species can shimmer differently. Since
+  2026-10-12 it lives in the biome core (`core/biome/30-core-foliage.js`, the `irid` kind).
 
 ## What the host provides (`BIO.host`)
 

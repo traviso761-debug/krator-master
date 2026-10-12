@@ -314,19 +314,10 @@ TX.oak=BIO.alphaTex(512,(g,S)=>{g.strokeStyle=BIO.tex.grey(70);g.lineWidth=2.2;
   g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.ellipse(c[0],c[1],rr(12,17),rr(5,7),rr(0,TAU),0,TAU);g.fill();}},[160,160,160]);
 EASTABYSS.TEX=TX;
 // ---------------------------------------------------------------- an iridescent bark
-// The sky scale-tree's cushions shimmer red-green with the view angle (and
-// slowly, with the wind): green facing the eye, a coppery red at grazing angles.
-// key names the variant in the program cache (the impostor ring's untextured copy is 'far').
-BIO.iridBarkMat=function(tex,key){const m=BIO.barkMat(tex);
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3(0.78,1.18,0.92),vec3(1.45,0.82,0.74),k);}');};
- m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:[0.78,1.18,0.92],b:[1.45,0.82,0.74]}};   // what it is, as data (42-core-export)
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+// The sky scale-tree's cushions shimmer red-green with the view angle (and slowly, with the wind): green facing
+// the eye, a coppery red at grazing angles. BIO.iridBarkMat is the core's 'irid' kind (core/biome/30-core-foliage.js);
+// its default tints are this kit's. key names the variant in the program cache (the impostor ring's untextured copy
+// is 'far').
 
 
 // ---------------------------------------------------------------- bark textures

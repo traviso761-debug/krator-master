@@ -425,19 +425,8 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===3?2:3,i===4?2:i===0?5:4]});});
 // the granite (stone.granite): the boulders and stones
 {const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
-// an iridescent bark (the Rift kit's hook, shared the way biomes/nhighlands shares it): teal facing the eye, violet at
-// grazing angles; the spiral frill tree's column
-BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat(tex);
- const A=colA||[0.78,1.18,0.92],B=colB||[1.45,0.82,0.74];
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+// an iridescent bark (BIO.iridBarkMat, the core's 'irid' kind: core/biome/30-core-foliage.js): teal facing the eye,
+// violet at grazing angles; the spiral frill tree's column
 BIO.bucket('barkF',BIO.iridBarkMat(SHIGH.BARKTEX[1],'shigh-frill',[0.80,1.16,1.06],[1.22,0.86,1.30]),{label:'Spiral frill tree column (iridescent)',uvScale:[3,5]});
 BIO.bucket('wood',M.wood,{label:'Fallen wood'});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});

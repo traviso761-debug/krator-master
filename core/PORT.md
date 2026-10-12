@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 354 (59%) | 60 (10%) | 52 (9%) | 17 (3%) | 117 (19%) |
+| KB | 354 (59%) | 62 (10%) | 52 (9%) | 17 (3%) | 117 (19%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/89-atmos-d-clouddeck.js` | 14.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | split: the field, its twin and its chunk port (godot/tools/atmos_clouddeck.js); cloudDeck() is the three.js draw (godot/krator/clouddeck.gd) |
 | `biome/10-core-head.js` | 9.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 23.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
-| `biome/30-core-foliage.js` | 16.5 | [G shader] | 1 | 4 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
+| `biome/30-core-foliage.js` | 18.3 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 | foliage card, bark, the iridescent bark (the `irid` kind, BIO.iridBarkMat), wind: the shader library |
 | `biome/35-core-anim.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | fauna paths are data; the body shader is [G shader] |
 | `biome/40-core-place.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | placement: ports to GDScript, tested tile for tile |
 | `biome/42-core-export.js` | 10.5 | [G data] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 4 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |

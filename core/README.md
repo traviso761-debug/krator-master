@@ -100,7 +100,7 @@ additions are in it, each marked with the kit it came from:
 |---|---|
 | `10-core-head.js` | `BIO`, `BIO.fn` (rng, noise...), `BIO.init` and the host binding: fields (wet, salt, upland, flow, mist, cold, rock), `waterH`/`depth`, `register`, detail radii (`BIO.radii()`), windows, `eye`, the world's `clock` and `wind` (one wind for leaves and atmosphere) |
 | `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
-| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
+| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks (`leafMat`, `barkMat`, the iridescent `iridBarkMat`: the `irid` kind, tints `colA`/`colB`), the wind clock, `BIO.col` |
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |

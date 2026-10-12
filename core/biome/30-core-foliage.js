@@ -182,6 +182,22 @@ BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  BIO._tickWind();return m;};
 // a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
 BIO.barkMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});m.userData.bio={kind:'bark'};return m;};
+// an IRIDESCENT BARK (the 'irid' kind): a bark whose colour shifts with the view angle and, slowly, with the wind:
+// colA facing the eye, colB at grazing angles (default green to coppery red, the east abyss's sky scale-tree). The
+// tints are baked into the shader text, so the program cache key carries the kit and the key (BIO.kitKey): each kit's
+// materials keep their own tints whatever else the page loads. One definition for every kit (it was written in five:
+// eastabyss, rift, nhighlands, shighlands, xanadu; the last one loaded won). Godot: bark.gdshader mode 1.
+BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
+ const A=colA==null?[0.78,1.18,0.92]:colA,B=colB==null?[1.45,0.82,0.74]:colB;
+ m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
+   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
+    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
+    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
+ m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
 

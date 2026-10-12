@@ -22,8 +22,9 @@ reads `xanadu-1`; a Rift or eastern-abyss fragment runs unchanged on it):
 - Anything that writes into a bucket by hand (an impostor builder pushing to `K.pos`) must
   push one key per triangle to `K.k` (`BIO._lodKey(x,z)`), or its triangles land in the
   always-drawn group.
-`BIO.iridBarkMat` is defined by the biome's species fragment only if no other biome
-defined it first, so the Rift and Xanadu can load into the same world.
+`BIO.iridBarkMat` is the biome core's `irid` kind (`core/biome/30-core-foliage.js`, since
+2026-10-12; the kits no longer define it), so the Rift and Xanadu can load into the same world and
+each keeps its own tints.
 
 ## What the host provides (`BIO.host`)
 

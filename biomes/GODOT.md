@@ -91,7 +91,7 @@ and options as data (the hook code still lives in the kit):
 
 | `kind` | Kits | Options | Godot (`godot/shaders/`) |
 |---|---|---|---|
-| `irid` | eastabyss, nhighlands, rift, xanadu (`BIO.iridBarkMat`) | `a`, `b`: the tints facing the eye and at grazing angles | `bark.gdshader` mode 1 |
+| `irid` | the core (`BIO.iridBarkMat`, `core/biome/30-core-foliage.js`): eastabyss, nhighlands, rift, shighlands, xanadu | `a`, `b`: the tints facing the eye and at grazing angles | `bark.gdshader` mode 1 |
 | `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
 | `far` | rift, swlowlands (`farMat`): the far impostors | `pack` (`c2-rule`: rift, `gloss`: swlowlands) and `uv`: what the impostor packs into its uvs | `bark.gdshader` modes 3, 4 |
 | `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `night` (the emissive intensity by day and by night); the material's `emissive` | `bark.gdshader` mode 5 |

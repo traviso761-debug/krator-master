@@ -248,9 +248,9 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
     buckets. A tile can be exported as meshes, but the continent's flora is grown at run time, and
     `GODOT-PLAN.md` ports no builder code. *Decided: variants by default, hero trees opt-in
     ("Hero trees: an opt-in", below).*
-11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` is written in four kits;
-    eastabyss and rift assign it unguarded with different signatures, so the last kit loaded
-    replaces the others'. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
+11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` was written in five kits, and the
+    last one loaded replaced the others'; since 2026-10-12 it is the core's `irid` kind
+    (`core/biome/30-core-foliage.js`), one definition. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
     swlowlands) and swbay's fauna material are kit copies too.
 
 ## The contract it needs

@@ -17,7 +17,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
-| `50-biome-nhighlands-species.js` | 53 **big** | palettes (24); the tree species (70); leaf and frond textures (182); bark textures (291); geometries local to this biome (327); an iridescent bark (shared hook; the Rift kit's) (391); materials (404); instanced items (477) |
+| `50-biome-nhighlands-species.js` | 51 **big** | palettes (24); the tree species (70); leaf and frond textures (182); bark textures (291); geometries local to this biome (327); an iridescent bark (391); materials (394); instanced items (467) |
 | `55-biome-nhighlands-trees.js` | 45 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (131); impostors (the far canopy) (352); the pass (383) |
 | `60-biome-nhighlands-floor.js` | 19 | small plants (27); the zone planters (91); the pass (171) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
