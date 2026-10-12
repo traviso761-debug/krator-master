@@ -25,9 +25,9 @@ CFG = {
  'dog':   dict(tymax=0.02, belly=-0.24, legx=0.03, head=(0.58, 0.15), tail=(-0.62, -0.6), zmid=0.0, stride=0.30, tris=7000),
  'cat':   dict(tymax=0.0, belly=-0.16, legx=0.07, head=(0.52, 0.05), tail=(-0.62, -0.7), zmid=0.0, stride=0.24, tris=7000),
 'horse': dict(tymax=0.1, belly=-0.12, legx=0.03, head=(0.30, 0.15), tail=(-0.60, -0.6), zmid=0.0, stride=0.30, tris=8500),
- 'buffalo': dict(tymax=-0.02, belly=-0.15, legx=0.03, head=(0.55, 0.0), tail=(-0.88, -0.7), zmid=-0.05, stride=0.26, tris=8000),
- 'yak':   dict(tymax=0.0, belly=-0.50, legx=0.03, head=(0.62, -0.05), tail=(-0.90, -0.6), zmid=0.0, stride=0.22, tris=8000),
- 'bison': dict(tymax=0.0, belly=-0.30, legx=0.03, head=(0.55, -0.25), tail=(-0.85, -0.7), zmid=-0.05, stride=0.24, tris=8000),
+ 'buffalo': dict(head_all=0.62, tymax=-0.02, belly=-0.15, legx=0.03, head=(0.55, 0.0), tail=(-0.88, -0.7), zmid=-0.05, stride=0.26, tris=8000),
+ 'yak':   dict(head_all=0.70, tymax=0.0, belly=-0.50, legx=0.03, head=(0.62, -0.05), tail=(-0.90, -0.6), zmid=0.0, stride=0.22, tris=8000),
+ 'bison': dict(head_all=0.62, tymax=0.0, belly=-0.30, legx=0.03, head=(0.55, -0.25), tail=(-0.85, -0.7), zmid=-0.05, stride=0.24, tris=8000),
  'duck':  dict(tymax=0.2, belly=-0.50, legx=0.03, head=(0.30, 0.30), tail=(-0.55, -0.30), zmid=None, stride=0.18, tris=7000, foot_h=0.12),
  'hen':   dict(belly=-0.46, legx=0.03, head=(0.18, 0.38), tail=(-0.42, -0.10), zmid=None, stride=0.20, tris=7000, foot_h=0.12),
 }
@@ -37,6 +37,7 @@ def classify(C, c):
     x, y, z = C[:, 0], C[:, 1], C[:, 2]; n = len(C)
     part = np.full(n, 'torso', dtype=object)
     hz, hy = c['head']; part[(z > hz) & (y > hy)] = 'head'
+    if 'head_all' in c: part[z > c['head_all']] = 'head'      # a low muzzle dips below the cut line: everything in front of this z is head
     xc = float(np.median(x[(y > c['belly']) & (np.abs(z) < 0.4)]))
     tz, tymin = c['tail']; part[(z < tz) & (y > tymin) & (y < c.get('tymax', 9.0)) & (np.abs(x - xc) < 0.16) & (part == 'torso')] = 'tail'
     leg = (y < c['belly']) & (part == 'torso')
