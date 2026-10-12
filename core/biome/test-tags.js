@@ -22,7 +22,12 @@ function page(tags, late) {
   const REG = [];
   BIO.init({ THREE, scene: new THREE.Scene(), seed: 3, err: m => errs.push(m), register: o => { REG.push(o); BIO.record(o); },
     tags: tags ? 'test' : undefined });
-  if (late) { BIO.register({ name: 'The map', x: 0, z: 0, r: 5000, h: 500 }); TAGS.forEach(load); }
+  if (late) {   // a volume, and an item put and never put again, both before core/tags is there
+    BIO.register({ name: 'The map', x: 0, z: 0, r: 5000, h: 500 });
+    BIO.def('early', new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial());
+    BIO.put('early', [1, 2, 3], null, 1, 0xffffff); BIO.put('early', [4, 5, 6], null, 1, 0xffffff);
+    TAGS.forEach(load);
+  }
   const solid = new THREE.MeshBasicMaterial(), anim = new THREE.MeshBasicMaterial();
   anim.userData.bio = { kind: 'anim', key: 'k|dart' };
   BIO.kit('k');
@@ -42,6 +47,7 @@ function page(tags, late) {
       const { rng, reseed } = BIO.fn; reseed(11);
       // a tree: a registered volume and its bole in the bucket; a log far from it in no volume
       BIO.register({ name: 'Oak', key: 'oak', kind: 'tree', x: 10, y: 2, z: -20, r: 6, h: 18 });
+      BIO.register({ name: 'A cave', cls: 'carve', x: -500, y: 0, z: 500, r: 4, h: 6 });   // a host's own class: not core/tags'
       BIO.tube('bark', [{ x: 10, y: 1.5, z: -20, r: .8 }, { x: 10.3, y: 9, z: -20.2, r: .5 }, { x: 10.1, y: 16, z: -19.8, r: .3 }], 0x886644, { seg: 6 });
       BIO.tube('bark', [{ x: 200, y: 0, z: 200, r: .5 }, { x: 206, y: 0.4, z: 201, r: .5 }], 0x664422, { seg: 5 });
       for (let i = 0; i < 300; i++) {
@@ -95,14 +101,20 @@ const audit = T.audit();
 ok(audit.unknown === 0, 'zero unknown vocabulary' + (audit.unknown ? ': ' + JSON.stringify(audit.unknownKeys) + JSON.stringify(audit.unknownValues) : ''));
 ok(audit.sets === 4 && audit.instances === 401 && audit.instancesByClass.flora === 302, 'the audit counts sets and instances: ' + JSON.stringify(audit.instancesByClass));
 const vol = T.query({ 'class': 'flora', kind: 'oak' });
-ok(vol.length === 1 && vol[0].r === 6 && vol[0].h === 18 && vol[0].tags.harvest.wood === 'timber' && A.REG.length === 1,
+ok(vol.length === 1 && vol[0].r === 6 && vol[0].h === 18 && vol[0].tags.harvest.wood === 'timber' && A.REG.length === 2,
   'a registered volume is one record (BIO.register and the host\'s REGISTER both saw it: recorded once)');
 
 const Lt = L.ctx.KTAGS.page;
-ok(!L.errs.length && Lt && Lt.sets().length === 4 && Lt.count(Lt.sets()[0]) === T.count(T.sets()[0]) && Lt.query({ key: 'The map' }).length === 1 &&
+const early = Lt && Lt.query({ key: 'early' })[0];
+ok(!!early && early.set && Lt.count(early) === 2 && Lt.instance(early, 1).uid === L.ctx.KTAGS.uid('flora', 'early', [4, 5, 6]),
+  'an item put only before core/tags loaded gets its set at bake, with both instances');
+ok(!L.errs.length && Lt && Lt.sets().length === 5 && Lt.count(Lt.query({ key: 'clump' })[0]) === T.count(T.sets()[0]) && Lt.query({ key: 'The map' }).length === 1 &&
   Lt.query({ key: 'The map' })[0]['class'] === 'feature' && Lt.get('feat_00000').name === 'The map',
   'core/tags loaded after BIO.init: the volume registered before it waits and is recorded first; the sets are whole');
-ok(L.REG.length === 2 && Lt.records.length === T.records.length + 1, 'the late page holds the early page\'s records and the map, nothing else');
+ok(L.REG.length === 3 && Lt.records.length === T.records.length + 2, 'the late page holds the early page\'s records, the map and the early item, nothing else');
+
+const cave = T.query({ key: 'A cave' })[0];
+ok(!!cave && cave['class'] === 'feature' && cave.kind === 'carve' && !A.errs.length, 'a host\'s own class that core/tags does not know (carve) is a feature of that kind, not an error');
 
 // ---- every row of every mesh names its set and carries the uid of its own position ----
 let rows = 0, bad = 0, seen = {};

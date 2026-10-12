@@ -73,7 +73,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
   for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
- if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def);};   /* core/tags: the item's set, at its first put (below) */
+ if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
@@ -230,6 +230,7 @@ BIO.indexedGeo=indexedGeo;
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
  BIO._tagCheck();
+ if(BIO.host.tags)for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(R.defs[name].set==null&&R.items[name].count)BIO._tagItem(name,R.defs[name],kn);}   // put before core/tags loaded
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh)
@@ -292,7 +293,7 @@ BIO.tagReg=function(){const h=BIO.host;if(!h||!h.tags)return null;if(typeof h.ta
  const K=typeof KTAGS!=='undefined'?KTAGS:null;
  if(!K||!K.VOCAB)return null;
  const T=K.create({build:typeof h.tags==='string'?h.tags:'biome'});if(!K.page)K.page=T;h.tags=T;
- const P=_pending;_pending=[];P.forEach(q=>_record(T,q.o,q.kit));return T;};
+ const P=_pending;_pending=[];P.forEach(q=>q.dyn?BIO._tagDynamic.apply(null,q.dyn):_record(T,q.o,q.kit));return T;};
 BIO._tagCheck=function(){if(BIO.host&&BIO.host.tags&&!BIO.tagReg())BIO.err('BIO.init({tags}): core/tags is not loaded (list 08-core-rand.js and core/tags in build.py)');};
 // the core's rule for an item's class: an animal (an anim material, a path in aP0, or put by a fauna pass) is life;
 // a stone (BIO.MINERAL) a feature; everything else flora. BIO.def's opt.cls overrides it
@@ -329,10 +330,10 @@ function _setRecord(T,name,def,kit,dyn){const info=_kitInfo(kit,name,null),F=inf
  const cls=def.cls||(dyn||info.animal||_isAnim(def)||/\/fauna$/.test(BIO.cur||'')?'life':BIO.MINERAL.test(name)?'feature':'flora');
  const kind=def.kind||(cls==='feature'?'rock':info.S&&info.S.key?info.S.key:info.pk||name);
  return {'class':cls,kind,key:name,name:F&&F.name?F.name:def.label,at:[0,0,0],tags:_tagsOf(kit,T,info,def.tags),frag:'core/biome'};}
-BIO._tagItem=function(name,def){const T=BIO.tagReg();if(!T)return;const kit=BIO.kitName||'',R=BIO.kits[kit];
+BIO._tagItem=function(name,def,kit){const T=BIO.tagReg();if(!T)return;const R=BIO.kits[kit];
  def.parts=def.parts||[];
  try{def.set=T.addSet(_setRecord(T,name,def,kit,false),_itemTable(R,name,def));}catch(e){def.set=false;BIO.err('core/tags: item '+name+': '+e.message);}};
-BIO._tagDynamic=function(name,im,opt){const T=BIO.tagReg();if(!T)return;const kit=BIO.kitName||'';
+BIO._tagDynamic=function(name,im,opt,kit){const T=BIO.tagReg();if(kit==null)kit=BIO.kitName||'';if(!T){_pending.push({dyn:[name,im,opt,kit]});return;}
  const def={geo:im.geometry,mat:im.material,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,attrs:null};
  const A=im.instanceMatrix.array;
  try{const set=T.addSet(_setRecord(T,name,def,kit,true),_matTable(()=>im.count,i=>({a:A,o:i*16}),def));
@@ -343,8 +344,9 @@ BIO._tagDynamic=function(name,im,opt){const T=BIO.tagReg();if(!T)return;const ki
 const _recorded=typeof WeakSet!=='undefined'?new WeakSet():null;
 BIO.record=function(o){if(!BIO.host||!BIO.host.tags||!o||typeof o!=='object')return null;if(_recorded){if(_recorded.has(o))return null;_recorded.add(o);}
  const T=BIO.tagReg(),kit=BIO.kitName||'';if(!T){_pending.push({o,kit});return null;}return _record(T,o,kit);};
-function _record(T,o,kit){const info=_kitInfo(kit,null,o.key),k=o.kind;
- const cls=o.cls||o['class']||(k==='fauna'||info.animal?'life':(k==='tree'||k==='stand'||k==='log'||k==='flora'||info.S)?'flora':'feature');
+// A host's own cls that is not a core/tags class (sedesert's carve patches: cls 'carve') becomes the kind of a feature.
+function _record(T,o,kit){const info=_kitInfo(kit,null,o.key),given=o.cls||o['class'],known=given&&KTAGS.VOCAB.classes.indexOf(given)>=0,k=o.kind||(given&&!known?given:null);
+ const cls=known?given:(k==='fauna'||info.animal?'life':(k==='tree'||k==='stand'||k==='log'||k==='flora'||info.S)?'flora':'feature');
  const rec={'class':cls,kind:cls==='life'?(o.key||o.name||null):(info.S&&info.S.key)||k||null,key:o.key!=null?o.key:(o.name||null),name:o.name||null,
   at:[o.x||0,o.y||0,o.z||0],tags:_tagsOf(kit,T,info,o.tags),frag:'core/biome'};
  if(o.r!=null){rec.r=o.r;if(o.h!=null)rec.h=o.h;}
