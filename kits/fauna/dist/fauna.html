@@ -4394,6 +4394,204 @@ ANIMAL({
   }
 });
 
+/* ---------------------------------------------------------------- the giant insects
+   LORE: the crater's and the lowland's air is about 2 atm: more oxygen reaches an insect's tracheae, so insects and
+   flyers grow larger there (the giant dragonfly is the flyers' file). These four are the hyperjungle's ground and
+   trunk insects, drawn (2026-10-12) in the kit's procedural style: jointed chitin legs that turn about their roots
+   (the hexapod tripod walk), plated bodies with banding. They are procedural only: a Meshy version waits on credits. */
+function faHiMix(a, b, t) { const c = new THREE.Color(a).lerp(new THREE.Color(b), Math.max(0, Math.min(1, t))); return [c.r, c.g, c.b]; }
+/* the drawing helpers at one scale K, and a jointed insect leg: pts root, joints..., foot, rad per point */
+function faHiKit(A, K) {
+  const Q = p => [p[0] * K, p[1] * K, p[2] * K];
+  const kit = {
+    Q: Q,
+    el: (x, y, z, rx, ry, rz, col, o) => A.ellip('chitin', x * K, y * K, z * K, rx * K, ry * K, rz * K, col, o || { seg: 12 }),
+    co: (a, b, r0, r1, col, seg) => A.cone('chitin', Q(a), Q(b), r0 * K, r1 * K, col, seg || 6),
+    rows: (rows, nt, ns, col, o) => faHjRows(A, 'chitin', rows.map(r => [r[0] * K, r[1] * K, r[2] * K, r[3] * K, r[4] * K]), nt, ns, col, o),
+    leg: (pts, rad, col, claw) => {
+      for (let k = 0; k < pts.length - 1; k++) {
+        A.cone('chitin', Q(pts[k]), Q(pts[k + 1]), rad[k] * K, rad[k + 1] * K, col, 7);
+        if (k > 0) A.ellip('chitin', pts[k][0] * K, pts[k][1] * K, pts[k][2] * K, rad[k] * K * 1.25, rad[k] * K * 1.25, rad[k] * K * 1.25, col, { seg: 8 });
+      }
+      const n = pts.length - 1, a = pts[n - 1], b = pts[n];   /* the tibia's spines and the foot's claws */
+      for (let k = 1; k <= 3; k++) { const f = k / 4, p = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+        A.cone('chitin', Q(p), Q([p[0] + Math.sign(p[0]) * 0.012, p[1] + 0.016, p[2] + (k & 1 ? 0.02 : -0.02)]), rad[n - 1] * 0.5 * K, 0.0012 * K, col, 4); }
+      const c = claw || 0.035; A.cone('chitin', Q(b), Q([b[0] + Math.sign(b[0]) * c * 0.4, b[1] - 0.004, b[2] + c]), rad[n] * K * 1.2, 0.0015 * K, 0x1a1410, 4);
+    }
+  };
+  return kit;
+}
+const FA_HI_BASE = { koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], biomes: ['hyperjungle'], abyssal: false, riparian: 'non', domestic: false, herdedBy: [] };
+const FA_HI_SRC = { build: 'kits/fauna', file: 'krator-fauna-hyperjungle.js', lines: '-' };
+
+/* ---- the lattice mantis: an ambush hunter that waits among the leaves with its raptorial arms folded */
+const FA_HI_MANTIS = [{ base: 0x5a8a34, dark: 0x2e5a22, pale: 0xb8d070 }, { base: 0x8a6a40, dark: 0x4a3420, pale: 0xc8a870 }, { base: 0xd8b0c0, dark: 0x9a5a78, pale: 0xf4e8e8 }];
+ANIMAL({
+  key: 'lattice-mantis', name: 'Lattice mantis', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
+    habitat: ['ground', 'canopy', 'trunks'], locomotion: ['walks', 'climbs', 'leaps'] }),
+  size: { length: 1.6, height: 1.0 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant praying mantis, grown large by the lowland air (about 2 atm); it waits motionless on a leaf and strikes with spined forearms' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 3, note: 'the folded forearms\' plates: light and hard; a hunter\'s bracers' } },
+  life: { maturity: 0.5, lifespan: 1.5, litter: 150, gestation: 30, note: 'litter: an egg case of a hundred and fifty; gestation: egg to nymph, a month; the nymphs eat each other' },
+  variants: 3, variantNames: ['leaf green', 'bark brown', 'orchid pink and white'],
+  w: 0.71, d: 1.62, h: 1.0,
+  data: { mass: 6, legs: 4, sizeRange: [0.7, 1.3], speed: { walk: 0.4, run: 3 }, gait: { type: 'quadruped', freq: 1.6, stride: 0.2 }, grazePitch: 0.3,
+    herd: 'alone: it holds a leaf and eats what comes within reach', fleeDistance: 3, aggression: 0.8,
+    idle: { headYaw: 0.7, headPitch: 0.1, tailYaw: 0.04 },
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const C = FA_HI_MANTIS[A.variant] || FA_HI_MANTIS[0], k = faHiKit(A, A.S), mix = faHiMix;
+    const shade = (t, a) => mix(C.base, C.pale, Math.cos(a) < -0.3 ? 0.7 : 0.15 * faNoise(t * 20, a, 1));
+    /* the abdomen, long and tapering, with the folded wings laid along its back */
+    k.rows([[0, .46, -.05, .07, .06], [0, .46, -.3, .09, .08], [0, .47, -.55, .075, .065], [0, .48, -.78, .03, .03]], 14, 12, null, { round: [0.1, 0.12], colf: (t, a) => shade(t, a) });
+    for (const s of [-1, 1]) k.el(s * .045, .53, -.38, .05, .014, .44, mix(C.dark, C.base, 0.4), { seg: 12, rz: s * 0.04 });
+    /* the prothorax: the slender neck, rising forward; the raptorial arms folded at its front */
+    k.rows([[0, .46, .0, .065, .06], [0, .52, .2, .035, .035], [0, .63, .42, .03, .03], [0, .69, .52, .028, .028]], 12, 10, null, { colf: (t, a) => shade(t, a) });
+    for (const s of [-1, 1]) {
+      k.leg([[s * .04, .62, .44], [s * .075, .7, .72], [s * .06, .56, .66], [s * .05, .6, .53]], [.026, .022, .016, .008], C.base);
+      for (let i = 0; i < 5; i++) { const z = .5 + i * .045, y = .7 - i * 0.006; k.co([s * .075, y, z], [s * .075, y - .06, z - .01], .006, .001, C.pale, 4); }
+    }
+    A.part('head', k.Q([0, .69, .5]), () => {
+      k.el(0, .73, .57, .075, .045, .045, C.base, { seg: 12 });               /* a triangular head */
+      k.el(0, .71, .6, .04, .04, .03, C.pale, { seg: 10 });
+      for (const s of [-1, 1]) { k.el(s * .068, .745, .575, .032, .036, .03, 0x1a2812, { seg: 10 }); k.el(s * .075, .752, .585, .012, .014, .012, 0xe8e0a0, { seg: 6 });
+        k.co([s * .02, .76, .59], [s * .12, .98, .8], .004, .0015, C.dark, 4); }   /* the antennae */
+      k.co([-.012, .7, .62], [-.03, .66, .64], .008, .002, C.dark, 4); k.co([.012, .7, .62], [.03, .66, .64], .008, .002, C.dark, 4);   /* the mandibles */
+    });
+    /* the four walking legs: out and up to the knee, down to the foot */
+    for (let i = 0; i < 4; i++) {
+      const s = (i & 1) ? -1 : 1, z = (i >> 1) ? -.12 : .12, X = q => [s * q[0], q[1], q[2] + z];
+      A.part('leg' + i, k.Q(X([.05, .46, 0])), () => k.leg([X([.05, .46, 0]), X([.2, .56, .02]), X([.32, .2, .08 * (z > 0 ? 1 : -1)]), X([.34, .0, .12 * (z > 0 ? 1 : -1)])], [.03, .022, .016, .01], C.base));
+    }
+    A.anchor('lead', k.Q([0, .6, .45])); A.anchor('headRoot', k.Q([0, .69, .5])); A.anchor('tailRoot', k.Q([0, .46, -.05]));
+  }
+});
+
+/* ---- the stilt walkingstick: a twig the length of a man, on six long legs */
+const FA_HI_STICK = [{ base: 0x6a7a3a, dark: 0x3a4a22, pale: 0xa8b060 }, { base: 0x6a5238, dark: 0x3a2c1e, pale: 0x9a8a68 }, { base: 0x7a7e6e, dark: 0x4a4e44, pale: 0xb0b49a }];
+ANIMAL({
+  key: 'stilt-walkingstick', name: 'Stilt walkingstick', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { diet: 'herbivore', feeding: 'browser', activity: 'nocturnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks', 'ground'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 2.0, height: 0.8 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant stick insect (about 2 m with its legs stretched), grown large by the lowland air (about 2 atm); it freezes and sways like a twig in the wind' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 5, note: 'pale and mild: roasted in the shell' }, eggs: { amount: 60, note: 'seed-like eggs dropped one at a time to the forest floor, which the ants carry off' }, chitin: { amount: 1, note: 'the thin, hollow limb plates' } },
+  life: { maturity: 0.7, lifespan: 2, litter: 1, gestation: 90, note: 'litter: one egg dropped at a time (about sixty a year); gestation: egg to nymph, three months, buried by ants' },
+  variants: 3, variantNames: ['leaf green', 'bark brown', 'lichen grey'],
+  w: 1.0, d: 2.1, h: 0.8,
+  data: { mass: 3, legs: 6, sizeRange: [0.7, 1.3], speed: { walk: 0.25, run: 1.2 }, gait: { type: 'hexapod', freq: 1.0, stride: 0.3 }, grazePitch: 0.2,
+    herd: 'alone; found by the bitten leaves', fleeDistance: 2, aggression: 0,
+    idle: { headYaw: 0.1, headPitch: 0.05, tailYaw: 0.1 },
+    schedule: ['BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE'],
+    scheduleNote: 'BROWSE: it eats leaves at night' },
+  build: function (A) {
+    const C = FA_HI_STICK[A.variant] || FA_HI_STICK[0], k = faHiKit(A, A.S), mix = faHiMix;
+    const skin = (t, a) => mix(C.base, C.dark, 0.3 * faNoise(t * 30, a * 2, 3) + (Math.sin(t * 150) > 0.9 ? 0.25 : 0));
+    /* one long jointed twig: abdomen to head, the thorax a little thicker, the tail a pair of short cerci */
+    k.rows([[0, .4, -.95, .012, .012], [0, .4, -.6, .026, .026], [0, .4, -.2, .03, .03], [0, .4, .1, .034, .036], [0, .42, .3, .026, .026]], 20, 8, null, { round: [0.04, 0.04], colf: (t, a) => skin(t, a) });
+    for (const s of [-1, 1]) k.co([s * .004, .4, -.95], [s * .02, .4, -1.03], .006, .001, C.dark, 4);
+    A.part('head', k.Q([0, .42, .3]), () => {
+      k.el(0, .43, .36, .03, .028, .04, C.base, { seg: 10 });
+      for (const s of [-1, 1]) { k.el(s * .026, .445, .37, .011, .011, .011, 0x1a1a10, { seg: 6 });
+        k.co([s * .01, .45, .39], [s * .06, .62, .95], .0035, .0012, C.dark, 4); }   /* the long antennae */
+    });
+    /* six long legs, each a thin femur and tibia, the front pair stretched forward along the antennae */
+    const spec = [{ z: .22, kn: [.32, .62, .5], ft: [.46, 0, .62] }, { z: .0, kn: [.36, .66, .12], ft: [.52, 0, .08] }, { z: -.2, kn: [.34, .6, -.4], ft: [.46, 0, -.75] }];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, g = spec[i >> 1], X = q => [s * q[0], q[1], q[2]];
+      A.part('leg' + i, k.Q(X([.03, .4, g.z])), () => k.leg([X([.03, .4, g.z]), X(g.kn), X(g.ft)], [.012, .009, .005], C.base, 0.03));
+    }
+    A.anchor('lead', k.Q([0, .43, .36])); A.anchor('headRoot', k.Q([0, .42, .3])); A.anchor('tailRoot', k.Q([0, .4, -.9]));
+  }
+});
+
+/* ---- the horned scarab: a rhinoceros beetle the size of a calf, the male with the horn that wins the bough */
+const FA_HI_SCARAB = [{ base: 0x5a2c1a, dark: 0x2a140c, pale: 0x8a4a2a }, { base: 0x1e1c22, dark: 0x0c0c10, pale: 0x4a4650 }, { base: 0x3a6a48, dark: 0x16301e, pale: 0x8ab070 }, { base: 0x8a6a3a, dark: 0x4a3418, pale: 0xc8a868 }];
+ANIMAL({
+  key: 'horned-scarab', name: 'Horned scarab', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { diet: 'herbivore', feeding: 'frugivore', activity: 'nocturnal', temperament: 'defensive',
+    habitat: ['ground', 'trunks', 'canopy'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 1.2, height: 0.68 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant rhinoceros beetle, grown large by the lowland air (about 2 atm); it drinks the sap of the split boughs and fights for them with its horn' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 7, note: 'the grubs are the prize: fat, sweet, roasted on a stick; the adult is mostly shell' }, chitin: { amount: 4, note: 'the domed wing cases: shields and bowls, black or bronze' } },
+  life: { maturity: 2, lifespan: 3, litter: 40, gestation: 60, note: 'litter: eggs laid in rotting wood; gestation: egg to grub; the grub lives two years and fattens in the log' },
+  variants: 4, variantNames: ['chestnut', 'black', 'green bronze', 'tan'],
+  w: 0.92, d: 1.19, h: 0.68,
+  data: { mass: 8, legs: 6, sizeRange: [0.7, 1.4], speed: { walk: 0.5, run: 2 }, gait: { type: 'hexapod', freq: 1.5, stride: 0.2 }, grazePitch: 0.5,
+    herd: 'a few at a split bough, the big males fighting on it', fleeDistance: 2, aggression: 0.4,
+    idle: { headYaw: 0.2, headPitch: 0.1, tailYaw: 0 },
+    schedule: ['BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE'],
+    scheduleNote: 'BROWSE: sap and fallen fruit' },
+  build: function (A) {
+    const C = FA_HI_SCARAB[A.variant] || FA_HI_SCARAB[0], k = faHiKit(A, A.S), mix = faHiMix;
+    const sheen = (x, y, z) => mix(C.base, C.pale, 0.35 * Math.max(0, y - 0.3) * 3 + 0.12 * faNoise(x * 12, y * 12, z * 12));
+    k.el(0, .3, -.1, .24, .18, .36, null, { seg: 18, colf: (x, y, z) => sheen(x, y, z) });                  /* the domed wing cases */
+    k.el(0, .19, -.12, .22, .06, .34, C.dark, { seg: 14 });                                               /* the belly under them */
+    for (const s of [-1, 1]) k.co([s * .004, .46, -.46], [s * .004, .46, .24], .006, .006, C.dark, 4);          /* the suture */
+    k.el(0, .28, .24, .19, .14, .15, null, { seg: 14, colf: (x, y, z) => sheen(x, y + .05, z) });             /* the thorax shield */
+    k.rows([[0, .34, .3, .04, .035], [0, .42, .44, .03, .03], [0, .56, .56, .024, .024], [0, .66, .54, .008, .008]], 10, 8, C.dark, { round: [0.1, 0.1] });   /* the thoracic horn, curving up */
+    A.part('head', k.Q([0, .26, .36]), () => {
+      k.el(0, .25, .42, .1, .065, .09, C.dark, { seg: 12 });
+      k.rows([[0, .3, .45, .036, .034], [0, .36, .58, .03, .03], [0, .5, .68, .022, .022], [0, .6, .64, .007, .007]], 12, 8, C.dark, { round: [0.1, 0.1] });   /* the head horn, forked at its tip */
+      k.co([0, .56, .66], [0, .66, .72], .008, .002, C.dark, 4);
+      for (const s of [-1, 1]) { k.el(s * .085, .28, .46, .02, .02, .02, 0x120c08, { seg: 6 }); k.co([s * .04, .22, .5], [s * .07, .2, .6], .012, .003, C.dark, 4);
+        k.co([s * .03, .26, .5], [s * .05, .34, .62], .004, .0015, C.dark, 4); }
+    });
+    const spec = [{ z: .22, kn: [.3, .22, .36], ft: [.38, .0, .42] }, { z: .0, kn: [.32, .2, .04], ft: [.44, .0, .02] }, { z: -.2, kn: [.3, .2, -.34], ft: [.36, .0, -.44] }];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, g = spec[i >> 1], X = q => [s * q[0], q[1], q[2]];
+      A.part('leg' + i, k.Q(X([.14, .22, g.z])), () => k.leg([X([.14, .22, g.z]), X(g.kn), X(g.ft)], [.04, .03, .016], C.dark, .045));
+    }
+    A.anchor('lead', k.Q([0, .3, .5])); A.anchor('headRoot', k.Q([0, .26, .36])); A.anchor('tailRoot', k.Q([0, .3, -.4]));
+  }
+});
+
+/* ---- the harvester ant: a worker the size of a dog, the soldier with a head like a shield */
+const FA_HI_ANT = [{ base: 0x2a1c16, dark: 0x120c08, pale: 0x5a3a2a }, { base: 0x8a3a1c, dark: 0x3a180c, pale: 0xc86a38 }, { base: 0x1e2224, dark: 0x0a0c0e, pale: 0x4a5258 }];
+ANIMAL({
+  key: 'harvester-ant', name: 'Harvester ant', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { diet: 'omnivore', feeding: 'mixed', activity: 'cathemeral', temperament: 'aggressive',
+    habitat: ['ground', 'trunks', 'burrow'], locomotion: ['walks', 'runs', 'climbs'] }),
+  size: { length: 1.5, height: 0.81 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant ant, grown large by the lowland air (about 2 atm); the colony cuts and hauls leaves and seed-pods to the mound, and the soldiers guard the trails' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 2, note: 'a soldier\'s jaws and head plate: a scraper and a shield rim' } },
+  life: { maturity: 0.3, lifespan: 2, litter: 400, gestation: 30, note: 'litter: the queen\'s clutch (the colony has one queen); gestation: egg to worker, a month' },
+  variants: 3, variantNames: ['worker, black', 'soldier, rust red', 'worker, slate'],
+  w: 0.79, d: 1.5, h: 0.81,
+  data: { mass: 4, legs: 6, sizeRange: [0.7, 1.3], speed: { walk: 0.9, run: 5 }, gait: { type: 'hexapod', freq: 2.2, stride: 0.3 }, grazePitch: 0.4,
+    herd: 'a column of fifty on a trail, hauling leaf, with a soldier to every ten', fleeDistance: 3, aggression: 0.7,
+    idle: { headYaw: 0.3, headPitch: 0.1, tailYaw: 0.05 },
+    schedule: ['WORK', 'WORK', 'WORK', 'WORK', 'IDLE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'IDLE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'IDLE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK'],
+    scheduleNote: 'WORK: the colony never sleeps; the trail is always busy' },
+  build: function (A) {
+    const v = A.variant, soldier = v === 1, C = FA_HI_ANT[v] || FA_HI_ANT[0], k = faHiKit(A, A.S), mix = faHiMix, hs = soldier ? 1.5 : 1;
+    const gloss = (x, y, z) => mix(C.base, C.pale, 0.3 * Math.max(0, y - 0.45) * 4 + 0.1 * faNoise(x * 14, y * 14, z * 14));
+    k.el(0, .5, -.38, .16, .16, .26, null, { seg: 16, colf: (x, y, z) => gloss(x, y, z) });                  /* the gaster */
+    k.co([0, .5, -.16], [0, .5, -.04], .035, .045, C.dark, 8); k.el(0, .54, -.1, .035, .06, .035, C.dark, { seg: 8 });   /* the petiole */
+    k.rows([[0, .46, -.04, .075, .07], [0, .5, .1, .085, .09], [0, .53, .24, .06, .06]], 10, 10, null, { round: [0.15, 0.15], colf: (t, a) => gloss(0, .5 + .04 * Math.cos(a), t) });   /* the thorax, humped over the legs' roots */
+    A.part('head', k.Q([0, .52, .26]), () => {
+      k.el(0, .52, .38, .1 * hs, .08 * hs, .12 * hs, null, { seg: 14, colf: (x, y, z) => gloss(x, y, z) });
+      for (const s of [-1, 1]) {
+        k.el(s * .09 * hs, .56, .4, .024, .026, .03, 0x0a0806, { seg: 8 });
+        k.co([s * .03, .5, .46 + .03 * hs], [s * .06, .46, .6 + .1 * (hs - 1)], .016, .004, C.pale, 5);      /* the mandibles */
+        k.co([s * .06, .46, .6 + .1 * (hs - 1)], [s * .02, .46, .66 + .1 * (hs - 1)], .005, .002, C.pale, 4);
+        const e = [s * .05, .6, .44]; k.co(e, [s * .12, .74, .6], .005, .003, C.dark, 4); k.co([s * .12, .74, .6], [s * .1, .78, .86], .003, .0012, C.dark, 4);   /* the elbowed antenna */
+      }
+    });
+    const spec = [{ z: .2, kn: [.2, .62, .34], ft: [.32, .0, .5] }, { z: .06, kn: [.24, .66, .08], ft: [.38, .0, .1] }, { z: -.04, kn: [.2, .62, -.2], ft: [.3, .0, -.5] }];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, g = spec[i >> 1], X = q => [s * q[0], q[1], q[2]];
+      A.part('leg' + i, k.Q(X([.05, .5, g.z])), () => k.leg([X([.05, .5, g.z]), X(g.kn), X(g.ft)], [.026, .018, .008], C.base, .03));
+    }
+    A.anchor('lead', k.Q([0, .52, .45])); A.anchor('headRoot', k.Q([0, .52, .26])); A.anchor('tailRoot', k.Q([0, .5, -.5]));
+  }
+});
+
 /* ---- kits/fauna/krator-fauna-livestock.js ---- */
 /* ======================================================================
    Krator Fauna: livestock (kits/fauna/krator-fauna-livestock.js)
