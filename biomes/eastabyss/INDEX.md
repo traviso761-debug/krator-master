@@ -11,11 +11,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 17 | the lake, the rivers, the zones (43); terrain (68); the host binding (90); the ground (100); the water (150) |
 | `50-biome-eastabyss-species.js` | 46 **big** | THE LAKE COLOUR (20); the tree species (64); harvest (biomes/FRUIT.md) (142); leaf textures (173); an iridescent bark (316); bark textures (323); geometries local to this biome (372); materials (430); instanced items (482) |
 | `55-biome-eastabyss-trees.js` | 62 **big** | zones from the fields (15); colour (28); polyline helpers (Girder's) (49); keep-clear between trees (57); cauliflory (64); beard moss (73); foliage helpers (78); the builders (99); the coal-swamp set (290); impostors (the far canopy) (412) |
@@ -26,6 +30,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `82-host-sky.js` | 14 | the shelf painter (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 5 |  |
+| `99-host-take.js` | 9 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (65); the page, handed to the host (92) |
 | `99-tail.html` | <1 |  |
