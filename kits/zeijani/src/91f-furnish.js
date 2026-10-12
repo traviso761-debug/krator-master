@@ -18,7 +18,7 @@ const ZJF=KFURN.create(Object.assign(KFURN.flags(true),{
   for(const L of (r.lights||[])){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
    const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:L.x,y:L.y,z:L.z,r:c.r,g:c.g,b:c.b,big:fire});}}}));
 ZJF.WEALTH={};   // a def's 0..1 wealth for its furniture (its tags.wealth name, or .5)
-function svfNewBatch(){KFURN.useBatch(ZJF,KratorFurniture,KratorInteriors);ZJF.placed=[];ZJF.missing={};ZJF.cfg.tags=ZJTAGS;ZJF.rooms=[];ZJF.interiorPieces=0;}
+function svfNewBatch(){KFURN.useBatch(ZJF,KratorFurniture,KratorInteriors,{indexed:true});ZJF.placed=[];ZJF.missing={};ZJF.cfg.tags=ZJTAGS;ZJF.rooms=[];ZJF.interiorPieces=0;}
 /* ---- INTERIORS: every def whose key has an item in kits/interiors/sets/zeijani.js gets its rooms planned and furnished at
    its placement (core/furnish's R.interior over the interiors kit). The runtime adapter draws into the batch without a
    record, so this wrapper registers what the interiors place, before it is drawn (GODOT-PLAN.md rule 4): each room as a

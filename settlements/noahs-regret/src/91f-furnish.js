@@ -25,7 +25,7 @@ SVF.lightCount=0;
 /* a light the furniture carries, as a halo (91n-night.js): fires big and warm, lamps small */
 function nrHalo(w,fire){const k=Math.round(w[0]/.6)+','+Math.round(w[1]/.6)+','+Math.round(w[2]/.6);if(HALOKEY.has(k))return;HALOKEY.add(k);
  const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:w[0],y:w[1],z:w[2],r:c.r,g:c.g,b:c.b,big:!!fire});SVF.lightCount++;}
-function svfNewBatch(){KFURN.useBatch(SVF,KratorFurniture,KratorInteriors);SVF.placed=[];SVF.missing={};SVF.cfg.tags=SVTAGS;SVF.lightCount=0;}
+function svfNewBatch(){KFURN.useBatch(SVF,KratorFurniture,KratorInteriors,{indexed:true});SVF.placed=[];SVF.missing={};SVF.cfg.tags=SVTAGS;SVF.lightCount=0;}
 function svfWealth(rec){const w=rec&&rec.tags&&rec.tags.wealth;return w==='rich'?.85:w==='poor'?.25:w==='middle'?.5:.45;}
 const _fv=new THREE.Vector3(),_fd=new THREE.Vector3(),_fm3=new THREE.Matrix3();
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};if(!CURREC){reportErr('FURNISH '+key+' outside a builder');return null;}

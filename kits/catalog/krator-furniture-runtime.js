@@ -12,7 +12,7 @@
    furniture is about 20 draw calls. Painted panels (F.decal: a canvas map) are kept as their
    own meshes, sharing the cached material per painted key. Lights the pieces add (F.lamp) are kept as DATA.
 
-     const B = KF.batch();
+     const B = KF.batch();                     // or KF.batch({ indexed: true }): see INDEXED below
      const rec = B.place(key, x, y, z, ry, { variant, seed, wealth, building, room, setting });
          -> { key, variant, seed, x, y, z, ry, building, room, lights: [{ x, y, z, color, intensity, distance }], error }
      const group = B.flush(parent);            // the merged meshes (one per family) added to parent; B empties
@@ -21,6 +21,14 @@
      KF.has(key), KF.cultures()
    A record's x y z is the frame origin (the footprint centre on the floor), ry the heading,
    as the catalog's buildFurn takes them; anchorY (wall, ceiling, surface) is the caller's.
+
+   INDEXED (opt-in, ROADMAP stage 1): by default a batch unrolls every source mesh into a triangle soup (one vertex
+   per corner, no index: a box's 24 vertices become 36, a smooth cylinder's up to six times its own), and code that
+   reads B.buckets or a flushed mesh's arrays may count on that. KF.batch({ indexed: true }) keeps each source mesh's
+   vertices once and its index (offset into the bucket; a non-indexed source gets sequential indices): the same
+   triangles, corners and order, 1.5 to 6 times fewer vertices. Its buckets carry `idx` (a Buf of Uint32) beside
+   pos / nor / col, its flushed meshes an index (Uint16, Uint32 past 65535 vertices) and its merged painted panels
+   too. A caller that copies the arrays must carry the index: Girder's gixAccum and Mav's Refuge's mixBuild do.
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
@@ -64,6 +72,7 @@ const KF_API = (function () {
 
   function Batch(opt) {
     this.opt = opt || {};
+    this.indexed = !!this.opt.indexed;   /* INDEXED above; off by default: the soup every older caller reads */
     this.buckets = {};
     this.placements = [];
     this.textured = [];      /* painted panels (F.decal): their canvas map shared; flush merges those sharing a material */
@@ -76,11 +85,21 @@ const KF_API = (function () {
     if (this.n + 3 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
+  Buf.prototype.push1 = function (x) {
+    if (this.n + 1 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
+    this.a[this.n++] = x;
+  };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
-  /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
+  /* an index for n vertices: Uint16 while every index fits, else Uint32 */
+  function indexAttr(idx, nv) { return new THREE.BufferAttribute(nv > 65535 ? (idx instanceof Uint32Array ? idx : new Uint32Array(idx)) : new Uint16Array(idx), 1); }
+  /* one bucket per render family, and per texture family within it (mat(): userData.texFamily); an indexed batch's
+     buckets also carry idx: the triangles, as indices into pos / nor / col (vertex i is pos.a[3i..3i+2]) */
   Batch.prototype.bucket = function (family, tex) {
     const k = tex ? tex + '/' + family : family;
-    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+    if (this.buckets[k]) return this.buckets[k];
+    const b = this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) };
+    if (this.indexed) b.idx = new Buf(Uint32Array);
+    return b;
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -99,6 +118,21 @@ const KF_API = (function () {
       const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
+      if (self.indexed) {
+        /* each vertex once (world space, the part's colour), then the triangles as indices offset by the bucket's
+           vertices so far: the soup's corners in the soup's order, shared instead of copied */
+        const base = b.pos.n / 3, nv = pos.count, cr = Math.round(c.r * 255), cg = Math.round(c.g * 255), cb = Math.round(c.b * 255);
+        for (let j = 0; j < nv; j++) {
+          _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
+          b.pos.push3(_v.x, _v.y, _v.z);
+          if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
+          b.col.push3(cr, cg, cb);
+        }
+        if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
+        else for (let i = 0; i < n; i++) b.idx.push1(base + i);
+        self.tris += n / 3;
+        return;
+      }
       for (let i = 0; i < n; i++) {
         const j = idx ? idx.getX(i) : i;
         _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
@@ -129,6 +163,7 @@ const KF_API = (function () {
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
       geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
       geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
+      if (b.idx) geo.setIndex(indexAttr(b.idx.view().slice(), b.pos.n / 3));
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });
       else {
@@ -149,6 +184,7 @@ const KF_API = (function () {
     for (const m of this.textured) { const a = byMat.get(m.material); if (a) a.push(m); else byMat.set(m.material, [m]); }
     for (const [mt, ms] of byMat) {
       if (ms.length === 1) { grp.add(ms[0]); continue; }
+      if (this.indexed) { grp.add(mergeIndexed(ms, mt)); continue; }
       let n = 0;
       for (const m of ms) { const g = m.geometry; n += g.index ? g.index.count : g.attributes.position.count; }
       const P = new Float32Array(n * 3), N = new Float32Array(n * 3), U = new Float32Array(n * 2);
@@ -176,6 +212,34 @@ const KF_API = (function () {
     if (parent) parent.add(grp);
     return grp;
   };
+  /* an indexed batch's painted panels sharing a material: each panel's vertices once, in world space, its index kept */
+  function mergeIndexed(ms, mt) {
+    let nv = 0, ni = 0;
+    for (const m of ms) { const g = m.geometry; nv += g.attributes.position.count; ni += g.index ? g.index.count : g.attributes.position.count; }
+    const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3), U = new Float32Array(nv * 2), I = new Uint32Array(ni);
+    let k = 0, q = 0;
+    for (const m of ms) {
+      m.updateMatrix(); _n.getNormalMatrix(m.matrix);
+      const g = m.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv, idx = g.index, base = k;
+      for (let j = 0; j < pos.count; j++, k++) {
+        _v.fromBufferAttribute(pos, j).applyMatrix4(m.matrix); P[k * 3] = _v.x; P[k * 3 + 1] = _v.y; P[k * 3 + 2] = _v.z;
+        if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); N[k * 3] = _w.x; N[k * 3 + 1] = _w.y; N[k * 3 + 2] = _w.z; } else N[k * 3 + 1] = 1;
+        if (uv) { U[k * 2] = uv.getX(j); U[k * 2 + 1] = uv.getY(j); }
+      }
+      if (idx) for (let i = 0; i < idx.count; i++) I[q++] = base + idx.getX(i);
+      else for (let i = 0; i < pos.count; i++) I[q++] = base + i;
+      g.dispose();
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+    geo.setAttribute('uv', new THREE.BufferAttribute(U, 2));
+    geo.setIndex(indexAttr(I, nv));
+    const mm = new THREE.Mesh(geo, mt);
+    mm.name = 'furniture:decal'; mm.userData.furniture = true;
+    return mm;
+  }
+  /* opt.indexed: keep the source meshes' indices (INDEXED above); default off */
   API.batch = function (opt) { return new Batch(opt); };
   return API;
 })();

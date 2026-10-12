@@ -103,7 +103,7 @@ function interiorPass(m,G){
  AIK.sites.push(site);AIK.byId[site.id]=site;}
 /* draw an opened building's furniture: its records into a fresh batch, flushed once into its own group */
 function aikDraw(site){if(site.group||!site.furniture)return site.group;
- const B=KratorFurniture.batch();
+ const B=KratorFurniture.batch({indexed:true});
  for(const r of site.recs)B.place(r.key,r.x,r.y,r.z,r.ry,{variant:r.variant,seed:r.seed,wealth:.6,building:r.building,setting:'indoor'});
  const g=site.group=B.flush(scene);g.traverse(o=>{if(o.isMesh){KFURN.linearColours(o.geometry);o.userData.probeSkip=true;}});
  aikClipAll();return g;}

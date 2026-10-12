@@ -41,7 +41,7 @@ function nrInstRecords(T,ox,oy,oz,ory,ctx,roomId){const c=Math.cos(ory),s=Math.s
   for(const L of (p.lights||[])){const lx=L.x,lz=L.z;nrHalo(nrH2W(ox+lx*c+lz*s,oy+L.y,oz-lx*s+lz*c),/fire|brazier|stove|forge|hearth/.test(p.key));}}
  return n;}
 /* build a template's pieces once and make its InstancedMeshes (capacity = its instance count) */
-function nrTemplateDraw(T){if(!T.inst.length||!T.plan.placements.length)return;const B=KratorFurniture.batch();KratorFurniture.setDetail(.5);
+function nrTemplateDraw(T){if(!T.inst.length||!T.plan.placements.length)return;const B=KratorFurniture.batch({indexed:true});KratorFurniture.setDetail(.5);
  for(const p of T.plan.placements)B.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.variant,seed:p.seed,wealth:T.wealth,setting:'indoor'});
  const g=B.flush(null);const meshes=[];
  g.traverse(m=>{if(!m.isMesh)return;KFURN.linearColours(m.geometry);const mt=m.material;if(!mt.map)svfDetail(mt);if(!mt.userData.nrCut){mt.userData.nrCut=1;nrCutHook(mt,mt.userData.family!=='glass'&&mt.userData.family!=='glow');}

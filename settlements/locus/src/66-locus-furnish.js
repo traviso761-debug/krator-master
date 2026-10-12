@@ -37,7 +37,7 @@ var LOCF = KFURN.create(Object.assign(KFURN.flags(false), {
       x:rec.x, y:rec.y-0.2, z:rec.z, r:Math.hypot(dm.w,dm.d)/2+0.4, h:(dm.h||2)+0.6 }); }
 }));
 Object.assign(LOCF, { stack:[], lastTop:null, deferred:0, unfurnished:{ noItem:{}, skip:{}, none:{} } });
-KFURN.useBatch(LOCF, KratorFurniture, KratorInteriors);
+KFURN.useBatch(LOCF, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
 window._locf = LOCF;   /* for probes: the records, LOCF.missing, LOCF.buildings */
 /* the interior-set item that furnishes a building of this key and variant (null: none, or skipped). Variant 0 is `<key>`,
    variant n `<key>#n` ONLY: no fallback to `<key>`, whose rooms are measured on variant 0's body */

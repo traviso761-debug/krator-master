@@ -19,7 +19,7 @@ const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
  draw:(rec,ctx)=>{KFURN.drawRec(HLF,rec,ctx.wealth,{detail:1,after:.5});}}));
-KFURN.useBatch(HLF,KratorFurniture,KratorInteriors);
+KFURN.useBatch(HLF,KratorFurniture,KratorInteriors,{indexed:true});   // indexed meshes (kits/catalog/README.md)
 function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
  const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
