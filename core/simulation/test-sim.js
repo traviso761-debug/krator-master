@@ -51,7 +51,10 @@ function world(seed){
  const P=S.get('place','market');P.org='folk';
  ok('a public place lets a friendly org in and keeps a hostile one out',S.welcome('riders',P)&&!S.welcome('band',P),!S.welcome('riders',P));
  const H=S.get('place','homeA');H.access='private';
- ok('a private place lets in its own people only',S.welcome(S.get('actor','f1'),H)&&!S.welcome(S.get('actor','f2'),H),S.welcome(S.get('actor','f2'),H));}
+ ok('a private place lets in its own people only',S.welcome(S.get('actor','f1'),H)&&!S.welcome(S.get('actor','f2'),H),S.welcome(S.get('actor','f2'),H));
+ H.guests={SOCIALIZE:200};
+ ok('a house that takes guests for an activity lets a neighbour in for it (home B 150 m off), and only for it',S.welcome(S.get('actor','f2'),H,'SOCIALIZE')&&!S.welcome(S.get('actor','f2'),H,'SLEEP'),S.welcome(S.get('actor','f2'),H,'SLEEP'));
+ H.guests={SOCIALIZE:100};ok('a neighbour farther than its guests\' reach is not let in',!S.welcome(S.get('actor','f2'),H,'SOCIALIZE'),S.welcome(S.get('actor','f2'),H,'SOCIALIZE'));}
 
 // 3. the resolver and the slots
 {const {S,clock}=world();

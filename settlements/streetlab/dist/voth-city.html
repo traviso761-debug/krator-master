@@ -47812,7 +47812,18 @@ var TUNE = {
        resting; at home first (the roles pin IDLE and REST to the home), else the nearest */
     /* the canton rooms that are someone's home (private: their own people only) */
     privateRooms: ['cottage', 'bedroom', 'living', 'cell'],
-    alsoAct: { chair: ['IDLE', 'RELAX'], stool: ['IDLE'], bench: ['IDLE'], seating: ['IDLE', 'RELAX'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
+    alsoAct: { chair: ['IDLE', 'RELAX', 'VISIT'], stool: ['IDLE', 'VISIT'], bench: ['IDLE', 'VISIT'], seating: ['IDLE', 'RELAX', 'VISIT'], table: ['VISIT'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
+    /* company at home (owner, 2026-10-12: "maybe people can socialize at home with housemates and neighbors too"): a
+       house's seats and table places take VISIT, its own people and the neighbours whose home is within `visitR` m;
+       someone who finds no room out (SOCIALIZE) visits instead (TUNE.sim.week.fallback) */
+    visitR: 60,
+    /* more places to socialize (owner, 2026-10-12): every plaza and pocket park of the plan is a place, its room by its
+       area: one person per `m2` square metres for its activities' shares (a plaza's SOCIALIZE takes one per 4 m2) */
+    greens: { plaza: { m2: 4, SOCIALIZE: 1, RELAX: 0.4, IDLE: 0.3 }, park: { m2: 8, SOCIALIZE: 0.6, RELAX: 1, IDLE: 0.5 }, min: 2, wander: 0.35 },
+    /* a shrine's, a chapel's, the funerary temple's and a canton shrine room's congregation by its ground floor: one
+       worshipper per `m2` square metres (standing), whatever its altars hold; `need` the rest day's worship sizing:
+       how many come (share of everyone) and in how many services */
+    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine'], services: [1, 3], attend: [1, 0.5] },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
       shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
@@ -47881,7 +47892,9 @@ var TUNE = {
     week: {
       rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
       /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
-      fallback: { SOCIALIZE: 'IDLE', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      fallback: { SOCIALIZE: 'VISIT', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      /* slaves: the rest day is a half shift (owner, 2026-10-12: "slaves work a half shift on rest day") */
+      slaveRest: 'half',
       shifts: { default: [7, 10], 'farmhands and ploughmen': [6, 12], miners: [6, 12], 'quarrymen and masons': [6, 12], 'mushroom growers': [6, 12],
                 'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
                 'innkeepers and servers': [10, 12], 'innkeepers and grooms': [8, 12], 'market traders': [7, 11], 'dockers and stevedores': [6, 11],
@@ -47902,7 +47915,7 @@ var TUNE = {
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600,
-              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
@@ -52472,7 +52485,7 @@ SL.pass13 = function () {
 //   SIM.relation({a, b, stance:'allied'|'friendly'|'cordial'|'neutral'|'wary'|'hostile', trade?, travel?, settle?, trust?})
 //   SIM.presence({id, faction, settlement, status:'NONE'|'VISITING'|'TRADING'|'RESIDENT'|'ESTABLISHED'|'PERSECUTED'|'EXPELLED'})
 //   SIM.stance(a, b)              a's stance toward b (org ids or faction ids), falling back org -> faction -> 'neutral'
-//   SIM.welcome(actorOrOrg, place) true when the place lets them in: place.access 'public' (default) | 'org' (its own
+//   SIM.welcome(actorOrOrg, place, act?) true when the place lets them in: place.access 'public' (default) | 'org' (its own
 //                                 org only) | 'friendly' (orgs whose stance from the place's org is friendly or better)
 (function(root){
   'use strict';
@@ -52493,12 +52506,14 @@ SL.pass13 = function () {
     return rel(a,b) || rel(a,fb) || rel(fa,b) || rel(fa,fb) || 'neutral';
   };
   SIM.rank = function(stance){ return RANK[stance]; };
-  SIM.welcome = function(who, place){
+  SIM.welcome = function(who, place, act){
     var org = typeof who==='string' ? who : who.org, acc = place.access || 'public';
     if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
     if(acc==='org') return org===place.org;
     if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
-    if(acc==='private') return typeof who!=='string' && (who.home===place.id || who.work===place.id);   /* a home: its own people only */
+    if(acc==='private'){ if(typeof who==='string') return false; if(who.home===place.id || who.work===place.id) return true;   /* a home: its own people, */
+      var g=act && place.guests && place.guests[act], H=g && SIM.R.place[who.home];                                               /* and for an activity it takes guests for, the */
+      return !!(H && Math.hypot(H.x-place.x, H.z-place.z) <= g); }                                                                  /* neighbours whose home is within that many metres */
     return false;
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -52558,14 +52573,15 @@ SL.pass13 = function () {
     if(opt.exclude && opt.exclude[P.id]) return false;
     if(hour!=null && !SIM.isOpen(P, act, hour)) return false;
     if(!opt.ignoreSlots && SIM.free(P, act) <= 0) return false;
-    if(actor && SIM.welcome && !SIM.welcome(actor, P)) return false;
+    if(actor && SIM.welcome && !SIM.welcome(actor, P, act)) return false;
     return true;
   }
   function byNear(near){ return function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); }; }
   /* a grid per activity of the places offering it, rebuilt when places are added or removed, or when a host says their
      activities changed (SIM.placesChanged()); a place with a `bias` makes the nearest-first order not a distance, so
      the grid stands aside. An activity no place offers is answered at once. A private place (a home) is not on the grids:
-     its own people reach it by their pins (it lets no one else in) */
+     its own people reach it by their pins (it lets no one else in), but for an activity it takes guests for (`guests:
+     {ACT: metres}`: a house the neighbours visit) it is on that activity's grid */
   var GRIDS={}, GSIG=null, GCELL=120, EMPTY={ m:null, k:{} };
   SIM.placesChanged = function(){ SIM.placeVersion=(SIM.placeVersion||0)+1; EMPTY={ m:null, k:{} }; };
   function grid(act){
@@ -52573,7 +52589,7 @@ SL.pass13 = function () {
     if(GSIG!==sig){ GRIDS={}; GSIG=sig; }
     if(GRIDS[act]) return GRIDS[act];
     var G={ cells:{}, n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
-    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || P.access==='private') return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
+    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
       if(P.bias) G.bias=true; G.x0=Math.min(G.x0,P.x); G.x1=Math.max(G.x1,P.x); G.z0=Math.min(G.z0,P.z); G.z1=Math.max(G.z1,P.z); });
     return (GRIDS[act]=G);
   }
@@ -55321,9 +55337,9 @@ VC.simStand = function (p) {
   return { x: p.x + s * out, y: p.y, z: p.z + c * out };
 };
 VC.simActs = function () {
-  var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL'].indexOf(a) >= 0 }); };
+  var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL', 'VISIT'].indexOf(a) >= 0 }); };
   ['SLEEP', 'EAT', 'DRINK', 'SOCIALIZE', 'RELAX', 'CONTEMPLATE', 'WORSHIP', 'HONOUR', 'BUY', 'SELL', 'KEEP_SHOP', 'COOK', 'STUDY', 'CRAFT', 'WEAVE', 'STORE', 'STORE_FOOD',
-   'DRAW_TOOLS', 'TRAIN', 'HEAL', 'WORK', 'REST', 'IDLE'].forEach(add);
+   'DRAW_TOOLS', 'TRAIN', 'HEAL', 'WORK', 'REST', 'IDLE', 'VISIT'].forEach(add);
   Object.keys(TUNE.sim.furnAct).forEach(function (k) { if (TUNE.sim.furnAct[k]) add(TUNE.sim.furnAct[k]); });
   Object.keys(SIM.FURN_ACT).forEach(function (k) { add(SIM.FURN_ACT[k]); });
 };
@@ -55348,6 +55364,8 @@ VC.simPlaces = function () {
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
+    if (kind !== 'home') delete acts.VISIT;                                                                             /* visiting is at a house */
+    if (T.worship.kinds.indexOf(kind) >= 0 && ty.floorArea) { var wa = Math.floor(ty.floorArea / Math.max(1, ty.storeys || 1) / T.worship.m2); acts.WORSHIP = Math.max(acts.WORSHIP || 0, wa); acts.CONTEMPLATE = Math.max(acts.CONTEMPLATE || 0, wa); }
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -55363,7 +55381,7 @@ VC.simPlaces = function () {
       .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
           activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i, indoor: true,
-          access: kind === 'home' ? 'private' : undefined });   /* a house: its own people only (phase C) */
+          access: kind === 'home' ? 'private' : undefined, guests: kind === 'home' && acts.VISIT ? { VISIT: T.visitR } : undefined });   /* a house: its own people only, and the neighbours visiting (phase C) */
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -55371,6 +55389,7 @@ VC.simPlaces = function () {
       var e = K.rooms[r.kind]; if (!e) return;
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
+      if (T.worship.kinds.indexOf('canton-' + r.kind) >= 0) acts.WORSHIP = acts.CONTEMPLATE = Math.max(1, Math.floor((r.x1 - r.x0) * (r.z1 - r.z0) / T.worship.m2));   /* a canton shrine room's congregation */
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
             open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn], indoor: true,
             access: TUNE.sim.privateRooms.indexOf(r.kind) >= 0 ? 'private' : undefined });
@@ -55405,6 +55424,18 @@ VC.simPlaces = function () {
       var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); });
     reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind), spots: spots, r: Math.round(rr), wander: Math.min(30, Math.round(rr / 3)),
           job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, workplaces: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
+  });
+  /* every plaza and pocket park of the plan (phase C: more places to socialize): its room by its area (TUNE.sim.greens),
+     its reach the green's, a little wander; the big parks are their districts' places (above) */
+  var GR = T.greens;
+  PLAN.greens.forEach(function (G, gi) {
+    var gk = G.kind === 'plaza' ? 'plaza' : G.kind === 'park' ? 'park' : null; if (!gk || !G.poly) return;
+    var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
+    ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
+    if (!Object.keys(acts).length) return;
+    var rr = Math.sqrt(area) / 2;
+    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
+          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, tags: [G.district || gk] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
@@ -55805,8 +55836,11 @@ VC.simPeople = function () {
      rest day), its pins (sleep and eat at home, work at work) */
   var roleOf = function (id, org, name, shift, essential) {
     if (!SIM.R.role[id]) {
-      var S = VC.simWeek(shift), week = []; for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? 'rest' : shift ? 'work' : 'day');
-      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest }, week: week, shift: shift, essential: !!essential,
+      var S = VC.simWeek(shift), half = org === 'slaves' && WK.slaveRest === 'half' && shift, week = [];
+      for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? (half ? 'half' : 'rest') : shift ? 'work' : 'day');
+      var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
+      if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
                  prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
@@ -55994,6 +56028,23 @@ VC.simWeek = function (shift) {
     var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
   }
   return out;
+};
+
+/* the rest day's worship, sized (owner, 2026-10-12: "how many more temples and shrines would we need"): who wants to
+   worship at the rest day's worship hour, the room the shrines, chapels, the funerary temple, the canton shrine rooms
+   and the parks' shrines give at once (their ground floor at TUNE.sim.worship.m2 each), and for each way of holding it
+   (TUNE.sim.worship.services x attend) how many more of an average shrine, and of the city's largest worship place,
+   would hold the rest. The Temple canton's interior (the owner's references) is not counted yet */
+VC.simWorshipNeed = function () {
+  var W = TUNE.sim.week, Wo = TUNE.sim.worship, m = W.rest * 1440 + W.worship * 60, want = 0, room = 0, byKind = {}, sizes = [];
+  SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') want++; });
+  SIM.all('place').forEach(function (P) { var n = SIM.offers(P, 'WORSHIP'); if (!n || P.access === 'private') return; room += n; var k = byKind[P.kind] || (byKind[P.kind] = { places: 0, room: 0 }); k.places++; k.room += n;
+    if (/^(shrine|canton-shrine|chapel|funerary)$/.test(P.kind)) sizes.push(n); });
+  sizes.sort(function (a, b) { return a - b; });
+  var shrine = byKind.shrine ? Math.round(byKind.shrine.room / byKind.shrine.places) : 0, big = sizes.length ? sizes[sizes.length - 1] : 0, opts = [];
+  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(want * at / sv), short = Math.max(0, need - room);
+    opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
+  return { hour: W.worship, want: want, room: room, byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
 };
 
 /* ---- targets/voth-site/50-site-scene.js ---- */
@@ -58131,6 +58182,10 @@ VC.peopleReportHTML = function () {
       'Day ' + (W.rest + 1) + ' is the rest day for all but ' + W.essential.length + ' essential kinds of work; every worker has a rota day off among the other six. ' + roles.length + ' roles on ' +
       roles.filter(function (r) { return r.shift; }).length + ' shifts. Steps so far ' + f(S.steps) + ', median ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms; the last jump ' + f(S.jumpMs) + ' ms.</div>';
     h += '<div>Now (day ' + (SIM.weekday() + 1) + ' of 7): ' + u(now.by) + '; walking ' + f(now.moving) + '; decisions waiting ' + f(now.pending) + '. <span class="bad">Wanted and not had: ' + u(now.unmet) + '</span> (the free-time places are full or farther than ' + f(TUNE.sim.run.reach) + ' m).</div>';
+    var Wn = VC.simWorshipNeed ? VC.simWorshipNeed() : null;
+    if (Wn) h += '<div>Worship on the rest day at ' + Wn.hour + ':00: ' + f(Wn.want) + ' want it, <span class="bad">room for ' + f(Wn.room) + ' at once</span> (a shrine holds ' + f(Wn.shrineRoom) + ', the largest place ' + f(Wn.largestRoom) + '; the Temple canton is not counted yet). To hold the rest: ' +
+      Wn.options.map(function (o) { return o.services + ' service' + (o.services > 1 ? 's' : '') + ', ' + Math.round(o.attend * 100) + '% attending: ' + f(o.shrines) + ' more shrines (or ' + f(o.largest) + ' of the largest)'; }).join('; ') + '.</div>';
+    h += '<div>Company at home now: ' + f(now.visiting) + ' visiting housemates or neighbours (no room out).</div>';
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
       days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });
@@ -58186,11 +58241,12 @@ VC.ixUI = function () {
 VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
 
 VC.simCensusNow = function () {
-  var A = SIM.all('actor'), out = { actors: A.length, by: {}, unmet: {}, moving: 0, indoors: 0, pending: 0, stuck: 0 }, minute = SIM.minute(), t = SIM.time();
+  var A = SIM.all('actor'), out = { actors: A.length, by: {}, unmet: {}, visiting: 0, moving: 0, indoors: 0, pending: 0, stuck: 0 }, minute = SIM.minute(), t = SIM.time();
   for (var i = 0; i < A.length; i++) {
     var a = A[i], k = a.activity || 'none'; out.by[k] = (out.by[k] || 0) + 1;
     if (a.task) { if (t < a.task.arrive) out.moving++; else if (a.task.indoor) out.indoors++; }
     if (a.present && SIM.desire(a, minute) !== a.wanted) out.pending++;
+    else if (a.wanted === 'SOCIALIZE' && a.activity === 'VISIT') out.visiting++;                                          /* company at home instead: met */
     else if (a.wanted && a.activity && a.activity !== a.wanted) out.unmet[a.wanted] = (out.unmet[a.wanted] || 0) + 1;   /* wanted, not had: the deficit */
     if (!a.task) out.stuck++;
   }
@@ -58276,7 +58332,7 @@ VC.simDay = function (day, h0, h1, at) {
   for (var m = h0 * 60; m < h1 * 60; m++) {
     C.hour = m / 60; VC.motionT = (VC.motionT || 0) + 3;
     var ts = performance.now(), made = SIM.step(), d = performance.now() - ts; ms.push(d); out.top.push([m, Math.round(d), made]);
-    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
+    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
   }
   ms.sort(function (a, b) { return a - b; }); out.top.sort(function (a, b) { return b[1] - a[1]; }); out.top = out.top.slice(0, 5);
   out.p50 = Math.round(ms[ms.length >> 1]); out.p90 = Math.round(ms[Math.floor(ms.length * 0.9)]); out.max = Math.round(ms[ms.length - 1]);

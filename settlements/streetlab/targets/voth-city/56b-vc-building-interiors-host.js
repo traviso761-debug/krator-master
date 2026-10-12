@@ -379,6 +379,10 @@ VC.peopleReportHTML = function () {
       'Day ' + (W.rest + 1) + ' is the rest day for all but ' + W.essential.length + ' essential kinds of work; every worker has a rota day off among the other six. ' + roles.length + ' roles on ' +
       roles.filter(function (r) { return r.shift; }).length + ' shifts. Steps so far ' + f(S.steps) + ', median ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms; the last jump ' + f(S.jumpMs) + ' ms.</div>';
     h += '<div>Now (day ' + (SIM.weekday() + 1) + ' of 7): ' + u(now.by) + '; walking ' + f(now.moving) + '; decisions waiting ' + f(now.pending) + '. <span class="bad">Wanted and not had: ' + u(now.unmet) + '</span> (the free-time places are full or farther than ' + f(TUNE.sim.run.reach) + ' m).</div>';
+    var Wn = VC.simWorshipNeed ? VC.simWorshipNeed() : null;
+    if (Wn) h += '<div>Worship on the rest day at ' + Wn.hour + ':00: ' + f(Wn.want) + ' want it, <span class="bad">room for ' + f(Wn.room) + ' at once</span> (a shrine holds ' + f(Wn.shrineRoom) + ', the largest place ' + f(Wn.largestRoom) + '; the Temple canton is not counted yet). To hold the rest: ' +
+      Wn.options.map(function (o) { return o.services + ' service' + (o.services > 1 ? 's' : '') + ', ' + Math.round(o.attend * 100) + '% attending: ' + f(o.shrines) + ' more shrines (or ' + f(o.largest) + ' of the largest)'; }).join('; ') + '.</div>';
+    h += '<div>Company at home now: ' + f(now.visiting) + ' visiting housemates or neighbours (no room out).</div>';
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
       days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });

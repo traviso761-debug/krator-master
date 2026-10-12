@@ -229,7 +229,18 @@ var TUNE = {
        resting; at home first (the roles pin IDLE and REST to the home), else the nearest */
     /* the canton rooms that are someone's home (private: their own people only) */
     privateRooms: ['cottage', 'bedroom', 'living', 'cell'],
-    alsoAct: { chair: ['IDLE', 'RELAX'], stool: ['IDLE'], bench: ['IDLE'], seating: ['IDLE', 'RELAX'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
+    alsoAct: { chair: ['IDLE', 'RELAX', 'VISIT'], stool: ['IDLE', 'VISIT'], bench: ['IDLE', 'VISIT'], seating: ['IDLE', 'RELAX', 'VISIT'], table: ['VISIT'], bed: ['REST'], bunk: ['REST'], mat: ['REST'] },
+    /* company at home (owner, 2026-10-12: "maybe people can socialize at home with housemates and neighbors too"): a
+       house's seats and table places take VISIT, its own people and the neighbours whose home is within `visitR` m;
+       someone who finds no room out (SOCIALIZE) visits instead (TUNE.sim.week.fallback) */
+    visitR: 60,
+    /* more places to socialize (owner, 2026-10-12): every plaza and pocket park of the plan is a place, its room by its
+       area: one person per `m2` square metres for its activities' shares (a plaza's SOCIALIZE takes one per 4 m2) */
+    greens: { plaza: { m2: 4, SOCIALIZE: 1, RELAX: 0.4, IDLE: 0.3 }, park: { m2: 8, SOCIALIZE: 0.6, RELAX: 1, IDLE: 0.5 }, min: 2, wander: 0.35 },
+    /* a shrine's, a chapel's, the funerary temple's and a canton shrine room's congregation by its ground floor: one
+       worshipper per `m2` square metres (standing), whatever its altars hold; `need` the rest day's worship sizing:
+       how many come (share of everyone) and in how many services */
+    worship: { m2: 2.5, kinds: ['shrine', 'chapel', 'funerary', 'canton-shrine'], services: [1, 3], attend: [1, 0.5] },
     pull: {
       home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
       shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
@@ -298,7 +309,9 @@ var TUNE = {
     week: {
       rest: 6, rota: true, slaveRota: false, relaxFrom: 20, worship: 9,
       /* free time with no place to go: sit at home (IDLE: its chairs), not to bed */
-      fallback: { SOCIALIZE: 'IDLE', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      fallback: { SOCIALIZE: 'VISIT', RELAX: 'IDLE', WORSHIP: 'IDLE', DRINK: 'IDLE' },
+      /* slaves: the rest day is a half shift (owner, 2026-10-12: "slaves work a half shift on rest day") */
+      slaveRest: 'half',
       shifts: { default: [7, 10], 'farmhands and ploughmen': [6, 12], miners: [6, 12], 'quarrymen and masons': [6, 12], 'mushroom growers': [6, 12],
                 'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
                 'innkeepers and servers': [10, 12], 'innkeepers and grooms': [8, 12], 'market traders': [7, 11], 'dockers and stevedores': [6, 11],
@@ -319,7 +332,7 @@ var TUNE = {
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600,
-              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },

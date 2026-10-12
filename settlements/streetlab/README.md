@@ -475,6 +475,13 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   headless (`VC.simDay`). To keep 54,000 decisions cheap, core/simulation gained a place grid per activity (exact
   nearest-first, an empty answer remembered for the minute), lazy paths (decided from the straight line, found when
   drawn), `SIM.REACH`, and a batched log.
+* **More company, the slaves' rest day, worship sized** (owner, 2026-10-12): every plaza and pocket park of the plan is a
+  place, its room by its area (`TUNE.sim.greens`: about 26,000 more places to socialize); a house's seats and table
+  places take VISIT, its own people and the neighbours within `TUNE.sim.visitR` m (core/simulation's `guests` on a
+  private place), and someone who finds no room out visits instead. Slaves work half their shift on the rest day
+  (`TUNE.sim.week.slaveRest`). A shrine's, chapel's, the funerary temple's and a canton shrine room's congregation is its
+  ground floor at 2.5 m2 a worshipper (`TUNE.sim.worship`); `VC.simWorshipNeed` sizes the rest day's worship (in the
+  report and `verify.py`).
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

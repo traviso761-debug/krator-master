@@ -321,11 +321,11 @@
  ],
  "77-sim-1-world.js": [
   "core/simulation",
-  "ecfbc291da5d"
+  "5f44b1f0e8ca"
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "d54245525615"
+  "2b690f8a7cbe"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",

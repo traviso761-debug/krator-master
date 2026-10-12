@@ -258,9 +258,9 @@ VC.simStand = function (p) {
   return { x: p.x + s * out, y: p.y, z: p.z + c * out };
 };
 VC.simActs = function () {
-  var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL'].indexOf(a) >= 0 }); };
+  var add = function (a) { if (!SIM.R.activity || !SIM.R.activity[a]) SIM.activity({ id: a, indoor: ['SLEEP', 'EAT', 'STUDY', 'COOK', 'WEAVE', 'STORE', 'STORE_FOOD', 'HEAL', 'VISIT'].indexOf(a) >= 0 }); };
   ['SLEEP', 'EAT', 'DRINK', 'SOCIALIZE', 'RELAX', 'CONTEMPLATE', 'WORSHIP', 'HONOUR', 'BUY', 'SELL', 'KEEP_SHOP', 'COOK', 'STUDY', 'CRAFT', 'WEAVE', 'STORE', 'STORE_FOOD',
-   'DRAW_TOOLS', 'TRAIN', 'HEAL', 'WORK', 'REST', 'IDLE'].forEach(add);
+   'DRAW_TOOLS', 'TRAIN', 'HEAL', 'WORK', 'REST', 'IDLE', 'VISIT'].forEach(add);
   Object.keys(TUNE.sim.furnAct).forEach(function (k) { if (TUNE.sim.furnAct[k]) add(TUNE.sim.furnAct[k]); });
   Object.keys(SIM.FURN_ACT).forEach(function (k) { add(SIM.FURN_ACT[k]); });
 };
@@ -285,6 +285,8 @@ VC.simPlaces = function () {
       return { type: p.type, role: p.catRole, job: (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key] || {}).job || null, kind: p.kind, anchor: p.anchor, seats: seats }; });
     var acts = SIM.slotsFromFurniture(pcs.filter(function (p) { return p.anchor !== 'surface'; }), T.furnAct);
     pcs.forEach(function (p) { if (p.anchor === 'surface') return; (T.alsoAct[p.type] || []).forEach(function (a) { acts[a] = (acts[a] || 0) + (p.seats || 1); }); });   /* seats to idle on, beds to rest on */
+    if (kind !== 'home') delete acts.VISIT;                                                                             /* visiting is at a house */
+    if (T.worship.kinds.indexOf(kind) >= 0 && ty.floorArea) { var wa = Math.floor(ty.floorArea / Math.max(1, ty.storeys || 1) / T.worship.m2); acts.WORSHIP = Math.max(acts.WORSHIP || 0, wa); acts.CONTEMPLATE = Math.max(acts.CONTEMPLATE || 0, wa); }
     if (u.beds) acts.SLEEP = u.beds * TUNE.ix.per;
     if (u.residents > (acts.SLEEP || 0)) { u.floor = u.residents - (acts.SLEEP || 0); acts.SLEEP = u.residents; }   /* phase C: a home's people sleep in it, on the floor where its beds fall short (the shortfall is phase A's report) */
     if (kind === 'shop' || kind === 'craft') acts.BUY = Math.max(2, (acts.KEEP_SHOP || 1) * 3);
@@ -300,7 +302,7 @@ VC.simPlaces = function () {
       .forEach(function (p) { var w = VC.ixWorld(u, VC.simStand(p)); spots.push([R2(w.x), R2(w.z), R2(w.y)]); });
     reg({ id: 'ix.' + u.i, kind: kind, name: (ASSET_BY_KEY[u.key] || {}).name || u.site || u.key, x: u.x, z: u.z, y: u.y, ry: u.ry, door: { x: door[0], z: door[1], y: u.y },
           activities: acts, open: hrs(kind), pull: pullOf(kind === 'home' ? 'home' : kind), job: u.job, posts: P.n, workplaces: u.jobs || 0, spots: spots, tags: [u.cls, u.district], unit: u.i, indoor: true,
-          access: kind === 'home' ? 'private' : undefined });   /* a house: its own people only (phase C) */
+          access: kind === 'home' ? 'private' : undefined, guests: kind === 'home' && acts.VISIT ? { VISIT: T.visitR } : undefined });   /* a house: its own people only, and the neighbours visiting (phase C) */
   });
   /* the canton rooms: their workplaces and residents as the census counts them (TUNE.census.rooms) */
   Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
@@ -308,6 +310,7 @@ VC.simPlaces = function () {
       var e = K.rooms[r.kind]; if (!e) return;
       var label = (K.rooms.byCanton[cn] && K.rooms.byCanton[cn][r.kind]) || e[2], acts = {};
       if (e[1]) acts.SLEEP = e[1];
+      if (T.worship.kinds.indexOf('canton-' + r.kind) >= 0) acts.WORSHIP = acts.CONTEMPLATE = Math.max(1, Math.floor((r.x1 - r.x0) * (r.z1 - r.z0) / T.worship.m2));   /* a canton shrine room's congregation */
       reg({ id: 'room.' + r.id, kind: 'canton-' + r.kind, name: cn + ' canton, ' + r.kind, x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2, y: r.y, activities: acts,
             open: e[0] ? [6, 20] : null, job: e[0] ? label : null, posts: e[0] || 0, workplaces: e[0] || 0, r: Math.min(r.x1 - r.x0, r.z1 - r.z0) / 2, tags: ['canton', cn], indoor: true,
             access: TUNE.sim.privateRooms.indexOf(r.kind) >= 0 ? 'private' : undefined });
@@ -342,6 +345,18 @@ VC.simPlaces = function () {
       var st = VC.simStand({ key: a.key, v: a.v, x: a.x, y: a.y || 0, z: a.z, ry: a.ry || 0 }); spots.push([Math.round(st.x * 100) / 100, Math.round(st.z * 100) / 100, Math.round(st.y * 100) / 100]); });
     reg({ id: 'open.' + di, kind: kind, name: D.name || kind, x: cx / m, z: cz / m, y: cy / m, activities: acts, open: hrs(kind), pull: pullOf(kind), spots: spots, r: Math.round(rr), wander: Math.min(30, Math.round(rr / 3)),
           job: cnt.stall ? 'market traders' : null, posts: cnt.stall ? cnt.stall * K.jobs.stall : 0, workplaces: cnt.stall ? cnt.stall * K.jobs.stall : 0, tags: [D.kind] });
+  });
+  /* every plaza and pocket park of the plan (phase C: more places to socialize): its room by its area (TUNE.sim.greens),
+     its reach the green's, a little wander; the big parks are their districts' places (above) */
+  var GR = T.greens;
+  PLAN.greens.forEach(function (G, gi) {
+    var gk = G.kind === 'plaza' ? 'plaza' : G.kind === 'park' ? 'park' : null; if (!gk || !G.poly) return;
+    var area = Math.abs(polyArea(G.poly)), c = polyCentroid(G.poly), g = GR[gk], acts = {};
+    ['SOCIALIZE', 'RELAX', 'IDLE'].forEach(function (a) { if (g[a]) { var n = Math.floor(area / g.m2 * g[a]); if (n >= GR.min) acts[a] = n; } });
+    if (!Object.keys(acts).length) return;
+    var rr = Math.sqrt(area) / 2;
+    reg({ id: 'green.' + gi, kind: gk === 'plaza' ? 'square' : 'green', name: gk === 'plaza' ? 'Square' : 'Pocket park', x: c[0], z: c[1], y: VC.walkY(c[0], c[1]), activities: acts, open: null,
+          pull: pullOf(gk), r: Math.round(rr * 10) / 10, wander: Math.round(rr * GR.wander * 10) / 10, tags: [G.district || gk] });
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */

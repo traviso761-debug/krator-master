@@ -27,8 +27,11 @@ VC.simPeople = function () {
      rest day), its pins (sleep and eat at home, work at work) */
   var roleOf = function (id, org, name, shift, essential) {
     if (!SIM.R.role[id]) {
-      var S = VC.simWeek(shift), week = []; for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? 'rest' : shift ? 'work' : 'day');
-      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest }, week: week, shift: shift, essential: !!essential,
+      var S = VC.simWeek(shift), half = org === 'slaves' && WK.slaveRest === 'half' && shift, week = [];
+      for (var d = 0; d < 7; d++) week.push(d === WK.rest && !essential ? (half ? 'half' : 'rest') : shift ? 'work' : 'day');
+      var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
+      if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
                  prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' } } });   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
@@ -216,4 +219,21 @@ VC.simWeek = function (shift) {
     var d = SIM.sched(TUNE.sim.people.sched.dependant); out.day = d; var rr = d.slice(); if (rr[W.worship] !== 'SLEEP') rr[W.worship] = 'WORSHIP'; out.rest = rr;
   }
   return out;
+};
+
+/* the rest day's worship, sized (owner, 2026-10-12: "how many more temples and shrines would we need"): who wants to
+   worship at the rest day's worship hour, the room the shrines, chapels, the funerary temple, the canton shrine rooms
+   and the parks' shrines give at once (their ground floor at TUNE.sim.worship.m2 each), and for each way of holding it
+   (TUNE.sim.worship.services x attend) how many more of an average shrine, and of the city's largest worship place,
+   would hold the rest. The Temple canton's interior (the owner's references) is not counted yet */
+VC.simWorshipNeed = function () {
+  var W = TUNE.sim.week, Wo = TUNE.sim.worship, m = W.rest * 1440 + W.worship * 60, want = 0, room = 0, byKind = {}, sizes = [];
+  SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORSHIP') want++; });
+  SIM.all('place').forEach(function (P) { var n = SIM.offers(P, 'WORSHIP'); if (!n || P.access === 'private') return; room += n; var k = byKind[P.kind] || (byKind[P.kind] = { places: 0, room: 0 }); k.places++; k.room += n;
+    if (/^(shrine|canton-shrine|chapel|funerary)$/.test(P.kind)) sizes.push(n); });
+  sizes.sort(function (a, b) { return a - b; });
+  var shrine = byKind.shrine ? Math.round(byKind.shrine.room / byKind.shrine.places) : 0, big = sizes.length ? sizes[sizes.length - 1] : 0, opts = [];
+  Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(want * at / sv), short = Math.max(0, need - room);
+    opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
+  return { hour: W.worship, want: want, room: room, byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
 };

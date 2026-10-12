@@ -12,11 +12,12 @@
 VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
 
 VC.simCensusNow = function () {
-  var A = SIM.all('actor'), out = { actors: A.length, by: {}, unmet: {}, moving: 0, indoors: 0, pending: 0, stuck: 0 }, minute = SIM.minute(), t = SIM.time();
+  var A = SIM.all('actor'), out = { actors: A.length, by: {}, unmet: {}, visiting: 0, moving: 0, indoors: 0, pending: 0, stuck: 0 }, minute = SIM.minute(), t = SIM.time();
   for (var i = 0; i < A.length; i++) {
     var a = A[i], k = a.activity || 'none'; out.by[k] = (out.by[k] || 0) + 1;
     if (a.task) { if (t < a.task.arrive) out.moving++; else if (a.task.indoor) out.indoors++; }
     if (a.present && SIM.desire(a, minute) !== a.wanted) out.pending++;
+    else if (a.wanted === 'SOCIALIZE' && a.activity === 'VISIT') out.visiting++;                                          /* company at home instead: met */
     else if (a.wanted && a.activity && a.activity !== a.wanted) out.unmet[a.wanted] = (out.unmet[a.wanted] || 0) + 1;   /* wanted, not had: the deficit */
     if (!a.task) out.stuck++;
   }
@@ -102,7 +103,7 @@ VC.simDay = function (day, h0, h1, at) {
   for (var m = h0 * 60; m < h1 * 60; m++) {
     C.hour = m / 60; VC.motionT = (VC.motionT || 0) + 3;
     var ts = performance.now(), made = SIM.step(), d = performance.now() - ts; ms.push(d); out.top.push([m, Math.round(d), made]);
-    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
+    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
   }
   ms.sort(function (a, b) { return a - b; }); out.top.sort(function (a, b) { return b[1] - a[1]; }); out.top = out.top.slice(0, 5);
   out.p50 = Math.round(ms[ms.length >> 1]); out.p90 = Math.round(ms[Math.floor(ms.length * 0.9)]); out.max = Math.round(ms[ms.length - 1]);

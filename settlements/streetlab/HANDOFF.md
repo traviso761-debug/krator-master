@@ -4,6 +4,20 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase C session 2, follow-up: more company, the slaves' rest day, worship sized
+
+The owner: "More places to socialize; and maybe people can socialize at home with housemates and neighbors too?",
+"Slaves work a half shift on rest day", "How many more temples and shrines would we need".
+- The 992 plazas and 617 pocket parks are places, their room by area; houses take visitors (VISIT: their own people and
+  neighbours within 60 m) when there is no room out. At 15:00 on a workday 28,594 socialize out (5,000 before), 5,030
+  visit, 511 go without (29,114 before).
+- Slaves work half their shift on the rest day.
+- **Worship at 9:00 on the rest day:** 45,277 want it; the room is 4,698 at once (the canton shrine rooms 3,228, the
+  funerary temple 510, the chapel 366, the five shrines 526, the House of Healing and the parks' shrines the rest; the
+  Temple canton not counted until its interior). A shrine holds about 105. More needed: one service, everyone: 387
+  shrines (or 80 of the funerary temple's size); one service, half the city: 171; three services, everyone: 99; three
+  services, half: 28 (or 6 of the largest).
+
 ## 2026-10-12: phase C session 2 (branch `Voth-sim`): the week, running
 
 The owner: "Ok continue build" (and, mid-session, "Items like chairs, stools could be a good target for idle and beds etc
