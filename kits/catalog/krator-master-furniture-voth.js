@@ -192,7 +192,7 @@ FURN({
 FURN({
   key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
   rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
-  materials: ['stone', 'wood', 'cloth', 'emissive', 'roof', 'ceramic', 'plaster'],
+  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster'],
   w: 1.9, d: 1.9, h: 2.7, variants: 1,
   build: function (F) {
     const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');
