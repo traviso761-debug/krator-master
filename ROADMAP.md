@@ -325,6 +325,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
     then the cities' placement passes ported onto it, Iziz first; its `city` export section with item 7.
 15. **`core/city` in Godot** (section 8): its GDScript twin with golden tests, edits as an id-keyed overlay, rules as
     shared functions; the base for the NPC and quest tool and, later, the player's settlement builder.
+16. **`core/water`** (section 9; `core/atmos/WATER.md`): phases 0 and 1 after item 5; Voth's water when its branch pauses.
+17. **The scripted walk** in the harness (section 9, stage 0j).
 
 ## 7. Decisions and open questions
 
@@ -390,6 +392,56 @@ Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant b
      `core/simulation`'s places already are.
 - **Minor debts:** two `x || number` defaults in `core/city/10-city-core.js` (`span`, `hw`); `core/city` has no node
   test yet (rule 6.9); `PORT-INDEX.md` needs a rerun of `tools/audit_port.py` to count Streetlab.
+
+## 9. Directives since the pause (`main`, 2026-10-10 to 2026-10-12)
+
+Merged into `full-refactor` on 2026-10-12 (four small conflicts: the generated indexes, the catalog's port table, the
+baseline, and `core/materials/PROMPTS-ready.md`, where the Zeijani prompts stay pruned because their images arrived).
+
+**Assigned to this branch:**
+
+- **Water: one shared module, `core/water`** (`core/atmos/WATER.md`; `TODO.md`, "Water"). Thirty-nine builds draw
+  water; five take the shared wave field, the rest run ten ripples or static materials; nine clocks never wrap;
+  nothing but the Ring Sea's hulls floats; no water reflects the sky. Six kinds (open, shore, flow, fall, still,
+  wet), each with a data side and a CPU twin (`heightAt`, `flowAt`, `seaLevel`), one clock, skylight reflection,
+  depth absorption. Its phases sit in this roadmap as:
+  - **Phase 0** (the README, the API and a node test for the twins) and **Phase 1** (a CDLOD water mesh, the shared
+    field, skylight, Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` moved in) are **stage 2f**,
+    after the terrain field is merged, since the flow and shore fields are built on it and on `core/mask`.
+  - Phases 2 to 4 (shore, flow and falls, still water and `W.wet`) follow `core/export`; Phase 5 (the FFT backend,
+    the ripple sim) is opt-in per sea world; Phase 6 is the Godot side and joins stage 4.
+  - Its first takers skip Voth: Voth's water (`settlements/voth/src/75-terrain.js`, and Streetlab's) is in the
+    Voth branch's area (below). Ring Sea, geyser, Port, Ys, Reed Lake, Noah's Regret, little-demo, Locus and Mungo go
+    first; Voth takes the module when that branch reaches a pause.
+- **A scripted walk in the verify harness** (`TODO.md`, from OhMyGame's QA skill): "build success establishes
+  compilation, not a playtest". A verify step that walks the camera along a route by scripted keys and asserts the
+  end position and a clean console. **Stage 0j**, on `tools/harness.py`.
+
+**Owned by another branch: the Voth citizen simulation** (`settlements/streetlab/SIM-ROADMAP.md`, the owner's brief
+and its phases A to G; the branch is the owner's Voth and simulation session). It is this plan's stage 5 done on the
+Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-items.js`, `-economy.js`,
+`77-sim-7-lod.js`) and an interior in every Voth building. So the refactor:
+- **stays out of** `settlements/streetlab`, `settlements/voth`, `core/simulation` and `core/city`. Where the plan
+  needs a change there (`core/city` onto `KRAND`, `core/mask` and `core/tags`; Voth's water; Verge onto the core
+  `SIM`), it is written as a note for that branch or waits until the branch pauses;
+- **keeps the furniture batch's API exactly as it is.** Every new Voth interior furnishes through it, so the indexed
+  batch (`wip/furniture-indexed`) lands only with the furniture fingerprint unchanged in records and Streetlab's city
+  page loading clean;
+- **shares one delta shape with it.** The simulation plan's off-screen sites (`core/simulation/PLAN.md` 8.9) log
+  ADD, MOVE, SET and REMOVE operations with a cause and a thread status. `core/city`'s edits-as-overlay (section 8)
+  should use the same operations, so the owner's edits, the player's builds and the simulation's changes are one log.
+
+**Naming:** `settlements/port` is the **Ancient Port kit**, not a settlement (it will build Hook). The geyser kit
+(`biomes/geyser`) is new; it draws its own sea and creek and is a first taker of `core/water`.
+
+### The order from here (2026-10-12)
+
+1. Stage 0j (the scripted walk) and 0f (the lossless normal repack, one baseline rewrite).
+2. Stage 1: land `wip/furniture-indexed` and `wip/biome-spatial-index` verified; size-aware segments; the first
+   geometry report.
+3. Stage 2: merge `refactor/terrain-field`; `BIO.iridBarkMat` as a core material kind; `core/tags` on the biome kits
+   with ids on exported nodes; `core/export`; then `core/water` phases 0 and 1.
+4. Stage 0h, the fragment splits, outside the Voth branch's area, whenever a session has room.
 
 ## Appendix: how this evaluation was made
 

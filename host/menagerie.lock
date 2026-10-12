@@ -1,4 +1,4 @@
 # The World Menagerie tree (git tree hash) host/menagerie/ was last synced from. Written by host/sync.py.
-tree = "17c69e4f0e2707472c4ad9ba43df5b570f43cbdb"
-uncommitted = 0
+tree = "88b6538c0677e92c78415125a4eba2833ae5beb1"
+uncommitted = 113
 server_py_matches = true

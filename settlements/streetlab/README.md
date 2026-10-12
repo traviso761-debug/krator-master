@@ -108,11 +108,20 @@ The dev tools (`58-vc-tools.js`):
   - **place building** puts a Voth kit building, with its variant, where you click. With *align* on, it faces the nearest street and stands back off it. **Q/E** turn the last one 15°; **R** aligns it again.
   - **paint street** draws a street of any class: click points; Backspace, Enter or a double-click, Esc.
   - **delete** takes out a building, placed or generated, or a painted street.
+  - **flora** (`59-vc-flora-edit.js`):
+    - *select and delete*: a click picks the tree, or the placed plant, the ray passes nearest. Delete (or the button) removes it at once, and Esc lets go.
+    - *plant*: a click plants the chosen species or plant on whatever floor is under it (a canton's deck, a park), at the chosen height or the species' own.
+
+    Live, the page hides exactly that tree's instances and triangles. The kit brackets every tree's writes (`SWBAY.onFlora`), and the page maps them to the baked meshes (`VC.flBake`).
+    On the next load, the kit's veto (`SWBAY.veto`) leaves a deleted tree unbuilt. It keeps its place, index and seed, so every other tree stays as it was.
+    The ground cover the kit scatters by itself (ferns, moss) cannot be picked.
   - **undo** (Ctrl+Z), **save**, **copy JSON**.
 
   Under `serve.py` the edits save to `site/voth-city-edits.json` (POST `/save/voth-city-edits`). The layout applies them when the page next loads (`VC.applyEdits` in `35-vc-steps.js`):
   - painted streets and placed buildings join at step 3, after the avenues, so later streets and lots work round them. A placed building takes out the lots it overlaps and stands on HARD ground. Its class is the kit class that lists its key, so the census counts it.
   - deletions run once the whole plan is laid. Each takes out the building under its point from the step it was born.
+
+  The flora edits save in the same file (`flora: {del, add}`).
 
   The page reads the file fresh under `serve.py`; `build.py` inlines it (`EDITS_INIT`) for the static page. Keep the file, even empty: the page asks for it.
 
@@ -159,12 +168,26 @@ on the page's own renderer, read back and kept. They are drawn two a frame from 
 ones the search shows go first.
 
 **Day and night** (`VC.dayNight` in `55-vc-host.js`, `TUNE.clock`; owner, 2026-10-09). One clock drives the page:
-core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`) as their own scripts.
-* **The sun** follows Voth's own sun for the hour (`21-sky.js` `skySunDir`, lifted into `VOTH` with `SKY` and `PAL`),
-  at Voth's latitude on the equinox (`TUNE.clock.doy`).
-  * Its strength and colour run from `PAL.sky.sunLow` to `sunCore`.
-  * At night the fill light turns to the gas giant's planetshine (`PAL.sky.shine`, from the giant's direction).
-  * The sky and fog go to `PAL.sky.nightHor`, with a little `sunset` at the horizon hours.
+core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`,
+`3-particles`, `4-weather`, `8-export`, `9-host`, `b-skylight`) as their own scripts.
+* **The sky** is the standard Krator sky, Voth's own: `build.py voth_sky_fragment()` lifts `20-stage.js` section 5 (the baked
+  volcano dome, the sun and moon discs) and `21-sky.js` up to its panel (the gas giant and its rings, the stars, the sun
+  disc, the pressure and eclipse model) into `VSKY`, with Voth's core helpers as a private stream. Nothing is copied. It
+  is not in core/atmos yet: `GODOT-PLAN.md` moves `21-sky.js` there as a sky preset in the refactor.
+  * `VC.dayNight` makes it (`VSKY.make`) and draws its background scene before the city each frame (a wrapper on
+    `renderer.render` for the screen pass only).
+  * The clock sets its hour, day and day of the year (`TUNE.clock.doy`). Its state drives the city's sun: the key light's
+    direction, colour and strength, with planetshine at night and eclipses. It also drives the sky fill, and the fog takes
+    the dome's horizon colour.
+  * `ATMOS.skylight` captures it as every standard material's reflections, recaptured as the hour moves.
+  * The volcano smokes, with a small or large eruption now and then, picked by an integer hash of the clock's quarter
+    hour (`TUNE.weather.eruptLarge`, `eruptSmall`), so the same hour always shows the same sky.
+* **The weather** is core/atmos's (`ATMOS.weather`) with its opt-in ash modes. The **Weather** select in the panel offers
+  auto, clear, rain, storm, fog, ashfall and ash (the ash storm). The page opens clear (`TUNE.weather.mode`).
+  * The module draws the rain and the ash flecks.
+  * `VC.applyHour` does what the weather does to this scene (`TUNE.weather`): it closes the fog in, dims the sun and the
+    fill, browns the haze in ash, lights everything in a lightning flash, and veils the dome (which takes no fog).
+  * An ash storm puts the volcano in Voth's violent bake.
 * **The lamps:** every lamp head is a core/atmos glow (`ATMOS.glowAdd`) with its own on and off hours
   (`TUNE.light.hours`):
   * electric switches on at once;
@@ -186,6 +209,17 @@ core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/a
   * a wayside shrine on the longest edge that has room.
 * **The site's plaza:** a ring of benches round the fountain, with statues and braziers at its corners.
 * **The pocket parks and small plazas** the street method leaves get a bench facing in (or facing the fountain), and sometimes a statue.
+* **The big parks** (at least `walkArea`) get gravel walks, painted on the ground overlay and kept bare by the flora mask:
+  * a ring round the middle, with benches facing in;
+  * spokes out to the middles of the longest edges;
+  * lantern posts on alternate sides, benches facing each walk, and an avenue of cherry and dragon trees behind them;
+  * between the walks, a lattice of groves (trees with beds of shrubs and blooms), flower gardens, braziers with benches round them, wells and shrines (`TUNE.parkFurn.grove`).
+
+  The plants are records (`VC.parkFlora`), planted by the host with the biome's own builders. Each choice is a KRAND
+  hash of the park and the spot.
+* **The markets** (the site's market districts and the Market canton's square) have the catalog's canopied stall
+  (`voth_market_stall`, produce or exotic), each with crates, baskets, sacks, jars or barrels of stock beside it
+  (`VC.marketPitch`, `TUNE.market`). One pitch in five keeps a seller's goods laid on the ground.
 * Every piece is a record in `PLAN.districts` (kind `furniture`): inside its green, clear of streets, lots, lamps,
   fountains and each other. The flora's mask leaves its footprint bare. `core/city/52-city-host-buildings.js` draws a `FURN` key
   through `buildFurn`: its meshes serve the near and mid levels, and it is not drawn far.
@@ -214,7 +248,7 @@ The page also loads `core/simulation`: the record core, places, ports, navigatio
 | 4 | Highways, then S12's road to the city, then the elephant bug stations. Each station stands off its road with a staging lay-by (a 22 m loop off the road and back, 56 m straight beside the platform, so an elephant bug pulls in, stops alongside and pulls out ahead); the platform and its forecourt are kept from the later streets and lots.<br>Highways E-NE, E along the river, NW along the bay (by S10) and S and SW (by S11). Each is an A* on the ground from the avenue point furthest out. It never crosses a landmark, market, monastery, cemetery or park, and passes 30–60 m from a station it must come by. A verge either side keeps lots off it | |
 | 5 | The wall on the west edge of the 'wall' polygon, pushed at least `wall.clear` from the avenues and standing whole. Gates come first: F, G and H at the crossings nearest them, generic gates at the other steep crossings. Each gate is squared to its road, with its towers either side of the road. Then the towers and segments | Voth's 30d/60-land wall |
 | 6–12 | Civic buildings, then lots on the avenues (never on the highways), main streets, side streets and alleys, as in the toy. Main streets use void infill on a 10 m grid, with dead-ends where a void backs onto the zone's edge. Lot mixes follow the districts. Wealth runs richest on the bay shore and round the parks and markets. Outside the wall is a sparse suburb | the toy |
-| 13 | The country:<br>• Mushroom farms (Voth's mushroomFarm) on the gentle ground of 'mush farm'; windmills (Voth's windmill, sails turning) beside a third of the farmsteads and at each village.<br>• Mines (Voth's mineEntrance) on the steep slopes of the 'mines' polygon and quarries (quarryPit) in 'quarries', each with a track to the roads and workers' houses; the 'more farms' polygon filled with farmsteads on tracks and fields.<br>• S10's village is bigger, with fishing docks; S12 gets a village.<br>• Farming villages by S10 and S11: a green with a well, lanes out from it, cottages, fields round it.<br>• Lanes off each highway beyond the city. Toward the S, SE and NE they carry a suburb that thins with distance (houses with kitchen gardens). Elsewhere, and further out, they are farm tracks to a farmstead among its fields.<br>• Terraced orchards on the slopes of the ridge west of the city.<br>Nothing out here is strung along a highway | Voth's FARMS fields, 19b farmsteads, 70-veg terraced orchards |
+| 13 | The country:<br>• Mushroom farms (Voth's mushroomFarm) on the gentle ground of 'mush farm'; windmills (Voth's windmill, sails turning) beside a third of the farmsteads and at each village.<br>• Mines (Voth's mineEntrance) on the steep slopes of the 'mines' polygon and quarries (quarryPit) in 'quarries', each with a track to the roads and workers' houses; the 'more farms' polygon filled with farmsteads on tracks, six mushroom farms, and fields squared to the nearest road. Every country track routes round the fields and the big plots, and a field any road still crosses is taken up (`VC.fieldsOffWays`).<br>• S10's village is bigger, with fishing docks; S12 gets a village.<br>• Farming villages by S10 and S11: a green with a well, lanes out from it, cottages, fields round it.<br>• Lanes off each highway beyond the city. Toward the S, SE and NE they carry a suburb that thins with distance (houses with kitchen gardens). Elsewhere, and further out, they are farm tracks to a farmstead among its fields.<br>• Terraced orchards on the slopes of the ridge west of the city.<br>Nothing out here is strung along a highway | Voth's FARMS fields, 19b farmsteads, 70-veg terraced orchards |
 | 14 | Ferry and elephant bug lines as `core/simulation` transport routes (`77-sim-5r-routes.js`).<br>• Each stop is a SIM place (a ferry stop boards at its pier).<br>• A line that enters or leaves by an edge has a SIM port there.<br>• The legs are routed on the `water` and `strider` layers: this page's grids. An elephant bug wades to 9 m, as in Voth's `66-striders.js`.<br>• SIM bakes each timetable, and the host draws every ferry and elephant bug where `SIM.vehiclePose` puts it.<br>• A shore ferry pier gets a paved landing and a street to the nearest street. Every ferry stop has a pier joined to a quay, the shore or a canton (run in under the canton's ledge to its plinth); the four cantons with Voth piers of their own get them built from their records.<br>• Boats keep Voth's boat rule (78b lifeNavBlocked): water deeper than 1.5 m, clear of the cantons' rounded squares, chinampas and every pier deck by 6 m; a smoothed route that would cut a corner falls back to a straighter one.<br>• Elephant bugs walk the roads (cheap) and open ground and wade to 9 m; buildings, cantons, platforms and the wall stop them. They are Voth's own model (79c), legs and gait, with orange awnings | Voth's 65e piers, 66 stations, 78b, 79c |
 
 `python3 verify.py dist/voth-city.html --assert` checks:
@@ -237,6 +271,82 @@ globals never meet the city page's. Dalab's stone hall and the Iziz, Republic an
 `settlements/dalab`, the Hykkousoi Treasury from `settlements/ys`, the Jimjam School from `settlements/jimjam`
 (about 780 KB of their source). A fragment those builds rename or split may need its list in `foreign.py` updated;
 `verify.py` fails if any embassy does not draw.
+
+**The cantons, bridges and stairs** (`targets/voth-site/20-site-cantons.js`, `CANT`; owner, 2026-10-09). Both pages
+read Voth's captured canton models into levels: each canton's tiers, aprons, raised bands and top deck, and the
+Ancestry's spiral walkway as faces. The bridges, causeways and stairs are planned on those levels:
+* **The bridges** run from deck to deck. Each candidate end pair is tested for:
+  * a grade over `CANT.T.gmax`;
+  * clearance from the big captured pieces;
+  * the waterfalls.
+
+  The cheapest clean pair wins. A rim canton prefers its top deck; the Palace and Temple keep their bridges near Voth's `DECK`. The captured rails a bridge lands through are cut. Each bridge has its piers, parapets, bridgehead posts and banners.
+* **The causeways** stop at a canton's apron and climb it by a flight.
+* **Every canton is walkable** from a ferry to its top:
+  * a dock flight from each pier onto the apron;
+  * a chain of terrace flights up the tiers, each landing on a raised band's top;
+  * on the Ancestry, its spiral walkway re-stepped, then a stair to the summit;
+  * a door at the bottom of each face a route uses.
+
+  The buried sea stairs and the old walkway slabs are taken out.
+* **The Ancestry:**
+  * its tombs face inward;
+  * its waterfalls are shader sheets with foam at their feet (`VIEW.falls`), four a side, kept clear by the bridges;
+  * its flora is the swbay biome's: its cherries become the kit's new ash cherry (`SWBAY.treeAt`), its beds the kit's plants.
+* `CANT.walk()` registers it all in core/walk (`KWALK`): floors, strips, blocks and flights. The pin's walker (F) follows those floors, with a ledge guard.
+
+**The chinampas** (`31b-vc-chinampa.js`): each bed is drawn as:
+* a mud and soil body inside wattle stakes and withies;
+* rows of crops (maize, beans, squash, amaranth, marigold, greens, a seedbed);
+* canoes and planks on the canals;
+* a Voth poor house on the mature beds.
+
+The willows, reeds and marsh plants are the swbay kit's. Every choice is a KRAND hash of the bed.
+
+**The canton interiors** (`40-vc-interiors.js` plans, `56-vc-interiors-host.js` furnishes and draws; `TUNE.interiors`;
+owner, 2026-10-09). Every canton but the Palace and Temple is hollowed into storeys. Each storey has:
+* a core stair (two flights and a landing each storey);
+* halls with rooms on both sides;
+* tunnels in from the doors;
+* a stair house up to the top deck (on the Fortress, its keep).
+
+The rooms follow each canton's purpose (`TUNE.interiors.purposes`), with some residences among them:
+
+| Canton | Rooms |
+|---|---|
+| Arsenal | barracks, smithies, armouries, workshops (weapon making), a mess, offices, stores |
+| Guild | workshops, shops, stores, a guildhall |
+| Market | shops, stores, a tavern, workshops, a kitchen |
+| Granary | bakeries, granaries, a kitchen, stores |
+| Arena | training rooms, gladiator barracks, stables, a mess, a shrine |
+| Port (the harbour) | warehouses, offices, workshops, a tavern |
+| Fortress | ordinator training rooms, barracks, the jail's cells, offices, an armoury, a shrine |
+| Foreign | diplomatic offices, reception rooms, a library, living rooms and bedrooms |
+
+The Ancestry is catacombs instead: galleries, cross galleries and tomb chambers.
+
+The rooms are furnished by `kits/interiors` (`ROOM`, `furnishRoom`) from the catalog, with new room kinds (`VC.intPrograms`). The Voth set adds pieces:
+* the trade set;
+* a bread oven;
+* a cell grate;
+* a sarcophagus;
+* ossuary shelves.
+
+A canton is drawn when it is first shown.
+
+**Cutaway (x):**
+* it shows the canton under the camera (or the one the walker is in) cut at a storey;
+* PageUp/PageDown or [ and ] step the storey;
+* clipping planes on every material, moved each frame, never recompiled.
+
+**The Ring Sea vessels** (`ringsea.py`, `RINGSEA`; owner, 2026-10-09). The Voth watercraft of `kits/ringsea` are built by
+that kit's own code, sealed like the embassies (about 100 KB of its source, procedural materials). They are:
+* the ferries on every ferry line (`TUNE.vessels.ferry`);
+* dhows at the fishing docks;
+* barges off the river quays;
+* junks and cargo hulks along the long piers (`VC.berthShips`, `TUNE.harbour.ship`).
+
+The moored ones are records (`VC.MOOR`), each scaled to its berth's length and drawn as one InstancedMesh per mesh of its model (`VC.drawVessels`). Their sails flutter on the kit's clock.
 
 ## Notes
 

@@ -12,6 +12,11 @@ It also runs on its own, as a smoke test (load each page, wait for `window._read
 errors, draw calls and triangles; exit 1 if any page is dirty or never gets ready):
 
     python3 tools/harness.py smoke settlements/voth/voth.html biomes/rift/dist/rift.html ...
+
+and as a scripted walk (stage 0j): hold real keys along a route and check the walker moved, stayed up and the
+console stayed clean:
+
+    python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:3000 --min 2
 """
 import asyncio, contextlib, functools, glob, http.server, os, re, socketserver, sys, threading, time
 
@@ -166,7 +171,94 @@ async def smoke(pages, settle_ms=2500):
     return 1 if bad else 0
 
 
+POSE_JS = """()=>{ if(window._walk&&window._walk.on) return Object.assign({mode:'walk'}, window._walk.pose());
+ const c=(typeof camera!=='undefined')?camera:null; if(!c) return null;
+ return {mode:'camera', x:c.position.x, y:c.position.y, z:c.position.z}; }"""
+
+
+def parse_route(spec):
+    """'KeyW:2000,KeyD:600,KeyW+ShiftLeft:1000' -> [(['KeyW'], 2000), (['KeyD'], 600), (['KeyW','ShiftLeft'], 1000)]"""
+    out = []
+    for part in (spec or '').split(','):
+        part = part.strip()
+        if part:
+            keys, ms = part.rsplit(':', 1)
+            out.append((keys.split('+'), int(ms)))
+    return out
+
+
+async def walk(pg, route, start=None, settle_ms=400):
+    """The scripted walk (ROADMAP.md stage 0j, from OhMyGame's QA skill: "build success establishes compilation, not a
+    playtest"): put the build in walk mode if it has one (`window._walk`, Girder and Verge), optionally at
+    start = (x, z, yaw), then hold real keys through the browser, step by step. Returns (pose before, pose after,
+    console errors). The caller judges the poses: frame times under software GL are uneven, so a check is a minimum
+    distance in a direction and a ground test, not an exact end point."""
+    cons = []
+    pg.on('console', lambda m: cons.append(m.text) if m.type == 'error' else None)
+    await pg.evaluate("(s)=>{ if(window._walk){ window._walk.toggle(true); if(s) window._walk.setPose(s[0], s[1], s[2]); } }",
+                      list(start) if start else None)
+    await pg.wait_for_timeout(settle_ms)
+    await pg.mouse.click(5, 5)            # the page has focus for key events (a corner, away from the panels)
+    before = await pg.evaluate(POSE_JS)
+    for keys, ms in route:
+        for k in keys:
+            await pg.keyboard.down(k)
+        await pg.wait_for_timeout(ms)
+        for k in reversed(keys):
+            await pg.keyboard.up(k)
+    await pg.wait_for_timeout(settle_ms)
+    after = await pg.evaluate(POSE_JS)
+    return before, after, cons
+
+
+async def walk_main(argv):
+    """python3 tools/harness.py walk <page> --route KeyW:3000 [--start x,z,yaw] [--min 2] [--dir dx,dz] [--query ?..]
+    Exit 1 unless the page loads clean, the walker moves at least --min metres (along --dir when given), stays above
+    the ground it started on minus 3 m, and the console stays clean."""
+    import argparse
+    from playwright.async_api import async_playwright
+    ap = argparse.ArgumentParser(prog='harness.py walk')
+    ap.add_argument('html'); ap.add_argument('--route', required=True); ap.add_argument('--start')
+    ap.add_argument('--min', type=float, default=2.0); ap.add_argument('--dir'); ap.add_argument('--query', default='')
+    a = ap.parse_args(argv)
+    start = [float(v) for v in a.start.split(',')] if a.start else None
+    fails = []
+    async with async_playwright() as p:
+        b = await launch_chromium(p)
+        with serve(ROOT) as port:
+            pg, errs, ready = await open_page(b, a.html, port, root=ROOT, query=a.query)
+            if not ready:
+                fails.append('page never ready')
+            before, after, cons = await walk(pg, parse_route(a.route), start)
+            panel = await pg.evaluate("document.getElementById('errs')?document.getElementById('errs').textContent:''")
+        await b.close()
+    print('before', before); print('after ', after)
+    if not before or not after:
+        fails.append('no camera or walker to read')
+    else:
+        dx, dz = after['x'] - before['x'], after['z'] - before['z']
+        if a.dir:
+            ux, uz = [float(v) for v in a.dir.split(',')]
+            n = (ux * ux + uz * uz) ** 0.5 or 1
+            moved = (dx * ux + dz * uz) / n
+        else:
+            moved = (dx * dx + dz * dz) ** 0.5
+        print('moved %.2f m%s' % (moved, ' along %s' % a.dir if a.dir else ''))
+        if moved < a.min:
+            fails.append('moved %.2f m, under %.2f' % (moved, a.min))
+        if before.get('mode') == 'walk' and after.get('feet', 0) < before.get('feet', 0) - 3:
+            fails.append('fell %.1f m' % (before['feet'] - after['feet']))
+    if panel:
+        fails.append('error panel: ' + panel[:200])
+    if errs or cons:
+        fails.append('console: ' + '; '.join((errs + cons)[:3])[:300])
+    print('FAILED: ' + '; '.join(fails) if fails else 'OK')
+    return 1 if fails else 0
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "smoke":
         sys.exit(asyncio.run(smoke(sys.argv[2:])))
+    if len(sys.argv) > 2 and sys.argv[1] == "walk":
+        sys.exit(asyncio.run(walk_main(sys.argv[2:])))
     print(__doc__)

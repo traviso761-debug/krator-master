@@ -85,6 +85,9 @@ export function installFlight(A){
 
   let btn=null;
   function label(){if(btn)btn.textContent=S.on?'Land (Esc)':'Fly';}
+  // In flight the wheel moves the chase camera in and out from the aeroplane (from close behind her to well back),
+  // instead of zooming the orbit camera, which the flight hook would only put back the next frame
+  addEventListener('wheel',e=>{if(!S.on)return;S.leash=clamp((S.leash||LEASH)*Math.exp(e.deltaY*0.0012),LEASH*0.35,LEASH*8);e.preventDefault();e.stopImmediatePropagation();},{capture:true,passive:false});
 
   function enter(){
     if(S.on)return;
@@ -184,7 +187,7 @@ export function installFlight(A){
     c.target.copy(S.pos).addScaledVector(fwd,LEASH*0.22);
     c.az=S.head+Math.PI;
     c.el=clamp(0.17-S.pitch*0.72,c.elMin,c.elMax);
-    c.dist=LEASH;
+    c.dist=S.leash||LEASH;
     c.goal=null;S.goalSeen=null;
     const e=c.el;
     look.set(-Math.cos(c.az)*Math.cos(e),-Math.sin(e),-Math.sin(c.az)*Math.cos(e)).normalize();

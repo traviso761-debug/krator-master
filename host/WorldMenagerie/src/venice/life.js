@@ -31,20 +31,21 @@ export function life(api){
   const canvasM=[0xd8d2c0,0xb44a3c,0x3f6a9c].map(h=>new THREE.MeshLambertMaterial({color:h,side:THREE.DoubleSide}));
   const gondM=new THREE.MeshLambertMaterial({color:0x1d1c1e});
 
-  const pots=[],posts=[],cloth=[],awnings=[],moored=[];
+  const pots=[],posts=[],cloth=[],awnings=[],moored=[],pali=[];
 
   // ---- the chimneys ----
   // One in three roofs, which is about right, and the bell on top is what the whole thing is for: it caught
   // the sparks. At this scale they are the only thing that breaks a roofline.
   for(let k=0;k<(K.chimneys||0);k++){
     const x=B.x0+R()*B.w, z=B.z0+R()*B.d;
-    const h=roofAt(x,z);if(h<4)continue;
+    const h0=roofAt(x,z);if(h0<4)continue;const h=h0+(K.lift||0);   // lift: clear of a pitched roof (src/core/palazzi.js)
     const st=new THREE.Mesh(new THREE.BoxGeometry(0.9,2.2+R()*2.2,0.9).translate(0,1.1,0),brick);
     st.position.set(x,h,z);pots.push(st);
     const bell=new THREE.Mesh(new THREE.CylinderGeometry(1.15,0.55,1.3,7).translate(0,0.65,0),potM);
     bell.position.set(x,h+2.2+R()*2.2,z);pots.push(bell);
     const cap=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.24,1.7),potM);
     cap.position.set(x,h+3.7+R()*2.2,z);pots.push(cap);
+    (api.chimneys=api.chimneys||[]).push([x,cap.position.y+0.2,z,R()]);   // for the smoke (src/core/streetlife.js)
   }
 
   // ---- the bricole and the pali ----
@@ -68,22 +69,11 @@ export function life(api){
         const h=4.5+R()*2;
         const m=paliM[Math.floor(R()*paliM.length)];
         const p=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.24,h,7).translate(0,h/2,0),m);
-        p.position.set(px,-1.2,pz);p.rotation.set((R()-0.5)*0.1,0,(R()-0.5)*0.1);scene.add(p);
-        const cap=new THREE.Mesh(new THREE.SphereGeometry(0.3,7,5),m);cap.position.set(px,h-1.2,pz);scene.add(cap);
+        p.position.set(px,-1.2,pz);p.rotation.set((R()-0.5)*0.1,0,(R()-0.5)*0.1);pali.push(p);
+        const cap=new THREE.Mesh(new THREE.SphereGeometry(0.3,7,5),m);cap.position.set(px,h-1.2,pz);pali.push(cap);   // merged by colour below
       }
       // and a gondola tied to about a third of them
-      if(R()<0.34){
-        const g=new THREE.Group();
-        const hull=new THREE.Mesh(new THREE.BoxGeometry(10.5,0.6,1.3),gondM);hull.position.y=0.3;g.add(hull);
-        const bow=new THREE.Mesh(new THREE.ConeGeometry(0.55,2.2,5).rotateZ(-Math.PI/2),gondM);
-        bow.position.set(5.9,0.45,0);g.add(bow);
-        const ferro=new THREE.Mesh(new THREE.BoxGeometry(0.14,1.3,0.45),new THREE.MeshLambertMaterial({color:0xb8a06a}));
-        ferro.position.set(6.6,1.2,0);g.add(ferro);
-        const cover=new THREE.Mesh(new THREE.BoxGeometry(5,0.5,1.5),new THREE.MeshLambertMaterial({color:0x2a3a4a}));
-        cover.position.set(-0.5,0.8,0);g.add(cover);
-        g.position.set(px-Math.sin(a)*1.6,0.1,pz+Math.cos(a)*1.6);g.rotation.y=-a;
-        scene.add(g);moored.push({g,ph:R()*6.28});
-      }
+      if(R()<0.34)moored.push({x:px-Math.sin(a)*1.6,z:pz+Math.cos(a)*1.6,ry:-a,ph:R()*6.28});   // drawn as instances below
     }
   }
 
@@ -100,9 +90,7 @@ export function life(api){
     for(let i=0;i<n;i++){
       const t=(i+0.7)/(n+0.4), px=x+Math.cos(ang)*(t-0.5)*len, pz=z+Math.sin(ang)*(t-0.5)*len;
       const w=0.6+R()*0.9, dh=0.7+R()*1.2;
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(w,dh),clothM[Math.floor(R()*clothM.length)]);
-      m.position.set(px,y-dh/2-0.08,pz);m.rotation.y=-ang;scene.add(m);
-      cloth.push({m,ph:R()*6.28});
+      cloth.push({x:px,y:y-0.08,z:pz,ry:-ang,w,dh,c:LAUNDRY[Math.floor(R()*LAUNDRY.length)],ph:R()*6.28});
     }
   }
 
@@ -129,12 +117,23 @@ export function life(api){
   for(const m of canvasM){const l=awnings.filter(q=>q.material===m);if(l.length)merged.push(mergeParts(l,m));}
   for(const m of merged){m.userData.wireCat='life';scene.add(m);}
 
-  let t0=performance.now();
+  // the pali, merged by colour; the moored gondolas and the washing as instances (one draw each, not a thousand)
+  for(const m of paliM){const l=pali.filter(q=>q.material===m);if(l.length){const mm=mergeParts(l,m);mm.userData.wireCat='life';scene.add(mm);}}
+  const vc=parts=>{const pos=[],nor=[],col=[];for(const [g0,c,x,y,z,rz=0] of parts){const g=g0.toNonIndexed();if(rz)g.rotateZ(rz);g.translate(x,y,z);const p=g.attributes.position,n=g.attributes.normal,cc=new THREE.Color(c);
+      for(let i=0;i<p.count;i++){pos.push(p.getX(i),p.getY(i),p.getZ(i));nor.push(n.getX(i),n.getY(i),n.getZ(i));col.push(cc.r,cc.g,cc.b);}}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));return g;};
+  const vMat=new THREE.MeshLambertMaterial({vertexColors:true});
+  const gm=new THREE.InstancedMesh(vc([[new THREE.BoxGeometry(10.5,0.6,1.3),'#161618',0,0.3,0],[new THREE.ConeGeometry(0.55,2.2,5),'#161618',5.9,0.45,0,-Math.PI/2],[new THREE.BoxGeometry(0.14,1.3,0.45),'#b8a06a',6.6,1.2,0],[new THREE.BoxGeometry(5,0.5,1.5),'#2a3a4a',-0.5,0.8,0]]),vMat,Math.max(1,moored.length));
+  gm.frustumCulled=false;scene.add(gm);
+  const cm=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1).translate(0,-0.5,0),new THREE.MeshLambertMaterial({side:THREE.DoubleSide}),Math.max(1,cloth.length));cm.frustumCulled=false;scene.add(cm);
+  cloth.forEach((q,i)=>cm.setColorAt(i,new THREE.Color(q.c)));
+  const dd=new THREE.Object3D();dd.rotation.order='YXZ';
+  let t0=performance.now(),fr=0;
   animHooks.push(now=>{
-    const t=(now-t0)/1000;
-    for(const q of cloth)q.m.rotation.z=Math.sin(t*0.8+q.ph)*0.16;
-    for(const q of moored){q.g.position.y=0.1+0.09*Math.sin(t*0.9+q.ph);
-      q.g.rotation.z=0.035*Math.sin(t*1.1+q.ph);}
+    const t=(now-t0)/1000;if((fr++)&1)return;   // every other frame is plenty for washing and a gentle bob
+    cloth.forEach((q,i)=>{dd.position.set(q.x,q.y,q.z);dd.rotation.set(0,q.ry,Math.sin(t*0.8+q.ph)*0.16);dd.scale.set(q.w,q.dh,1);dd.updateMatrix();cm.setMatrixAt(i,dd.matrix);});cm.instanceMatrix.needsUpdate=true;
+    dd.scale.set(1,1,1);
+    moored.forEach((q,i)=>{dd.position.set(q.x,0.1+0.09*Math.sin(t*0.9+q.ph),q.z);dd.rotation.set(0,q.ry,0.035*Math.sin(t*1.1+q.ph));dd.updateMatrix();gm.setMatrixAt(i,dd.matrix);});gm.instanceMatrix.needsUpdate=true;
   });
 
   ctx.details=Object.assign(ctx.details||{},{

@@ -4,7 +4,7 @@
 setTimeout(function () {
   var note = $('loading');
   try {
-    VIEW.stage(); VIEW.terrain(); VIEW.cantons(); VIEW.bridges(); VIEW.cantonLabels(); VIEW.minimap();
+    VIEW.stage(); VIEW.terrain(); VIEW.cantons(); VIEW.bridges(); VIEW.falls(); VIEW.cantonLabels(); VIEW.minimap();
     var dc = document.createElement('canvas'); dc.width = dc.height = 64; var dx = dc.getContext('2d');
     dx.fillStyle = '#fff'; dx.beginPath(); dx.arc(32, 32, 26, 0, 7); dx.fill(); dx.lineWidth = 8; dx.strokeStyle = 'rgba(20,18,12,0.9)'; dx.stroke();
     TOOL.dotTex = new THREE.CanvasTexture(dc);

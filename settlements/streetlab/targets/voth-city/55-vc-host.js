@@ -35,6 +35,8 @@ VC.paint = function () {
     ctx.globalAlpha = 0.7; ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.stroke(); ctx.globalAlpha = 1;
   });
   PLAN.greens.forEach(function (G) { if (G.born > st) return; poly(G.poly); ctx.fillStyle = G.kind === 'park' ? '#3d7031' : '#cbbd9c'; ctx.fill(); });
+  /* the big parks' gravel walks (39-vc-furnish.js VC.parkWalks) */
+  if (st >= 2 && VC.parkWalks) { ctx.strokeStyle = TUNE.parkFurn.walkTone; ctx.lineCap = 'round'; VC.parkWalks.forEach(function (w) { ctx.lineWidth = w.w * k; ctx.beginPath(); ctx.moveTo(X(w.a[0]), Z(w.a[1])); ctx.lineTo(X(w.b[0]), Z(w.b[1])); ctx.stroke(); }); ctx.lineCap = 'butt'; }
   /* the country's fields: Voth's field tones, plough lines along the long side (Voth's 40-ground.js FARMS) */
   (PLAN.fields || []).forEach(function (F) {
     if (F.born > st) return;
@@ -51,6 +53,19 @@ VC.paint = function () {
     ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(25,20,15,0.7)'; ctx.stroke();
   });
   VIEW.ovTex.needsUpdate = true;
+  /* the park mask for the grass (50-site-scene.js VIEW.hook): the parks white, their walks cut out */
+  if (VIEW.gmCanvas) {
+    var gc = VIEW.gmCanvas.getContext('2d'), gk = VIEW.gmCanvas.width / (2 * E), GX = function (x) { return (x + E) * gk; }, GZ = function (z) { return (z + E) * gk; };
+    var gpoly = function (P) { gc.beginPath(); P.forEach(function (p, i) { if (i) gc.lineTo(GX(p[0]), GZ(p[1])); else gc.moveTo(GX(p[0]), GZ(p[1])); }); gc.closePath(); };
+    gc.fillStyle = '#000'; gc.fillRect(0, 0, VIEW.gmCanvas.width, VIEW.gmCanvas.height);
+    if (st >= 2) {
+      gc.fillStyle = '#fff';
+      PLAN.site.forEach(function (d) { if (d.role === 'park') { gpoly(d.poly); gc.fill(); } });
+      PLAN.greens.forEach(function (G) { if (G.kind === 'park' && G.born <= st) { gpoly(G.poly); gc.fill(); } });
+      if (VC.parkWalks) { gc.strokeStyle = '#000'; gc.lineCap = 'round'; VC.parkWalks.forEach(function (w) { gc.lineWidth = w.w * gk; gc.beginPath(); gc.moveTo(GX(w.a[0]), GZ(w.a[1])); gc.lineTo(GX(w.b[0]), GZ(w.b[1])); gc.stroke(); }); }
+    }
+    VIEW.gmTex.needsUpdate = true;
+  }
 };
 
 /* ---------------------------------------------------------------- Voth's structures, transit lines, labels */
@@ -83,10 +98,68 @@ VC.drawTransit = function () {
 /* the vehicles: one small model per vehicle of each line, placed every frame where core/simulation says
    (SIM.vehiclePose: a pure function of motion time; TUNE.timeScale runs the timetable faster than life) */
 VC.vehicleModel = function () {
+  /* the Ring Sea kit's Voth bay ferry (ringsea.py), turned so its bow (the kit's +x) leads along the pose's heading */
+  var R = typeof RINGSEA !== 'undefined' && RINGSEA.make(TUNE.vessels.ferry);
+  if (R) { var w = new THREE.Group(); R.group.rotation.y = -Math.PI / 2; w.add(R.group); return w; }
   var g = new THREE.Group(), wood = new THREE.MeshStandardMaterial({ color: 0x6a5238, roughness: 0.9 }), cloth = new THREE.MeshStandardMaterial({ color: 0xd8c9a0, roughness: 0.9 });
   var hull = new THREE.Mesh(new THREE.BoxGeometry(7, 2.6, 20), wood); hull.position.y = 0.6; g.add(hull);
   var cab = new THREE.Mesh(new THREE.BoxGeometry(5.4, 2.6, 8), cloth); cab.position.set(0, 3.2, -1.5); g.add(cab);
   return g;
+};
+/* the moored vessels (31-vc-voth.js VC.MOOR: dhows at the fishing docks, barges off the river quays, junks and hulks
+   along the ship piers): the Ring Sea kit's models (ringsea.py), each scaled to the berth's length and drawn as one
+   InstancedMesh per mesh of its model, so a hundred dhows cost what one does in draw calls. Without the kit: plain
+   hulls. The sails flutter on the kit's clock (RINGSEA.tick). */
+VC.drawVessels = function () {
+  var L = VC.MOOR || [], by = {}; VC.vesselMeshes = [];
+  L.forEach(function (m) { (by[m.key] = by[m.key] || []).push(m); });
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), p = new THREE.Vector3(), s = new THREE.Vector3(), rel = new THREE.Matrix4(), tmp = new THREE.Matrix4();
+  Object.keys(by).forEach(function (key) {
+    var list = by[key], R = typeof RINGSEA !== 'undefined' && RINGSEA.make(key), D = R && RINGSEA.dims[key];
+    var place = function (r) { var k = r.len / (D ? D.L : r.len); q.setFromAxisAngle(up, r.ry - Math.PI / 2); return m4.compose(p.set(r.x, 0, r.z), q, s.set(k, k, k)); };
+    if (!R) {
+      var box = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0x5e4d3a, roughness: 0.9 }), list.length);
+      list.forEach(function (r, i) { q.setFromAxisAngle(up, r.ry); box.setMatrixAt(i, m4.compose(p.set(r.x, -0.2, r.z), q, s.set(r.len * 0.3, 2.4, r.len))); });
+      box.userData = { kind: 'vessel', key: key }; scene.add(box); VC.vesselMeshes.push(box); return;
+    }
+    var root = R.group; root.updateMatrixWorld(true);
+    var inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      rel.multiplyMatrices(inv, o.matrixWorld);
+      var per = o.isInstancedMesh ? o.count : 1, IM = new THREE.InstancedMesh(o.geometry, o.material, list.length * per);
+      list.forEach(function (r, i) {
+        place(r);
+        for (var j = 0; j < per; j++) {
+          if (o.isInstancedMesh) { o.getMatrixAt(j, tmp); IM.setMatrixAt(i * per + j, new THREE.Matrix4().multiplyMatrices(m4, rel).multiply(tmp)); }
+          else IM.setMatrixAt(i, new THREE.Matrix4().multiplyMatrices(m4, rel));
+        }
+      });
+      IM.frustumCulled = false; IM.castShadow = o.castShadow; IM.receiveShadow = o.receiveShadow;
+      IM.userData = { kind: 'vessel', key: key, step: 2 }; scene.add(IM); VC.vesselMeshes.push(IM);
+    });
+  });
+  if (typeof RINGSEA !== 'undefined') (window._frameHooks = window._frameHooks || []).push(function (now) { RINGSEA.tick(now / 1000); });
+  var n = {}; L.forEach(function (r) { n[r.key] = (n[r.key] || 0) + 1; });
+  VC.vesselStats = { moored: n, meshes: VC.vesselMeshes.length };
+};
+/* a canton in one dark scheme (owner, 2026-10-09: the Fortress "just use the dark grey/black color scheme"): every colour on
+   its captured model (instance colours, vertex colours, material colours) mapped to a grey between lo and hi (linear),
+   by the square root of its own lightness, so its courses and trims still read against each other */
+VC.greyscale = function (lo, hi) {
+  var c = new THREE.Color(), map = function (r, g, b) { var l = 0.2126 * r + 0.7152 * g + 0.0722 * b, v = lo + (hi - lo) * Math.sqrt(Math.min(1, l)); return v; };
+  return function (root) {
+    var done = new Set();
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      if (o.instanceColor) { var A = o.instanceColor.array; for (var i = 0; i < A.length; i += 3) { var v = map(A[i], A[i + 1], A[i + 2]); A[i] = A[i + 1] = A[i + 2] = v; } o.instanceColor.needsUpdate = true; }
+      var ca = o.geometry && o.geometry.attributes.color;
+      if (ca && !done.has(o.geometry)) { if (o.geometry.userData.shared !== false) { o.geometry = o.geometry.clone(); ca = o.geometry.attributes.color; } done.add(o.geometry); for (var k = 0; k < ca.count; k++) { var w = map(ca.getX(k), ca.getY(k), ca.getZ(k)); ca.setXYZ(k, w, w, w); } ca.needsUpdate = true; }
+      var ms = Array.isArray(o.material) ? o.material : [o.material];
+      o.material = ms.map(function (m) { if (!m || !m.color || m.vertexColors) return m; var n = m.clone(); c.copy(m.color); var v = map(c.r, c.g, c.b); n.color.setRGB(v, v, v); return n; });
+      if (!Array.isArray(o.material) || o.material.length === 1) o.material = Array.isArray(o.material) ? o.material[0] : o.material;
+    });
+  };
 };
 /* the elephant bugs are Voth's own (VSTRIDER, lifted from 79c-strider-model.js by build.py): the merged body as
    one instanced mesh, the twelve leg bars of each as another, placed by Voth's striderPlaceLegs with its gait (feet
@@ -113,6 +186,7 @@ VC.drawVehicles = function () {
     body.userData = { kind: 'strider' }; scene.add(body); scene.add(legs);
     VC.striderMeshes = [body, legs];
   }
+  var K = TUNE.bugScale == null ? 1 : TUNE.bugScale, sk = new THREE.Vector3(K, K, K), kM = new THREE.Matrix4().makeScale(K, K, K), about = new THREE.Matrix4(), back = new THREE.Matrix4(), lm = new THREE.Matrix4();
   var last = -1;
   (window._frameHooks = window._frameHooks || []).push(function (now) {
     var t = (VC.clock ? VC.clock.t : now / 1000) * TUNE.timeScale, dt = last < 0 ? 0 : Math.min(1, t - last); last = t; VC.motionT = t;
@@ -130,10 +204,13 @@ VC.drawVehicles = function () {
         for (var b = 0; b < S.BARS; b++) legs.setMatrixAt(i * S.BARS + b, tm);
         return;
       }
-      var dk = VOTH.lifeBridgeY(p.x, p.z), y = dk != null ? dk : Math.max(-S.WADE, terrainH(p.x, p.z));   /* on a bridge: its deck */
-      if (p.moving) v.gait += dt * Math.PI * v.spd / (2 * S.STRIDE);   /* Voth: omega = pi * speed / (2 * stride) */
-      tq.setFromAxisAngle(up, p.h); tm.compose(tp.set(p.x, y, p.z), tq, one); body.setMatrixAt(i, tm);
+      var dk = VOTH.lifeBridgeY(p.x, p.z), y = dk != null ? dk : Math.max(-S.WADE * K, terrainH(p.x, p.z));   /* on a bridge: its deck */
+      if (p.moving) v.gait += dt * Math.PI * v.spd / (2 * S.STRIDE * K);   /* Voth: omega = pi * speed / (2 * stride), the stride scaled */
+      tq.setFromAxisAngle(up, p.h); tm.compose(tp.set(p.x, y, p.z), tq, sk); body.setMatrixAt(i, tm);
       S.legs(legs, i, p.x, y, p.z, p.h, v.gait, p.moving ? 1 : 0);
+      /* Voth places the legs at full size round the body: scale each bar about the body's origin */
+      if (K !== 1) { about.makeTranslation(p.x, y, p.z).multiply(kM).multiply(back.makeTranslation(-p.x, -y, -p.z));
+        for (var lb = 0; lb < S.BARS; lb++) { legs.getMatrixAt(i * S.BARS + lb, lm); legs.setMatrixAt(i * S.BARS + lb, lm.premultiply(about)); } }
     });
     body.instanceMatrix.needsUpdate = true; legs.instanceMatrix.needsUpdate = true;
   });
@@ -194,12 +271,48 @@ VC.drawFlora = function () {
       seed: 11, origin: F.spine, center: F.center, fields: F.fields,
       eye: function () { return [camera.position.x, camera.position.y, camera.position.z]; }, err: function (m) { console.warn('biome: ' + m); } });
     BIO.setSun([sun.position.x, sun.position.y, sun.position.z]);
-    var out = SWBAY.build({ R: F.R, quality: F.quality, fauna: true }) || {}, b = BIO.bake(), T = BIO.totals();
+    VC.flInit();                               /* 59-vc-flora-edit.js: the saved flora edits' veto, the kit's record hook */
+    var out = SWBAY.build({ R: F.R, quality: F.quality, fauna: true }) || {};
+    VC.placedFlora = VC.floraPlace();          /* the plants the city places itself (the Ancestry's beds), before the bake */
+    VC.placedFlora.edits = VC.flAddSaved();    /* the owner's own (59) */
+    var b = VC.flBake(), T = BIO.totals();
     var by = {}; (SWBAY.TREES || []).forEach(function (t) { var k = SWBAY.SPECIES[t.sp].key; by[k] = (by[k] || 0) + 1; });
     var inPark = (SWBAY.TREES || []).filter(function (t) { return F.park(t.x, t.z); }).length;
     VC.floraStats = { trees: (SWBAY.TREES || []).length, inParks: inPark, heroes: out.heroes || 0, far: out.far || 0, bySpecies: by, tris: T.tris, inst: T.inst, calls: b && b.calls, ms: Math.round(performance.now() - t0) };
   } catch (e) { console.error('flora: ' + (e.stack || e)); VC.floraStats = { error: String(e) }; }
   (window._frameHooks = window._frameHooks || []).push(function () { if (!grp.visible) return; camera.updateMatrixWorld(); BIO.lodTick(camera); });
+};
+/* the plants the city places one by one with the biome's own builders (SWBAY.treeAt, SWBAY.plantAt), each standing on
+   what is under it (a canton's garden bed, CANT.surface): the Ancestry's trees where Voth's stood, a cherry for each
+   cherry (20-site-cantons.js CANT.floraToBiome), and its bed cover. Heights and kinds: TUNE.flora.placed. */
+VC.floraPlace = function () {
+  var P = TUNE.flora.placed, n = { trees: 0, plants: 0 }, A = CANT.by.Ancestry, AF = CANT.ancFlora;
+  if (!SWBAY.treeAt) return n;
+  /* the chinampas' banks and marsh beds (31b-vc-chinampa.js VC.CHIN.flora) */
+  ((VC.CHIN && VC.CHIN.flora) || []).forEach(function (f) {
+    if (f.tree) { if (SWBAY.treeAt(f.tree, f.x, f.y, f.z, { H: f.H, wet: 0.85 })) n.trees++; }
+    else if (SWBAY.plantAt(f.plant, f.x, f.y, f.z, {})) n.plants++;
+  });
+  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora) */
+  (VC.parkFlora || []).concat(VC.hohFlora || []).forEach(function (f) {
+    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = function (x, z) { return baseH(x, z); };
+    if (f.tree) { var H = P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
+    else if (SWBAY.plantAt(f.plant, f.x, y, f.z, { ground: gr })) n.plants++;
+  });
+  if (!AF || !A) return n;
+  var ground = function (x, z) { var y = CANT.surface(A, x, z); return y == null ? TERR.h(x, z) : y; };
+  AF.trees.forEach(function (T, i) {
+    var H = P.H[T.kind] || [6, 10], u = KRAND.unit(KRAND.hash(4401, Math.round(T.x * 10), Math.round(T.z * 10), i));
+    if (SWBAY.treeAt(T.kind, T.x, T.y, T.z, { H: H[0] + (H[1] - H[0]) * u, wet: 0.55, ground: ground })) n.trees++;
+  });
+  AF.ground.forEach(function (g, i) {
+    var u = KRAND.unit(KRAND.hash(4402, Math.round(g.x * 10), Math.round(g.z * 10), i)), acc = 0, kind = null;
+    if (u > P.groundKeep) return;
+    var v = KRAND.unit(KRAND.hash(4403, Math.round(g.x * 10), Math.round(g.z * 10), i));
+    for (var k in P.ground) { acc += P.ground[k]; if (v < acc) { kind = k; break; } }
+    if (kind && SWBAY.plantAt(kind, g.x, g.y, g.z, { ground: ground })) n.plants++;
+  });
+  return n;
 };
 VC.drawBeacons = function () {
   var B = VOTH, list = [];
@@ -301,7 +414,9 @@ VC.ui = function () {
   $('ly-inspect').onclick = function () { on = !on; this.classList.toggle('on', on); tip.style.display = on ? 'block' : 'none'; };
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if (e.key === 'i') $('ly-inspect').onclick(); if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
+    if (e.key === 'i') $('ly-inspect').onclick();
+    if (VC.INTD && VC.INTD.cut && VC.INTD.cut.on) return;   /* [ and ] step the cutaway's storeys then (56-vc-interiors-host.js) */
+    if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
   });
   window.addEventListener('mousemove', function (e) {
     if (!on || e.target !== renderer.domElement) return;
@@ -327,7 +442,48 @@ VC.pickLot = function (r) {
   });
   return best;
 };
+/* the furniture under a ray (owner, 2026-10-09: "make it so furniture is also clickable for inspector"): the pieces of a
+   shown interior (their InstancedMeshes, storeys the cutaway hides left out) and the outdoor pieces (benches, stalls,
+   lanterns: the districts' furniture records, as boxes of the catalog's sizes), the nearest along the ray */
+VC.pickFurn = function (r) {
+  var best = null, rc = new THREE.Raycaster(); rc.ray.copy(r);
+  Object.keys((VC.INTD && VC.INTD.groups) || {}).forEach(function (cn) {
+    var g = VC.INTD.groups[cn]; if (!g.visible) return;
+    g.children.forEach(function (m) {
+      if (!m.visible || !m.userData.items) return;
+      var hit = rc.intersectObject(m, false)[0]; if (!hit || (best && hit.distance >= best.d)) return;
+      var p = m.userData.items[hit.instanceId]; if (!p) return;
+      var room = (VC.INT.cantons[cn].rooms || []).filter(function (q) { return q.id === p.room; })[0];
+      best = { d: hit.distance, key: p.key, v: p.variant || 0, where: cn + ' canton, ' + (room ? room.kind : 'room') + ', storey ' + (m.userData.storey + 1) };
+    });
+  });
+  var o = r.origin, dir = r.direction, inv = new THREE.Vector3();
+  (PLAN.districts || []).forEach(function (D) {
+    if (D.born > HOST.step) return;
+    (D.art || []).forEach(function (a) {
+      if (!a.furn || Math.hypot(a.x - o.x, a.z - o.z) > 900) return;
+      var dm = VC.furnDims(a.key, a.v || 0); if (!dm) return;
+      /* the ray in the piece's frame (turned by -ry about its foot), against its box */
+      var c = Math.cos(-a.ry || 0), s = Math.sin(-a.ry || 0), ox = o.x - a.x, oz = o.z - a.z;
+      var lo = [ox * c + oz * s, o.y - a.y, -ox * s + oz * c], ld = [dir.x * c + dir.z * s, dir.y, -dir.x * s + dir.z * c];
+      var mn = [-dm.w / 2, 0, -dm.d / 2], mx = [dm.w / 2, dm.h, dm.d / 2], t0 = 0, t1 = Infinity;
+      for (var k = 0; k < 3; k++) {
+        if (Math.abs(ld[k]) < 1e-9) { if (lo[k] < mn[k] || lo[k] > mx[k]) return; continue; }
+        var ta = (mn[k] - lo[k]) / ld[k], tb = (mx[k] - lo[k]) / ld[k]; if (ta > tb) { var tt = ta; ta = tb; tb = tt; }
+        t0 = Math.max(t0, ta); t1 = Math.min(t1, tb); if (t0 > t1) return;
+      }
+      if (!best || t0 < best.d) best = { d: t0, key: a.key, v: a.v || 0, where: D.name || D.kind };
+    });
+  });
+  return best;
+};
 VC.describe = function (r) {
+  var Fp = VC.pickFurn(r), gh = VIEW.pick(r);
+  if (Fp && (!gh || Fp.d <= Math.hypot(gh[0] - r.origin.x, VIEW.surf(gh[0], gh[1]) - r.origin.y, gh[1] - r.origin.z) + 1)) {   /* nearer than the ground under the cursor */
+    var FA = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[Fp.key]) || {};
+    return '<b>' + (FA.name || Fp.key) + '</b> <span class="k">' + Fp.key + ' v' + Fp.v + '</span><br>' + [FA.type, FA.culture, FA.tier, FA.setting].filter(Boolean).join(' &middot; ') +
+      (FA.w ? ' <span class="k">' + FA.w + ' &times; ' + FA.d + ' &times; ' + FA.h + ' m</span>' : '') + '<br>' + Fp.where;
+  }
   var L = VC.pickLot(r);
   if (L) {
     var A = ASSET_BY_KEY[L.key] || {}, w = PLAN.ways[L.way];
@@ -445,8 +601,13 @@ VC.stripCantons = function () {
 
 /* ---------------------------------------------------------------- day and night
    One clock for the page: core/clock's KCLOCK, a 72-minute day (TUNE.clock). It drives:
-   - the sun, by Voth's own sun direction for the hour (21-sky.js skySunDir, lifted into VOTH), with Voth's sky colours
-     (PAL.sky): the sun's strength and colour, the fill turning to the gas giant's planetshine at night, the sky and fog;
+   - the sky: Voth's own (VSKY, 20-stage.js section 5 and 21-sky.js, lifted whole by build.py), a background scene
+     drawn before the city: the volcano dome, the gas giant and its rings, the stars, the sun. Its state drives the
+     city's sun (key direction, colour and strength, eclipses, planetshine), the sky fill and the fog (the dome's horizon).
+     core/atmos's skylight (ATMOS.skylight) captures it as every standard material's reflections;
+   - the weather: core/atmos's modes with its opt-in ash (ATMOS.weather, the Weather select): rain, storm, fog, ashfall
+     and the ash storm. The module draws the rain and the ash; applyHour closes the fog in, dims the sun, browns the
+     haze, veils the dome, and puts the volcano in its violent bake in an ash storm (TUNE.weather);
    - the evening's lights: every lamp head is a core/atmos glow with its own on and off hours (37-vc-light.js), the
      lamp heads and the lighthouse beams dim by day;
    - motion: the vehicles run on the clock's motion time (times TUNE.timeScale), so the speed buttons speed them too.
@@ -454,30 +615,63 @@ VC.stripCantons = function () {
 VC.dayNight = function () {
   var C = VC.clock = KCLOCK.make({ hour: TUNE.clock.hour, running: TUNE.clock.running }), P = VOTH.PAL.sky;
   var hemi = null, fill = null; scene.traverse(function (o) { if (o.isHemisphereLight && !hemi) hemi = o; if (o.isDirectionalLight && o !== sun && !fill) fill = o; });
-  var D0 = { sun: sun.intensity, hemi: hemi && hemi.intensity, hemiC: hemi && hemi.color.clone(), fill: fill && fill.intensity, fillC: fill && fill.color.clone(), bg: scene.background.clone() };
-  var col = function (h) { return new THREE.Color(h); }, cNight = col(P.nightHor), cSunset = col(P.sunset), cLow = col(P.sunLow), cCore = col(P.sunCore), cShine = col(P.shine), cNightZen = col(P.nightZen);
-  var giant = VOTH.altAzToVec(VOTH.SKY.giantAlt, VOTH.SKY.giantAz), sd = new THREE.Vector3(), tmp = new THREE.Color();
+  /* the sky: Voth's own (VSKY, lifted from settlements/voth/src 20-stage.js and 21-sky.js by build.py), a background
+     scene drawn before the city each frame: the volcano dome, the gas giant and its rings, the stars, the sun */
+  var S = VC.sky = VSKY.make(scene, camera, renderer, VOTH.PAL);
+  var drawCity = renderer.render.bind(renderer);
+  renderer.render = function (sc, cam) {
+    if (sc !== scene || cam !== camera || renderer.getRenderTarget()) return drawCity(sc, cam);
+    var ac = renderer.autoClear; renderer.autoClear = false; renderer.clear(); S.render(); renderer.clearDepth(); drawCity(sc, cam); renderer.autoClear = ac;
+  };
+  var D0 = { sun: sun.intensity, hemi: hemi && hemi.intensity, fill: fill && fill.intensity, fillC: fill && fill.color.clone(), near: scene.fog.near, far: scene.fog.far };
+  var cShine = new THREE.Color(P.shine), cAsh = new THREE.Color(TUNE.weather.ashFog), cFlash = new THREE.Color(TUNE.weather.flash), hor = new THREE.Color();
   var ss = function (a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  /* the weather's veil over the dome (which takes no fog), closing in as fog, rain or an ash storm thickens */
+  var veil = new THREE.Mesh(new THREE.SphereGeometry(9000, 32, 16), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.BackSide, fog: false, depthWrite: false }));
+  veil.userData.probeSkip = true; veil.renderOrder = -9; veil.frustumCulled = false; scene.add(veil);
+  VC.W = { rain: 0, fog: 0, ash: 0, flash: 0, wet: 0 };
   VC.applyHour = function (h) {
-    VOTH.skySunDir(h, TUNE.clock.doy, sd);
-    var up = ss(Math.sin(-6 * Math.PI / 180), Math.sin(8 * Math.PI / 180), sd.y), hi = ss(0, 0.4, sd.y), tw = Math.max(0, 1 - Math.abs(sd.y) / 0.2);
-    sun.position.copy(sun.target.position).addScaledVector(sd, 3000); sun.intensity = D0.sun * up; sun.color.copy(cLow).lerp(cCore, hi);
-    if (fill) { fill.position.copy(giant).multiplyScalar(3000); fill.intensity = D0.fill * up + 0.32 * (1 - up); fill.color.copy(cShine).lerp(D0.fillC, up); }
-    if (hemi) { hemi.intensity = D0.hemi * (0.3 + 0.7 * up); hemi.color.copy(cNightZen).lerp(D0.hemiC, up); }
-    tmp.copy(cNight).lerp(D0.bg, up).lerp(cSunset, 0.35 * tw * Math.min(1, up * 2)); scene.background.copy(tmp); if (scene.fog) scene.fog.color.copy(tmp);
+    S.setTime(C.day, h, TUNE.clock.doy); S.update();
+    var K = S.STATE, W = VC.W, X = TUNE.weather, up = K.dayK;
+    var dim = (1 - X.rainSun * W.rain) * (1 - X.fogSun * W.fog) * (1 - X.ashSun * W.ash * W.ash);
+    sun.position.copy(sun.target.position).addScaledVector(K.keyDir, 3000); sun.color.copy(K.keyCol); sun.intensity = D0.sun * Math.min(1.15, K.keyI) * dim;
+    if (fill) { fill.position.copy(S.giantDir).multiplyScalar(3000); fill.intensity = (D0.fill * up + 0.32 * (1 - up)) * (0.5 + 0.5 * dim); fill.color.copy(cShine).lerp(D0.fillC, up); }
+    if (hemi) { hemi.intensity = D0.hemi * (0.3 + 0.7 * up) * (0.6 + 0.4 * dim) + W.flash * X.flashHemi; hemi.color.copy(K.hemiSky); }
+    /* the fog takes the dome's own horizon, browned by ash; it closes in with the weather */
+    hor.copy(S.DOME.uSkyHor.value).convertLinearToSRGB().lerp(cAsh, Math.min(1, W.ash * 0.85)).lerp(cFlash, W.flash * 0.35);
+    var thick = Math.max(W.fog * X.fogK, W.rain * X.rainK, W.ash * W.ash * X.ashK);
+    scene.fog.color.copy(hor); scene.fog.far = D0.far * (1 - thick) + X.closeFar * thick; scene.fog.near = Math.min(scene.fog.far * 0.5, D0.near * (1 - thick) + 20 * thick);
+    veil.position.copy(camera.position); veil.material.color.copy(hor); veil.material.opacity = Math.min(1, ss(0.15, 0.95, thick) + 0.4 * W.ash);
+    /* the volcano: the ash storm forces Voth's 'violent' bake; otherwise it smokes, with a small or large eruption now
+       and then, picked by an integer hash of the clock's quarter hour (deterministic: the same hour, the same sky) */
+    var slot = Math.floor((C.day * 24 + h) * 4), r = (Math.imul(slot ^ 0x5bd1e995, 0x27d4eb2d) >>> 0) / 4294967296;
+    S.volcano(W.ash > 0.6 ? 'violent' : r < X.eruptLarge ? 'large' : r < X.eruptLarge + X.eruptSmall ? 'small' : 'idle');
     var night = typeof ATMOS !== 'undefined' && ATMOS.night ? ATMOS.night(h) : 1 - up;
     (VC.lampMats || []).forEach(function (m) { m.color.setScalar(0.3 + 0.7 * night); });
     if (VC.beaconMat) VC.beaconMat.opacity = TUNE.beaconOpacity * night;
     VC.dayK = up;
   };
-  /* the lamp glows: core/atmos, its clock fed the page's frame time */
+  /* the lamp glows, the weather and the sky's light: core/atmos, its clock fed the page's frame time */
   if (typeof ATMOS !== 'undefined') {
     VC.atmosHooks = [];
     ATMOS.init({ THREE: THREE, scene: scene, camera: camera, hour: function () { return C.hour; }, onFrame: function (fn) { VC.atmosHooks.push(fn); },
       ground: function (x, z) { return TERR.h(x, z); }, seed: 7, err: function (m) { console.warn(m); },
       viewH: function () { return innerHeight; }, pixelRatio: function () { return renderer.getPixelRatio(); } });
     (PLAN.lamps || []).forEach(function (l) { var c = new THREE.Color(TUNE.light.glow[l.kind]); (l.heads || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], [c.r, c.g, c.b], TUNE.light.halo[l.kind], l.on, l.off); }); });
+    /* the weather: core/atmos's modes with its opt-in ash (Voth's ash storm); it draws the rain and the ash, the host
+       (applyHour) does what they do to this scene */
+    /* spray where the Ancestry's falls land (20-site-cantons.js CANT.falls, drawn by VIEW.falls) */
+    var sm = (CANT.falls || []).filter(function (F) { return F.foam && F.y0 - F.y1 > 6; }).map(function (F) { return [F.foam[0], F.foam[1], F.foam[2], 'spray']; });
+    /* the Temple's braziers (31-vc-voth.js VC.templeFires): a fire's glow, lit from dusk, and its smoke */
+    (VC.cantonFires || []).forEach(function (p) { ATMOS.glowAdd(p[0], p[1], p[2], p[3] || [1.0, 0.45, 0.12], p[4] || 8, 17.4, 30.6); sm.push([p[0], p[1] + 1, p[2], 'chimney']); });
+    if (sm.length) ATMOS.smoke(sm);
+    ATMOS.weather({ mode: TUNE.weather.mode, ash: true, reduceMotion: !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches), apply: function (W) { VC.W = W; } });
     ATMOS.finish();
+    ATMOS.weatherUI($('wx'));
+    /* every standard material reflects the sky as it is now (recaptured as the hour moves) */
+    var gnd = new THREE.Color();
+    ATMOS.skylight({ renderer: renderer, sky: S.scene, scene: scene, ground: function () { return hemi ? gnd.copy(hemi.groundColor).convertSRGBToLinear().multiplyScalar(hemi.intensity) : gnd.setRGB(0.1, 0.08, 0.06); },
+      key: function () { return (VC.W.ash > 0.5 ? 'a' : '') + (S.STATE.ecl > 0.5 ? 'e' : ''); } });
   }
   var last = null, shown = '';
   (window._frameHooks = window._frameHooks || []).unshift(function (now) {
@@ -501,7 +695,13 @@ VC.clockUI = function () {
 VC.start = function () {
   VC.stripped = VC.stripCantons();
   VIEW.stage(); VIEW.terrain(); VIEW.refreshTerrain(null, true);
-  VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.cantonLabels();
-  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
-  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  CANT.walkOn = true;                 /* the causeways register their decks in KWALK as they are built */
+  VIEW.recolour = { Fortress: VC.greyscale(TUNE.dress.Fortress.grey[0], TUNE.dress.Fortress.grey[1]) };   /* the Fortress in black */
+  VIEW.cantons(); VIEW.bridges(); VIEW.causeways(); VIEW.falls(); VIEW.cantonLabels();
+  CANT.walk(); CANT.tag();             /* the cantons' levels, bridges and stairs: the walker's floors; their records' tags */
+  VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */
+  /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
+  Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
+  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
+  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };

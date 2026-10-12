@@ -119,6 +119,9 @@ SWBAY.SPECIES=[
  /*12*/{key:'thorn',name:'Umbrella thorn',H:[6,15],rb:[.3,.7],crownR:[6,12],barkK:3,bark:[0x5a4a3c,0x4e4034,0x6a5a48],
   leaf:[0x5a7a34,0x6a8a3c,0x4e6e2e,0x7a9a48],boughs:[3,5],
   tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ /*13*/{key:'cherry',name:'Ash cherry',H:[5.5,10],rb:[.32,.62],crownR:[4,7.5],barkK:3,bark:[0x4a3230,0x3e2a28,0x56383a],
+  /* the blossom: pale to deep pink, a little lilac (the Voth necropolis's cherries, 2026-10-09) */leaf:[0xf0c8d4,0xe8b0c4,0xf6dce4,0xd898b4],boughs:[4,6],
+  tags:{climate:'tropic',aridity:'mild',abyssal:false,riparian:'no'}},
 ];
 SWBAY.byKey={};SWBAY.SPECIES.forEach(S=>{SWBAY.byKey[S.key]=S;});
 
@@ -141,6 +144,7 @@ SWBAY.HARVEST={
  brackettree:HV('fuel',[],true,'The dried brackets are tinder and a styptic.'),
  coral:HV('none',['the coral (cooked)'],false,'Bay fungi: the orange, pink and violet coral is picked as a clump.','generic_fruit_bay_fungi'),
  thorn:HV('fuel, fencing (the thorny boughs)',['pods (fodder, famine)'],true,'The pods feed the herds; the gum is a sweet (not drawn, not catalogued).'),
+ cherry:HV('fine timber (small)',['cherries'],true,'Planted for its blossom by the bay\'s tombs and gardens; the sour fruit is dried, the bark steeped for coughs (the fruit not drawn, not catalogued).'),
 };
 SWBAY.SPECIES.forEach(S=>{S.tags.harvest=SWBAY.HARVEST[S.key]||HV('none');});
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names

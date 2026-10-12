@@ -260,6 +260,7 @@ ENTRIES = [
     ('biome', 'crater-drylands', 'biomes/crater-drylands/dist/crater-drylands.html', 'Crater drylands', "The Throne's rain shadow at 1.9 atm, a mosaic of wildfires of every age from the kit's own fire model: fresh char and ash, the superbloom that follows (fireweed, poppies, lupine, flame plumes, fire lilies), regrowth and old scrub; prism mallees resprouting from their root crowns, pyre pillars, frill-trees burst over their seedlings, granite kopjes where the Scyvoi live; the dense air's light.", 'new'),
     ('biome', 'shighlands', 'biomes/shighlands/dist/shighlands.html', 'Southern highlands', "The spiral biome: the Inner Wall's flank above the cloud sea, where the hyperjungle's air pools below the Wall and laps against the scarp. Every plant grows in a spiral (whorl, twist, coil or shell), and every spiral turns the same way, but for the rare mirror-handed tree. A cloud forest of coilbarks, spiral trumpets with fluted twisting funnels, volute trees whose limbs end in leafy scrolls, spiral frill trees, tree ferns and screw palms, over a sea of drifting cloud; above it a paramo of ruffle-crowns, giant groundsels, spiral lobelias and spiral aloes, bogs of sphagnum; the Whorl Stone, a tor whose ledge spirals to its top.", 'new'),
     ('biome', 'ehighlands', 'biomes/ehighlands/dist/ehighlands.html', 'Eastern highlands', "The cushion plateau: a cold altiplano in thin air under a deep blue sky, snow-capped volcanoes on every horizon, where everything grows toward the giant. Poured cushions and the Mother Cushion, one plant over a whole hill; woolbacks, thorn cushions, a stand of vigil spikes in flower all leaning one way, dead torches, ragbark woods in the gullies, glass towers lit from within; a cushion bog and a frozen tarn, a geyser field; wormwick in the turf and tower honey under the cliffs.", 'new'),
+    ('biome', 'geyser', 'biomes/geyser/dist/geyser.html', 'The geyser basin', "A basin in the Steampits cut into the hyperjungle: geysers erupting on their own clocks (Erupt buttons, a timetable), the Great Prism and its mat-banded run-off, mud pots and fumaroles, a dead forest drowned in silica, travertine pools stepping down to the sea; thermophile life.", 'new'),
 ]
 
 
@@ -497,6 +498,9 @@ def main():
                  'background:rgba(18,14,58,.85);color:#e8c98a;border:1px solid #c99a55;padding:7px 12px;'
                  'font:14px Georgia,serif;text-decoration:none;border-radius:2px">Open on your phone or tablet</a>\n'
                  % html.escape(share))
+        # and, at the foot of the page, the way to the World Menagerie the same server carries
+        page = page.replace('</footer>', ' · <a href="%s">The World Menagerie &rarr;</a></footer>'
+                            % html.escape(lod.get('menagerie', '/menagerie')), 1)
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
     total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)

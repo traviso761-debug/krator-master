@@ -16,6 +16,10 @@
    "bytes": 1571191,
    "sha256": "6b59dff339ef82c43494d9a96a26903230112aef0f199448e42892140b9d03c3"
   },
+  "biomes/geyser/dist/geyser.html": {
+   "bytes": 392268,
+   "sha256": "461d56f3138e405b3ac5e9e6051e8e5e1e1bd63ad29f35eeb519516c4c75abb4"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 3228505,
    "sha256": "29fd815562d73075970f40930bbdb975ab62f5b6acbea1223723476252158588"
@@ -45,8 +49,8 @@
    "sha256": "9a16451d1e88dc9d4dad1e9b7e3e8555efd3f4f3dc378404627259b6cb992173"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 4558589,
-   "sha256": "257e4b695f1c80096bd7685913cb6cbad8d9875ac38703e2f442573baca54aa8"
+   "bytes": 4565488,
+   "sha256": "5308530a816a8a0f42e86022f3fae254344c088d587089c29bef0260b28c7070"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
    "bytes": 5080716,
@@ -277,8 +281,8 @@
    "sha256": "e16f9df19edbc23f5cea0a4bdddf3a114db2572c98e6c9f91796b0da81ce09ca"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1643207,
-   "sha256": "9fb797baafa1f90481a8392a8e16f646423ad9d7b6ae8d3187b87c728e3cb822"
+   "bytes": 1648590,
+   "sha256": "03d62ad610a6cfff422261b9da97bcab53db2c40d8453dd23c6583181ef4e70f"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 8355828,
@@ -293,8 +297,8 @@
    "sha256": "38cfb89343e7790d18562fa61daaf933cd0c7074ff0666d5ee107469f963b781"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9608504,
-   "sha256": "d8896317b9082facee9395b35cb3ab9638ac6e1c4c455c756534e2726166eeae"
+   "bytes": 9613887,
+   "sha256": "207b6cc944bedadf0897fc273a1544b262a72937777e660a94f0ae9a02d4bfda"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 246684,
@@ -561,12 +565,12 @@
    "sha256": "9c5486420b8259d291df6415c215d0a82d007fa71fcf9a9b3f65984df7002af9"
   },
   "settlements/streetlab/dist/voth-city.html": {
-   "bytes": 7157261,
-   "sha256": "bf138f2c3348398da2109a6e5134a0103c305a4b874ca668885033dc6b717b24"
+   "bytes": 8247140,
+   "sha256": "622b5361220e6f9f80223467aeebf291b38c532aed90307f8ea197123dd165f7"
   },
   "settlements/streetlab/dist/voth-site.html": {
-   "bytes": 3487595,
-   "sha256": "3b403e3327eba830386e7b372cec676c66321c8dbefab5bb9bb4ea6662d08f8d"
+   "bytes": 3596217,
+   "sha256": "9509d9b9c73d871ff47468e6f92c44bdfecfd062e7adb2acaf954f881ad5f449"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 2899591,

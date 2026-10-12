@@ -107,6 +107,24 @@ VC.buildMonastery = function (d) {
       return null;
     };
     var fx = 145, fz = 120;                                   /* Voth's compound: the builders' sizes are fractions of it */
+    /* Voth's own compound at the heart of it (owner, 2026-10-09: "pull in the model from original voth"): its
+       monasteryCompound() whole, as voth.html draws it (wall, chapel and bell tower, dormitories, hall, well, pen,
+       fields), its gate toward the Temple canton, at its own size or shrunk to fit; the extra dormitories, stores, pens,
+       coops and fields the owner asked for stand round it, inside the district's wall */
+    if (M.compound && B.monasteryCompound) {
+      var cry = B.faceToward(cen[0], cen[1], T.x, T.z), S0 = B.MONASTERY_SITES, n0 = { f: S0.fields.length, c: S0.coops.length, d: S0.dorms.length }, fit = null;
+      for (var sc = M.compoundMax == null ? 1 : M.compoundMax; sc >= 0.45 && !fit; sc -= 0.05) {
+        var best = null;
+        cand.forEach(function (c) { var o = VC.obbAt(c.p, cry, fx * sc + 6, fz * sc + 6); if (!best || c.dc < best.dc) { if (!VC.anyHit(o, placed, 0) && ok(o, M.relief + 4)) best = { dc: c.dc, c: c.p, o: o }; } });
+        if (best) fit = { c: best.c, o: best.o, s: sc };
+      }
+      if (fit) {
+        B.monasteryCompound(fit.c[0], fit.c[1], cry, fx * fit.s, fz * fit.s);
+        placed.push(fit.o);
+        counts.dorm += S0.dorms.length - n0.d; counts.coop += S0.coops.length - n0.c; counts.field += S0.fields.length - n0.f; counts.compound = +fit.s.toFixed(2);
+      }
+    }
+    if (!counts.compound) {
     /* the chapel at the middle, its door toward the Temple canton */
     var cw = fx * 0.26 * 1.5, cd = fz * 0.22 * 1.5;
     put('chapel', cw * 0.77, cd * 0.5 + cw * 0.27, function (c) { return V.dist(c.p, cen); },
@@ -118,14 +136,15 @@ VC.buildMonastery = function (d) {
       function (c, y, ry) { B.monasteryAssemblyHall(c[0], c[1], y, hw, hd, B.rr(30, 34), ry, col, {}); },
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
     /* dormitories round the chapel (owner: more of them) */
-    var dw = fx * 0.20 * 1.5, dd = fz * 0.17 * 2.0, roof = B.shade(B.GREYC[1], -0.05);
-    for (var k = 0; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
+    var ds = counts.compound || 1, dw = fx * 0.20 * 1.5 * ds, dd = fz * 0.17 * 2.0 * ds, roof = B.shade(B.GREYC[1], -0.05);   /* round Voth's compound: at its scale */
+    for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
       function (c, y, ry) { B.shed(c[0], y, c[1], fx * 0.22, fz * 0.15, B.rr(9, 12), ry, col); });
     /* the well at the heart of the cluster */
     put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
+    }
     /* pens and coops between the buildings and the fields */
     var ring = function (f) { return function (c) { return Math.abs(c.de / maxDe - f) * 300 + B.rr(0, 60); }; };
     for (var p2 = 0; p2 < M.pens; p2++) put('pen', MO.penW / 2 + 3, MO.penD / 2 + 3, ring(0.45), function (c, y, ry) { B.monasteryPen(c[0], y, c[1], MO.penW / 2, MO.penD / 2, ry); });
@@ -219,10 +238,22 @@ VC.deckOf = function (n) {
   var c = VOTH.CIDX[n], hw = c.r * 0.97 * Math.pow(0.86, c.tiers), yTop = c.top + 0.12 * c.tiers, y = yTop + 0.9;
   var D = typeof VOTH_CITY_CAPTURE !== 'undefined' ? VOTH_CITY_CAPTURE : null, v = D && D.entries['voth_city_canton_' + n.toLowerCase()];
   if (v && v[0]) { var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), top = -Infinity; v[0].r.forEach(function (q) { if (q[0] !== 9 && q[5] * q[7] > 2000) top = Math.max(top, bed + q[3] + q[6]); }); if (top > 0) y = top; }
-  return { n: n, c: [c.x, c.z], y: y, shift: y - 0.9 - yTop, hw: hw, use: hw * TUNE.decks.use, placed: [] };
+  return { n: n, c: [c.x, c.z], y: y, shift: y - 0.9 - yTop, hw: hw, use: hw * TUNE.decks.use, placed: CANT.deckKeep(n).concat(VC.intKeep(n)) };   /* the bridges' and the stairs' arrivals, the stair house */
 };
 /* the first free spot for a footprint on a deck, scored by `score` (low is best); faces the deck's middle, squared to
    the deck's axes. Returns {c, f, o} or null. */
+/* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
+   deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
+   just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+VC.capturedHit = function (n, o, y) {
+  var M = CANT.by[n]; if (!M) return false;
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
+    if (P.M !== M || cut[P.k]) return false;
+    var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
+    return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
+  });
+};
 VC.deckSpot = function (dk, hw, hd, score, gap) {
   var best = null, bs = Infinity, G = TUNE.decks.grid;
   for (var x = -dk.use; x <= dk.use; x += G) for (var z = -dk.use; z <= dk.use; z += G) {
@@ -231,7 +262,8 @@ VC.deckSpot = function (dk, hw, hd, score, gap) {
     for (var i = 0; i < 4 && ok; i++) { var lx = C[i][0] - dk.c[0], lz = C[i][1] - dk.c[1]; if (Math.max(Math.abs(lx), Math.abs(lz)) > dk.use || Math.hypot(lx, lz) < TUNE.decks.obelisk) ok = false; }
     if (!ok || Math.hypot(x, z) < TUNE.decks.obelisk + Math.min(hw, hd)) continue;
     if (VC.anyHit(o, dk.placed, gap == null ? TUNE.decks.gap : gap) || SL.clash(o)) continue;
-    var sc = score(x, z); if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
+    var sc = score(x, z); if (sc >= bs) continue;
+    if (VC.capturedHit(dk.n, o, dk.y)) continue;                                           /* what the canton's own model has standing there */ if (sc < bs) { bs = sc; best = { c: c, f: f, o: o }; }
   }
   return best;
 };
@@ -293,7 +325,8 @@ VC.cantonDecks = function () {
       B.BOX(m.c[0], m.y - 0.25, m.c[1], sq * 2, 0.4, sq * 2, 0, 0xb2a68c);
       for (var x = -sq + 7; x <= sq - 7; x += 9) for (var z = -sq + 7; z <= sq - 7; z += 9) {
         if (Math.hypot(x, z) < K.obelisk + 6 || !rs.chance(0.7)) continue;
-        D.art.push({ key: rs.pick(STALLS), x: m.c[0] + x + rs.rr(-1, 1), z: m.c[1] + z + rs.rr(-1, 1), y: m.y, ry: Math.atan2(-x, -z) }); st++;
+        if (VC.intKeep('Market').some(function (o) { return SL.pen(obb([m.c[0] + x, m.c[1] + z], [1, 0], 4.5, 4.5), o) > 0; })) continue;   /* the stair house (a stall and its stock) */
+        var gk = rs.pick(STALLS), jx = rs.rr(-1, 1), jz = rs.rr(-1, 1); VC.marketPitch(D, m.c[0] + x + jx, m.y, m.c[1] + z + jz, Math.atan2(-x, -z), gk); st++;
       }
       PLAN.districts.push(D);
       m.placed.push(obb(m.c, [1, 0], sq + 2, sq + 2));
@@ -316,7 +349,7 @@ VC.cantonDecks = function () {
         for (var qq = -1; qq <= 1; qq++) {
           var it = qitems[(qn + qq + 3) % qitems.length]; if (!it) continue;
           var cq = V.add(V.add(po.c, V.mul(e, qhw - 8 - it.d / 2)), V.mul([-e[1], e[0]], qq * qhw * 0.55)), oq = obb(cq, [e[1], -e[0]], it.w / 2, it.d / 2);
-          if (SL.clash(oq)) continue;
+          if (SL.clash(oq) || VC.capturedHit('Port', oq, qy - 0.9)) continue;
           var Lq = VC.deckLot({ n: 'Port', y: qy, placed: [] }, 'warehouse', it, { c: cq, f: e, o: oq }); Lq.quay = true; qn++;
         }
       }
@@ -391,6 +424,7 @@ VC.clashWide = function (o) {
 };
 VC.FH = null;
 VC.fieldHit = function (o) {
+  if (!VC.FH) return false;                     /* before the country (step 4's roads): no fields yet */
   var gx = Math.floor(o.c[0] / 80), gz = Math.floor(o.c[1] / 80);
   for (var x = gx - 2; x <= gx + 2; x++) for (var z = gz - 2; z <= gz + 2; z++) { var L = VC.FH.get(x + ',' + z); if (!L) continue; for (var i = 0; i < L.length; i++) if (SL.pen(o, L[i].bo) > 0) return true; }
   return false;
@@ -541,7 +575,7 @@ VC.fishDocks = function (g, rs, n, id) {
       [-1, 1].forEach(function (sd) {
         if (!rs.chance(0.75)) return;
         var hc = V.add(V.add(root, V.mul(dir, (L + 4) * rs.rr(0.45, 0.8))), V.mul(side, sd * (B.LIFE_FISHDOCK_W / 2 + 3.4)));
-        B.BOX(hc[0], -1.0, hc[1], 4.2, 2.1, rs.rr(12, 15), fry, 0x5e4d3a, 'wood'); B.BOX(hc[0], 1.1, hc[1], 3.6, 0.4, 11, fry, 0x4a3c2c, 'wood'); B.CYL(hc[0], 1.1, hc[1], 0.22, rs.rr(8, 11), 0, 0x4a3c2c, 'wood');
+        VC.moor('vothDhow', hc[0], hc[1], fry, rs.rr(12, 15)); rs.rr(8, 11);   /* a Ring Sea dhow (31-vc-voth.js VC.moor); the old mast's draw kept */
       });
     });
   });
@@ -567,10 +601,12 @@ VC.routeToRoad = function (p, reach, opt) {
   var cost = function (k, i, j) {
     var h = H[k]; if (h < 0.9) return Infinity;
     var q = at(k); if (!opt.city && VC.inCity(q, 10)) return Infinity;
+    if (!opt.overFields && (VC.fieldHit(obb(q, [1, 0], c / 2, c / 2)) || VC.anyHit(obb(q, [1, 0], c / 2, c / 2), VC.big || [], 2))) return Infinity;   /* nor through the big plots (farmsteads, mushroom farms) */   /* round the fields, never through them (owner, 2026-10-09) */
     var gx = (H[j * n + Math.min(n - 1, i + 1)] - H[j * n + Math.max(0, i - 1)]) / (2 * c), gz = (H[Math.min(n - 1, j + 1) * n + i] - H[Math.max(0, j - 1) * n + i]) / (2 * c);
     return 1 + 60 * (gx * gx + gz * gz);
   };
   var si = Math.floor((p[0] - x0) / c), sj = Math.floor((p[1] - z0) / c), path = ASTAR(G, sj * n + si, goals, cost, null, 1.0);
+  if (!path && !opt.overFields) return VC.routeToRoad(p, reach, Object.assign({}, opt, { overFields: true }));   /* hemmed in: the fields it crosses go (VC.fieldsOffWays) */
   if (!path) return null;
   var pts = [p].concat(path.slice(1).map(at)), last = pts[pts.length - 1], rn = VC.roadNear(last, 12);
   if (rn) { var ww = rn.way, nq = ww.F.nearest(last); pts.push(ww.F.at(nq.s)); }
@@ -641,9 +677,9 @@ VC.quarries = function (rs) {
 /* mushroom farms (owner, 2026-10-09: "add mushroom farms to 'mush farm' region"): Voth's own mushroomFarm() (71-industry:
    a fenced plot of cultivated fungus in rows, damp gentle ground), on the gentle ground of the owner's polygon, apart from
    each other, each with a track to the roads and its grower's house */
-VC.mushFarms = function (rs) {
-  var B = VOTH, K = TUNE.country.mush, made = [], houses = 0;
-  VC.districts('mushfarm').forEach(function (d) {
+VC.mushFarms = function (rs, role, KK) {
+  var B = VOTH, K = Object.assign({}, TUNE.country.mush, KK || {}), made = [], houses = 0, tag = role || 'mushfarm', n0 = (VC.industry.mush || []).length;
+  VC.districts(tag).forEach(function (d) {
     var xs = d.poly.map(function (p) { return p[0]; }), zs = d.poly.map(function (p) { return p[1]; }), cand = [];
     for (var x = Math.min.apply(null, xs); x <= Math.max.apply(null, xs); x += K.grid) for (var z = Math.min.apply(null, zs); z <= Math.max.apply(null, zs); z += K.grid) {
       var p = [x + rs.rr(-8, 8), z + rs.rr(-8, 8)]; if (!inPoly(p, d.poly) || polyEdgeDist(p, d.poly) < K.edge) continue;
@@ -656,15 +692,15 @@ VC.mushFarms = function (rs) {
       var c = cand[i].p, o = obb(c, [1, 0], K.half, K.half);
       if (made.some(function (m) { return V.dist(m.p, c) < K.apart; }) || !VC.countryOk(o, { road: 4, relief: K.relief })) continue;
       var near = VC.roadNear(c, 600), to = near ? near.way.F.at(near.way.F.nearest(c).s) : V.add(c, [1, 0]), ry = Math.atan2(-(to[1] - c[1]), to[0] - c[0]), ok = false;
-      VC.capture('mush' + made.length, 13, function () { ok = !!B.mushroomFarm(c[0], c[1], ry, {}); });
+      VC.capture('mush' + (n0 + made.length), 13, function () { ok = !!B.mushroomFarm(c[0], c[1], ry, {}); });
       if (!ok) continue;
       var m = { p: c }; made.push(m); VC.big.push(o);
       m.track = !!VC.track(V.add(c, V.mul(V.norm(V.sub(to, c)), K.half + 2)), K.trackReach, 'mushroom farm track');
       houses += VC.workersHouses(c, rs, 1, 'mushroom growers');
     }
   });
-  VC.industry.mush = made;
-  return made.length + ' mushroom farms (' + made.filter(function (m) { return m.track; }).length + ' with a track to the roads), ' + houses + ' growers\u2019 houses';
+  VC.industry.mush = (VC.industry.mush || []).concat(made);
+  return made.length + ' mushroom farms' + (role ? ' in ' + role : '') + ' (' + made.filter(function (m) { return m.track; }).length + ' with a track to the roads), ' + houses + ' growers\u2019 houses';
 };
 VC.workersHouses = function (c, rs, n, tag) {
   var got = 0;
@@ -679,6 +715,8 @@ VC.workersHouses = function (c, rs, n, tag) {
    farmsteads on a jittered grid, each on a track to the nearest road; then fields wherever the ground allows */
 VC.moreFarms = function (rs) {
   var K = TUNE.country.moreFarms, D = VC.districts('farms'), farms = 0, fields = 0;
+  /* mushroom farms on its gentle ground first (owner, 2026-10-09: "add some mushroom farms in there"), on their tracks */
+  var mush = D.length ? VC.mushFarms(rs, 'farms', K.mush) : '';
   D.forEach(function (d) {
     var xs = d.poly.map(function (p) { return p[0]; }), zs = d.poly.map(function (p) { return p[1]; });
     for (var x = Math.min.apply(null, xs); x <= Math.max.apply(null, xs); x += K.farmGrid) for (var z = Math.min.apply(null, zs); z <= Math.max.apply(null, zs); z += K.farmGrid) {
@@ -691,11 +729,14 @@ VC.moreFarms = function (rs) {
     }
     for (var x2 = Math.min.apply(null, xs); x2 <= Math.max.apply(null, xs); x2 += K.fieldGrid) for (var z2 = Math.min.apply(null, zs); z2 <= Math.max.apply(null, zs); z2 += K.fieldGrid) {
       var c = [x2 + rs.rr(-12, 12), z2 + rs.rr(-12, 12)]; if (!inPoly(c, d.poly)) continue;
-      var fw = rs.rr(TUNE.country.field[0], TUNE.country.field[1]), fd = fw * rs.rr(0.45, 0.85), o = obb(c, V.rot([1, 0], rs.rr(-0.3, 0.3)), fw / 2, fd / 2);
+      /* square to the nearest road (owner, 2026-10-09: "align the farms within 'more farms' to the streets"): its long
+         side along the road's run there, so the fields stand in rows along the tracks and lanes, not across them */
+      var fw = rs.rr(TUNE.country.field[0], TUNE.country.field[1]), fd = fw * rs.rr(0.45, 0.85), jr = rs.rr(-0.3, 0.3), rn = VC.roadNear(c, K.alignReach);
+      var ax = rn ? rn.way.F.tan(rn.way.F.nearest(c).s, 8) : V.rot([1, 0], jr), o = obb(c, ax, fw / 2, fd / 2);
       if (VC.countryOk(o, { road: 2, relief: TUNE.country.fieldRelief, cityPad: 40 })) { VC.addField(o, VOTH.pick(VOTH.FIELDC)); fields++; }
     }
   });
-  return D.length ? farms + ' farmsteads and ' + fields + ' fields in ' + D.map(function (d) { return d.name; }).join(', ') : '';
+  return D.length ? farms + ' farmsteads and ' + fields + ' fields in ' + D.map(function (d) { return d.name; }).join(', ') + '; ' + mush : '';
 };
 
 /* a station's own road to the city (S12): from beside the station to the nearest road */
@@ -799,6 +840,21 @@ VC.orchards = function (rs) {
   return trees + ' orchard trees and ' + walls + ' terrace walls on the west hill';
 };
 
+/* no field under a road (owner, 2026-10-09: farms "cut thru" by the streets): once the country is laid, a field any
+   way runs across (a lane, a track, a highway laid after it) is taken up, sampled every 4 m over its footprint */
+VC.fieldsOffWays = function () {
+  VC.roadHash(); var gone = 0;
+  PLAN.fields = PLAN.fields.filter(function (F) {
+    var o = F.bo, hit = false;
+    for (var a = -o.hw; a <= o.hw + 0.1 && !hit; a += Math.min(4, o.hw)) for (var b = -o.hd; b <= o.hd + 0.1 && !hit; b += Math.min(4, o.hd)) {
+      var p = V.add(o.c, V.add(V.mul(o.u, a), V.mul(o.v, b))), r = VC.roadNear(p, 0.5); if (r) hit = true;
+    }
+    if (hit) gone++; return !hit;
+  });
+  VC.FH = new Map(); PLAN.fields.forEach(function (F) { var k = Math.floor(F.bo.c[0] / 80) + ',' + Math.floor(F.bo.c[1] / 80); (VC.FH.get(k) || VC.FH.set(k, []).get(k)).push(F); });
+  return gone;
+};
+
 SL.pass13 = function () {
   var rs = SL.stream(13), K = TUNE.country, n0 = PLAN.lots.length;
   PLAN.fields = []; VC.FH = new Map(); VC.big = (VC.clans || []).map(function (L) { return L.bo; }); VC.villages = [];
@@ -856,6 +912,7 @@ SL.pass13 = function () {
   log.push(VC.orchards(rs));
   log.push(VC.farmMills(rs));
   log.push(VC.waterMills(rs)); log.push(VC.ranches(rs));
+  log.push(VC.fieldsOffWays() + ' fields taken up from under a road');
   PLAN.country = { lots: PLAN.lots.length - n0, fields: PLAN.fields.length, villages: VC.villages };
   SL.note(13, log.join('; '));
 };

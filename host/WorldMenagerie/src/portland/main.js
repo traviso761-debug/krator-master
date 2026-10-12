@@ -4,6 +4,7 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
+import {dress} from '../core/dress.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -21,5 +22,5 @@ configureLoading({
   ],
   prefix:'raising Portland… ',labels:{'map-data':'reading the map',ground:'laying out the streets',buildings:'raising the buildings',details:'planting the trees',landmarks:'placing the landmarks',el:'running the MAX',traffic:'starting the traffic',ui:'opening the windows'}});
 // the bridges, the sign, the gate, the submarine, the tram and Mount Hood are Portland's, so they come with it
-const ctx=window._iz={defaultCity:'portland',models:[landmarks]};
+const ctx=window._iz={defaultCity:'portland',models:[landmarks],extras:[{name:'dress',fn:dress}]};
 boot(()=>build(ctx));

@@ -326,10 +326,15 @@ def main():
     put(rect(-520, 165, 46, 24), 5.5, "civic", PARK, name="Ranger Station", roof="f")
     put(rect(-560, 320, 34, 18), 5, "shed", ROOFED, roof="f")
     put(rect(-250, 250, 30, 16), 4.5, "civic", PARK, name="Comfort Station", roof="f")
-    # the amphitheatre on the rim apron: a bank of seating facing the hole
+    # the amphitheatre on the rim apron: seven rows of seating in arcs round a stage, facing the hole, each a step up
+    AC = (-150, 330)
+    face = math.atan2(-AC[1], -AC[0])
     for k in range(7):
-        r0 = 330 + k * 9
-        put(ring_poly(-150, 330, r0, 22, r0 * 0.5)[3:9], 1.2 + k * 0.9, "wall", "#8d8578", roof="f")
+        r1, r2 = 20 + k * 6, 24.5 + k * 6
+        arc = [(AC[0] + math.cos(face + math.pi + t) * r2, AC[1] + math.sin(face + math.pi + t) * r2) for t in [i / 12 * 2.2 - 1.1 for i in range(13)]]
+        arc += [(AC[0] + math.cos(face + math.pi + t) * r1, AC[1] + math.sin(face + math.pi + t) * r1) for t in [1.1 - i / 12 * 2.2 for i in range(13)]]
+        put(arc, 0.6 + k * 0.7, "wall", "#8d8578", roof="f")
+    put(rect(AC[0] + math.cos(face + math.pi) * 6, AC[1] + math.sin(face + math.pi) * 6, 16, 9, face), 1.1, "wall", "#a89a84", name="The Amphitheatre stage", roof="f")
     # the entrance station: a booth and a shade canopy where the road comes in
     put(rect(GATE[0], GATE[1], 14, 8), 4.5, "civic", PARK, name="Entrance Station", roof="f")
     put(rect(GATE[0], GATE[1] - 30, 46, 10), 6.5, "shed", ROOFED, roof="f")

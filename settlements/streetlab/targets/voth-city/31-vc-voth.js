@@ -2,6 +2,251 @@
 /* [G data] Every structure here is drawn by Voth's own builder (lifted by name into VOTH, build.py/vothlift.py),
    on the edited ground, with Voth's seeds; this file says where, following Voth's own placement rules. The
    primitives each call pushes are kept per group (VC.prims[name] = {step, list}) for the host to draw. */
+
+/* the Ring Sea vessels moored in the city (owner, 2026-10-09: "import new ship models from ring sea"): records the
+   host draws with the kit's own models (ringsea.py, RINGSEA.make; 55-vc-host.js VC.drawVessels). `ry` is the hull's
+   heading as a box's (its length along (sin ry, cos ry)), `len` the length it takes: the model is scaled to it, so a
+   berth sized for the old box hull holds the vessel that replaces it. */
+VC.moor = function (key, x, z, ry, len) { (VC.MOOR = VC.MOOR || []).push({ key: key, x: x, z: z, ry: ry, len: len }); };
+/* the house of healing (owner, 2026-10-09: "do quality pass on house of healing"): Voth's own houseOfHealing (65j), then
+   what makes it read as a place of healing, all on its own floor (the builder's floorY, 7.05 m over its ground):
+   - a paved forecourt from the gate to the avenue, lantern posts down both sides;
+   - sea-green and white banners either side of each of the four gates (the healers' colours);
+   - the garden: gravel paths crossing at the well, four raised herb beds of the swbay kit's plants, an ash cherry in
+     each corner of the lawn (records the host plants with the biome's builders, VC.hohFlora);
+   - the ambulatory furnished as the wards: rows of cots along the outer wall under its roof, a votive candle stand
+     between every few, a dispensary table and benches by each gate, an offering table facing the well (catalog
+     pieces, as district art). Every choice is a KRAND hash of the place. */
+VC.healingModel = function (c, ry, f, court) {
+  var B = VOTH, K = TUNE.healing, y = B.terrainHe(c[0], c[1]), hw = 56, wallT = 4.2, cloister = hw * 0.62, garden = cloister * 0.66;
+  var y1 = y + 6, fy = y1 + 1.05, tone = B.pick(B.TONES);
+  var at = function (lx, lz, r) { return [c[0] + lx * Math.cos(r) + lz * Math.sin(r), c[1] - lx * Math.sin(r) + lz * Math.cos(r)]; };
+  var U = function (a, b, s) { return KRAND.unit(KRAND.hash(7701, Math.round(a * 4), Math.round(b * 4), s)); };
+  B.houseOfHealing(c[0], y, c[1], ry, tone, {});
+  /* the forecourt and its lanterns */
+  if (court) {
+    var fr = Math.atan2(f[0], f[1]), g0 = baseH(court.mid[0], court.mid[1]), side = V.perp(f);
+    B.BOX(court.mid[0], Math.min(g0, y) - 0.6, court.mid[1], K.forecourt, Math.max(0.9, y + 0.6 - Math.min(g0, y)), court.L, fr, 0xb9ad92, 'stone');
+    for (var s = 4; s < court.L - 2; s += K.lampEvery) [-1, 1].forEach(function (sd) {
+      var p = V.add(V.add(c, V.mul(f, hw + 4.2 + s)), V.mul(side, sd * (K.forecourt / 2 - 0.8))), gy = Math.max(baseH(p[0], p[1]), y + 0.4);
+      B.CYL(p[0], gy, p[1], 0.16, 3.4, 0, 0x3b3226, 'metal'); B.BOX(p[0], gy + 3.4, p[1], 0.55, 0.6, 0.55, 0, 0xffd27a, 'glow');
+    });
+  }
+  /* banners either side of each gate, on the outer wall's face */
+  var gap = hw * 2 * 0.3;
+  for (var k = 0; k < 4; k++) {
+    var sr = ry + k * Math.PI / 2;
+    [-1, 1].forEach(function (s) {
+      var p = at(hw + wallT / 2 + 0.25, s * (gap / 2 + 3.2), sr);
+      B.BOX(p[0], y1 + 3.5, p[1], 0.18, 7.5, 2.4, sr, 0x5fa58f, 'cloth');
+      B.BOX(p[0], y1 + 6.2, p[1], 0.2, 1.1, 2.42, sr, 0xf2ead8, 'cloth');
+      B.BOX(p[0], y1 + 11.1, p[1], 0.3, 0.25, 2.8, sr, 0x3b3226, 'wood');
+    });
+  }
+  /* the garden: paths, raised herb beds, cherries */
+  VC.hohFlora = [];
+  B.BOX(c[0], fy - 0.02, c[1], 3.2, 0.08, garden * 2, ry, 0xc9b994, 'stone'); B.BOX(c[0], fy - 0.02, c[1], garden * 2, 0.08, 3.2, ry, 0xc9b994, 'stone');
+  var bed = garden * 0.62, kinds = Object.keys(TUNE.flora.placed.garden);
+  [[1, 1], [-1, 1], [-1, -1], [1, -1]].forEach(function (q, qi) {
+    var bc = at(q[0] * (garden * 0.5 + 0.8), q[1] * (garden * 0.5 + 0.8), ry);
+    B.BOX(bc[0], fy, bc[1], bed, 0.5, bed, ry, B.shade(tone, -0.2), 'stone');
+    B.BOX(bc[0], fy + 0.5, bc[1], bed - 0.6, 0.05, bed - 0.6, ry, 0x4a3a2a, 'soil');
+    for (var a = -bed / 2 + 1; a <= bed / 2 - 1; a += 1.7) for (var b = -bed / 2 + 1; b <= bed / 2 - 1; b += 1.7) {
+      var p = at(q[0] * (garden * 0.5 + 0.8) + a, q[1] * (garden * 0.5 + 0.8) + b, ry), u = U(p[0], p[1], qi);
+      if (u > 0.85) continue;
+      VC.hohFlora.push({ plant: kinds[Math.floor(U(p[0], p[1], 9) * kinds.length) % kinds.length], x: p[0], y: fy + 0.55, z: p[1] });
+    }
+    var tc = at(q[0] * (cloister - 4), q[1] * (cloister - 4), ry);
+    VC.hohFlora.push({ tree: 'cherry', x: tc[0], y: fy, z: tc[1], u: U(tc[0], tc[1], 3) });
+  });
+  /* the wards and the dispensaries, as catalog pieces */
+  var D = { kind: 'furniture', name: 'House of Healing furnishings', art: [], born: 3 };
+  var put = function (key, p, face) { if (typeof FURN_BY_KEY === 'undefined' || !FURN_BY_KEY[key]) return; D.art.push({ key: key, v: 0, x: p[0], y: fy + 0.05, z: p[1], ry: face, furn: true }); };
+  for (var k2 = 0; k2 < 4; k2++) {
+    var sr2 = ry + k2 * Math.PI / 2, inward = Math.atan2(-Math.cos(sr2), Math.sin(sr2)), along = Math.atan2(Math.sin(sr2 + Math.PI / 2), Math.cos(sr2 + Math.PI / 2));
+    [-1, 1].forEach(function (s) {
+      var n = 0;
+      for (var lz = gap / 2 + 3; lz <= hw - wallT - 4; lz += K.cotEvery) {
+        var p = at(hw - wallT - 2.2, s * lz, sr2);
+        put(n % 4 === 3 ? 'voth_candle_stand' : 'voth_trade_bunk', p, inward); n++;
+      }
+      var dp = at(hw - wallT - 5.5, s * (gap / 2 - 2.5), sr2);
+      put('voth_tavern_table', dp, along); put('voth_tavern_bench', at(hw - wallT - 7.5, s * (gap / 2 - 2.5), sr2), along);
+    });
+    put('voth_offering_table', at(garden * 0.5 + 0.8, 0, sr2), inward);
+  }
+  PLAN.districts.push(D);
+};
+/* the Temple canton's dressing (owner, 2026-10-09: "do quality pass on temple and bling it up similarly to, but distinct
+   from the palace; red trim (color of blood) is emphasized"). The Palace is glossy gilt on pale ashlar with black trim,
+   flying buttresses and atria (Voth's 50b-palace.js); the Temple stays Voth's matte ochre gilt on blood red
+   (65d templeCanton: TEMPLE_RED_BRIGHT, _DARK, _GOLD), and takes, on its own read levels (CANT.by.Temple):
+   - every terrace's edge a blood-red cornice over a gilt fillet and a dark-red course;
+   - fire pylons at the terraces' corners: dark-red shafts, gilt collars and pyramid caps, a gilt brazier burning on
+     each (VC.templeFires: the host lights them and smokes them, core/atmos);
+   - blood-red banners with gilt borders hung from each cornice down the tier walls;
+   - a crown of red obelisks with gilt tips round the top deck.
+   Nothing is laid where a bridge lands or a flight of steps climbs (each side's runs are cut round them). No draws
+   from any stream: every choice is fixed by the canton's geometry. */
+VC.cantonDress = function (cn) {
+  var M = CANT.by[cn], K = TUNE.dress[cn]; if (!M || !K) return 'no ' + cn + ' canton';
+  var B = VOTH, n = { trim: 0, pylons: 0, banners: 0, obelisks: 0, fires: 0 };
+  /* what each side must leave open: flights, bridge landings, the dock flights */
+  var keep = [];
+  CANT.flights.filter(function (f) { return f.canton === cn; }).forEach(function (f) { keep.push({ p: f.a, w: f.w }, { p: f.b, w: f.w }, { p: [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], w: f.w }); });
+  CANT.spans.forEach(function (S) { if (S.a === cn) keep.push({ p: S.la, w: S.w + 4 }, { p: [S.ax, S.az], w: S.w + 4 }); if (S.b === cn) keep.push({ p: S.lb, w: S.w + 4 }, { p: [S.bx, S.bz], w: S.w + 4 }); });
+  (CANT.ends || []).forEach(function (e) { if (e.canton === cn) keep.push({ p: [e.x, e.z], w: (e.w || 30) + 4 }); });
+  /* a side: s 0..3 (+x, +z, -x, -z), the point at along-coordinate t on the square of radius r */
+  var pt = function (s, r, t) { return s === 0 ? [M.x + r, M.z + t] : s === 1 ? [M.x - t, M.z + r] : s === 2 ? [M.x - r, M.z - t] : [M.x + t, M.z - r]; };
+  var ryOf = function (s) { return s % 2 === 0 ? 0 : Math.PI / 2; };   /* a box's depth (z) along the side */
+  var runs = function (s, r, lo, hi) {
+    var cut = [];
+    keep.forEach(function (k) {
+      var lx = k.p[0] - M.x, lz = k.p[1] - M.z, rad = s === 0 ? lx : s === 1 ? lz : s === 2 ? -lx : -lz, t = s === 0 ? lz : s === 1 ? -lx : s === 2 ? -lz : lx;
+      if (Math.abs(rad - r) < K.keepBand) cut.push([t - k.w / 2 - 2, t + k.w / 2 + 2]);
+    });
+    var iv = [[lo, hi]];
+    cut.forEach(function (c) { iv = [].concat.apply([], iv.map(function (q) { return c[0] >= q[1] || c[1] <= q[0] ? [q] : [[q[0], c[0]], [c[1], q[1]]].filter(function (z) { return z[1] - z[0] > 1.5; }); })); });
+    return iv;
+  };
+  VC.capture(cn.toLowerCase() + ' dress', 2, function () {
+    var L = M.levels;
+    L.forEach(function (lv, k) {
+      var r = lv.ro, y = lv.y;
+      for (var s = 0; s < 4; s++) runs(s, r, -r + 1, r - 1).forEach(function (q) {
+        var m = pt(s, r + 0.3, (q[0] + q[1]) / 2), len = q[1] - q[0], ry = ryOf(s);
+        if (K.trim) {
+        B.BOX(m[0], y - 1.15, m[1], 1.3, 1.05, len, ry, K.red, 'stone');                          /* the blood-red cornice */
+        var mg = pt(s, r + 0.4, (q[0] + q[1]) / 2);
+        B.BOX(mg[0], y - 1.55, mg[1], 1.5, 0.4, len, ry, K.gold, 'stone');                        /* the gilt fillet */
+        var md = pt(s, r + 0.2, (q[0] + q[1]) / 2);
+        B.BOX(md[0], y - 3.1, md[1], 1.0, 0.55, len, ry, K.dark, 'stone');                        /* the dark-red course */
+        n.trim++;
+        }
+        /* banners down the wall below, from this level's cornice to the terrace beneath (the apron has none) */
+        if (k === 0 || !K.banners) return;
+        var drop = Math.min(K.bannerH, (y - L[k - 1].y) * 0.62);
+        for (var t = q[0] + K.bannerEvery / 2; t < q[1] - 2; t += K.bannerEvery) {
+          var bp = pt(s, r + 0.75, t);
+          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.banner, 'cloth');
+          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.26, 0.45, 3.3, ry, K.gold, 'cloth');
+          var bq = pt(s, r + 0.78, t); B.BOX(bq[0], y - 1.7 - drop * 0.55, bq[1], 0.26, 1.1, 1.1, ry + Math.PI / 4, K.gold, 'cloth');   /* the gilt lozenge */
+          n.banners++;
+        }
+      });
+      /* fire pylons on the corners of every terrace but the top deck's */
+      if (!K.pylons || lv.top || k === L.length - 1) return;
+      var inner = lv.ri || r * 0.8, cr = (r + inner) / 2;
+      if (r - inner < 6) return;
+      [[1, 1], [-1, 1], [-1, -1], [1, -1]].forEach(function (c) {
+        var p = [M.x + c[0] * (r - 3.2), M.z + c[1] * (r - 3.2)];
+        if (keep.some(function (kq) { return V.dist(kq.p, p) < kq.w / 2 + 4; })) return;
+        var h = K.pylonH;
+        B.FR8(p[0], y, p[1], 2.8, h, 2.8, Math.PI / 4, K.dark, 'stone');
+        B.BOX(p[0], y + 0.3, p[1], 3.6, 0.8, 3.6, Math.PI / 4, K.gold, 'stone');
+        B.BOX(p[0], y + h * 0.55, p[1], 3.1, 0.5, 3.1, Math.PI / 4, K.red, 'stone');
+        B.BOX(p[0], y + h, p[1], 3.4, 0.6, 3.4, Math.PI / 4, K.gold, 'stone');
+        B.CYL(p[0], y + h + 0.6, p[1], 1.5, 0.9, 0, K.gold, 'stone');                              /* the brazier bowl */
+        B.CYL(p[0], y + h + 1.2, p[1], 1.1, 0.5, 0, 0x2a1a12, 'soil');                             /* its coals */
+        B.CONE(p[0], y + h + 1.5, p[1], 0.9, 1.6, 0, 0xf07a1e, 'cloth');                           /* the flame */
+        VC.cantonFires.push([p[0], y + h + 2.4, p[1], K.fire]); n.fires++;
+        n.pylons++;
+      });
+    });
+    /* the crown: obelisks round the top deck's edge */
+    var T = L[L.length - 1], R = T.ro - 3.5;
+    if (K.crown)
+    for (var s2 = 0; s2 < 4; s2++) runs(s2, T.ro, -R, R).forEach(function (q) {
+      for (var t2 = q[0] + 3; t2 <= q[1] - 3; t2 += K.obeliskEvery) {
+        var o = pt(s2, R, t2);
+        B.FR8(o[0], T.y, o[1], 2.2, 1.0, 2.2, 0, K.gold, 'stone');
+        B.FR3(o[0], T.y + 1.0, o[1], 1.4, K.obeliskH, 1.4, 0, K.red, 'stone');
+        B.CONE(o[0], T.y + 1.0 + K.obeliskH, o[1], 0.8, 1.6, 0, K.gold, 'stone');
+        n.obelisks++;
+      }
+    });
+    /* fires on the corner towers' tops (the Fortress's green flame): a brazier on the highest piece of each corner */
+    if (K.towerFires) {
+      var best = {}, seen = new Set();
+      CANT.grid.forEach(function (a) { a.forEach(function (p) {
+        if (seen.has(p) || p.M !== M) return; seen.add(p);
+        var cx = (p.x0 + p.x1) / 2 - M.x, cz = (p.z0 + p.z1) / 2 - M.z, rr = Math.max(Math.abs(cx), Math.abs(cz));
+        if (Math.min(Math.abs(cx), Math.abs(cz)) < rr * K.cornerShare || rr < (M.top.ri || 0) + 2) return;   /* a corner, not a face, and outside the keep */
+        var key = (cx > 0 ? 1 : 0) + (cz > 0 ? 2 : 0); if (!best[key] || p.y1 > best[key].y1) best[key] = p;
+      }); });
+      Object.keys(best).forEach(function (q2) {
+        var p = best[q2], c = [(p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2], y = p.y1, s = K.fireScale || 1;   /* the flame's size (owner: "make the green flames larger") */
+        B.CYL(c[0], y, c[1], 1.7 * s, 0.8 * s, 0, K.gold, 'stone'); B.CYL(c[0], y + 0.8 * s, c[1], 1.2 * s, 0.5 * s, 0, 0x101010, 'soil');
+        B.CONE(c[0], y + 1.1 * s, c[1], 1.0 * s, 2.6 * s, 0, K.flame, 'cloth');
+        B.CONE(c[0], y + 1.1 * s, c[1], 0.55 * s, 3.6 * s, Math.PI / 5, 0xb8ffc8, 'cloth');                       /* its pale heart */
+        VC.cantonFires.push([c[0], y + 2.8 * s, c[1], K.fire, 8 * s]); n.fires++;
+      });
+    }
+  });
+  return cn + ' dressed: ' + n.trim + ' cornice runs, ' + n.banners + ' banners, ' + n.pylons + ' fire pylons, ' + n.obelisks + ' crown obelisks, ' + n.fires + ' fires';
+};
+/* a canton's gold redrawn as metal (owner, 2026-10-09: "palace has a noticeably shinier and better gold texture than temple
+   dome, give temple an upgrade"): the Palace's gilt is captured in the 'metal' family (glossy, the sky in it); the
+   Temple's dome and spire tips were captured as plain stone-family pieces in gold. Every piece of the canton's capture
+   whose colour is a gold (its hue, saturation and value in TUNE.regild) is cut from the capture and drawn again, the same
+   shape and place, in polished gilt (VIEW.primMeshes 'gilt': glossy, metallic, panelled; a smoother dome) */
+VC.regild = function (cn) {
+  var M = CANT.by[cn], D = window.VOTH_CITY_CAPTURE, K = TUNE.regild, n = 0; if (!M || !D || !M.v) return 'no ' + cn;
+  var c = { r: 0, g: 0, b: 0 }, gold = function (hex) {
+    var r = (hex >> 16 & 255) / 255, g = (hex >> 8 & 255) / 255, b = (hex & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    if (!d || mx < K.value || d / mx < K.sat) return false;
+    var h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; if (h < 0) h += 360;
+    return h >= K.hue[0] && h <= K.hue[1];
+  };
+  M.v.r.forEach(function (q, k) {
+    if (q[0] === 9 || D.fams[q[1]] === 'metal') return;
+    var col = D.cols[q[9]]; if (typeof col !== 'number' || !gold(col)) return;
+    CANT.cut({ M: M, k: k }, 'regilt');
+    CANT.prims.push([D.shapes[q[0]], q[2] + M.ox, q[3] + M.bed, q[4] + M.oz, q[5], q[6], q[7], q[8] || 0, K.colour, 'gilt']);
+    n++;
+  });
+  return cn + ': ' + n + ' gold pieces in metal';
+};
+
+/* the captured domes that stand on nothing (owner, 2026-10-09: "side domes on fortress dont actually connect to
+   anything"): under each dome of a canton's model, the highest piece beneath its middle is what it should sit on; where
+   there is air between them (more than TUNE.domeGap), a drum fills it, as wide as the dome's foot, with a moulding at its
+   head. The Fortress's in its own dark grey, the others in their canton's stone */
+VC.domeDrums = function () {
+  var B = VOTH, n = 0;
+  VC.capture('dome drums', 2, function () {
+    CANT.list.forEach(function (M) {
+      var mine = [], seen = new Set();
+      CANT.grid.forEach(function (a) { a.forEach(function (p) { if (!seen.has(p) && p.M === M) { seen.add(p); mine.push(p); } }); });
+      mine.forEach(function (D) {
+        if (D.sh !== 'dome') return;
+        var cx = (D.x0 + D.x1) / 2, cz = (D.z0 + D.z1) / 2, r = Math.min(D.x1 - D.x0, D.z1 - D.z0) / 2, sup = -Infinity;
+        mine.forEach(function (p) { if (p !== D && p.x0 <= cx && p.x1 >= cx && p.z0 <= cz && p.z1 >= cz && p.y1 <= D.y0 + 0.2 && p.y1 > sup) sup = p.y1; });
+        if (sup === -Infinity || D.y0 - sup < TUNE.domeGap) return;
+        var col = M.n === 'Fortress' ? 0x24252a : B.shade(M.tone, -0.06);
+        B.CYL(cx, sup, cz, r * 0.92, D.y0 - sup + 0.2, 0, col, 'stone');
+        B.CYL(cx, D.y0 - 0.5, cz, r * 1.0, 0.7, 0, B.shade(col, -0.15), 'stone');
+        n++;
+      });
+    });
+  });
+  return n + ' drums under floating domes';
+};
+/* ships alongside a ship pier: on each side, by a KRAND hash of the pier and the side (never the stream), a junk or a
+   cargo hulk toward the pier's tip, a clearance off its deck, only where all of its hull floats */
+VC.berthShips = function (root, out, Lp, w) {
+  var S = TUNE.harbour.ship, side = [out[1], -out[0]];
+  [-1, 1].forEach(function (sd, k) {
+    var u = KRAND.unit(KRAND.hash(6801, Math.round(root[0] * 2), Math.round(root[1] * 2), k)); if (u > S.moored) return;
+    var key = KRAND.unit(KRAND.hash(6802, Math.round(root[0] * 2), Math.round(root[1] * 2), k)) < S.junk ? 'vothJunk' : 'vothHulk';
+    var D = S.dims[key], L = D.L, at = Lp - L / 2 - S.tipGap;
+    if (at < L / 2) return;
+    var c = V.add(V.add(root, V.mul(out, at)), V.mul(side, sd * (w / 2 + S.berth + D.B / 2)));
+    if (!obbCorners(obb(c, side, D.B / 2, L / 2)).concat([c]).every(function (q) { return baseH(q[0], q[1]) < -1.5; })) return;
+    VC.moor(key, c[0], c[1], Math.atan2(out[0], out[1]) + (KRAND.unit(KRAND.hash(6803, Math.round(root[0] * 2), Math.round(root[1] * 2), k)) < 0.5 ? Math.PI : 0), L);
+  });
+};
+
 VC.capture = function (name, step, fn) {
   VOTH.PRIMS.length = 0;
   var r = fn();
@@ -30,7 +275,6 @@ VC.buildDistricts = function () {
   VC.capture('landmarks', 1, function () {
     PLAN.voth.forEach(function (q) {
       if (q.role === 'shrine' && !q.islet) VC.shrineModel(q.x, B.terrainHe(q.x, q.z), q.z, q.ry, q.rad);
-      else if (q.role === 'healing') B.houseOfHealing(q.x, B.terrainHe(q.x, q.z), q.z, q.ry, B.pick(B.TONES), {});
       else if (q.role === 'funeraryTemple') B.funeraryTemple(q.x, B.terrainHe(q.x, q.z), q.z, q.ry, B.MARBLEC[0], {});
       else if (q.role === 'lighthouse' && !q.islet) {      /* a lighthouse off any islet: on a plinth up out of the water */
         var y = Math.max(0, B.terrainHe(q.x, q.z));
@@ -43,21 +287,35 @@ VC.buildDistricts = function () {
      else at the district's middle, sized to it; gate toward the Temple canton */
   var mon = VC.districts('monastery')[0];
   if (mon) log.push(VC.buildMonastery(mon));          /* 33-vc-country.js: walled round the owner's polygon */
-  log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the ferry stops' piers are set out first and booked in Voth's PIERS, so the harbour's piers and fishing docks
      and the chinampas all keep clear of them (built with the lines, step 14) */
   VC.ferryPiers();
+  /* then the cantons' stairs: from each canton pier up onto the apron, and up the terraces to the top deck; the
+     decks below keep clear of where they and the bridges arrive */
+  CANT.planB(Object.keys(VC.FP).filter(function (id) { return VC.FP[id].canton; }).map(function (id) { var P = VC.FP[id]; return { id: id, canton: (P.to || '').split(' ')[0], root: P.root, dir: P.dir, w: 5.5, deckY: B.SEA + 2.1 }; }));
+  VC.cantonFires = [];
+  log.push(VC.cantonDress('Temple'));                  /* the Temple's blood-red and gilt dressing (below) */
+  log.push(VC.cantonDress('Fortress'));                /* the Fortress's green and gold banners, its towers' green fires */
+  log.push(VC.regild('Temple'));                       /* its gold in polished gilt (below) */
+  log.push(VC.domeDrums());                            /* drums under the captured domes that float (below) */
+  log.push(VC.intPlanAll());                           /* 40-vc-interiors.js: the cantons' interiors, their cores and stair houses */
+  log.push(VC.cantonDecks());                          /* 33-vc-country.js: the rim cantons' decks laid out again */
   /* the harbour next: its piers go into Voth's own PIERS list, which the chinampa pass keeps clear of */
   VC.districts('harbor').forEach(function (d) { log.push(VC.buildHarbor(d)); });
   VC.districts('riverport').forEach(function (d) { log.push(VC.buildRiverPort(d)); });
   /* chinampas: the whole of 55-chinampa.js, in Voth's own zones */
   VC.chin = VC.capture('chinampas', 2, function () { return B.runChinampas(); });
+  /* Voth's beds, drawn again from their records (31b-vc-chinampa.js): wattle, crop rows, canoes; its stilt huts as kit
+     shore houses (district art), its willows the biome's trees (VC.floraPlace) */
+  VC.prims.chinampas.list = VC.chinampaPrims(VC.chin.units);
+  PLAN.districts.push({ kind: 'chinampa huts', name: 'Chinampa huts', born: 2, art: VC.CHIN.huts });
   /* the owner's 'chinampa exclusion' polygons: no bed, canal post, willow or hut there (a primitive goes with its
      centre), and the water there is open again for the ferries */
   var ex = VC.districts('nochin');
   if (ex.length) {
     var CL = VC.prims.chinampas.list, n0 = CL.length, inEx = function (x, z) { return ex.some(function (d) { return inPoly([x, z], d.poly); }); };
     VC.prims.chinampas.list = CL.filter(function (q) { return !inEx(q[1], q[3]); });
+    ['beds', 'huts', 'flora'].forEach(function (k) { var L = VC.CHIN[k]; L.splice.apply(L, [0, L.length].concat(L.filter(function (o) { return !inEx(o.x, o.z); }))); });
     var hit0 = VC.chin.chinHit; VC.chin.chinHit = function (x, z, pad) { return !inEx(x, z) && hit0(x, z, pad); };
     log.push((n0 - VC.prims.chinampas.list.length) + ' chinampa pieces cleared from ' + ex.map(function (d) { return d.name; }).join(', '));
   }
@@ -148,7 +406,10 @@ VC.coastIn = function (poly) {
   }
   return out;
 };
-VC.inCanton = function (p, pad) { return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
+VC.inCanton = function (p, pad) {
+  /* a canton's real apron (20-site-cantons.js, read off its model) reaches further than Voth's radius (owner, 2026-10-09: "the long pier should not run into canton") */
+  if (typeof CANT !== 'undefined' && CANT.list && CANT.list.length && CANT.at(p[0], p[1], pad || 0)) return true;
+  return VOTH.CANTONS.some(function (c) { return Math.abs(p[0] - c.x) < c.r * 1.08 + (pad || 0) && Math.abs(p[1] - c.z) < c.r * 1.08 + (pad || 0); }); };
 VC.pierHit = function (p, w) { return VOTH.PIERS.some(function (q) { return segDist(p, [q.x0, q.z0], [q.x1, q.z1]) < (q.w + (w || 10)) / 2 + 14; }); };
 VC.wet = function (p) { return baseH(p[0], p[1]) < -1.5 && !VC.inCanton(p, 12) && !(VC.chin && VC.chin.chinHit(p[0], p[1], 6)) && !(VC.pierHit && VC.pierHit(p)); };
 
@@ -195,6 +456,7 @@ VC.buildHarbor = function (d) {
         B.BOX(c[0], 3, c[1], w, 1.2, Lp / n * 1.04, ry2, 0x7a6448, 'wood');
         [-1, 1].forEach(function (sd) { var pp = V.add(c, V.mul([out[1], -out[0]], sd * (w / 2 - 0.8))); B.CYL(pp[0], Math.min(-1, baseH(pp[0], pp[1])), pp[1], 0.7, 4 - Math.min(-1, baseH(pp[0], pp[1])), 0, 0x5a4a36, 'wood'); });
       }
+      VC.berthShips(root, out, Lp, w);
       if (B.chance(0.6)) { var cr = V.add(root, V.mul(out, Lp * 0.8)); B.BOX(cr[0], 4.2, cr[1], 3, 14, 3, ry2, 0x5a4a36, 'wood'); B.BOX(cr[0], 17, cr[1], 1.6, 1.6, 16, ry2 + 0.7, 0x5a4a36, 'wood'); }
       piers++;
       /* a warehouse from the kit on the quay behind every other pier, its front to the pier */
@@ -219,9 +481,7 @@ VC.buildHarbor = function (d) {
       [-1, 1].forEach(function (sd) {
         if (!B.chance(0.7)) return;
         var hc = V.add(V.add(fr, V.mul(fo, fl * B.rr(0.45, 0.75))), V.mul(side, sd * (B.LIFE_FISHDOCK_W / 2 + 3.4)));
-        B.BOX(hc[0], -1.0, hc[1], 4.2, 2.1, B.rr(12, 15), fry, 0x5e4d3a, 'wood');
-        B.BOX(hc[0], 1.1, hc[1], 3.6, 0.4, 11, fry, 0x4a3c2c, 'wood');
-        B.CYL(hc[0], 1.1, hc[1], 0.22, B.rr(8, 11), 0, 0x4a3c2c, 'wood');
+        VC.moor('vothDhow', hc[0], hc[1], fry, B.rr(12, 15)); B.rr(8, 11);   /* the old mast's draw, kept so the stream is as it was */
       });
     }
     /* cargo on the quay */
@@ -281,8 +541,7 @@ VC.buildRiverPort = function (d) {
           var tg = [p.tx, p.tz], gl = B.rr(26, 34), gb = B.rr(7, 9), g = V.add(root, V.mul(out, L + gb / 2 + TUNE.bargeClear)), gry = Math.atan2(tg[0], tg[1]), col = 0x5e4d3a;
           var afloat = obbCorners(obb(g, [tg[1], -tg[0]], gb / 2, gl / 2)).concat([g]).every(function (q) { return baseH(q[0], q[1]) < -0.8; });
           if (afloat) {
-            B.BOX(g[0], -1.6, g[1], gb, 3.4, gl, gry, col, 'wood'); B.BOX(g[0], 1.8, g[1], gb * 0.9, 0.6, gl * 0.96, gry, B.shade(col, -0.2), 'wood');
-            var cb = V.sub(g, V.mul(tg, gl * 0.28)); B.BOX(cb[0], 2.4, cb[1], gb * 0.7, 2.6, gl * 0.26, gry, B.shade(col, 0.08), 'wood');
+            VC.moor('vothBarge', g[0], g[1], gry, gl);
             /* the boats steer round it as round a pier */
             B.PIERS.push({ x0: g[0] - tg[0] * gl / 2, z0: g[1] - tg[1] * gl / 2, x1: g[0] + tg[0] * gl / 2, z1: g[1] + tg[1] * gl / 2, w: gb, river: true, barge: true });
             VC.barges = (VC.barges || 0) + 1;

@@ -5,6 +5,7 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
+import {dress} from '../core/dress.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -27,5 +28,5 @@ configureLoading({
   ],
   prefix:'raising Chicago… ',labels:{ground:'filling the lake',blocks:'raising the towers',landmarks:'placing the landmarks',el:'building the L',traffic:'starting the traffic',ui:'opening the windows'}});
 // Cloud Gate, the Pritzker Pavilion, the Wheel and Wrigley Field are Chicago's own, so the page brings them.
-const ctx=window._iz={defaultCity:'chicago',models:[landmarks]};
+const ctx=window._iz={defaultCity:'chicago',models:[landmarks],extras:[{name:'dress',fn:dress}]};
 boot(()=>build(ctx));
