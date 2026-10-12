@@ -5,160 +5,187 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 </head>
 <body>
-<title>Rider's Tent</title>
+<title>Animation Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: the figure stands in a lamp-lit tent filling the page; a ledger of slots and sliders runs down the right
-   (below the figure on a phone). Moss and ochre from the Beast Rider village; numbers set in mono like a tailor's chit. */
+/* Layout: a long stage where six bodies stand in a row on a marked floor (each body's neutral, short and broad, tall
+   and lanky), a transport bar under them like a film viewer's, and the clip ledger down the right with a review mark
+   on every line. Same lichen and ochre as the Cosmetic Lab; the review marks get their own good / fix / broken hues. */
 :root {
-  --bg: #e6e9e1;          /* pale lichen */
+  --bg: #e6e9e1;
   --stage: #d5dacd;
   --panel: #f3f4ef;
   --ink: #1d2620;
   --muted: #5b6a5f;
   --line: #c3cabd;
-  --accent: #9a5a17;      /* ochre dye */
+  --accent: #9a5a17;
   --accent-ink: #ffffff;
   --chip: #e9ece4;
   --chip-on: #fbf1e3;
-  --track: #c9d0c3;
+  --stage-top: #cfd6c6;
+  --stage-floor: #a9b3a0;
+  --good: #3f7d3a;
+  --fix: #b9800f;
+  --bad: #b23a2b;
+  --none: #b7bfb3;
   --display: "Alegreya SC", "Palatino Linotype", Palatino, Georgia, serif;
   --body: "Alegreya Sans", "Gill Sans", "Trebuchet MS", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --stage-top: #cfd6c6;
-  --stage-floor: #a9b3a0;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #121815; --stage: #18201b; --panel: #19211c; --ink: #e2e8df; --muted: #93a197; --line: #2c3830;
-  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a; --track: #34423a;
-  --stage-top: #1d2721; --stage-floor: #0d120f; color-scheme: dark; } }
+  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a;
+  --stage-top: #1d2721; --stage-floor: #0d120f; --good: #79c06f; --fix: #e3b04f; --bad: #e57a69; --none: #3d4a42; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #121815; --stage: #18201b; --panel: #19211c; --ink: #e2e8df; --muted: #93a197; --line: #2c3830;
-  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a; --track: #34423a;
-  --stage-top: #1d2721; --stage-floor: #0d120f; color-scheme: dark; }
+  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a;
+  --stage-top: #1d2721; --stage-floor: #0d120f; --good: #79c06f; --fix: #e3b04f; --bad: #e57a69; --none: #3d4a42; color-scheme: dark; }
 html, body { height: 100%; }
 [hidden] { display: none !important; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--body); overflow: hidden; }
-#app { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: minmax(0, 1fr); }
-#stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: radial-gradient(120% 90% at 50% 20%, var(--stage-top), var(--stage) 55%, var(--stage-floor)); }
+#app { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: minmax(0, 1fr); }
+#stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: radial-gradient(130% 90% at 50% 15%, var(--stage-top), var(--stage) 55%, var(--stage-floor)); }
 #stage canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
 #stage canvas:active { cursor: grabbing; }
-#brand { position: absolute; left: 20px; top: 16px; pointer-events: none; }
-#brand h1 { margin: 0; font: 700 26px/1 var(--display); letter-spacing: .02em; }
-#brand p { margin: 4px 0 0; color: var(--muted); font-size: 13px; max-width: 34ch; }
-#stats { position: absolute; left: 20px; bottom: 74px; font: 12px/1.6 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; pointer-events: none; }
-#stats b { color: var(--ink); font-weight: 600; }
-#bar { position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-#bar .grp { display: flex; gap: 2px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 2px; }
-button, .btn { font: 500 13px/1 var(--body); color: var(--ink); background: transparent; border: 0; border-radius: 6px; padding: 8px 11px; cursor: pointer; }
-button:hover { background: var(--chip); }
-button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.pick { display: flex; align-items: center; }
-.pick select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px 6px; max-width: 150px; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#brand { position: absolute; left: 20px; top: 16px; pointer-events: none; max-width: 46ch; }
+#brand h1 { margin: 0; font: 700 26px/1 var(--display); letter-spacing: .02em; text-wrap: balance; }
+#brand p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+#now { position: absolute; right: 16px; top: 16px; text-align: right; pointer-events: none; }
+#now b { display: block; font: 700 20px/1.1 var(--display); letter-spacing: .02em; }
+#now span { font: 12px var(--mono); color: var(--muted); }
+#labels { position: absolute; inset: 0; pointer-events: none; }
+.tag { position: absolute; transform: translate(-50%, 0); pointer-events: auto; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px;
+  font: 500 12px/1.2 var(--body); color: var(--ink); background: color-mix(in srgb, var(--panel) 82%, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; white-space: nowrap; }
+.tag small { font: 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tag.flag { border-color: var(--bad); box-shadow: 0 0 0 1px var(--bad); }
+.tag[aria-pressed="true"] { background: var(--chip-on); border-color: var(--accent); }
 #loading { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; font: 500 15px var(--body); color: var(--muted); }
 
+#bar { position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grp { display: flex; gap: 2px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 2px; }
+.grp.scrub { flex: 1 1 260px; padding: 2px 10px; gap: 10px; }
+.grp.scrub input { flex: 1; min-width: 80px; accent-color: var(--accent); }
+#clock { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+button { font: 500 13px/1 var(--body); color: var(--ink); background: transparent; border: 0; border-radius: 6px; padding: 8px 11px; cursor: pointer; }
+button:hover { background: var(--chip); }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px; max-width: 150px; }
+#play { min-width: 64px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
 #panel { min-width: 0; background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; height: 100%; }
-#bodies { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px 16px 0; }
-#bodies button { flex: 1 1 40%; border: 1px solid var(--line); background: var(--chip); font: 700 14px/1 var(--display); letter-spacing: .03em; padding: 9px; }
-#bodies button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-#tabs { display: flex; gap: 2px; padding: 8px 16px 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
-#tabs button { border-radius: 6px 6px 0 0; padding: 10px 10px; font: 700 15px/1 var(--display); letter-spacing: .03em; color: var(--muted); }
-#tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); background: transparent; }
-.page { flex: 1; overflow-y: auto; padding-block: 14px 24px; padding-inline: 16px; display: flex; flex-direction: column; gap: 18px; }
-.page[hidden] { display: none; }
-.slot h3 { margin: 0 0 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font: 700 15px/1 var(--display); letter-spacing: .03em; }
-.slot h3 small { font: 400 12px var(--body); color: var(--muted); letter-spacing: 0; }
-.chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.chip { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; overflow: hidden; background: var(--chip); border: 1px solid var(--line); border-radius: 8px; text-align: left; }
-.chip img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--stage); }
-.chip .none { display: block; width: 100%; aspect-ratio: 1; background: repeating-linear-gradient(135deg, var(--stage), var(--stage) 6px, var(--chip) 6px, var(--chip) 12px); }
-.chip span { padding: 5px 7px 6px; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chip[aria-pressed="true"] { background: var(--chip-on); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); color: var(--ink); }
-.dye { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--muted); }
-.dye input[type=color] { width: 30px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: none; }
-.dye button { padding: 4px 8px; font-size: 12px; }
-.chips.tags { display: flex; flex-wrap: wrap; gap: 5px; }
-.chips.tags .chip { width: auto; padding: 5px 9px; }
-.chips.tags .chip span { padding: 0; white-space: nowrap; }
-.swatches { flex-wrap: wrap; gap: 5px; }
-.swatches .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--line); }
-.page > h3 { margin: 14px 0 4px; font-size: 13px; }
-.sl { display: grid; grid-template-columns: minmax(0, 1fr) 52px; gap: 2px 10px; align-items: center; }
-.sl label { font-size: 14px; }
-.sl output { font: 12px var(--mono); text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
-.sl input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
-.sl.changed output { color: var(--accent); }
-.hint { margin: 0; font-size: 13px; color: var(--muted); max-width: 60ch; }
-.row { display: flex; gap: 8px; flex-wrap: wrap; }
-.row button { border: 1px solid var(--line); background: var(--chip); }
-textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.5 var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; resize: vertical; }
-#note { min-height: 1.4em; font-size: 13px; color: var(--accent); }
+#review { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 9px; }
+#review h2 { margin: 0; font: 700 19px/1.1 var(--display); letter-spacing: .02em; text-wrap: balance; }
+#review .meta { font: 12px var(--mono); color: var(--muted); }
+.verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.verdicts button { border: 1px solid var(--line); background: var(--chip); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 6px; }
+.verdicts button i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.verdicts button[data-v="good"] i { background: var(--good); }
+.verdicts button[data-v="fix"] i { background: var(--fix); }
+.verdicts button[data-v="bad"] i { background: var(--bad); }
+.verdicts button[aria-pressed="true"] { background: var(--chip-on); color: var(--ink); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.who { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; color: var(--muted); }
+.who button { font-size: 12px; padding: 5px 8px; border: 1px solid var(--line); background: var(--chip); }
+.who button[aria-pressed="true"] { background: var(--bad); color: #fff; border-color: var(--bad); }
+#rv-note { width: 100%; box-sizing: border-box; min-height: 58px; font: 13px/1.4 var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; resize: vertical; }
+#rv-status { font-size: 12px; color: var(--muted); min-height: 1.2em; }
+
+#ledger-head { padding: 10px 16px 8px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
+.progress { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--none); }
+.progress span { display: block; height: 100%; }
+.progress .g { background: var(--good); } .progress .f { background: var(--fix); } .progress .b { background: var(--bad); }
+#tally { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+#find { flex: 1 1 120px; min-width: 0; font: 13px var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+#ledger { flex: 1; overflow-y: auto; padding: 4px 8px 20px; }
+#ledger h3 { margin: 12px 8px 4px; font: 700 14px/1 var(--display); letter-spacing: .04em; color: var(--muted); display: flex; justify-content: space-between; }
+#ledger h3 small { font: 11px var(--mono); }
+.clip { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 8px; text-align: left; padding: 6px 8px; border-radius: 6px; }
+.clip i { width: 9px; height: 9px; border-radius: 50%; background: var(--none); }
+.clip i.good { background: var(--good); } .clip i.fix { background: var(--fix); } .clip i.bad { background: var(--bad); }
+.clip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.clip small { font: 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.clip em { font-style: normal; color: var(--accent); }
+.clip[aria-current="true"] { background: var(--chip-on); box-shadow: inset 2px 0 0 var(--accent); }
+.keys { margin: 0; padding: 8px 16px 12px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; background: var(--chip); }
 
 @media (max-width: 820px) {
   body { overflow: auto; }
-  #app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 62vh auto; height: auto; }
-  #stage { height: 62vh; }
+  #app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 64vh auto; height: auto; }
+  #stage { height: 64vh; }
   #panel { border-left: 0; border-top: 1px solid var(--line); height: auto; }
-  .page { overflow: visible; }
-  #brand h1 { font-size: 22px; }
-  #brand p { display: none; }
-  #stats { bottom: 66px; }
+  #ledger { max-height: 60vh; }
+  #brand p, #now span { display: none; }
+  #brand h1 { font-size: 21px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 <div id="app">
   <div id="stage">
-    <div id="loading">Fetching the pieces…</div>
-    <div id="brand"><h1>Rider's Tent</h1><p>Pick a people for a stranger, or shape one yourself: clothes, hair and beard, skin and hair colour, body and face. Drag to turn, scroll to step closer.</p></div>
-    <div id="stats"></div>
+    <div id="loading">Fetching six bodies…</div>
+    <div id="brand"><h1>Animation Lab</h1><p>Each body three ways (neutral, short and broad, tall and lanky), every clip on all six at once. Mark what holds up and what breaks. Drag to orbit, scroll to zoom, click a name to look closer.</p></div>
+    <div id="now"><b id="now-clip">Idle</b><span id="now-meta"></span></div>
+    <div id="labels"></div>
     <div id="bar">
-      <div class="grp" role="group" aria-label="Animation">
-        <button id="clip-none" data-clip="" aria-pressed="false">A-pose</button>
-        <button id="clip-idle" data-clip="idle" aria-pressed="true">Idle</button>
-        <label class="pick" for="idle-pick"><span class="sr">Which idle</span><select id="idle-pick"></select></label>
-        <button id="clip-walk" data-clip="walk" aria-pressed="false">Walk</button>
-        <button id="clip-run" data-clip="run" aria-pressed="false">Run</button>
-        <button id="clip-act" data-clip="" aria-pressed="false">Action</button>
-        <label class="pick" for="act-pick"><span class="sr">Which action</span><select id="act-pick"></select></label>
-        <label class="pick" for="hold-pick"><span class="sr">Holding</span><select id="hold-pick"></select></label>
+      <div class="grp" role="group" aria-label="Playback">
+        <button id="play" aria-pressed="true">Pause</button>
+        <button id="restart">Restart</button>
+        <label class="sr" for="speed">Speed</label>
+        <select id="speed"><option value="0.1">0.1×</option><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select>
+      </div>
+      <div class="grp scrub">
+        <label class="sr" for="scrub">Clip time</label>
+        <input id="scrub" type="range" min="0" max="1000" value="0">
+        <span id="clock">0.00 / 0.00 s</span>
+      </div>
+      <div class="grp" role="group" aria-label="Holding">
+        <label class="sr" for="hold-pick">Holding</label>
+        <select id="hold-pick"></select>
+      </div>
+      <div class="grp" role="group" aria-label="Line-up">
+        <button id="who-all" data-who="all" aria-pressed="true">All six</button>
+        <button id="who-m" data-who="m" aria-pressed="false">Men</button>
+        <button id="who-f" data-who="f" aria-pressed="false">Women</button>
       </div>
       <div class="grp" role="group" aria-label="View">
-        <button id="cam-body" aria-pressed="true">Full figure</button>
-        <button id="cam-face" aria-pressed="false">Face</button>
-        <button id="spin" aria-pressed="false">Turn</button>
+        <button data-yaw="0" aria-pressed="true">Front</button>
+        <button data-yaw="0.7" aria-pressed="false">¾</button>
+        <button data-yaw="1.5708" aria-pressed="false">Side</button>
+        <button data-yaw="3.1416" aria-pressed="false">Back</button>
       </div>
     </div>
   </div>
   <aside id="panel">
-    <div id="bodies" role="group" aria-label="Body"></div>
-    <div id="tabs" role="tablist">
-      <button role="tab" id="tab-gear" aria-selected="true" aria-controls="page-gear">Gear</button>
-      <button role="tab" id="tab-head" aria-selected="false" aria-controls="page-head">Head</button>
-      <button role="tab" id="tab-body" aria-selected="false" aria-controls="page-body">Body</button>
-      <button role="tab" id="tab-face" aria-selected="false" aria-controls="page-face">Face</button>
-      <button role="tab" id="tab-record" aria-selected="false" aria-controls="page-record">Record</button>
-    </div>
-    <section class="page" id="page-gear" role="tabpanel"></section>
-    <section class="page" id="page-head" role="tabpanel" hidden></section>
-    <section class="page" id="page-body" role="tabpanel" hidden></section>
-    <section class="page" id="page-face" role="tabpanel" hidden></section>
-    <section class="page" id="page-record" role="tabpanel" hidden>
-      <p class="hint">The character as data: body, clothes per slot, hair and beard, skin and hair colour, the morph sliders (−1 to 1), ancestry shares, the people it was drawn from, and any dye. A city can store one of these per citizen. Roll a stranger draws from the people picked on the Head tab.</p>
-      <div class="row">
-        <button id="rec-random">Roll a stranger</button>
-        <button id="rec-reset">Reset sliders</button>
-        <button id="rec-copy">Copy</button>
-        <button id="rec-load">Load from text</button>
+    <section id="review" aria-label="Review this clip">
+      <div><h2 id="rv-title">Idle</h2><div class="meta" id="rv-meta"></div></div>
+      <div class="verdicts" role="group" aria-label="Verdict">
+        <button data-v="good" aria-pressed="false"><i></i>Good</button>
+        <button data-v="fix" aria-pressed="false"><i></i>Needs work</button>
+        <button data-v="bad" aria-pressed="false"><i></i>Broken</button>
       </div>
-      <div id="note" role="status"></div>
-      <textarea id="rec-text" spellcheck="false" aria-label="Character record"></textarea>
-      <p class="hint credits">Bodies, clothes and much of the hair: MakeHuman and its community assets (CC0), fitted with MPFB2. CC-BY: hair by Elvaerwyn, punkduck, culturalibre, grinsegold, WojackOWL and brkurt; beards by Elvaerwyn, grinsegold and WojackOWL (MakeHuman community asset packs and repository). See CREDITS.md.</p>
+      <div class="who" id="rv-who" role="group" aria-label="Looks wrong on"><span>Wrong on:</span></div>
+      <label class="sr" for="rv-note">Note</label>
+      <textarea id="rv-note" placeholder="What looks off: a hand through the hip, feet sliding, the spear through the head…"></textarea>
+      <div id="rv-status" role="status"></div>
     </section>
+    <div id="ledger-head">
+      <div class="progress" aria-hidden="true"><span class="g"></span><span class="f"></span><span class="b"></span></div>
+      <div id="tally"></div>
+      <div class="filters">
+        <label class="sr" for="find">Find a clip</label>
+        <input id="find" type="search" placeholder="Find a clip">
+        <label class="sr" for="show">Show</label>
+        <select id="show"><option value="all">All clips</option><option value="none">Not reviewed</option><option value="good">Good</option><option value="fix">Needs work</option><option value="bad">Broken</option></select>
+        <button id="next-open">Next unreviewed</button>
+      </div>
+    </div>
+    <nav id="ledger" aria-label="Clips"></nav>
+    <p class="keys"><kbd>↑</kbd> <kbd>↓</kbd> previous / next clip · <kbd>Space</kbd> pause · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> good / needs work / broken · <kbd>,</kbd> <kbd>.</kbd> step a frame</p>
   </aside>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -512,9 +539,23 @@ var KCHAR = (function(){
     return rec;
   }
 
+  /* crowd(seed, n, kits, people): n strangers for a city's NPCs (the Cosmetic Lab's batch, tools/npcs.js). kits: the
+     bodies to draw from ({ mpfb_male: kit, ... }); each stranger takes one of them at random, and its own seed from
+     the crowd's stream, so the same seed gives the same crowd and stranger i does not depend on n */
+  function crowd(seed, n, kits, people){
+    var r = KRAND.stream(seed).next, bodies = Object.keys(kits).sort(), out = [];
+    for(var i = 0; i < n; i++){
+      var b = bodies[Math.floor(r() * bodies.length)], s = Math.floor(r() * 2147483647);
+      var rec = stranger(s, kits[b], people);
+      rec.seed = s;
+      out.push(rec);
+    }
+    return out;
+  }
+
   return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along };
+           along:along, crowd:crowd };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;
 
@@ -1069,57 +1110,87 @@ function KCharFigure(body, sliders, load){
 }
 KCharFigure.props = {};      // data/props.json by id (the page fills it)
 
-/* src/90-editor.js */
-/* ==== the editor page: stage, camera, panel. [web] (host code; Godot builds its own UI over kchar.gd) ====
-   KCHAR_DATA (build.py): { sliders, bodies: { male: { skeleton, kit }, female: {...} } }. The pieces are fetched when a
-   record needs them: pieces/<key>.txt (a base64 GLB), or KCHAR_GLB[key] when build.py inlined them. Chip pictures are
-   thumbs/<key>__<mesh>.png (tools/thumbs.mjs). Everything the panel changes goes through one record and fig.apply().
-   A MakeHuman body (kit.style 'mpfb') morphs: its Body and Face tabs are kit.morph's sliders (record.morph) and the
-   ancestry triple; its Head tab picks a people (data/peoples.json), skin tone, hair, hair colour and beard.
+/* src/92-animlab.js */
+/* ==== the Animation Lab: six figures, one clip on all of them, a review mark per clip. [web] (host code) ====
+   Each MakeHuman body three ways (CAST: neutral, short and broad, tall and lanky, all in the same plain clothes) stand
+   in a row; a clip from the ledger plays on all six in step, with the props its data/clips.json hold names (both
+   hands where two_hands says). One-shots repeat here so they can be watched again. The playback can be paused,
+   slowed and scrubbed.
+   Reviews: per clip a verdict (good, fix, bad), the bodies it looks wrong on and a note, kept in the artifact's db
+   (collection 'reviews', one document per clip, read by Claude with ArtifactData), or in this browser when the page
+   runs without one (a local server, verify.py).
 */
 (function(){
   var D = KCHAR_DATA, $ = function(id){ return document.getElementById(id); };
-  var SLOT_LABEL = { torso:'Torso & arms', legs:'Legs', feet:'Feet' };
-  var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
-  var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman' };
-  var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
-  var start = {
-    male:   { body:'male', head:'base_m', hair:'hair_m_long', beard:null, armour:{ torso:'bronze', legs:'scout', feet:'bone' }, sliders:{}, dye:{} },
-    female: { body:'female', head:'base_f', hair:'hair_f_braids', beard:null, armour:{ torso:'f_hide', legs:'f_scout', feet:'f_bone' }, sliders:{}, dye:{} }
-  };
-  start.mpfb_male = { body:'mpfb_male', hair:'short02', beard:'wdg_scruffy_beard', armour:{ torso:'mindfront_kimono', legs:'toigo_harem_pants', feet:'culturalibre_hero_boots_1' },
-                      sliders:{}, morph:{}, ancestry:null, skin:'#c99a74', hair_color:'#3a2a1e', eye_color:'#5a3a22', people:null, dye:{} };
-  start.mpfb_female = { body:'mpfb_female', hair:'braid01', beard:null, armour:{ torso:'toigo_bodice-style_top', legs:'toigo_long_full_skirt', feet:'grinsegold_female_pirate_boots' },
-                        sliders:{}, morph:{}, ancestry:null, skin:'#d9b294', hair_color:'#2c2019', eye_color:'#4e6a80', people:null, dye:{} };
-  var saved = {};
 
-  /* ---- pieces ---- */
+  /* ---- pieces: as the Cosmetic Lab fetches them, shared by the six figures ---- */
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
-  // build.py gzips each piece before base64: unzip it in the browser (a plain one passes through)
   function gunzip(buf){
     var u = new Uint8Array(buf);
     if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
+  var raws = {}, cache = {};
   function fetchPiece(key){
-    return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+    if(!raws[key]) raws[key] = fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+    return raws[key];
   }
-  var cache = {};
   function load(key){
-    if(!cache[key]){
-      var bytes = (typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]) ? Promise.resolve(b64(KCHAR_GLB[key])) :
-        fetchPiece(key);
-      cache[key] = bytes.then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
-    }
+    if(!cache[key]) cache[key] = fetchPiece(key).then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
     return cache[key];
   }
-  load.raw = function(key){
-    return fetchPiece(key);
+  load.raw = fetchPiece;
+
+  /* ---- the cast ---- */
+  var OUTFIT = {
+    mpfb_male:   { hair:'short02', beard:null, armour:{ torso:'elvs_crude_t-shirt_male', legs:'cortu_cargo_pants', feet:'toigo_ankle_boots_male' },
+                   skin:'#b98a66', hair_color:'#3a2a1e', eye_color:'#5a3a22' },
+    mpfb_female: { hair:'braid01', beard:null, armour:{ torso:'joepal_crude_t-shirt_female', legs:'cortu_cargo_pants', feet:'toigo_ankle_boots_female' },
+                   skin:'#c99a74', hair_color:'#2c2019', eye_color:'#4e6a80' }
   };
-  function thumb(key, mesh){ return 'thumbs/' + key + '__' + mesh + '.png'; }
+  var BUILD = {
+    short:   { label:'Short, broad', morph:{ height:-0.8, weight:0.6, muscle:0.6 } },
+    neutral: { label:'Neutral', morph:{} },
+    tall:    { label:'Tall, lanky', morph:{ height:0.75, weight:-0.8, muscle:-0.4 } }
+  };
+  var CAST = [];
+  [['m', 'mpfb_male', 'Man'], ['f', 'mpfb_female', 'Woman']].forEach(function(g){
+    if(!D.bodies[g[1]]) return;
+    ['short', 'neutral', 'tall'].forEach(function(b){
+      CAST.push({ id:g[0] + '-' + b, sex:g[0], body:g[1], build:b, label:g[2] + ' · ' + BUILD[b].label.toLowerCase(), short:g[2].charAt(0) + ' ' + b });
+    });
+  });
+  function record(c){
+    var kit = D.bodies[c.body].kit, r = KCHAR.blank(kit), o = OUTFIT[c.body];
+    Object.keys(o).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(o[k])); });
+    r.armour = Object.assign({}, r.armour);
+    Object.keys(r.armour).forEach(function(s){ if(!kit.items.some(function(it){ return it.id === r.armour[s]; })) r.armour[s] = null; });
+    if(!kit.items.some(function(it){ return it.id === r.hair; })) r.hair = null;
+    r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
+    r.ancestry = null;
+    return r;
+  }
+
+  /* ---- the clips: the body's clip list (skeleton.json), grouped as data/clips.json groups them ---- */
+  var META = {}, ORDER = [], INFO = {}, PROP = {};
+  (D.props || []).forEach(function(p){ PROP[p.id] = p; });
+  KCharFigure.props = PROP;
+  ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
+  var lead = D.bodies[CAST[0].body].skeleton.clips;
+  lead.forEach(function(c){ META[c.name] = c; });
+  var GROUPS = [{ id:'idle', label:'Idle' }].concat((D.clips && D.clips.groups) || []);
+  GROUPS.forEach(function(g){ g.clips = lead.filter(function(c){ return c.group === g.id; }).map(function(c){ return c.name; }); });
+  var known = {}; GROUPS.forEach(function(g){ g.clips.forEach(function(n){ known[n] = 1; }); });
+  var rest = lead.filter(function(c){ return !known[c.name]; }).map(function(c){ return c.name; });
+  if(rest.length) GROUPS.push({ id:'other', label:'Other', clips:rest });
+  GROUPS = GROUPS.filter(function(g){ return g.clips.length; });
+  GROUPS.forEach(function(g){ ORDER = ORDER.concat(g.clips); });
+  function label(n){ return (INFO[n] && INFO[n].label) || (META[n] && META[n].label) || n; }
+  function groupOf(n){ return GROUPS.filter(function(g){ return g.clips.indexOf(n) >= 0; })[0]; }
 
   /* ---- stage ---- */
-  var cam = { yaw:0.35, pitch:0.1, dist:4.2, ty:0.9, want:{ dist:4.2, ty:0.9, pitch:0.1 }, spin:false, face:false };
+  var renderer, scene, camera, clock = new THREE.Clock(), figs = [], current = 'idle', paused = false, speed = 1;
+  var cam = { yaw:0, pitch:0.12, dist:9, x:0, ty:0.95, want:{ yaw:0, pitch:0.12, dist:9, x:0, ty:0.95 } }, focus = null, who = 'all';
   function boot(){
     var stage = $('stage');
     renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true });
@@ -1128,43 +1199,56 @@ KCharFigure.props = {};      // data/props.json by id (the page fills it)
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     stage.insertBefore(renderer.domElement, stage.firstChild);
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50);
-    // a record's skin and hair colours are albedo: lit about 1:1 where the key light falls square on
+    camera = new THREE.PerspectiveCamera(30, 1, 0.05, 80);
     scene.add(new THREE.HemisphereLight(0xfff4e0, 0x3a4a3c, 0.55));
-    var key = new THREE.DirectionalLight(0xffe2b8, 0.8); key.position.set(1.6, 3.2, 2.4); key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024); key.shadow.camera.left = key.shadow.camera.bottom = -1.2; key.shadow.camera.right = key.shadow.camera.top = 1.2;
+    var key = new THREE.DirectionalLight(0xffe2b8, 0.8); key.position.set(2.5, 5, 4); key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.left = key.shadow.camera.bottom = -6; key.shadow.camera.right = key.shadow.camera.top = 6;
     key.shadow.bias = -0.0005; scene.add(key);
-    var rim = new THREE.DirectionalLight(0x9fc3ff, 0.4); rim.position.set(-2, 2.5, -2.5); scene.add(rim);
-    var floor = new THREE.Mesh(new THREE.CircleGeometry(1.1, 48), new THREE.ShadowMaterial({ opacity:0.28 }));
+    var rim = new THREE.DirectionalLight(0x9fc3ff, 0.4); rim.position.set(-3, 3, -4); scene.add(rim);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 6), new THREE.ShadowMaterial({ opacity:0.26 }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-    var ring = new THREE.Mesh(new THREE.RingGeometry(0.62, 0.64, 64), new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.12 }));
-    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.002; scene.add(ring);
+    CAST.forEach(function(c){
+      var f = new KCharFigure(D.bodies[c.body], D.sliders, load);
+      var ring = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.44, 48), new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.14 }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = 0.002; f.group.add(ring);
+      scene.add(f.group);
+      var tag = document.createElement('button'); tag.className = 'tag'; tag.id = 'tag-' + c.id; tag.setAttribute('aria-pressed', 'false');
+      tag.innerHTML = c.label + '<small></small>';
+      tag.addEventListener('click', function(){ setFocus(focus === c.id ? null : c.id); });
+      $('labels').appendChild(tag);
+      figs.push({ c:c, f:f, tag:tag });
+    });
+    lineup();
     bindStage(renderer.domElement);
-    bindPanel();
     window.addEventListener('resize', resize); resize();
     requestAnimationFrame(frame);
-    setBody(D.bodies.mpfb_male ? 'mpfb_male' : Object.keys(D.bodies)[0]);
+    var ready = Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)).then(function(){
+      x.tag.querySelector('small').textContent = x.f.pose.stature ? Math.round(x.f.pose.stature * 100) + ' cm' : '';
+    }); })).then(function(){ $('loading').hidden = true; return play(current); }, function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
+    window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam };
   }
 
-  function setBody(b){
-    if(rec) saved[body] = rec;
-    body = b;
-    if(fig) fig.dispose();
-    fig = new KCharFigure(D.bodies[b], D.sliders, load);
-    scene.add(fig.group);
-    rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
-    Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
-    buildPanel();
-    var clip = document.querySelector('[data-clip][aria-pressed="true"]');
-    $('loading').hidden = false;
-    var done = apply().then(function(){
-      $('loading').hidden = true;
-      if(window._kcharHold) window._kcharHold(clip ? clip.dataset.clip || '' : 'idle');
-      return fig.play(clip ? clip.dataset.clip || null : 'idle');
-    });
-    window._kchar = { fig:fig, ready:done, record:function(){ return rec; }, cam:cam,
-                      set:function(r){ rec = r; buildPanel(); return apply(); }, body:setBody };
-    return done;
+  // the row: each body's three side by side, a wider gap between the two bodies
+  function lineup(){
+    var shown = figs.filter(function(x){ return who === 'all' || x.c.sex === who; }), xs = [], x = 0;
+    shown.forEach(function(s, i){ if(i){ x += shown[i - 1].c.sex !== s.c.sex ? 1.7 : 1.15; } xs.push(x); });
+    var mid = x / 2;
+    figs.forEach(function(s){ s.f.group.visible = false; s.tag.hidden = true; });
+    shown.forEach(function(s, i){ s.f.group.visible = true; s.tag.hidden = false; s.f.group.position.x = xs[i] - mid; });
+    cam.want.dist = Math.max(4.2, x * 1.25 + 3.2);
+    if(focus && !shown.some(function(s){ return s.c.id === focus; })) setFocus(null);
+    else setFocus(focus);
+  }
+  function setFocus(id){
+    focus = id;
+    figs.forEach(function(s){ s.tag.setAttribute('aria-pressed', s.c.id === id); });
+    var s = figs.filter(function(x){ return x.c.id === id; })[0];
+    if(s){ cam.want.x = s.f.group.position.x; cam.want.dist = 3.2; }
+    else {
+      var shown = figs.filter(function(x){ return x.f.group.visible; }), w = shown.length ? shown[shown.length - 1].f.group.position.x - shown[0].f.group.position.x : 0;
+      cam.want.x = 0; cam.want.dist = Math.max(4.2, w * 1.25 + 3.2);
+    }
   }
 
   function resize(){
@@ -1173,20 +1257,24 @@ KCharFigure.props = {};      // data/props.json by id (the page fills it)
     camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   }
 
-  var hv = new THREE.Vector3();
+  var tv = new THREE.Vector3();
   function frame(){
-    var dt = Math.min(0.05, clock.getDelta());
-    if(fig) fig.update(dt);
-    if(cam.spin) cam.yaw += dt * 0.5;
-    if(cam.face && fig){ fig.headWorld(hv); cam.want.ty = hv.y + 0.06; }
-    else if(fig) cam.want.ty = 0.9 * fig.pose.root;
-    var k = 1 - Math.pow(0.001, dt);
-    cam.dist += (cam.want.dist - cam.dist) * k; cam.ty += (cam.want.ty - cam.ty) * k; cam.pitch += (cam.want.pitch - cam.pitch) * k;
+    var dt = Math.min(0.05, clock.getDelta()), step = paused ? 0 : dt * speed;
+    figs.forEach(function(s){ if(s.f.group.visible) s.f.update(step); });
+    var k = 1 - Math.pow(0.002, dt);
+    ['yaw', 'pitch', 'dist', 'x', 'ty'].forEach(function(n){ cam[n] += (cam.want[n] - cam[n]) * k; });
     var cp = Math.cos(cam.pitch);
-    var tx = cam.at ? cam.at[0] : 0, tz = cam.at ? cam.at[2] : 0, ty = cam.at ? cam.at[1] : cam.ty;   // cam.at: verify.py's close-ups
-    camera.position.set(tx + Math.sin(cam.yaw) * cp * cam.dist, ty + Math.sin(cam.pitch) * cam.dist, tz + Math.cos(cam.yaw) * cp * cam.dist);
-    camera.lookAt(tx, ty, tz);
+    camera.position.set(cam.x + Math.sin(cam.yaw) * cp * cam.dist, cam.ty + Math.sin(cam.pitch) * cam.dist, Math.cos(cam.yaw) * cp * cam.dist);
+    camera.lookAt(cam.x, cam.ty, 0);
     renderer.render(scene, camera);
+    var r = renderer.domElement.getBoundingClientRect();
+    figs.forEach(function(s){
+      if(!s.f.group.visible) return;
+      tv.set(s.f.group.position.x, 0, 0.55).project(camera);
+      s.tag.style.left = ((tv.x + 1) / 2 * r.width) + 'px';
+      s.tag.style.top = Math.min(r.height - 120, (1 - tv.y) / 2 * r.height + 6) + 'px';
+    });
+    clockText();
     requestAnimationFrame(frame);
   }
 
@@ -1195,352 +1283,243 @@ KCharFigure.props = {};      // data/props.json by id (the page fills it)
     el.addEventListener('pointerdown', function(e){ drag = { x:e.clientX, y:e.clientY }; el.setPointerCapture(e.pointerId); });
     el.addEventListener('pointermove', function(e){
       if(!drag) return;
-      cam.yaw -= (e.clientX - drag.x) * 0.008;
-      cam.want.pitch = Math.max(-0.4, Math.min(0.9, cam.want.pitch + (e.clientY - drag.y) * 0.005));
+      cam.want.yaw -= (e.clientX - drag.x) * 0.008;
+      cam.want.pitch = Math.max(-0.3, Math.min(0.9, cam.want.pitch + (e.clientY - drag.y) * 0.005));
       drag = { x:e.clientX, y:e.clientY };
+      Array.prototype.forEach.call(document.querySelectorAll('[data-yaw]'), function(b){ b.setAttribute('aria-pressed', 'false'); });
     });
     el.addEventListener('pointerup', function(){ drag = null; });
     el.addEventListener('wheel', function(e){
       e.preventDefault();
-      cam.want.dist = Math.max(0.45, Math.min(5, cam.want.dist * Math.exp(e.deltaY * 0.001)));
+      cam.want.dist = Math.max(1.2, Math.min(16, cam.want.dist * Math.exp(e.deltaY * 0.001)));
     }, { passive:false });
   }
 
-  function view(face){
-    cam.face = face;
-    cam.want.dist = face ? 0.8 : 4.2; cam.want.pitch = face ? 0.02 : 0.1;
-    $('cam-body').setAttribute('aria-pressed', !face); $('cam-face').setAttribute('aria-pressed', face);
+  /* ---- playback ---- */
+  function lead1(){ var s = figs.filter(function(x){ return x.f.group.visible && x.f.action; })[0]; return s && s.f.action; }
+  function duration(){ var a = lead1(); return a ? a.getClip().duration : 0; }
+  function clockText(){
+    var a = lead1(), d = duration(), t = a ? a.time % (d || 1) : 0;
+    $('clock').textContent = t.toFixed(2) + ' / ' + d.toFixed(2) + ' s';
+    if(!scrubbing && d) $('scrub').value = Math.round(t / d * 1000);
   }
-
-  /* ---- panel ---- */
-  function chips(box, items, current, onPick, compact){
-    var grid = document.createElement('div'); grid.className = 'chips' + (compact ? ' tags' : '');
-    items.forEach(function(it){
-      var b = document.createElement('button'); b.className = 'chip'; b.id = it.domId;
-      b.setAttribute('aria-pressed', it.id === current);
-      b.innerHTML = (it.img ? '<img alt="" loading="lazy" src="' + it.img + '">' : compact ? '' : '<span class="none"></span>') + '<span>' + it.name + '</span>';
-      var img = b.querySelector('img');
-      if(img) img.onerror = function(){ var n = document.createElement('span'); n.className = 'none'; img.replaceWith(n); };
-      b.addEventListener('click', function(){ onPick(it.id); });
-      grid.appendChild(b);
+  function setTime(t){
+    figs.forEach(function(s){ if(s.f.action){ s.f.action.time = t; s.f.update(0); } });
+  }
+  function setPaused(p){
+    paused = p;
+    $('play').textContent = p ? 'Play' : 'Pause';
+    $('play').setAttribute('aria-pressed', !p);
+  }
+  var holdChoice = null;
+  function holdFor(name){
+    var h = (INFO[name] && INFO[name].hold) || {}, side = h.R ? 'R' : h.L ? 'L' : null, pick = $('hold-pick');
+    pick.innerHTML = '';
+    var none = document.createElement('option'); none.value = ''; none.textContent = side ? 'Empty hands' : 'Nothing to hold';
+    pick.appendChild(none);
+    (side ? h[side] : []).forEach(function(id){
+      var o = document.createElement('option'); o.value = id; o.textContent = (PROP[id] || { label:id }).label; pick.appendChild(o);
     });
-    box.appendChild(grid);
-  }
-
-  function section(page, title, small){
-    var s = document.createElement('div'); s.className = 'slot';
-    s.innerHTML = '<h3>' + title + ' <small>' + (small || '') + '</small></h3>';
-    page.appendChild(s);
-    return s;
-  }
-
-  function dyeRow(box, slot){
-    var row = document.createElement('div'); row.className = 'dye';
-    row.innerHTML = '<label for="dye-' + slot + '">Dye</label><input type="color" id="dye-' + slot + '" value="' + ((rec.dye && rec.dye[slot]) || '#ffffff') + '"><button id="undye-' + slot + '">Clear</button>';
-    row.querySelector('input').addEventListener('input', function(e){ rec.dye[slot] = e.target.value; apply(); });
-    row.querySelector('button').addEventListener('click', function(){ delete rec.dye[slot]; apply(); buildPanel(); });
-    box.appendChild(row);
-  }
-
-  var sliderEls = {};
-  function buildPanel(){
-    var kit = D.bodies[body].kit;
-    var gear = $('page-gear'), headp = $('page-head');
-    gear.innerHTML = ''; headp.innerHTML = '';
-    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); buildSliders(); return; }
-    ['torso', 'legs', 'feet'].forEach(function(slot){
-      var a = kit.armour.filter(function(x){ return x.slots[slot]; });
-      var cur = rec.armour[slot] || null, it = a.filter(function(x){ return x.id === cur; })[0];
-      var s = section(gear, SLOT_LABEL[slot], it ? it.name : 'None');
-      chips(s, [{ id:null, name:'None', domId:'chip-' + slot + '-none' }].concat(a.map(function(x){
-        return { id:x.id, name:x.name, img:thumb(KCHAR.key(x.glb), slot), domId:'chip-' + slot + '-' + x.id };
-      })), cur, function(id){ rec.armour[slot] = id; apply(); buildPanel(); });
-      dyeRow(s, slot);
-    });
-    var gh = document.createElement('p'); gh.className = 'hint';
-    gh.textContent = 'Armour sits over the base body in layers: boots, then trousers, then the torso. Gloves come with the torso piece that has them. An empty slot shows the base body.';
-    gear.appendChild(gh);
-
-    var head = KCHAR.headOf(rec, kit);
-    var hs = section(headp, 'Head', head.name);
-    chips(hs, kit.heads.map(function(h){
-      return { id:h.id, name:h.name, img:thumb(KCHAR.key(h.glb), 'head'), domId:'chip-head-' + h.id };
-    }), head.id, function(id){ rec.head = id; apply(); buildPanel(); });
-    ['hair', 'beard'].forEach(function(kind){
-      if(!kit.hair.some(function(h){ return h.kind === kind; })) return;
-      var list = kit.hair.filter(function(h){ return h.kind === kind && h.head === head.id; });
-      var cur = rec[kind] || null, it = list.filter(function(x){ return x.id === cur; })[0];
-      var s = section(headp, kind === 'hair' ? 'Hair' : 'Beard', KCHAR.takesHair(head) ? (it ? it.name : 'None') : '');
-      if(!KCHAR.takesHair(head)){
-        var p = document.createElement('p'); p.className = 'hint';
-        p.textContent = 'This head comes with its own. Pick a bald head (Base or Styv) to choose ' + (kind === 'hair' ? 'hair.' : 'a beard.');
-        s.appendChild(p); return;
-      }
-      chips(s, [{ id:null, name:'None', domId:'chip-' + kind + '-none' }].concat(list.map(function(h){
-        return { id:h.id, name:h.name, img:thumb(KCHAR.key(h.glb), kind), domId:'chip-' + kind + '-' + h.id };
-      })), cur, function(id){ rec[kind] = id; apply(); buildPanel(); });
-      if(kind === 'hair') dyeRow(s, 'hair');
-    });
-
-    buildSliders();
-  }
-
-  /* a MakeHuman body: library items per slot, MPFB's own fitting; the head is the base's, shaped by the morphs */
-  var PEOPLE = {}; (D.peoples || []).forEach(function(p){ PEOPLE[p.id] = p; });
-  var SKIN_ANY = ['#f3d9c6', '#e2b897', '#c99a74', '#a8764f', '#835735', '#5e3c25', '#3e271a'];
-  var EYES_ANY = ['#1e140c', '#3b2414', '#5a3a22', '#7a5a2a', '#4a5a3a', '#4e6a80', '#6a7a86', '#8a3a1c'];
-  var HAIR_ANY = ['#e6d3a3', '#c9a35a', '#a0703d', '#8e4f2a', '#5a3a22', '#2c2019', '#141110', '#9a9894', '#d8d6d2'];
-  function swatches(box, label, id, value, list, set){
-    var row = document.createElement('div'); row.className = 'dye swatches';
-    row.innerHTML = '<label for="' + id + '">' + label + '</label><input type="color" id="' + id + '" value="' + value + '">';
-    list.forEach(function(c){
-      var b = document.createElement('button'); b.className = 'sw'; b.title = c; b.style.background = c;
-      b.setAttribute('aria-label', label + ' ' + c);
-      b.addEventListener('click', function(){ set(c); row.querySelector('input').value = c; });
-      row.appendChild(b);
-    });
-    row.querySelector('input').addEventListener('input', function(e){ set(e.target.value); });
-    box.appendChild(row);
-  }
-  function itemChips(page, kit, slot, title){
-    var list = kit.items.filter(function(x){ return x.slot === slot; });
-    if(!list.length) return null;
-    var cur = (slot === 'hair' || slot === 'beard') ? rec[slot] : rec.armour[slot];
-    var it = list.filter(function(x){ return x.id === cur; })[0];
-    var s = section(page, title, it ? it.name : 'None');
-    chips(s, [{ id:null, name:'None', domId:'chip-' + slot + '-none' }].concat(list.map(function(x){
-      return { id:x.id, name:x.name, img:thumb(KCHAR.key(x.glb), 'all'), domId:'chip-' + slot + '-' + x.id };
-    })), cur || null, function(id){ if(slot === 'hair' || slot === 'beard') rec[slot] = id; else rec.armour[slot] = id; apply(); buildPanel(); });
-    return s;
-  }
-  var lookSeed = 1;
-  function rollLook(people){
-    // a stranger of this people, wearing what this one wears
-    var kit = D.bodies[body].kit, r = KCHAR.stranger(lookSeed++ * 104729 + 17, kit, people);
-    r.armour = rec.armour; r.dye = rec.dye;
-    rec = r;
-  }
-  function buildMpfb(kit, gear, headp){
-    ['torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
-    var gh = document.createElement('p'); gh.className = 'hint';
-    gh.textContent = 'MakeHuman library clothing: MPFB fitted each piece to this body, it takes its weights from the body, and it hides the skin it covers. Loose pieces (the kimono, harem trousers, skirts) hang from the body. The body and face sliders reshape the clothes with it.';
-    gear.appendChild(gh);
-
-    var cur = rec.people && PEOPLE[rec.people];
-    var ps = section(headp, 'People', cur ? cur.name : 'Any');
-    chips(ps, [{ id:null, name:'Any', domId:'chip-people-any' }].concat((D.peoples || []).map(function(p){
-      return { id:p.id, name:p.name, domId:'chip-people-' + p.id };
-    })), rec.people || null, function(id){ rollLook(PEOPLE[id] || null); apply(); buildPanel(); note(id ? 'A stranger of the ' + PEOPLE[id].name + '. Pick them again for another.' : 'A stranger of no people in particular.'); }, true);
-    var pn = document.createElement('p'); pn.className = 'hint';
-    pn.textContent = cur ? cur.note + '. Picking a people draws a new face, body, skin and hair from its range; the sliders below can then take it anywhere.' :
-      'Pick a people to draw a stranger from its range of skin, hair, ancestry and build (data/peoples.json).';
-    ps.appendChild(pn);
-    var sk = section(headp, 'Skin tone', '');
-    swatches(sk, 'Skin', 'skin-pick', rec.skin || '#d6ad8f', cur ? [0, 0.25, 0.5, 0.75, 1].map(function(u){ return KCHAR.along(cur.skin, u); }) : SKIN_ANY,
-             function(c){ rec.skin = c; apply(); });
-    var hs = itemChips(headp, kit, 'hair', 'Hair');
-    swatches(hs, 'Colour', 'hair-pick', rec.hair_color || '#4a3424', (cur ? cur.hair : HAIR_ANY).concat(['#9a9894', '#d8d6d2']).filter(function(c, i, a){ return a.indexOf(c) === i; }),
-             function(c){ rec.hair_color = c; apply(); });
-    itemChips(headp, kit, 'beard', 'Beard');
-    var es = section(headp, 'Eyes', '');
-    swatches(es, 'Eye colour', 'eye-pick', rec.eye_color || '#5a3a22', cur && cur.eyes ? cur.eyes : EYES_ANY, function(c){ rec.eye_color = c; apply(); });
-  }
-
-  function vals(){ return D.bodies[body].kit.style === 'mpfb' ? (rec.morph = rec.morph || {}) : rec.sliders; }
-  function sliderRow(page, s, min, get, set){
-    var row = document.createElement('div'); row.className = 'sl';
-    row.innerHTML = '<label for="sl-' + s.id + '">' + s.label + '</label><output for="sl-' + s.id + '"></output>' +
-      '<input type="range" id="sl-' + s.id + '" min="' + min + '" max="1" step="0.01" value="0">';
-    var inp = row.querySelector('input');
-    inp.addEventListener('input', function(){ set(+inp.value); apply(); });
-    inp.addEventListener('dblclick', function(){ set(null); apply(); });
-    sliderEls[s.id] = { row:row, input:inp, out:row.querySelector('output'), get:get };
-    page.appendChild(row);
-  }
-  var ANC = [{ id:'african', label:'African' }, { id:'asian', label:'Asian' }, { id:'caucasian', label:'Caucasian' }];
-  function buildMorphSliders(kit){
-    var M = kit.morph;
-    ['Body', 'Face'].forEach(function(group){
-      var page = $('page-' + group.toLowerCase()); page.innerHTML = '';
-      var fh = document.createElement('p'); fh.className = 'hint';
-      fh.textContent = group === 'Face' ? 'MakeHuman face targets: each slider blends the whole head (and the hair and beard sitting on it). Double-click a slider to clear it.' :
-        'MakeHuman body targets: the skeleton, the clothes and the hair follow. Ancestry blends MakeHuman\'s three reference shapes (it moves the face and build, not the skin tone).';
-      page.appendChild(fh);
-      if(group === 'Body'){
-        var h = document.createElement('h3'); h.textContent = 'Ancestry'; page.appendChild(h);
-        ANC.forEach(function(a){
-          sliderRow(page, { id:'anc-' + a.id, label:a.label }, 0,
-            function(){ var x = rec.ancestry; if(!x) return M.ancestry.base[ANC.indexOf(a)]; var t = ANC.reduce(function(q, b){ return q + (+x[b.id] || 0); }, 0); return t ? (+x[a.id] || 0) / t : 0; },
-            function(v){
-              if(v === null){ rec.ancestry = null; return; }
-              var x = {}; ANC.forEach(function(b, k){ x[b.id] = sliderEls['anc-' + b.id].get(); });
-              // set this share, scale the other two to fill the rest
-              var rest = 1 - v, others = ANC.filter(function(b){ return b !== a; }), ot = others.reduce(function(q, b){ return q + x[b.id]; }, 0);
-              others.forEach(function(b){ x[b.id] = ot > 0 ? x[b.id] / ot * rest : rest / 2; });
-              x[a.id] = v; ANC.forEach(function(b){ x[b.id] = Math.round(x[b.id] * 100) / 100; });
-              rec.ancestry = x;
-            });
-        });
-        var h2 = document.createElement('h3'); h2.textContent = 'Build'; page.appendChild(h2);
-      }
-      M.morphs.filter(function(s){ return s.group === group; }).forEach(function(s){
-        sliderRow(page, s, s.minus === undefined ? 0 : -1, function(){ return +(vals()[s.id] || 0); },
-                  function(v){ if(v) vals()[s.id] = v; else delete vals()[s.id]; });
-      });
-    });
-    syncPanel();
-  }
-  function buildSliders(){
-    sliderEls = {};
-    var kit = D.bodies[body].kit;
-    if(kit.style === 'mpfb' && kit.morph && kit.morph.morphs) return buildMorphSliders(kit);
-    ['Body', 'Face'].forEach(function(group){
-      var page = $('page-' + group.toLowerCase()); page.innerHTML = '';
-      if(group === 'Face'){
-        var fh = document.createElement('p'); fh.className = 'hint';
-        fh.textContent = 'The face sliders move ten points on the head you picked. A helmet hides most of what they do.';
-        page.appendChild(fh);
-      }
-      D.sliders.sliders.filter(function(s){ return s.group === group; }).forEach(function(s){
-        var row = document.createElement('div'); row.className = 'sl';
-        row.innerHTML = '<label for="sl-' + s.id + '">' + s.label + '</label><output for="sl-' + s.id + '"></output>' +
-          '<input type="range" id="sl-' + s.id + '" min="-1" max="1" step="0.01" value="0">';
-        var inp = row.querySelector('input');
-        inp.addEventListener('input', function(){ rec.sliders[s.id] = +inp.value; if(!rec.sliders[s.id]) delete rec.sliders[s.id]; apply(); });
-        inp.addEventListener('dblclick', function(){ delete rec.sliders[s.id]; apply(); });
-        sliderEls[s.id] = { row:row, input:inp, out:row.querySelector('output'), get:function(){ return +(rec.sliders[s.id] || 0); } };
-        page.appendChild(row);
-      });
-    });
-    syncPanel();
-  }
-
-  function syncPanel(){
-    Object.keys(sliderEls).forEach(function(id){
-      var e = sliderEls[id], v = e.get(), anc = id.indexOf('anc-') === 0;
-      e.input.value = v; e.out.textContent = anc ? Math.round(v * 100) + '%' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2);
-      e.row.classList.toggle('changed', anc ? !!rec.ancestry : v !== 0);
-    });
-    $('rec-text').value = JSON.stringify(rec, null, 1);
-  }
-
-  var TABS = ['gear', 'head', 'body', 'face', 'record'];
-  function bindPanel(){
-    TABS.forEach(function(t){
-      $('tab-' + t).addEventListener('click', function(){
-        TABS.forEach(function(u){ $('tab-' + u).setAttribute('aria-selected', u === t); $('page-' + u).hidden = u !== t; });
-        if(t === 'face' || t === 'head') view(true); else if(t === 'body' || t === 'gear') view(false);
-      });
-    });
-    Object.keys(D.bodies).forEach(function(b){
-      var btn = document.createElement('button'); btn.id = 'body-' + b; btn.textContent = BODY_LABEL[b] || b;
-      btn.setAttribute('aria-pressed', 'false');
-      btn.addEventListener('click', function(){ if(b !== body) setBody(b); });
-      $('bodies').appendChild(btn);
-    });
-    var pick = $('idle-pick');
-    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
-      var o = document.createElement('option'); o.value = c.name; o.textContent = c.label + ' · ' + c.seconds.toFixed(1) + ' s';
-      pick.appendChild(o);
-    });
-    pick.value = 'idle';
-    pick.addEventListener('change', function(){ $('clip-idle').dataset.clip = pick.value; $('clip-idle').click(); });
-    // the actions (data/clips.json): grouped; a one-shot plays once and goes back to the idle
-    var act = $('act-pick'), meta = {};
-    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.forEach(function(c){ meta[c.name] = c; });
-    ((D.clips && D.clips.groups) || []).forEach(function(g){
-      var og = document.createElement('optgroup'); og.label = g.label;
-      D.clips.clips.filter(function(c){ return c.group === g.id && meta[c.key]; }).forEach(function(c){
-        var o = document.createElement('option'); o.value = c.key; o.textContent = c.label + (c.loop ? '' : ' ·  once');
-        og.appendChild(o);
-      });
-      if(og.children.length) act.appendChild(og);
-    });
-    $('clip-act').dataset.clip = act.value;
-    act.addEventListener('change', function(){ $('clip-act').dataset.clip = act.value; $('clip-act').click(); });
-    // what the hands hold: a clip's data/clips.json 'hold' (per hand, the props it may take, default first); the
-    // picker swaps the right hand's prop among them, or empties the hands
-    var holdPick = $('hold-pick'), PROP = {}, holdChoice = null;
-    (D.props || []).forEach(function(p){ PROP[p.id] = p; });
-    KCharFigure.props = PROP;
-    var clipInfo = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ clipInfo[c.key] = c; });
-    function holdFor(name){
-      var h = (clipInfo[name] && clipInfo[name].hold) || {}, side = h.R ? 'R' : h.L ? 'L' : null;
-      holdPick.innerHTML = '';
-      var none = document.createElement('option'); none.value = ''; none.textContent = side ? 'Empty hands' : 'Nothing to hold';
-      holdPick.appendChild(none);
-      (side ? h[side] : []).forEach(function(id){
-        var o = document.createElement('option'); o.value = id; o.textContent = (PROP[id] || { label:id }).label; holdPick.appendChild(o);
-      });
-      var pick = side && holdChoice !== '' ? (h[side].indexOf(holdChoice) >= 0 ? holdChoice : h[side][0]) : '';
-      holdPick.value = pick || '';
-      holdPick.disabled = !side;
-      var want = { R:null, L:null };
-      if(pick !== ''){
-        if(h.R) want.R = side === 'R' ? pick : h.R[0];
-        if(h.L) want.L = side === 'L' ? pick : h.L[0];
-        want.both = !!(want.R && clipInfo[name].two_hands && clipInfo[name].two_hands.indexOf(want.R) >= 0);
-      }
-      fig.hold(want);
+    var p = side && holdChoice !== '' ? (h[side].indexOf(holdChoice) >= 0 ? holdChoice : h[side][0]) : '';
+    pick.value = p || '';
+    pick.disabled = !side;
+    var want = { R:null, L:null };
+    if(p !== '' && side){
+      if(h.R) want.R = side === 'R' ? p : h.R[0];
+      if(h.L) want.L = side === 'L' ? p : h.L[0];
+      want.both = !!(want.R && INFO[name].two_hands && INFO[name].two_hands.indexOf(want.R) >= 0);
     }
-    holdPick.addEventListener('change', function(){
-      holdChoice = holdPick.value;
-      var on = document.querySelector('[data-clip][aria-pressed="true"]');
-      holdFor(on ? on.dataset.clip : '');
+    held = want;
+    return Promise.all(figs.map(function(s){ return s.f.hold(want); }));
+  }
+  var held = { R:null, L:null };
+  // play a clip on all six from its start, without a cross-fade (so a paused or scrubbed frame is this clip alone);
+  // a one-shot repeats
+  function play(name){
+    flushNote();
+    current = name;
+    return holdFor(name).then(function(){ return Promise.all(figs.map(function(s){ return s.f.play(name); })); }).then(function(){
+      if(current !== name) return;
+      figs.forEach(function(s){
+        var a = s.f.action;
+        if(!a) return;
+        s.f.mixer.stopAllAction();
+        a.reset(); a.setLoop(THREE.LoopRepeat, Infinity); a.clampWhenFinished = false; a.setEffectiveWeight(1); a.play();
+        s.f.update(0);
+      });
+      showCurrent();
     });
-    window._kcharHold = holdFor;
-    Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(b){
-      b.addEventListener('click', function(){
-        holdFor(b.dataset.clip || '');
-        fig.play(b.dataset.clip || null);
-        Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(o){ o.setAttribute('aria-pressed', o === b); });
+  }
+
+  /* ---- reviews ---- */
+  var reviews = {}, db = null, local = true, KEY = 'kchar.animlab.reviews';
+  try { reviews = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ reviews = {}; }
+  function status(t){ $('rv-status').textContent = t; }
+  function connect(){
+    if(!(window.claude && window.claude.use)){ status('Marks are kept in this browser only.'); return; }
+    window.claude.use('db').then(function(d){
+      if(!d){ status('Marks are kept in this browser only (sign in to share them).'); return; }
+      db = d; local = false;
+      d.collection('reviews').onSnapshot(function(snap){
+        var next = {};
+        snap.docs.forEach(function(doc){ next[doc.id] = doc.data(); });
+        Object.keys(pending).forEach(function(k){ if(pending[k]) next[k] = reviews[k]; });   // keep a note being typed
+        reviews = next;
+        ledger(); showCurrent(true);
+        status('Marks are shared: anyone who opens this lab sees them.');
+      }, function(e){ status('The shared marks did not load (' + e.code + '); new marks stay in this browser.'); db = null; local = true; });
+    }, function(){ status('Marks are kept in this browser only.'); });
+  }
+  var pending = {};
+  function save(clip){
+    var r = reviews[clip];
+    if(local || !db){
+      try { localStorage.setItem(KEY, JSON.stringify(reviews)); status('Saved in this browser.'); } catch(e){ status('Not saved: this browser blocks storage here.'); }
+      return;
+    }
+    pending[clip] = true;
+    var body = JSON.parse(JSON.stringify(r));
+    (r && (r.verdict || r.note || (r.bodies && r.bodies.length)) ? db.collection('reviews').doc(clip).set(body) : db.collection('reviews').doc(clip).delete())
+      .then(function(){ pending[clip] = false; status('Saved.'); },
+            function(e){ pending[clip] = false; status(e.code === 'invalid_argument' ? 'Not saved: this lab is view-only for you.' : 'Not saved (' + e.code + '). Try again in a moment.'); });
+  }
+  function mark(patch){
+    var r = Object.assign({ verdict:null, note:'', bodies:[] }, reviews[current] || {}, patch);
+    r.clip = current; r.label = label(current); r.prop = held.R || held.L || null; r.at = new Date().toISOString();
+    reviews[current] = r;
+    save(current);
+    ledger(); showCurrent(true);
+  }
+  var noteTimer = null;
+  function flushNote(){
+    if(noteTimer){ clearTimeout(noteTimer); noteTimer = null; mark({ note:$('rv-note').value }); }
+  }
+
+  function showCurrent(keepNote){
+    var r = reviews[current] || {}, m = META[current] || {}, g = groupOf(current), info = INFO[current] || {};
+    $('now-clip').textContent = $('rv-title').textContent = label(current);
+    var bits = [g ? g.label : '', m.loop === false ? 'one-shot, repeating here' : 'loop', (m.seconds || 0).toFixed(2) + ' s'];
+    if(m.root_speed){ var v = Math.hypot(m.root_speed[0], m.root_speed[2]); if(v > 0.05) bits.push(v.toFixed(2) + ' m/s'); }
+    $('now-meta').textContent = bits.join(' · ');
+    var hold = held.R || held.L;
+    $('rv-meta').textContent = bits.join(' · ') + (hold ? ' · ' + (PROP[hold] || { label:hold }).label.toLowerCase() + (held.both ? ' in both hands' : '') : '');
+    Array.prototype.forEach.call(document.querySelectorAll('.verdicts button'), function(b){ b.setAttribute('aria-pressed', r.verdict === b.dataset.v); });
+    Array.prototype.forEach.call(document.querySelectorAll('#rv-who button'), function(b){ b.setAttribute('aria-pressed', (r.bodies || []).indexOf(b.dataset.id) >= 0); });
+    figs.forEach(function(s){ s.tag.classList.toggle('flag', (r.bodies || []).indexOf(s.c.id) >= 0); });
+    if(!keepNote || document.activeElement !== $('rv-note')) $('rv-note').value = r.note || '';
+    Array.prototype.forEach.call(document.querySelectorAll('.clip'), function(b){ b.setAttribute('aria-current', b.dataset.clip === current); });
+    var on = document.querySelector('.clip[aria-current="true"]');
+    if(on && !keepNote) on.scrollIntoView({ block:'nearest' });
+  }
+
+  function visibleOrder(){
+    var q = $('find').value.trim().toLowerCase(), show = $('show').value;
+    return ORDER.filter(function(n){
+      var v = (reviews[n] && reviews[n].verdict) || 'none';
+      return (!q || label(n).toLowerCase().indexOf(q) >= 0 || n.indexOf(q) >= 0) && (show === 'all' || show === v);
+    });
+  }
+  function ledger(){
+    var box = $('ledger'), vis = visibleOrder(), set = {};
+    vis.forEach(function(n){ set[n] = 1; });
+    box.innerHTML = '';
+    GROUPS.forEach(function(g){
+      var list = g.clips.filter(function(n){ return set[n]; });
+      if(!list.length) return;
+      var done = g.clips.filter(function(n){ return reviews[n] && reviews[n].verdict; }).length;
+      var h = document.createElement('h3'); h.innerHTML = g.label + ' <small>' + done + ' / ' + g.clips.length + '</small>';
+      box.appendChild(h);
+      list.forEach(function(n){
+        var r = reviews[n] || {}, m = META[n] || {}, b = document.createElement('button');
+        b.className = 'clip'; b.dataset.clip = n; b.setAttribute('aria-current', n === current);
+        b.innerHTML = '<i class="' + (r.verdict || '') + '"></i><span>' + label(n) + (m.loop === false ? ' <em>· once</em>' : '') + (r.note ? ' ✎' : '') +
+          '</span><small>' + (m.seconds || 0).toFixed(1) + ' s</small>';
+        b.title = r.note || '';
+        b.addEventListener('click', function(){ play(n); });
+        box.appendChild(b);
       });
     });
-    $('cam-body').addEventListener('click', function(){ view(false); });
-    $('cam-face').addEventListener('click', function(){ view(true); });
-    $('spin').addEventListener('click', function(){ cam.spin = !cam.spin; $('spin').setAttribute('aria-pressed', cam.spin); });
-    var seed = 1;
-    $('rec-random').addEventListener('click', function(){
-      var kit = D.bodies[body].kit, people = rec.people && PEOPLE[rec.people];
-      rec = kit.style === 'mpfb' ? KCHAR.stranger(seed++ * 7919, kit, people) : KCHAR.random(seed++ * 7919, D.sliders, kit);
-      buildPanel(); apply(); note('Rolled stranger #' + (seed - 1) + (people ? ' of the ' + people.name : '') + '.');
-    });
-    $('rec-reset').addEventListener('click', function(){ rec.sliders = {}; rec.morph = {}; rec.ancestry = null; buildPanel(); apply(); note('Sliders back to the base body.'); });
-    $('rec-copy').addEventListener('click', function(){
-      var t = $('rec-text');
-      (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject())
-        .then(function(){ note('Copied.'); }, function(){ t.select(); note('Selected: press Ctrl+C or ⌘C to copy.'); });
-    });
-    $('rec-load').addEventListener('click', function(){
-      try {
-        var r = JSON.parse($('rec-text').value);
-        if(!D.bodies[r.body]) throw new Error('body must be one of ' + Object.keys(D.bodies).join(', '));
-        r.armour = r.armour || {}; r.sliders = r.sliders || {}; r.dye = r.dye || {}; r.morph = r.morph || {};
-        saved[r.body] = r;
-        if(r.body !== body) setBody(r.body); else { rec = r; buildPanel(); apply(); }
-        note('Loaded.');
-      } catch(e){ note('That record did not load: ' + e.message + '.'); }
-    });
+    if(!vis.length){ var p = document.createElement('p'); p.className = 'keys'; p.textContent = 'No clip matches.'; box.appendChild(p); }
+    var c = { good:0, fix:0, bad:0 };
+    ORDER.forEach(function(n){ var v = reviews[n] && reviews[n].verdict; if(c[v] !== undefined) c[v]++; });
+    var n = ORDER.length, done = c.good + c.fix + c.bad;
+    $('tally').textContent = done + ' of ' + n + ' reviewed · ' + c.good + ' good · ' + c.fix + ' need work · ' + c.bad + ' broken';
+    var spans = document.querySelectorAll('.progress span');
+    spans[0].style.width = (c.good / n * 100) + '%'; spans[1].style.width = (c.fix / n * 100) + '%'; spans[2].style.width = (c.bad / n * 100) + '%';
   }
 
-  function note(t){ $('note').textContent = t; }
+  function step(d){
+    var vis = visibleOrder(), i = vis.indexOf(current);
+    var n = vis[i < 0 ? 0 : Math.max(0, Math.min(vis.length - 1, i + d))];
+    if(n && n !== current) play(n);
+  }
 
-  function apply(){
-    syncPanel();
-    return fig.apply(rec).then(function(){
-      var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
-      if(p.stature){
-        var who = rec.people && PEOPLE[rec.people];
-        $('stats').innerHTML = 'Height <b>' + Math.round(p.stature * 100) + ' cm</b>' + (who ? ' · <b>' + who.name + '</b>' : '') + '<br>Meshes <b>' + n + '</b>';
-        return;
+  /* ---- controls ---- */
+  var scrubbing = false;
+  function bind(){
+    $('play').addEventListener('click', function(){ setPaused(!paused); });
+    $('restart').addEventListener('click', function(){ setTime(0); });
+    $('speed').addEventListener('change', function(){ speed = +$('speed').value; });
+    var sc = $('scrub');
+    sc.addEventListener('input', function(){ scrubbing = true; setPaused(true); setTime(+sc.value / 1000 * duration()); });
+    sc.addEventListener('change', function(){ scrubbing = false; });
+    $('hold-pick').addEventListener('change', function(){ holdChoice = $('hold-pick').value; holdFor(current).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); }); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-who]'), function(b){
+      b.addEventListener('click', function(){
+        who = b.dataset.who; lineup();
+        Array.prototype.forEach.call(document.querySelectorAll('[data-who]'), function(o){ o.setAttribute('aria-pressed', o === b); });
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-yaw]'), function(b){
+      b.addEventListener('click', function(){
+        cam.want.yaw = +b.dataset.yaw;
+        Array.prototype.forEach.call(document.querySelectorAll('[data-yaw]'), function(o){ o.setAttribute('aria-pressed', o === b); });
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.verdicts button'), function(b){
+      b.addEventListener('click', function(){ var r = reviews[current] || {}; mark({ verdict:r.verdict === b.dataset.v ? null : b.dataset.v }); });
+    });
+    var whoBox = $('rv-who');
+    CAST.forEach(function(c){
+      var b = document.createElement('button'); b.dataset.id = c.id; b.textContent = c.short; b.title = c.label; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function(){
+        var list = ((reviews[current] || {}).bodies || []).slice(), i = list.indexOf(c.id);
+        if(i >= 0) list.splice(i, 1); else list.push(c.id);
+        mark({ bodies:list });
+      });
+      whoBox.appendChild(b);
+    });
+    $('rv-note').addEventListener('input', function(){
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(function(){ noteTimer = null; mark({ note:$('rv-note').value }); }, 700);
+    });
+    $('rv-note').addEventListener('blur', flushNote);
+    $('find').addEventListener('input', ledger);
+    $('show').addEventListener('change', ledger);
+    $('next-open').addEventListener('click', function(){
+      var i = ORDER.indexOf(current);
+      for(var k = 1; k <= ORDER.length; k++){
+        var n = ORDER[(i + k) % ORDER.length];
+        if(!(reviews[n] && reviews[n].verdict)){ play(n); return; }
       }
-      var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
-      $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
-        'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
-    }).catch(function(e){ note('A piece failed to load: ' + e.message); });
+      status('Every clip has a mark.');
+    });
+    document.addEventListener('keydown', function(e){
+      var t = e.target.tagName;
+      if(t === 'TEXTAREA' || t === 'INPUT' || t === 'SELECT' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if(e.key === 'ArrowDown'){ e.preventDefault(); step(1); }
+      else if(e.key === 'ArrowUp'){ e.preventDefault(); step(-1); }
+      else if(e.key === ' '){ e.preventDefault(); setPaused(!paused); }
+      else if(e.key === '1' || e.key === '2' || e.key === '3'){ var v = ['good', 'fix', 'bad'][+e.key - 1], r = reviews[current] || {}; mark({ verdict:r.verdict === v ? null : v }); }
+      else if(e.key === ',' || e.key === '.'){
+        var a = lead1(); if(!a) return;
+        setPaused(true); var d = duration();
+        setTime(((a.time % d) + (e.key === '.' ? 1 : -1) / 30 + d) % d);
+      }
+    });
   }
 
-  boot();
+  bind(); ledger(); showCurrent(); connect(); boot();
 })();
 
 </script>

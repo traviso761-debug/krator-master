@@ -1,4 +1,6 @@
-/* ==== the editor page: stage, camera, panel. [web] (host code; Godot builds its own UI over kchar.gd) ====
+/* ==== the Cosmetic Lab: stage, camera, panel. [web] (host code; Godot builds its own UI over kchar.gd) ====
+   One figure and every cosmetic choice: the future player character editor, and strangers in bulk for NPCs
+   (KCHAR.crowd). The clips are tried on six bodies at once in the Animation Lab (92-animlab.js).
    KCHAR_DATA (build.py): { sliders, bodies: { male: { skeleton, kit }, female: {...} } }. The pieces are fetched when a
    record needs them: pieces/<key>.txt (a base64 GLB), or KCHAR_GLB[key] when build.py inlined them. Chip pictures are
    thumbs/<key>__<mesh>.png (tools/thumbs.mjs). Everything the panel changes goes through one record and fig.apply().
@@ -87,7 +89,6 @@
     $('loading').hidden = false;
     var done = apply().then(function(){
       $('loading').hidden = true;
-      if(window._kcharHold) window._kcharHold(clip ? clip.dataset.clip || '' : 'idle');
       return fig.play(clip ? clip.dataset.clip || null : 'idle');
     });
     window._kchar = { fig:fig, ready:done, record:function(){ return rec; }, cam:cam,
@@ -373,57 +374,17 @@
     });
     pick.value = 'idle';
     pick.addEventListener('change', function(){ $('clip-idle').dataset.clip = pick.value; $('clip-idle').click(); });
-    // the actions (data/clips.json): grouped; a one-shot plays once and goes back to the idle
-    var act = $('act-pick'), meta = {};
-    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.forEach(function(c){ meta[c.name] = c; });
-    ((D.clips && D.clips.groups) || []).forEach(function(g){
-      var og = document.createElement('optgroup'); og.label = g.label;
-      D.clips.clips.filter(function(c){ return c.group === g.id && meta[c.key]; }).forEach(function(c){
-        var o = document.createElement('option'); o.value = c.key; o.textContent = c.label + (c.loop ? '' : ' ·  once');
-        og.appendChild(o);
-      });
-      if(og.children.length) act.appendChild(og);
-    });
-    $('clip-act').dataset.clip = act.value;
-    act.addEventListener('change', function(){ $('clip-act').dataset.clip = act.value; $('clip-act').click(); });
-    // what the hands hold: a clip's data/clips.json 'hold' (per hand, the props it may take, default first); the
-    // picker swaps the right hand's prop among them, or empties the hands
-    var holdPick = $('hold-pick'), PROP = {}, holdChoice = null;
+    // the props, for anything that holds one (verify.py tries the clips here; the Animation Lab picks them)
+    var PROP = {};
     (D.props || []).forEach(function(p){ PROP[p.id] = p; });
     KCharFigure.props = PROP;
-    var clipInfo = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ clipInfo[c.key] = c; });
-    function holdFor(name){
-      var h = (clipInfo[name] && clipInfo[name].hold) || {}, side = h.R ? 'R' : h.L ? 'L' : null;
-      holdPick.innerHTML = '';
-      var none = document.createElement('option'); none.value = ''; none.textContent = side ? 'Empty hands' : 'Nothing to hold';
-      holdPick.appendChild(none);
-      (side ? h[side] : []).forEach(function(id){
-        var o = document.createElement('option'); o.value = id; o.textContent = (PROP[id] || { label:id }).label; holdPick.appendChild(o);
-      });
-      var pick = side && holdChoice !== '' ? (h[side].indexOf(holdChoice) >= 0 ? holdChoice : h[side][0]) : '';
-      holdPick.value = pick || '';
-      holdPick.disabled = !side;
-      var want = { R:null, L:null };
-      if(pick !== ''){
-        if(h.R) want.R = side === 'R' ? pick : h.R[0];
-        if(h.L) want.L = side === 'L' ? pick : h.L[0];
-        want.both = !!(want.R && clipInfo[name].two_hands && clipInfo[name].two_hands.indexOf(want.R) >= 0);
-      }
-      fig.hold(want);
-    }
-    holdPick.addEventListener('change', function(){
-      holdChoice = holdPick.value;
-      var on = document.querySelector('[data-clip][aria-pressed="true"]');
-      holdFor(on ? on.dataset.clip : '');
-    });
-    window._kcharHold = holdFor;
     Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(b){
       b.addEventListener('click', function(){
-        holdFor(b.dataset.clip || '');
         fig.play(b.dataset.clip || null);
         Array.prototype.forEach.call(document.querySelectorAll('[data-clip]'), function(o){ o.setAttribute('aria-pressed', o === b); });
       });
     });
+    bindBatch();
     $('cam-body').addEventListener('click', function(){ view(false); });
     $('cam-face').addEventListener('click', function(){ view(true); });
     $('spin').addEventListener('click', function(){ cam.spin = !cam.spin; $('spin').setAttribute('aria-pressed', cam.spin); });
@@ -448,6 +409,33 @@
         if(r.body !== body) setBody(r.body); else { rec = r; buildPanel(); apply(); }
         note('Loaded.');
       } catch(e){ note('That record did not load: ' + e.message + '.'); }
+    });
+  }
+
+  // strangers in bulk (KCHAR.crowd), as records a city loads
+  function bindBatch(){
+    var pp = $('batch-people');
+    pp.innerHTML = '<option value="">Any</option>' + (D.peoples || []).map(function(p){ return '<option value="' + p.id + '">' + p.name + '</option>'; }).join('');
+    var crowd = [];
+    $('batch-roll').addEventListener('click', function(){
+      var n = Math.max(1, Math.min(1000, +$('batch-count').value || 20)), seed = Math.max(1, +$('batch-seed').value || 1);
+      var which = $('batch-body').value, kits = {};
+      Object.keys(D.bodies).forEach(function(b){ if(D.bodies[b].kit.style === 'mpfb' && (which === 'both' || which === b)) kits[b] = D.bodies[b].kit; });
+      crowd = KCHAR.crowd(seed, n, kits, PEOPLE[pp.value] || null);
+      $('batch-text').value = '[\n' + crowd.map(function(r){ return ' ' + JSON.stringify(r); }).join(',\n') + '\n]';
+      note(n + ' strangers' + (pp.value ? ' of the ' + PEOPLE[pp.value].name : '') + ', seed ' + seed + '.');
+    });
+    $('batch-copy').addEventListener('click', function(){
+      var t = $('batch-text');
+      (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject())
+        .then(function(){ note('Copied the crowd.'); }, function(){ t.select(); note('Selected: press Ctrl+C or ⌘C to copy.'); });
+    });
+    $('batch-show').addEventListener('click', function(){
+      if(!crowd.length){ note('Draw a crowd first.'); return; }
+      var r = JSON.parse(JSON.stringify(crowd[0])); delete r.seed;
+      saved[r.body] = r;
+      if(r.body !== body) setBody(r.body); else { rec = r; buildPanel(); apply(); }
+      note('The first of the crowd (seed ' + crowd[0].seed + ').');
     });
   }
 

@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-"""Build kits/characters: the character editor page.
+"""Build kits/characters: two pages over the same pieces.
 
-The page needs a web server (it fetches its pieces):  python3 -m http.server -d dist   then open /characters.html
+  dist/cosmetic-lab.html    the Cosmetic Lab: one figure, every face, hair, skin, body and clothing choice (the future
+                            player character editor), and strangers in bulk for NPCs (src/00-head.html, 90-editor.js)
+  dist/animation-lab.html   the Animation Lab: six figures (each body neutral, short and broad, tall and lanky) side by
+                            side, every clip on all of them at once, with a review mark per clip (src/01-animlab.html,
+                            92-animlab.js)
 
-  python3 build.py             # dist/characters.html (a whole page, the GLBs inside) and dist/characters.artifact.html
-                               # (no <!doctype>/<html>/<body>, which the artifact host adds, and no GLBs: it fetches
-                               # dist/pieces/*.txt (the GLBs and morph files, gzipped, as base64), published beside it, to stay under the host's 16 MB a page)
+The pages need a web server (they fetch their pieces):  python3 -m http.server -d dist   then open /cosmetic-lab.html
+
+  python3 build.py             # dist/<page>.html (whole pages) and dist/<page>.artifact.html (no <!doctype>/<html>/
+                               # <body>, which the artifact host adds); both fetch dist/pieces/*.txt (the GLBs and
+                               # morph files, gzipped, as base64), published beside them, to stay under the host's 16 MB a page
   python3 build.py --no-checks # skip the port lint and the node test
   python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
 
 The pieces are made beforehand by tools/make_pieces.py (pieces/*.glb, data/*.json); this only packs them. The page is
-src/00-head.html, then one inline script: core/rand (KRAND), the data (KCHAR_DATA) and the GLBs as base64
-(KCHAR_GLB), then src/10-89 and src/90-editor.js. three.js r128 and its GLTFLoader load from the CDN, as in the hero
+its head fragment (PAGES), then one inline script: core/rand (KRAND), the data (KCHAR_DATA), then the shared
+fragments src/10-89 and the page's own 9x fragment. three.js r128 and its GLTFLoader load from the CDN, as in the hero
 build. Deterministic: the same inputs give the same bytes; build-manifest.json holds a sha1 per input.
 """
 import base64, gzip, hashlib, json, os, shutil, subprocess, sys
@@ -39,6 +45,10 @@ BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.pa
                       and (b.startswith('mpfb_') or '--meshy' in sys.argv)))
 
 
+# page -> (its head fragment, its own script fragment); every page also takes the shared src/10-89*.js
+PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01-animlab.html', '92-animlab.js')}
+
+
 def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
@@ -52,13 +62,11 @@ def main():
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}
             for f in ('skeleton.json', 'kit.json'):
                 inputs['data/%s/%s' % (b, f)] = read(os.path.join(HERE, 'data', b, f), 'rb')
-    frags = sorted(f for f in os.listdir(SRC) if f.endswith('.js'))
-    head = read(os.path.join(SRC, '00-head.html'))
-    inputs['src/00-head.html'] = head.encode()
+    shared = sorted(f for f in os.listdir(SRC) if f.endswith('.js') and f < '90')
     js = ['/* core/rand/08-core-rand.js */', read(RAND)]
     inputs['core/rand/08-core-rand.js'] = js[-1].encode()
     js.append('var KCHAR_DATA = ' + json.dumps(data, separators=(',', ':')) + ';')
-    for f in frags:
+    for f in shared:
         t = read(os.path.join(SRC, f))
         inputs['src/' + f] = t.encode()
         js.append('/* src/%s */\n%s' % (f, t))
@@ -80,28 +88,38 @@ def main():
                 inputs['pieces/%s/%s' % (b, f)] = raw
                 with open(os.path.join(out_dir, f[:-4] + '.txt'), 'w') as o:     # gzipped (the page unzips it)
                     o.write(base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode())
-    body = head + '<script>\n' + '\n'.join(js) + '\n</script>\n'
     os.makedirs(DIST, exist_ok=True)
-    whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
-            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
-            body + '</body>\n</html>\n'
-    for name, text in (('characters.html', whole), ('characters.artifact.html', body)):
-        with open(os.path.join(DIST, name), 'w', encoding='utf-8') as f:
-            f.write(text)
-    if CHECKS:
-        script = os.path.join(DIST, '.check.js')
-        open(script, 'w').write('\n'.join(js))
-        rc = subprocess.call(['node', '--check', script])
-        os.remove(script)
-        if rc:
-            sys.exit('build.py: the inline script does not parse')
+    for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
+        if os.path.exists(os.path.join(DIST, old)):
+            os.remove(os.path.join(DIST, old))
+    wholes = {}
+    for page, (headf, own) in sorted(PAGES.items()):
+        head, t = read(os.path.join(SRC, headf)), read(os.path.join(SRC, own))
+        inputs['src/' + headf], inputs['src/' + own] = head.encode(), t.encode()
+        pjs = js + ['/* src/%s */\n%s' % (own, t)]
+        body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
+        whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
+                '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
+                body + '</body>\n</html>\n'
+        for name, text in ((page + '.html', whole), (page + '.artifact.html', body)):
+            with open(os.path.join(DIST, name), 'w', encoding='utf-8') as f:
+                f.write(text)
+        wholes[page] = whole
+        if CHECKS:
+            script = os.path.join(DIST, '.check.js')
+            open(script, 'w').write('\n'.join(pjs))
+            rc = subprocess.call(['node', '--check', script])
+            os.remove(script)
+            if rc:
+                sys.exit('build.py: %s: the inline script does not parse' % page)
     if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
         if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
             print('build.py: thumbs.mjs failed; the chips show names only')
     man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
-    man['dist/characters.html'] = hashlib.sha1(whole.encode()).hexdigest()
+    for page, whole in wholes.items():
+        man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
     json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
-    print('dist/characters.html  %.2f MB, pieces %.1f MB' % (len(whole) / 1e6, sum(
+    print('%s  pieces %.1f MB' % ('  '.join('dist/%s.html %.2f MB' % (p, len(w) / 1e6) for p, w in sorted(wholes.items())), sum(
         os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(os.path.join(DIST, 'pieces')) for f in fs) / 1e6))
 
 

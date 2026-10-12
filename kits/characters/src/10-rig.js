@@ -280,8 +280,22 @@ var KCHAR = (function(){
     return rec;
   }
 
+  /* crowd(seed, n, kits, people): n strangers for a city's NPCs (the Cosmetic Lab's batch, tools/npcs.js). kits: the
+     bodies to draw from ({ mpfb_male: kit, ... }); each stranger takes one of them at random, and its own seed from
+     the crowd's stream, so the same seed gives the same crowd and stranger i does not depend on n */
+  function crowd(seed, n, kits, people){
+    var r = KRAND.stream(seed).next, bodies = Object.keys(kits).sort(), out = [];
+    for(var i = 0; i < n; i++){
+      var b = bodies[Math.floor(r() * bodies.length)], s = Math.floor(r() * 2147483647);
+      var rec = stranger(s, kits[b], people);
+      rec.seed = s;
+      out.push(rec);
+    }
+    return out;
+  }
+
   return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along };
+           along:along, crowd:crowd };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

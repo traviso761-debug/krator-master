@@ -1,4 +1,4 @@
-dist/characters.artifact.html
+dist/*.artifact.html
 dist/pieces/
 dist/thumbs/
 dist/.check.js

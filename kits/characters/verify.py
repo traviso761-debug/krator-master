@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Headless verification for kits/characters (dist/characters.html).
+"""Headless verification for kits/characters (dist/cosmetic-lab.html, dist/animation-lab.html).
 
-  python3 verify.py dist/characters.html [--assert] [--out shots/]
+  python3 verify.py dist/cosmetic-lab.html [--assert] [--out shots/]
+  python3 verify.py dist/animation-lab.html [--assert] [--out shots/]
 
 Serves dist/ and loads the page in headless Chromium (software WebGL), with three.js r128 and its GLTFLoader routed to local copies
 (settlements/ys/three.min.js, tools/vendor/GLTFLoader.r128.js): no CDN. Page errors fail the run. --assert checks,
@@ -17,6 +18,8 @@ through window._kchar:
   props        in every clip whose two_hands names a prop, the left hand reaches that prop's support (data/props.json);
                the bow's string is drawn in bow_scan
   random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
+The Animation Lab (window._lab) is checked instead for: six figures dressed, each body's short one shorter than its
+neutral one and its tall one taller; a clip plays on all six in step; a review mark is kept.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
@@ -118,6 +121,24 @@ CHECKS = r'''async () => {
 }'''
 
 
+LAB_CHECKS = r'''async () => {
+  const L = window._lab, out = [];
+  await L.ready;
+  const f = L.figs, h = f.map(x => x.pose.stature || 0);
+  if (f.length !== 6) out.push('lab: ' + f.length + ' figures, want 6');
+  for (const k of [0, 3]) if (!(h[k] < h[k + 1] && h[k + 1] < h[k + 2])) out.push('lab: heights ' + h.slice(k, k + 3).map(x => x.toFixed(2)));
+  await L.play('ual_chop');
+  f.forEach(x => x.update(0.37));
+  const t = f.map(x => x.action && x.action.getClip().name === 'ual_chop' ? x.action.time : -1);
+  if (t.some(x => Math.abs(x - t[0]) > 1e-6 || x < 0)) out.push('lab: the six are out of step: ' + t);
+  if (f.some(x => !x.held.R)) out.push('lab: a figure holds nothing in the chop');
+  document.querySelector('.verdicts button[data-v="good"]').click();
+  if (!(L.reviews().ual_chop && L.reviews().ual_chop.verdict === 'good')) out.push('lab: the mark was not kept');
+  document.querySelector('.verdicts button[data-v="good"]').click();
+  return out;
+}'''
+
+
 async def run(page_path, do_assert, out_dir):
     from playwright.async_api import async_playwright
     chrome = os.environ.get('KRATOR_CHROME') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
@@ -139,12 +160,27 @@ async def run(page_path, do_assert, out_dir):
         srv = socketserver.TCPServer(('127.0.0.1', 0), h)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         await pg.goto('http://127.0.0.1:%d/%s' % (srv.server_address[1], os.path.basename(page_path)))
+        if 'animation-lab' in os.path.basename(page_path):
+            await pg.wait_for_function('window._lab', timeout=120000)
+            r = await pg.evaluate(LAB_CHECKS) if do_assert else []
+            fails += r
+            if out_dir:
+                os.makedirs(out_dir, exist_ok=True)
+                await pg.wait_for_timeout(1500)
+                await pg.screenshot(path=os.path.join(out_dir, 'animation-lab.png'))
+            await b.close()
+            for e in errs:
+                print('page error:', e)
+            for f in fails:
+                print('FAIL', f)
+            print('verify: %s' % ('ok' if not errs and not fails else 'FAILED'))
+            return 0 if not errs and not fails else 1
         await pg.evaluate('window._kchar && window._kchar.ready')
         await pg.wait_for_function('window._kchar', timeout=120000)
         if out_dir:
             os.makedirs(out_dir, exist_ok=True)
             await pg.wait_for_timeout(1500)
-            await pg.screenshot(path=os.path.join(out_dir, 'characters.png'))
+            await pg.screenshot(path=os.path.join(out_dir, 'cosmetic-lab.png'))
         if do_assert:
             r = await pg.evaluate(CHECKS)
             print(json.dumps(r))

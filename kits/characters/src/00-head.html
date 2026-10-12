@@ -1,4 +1,4 @@
-<title>Rider's Tent</title>
+<title>Cosmetic Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -90,6 +90,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .row button { border: 1px solid var(--line); background: var(--chip); }
 textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.5 var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; resize: vertical; }
 #note { min-height: 1.4em; font-size: 13px; color: var(--accent); }
+.page > h3.batch-h { margin: 18px 0 0; font: 700 15px/1 var(--display); letter-spacing: .03em; }
+.batch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
+.batch label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.batch select, .batch input { font: 500 13px/1.2 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px; min-width: 0; }
+#batch-text { min-height: 140px; }
+code { font: 12px var(--mono); }
 
 @media (max-width: 820px) {
   body { overflow: auto; }
@@ -107,18 +113,15 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
 <div id="app">
   <div id="stage">
     <div id="loading">Fetching the pieces…</div>
-    <div id="brand"><h1>Rider's Tent</h1><p>Pick a people for a stranger, or shape one yourself: clothes, hair and beard, skin and hair colour, body and face. Drag to turn, scroll to step closer.</p></div>
+    <div id="brand"><h1>Cosmetic Lab</h1><p>Swap faces, hair, skin and clothes, and push the body to its extremes to check what fits. Drag to turn, scroll to step closer.</p></div>
     <div id="stats"></div>
     <div id="bar">
-      <div class="grp" role="group" aria-label="Animation">
+      <div class="grp" role="group" aria-label="Pose">
         <button id="clip-none" data-clip="" aria-pressed="false">A-pose</button>
         <button id="clip-idle" data-clip="idle" aria-pressed="true">Idle</button>
         <label class="pick" for="idle-pick"><span class="sr">Which idle</span><select id="idle-pick"></select></label>
         <button id="clip-walk" data-clip="walk" aria-pressed="false">Walk</button>
         <button id="clip-run" data-clip="run" aria-pressed="false">Run</button>
-        <button id="clip-act" data-clip="" aria-pressed="false">Action</button>
-        <label class="pick" for="act-pick"><span class="sr">Which action</span><select id="act-pick"></select></label>
-        <label class="pick" for="hold-pick"><span class="sr">Holding</span><select id="hold-pick"></select></label>
       </div>
       <div class="grp" role="group" aria-label="View">
         <button id="cam-body" aria-pressed="true">Full figure</button>
@@ -150,6 +153,20 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
       </div>
       <div id="note" role="status"></div>
       <textarea id="rec-text" spellcheck="false" aria-label="Character record"></textarea>
+      <h3 class="batch-h">Strangers in bulk</h3>
+      <p class="hint">Records for NPCs: a crowd drawn from a people's ranges. The same seed gives the same crowd, and each record keeps the seed that redraws it. Outside the browser: <code>node tools/npcs.js --people chichani --count 200 --seed 1</code>.</p>
+      <div class="batch">
+        <label for="batch-people">People <select id="batch-people"></select></label>
+        <label for="batch-body">Bodies <select id="batch-body"><option value="both">Both</option><option value="mpfb_male">Men</option><option value="mpfb_female">Women</option></select></label>
+        <label for="batch-count">Count <input id="batch-count" type="number" min="1" max="1000" value="20"></label>
+        <label for="batch-seed">Seed <input id="batch-seed" type="number" min="1" value="1"></label>
+      </div>
+      <div class="row">
+        <button id="batch-roll">Draw the crowd</button>
+        <button id="batch-copy">Copy</button>
+        <button id="batch-show">Show the first one</button>
+      </div>
+      <textarea id="batch-text" spellcheck="false" aria-label="Crowd records" readonly></textarea>
       <p class="hint credits">Bodies, clothes and much of the hair: MakeHuman and its community assets (CC0), fitted with MPFB2. CC-BY: hair by Elvaerwyn, punkduck, culturalibre, grinsegold, WojackOWL and brkurt; beards by Elvaerwyn, grinsegold and WojackOWL (MakeHuman community asset packs and repository). See CREDITS.md.</p>
     </section>
   </aside>

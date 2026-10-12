@@ -8,7 +8,8 @@
  "data/peoples.json": "902256f5353ae5905a95f720cf157acf27c3cfda",
  "data/props.json": "d7c3f4b97fe077936e28c877d026c3f8ee32e052",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/characters.html": "cd5eaa9e67fc629a08c742a17cfbb7b6c91e053d",
+ "dist/animation-lab.html": "ee81be5bc485f4a9642cba5ad2e9e150d6409d2a",
+ "dist/cosmetic-lab.html": "af7bcf3fb0dc5c2c2c336783bd4e1b0da1eaf5ed",
  "pieces/mpfb_female/AfroPonytail.glb": "655421b1964743d8ff18c4a0811419cb9d089b3d",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "e831b6c29c82855df4ea7ab1f2fa20f78bfb0f6d",
@@ -228,8 +229,10 @@
  "pieces/props/sword.glb": "0d7b24e555da05104faf85cc579b494e971eeaea",
  "pieces/props/torch.glb": "73a8ca8c85f5239be496cd98715f5ee071603db1",
  "pieces/props/warhammer.glb": "c2fb1f7685aa5b1d21662161218e25c739f0d52e",
- "src/00-head.html": "11df1472171b5b8cfae4b3aac67ad3b3cf688d22",
- "src/10-rig.js": "4a83ca4f845ed1143efb3d28dfcb7e4118c0ea45",
+ "src/00-head.html": "3a82ebc493ff01aca08252b005093aa8828a790c",
+ "src/01-animlab.html": "ee6c4a5ba427d141361c3f4a7c5bd2558aea9747",
+ "src/10-rig.js": "d9ff0e3a700c670047cb72e9a066d78053c36df9",
  "src/50-figure.js": "5722c0bd867e3cb93d8d4e24d4f5bc7bafabcf9e",
- "src/90-editor.js": "2b478983e462e1b7258c80c14b20e2cb721b9ec0"
+ "src/90-editor.js": "3ad835fc1bc5c0ad2cbafddfb0e749be11b420a3",
+ "src/92-animlab.js": "711a170cf63a1b4a42cfef57d916e48b4ac91fcb"
 }

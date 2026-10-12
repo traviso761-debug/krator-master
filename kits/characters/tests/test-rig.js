@@ -120,5 +120,15 @@ peoples.forEach(function(P){
   }
 });
 
+// crowd: the same seed gives the same crowd, stranger i does not depend on the crowd's size, both bodies appear
+(function(){
+  var fk = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'mpfb_female', 'kit.json')));
+  var kits = { mpfb_male:mkit, mpfb_female:fk }, a = KCHAR.crowd(9, 30, kits, null), b = KCHAR.crowd(9, 12, kits, null);
+  ok(JSON.stringify(a.slice(0, 12)) === JSON.stringify(b), 'crowd: a prefix of a bigger crowd is the smaller one');
+  ok(a.some(function(r){ return r.body === 'mpfb_male'; }) && a.some(function(r){ return r.body === 'mpfb_female'; }), 'crowd: both bodies');
+  ok(a.every(function(r){ return JSON.stringify(KCHAR.stranger(r.seed, kits[r.body], null)) === JSON.stringify(Object.assign({}, r, { seed:undefined })); }),
+     'crowd: each record redraws from its seed');
+})();
+
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);
