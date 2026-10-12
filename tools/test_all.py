@@ -90,6 +90,10 @@ def steps(nightly, build):
         for b, page, args in NIGHTLY_VERIFY:
             ok = pw and os.path.isfile(os.path.join(ROOT, b, 'verify.py'))
             s.append(('verify ' + b, [PY, 'verify.py', page] + args if ok else None, b))
+        # the scripted walk (ROADMAP.md stage 0j): real keys held for 20 frames from open ground; the walker must
+        # cover 2 m forward, stay up, and leave the console clean
+        s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',
+                                               '--start', 'auto', '--min', '2', '--dir', '0,-1'] if pw else None))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))

@@ -16,7 +16,7 @@ errors, draw calls and triangles; exit 1 if any page is dirty or never gets read
 and as a scripted walk (stage 0j): hold real keys along a route and check the walker moved, stayed up and the
 console stayed clean:
 
-    python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:3000 --min 2
+    python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:20f --start auto --min 2 --dir 0,-1
 """
 import asyncio, contextlib, functools, glob, http.server, os, re, socketserver, sys, threading, time
 
@@ -171,20 +171,37 @@ async def smoke(pages, settle_ms=2500):
     return 1 if bad else 0
 
 
-POSE_JS = """()=>{ if(window._walk&&window._walk.on) return Object.assign({mode:'walk'}, window._walk.pose());
+POSE_JS = """()=>{ if(window._walk&&typeof window._walk.pose==='function'&&window._walk.on) return Object.assign({mode:'walk'}, window._walk.pose());
  const c=(typeof camera!=='undefined')?camera:null; if(!c) return null;
  return {mode:'camera', x:c.position.x, y:c.position.y, z:c.position.z}; }"""
 
 
+# A start on open ground: the nearest point to the origin (a spiral out to 120 m) where the walker, set down by its
+# own setPose, stands on the terrain and nothing blocks the 6 m ahead of it at yaw 0 (forward is -z). Needs the
+# walker's own API (window._walk.setPose and .blocked, as Girder's): a page's terrainH is not reachable from outside
+# its script. null when the page has none, and the walk starts where it spawns.
+AUTO_START_JS = """()=>{ const w=window._walk; if(!w||typeof w.blocked!=='function'||typeof w.setPose!=='function') return null;
+ const stand=(x,z)=>{ const p=w.setPose(x,z,0); return p&&/terrain|ground/i.test(p.support||'')?p:null; };
+ for(let r=0;r<=120;r+=4){ const n=Math.max(1,Math.round(r*1.5)); for(let a=0;a<n;a++){ const t=a/n*Math.PI*2, x=r*Math.cos(t), z=r*Math.sin(t);
+  const p=stand(x,z); if(!p) continue; let ok=true;
+  for(let d=0.5;d<=6&&ok;d+=0.5){ const q=stand(x,z-d); if(!q||Math.abs(q.feet-p.feet)>1.5||w.blocked(x,z-d,q.feet)) ok=false; }
+  if(ok) return [x,z,0]; } } return null; }"""
+
+
 def parse_route(spec):
-    """'KeyW:2000,KeyD:600,KeyW+ShiftLeft:1000' -> [(['KeyW'], 2000), (['KeyD'], 600), (['KeyW','ShiftLeft'], 1000)]"""
+    """'KeyW:30f,KeyD:600,KeyW+ShiftLeft:10f' -> [(['KeyW'], '30f'), (['KeyD'], 600), (['KeyW', 'ShiftLeft'], '10f')].
+    A step is held for N rendered frames ('30f') or N milliseconds ('600'). Prefer frames: a walker moves per frame
+    (dt capped at 0.1 s), and under software GL a frame can take seconds (Girder in walk mode: one frame in 4 s)."""
     out = []
     for part in (spec or '').split(','):
         part = part.strip()
         if part:
-            keys, ms = part.rsplit(':', 1)
-            out.append((keys.split('+'), int(ms)))
+            keys, n = part.rsplit(':', 1)
+            out.append((keys.split('+'), n if n.endswith('f') else int(n)))
     return out
+
+
+FRAMES_JS = "()=>{ if(window._hxFrames==null){ window._hxFrames=0; (function f(){ window._hxFrames++; requestAnimationFrame(f); })(); } return window._hxFrames; }"
 
 
 async def walk(pg, route, start=None, settle_ms=400):
@@ -195,15 +212,22 @@ async def walk(pg, route, start=None, settle_ms=400):
     distance in a direction and a ground test, not an exact end point."""
     cons = []
     pg.on('console', lambda m: cons.append(m.text) if m.type == 'error' else None)
-    await pg.evaluate("(s)=>{ if(window._walk){ window._walk.toggle(true); if(s) window._walk.setPose(s[0], s[1], s[2]); } }",
+    if start == 'auto':
+        start = await pg.evaluate(AUTO_START_JS)
+    await pg.evaluate("(s)=>{ const w=window._walk; if(w&&typeof w.toggle==='function'){ w.toggle(true); if(s) w.setPose(s[0], s[1], s[2]); } }",
                       list(start) if start else None)
     await pg.wait_for_timeout(settle_ms)
     await pg.mouse.click(5, 5)            # the page has focus for key events (a corner, away from the panels)
     before = await pg.evaluate(POSE_JS)
-    for keys, ms in route:
+    await pg.evaluate(FRAMES_JS)
+    for keys, n in route:
         for k in keys:
             await pg.keyboard.down(k)
-        await pg.wait_for_timeout(ms)
+        if isinstance(n, str):             # frames: hold until the page has drawn n more (at most 20 minutes)
+            f0 = await pg.evaluate(FRAMES_JS)
+            await pg.wait_for_function("(t)=>window._hxFrames>=t", arg=f0 + int(n[:-1]), timeout=1200000)
+        else:
+            await pg.wait_for_timeout(n)
         for k in reversed(keys):
             await pg.keyboard.up(k)
     await pg.wait_for_timeout(settle_ms)
@@ -212,7 +236,7 @@ async def walk(pg, route, start=None, settle_ms=400):
 
 
 async def walk_main(argv):
-    """python3 tools/harness.py walk <page> --route KeyW:3000 [--start x,z,yaw] [--min 2] [--dir dx,dz] [--query ?..]
+    """python3 tools/harness.py walk <page> --route KeyW:20f [--start x,z,yaw] [--min 2] [--dir dx,dz] [--query ?..]
     Exit 1 unless the page loads clean, the walker moves at least --min metres (along --dir when given), stays above
     the ground it started on minus 3 m, and the console stays clean."""
     import argparse
@@ -221,7 +245,7 @@ async def walk_main(argv):
     ap.add_argument('html'); ap.add_argument('--route', required=True); ap.add_argument('--start')
     ap.add_argument('--min', type=float, default=2.0); ap.add_argument('--dir'); ap.add_argument('--query', default='')
     a = ap.parse_args(argv)
-    start = [float(v) for v in a.start.split(',')] if a.start else None
+    start = 'auto' if a.start == 'auto' else ([float(v) for v in a.start.split(',')] if a.start else None)
     fails = []
     async with async_playwright() as p:
         b = await launch_chromium(p)
