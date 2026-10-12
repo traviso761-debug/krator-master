@@ -14,13 +14,12 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser(
 INDEX = 'http://www.makehumancommunity.org/sites/default/files/assets.json'
 # asset id -> MPFB folder kind (beards are clothes in MakeHuman)
 ASSETS = {3658: 'clothes', 3656: 'clothes', 3657: 'clothes', 3654: 'clothes', 3655: 'clothes', 3659: 'clothes',
-          3662: 'hair', 3729: 'hair', 3663: 'hair', 3677: 'hair', 3660: 'hair', 2616: 'hair', 2892: 'hair', 575: 'hair',
+          3662: 'hair', 3663: 'hair', 3677: 'hair', 3660: 'hair', 2616: 'hair', 2892: 'hair', 575: 'hair',
           200: 'hair', 3532: 'hair', 3661: 'hair', 3639: 'hair', 3642: 'hair', 3688: 'hair', 2893: 'hair',
           176: 'hair', 74: 'hair', 3542: 'hair'}
 # material files that name textures the upload does not carry (or under another name): (folder, sed-like edits)
 DROP = ('normalmapTexture', 'aomapTexture', 'displacementTexture')
 FIXES = {'Dreads_with_Fade': {'BHL_AfroHairB_BaseColor.png': 'BHL_AfroHairB_Test_BaseColor_Alpha.png'},
-         'half_bald': {'half_bald.png': 'hair_alpha.png'},
          'southernbelleringlets': {'southernbelleringlets.png': 'southernbelleringletstexture1.png'},
          'brunhilde': {'brunhilde.png': 'brunhildetexture.png'}}
 COPY = {'Mutton_Chops': ('Goatee', 'BHL_FacialHair_Test_BaseColor_Alpha.png')}   # same author, same texture
