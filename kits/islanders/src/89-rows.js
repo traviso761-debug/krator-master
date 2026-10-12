@@ -6,10 +6,13 @@ const FAMILIES=[
  {name:'West - poor houses',keys:['iw-hut-scrap','iw-hut-fisher','iw-house-shared']},
  {name:'West - houses',keys:['iw-house-rumah','iw-house-batak','iw-house-tongkonan']},
  {name:'West - rich houses',keys:['iw-house-gadang','iw-house-chief','iw-house-tongkonan-great']},
+ {name:'West - civic',keys:['iw-hall','iw-square','iw-school']},
+ {name:'West - trade',keys:['iw-farm','iw-farm-poor','iw-granary','iw-granary-row','iw-windmill','iw-warehouse','iw-smithy','iw-market','iw-kava','iw-shophouse','iw-weaver','iw-potter','iw-chandler']},
+ {name:'West - defence',keys:['iw-palisade','iw-gate','iw-watchtower','iw-barracks']},
  {name:'Kautoa - poor houses',keys:['ie-hut-scrap','ie-hut-garden','ie-house-shared']},
  {name:'Kautoa - houses',keys:['ie-house-uma','ie-house-twin','ie-house-clan']},
  {name:'Kautoa - rich houses',keys:['ie-house-wealthy','ie-house-great','ie-house-noble']},
  {name:'Kautoa - palace',keys:['ip-palace']},
  {name:'Gardens, groves and stock',keys:['fl-paddy','fl-taro','fl-banana','fl-coconut','fl-breadfruit','pig','hen','duck','buffalo']},
- {name:'Harbours',shore:true,keys:['iw-fishdock']}
+ {name:'Harbours',shore:true,keys:['iw-fishdock','iw-dockyard','iw-godown']}
 ];

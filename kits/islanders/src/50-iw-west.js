@@ -14,12 +14,11 @@
    floor), extra(rf) (drawn in the house frame after the roof, rf the roof's handle), wings (rich: stepped horned roofs at
    the ends), porch (a horned porch on the front) */
 function iwHouse(o){const L=o.L,D=o.D,fy=o.floorY,wh=o.wallH||2.2,R=Object.assign({ridgeH:3.4,sag:.9,hornRise:3,hornOut:1.4,taper:1,over:.8,p:4,mk:'thatch'},o.roof||{});
- const body=()=>{const top=fy+wh;
+ const body=()=>{const top=fy+wh;isCutFloor(fy);   /* before the piles and the deck: they stay when the house opens */
   if(fy>.35){const nx=Math.max(2,Math.round(L/2.3)+1),nz=Math.max(2,Math.round(D/2.3)+1);
    isPiles(isSpan(-L/2+.25,L/2-.25,nx),isSpan(-D/2+.25,D/2-.25,nz),fy-IS_T,{r:o.pileR||.17,mk:o.pileMk||'tarred',col:P('tarred'),beamY:fy*.5,square:o.square});}
   else box('earth',0,0,0,L+.3,fy+.05,D+.3,P('earth'));
   isDeck(L,D,fy,{col:P('planks'),beam:fy>.35});
-  isCutFloor(fy);
   isWalls(L,D,fy,wh,o.wallMk||'planks',o.wallCol||P('planks'),{front:o.front,back:o.back,left:o.left,right:o.right,mkf:o.wallMkf,colf:o.wallColf,
    frame:o.frame===undefined?P('woodD'):o.frame,shutMk:o.shutMk,shutCol:o.shutCol});
   /* a painted frieze under the eave and a dado at the floor, all round */
