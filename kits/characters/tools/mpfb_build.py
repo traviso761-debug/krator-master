@@ -37,7 +37,14 @@ ITEMS = {
                     ('hair', 'Tousled', 'culturalibre_hair_05'), ('hair', 'Close crop', 'culturalibre_hair_14'),
                     ('hair', 'Comb-over', 'elvs_grump_hair'), ('hair', 'Swept back', 'elvs_maxwell_hair'),
                     ('hair', 'Four-strand braid', 'fourstrandbraid'), ('hair', 'Beaded braid', 'braided_curly_beads4'),
-                    ('hair', 'Loose braid', 'elvs_unkempt_french_braid')]},
+                    ('hair', 'Loose braid', 'elvs_unkempt_french_braid'),
+                    # Voth (Chichani) clothing: tools/make_garments.py makes these into MPFB's user data
+                    ('torso', 'Voth field cloak', 'voth_m_peasant_cloak'), ('legs', 'Voth loincloth', 'voth_m_peasant_maxtlatl'),
+                    ('feet', 'Voth sandals', 'voth_m_sandals'),
+                    ('torso', 'Voth artisan xicolli', 'voth_m_trade_xicolli'), ('legs', 'Voth wrap kilt', 'voth_m_trade_kilt'),
+                    ('feet', 'Voth heeled sandals', 'voth_m_trade_sandals'),
+                    ('torso', 'Voth court robe', 'voth_m_noble_robe'), ('legs', 'Voth court skirt', 'voth_m_noble_skirt'),
+                    ('feet', 'Voth gilded sandals', 'voth_m_noble_sandals')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -63,7 +70,13 @@ ITEMS = {
                     ('hair', 'Long side part', 'elvs_island_princess_hair'),
                     ('hair', 'Loose braid', 'elvs_unkempt_french_braid'), ('hair', 'Curly long', 'punkduck_alpha7_curly2'),
                     ('hair', 'Long wavy', 'culturalibre_hair_17'), ('hair', 'Straight bob', 'o4saken_chinesebob01'),
-                    ('hair', 'Short crop', 'culturalibre_hair_13')]},
+                    ('hair', 'Short crop', 'culturalibre_hair_13'),
+                    ('torso', 'Voth plain huipil', 'voth_f_peasant_huipil'), ('legs', 'Voth wrap skirt', 'voth_f_peasant_cueitl'),
+                    ('feet', 'Voth sandals', 'voth_f_sandals'),
+                    ('torso', 'Voth banded huipil', 'voth_f_trade_huipil'), ('legs', 'Voth ankle skirt', 'voth_f_trade_skirt'),
+                    ('feet', 'Voth heeled sandals', 'voth_f_trade_sandals'),
+                    ('torso', 'Voth court huipil', 'voth_f_noble_gown'), ('legs', 'Voth court skirt', 'voth_f_noble_skirt'),
+                    ('feet', 'Voth gilded sandals', 'voth_f_noble_sandals')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -105,7 +118,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            ms.material.use_backface_culling = not cut
+            # the Voth garments are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith('voth_')
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

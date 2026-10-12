@@ -249,7 +249,28 @@
     r.armour = rec.armour; r.dye = rec.dye;
     rec = r;
   }
+  // a people's own outfits (data/peoples.json outfits): one chip per tier puts on its torso, legs and feet together
+  function outfitChips(kit, gear){
+    var sex = kit.body.replace(/^mpfb_/, ''), list = [];
+    (D.peoples || []).forEach(function(p){
+      var o = p.outfits && p.outfits[sex];
+      if(!o) return;
+      (p.tiers || Object.keys(o).map(function(k){ return [k]; })).forEach(function(t){
+        if(o[t[0]]) list.push({ id:p.id + '.' + t[0], name:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), set:o[t[0]] });
+      });
+    });
+    if(!list.length) return;
+    var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
+    var cur = list.filter(function(x){ return ['torso', 'legs', 'feet'].every(function(sl){ return (rec.armour[sl] || null) === (x.set[sl] && has(x.set[sl]) ? x.set[sl] : null); }); })[0];
+    var s = section(gear, 'Outfits', cur ? cur.name : 'Mixed');
+    chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-outfit-' + x.id.replace('.', '-') }; }), cur ? cur.id : null, function(id){
+      var x = list.filter(function(y){ return y.id === id; })[0];
+      ['torso', 'legs', 'feet'].forEach(function(sl){ rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null; });
+      apply(); buildPanel();
+    }, true);
+  }
   function buildMpfb(kit, gear, headp){
+    outfitChips(kit, gear);
     ['torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
     var gh = document.createElement('p'); gh.className = 'hint';
     gh.textContent = 'MakeHuman library clothing: MPFB fitted each piece to this body, it takes its weights from the body, and it hides the skin it covers. Loose pieces (the kimono, harem trousers, skirts) hang from the body. The body and face sliders reshape the clothes with it.';

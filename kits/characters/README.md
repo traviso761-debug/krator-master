@@ -20,6 +20,7 @@ model per person. Two pages are built over the same pieces:
 
 ```
 cd kits/characters
+blender -b --python tools/make_garments.py -- male [--render <dir>] # the Voth clothing, into MPFB's user data
 blender -b --python tools/mpfb_build.py -- male <export dir>      # Blender 4.5 + MPFB2 + the asset packs (below)
 python3 tools/make_mpfb.py male <export dir>                       # -> pieces/mpfb_male/, data/mpfb_male/
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
@@ -72,6 +73,24 @@ arm there. When the left arm cannot reach, the right brings the prop toward the 
 that hand is behind the bow and near its middle, turns the bow about its handle to face the drawing hand, and nocks
 the arrow once the string is pulled (`fig.drawn`).
 
+**Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,
+made here as MakeHuman clothes (so MPFB fits, weights and morphs them like the library's): peasants in undyed maguey
+and cotton (a field cloak and loincloth; a plain huipil and wrap skirt; maguey sandals), tradesfolk in dyed cotton with
+banded hems and step frets (a sashed xicolli over a wrap kilt under a shoulder mantle; a banded huipil over an ankle
+skirt; heeled sandals laced up the shin), and the court in Voth's purple and ash-white with crimson, gold and quetzal
+green (a robe with bell sleeves, a feathered mantle, a gold collar and a cloak over a long skirt and apron; a huipil
+under a pointed quechquemitl cape over a two-tier skirt; gilded sandals and greaves). Aztec cut, Dunmer layering.
+Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its
+elbow, a foot) to the skin and set off it; below a hang line a ring only grows (cloth falls straight from the chest
+or the hips instead of hugging the waist) and spans hollows (its convex hull: between the breasts, round both legs);
+tunics are fitted to the skin without the arms, so the arms pass through armholes the sleeves cover; mantles and
+capes are fitted over the arms. Rows below the crotch match MakeHuman's skirt helper, so skirts swing with both legs.
+The textures are painted in the same script (woven grain, hem bands, step frets, zigzags, the diamond of Voth,
+feather scales). `--render <dir>` loads the garments back through MPFB and renders each class front, side and back.
+`data/peoples.json` gives the Chichani `outfits` per class and `tiers` (60 % peasants, 30 % tradesfolk, 10 % court):
+their strangers and crowds are dressed by class (`record.tier`), and the Cosmetic Lab's Gear tab puts any of the six
+outfits on with one chip.
+
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and
 preferred hairstyles per body. The Chichani and Beast Rider entries follow the owner's notes; the rest are proposals
@@ -82,7 +101,8 @@ rebuilds the pieces from here). Blender 4.5 LTS from download.blender.org/releas
 as is); MPFB from extensions.blender.org/add-ons/mpfb, installed with
 `blender -b --python-expr "import bpy; bpy.ops.extensions.package_install_files(filepath='mpfb.zip', repo='user_default')"`;
 the packs below from static.makehumancommunity.org/assets/assetpacks, and `python3 tools/mpfb_repo.py` for the hair
-and beards that come from the community asset repository instead (it applies the texture-name fixes some need). Then per body: `mpfb_build.py` (about 10
+and beards that come from the community asset repository instead (it applies the texture-name fixes some need), and
+`make_garments.py` per body for the Voth clothing. Then per body: `mpfb_build.py` (about 10
 minutes: it refits every item once per slider end), `make_mpfb.py`, `build.py`.
 
 **Asset packs** (load them into MPFB once: `bpy.ops.mpfb.load_pack(filepath=...)`): makehuman_system_assets, hair01,
@@ -106,6 +126,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
+| `tools/make_garments.py` | the Voth clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

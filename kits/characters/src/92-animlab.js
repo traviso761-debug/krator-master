@@ -1,5 +1,6 @@
 /* ==== the Animation Lab: six figures, one clip on all of them, a review mark per clip. [web] (host code) ====
-   Each MakeHuman body three ways (CAST: neutral, short and broad, tall and lanky, all in the same plain clothes) stand
+   Each MakeHuman body three ways (CAST: neutral, short and broad, tall and lanky, all in the same plain clothes, or a
+   people's outfit for one class from the Clothes picker) stand
    in a row; a clip from the ledger plays on all six in step, with the props its data/clips.json hold names (both
    hands where two_hands says). One-shots repeat here so they can be watched again. The playback can be paused,
    slowed and scrubbed.
@@ -47,12 +48,22 @@
       CAST.push({ id:g[0] + '-' + b, sex:g[0], body:g[1], build:b, label:g[2] + ' · ' + BUILD[b].label.toLowerCase(), short:g[2].charAt(0) + ' ' + b });
     });
   });
+  // the clothes the six wear: plain (OUTFIT), or a people's outfit for one tier (data/peoples.json outfits)
+  var DRESS = [];
+  (D.peoples || []).forEach(function(p){
+    (p.tiers || []).forEach(function(t){
+      if(p.outfits && (p.outfits.male || {})[t[0]]) DRESS.push({ id:p.id + '.' + t[0], label:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), p:p, tier:t[0] });
+    });
+  });
+  var dress = '';
   function record(c){
     var kit = D.bodies[c.body].kit, r = KCHAR.blank(kit), o = OUTFIT[c.body];
     Object.keys(o).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(o[k])); });
     r.armour = Object.assign({}, r.armour);
     Object.keys(r.armour).forEach(function(s){ if(!kit.items.some(function(it){ return it.id === r.armour[s]; })) r.armour[s] = null; });
     if(!kit.items.some(function(it){ return it.id === r.hair; })) r.hair = null;
+    var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && d.p.outfits[c.body.replace(/^mpfb_/, '')][d.tier];
+    if(set) ['torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
     r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
     r.ancestry = null;
     return r;
@@ -344,6 +355,13 @@
   /* ---- controls ---- */
   var scrubbing = false;
   function bind(){
+    DRESS.forEach(function(x){ var o = document.createElement('option'); o.value = x.id; o.textContent = x.label; $('dress').appendChild(o); });
+    $('dress').addEventListener('change', function(){
+      dress = $('dress').value;
+      $('loading').hidden = false; $('loading').textContent = 'Dressing the six…';
+      Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)); })).then(function(){ $('loading').hidden = true; figs.forEach(function(x){ x.f.update(0); }); },
+        function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
+    });
     $('play').addEventListener('click', function(){ setPaused(!paused); });
     $('restart').addEventListener('click', function(){ setTime(0); });
     $('speed').addEventListener('change', function(){ speed = +$('speed').value; });

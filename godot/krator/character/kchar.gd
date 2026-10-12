@@ -196,7 +196,28 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 	var rec := blank(kit)
 	var P: Dictionary = people if people != null else {}
 	var styles = P.get("styles", {}).get(String(kit["body"]).trim_prefix("mpfb_"))
+	# a people with its own clothes dresses a stranger in one tier's outfit (as KCHAR.stranger)
+	var outfits = P.get("outfits", {}).get(String(kit["body"]).trim_prefix("mpfb_"))
+	var outfit = null
+	if outfits != null and P.has("tiers"):
+		var x: float = r.next()
+		var acc := 0.0
+		var tiers: Array = P["tiers"]
+		for t in tiers.size():
+			acc += float(tiers[t][1])
+			if x < acc or t == tiers.size() - 1:
+				rec["tier"] = tiers[t][0]
+				outfit = outfits.get(rec["tier"])
+				break
 	for slot in SLOTS:
+		if outfit != null and slot != "hair" and slot != "beard":
+			var want = outfit.get(slot)
+			var ok := false
+			for it in kit["items"]:
+				if want != null and it["id"] == want and it["slot"] == slot:
+					ok = true
+			rec["armour"][slot] = want if ok else null
+			continue
 		var have := []
 		for it in kit["items"]:
 			if it["slot"] == slot:

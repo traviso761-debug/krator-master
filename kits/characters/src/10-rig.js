@@ -254,7 +254,22 @@ var KCHAR = (function(){
     function pick(list){ return list[Math.floor(r() * list.length)]; }
     function range(lr){ return lr[0] + (lr[1] - lr[0]) * r(); }
     var styles = (P.styles || {})[kit.body.replace(/^mpfb_/, '')];
+    // a people with its own clothes (data/peoples.json outfits, one per tier, and tiers' shares) dresses a stranger
+    // in one tier's outfit; others draw each slot from the library
+    var outfits = (P.outfits || {})[kit.body.replace(/^mpfb_/, '')], outfit = null;
+    if(outfits && P.tiers){
+      var x = r(), acc = 0;
+      for(var t = 0; t < P.tiers.length; t++){
+        acc += P.tiers[t][1];
+        if(x < acc || t === P.tiers.length - 1){ rec.tier = P.tiers[t][0]; outfit = outfits[rec.tier] || null; break; }
+      }
+    }
     MPFB_SLOTS.forEach(function(slot){
+      if(outfit && slot !== 'hair' && slot !== 'beard'){
+        var want = outfit[slot] || null;
+        rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot; }) ? want : null;
+        return;
+      }
       var have = kit.items.filter(function(it){ return it.slot === slot; });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;

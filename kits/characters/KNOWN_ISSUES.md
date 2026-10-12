@@ -24,6 +24,12 @@
   face the drawing hand rather than the bow hand turning; the draw has no pinch pose (the right hand keeps the clip's
   fingers), and the arrow only shows while the string is pulled (there is no nocking motion). The supporting hand
   always closes in a fist.
+- **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
+  script (`tools/make_garments.py`): no cloth simulation, no folds beyond the hang and flare, flat-shaded strips of
+  texture. In motion it bends with the skin it was matched to: a cape or a long skirt follows MakeHuman's skirt helper,
+  so it swings with the hips and thighs but cannot billow, and a raised arm can push through a mantle's hem. Sleeves
+  start inside the shoulder, under the tunic. There is no headgear yet (a noble's feathered headdress, a Dunmer hat),
+  and the court outfits share one cut per body; more garments are more entries in `GARMENTS`.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below.

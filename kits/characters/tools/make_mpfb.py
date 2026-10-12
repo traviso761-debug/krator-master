@@ -552,6 +552,11 @@ def main():
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
             tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'))
+            if it['id'].startswith('voth_'):
+                # the Voth clothing (make_garments.py) hangs loose below the hips: a flap or a skirt that lies over a
+                # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
+                top = BP[:, 1].max() - BP[:, 1].min()
+                tris = tris[(BP[BT[tris], 1] > BP[:, 1].min() + 0.5 * top).all(1)]
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
             entry['hide_by'] = 'rays'          # no delete group in the asset: covered() found it
