@@ -141,7 +141,19 @@
  ],
  "59-civic.js": [
   "locus",
-  "9f72c44a9347"
+  "e39e582747f8"
+ ],
+ "59a-civic-park.js": [
+  "locus",
+  "2325d0531216"
+ ],
+ "59b-civic-library.js": [
+  "locus",
+  "55f3b6d8d558"
+ ],
+ "59c-civic-furniture.js": [
+  "locus",
+  "bffa210fcce6"
  ],
  "60-flora.js": [
   "locus",
