@@ -104,6 +104,17 @@ def core_lists(build):
             files = ast.literal_eval(m.group(2))
             if files:
                 out.append(('core/biome' if m.group(1) == 'CORE_BIOME' else 'core/terrain', files))
+        # the host shell (core/host/host.py): CORE_HOST = khost.SHELL, khost.SHELL+[...], or a literal list
+        m = re.match(r'\s*CORE_HOST\s*=\s*(khost\.SHELL)?\s*\+?\s*(\[[^\]]*\])?', line)
+        if m and (m.group(1) or m.group(2)):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('khost', os.path.join(ROOT, 'core', 'host', 'host.py'))
+            mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+            files = (list(mod.SHELL) if m.group(1) else []) + (ast.literal_eval(m.group(2)) if m.group(2) else [])
+            for where in ('host', 'clock'):
+                fs = [f for f in files if mod.WHERE.get(f, 'host') == where]
+                if fs:
+                    out.append(('core/' + where, fs))
     return out
 
 
