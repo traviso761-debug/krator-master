@@ -129,7 +129,7 @@ def main():
     def Rax(u, ang):
         u = np.asarray(u, float); u = u / np.linalg.norm(u); K = np.array([[0, -u[2], u[1]], [u[2], 0, -u[0]], [-u[1], u[0], 0]]); return np.eye(3) + np.sin(ang) * K + (1 - np.cos(ang)) * K @ K
     def fk(g, th): return Rax(X, th[0]) @ Rax(Zv, th[1]) @ (g['f'] + Rax(X, th[2]) @ (g['a'] - g['f']))
-    LO, HI = np.array([-0.7, -0.3, -0.05]), np.array([0.7, 0.3, 2.0])
+    LO, HI = np.array([-0.7, -0.3, -0.5]), np.array([0.7, 0.3, 2.0])      # a hock may straighten (a bent hind leg at rest)
     def solve1(g, tgt, th):
         for _ in range(40):
             err = tgt - fk(g, th)
