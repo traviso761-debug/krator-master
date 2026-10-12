@@ -495,7 +495,7 @@ ANIMAL({
    flyers grow larger there (the giant dragonfly is the flyers' file). These four are the hyperjungle's ground and
    trunk insects, drawn (2026-10-12) in the kit's procedural style: jointed chitin legs that turn about their roots
    (the hexapod tripod walk), plated bodies with banding. They are procedural only: a Meshy version waits on credits. */
-function faHiMix(a, b, t) { const c = new THREE.Color(a).lerp(new THREE.Color(b), Math.max(0, Math.min(1, t))); return [c.r, c.g, c.b]; }
+function faHiMix(a, b, t) { const C = q => Array.isArray(q) ? new THREE.Color(q[0], q[1], q[2]) : new THREE.Color(q); const c = C(a).lerp(C(b), Math.max(0, Math.min(1, t))); return [c.r, c.g, c.b]; }   /* a and b: hex or [r, g, b] */
 /* the drawing helpers at one scale K, and a jointed insect leg: pts root, joints..., foot, rad per point */
 function faHiKit(A, K) {
   const Q = p => [p[0] * K, p[1] * K, p[2] * K];
@@ -685,5 +685,393 @@ ANIMAL({
       A.part('leg' + i, k.Q(X([.05, .5, g.z])), () => k.leg([X([.05, .5, g.z]), X(g.kn), X(g.ft)], [.026, .018, .008], C.base, .03));
     }
     A.anchor('lead', k.Q([0, .52, .45])); A.anchor('headRoot', k.Q([0, .52, .26])); A.anchor('tailRoot', k.Q([0, .5, -.5]));
+  }
+});
+
+/* ---------------------------------------------------------------- more of the hyperjungle (2026-10-12)
+   Three more insects (a leaf katydid, a giant caterpillar, a gilded orb spider), four flyers (an atlas moth, an emperor
+   hornet, a jewel macaw, a sparkle hummer, a lantern-fly), and the jungle's other animals (a lantern tree frog, a tusk
+   tapir, a vine boa). All procedural, in the same style as the insects above. */
+/* a flying bird at scale k: a feathered body, a hooked or needle beak, fanned tail, two broad wings, two legs. o: palette
+   (body, belly, head, wing, tip, tail, beak, leg), tailL, beakL, hook, span (a half-span in body units), chord */
+function faHiBird(A, o) {
+  const M = A.S * o.k, R = rows => rows.map(r => [r[0] * M, r[1] * M, r[2] * M, r[3] * M, r[4] * M]), mix = faHiMix;
+  const bw = o.bw || 1, tipC = mix(o.wing, o.tip, 0.8);
+  const plum = (t, f, q) => { const up = Math.cos(f); return mix(mix(o.body, o.belly, faHjSm(0.0, -0.7, up)), o.wing, 0.35 * faHjSm(0.1, 0.5, up) * (q[2] / M < 0.1 ? 1 : 0)); };
+  faHjRows(A, 'feather', R([[0, 0.236, -0.3, 0.025 * bw, 0.02 * bw], [0, 0.228, -0.24, 0.06 * bw, 0.055 * bw], [0, 0.218, -0.13, 0.095 * bw, 0.092 * bw], [0, 0.212, -0.01, 0.11 * bw, 0.11 * bw],
+    [0, 0.222, 0.1, 0.1 * bw, 0.105 * bw], [0, 0.245, 0.18, 0.08 * bw, 0.085 * bw], [0, 0.27, 0.23, 0.062 * bw, 0.066 * bw]]), 16, 14, null, { round: [0.1, 0], colf: plum });
+  A.part('head', [0, 0.26 * M, 0.2 * M], () => {
+    faHjRows(A, 'feather', R([[0, 0.262, 0.18, 0.06 * bw, 0.064 * bw], [0, 0.284, 0.25, 0.075 * bw, 0.074 * bw], [0, 0.29, 0.31, 0.077 * bw, 0.074 * bw], [0, 0.285, 0.36, 0.06 * bw, 0.055 * bw], [0, 0.28, 0.395, 0.034 * bw, 0.03 * bw]]),
+      12, 14, null, { round: [0, 0.22], colf: (t, f) => mix(o.head, o.belly, 0.5 * faHjSm(-0.2, -0.8, Math.cos(f))) });
+    const bl = o.beakL, bk = o.hook || 0;      /* the beak: along z, its tip dropping by `hook` */
+    faHjTube(A, 'horn', faHjPath([[0, 0.29 * M, 0.37 * M], [0, (0.285 - bk * 0.3) * M, (0.37 + bl * 0.5) * M], [0, (0.27 - bk) * M, (0.37 + bl) * M]]), t => [o.beakW * M * (1 - 0.9 * t), o.beakW * 0.75 * M * (1 - 0.85 * t)], 8, 8, o.beak, { round: [0, 0.08] });
+    for (const s of [-1, 1]) { A.ellip('feather', s * 0.062 * M * bw, 0.3 * M, 0.315 * M, 0.018 * M, 0.018 * M, 0.017 * M, o.belly, { seg: 8 }); A.ellip('eye', s * 0.07 * M * bw, 0.301 * M, 0.317 * M, 0.012 * M, 0.012 * M, 0.012 * M, 0x0a0806, { seg: 8 }); }
+    if (o.crest) for (let k = 0; k < 4; k++) A.cone('feather', [0, 0.33 * M, (0.27 + k * 0.025) * M], [0, (0.33 + o.crest) * M, (0.2 + k * 0.02) * M], 0.008 * M, 0.001 * M, o.tail, 4);
+  });
+  A.part('tail', [0, 0.232 * M, -0.27 * M], () => faHjPlate(A, 'feather', (u, w) => { const a = 2 * u - 1, L = o.tailL * (1 - 0.2 * a * a);
+    return [a * (0.02 + o.tailW * w) * M, (0.236 + 0.012 * w) * M, (-0.27 - L * w) * M]; }, (u, w) => [0.005 * M * (1 - 0.8 * w), 0.002 * M * (1 - w)], 10, 5, (u, w, sd) => mix(o.tail, o.tip, faHjSm(0.65, 0.95, w) * 0.8)));
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.07 * M, 0.27 * M, 0.07 * M], () => faHjPlate(A, 'feather', (u, w) => {
+    const le = 0.09 - 0.12 * Math.pow(u, 1.4); let ch = (u < 0.35 ? 0.17 + 0.03 * u / 0.35 : 0.2 * (1 - Math.pow((u - 0.35) / 0.65, 1.3)) + 0.03) * o.chord;
+    if (u > 0.4) ch *= 1 - 0.07 * Math.abs(Math.sin(u * Math.PI * 7)) * w;
+    return [s * (0.07 + o.span * u) * M, (0.27 + 0.035 * u) * M, (le - ch * w) * M]; }, (u, w) => [0.012 * M * (1 - 0.6 * u) * Math.sin(Math.PI * Math.pow(Math.max(0.0001, w), 0.6)), 0.004 * M * Math.sin(Math.PI * w)], 20, 6,
+    (u, w, sd) => { let c = mix(o.wing, o.body, 0.25 * (1 - w)); c = mix(c, tipC, faHjSm(0.55, 0.95, u) * 0.8); if (o.wingBand && u > 0.15 && u < 0.5 && w > 0.3) c = mix(c, o.wingBand, 0.9); return sd > 0 ? c : mix(c, o.belly, 0.4); }));
+  for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', [s * 0.04 * M, 0.13 * M, -0.01 * M], () => {
+    const ank = [s * 0.05 * M, 0.018 * M, 0.006 * M];
+    A.cone('scale', [s * 0.045 * M, 0.12 * M, -0.02 * M], ank, 0.009 * M, 0.007 * M, o.leg, 6);
+    for (const a of [-0.45, 0, 0.45, Math.PI]) { const L = (a === Math.PI ? 0.04 : 0.058) * M; A.cone('scale', [ank[0], 0.008 * M, ank[2]], [ank[0] + Math.sin(a) * L, 0.005 * M, ank[2] + Math.cos(a) * L], 0.0055 * M, 0.004 * M, o.leg, 4); }
+  });
+}
+/* a flat insect wing (membrane) from root at (x0, y0, z0), reaching s*L along x, chord c at its widest, swept back by `sw` */
+function faHiWing(A, s, x0, y0, z0, L, c, sw, colf, lift) {
+  A.sheet('membrane', (u, v) => { const ch = c * Math.pow(Math.sin(Math.PI * Math.min(1, 0.08 + 0.92 * u)), 0.6) * (1 - 0.15 * u);
+    return [s * (x0 + L * u), y0 + (lift || 0.05) * L * u, z0 - sw * u * L + (0.5 - v) * ch]; }, 14, 6, null, { colf: colf });
+}
+const FA_HI_BASE2 = { koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], biomes: ['hyperjungle'], abyssal: false, riparian: 'non', domestic: false, herdedBy: [] };
+const FA_HI_SRC2 = { build: 'kits/fauna', file: 'krator-fauna-hyperjungle.js', lines: '-' };
+const FA_HI_SCH_DAY = ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'FLY', 'FLY', 'BROWSE', 'BROWSE', 'FLY', 'REST', 'BROWSE', 'FLY', 'BROWSE', 'BROWSE', 'FLY', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'];
+const FA_HI_SCH_NIGHT = ['BROWSE', 'FLY', 'FLY', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'FLY', 'FLY', 'BROWSE', 'BROWSE'];
+const FA_HI_SCH_WALK = ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'GRAZE', 'REST', 'REST', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'];
+
+/* ---- the leaf katydid: a bush-cricket whose folded wings are a leaf, with a bitten edge and a midrib */
+const FA_HI_KATY = [{ leaf: 0x4a8a30, vein: 0xa8c860, body: 0x5a9a38 }, { leaf: 0x8a5a24, vein: 0xc89a50, body: 0x6a4a28 }, { leaf: 0xc8789a, vein: 0xf0c8d8, body: 0x9a5a70 }];
+ANIMAL({
+  key: 'leaf-katydid', name: 'Leaf katydid', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'browser', activity: 'nocturnal', temperament: 'skittish',
+    habitat: ['canopy', 'ground', 'trunks'], locomotion: ['walks', 'climbs', 'leaps'] }),
+  size: { length: 1.7, height: 0.8 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant leaf-mimic katydid, grown large by the lowland air (about 2 atm); by day it hangs among the leaves, by night it sings' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 4, note: 'a crisp, nutty tail: roasted' }, eggs: { amount: 30, note: 'flat eggs laid in rows on a leaf edge' }, chitin: { amount: 1, note: 'the leaf-wings: green and translucent, used for lampshades and fans' } },
+  life: { maturity: 0.6, lifespan: 1.5, litter: 40, gestation: 40, note: 'litter: the eggs a female lays on a leaf (in rows of five); gestation: egg to nymph' },
+  variants: 3, variantNames: ['leaf green', 'dead-leaf brown', 'orchid pink'],
+  w: 0.85, d: 1.7, h: 0.8,
+  data: { mass: 3, legs: 6, sizeRange: [0.7, 1.3], speed: { walk: 0.3, run: 2 }, gait: { type: 'hexapod', freq: 1.2, stride: 0.2 }, grazePitch: 0.1,
+    herd: 'alone, by day hanging in the leaves; by night in chorus', fleeDistance: 3, aggression: 0,
+    idle: { headYaw: 0.15, headPitch: 0.05, tailYaw: 0.05 }, schedule: FA_HI_SCH_NIGHT, scheduleNote: 'BROWSE: leaves, by night' },
+  build: function (A) {
+    const C = FA_HI_KATY[A.variant] || FA_HI_KATY[0], k = faHiKit(A, A.S), mix = faHiMix;
+    k.rows([[0, .4, -.15, .05, .05], [0, .42, .05, .06, .06], [0, .43, .22, .05, .05]], 10, 10, C.body, { round: [0.1, 0.1] });                         /* the thorax */
+    k.rows([[0, .4, -.15, .05, .05], [0, .36, -.4, .035, .035], [0, .32, -.65, .018, .018]], 10, 8, C.body, { round: [0, 0.2] });                      /* the abdomen under the leaf, with the sword-ovipositor curve */
+    /* the folded wings: one leaf over the back, a midrib, a notch bitten out of the edge */
+    A.sheet('membrane', (u, v) => { const w = 0.2 * Math.pow(Math.sin(Math.PI * Math.pow(u, 0.75)), 0.8) * A.S, a = 2 * v - 1;
+      return [a * w, (0.5 + 0.09 * (1 - Math.abs(a)) - 0.12 * a * a * 0.5 - 0.06 * u) * A.S, (0.28 - 1.02 * u) * A.S]; }, 20, 8, null,
+      { colf: (u, v) => { const a = Math.abs(2 * v - 1), rib = a < 0.06 || Math.abs(Math.sin(u * 40 + a * 12)) > 0.93 ? 1 : 0, bite = u > 0.5 && u < 0.62 && a > 0.7; return bite ? mix(C.leaf, 0x2a1a0c, 0.7) : mix(C.leaf, C.vein, rib ? 0.8 : 0.15 * faNoise(u * 30, a * 8, 5)); } });
+    A.part('head', k.Q([0, .42, .22]), () => {
+      k.el(0, .42, .3, .055, .06, .06, C.body, { seg: 10 });
+      for (const s of [-1, 1]) { k.el(s * .052, .445, .32, .018, .02, .018, 0x16200c, { seg: 6 }); k.co([s * .015, .46, .34], [s * .1, .75, .62], .004, .0012, 0x3a3a22, 4); k.co([s * .1, .75, .62], [s * .22, .62, .95], .0025, .001, 0x3a3a22, 4); }
+    });
+    const spec = [{ z: .2, kn: [.22, .6, .3], ft: [.34, 0, .5] }, { z: .05, kn: [.26, .62, .08], ft: [.4, 0, .1] }, { z: -.08, kn: [.26, .74, -.3], ft: [.38, 0, -.55] }];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, g = spec[i >> 1], X = q => [s * q[0], q[1], q[2]];
+      A.part('leg' + i, k.Q(X([.05, .4, g.z])), () => k.leg([X([.05, .4, g.z]), X(g.kn), X(g.ft)], [i >> 1 === 2 ? .035 : .022, .014, .006], C.body, .03));
+    }
+    A.anchor('lead', k.Q([0, .44, .4])); A.anchor('headRoot', k.Q([0, .42, .22])); A.anchor('tailRoot', k.Q([0, .4, -.6]));
+  }
+});
+
+/* ---- the giant caterpillar: nine fat rings that hump forward in a wave */
+const FA_HI_CAT = [{ a: 0x6aa83a, b: 0xe8f0d0, e: 0x3a2a1a, hair: 0 }, { a: 0x1c1410, b: 0xe07a1a, e: 0x1c1410, hair: 1 }, { a: 0xc8d048, b: 0x2a5a2a, e: 0xe8c060, hair: 0 }];
+ANIMAL({
+  key: 'giant-caterpillar', name: 'Giant caterpillar', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'browser', activity: 'cathemeral', temperament: 'docile',
+    habitat: ['ground', 'canopy', 'trunks'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 1.7, height: 0.5 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): the grub of a giant moth, grown large by the lowland air (about 2 atm); it strips a branch in a night and spins a cocoon the size of a barrel' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 30, note: 'a soft, rich, grassy meat: fried' }, silk: { amount: 2, note: 'from the cocoon: coarse, strong, golden' } },
+  life: { maturity: 0.3, lifespan: 0.5, litter: 200, gestation: 12, note: 'litter: the eggs the moth lays; it eats for three months, then spins' },
+  variants: 3, variantNames: ['hawk-moth grub: green with white stripes', 'tiger grub: black, orange-banded, hairy', 'swallowtail grub: yellow-green, eye-spotted'],
+  w: 0.6, d: 1.8, h: 0.55,
+  data: { mass: 15, legs: 0, segs: 9, sizeRange: [0.6, 1.3], speed: { walk: 0.15, run: 0.5 }, gait: { type: 'multipede', freq: 0.8, stride: 0.1 }, chain: { amp: 0.03, wave: 1.0 }, grazePitch: 0.5,
+    herd: 'alone, or a dozen on one tree', fleeDistance: 1, aggression: 0, idle: { headYaw: 0.25, headPitch: 0.1, tailYaw: 0.05 },
+    schedule: ['GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE'], scheduleNote: 'GRAZE: leaves' },
+  build: function (A) {
+    const C = FA_HI_CAT[A.variant] || FA_HI_CAT[0], k = faHiKit(A, A.S), mix = faHiMix, N = 9, D = 0.17, R0 = 0.17;
+    for (let i = 0; i < N; i++) {
+      const z = (N / 2 - 0.5 - i) * D, t = i / (N - 1), r = R0 * (0.62 + 0.55 * Math.sin(Math.PI * (0.12 + 0.76 * t))), y = r * 0.95;
+      A.part('seg' + i, k.Q([0, y, z]), () => {
+        k.el(0, y, z, r * 0.95, r, D * 0.62, null, { seg: 14, colf: (x, yy, zz) => { const up = (yy / A.S - y) / r; return up < -0.5 ? mix(C.a, C.b, 0.5) : (i % 2 ? mix(C.a, C.b, 0.65) : mix(C.a, C.a, 0)); } });
+        if (i > 0 && i < N - 1) { k.el(0, y + r * 0.2, z + D * 0.45, r * 0.55, r * 0.35, 0.01, C.b, { seg: 8 }); }
+        for (const s of [-1, 1]) { k.co([s * r * 0.6, y - r * 0.7, z], [s * r * 0.7, 0.01, z + 0.01], 0.03, 0.04, mix(C.a, C.b, 0.4), 6);       /* the prolegs */
+          k.el(s * r * 0.98, y * 1.0, z, 0.012, 0.012, 0.012, 0x120c08, { seg: 5 });                                                              /* the spiracles */
+          if (C.hair) for (let h = 0; h < 4; h++) k.co([s * r * 0.55, y + r * 0.8, z + (h - 1.5) * 0.03], [s * r * 0.8, y + r * 1.5, z + (h - 1.5) * 0.04], 0.008, 0.001, C.b, 4); }
+        if (A.variant === 2 && i === 2) for (const s of [-1, 1]) { k.el(s * r * 0.6, y + r * 0.6, z + 0.05, 0.05, 0.045, 0.02, 0x16180c, { seg: 8 }); k.el(s * r * 0.62, y + r * 0.63, z + 0.065, 0.02, 0.02, 0.01, 0xf8f4c0, { seg: 6 }); }
+      });
+    }
+    const zf = (N / 2 - 0.5 + 1) * D;
+    A.part('head', k.Q([0, .1, zf - .06]), () => { k.el(0, .13, zf, .1, .11, .09, C.e, { seg: 12 }); for (const s of [-1, 1]) { k.el(s * .06, .16, zf + .07, .018, .018, .01, 0x0a0806, { seg: 6 }); k.co([s * .03, .05, zf + .07], [s * .05, .05, zf + .13], .02, .008, 0x2a1a10, 5); } });
+    A.anchor('lead', k.Q([0, .13, zf + .1])); A.anchor('headRoot', k.Q([0, .1, zf - .06])); A.anchor('tailRoot', k.Q([0, .15, -(N / 2 - 0.5) * D]));
+  }
+});
+
+/* ---- the gilded orb spider: a web-spinner the size of a table, the abdomen gold-marked */
+const FA_HI_SPIDER = [{ body: 0x1c1610, mark: 0xe0b020, leg: 0x2a2018 }, { body: 0x2a4a2a, mark: 0xe8f0c0, leg: 0x3a5a2a }, { body: 0x2a0e0e, mark: 0xc82a1a, leg: 0x3a1a14 }];
+ANIMAL({
+  key: 'gilded-orb-spider', name: 'Gilded orb spider', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'carnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'defensive',
+    habitat: ['canopy', 'trunks', 'ground'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 1.4, height: 0.5 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant orb-weaver (an arachnid, but an insectoid for the kit), grown large by the lowland air (about 2 atm); the web is spun across a game trail and takes birds' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { silk: { amount: 4, note: 'the web: strong, golden, reeled in the dry months' }, chitin: { amount: 1.5, note: 'the fangs and the carapace' } },
+  life: { maturity: 1, lifespan: 4, litter: 300, gestation: 30, note: 'litter: an egg sac; gestation: the sac to the young' },
+  variants: 3, variantNames: ['gilded: black with gold', 'jade: green and cream', 'crimson: maroon with red'],
+  w: 1.3, d: 1.6, h: 0.5,
+  data: { mass: 5, legs: 8, sizeRange: [0.7, 1.3], speed: { walk: 0.5, run: 3 }, gait: { type: 'octopod', freq: 1.4, stride: 0.2 }, grazePitch: 0.3,
+    herd: 'alone, at the hub of its web', fleeDistance: 2, aggression: 0.5, idle: { headYaw: 0.1, headPitch: 0.03, tailYaw: 0.04 },
+    schedule: ['HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT'], scheduleNote: 'HUNT: waiting at the hub for a catch' },
+  build: function (A) {
+    const C = FA_HI_SPIDER[A.variant] || FA_HI_SPIDER[0], k = faHiKit(A, A.S), mix = faHiMix;
+    k.el(0, .3, -.28, .22, .2, .3, null, { seg: 16, colf: (x, y, z) => { const a = Math.atan2(x, z + .28 / A.S * 0 + 0), band = Math.sin((y / A.S - .3) * 30 + (x / A.S) * 8) > 0.55; return band ? C.mark : mix(C.body, C.mark, 0.1 * faNoise(x * 10, y * 10, z * 10)); } });   /* the abdomen */
+    k.el(0, .3, .06, .12, .1, .14, C.body, { seg: 12 });                                                               /* the carapace */
+    A.part('head', k.Q([0, .3, .14]), () => { k.el(0, .3, .2, .07, .06, .07, C.body, { seg: 10 });
+      for (let e = 0; e < 4; e++) k.el((e % 2 ? 1 : -1) * (.025 + (e >> 1) * .02), .35, .25, .014, .014, .014, 0x0a0806, { seg: 5 });
+      for (const s of [-1, 1]) { k.co([s * .03, .26, .25], [s * .04, .18, .3], .02, .008, C.leg, 5); k.co([s * .04, .18, .3], [s * .03, .12, .3], .008, .002, 0xe8e0c0, 4); } });
+    for (let i = 0; i < 8; i++) {
+      const s = (i & 1) ? -1 : 1, p = i >> 1, z = [.12, .06, .0, -.06][p], dz = [.42, .2, -.12, -.4][p], X = q => [s * q[0], q[1], q[2]];
+      A.part('leg' + i, k.Q(X([.08, .3, z])), () => k.leg([X([.08, .3, z]), X([.32, .5, z + dz * 0.45]), X([.52, .0, z + dz])], [.026, .018, .007], C.leg, .03));
+    }
+    A.anchor('lead', k.Q([0, .32, .3])); A.anchor('headRoot', k.Q([0, .3, .14])); A.anchor('tailRoot', k.Q([0, .3, -.55]));
+  }
+});
+
+/* ---- the atlas moth: wings two metres across, the tips drawn out into serpent heads' hooks, a clear window in each */
+const FA_HI_MOTH = [{ a: 0xa8602a, b: 0x5a2a14, win: 0xf0e8d0, body: 0x6a3a1e }, { a: 0xb89a62, b: 0x6a5a38, win: 0xf0f0e0, body: 0x7a6a44 }, { a: 0x8a9a6a, b: 0x3a4a2a, win: 0xe8f0d8, body: 0x4a5a34 }];
+ANIMAL({
+  key: 'atlas-moth', name: 'Atlas moth', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'frugivore', activity: 'nocturnal', temperament: 'skittish',
+    habitat: ['canopy', 'ground'], locomotion: ['flies', 'walks'] }),
+  size: { length: 1.0, height: 0.9, span: 2.2 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant silk moth, grown large by the lowland air (about 2 atm); it does not eat as an adult, only drinks, and lives a fortnight' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { silk: { amount: 0.5, note: 'the cocoon' } },
+  life: { maturity: 0.4, lifespan: 0.5, litter: 150, gestation: 14, note: 'litter: the eggs; the adult lives only a fortnight' },
+  variants: 3, variantNames: ['rust', 'tawny', 'moss'],
+  w: 2.2, d: 1.0, h: 0.9,
+  data: { mass: 1.2, legs: 6, wings: 1, sizeRange: [0.7, 1.3], speed: { walk: 0.05, run: 0.1, fly: 3 }, gait: { type: 'insect', freq: 1.4, stride: 0.03 }, flap: { freq: 1.4, amp: 0.55, glide: 0.1 },
+    herd: 'alone, to the lights at night', fleeDistance: 3, aggression: 0, schedule: FA_HI_SCH_NIGHT, scheduleNote: 'BROWSE: it drinks at fallen fruit' },
+  build: function (A) {
+    const C = FA_HI_MOTH[A.variant] || FA_HI_MOTH[0], M = A.S, K = 3.2 * M, yb = 0.12 * M, mix = faHiMix, RAISE = 0.6;
+    A.ellip('coat', 0, yb, 0.02 * M, 0.06 * M, 0.06 * M, 0.11 * M, C.body, { seg: 12 });
+    A.ellip('coat', 0, yb - 0.01 * M, -0.2 * M, 0.05 * M, 0.05 * M, 0.2 * M, mix(C.body, C.b, 0.4), { seg: 12 });
+    A.part('head', [0, yb, 0.12 * M], () => { A.ellip('coat', 0, yb, 0.18 * M, 0.05 * M, 0.05 * M, 0.05 * M, C.body, { seg: 10 });
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.04 * M, yb + 0.01 * M, 0.2 * M, 0.02 * M, 0.02 * M, 0.02 * M, 0x1a1008, { seg: 6 });
+        for (let f = 0; f < 6; f++) A.cone('plain', [s * 0.015 * M, yb + 0.04 * M, 0.2 * M + f * 0.02 * M], [s * (0.08 + f * 0.0) * M, yb + 0.15 * M, (0.25 + f * 0.035) * M], 0.004 * M, 0.001 * M, C.b, 3); } });
+    const C0 = [0.12, 0.5], jr = j => 1 - Math.pow(1 - j, 1.5), NU = 48, x0 = 0.04 * M, y0 = yb + 0.05 * M, cw = Math.cos(RAISE), sw = Math.sin(RAISE);
+    const uvAt = (i, j) => { const o = faHjFlyOutline(i), r = jr(j); return [C0[0] + (o[0] - C0[0]) * r, C0[1] + (o[1] - C0[1]) * r]; };
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * x0, y0, 0.04 * M], () => {
+      const pos = (i, j) => { const p = uvAt(i, j), u = p[0], w = p[1], fore = (0.16 - 0.32 * w) * (1 - u) + (0.13 - 0.30 * w) * u, lat = 0.40 * u * K; return [s * (x0 + lat * cw), y0 + lat * sw, 0.04 * M + fore * K]; };
+      A.sheet('membrane', pos, NU, 12, null, { colf: (i, j) => { const r = jr(j), p = uvAt(i, j); let c = mix(C.a, C.b, 0.55 * (1 - r) + 0.25 * faNoise(p[0] * 20, p[1] * 20, 4));
+        if (r > 0.94) c = mix(c, 0xe8d8b0, 0.7); const dx = p[0] - 0.6, dy = p[1] - 0.45; if (dx * dx + dy * dy * 1.6 < 0.012) c = C.win;      /* the window */
+        return Math.round(i * NU) % 6 === 3 && r > 0.12 ? mix(c, C.b, 0.35) : c; } });
+    });
+    [[0.055, 0.065], [0.0, -0.0], [-0.055, -0.06]].forEach(([z, dz], kk) => { for (const s of [1, -1]) {
+      const hip = [s * 0.02 * M, yb - 0.04 * M, z * M], knee = [s * 0.07 * M, yb - 0.02 * M, (z + dz * 0.5) * M], ft = [s * 0.1 * M, 0.005 * M, (z + dz) * M];
+      A.part('leg' + (2 * kk + (s > 0 ? 0 : 1)), hip, () => { A.cone('plain', hip, knee, 0.008 * M, 0.006 * M, C.body, 6); A.cone('plain', knee, ft, 0.006 * M, 0.003 * M, C.body, 6); }); } });
+  }
+});
+
+/* ---- the emperor hornet: a wasp as long as a forearm... a man's forearm and then some, with four glass wings */
+const FA_HI_HORNET = [{ a: 0xd89a10, b: 0x1c1208, h: 0x7a2a10 }, { a: 0xc8c8a0, b: 0x2a1a10, h: 0x8a3a1a }, { a: 0xc84a1a, b: 0x120c0a, h: 0x5a1a0c }];
+ANIMAL({
+  key: 'emperor-hornet', name: 'Emperor hornet', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
+    habitat: ['canopy', 'trunks', 'sky'], locomotion: ['flies', 'walks'] }),
+  size: { length: 1.4, height: 0.5, span: 1.4 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant hornet, grown large by the lowland air (about 2 atm); it hunts the other insects and nests in a paper globe in a hollow tree' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 0.5, note: 'a sting a hand long: a needle and an awl' } },
+  life: { maturity: 0.3, lifespan: 1, litter: 100, gestation: 14, note: 'litter: a queen\'s brood in the paper nest; gestation: egg to larva' },
+  variants: 3, variantNames: ['golden', 'pale and black', 'red'],
+  w: 1.4, d: 1.4, h: 0.5,
+  data: { mass: 1.0, legs: 6, wings: 2, sizeRange: [0.7, 1.3], speed: { walk: 0.3, run: 0.8, fly: 9 }, gait: { type: 'insect', freq: 6, stride: 0.04 }, grazePitch: 0.05, flap: { freq: 6, amp: 0.45, glide: 0 },
+    herd: 'a nest of a hundred; a few hunters on the wing', fleeDistance: 3, aggression: 0.8, schedule: FA_HI_SCH_DAY.map(a => a === 'BROWSE' ? 'HUNT' : a), scheduleNote: '' },
+  build: function (A) {
+    const C = FA_HI_HORNET[A.variant] || FA_HI_HORNET[0], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.22;
+    k.el(0, yb, 0.1, .08, .08, .11, C.b, { seg: 12 });                                                                         /* the thorax */
+    k.co([0, yb, -.02], [0, yb - .01, -.1], .03, .02, C.b, 6);                                                                  /* the waist */
+    k.rows([[0, yb - .01, -.1, .02, .02], [0, yb - .03, -.22, .09, .08], [0, yb - .06, -.45, .09, .085], [0, yb - .09, -.65, .02, .02]], 16, 14, null, { round: [0.1, 0.05], colf: (t, a) => Math.sin(t * 30) > 0.1 ? C.a : C.b });  /* the striped abdomen */
+    k.co([0, yb - .09, -.65], [0, yb - .13, -.82], .012, .001, 0x2a1a0c, 5);                                                    /* the sting */
+    A.part('head', k.Q([0, yb, .2]), () => { k.el(0, yb + .0, .29, .08, .075, .07, C.h, { seg: 12 }); k.el(0, yb - .04, .34, .05, .035, .035, C.a, { seg: 8 });
+      for (const s of [-1, 1]) { k.el(s * .068, yb + .02, .3, .03, .04, .035, 0x1a0e08, { seg: 8 }); k.co([s * .02, yb - .06, .36], [s * .05, yb - .1, .42], .012, .004, 0x2a1a0c, 4); k.co([s * .02, yb + .06, .33], [s * .1, yb + .22, .55], .004, .0015, C.b, 4); } });
+    const wcol = (u, v) => mix(0xd8d0b0, C.a, 0.5 * Math.max(0, 0.3 - v) * 3 * (1 - u) + 0.1 * Math.sin(u * 30) * 0 );
+    for (const s of [1, -1]) { A.part(s > 0 ? 'wingL' : 'wingR', k.Q([s * .06, yb + .08, .12]), () => faHiWing(A, s, .06 * A.S, (yb + .08) * A.S, .12 * A.S, .62 * A.S, .22 * A.S, .25, wcol, .05));
+      A.part(s > 0 ? 'wing2L' : 'wing2R', k.Q([s * .06, yb + .07, .0]), () => faHiWing(A, s, .06 * A.S, (yb + .07) * A.S, .0, .42 * A.S, .15 * A.S, .2, wcol, .04)); }
+    const spec = [{ z: .16, kn: [.12, .02, .3], ft: [.16, -.2, .4] }, { z: .1, kn: [.15, .0, .1], ft: [.2, -.22, .12] }, { z: .02, kn: [.12, .0, -.14], ft: [.15, -.22, -.26] }];
+    for (let i = 0; i < 6; i++) { const s = (i & 1) ? -1 : 1, g = spec[i >> 1], X = q => [s * q[0], yb - .04 + q[1], q[2]], root = [s * .05, yb - .06, g.z];
+      A.part('leg' + i, k.Q(root), () => k.leg([root, X([g.kn[0], g.kn[1] + .0, g.kn[2]]), [s * g.ft[0], .0, g.ft[2]]], [.016, .011, .005], C.b, .02)); }
+    A.anchor('lead', k.Q([0, yb, .38])); A.anchor('headRoot', k.Q([0, yb, .2])); A.anchor('tailRoot', k.Q([0, yb, -.4]));
+  }
+});
+
+/* ---- the jewel macaw: a big parrot, red and blue and yellow, a long tail */
+const FA_HI_MACAW = [{ body: 0xc81a1a, belly: 0xd8301c, head: 0xc81a1a, wing: 0x1a58c8, tip: 0x1a8ac8, tail: 0xc81a1a, band: 0xe8c81a, beak: 0xe0d8c0, leg: 0x5a5048 },
+  { body: 0x1a58c8, belly: 0xe8c81a, head: 0x2a7ad8, wing: 0x1a50b8, tip: 0x38a0e0, tail: 0x1a58c8, band: 0x2a8a3a, beak: 0x1c1c1c, leg: 0x5a5048 },
+  { body: 0x2a9a3a, belly: 0x6ac848, head: 0x2a9a3a, wing: 0x1a7a30, tip: 0x38b0a0, tail: 0xc83a1a, band: 0xe8c81a, beak: 0xd0c8b0, leg: 0x5a5048 }];
+ANIMAL({
+  key: 'jewel-macaw', name: 'Jewel macaw', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'frugivore', activity: 'diurnal', temperament: 'wary',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies', 'climbs'] }),
+  size: { length: 1.3, height: 0.7, span: 1.6 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a large parrot of the high canopy, loud and long-lived; pairs for life, they strip fruit and nest in dead trunks' })],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 1, note: 'tough, oily' }, eggs: { amount: 4, note: 'two eggs a year in a trunk hollow' }, feathers: { amount: 0.08, note: 'the red, blue and gold quills: the finest finery and fletching' } },
+  life: { maturity: 4, lifespan: 50, litter: 2, gestation: 28, note: 'gestation: the incubation; a macaw lives half a century' },
+  variants: 3, variantNames: ['scarlet', 'blue and gold', 'green and red'],
+  w: 1.6, d: 1.4, h: 0.75,
+  data: { mass: 1.4, legs: 2, wings: 1, sizeRange: [0.8, 1.2], speed: { walk: 0.4, run: 1.0, fly: 14 }, gait: { type: 'flyer', freq: 2.4, stride: 0.1 }, flap: { freq: 2.4, amp: 0.4, glide: 0.1, fold: 0.05, sweep: 1.3, foldScale: 0.6, roll: 0.75, tuck: 0.9 },
+    herd: 'pairs, gathering in flocks of thirty at the fruiting trees', fleeDistance: 8, aggression: 0, schedule: FA_HI_SCH_DAY, scheduleNote: 'BROWSE: fruit in the crowns' },
+  build: function (A) {
+    const C = FA_HI_MACAW[A.variant] || FA_HI_MACAW[0];
+    faHiBird(A, { k: 1.0, bw: 1.0, body: C.body, belly: C.belly, head: C.head, wing: C.wing, tip: C.tip, tail: C.tail, wingBand: C.band, beak: C.beak, leg: C.leg, tailL: 0.5, tailW: 0.05, beakL: 0.1, hook: 0.07, beakW: 0.04, span: 0.55, chord: 1.0 });
+  }
+});
+
+/* ---- the sparkle hummer: a bird the size of a thumb... that is, small, with a needle bill, and iridescent */
+const FA_HI_HUMMER = [{ body: 0x1a8a5a, belly: 0xe8e0c0, head: 0x1a4ac8, wing: 0x3a4a3a, tip: 0x1c2a22, tail: 0x1a6a4a, beak: 0x1a1a1a, leg: 0x2a2a2a }, { body: 0xc81a6a, belly: 0xe8d0b8, head: 0xe8a81a, wing: 0x4a3a44, tip: 0x2a1a22, tail: 0x8a1a4a, beak: 0x1a1a1a, leg: 0x2a2a2a }, { body: 0x2a6ac8, belly: 0xf0f0f0, head: 0x1ac8c8, wing: 0x3a4a5a, tip: 0x1a2430, tail: 0x1a3a8a, beak: 0x1a1a1a, leg: 0x2a2a2a }];
+ANIMAL({
+  key: 'sparkle-hummer', name: 'Sparkle hummer', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'frugivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies'] }),
+  size: { length: 0.36, height: 0.12, span: 0.36 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a hovering nectar-drinker, the bloom\'s pollinator; the thick air lets even it grow larger than the world\'s (a hand long)' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {},
+  life: { maturity: 0.5, lifespan: 5, litter: 2, gestation: 16, note: 'gestation: the incubation; a thumbnail nest, two eggs' },
+  variants: 3, variantNames: ['emerald and sapphire', 'ruby and gold', 'sapphire and aqua'],
+  w: 0.36, d: 0.36, h: 0.12,
+  data: { mass: 0.02, legs: 2, wings: 1, sizeRange: [0.8, 1.2], speed: { walk: 0.05, run: 0.1, fly: 8 }, gait: { type: 'flyer', freq: 12, stride: 0.02 }, flap: { freq: 12, amp: 0.5, glide: 0, fold: 0.05, sweep: 1.3, foldScale: 0.6, roll: 0.75, tuck: 0.9 },
+    herd: 'alone, at its patch of bloom', fleeDistance: 2, aggression: 0.2, schedule: FA_HI_SCH_DAY, scheduleNote: 'BROWSE: nectar at the blooms' },
+  build: function (A) {
+    const C = FA_HI_HUMMER[A.variant] || FA_HI_HUMMER[0];
+    faHiBird(A, { k: 0.3, bw: 0.7, body: C.body, belly: C.belly, head: C.head, wing: C.wing, tip: C.tip, tail: C.tail, beak: C.beak, leg: C.leg, tailL: 0.18, tailW: 0.04, beakL: 0.34, hook: 0, beakW: 0.012, span: 0.5, chord: 0.5 });
+  }
+});
+
+/* ---- the lantern-fly: a glowing planthopper, its long snout and its tail alight */
+const FA_HI_LANTERN = [{ body: 0x4a3a1a, glow: 0x6ae830, wing: 0x8a3a1a }, { body: 0x2a2a3a, glow: 0x30c8e8, wing: 0x3a2a6a }, { body: 0x5a2a1a, glow: 0xe8a830, wing: 0xa84a1a }];
+ANIMAL({
+  key: 'lantern-fly', name: 'Lantern-fly', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'herbivore', feeding: 'browser', activity: 'nocturnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies', 'walks', 'leaps'] }),
+  size: { length: 0.33, height: 0.13, span: 0.44 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a sap-sucking planthopper with a glowing abdomen and snout; at night they drift through the canopy like sparks. The abdomen and the snout are the "glow" family (the kit\'s emissive)' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {},
+  life: { maturity: 0.3, lifespan: 1, litter: 60, gestation: 20, note: 'litter: eggs in a bark crevice; gestation: egg to nymph' },
+  variants: 3, variantNames: ['green', 'cyan', 'amber'],
+  w: 0.44, d: 0.33, h: 0.13,
+  data: { mass: 0.05, legs: 6, wings: 1, sizeRange: [0.8, 1.2], speed: { walk: 0.05, run: 0.2, fly: 3 }, gait: { type: 'insect', freq: 4, stride: 0.02 }, flap: { freq: 4, amp: 0.5, glide: 0 },
+    herd: 'drifts of a dozen over a flowering vine', fleeDistance: 1.5, aggression: 0, schedule: FA_HI_SCH_NIGHT, scheduleNote: 'BROWSE: sap' },
+  build: function (A) {
+    const C = FA_HI_LANTERN[A.variant] || FA_HI_LANTERN[0], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.07;
+    k.el(0, yb, 0.01, .028, .028, .06, C.body, { seg: 10 });
+    A.ellip('glow', 0, yb * A.S - 0.005 * A.S, -0.07 * A.S, .026 * A.S, .026 * A.S, .06 * A.S, C.glow, { seg: 10 });                                                  /* the glowing abdomen */
+    A.part('head', k.Q([0, yb, .05]), () => { k.el(0, yb, .09, .025, .025, .025, C.body, { seg: 8 });
+      A.cone('glow', k.Q([0, yb + .005, .1]), k.Q([0, yb + .02, .19]), .01 * A.S, .004 * A.S, C.glow, 6);                                                               /* the lantern snout */
+      for (const s of [-1, 1]) k.el(s * .022, yb + .01, .1, .01, .01, .01, 0x0a0806, { seg: 5 }); });
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', k.Q([s * .02, yb + .03, .02]), () => faHiWing(A, s, .02 * A.S, (yb + .03) * A.S, .02 * A.S, .2 * A.S, .09 * A.S, .3, (u, v) => mix(C.wing, 0xe8d8b0, 0.4 * u + 0.2 * (1 - v)), .04));
+    [[.04, .02], [.0, .0], [-.04, -.03]].forEach(([z, dz], kk) => { for (const s of [1, -1]) {
+      const hip = [s * .02, yb - .02, z], kn = [s * .06, yb - .01, z + dz * .4], ft = [s * .08, 0.003, z + dz];
+      A.part('leg' + (2 * kk + (s > 0 ? 0 : 1)), k.Q(hip), () => k.leg([hip, kn, ft], [.006, .004, .002], C.body, .01)); } });
+    A.anchor('lead', k.Q([0, yb, .14])); A.anchor('headRoot', k.Q([0, yb, .05])); A.anchor('tailRoot', k.Q([0, yb, -.1]));
+  }
+});
+
+/* ---- the lantern tree frog: a big green frog of the canopy, gold-eyed, with sticky toe pads */
+const FA_HI_FROG = [{ body: 0x3aa83a, flank: 0xe8d84a, belly: 0xe8f0c0, eye: 0xe8b81a, pad: 0x8ae85a }, { body: 0x1a4ac8, flank: 0x0a0a14, belly: 0x2a2a3a, eye: 0x1a1a1a, pad: 0x2a6ae8 }, { body: 0x6ac85a, flank: 0xe87a1a, belly: 0xf0f0d0, eye: 0xc81a1a, pad: 0xe87a1a }];
+ANIMAL({
+  key: 'lantern-tree-frog', name: 'Lantern tree frog', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { riparian: 'both', diet: 'carnivore', feeding: 'insectivore', activity: 'nocturnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks', 'marsh', 'ground'], locomotion: ['walks', 'leaps', 'climbs'] }),
+  size: { length: 0.5, height: 0.35 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a big tree frog of the hyperjungle, the size of a cat; it sings from the bromeliad pools at night and takes the giant insects as they land' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 1.2, note: 'white and sweet, the hind legs the best' }, eggs: { amount: 200, note: 'a jelly clutch on a leaf above a bromeliad pool' } },
+  life: { maturity: 2, lifespan: 10, litter: 200, gestation: 14, note: 'litter: the spawn; gestation: spawn to tadpole; the tadpoles grow in a bromeliad\'s pool' },
+  variants: 3, variantNames: ['emerald, gold-flanked', 'cobalt, black-flanked', 'leaf green, red-eyed'],
+  w: 0.45, d: 0.62, h: 0.4,
+  data: { mass: 1.5, legs: 4, sizeRange: [0.7, 1.3], speed: { walk: 0.3, run: 2.5 }, gait: { type: 'quadruped', freq: 1.2, stride: 0.2 }, grazePitch: 0.1,
+    herd: 'a chorus of a dozen at one pool', fleeDistance: 3, aggression: 0, idle: { headYaw: 0.1, headPitch: 0.03, tailYaw: 0 }, schedule: FA_HI_SCH_NIGHT, scheduleNote: 'BROWSE: insects at night' },
+  build: function (A) {
+    const C = FA_HI_FROG[A.variant] || FA_HI_FROG[0], S = A.S, mix = faHiMix, e = (x, y, z, rx, ry, rz, col, o) => A.ellip('skin', x * S, y * S, z * S, rx * S, ry * S, rz * S, col, o || { seg: 12 }), co = (a, b, r0, r1, col) => A.cone('skin', [a[0] * S, a[1] * S, a[2] * S], [b[0] * S, b[1] * S, b[2] * S], r0 * S, r1 * S, col, 6);
+    e(0, .2, -.02, .15, .13, .22, null, { seg: 16, colf: (x, y, z) => { const a = y / S / .13; return a < -0.4 ? C.belly : (Math.abs(x / S) > .1 && a < 0.4 ? C.flank : mix(C.body, C.flank, 0.1 * faNoise(x * 15, y * 15, z * 15))); } });
+    A.part('head', [0, .22 * S, .16 * S], () => { e(0, .24, .24, .125, .09, .11, mix(C.body, C.belly, 0.1), { seg: 14 }); e(0, .17, .26, .07, .05, .06, C.belly, { seg: 10 });   /* the throat */
+      for (const s of [-1, 1]) { e(s * .075, .325, .24, .05, .05, .05, C.eye, { seg: 10 }); e(s * .078, .328, .275, .02, .035, .012, 0x0a0806, { seg: 6 }); e(s * .03, .3, .35, .008, .008, .008, 0x2a2a18, { seg: 4 }); } });
+    const pads = (p, s) => { for (let k = -1; k <= 1; k++) e(p[0] + s * k * .02, .006, p[2] + .045, .014, .008, .014, C.pad, { seg: 6 }); };
+    for (let i = 0; i < 4; i++) {
+      const s = (i & 1) ? -1 : 1, hind = i >> 1, X = q => [s * q[0], q[1], q[2]];
+      const pts = hind ? [X([.12, .2, -.14]), X([.22, .17, .02]), X([.2, .04, -.2]), X([.2, .005, -.02])] : [X([.1, .18, .12]), X([.14, .1, .1]), X([.13, .005, .2])];
+      A.part('leg' + i, [pts[0][0] * S, pts[0][1] * S, pts[0][2] * S], () => { for (let q = 0; q < pts.length - 1; q++) { co(pts[q], pts[q + 1], hind && q === 0 ? .05 : .03 - q * .004, .022, mix(C.body, C.flank, q === 0 ? 0 : 0.2)); if (q) e(pts[q][0], pts[q][1], pts[q][2], .026, .026, .026, C.body, { seg: 6 }); }
+        const f = pts[pts.length - 1]; for (let d = -1; d <= 1; d++) { co(f, [f[0] + s * d * .035 * 0 + d * .03, .008, f[2] + .06], .014, .01, C.body); } pads(f, 1); });
+    }
+    A.anchor('lead', [0, .26 * S, .35 * S]); A.anchor('headRoot', [0, .22 * S, .16 * S]); A.anchor('tailRoot', [0, .2 * S, -.24 * S]);
+  }
+});
+
+/* ---- the forest tapir: a shy browser of the understory with a flexible snout, dark fore and hind, a pale saddle */
+const FA_HI_TAPIR = [{ dark: 0x2a2420, pale: 0xd8d0b8 }, { dark: 0x5a3220, pale: 0xc8a880 }, { dark: 0x6a665a, pale: 0xc8c4b4 }];
+ANIMAL({
+  key: 'forest-tapir', name: 'Forest tapir', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { riparian: 'both', diet: 'herbivore', feeding: 'browser', activity: 'crepuscular', temperament: 'skittish',
+    habitat: ['ground', 'marsh', 'shallows'], locomotion: ['walks', 'runs', 'swims'] }),
+  size: { length: 2.5, height: 1.07 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a tapir of the hyperjungle floor, browsing fruit and leaf with its snout and taking to the water when pressed' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 120, note: 'dark and strong, from the haunch' }, hide: { amount: 1, hideM2: 2.2, note: 'thick, tough, split for shields and boots' } },
+  life: { maturity: 3, lifespan: 25, litter: 1, gestation: 395, note: 'one calf, striped and spotted for the first six months' },
+  variants: 3, variantNames: ['dark with a cream saddle', 'chestnut with a buff saddle', 'dun'],
+  w: 0.72, d: 2.5, h: 1.1,
+  data: { mass: 220, legs: 4, sizeRange: [0.75, 1.2], speed: { walk: 1.0, run: 7 }, gait: { type: 'quadruped', freq: 1.4, stride: 0.5 }, grazePitch: 0.7,
+    herd: 'alone, or a cow with her calf', fleeDistance: 12, aggression: 0.1, idle: { headYaw: 0.4, headPitch: 0.08, tailYaw: 0.05 }, schedule: FA_HI_SCH_WALK, scheduleNote: '' },
+  build: function (A) {
+    const C = FA_HI_TAPIR[A.variant] || FA_HI_TAPIR[0], S = A.S, mix = faHiMix, R = rows => rows.map(r => r.map(x => x * S));
+    const coat = (t, a, q) => { const z = q[2] / S, up = Math.cos(a), saddle = faHjSm(0.15, 0.45, up) * faHjSm(-0.55, -0.35, z) * faHjSm(0.55, 0.35, z); return mix(C.dark, C.pale, Math.max(saddle, 0.7 * (1 - faHjSm(-0.5, -0.05, up)) * 0)) ; };
+    faHjRows(A, 'coat', R([[0, .62, -.9, .09, .12], [0, .66, -.55, .26, .3], [0, .7, -.05, .32, .34], [0, .7, .45, .3, .33], [0, .66, .8, .22, .26]]), 16, 16, null, { round: [0.08, 0], colf: coat });
+    A.part('head', [0, .7 * S, .75 * S], () => {
+      faHjRows(A, 'coat', R([[0, .72, .7, .2, .24], [0, .68, .95, .15, .18], [0, .6, 1.2, .1, .11], [0, .54, 1.33, .075, .075]]), 12, 12, null, { round: [0, 0.12], colf: (t, a) => mix(C.dark, C.pale, 0.9 * faHjSm(0.55, 0.9, t) * faHjSm(0.4, -0.2, Math.cos(a)) * 0 + 0.0) });
+      A.cone('coat', [0, .54 * S, 1.3 * S], [0, .44 * S, 1.48 * S], .07 * S, .05 * S, C.dark, 8);               /* the snout */
+      for (const s of [-1, 1]) { A.ellip('eye', s * .14 * S, .74 * S, 1.0 * S, .02 * S, .02 * S, .02 * S, 0x0a0806, { seg: 6 }); A.ellip('coat', s * .16 * S, .93 * S, .83 * S, .07 * S, .1 * S, .035 * S, mix(C.dark, C.pale, .25), { seg: 8 }); }
+    });
+    A.part('tail', [0, .66 * S, -.9 * S], () => A.cone('coat', [0, .66 * S, -.9 * S], [0, .58 * S, -.98 * S], .04 * S, .02 * S, C.dark, 6));
+    for (let i = 0; i < 4; i++) {
+      const s = (i & 1) ? -1 : 1, hind = i >> 1, z = hind ? -.55 : .5, X = q => [s * q[0] * S, q[1] * S, (z + q[2]) * S];
+      const root = X([.18, .5, 0]), kn = X([.19, .27, hind ? -.1 : .02]), ft = X([.18, .03, hind ? -.06 : .04]);
+      A.part('leg' + i, root, () => { A.cone('coat', root, kn, .1 * S, .07 * S, C.dark, 8); A.cone('coat', kn, ft, .07 * S, .05 * S, C.dark, 8);
+        for (let d = -1; d <= 1; d++) A.ellip('hoof', ft[0] + d * .03 * S, .015 * S, ft[2] + .03 * S, .022 * S, .022 * S, .035 * S, 0x1a1612, { seg: 6 }); });
+    }
+    A.anchor('lead', [0, .6 * S, 1.2 * S]); A.anchor('headRoot', [0, .7 * S, .75 * S]); A.anchor('tailRoot', [0, .66 * S, -.9 * S]);
+  }
+});
+
+/* ---- the vine boa: four metres of snake in the boughs, its body a chain of twelve segments */
+const FA_HI_BOA = [{ a: 0x2a8a3a, b: 0xe8e8c0, d: 0x16502a }, { a: 0x8a4a24, b: 0xd8a868, d: 0x3a1a0c }, { a: 0x4a8a3a, b: 0x1a3a1a, d: 0xc8d868 }];
+ANIMAL({
+  key: 'vine-boa', name: 'Vine boa', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { riparian: 'both', diet: 'carnivore', feeding: 'predator', activity: 'nocturnal', temperament: 'defensive',
+    habitat: ['canopy', 'trunks', 'ground', 'marsh'], locomotion: ['walks', 'climbs', 'swims'] }),
+  size: { length: 3.7, height: 0.25 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a constrictor of the boughs that hangs over the game trails, as thick as a man\'s thigh; the segments weave (the kit\'s chain) and the head follows' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 20, note: 'white and firm, like chicken' }, hide: { amount: 1, hideM2: 3.5, note: 'a patterned skin: belts, bindings, drumheads' } },
+  life: { maturity: 4, lifespan: 25, litter: 12, gestation: 150, note: 'live-bearing: a litter of a dozen' },
+  variants: 3, variantNames: ['emerald with cream saddles', 'copper', 'banded green'],
+  w: 0.35, d: 3.7, h: 0.25,
+  data: { mass: 40, legs: 0, segs: 12, sizeRange: [0.6, 1.2], speed: { walk: 0.5, run: 2 }, gait: { type: 'multipede', freq: 0.6, stride: 0.2 }, chain: { amp: 0.12, wave: 1.5 }, grazePitch: 0.1,
+    herd: 'alone, coiled on a bough over a trail', fleeDistance: 3, aggression: 0.4, idle: { headYaw: 0.2, headPitch: 0.05, tailYaw: 0.1 },
+    schedule: ['HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'HUNT', 'HUNT'], scheduleNote: 'HUNT: an ambush from a bough' },
+  build: function (A) {
+    const C = FA_HI_BOA[A.variant] || FA_HI_BOA[0], S = A.S, mix = faHiMix, N = 12, Z0 = -1.8, Z1 = 1.5, L = (Z1 - Z0) / N;
+    const r = z => { const t = (z - Z0) / (Z1 - Z0); return Math.max(0.012, 0.075 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.06 + t * 0.94)), 0.5) * (t > 0.85 ? 1 - (t - 0.85) * 2 : 1)); };
+    for (let k = 0; k < N; k++) {
+      const z0 = Z0 + k * L, z1 = z0 + L, zm = (z0 + z1) / 2;
+      A.part('seg' + k, [0, r(zm) * S, zm * S], () => faHjRows(A, 'scale', [z0, zm, z1].map(z => [0, r(z) * S, z * S, r(z) * S, r(z) * S * 0.9]), 4, 14, null,
+        { round: [k === 0 ? 0.6 : 0, 0], colf: (t, a, q) => { const z = q[2] / S, belly = Math.cos(a) < -0.5; return belly ? C.b : (Math.sin(z * 16) * Math.cos(a * 2) > 0.45 ? C.d : mix(C.a, C.d, 0.12 * faNoise(z * 8, a, 3))); } }));
+    }
+    A.part('head', [0, .07 * S, 1.56 * S], () => { faHjRows(A, 'scale', [[0, .07, 1.5, .05, .045], [0, .07, 1.62, .062, .05], [0, .065, 1.74, .046, .036], [0, .06, 1.83, .026, .02]].map(q => q.map(x => x * S)), 10, 12, C.a, { round: [0, 0.2] });
+      for (const s of [-1, 1]) { A.ellip('eye', s * .05 * S, .09 * S, 1.7 * S, .012 * S, .014 * S, .014 * S, 0xe8b81a, { seg: 6 }); A.ellip('eye', s * .054 * S, .09 * S, 1.705 * S, .004 * S, .012 * S, .004 * S, 0x0a0806, { seg: 4 }); }
+      A.cone('mouth', [0, .05 * S, 1.83 * S], [0, .045 * S, 1.95 * S], .004 * S, .002 * S, 0xc82a3a, 4); });
+    A.ellip('scale', 0, .004 * S, 0, .002 * S, .002 * S, .002 * S, C.a, { seg: 4 });   /* the body part's stand-in: the segments carry the snake */
+    A.anchor('lead', [0, .08 * S, 1.8 * S]); A.anchor('headRoot', [0, .07 * S, 1.56 * S]); A.anchor('tailRoot', [0, .02 * S, -1.8 * S]);
   }
 });
