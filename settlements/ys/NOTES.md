@@ -627,3 +627,39 @@ the kit's figures are no longer drawn on a drowned forecourt.
 was (244); the kit sheet and the mock pass
 `--assert` too. **The vendor manifest** hashes a file's bytes with CRLF read as LF now (the committed one was written on
 a Windows checkout, so every Linux build rewrote all of it).
+## The gaps, the polish, the housekeeping (Oct 12 2026, Travis: "work on 2, 3, 4")
+**The foreign quarter.** A slot may carry a `wish` (a builder key): the fill takes it whole when it fits, else the pool as
+before. The Voth embassy and the Historians' chapterhouse no longer clear lane houses at load: the placer seats each as a
+compound (`ysPlCompound`, 88) in the first block of its culture with no host, trying every side of the block at five
+shifts, with the building behind a 26 × 21 m square (`street:square`) and an approach strip to the street, and the foreign
+lanes are laid round it. Each foreign plot is sized to a builder of its culture's set picked by the block's wealth (`PL_FOREIGN`,
+`ysPlForeignPick`) and carries it as its wish: fixed 12-20 m plots had fitted a third of the sets' builders. Every dwelling the pass fills gets a room (`ysFqRoom`: the residence's body from `YS_FQ_BODY`,
+a bedroom polygon inset .3, the door at the front, a bed, a store and a food spot), so the life layer can put someone in
+it (`foreign` invariant: 100 or more).
+**The water's edges.** The moles carry bollards every 16 m and a ladder every 55 m (`hykSpanLadder`, framed by the new
+`ysInFrame`), none by a pier, a quay or a span's foot. Roads and canal streets follow the drawn surface (`ysMeshH`, the
+port mesh's own triangle, not the analytic height), lifted by kind; a canal street lies on its bed and is broken under a
+host, a ruin site and a mole. The river's sheet is 95 % of the channel and its banks ease in two steps (`ysRiverY`), so
+the bank no longer shows a step at the waterline.
+**The hosts.** Floors of one core are linked by newel stairs (`FLOORS.stairs`, 88a: consecutive inhabited plans sharing a
+core; drawn bare by 88b, the treads round a fluted newel, `host-floors-linked-by-stairs`). A shelf host (the Trays) drops
+any kit item a grown-on pod put below its own floor (`HYK.placeOn`). The Pharos's mast carries three stays.
+**The polish.** One lathe radius (`hykLatheR`, `hykLatheAt` on the skin with its normal) replaces the four copies in the
+housing, the tides, the military and the shops. Cloth is the library's `cloth.seaweed` (`hkCloth`, materials.json) with a
+procedural fallback. An open bowl (`hykFurnDish` without `fill`) is hollow: the rim cut and an inner lathe. The cliff stair
+marches the drawn surface from 24 m inside the edge to 16 m past it.
+**The biome, re-vendored.** `src/86-bio-*` match `biomes/nwbay` again, including the tree variants
+(`86-bio-56-biome-nwbay-variants.js`). The variants put each species' bark as its own mesh, so the biome drew 169 calls;
+upstream now takes `BIO.host.bakeBark` (set by 89 after `BIO.init`, which drops keys it does not know), stamping the bark
+into the floor's buckets: 50 calls.
+**Draw calls.** Before the bake, a kit item with 60 instances or fewer, none owned by a building, is merged per material
+(`ysMergeSparseKit`, 88b; `window._sparseKit`). Most sparse items are a building's (the editor hides them by owner), so
+it takes only three. What did the work: every host's foam ring was a mesh of its own (34 calls at the Overview); they are
+one mesh now (`HYK_FOAM`, 64). The core stairs first cost 2.24 M triangles (the open-air spiral's bone brackets on each
+of 324 stairs); drawn bare they are 364 k, budgeted per host.
+**Numbers** (`verify.py dist/ys.html --assert`): error panel clean, 40 invariants green, nothing over; 28.43 M of 30 M
+scene triangles (27.56 M before), 187 of 220 draw calls at the opening (196), the Overview 203 (233: under its 220 for the
+first time). The kit sheet and the mock pass `--assert`.
+Seen and left: the river's waterline is a saw-tooth where the flat sheet meets the terrain's 10 m triangles (the phase-0
+grid; KNOWN_ISSUES). Not done: the karst overhangs (`core/terrain` is the refactor's), the textures the library lacks
+(the owner's to find or generate), the Bole as a host, rooms in the foreign trade buildings.

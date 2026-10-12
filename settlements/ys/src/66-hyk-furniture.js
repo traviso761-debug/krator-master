@@ -42,15 +42,22 @@ function hykFurnJar(F,x,y,z,r,h,col,lid,o){o=o||{};
  hykFurnBody(F,x,z,[[r*.45,y],[r*.8,y+h*.06],[r,y+h*.3],[r*.95,y+h*.55],[r*.6,y+h*.74],[r*.5,y+h*.8],[r*.55,y+h*.84]],col,'shell',{nu:16,nv:14,flute:{n:o.fl||9,amp:.06,sharp:1.5}});
  hykFurnBody(F,x,z,[[r*.5,y+h*.84],[r*.68,y+h*.86],[r*.6,y+h*.93],[r*.2,y+h*.98],[0,y+h]],lid,'nacre',{nu:14,nv:6});
  hykFurnRing(F,x,y+h*.845,z,r*.6,r*.05,F.pick('weed'),'weed',{n:16,seg:5});}
-// a dish: the wall climbs to the rim at (R, yr) and caps flush over it (F.lathe winds outward only, so a hollow has no
-// visible inside); a dark fill a finger proud inside the lip reads as the shadowed hollow; a lip ring stands on the rim.
-// o.prof replaces the default wall; o.oval (hykFurnOval, with R = oval.R) makes it an oval; o.flute ribs a round one;
-// o.lip the lip's tube radius; o.fill its colour
+// a dish: the wall climbs to the rim at (R, yr); a lip ring stands on the rim. Filled (o.fill: the hearth's ash), the wall
+// caps over the rim and the fill lies a finger proud inside the lip, the contents' surface. Empty, it is a real hollow
+// (Oct 12 2026: F.lathe takes `flip` now): the profile is cut at the rim and an inner wall, flipped, curves down from just
+// inside the rim to a floor above any stem, no deeper than .6 R, following the outer wall .9 in where that is narrower.
+// o.prof replaces the default wall (its last points, past the rim, are the cap); o.oval (hykFurnOval, with R = oval.R)
+// makes it an oval; o.flute ribs a round one; o.lip the lip's tube radius
 function hykFurnDish(F,x,z,R,yr,col,m,o){o=o||{};const y0=o.y0||0;const H=yr-y0;const O=o.oval;const lob=O?O.lobes:o.lobes,fl=O?O.flute:o.flute;
  const prof=o.prof||[[R*.3,y0],[R*.55,y0+H*.2],[R*.85,y0+H*.55],[R,y0+H*.9],[R*.98,yr],[R*.9,yr+.012],[0,yr+.02]];
- hykFurnBody(F,x,z,prof,col,m,{nu:o.nu||28,nv:o.nv||16,lobes:lob,flute:fl});
  const fx=O?O.rx*.9:R*.9*(1+(fl?fl.amp*.5:0)),fz=O?O.rz*.9:fx;
- F.blob(x,yr+.02,z,fx,.012,fz,o.fill||F.pick('crust'),'dark');
+ if(o.fill){hykFurnBody(F,x,z,prof,col,m,{nu:o.nu||28,nv:o.nv||16,lobes:lob,flute:fl});F.blob(x,yr+.02,z,fx,.012,fz,o.fill,'dark');}
+ else{let ri=prof.findIndex(p=>p[1]>=yr-1e-6);if(ri<0)ri=prof.length-1;const outer=prof.slice(0,ri+1),rr0=outer[ri][0];
+  const rOut=y=>{for(let i=1;i<outer.length;i++)if(y<=outer[i][1]){const a=outer[i-1],b=outer[i];const t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return a[0]+(b[0]-a[0])*t;}return rr0;};
+  let yf=yr-Math.min(.6*rr0,H*.8);for(let y=yr;y>yf;y-=.005)if(rOut(y)<rr0*.5){yf=y+.005;break;}   /* the floor above a stem */
+  const inner=[[0,yf]];for(let k=1;k<=6;k++){const y=yf+(yr-yf)*k/6;inner.push([Math.min(rr0*.92*Math.sqrt(k/6),rOut(y)*.9),y]);}
+  hykFurnBody(F,x,z,outer,col,m,{nu:o.nu||28,nv:o.nv||16,lobes:lob,flute:fl});
+  F.lathe(x,z,inner,col,m,{nu:o.nu||28,nv:8,lobes:lob,flute:fl,flip:true,inside:true});}
  hykFurnRing(F,x,yr+.01,z,R*.97,o.lip||R*.06,o.lipCol||col,o.lipM||m,{lobes:lob,flute:fl,n:O?40:28});}
 // a bone upright for a rack: a flattened shell pad for a foot, the stalk bowed outward, knuckled at the head
 function hykFurnUpright(F,x,z,hx,hy,hz,r,col,o){o=o||{};

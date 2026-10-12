@@ -7,13 +7,6 @@ reseed(30849);
 // ---------------------------------------------------------------- shared helpers (used by 78-hyk-agri.js too)
 // the radius a hykLathe really has at (th, y): the same modulation chain as 61's rAt, so lips, brackets and fillets sit on
 // the surface and not on the nominal profile (a flute crest stands up to amp proud of it)
-function hykMilLatheR(L,th,y){let r=L.rFn(y);const u=((th/TAU)%1+1)%1;
- if(L.lobes)r*=1+L.lobes.amp*Math.cos(L.lobes.n*th+(L.lobes.ph||0));
- if(L.flute)r*=1+L.flute.amp*Math.pow(.5+.5*Math.cos(L.flute.n*th+(L.twist||0)*y),L.flute.sharp||2);
- if(L.rings)r*=1+L.rings.amp*Math.sin(y/L.H*L.rings.n*TAU);
- if(L.noise)r*=1+L.noise.amp*(fbm(u*(L.noise.su||3)+(L.noise.seed||0),y/(L.noise.sv||2),L.noise.seed||1,2)-.5)*2;
- return Math.max(0,r);}
-function hykMilLatheAt(L,th,y){const q=hykLatheAt(L,th,y);const r=hykMilLatheR(L,th,y);return {p:[(L.cx||0)+r*Math.cos(th),(L.yBase||0)+y,(L.cz||0)+r*Math.sin(th)],n:q.n};}
 // the elevation at which a hykPod's surface passes height y (for a door whose sill must meet the floor)
 function hykMilPodEl(P,y){const b=P.b,e1=P.e1||1,cy=P.cy!=null?P.cy:b*.82;let t=(y-cy)/b;if(t<0&&P.squash)t/=P.squash;t=clamp(t,-.999,.999);return Math.sign(t)*Math.asin(Math.pow(Math.abs(t),1/e1));}
 // A closed-in-u hykSurf (lathe, pod, flare, disc) shows a seam where its first and last columns meet: 61 computes the
@@ -68,13 +61,13 @@ function hykMilCone(s){const mat=s.mat||'hkShell';const rb=s.rb,rt=s.rt,h=s.h;co
  if(s.inner!==false)hykPut('hkIn',hykMilLathe(Object.assign({},L,{ops:inOps,rFn:y=>L.rFn(y)*.9,flip:true,col:hC(hPick(mat==='hkBarn'?HPAL.barnacle:HPAL.shell),.85)})),true);
  hykPut(mat,hykMilFlare([s.cx,yB+.06,s.cz],[0,1,0],rb*.98,rb*(s.flare||.32),{col}));
  const hAt=th=>h*(1-L.tilt.amp*.5*(1+Math.cos(th-L.tilt.dir)));const hMid=h*(1-L.tilt.amp*.5);
- const rAt=(th,y)=>hykMilLatheR(L,th,y);
+ const rAt=(th,y)=>hykLatheR(L,th,y);
  if(s.lid!==false){const dome=s.dome!=null?s.dome:rt*.3,vk=s.ventK||.2;const lidCol=hC(hPick(mat==='hkBarn'?HPAL.barnacle:HPAL.shellWarm),.92);
   hykPut(mat,hykMilWeld(hykSurf((u,v)=>{const th=u*TAU;const r=rAt(th,hAt(th))*v;return [s.cx+r*Math.cos(th),yB+hAt(th)*v+hMid*(1-v)+dome*(1-v*v)-.04,s.cz+r*Math.sin(th)];},L.nu,6,{col:lidCol,flip:true,hole:s.vent===false?null:(u,v)=>v<vk}),L.nu,6));
   if(s.vent!==false)kput(s.nacre?'hkLipN':'hkLip',[s.cx,yB+hMid+dome-.08,s.cz],qEuler(Math.PI/2,0,0),[rt*vk*1.05,rt*vk*1.05,1.2],s.nacre?hC(hPick(HPAL.nacre)):col);}
  return {L,hAt,rAt,hMid};}
 // a lamp on a bracket off a lathe's real surface at (th, y), standing `out` metres off it
-function hykMilLampOnLathe(L,th,y,o){const A=hykMilLatheAt(L,th,y);const out=(o&&o.out)||.42;return hykLight(A.p[0]+A.n[0]*out,A.p[1]+.14,A.p[2]+A.n[2]*out,Object.assign({r:.2,bracket:A.p},o||{}));}
+function hykMilLampOnLathe(L,th,y,o){const A=hykLatheAt(L,th,y);const out=(o&&o.out)||.42;return hykLight(A.p[0]+A.n[0]*out,A.p[1]+.14,A.p[2]+A.n[2]*out,Object.assign({r:.2,bracket:A.p},o||{}));}
 // a lamp on a bracket off a hykPod's surface at (th, el), the pod translated by (dx,0,dz)
 function hykMilLampOnPod(pod,P,th,el,dx,dz,o){const u=((th/TAU)%1+1)%1,v=clamp(el/Math.PI+.5,.02,.98);const sp=pod.surf(u,v);const A=[sp[0]+dx,sp[1],sp[2]+dz];
  const cy=P.cy!=null?P.cy:P.b*.82;const vx=A[0]-dx,vy=A[1]-cy,vz=A[2]-dz;const vl=Math.hypot(vx,vy,vz)||1;const out=(o&&o.out)||.42;
@@ -102,10 +95,10 @@ function hykMilBarracks(G,o){reseed(30800+(o.v|0));
  const hall={cx:HX,cz:HZ,rb:HR,rt:HR*.66,h:HH,pow:1.6,yBase:-.4,dir:-Math.PI/2,tilt:.14,nu:84,nv:28,fluteN:24,fluteAmp:.055,ringsN:10,seed:17,col,dome:1.6,ventK:.14,nacre:true,ops:hallOps,mat:'hkShell'};
  const Lh=hykMilConeL(hall);hall.L=Lh;
  const doorY=FY+1.2-Lh.yBase;   // a 2.4 m door whose sill meets the floor
- const dh=hykMilLatheAt(Lh,Math.PI/2,doorY);hallOps.push({p:dh.p,n:dh.n,r:1.2,ky:1.0,kind:'door'});
- for(const s of [-1,1]){const th=Math.atan2(podZ-HZ,s*podX-HX);const q=hykMilLatheAt(Lh,th,FY+1.15-Lh.yBase);hallOps.push({p:q.p,n:q.n,r:1.15,ky:1.0,kind:'pass',to:s});}
- {const q=hykMilLatheAt(Lh,-Math.PI/2,FY+1.1-Lh.yBase);hallOps.push({p:q.p,n:q.n,r:1.1,ky:1.0,kind:'pass',to:0});}
- for(const [th,y,r] of [[Math.PI/2+1.05,4.2,.6],[Math.PI/2-1.05,4.4,.6],[Math.PI/2+.5,5.6,.42],[Math.PI/2-.5,5.4,.42],[-Math.PI/2+1.3,4.0,.5],[-Math.PI/2-1.3,4.3,.5]]){const q=hykMilLatheAt(Lh,th,y);hallOps.push({p:q.p,n:q.n,r,kind:'window'});}
+ const dh=hykLatheAt(Lh,Math.PI/2,doorY);hallOps.push({p:dh.p,n:dh.n,r:1.2,ky:1.0,kind:'door'});
+ for(const s of [-1,1]){const th=Math.atan2(podZ-HZ,s*podX-HX);const q=hykLatheAt(Lh,th,FY+1.15-Lh.yBase);hallOps.push({p:q.p,n:q.n,r:1.15,ky:1.0,kind:'pass',to:s});}
+ {const q=hykLatheAt(Lh,-Math.PI/2,FY+1.1-Lh.yBase);hallOps.push({p:q.p,n:q.n,r:1.1,ky:1.0,kind:'pass',to:0});}
+ for(const [th,y,r] of [[Math.PI/2+1.05,4.2,.6],[Math.PI/2-1.05,4.4,.6],[Math.PI/2+.5,5.6,.42],[Math.PI/2-.5,5.4,.42],[-Math.PI/2+1.3,4.0,.5],[-Math.PI/2-1.3,4.3,.5]]){const q=hykLatheAt(Lh,th,y);hallOps.push({p:q.p,n:q.n,r,kind:'window'});}
  const H=hykMilCone(hall);
  for(const op of hallOps){if(op.kind==='door')hykDoor(op,{level:'ground',nacre:true,depth:.85});else if(op.kind==='pass')hykDoor(op,{level:'ground',nacre:true,room:'hall',depth:.5});else hykWin(op,{nacre:true,lit:true});}
  hykFloor(HX,HZ,FY,HR*.88,{lobes:{n:12,amp:.03}});
@@ -115,7 +108,7 @@ function hykMilBarracks(G,o){reseed(30800+(o.v|0));
   hykPut('hkShell',hykMilFlare([x,y-.02,z],[0,1,0],.34,.4,{col:colW}));}
  // lamps: a pearl either side of the door, two inside on the back wall
  hykMilLampOnLathe(Lh,Math.PI/2+.36,3.3,{nacre:true});hykMilLampOnLathe(Lh,Math.PI/2-.36,3.3,{nacre:true});
- for(const th of [-Math.PI/2+.7,-Math.PI/2-.7]){const A=hykMilLatheAt(Lh,th,4.6);const px=HX+(A.p[0]-HX)*.9,pz=HZ+(A.p[2]-HZ)*.9;const ax=[px,A.p[1],pz];
+ for(const th of [-Math.PI/2+.7,-Math.PI/2-.7]){const A=hykLatheAt(Lh,th,4.6);const px=HX+(A.p[0]-HX)*.9,pz=HZ+(A.p[2]-HZ)*.9;const ax=[px,A.p[1],pz];
   hykLight(HX+(A.p[0]-HX)*.84,A.p[1]+.12,HZ+(A.p[2]-HZ)*.84,{r:.18,nacre:true,bracket:ax});}
  // ---- the bunk pods, one on each flank, bedded into the hall's wall and opened into it
  const PB={a:4.6,b:3.6,c:4.6,e1:.9,e2:.94};const pcy=PB.b*.82;
@@ -170,12 +163,12 @@ function hykMilBallista(G,o){reseed(30810+(o.v|0));
  const PY=2.9,PR=5.0,PZ=2.2;const ss=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
  // ---- the pedestal, flaring into the pad; the magazine door on its landward face
  const L={H:PY+.4,cx:0,cz:PZ,yBase:-.3,rFn:y=>4.3-1.0*ss(y/2.0)+1.9*Math.pow(Math.max(0,(y-1.9)/1.4),2.4),nu:96,nv:34,flute:{n:18,amp:.05,sharp:1.6},rings:{n:8,amp:.02},noise:{amp:.03,su:5,sv:1.1,seed:31},col};
- const ops=[];{const q=hykMilLatheAt(L,-Math.PI/2,.3+.05+1.15);ops.push({p:q.p,n:q.n,r:1.0,ky:1.15,kind:'door'});}
- for(const th of [-Math.PI/2+1.1,-Math.PI/2-1.1]){const q=hykMilLatheAt(L,th,1.9);ops.push({p:q.p,n:q.n,r:.5,kind:'window'});}
+ const ops=[];{const q=hykLatheAt(L,-Math.PI/2,.3+.05+1.15);ops.push({p:q.p,n:q.n,r:1.0,ky:1.15,kind:'door'});}
+ for(const th of [-Math.PI/2+1.1,-Math.PI/2-1.1]){const q=hykLatheAt(L,th,1.9);ops.push({p:q.p,n:q.n,r:.5,kind:'window'});}
  L.ops=ops;hykPut('hkShell',hykMilLathe(L));hykPut('hkIn',hykMilLathe(Object.assign({},L,{rFn:y=>L.rFn(y)*.86,flip:true,col:hC(hPick(HPAL.shell),.85)})),true);
  for(const op of ops){if(op.kind==='door')hykDoor(op,{level:'ground',nacre:true});else hykWin(op,{nacre:true});}
  hykPut('hkShell',hykMilFlare([0,-.24,PZ],[0,1,0],4.3*.98,1.5,{col}));
- for(let i=0;i<26;i++){const a=rng()*TAU,y=rr(-.1,.9);const r=hykMilLatheR(L,a,y+.3)+.03;const s=rr(.08,.2);kput('hkBarnB',[r*Math.cos(a),y,PZ+r*Math.sin(a)],null,[s,s*.7,s],grey);}
+ for(let i=0;i<26;i++){const a=rng()*TAU,y=rr(-.1,.9);const r=hykLatheR(L,a,y+.3)+.03;const s=rr(.08,.2);kput('hkBarnB',[r*Math.cos(a),y,PZ+r*Math.sin(a)],null,[s,s*.7,s],grey);}
  hykFloor(0,PZ,.05,3.1,{});
  // the pad: the top plate, its lip, the parapet lip over the front half (a tapering sausage along the rim), the rail behind
  hykPut('hkShell',hykDisc(0,PY,PZ,PR,{col:colW,nu:64,lobes:{n:9,amp:.015}}));kput('hkLip',[0,PY+.03,PZ],qEuler(Math.PI/2,0,0),[PR*1.03,PR*1.03,.9],col);

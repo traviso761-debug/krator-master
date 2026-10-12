@@ -62,6 +62,7 @@ function ysHostInhabit(host,y,use){let best=null;for(const f of host.floors)if(M
 // ---------------------------------------------------------------- the tideline: crust, weed, barnacle specks, foam
 // A `shaped` host (a square keep, a rounded-square monolith: the city's D and H) has a face that depends on the bearing:
 // the band, the weed, the specks and the foam follow host.rAt(y,a) round it; a round host keeps the lathe it always had.
+const HYK_FOAM={geos:[],mesh:null};
 function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const S=!!host.shaped;const R=(y,a)=>host.rAt(y,S?a:undefined)+.3;
  if(S)hykPut('hkCrust',hykSurf((u,v)=>{const th=u*TAU,y=yb+v*(yt-yb);const r=R(y,th);return [host.x+r*Math.cos(th),y,host.z+r*Math.sin(th)];},192,6,{col:hC(hPick(HPAL.crust)),uS:TAU*R(0,0)/4,vS:(yt-yb)/4}));
  else hykPut('hkCrust',hykLathe({H:yt-yb,yBase:yb,cx:host.x,cz:host.z,rFn:y=>R(y+yb),nu:84,nv:6,noise:{amp:.05,su:7,sv:.6,seed:11},col:hC(hPick(HPAL.crust))}));
@@ -70,7 +71,9 @@ function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const S=!!host.shaped;
  const m=o.specks||Math.round(TAU*R(0,0)*2.4);for(let i=0;i<m;i++){const a=rng()*TAU,y=rr(-1.3,1.2);const r=R(y,a)+.04;const s=rr(.08,.24);
   kput('hkBarnB',[host.x+r*Math.cos(a),y,host.z+r*Math.sin(a)],null,[s,s*.7,s],hC(hPick(HPAL.barnacle)));}
  const f=hykSurf((u,v)=>{const th=u*TAU;const r=R(0,th)+.1+v*(o.foam||2.4)*(1+.3*Math.sin(th*7));return [host.x+r*Math.cos(th),.06,host.z+r*Math.sin(th)];},S?192:84,2,{col:HYK_WHITE,flip:true});
- const fm=new THREE.Mesh(f,MAT.hkFoam);fm.userData.probeSkip=true;fm.renderOrder=2;scene.add(fm);}
+ // every host's foam is one mesh (Oct 12 2026: a mesh each was 34 of the city's Overview draw calls), re-merged as each ring joins
+ HYK_FOAM.geos.push(f);if(HYK_FOAM.mesh){scene.remove(HYK_FOAM.mesh);HYK_FOAM.mesh.geometry.dispose();}
+ const t0=TSTAT.cur;TSTAT.cur=null;const fm=meshMerged(HYK_FOAM.geos,MAT.hkFoam,scene);TSTAT.cur=t0;fm.userData.probeSkip=true;fm.renderOrder=2;fm.castShadow=fm.receiveShadow=false;HYK_FOAM.mesh=fm;}
 // the depth of a superellipsoid pod's underside below its centre at a horizontal offset (dx,dz), or null outside it
 function hykPodUnder(a,b,c,e1,e2,dx,dz){const q=Math.pow(Math.abs(dx)/a,2/e2)+Math.pow(Math.abs(dz)/c,2/e2);const t=Math.pow(q,e2/e1);if(t>=1)return null;return b*Math.pow(1-t,e1/2);}
 // ---------------------------------------------------------------- accretion: pods grown onto a host's face

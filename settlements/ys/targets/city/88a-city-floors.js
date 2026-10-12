@@ -7,8 +7,9 @@
 // living: bed, food, store (middle and rich add a hearth and a table); work: two benches; shop: a counter and a store.
 // A room behind a way-in pod's back door is a hall, its second door onto the pod. The partitions (radial walls and the
 // corridor's two walls) are recorded as segments here and drawn by the draw pass as thin shell walls in the interior bucket.
+// The floors of one core are linked by newel stairs in the core (FLOORS.stairs), drawn by the draw pass too.
 // Data only: KRAND draws the uses, so the plan is the same in any engine.
-const FLOORS={plans:[],rooms:0,spots:0};
+const FLOORS={plans:[],rooms:0,spots:0,stairs:[]};
 (function floorPass(){
  const uses=(st,shopFloor)=>{const r=st.next();return r<(shopFloor?.28:.15)?'shop':r<(shopFloor?.5:.4)?'work':'living';};
  PLACE.hosts.forEach((h,hi)=>{if(!h.pods.length)return;const T=YS_HOST_TYPES[h.type];const st=KRAND.stream(KRAND.child(KRAND.child(PLACE.SEED,'floors'),hi));
@@ -21,11 +22,12 @@ const FLOORS={plans:[],rooms:0,spots:0};
   // the cores a floor is laid round: one at the axis, or the Stalks' three
   const cores=(T.key==='midStalks'&&typeof HST!=='undefined')?HST.CORES.map(C=>({x:C.x,z:C.z,top:C.top,rw:()=>C.r*.84})):[{x:0,z:0,top:1e9,rw:(yl,th)=>T.rAt(yl,th)*.86}];
   for(let k=Math.max(0,k0);k<=k1;k++){const y=plate(k),yl=y-h.sink;if(y<1.5||y+H>h.top-.5)continue;
-   const plan={host:h.n,k,y,H,rooms:[],walls:[],hx:h.x,hz:h.z,ry:h.ry};let any=false;
+   const plan={host:h.n,k,y,H,rooms:[],walls:[],cores:[],hx:h.x,hz:h.z,ry:h.ry};let any=false;
    for(const C of cores){if(yl+H>C.top)continue;
     const NB=48,rw=[...Array(NB)].map((_,i)=>C.rw(yl,i/NB*TAU));const mean=rw.reduce((a,b)=>a+b,0)/NB;if(mean<5)continue;
     const minR=Math.min(...rw);const rc=mean<14?1.6:Math.max(2.5,mean*.26),deep=minR-rc>16;   /* a slim stair core in a small one; a flat-sided plan (the Sail) bounds the rings by its inscribed radius */const rm=Math.min(deep?(rc+mean)/2:rc+1.2,Math.max(rc+1.2,minR-2));   // the corridor's centre line
     const rings=deep?[[rc,rm-1.2],[rm+1.2,null]]:[[rm+1.2,null]];   // null: out to the wall
+    {const c=W(C.x,C.z);plan.cores.push({key:C.x+','+C.z,x:c[0],z:c[1],r:rc});}
     const P=(r,th)=>W(C.x+r*Math.cos(th),C.z+r*Math.sin(th));const wallR=th=>{const f=((th/TAU)%1+1)%1*NB;const i=Math.floor(f)%NB,j=(i+1)%NB,t=f-Math.floor(f);return rw[i]*(1-t)+rw[j]*t;};
     // the corridor's walls
     for(const rr of [rm-1.2,rm+1.2])if(rr>rc+.5)plan.walls.push({arc:true,cx:C.x,cz:C.z,r:rr});
@@ -52,5 +54,11 @@ const FLOORS={plans:[],rooms:0,spots:0};
       // the partition on this room's first side
       plan.walls.push({cx:C.x,cz:C.z,th:t0,r0,r1:r1f!=null?r1f:wallR(t0)-.15});}}}
    if(any){FLOORS.plans.push(plan);FLOORS.rooms+=plan.rooms.length;}}
-  h.floorsLived=FLOORS.plans.filter(p=>p.host===h.n).map(p=>p.k);});
+  h.floorsLived=FLOORS.plans.filter(p=>p.host===h.n).map(p=>p.k);
+  // the stairs (Oct 12 2026: from a way-in pod only its own plate was reachable on foot): a newel stair in the lift core
+  // from each inhabited floor to the next one up that shares the core (a skipped plate between them is climbed past), its
+  // treads inside the core's radius; the draw pass builds it, the life layer reads FLOORS.stairs as the vertical links
+  const mine=FLOORS.plans.filter(p=>p.host===h.n).sort((a,b)=>a.y-b.y);
+  for(let i=0;i+1<mine.length;i++){const lo=mine[i],hi=mine[i+1];for(const c of lo.cores){const d=hi.cores.find(e=>e.key===c.key);if(!d)continue;
+   FLOORS.stairs.push({host:h.n,x:c.x,z:c.z,r:Math.min(c.r,d.r),y0:+(hi.y+.3).toFixed(2),y1:+(lo.y+.3).toFixed(2),k0:lo.k,k1:hi.k,a0:st.next()*TAU});}}});
 })();

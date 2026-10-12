@@ -242,17 +242,46 @@ const PL_SMALL={poor:[['hyk_house_poor_1',3],['hyk_house_poor_2',3],['hyk_house_
 const PL_INDUSTRY_SMALL=[['hyk_warehouse_small',2],['hyk_smithy_small',1.5],['hyk_house_poor_2',1],['hyk_shop_general',.4]];   // the industry blocks' lanes
 const PL_GAP={poor:[2,5],middle:[3,7],rich:[6,13],market:[3,6],industry:[6,12],foreign:[5,10]};
 const PL_GARDEN={poor:.06,middle:.1,rich:.18,market:0,industry:.15,foreign:.1};
-const PL_FOREIGN={iziz:[[14,12],[16,13],[12,12]],republic:[[13,11],[15,12],[18,10]],voth:[[16,14],[20,16]]};
+// the foreign plots: a builder of the culture's set picked by the block's wealth, the plot sized to its footprint (VERN.defs
+// w x d), so the foreign pass (88c) stands it whole (Oct 12 2026: fixed 12-20 m plots fitted a third of the sets' builders)
+const PL_FOREIGN={
+ iziz:{poor:[['vern_house_poor_a',3],['vern_house_poor_b',3],['vern_house_poor_c',3],['vern_workshop_a',1],['vern_smithy',.6]],
+  middle:[['vern_house_mid_a',3],['vern_house_mid_b',3],['vern_house_mid_c',2],['vern_house_poor_c',1],['vern_shops',1.2],['vern_workshop_b',.8],['vern_tavern',.5],['vern_warehouse',.3]],
+  rich:[['vern_house_rich_a',2],['vern_house_rich_b',2],['vern_house_mid_c',2],['vern_shops',1],['vern_tavern',.6],['vern_market',.4]]},
+ republic:{poor:[['hl_rep_house_poor_a',3],['hl_rep_house_poor_b',3],['hl_rep_house_poor_c',2]],
+  middle:[['hl_rep_house_mid_a',3],['hl_rep_house_mid_b',3],['hl_rep_house_mid_c',2],['hl_rep_house_poor_a',1]],
+  rich:[['hl_rep_house_rich_a',2],['hl_rep_house_rich_b',2],['hl_rep_house_rich_c',2],['hl_rep_house_mid_b',1]]},
+ voth:{poor:[['voth_townhouse_a',3],['voth_townhouse_b',3]],middle:[['voth_townhouse_a',3],['voth_townhouse_b',3],['voth_townhouse_c',1]],rich:[['voth_townhouse_a',2],['voth_townhouse_b',2],['voth_townhouse_c',3]]}};
+function ysPlForeignPick(st,fq,wealth){const pool=((PL_FOREIGN[fq]||{})[wealth]||(PL_FOREIGN[fq]||{}).middle||[]).filter(([k])=>typeof VERN!=='undefined'&&VERN.defs[k]);
+ if(!pool.length)return null;const k=ysPlPick(st,pool);ysPlCount(k);const D=VERN.defs[k];return {key:k,w:D.w,d:D.d};}
+// a compound in a foreign block (the Voth embassy, the Historians' chapterhouse: Oct 12 2026, a square of their own): the
+// building at the block's middle, its gate toward the block's side nearest the head (else another side, or shifted along
+// it, where a highway crosses), a paved square 52 x 42 m in front of it and an approach 12 m wide from the square to that
+// side's street, all reserved before the block's frontage and lanes
+// (the frontage leaves the approach open); the ground under the building and the square levelled and paved
+function ysPlCompound(b,key,kind){const D=typeof VERN!=='undefined'?VERN.defs[key]:null;if(!D)return ysPlRefuse('compound: no '+key);
+ let why='no side';let got=null;
+ search:for(const S of ysPlSides(b,91))for(const sh of [0,-24,24,-44,44]){   /* the side nearest the head first, the gate on the block's axis first; a highway may cross the block */
+  const n=S.n,t=S.t,ry=ysPlFacing(n[0],n[1]);const at=(u,v)=>[b.x+n[0]*u+t[0]*(v+sh),b.z+n[1]*u+t[1]*(v+sh)];
+  const c=at(-6-D.d/2,0),B=ysPlBox(c[0],c[1],D.w/2+1,D.d/2+1,ry,'compound:'+key);
+  const q=at(16.5,0),Sq=ysPlBox(q[0],q[1],26,21,ry,'street:square'),Ap=ysPlStrip(at(37.5,0),at(93,0),12,'street:approach');   /* the square 1.5 m off the building's face */
+  const cl=[B,Sq,Ap].map(X=>ysPlClash(X)).find(Boolean);if(cl){why='occupied by '+ysPlWhat(cl);continue;}
+  const n0=Object.assign({},PLACE.refused);const y=ysPlGround(ysPlBox((c[0]+q[0])/2,(c[1]+q[1])/2,26,(D.d+48)/2,ry,'probe'),{slope:5});PLACE.refused=n0;if(y==null){why='ground';continue;}
+  got={B,Sq,Ap,c,q,ry,y};break search;}
+ if(!got)return ysPlRefuse('compound '+key+': '+why);const {B,Sq,Ap,c,q,ry,y}=got;
+ for(const X of [B,Sq,Ap])ysPlTake(X);b.compound=true;
+ CITY_STAMPS.push({kind:'flat',poly:ysPlBoxPoly(ysPlBox((c[0]+q[0])/2,(c[1]+q[1])/2,30,(D.d+52)/2,ry)),y,soft:10,paint:'pave'});
+ const slot={kind,swap:[key],wish:key,x:c[0],z:c[1],ry,w:D.w,d:D.d,y,block:b.i+','+b.j,box:B,square:Sq};PLACE.slots.push(slot);return slot;}
 function ysPlSides(b,h){const S=[[PL_U,PL_V],[[-PL_U[0],-PL_U[1]],PL_V],[PL_V,PL_U],[[-PL_V[0],-PL_V[1]],PL_U]];
  return S.map(([n,t])=>({n,t,mx:b.x+n[0]*h,mz:b.z+n[1]*h})).sort((p,q)=>Math.hypot(p.mx-CITY.HEAD[0],p.mz-CITY.HEAD[1])-Math.hypot(q.mx-CITY.HEAD[0],q.mz-CITY.HEAD[1]));}
 function ysPlFront(b,o){const st=ysPlStream('front:'+(o.tag||''),b);const pool=o.pool,h=o.h||91,sides=ysPlSides(b,h).filter(S=>!o.only||o.only.some(n=>n[0]*S.n[0]+n[1]*S.n[1]>.9)).slice(0,o.sides||4);let n=0;
  for(const S of sides){let t=-h+4;const ry=o.inward?ysPlFacing(-S.n[0],-S.n[1]):ysPlFacing(S.n[0],S.n[1]);   /* inward: a courtyard ring, backs to the street frontage */
   while(t<h-4&&n<(o.max||99)){if(st.chance(PL_GARDEN[o.kind]||0)){t+=st.range(12,22);continue;}
-   let key,w,d,fq=null;if(o.kind==='foreign'){fq=o.foreign;const sz=st.pick(PL_FOREIGN[fq]);w=sz[0];d=sz[1];key=null;}else{key=ysPlPick(st,pool);const D=HYK.defs[key];w=D.w;d=D.d;}
+   let key,w,d,fq=null,wish=null;if(o.kind==='foreign'){fq=o.foreign;const f=ysPlForeignPick(st,fq,b.wealth);if(!f)break;w=f.w;d=f.d;wish=f.key;key=null;}else{key=ysPlPick(st,pool);const D=HYK.defs[key];w=D.w;d=D.d;}
    if(t+w>h-4)break;const s=t+w/2;const cx=b.x+S.n[0]*(h-d/2)+S.t[0]*s,cz=b.z+S.n[1]*(h-d/2)+S.t[1]*s;
    const B=ysPlBox(cx,cz,w/2+1,d/2+1,ry,key||'slot');{const c=ysPlClash(B);if(c){ysPlRefuse('occupied by '+ysPlWhat(c));t+=6;continue;}}
    const y=ysPlGround(B,o.ground);if(y==null){t+=6;continue;}
-   if(key)ysPlBld(key,B,y,o.why,b,st);else{ysPlTake(B);const slot={kind:'foreign',foreign:fq,swap:PL_SWAP[fq],x:cx,z:cz,ry,w,d,y,block:b.i+','+b.j,box:B};PLACE.slots.push(slot);
+   if(key)ysPlBld(key,B,y,o.why,b,st);else{ysPlTake(B);const slot={kind:'foreign',foreign:fq,swap:PL_SWAP[fq],wish,x:cx,z:cz,ry,w,d,y,block:b.i+','+b.j,box:B};PLACE.slots.push(slot);
     if(o.standIn){const fit=PL_POOL.middle.filter(([k])=>HYK.defs[k].w<=w&&HYK.defs[k].d<=d);if(fit.length){const k2=ysPlPick(st,fit);const r=ysPlBld(k2,ysPlBox(cx,cz,HYK.defs[k2].w/2,HYK.defs[k2].d/2,ry,k2),y,o.why+' stand-in',b,st);r.standIn=true;slot.standIn=r;}}}
    n++;t+=w+st.range(...PL_GAP[o.kind]);}}
  return n;}
@@ -426,15 +455,19 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  const FQ=LAYOUT.blocks.filter(b=>b.use==='foreign').sort((p,q)=>Math.hypot(p.x-CITY.HEAD[0],p.z-CITY.HEAD[1])-Math.hypot(q.x-CITY.HEAD[0],q.z-CITY.HEAD[1]));
  if(FQ.length){const b=FQ[0];const S=ysPlSides(b,91)[0];const D=HYK.defs.hyk_caravanserai;const u0=(S.n[0]*PL_U[0]+S.n[1]*PL_U[1])*(91-D.d/2-2),v0=(S.n[0]*PL_V[0]+S.n[1]*PL_V[1])*(91-D.d/2-2);
   ysPlSeek('hyk_caravanserai',ysPlCands(b,u0,v0,66),ysPlFacing(S.n[0],S.n[1]),'caravanserai',b);}
- // the foreign quarter: slots with their swap lists (Iziz nearest the market, the Republic, Voth furthest) and the
- // Historians' chapterhouse on its own square
+ // the foreign quarter: slots with their swap lists (Iziz nearest the market, the Republic, Voth furthest), the Voth
+ // embassy and the Historians' chapterhouse each in a compound on a square of its own
  // (Travis, Oct 5 2026: the inner quarter as dense as the coast's neighbourhoods) every side, and a lane-quartered middle
  // with small houses; every foreign slot keeps its swap list and, until the set lands, a Hykkousoi stand-in is drawn in it
- FQ.forEach((b,i)=>{const fq=i<2?'iziz':i<4?'republic':'voth';if(!b.hostPlaced)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));   /* the lanes first: a side's house must not straddle a lane's end */
+ // the compounds first, each in the first block of its culture that no host stands in (FQ[2], the Republic's first, has
+ // the Trays stump at the head: the chapterhouse's square never fitted there)
+ const cultureOf=i=>i<2?'iziz':i<4?'republic':'voth';
+ for(const [cu,key,kind] of [['voth','port_voth_embassy','embassy'],['republic','port_order_chapterhouse','chapterhouse']]){
+  for(const b of FQ.filter((b,i)=>cultureOf(i)===cu&&!b.hostPlaced&&!b.compound))if(ysPlCompound(b,key,kind))break;}
+ FQ.forEach((b,i)=>{const fq=cultureOf(i);const laned=!b.hostPlaced&&!b.compound;if(laned)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));   /* the lanes first: a side's house must not straddle a lane's end */
   ysPlFront(b,{kind:'foreign',foreign:fq,why:'foreign quarter',sides:4,max:40,standIn:true});
-  if(!b.hostPlaced)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const c=ysPlAt(b,qu*48,qv*48);const q={x:c[0],z:c[1],i:b.i,j:b.j,wealth:'middle'};
+  if(laned)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const c=ysPlAt(b,qu*48,qv*48);const q={x:c[0],z:c[1],i:b.i,j:b.j,wealth:'middle'};
    ysPlFront(q,{pool:PL_SMALL.middle,kind:'middle',why:'foreign quarter lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'flane'+qu+qv});}});
- if(FQ.length>2){const b=FQ[2];const B=ysPlBox(b.x,b.z,22,22,PL_RY,'chapterhouse');if(!ysPlClash(B)){const y=ysPlGround(B);if(y!=null){ysPlTake(B);PLACE.slots.push({kind:'chapterhouse',swap:['civic_chapter_house'],x:b.x,z:b.z,ry:PL_RY,w:44,d:44,y,block:b.i+','+b.j,box:B});}}}
  // ---- 4. the land quarter: neighbourhoods (sides built by distance from the head), shrines and the two small markets,
  // the reclaimed Ancients' plots (a quarter of the neighbourhood blocks; slots until the mid-rise types are vendored),
  // industry, farms
@@ -508,7 +541,8 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // other pass left. Candidates on an 8 m lattice of the city grid over YS_CENTRAL, in the stream's order, jittered 2 m;
  // the small pool of the block a point falls in (the industry lanes' pool on an industry block; none on a farm or the
  // river mouth); each house faces the nearest street along the grid, else the next nearest, and its box carries a 3 m
- // dooryard in front so a later house cannot stand against its door. Three candidates in ten keep a 16 m yard open
+ // dooryard in front so a later house cannot stand against its door; with no street within 24 m it fronts the nearest
+// yard within 30 m instead (a court). Three candidates in ten keep a 16 m yard open
  // instead (not reserved: the biome may plant it); at one in eight the infill was 280 buildings and 4.4 M triangles, the
  // city 29.1 M of its 30 M.
  {const st=ysPlStream('central infill');const P=YS_CENTRAL,H=CITY.HEAD;const uv=p=>[(p[0]-H[0])*PL_U[0]+(p[1]-H[1])*PL_U[1],(p[0]-H[0])*PL_V[0]+(p[1]-H[1])*PL_V[1]];
@@ -523,7 +557,10 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
    const g=ysBlockIJ(x,z),b=ysBlock(Math.round(g[0]),Math.round(g[1]));if(!b||/^(farm|river_mouth|arena)$/.test(b.use))continue;
    if(st.chance(.3)){yards.push(ysPlBox(x,z,8,8,PL_RY,'yard'));continue;}
    const pool=b.use==='industry'?PL_INDUSTRY_SMALL:PL_SMALL[b.wealth]||PL_SMALL.middle;const key=ysPlPick(st,pool),D=HYK.defs[key];
-   const order=DIRS.map(d=>[d,streetAlong(x,z,d)+st.next()]).sort((p,q)=>p[1]-q[1]);
+   let order=DIRS.map(d=>[d,streetAlong(x,z,d)+st.next()]).sort((p,q)=>p[1]-q[1]);
+   /* no street within 24 m: front the nearest yard within 30 m, so the quarter's middle builds small courts (Oct 12 2026) */
+   if(order[0][1]>25){let Y=null,yd=30;for(const Q of yards){const dd=Math.hypot(Q.cx-x,Q.cz-z);if(dd<yd){yd=dd;Y=Q;}}
+    if(Y)order=DIRS.map(d=>[d,-(d[0]*(Y.cx-x)+d[1]*(Y.cz-z))]).sort((p,q)=>p[1]-q[1]);}
    for(const [d] of order){const ry=ysPlFacing(d[0],d[1]);const B=ysPlBox(x+d[0]*1.5,z+d[1]*1.5,D.w/2+1,D.d/2+2.5,ry,key);
     if(ysPlClash(B)||yards.some(Y=>ysPlHit(B,Y)))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B);PLACE.refused=n0;if(y==null)break;
     ysPlBld(key,B,y,'central infill',b,st,{x,z});n++;break;}}

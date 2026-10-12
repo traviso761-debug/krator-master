@@ -157,6 +157,8 @@ wall is already cut to `R = w/2`). All helpers work in the local frame as in HYK
 is world); `hykStairSpiral` takes the host's world centre and `rAt`, so call it with the frame stood down (70's
 `hykHouseWorld` is the pattern). `w,d,h` are the pod's size; satellites and drips are the
 builder's to add (`hykAccrete` in 64 is the pattern, including the lamp on a bracket).
+A **shelf host** (`host.shelf`, set by the draw pass for a host whose type has `crest`: the Trays) gets every kit item a
+pod put more than .35 m below the pod's floor dropped after the build, since a tray is open underneath.
 
 ## Furniture (35-furn-frame.js, kits/furniture/SPEC.md)
 
@@ -323,6 +325,8 @@ NWBAY.dress([faceGeometry],{karst:true,...});     // once per stack within 1.7 k
 ysBioKarstForest();                               // fan-crowns, crown ferns and splay shrubs on the field stacks' tops (the kit roots only its figs on the rock)
 BIO.bake();
 ```
+After `BIO.init`, 89 sets `BIO.host.bakeBark = true` (init keeps only the keys it knows): the tree variants then stamp
+their bark into the floor's buckets instead of a mesh per species (biomes/nwbay/BIOME-API.md).
 
 **The mask** (`ysBioMask`): 0 on water (`terrainH < .3`) and off the map; 0 on a stack's rim band (12 m inside the
 wall's top edge), on its face and on the scree 8 m past its foot, and on the whole top of a landmark's stack (its
@@ -370,6 +374,13 @@ switches the rose and gizmo on, inside hides every exterior shell and shows the 
 | the mock sheet | 2 M |
 | draw calls | one per material per side for every merged shell in the world, plus one per kit item |
 
+**The city's helpers for drawing on the ground** (targets/city/88b): `ysMeshH(x,z)` is the height of the drawn port mesh
+(its own triangle, `PORT_ST.grid`), not `terrainH`; anything laid on the surface (roads, canal streets, the cliff stair)
+reads it. `ysInFrame(x,y,z,ry,fn)` runs `fn` with the group frame at that point, for a kit helper that draws in local
+coordinates (the moles' ladders). `FLOORS.stairs` (88a) are the vertical links between a core's floors, `{host,x,z,r,y0,y1,
+k0,k1,a0}`; `hykSpanStairSpiral(..., {bare:true})` draws one without the open-air spiral's brackets. Before the bake,
+`ysMergeSparseKit` merges every kit item of 60 instances or fewer that no building owns, per material.
+
 ## Pitfalls
 
 - `const` in a later fragment is in the temporal dead zone for code that runs at load in an earlier one: a
@@ -390,8 +401,10 @@ over `VERN.order` (`ysFqPool`), among those whose footprint fits `w × d` within
 scale .92 / .86 when nothing fits whole (`ysFqFits`; whole and unturned weigh most, a builder not yet standing in the
 quarter six times more, `ysFqPick`), from `KRAND.stream(KRAND.child(KRAND.cell(YS_FQ.SEED, i, j), kind+':'+n))` (the
 block's cell, the slot's index in its block). The slot's `standIn` record is spliced out of `PLACE.blds` and its box freed
-(`ysPlFree`); a slot nothing fits keeps it (`YS_FQ.kept`). A compound bigger than any plot (the Voth embassy; the
-chapterhouse when 88 reserved no square) is seated by `compound(key, blocks, culture)`: a box behind a lane of its
+(`ysPlFree`); a slot nothing fits keeps it (`YS_FQ.kept`). A slot's `wish` (a builder key: the foreign plots are sized to one, `PL_FOREIGN`) is taken whole when it fits. The Voth
+embassy and the chapterhouse are slots of kind `embassy` and `chapterhouse` the placer seats as compounds (`ysPlCompound`: the
+building behind its own 26 × 21 m `street:square` and an approach strip, on whichever side of the block takes it); only
+when no such slot exists is one seated by `compound(key, blocks, culture)`: a box behind a lane of its
 culture's blocks, facing the lane, where the only things in the way are that lane's small houses (`why 'foreign quarter
 lane'`), which it replaces (`YS_FQ.lanesCleared`). The draw hook places each fill with `VERN.place(scene,key,x,z,ry,{v,scale,y})`,
 lays a 1.5 m stone pad under the footprint, stamps every REG volume the builder made (`culture:'iziz'|'republic'|'voth'|
@@ -399,5 +412,6 @@ lays a 1.5 m stone pad under the footprint, stamps every REG volume the builder 
 `DOORS` into `MARKS` door records; the accounting is `TSTAT 'foreign:<culture>'`, one `n` per building (`BUDGET.cls.foreign`).
 Before the bake, `ysFqMerge` takes this pass's kit instances out of `KIT.items` and merges them into one vertex-coloured
 mesh per material (the night kit and transparent items stay instanced). `FURNISH` (the Highlands kit's catalog furniture)
-is a stub here. `_api.city.foreign()` → `window._foreign` (counts per culture and key, the embassy and the chapterhouse,
+is a stub here. Every dwelling filled gets a room (`ysFqRoom(fill, bid, name)`, a `ysRoom` bedroom on the residence's
+body, `YS_FQ_BODY[key] = [cx, cz, W, D, floorY]`, the door at the front; spots `bed`, `store`, `food`): `window._foreign.rooms`. `_api.city.foreign()` → `window._foreign` (counts per culture and key, the embassy and the chapterhouse,
 door marks, the merge). Presets `The foreign quarter`, `The Voth embassy`, `The Historians' chapterhouse`, `The Republican plots`.

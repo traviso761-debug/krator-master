@@ -77,6 +77,12 @@ hkMatPair('hkBone',TEX.hkBone,{rough:.48,metal:.02});
 hkMatPair('hkMosaic',TEX.hkMosaic,{rough:.32,metal:.06});
 hkMatPair('hkCrust',TEX.hkCrust,{rough:.96});
 hkMatPair('hkWeed',TEX.hkWeed,{rough:.85,side:THREE.DoubleSide});
+// cloth (Oct 12 2026): the furniture's slings, cushions, covers and cords were drawn in the weed pair, whose map the kelp
+// card replaced, so a coral cushion read green and holed. A neutral pair of its own (the library's seaweed weave, 79z;
+// procedurally a grey cross-weave), coloured by the vertex colour
+TEX.hkCloth=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+ const wv=((x>>2)+(y>>2))%2?Math.sin(x/4*Math.PI):Math.sin(y/4*Math.PI);const v=196+wv*18+(fbm(x/5,y/5,3.1,2)-.5)*22;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}g.putImageData(id,0,0);});
+hkMatPair('hkCloth',TEX.hkCloth,{rough:.9,side:THREE.DoubleSide});
 hkMatPair('hkFloor',TEX.hkShell,{rough:.74});
 hkMatPair('hkIn',TEX.hkShell,{rough:.7});                        // interior skins (built facing inward)
 hkMatPair('hkNacre',TEX.hkShell,{rough:.22,metal:.18});

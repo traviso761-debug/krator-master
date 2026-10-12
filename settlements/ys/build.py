@@ -164,7 +164,7 @@ for _f in VENDOR_RENAME:
 # byte-identical, as src/86-bio-*.js (the dalab pattern). Only the city target takes them (TARGET_ONLY); the city's host
 # binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-nwbay-species', '55-biome-nwbay-trees', '60-biome-nwbay-floor',
+                '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
                 '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
 for _b in BIO_VENDORED:
     VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'

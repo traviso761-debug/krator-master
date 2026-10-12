@@ -24,7 +24,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 287 | 108 | 12 | 6 | 111 | 49 | 1 | biome | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1802 | 412 | 0 | 106 | 107 | 1178 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 65 | 947 | 463 | 19 | 10 | 70 | 385 | 6 |  | yes | yes |
-| [`settlements/ys`](settlements/ys/PORT.md) | 139 | 1949 | 316 | 52 | 105 | 106 | 1370 | 8 |  | yes | yes |
+| [`settlements/ys`](settlements/ys/PORT.md) | 140 | 1996 | 332 | 53 | 105 | 109 | 1397 | 8 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 50 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 215 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
@@ -45,7 +45,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 18 | 178 | 38 | 38 | 14 | 47 | 41 | 2 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 150 | 2 | 0 | 12 | 20 | 116 | 6 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 228 | 0 | 0 | 34 | 46 | 149 | 6 | biome | yes | yes |
-| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 279 | 1 | 0 | 10 | 83 | 184 | 7 | biome | yes | yes |
+| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 280 | 1 | 0 | 10 | 83 | 185 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 182 | 1 | 0 | 13 | 37 | 131 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 215 | 1 | 0 | 16 | 32 | 166 | 5 | biome | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 202 | 1 | 0 | 14 | 55 | 132 | 6 | biome | yes | yes |
@@ -55,7 +55,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1843 | 24654 | 4082 (17%) | 519 (2%) | 1049 (4%) | 3035 (12%) | 15969 (65%) | 250 | | | |
+| **all** | 1844 | 24703 | 4098 (17%) | 520 (2%) | 1049 (4%) | 3039 (12%) | 15997 (65%) | 250 | | | |
 
 ## Host-shell copies
 

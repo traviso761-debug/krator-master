@@ -56,6 +56,9 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
   R.push({name:'ruins-in-the-drowned-grid',ok:RU.length>=6&&kinds.size>=4&&!bad.length,detail:RU.length+' sunk ruins of '+kinds.size+' kinds'+(bad.length?', '+bad.length+' bad: '+bad.map(r=>r.name).join(' | '):'')+': '+RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)).join(' | ')});}
  {const F=PLACE.hosts.filter(h=>h.type==='skyF');const bad=F.filter(h=>h.full||h.cutY==null||h.cutY>160||!h.drawn||h.pods.length<3||h.pods.some(p=>!p.drawn));
   R.push({name:'trays-are-podded-stumps',ok:F.length>0&&!bad.length,detail:F.map(h=>h.n+' cut '+h.cutY+' of 290, '+h.pods.length+' pods on '+new Set(h.pods.map(p=>p.y)).size+' trays').join(' | ')+(bad.length?' | BAD: '+bad.map(h=>h.n).join(', '):'')});}
+ {const bad=[];let n=0;for(const h of PLACE.hosts){const P=FLOORS.plans.filter(p=>p.host===h.n&&p.cores.some(c=>c.key==='0,0'));if(P.length<2)continue;n++;
+   const S=FLOORS.stairs.filter(t=>t.host===h.n&&t.drawn);if(S.length<P.length-1)bad.push(h.n+' '+S.length+'/'+(P.length-1));}
+  R.push({name:'host-floors-linked-by-stairs',ok:!bad.length&&FLOORS.stairs.length>0,detail:bad.length?bad.length+' hosts short: '+bad.slice(0,4).join(' | '):FLOORS.stairs.length+' newel stairs link the inhabited floors of '+n+' hosts'});}
  {const I=PLACE.blds.filter(r=>r.why==='central infill');R.push({name:'central-infill',ok:I.length>=150&&I.every(r=>r.drawn),detail:I.length+' small buildings infilled in the central region, '+I.filter(r=>!r.drawn).length+' not drawn'});}
  R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
@@ -68,10 +71,10 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
    for(const st of streets)if(ysPlHit(f.box,st)){onSt++;if(bad.length<4)bad.push(f.key+' on '+st.tag);break;}}
   const comp=[F.embassy,F.chapterhouse].filter(Boolean);for(const c of comp){const B=(c===F.embassy?YS_FQ.embassy:YS_FQ.chapterhouse).box;for(const st of streets)if(ysPlHit(B,st)){onSt++;if(bad.length<4)bad.push('compound on '+st.tag);break;}}
   const by=F.byCulture||{};const cultures=['iziz','republic','voth'].filter(c=>fills.some(s=>s.fill.culture===c&&s.fill.drawn));
-  R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn),
-   detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse').length+' slots filled ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
+  R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn)&&(F.rooms||0)>=100,
+   detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse'||s.kind==='embassy').length+' slots filled, '+(F.rooms||0)+' residences with a room ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
     +(bad.length?'; '+(out+onSt)+' bad: '+bad.join(' | '):'; every one inside its slot and off the streets')+(nd?'; '+nd+' not drawn':'')
-    +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+', '+F.embassy.cleared+' lane houses cleared)':'not drawn'):'NOT PLACED')
+    +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+(F.embassy.cleared?', '+F.embassy.cleared+' lane houses cleared':', on its square')+')':'not drawn'):'NOT PLACED')
     +'; chapterhouse '+(F.chapterhouse?(F.chapterhouse.drawn?'at '+F.chapterhouse.x+','+F.chapterhouse.z+(F.chapterhouse.onSquare?' on its square':' in block '+F.chapterhouse.block):'not drawn'):'NOT PLACED')
     +'; '+(F.doors||0)+' door marks; merge '+(F.merge?F.merge.instances+' instances into '+F.merge.meshes+' meshes':'none')});}
  // the biome (89-city-biome.js, BIOME-API.md): bound and rooted where the mask allows; the biome's own invariants

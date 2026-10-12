@@ -272,7 +272,7 @@
  "86-bio-20-core-kit.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "63ac32089b6d"
+  "sha1": "a020cb184f85"
  },
  "86-bio-30-core-foliage.js": {
   "adapted": false,
@@ -287,17 +287,22 @@
  "86-bio-50-biome-nwbay-species.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "dadea35c1f2f"
+  "sha1": "a526009b7901"
  },
  "86-bio-55-biome-nwbay-trees.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "27c802404418"
+  "sha1": "a1762aa0e75c"
+ },
+ "86-bio-56-biome-nwbay-variants.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "31dac8a160de"
  },
  "86-bio-60-biome-nwbay-floor.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "ce3c7c1ddd5f"
+  "sha1": "f88984b83e8a"
  },
  "86-bio-65-biome-nwbay-dress.js": {
   "adapted": false,

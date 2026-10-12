@@ -3203,12 +3203,14 @@ function protoFor(sp,v,lv,wetV){const key=sp+'|'+v+'|'+lv;let P=PROTO.get(key);i
   if(S.key==='clifffig'){T.out=[1,0];T.edgeD=12;T.footY=-1e3;}       // a rim to lean over (+x); the curtains are per site
   if(S.key==='cinderpine')T.lee=[1,0];                                // the wind toward +x
   st=newSt();B[sp](T,st,lv);},gy);
- const cap=take(s0),defs=[];
- // the bark parts become instanced items: one per material, its vertices in the variant's own frame
- cap.parts.forEach(pt=>{const g=new T3.BufferGeometry();g.setAttribute('position',new T3.BufferAttribute(pt.P,3));g.setAttribute('normal',new T3.BufferAttribute(pt.N,3));
+ const cap=take(s0),defs=[],bake=!!(BIO.host&&BIO.host.bakeBark);
+ // the bark parts become instanced items: one per material, its vertices in the variant's own frame. A host that sets
+ // `bakeBark` (a city whose draw calls are spent: Ys) keeps them as parts and has each placed tree's bark baked into
+ // the kit's buckets instead (stamp, below): the same variants, merged per material as the pass drew them before
+ if(!bake)cap.parts.forEach(pt=>{const g=new T3.BufferGeometry();g.setAttribute('position',new T3.BufferAttribute(pt.P,3));g.setAttribute('normal',new T3.BufferAttribute(pt.N,3));
   g.setAttribute('uv',new T3.BufferAttribute(pt.U,2));g.setAttribute('color',new T3.BufferAttribute(pt.C,3));
   const name='v'+(SEQ++)+':'+S.key+':'+v+':'+lv+':'+pt.fam;BIO.def(name,g,pt.mat,{label:(BIO.buckets[pt.fam].label||pt.fam)+' ('+S.name+', variant)'});defs.push(name);});
- P={sp,v,lv,H:T.H,wet:wetV,y0:T.y0,spread:T.spread||T.crownR,crownR:T.crownR,rb:T.rb,defs,items:cap.items,reg:r.reg,hangs:T.hangs||null,st,man};
+ P={sp,v,lv,H:T.H,wet:wetV,y0:T.y0,spread:T.spread||T.crownR,crownR:T.crownR,rb:T.rb,defs,parts:bake?cap.parts:null,items:cap.items,reg:r.reg,hangs:T.hangs||null,st,man};
  PROTO.set(key,P);return P;}
 NWBAY.PROTOS=PROTO;
 
@@ -3219,8 +3221,12 @@ function stamp(P,T,st){const S=SP[T.sp];
  const dir=S.key==='clifffig'&&T.out?T.out:S.key==='cinderpine'&&T.lee?T.lee:null,th=dir?Math.atan2(-dir[1],dir[0]):(h3(T.seed,T.sp,7)*TAU);
  const s=T.H/P.H,ty=P.man?0:T.y0-P.y0*s;
  _q.setFromAxisAngle(UP,th);_p.set(T.x,ty,T.z);_s.set(s,s,s);_M.compose(_p,_q,_s);
- // the bark: one instance per part
+ // the bark: one instance per part, or (bakeBark) the part's triangles through the tree's transform into its bucket
  P.defs.forEach(nm=>BIO.put(nm,[T.x,ty,T.z],_q,s,null));
+ if(P.parts){const kk=BIO._lodKey(T.x,T.z);for(const pt of P.parts){const K=BIO.buckets[pt.fam];const nv=pt.P.length/3;
+   for(let i=0;i<nv;i++){_p.set(pt.P[i*3],pt.P[i*3+1],pt.P[i*3+2]).applyMatrix4(_M);K.pos.push(_p.x,_p.y,_p.z);
+    _n.set(pt.N[i*3],pt.N[i*3+1],pt.N[i*3+2]).applyQuaternion(_q);K.nor.push(_n.x,_n.y,_n.z);K.uv.push(pt.U[i*2],pt.U[i*2+1]);K.col.push(pt.C[i*3],pt.C[i*3+1],pt.C[i*3+2]);}
+   const tris=nv/3;for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);}}
  // the items: each captured instance through the tree's transform
  for(const it of P.items){const I=BIO.items[it.name],def=BIO.defs[it.name];
   for(let i=0;i<it.count;i++){_I.fromArray(it.m,i*16);_O.multiplyMatrices(_M,_I);const e=_O.elements;for(let q=0;q<16;q++)I.m.push(e[q]);
