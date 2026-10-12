@@ -160,7 +160,7 @@ static func build(path: String) -> Node3D:
 			root.set_meta("tags", by)
 			report["tags"] = {"build": t.get("build"), "records": by.size(), "classes": cls}
 			if ids["nodes_with_id"] == 0:
-				report["gaps"]["tag nodes"] = "the core/tags records arrive as data (root meta 'tags', %d records), but no node names one: every mesh in this region merges records (a furniture batch per material) or has none, and the exporter writes ids only on a node that is one record or an instanced set" % by.size()
+				report["gaps"]["tag nodes"] = "the core/tags records arrive as data (root meta 'tags', %d records), but no node names one: an export from before 2026-10-12, or every mesh in the region merges many records (a furniture batch per material) or has none (the exporter writes ids only on a node that is one record or an instanced item set)" % by.size()
 	report["ids"] = ids
 	if ids["misaligned"] > 0:
 		report["gaps"]["records side table"] = "%d MultiMeshes whose krator_records do not match their instance count" % ids["misaligned"]
