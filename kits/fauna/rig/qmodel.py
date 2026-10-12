@@ -24,6 +24,11 @@ CFG = {
  'goat':  dict(belly=-0.30, legx=0.03, head=(0.52, 0.25), tail=(-0.86, -0.4), zmid=0.0, stride=0.26, tris=7000),
  'dog':   dict(tymax=0.02, belly=-0.24, legx=0.03, head=(0.58, 0.15), tail=(-0.62, -0.6), zmid=0.0, stride=0.30, tris=7000),
  'cat':   dict(tymax=0.0, belly=-0.16, legx=0.07, head=(0.52, 0.05), tail=(-0.62, -0.7), zmid=0.0, stride=0.24, tris=7000),
+'horse': dict(tymax=0.1, belly=-0.12, legx=0.03, head=(0.30, 0.15), tail=(-0.60, -0.6), zmid=0.0, stride=0.30, tris=8500),
+ 'buffalo': dict(tymax=-0.02, belly=-0.15, legx=0.03, head=(0.55, 0.0), tail=(-0.88, -0.7), zmid=-0.05, stride=0.26, tris=8000),
+ 'yak':   dict(tymax=0.0, belly=-0.50, legx=0.03, head=(0.62, -0.05), tail=(-0.90, -0.6), zmid=0.0, stride=0.22, tris=8000),
+ 'bison': dict(tymax=0.0, belly=-0.30, legx=0.03, head=(0.55, -0.25), tail=(-0.85, -0.7), zmid=-0.05, stride=0.24, tris=8000),
+ 'duck':  dict(tymax=0.2, belly=-0.50, legx=0.03, head=(0.30, 0.30), tail=(-0.55, -0.30), zmid=None, stride=0.18, tris=7000, foot_h=0.12),
  'hen':   dict(belly=-0.46, legx=0.03, head=(0.18, 0.38), tail=(-0.42, -0.10), zmid=None, stride=0.20, tris=7000, foot_h=0.12),
 }
 
@@ -50,9 +55,11 @@ def classify(C, c):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument('animal'); ap.add_argument('glb'); ap.add_argument('out'); ap.add_argument('--debug')
+    ap = argparse.ArgumentParser(); ap.add_argument('animal'); ap.add_argument('glb'); ap.add_argument('out'); ap.add_argument('--debug'); ap.add_argument('--yaw90', action='store_true', help='the model faces -x: turn it a quarter about y so it faces +z')
     a = ap.parse_args(); c = CFG[a.animal]
     J, BIN, P, N, UV, F = load(a.glb)
+    if a.yaw90:
+        Ry = np.array([[0, 0, 1.0], [0, 1, 0], [-1, 0, 0]]); P = P @ Ry.T; N = N @ Ry.T
     # ---- decimate in one pass
     _, first, inv = np.unique(np.round(P, 4), axis=0, return_index=True, return_inverse=True); inv = inv.reshape(-1)
     WF = inv[F]; WF = WF[(WF[:, 0] != WF[:, 1]) & (WF[:, 1] != WF[:, 2]) & (WF[:, 0] != WF[:, 2])]
