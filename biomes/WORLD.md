@@ -248,9 +248,9 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
     buckets. A tile can be exported as meshes, but the continent's flora is grown at run time, and
     `GODOT-PLAN.md` ports no builder code. *Decided: variants by default, hero trees opt-in
     ("Hero trees: an opt-in", below).*
-11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` is written in four kits;
-    eastabyss and rift assign it unguarded with different signatures, so the last kit loaded
-    replaces the others'. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
+11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` was written in five kits, and the
+    last one loaded replaced the others'; since 2026-10-12 it is the core's `irid` kind
+    (`core/biome/30-core-foliage.js`), one definition. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
     swlowlands) and swbay's fauna material are kit copies too.
 
 ## The contract it needs
@@ -347,7 +347,9 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
 - **Move the plants once.** The integer hash (`core/rand`, Phase 2), cell seeding, level-free
   records and the heightmap terrain (`core/terrain`, Phase 2) each reshuffle every kit. Do them
   as one event with one screenshot set, one baseline rewrite and one gallery update; tune preset
-  views after it.
+  views after it. *2026-10-08:* the field exists (`core/terrain/30-core-field.js`) and sedesert's ground reads it,
+  but its placement decisions stay on the closure (`BIO.init({placeH})`), so its plants kept every place and moved
+  only in y (`biomes/sedesert/KNOWN_ISSUES.md`); moving the decisions onto the field belongs to this event.
 - **Shader hooks name a library shader** (the plan's rule 7). The kits' own hooks become core
   material kinds; that also fixes blocker 11.
 - **The host shell** (Phase 1). The biome hosts (ten `host-*` sets, each its own version) are the

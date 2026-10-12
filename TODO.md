@@ -128,9 +128,11 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   then `BIO.put`); `85-host-tower` is a preview prop (a builder); `82-host-sky` becomes a `core/atmos` sky
   preset.
 - **[G shader] One copy of each biome shader hook, in the core.** The iridescent bark `BIO.iridBarkMat` is
-  written in four kits (eastabyss, nhighlands, rift, xanadu), on the shared `BIO`: eastabyss and rift assign
-  it unguarded and with different signatures, so with several kits resident the last kit loaded replaces the
-  others' (a residency bug, not only a port cost). Also the two-tone gloss bark `barkMat2` (nwlowlands,
+  done (2026-10-12): it was written in five kits (eastabyss, rift unguarded with different signatures;
+  nhighlands, shighlands, xanadu guarded), so with several kits resident the last definer loaded won (a residency
+  bug: eastabyss before xanadu gave xanadu's boles eastabyss's tints). It is now the `irid` kind in
+  `core/biome/30-core-foliage.js`, one definition with Rift's signature and eastabyss's tints as the defaults;
+  every kit's baked geometry and tints were proven unchanged. Still to do: the two-tone gloss bark `barkMat2` (nwlowlands,
   swlowlands), the impostor `farMat` (rift: iridescent; swlowlands: gloss), nhighlands' hanging sway on its
   bulbs and pods, and swbay's own `animMat` beside `core/biome/35-core-anim.js`. Move them into
   `30-core-foliage.js` and `35-core-anim.js` as material kinds (`irid`, `gloss`, `far`, `hang`, `anim`) with

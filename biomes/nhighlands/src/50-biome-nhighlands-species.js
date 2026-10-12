@@ -388,18 +388,8 @@ G.berry=function(){return new T3.OctahedronGeometry(1,0);};
 G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,5,1,true);};
 NHL.G=G;
 
-// ---------------------------------------------------------------- an iridescent bark (shared hook; the Rift kit's)
-BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat(tex);
- const A=colA||[0.78,1.18,0.92],B=colB||[1.45,0.82,0.74];
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+// ---------------------------------------------------------------- an iridescent bark
+// BIO.iridBarkMat is the core's 'irid' kind (core/biome/30-core-foliage.js): the trumpet stalks below.
 
 // ---------------------------------------------------------------- materials
 // the bark buckets: one per texture kind; the trumpets' bucket shimmers (the Rift's iridescent bark)

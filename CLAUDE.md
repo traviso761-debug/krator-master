@@ -54,8 +54,7 @@ on purpose and checked.
   it will run in Godot: keep its data side free of three.js and the DOM, its records keyed by stable ids, its edits
   kept as deltas by id, and its rules (overlap, frontage, slope) as plain functions on records.
 
-**Known bugs not to build on.** `BIO.iridBarkMat` is defined by five biome kits (two unguarded): never load two of
-them in one page until it is a core material kind. The catalog furniture batch unrolls indexed geometry (1.5 to 6
+**Known bugs not to build on.** The catalog furniture batch unrolls indexed geometry (1.5 to 6
 times the vertices); do not write new code that depends on that triangle soup. Packed normal maps from
 `tools/textures/pack.py` are lossy (4:2:0, about 11 degrees of error); `full-refactor` packs them lossless, so do
 not tune a material against the current normals.

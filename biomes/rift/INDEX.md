@@ -17,7 +17,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 18 | the lake, the ridge, the streams (44); terrain (73); the field cache (100); the host binding (112); the ground (121); the water (177) |
-| `50-biome-rift-species.js` | 61 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (191); leaf textures (244); an iridescent bark (397); bark textures (437); geometries local to this biome (473); materials (564); instanced items (624) |
+| `50-biome-rift-species.js` | 60 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (191); leaf textures (244); an iridescent bark (397); bark textures (426); geometries local to this biome (462); materials (553); instanced items (613) |
 | `55-biome-rift-trees.js` | 68 **big** | zones from the fields (20); colour (35); polyline helpers (Girder's) (65); keep-clear between trees (73); foliage helpers (80); the builders (97); impostors (the far canopy) (456); the pass (535) |
 | `60-biome-rift-floor.js` | 24 | fields local to the floor (32); small plants (37); the zone planters (141); the pass (211) |
 | `65-biome-rift-dress.js` | 7 |  |

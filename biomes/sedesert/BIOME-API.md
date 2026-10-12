@@ -16,6 +16,9 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   river that descends, or a pond in a hollow, hands its own level in. `BIO.waterH(x,z)`
   and `BIO.depth(x,z)` (= waterH − terrainH, positive under water) are what a fragment
   reads; the default is 0, so the old kits' `terrainH<0` and `depth>0` agree.
+- `field` and `placeH` (2026-10-08): this kit's host bakes its ground into a `core/terrain` field and reads it
+  (`terrainH`); `placeH` is the closure it baked from, which `BIO.depth`, the default mask and this host's mask and
+  field cache decide on, so the plants keep their places and only take the field's height. `BIO.depth` is waterH − placeH.
 - A field a world does not bind reads 0 (`wet`, `salt` and `upland` keep their old
   defaults); `BIO.hasField(name)` says whether it was bound.
 - `register(o)`: the world's inspector / probe hook; a biome calls `BIO.register({name,x,z,y,r,h})`
@@ -63,6 +66,8 @@ BIO.init({
   scene,
   terrainH: (x,z)=>y,           // ground height, world space
   waterH:   (x,z)=>y,           // the water surface there (-1e9 where there is none)
+  field:    KFIELD field,       // optional (2026-10-08): the baked ground terrainH reads; BIO.export adds it as ground.field
+  placeH:   (x,z)=>y,           // optional (2026-10-08): the height placement DECIDES on (mask, BIO.depth); terrainH if omitted
   mask:     (x,z)=>0..1,        // density multiplier: 0 where nothing roots (water, footprints)
   obstacles:[{x,z,r,y0,y1}],    // cylinders nothing may grow inside
   ticks:    fn=>void,           // per-frame fn(dt,t) for the wind

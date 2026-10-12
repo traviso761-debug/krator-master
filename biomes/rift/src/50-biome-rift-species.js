@@ -395,20 +395,9 @@ RIFT.PORETEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#4aa0b8';g.fillRect(0,
   g.fillStyle='#6ac0d0';g.beginPath();g.arc(x,y,12.5,0,TAU);g.fill();g.fillStyle='#18404c';g.beginPath();g.arc(x,y+1,9,0,TAU);g.fill();g.fillStyle='#0c2830';g.beginPath();g.arc(x,y+2,6,0,TAU);g.fill();}});
 
 // ---------------------------------------------------------------- an iridescent bark
-// A bole whose colour shifts with the view angle (and slowly with the wind):
-// colA facing the eye, colB at grazing angles. The frill tree's column goes
+// A bole whose colour shifts with the view angle (and slowly with the wind): BIO.iridBarkMat, the core's 'irid' kind
+// (core/biome/30-core-foliage.js): colA facing the eye, colB at grazing angles. The frill tree's column goes
 // teal to violet; the bell palm's pale trunk only a little.
-BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
- const A=colA||[0.78,1.18,0.92],B=colB||[1.45,0.82,0.74];
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 // the four iridescent barks' pairs (facing the eye, at grazing angles); the impostors read them too (55-trees)
 RIFT.IRIDBARK={frill:[[0.80,1.16,1.06],[1.22,0.86,1.30]],bell:[[1.0,1.02,0.98],[1.08,0.96,1.12]],carrot:[[0.92,1.14,0.96],[1.18,0.90,1.22]],trumpet:[[1.0,1.08,0.9],[1.1,1.0,1.2]]};
 // THE FAR CANOPY'S MATERIAL: vertex-coloured Lambert whose colour shifts with the view, so the impostors keep the

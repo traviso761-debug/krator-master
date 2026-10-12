@@ -85,10 +85,18 @@ function trend(x){return 40-.0045*x;}
 function floorC(x){const zr=zR(x);return trend(x)+mtnH(x,zr)-Dc(x);}
 function WL(x){return floorC(x)-1.2;}
 // ---------------------------------------------------------------- terrain
-// terrainH is memoised one point deep: the biome's zoning, the mask and the depth
-// test all ask for the same point in a row (about half of all calls repeat the last)
+// THE GROUND IS A BAKED FIELD (core/terrain/30-core-field.js, since 2026-10-08): terrainH0 below is the closure that
+// paints it, once, at load (TFIELD, after the carve patch is declared); terrainH and everything that roots, walks or
+// draws reads the field, and BIO.export hands it to Godot as the ground's `field`. The base grid is half the ground
+// mesh's cell (17.8 m / 2), so every ground vertex is a grid point; the lip's window, where the mesh splits each cell
+// 12 ways, is an inset at that finer step. Between grid points the field is bilinear (KNOWN_ISSUES.md: the error).
+function terrainH(x,z){return TFIELD.h(x,z);}
+// placeH: the closure, for the placement DECISIONS only (the mask's water depth, BIO.depth, the field cache's slope), so
+// every plant keeps its place and takes only the field's height; the reseeding event (biomes/WORLD.md, Order 6) moves
+// the decisions onto the field with everything else, once. Memoised one point deep: the zoning, the mask and the depth
+// test ask for the same point in a row
 const _tm={x:NaN,z:NaN,h:0};
-function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+function placeH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the ground without the carve patch's recess (the patch's own rock top)
 function terrainBase(x,z){return terrainH0(x,z,false);}
 function terrainH0(x,z,carved){
@@ -110,7 +118,19 @@ function terrainH0(x,z,carved){
 // duplicates the Abyss face beside the promontory, where the ground's cells cannot match it
 const UNDERCUT=BIO.carve.add({id:'cataract-undercut',name:'The cave behind the cataract',kind:'undercut',c:[LIP.x-1,LIP.z],n:[1,0],
  hw:34,depth:30,h:46,floorY:LIP.floorY,base:terrainBase,margin:10,pad:3,cell:1});
-const PL=(function(){const b=terrainH(POND.x,POND.z);return b+6.2;})();   // the pond's surface: 6 m of water in a 12 m hollow
+// the ground mesh's lattice (GROUND, below, draws on it): 420 cells over the map, each cell in the lip's window split 12 ways
+const GRID={N:420,S:TERR.R*2.2,M:12,win:{x:[3040,3230],z:[LIP.z-90,LIP.z+90]}};GRID.cs=GRID.S/GRID.N;
+GRID.cells=(lo,hi)=>{let a0=null,a1=null;for(let i=0;i<GRID.N;i++){const a=-GRID.S/2+i*GRID.cs;if(a+GRID.cs>lo&&a<hi){if(a0===null)a0=a;a1=a+GRID.cs;}}return[a0,a1];};
+// the pond's surface: 6 m of water in a 12 m hollow (from the closure, before the bake: the level is the field's data)
+const PL=terrainH0(POND.x,POND.z,true)+6.2;
+// THE BAKE: the closure (with the carve patch's recess) on the base grid and the lip's inset; the river and the pond
+// ride along as the field's named water surfaces (the export's; the page's waterH below still answers from its closure)
+const TFIELD=(function(){const t0=performance.now(),S=GRID.S,wx=GRID.cells(GRID.win.x[0],GRID.win.x[1]),wz=GRID.cells(GRID.win.z[0],GRID.win.z[1]);
+ const f=KFIELD.bake((x,z)=>terrainH0(x,z,true),[-S/2,-S/2,S/2,S/2],GRID.cs/2,{name:'sedesert',
+  insets:[{box:[wx[0],wz[0],wx[1],wz[1]],step:GRID.cs/GRID.M,name:'the lip'}],
+  water:{river:(x,z)=>canyonU(x,z)<1.1&&x<TERR.RIM+40?WL(x):NaN,pond:(x,z)=>pondD(x,z)<170?PL:NaN},
+  waterBox:{river:[-S/2,-560,TERR.RIM+40,560],pond:[POND.x-220,POND.z-220,POND.x+220,POND.z+220]}});
+ window._field={step:f.step,nx:f.nx,nz:f.nz,inset:[f.insets[0].nx,f.insets[0].nz],ms:Math.round(performance.now()-t0)};return f;})();
 function waterH(x,z){if(canyonU(x,z)<1.1&&x<TERR.RIM+40)return WL(x);if(pondD(x,z)<170)return PL;return -1e9;}
 // the climate fields the biome asks for (cached below; these are the definitions)
 function fieldsAt(x,z,h,slope){const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u),ab=smooth(3080,3200,x+60*Math.sin(z*.003));
@@ -129,7 +149,7 @@ const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope'
 // a coarse cache of the fields (they cost several terrainH calls each)
 const FC=(function(){const N=384,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=placeH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,k=j*N+i;
   const hx=a.h[j*N+Math.min(N-1,i+1)]-a.h[j*N+Math.max(0,i-1)],hz=a.h[Math.min(N-1,j+1)*N+i]-a.h[Math.max(0,j-1)*N+i],slope=clamp(Math.hypot(hx,hz)/(2*cs)*1.6,0,1);
   const F=fieldsAt(x,z,a.h[k],slope);FNAMES.forEach(n=>a[n][k]=F[n]);}
@@ -144,8 +164,8 @@ const OBSTACLES=[];
 // the LOD spine: a row of origins along the river, plus the pond and the butte's foot
 TOWER.z=zR(TOWER.x)-Wc(TOWER.x)*2.1;
 const SPINE=[];for(let x=-3000;x<=3200;x+=700)SPINE.push([x,zR(x)]);SPINE.push([POND.x,POND.z],[BUTTE.x-300,BUTTE.z-500],[TOWER.x,TOWER.z]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
- mask:(x,z)=>{if(BIO.carve.topAt(x,z)!==null)return 0;const d=terrainH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},   // the core's default (nothing rooted under the local water), and nothing in the carve patch
+BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:TFIELD,placeH:placeH,
+ mask:(x,z)=>{if(BIO.carve.topAt(x,z)!==null)return 0;const d=placeH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},   // the core's default (nothing rooted under the local water), and nothing in the carve patch
  obstacles:OBSTACLES,ticks:tick,seed:11,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  windows:{water:[-TERR.R,-700,TERR.R,1000]}});   // the river strip and the pond: the water-bound passes look nowhere else
 BIO.setSun([-1000,1150,-560]);
@@ -201,9 +221,9 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
 // so the promontory's sheer faces and the cave's recess are resolved (the patch's pad, 3 m, must
 // exceed the cell's diagonal). Outside the window the lattice is the plain 420 x 420 one.
 const SUNV=[sun.position.x,sun.position.y,sun.position.z];
-const GROUND=(function(){const N=420,S=TERR.R*2.2,cs=S/N,M=12;
+const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;
  const axis=(lo,hi)=>{const o=[];for(let i=0;i<=N;i++){const a=-S/2+i*cs;o.push(a);if(i<N&&a+cs>lo&&a<hi)for(let k=1;k<M;k++)o.push(a+cs*k/M);}return o;};
- const X=axis(3040,3230),Z=axis(LIP.z-90,LIP.z+90),nx=X.length,nz=Z.length;
+ const X=axis(GRID.win.x[0],GRID.win.x[1]),Z=axis(GRID.win.z[0],GRID.win.z[1]),nx=X.length,nz=Z.length;
  const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),ck=new Float32Array(nx*nz),rk=new Float32Array(nx*nz),oc=new Float32Array(nx*nz),sn=new Float32Array(nx*nz);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=X[i],z=Z[j],y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);   // mud cracks and fine strata are fields (fieldsAt)

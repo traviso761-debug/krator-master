@@ -39,21 +39,21 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/scyvoi`](kits/scyvoi/INDEX.md) | 26 | 192 | 22 | The Scyvoi kit: the salamander riders of the crater drylands, gers and Tibetan tents in polychrome and appliqué. Five small and five large tents (gers, a bell tent, goat-hair tents, a white appliqué tent and a gur, two Tibetan halls, an appliqué tent), the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished from the catalog's Scyvoi culture (core/furnish) with a cut-away; salamanders (riding, war, draught), goats, bison and cattle from kits/fauna with life data and their pens, chariots and carts, tethering; and the Baelu, a fitted-stone fire redoubt. Its engine (the KIT record, materials, tent kit, scene) is vendored by the Desert and Ash Nomads kits; a verified kit sheet. |
 | [`kits/zeijani`](kits/zeijani/INDEX.md) | 30 | 270 | 27 | The Zeijani building kit: carved and built dwellings, galleries, estates, shops, the temple, council, kiva, cistern, portal, works and the outpost, each carved by the cavern module (core/terrain/39-core-cavern.js) from the void plans in kits/interiors/sets/zeijani.js. |
 | [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 15 | 195 | 44 | Biome kit: see `biomes/README.md`. |
-| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 14 | 206 | 62 | Biome kit: see `biomes/README.md`. |
+| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 14 | 205 | 62 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 16 | 221 | 52 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 14 | 154 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/geyser`](biomes/geyser/INDEX.md) | 18 | 178 | 24 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 150 | 33 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 228 | 53 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 227 | 51 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 16 | 279 | 73 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 182 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 215 | 68 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 202 | 36 | Biome kit: see `biomes/README.md`. |
-| [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 14 | 165 | 48 | Biome kit: see `biomes/README.md`. |
+| [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 213 | 68 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 204 | 36 | Biome kit: see `biomes/README.md`. |
+| [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 14 | 164 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 194 | 53 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 207 | 61 | Biome kit: see `biomes/README.md`. |
 | [`biomes/throne`](biomes/throne/INDEX.md) | 16 | 278 | 79 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
-| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 220 | 67 | Biome kit: see `biomes/README.md`. |
+| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 218 | 67 | Biome kit: see `biomes/README.md`. |
 | [`openworld/little-demo`](openworld/little-demo/INDEX.md) | 17 | 157 | 32 | Little Demo: the scale model's eastern desert region at 1:1 (1.3 million km2), streamed: terrain from the scale model's heights, the sedesert, eastabyss, hyperjungle and ebadlands kits' flora placed by climate as cell-seeded instances, settlements marked. |
 
 ## Not builds
