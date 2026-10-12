@@ -13,7 +13,8 @@
 //   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
 //   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...]}) -> candidates, nearest first, open, free and
 //                                 letting the actor in (SIM.welcome)
-//   SIM.slotsFromFurniture(pieces) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3)
+//   SIM.slotsFromFurniture(pieces, map?) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3);
+//                                 map: a world's own {job|type|role: ACT} over SIM.FURN_ACT
 (function(root){
   'use strict';
   var SIM = root.SIM;
@@ -57,8 +58,11 @@
   SIM.FURN_ACT = { bed:'SLEEP', mat:'SLEEP', bunk:'SLEEP', seat:'EAT', chair:'EAT', bench:'SOCIALIZE', stool:'DRINK', table:'EAT',
     counter:'KEEP_SHOP', stall:'SELL', stove:'COOK', hearth:'COOK', desk:'STUDY', altar:'WORSHIP', shrine:'WORSHIP',
     forge:'CRAFT', anvil:'CRAFT', loom:'WEAVE', smithing:'CRAFT', fishing:'MEND_NETS', farming:'FARM', carpentry:'CRAFT', milling:'CRAFT' };
-  SIM.slotsFromFurniture = function(pieces){
-    var out={}; (pieces||[]).forEach(function(p){ var a = SIM.FURN_ACT[p.job] || SIM.FURN_ACT[p.type] || SIM.FURN_ACT[p.role]; if(a) out[a]=(out[a]||0)+(p.seats||1); });
+  /* map: a world's own vocabulary over SIM.FURN_ACT (Voth's city: a rack is DRAW_TOOLS, a well DRINK, a tomb HONOUR);
+     a key it maps to null is no activity there */
+  SIM.slotsFromFurniture = function(pieces, map){
+    var M = map ? Object.assign({}, SIM.FURN_ACT, map) : SIM.FURN_ACT, out={};
+    (pieces||[]).forEach(function(p){ var a = M[p.job] || M[p.type] || M[p.role]; if(a) out[a]=(out[a]||0)+(p.seats||1); });
     return out;
   };
 })(typeof window!=='undefined'?window:globalThis);

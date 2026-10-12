@@ -186,6 +186,52 @@ var TUNE = {
         work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
+  /* phase B of SIM-ROADMAP.md (42-vc-sim-places.js): the buildings the simulation needs placed, the wells, every building
+     and open place as a core/simulation place.
+     - place: the new kit models (kits/catalog/krator-master-buildings-voth.js) on the plan. A trade takes `n` lots of the
+       `from` classes whose plot holds its model, spread over the city (the farthest from those already taken first);
+       `cls` is the class it becomes. The watchhouses take a house near the east, west and south of the city (`at`, a
+       fraction of the way from the city's middle to its edge); the central one is the Fortress's armoury. The
+       caravanserai stands by `gate` within `reach` m, on ground rising no more than `slope` across it and within `climb` m
+       of the gate's height (outside the wall where there is such ground, else inside it in place of houses); the coast-guard berth on the water `off` m from the
+       Fortress's apron, `clear` radians from its bridges and docks, its deck `deckY` over the sea on a stone footing.
+     - wells: on every plaza and market square, every `street` m along the residential streets (`side` m off the kerb, at
+       least `gap` m from another well), and one in the yard of every manor and clan compound.
+     - furnAct: the city's activity vocabulary over core/simulation's SIM.FURN_ACT (a piece's job, type or catalog role).
+     - pull: how strongly a place draws someone choosing what to do with free time, by place kind and activity (phase C
+       reads it: the activity whose unmet need x pull is highest wins).
+     - hours: when a place of a kind is open (the home and the well always); posts: work posts a piece gives (the job
+       table's posts: a counter takes two, a warehouse's bay half a porter); outdoor: the work that has no furniture (the
+       fields, the docks, the mines, the walls): its posts are the census's workplaces there. */
+  sim: {
+    place: {
+      trades: [
+        { key: 'voth_bldg_bakery', n: 14, from: ['shop', 'craft'], cls: 'craft', plural: 'bakeries' },
+        { key: 'voth_bldg_butcher', n: 10, from: ['shop', 'craft'], cls: 'craft', plural: 'butchers' },
+        { key: 'voth_bldg_weaver', n: 8, from: ['craft', 'shop'], cls: 'craft', plural: 'weavers' },
+        { key: 'voth_bldg_brewery', n: 4, from: ['industrial', 'warehouse'], cls: 'industrial', plural: 'breweries' },
+        { key: 'voth_bldg_tannery', n: 3, from: ['industrial', 'warehouse'], cls: 'industrial', plural: 'tanneries' }
+      ],
+      watch: { key: 'voth_bldg_watchhouse', at: 0.55, dirs: { east: [1, 0], west: [-1, 0], south: [0, 1] }, from: ['middle', 'poor', 'shop', 'craft'] },
+      caravanserai: { key: 'voth_bldg_caravanserai', gate: 'SpiritGate', reach: 420, pad: 3, slope: 6, climb: 12 },
+      berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
+    },
+    wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
+    furnAct: { rack: 'DRAW_TOOLS', weapon: 'DRAW_TOOLS', well: 'DRINK', stall: 'SELL', counter: 'KEEP_SHOP', altar: 'WORSHIP', shrine: 'WORSHIP',
+               tomb: 'HONOUR', bench: 'RELAX', seating: 'SOCIALIZE', chair: 'EAT', stool: 'DRINK', loom: 'WEAVE', workstation: 'CRAFT', stove: 'COOK',
+               desk: 'STUDY', bed: 'SLEEP', larder: 'STORE_FOOD', store: 'STORE_FOOD', chest: 'STORE', tool: 'TRAIN' },
+    pull: {
+      home: { EAT: 1, SLEEP: 1, RELAX: 0.8, SOCIALIZE: 0.6 }, tavern: { EAT: 1.2, DRINK: 1.5, SOCIALIZE: 1.5, RELAX: 1 }, shop: { BUY: 1 }, market: { BUY: 1.3, SOCIALIZE: 0.8 },
+      shrine: { WORSHIP: 1.4, CONTEMPLATE: 1.2 }, chapel: { WORSHIP: 1.2, CONTEMPLATE: 1.4 }, funerary: { HONOUR: 1.5, CONTEMPLATE: 1 }, park: { RELAX: 1.4, SOCIALIZE: 0.8 },
+      plaza: { SOCIALIZE: 1.1, RELAX: 0.6 }, well: { DRINK: 1, SOCIALIZE: 0.5 }, healing: { HEAL: 1.5 }
+    },
+    hours: { home: null, well: null, shop: [7, 19], craft: [6, 19], tavern: [10, 2], warehouse: [6, 18], industrial: [6, 18], civic: [7, 18], market: [6, 19],
+             shrine: [5, 22], chapel: [4, 22], funerary: [6, 20], park: [5, 23], plaza: null, watch: null, healing: null, lighthouse: null },
+    posts: { counter: 2, workstation: 1, loom: 1, desk: 1, stove: 2, rack: 1, anvil: 2, forge: 2, stall: 1, tool: 1, storage: 0.5, stack: 0.5, bed: 0.5, table: 1, altar: 3, shrine: 2, tomb: 1, food: 0.5 },
+    target: 0.9,
+    /* the soldiers' posts on the wall: at each standing tower and each gate */
+    wallPost: { tower: 4, gate: 12 }
+  },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
@@ -281,6 +327,16 @@ var TUNE = {
              catacomb: [0.3, 0, 'necropolis keepers'], tomb: [0.2, 0, 'necropolis keepers'],
              byCanton: { Arena: { barracks: 'gladiators and arena keepers', training: 'gladiators and arena keepers' }, Fortress: { barracks: 'Ordinator garrison', training: 'Ordinator garrison', office: 'Ordinator garrison' },
                          Foreign: { office: 'envoys and embassy staff' }, Guild: { workshop: 'guild masters and journeymen', smithy: 'guild masters and journeymen' }, Arsenal: { workshop: 'armourers and quartermasters' } } },
+    /* the citizen simulation's buildings (phase B, 42-vc-sim-places.js), by kit key: residents, workplaces, the kind of work
+       and where; a converted lot counts as its new building, not its old one */
+    byKey: { voth_bldg_watchhouse: { job: 'town guard', jobs: 24, where: 'watchhouses' },
+             voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
+             voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
+             voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },
+             voth_bldg_butcher: { job: 'butchers', jobs: 4, live: 5, where: 'butchers' },
+             voth_bldg_weaver: { job: 'weavers and dyers', jobs: 5, live: 6, where: 'weavers' },
+             voth_bldg_brewery: { job: 'brewers', jobs: 10, where: 'breweries' },
+             voth_bldg_tannery: { job: 'tanners', jobs: 8, where: 'tanneries' } },
     jobs: { shop: 4, craft: 5, tavern: 6, warehouse: 10, industrial: 15, power: 130, rich: 2, manor: 8, clanService: 6, garrison: 240, barracks: 90, school: 8, guild: 14, customs: 22,
             healing: 45, funeraryTemple: 18, shrine: 3, lighthouse: 4, pier: 30, riverQuay: 14, fishDock: 10, stall: 2,
             mill: 3, watermill: 4, ranch: 8, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }

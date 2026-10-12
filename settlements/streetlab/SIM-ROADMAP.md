@@ -8,7 +8,8 @@ world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.
 
 **The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A is done but for the Palace and
 Temple (branch `Voth-sim`, sessions 1 and 2, 2026-10-12): every building's interior, the residence rule's report, the
-cutaway on any building, the density overlay, the job table and the eight new kit models. Numbers in `HANDOFF.md`.**
+cutaway on any building, the density overlay, the job table and the eight new kit models. Phase B session 1 is done
+(places, wells, the new buildings placed, the 90% audit). Numbers in `HANDOFF.md`.**
 
 ---
 
@@ -242,6 +243,12 @@ Temple. Numbers in `HANDOFF.md`.
    Fortress, and the trades the chains need (weaver, tannery, brewer, butcher, bakeries) as `craft` lots with their own
    kit pieces.
 5. The job table of 1.2 is produced here in full, in the page and by `verify.py`.
+
+**Session 1 (2026-10-12):** items 1 to 5 are done (`42-vc-sim-places.js`): the places (with activities, hours, pull and
+work posts), the 90% audit, the wells, the new buildings placed, the job table in full. Differences from the plan: the
+yard wells of manors and clan compounds are a DRINK on the home, not a placed piece (the courtyard is inside the kit
+model); the caravanserai stands inside the Spirit Gate (no level ground outside any gate); the central watchhouse is
+the Fortress's armoury. Numbers and the owner's decisions in `HANDOFF.md`.
 
 ### 2.4 Phase C: citizens, schedules, needs, happiness (2–3 sessions)
 

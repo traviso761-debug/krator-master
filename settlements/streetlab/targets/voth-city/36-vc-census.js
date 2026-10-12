@@ -10,6 +10,8 @@ VC.census = function () {
   /* homes */
   alive.forEach(function (L) {
     var place = L.deck ? 'canton' : L.country ? 'country' : 'city';
+    var BK = K.byKey && K.byKey[L.key];                 /* the citizen simulation's buildings, by kit key (phase B) */
+    if (BK) { if (BK.live) addL(place === 'country' ? (L.country === 'suburb' ? 'suburbs' : 'farms and villages') : place === 'canton' ? 'canton decks' : 'city houses', BK.live); if (BK.jobs) addJ(BK.job, BK.jobs, BK.where); return; }
     if (L.cls === 'clan') { addL('clan compounds', K.live.clan); addJ('household service', K.jobs.clanService, 'clan compounds'); return; }
     if (L.cls === 'farm') { addL('farms and villages', L.w * L.d > 6000 ? K.live.bigFarm : K.live.farm); return; }
     if (L.role === 'garrison') { addL('garrison and barracks', K.live.garrison); addJ('soldiers', K.jobs.garrison, 'garrison castle'); return; }

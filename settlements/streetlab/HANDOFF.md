@@ -4,6 +4,36 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase B session 1 (branch `Voth-sim`)
+
+The owner: "start phase B". Done (README "The citizens' places (phase B)"), in `targets/voth-city/42-vc-sim-places.js`:
+- **The new buildings are on the plan:** 14 bakeries, 10 butchers, 8 weavers, 4 breweries, 3 tanneries (converted lots,
+  spread over the city), watchhouses east, west and south (and the Fortress's armoury as the central one), the
+  caravanserai 320 m from the Spirit Gate inside the wall in place of 7 houses, the coast-guard berth off the Fortress.
+- **269 wells** (215 on plazas, 52 along the streets, 2 in market squares) and 59 private ones in the manor and clan
+  courtyards.
+- **About 11,100 SIM places** with activities, hours, pull and work posts; core/simulation's `SIM.slotsFromFurniture` takes
+  a world's own map now (`test-sim.js` checks it; Shade, Mungo and the example were rebuilt, their verifies run).
+- **The 90% rule and the full job table** in the report panel and `verify.py`.
+
+**What the 90% audit says:** 23,410 of the 24,556 posts the rule asks for stand. Short: industrial workers (490: the
+industrial lots' census is 15 workers each, their warehouses hold about 7 posts), soldiers (257: barracks, the garrison
+castle and the wall's towers and gates; their patrols are phase F), power-house stokers (201: 130 workplaces a house),
+innkeepers and servers (97), the town guard (32: their patrols are phase F), granary keepers and millers (29), the coast
+guard (24), the caravanserai's grooms (7), the funerary priests (6), guild and customs clerks (2, 1). Each short row names
+the buildings with the most floor per post: where more work furniture would go, or where the census is too generous.
+
+**Decisions for the owner:**
+- The caravanserai: no gate has level ground outside within 700 m; it stands inside, in place of 7 houses (4 rich). Keep
+  it, move it, or name a spot (the editor's placed building does that).
+- The short kinds above: more work furniture, or fewer workplaces in the census (`TUNE.census.jobs`: industrial 15,
+  power 130 are the large ones)?
+- The new buildings' census numbers are first guesses (`TUNE.census.byKey`: a watchhouse 24 guards, the berth 40, a
+  brewery 10...).
+
+**Next (phase B session 2 or phase C):** the places' `spots` (where people stand), the furniture's own capacities in place
+of one post a piece where it matters (a loom, a counter), and phase C's pedestrian nav layer.
+
 ## 2026-10-12: phase A session 2 (branch `Voth-sim`): phase A is done but for the Palace and Temple
 
 The owner (2026-10-12): "work on session 2 phase A except the palace/temple interiors". Done (README "Every building's

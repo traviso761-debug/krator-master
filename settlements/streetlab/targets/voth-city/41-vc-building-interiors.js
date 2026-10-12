@@ -66,7 +66,8 @@ VC.ixPrograms = function () {
 
 /* ---------------------------------------------------------------- residents and jobs, as the census counts them (36) */
 VC.ixResidents = function (L) {
-  var K = TUNE.census;
+  var K = TUNE.census, BK = K.byKey && K.byKey[L.key];
+  if (BK) return BK.live || 0;
   if (L.cls === 'clan') return K.live.clan;
   if (L.cls === 'farm') return L.w * L.d > 6000 ? K.live.bigFarm : K.live.farm;
   if (L.role === 'garrison') return K.live.garrison;
@@ -76,7 +77,8 @@ VC.ixResidents = function (L) {
 };
 /* [kind of work, workplaces] of a lot (the census's labels), or null */
 VC.ixJob = function (L) {
-  var K = TUNE.census;
+  var K = TUNE.census, BK = K.byKey && K.byKey[L.key];
+  if (BK) return BK.jobs ? [BK.job, BK.jobs] : null;
   if (L.cls === 'clan') return ['household service', K.jobs.clanService];
   if (L.cls === 'farm') return null;
   if (L.role === 'garrison') return ['soldiers', K.jobs.garrison];

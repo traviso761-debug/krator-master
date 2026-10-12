@@ -390,6 +390,31 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
   furniture kind, with the census's workplaces, the 90% target and the posts placed); every type with its shell, storeys,
   rooms and counts. `VC.ixSlots(i)` is what phase B's places will read; `VC.IX.export()` is all of it as JSON.
 
+**The citizens' places (phase B)** (`42-vc-sim-places.js`; `TUNE.sim`, `TUNE.census.byKey`; `SIM-ROADMAP.md` 2.3). What
+phase C's citizens will need, placed and declared, and its deficits reported before anyone walks:
+* **The buildings** (`VC.simBuildings`, after the street method and the owner's edits, before the census): the new kit
+  models go onto the plan. The trades (14 bakeries, 10 butchers, 8 weavers, 4 breweries, 3 tanneries, `TUNE.sim.place.trades`)
+  take shop, craft and industrial lots whose plot holds their model and whose new footprint clears every other building,
+  front kept on the street, spread over the city (each next lot the farthest from those its trade holds). Three
+  watchhouses take a house near the east, west and south of the city; the central one is the Fortress's armoury. The
+  caravanserai stands by the Spirit Gate: no gate has level ground outside within 700 m (the wall runs on the hills), so
+  it stands just inside, in place of the houses it overlaps, and may close an alley but never a street, a park or a
+  market. The coast-guard berth stands on the water off the Fortress's apron, clear of every bridge, causeway and pier,
+  on a stone footing. A converted lot counts in the census as its new building (`TUNE.census.byKey`).
+* **The wells** (`VC.wells`, after the park furniture): `voth_well` on the plazas and market squares and every 150 m along
+  the residential streets, none within 90 m of another (or of the parks' and the monastery's wells); the manors and clan
+  compounds have their own, in their courtyards (a DRINK on the home). They are a 'Wells' district's art: drawn and
+  inspected as the other furniture.
+* **The places** (`VC.simPlaces`, after the interiors): every building with an interior, every canton room, every well,
+  park, market and burial ground, the fields, piers, mines, quarries, mills and the wall's towers and gates are
+  `SIM.place`s (about 11,100), each with its activities (its furniture read through `TUNE.sim.furnAct` over
+  core/simulation's `SIM.FURN_ACT`: `SIM.slotsFromFurniture(pieces, map)`), its hours (`TUNE.sim.hours`), its pull for free
+  time (`TUNE.sim.pull`) and its work posts with their kind of work (`TUNE.sim.posts` per piece; a canton room's and the
+  outdoor work's are the census's).
+* **The 90% rule** (`VC.simWorkAudit`): for every kind of work the census counts, the posts against 90% of its
+  workplaces; a short kind is named with its buildings that have the most floor per post (where more posts would go).
+  In the report panel (the "interiors report" button) and in `verify.py`'s output.
+
 ## Notes
 
 * **Fountain.** The plaza fountain (`sl_fountain`, `core/city/52-city-host-buildings.js`) is a placeholder piece, not a catalog furniture piece.

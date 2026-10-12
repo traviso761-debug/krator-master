@@ -87,7 +87,7 @@ CITY = '../../core/city/'
 CITY_JS = [CITY + '10-city-core.js', 'targets/voth-city/15-vc-tune.js', CITY + '20-city-plan.js', CITY + '31-city-steps-b.js', CITY + '32-city-steps-c.js',
            'targets/voth-site/10-site-model.js', 'targets/voth-site/20-site-cantons.js', 'targets/voth-city/30-vc-site.js', 'targets/voth-city/31-vc-voth.js', 'targets/voth-city/31b-vc-chinampa.js',
            'targets/voth-city/32-vc-city.js', 'targets/voth-city/33-vc-country.js'] + SIM_JS + ['targets/voth-city/34-vc-transit.js',
-           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-city/41-vc-building-interiors.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
+           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-city/41-vc-building-interiors.js', 'targets/voth-city/42-vc-sim-places.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
            CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/56-vc-interiors-host.js', 'targets/voth-city/56b-vc-building-interiors-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/59-vc-flora-edit.js', 'targets/voth-city/98-start.js']
 NL = '\n'
 

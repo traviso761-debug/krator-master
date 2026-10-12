@@ -194,4 +194,9 @@ function world(seed){
  S.transport({id:'hw',layer:'pedestrian',stops:['homeA','homeB'],speed:2,dwell:10,headway:500});const H=S.transportBake('hw');
  ok('headway sets the number of vehicles (period / headway)',H.vehicles===Math.max(1,Math.round(H.period/500)),H.vehicles===Math.round(H.period/240)&&H.period/240>1.5);}
 
+{world(17);const S=window.SIM, ps=[{type:'rack'},{type:'bed'},{type:'bed'},{type:'table'}];
+ const base=S.slotsFromFurniture(ps), own=S.slotsFromFurniture(ps,{rack:'DRAW_TOOLS',table:null});
+ ok('a world\'s own map reads a piece the core does not (a rack as DRAW_TOOLS)',own.DRAW_TOOLS===1&&own.SLEEP===2,base.DRAW_TOOLS!=null);
+ ok('a key the map sets to null is no activity there, the rest as the core reads them',own.EAT==null&&base.EAT===1&&base.SLEEP===2,own.EAT===1);}
+
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

@@ -307,12 +307,30 @@ VC.ixReportHTML = function () {
   R.typeList.forEach(function (t) { h += '<tr><td>' + t.type + '</td><td class="n">' + t.units + '</td><td class="' + (t.shell === 'fallback' ? 'bad' : '') + '">' + t.shell + '</td><td class="n">' + t.storeys + '</td><td>' + t.rooms + '</td><td class="n">' + t.beds + '</td><td class="n">' + t.items + '</td><td class="n">' + t.food + '</td><td class="n">' + t.posts + '</td><td class="n">' + (t.dropped || '') + '</td></tr>'; });
   return h + '</table>';
 };
+/* phase B (42-vc-sim-places.js): the buildings placed, the wells, the places by kind, the 90% rule */
+VC.simReportHTML = function () {
+  var S = VC.SIMB || {}, A = S.audit; if (!A) return S.error ? '<span class="bad">' + S.error + '</span>' : '';
+  var f = function (n) { return Math.round(n).toLocaleString(); };
+  var h = '<h2>Phase B: the citizens\' buildings, the wells, the places</h2><div>' + (S.log || []).join('; ') + '.</div>';
+  var w = S.wellCount || {};
+  h += '<div>' + f((S.wells || []).length) + ' wells placed (' + (w.market || 0) + ' in market squares, ' + (w.plaza || 0) + ' on plazas, ' + (w.street || 0) + ' along the streets), ' + (w.yard || 0) + ' private ones in manor and clan courtyards.</div>';
+  var g = {}; (S.list || []).forEach(function (o) { var k = /^ix\./.test(o.id) ? (o.kind === 'home' ? 'homes' : 'buildings at work') : /^room\./.test(o.id) ? 'canton rooms' : /^well\./.test(o.id) ? 'wells' : /^open\./.test(o.id) ? 'parks, markets, burial grounds' : 'outdoor work'; g[k] = (g[k] || 0) + 1; });
+  h += '<div>' + f(S.places || 0) + ' simulation places: ' + Object.keys(g).map(function (k) { return f(g[k]) + ' ' + k; }).join(', ') + ' (core/simulation SIM.place: activities from the furniture, opening hours, pull, work posts).</div>';
+  h += '<h2>Work posts against the 90% rule</h2><div class="k">The brief (1.2): work furniture for at least ' + Math.round(TUNE.sim.target * 100) + '% of the workplaces at once. Posts: a building\'s work pieces at TUNE.sim.posts each; a canton room\'s and the outdoor work\'s (fields, docks, mines, the wall) are the census\'s own numbers. ' +
+    f(A.total.posts) + ' of the ' + f(A.total.target) + ' posts the rule asks for stand; ' + A.short + ' kinds of work fall short.</div>';
+  h += '<table><tr><th>kind of work</th><th>workplaces</th><th>90%</th><th>posts</th><th>in buildings</th><th>canton rooms</th><th>outdoor</th><th>short</th><th>buildings with the most floor per post</th></tr>';
+  A.rows.forEach(function (r) {
+    h += '<tr><td>' + r.job + '</td><td class="n">' + f(r.workplaces) + '</td><td class="n">' + f(r.target) + '</td><td class="n ' + (r.short ? 'bad' : 'ok') + '">' + f(r.posts) + '</td><td class="n">' + f(r.building) + '</td><td class="n">' + f(r.canton) + '</td><td class="n">' + f(r.outdoor) + '</td><td class="n ' + (r.short ? 'bad' : '') + '">' + (r.short ? f(r.short) : '') + '</td><td class="k">' +
+      (r.room || []).slice(0, 3).map(function (x) { return x.name + ' (' + x.district + ', ' + x.floor + ' m\u00b2 for ' + Math.round(x.posts) + ')'; }).join('; ') + '</td></tr>';
+  });
+  return h + '</table>';
+};
 VC.ixUI = function () {
   VC.ixCutWrap(); VC.ixPickWrap();
   var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
   var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
   var r = $('ly-ixrep'), P = $('ix');
-  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.ixReportHTML(); };
+  if (r && P) r.onclick = function () { var on = P.style.display !== 'block'; P.style.display = on ? 'block' : 'none'; r.classList.toggle('on', on); if (on) $('ix-body').innerHTML = VC.simReportHTML() + VC.ixReportHTML(); };
   var c = $('ix-close'); if (c) c.onclick = function () { P.style.display = 'none'; if (r) r.classList.remove('on'); };
   window.addEventListener('keydown', function (e) { if (VC.typing(e) || e.ctrlKey || e.metaKey) return; if (e.key === 'n' || e.key === 'N') { VC.ixDensityToggle(); e.preventDefault(); } });
   /* the stats panel's last step: a line on the interiors */

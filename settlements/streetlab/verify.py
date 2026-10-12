@@ -78,7 +78,7 @@ CITY_CHECK = r"""() => {
   fp.forEach((A, i) => {
     const gx = Math.floor(A.c[0] / 60), gz = Math.floor(A.c[1] / 60);
     for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) (grid.get((gx + dx) + ',' + (gz + dz)) || []).forEach(j => { if (j > i && SL.pen(A, fp[j]) > 0.3) pairs++; });
-    if (baseH(A.c[0], A.c[1]) < 0 && !A.L.deck) wet++;
+    if (baseH(A.c[0], A.c[1]) < 0 && !A.L.deck && !A.L.berth) wet++;   /* a canton deck's and the coast-guard berth's stand over the water */
     if (_vc.wall && _vc.wall.segs.some(s => segDist(A.c, [s.ax, s.az], [s.bx, s.bz]) < Math.min(A.hw, A.hd))) onWall++;
   });
   out.overlapPairs = pairs; out.wet = wet; out.onWall = onWall;
@@ -259,6 +259,16 @@ CITY_CHECK = r"""() => {
       VC.ixDensityToggle(); out.ix.density = document.getElementById('ixlegend').innerText.split('\n')[0]; VC.ixDensityToggle(); VC.ixDensityToggle();
     }
   }
+  /* phase B (42-vc-sim-places.js): the citizens' buildings, the wells, the places, the 90% rule */
+  { const S = VC.SIMB || {}, A = S.audit || { rows: [], total: {} }, T = TUNE.sim.place;
+    const trades = {}; T.trades.forEach(tr => trades[tr.key] = [(S.placed && S.placed.trades[tr.key] || []).length, tr.n]);
+    const byKind = {}; (S.list || []).forEach(o => { const g = /^ix\./.test(o.id) ? 'building:' + o.kind : /^room\./.test(o.id) ? 'canton room' : /^well\./.test(o.id) ? 'well' : /^open\./.test(o.id) ? 'open:' + o.kind : 'work:' + o.kind; byKind[g] = (byKind[g] || 0) + 1; });
+    const censusRows = Object.keys(P.census.byJob).filter(k => P.census.byJob[k].n > 0);
+    out.simb = { err: S.error || null, log: S.log, wells: S.wellCount, wellPieces: (S.wells || []).length, places: S.places, simPlaces: SIM.all ? SIM.all('place').length : null, byKind, trades,
+      watch: (S.placed && S.placed.watch || []).length, caravanserai: S.placed && S.placed.caravanserai != null, berth: S.placed && S.placed.berth != null,
+      fortressWatch: (S.list || []).some(o => o.kind === 'watch'), total: A.total, rows: A.rows.map(r => [r.job, r.workplaces, r.target, r.posts, r.building, r.canton, r.outdoor, r.short, (r.room || []).slice(0, 3).map(x => x.name + ' (' + x.district + ', ' + x.floor + ' m2, ' + x.posts + ' posts)').join('; ')]),
+      noPlace: censusRows.filter(k => !A.rows.some(r => r.job === k && r.places)), census: [P.census.population, P.census.workforce, P.census.jobs] };
+  }
   return out;
 }"""
 
@@ -315,11 +325,22 @@ def verify_city(a, port, rel, sync_playwright):
         print('  drawn %d types, errors %s; cutaway %s; density %s' % (ix.get('drawn', 0), ix.get('drawErr'), json.dumps(ix.get('cut')), ix.get('density')))
     else:
         print('interiors: ' + str(ix.get('err')))
+    sb = r['simb']
+    print('phase B: ' + '; '.join(sb['log'] or []) + ' (census now %d people, %d working, %d workplaces)' % tuple(sb['census']))
+    print('  wells: %d placed %s; places: %d (SIM holds %s): %s' % (sb['wellPieces'], json.dumps(sb['wells']), sb['places'] or 0, sb['simPlaces'], ', '.join('%s %d' % kv for kv in sorted(sb['byKind'].items()))))
+    t = sb['total'] or {}
+    print('  the 90%% rule: %d workplaces, 90%% is %d, posts meeting it %d; by kind of work [workplaces, 90%%, posts (buildings, canton rooms, outdoor), short, where there is room for more]:' % (t.get('workplaces', 0), t.get('target', 0), t.get('posts', 0)))
+    for w in sb['rows']: print('    %s: %d, %d, %d (%d, %d, %d)%s%s' % (w[0], w[1], w[2], w[3], w[4], w[5], w[6], ' SHORT %d' % w[7] if w[7] else '', ' -> ' + w[8] if w[8] else ''))
+    if sb['noPlace']: print('  kinds of work with no place: ' + ', '.join(sb['noPlace']))
     for e in errors: print('ERROR', e)
     if a.check:
         bad = []
         if r['err'] or errors: bad.append('page errors')
         if r['failed']: bad.append('kit pieces failed')
+        if sb['err'] or any(v[0] < v[1] for v in sb['trades'].values()) or sb['watch'] < 3 or not sb['fortressWatch'] or not sb['caravanserai'] or not sb['berth']:
+            bad.append('phase B buildings: ' + json.dumps({k: v for k, v in sb['trades'].items() if v[0] < v[1]}) + (' watchhouses %d' % sb['watch'] if sb['watch'] < 3 else '') + ('' if sb['caravanserai'] else ' no caravanserai') + ('' if sb['berth'] else ' no berth'))
+        if sb['wellPieces'] < 100 or not sb['places'] or (sb['simPlaces'] or 0) < sb['places'] or sb['noPlace'] or not sb['rows']:
+            bad.append('phase B places (wells %d, places %s of SIM %s, kinds of work with no place %s)' % (sb['wellPieces'], sb['places'], sb['simPlaces'], sb['noPlace']))
         c = ix.get('cut') or {}
         if ix.get('err') or not ix.get('units') or ix['lotUnits'] < ix['want'] or ix['failed'] or ix.get('drawErr') or not c.get('shown') or not c.get('off') or not ix['have']['beds'] or len(ix['jobs']) < 8:
             bad.append('building interiors (VC.IX)')
