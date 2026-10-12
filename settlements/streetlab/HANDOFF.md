@@ -4,6 +4,37 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-12: phase A session 2 (branch `Voth-sim`): phase A is done but for the Palace and Temple
+
+The owner (2026-10-12): "work on session 2 phase A except the palace/temple interiors". Done (README "Every building's
+interior"):
+- **The fallback shells are gone (18 to 0).** They were the probe's fault, not the models': three.js r128's
+  `Box3.setFromObject` overstated every turned mesh (Voth's tapered blocks are 4-sided cylinders turned 45 degrees, read
+  1.4 times their size and as round), and a block on piles or on a yard platform stood above `TUNE.ix.base`. The probe now
+  measures vertices, a cylinder is round only past 6 sides, and `base` is 2.5 m. No overrides were needed.
+- **The buildings off the lots have interiors:** 6 monastery dormitories (180 monks, 288 beds), its chapel and assembly
+  hall, the funerary temple, 5 shrines, 2 lighthouses and their keepers' cottages, 229 chinampa stilt huts, and the House
+  of Healing counted from its wards (112 cots). `build.py` logs Voth's builders (`VOTH.BUILT`); the city's own models
+  record their shells (`VC.ixSite`); the hut export carries each hut's size.
+- **The eight new Voth kit models** (Q4) are in `kits/catalog/krator-master-buildings-voth.js`: watchhouse, caravanserai,
+  coast-guard berth, weaver, tannery, brewery, butcher, bakery, each with an `ix` shell and a programme
+  (`TUNE.ix.byKey`); four trade room kinds (`brewhouse`, `weaving`, `tanyard`, `butchery`) take their trades' pieces.
+  They are placed in phase B; until then the report plans each as a lot of its class (`TUNE.ix.kitCheck`). The Voth
+  building catalog page shows them (`settlements/voth/catalog/index.html` loads the file).
+
+**The report now:** beds for 86% of the need (22,566 of 26,389), item stores 85%, food stores 67%; 1,482 homes short of
+beds, about 7,600 residents without one: the poor houses (4,544: the census puts 7 in each, and the five poor-house models hold from 1 to 10 beds),
+the clan compounds (1,302), shops (909), farms (380). Middle, rich, manor and craft homes now hold their people.
+
+**For the owner when back at the computer:**
+- The new models' look (one screenshot was taken of them side by side; not reviewed by the owner).
+- The chinampa huts have 229 beds and the census houses no one there (Q3: the growers' homes); the monastery's
+  dormitories hold no food store (the monks eat in the hall), so they show as short of food.
+- Still failing `verify.py --assert`, unchanged: Dalab and Yuni embassies (no room on the Foreign deck), the Arena and
+  Fortress interior walks (below).
+
+**Left of phase A:** the Palace and Temple interiors, when the references arrive.
+
 ## 2026-10-12: the citizen simulation, phase A session 1 (branch `Voth-sim`)
 
 The work is `SIM-ROADMAP.md` (the owner's brief, the phases, the answers). Phase A, session 1 is done; what is left of

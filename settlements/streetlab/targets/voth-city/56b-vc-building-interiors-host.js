@@ -10,6 +10,7 @@
      mean, the homes short of beds hatched; again for workplaces per hectare; again for off.
    - The report (the "interiors report" button): totals, the shortfall by class and district, the job table, the types. */
 VC.IXD = { groups: {}, protos: {}, density: 0, cut: null };
+var _ixV = new THREE.Vector3();
 
 /* ---------------------------------------------------------------- the shells: each model's boxes */
 VC.ixProbe = function () {
@@ -24,9 +25,13 @@ VC.ixProbe = function () {
     var boxes = []; g.updateMatrixWorld(true);
     g.traverse(function (m) {
       if (!m.isMesh || !m.geometry) return;
-      bb.setFromObject(m); var w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, h = bb.max.y - bb.min.y;
+      /* the exact box of its vertices (Box3.setFromObject in r128 turns the geometry's box, so a Voth tapered block, a
+         4-sided cylinder turned 45 degrees, read 1.4 times its size) */
+      var pa = m.geometry.attributes && m.geometry.attributes.position; if (!pa) return;
+      bb.makeEmpty(); for (var j = 0; j < pa.count; j++) { _ixV.fromBufferAttribute(pa, j).applyMatrix4(m.matrixWorld); bb.expandByPoint(_ixV); }
+      var w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, h = bb.max.y - bb.min.y;
       if (w * d < 4 && h > 1.5) return;
-      var t = m.geometry.type, round = /Cylinder|Lathe|Circle|Sphere/.test(t);
+      var t = m.geometry.type, gp = m.geometry.parameters || {}, round = /Lathe|Circle|Sphere/.test(t) || (/Cylinder/.test(t) && (gp.radialSegments || 8) > 6);
       boxes.push({ x: (bb.max.x + bb.min.x) / 2, z: (bb.max.z + bb.min.z) / 2, w: w, d: d, y0: bb.min.y, h: h, round: round });
     });
     scene.remove(g); var i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);
@@ -225,7 +230,8 @@ VC.ixPaint = function () {
     ctx.strokeStyle = TUNE.ix.density.hatch; ctx.lineWidth = Math.max(1, k * 0.8);
     VC.IX.units.forEach(function (u) {
       if (!u.short || !u.short.beds) return;
-      var L = PLAN.lots[u.lot], C = obbCorners(L.lot); ctx.beginPath(); C.forEach(function (p, j) { if (j) ctx.lineTo(X(p[0]), Z(p[1])); else ctx.moveTo(X(p[0]), Z(p[1])); }); ctx.closePath();
+      var ty = VC.IX.types[u.type], C = u.lot >= 0 ? obbCorners(PLAN.lots[u.lot].lot) : ty.shell && ty.shell.poly ? ty.shell.poly.map(function (q) { return VC.ixWorldXZ(u, q); }) : null;
+      if (!C) return; ctx.beginPath(); C.forEach(function (p, j) { if (j) ctx.lineTo(X(p[0]), Z(p[1])); else ctx.moveTo(X(p[0]), Z(p[1])); }); ctx.closePath();
       ctx.save(); ctx.clip(); ctx.beginPath();
       var x0 = Math.min.apply(null, C.map(function (p) { return X(p[0]); })), x1 = Math.max.apply(null, C.map(function (p) { return X(p[0]); }));
       var z0 = Math.min.apply(null, C.map(function (p) { return Z(p[1]); })), z1 = Math.max.apply(null, C.map(function (p) { return Z(p[1]); })), st = Math.max(2, k * 3);
@@ -268,7 +274,21 @@ VC.ixReportHTML = function () {
     keys.forEach(function (k) { var e = o[k]; t += '<tr><td>' + k + '</td><td class="n">' + f(e.units) + '</td><td class="n">' + f(e.homes) + '</td><td class="n">' + f(e.residents) + '</td><td class="n">' + f(e.need) + '</td><td class="n">' + f(e.beds) + '</td><td class="n ' + (e.short ? 'bad' : '') + '">' + f(e.short) + '</td><td class="n ' + (e.shortResidents ? 'bad' : '') + '">' + f(e.shortResidents) + '</td></tr>'; });
     return t + '</table>';
   };
-  h += tbl(R.byClass, 'By lot class') + tbl(R.byDistrict, 'By district');
+  h += tbl(R.byClass, 'By class') + tbl(R.byDistrict, 'By district');
+  /* the buildings off the lots, and the beds where the census houses nobody */
+  h += '<h2>The buildings off the lots</h2><div class="k">Voth\'s own builders the city calls (the monastery, the funerary temple), the city\'s shrine and lighthouse models, the chinampas\' stilt huts; the House of Healing as the city furnished its wards.</div>';
+  h += '<table><tr><th></th><th>buildings</th><th>rooms</th><th>pieces</th><th>beds</th><th>residents</th><th>workplaces</th><th>posts</th></tr>';
+  Object.keys(R.sites).sort().forEach(function (k) { var e = R.sites[k]; h += '<tr><td>' + k + '</td><td class="n">' + f(e.units) + '</td><td class="n">' + f(e.rooms) + '</td><td class="n">' + f(e.pieces) + '</td><td class="n">' + f(e.beds) + '</td><td class="n">' + f(e.residents) + '</td><td class="n">' + f(e.jobs) + '</td><td class="n">' + f(e.posts) + '</td></tr>'; });
+  h += '</table>';
+  var sp = Object.keys(R.spare);
+  if (sp.length) h += '<div>Beds where the census houses nobody (room to spare): ' + sp.map(function (k) { return k + ' ' + f(R.spare[k].beds) + ' in ' + f(R.spare[k].units); }).join('; ') + '. The census counts the chinampa growers\' work but not their homes.</div>';
+  /* the new kit models, not placed yet (phase B) */
+  if (R.kit && R.kit.length) {
+    h += '<h2>The new kit models (placed in phase B)</h2><div class="k">The watchhouse, caravanserai, coast-guard berth and the chains\' trades (kits/catalog/krator-master-buildings-voth.js), each with its own shell, planned as a lot of the class named in TUNE.ix.kitCheck.</div>';
+    h += '<table><tr><th>model</th><th>class</th><th>storeys</th><th>rooms</th><th>pieces</th><th>beds</th><th>posts</th><th>work furniture</th></tr>';
+    R.kit.forEach(function (k) { h += '<tr><td>' + (k.name || k.key) + ' <span class="k">' + k.key + '</span></td><td>' + (k.cls || '') + '</td><td class="n">' + (k.storeys || '') + '</td><td>' + (k.rooms || '<span class="bad">' + k.fail + '</span>') + '</td><td class="n">' + (k.pieces || 0) + '</td><td class="n">' + (k.beds || 0) + '</td><td class="n">' + (k.posts || 0) + '</td><td class="k">' + Object.keys(k.work || {}).map(function (w) { return w + ' ' + k.work[w]; }).join(', ') + '</td></tr>'; });
+    h += '</table>';
+  }
   /* the job table */
   var kinds = {}; Object.keys(R.jobs).forEach(function (j) { Object.keys(R.jobs[j].kinds).forEach(function (k) { kinds[k] = (kinds[k] || 0) + R.jobs[j].kinds[k].n; }); });
   var cols = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; });

@@ -1761,7 +1761,7 @@ const KratorLOD = (function () {
 </script>
 <script>/* kits/catalog/krator-master-buildings-voth.js */
 /* ======================================================================
-   Voth — Building Registry (13 keys / 17 build "looks")
+   Voth — Building Registry (21 keys / 25 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -3286,6 +3286,376 @@ ASSET({
     [-1, 1].forEach(function (s) {
       F.box(s * 4.6, 2.0, -14.6, 0.25, 1.6, 1.2, 0, doorC, 'wood');
     });
+  }
+});
+
+/* ======================================================================
+   The citizen simulation's buildings (owner, 2026-10-12, SIM-ROADMAP.md Q4): the watchhouse, the caravanserai, the
+   coast-guard berth and the trades the production chains need (weaver, tannery, brewery, butcher, bakery). Each
+   carries `ix`: the shell its interior is planned in (settlements/streetlab 41-vc-building-interiors.js), the main
+   block { block: [x, z, w, d] } in the building's frame, its floor `y`, its height `h` and its `storeys`, so the
+   planner never has to guess it from the model. The street door is mid-front (+z) on every one.
+   ====================================================================== */
+
+ASSET({
+  key: 'voth_bldg_watchhouse', name: 'Watchhouse', culture: 'voth', family: 'defensive', types: ['civic', 'infrastructure'],
+  districts: ['common', 'gate', 'market'], wealth: [0.3, 0.6], w: 15.6, d: 13.6, h: 17.2, variants: 1,
+  ix: { block: [0, 0, 12, 10], y: 0.6, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x5e5a54, 0x66605a, 0x57534d]), trim = shade(c, -0.2), dark = shade(c, -0.34);
+    const doorC = 0x1f1b16, timber = 0x4a3a28, iron = 0x3a3630, banner = 0x7a2028, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s, bars) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.22, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.22, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+      if (bars) for (let k = -1; k <= 1; k++) F.box(cx + n[0] * 0.2 + (flat ? k * ww * 0.3 : 0), cy, cz + n[1] * 0.2 + (flat ? 0 : k * ww * 0.3), flat ? 0.07 : 0.07, wh, 0.07, 0, iron, 'metal');
+    }
+    /* plinth, the guard hall and its upper storey, a battlemented parapet */
+    F.box(0, 0, 0, 13, 0.6, 11, 0, dark, 'stone');
+    F.box(0, 0.6, 0, 12, 3.9, 10, 0, c, 'stone');
+    F.box(0, 4.3, 0, 12.4, 0.3, 10.4, 0, trim, 'stone');
+    F.box(0, 4.6, 0, 12, 3.4, 10, 0, shade(c, 0.05), 'stone');
+    F.box(0, 8.0, 0, 12.5, 0.35, 10.5, 0, trim, 'stone');
+    for (let i = -5; i <= 5; i += 2) { F.box(i, 8.35, 5.0, 1.0, 0.9, 0.5, 0, c, 'stone'); F.box(i, 8.35, -5.0, 1.0, 0.9, 0.5, 0, c, 'stone'); }
+    for (let i = -4; i <= 4; i += 2) { F.box(6.0, 8.35, i, 0.5, 0.9, 1.0, 0, c, 'stone'); F.box(-6.0, 8.35, i, 0.5, 0.9, 1.0, 0, c, 'stone'); }
+    /* the lookout tower at the back corner: a square shaft, an open lantern stage under a pyramid roof */
+    F.box(4.2, 8.35, -3.2, 3.6, 5.2, 3.6, 0, shade(c, -0.04), 'stone');
+    F.box(4.2, 13.55, -3.2, 4.0, 0.3, 4.0, 0, trim, 'stone');
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { F.box(4.2 + q[0] * 1.75, 13.85, -3.2 + q[1] * 1.75, 0.4, 1.9, 0.4, 0, timber, 'wood'); });
+    F.pyrRoof(4.2, 15.75, -3.2, 4.6, 1.45, 4.6, 0, 0x4a3a2e, 'roof');
+    F.ball(4.2, 14.5, -3.2, 0.42, glow, 'glow');
+    W(4.2, 10.4, -1.35, 0.9, 1.4, 0, true); W(6.05, 10.4, -3.2, 0.9, 1.4, 2, true);
+    /* the door under a stone hood, the watch's banners either side, lanterns */
+    F.box(0, 0.6, 5.1, 2.6, 3.0, 0.4, 0, dark, 'stone');
+    F.box(0, 0.6, 5.32, 1.8, 2.5, 0.22, 0, doorC, 'wood');
+    F.box(0, 3.6, 5.3, 3.2, 0.35, 0.9, 0, trim, 'stone');
+    [-2.6, 2.6].forEach(function (px) {
+      F.box(px, 4.9, 5.12, 1.1, 2.6, 0.08, 0, banner, 'cloth');
+      F.box(px, 7.5, 5.15, 1.3, 0.12, 0.25, 0, iron, 'metal');
+      F.rod(px * 1.55, 3.4, 5.1, px * 1.55, 3.4, 5.7, 0.06, iron, 'metal'); F.ball(px * 1.55, 3.15, 5.7, 0.24, glow, 'glow');
+    });
+    /* barred windows below, shuttered above, on all four faces */
+    [-3.6, 3.6].forEach(function (px) { W(px, 1.9, 5.05, 1.0, 1.3, 0, true); W(px, 5.7, 5.05, 1.1, 1.5, 0, false); });
+    [-3.6, 0, 3.6].forEach(function (px) { W(px, 1.9, -5.05, 1.0, 1.3, 1, true); W(px, 5.7, -5.05, 1.1, 1.5, 1, false); });
+    [-2.4, 2.4].forEach(function (pz) { W(6.05, 1.9, pz, 1.0, 1.3, 2, true); W(-6.05, 1.9, pz, 1.0, 1.3, 3, true); W(6.05, 5.7, pz, 1.1, 1.5, 2, false); W(-6.05, 5.7, pz, 1.1, 1.5, 3, false); });
+    /* a weapon rack and a mounting block by the door, a water butt on the flank */
+    F.box(-4.6, 0, 6.0, 2.2, 0.15, 0.5, 0, timber, 'wood'); F.box(-4.6, 1.5, 6.0, 2.2, 0.12, 0.3, 0, timber, 'wood');
+    for (let k = 0; k < 5; k++) F.rod(-5.5 + k * 0.45, 0.1, 6.0, -5.5 + k * 0.45, 2.0, 6.0, 0.035, iron, 'metal');
+    F.box(4.8, 0, 6.2, 1.4, 0.6, 1.0, 0, trim, 'stone');
+    F.cyl(-6.9, 0, -2.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); F.cyl(-6.9, 1.2, -2.5, 0.62, 0.08, 0, iron, 'metal');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_caravanserai', name: 'Caravanserai', culture: 'voth', family: 'trade', types: ['inn', 'market', 'infrastructure'],
+  districts: ['gate', 'market'], wealth: [0.3, 0.6], w: 42, d: 42, h: 12.6, variants: 1,
+  ix: { block: [0, -14.5, 38, 10], y: 0.5, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xa08c6c, 0x9a8466, 0xa89474]), trim = shade(c, -0.16), dark = shade(c, -0.3);
+    const doorC = 0x231c15, timber = 0x4a3a28, cloth = F.pick([0x8a2f2a, 0x2f5a86, 0xb08d3c]), roofC = 0x6a4a36;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    /* the court's paving, then four ranges round it: the lodging range at the back (two storeys), stables either side,
+       the gate range at the front */
+    F.box(0, 0, 0, 42, 0.5, 42, 0, dark, 'stone');
+    F.box(0, 0.5, 0, 22, 0.08, 18, 0, shade(c, 0.1), 'stone');
+    F.box(0, 0.5, -14.5, 38, 7.4, 10, 0, c, 'stone');
+    F.box(0, 4.0, -14.5, 38.4, 0.3, 10.4, 0, trim, 'stone');
+    F.box(0, 7.9, -14.5, 38.6, 0.35, 10.6, 0, trim, 'stone');
+    F.pyrRoof(0, 8.25, -14.5, 39, 3.4, 11, 0, roofC, 'roof');
+    [-1, 1].forEach(function (s) {
+      F.box(s * 15.5, 0.5, 2.5, 9, 4.6, 24, 0, shade(c, -0.04), 'stone');
+      F.box(s * 15.5, 5.1, 2.5, 9.4, 0.3, 24.4, 0, trim, 'stone');
+      F.pyrRoof(s * 15.5, 5.4, 2.5, 9.8, 2.2, 24.8, 0, roofC, 'roof');
+      /* the stalls open to the court: posts, mangers, a feed rack */
+      for (let k = -2; k <= 2; k++) {
+        const pz = 2.5 + k * 4.6;
+        F.box(s * 10.8, 0.5, pz + 2.3, 0.45, 4.4, 0.45, 0, timber, 'wood');
+        F.box(s * 11.6, 0.5, pz, 1.2, 0.9, 3.0, 0, shade(timber, 0.1), 'wood');
+        W(s * 20.05, 2.6, pz, 1.0, 1.0, s > 0 ? 2 : 3);
+      }
+    });
+    F.box(0, 0.5, 18.5, 22, 5.6, 5, 0, shade(c, 0.03), 'stone');
+    F.box(0, 6.1, 18.5, 22.4, 0.3, 5.4, 0, trim, 'stone');
+    /* the great gate: an arch through the front range, iron-bound leaves standing open, a carved lintel */
+    F.box(0, 0.5, 21.05, 6.4, 5.6, 0.3, 0, dark, 'stone');
+    F.box(0, 0.5, 21.15, 4.6, 4.4, 0.25, 0, 0x14110d, 'wood');
+    [-1, 1].forEach(function (s) { F.box(s * 3.0, 0.5, 22.0, 0.25, 4.2, 2.2, s * 0.35, doorC, 'wood'); F.box(s * 3.6, 0.5, 21.4, 1.0, 6.4, 1.0, 0, trim, 'stone'); });
+    F.box(0, 6.4, 21.2, 7.6, 1.2, 0.9, 0, trim, 'stone');
+    F.box(0, 6.6, 21.7, 3.4, 0.7, 0.12, 0, 0xb08d3c, 'metal');
+    /* the lodging range's gallery over the court and its stair, its doors and windows round all four faces */
+    F.box(0, 3.9, -8.9, 36, 0.3, 1.6, 0, timber, 'wood');
+    for (let k = -4; k <= 4; k++) F.box(k * 4.2, 0.5, -8.2, 0.3, 3.4, 0.3, 0, timber, 'wood');
+    for (let i = 0; i < 6; i++) F.box(-16.5 + i * 0.9, 0.5 + i * 0.6, -8.0, 0.9, 0.3, 1.4, 0, shade(timber, 0.1), 'wood');
+    [-14, -7, 0, 7, 14].forEach(function (px) { W(px, 0.5, -9.45, 1.4, 2.4, 0); W(px + 2.1, 4.4, -9.45, 1.2, 2.2, 0); W(px, 2.4, -19.55, 1.0, 1.3, 1); W(px, 5.4, -19.55, 1.0, 1.3, 1); });
+    [-16.5, -12.5].forEach(function (pz) { W(19.05, 2.4, pz, 1.0, 1.3, 2); W(-19.05, 2.4, pz, 1.0, 1.3, 3); W(19.05, 5.4, pz, 1.0, 1.3, 2); W(-19.05, 5.4, pz, 1.0, 1.3, 3); });
+    [-8, -4, 4, 8].forEach(function (px) { W(px, 2.4, 21.05, 1.0, 1.2, 0); W(px, 2.4, 15.95, 1.0, 1.2, 1); });
+    /* the court: a well under a canopy, a drinking trough, bales and the caravan's goods */
+    F.cyl(0, 0.5, 0, 1.3, 0.9, 0, trim, 'stone'); F.cyl(0, 1.4, 0, 1.35, 0.12, 0, dark, 'stone');
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { F.rod(q[0] * 1.6, 0.5, q[1] * 1.6, q[0] * 1.6, 3.6, q[1] * 1.6, 0.09, timber, 'wood'); });
+    F.box(0, 3.6, 0, 3.8, 0.15, 3.8, 0, cloth, 'cloth');
+    F.box(-6, 0.5, 4, 3.6, 0.7, 1.0, 0, trim, 'stone');
+    F.box(5.5, 0.5, 5.5, 1.4, 1.0, 1.0, 0.3, 0xc2a56a, 'cloth'); F.box(6.6, 0.5, 4.3, 1.4, 1.0, 1.0, -0.2, 0xc2a56a, 'cloth');
+    F.box(-5.5, 0.5, -4.5, 1.3, 1.2, 1.3, 0.2, shade(timber, 0.15), 'wood'); F.box(-4.2, 0.5, -5.2, 1.0, 1.0, 1.0, -0.3, shade(timber, 0.05), 'wood');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_coastguard_berth', name: 'Coast-Guard Berth', culture: 'voth', family: 'defensive', types: ['infrastructure', 'civic'],
+  districts: ['harbour'], wealth: [0.4, 0.7], w: 34, d: 44, h: 15.4, variants: 1,
+  ix: { block: [-11, -12, 11, 18], y: 0.6, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x4c4a48, 0x55524e]), trim = shade(c, -0.2), dark = shade(c, -0.34), green = 0x2f5a3a, gold = 0xb08d3c;
+    const doorC = 0x1c1915, timber = 0x3e3226, roofC = 0x2e3a30, iron = 0x3a3630, glow = 0xbfffc8;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    /* the quay apron the berth stands on */
+    F.box(0, 0, 0, 34, 0.6, 44, 0, dark, 'stone');
+    /* the crew house: two storeys in the Ordinators' black, green and gold */
+    F.box(-11, 0.6, -12, 11, 7.4, 18, 0, c, 'stone');
+    F.box(-11, 4.2, -12, 11.3, 0.3, 18.3, 0, trim, 'stone');
+    F.box(-11, 8.0, -12, 11.6, 0.35, 18.6, 0, gold, 'metal');
+    F.pyrRoof(-11, 8.35, -12, 12, 3.2, 19, 0, roofC, 'roof');
+    F.box(-11, 0.6, -2.85, 2.4, 3.0, 0.3, 0, dark, 'stone'); F.box(-11, 0.6, -2.7, 1.7, 2.6, 0.2, 0, doorC, 'wood');
+    F.box(-11, 3.7, -2.75, 2.9, 0.3, 0.8, 0, gold, 'metal');
+    [-14.5, -7.5].forEach(function (px) { W(px, 1.9, -2.95, 1.0, 1.4, 0); W(px, 5.4, -2.95, 1.0, 1.5, 0); W(px, 1.9, -21.05, 1.0, 1.4, 1); W(px, 5.4, -21.05, 1.0, 1.5, 1); });
+    [-18, -12, -6].forEach(function (pz) { W(-16.55, 1.9, pz, 1.0, 1.4, 3); W(-16.55, 5.4, pz, 1.0, 1.5, 3); W(-5.45, 5.4, pz, 1.0, 1.5, 2); });
+    /* the covered slip: a long open shed on piers over the water side (+z beyond the apron's front half), the
+       flagship's cradle and capstan, the green banners of the Ordinators' fleet */
+    const sx = 7.5, sz = 4, sw = 15, sl = 36;
+    for (let k = 0; k <= 6; k++) {
+      const pz = sz - sl / 2 + k * sl / 6;
+      [-1, 1].forEach(function (s) { F.box(sx + s * sw / 2, 0.6, pz, 0.8, 8.0, 0.8, 0, trim, 'stone'); });
+    }
+    [-1, 1].forEach(function (s) { F.box(sx + s * sw / 2, 8.6, sz, 1.0, 0.6, sl + 1, 0, trim, 'stone'); });
+    F.pyrRoof(sx, 9.2, sz, sw + 2, 3.2, sl + 2, 0, roofC, 'roof');
+    F.box(sx, 0.1, sz + 2, sw - 2.4, 0.5, sl - 6, 0, 0x2a4048, 'stone');
+    for (let k = -3; k <= 3; k++) F.box(sx, 0.6, sz + k * 4.4, 3.4, 0.8, 0.6, 0, timber, 'wood');
+    F.cyl(sx - 4, 0.6, sz - sl / 2 + 2, 0.8, 1.3, 0, timber, 'wood'); F.cyl(sx - 4, 1.9, sz - sl / 2 + 2, 1.1, 0.2, 0, iron, 'metal');
+    F.rod(sx - 4, 1.4, sz - sl / 2 + 2, sx, 1.0, sz - 8, 0.06, 0x6b5a3a, 'rope');
+    [-1, 1].forEach(function (s) {
+      F.box(sx + s * (sw / 2 + 0.45), 4.0, sz + sl / 2 - 1, 0.08, 4.2, 1.6, 0, green, 'cloth');
+      F.ball(sx + s * (sw / 2 + 0.6), 7.4, sz + sl / 2, 0.3, glow, 'glow');
+    });
+    /* an armoury chest, oars racked against the crew house, bollards on the apron's edge */
+    F.box(-4.6, 0.6, -6, 0.6, 2.6, 4.2, 0, timber, 'wood');
+    for (let k = 0; k < 6; k++) F.rod(-4.3, 0.7, -7.8 + k * 0.7, -4.3, 3.6, -7.6 + k * 0.7, 0.05, 0x8a6a42, 'wood');
+    F.box(-8, 0.6, 2, 1.6, 0.9, 1.0, 0, 0x5a4028, 'wood'); F.box(-8, 1.5, 2, 1.65, 0.1, 1.05, 0, iron, 'metal');
+    [-14, -8, -2].forEach(function (px) { F.cyl(px, 0.6, 21, 0.35, 1.0, 0, iron, 'metal'); });
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_weaver', name: "Weaver's House", culture: 'voth', family: 'trade', types: ['shop', 'industry', 'dwelling-single'],
+  districts: ['common', 'craft'], wealth: [0.25, 0.55], w: 15.2, d: 13.4, h: 11.6, variants: 1,
+  ix: { block: [0, -0.5, 12, 10], y: 0.5, h: 7.2, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xb0a088, 0xa89878, 0xbca88c]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038;
+    const DYE = [0x7a2028, 0x2f5a86, 0xb08d3c, 0x3e6b3a, 0x6a3a6a, 0xc8a050];
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s, shut) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+      if (shut) for (let k = -1; k <= 1; k += 2) F.box(cx + (flat ? k * (ww / 2 + 0.22) : n[0] * 0.15), cy, cz + (flat ? n[1] * 0.15 : k * (ww / 2 + 0.22)), flat ? 0.4 : 0.12, wh, flat ? 0.12 : 0.4, 0, DYE[(k + 1) % DYE.length], 'wood');
+    }
+    F.box(0, 0, -0.5, 12.8, 0.5, 10.8, 0, dark, 'stone');
+    F.box(0, 0.5, -0.5, 12, 3.8, 10, 0, c, 'stone');
+    F.box(0, 4.3, -0.5, 12.3, 0.3, 10.3, 0, trim, 'stone');
+    F.box(0, 4.6, -0.5, 12, 3.1, 10, 0, shade(c, 0.05), 'stone');
+    F.box(0, 7.7, -0.5, 12.4, 0.3, 10.4, 0, trim, 'stone');
+    F.pyrRoof(0, 8.0, -0.5, 13, 3.0, 11, 0, roofC, 'roof');
+    /* the loom room's wide windows on the street, the door under a dyed awning, the guild's spindle sign */
+    F.box(-1.5, 0.5, 4.6, 1.8, 2.7, 0.3, 0, doorC, 'wood');
+    F.box(-1.5, 3.2, 4.65, 2.3, 0.3, 0.6, 0, trim, 'stone');
+    F.box(1.5, 3.5, 5.3, 8.6, 0.12, 1.6, 0, DYE[1], 'cloth');
+    [-2.8, 5.8].forEach(function (px) { F.rod(px, 0.5, 6.0, px, 3.5, 6.0, 0.08, timber, 'wood'); });
+    W(2.8, 1.4, 4.55, 3.2, 1.8, 0, false);
+    F.rod(-3.5, 4.0, 4.6, -3.5, 4.0, 5.6, 0.05, 0x3a2f22, 'metal'); F.cyl(-3.5, 3.0, 5.6, 0.18, 0.9, 0, 0x8a6a42, 'wood'); F.ball(-3.5, 3.45, 5.6, 0.32, DYE[2], 'cloth');
+    [-3.6, 0, 3.6].forEach(function (px) { W(px, 5.4, 4.55, 1.1, 1.5, 0, true); W(px, 1.8, -5.55, 1.0, 1.3, 1, false); W(px, 5.4, -5.55, 1.1, 1.5, 1, true); });
+    [-3, 2].forEach(function (pz) { W(6.05, 1.8, pz, 1.0, 1.3, 2, false); W(-6.05, 1.8, pz, 1.0, 1.3, 3, false); W(6.05, 5.4, pz, 1.1, 1.5, 2, true); W(-6.05, 5.4, pz, 1.1, 1.5, 3, true); });
+    /* the drying yard on the flank: lines of dyed cloth between posts, a dye vat and a skein rack */
+    [[6.9, -4.2], [6.9, 3.2]].forEach(function (p) { F.rod(p[0] + 0.3, 0.5, p[1], p[0] + 0.3, 3.4, p[1], 0.08, timber, 'wood'); });
+    F.rod(7.2, 3.3, -4.2, 7.2, 3.3, 3.2, 0.03, 0x6b5a3a, 'rope');
+    for (let k = 0; k < 6; k++) F.box(7.2, 1.7, -3.6 + k * 1.15, 0.05, 1.6, 0.95, 0, DYE[k % DYE.length], 'cloth');
+    F.cyl(-6.9, 0.5, 2.6, 0.7, 0.9, 0, 0x5a4a34, 'wood'); F.cyl(-6.9, 1.35, 2.6, 0.62, 0.05, 0, DYE[0], 'cloth');
+    F.box(-6.9, 0.5, -2.2, 0.4, 2.0, 2.4, 0, timber, 'wood');
+    for (let k = 0; k < 4; k++) F.cyl(-6.75, 0.9 + k * 0.4, -2.2, 0.16, 0.3, 0, DYE[(k + 2) % DYE.length], 'cloth');
+    /* the roof terrace's drying frame */
+    F.box(0, 11.0, -0.5, 0.25, 0.25, 6, 0, timber, 'wood');
+    for (let k = 0; k < 3; k++) F.box(0, 9.6, -2.3 + k * 1.8, 0.04, 1.3, 1.5, 0, DYE[(k + 3) % DYE.length], 'cloth');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_tannery', name: 'Tannery', culture: 'voth', family: 'industrial', types: ['industry'],
+  districts: ['industry', 'shore'], wealth: [0.1, 0.4], w: 20, d: 15.4, h: 9.4, variants: 1,
+  ix: { block: [-3, -1.5, 12, 11], y: 0.4, h: 5.2, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7a62, 0x80705a]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x5a5248, hide = 0x9a6a42, hide2 = 0x7a5232, liquor = 0x5a4a2a, lime = 0xd8d2c0;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, 0, 20, 0.4, 15.4, 0, dark, 'stone');
+    /* the beam house: one tall storey, louvred vents along its ridge for the stench */
+    F.box(-3, 0.4, -1.5, 12, 5.2, 11, 0, c, 'stone');
+    F.box(-3, 5.6, -1.5, 12.4, 0.3, 11.4, 0, trim, 'stone');
+    F.pyrRoof(-3, 5.9, -1.5, 13, 2.6, 12, 0, roofC, 'roof');
+    for (let k = -1; k <= 1; k++) { F.box(-3 + k * 3.6, 7.6, -1.5, 1.6, 0.9, 1.6, 0, shade(roofC, -0.15), 'wood'); F.box(-3 + k * 3.6, 8.5, -1.5, 2.0, 0.15, 2.0, 0, shade(roofC, -0.25), 'wood'); }
+    F.box(-3, 0.4, 4.05, 3.0, 3.4, 0.3, 0, dark, 'stone'); F.box(-3, 0.4, 4.2, 2.4, 3.0, 0.2, 0, doorC, 'wood');
+    F.box(-3, 3.8, 4.15, 3.4, 0.3, 0.6, 0, trim, 'stone');
+    [-7, 1].forEach(function (px) { W(px, 2.2, 4.05, 1.4, 1.2, 0); W(px, 2.2, -7.05, 1.4, 1.2, 1); });
+    W(-3, 2.2, -7.05, 1.4, 1.2, 1);
+    [-4.5, 1.5].forEach(function (pz) { W(-9.05, 2.2, pz, 1.4, 1.2, 3); W(3.05, 2.2, pz, 1.4, 1.2, 2); });
+    /* the yard: lime pits, tan vats sunk in a stone kerb, hides stretched on frames, a bark pile */
+    F.box(6.6, 0.4, -1, 6, 0.5, 13, 0, trim, 'stone');
+    for (let r = 0; r < 2; r++) for (let k = 0; k < 3; k++) {
+      const vx = 5.1 + r * 3.0, vz = -5.0 + k * 3.6;
+      F.cyl(vx, 0.4, vz, 1.15, 0.7, 0, dark, 'stone');
+      F.cyl(vx, 1.02, vz, 1.0, 0.04, 0, r ? liquor : lime, 'stone');
+    }
+    [[9.4, 4.9], [9.4, 6.5]].forEach(function (p, i) {
+      F.rod(p[0] - 1.2, 0.4, p[1], p[0] - 1.2, 3.0, p[1], 0.08, timber, 'wood'); F.rod(p[0] + 0.2, 0.4, p[1], p[0] + 0.2, 3.0, p[1], 0.08, timber, 'wood');
+      F.box(p[0] - 0.5, 1.0, p[1], 1.3, 1.8, 0.04, 0, i ? hide2 : hide, 'cloth');
+    });
+    F.blob(4.4, 0.4, 6.4, 1.3, 0.9, 0, 0x5a3a22, 'wood');
+    F.box(-9.6, 0.4, 5.4, 0.8, 1.0, 1.6, 0, timber, 'wood'); F.box(-9.6, 1.4, 5.4, 0.8, 0.3, 1.6, 0, hide2, 'cloth');
+    F.rod(-9.5, 0.4, -6.4, -9.5, 3.2, -6.4, 0.07, timber, 'wood'); F.rod(-9.5, 3.1, -6.4, -9.5, 3.1, 0.4, 0.03, 0x6b5a3a, 'rope');
+    for (let k = 0; k < 3; k++) F.box(-9.5, 1.9, -5.3 + k * 2.1, 0.04, 1.2, 1.6, 0, k % 2 ? hide : hide2, 'cloth');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_brewery', name: 'Brewery', culture: 'voth', family: 'industrial', types: ['industry', 'tavern'],
+  districts: ['common', 'industry'], wealth: [0.3, 0.6], w: 19.6, d: 15, h: 15.6, variants: 1,
+  ix: { block: [0, -1, 16, 12], y: 0.5, h: 8.2, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x9a8a70, 0x8e7e66, 0xa49276]), trim = shade(c, -0.16), dark = shade(c, -0.3);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x6a4a36, copper = 0xa8683a, iron = 0x3a3630, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, -1, 16.8, 0.5, 12.8, 0, dark, 'stone');
+    F.box(0, 0.5, -1, 16, 4.4, 12, 0, c, 'stone');
+    F.box(0, 4.9, -1, 16.3, 0.3, 12.3, 0, trim, 'stone');
+    F.box(0, 5.2, -1, 16, 3.5, 12, 0, shade(c, 0.05), 'stone');
+    F.box(0, 8.7, -1, 16.4, 0.35, 12.4, 0, trim, 'stone');
+    F.pyrRoof(0, 9.05, -1, 17, 3.0, 13, 0, roofC, 'roof');
+    /* the copper house rising through the roof at the back: its drum, its dome and the flue */
+    F.cyl(4.5, 8.7, -4.2, 2.2, 3.2, 0, shade(c, -0.05), 'stone');
+    F.dome(4.5, 11.9, -4.2, 2.3, 1.7, 0, copper, 'metal');
+    F.cyl(4.5, 13.4, -4.2, 0.45, 2.2, 0, iron, 'metal');
+    F.box(-5.5, 9.05, -5.0, 1.4, 5.0, 1.4, 0, dark, 'stone'); F.box(-5.5, 14.05, -5.0, 1.8, 0.4, 1.8, 0, trim, 'stone');
+    /* the cart doors and the tap-room door, a hanging barrel sign */
+    F.box(-3.5, 0.5, 5.05, 4.2, 4.0, 0.3, 0, dark, 'stone');
+    [-1, 1].forEach(function (s) { F.box(-3.5 + s * 1.0, 0.5, 5.2, 1.9, 3.6, 0.2, 0, doorC, 'wood'); });
+    F.box(3.5, 0.5, 5.05, 1.8, 2.8, 0.3, 0, doorC, 'wood'); F.box(3.5, 3.3, 5.1, 2.3, 0.3, 0.6, 0, trim, 'stone');
+    F.rod(5.0, 4.4, 5.1, 5.0, 4.4, 6.0, 0.06, iron, 'metal');
+    F.cyl(5.0, 3.2, 6.0, 0.42, 1.0, 0, 0x6a4a2a, 'wood'); F.cyl(5.0, 3.5, 6.0, 0.44, 0.08, 0, iron, 'metal');
+    F.rod(2.0, 3.8, 5.1, 2.0, 3.8, 5.6, 0.05, iron, 'metal'); F.ball(2.0, 3.55, 5.6, 0.26, glow, 'glow');
+    [-5.5, -1.5, 1.5, 5.5].forEach(function (px) { W(px, 6.0, 5.05, 1.1, 1.6, 0); W(px, 1.9, -7.05, 1.1, 1.4, 1); W(px, 6.0, -7.05, 1.1, 1.6, 1); });
+    [-4.5, 0, 3.5].forEach(function (pz) { W(8.05, 1.9, pz, 1.1, 1.4, 2); W(-8.05, 1.9, pz, 1.1, 1.4, 3); W(8.05, 6.0, pz, 1.1, 1.6, 2); W(-8.05, 6.0, pz, 1.1, 1.6, 3); });
+    /* the yard: barrels racked and stacked, sacks of grain, a malt kiln's hearth by the flank */
+    for (let k = 0; k < 4; k++) { F.cyl(-9.0, 0.5, -4.5 + k * 1.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); F.cyl(-9.0, 1.1, -4.5 + k * 1.5, 0.62, 0.08, 0, iron, 'metal'); }
+    for (let k = 0; k < 3; k++) { F.cyl(-9.0, 1.7, -3.75 + k * 1.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); }
+    [[8.9, 5.6], [9.5, 6.4], [8.6, 6.6]].forEach(function (p) { F.blob(p[0], 0.5, p[1], 0.5, 0.7, 0, 0xc2a56a, 'cloth'); });
+    F.box(9.3, 0.5, -5.2, 1.4, 1.2, 2.2, 0, dark, 'stone'); F.blob(9.3, 1.7, -5.2, 0.4, 0.4, 0, 0xffb066, 'glow');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_butcher', name: "Butcher's Shop", culture: 'voth', family: 'trade', types: ['shop', 'dwelling-single'],
+  districts: ['common', 'market'], wealth: [0.25, 0.55], w: 12.4, d: 12.8, h: 11.2, variants: 1,
+  ix: { block: [0, -1, 10, 9], y: 0.4, h: 7.0, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xa89478, 0x9c8a70, 0xb09c80]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038, iron = 0x3a3630, meat = 0x8a2f2a, fat = 0xd8c8a8, tile = 0xd8d2c0;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, -1, 10.8, 0.4, 9.8, 0, dark, 'stone');
+    F.box(0, 0.4, -1, 10, 3.7, 9, 0, c, 'stone');
+    F.box(0, 4.1, -1, 10.3, 0.3, 9.3, 0, trim, 'stone');
+    F.box(0, 4.4, -1, 10, 3.0, 9, 0, shade(c, 0.05), 'stone');
+    F.box(0, 7.4, -1, 10.4, 0.3, 9.4, 0, trim, 'stone');
+    F.pyrRoof(0, 7.7, -1, 11, 2.8, 10, 0, roofC, 'roof');
+    F.box(3.2, 7.7, -3.5, 0.9, 2.6, 0.9, 0, dark, 'stone');
+    /* the shop front: a wide opening with a tiled counter under an awning, meat on hooks from the awning rail */
+    F.box(-1.0, 0.4, 3.55, 6.4, 3.0, 0.2, 0, 0x14110d, 'wood');
+    F.box(-1.0, 0.4, 4.2, 6.2, 1.0, 1.1, 0, tile, 'stone');
+    F.box(-1.0, 1.4, 4.2, 6.4, 0.1, 1.2, 0, shade(tile, -0.1), 'stone');
+    F.box(-1.0, 3.5, 5.0, 7.0, 0.12, 2.4, 0, 0x8a2f2a, 'cloth');
+    [-4.4, 2.4].forEach(function (px) { F.rod(px, 0.4, 6.1, px, 3.5, 6.1, 0.08, timber, 'wood'); });
+    F.rod(-4.0, 3.2, 5.2, 2.0, 3.2, 5.2, 0.05, iron, 'metal');
+    for (let k = 0; k < 5; k++) { F.rod(-3.4 + k * 1.2, 3.2, 5.2, -3.4 + k * 1.2, 2.8, 5.2, 0.02, iron, 'metal'); F.ell(-3.4 + k * 1.2, 2.45, 5.2, 0.28, 0.4, 0.2, 0, k % 2 ? meat : shade(meat, -0.1), 'cloth'); }
+    F.box(3.9, 0.4, 3.55, 1.6, 2.7, 0.2, 0, doorC, 'wood'); F.box(3.9, 3.1, 3.6, 2.0, 0.3, 0.5, 0, trim, 'stone');
+    [-3, 0, 3].forEach(function (px) { W(px, 5.2, 3.55, 1.0, 1.4, 0); W(px, 1.7, -5.55, 0.9, 1.1, 1); W(px, 5.2, -5.55, 1.0, 1.4, 1); });
+    [-3.5, 1].forEach(function (pz) { W(5.05, 1.7, pz, 0.9, 1.1, 2); W(-5.05, 1.7, pz, 0.9, 1.1, 3); W(5.05, 5.2, pz, 1.0, 1.4, 2); W(-5.05, 5.2, pz, 1.0, 1.4, 3); });
+    /* the yard behind: a chopping block, a salting trough, a smoke house */
+    F.cyl(-3, 0.4, -7.2, 0.5, 0.9, 0, 0x6a4a2a, 'wood'); F.box(-3, 1.3, -7.2, 0.12, 0.3, 0.6, 0.6, iron, 'metal');
+    F.box(0.5, 0.4, -7.3, 2.6, 0.7, 0.9, 0, timber, 'wood'); F.box(0.5, 1.1, -7.3, 2.4, 0.05, 0.7, 0, fat, 'stone');
+    F.box(4.4, 0.4, -7.0, 1.8, 2.2, 1.8, 0, dark, 'stone'); F.pyrRoof(4.4, 2.6, -7.0, 2.2, 0.9, 2.2, 0, roofC, 'roof');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_bakery', name: 'Bakery', culture: 'voth', family: 'trade', types: ['shop', 'dwelling-single'],
+  districts: ['common', 'market'], wealth: [0.25, 0.55], w: 15.4, d: 12.4, h: 11.8, variants: 1,
+  ix: { block: [-1.5, -0.5, 11, 10], y: 0.4, h: 7.0, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xc0ac8c, 0xb4a084, 0xc8b496]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038, iron = 0x3a3630, bread = 0xc08a48, glow = 0xffb066;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(-1.5, 0, -0.5, 11.8, 0.4, 10.8, 0, dark, 'stone');
+    F.box(-1.5, 0.4, -0.5, 11, 3.7, 10, 0, c, 'stone');
+    F.box(-1.5, 4.1, -0.5, 11.3, 0.3, 10.3, 0, trim, 'stone');
+    F.box(-1.5, 4.4, -0.5, 11, 3.0, 10, 0, shade(c, 0.05), 'stone');
+    F.box(-1.5, 7.4, -0.5, 11.4, 0.3, 10.4, 0, trim, 'stone');
+    F.pyrRoof(-1.5, 7.7, -0.5, 12, 2.8, 11, 0, roofC, 'roof');
+    /* the oven house on the flank: a vaulted brick oven under its own dome, the flue rising past the eaves */
+    F.box(6.0, 0.4, -1.5, 4.0, 3.2, 6.0, 0, shade(c, -0.08), 'stone');
+    F.dome(6.0, 3.6, -1.5, 2.2, 1.6, 0, 0x8a5a3a, 'stone');
+    F.box(6.0, 3.2, -4.0, 1.0, 7.4, 1.0, 0, dark, 'stone'); F.box(6.0, 10.6, -4.0, 1.4, 0.4, 1.4, 0, trim, 'stone');
+    F.box(6.0, 0.9, 1.55, 1.2, 1.0, 0.2, 0, 0x1a1410, 'stone'); F.blob(6.0, 1.1, 1.5, 0.45, 0.4, 0, glow, 'glow');
+    F.box(6.0, 0.4, 2.4, 2.2, 0.9, 1.2, 0, dark, 'stone');
+    /* the shop window with its bread shelf and an awning, the door, a wheat-sheaf sign */
+    F.box(-3.5, 0.4, 4.55, 4.4, 2.6, 0.2, 0, 0x14110d, 'wood');
+    F.box(-3.5, 1.1, 4.85, 4.2, 0.1, 0.6, 0, timber, 'wood');
+    for (let k = 0; k < 6; k++) F.ell(-5.2 + k * 0.68, 1.3, 4.85, 0.26, 0.14, 0.18, 0, k % 2 ? bread : shade(bread, -0.12), 'cloth');
+    F.box(-3.5, 3.2, 5.6, 5.4, 0.12, 2.0, 0, 0xb08d3c, 'cloth');
+    F.box(1.5, 0.4, 4.55, 1.6, 2.7, 0.2, 0, doorC, 'wood'); F.box(1.5, 3.1, 4.6, 2.0, 0.3, 0.5, 0, trim, 'stone');
+    F.rod(3.1, 4.2, 4.6, 3.1, 4.2, 5.5, 0.05, iron, 'metal'); F.cyl(3.1, 3.3, 5.5, 0.35, 0.9, 0, 0xc8a050, 'cloth');
+    [-5, -1.5, 2].forEach(function (px) { W(px, 5.2, 4.55, 1.0, 1.4, 0); W(px, 1.7, -5.55, 0.9, 1.1, 1); W(px, 5.2, -5.55, 1.0, 1.4, 1); });
+    [-3, 2].forEach(function (pz) { W(-7.05, 1.7, pz, 0.9, 1.1, 3); W(-7.05, 5.2, pz, 1.0, 1.4, 3); W(4.05, 5.2, pz, 1.0, 1.4, 2); });
+    /* a firewood stack and flour sacks by the oven, a cooling rack by the door */
+    for (let k = 0; k < 3; k++) F.box(6.0, 0.4 + k * 0.35, -5.4, 3.4, 0.35, 0.9, 0, shade(timber, 0.05 * k), 'wood');
+    [[8.5, 0.2], [8.6, 1.1]].forEach(function (p) { F.blob(p[0], 0.4, p[1], 0.45, 0.6, 0, 0xe0d8c8, 'cloth'); });
+    F.box(3.0, 0.4, 6.0, 1.4, 1.2, 0.5, 0, timber, 'wood');
   }
 });
 
@@ -23645,6 +24015,12 @@ function mushroomFarm(fx0, fz0, ry, opt){
 var ptrs = {}, lastPinch = 0, dragged = false;
 /* ---- settlements/voth/src/80-camera.js: up ---- */
 function up(e){ delete ptrs[e.pointerId]; lastPinch = 0; }
+var BUILT = [];
+monasteryDorm = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); BUILT.push({ fn: "monasteryDorm", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(monasteryDorm);
+monasteryChapel = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); BUILT.push({ fn: "monasteryChapel", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(monasteryChapel);
+monasteryAssemblyHall = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); BUILT.push({ fn: "monasteryAssemblyHall", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(monasteryAssemblyHall);
+funeraryTemple = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); BUILT.push({ fn: "funeraryTemple", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(funeraryTemple);
+houseOfHealing = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); BUILT.push({ fn: "houseOfHealing", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(houseOfHealing);
 function buildIslets(){
 /* ---- settlements/voth/src/60-land.js: /* ============================== 20. ISLETS ---- */
 /* ============================== 20. ISLETS ============================== */
@@ -23946,7 +24322,7 @@ function chinampaHut(x, z, ry, bw, bl){
   BOX(x, 3.8, z, bw*0.92, 0.9, bl*0.92, ry, 0x7d6a50, 'wood');
   structure(x, 4.7, z, bw*0.68, bl*0.62, rr(4.5,7), ry, 'hovel', pick(TONES_POOR));
   CHINN++; CHINHUTS++;
-  window._chinampaHuts.push([x,z,ry]);
+  window._chinampaHuts.push([x,z,ry,bw,bl]);
 }
 window._chinampaHuts = [];
 
@@ -24126,13 +24502,13 @@ window._chinDebug = { pointInPoly:pointInPoly, chinBlocked:chinBlocked, ZONE:ZON
   CANTONS:CANTONS, SPANS:SPANS, CAUSEWAYS:CAUSEWAYS.map(function(cw){ return {s:cw.s, solid:cw.solid, n:cw.c?cw.c.n:null, x:cw.c?cw.c.x:null, z:cw.c?cw.c.z:null, r:cw.c?cw.c.r:null}; }),
   PIERS:PIERS, CPIERS: (typeof CPIERS!=='undefined'?CPIERS:[]), ISLES:ISLES, inRiver:inRiver, CHINP:CHINP };
 
-  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, units: finalUnits };
+  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, hutList: window._chinampaHuts, units: finalUnits };
 }
 var __rawTerrainH = terrainH, __groundEdit = null;
 terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };
 function setGroundEdit(fn) { __groundEdit = fn; }
 
-  return { terrainH: __rawTerrainH, terrainHe: function (x, z) { return terrainH(x, z); }, BARGES: BARGES, BASALTC: BASALTC, BLOB: BLOB, BOX: BOX, CANTONS: CANTONS, CAUSEWAYS: CAUSEWAYS, CIDX: CIDX, CITY_EXT: CITY_EXT, CITY_LIM: CITY_LIM, CONE: CONE, CPIERS: CPIERS, CWAY: CWAY, CYL: CYL, DECK: DECK, DISTRICTS: DISTRICTS, DOME: DOME, DOMEC: DOMEC, FIELDC: FIELDC, FR3: FR3, FR6: FR6, FR8: FR8, FRUITC: FRUITC, GREYC: GREYC, GRIDC: GRIDC, HW: HW, INDUSTRY: INDUSTRY, ISLES: ISLES, LIFE_FISHDOCK_H: LIFE_FISHDOCK_H, LIFE_FISHDOCK_LEN: LIFE_FISHDOCK_LEN, LIFE_FISHDOCK_PILE_R: LIFE_FISHDOCK_PILE_R, LIFE_FISHDOCK_W: LIFE_FISHDOCK_W, MARBLEC: MARBLEC, MILL_CLUSTERS: MILL_CLUSTERS, MINE_CART_STOPS: MINE_CART_STOPS, MONASTERY: MONASTERY, MONASTERY_COOP_SLOTS: MONASTERY_COOP_SLOTS, MONASTERY_SITES: MONASTERY_SITES, PAL: PAL, PIERS: PIERS, PLACED: PLACED, PRIMS: PRIMS, QUARRY_CART_STOPS: QUARRY_CART_STOPS, RBRIDGES: RBRIDGES, RIVER: RIVER, RIVER_HEAD: RIVER_HEAD, RLAND: RLAND, ROOFS: ROOFS, RPIERS: RPIERS, SEA: SEA, SKY: SKY, SLEN: SLEN, SPANS: SPANS, STK: STK, TONES: TONES, TONES_POOR: TONES_POOR, WATER: WATER, addWindows: addWindows, altAzToVec: altAzToVec, bedAt: bedAt, beetleModel: beetleModel, beetleRanch: beetleRanch, benchPlain: benchPlain, buildFishDockPier: buildFishDockPier, buildIslets: buildIslets, chance: chance, claim: claim, cornCobMotif: cornCobMotif, customsHouse: customsHouse, facadeFindGateSite: facadeFindGateSite, faceToward: faceToward, footing: footing, funeraryTemple: funeraryTemple, gkey: gkey, granary: granary, gridHit: gridHit, gridPut: gridPut, groundTone: groundTone, harborGate: harborGate, houseOfHealing: houseOfHealing, inRiver: inRiver, landDist: landDist, lifeBridgeY: lifeBridgeY, lifeBuildFerryPier: lifeBuildFerryPier, lifeCantonEdge: lifeCantonEdge, lifeStandaloneShrine: lifeStandaloneShrine, loc: loc, mineEntrance: mineEntrance, mix: mix, monasteryAssemblyHall: monasteryAssemblyHall, monasteryChapel: monasteryChapel, monasteryClash: monasteryClash, monasteryCompound: monasteryCompound, monasteryCoop: monasteryCoop, monasteryDorm: monasteryDorm, monasteryField: monasteryField, monasteryOpenings: monasteryOpenings, monasteryPen: monasteryPen, monasteryWell: monasteryWell, monasteryWindow: monasteryWindow, mushroomFarm: mushroomFarm, pick: pick, plinth: plinth, ptrs: ptrs, quarryPit: quarryPit, reclaimedCauseway: reclaimedCauseway, rectFrus: rectFrus, registerMillCluster: registerMillCluster, reliefLimb: reliefLimb, reseed: reseed, riverAt: riverAt, riverGate: riverGate, riverHalf: riverHalf, ropeCoil: ropeCoil, rr: rr, runChinampas: runChinampas, setGroundEdit: setGroundEdit, shade: shade, shed: shed, shoreAt: shoreAt, shoreIn: shoreIn, shoreNorm: shoreNorm, shoreS: shoreS, siteSlope: siteSlope, skullMotif: skullMotif, skySunAltAz: skySunAltAz, skySunDir: skySunDir, span: span, spiritGate: spiritGate, striderStationBuild: striderStationBuild, structure: structure, up: up, vothPatCol: vothPatCol, wallGateRuinA: wallGateRuinA, wallGateRuinB: wallGateRuinB, wallGateRuinC: wallGateRuinC, wallSeg: wallSeg, wallSegRender: wallSegRender, wallSegmentBasalt: wallSegmentBasalt, wallWindow: wallWindow, watchtower: watchtower, watermill: watermill, wheatSheafMotif: wheatSheafMotif, windmill: windmill };
+  return { terrainH: __rawTerrainH, terrainHe: function (x, z) { return terrainH(x, z); }, BARGES: BARGES, BASALTC: BASALTC, BLOB: BLOB, BOX: BOX, BUILT: BUILT, CANTONS: CANTONS, CAUSEWAYS: CAUSEWAYS, CIDX: CIDX, CITY_EXT: CITY_EXT, CITY_LIM: CITY_LIM, CONE: CONE, CPIERS: CPIERS, CWAY: CWAY, CYL: CYL, DECK: DECK, DISTRICTS: DISTRICTS, DOME: DOME, DOMEC: DOMEC, FIELDC: FIELDC, FR3: FR3, FR6: FR6, FR8: FR8, FRUITC: FRUITC, GREYC: GREYC, GRIDC: GRIDC, HW: HW, INDUSTRY: INDUSTRY, ISLES: ISLES, LIFE_FISHDOCK_H: LIFE_FISHDOCK_H, LIFE_FISHDOCK_LEN: LIFE_FISHDOCK_LEN, LIFE_FISHDOCK_PILE_R: LIFE_FISHDOCK_PILE_R, LIFE_FISHDOCK_W: LIFE_FISHDOCK_W, MARBLEC: MARBLEC, MILL_CLUSTERS: MILL_CLUSTERS, MINE_CART_STOPS: MINE_CART_STOPS, MONASTERY: MONASTERY, MONASTERY_COOP_SLOTS: MONASTERY_COOP_SLOTS, MONASTERY_SITES: MONASTERY_SITES, PAL: PAL, PIERS: PIERS, PLACED: PLACED, PRIMS: PRIMS, QUARRY_CART_STOPS: QUARRY_CART_STOPS, RBRIDGES: RBRIDGES, RIVER: RIVER, RIVER_HEAD: RIVER_HEAD, RLAND: RLAND, ROOFS: ROOFS, RPIERS: RPIERS, SEA: SEA, SKY: SKY, SLEN: SLEN, SPANS: SPANS, STK: STK, TONES: TONES, TONES_POOR: TONES_POOR, WATER: WATER, addWindows: addWindows, altAzToVec: altAzToVec, bedAt: bedAt, beetleModel: beetleModel, beetleRanch: beetleRanch, benchPlain: benchPlain, buildFishDockPier: buildFishDockPier, buildIslets: buildIslets, chance: chance, claim: claim, cornCobMotif: cornCobMotif, customsHouse: customsHouse, facadeFindGateSite: facadeFindGateSite, faceToward: faceToward, footing: footing, funeraryTemple: funeraryTemple, gkey: gkey, granary: granary, gridHit: gridHit, gridPut: gridPut, groundTone: groundTone, harborGate: harborGate, houseOfHealing: houseOfHealing, inRiver: inRiver, landDist: landDist, lifeBridgeY: lifeBridgeY, lifeBuildFerryPier: lifeBuildFerryPier, lifeCantonEdge: lifeCantonEdge, lifeStandaloneShrine: lifeStandaloneShrine, loc: loc, mineEntrance: mineEntrance, mix: mix, monasteryAssemblyHall: monasteryAssemblyHall, monasteryChapel: monasteryChapel, monasteryClash: monasteryClash, monasteryCompound: monasteryCompound, monasteryCoop: monasteryCoop, monasteryDorm: monasteryDorm, monasteryField: monasteryField, monasteryOpenings: monasteryOpenings, monasteryPen: monasteryPen, monasteryWell: monasteryWell, monasteryWindow: monasteryWindow, mushroomFarm: mushroomFarm, pick: pick, plinth: plinth, ptrs: ptrs, quarryPit: quarryPit, reclaimedCauseway: reclaimedCauseway, rectFrus: rectFrus, registerMillCluster: registerMillCluster, reliefLimb: reliefLimb, reseed: reseed, riverAt: riverAt, riverGate: riverGate, riverHalf: riverHalf, ropeCoil: ropeCoil, rr: rr, runChinampas: runChinampas, setGroundEdit: setGroundEdit, shade: shade, shed: shed, shoreAt: shoreAt, shoreIn: shoreIn, shoreNorm: shoreNorm, shoreS: shoreS, siteSlope: siteSlope, skullMotif: skullMotif, skySunAltAz: skySunAltAz, skySunDir: skySunDir, span: span, spiritGate: spiritGate, striderStationBuild: striderStationBuild, structure: structure, up: up, vothPatCol: vothPatCol, wallGateRuinA: wallGateRuinA, wallGateRuinB: wallGateRuinB, wallGateRuinC: wallGateRuinC, wallSeg: wallSeg, wallSegRender: wallSegRender, wallSegmentBasalt: wallSegmentBasalt, wallWindow: wallWindow, watchtower: watchtower, watermill: watermill, wheatSheafMotif: wheatSheafMotif, windmill: windmill };
 })();
 </script>
 <script>
@@ -47198,13 +47574,13 @@ var TUNE = {
   /* every building's interior (41-vc-building-interiors.js VC.IX, phase A of SIM-ROADMAP.md): the residence rule (per `per`
      residents one bed, one item store and one food store; a bunk counts as two beds), the storey height a shell is cut into
      and the most storeys, how a shell is read off a kit model (the main block: spans head height `head`, at least `minArea`
-     m2 and `minSide` m thick, standing within `base` m of the ground; else a fallback `fallback` of the model's footprint),
+     m2 and `minSide` m thick, standing within `base` m of the ground (a hut on piles, a farmhouse on its yard's platform); else a fallback `fallback` of the model's footprint),
      the placer's cell, the programmes (lot class -> room kinds per storey, the last repeated upward; `key` matches a kit
      key first), the room kinds that are homes and the ones that are work, the density overlay's cell, and the overrides
      of shells the reading gets wrong ({ key|v|slot: { poly: [[x, z], ...] local, y, h } or { skip: why } }) */
-  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 1.6, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
+  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 2.5, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
         wealth: { poor: 0.15, middle: 0.45, rich: 0.75, manor: 0.9, shop: 0.5, craft: 0.5, tavern: 0.5, clan: 0.9, farm: 0.3, civic: 0.6,
-                             warehouse: 0.35, industrial: 0.3, landmark: 0.6 },
+                             warehouse: 0.35, industrial: 0.3, landmark: 0.6, monastery: 0.3, shrine: 0.55, lighthouse: 0.4, funerary: 0.7, 'chinampa hut': 0.15, healing: 0.5 },
         /* a home's bedrooms are `chamber`s (VC.ixPrograms): a bed and a chest, and as many more beds and stores as the room holds */
         programmes: {
           poor:       [['cottage', 'chamber'], ['chamber', 'chamber']],
@@ -47237,13 +47613,41 @@ var TUNE = {
           voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
           voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
           voth_generator: [['workshop', 'store']],
-          voth_mustering_grounds: null
+          voth_mustering_grounds: null,
+          /* the citizen simulation's buildings (kits/catalog/krator-master-buildings-voth.js, each with its own `ix` shell) */
+          voth_bldg_watchhouse: [['barracks', 'armoury'], ['office', 'dormitory']],
+          voth_bldg_caravanserai: [['tavern', 'kitchen', 'store'], ['chamber', 'chamber', 'chamber', 'chamber']],
+          voth_bldg_coastguard_berth: [['barracks', 'armoury', 'store'], ['dormitory', 'office']],
+          voth_bldg_weaver: [['weaving', 'store'], ['living', 'chamber']],
+          voth_bldg_tannery: [['tanyard', 'store']],
+          voth_bldg_brewery: [['brewhouse', 'store', 'tavern'], ['store', 'office']],
+          voth_bldg_butcher: [['shop', 'butchery'], ['living', 'chamber']],
+          voth_bldg_bakery: [['bakery', 'shop'], ['living', 'chamber']]
         },
+        /* the kit models no lot draws yet, planned as [key, lot class] so the report shows what each holds (VC.ixKitCheck) */
+        kitCheck: [['voth_bldg_watchhouse', 'civic'], ['voth_bldg_caravanserai', 'tavern'], ['voth_bldg_coastguard_berth', 'civic'], ['voth_bldg_weaver', 'craft'],
+                   ['voth_bldg_tannery', 'industrial'], ['voth_bldg_brewery', 'industrial'], ['voth_bldg_butcher', 'shop'], ['voth_bldg_bakery', 'shop']],
         home: ['cottage', 'bedroom', 'chamber', 'living', 'dormitory', 'hall', 'kitchen'],
-        /* a work post (the job table's posts): a piece of these kinds in a work room; storage and stacks only in a store or warehouse */
-        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'], postsStore: ['storage', 'stack'],
+        /* a work post (the job table's posts): a piece of these kinds in a work room, and these in rooms of a kind (a store's shelves,
+           a ward's cots, a shrine's altar, a tomb's sarcophagus) */
+        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'],
+        postsIn: { store: ['storage', 'stack'], warehouse: ['storage', 'stack'], ward: ['bed', 'table'], shrine: ['altar', 'shrine'], tomb: ['tomb'],
+                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'] },
+        /* the buildings off the lots (VC.ixSites): programme per storey, storeys (else from the height), class, residents (a
+           TUNE.census.live key) and kind of work [label, TUNE.census.jobs or .live key] as the census counts them. The chinampa
+           huts' growers are not housed by the census (it counts their jobs only): the huts' beds are reported as room to spare */
+        sites: {
+          dorm:       { prog: [['dormitory', 'dormitory'], ['dormitory', 'dormitory']], storeys: 2, cls: 'monastery', live: 'monkPerDorm', job: ['monks and lay brothers (chapel, fields, coops)', 'monkPerDorm'] },
+          chapel:     { prog: [['shrine']], storeys: 1, cls: 'monastery' },
+          hall:       { prog: [['mess', 'kitchen'], ['library', 'study'], ['study', 'store']], storeys: 3, cls: 'monastery' },
+          shrine:     { prog: [['shrine']], storeys: 1, cls: 'shrine', job: ['shrine keepers', 'shrine'] },
+          lighthouse: { prog: [['store', 'office'], ['store'], ['study'], ['store']], cls: 'lighthouse', job: ['lighthouse keepers', 'lighthouse'] },
+          keeper:     { prog: [['cottage']], storeys: 1, cls: 'lighthouse' },
+          funerary:   { prog: [['shrine', 'tomb', 'office', 'store']], storeys: 1, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
+          hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
+        },
         dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
@@ -50073,6 +50477,7 @@ VC.capture = function (name, step, fn) {
 /* ---------------------------------------------------------------- step 1-2: islets, landmarks, districts */
 VC.buildDistricts = function () {
   var B = VOTH, log = [];
+  VC.IX_SITES = [];                                  /* the buildings off the lots that record their shells (41-vc-building-interiors.js) */
   /* the islets as Voth builds them (60-land.js 20. ISLETS): the shrine islets (A, B), the lighthouse islet (LH), rocks */
   VC.capture('islets', 1, function () { B.buildIslets(); });
   /* the islets' shrine and lighthouse give way to the better models below (their pads stay) */
@@ -50150,7 +50555,8 @@ VC.shrineModel = function (x, y, z, ry, rad) {
   B.BOX(x, y - 1.2, z, rad * 0.86, 2.4, rad * 0.86, ry, dk);
   B.BOX(x, y + 1.2, z, rad * 0.70, 1.0, rad * 0.70, ry, B.shade(col, -0.08));
   var yb = y + 2.2, w = rad * 0.34, d = rad * 0.30, h = 7.5, m = Math.min(w, d);
-  /* the cella, its cornice, a drum and the dome with a finial */
+  /* the cella, its cornice, a drum and the dome with a finial (its interior: 41-vc-building-interiors.js) */
+  VC.ixSite({ kind: 'shrine', x: x, y: yb, z: z, ry: ry, w: w, d: d, h: h });
   B.BOX(x, yb, z, w, h, d, ry, col);
   B.BOX(x, yb + h - 0.6, z, w * 1.06, 0.9, d * 1.06, ry, trim);
   B.CYL(x, yb + h + 0.3, z, m * 0.42, 2.4, ry, B.shade(col, 0.05));
@@ -50177,6 +50583,8 @@ VC.lighthouseModel = function (x, y, z, ry, isleR) {
   /* an octagonal plinth with its door and steps */
   B.FR8(x, y + 1.8, z, 22, 4.0, 22, ry, dk); B.BOX(x, y + 5.6, z, 22.6, 0.6, 22.6, ry, trim);
   var yb = y + 5.8, ys = yb, stages = [[17.6, 10], [15.6, 10], [13.6, 9.5], [11.8, 8.5]];
+  /* its interior (41-vc-building-interiors.js): the square inside the top stage's octagon, up the four stages */
+  VC.ixSite({ kind: 'lighthouse', x: x, y: yb, z: z, ry: ry, w: 11.8 * 0.7, d: 11.8 * 0.7, h: 38, storeys: 4 });
   var dp = L(8.9, 0); B.BOX(dp[0], y + 1.8, dp[1], 0.4, 3.6, 2.4, ry, 0x4a3524, 'wood'); B.BOX(dp[0], y + 5.4, dp[1], 0.6, 0.5, 3.2, ry, frame);
   for (var i = 0; i < 3; i++) { var sp = L(11.6 + i * 1.2, 0); B.BOX(sp[0], y + 0.6 - i * 0.6, sp[1], 1.2, 1.2, 3.6, ry, B.shade(dk, -0.05 * i)); }
   /* the tower in four tapering stages, a string course at each, two lancet windows a stage on alternate faces */
@@ -50202,6 +50610,7 @@ VC.lighthouseModel = function (x, y, z, ry, isleR) {
   /* the keeper's cottage behind it, where the islet has the room */
   if (!isleR || isleR * 0.43 > 21) {
     var cp = L(-17, 0), cw = 8, cd = 10, ch = 5;
+    VC.ixSite({ kind: 'keeper', x: cp[0], y: y + 1.8, z: cp[1], ry: ry + Math.PI, w: cw, d: cd, h: ch });   /* its door faces away from the tower */
     B.BOX(cp[0], y + 1.8, cp[1], cw, ch, cd, ry, B.shade(col, 0.06));
     B.FR8(cp[0], y + 1.8 + ch, cp[1], cw * 1.08, 3.2, cd * 1.08, ry, B.pick(B.ROOFS), 'roof');
     B.monasteryOpenings(cp[0], cp[1], y + 1.8, cw, cd, ch, ry + Math.PI, { door: 0x4a3524, frame: frame });
@@ -53901,6 +54310,20 @@ VC.ixPrograms = function () {
                { types: ['lamp'], max: 1 }, { types: ['chair', 'stool'], max: 1 }], extra: 3 };
   IX.KIND_ALIAS.chamber = ['bedroom', 'dormitory'];
   IX.KIND_WEIGHT.chamber = 1.3;
+  /* the trades the production chains need (the new kit models' work rooms), each requiring its trade's pieces by their
+     catalog role: the brewer's still, barrels and vat; the weaver's looms and dye vat; the tanner's vats; the butcher's
+     block and meat */
+  var P = IX.PROGRAMS, A = IX.KIND_ALIAS, LAMP = { types: ['lamp'], max: 1 };
+  P.brewhouse = { require: [{ need: 'still', types: ['workstation'], roles: ['still'], n: 1 }, { need: 'barrels', types: ['storage'], roles: ['barrel'], n: 2 }, { need: 'vat', types: ['storage'], roles: ['vat'], n: 1 }],
+    optional: [{ types: ['storage'], roles: ['barrel'], max: 4 }, { types: ['storage'], roles: ['vat'], max: 2 }, { types: ['table', 'workstation'], max: 1 }, LAMP], extra: 4 };
+  P.weaving = { require: [{ need: 'looms', types: ['loom'], n: 2 }, { need: 'dye vat', types: ['storage'], roles: ['vat'], n: 1 }],
+    optional: [{ types: ['loom'], max: 2 }, { types: ['storage', 'shelf'], max: 2 }, { types: ['chair', 'stool'], max: 2 }, LAMP], extra: 4 };
+  P.tanyard = { require: [{ need: 'vats', types: ['storage'], roles: ['vat'], n: 2 }, { need: 'bench', types: ['table'], n: 1 }],
+    optional: [{ types: ['storage'], roles: ['vat'], max: 4 }, { types: ['rack'], max: 2 }, { types: ['storage', 'stack'], max: 2 }, LAMP], extra: 4 };
+  P.butchery = { require: [{ need: 'block', types: ['table', 'counter'], n: 1 }, { need: 'meat', types: ['food'], n: 2 }],
+    optional: [{ types: ['storage', 'vessel'], roles: IX.FOOD_ROLES, max: 3 }, { types: ['rack'], max: 1 }, { types: ['food'], max: 4 }, LAMP], extra: 4 };
+  A.brewhouse = ['workshop', 'store', 'tavern', 'kitchen']; A.weaving = ['workshop', 'hall']; A.tanyard = ['workshop', 'store']; A.butchery = ['kitchen', 'store', 'shop'];
+  ['brewhouse', 'weaving', 'tanyard', 'butchery'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 
@@ -53978,23 +54401,29 @@ VC.ixShellFrom = function (boxes, dims) {
 };
 VC.ixShell = function (k) {
   var o = TUNE.ix.shells[k]; if (o) return o.skip ? null : Object.assign({ src: 'override' }, o);
+  /* a kit model that carries its own shell (`ix: { block: [x, z, w, d], y, h, storeys }`, the citizen simulation's buildings) */
+  var A = typeof ASSET_BY_KEY !== 'undefined' && ASSET_BY_KEY[k.split('|')[0]];
+  if (A && A.ix && A.ix.block) {
+    var b = A.ix.block, hw = b[2] / 2, hd = b[3] / 2;
+    return { poly: [[b[0] - hw, b[1] - hd], [b[0] + hw, b[1] - hd], [b[0] + hw, b[1] + hd], [b[0] - hw, b[1] + hd]], y: A.ix.y || 0, h: A.ix.h, storeys: A.ix.storeys || null, src: 'kit' };
+  }
   var B = VC.IX.boxes[k]; if (!B) return null;
   return VC.ixShellFrom(B.boxes, B.dims);
 };
 
-/* ---------------------------------------------------------------- a type: planned and furnished once, in the model's frame */
-VC.ixType = function (L) {
-  var pg = VC.ixProgram(L); if (!pg) return null;
-  var k = VC.ixKey(L), tk = k + '|' + pg.id;
-  if (VC.IX.types[tk]) return VC.IX.types[tk];
-  var T = TUNE.ix, IX = VC.ixPrograms(), sh = VC.ixShell(k);
-  var ty = VC.IX.types[tk] = { id: tk, key: L.key, v: L.v | 0, slot: L.slot | 0, prog: pg.id, cls: VC.ixClass(L), shell: sh, units: 0, dwelling: false };
+/* ---------------------------------------------------------------- a type: planned and furnished once, in its own frame */
+/* spec: { tk, key, v, slot, prog: { id, p, one }, cls, shell: { poly, y, h, src }, storeys?, door?: [x, z], live } (the
+   frame's origin is the building's foot; a lot's door is mid-front, +z; a Voth builder's is mid +x) */
+VC.ixTypeBuild = function (spec) {
+  var tk = spec.tk; if (VC.IX.types[tk]) return VC.IX.types[tk];
+  var T = TUNE.ix, IX = VC.ixPrograms(), sh = spec.shell, pg = spec.prog;
+  var ty = VC.IX.types[tk] = { id: tk, key: spec.key, v: spec.v | 0, slot: spec.slot | 0, prog: pg.id, cls: spec.cls, shell: sh, units: 0, dwelling: false, site: !!spec.site };
   if (!sh || !IX || typeof furnishRoom === 'undefined') { ty.fail = sh ? 'no interiors kit' : 'no shell'; return ty; }
-  var n = Math.max(1, Math.min(T.maxStoreys, Math.floor((sh.h + 0.2) / T.storeyH))), lh = sh.h / n - T.slab;
+  var n = spec.storeys || Math.max(1, Math.min(T.maxStoreys, Math.floor((sh.h + 0.2) / T.storeyH))), lh = sh.h / n - T.slab;
   var xs = sh.poly.map(function (p) { return p[0]; }), zs = sh.poly.map(function (p) { return p[1]; });
-  var front = Math.max.apply(null, zs), mid = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+  var door = spec.door || [(Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2, Math.max.apply(null, zs)];
   var wealth = T.wealth[ty.cls] == null ? 0.5 : T.wealth[ty.cls];
-  var shell = { id: 'ix.' + tk, poly: sh.poly, y: sh.y, levels: [], doors: [{ at: [mid, front], w: 1.2 }], culture: 'voth', wealth: wealth,
+  var shell = { id: 'ix.' + tk, poly: sh.poly, y: sh.y, levels: [], doors: [{ at: door, w: 1.2 }], culture: 'voth', wealth: wealth,
                 wall: T.wall, partition: 0.12, slab: T.slab, roof: 'flat' };
   for (var l = 0; l < n; l++) shell.levels.push({ h: Math.max(2.4, lh) });
   var per = function (prog, trim) { return function (lv) { var e = prog[Math.min(lv, prog.length - 1)].slice(); return e.slice(0, Math.max(1, e.length - (trim || 0))); }; };
@@ -54008,7 +54437,7 @@ VC.ixType = function (L) {
   if (!B) return ty;
   ty.B = B; ty.storeys = n; ty.dropped = dropped;
   var home = T.home, kinds = B.rooms.map(function (R) { return R.kind; });
-  ty.dwelling = VC.ixResidents(L) > 0 && kinds.some(function (q) { return home.indexOf(q) >= 0; });
+  ty.dwelling = !!spec.live && kinds.some(function (q) { return home.indexOf(q) >= 0; });
   var cat = VC.IX.cat || (VC.IX.cat = (VC.INTD && VC.INTD.catalog) || IX.catalogAdapter()), best = null;   /* the cantons' adapter when it is made (its cache) */
   for (var att = 0; att < 3; att++) {
     var pieces = [], missing = [];
@@ -54027,6 +54456,77 @@ VC.ixType = function (L) {
   ty.rooms = kinds; ty.floorArea = B.levels.reduce(function (s, Lv) { return s + Math.abs(polyArea(Lv.inner || Lv.outer || sh.poly)); }, 0);
   return ty;
 };
+/* a lot's type: its kit model's shell, its class's (or its key's) programme */
+VC.ixType = function (L) {
+  var pg = VC.ixProgram(L); if (!pg) return null;
+  var k = VC.ixKey(L);
+  var sh = VC.ixShell(k);
+  return VC.ixTypeBuild({ tk: k + '|' + pg.id, key: L.key, v: L.v, slot: L.slot, prog: pg, cls: VC.ixClass(L), shell: sh, storeys: sh && sh.storeys, live: VC.ixResidents(L) > 0 });
+};
+/* the kit models no lot draws yet (TUNE.ix.kitCheck: the citizen simulation's new buildings, placed in phase B), planned and
+   furnished as a lot of their class would be, so the report shows what each holds before it stands anywhere */
+VC.ixKitCheck = function () {
+  return (TUNE.ix.kitCheck || []).map(function (e) {
+    var key = e[0], cls = e[1], A = typeof ASSET_BY_KEY !== 'undefined' && ASSET_BY_KEY[key];
+    if (!A) return { key: key, fail: 'no kit model' };
+    var ty = VC.ixType({ key: key, v: 0, slot: 0, cls: cls, role: null, w: A.w, d: A.d });
+    if (!ty) return { key: key, fail: 'no programme' };
+    var C = ty.count || {};
+    return { key: key, name: A.name, cls: cls, type: ty.id, shell: ty.shell ? ty.shell.src : 'none', storeys: ty.storeys || 0, rooms: (ty.rooms || []).join(' '), pieces: (ty.pieces || []).length,
+             beds: C.beds || 0, items: C.items || 0, food: C.food || 0, posts: C.posts || 0, work: C.work || {}, fail: ty.fail || null };
+  });
+};
+
+/* ---------------------------------------------------------------- the buildings off the lots
+   Voth's own builders the city calls (logged by build.py into VOTH.BUILT with their arguments: the monastery's dormitories,
+   chapel and assembly hall, the funerary temple, the House of Healing), the city's own shrine and lighthouse models
+   (VC.ixSite, 31-vc-voth.js) and the chinampas' stilt huts (VC.chin.hutList). Each is a rectangle w x d at its floor,
+   its door mid +x (Voth's builders face +x), as TUNE.ix.sites says: programme, storeys, class, residents, kind of work.
+   The House of Healing's wards are furnished by the city already (31-vc-voth.js VC.healingModel: cots, dispensaries):
+   it is counted from those pieces, not planned again. */
+VC.ixSite = function (rec) { (VC.IX_SITES = VC.IX_SITES || []).push(rec); };
+VC.ixSites = function () {
+  var out = [], K = TUNE.census;
+  var add = function (kind, x, y, z, ry, w, d, h, o) { out.push(Object.assign({ kind: kind, x: x, y: y, z: z, ry: ry, w: w, d: d, h: h }, o || {})); };
+  (VOTH.BUILT || []).forEach(function (b) {
+    var a = b.a;
+    if (b.fn === 'monasteryDorm') add('dorm', a[0], a[1], a[2], a[6], a[3], a[4], a[5] * 0.92);
+    else if (b.fn === 'monasteryChapel') add('chapel', a[0], a[1], a[2], a[6], a[3], a[4], a[5]);
+    else if (b.fn === 'monasteryAssemblyHall') add('hall', a[0], a[2], a[1], a[6], a[3], a[4], a[5] * 0.92);
+    else if (b.fn === 'funeraryTemple') { var o = a[5] || {}, fw = o.w || 46, fd = o.d || 64, fh = o.h || 34; add('funerary', a[0], a[1] + fh * 0.185, a[2], a[3], fw * 0.62, fd * 0.72, fh * 0.5); }
+  });
+  (VC.IX_SITES || []).forEach(function (r) { add(r.kind, r.x, r.y, r.z, r.ry, r.w, r.d, r.h, r.storeys ? { storeys: r.storeys } : null); });
+  ((VC.chin && VC.chin.hutList) || []).forEach(function (q) { if (q[3]) add('hut', q[0], 4.7, q[1], q[2], q[3] * 0.68, q[4] * 0.62, 4.5); });
+  return out;
+};
+VC.ixSiteUnits = function () {
+  var T = TUNE.ix, K = TUNE.census, R3 = function (v) { return Math.round(v * 1000) / 1000; }, n = 0;
+  VC.ixSites().forEach(function (st, i) {
+    var S = T.sites[st.kind]; if (!S) return;
+    var hw = st.w / 2, hd = st.d / 2, dims = [st.w, st.d, st.h].map(function (v) { return Math.round(v * 2) / 2; }).join('x');
+    var spec = { tk: 'site:' + st.kind + '|' + dims, key: st.kind, prog: { id: st.kind, p: S.prog, one: S.prog[0] }, cls: S.cls, site: true, storeys: st.storeys || S.storeys || null,
+                 shell: { poly: [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(function (p) { return [R3(p[0]), R3(p[1])]; }), y: 0, h: st.h, src: 'site' }, door: [R3(hw), 0], live: !!S.live };
+    var ty = VC.ixTypeBuild(spec);
+    var res = S.live ? (K.live[S.live] || 0) : 0, job = S.job ? [S.job[0], K.jobs[S.job[1]] != null ? K.jobs[S.job[1]] : K.live[S.job[1]] || 0] : null;
+    VC.ixAddUnit(ty, { x: st.x, y: st.y, z: st.z, ry: st.ry, key: st.kind, lot: -1, site: st.kind, district: VC.ixDistrict({ x: st.x, z: st.z }) }, res, job);
+    n++;
+  });
+  /* the House of Healing: its wards as the city furnished them */
+  var hq = (PLAN.voth || []).filter(function (q) { return q.role === 'healing'; })[0], D = (PLAN.districts || []).filter(function (d) { return d.name === 'House of Healing furnishings'; })[0];
+  if (hq && D) {
+    var c = Math.cos(hq.ry), s = Math.sin(hq.ry), y0 = Math.min.apply(null, D.art.map(function (a) { return a.y; }));
+    var pieces = D.art.map(function (a, k) {
+      var dx = a.x - hq.x, dz = a.z - hq.z, A = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {};
+      return { key: a.key, v: a.v | 0, x: dx * c - dz * s, y: a.y - y0, z: dx * s + dz * c, ry: (a.ry || 0) - hq.ry, type: A.type, catRole: A.role || null, anchor: A.anchor || 'floor', room: 0, level: 0, kind: 'ward' };
+    });
+    var ty = VC.IX.types['site:healing'] = { id: 'site:healing', key: 'healing', prog: 'healing', cls: 'healing', shell: { src: 'builder' }, units: 0, site: true, prebuilt: true,
+      pieces: pieces, rooms: ['ward'], count: VC.ixCount(pieces), storeys: 1, dropped: 0 };
+    VC.ixAddUnit(ty, { x: hq.x, y: y0, z: hq.z, ry: hq.ry, key: 'healing', lot: -1, site: 'healing', district: VC.ixDistrict({ x: hq.x, z: hq.z }) }, 0, ['healers and nurses', K.jobs.healing]);
+    n++;
+  }
+  return n;
+};
+
 /* a type's beds (a bunk is two), item and food stores (kits/interiors' roles, as its residence rule counts them), dining
    rooms, and work pieces by furniture kind in its work rooms */
 VC.ixCount = function (pieces) {
@@ -54037,7 +54537,7 @@ VC.ixCount = function (pieces) {
     if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') o.food++;
     if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') o.items++;
     if (p.type === 'table' && T.dining.indexOf(p.kind) >= 0) dine[p.room] = 1;
-    if (T.work.indexOf(p.kind) >= 0 && p.anchor !== 'surface' && (T.posts.indexOf(p.type) >= 0 || ((p.kind === 'store' || p.kind === 'warehouse') && T.postsStore.indexOf(p.type) >= 0))) {
+    if (T.work.indexOf(p.kind) >= 0 && p.anchor !== 'surface' && (T.posts.indexOf(p.type) >= 0 || (T.postsIn[p.kind] || []).indexOf(p.type) >= 0)) {
       o.work[p.type] = (o.work[p.type] || 0) + 1; o.posts++;
     }
   });
@@ -54046,29 +54546,36 @@ VC.ixCount = function (pieces) {
   return o;
 };
 
-/* ---------------------------------------------------------------- the units: every standing lot with a programme */
+/* ---------------------------------------------------------------- the units: every standing lot with a programme, every site */
+/* a unit: a type at a pose (p: { x, y, z, ry, key, lot, site?, district }), its residents and [kind of work, workplaces] */
+VC.ixAddUnit = function (ty, p, res, job) {
+  var T = TUNE.ix, need = Math.ceil(res / T.per), C = ty.count || { beds: 0, items: 0, food: 0, dining: 0, posts: 0 };
+  ty.units++;
+  var u = { i: VC.IX.units.length, lot: p.lot, site: p.site || null, type: ty.id, cls: ty.cls, key: p.key, x: p.x, y: p.y, z: p.z, ry: p.ry, district: p.district,
+            residents: res, need: need, beds: C.beds, items: C.items, food: C.food, dining: C.dining, job: job ? job[0] : null, jobs: job ? job[1] : 0, posts: C.posts };
+  if (res > 0) {
+    var s = {};
+    if (C.beds < need) s.beds = need - C.beds;
+    if (C.items < need) s.items = need - C.items;
+    if (C.food < need) s.food = need - C.food;
+    if (!C.dining) s.dining = 1;
+    if (Object.keys(s).length) u.short = s;
+  }
+  if (ty.fail) u.fail = ty.fail;
+  VC.IX.units.push(u);
+  return u;
+};
 VC.ixPlanAll = function () {
-  var t0 = Date.now(), T = TUNE.ix;
+  var t0 = Date.now();
   VC.IX.units = []; VC.IX.types = {};
   PLAN.lots.forEach(function (L) {
     if (L.died != null) return;
     var ty = VC.ixType(L); if (!ty) return;
-    ty.units++;
-    var res = VC.ixResidents(L), need = Math.ceil(res / T.per), C = ty.count || { beds: 0, items: 0, food: 0, dining: 0, posts: 0 }, job = VC.ixJob(L);
-    var u = { i: VC.IX.units.length, lot: L.id, type: ty.id, cls: ty.cls, key: L.key, x: L.x, y: L.y, z: L.z, ry: L.ry, district: VC.ixDistrict(L),
-              residents: res, need: need, beds: C.beds, items: C.items, food: C.food, dining: C.dining, job: job ? job[0] : null, jobs: job ? job[1] : 0, posts: C.posts };
-    if (res > 0) {
-      var s = {};
-      if (C.beds < need) s.beds = need - C.beds;
-      if (C.items < need) s.items = need - C.items;
-      if (C.food < need) s.food = need - C.food;
-      if (!C.dining) s.dining = 1;
-      if (Object.keys(s).length) u.short = s;
-    }
-    if (ty.fail) u.fail = ty.fail;
+    var u = VC.ixAddUnit(ty, { x: L.x, y: L.y, z: L.z, ry: L.ry, key: L.key, lot: L.id, district: VC.ixDistrict(L) }, VC.ixResidents(L), VC.ixJob(L));
     L.ix = u.i;
-    VC.IX.units.push(u);
   });
+  VC.IX.lotUnits = VC.IX.units.length;
+  VC.ixSiteUnits();
   VC.IX.ms = Math.round(Date.now() - t0);
   VC.IX.done = true;
   return VC.IX.units.length;
@@ -54090,7 +54597,7 @@ VC.ixSlots = function (i) {
 VC.ixReport = function () {
   var U = VC.IX.units, R = { units: U.length, types: Object.keys(VC.IX.types).length, rooms: 0, pieces: 0, residents: 0, homes: 0, ms: VC.IX.ms,
     need: { beds: 0, items: 0, food: 0 }, have: { beds: 0, items: 0, food: 0 }, short: { units: 0, bedUnits: 0, beds: 0, items: 0, food: 0, dining: 0, residents: 0 },
-    byClass: {}, byDistrict: {}, shells: {}, jobs: {}, failed: [], dropped: 0 };
+    byClass: {}, byDistrict: {}, shells: {}, jobs: {}, failed: [], dropped: 0, sites: {}, spare: {} };
   var add = function (o, k, u) {
     var e = o[k] || (o[k] = { units: 0, homes: 0, residents: 0, beds: 0, need: 0, short: 0, shortResidents: 0, missingBeds: 0 });
     e.units++; if (u.residents) { e.homes++; e.residents += u.residents; e.beds += Math.min(u.beds, u.need); e.need += u.need; }
@@ -54108,6 +54615,9 @@ VC.ixReport = function () {
       if (u.short.beds) { R.short.bedUnits++; R.short.residents += Math.min(u.residents, u.short.beds * TUNE.ix.per); }
     }
     add(R.byClass, u.cls, u); add(R.byDistrict, u.district, u);
+    if (u.site) { var Sx = R.sites[u.site] || (R.sites[u.site] = { units: 0, rooms: 0, pieces: 0, beds: 0, residents: 0, jobs: 0, posts: 0 });
+      Sx.units++; Sx.rooms += ty.rooms ? ty.rooms.length : 0; Sx.pieces += ty.pieces ? ty.pieces.length : 0; Sx.beds += u.beds; Sx.residents += u.residents; Sx.jobs += u.jobs; Sx.posts += u.posts; }
+    if (!u.residents && u.beds && TUNE.ix.sites[u.site] && !TUNE.ix.sites[u.site].job) { var Sp = R.spare[u.cls] || (R.spare[u.cls] = { units: 0, beds: 0 }); Sp.units++; Sp.beds += u.beds; }
     if (u.fail && R.failed.indexOf(u.type + ': ' + u.fail) < 0) R.failed.push(u.type + ': ' + u.fail);
     /* the job table: a row per kind of work, a column per furniture kind (its count and where) */
     if (u.job) {
@@ -54129,6 +54639,7 @@ VC.ixReport = function () {
     return { type: k, units: ty.units, shell: sh.src || 'none', storeys: ty.storeys || 0, rooms: (ty.rooms || []).join(' '), beds: ty.count ? ty.count.beds : 0,
              items: ty.count ? ty.count.items : 0, food: ty.count ? ty.count.food : 0, posts: ty.count ? ty.count.posts : 0, dropped: ty.dropped || 0, fail: ty.fail || null };
   });
+  R.kit = VC.ixKitCheck();
   VC.IX.report = R;
   return R;
 };
@@ -55906,6 +56417,7 @@ VC.cutUI = function () {
      mean, the homes short of beds hatched; again for workplaces per hectare; again for off.
    - The report (the "interiors report" button): totals, the shortfall by class and district, the job table, the types. */
 VC.IXD = { groups: {}, protos: {}, density: 0, cut: null };
+var _ixV = new THREE.Vector3();
 
 /* ---------------------------------------------------------------- the shells: each model's boxes */
 VC.ixProbe = function () {
@@ -55920,9 +56432,13 @@ VC.ixProbe = function () {
     var boxes = []; g.updateMatrixWorld(true);
     g.traverse(function (m) {
       if (!m.isMesh || !m.geometry) return;
-      bb.setFromObject(m); var w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, h = bb.max.y - bb.min.y;
+      /* the exact box of its vertices (Box3.setFromObject in r128 turns the geometry's box, so a Voth tapered block, a
+         4-sided cylinder turned 45 degrees, read 1.4 times its size) */
+      var pa = m.geometry.attributes && m.geometry.attributes.position; if (!pa) return;
+      bb.makeEmpty(); for (var j = 0; j < pa.count; j++) { _ixV.fromBufferAttribute(pa, j).applyMatrix4(m.matrixWorld); bb.expandByPoint(_ixV); }
+      var w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, h = bb.max.y - bb.min.y;
       if (w * d < 4 && h > 1.5) return;
-      var t = m.geometry.type, round = /Cylinder|Lathe|Circle|Sphere/.test(t);
+      var t = m.geometry.type, gp = m.geometry.parameters || {}, round = /Lathe|Circle|Sphere/.test(t) || (/Cylinder/.test(t) && (gp.radialSegments || 8) > 6);
       boxes.push({ x: (bb.max.x + bb.min.x) / 2, z: (bb.max.z + bb.min.z) / 2, w: w, d: d, y0: bb.min.y, h: h, round: round });
     });
     scene.remove(g); var i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);
@@ -56121,7 +56637,8 @@ VC.ixPaint = function () {
     ctx.strokeStyle = TUNE.ix.density.hatch; ctx.lineWidth = Math.max(1, k * 0.8);
     VC.IX.units.forEach(function (u) {
       if (!u.short || !u.short.beds) return;
-      var L = PLAN.lots[u.lot], C = obbCorners(L.lot); ctx.beginPath(); C.forEach(function (p, j) { if (j) ctx.lineTo(X(p[0]), Z(p[1])); else ctx.moveTo(X(p[0]), Z(p[1])); }); ctx.closePath();
+      var ty = VC.IX.types[u.type], C = u.lot >= 0 ? obbCorners(PLAN.lots[u.lot].lot) : ty.shell && ty.shell.poly ? ty.shell.poly.map(function (q) { return VC.ixWorldXZ(u, q); }) : null;
+      if (!C) return; ctx.beginPath(); C.forEach(function (p, j) { if (j) ctx.lineTo(X(p[0]), Z(p[1])); else ctx.moveTo(X(p[0]), Z(p[1])); }); ctx.closePath();
       ctx.save(); ctx.clip(); ctx.beginPath();
       var x0 = Math.min.apply(null, C.map(function (p) { return X(p[0]); })), x1 = Math.max.apply(null, C.map(function (p) { return X(p[0]); }));
       var z0 = Math.min.apply(null, C.map(function (p) { return Z(p[1]); })), z1 = Math.max.apply(null, C.map(function (p) { return Z(p[1]); })), st = Math.max(2, k * 3);
@@ -56164,7 +56681,21 @@ VC.ixReportHTML = function () {
     keys.forEach(function (k) { var e = o[k]; t += '<tr><td>' + k + '</td><td class="n">' + f(e.units) + '</td><td class="n">' + f(e.homes) + '</td><td class="n">' + f(e.residents) + '</td><td class="n">' + f(e.need) + '</td><td class="n">' + f(e.beds) + '</td><td class="n ' + (e.short ? 'bad' : '') + '">' + f(e.short) + '</td><td class="n ' + (e.shortResidents ? 'bad' : '') + '">' + f(e.shortResidents) + '</td></tr>'; });
     return t + '</table>';
   };
-  h += tbl(R.byClass, 'By lot class') + tbl(R.byDistrict, 'By district');
+  h += tbl(R.byClass, 'By class') + tbl(R.byDistrict, 'By district');
+  /* the buildings off the lots, and the beds where the census houses nobody */
+  h += '<h2>The buildings off the lots</h2><div class="k">Voth\'s own builders the city calls (the monastery, the funerary temple), the city\'s shrine and lighthouse models, the chinampas\' stilt huts; the House of Healing as the city furnished its wards.</div>';
+  h += '<table><tr><th></th><th>buildings</th><th>rooms</th><th>pieces</th><th>beds</th><th>residents</th><th>workplaces</th><th>posts</th></tr>';
+  Object.keys(R.sites).sort().forEach(function (k) { var e = R.sites[k]; h += '<tr><td>' + k + '</td><td class="n">' + f(e.units) + '</td><td class="n">' + f(e.rooms) + '</td><td class="n">' + f(e.pieces) + '</td><td class="n">' + f(e.beds) + '</td><td class="n">' + f(e.residents) + '</td><td class="n">' + f(e.jobs) + '</td><td class="n">' + f(e.posts) + '</td></tr>'; });
+  h += '</table>';
+  var sp = Object.keys(R.spare);
+  if (sp.length) h += '<div>Beds where the census houses nobody (room to spare): ' + sp.map(function (k) { return k + ' ' + f(R.spare[k].beds) + ' in ' + f(R.spare[k].units); }).join('; ') + '. The census counts the chinampa growers\' work but not their homes.</div>';
+  /* the new kit models, not placed yet (phase B) */
+  if (R.kit && R.kit.length) {
+    h += '<h2>The new kit models (placed in phase B)</h2><div class="k">The watchhouse, caravanserai, coast-guard berth and the chains\' trades (kits/catalog/krator-master-buildings-voth.js), each with its own shell, planned as a lot of the class named in TUNE.ix.kitCheck.</div>';
+    h += '<table><tr><th>model</th><th>class</th><th>storeys</th><th>rooms</th><th>pieces</th><th>beds</th><th>posts</th><th>work furniture</th></tr>';
+    R.kit.forEach(function (k) { h += '<tr><td>' + (k.name || k.key) + ' <span class="k">' + k.key + '</span></td><td>' + (k.cls || '') + '</td><td class="n">' + (k.storeys || '') + '</td><td>' + (k.rooms || '<span class="bad">' + k.fail + '</span>') + '</td><td class="n">' + (k.pieces || 0) + '</td><td class="n">' + (k.beds || 0) + '</td><td class="n">' + (k.posts || 0) + '</td><td class="k">' + Object.keys(k.work || {}).map(function (w) { return w + ' ' + k.work[w]; }).join(', ') + '</td></tr>'; });
+    h += '</table>';
+  }
   /* the job table */
   var kinds = {}; Object.keys(R.jobs).forEach(function (j) { Object.keys(R.jobs[j].kinds).forEach(function (k) { kinds[k] = (kinds[k] || 0) + R.jobs[j].kinds[k].n; }); });
   var cols = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; });

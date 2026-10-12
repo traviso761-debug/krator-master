@@ -178,11 +178,22 @@ def voth_city_fragment():
              lift('78a-life-core.js', 'function lifeBridgeY('))   # the deck under a walker on a river bridge or a canton span
     code, names = vothlift.lift(CITY_SEEDS)
     body += code
+    # the builder log (41-vc-building-interiors.js reads it): each call of these Voth builders, its arguments and the
+    # primitives it pushed, so a building the city places through Voth's own code gets an interior without a copy of
+    # its geometry. The names are rebound inside this closure, so Voth's callers (monasteryCompound) log too.
+    body += 'var BUILT = [];' + NL + ''.join(
+        '%s = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); '
+        'BUILT.push({ fn: "%s", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(%s);%s' % (n, n, n, NL)
+        for n in ('monasteryDorm', 'monasteryChapel', 'monasteryAssemblyHall', 'funeraryTemple', 'houseOfHealing'))
     isl = lift('60-land.js', '/* ============================== 20. ISLETS', NL + '});' + NL)
     body += 'function buildIslets(){' + NL + isl + '}' + NL
     chin = read(os.path.join(VOTH_SRC, '55-chinampa.js'))
+    # each stilt hut's size too (its bed slot, bw x bl), for its interior
+    hut = 'window._chinampaHuts.push([x,z,ry]);'
+    assert hut in chin, '55-chinampa.js changed: the hut export is no longer where streetlab extends it'
+    chin = chin.replace(hut, 'window._chinampaHuts.push([x,z,ry,bw,bl]);')
     body += ('/* ---- settlements/voth/src/55-chinampa.js, whole, run on demand ---- */' + NL + 'function runChinampas(){' + NL + chin + NL +
-             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, units: finalUnits };' + NL + '}' + NL)
+             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, hutList: window._chinampaHuts, units: finalUnits };' + NL + '}' + NL)
     # the edited ground: every Voth builder reads terrainH by name, so it reads the site's edits too
     body += NL.join(['var __rawTerrainH = terrainH, __groundEdit = null;',
                      'terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };',
@@ -190,7 +201,7 @@ def voth_city_fragment():
     export = set(names) | set(('landDist groundTone CANTONS CIDX ISLES RIVER RIVER_HEAD DISTRICTS WATER SEA HW CITY_EXT CITY_LIM SPANS CAUSEWAYS '
                                'RBRIDGES CPIERS PIERS RPIERS BARGES DECK CWAY RLAND TONES TONES_POOR BASALTC MARBLEC DOMEC ROOFS GREYC FRUITC FIELDC MONASTERY LIFE_FISHDOCK_W LIFE_FISHDOCK_LEN PRIMS BOX FR8 FR6 FR3 DOME CYL CONE BLOB STK SLEN '
                                'shoreIn shoreNorm shoreS shoreAt riverAt riverHalf inRiver reseed rr pick chance mix buildIslets runChinampas '
-                               'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY').split())
+                               'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY BUILT').split())
     export.discard('terrainH')
     pairs = ['terrainH: __rawTerrainH', 'terrainHe: function (x, z) { return terrainH(x, z); }'] + ['%s: %s' % (n, n) for n in sorted(export)]
     return ('var VOTH = (function(){' + NL + '  var window = {};' + NL + body + NL +

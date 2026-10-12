@@ -355,12 +355,14 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
 **reported, not forced** (the owner's answer to Q3).
 
 * **Types, not lots.** A lot draws a kit model (key, variant, slot), so every lot with the same model and programme has the
-  same building. It is planned and furnished once, in the model's frame, and placed by each lot's pose: 8,050 buildings are
-  111 types, about 6 s at load (no bake needed).
+  same building. It is planned and furnished once, in the model's frame, and placed by each lot's pose: 8,050 lot
+  buildings and 248 others are 124 types, about 8 s at load (no bake needed).
 * **The shell** is read off the kit model (`VC.ixProbe` builds it once and hands its boxes to `VC.ixShellFrom`): the main
   block (the biggest volume that spans head height, stands on the ground and is not a thin wall; a round one as the square
-  inside it), its floor on any plinth, storeys of `TUNE.ix.storeyH`, the street door mid-front. A model with no such block
-  takes `TUNE.ix.fallback` of its footprint and is listed in the report; `TUNE.ix.shells` overrides any `key|v|slot`.
+  inside it), its floor on any plinth, storeys of `TUNE.ix.storeyH`, the street door mid-front. The boxes are each mesh's
+  exact vertices (three.js r128's `Box3.setFromObject` overstates a turned mesh, and Voth's tapered blocks are 4-sided
+  cylinders turned 45 degrees). A model with no such block takes `TUNE.ix.fallback` of its footprint and is listed in
+  the report (none do now); `TUNE.ix.shells` overrides any `key|v|slot`.
 * **The programme** is by lot class (`TUNE.ix.programmes`, per storey, the last repeated upward; `TUNE.ix.single` for a
   one-storey building), or by kit key (`TUNE.ix.byKey`: barracks, school, guild hall, customs house, smithy). A home's
   bedrooms are `chamber`s: a bed and a chest, then as many more beds (`TUNE.ix.chamber`) and stores as the room holds.
@@ -369,6 +371,18 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
 * **The cutaway (x)** now opens the building nearest the middle of the view when no canton is nearer: the same planes and
   storey keys, its walls with their doors and windows, stairs and furniture drawn the first time it is opened. The inspector
   names its pieces.
+* **The buildings off the lots** (session 2): Voth's own builders the city calls are logged by `build.py` with their
+  arguments (`VOTH.BUILT`: the monastery's dormitories, chapel and assembly hall, the funerary temple, the House of
+  Healing); the city's shrine and lighthouse models record their shells (`VC.ixSite`); the chinampas' stilt huts carry
+  their size (`VC.chin.hutList`). Each is planned as `TUNE.ix.sites` says. The House of Healing is counted from the wards
+  the city already furnished (its cots and dispensaries), not planned again. The huts' beds are reported as room to
+  spare: the census counts the chinampa growers' work, not their homes.
+* **Kit models with their own shell**: an ASSET may carry `ix: { block: [x, z, w, d], y, h, storeys }`, read before any
+  guess. The citizen simulation's eight new models (`kits/catalog/krator-master-buildings-voth.js`: watchhouse,
+  caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery) carry it; they stand nowhere yet (phase B
+  places them), so `VC.ixKitCheck` plans each as a lot of the class in `TUNE.ix.kitCheck` and the report lists them. Their
+  trades have room kinds of their own (`brewhouse`, `weaving`, `tanyard`, `butchery`, beside the cantons' `bakery`), each
+  requiring its trade's pieces by catalog role (the still, barrels and vat; the looms and dye vat; the vats).
 * **The density overlay (n)**: residents per hectare on 50 m cells (a diverging ramp round the city's mean), the homes short
   of beds hatched; again for workplaces per hectare; again for off. Its legend has the totals.
 * **The report** (the "interiors report" button, and `verify.py`'s output): beds, item and food stores needed and held;

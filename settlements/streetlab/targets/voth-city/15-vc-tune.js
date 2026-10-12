@@ -110,13 +110,13 @@ var TUNE = {
   /* every building's interior (41-vc-building-interiors.js VC.IX, phase A of SIM-ROADMAP.md): the residence rule (per `per`
      residents one bed, one item store and one food store; a bunk counts as two beds), the storey height a shell is cut into
      and the most storeys, how a shell is read off a kit model (the main block: spans head height `head`, at least `minArea`
-     m2 and `minSide` m thick, standing within `base` m of the ground; else a fallback `fallback` of the model's footprint),
+     m2 and `minSide` m thick, standing within `base` m of the ground (a hut on piles, a farmhouse on its yard's platform); else a fallback `fallback` of the model's footprint),
      the placer's cell, the programmes (lot class -> room kinds per storey, the last repeated upward; `key` matches a kit
      key first), the room kinds that are homes and the ones that are work, the density overlay's cell, and the overrides
      of shells the reading gets wrong ({ key|v|slot: { poly: [[x, z], ...] local, y, h } or { skip: why } }) */
-  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 1.6, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
+  ix: { per: 2, storeyH: 3.3, maxStoreys: 4, head: 2.6, minArea: 12, minSide: 3, base: 2.5, fallback: 0.6, wall: 0.25, cell: 0.25, slab: 0.25,
         wealth: { poor: 0.15, middle: 0.45, rich: 0.75, manor: 0.9, shop: 0.5, craft: 0.5, tavern: 0.5, clan: 0.9, farm: 0.3, civic: 0.6,
-                             warehouse: 0.35, industrial: 0.3, landmark: 0.6 },
+                             warehouse: 0.35, industrial: 0.3, landmark: 0.6, monastery: 0.3, shrine: 0.55, lighthouse: 0.4, funerary: 0.7, 'chinampa hut': 0.15, healing: 0.5 },
         /* a home's bedrooms are `chamber`s (VC.ixPrograms): a bed and a chest, and as many more beds and stores as the room holds */
         programmes: {
           poor:       [['cottage', 'chamber'], ['chamber', 'chamber']],
@@ -149,13 +149,41 @@ var TUNE = {
           voth_city_customs_house: [['office', 'warehouse'], ['office', 'store']],
           voth_tavern_b: [['tavern', 'kitchen'], ['chamber', 'chamber']],
           voth_generator: [['workshop', 'store']],
-          voth_mustering_grounds: null
+          voth_mustering_grounds: null,
+          /* the citizen simulation's buildings (kits/catalog/krator-master-buildings-voth.js, each with its own `ix` shell) */
+          voth_bldg_watchhouse: [['barracks', 'armoury'], ['office', 'dormitory']],
+          voth_bldg_caravanserai: [['tavern', 'kitchen', 'store'], ['chamber', 'chamber', 'chamber', 'chamber']],
+          voth_bldg_coastguard_berth: [['barracks', 'armoury', 'store'], ['dormitory', 'office']],
+          voth_bldg_weaver: [['weaving', 'store'], ['living', 'chamber']],
+          voth_bldg_tannery: [['tanyard', 'store']],
+          voth_bldg_brewery: [['brewhouse', 'store', 'tavern'], ['store', 'office']],
+          voth_bldg_butcher: [['shop', 'butchery'], ['living', 'chamber']],
+          voth_bldg_bakery: [['bakery', 'shop'], ['living', 'chamber']]
         },
+        /* the kit models no lot draws yet, planned as [key, lot class] so the report shows what each holds (VC.ixKitCheck) */
+        kitCheck: [['voth_bldg_watchhouse', 'civic'], ['voth_bldg_caravanserai', 'tavern'], ['voth_bldg_coastguard_berth', 'civic'], ['voth_bldg_weaver', 'craft'],
+                   ['voth_bldg_tannery', 'industrial'], ['voth_bldg_brewery', 'industrial'], ['voth_bldg_butcher', 'shop'], ['voth_bldg_bakery', 'shop']],
         home: ['cottage', 'bedroom', 'chamber', 'living', 'dormitory', 'hall', 'kitchen'],
-        /* a work post (the job table's posts): a piece of these kinds in a work room; storage and stacks only in a store or warehouse */
-        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'], postsStore: ['storage', 'stack'],
+        /* a work post (the job table's posts): a piece of these kinds in a work room, and these in rooms of a kind (a store's shelves,
+           a ward's cots, a shrine's altar, a tomb's sarcophagus) */
+        posts: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'anvil', 'forge', 'stall', 'tool'],
+        postsIn: { store: ['storage', 'stack'], warehouse: ['storage', 'stack'], ward: ['bed', 'table'], shrine: ['altar', 'shrine'], tomb: ['tomb'],
+                   brewhouse: ['storage'], tanyard: ['storage'], weaving: ['storage'], butchery: ['table', 'food'] },
+        /* the buildings off the lots (VC.ixSites): programme per storey, storeys (else from the height), class, residents (a
+           TUNE.census.live key) and kind of work [label, TUNE.census.jobs or .live key] as the census counts them. The chinampa
+           huts' growers are not housed by the census (it counts their jobs only): the huts' beds are reported as room to spare */
+        sites: {
+          dorm:       { prog: [['dormitory', 'dormitory'], ['dormitory', 'dormitory']], storeys: 2, cls: 'monastery', live: 'monkPerDorm', job: ['monks and lay brothers (chapel, fields, coops)', 'monkPerDorm'] },
+          chapel:     { prog: [['shrine']], storeys: 1, cls: 'monastery' },
+          hall:       { prog: [['mess', 'kitchen'], ['library', 'study'], ['study', 'store']], storeys: 3, cls: 'monastery' },
+          shrine:     { prog: [['shrine']], storeys: 1, cls: 'shrine', job: ['shrine keepers', 'shrine'] },
+          lighthouse: { prog: [['store', 'office'], ['store'], ['study'], ['store']], cls: 'lighthouse', job: ['lighthouse keepers', 'lighthouse'] },
+          keeper:     { prog: [['cottage']], storeys: 1, cls: 'lighthouse' },
+          funerary:   { prog: [['shrine', 'tomb', 'office', 'store']], storeys: 1, cls: 'funerary', job: ['priests and undertakers', 'funeraryTemple'] },
+          hut:        { prog: [['cottage']], storeys: 1, cls: 'chinampa hut' }
+        },
         dining: ['living', 'hall', 'kitchen', 'cottage', 'tavern', 'mess'],
-        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study'],
+        work: ['shop', 'workshop', 'smithy', 'store', 'warehouse', 'office', 'tavern', 'kitchen', 'mess', 'armoury', 'barracks', 'school', 'library', 'guildhall', 'study', 'ward', 'shrine', 'tomb', 'bakery', 'brewhouse', 'weaving', 'tanyard', 'butchery'],
         density: { cell: 50, hatch: '#d24b3a' },
         shells: {} },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */

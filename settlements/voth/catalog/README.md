@@ -24,7 +24,7 @@ python3 -m http.server 8000          # from the repo root
 | `registry/voth-warehouses.js` | `voth_warehouse_b`: canal warehouse with hoist bay, bonded grain store |
 | `registry/voth-civic.js` | school (Temple college, schoolhouse), generator (turbine hall, fumarole vent house), farmhouses (Velothi, chinampa, Hlaalu), governor's palace |
 | `registry/voth-military.js` | garrison (Velothi fortress, harbour fort), barracks (Hlaalu, Velothi), mustering grounds, army camp |
-| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (13 entries) |
+| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (21 entries): the 13 first ones, and the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), each with an `ix` shell for its interior (`settlements/streetlab` 41-vc-building-interiors.js) |
 | `registry/voth-city-captured.js` + `.data.js` | **generated**: every structure the city builds, pulled from a live build (see below) |
 
 ## Structures pulled from the city

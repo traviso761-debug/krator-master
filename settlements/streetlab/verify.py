@@ -248,7 +248,8 @@ CITY_CHECK = r"""() => {
       byClass: Object.keys(R.byClass).map(k => [k, R.byClass[k].homes, R.byClass[k].residents, R.byClass[k].need, R.byClass[k].beds, R.byClass[k].short, R.byClass[k].shortResidents]),
       byDistrict: Object.keys(R.byDistrict).sort((a, b) => R.byDistrict[b].shortResidents - R.byDistrict[a].shortResidents).slice(0, 12).map(k => [k, R.byDistrict[k].homes, R.byDistrict[k].residents, R.byDistrict[k].shortResidents]),
       jobs: Object.keys(R.jobs).map(k => [k, R.jobs[k].units, R.jobs[k].jobs, R.jobs[k].target, R.jobs[k].posts, Object.keys(R.jobs[k].kinds).map(f => f + ' ' + R.jobs[k].kinds[f].n).join(', ')]),
-      fallback: R.typeList.filter(t => t.shell === 'fallback').map(t => t.type) } : { err: VC.IX.error || 'no report' };
+      fallback: R.typeList.filter(t => t.shell === 'fallback').map(t => t.type), lotUnits: VC.IX.lotUnits,
+      sites: R.sites, spare: R.spare, kit: (R.kit || []).map(k => [k.key, k.cls, k.storeys, k.rooms, k.pieces, k.beds, k.posts, k.fail]) } : { err: VC.IX.error || 'no report' };
     if (R) {
       const seen = {}, drawErr = []; let drawn = 0;
       VC.IX.units.forEach(u => { if (seen[u.type] || drawn >= 12) return; seen[u.type] = 1; try { const g = VC.ixDraw(u.i); if (!g || !g.userData.stats.rooms) drawErr.push(u.type); else drawn++; VC.ixShow(u.i, false); } catch (e) { drawErr.push(u.type + ': ' + e.message); } });
@@ -306,6 +307,11 @@ def verify_city(a, port, rel, sync_playwright):
         print('  by district, worst first [district, homes, residents, residents without a bed]: ' + '; '.join(' '.join(str(x) for x in c) for c in ix['byDistrict']))
         print('  job table [kind of work, buildings, workplaces, 90%, posts: furniture kinds]:')
         for j in ix['jobs']: print('    %s: %d buildings, %d workplaces, target %d, %d posts%s (%s)' % (j[0], j[1], j[2], j[3], j[4], '' if j[4] >= j[3] else ' SHORT', j[5]))
+        print('  buildings off the lots [kind: buildings, rooms, pieces, beds, residents, workplaces, posts]: ' + '; '.join(
+            '%s %d, %d, %d, %d, %d, %d, %d' % (k, e['units'], e['rooms'], e['pieces'], e['beds'], e['residents'], e['jobs'], e['posts']) for k, e in sorted(ix['sites'].items())))
+        print('  beds where the census houses nobody: ' + ('; '.join('%s %d in %d' % (k, e['beds'], e['units']) for k, e in sorted(ix['spare'].items())) or 'none'))
+        print('  new kit models (not placed) [key, class, storeys, rooms, pieces, beds, posts, fail]:')
+        for k in ix['kit']: print('    ' + ' | '.join(str(x) for x in k))
         print('  drawn %d types, errors %s; cutaway %s; density %s' % (ix.get('drawn', 0), ix.get('drawErr'), json.dumps(ix.get('cut')), ix.get('density')))
     else:
         print('interiors: ' + str(ix.get('err')))
@@ -315,8 +321,13 @@ def verify_city(a, port, rel, sync_playwright):
         if r['err'] or errors: bad.append('page errors')
         if r['failed']: bad.append('kit pieces failed')
         c = ix.get('cut') or {}
-        if ix.get('err') or not ix.get('units') or ix['units'] < ix['want'] or ix['failed'] or ix.get('drawErr') or not c.get('shown') or not c.get('off') or not ix['have']['beds'] or len(ix['jobs']) < 8:
+        if ix.get('err') or not ix.get('units') or ix['lotUnits'] < ix['want'] or ix['failed'] or ix.get('drawErr') or not c.get('shown') or not c.get('off') or not ix['have']['beds'] or len(ix['jobs']) < 8:
             bad.append('building interiors (VC.IX)')
+        st = ix.get('sites') or {}
+        if any(not st.get(k, {}).get('units') for k in ('dorm', 'chapel', 'hall', 'shrine', 'lighthouse', 'funerary', 'hut', 'healing')):
+            bad.append('interiors of the buildings off the lots: ' + ', '.join(k for k in ('dorm', 'chapel', 'hall', 'shrine', 'lighthouse', 'funerary', 'hut', 'healing') if not st.get(k, {}).get('units')))
+        if any(k[7] or not k[4] for k in ix.get('kit', [])) or len(ix.get('kit', [])) < 8:
+            bad.append('new kit models without an interior')
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')

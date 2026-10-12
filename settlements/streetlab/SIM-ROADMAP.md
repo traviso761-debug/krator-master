@@ -6,9 +6,9 @@ roadmap it needs (part 2). It is a Voth-city instance of `core/simulation/PLAN.m
 earlier world-layer roadmap). Nothing here replaces those: new mechanics go into `core/simulation` as modules every
 world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.html`) is the first consumer.
 
-**The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A session 1 is done (branch `Voth-sim`,
-2026-10-12): every lot building's interior, the residence rule's report, the cutaway on any building, the density overlay
-and the job table. Its numbers and what is left of phase A are in `HANDOFF.md`.**
+**The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A is done but for the Palace and
+Temple (branch `Voth-sim`, sessions 1 and 2, 2026-10-12): every building's interior, the residence rule's report, the
+cutaway on any building, the density overlay, the job table and the eight new kit models. Numbers in `HANDOFF.md`.**
 
 ---
 
@@ -221,6 +221,11 @@ are 111 types, each planned and furnished once in the model's frame (about 6 s a
 boxes (the main block; round blocks as their inscribed square; a fallback of 60% of the footprint for 18 types, listed).
 A home's bedrooms are `chamber`s that take up to four beds and their stores. Left: item 1 for the non-lot buildings,
 item 8 (the new models), the fallback overrides, the Palace and Temple.
+
+**Session 2 (2026-10-12):** item 1 for the buildings off the lots (monastery, funerary temple, shrines, lighthouses,
+chinampa huts; the House of Healing counted from its wards), item 8 (the eight models, each with an `ix` shell, and
+their trade room kinds), the fallback shells fixed at the probe (none left). Phase A is done but for the Palace and
+Temple. Numbers in `HANDOFF.md`.
 
 ### 2.3 Phase B: places, work posts, wells and the missing buildings (1–2 sessions)
 

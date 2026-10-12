@@ -47,6 +47,20 @@ VC.ixPrograms = function () {
                { types: ['lamp'], max: 1 }, { types: ['chair', 'stool'], max: 1 }], extra: 3 };
   IX.KIND_ALIAS.chamber = ['bedroom', 'dormitory'];
   IX.KIND_WEIGHT.chamber = 1.3;
+  /* the trades the production chains need (the new kit models' work rooms), each requiring its trade's pieces by their
+     catalog role: the brewer's still, barrels and vat; the weaver's looms and dye vat; the tanner's vats; the butcher's
+     block and meat */
+  var P = IX.PROGRAMS, A = IX.KIND_ALIAS, LAMP = { types: ['lamp'], max: 1 };
+  P.brewhouse = { require: [{ need: 'still', types: ['workstation'], roles: ['still'], n: 1 }, { need: 'barrels', types: ['storage'], roles: ['barrel'], n: 2 }, { need: 'vat', types: ['storage'], roles: ['vat'], n: 1 }],
+    optional: [{ types: ['storage'], roles: ['barrel'], max: 4 }, { types: ['storage'], roles: ['vat'], max: 2 }, { types: ['table', 'workstation'], max: 1 }, LAMP], extra: 4 };
+  P.weaving = { require: [{ need: 'looms', types: ['loom'], n: 2 }, { need: 'dye vat', types: ['storage'], roles: ['vat'], n: 1 }],
+    optional: [{ types: ['loom'], max: 2 }, { types: ['storage', 'shelf'], max: 2 }, { types: ['chair', 'stool'], max: 2 }, LAMP], extra: 4 };
+  P.tanyard = { require: [{ need: 'vats', types: ['storage'], roles: ['vat'], n: 2 }, { need: 'bench', types: ['table'], n: 1 }],
+    optional: [{ types: ['storage'], roles: ['vat'], max: 4 }, { types: ['rack'], max: 2 }, { types: ['storage', 'stack'], max: 2 }, LAMP], extra: 4 };
+  P.butchery = { require: [{ need: 'block', types: ['table', 'counter'], n: 1 }, { need: 'meat', types: ['food'], n: 2 }],
+    optional: [{ types: ['storage', 'vessel'], roles: IX.FOOD_ROLES, max: 3 }, { types: ['rack'], max: 1 }, { types: ['food'], max: 4 }, LAMP], extra: 4 };
+  A.brewhouse = ['workshop', 'store', 'tavern', 'kitchen']; A.weaving = ['workshop', 'hall']; A.tanyard = ['workshop', 'store']; A.butchery = ['kitchen', 'store', 'shop'];
+  ['brewhouse', 'weaving', 'tanyard', 'butchery'].forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.5; });
   return IX;
 };
 
@@ -124,23 +138,29 @@ VC.ixShellFrom = function (boxes, dims) {
 };
 VC.ixShell = function (k) {
   var o = TUNE.ix.shells[k]; if (o) return o.skip ? null : Object.assign({ src: 'override' }, o);
+  /* a kit model that carries its own shell (`ix: { block: [x, z, w, d], y, h, storeys }`, the citizen simulation's buildings) */
+  var A = typeof ASSET_BY_KEY !== 'undefined' && ASSET_BY_KEY[k.split('|')[0]];
+  if (A && A.ix && A.ix.block) {
+    var b = A.ix.block, hw = b[2] / 2, hd = b[3] / 2;
+    return { poly: [[b[0] - hw, b[1] - hd], [b[0] + hw, b[1] - hd], [b[0] + hw, b[1] + hd], [b[0] - hw, b[1] + hd]], y: A.ix.y || 0, h: A.ix.h, storeys: A.ix.storeys || null, src: 'kit' };
+  }
   var B = VC.IX.boxes[k]; if (!B) return null;
   return VC.ixShellFrom(B.boxes, B.dims);
 };
 
-/* ---------------------------------------------------------------- a type: planned and furnished once, in the model's frame */
-VC.ixType = function (L) {
-  var pg = VC.ixProgram(L); if (!pg) return null;
-  var k = VC.ixKey(L), tk = k + '|' + pg.id;
-  if (VC.IX.types[tk]) return VC.IX.types[tk];
-  var T = TUNE.ix, IX = VC.ixPrograms(), sh = VC.ixShell(k);
-  var ty = VC.IX.types[tk] = { id: tk, key: L.key, v: L.v | 0, slot: L.slot | 0, prog: pg.id, cls: VC.ixClass(L), shell: sh, units: 0, dwelling: false };
+/* ---------------------------------------------------------------- a type: planned and furnished once, in its own frame */
+/* spec: { tk, key, v, slot, prog: { id, p, one }, cls, shell: { poly, y, h, src }, storeys?, door?: [x, z], live } (the
+   frame's origin is the building's foot; a lot's door is mid-front, +z; a Voth builder's is mid +x) */
+VC.ixTypeBuild = function (spec) {
+  var tk = spec.tk; if (VC.IX.types[tk]) return VC.IX.types[tk];
+  var T = TUNE.ix, IX = VC.ixPrograms(), sh = spec.shell, pg = spec.prog;
+  var ty = VC.IX.types[tk] = { id: tk, key: spec.key, v: spec.v | 0, slot: spec.slot | 0, prog: pg.id, cls: spec.cls, shell: sh, units: 0, dwelling: false, site: !!spec.site };
   if (!sh || !IX || typeof furnishRoom === 'undefined') { ty.fail = sh ? 'no interiors kit' : 'no shell'; return ty; }
-  var n = Math.max(1, Math.min(T.maxStoreys, Math.floor((sh.h + 0.2) / T.storeyH))), lh = sh.h / n - T.slab;
+  var n = spec.storeys || Math.max(1, Math.min(T.maxStoreys, Math.floor((sh.h + 0.2) / T.storeyH))), lh = sh.h / n - T.slab;
   var xs = sh.poly.map(function (p) { return p[0]; }), zs = sh.poly.map(function (p) { return p[1]; });
-  var front = Math.max.apply(null, zs), mid = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+  var door = spec.door || [(Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2, Math.max.apply(null, zs)];
   var wealth = T.wealth[ty.cls] == null ? 0.5 : T.wealth[ty.cls];
-  var shell = { id: 'ix.' + tk, poly: sh.poly, y: sh.y, levels: [], doors: [{ at: [mid, front], w: 1.2 }], culture: 'voth', wealth: wealth,
+  var shell = { id: 'ix.' + tk, poly: sh.poly, y: sh.y, levels: [], doors: [{ at: door, w: 1.2 }], culture: 'voth', wealth: wealth,
                 wall: T.wall, partition: 0.12, slab: T.slab, roof: 'flat' };
   for (var l = 0; l < n; l++) shell.levels.push({ h: Math.max(2.4, lh) });
   var per = function (prog, trim) { return function (lv) { var e = prog[Math.min(lv, prog.length - 1)].slice(); return e.slice(0, Math.max(1, e.length - (trim || 0))); }; };
@@ -154,7 +174,7 @@ VC.ixType = function (L) {
   if (!B) return ty;
   ty.B = B; ty.storeys = n; ty.dropped = dropped;
   var home = T.home, kinds = B.rooms.map(function (R) { return R.kind; });
-  ty.dwelling = VC.ixResidents(L) > 0 && kinds.some(function (q) { return home.indexOf(q) >= 0; });
+  ty.dwelling = !!spec.live && kinds.some(function (q) { return home.indexOf(q) >= 0; });
   var cat = VC.IX.cat || (VC.IX.cat = (VC.INTD && VC.INTD.catalog) || IX.catalogAdapter()), best = null;   /* the cantons' adapter when it is made (its cache) */
   for (var att = 0; att < 3; att++) {
     var pieces = [], missing = [];
@@ -173,6 +193,77 @@ VC.ixType = function (L) {
   ty.rooms = kinds; ty.floorArea = B.levels.reduce(function (s, Lv) { return s + Math.abs(polyArea(Lv.inner || Lv.outer || sh.poly)); }, 0);
   return ty;
 };
+/* a lot's type: its kit model's shell, its class's (or its key's) programme */
+VC.ixType = function (L) {
+  var pg = VC.ixProgram(L); if (!pg) return null;
+  var k = VC.ixKey(L);
+  var sh = VC.ixShell(k);
+  return VC.ixTypeBuild({ tk: k + '|' + pg.id, key: L.key, v: L.v, slot: L.slot, prog: pg, cls: VC.ixClass(L), shell: sh, storeys: sh && sh.storeys, live: VC.ixResidents(L) > 0 });
+};
+/* the kit models no lot draws yet (TUNE.ix.kitCheck: the citizen simulation's new buildings, placed in phase B), planned and
+   furnished as a lot of their class would be, so the report shows what each holds before it stands anywhere */
+VC.ixKitCheck = function () {
+  return (TUNE.ix.kitCheck || []).map(function (e) {
+    var key = e[0], cls = e[1], A = typeof ASSET_BY_KEY !== 'undefined' && ASSET_BY_KEY[key];
+    if (!A) return { key: key, fail: 'no kit model' };
+    var ty = VC.ixType({ key: key, v: 0, slot: 0, cls: cls, role: null, w: A.w, d: A.d });
+    if (!ty) return { key: key, fail: 'no programme' };
+    var C = ty.count || {};
+    return { key: key, name: A.name, cls: cls, type: ty.id, shell: ty.shell ? ty.shell.src : 'none', storeys: ty.storeys || 0, rooms: (ty.rooms || []).join(' '), pieces: (ty.pieces || []).length,
+             beds: C.beds || 0, items: C.items || 0, food: C.food || 0, posts: C.posts || 0, work: C.work || {}, fail: ty.fail || null };
+  });
+};
+
+/* ---------------------------------------------------------------- the buildings off the lots
+   Voth's own builders the city calls (logged by build.py into VOTH.BUILT with their arguments: the monastery's dormitories,
+   chapel and assembly hall, the funerary temple, the House of Healing), the city's own shrine and lighthouse models
+   (VC.ixSite, 31-vc-voth.js) and the chinampas' stilt huts (VC.chin.hutList). Each is a rectangle w x d at its floor,
+   its door mid +x (Voth's builders face +x), as TUNE.ix.sites says: programme, storeys, class, residents, kind of work.
+   The House of Healing's wards are furnished by the city already (31-vc-voth.js VC.healingModel: cots, dispensaries):
+   it is counted from those pieces, not planned again. */
+VC.ixSite = function (rec) { (VC.IX_SITES = VC.IX_SITES || []).push(rec); };
+VC.ixSites = function () {
+  var out = [], K = TUNE.census;
+  var add = function (kind, x, y, z, ry, w, d, h, o) { out.push(Object.assign({ kind: kind, x: x, y: y, z: z, ry: ry, w: w, d: d, h: h }, o || {})); };
+  (VOTH.BUILT || []).forEach(function (b) {
+    var a = b.a;
+    if (b.fn === 'monasteryDorm') add('dorm', a[0], a[1], a[2], a[6], a[3], a[4], a[5] * 0.92);
+    else if (b.fn === 'monasteryChapel') add('chapel', a[0], a[1], a[2], a[6], a[3], a[4], a[5]);
+    else if (b.fn === 'monasteryAssemblyHall') add('hall', a[0], a[2], a[1], a[6], a[3], a[4], a[5] * 0.92);
+    else if (b.fn === 'funeraryTemple') { var o = a[5] || {}, fw = o.w || 46, fd = o.d || 64, fh = o.h || 34; add('funerary', a[0], a[1] + fh * 0.185, a[2], a[3], fw * 0.62, fd * 0.72, fh * 0.5); }
+  });
+  (VC.IX_SITES || []).forEach(function (r) { add(r.kind, r.x, r.y, r.z, r.ry, r.w, r.d, r.h, r.storeys ? { storeys: r.storeys } : null); });
+  ((VC.chin && VC.chin.hutList) || []).forEach(function (q) { if (q[3]) add('hut', q[0], 4.7, q[1], q[2], q[3] * 0.68, q[4] * 0.62, 4.5); });
+  return out;
+};
+VC.ixSiteUnits = function () {
+  var T = TUNE.ix, K = TUNE.census, R3 = function (v) { return Math.round(v * 1000) / 1000; }, n = 0;
+  VC.ixSites().forEach(function (st, i) {
+    var S = T.sites[st.kind]; if (!S) return;
+    var hw = st.w / 2, hd = st.d / 2, dims = [st.w, st.d, st.h].map(function (v) { return Math.round(v * 2) / 2; }).join('x');
+    var spec = { tk: 'site:' + st.kind + '|' + dims, key: st.kind, prog: { id: st.kind, p: S.prog, one: S.prog[0] }, cls: S.cls, site: true, storeys: st.storeys || S.storeys || null,
+                 shell: { poly: [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(function (p) { return [R3(p[0]), R3(p[1])]; }), y: 0, h: st.h, src: 'site' }, door: [R3(hw), 0], live: !!S.live };
+    var ty = VC.ixTypeBuild(spec);
+    var res = S.live ? (K.live[S.live] || 0) : 0, job = S.job ? [S.job[0], K.jobs[S.job[1]] != null ? K.jobs[S.job[1]] : K.live[S.job[1]] || 0] : null;
+    VC.ixAddUnit(ty, { x: st.x, y: st.y, z: st.z, ry: st.ry, key: st.kind, lot: -1, site: st.kind, district: VC.ixDistrict({ x: st.x, z: st.z }) }, res, job);
+    n++;
+  });
+  /* the House of Healing: its wards as the city furnished them */
+  var hq = (PLAN.voth || []).filter(function (q) { return q.role === 'healing'; })[0], D = (PLAN.districts || []).filter(function (d) { return d.name === 'House of Healing furnishings'; })[0];
+  if (hq && D) {
+    var c = Math.cos(hq.ry), s = Math.sin(hq.ry), y0 = Math.min.apply(null, D.art.map(function (a) { return a.y; }));
+    var pieces = D.art.map(function (a, k) {
+      var dx = a.x - hq.x, dz = a.z - hq.z, A = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[a.key]) || {};
+      return { key: a.key, v: a.v | 0, x: dx * c - dz * s, y: a.y - y0, z: dx * s + dz * c, ry: (a.ry || 0) - hq.ry, type: A.type, catRole: A.role || null, anchor: A.anchor || 'floor', room: 0, level: 0, kind: 'ward' };
+    });
+    var ty = VC.IX.types['site:healing'] = { id: 'site:healing', key: 'healing', prog: 'healing', cls: 'healing', shell: { src: 'builder' }, units: 0, site: true, prebuilt: true,
+      pieces: pieces, rooms: ['ward'], count: VC.ixCount(pieces), storeys: 1, dropped: 0 };
+    VC.ixAddUnit(ty, { x: hq.x, y: y0, z: hq.z, ry: hq.ry, key: 'healing', lot: -1, site: 'healing', district: VC.ixDistrict({ x: hq.x, z: hq.z }) }, 0, ['healers and nurses', K.jobs.healing]);
+    n++;
+  }
+  return n;
+};
+
 /* a type's beds (a bunk is two), item and food stores (kits/interiors' roles, as its residence rule counts them), dining
    rooms, and work pieces by furniture kind in its work rooms */
 VC.ixCount = function (pieces) {
@@ -183,7 +274,7 @@ VC.ixCount = function (pieces) {
     if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') o.food++;
     if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') o.items++;
     if (p.type === 'table' && T.dining.indexOf(p.kind) >= 0) dine[p.room] = 1;
-    if (T.work.indexOf(p.kind) >= 0 && p.anchor !== 'surface' && (T.posts.indexOf(p.type) >= 0 || ((p.kind === 'store' || p.kind === 'warehouse') && T.postsStore.indexOf(p.type) >= 0))) {
+    if (T.work.indexOf(p.kind) >= 0 && p.anchor !== 'surface' && (T.posts.indexOf(p.type) >= 0 || (T.postsIn[p.kind] || []).indexOf(p.type) >= 0)) {
       o.work[p.type] = (o.work[p.type] || 0) + 1; o.posts++;
     }
   });
@@ -192,29 +283,36 @@ VC.ixCount = function (pieces) {
   return o;
 };
 
-/* ---------------------------------------------------------------- the units: every standing lot with a programme */
+/* ---------------------------------------------------------------- the units: every standing lot with a programme, every site */
+/* a unit: a type at a pose (p: { x, y, z, ry, key, lot, site?, district }), its residents and [kind of work, workplaces] */
+VC.ixAddUnit = function (ty, p, res, job) {
+  var T = TUNE.ix, need = Math.ceil(res / T.per), C = ty.count || { beds: 0, items: 0, food: 0, dining: 0, posts: 0 };
+  ty.units++;
+  var u = { i: VC.IX.units.length, lot: p.lot, site: p.site || null, type: ty.id, cls: ty.cls, key: p.key, x: p.x, y: p.y, z: p.z, ry: p.ry, district: p.district,
+            residents: res, need: need, beds: C.beds, items: C.items, food: C.food, dining: C.dining, job: job ? job[0] : null, jobs: job ? job[1] : 0, posts: C.posts };
+  if (res > 0) {
+    var s = {};
+    if (C.beds < need) s.beds = need - C.beds;
+    if (C.items < need) s.items = need - C.items;
+    if (C.food < need) s.food = need - C.food;
+    if (!C.dining) s.dining = 1;
+    if (Object.keys(s).length) u.short = s;
+  }
+  if (ty.fail) u.fail = ty.fail;
+  VC.IX.units.push(u);
+  return u;
+};
 VC.ixPlanAll = function () {
-  var t0 = Date.now(), T = TUNE.ix;
+  var t0 = Date.now();
   VC.IX.units = []; VC.IX.types = {};
   PLAN.lots.forEach(function (L) {
     if (L.died != null) return;
     var ty = VC.ixType(L); if (!ty) return;
-    ty.units++;
-    var res = VC.ixResidents(L), need = Math.ceil(res / T.per), C = ty.count || { beds: 0, items: 0, food: 0, dining: 0, posts: 0 }, job = VC.ixJob(L);
-    var u = { i: VC.IX.units.length, lot: L.id, type: ty.id, cls: ty.cls, key: L.key, x: L.x, y: L.y, z: L.z, ry: L.ry, district: VC.ixDistrict(L),
-              residents: res, need: need, beds: C.beds, items: C.items, food: C.food, dining: C.dining, job: job ? job[0] : null, jobs: job ? job[1] : 0, posts: C.posts };
-    if (res > 0) {
-      var s = {};
-      if (C.beds < need) s.beds = need - C.beds;
-      if (C.items < need) s.items = need - C.items;
-      if (C.food < need) s.food = need - C.food;
-      if (!C.dining) s.dining = 1;
-      if (Object.keys(s).length) u.short = s;
-    }
-    if (ty.fail) u.fail = ty.fail;
+    var u = VC.ixAddUnit(ty, { x: L.x, y: L.y, z: L.z, ry: L.ry, key: L.key, lot: L.id, district: VC.ixDistrict(L) }, VC.ixResidents(L), VC.ixJob(L));
     L.ix = u.i;
-    VC.IX.units.push(u);
   });
+  VC.IX.lotUnits = VC.IX.units.length;
+  VC.ixSiteUnits();
   VC.IX.ms = Math.round(Date.now() - t0);
   VC.IX.done = true;
   return VC.IX.units.length;
@@ -236,7 +334,7 @@ VC.ixSlots = function (i) {
 VC.ixReport = function () {
   var U = VC.IX.units, R = { units: U.length, types: Object.keys(VC.IX.types).length, rooms: 0, pieces: 0, residents: 0, homes: 0, ms: VC.IX.ms,
     need: { beds: 0, items: 0, food: 0 }, have: { beds: 0, items: 0, food: 0 }, short: { units: 0, bedUnits: 0, beds: 0, items: 0, food: 0, dining: 0, residents: 0 },
-    byClass: {}, byDistrict: {}, shells: {}, jobs: {}, failed: [], dropped: 0 };
+    byClass: {}, byDistrict: {}, shells: {}, jobs: {}, failed: [], dropped: 0, sites: {}, spare: {} };
   var add = function (o, k, u) {
     var e = o[k] || (o[k] = { units: 0, homes: 0, residents: 0, beds: 0, need: 0, short: 0, shortResidents: 0, missingBeds: 0 });
     e.units++; if (u.residents) { e.homes++; e.residents += u.residents; e.beds += Math.min(u.beds, u.need); e.need += u.need; }
@@ -254,6 +352,9 @@ VC.ixReport = function () {
       if (u.short.beds) { R.short.bedUnits++; R.short.residents += Math.min(u.residents, u.short.beds * TUNE.ix.per); }
     }
     add(R.byClass, u.cls, u); add(R.byDistrict, u.district, u);
+    if (u.site) { var Sx = R.sites[u.site] || (R.sites[u.site] = { units: 0, rooms: 0, pieces: 0, beds: 0, residents: 0, jobs: 0, posts: 0 });
+      Sx.units++; Sx.rooms += ty.rooms ? ty.rooms.length : 0; Sx.pieces += ty.pieces ? ty.pieces.length : 0; Sx.beds += u.beds; Sx.residents += u.residents; Sx.jobs += u.jobs; Sx.posts += u.posts; }
+    if (!u.residents && u.beds && TUNE.ix.sites[u.site] && !TUNE.ix.sites[u.site].job) { var Sp = R.spare[u.cls] || (R.spare[u.cls] = { units: 0, beds: 0 }); Sp.units++; Sp.beds += u.beds; }
     if (u.fail && R.failed.indexOf(u.type + ': ' + u.fail) < 0) R.failed.push(u.type + ': ' + u.fail);
     /* the job table: a row per kind of work, a column per furniture kind (its count and where) */
     if (u.job) {
@@ -275,6 +376,7 @@ VC.ixReport = function () {
     return { type: k, units: ty.units, shell: sh.src || 'none', storeys: ty.storeys || 0, rooms: (ty.rooms || []).join(' '), beds: ty.count ? ty.count.beds : 0,
              items: ty.count ? ty.count.items : 0, food: ty.count ? ty.count.food : 0, posts: ty.count ? ty.count.posts : 0, dropped: ty.dropped || 0, fail: ty.fail || null };
   });
+  R.kit = VC.ixKitCheck();
   VC.IX.report = R;
   return R;
 };
