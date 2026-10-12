@@ -30,7 +30,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `56-mid.js` | 63 **big** | 16b. ASSETS: middle-class houses + trade (1) |
 | `57-poor.js` | 26 | 16c. ASSETS: POOR QUARTERS — mud and thatch (1) |
 | `58-rich.js` | 48 **big** | 16d. ASSETS: WEALTHY COMPOUNDS + THE EMIR'S PALA (1) |
-| `59-civic.js` | 84 **big** | 16e. ASSETS: CIVIC, NEO-AFRICAN AND PARK PIECES (1) |
+| `59-civic.js` | 20 | 16e. ASSETS: CIVIC, NEO-AFRICAN AND PARK PIECES (1) |
+| `59a-civic-park.js` | 27 |  |
+| `59b-civic-library.js` | 28 |  |
+| `59c-civic-furniture.js` | 9 |  |
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |

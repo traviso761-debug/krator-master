@@ -131,6 +131,9 @@ def izv_bundle():
 
 # ---------------------------------------------------------------- the Yuni / Locus / Abyss bundle (YKIT)
 LOCUS = os.path.join(ROOT, 'settlements', 'locus', 'src')
+# Locus fragments cut into parts so they can be read (settlements/locus/build.py CONTINUES): YKIT takes the fragment
+# whole, its parts joined back on under the fragment's own name, so the bundle is the same text as before the cut.
+LOCUS_PARTS = {'59-civic.js': ['59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js']}
 
 
 def ykit_files():
@@ -147,7 +150,7 @@ def ykit_bundle():
     fs = ykit_files()
     parts = []
     for f in fs:
-        s = rd(f)
+        s = rd(f) + ''.join(rd(os.path.join(LOCUS, p)) for p in LOCUS_PARTS.get(os.path.basename(f), []))
         if f.endswith('10-core.js'):
             n = s.count('window.YUNI_TARGET')
             if n != 1:
