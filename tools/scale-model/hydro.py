@@ -2,8 +2,9 @@
 
 Used by edit_rivers.py (4.21) to audit the valleys and designate the rivers. Deterministic: no randomness anywhere.
 
-- runoff(P, T): Turc's annual balance. Actual evaporation P / sqrt(0.9 + (P/L)^2), L = 300 + 25 T + 0.05 T^3 (mm/yr,
+- runoff(P, T, k): Turc's annual balance. Actual evaporation P / sqrt(0.9 + (P/L)^2), L = 300 + 25 T + 0.05 T^3 (mm/yr,
   T the mean in deg C) its evaporative capacity, which is also taken as open water's evaporation. Runoff = P less it.
+  calibrate() scales L so the crater's books close: rain = evaporation + what the ocean outside brings in.
 - route(S, term, R, PL): the routing. S is the surface (a lake's level where there is water), term the cells that end
   flow (the seas, the map's edge). Every closed hollow is filled to its spill (priority flood) and drains D8 on the
   filled surface; a hollow (or a lake) is one unit whose outflow is its inflow plus the rain on it less the evaporation
@@ -19,10 +20,35 @@ N8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 SEC_YR = 3.156e7
 
 
-def runoff(P, T):
-    L = np.maximum(300 + 25 * T + 0.05 * T ** 3, 50.0)
+def runoff(P, T, k=1.0):
+    """runoff and open water's evaporation (mm/yr); k scales the evaporative capacity L (calibrate)"""
+    L = np.maximum(300 + 25 * T + 0.05 * T ** 3, 50.0) * k
     Ea = P / np.sqrt(0.9 + (P / L) ** 2)
     return np.clip(P - Ea, 0, None), L
+
+
+def budget(P, T, inside, water, k):
+    """the crater's water books in m3/s per 4 km cell grid: rain, land evaporation, open water's, and what is left"""
+    L = np.maximum(300 + 25 * T + 0.05 * T ** 3, 50.0) * k
+    Ea = np.minimum(P / np.sqrt(0.9 + (P / L) ** 2), P)
+    q = lambda a: float(a.sum()) * 1e-3 * 16.04e6 / SEC_YR
+    rain, land, wat = q(P[inside]), q(Ea[inside & ~water]), q(L[inside & water])
+    return rain, land, wat, rain - land - wat
+
+
+def calibrate(P, T, inside, water, imported):
+    """the k on evaporation that closes the books of a crater sealed by an airless rim: everything that rains inside
+    either evaporates inside or came in from outside (`imported`, m3/s). Turc's L is Earth's; the crater's dense air
+    and the rain the model gives it (moisture from its own lakes and sea) need more evaporation than that, or its closed
+    basins fill with water that has nowhere to have come from."""
+    lo, hi = 0.5, 4.0
+    for _ in range(40):
+        k = (lo + hi) / 2
+        if budget(P, T, inside, water, k)[3] > imported:
+            lo = k
+        else:
+            hi = k
+    return (lo + hi) / 2
 
 
 def fill(Z, sink):

@@ -121,6 +121,11 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
 - **The water** (`hydro.py`): runoff from rain and the mean temperature by Turc's balance (`L = 300 + 25T + 0.05T^3`
   also taken as open water's evaporation). The airless rim gives nothing; ground whose annual mean is under -10 C
   carries ice, not rivers.
+- **The crater's water books** (the owner: a crater sealed by a mostly airless rim, its only outside moisture from the
+  ocean to the north-west). Everything that rains inside must evaporate inside, or have come from that ocean, taken
+  as all the rain within `IMPORT_KM` (300 km) of it: ~6,300 m3/s. Turc's L alone left ~32,000 m3/s of rain (21%) with
+  nowhere to have come from, and it piled up in the closed basins (the rift's seas rose 400-1,200 m). `hydro.calibrate`
+  scales L until the books close: x1.40. Every flow, lake and course below is on the closed books.
 - **The routing:** the Ring Sea (-1,500 m) and the oceans at the edge end flow, and so does every lake the model draws
   below its own spill (as drawn). Every other hollow fills and spills, unless what reaches it is less than its full lake
   would lose: then it is endorheic and its lake stands where the two balance. A hollow whose only way out is over frozen
@@ -130,8 +135,8 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   grid's (a gorge narrower than a cell), and the course is cut through, falling all the way; deeper, a river fills it,
   so it becomes a lake at its spill (`through lake`). Rounds of routing, cutting and routing again until no course
   climbs; then it asserts that every course falls (or runs level on water) from its source to its mouth.
-  4.21: 460 hollows on courses, 360 cut (844 cells, 34 m on average), 100 made through lakes (~125,000 km2); 93
-  endorheic lakes balanced (~30,000 km2) and written to the water too.
+  4.21 (closed books): 740 cells cut (34 m on average), 83 through lakes and 85 endorheic lakes written to the water
+  (~127,000 km2 together); 471 rivers (56 over 100 m3/s) and 394 dry valleys.
 - **The Yuni river** keeps its drawn course and the routing is held to it. On the 4.20 heights it climbed four times
   (49, 135, 11 and 459 m: the escarpment's sharpening raised the lip above Locus after 4.19 cut its bed); its bed is
   cut to fall all the way.
@@ -155,14 +160,16 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   through that tongue's regular changes (Vothic *Tzolt Rivrh* salt river, Izani *Rrivar Rreda*, Dalab *Folriba*,
   Tl'aai *Tl'aa Baatar*, Dasri *Wadi al-Jost*, Xanadui *Alph* for its greatest, Yuni *Saltie Rivvo*...), the word chosen
   from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
-  settlement it passes) and then from each tongue's own pool. 330 of 936 named, each with `tongue` and `gloss`: the
+  settlement it passes) and then from each tongue's own pool. 305 of 865 named, each with `tongue` and `gloss`: the
   Scyvoi's in Boruntun (*Borun Gulusu*, *Madır Kiriki*; the polity and both 'crater drylands'), Screamer Country's in
   plain English, the caravans' (*Howling Gulch*); the rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). 21 grow, 15 shrink: 286,878 km2 of land would flood and 38,649 km2 of lakebed lie dry. The western level-0
-  lakes are the biggest change: Ancient's Valley's and the SW lowlands' (1, 2) rise to 957 m and join. Kept as
+  away). On the closed books 15 grow and 19 shrink (221,291 km2 flooded, 57,035 km2 laid dry); the rift's
+  terminal seas now balance. The western level-0 lakes (1, 2) still rise to 957 m and join: the western ring catches the
+  ocean's moisture and is closed below 957 m. An outlet from lake 2 to the Ring Sea would be a canyon 144 km long, up to
+  1.2 km deep, through the Inner Wall (the owner's call). Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and

@@ -41,6 +41,7 @@ from edit_dams import set_data   # noqa: E402
 import hydro   # noqa: E402
 
 VERSION = '4.21'
+IMPORT_KM = 300.0      # km: the rain this near the ocean at the map's edge is the crater's only outside water
 ICE_T = -10.0          # deg C: ground with a colder annual mean is frozen all year
 CLOSED_M = 25.0        # m: a drawn lake whose spill stands this far over its level is closed (ends flow as drawn)
 Q_RIVER = 10.0         # m3/s mean flow: a river
@@ -92,13 +93,38 @@ def grid_fields(D):
     gy = np.clip(np.round(np.arange(ny) / sv).astype(int), 0, OH - 1)
     P = (raster(D, 'p', 'L').astype(float) / 255 * 4000)[np.ix_(gy, gx)]
     T = (raster(D, 'tm', 'L').astype(float) - 90)[np.ix_(gy, gx)]
-    return dict(su=su, sv=sv, h=h, E=E, water=water, whas=whas, wlev=wlev, P=P, T=T)
+    G = dict(su=su, sv=sv, h=h, E=E, water=water, whas=whas, wlev=wlev, P=P, T=T)
+    G['evap_k'], G['books'] = closed_books(G)
+    return G
+
+
+def closed_books(G):
+    """the crater's water books (hydro.calibrate): its only outside water is what the ocean at the map's edge brings,
+    taken as all the rain within IMPORT_KM of that ocean; evaporation is scaled until the rest balances"""
+    E, whas, P, T = G['E'], G['whas'], G['P'], G['T']
+    air = T > -85
+    lab, n = nd.label(whas, structure=np.ones((3, 3)))
+    ocean = np.zeros(E.shape, bool)
+    for k in range(1, n + 1):
+        m = lab == k
+        j, i = np.nonzero(m)
+        if j.min() == 0 or i.min() == 0 or j.max() == E.shape[0] - 1 or i.max() == E.shape[1] - 1:
+            ocean |= m
+    inside = air & ~ocean
+    near = inside & (nd.distance_transform_edt(~ocean) * (2 / G['su']) < IMPORT_KM)
+    imported = float(P[near].sum()) * 1e-3 * 16.04e6 / hydro.SEC_YR
+    k = hydro.calibrate(P, T, inside, whas, imported)
+    b0, b1 = hydro.budget(P, T, inside, whas, 1.0), hydro.budget(P, T, inside, whas, k)
+    books = {'import_km': IMPORT_KM, 'imported_m3s': round(imported), 'evap_k': round(k, 3),
+             'turc_alone': {'rain': round(b0[0]), 'land_evap': round(b0[1]), 'water_evap': round(b0[2]), 'left': round(b0[3])},
+             'closed': {'rain': round(b1[0]), 'land_evap': round(b1[1]), 'water_evap': round(b1[2]), 'left': round(b1[3])}}
+    return k, books
 
 
 def setup(G):
     E, whas, wlev, P, T = G['E'], G['whas'], G['wlev'], G['P'], G['T']
     ny, nx = E.shape
-    R, L = hydro.runoff(P, T)
+    R, L = hydro.runoff(P, T, G.get('evap_k', 1.0))
     air = T > -85                         # the page shows the airless rim as -90
     R[~air] = 0.0
     PL = np.where(air, P - L, 0.0)
@@ -194,8 +220,11 @@ def main():
     G['water'] = G['water'] & ~arms
     G['wlev'] = np.where(arms, np.nan, G['wlev'])
     H = setup(G)
+    print('the water books: Turc alone leaves %(left)+d m3/s of rain with nowhere to go;' % G['books']['turc_alone'],
+          'evaporation x %.2f closes them on %d m3/s from the ocean' % (G['evap_k'], G['books']['imported_m3s']))
     report = {'version': VERSION, 'thresholds': {'ice_t': ICE_T, 'q_river_m3s': Q_RIVER, 'a_wadi_km2': A_WADI,
-                                                 'min_km': round(MIN_CELLS * KM), 'breach_m': BREACH_M}}
+                                                 'min_km': round(MIN_CELLS * KM), 'breach_m': BREACH_M},
+              'books': G['books']}
 
     liquid = ~H['frozen']
 
@@ -637,7 +666,7 @@ def main():
     s = set_data(s, 'basins', basins)
     s = set_data(s, 'hydro', {
         'version': VERSION, 'grid_km': round(KM, 3), 'runoff': 'Turc: P - P/sqrt(0.9+(P/L)^2), L = 300+25T+0.05T^3 mm/yr',
-        'lake_evaporation': 'L at the cell', 'q': 'mean annual discharge, m3/s', 'width_depth': 'w = 4.5 Q^0.5, d = 0.35 Q^0.38 (m)',
+        'lake_evaporation': 'L at the cell', 'evap_k': round(G['evap_k'], 3), 'books': G['books'], 'q': 'mean annual discharge, m3/s', 'width_depth': 'w = 4.5 Q^0.5, d = 0.35 Q^0.38 (m)',
         'wadi_width': '3 A^0.35 m (A km2), the flash-flood bed', 'thresholds': report['thresholds'],
         'note': 'px: one vertex per height cell (~4 km); bed_m the surface under each (a lake\'s level on water); the '
                 'Yuni river keeps its drawn course as drawn_px'})
