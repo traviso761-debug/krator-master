@@ -56,11 +56,16 @@ CORE_TERRAIN=[]
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+# core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
+CORE_SPACE=['20-core-space.js']
+CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+for f in CORE_SPACE:
+    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
 # empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).

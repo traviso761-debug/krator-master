@@ -70,6 +70,9 @@ CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # A kit that lists nothing keeps its own src/ copies and builds as before.
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+# core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
+CORE_SPACE=['20-core-space.js']
+CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
@@ -82,6 +85,8 @@ if STATION:
     for f in STN.get('atmos',[]): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+for f in CORE_SPACE:
+    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
