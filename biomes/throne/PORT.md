@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.6 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/45-host-stage.js` | 8.2 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45-host-stage.js` | 8.3 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-biome-throne-flows.js` | 6.0 | [G data] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the flow model: pure maths over the host's baseH, writes typed arrays (the THREE count is a comment) |
 | `src/47-host-land.js` | 9.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host binding: the showcase's flows, the cuts, the fields cache, BIO.init |
 | `src/50-biome-throne-species.js` | 78.7 | [draw] | 0 | 8 | 0 | 0 | 0 | 11 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |

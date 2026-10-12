@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/45-host-stage.js` | 19.8 | [web] | 27 | 3 | 3 | 1 | 0 | 5 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
+| `src/45-host-stage.js` | 19.9 | [web] | 27 | 3 | 3 | 1 | 0 | 5 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
 | `src/50-biome-swlowlands-species.js` | 56.5 | [draw] | 0 | 8 | 0 | 0 | 0 | 7 | 14 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-swlowlands-trees.js` | 61.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 | placement pass: `SWLOW.buildTrees` (line 516); `mk` (line 520) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 589) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop; `SWLOW.treeAt` (line 599) places one tree at a point and draws it in one call |
 | `src/60-biome-swlowlands-floor.js` | 24.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
