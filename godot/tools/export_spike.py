@@ -11,6 +11,7 @@ cover the routes the plan names and to differ from each other:
 
   hyperjungle  krator-biome JSON (BIO.export), a 300 m tile round a hero hypertree; DataTexture leaf atlases; no LOD chunks
   rift         krator-biome JSON, one tile; every mesh LOD-chunked; hooked materials (irid bark, far impostors)
+  sedesert     krator-biome JSON, a 300 m tile round the pond, whose ground carries the page's core/terrain field (krator-field)
   girder       glTF (three's own GLTFExporter over a region) plus its material records (KMAT.table) and pack (tex/)
   iziz         krator-atmos JSON (ATMOS.export) for the whole city, plus a glTF region of the city round it
   yuni         KRATOR_EXPORT records (fixtures, core/tags records, one building's interior): ids, tags, nav, no meshes at all
@@ -45,6 +46,9 @@ CASES = {
                         box=[12, -897, 312, -597]),   # centred on a hero hypertree (162, -747)
     "rift": dict(page="biomes/rift/dist/rift.html", kind="biome",
                  box=[-450, 150, -150, 450]),
+    # the first page on a core/terrain field (2026-10-08): its export's ground carries the baked heightmap (`field`)
+    "sedesert": dict(page="biomes/sedesert/dist/sedesert.html", kind="biome",
+                     box=[80, 490, 380, 790]),   # centred on the rain-shadow pond (230, 640): water, its hollow, the oasis
     "girder": dict(page="settlements/girder/girder.html", kind="gltf",
                    box=[-30, -30, 30, 30], height="(x,z)=>_api.terrainH(x,z)", step=1,
                    kmat="girder", tex="settlements/girder/tex",   # the material library pilot: records and its pack

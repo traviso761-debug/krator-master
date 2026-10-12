@@ -1,6 +1,6 @@
 # The spike's one scene (GODOT-PLAN.md Phase 7): load one export case at a time and show what came through.
 #
-#   godot --path godot                          the window; keys 1-7 switch case, F1 help
+#   godot --path godot                          the window; keys 1-8 switch case, F1 help
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert"]
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -19,9 +19,11 @@ const ABOUT := {
 	"yuni": "KRATOR_EXPORT records: every building, door, window and light as tagged records; one interior in full",
 	"verge": "krator-sim + krator-verge-place: the twin cities' buildings as stand-ins and the caravans, porters, nomads and patrols moved by the exported timetable (KratorVergeSim)",
 	"dhelv": "krator-dhelv-place + krator-walk + krator-sim motion: the cave city's sites as stand-ins, its walk floors baked to a navmesh with an agent walking gate to temple, the ramblers posed by KSim (core/simulation's twin)",
+	"sedesert": "krator-biome JSON with a krator-field ground: one sedesert tile round the pond, its ground the page's baked core/terrain field (terrain mesh + HeightMapShape3D)",
 }
 
 var current := ""
+var ground: Node3D   # the case's ground (a field, an export's sampled ground or terrain.json), for --check's collision rays
 var world: Node3D
 var cam: Camera3D
 var sun: DirectionalLight3D
@@ -122,7 +124,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"hyperjungle", "rift":
+		"hyperjungle", "rift", "sedesert":
 			var b := KratorBiome.build(dir + "biome.json")
 			world.add_child(b)
 			report = b.get_meta("report")
@@ -174,6 +176,7 @@ func _load_case(name: String) -> Dictionary:
 			world.add_child(r)
 			report = r.get_meta("report")
 			focus = r.get_meta("focus", Vector3.ZERO)
+	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
 	_stage_base = {}
@@ -232,6 +235,14 @@ func _check_all() -> void:
 		if r.get("gaps", {}).has("load") or r.get("gaps", {}).has("format"):
 			ok = false
 		await get_tree().process_frame
+		if ground and ground.has_meta("field"):   # a krator-field: rays onto its HeightMapShape3D against KField.h
+			await get_tree().physics_frame
+			await get_tree().physics_frame
+			var col := KratorField.check_collision(ground)
+			r["collision"] = col
+			print("  collision: ", JSON.stringify(col))
+			if col["grid_points"] == 0 or col["missed"] > 0 or col["grid_max"] > 0.01:
+				ok = false
 	var f := FileAccess.open("res://spike-report.json", FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(reports, "  "))
@@ -266,7 +277,7 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-7 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "\n1-8 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -274,7 +285,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if not (e is InputEventKey and e.pressed and not e.echo):
 		return
 	var k := (e as InputEventKey).keycode
-	if k >= KEY_1 and k <= KEY_7:
+	if k >= KEY_1 and k <= KEY_8:
 		_load_case(CASES[k - KEY_1])
 	elif k == KEY_F1:
 		help_on = not help_on

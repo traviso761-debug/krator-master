@@ -13,6 +13,8 @@ PAIRS = [(f"core/rand/{f}", f"godot/tests/rand/{f}") for f in ("krand.gd", "kran
 PAIRS += [(f"core/tags/{f}", f"godot/tests/tags/{f}") for f in ("ktags.gd", "ktags_test.gd", "golden.json")]
 PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kmask_test.gd", "golden.json")]
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
+# KField (class_name: the importer godot/krator/field_import.gd uses it from here)
+PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json")]
 
 drift = [(a, b) for a, b in PAIRS if not os.path.exists(os.path.join(REPO, b))
          or not filecmp.cmp(os.path.join(REPO, a), os.path.join(REPO, b), shallow=False)]
