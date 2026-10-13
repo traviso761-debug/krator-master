@@ -30,7 +30,7 @@ void fragment() {
 	float w0 = 1.0 - abs(2.0 * p0 - 1.0);
 	float nz = mix(wk_noise((v_w - v * fract(p0 + 0.5) * wk_flow_t.y) * 0.55 + 7.3), wk_noise((v_w - v * p0 * wk_flow_t.y) * 0.55), w0);
 	float fo = wk_flow_foam(v_f.z, v_f.w);
-	float fk = fo * smoothstep(0.35, 0.75, nz + 0.25 * fo);
+	float fk = fo * smoothstep(0.42, 0.82, nz + 0.15 * fo);
 	vec3 c = mix(shallow, deep, smoothstep(0.3, 3.5, v_f.w));
 	c = mix(c, vec3(0.86, 0.9, 0.9), fk);
 	ALBEDO = k_albedo(c);

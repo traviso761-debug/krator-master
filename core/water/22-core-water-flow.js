@@ -29,7 +29,7 @@
   // direction deg from the current]; the flow-map phase (whole cycles per period); rapids from the line's slope [a, b];
   // edge foam over this many m from the bank; the foam's share for each
   flow:{step:6,across:6,margin:1.5,ripple:[[.07,3.1,15],[.05,1.9,-55],[.035,1.15,80],[.02,.62,-20]],phases:150,
-   rapids:[.012,.07],rapidGain:2.4,edge:1.6,foam:[.75,.45]},
+   rapids:[.015,.12],rapidGain:2.4,edge:1.6,foam:[.6,.45]},
   // a curtain: rows down, cols across; the streaks (cycles per period of the pattern, across-streaks per metre of lip);
   // how much wider it is at the foot (m a side per 100 m of drop); the plunge pool (radius as a share of the drop,
   // at least the lip's width; ring wavelength m, cycles per period)
