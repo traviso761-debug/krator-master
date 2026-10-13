@@ -373,8 +373,8 @@
    "sha256": "b9c664ec00103a6530d8bff03bfcca0d6e2ec8fbbbf17fce6f595abd339155de"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 21014078,
-   "sha256": "7681f0c1ce9b6637467f80a0133c48478d9486885c8e4276289eb17ab9960d96"
+   "bytes": 21028693,
+   "sha256": "69e655ccd754ccddbfd01c6d9cdf7b191dedbbf0e68e23e3b9dc71929a861b75"
   },
   "settlements/iziz/dist/w-a.html": {
    "bytes": 16201565,
@@ -549,12 +549,12 @@
    "sha256": "78f8f1b62a6c8c93355440c290ed9824c028b8be0b6eab25c2093c15afa89df2"
   },
   "settlements/reedlake/dist/reedlake-village.html": {
-   "bytes": 25713103,
-   "sha256": "b8119f0f1e0cba362b405a38519ec0c114824556f1ae6430add36034e3337ed7"
+   "bytes": 25713311,
+   "sha256": "dcb62270016ac96bc3cfad601ca5af30c7276f17364ace56df97785b93fdbf9f"
   },
   "settlements/reedlake/dist/reedlake.html": {
-   "bytes": 25713144,
-   "sha256": "695331da893b9074b484bddcfb50d0d6cab5c71afdee9891c85e344ce2ca65e1"
+   "bytes": 25713352,
+   "sha256": "838b55614af1c062a7944d9a44ebc95bda14772ba08a3ef4aace74aa1b721b97"
   },
   "settlements/screamers/dist/furniture.html": {
    "bytes": 649446,
@@ -585,12 +585,12 @@
    "sha256": "c896f7c8e5ec519da746e313e511edaac964ea5f0ca4314ffb2e025d9c9802af"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 25731265,
-   "sha256": "d04224f592aca406a4a37133d4b06f9397c470af7dffe4c1bfc02000aefb172e"
+   "bytes": 25731473,
+   "sha256": "cffe84f95cf197b243d7de74b1053e15acb5183a9086b2163de66237fd940e26"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 25394787,
-   "sha256": "83f293a1500cc72af61918d29336b26fc6daeb96330715a83dcc6cf8a2eb3812"
+   "bytes": 25394995,
+   "sha256": "8953a9889a27dcac82b7313b0ff5d3a0e03c64ceab137f2c6946cfcd37804830"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1354707,
