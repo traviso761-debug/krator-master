@@ -39,6 +39,10 @@
   "core/sched",
   "932d088efbab"
  ],
+ "20-core-water.js": [
+  "core/water",
+  "00212c5c6a4f"
+ ],
  "20-stage.js": [
   "mungo (overrides locus)",
   "8f0b0c3dc8bf"
@@ -98,6 +102,10 @@
  "50-core-tags.js": [
   "core/tags",
   "351884caf5b4"
+ ],
+ "50-core-water-draw.js": [
+  "core/water",
+  "8c050cfae567"
  ],
  "50-structure.js": [
   "locus",
@@ -325,7 +333,7 @@
  ],
  "75-terrain.js": [
   "mungo (overrides locus)",
-  "fc3dde168e26"
+  "d542205905a2"
  ],
  "77-sim-0-core.js": [
   "core/simulation",
@@ -389,7 +397,7 @@
  ],
  "84-mungo-life.js": [
   "mungo",
-  "93927317e3c6"
+  "c4c1845b8df6"
  ],
  "85-probe.js": [
   "mungo (overrides locus)",
@@ -481,7 +489,11 @@
  ],
  "90-atmos-host.js": [
   "locus",
-  "ffbcf5dec4fc"
+  "5a5166f0db52"
+ ],
+ "90w-lake.js": [
+  "locus",
+  "c915b3d2fe2f"
  ],
  "97-lod-auto.js": [
   "core/lod",
