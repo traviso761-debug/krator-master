@@ -6,7 +6,10 @@
 #   "Items"    a MultiMeshInstance3D per item: meta krator_record (its item set), krator_records (a uid per instance, in
 #              instance order), krator_index (each instance's index in its set), krator_set (the set's registry record)
 #   "Buckets"  a MeshInstance3D per bucket: meta krator_records and krator_record_ids (the volumes it merges)
-#   "Field" or "Terrain", and "Atmos" when the world has one
+#   "Field" or "Terrain" (the ground's layers, a material with role 'ground' and hook 'world-uv', on its material), "Water"
+#              (krator/water_import.gd: the water section's open surfaces on the library's water shader), and "Atmos"
+#              when the world has one
+# Every material's hook is resolved against the shader library (krator/khooks.gd); a hook nothing answers is a gap.
 # Root meta: report (counts, ids, the sections' status, the export's own errors, the gaps), tags ({id: record}), stage,
 # ground (the terrain node), world (the JSON minus items and buckets).
 class_name KratorWorld
@@ -62,8 +65,15 @@ static func build(path: String) -> Node3D:
 			tc["missing"] += 1
 		tex[t["id"]] = img
 	var mats := {}
+	var ground_rec = null
 	for m in d["materials"]:
 		mats[m["id"]] = m
+		if m.get("role") == "ground" and ground_rec == null:
+			ground_rec = m
+	var hk := KHooks.survey(d["materials"])
+	report["hooks"] = hk["hooks"]
+	if not (hk["unknown"] as Array).is_empty():
+		report["gaps"]["hooks"] = "no library shader answers hook(s) %s (krator/khooks.gd)" % [", ".join(PackedStringArray(hk["unknown"]))]
 
 	# the meshes: world.glb through GLTFDocument with the instancing extension (krator/gltf_instancing.gd)
 	var scene: Node = null
@@ -173,14 +183,33 @@ static func build(path: String) -> Node3D:
 			g = KData.ground(grid, look)
 			report["gaps"]["field"] = "the terrain is the page's h sampled on a grid: the build bakes no core/terrain field"
 		if g != null:
-			if not grid.is_empty() and grid.get("water") is Dictionary and t.get("field") is Dictionary:
+			var has_water: bool = d.get("water") is Dictionary and (d["water"].get("surfaces", []) as Array).size() > 0
+			if not has_water and not grid.is_empty() and grid.get("water") is Dictionary and t.get("field") is Dictionary:
 				var wm := KData.water_sheet(grid)
 				if wm:
 					g.add_child(wm)
+			if ground_rec != null:
+				report["ground_layers"] = ground_layers(g, ground_rec, tex, texrec)
+				if report["ground_layers"].has("gap"):
+					report["gaps"]["ground layers"] = report["ground_layers"]["gap"]
 			root.add_child(g)
 			root.set_meta("ground", g)
 	else:
 		report["gaps"]["terrain"] = "no terrain section"
+
+	# the water (core/water through core/export's water section): the open surfaces drawn by the library's water shader,
+	# and the page's own heights at the probes against KWater here
+	if d.get("water") is Dictionary:
+		var atm = Engine.get_main_loop().root.get_node_or_null("Atmos") if Engine.get_main_loop() is SceneTree else null
+		var wn := KratorWater.build(d["water"], d.get("box"), atm)
+		root.add_child(wn)
+		var wr: Dictionary = wn.get_meta("report")
+		wr["probes"] = KratorWater.check_probes(d["water"], wn.get_meta("surfaces", {}))
+		report["water"] = wr
+		for k in wr["gaps"]:
+			report["gaps"]["water " + k] = wr["gaps"][k]
+		if not (wr["not_drawn"] as Array).is_empty():
+			report["gaps"]["water not drawn"] = "; ".join(PackedStringArray(wr["not_drawn"]))
 
 	if d.get("atmos") is Dictionary and d["atmos"].get("format") == "krator-atmos":
 		# loaded by path, not by class name: atmos_import.gd reads the Atmos autoload, which a --script run compiles late
@@ -191,7 +220,7 @@ static func build(path: String) -> Node3D:
 		root.set_meta("stage", d["stage"])
 	var meta := {}
 	for k in d:
-		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos"]):
+		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
@@ -201,6 +230,87 @@ static func build(path: String) -> Node3D:
 	if tc["missing"] > 0:
 		report["gaps"]["textures"] = "%d textures have no image (an export without an encoder, or a library pack not copied to tex/)" % tc["missing"]
 	return root
+
+
+# a ground's layers (core/export's EXPORT.groundLayers: hook 'world-uv', role 'ground') on the terrain's ground.gdshader:
+# the maps by texture id, each term's gain, amount and weight channel, the weights on the tile's grid as a texture
+# (RGBA8, a name a channel, sampled bilinearly between grid points as the page's per-vertex weights are). Returns what it
+# set, or {gap} when it cannot.
+static func ground_layers(g: Node3D, rec: Dictionary, tex: Dictionary, texrec: Dictionary) -> Dictionary:
+	var mi: MeshInstance3D = g as MeshInstance3D if g is MeshInstance3D and g.name == "Terrain" else g.get_node_or_null("Terrain") as MeshInstance3D
+	if mi == null or mi.mesh == null:
+		return {"gap": "no Terrain mesh to put the ground's layers on"}
+	var mat := mi.mesh.surface_get_material(0) as ShaderMaterial
+	if mat == null or mat.shader == null or not mat.shader.resource_path.ends_with("ground.gdshader"):
+		return {"gap": "the terrain is not on ground.gdshader (the stage carries no ground look): its layers are not drawn"}
+	if not ("world-uv" in KHooks.resolve(rec.get("hook"))["ids"]):
+		return {"gap": "the ground record's hook %s is not world-uv" % rec.get("hook")}
+	var L: Dictionary = rec.get("layers", {})
+	var W = rec.get("weights")
+	var names: Array = W["names"] if W is Dictionary else []
+	var maps := []
+	var terms: Array = L.get("terms", [])
+	var out := {"maps": 0, "terms": terms.size(), "weights": names, "missing": []}
+	if terms.size() > 3:
+		return {"gap": "%d layer terms: ground.gdshader holds 3" % terms.size()}
+	var tk := []
+	for ti in terms.size():
+		var t: Dictionary = terms[ti]
+		for q in t["maps"]:
+			maps.append([ti, q])
+		var ch := names.find(t["weight"]) if t.get("weight") != null else -1
+		if t.get("weight") != null and ch < 0:
+			out["missing"].append("weight " + str(t["weight"]))
+		tk.append(Vector4(float(t.get("gain", 1.0)), float(t.get("amount", 1.0)), float(ch), 0.0))
+	while tk.size() < 3:
+		tk.append(Vector4(1.0, 0.0, -1.0, 0.0))
+	if maps.size() > 4 or names.size() > 4:
+		return {"gap": "%d layer maps and %d weights: ground.gdshader holds 4 of each" % [maps.size(), names.size()]}
+	var st := []
+	var imgs := []
+	var term := Vector4i.ZERO
+	var flip := Vector4i.ONE
+	for i in 4:
+		if i < maps.size():
+			var q: Dictionary = maps[i][1]
+			var img: Texture2D = tex.get(q["map"])
+			if img == null:
+				out["missing"].append("map " + str(q["map"]))
+			imgs.append(img)
+			st.append(Vector4(float(q["scale"][0]), float(q["scale"][1]), float(q["offset"][0]), float(q["offset"][1])))
+			term[i] = int(maps[i][0])
+			flip[i] = 1 if bool(texrec.get(q["map"], {}).get("flipY", true)) else 0
+		else:
+			st.append(Vector4(1.0, 1.0, 0.0, 0.0))
+	if not (out["missing"] as Array).is_empty():
+		return {"gap": "the ground's layers name what the export does not hold: %s" % ", ".join(PackedStringArray(out["missing"]))}
+	for i in imgs.size():
+		mat.set_shader_parameter("layer%d" % i, imgs[i])
+	mat.set_shader_parameter("layer_n", maps.size())
+	mat.set_shader_parameter("layer_st", st)
+	mat.set_shader_parameter("layer_term", term)
+	mat.set_shader_parameter("layer_flip", flip)
+	mat.set_shader_parameter("term_n", terms.size())
+	mat.set_shader_parameter("term_k", tk)
+	if W is Dictionary:
+		var v := KData.floats(W["values"])
+		var nx: int = int(W["nx"])
+		var nz: int = int(W["nz"])
+		var nn := names.size()
+		var bytes := PackedByteArray()
+		bytes.resize(nx * nz * 4)
+		for s in nx * nz:
+			for c in 4:
+				bytes[s * 4 + c] = int(round(clampf(v[s * nn + c], 0.0, 1.0) * 255.0)) if c < nn else 0
+		var wimg := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, bytes)
+		mat.set_shader_parameter("weights_tex", ImageTexture.create_from_image(wimg))
+		mat.set_shader_parameter("weights_box", Vector4(float(W["x0"]), float(W["z0"]), 1.0 / float(W["step"]), 0.0))
+		mat.set_shader_parameter("weights_n", Vector2(nx, nz))
+		out["grid"] = [nx, nz, float(W["step"])]
+		mi.set_meta("krator_ground_weights", wimg)
+	out["maps"] = maps.size()
+	mi.set_meta("krator_ground_layers", rec["id"])
+	return out
 
 
 # a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds)

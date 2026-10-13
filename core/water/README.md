@@ -185,6 +185,14 @@ hull's own preset view (the triangle over the hull, from the vertex shader's twi
 
 ## Godot (Phase 6: notes, not written yet)
 
+*Begun 2026-10-13 (ROADMAP.md stage 2e):* core/export's `water` section carries every surface (`core/export/README.md`,
+"Water": the waves in turns, the bed's bytes, WATER's own heights as probes); `godot/krator/water.gd` (`KWater`) is the
+open surface's GDScript twin, rebuilt from that record alone and equal to `WATER.heightAt` within 1.1e-14 m
+(`godot/tests/water/water_test.gd`, golden from `node godot/tools/water_golden.js`); the shader is a library include,
+`godot/shaders/lib/water.gdshaderinc`, the maths of `WATER.glsl` with the waves as uniform arrays rather than generated
+literals (one shader for every surface; within 0.5 mm of the twin on a GPU), drawn by `godot/shaders/water.gdshader` on a
+regular grid over the tile (`krator/water_import.gd`), not yet the CDLOD selection. Below is the rest of the plan.
+
 - **The data side ports as it is** ([G data]): `WATER` becomes a `Water` autoload in GDScript with the same records and
   twins (64-bit, like `Atmos.wave_height`); `test-water.js` grows a golden of `WATER.export()` plus sampled heights,
   normals and foam, and a `godot/tests/water/water_test.gd` checks the GDScript twins against it to 1e-9, as

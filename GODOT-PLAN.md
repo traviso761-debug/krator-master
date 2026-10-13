@@ -329,7 +329,7 @@ path, and a GPU and a CPU load give the same placement hash.
   emissive, doubleSided, alphaTest, hook}` where `hook` names a shader from the shared library. `MAT`,
   `FAMMAT` and the catalog's family strings become adapters onto it; the export writes it; Godot reads it as
   a `StandardMaterial3D` or one of the library shaders.
-- **The shader library.** `core/godot/shaders/`: `atmos.gdshaderinc` (already specified), foliage card, bark,
+- **The shader library.** `godot/shaders/lib/` (planned as `core/godot/shaders/`; built there 2026-10-13, status below): `atmos.gdshaderinc` (already specified), foliage card, bark,
   animated fauna body, world-unit UV (triplanar or world-space UV: `vWorldUV` is [G native] in Godot), the
   flag, the glass Fresnel, the water, `breakup` (world-space macro variety: shifted copy, brightness, roughness,
   grime), `coursing` (analytic ashlar and brick joints: no texture repeat, no mip smear). A detail normal is
@@ -389,6 +389,22 @@ node test) with the pack tool `tools/textures/pack.py`, and **Girder is the pilo
 sets with colour, normal and roughness maps, the rest as `TEX.def` kinds, `window._materials` as its table,
 `?mat=proc` identical to the old page. Not yet: an exporter that writes the table to a file (Phase 4), Iziz as the
 second pilot, the shader-library ids for the hooks (`world-uv`, `cloth-sway` are named, not yet `.gdshader`s).
+
+*Status 2026-10-13 (ROADMAP.md stage 2e, the shader half):* **the shader library exists**, in `godot/shaders/lib/`
+rather than `core/godot/shaders/` (`res://` cannot reach outside `godot/`, and the spike's shaders live there; nothing
+moved): `world-uv`, `breakup`, `foliage`, `bark`, `cloth-sway`, `flag`, `glass`, `coursing` and `water`, one guarded
+`.gdshaderinc` each, each naming the three.js hook it answers; the hook table is `godot/README.md`'s "The shader
+library" and `godot/krator/khooks.gd` (a record's `hook`, `+`-joined, with the biome kinds as aliases, selects them; an
+unknown hook is reported). The spike's `library`, `foliage`, `bark` and `ground` shaders now draw through them, and a new
+`water` shader draws core/export's new `water` section (core/water's open surfaces: waves in turns, the bed's bytes,
+the twin's probes) with `lib/water`, `WATER.glsl`'s maths as uniforms; `krator/water.gd` (`KWater`) is its GDScript twin,
+equal to `WATER.heightAt` within 1e-14 m (`tests/water/water_test.gd`), and the include within 0.5 mm of it on a GPU
+(`tests/shaders/library_gpu_check.gd`). The M4 side-by-side's two gaps are closed on sedesert: its ground's crack and
+detail layers travel as a `world-uv` material record (`EXPORT.groundLayers`) and its pond as a core/water surface.
+Not yet: Iziz as the second material pilot (the other half of stage 2e); records that select `cloth-sway`, `flag`,
+`glass` or `coursing` on an exported mesh (Girder and Iziz still export through glTF); `coursing`'s three.js TEX kind
+(its pilot is Voth's, the Voth branch's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
+`detail_*`); bark variants as a texture array; pre-compiling the library at load.
 
 **Content and status: `core/materials/PLAN.md`.** That file holds the library itself: about 45 shared PBR
 surfaces tinted per culture, culture pattern sheets, where each comes from (scan libraries, generated

@@ -79,6 +79,12 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/water's data side (core/water/README.md): the pond as a WATER.open surface (45-host-stage.js), so core/export's
+# water section carries it to a port. The page draws its own ripple water; 50-core-water-draw.js (which needs core/atmos)
+# is not listed. A src/ copy wins.
+CORE_WATER=['20-core-water.js']
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
