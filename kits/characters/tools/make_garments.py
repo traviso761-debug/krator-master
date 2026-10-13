@@ -522,8 +522,8 @@ def motif(style, w, h, fg, bg):
     elif style == 'buttons':                     # a button down the middle of each cell
         img[((u - 0.5) ** 2 + (v - 0.5) ** 2) < 0.2 ** 2] = fg
     elif style == 'buttons2':                    # double-breasted: two buttons a row
-        for cx in (0.18, 0.82):
-            img[((u - cx) ** 2 * 1.0 + (v - 0.5) ** 2) < 0.13 ** 2] = fg
+        for cx in (0.2, 0.8):
+            img[((u - cx) ** 2 * 1.0 + (v - 0.5) ** 2) < 0.09 ** 2] = fg
     elif style == 'quilt':                       # diamond quilting: thin stitched seams in a lattice
         a1, a2 = ((u + v) * 1.0) % 1, ((u - v) * 1.0) % 1
         img[(np.abs(a1 - 0.5) < 0.035) | (np.abs(a2 - 0.5) < 0.035)] = fg
@@ -2032,7 +2032,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         # buttons, plain epaulettes, a cross-belt and a belt; the triskelion small, on the collar tabs
         gid = 'rep_%s_noble_greatcoat' % sex
         coat = P('repblack', 0.04, [B('top', 0.0, 0.04, 'triskele', 'repred', 'repblack', 0.045), B('top', 0.04, 0.046, 'solid', 'repred'),
-                                    B('bottom', 0.0, 0.006, 'solid', 'repred')], [PN(0.42, 0.58, 'buttons2', 'brass', 'repblack', 0.09)])
+                                    B('bottom', 0.0, 0.006, 'solid', 'repred')], [PN(0.42, 0.58, 'buttons2', 'brass', 'repblack', 0.13)])
         sl = P('repblack', 0.04, [B('bottom', 0.0, 0.05, 'solid', 'repblack'), B('bottom', 0.05, 0.056, 'solid', 'repred')])
         ep = P('repblack', 0.03, [B('bottom', 0.0, 0.01, 'solid', 'repred')])
         hem = KNEE - 0.1 if sex == 'm' else KNEE - 0.18
