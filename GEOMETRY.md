@@ -133,16 +133,16 @@
 | `settlements/port/dist/slCarrier.html` | 118 | 455 k | 121 / 655 k | 118 / 434 k | 610 k |  | 121 | 56 | 12 k | 73 |
 | `settlements/port/dist/slPen.html` | 129 | 473 k | 126 / 771 k | 129 / 459 k | 726 k |  | 126 | 55 | 13 k | 71 |
 | `settlements/port/dist/slSub.html` | 106 | 384 k | 109 / 542 k | 106 / 371 k | 497 k |  | 109 | 48 | 7562 | 63 |
-| `settlements/port/dist/spYard.html` | 202 | 580 k | 208 / 923 k | 191 / 572 k | 924 k |  | 210 | 61 | 18 k | 82 |
-| `settlements/port/dist/tmEdges.html` | 101 | 414 k | 105 / 565 k | 101 / 407 k | 565 k |  | 105 | 39 | 12 k | 51 |
-| `settlements/port/dist/tmHeli.html` | 133 | 380 k | 139 / 542 k | 133 / 377 k | 542 k |  | 139 | 77 | 8384 | 91 |
-| `settlements/port/dist/tmPass.html` | 121 | 406 k | 123 / 593 k | 121 / 402 k | 593 k |  | 123 | 64 | 12 k | 79 |
-| `settlements/port/dist/tmShip.html` | 119 | 374 k | 123 / 538 k | 119 / 370 k | 538 k |  | 123 | 65 | 9111 | 79 |
-| `settlements/port/dist/vsFeeder.html` | 125 | 372 k | 128 / 547 k | 125 / 355 k | 547 k |  | 129 | 52 | 9676 | 76 |
-| `settlements/port/dist/vsGiant.html` | 134 | 527 k | 138 / 734 k | 134 / 501 k | 734 k |  | 139 | 53 | 24 k | 77 |
-| `settlements/port/dist/vsPanamax.html` | 126 | 405 k | 129 / 580 k | 126 / 383 k | 580 k |  | 130 | 51 | 12 k | 77 |
-| `settlements/reedlake/dist/reedlake-village.html` | 148 | 219 k | 148 / 223 k | 148 / 219 k | 223 k |  | 148 | 65 | 5976 | 137 |
-| `settlements/reedlake/dist/reedlake.html` | 101 | 409 k | 118 / 507 k | 101 / 409 k | 619 k |  | 355 | 66 | 15 k | 320 |
+| `settlements/port/dist/spYard.html` | 202 | 627 k | 208 / 970 k | 191 / 618 k | 924 k |  | 210 | 61 | 18 k | 82 |
+| `settlements/port/dist/tmEdges.html` | 101 | 461 k | 105 / 611 k | 101 / 453 k | 565 k |  | 105 | 39 | 12 k | 51 |
+| `settlements/port/dist/tmHeli.html` | 133 | 426 k | 139 / 587 k | 133 / 423 k | 542 k |  | 139 | 77 | 8384 | 91 |
+| `settlements/port/dist/tmPass.html` | 121 | 453 k | 123 / 639 k | 121 / 447 k | 594 k |  | 123 | 64 | 12 k | 79 |
+| `settlements/port/dist/tmShip.html` | 119 | 419 k | 123 / 584 k | 119 / 416 k | 539 k |  | 123 | 65 | 9111 | 79 |
+| `settlements/port/dist/vsFeeder.html` | 125 | 418 k | 128 / 593 k | 125 / 400 k | 548 k |  | 129 | 52 | 9676 | 76 |
+| `settlements/port/dist/vsGiant.html` | 134 | 572 k | 138 / 779 k | 134 / 547 k | 735 k |  | 139 | 53 | 24 k | 77 |
+| `settlements/port/dist/vsPanamax.html` | 126 | 452 k | 129 / 625 k | 126 / 429 k | 580 k |  | 130 | 51 | 12 k | 77 |
+| `settlements/reedlake/dist/reedlake-village.html` | 148 | 241 k | 148 / 245 k | 148 / 241 k | 224 k |  | 149 | 65 | 5976 | 138 |
+| `settlements/reedlake/dist/reedlake.html` | 101 | 482 k | 118 / 579 k | 101 / 482 k | 619 k |  | 356 | 66 | 15 k | 321 |
 | `settlements/screamers/dist/furniture.html` | 17 | 13 k | 17 / 13 k | 17 / 13 k | 26 k |  | 18 | 13 | 251 | 18 |
 | `settlements/screamers/dist/screamers.html` | 128 | 3.28 M | 149 / 3.58 M | 126 / 3.06 M | 3.60 M | 99 k | 151 | 70 | 258 k | 145 |
 | `settlements/shade/dist/shade.html` | 48 | 3.25 M |  |  | 3.47 M |  | 82 | 32 | 109 k | 70 |
@@ -152,9 +152,9 @@
 | `settlements/voth/voth.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/xanadu/dist/erewhon.html` | 1029 | 9.53 M | 1255 / 20.95 M | 1031 / 9.36 M | 21.99 M |  | 1639 | 1579 | 1.02 M | 1435 |
 | `settlements/xanadu/dist/xanadu.html` | 89 | 990 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
-| `settlements/ys/dist/kit.html` | 99 | 4.21 M |  |  | 4.26 M |  | 107 | 35 | 16 k | 57 |
-| `settlements/ys/dist/mock.html` | 58 | 502 k |  |  | 502 k |  | 56 | 30 | 2328 | 45 |
-| `settlements/ys/dist/ys.html` | 187 | 29.43 M |  |  | 29.49 M |  | 204 | 100 | 394 k | 178 |
+| `settlements/ys/dist/kit.html` | 99 | 4.26 M |  |  | 4.26 M |  | 108 | 35 | 16 k | 58 |
+| `settlements/ys/dist/mock.html` | 58 | 561 k |  |  | 502 k |  | 57 | 30 | 2328 | 46 |
+| `settlements/ys/dist/ys.html` | 187 | 29.50 M |  |  | 29.49 M |  | 205 | 100 | 394 k | 180 |
 | `settlements/yuni/yuni-assets.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/yuni/yuni-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/yuni/yuni.html` | not ready |  |  |  |  |  |  |  |  |  |
