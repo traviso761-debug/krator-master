@@ -238,6 +238,16 @@ Three principles the evaluations converge on, stated as rules the repo can check
 The five rows of the table in section 4, in that order. Each lands with its measurement in the build's README
 and the cross-build report.
 
+**Done 2026-10-14.** The indexed furniture batch (vertices 1.7-3x fewer), the spatial index (KSPACE), Voth's
+placement on `core/mask`, size-aware catalog segments (57 % of the catalog's triangles at detail 1, 13.6 % on the
+furnished pages), and the first cross-build report: `GEOMETRY.md` and `geometry.json`, all 154 pages, by
+`tools/geometry_report.py` (draw calls, triangles, LOD off/on, meshes, instanced sets, instances, materials,
+furniture triangles). The heaviest are Streetlab's city (34.9 M triangles, 1,047 calls), Ys (29.5 M) and the Throne's
+pages (19-22 M); the contact sheets draw piece by piece (catalog 43k calls, interiors sets 47k); core/lod saves
+10-80 % of triangles on the 87 pages that take it. Pages that keep their camera private (the Yuni lineage) are
+counted from their own last frame (marked *). Rerun a row with `python3 tools/geometry_report.py <page>` after a
+change; a whole run takes most of a day under SwiftShader on a loaded box, so run pages one browser at a time.
+
 ### Stage 2: the substrate (the plan's Phase 2 and 4, in the plan's order)
 
 - **a. `core/terrain`'s field**: Float32 heightmap at a fixed step, water levels, carve patches, land cover;
