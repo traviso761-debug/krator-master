@@ -4,6 +4,9 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+**Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
+conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
+
 ## 2026-10-13: the trades in two half-hour buckets
 
 The owner: "Can we stagger the jobs into 2 buckets separated by 1/2 hour to further reduce that load?"
