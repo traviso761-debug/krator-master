@@ -49,13 +49,21 @@
   and the gele are rigid; the grand boubou is one stiff sheet over the arms (it swings at the hem but has no folds and
   does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
   held overhead.
-- **The Giants' lower arms are copies driven by rule, not animated.** They are the upper pair's skin and joints copied
-  lower (`tools/giant.py`), so their deltoids are the upper's; where the copy blends into the ribs a close look finds a
-  soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the lower pair keeps a
-  guard and takes a share of the upper arms' motion (README, Giants), so it never does anything of its own (it does
-  not block with the shield it holds, take a two-handed grip, or reach for something). Only the man's body has a giant,
-  and a giant has no tops: a top made for two arms would have no sleeves for the lower pair. The scale slows the clips
-  to a giant's pace, but the clips are still a man's: a giant's weight does not show in them beyond that.
+- **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
+  and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
+  close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the
+  lower pair keeps a guard and takes a share of the upper arms' motion (README, Body mods), so it never does anything
+  of its own (it does not block with the shield it holds, take a two-handed grip, or reach for something). The scale
+  slows a giant's clips to a giant's pace, but the clips are still a man's: a giant's weight does not show in them
+  beyond that.
+- **Four-armed tops exist only for the giants.** A man or a woman with an arm mod has no top that fits (`KCHAR.fits`)
+  and goes bare-chested; the library's and the cultures' tops are two-armed. A four-armed top's lower sleeves are
+  weighted to the lower arms, but their shape under the body sliders follows the skin MakeHuman fitted them to (the
+  side of the ribs and the upper arm), so a very muscular or heavy giant's lower sleeves fit looser or tighter than
+  his lower arms. The cybernetic arms wear a four-armed top's sleeves as the flesh arms do: thin plates under cloth
+  sized for flesh.
+- **Rib gills are painted slits on a lip, not openings.** They are lit as skin, do not move with breath, and a top
+  hides them.
 - **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi, Dalab, Yuni): a random
   stranger of another people never draws them. The Cosmetic Lab's pickers show one wardrobe at a time (a people's, the
   library's, or all), but nothing stops a Voth body in Yuni clothes: that is the editor's freedom, not a rule.

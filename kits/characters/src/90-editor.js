@@ -21,10 +21,10 @@
                       sliders:{}, morph:{}, ancestry:null, skin:'#c99a74', hair_color:'#3a2a1e', eye_color:'#5a3a22', people:null, dye:{} };
   start.mpfb_female = { body:'mpfb_female', hair:'braid01', beard:null, armour:{ torso:'toigo_bodice-style_top', legs:'toigo_long_full_skirt', feet:'grinsegold_female_pirate_boots' },
                         sliders:{}, morph:{}, ancestry:null, skin:'#d9b294', hair_color:'#2c2019', eye_color:'#4e6a80', people:null, dye:{} };
-  // a Giant of Dalab (tools/giant.py): the temple guard, four-armed, in the loincloth and sandals
-  start.mpfb_giant = { body:'mpfb_giant', hair:'short04', beard:null, armour:{ torso:null, legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals', head:null },
+  // a Giant of Dalab (tools/giant.py): the temple guard, four-armed, in the god's harness, loincloth and sandals
+  start.mpfb_giant = { body:'mpfb_giant', hair:'short04', beard:null, armour:{ torso:'giant_dalab_m_harness4', legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals', head:null },
                        sliders:{}, morph:{ muscle:0.7, weight:0.25 }, ancestry:null, skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e',
-                       people:'giants', arms:4, dye:{ legs:'#b8443a' } };
+                       people:'giants', mods:['mod_arms_flesh'], dye:{ legs:'#b8443a' } };
   var saved = {};
   function figScale(){ return fig ? fig.scale || 1 : 1; }
 
@@ -274,9 +274,34 @@
       wardrobe = id; buildPanel();
     }, true);
   }
+  /* body mods (tools/mods.py): a genetic or cybernetic second pair of arms, rib gills; on or off, one pair of arms at
+     a time. With four arms the torso picker offers only four-armed tops (KCHAR.fits), and a top that no longer fits
+     comes off */
+  function modChips(kit, gear){
+    var all = kit.items.filter(function(x){ return x.slot === 'mods'; });
+    if(!all.length) return;
+    var on = KCHAR.mods(rec, kit).map(function(m){ return m.id; });
+    var s = section(gear, 'Body mods', on.length ? on.length + ' worn' : 'None');
+    var grid = document.createElement('div'); grid.className = 'chips tags';
+    all.forEach(function(m){
+      var b = document.createElement('button'); b.className = 'chip'; b.id = 'chip-mod-' + m.id;
+      b.setAttribute('aria-pressed', on.indexOf(m.id) >= 0);
+      b.innerHTML = '<span>' + m.name + ' <small>' + (m.kind || '') + '</small></span>';
+      b.addEventListener('click', function(){
+        var cur = KCHAR.mods(rec, kit);
+        rec.mods = on.indexOf(m.id) >= 0 ? cur.filter(function(x){ return x.id !== m.id; }).map(function(x){ return x.id; })
+                                          : cur.filter(function(x){ return x.group !== m.group; }).map(function(x){ return x.id; }).concat([m.id]);
+        var top = rec.armour.torso && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
+        if(top && !KCHAR.fits(top, rec, kit)) rec.armour.torso = null;
+        apply(); buildPanel();
+      });
+      grid.appendChild(b);
+    });
+    s.appendChild(grid);
+  }
   function itemChips(page, kit, slot, title){
     var worn = (slot === 'hair' || slot === 'beard') ? rec[slot] : rec.armour[slot];
-    var list = kit.items.filter(function(x){ return x.slot === slot && (slot === 'hair' || slot === 'beard' || x.id === worn || inWardrobe(x)); });
+    var list = kit.items.filter(function(x){ return x.slot === slot && (slot === 'hair' || slot === 'beard' || x.id === worn || inWardrobe(x)) && KCHAR.fits(x, rec, kit); });
     if(!list.length) return null;
     var cur = (slot === 'hair' || slot === 'beard') ? rec[slot] : rec.armour[slot];
     var it = list.filter(function(x){ return x.id === cur; })[0];
@@ -300,7 +325,7 @@
       var o = p.outfits && p.outfits[sex];
       if(!o || (wardrobe && wardrobe !== p.id)) return;
       (p.tiers || Object.keys(o).map(function(k){ return [k]; })).forEach(function(t){
-        if(o[t[0]]) list.push({ id:p.id + '.' + t[0], name:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), set:o[t[0]] });
+        if(o[t[0]]) list.push({ id:p.id + '.' + t[0], name:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), set:o[t[0]], p:p });
       });
     });
     if(!list.length) return;
@@ -309,18 +334,14 @@
     var s = section(gear, 'Outfits', cur ? cur.name : 'Mixed');
     chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-outfit-' + x.id.replace('.', '-') }; }), cur ? cur.id : null, function(id){
       var x = list.filter(function(y){ return y.id === id; })[0];
+      // the tier's mods (a temple guard's second pair of arms) and the people's (gills), before the clothes that fit them
+      rec.mods = (x.p.mods || []).concat(x.set.mods || []).filter(has);
       ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null; });
-      if(x.set.arms) rec.arms = x.set.arms;
       apply(); buildPanel();
     }, true);
   }
   function buildMpfb(kit, gear, headp){
-    if(kit.arms2){
-      // a giant: the temple guards have four arms, the street patrols two (the same body, the lower pair left out)
-      var arms = rec.arms || kit.arms;
-      var as = section(gear, 'Arms', arms >= 4 ? 'Four' : 'Two');
-      chips(as, [{ id:4, name:'Four', domId:'chip-arms-4' }, { id:2, name:'Two', domId:'chip-arms-2' }], arms, function(id){ rec.arms = id; apply(); buildPanel(); }, true);
-    }
+    modChips(kit, gear);
     wardrobeChips(kit, gear);
     outfitChips(kit, gear);
     ['head', 'torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });

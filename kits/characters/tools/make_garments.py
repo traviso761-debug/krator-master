@@ -10,7 +10,7 @@
 # then smoothed and pushed out of the skin a few times. Rows below the crotch are matched to MakeHuman's skirt helper
 # (they swing with both legs), the rest to the body. Every part has its own strip of one texture, painted here:
 # woven cloth, hem bands, step frets, zigzags and the diamond of Voth (data from GARMENTS).
-import bpy, bmesh, addon_utils, os, sys, math, json, uuid
+import bpy, bmesh, addon_utils, bisect, os, sys, math, json, uuid
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
@@ -21,6 +21,8 @@ from bl_ext.user_default.mpfb.services.clothesservice import ClothesService
 from bl_ext.user_default.mpfb.services.locationservice import LocationService
 from bl_ext.user_default.mpfb.entities.meshcrossref import MeshCrossRef
 from bl_ext.user_default.mpfb.entities.objectproperties import GeneralObjectProperties
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import arms2                                          # where a second pair of arms hangs (tools/mods.py makes them)
 
 ARGS = sys.argv[sys.argv.index('--') + 1:]
 BODY = ARGS[0]
@@ -58,7 +60,10 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      'terracotta': (0.70, 0.36, 0.22), 'holyred': (0.74, 0.10, 0.10), 'godteal': (0.28, 0.84, 0.80), 'white': (0.95, 0.94, 0.91),
      # Yuni: the yellow of the hyperboloid, indigo and mud-cloth for the many, Gaudi's mosaic for the families
      'yuniyellow': (0.96, 0.78, 0.18), 'mud': (0.40, 0.28, 0.18), 'sahel': (0.93, 0.91, 0.84), 'orderblue': (0.20, 0.36, 0.70),
-     'tileblue': (0.16, 0.50, 0.72), 'tilegreen': (0.34, 0.62, 0.36), 'coral': (0.92, 0.46, 0.36), 'violet': (0.42, 0.26, 0.56)}
+     'tileblue': (0.16, 0.50, 0.72), 'tilegreen': (0.34, 0.62, 0.36), 'coral': (0.92, 0.46, 0.36), 'violet': (0.42, 0.26, 0.56),
+     # the Free Giants: Gaulish wool in woad, weld and madder, heather and loden; bronze and iron
+     'woad': (0.20, 0.30, 0.48), 'weld': (0.80, 0.70, 0.30), 'heather': (0.46, 0.34, 0.44), 'loden': (0.28, 0.33, 0.20),
+     'iron': (0.30, 0.31, 0.33)}
 
 # ---------------------------------------------------------------------------------------------------------------
 # the body
@@ -476,6 +481,14 @@ def motif(style, w, h, fg, bg):
         img[alm & (ax ** 2 + ay ** 2 < 0.03)] = (0.05, 0.05, 0.05)
     elif style == 'rays':                        # stripes along the strip (a halo's rays, a wrap's turns)
         img[(u * 2).astype(int) % 2 == 0] = fg
+    elif style == 'tartan':                      # the Free Giants' checks: crossing bands, darker where they cross
+        a, b = ((u * 3) % 1) < 0.34, ((v * 3) % 1) < 0.34
+        img[a | b] = np.array(fg) * 0.55 + np.array(bg) * 0.45
+        img[a & b] = fg
+        img[(((u * 12) % 1) < 0.12) & ~a & ~b] = np.array(fg) * 0.8 + np.array(bg) * 0.2
+    elif style == 'knot':                        # two waves interlaced: a Celtic running knot
+        w1, w2 = 0.5 + 0.32 * np.sin(u * 2 * math.pi), 0.5 - 0.32 * np.sin(u * 2 * math.pi)
+        img[(np.abs(v - w1) < 0.11) | (np.abs(v - w2) < 0.11)] = fg
     elif style == 'feather':                     # overlapping feather scales
         uu = (u + 0.5 * (v > 0.5)) % 1
         vv = (v * 2) % 1
@@ -574,9 +587,15 @@ def build(gid, label, parts, slot='torso'):
         for i in range(R):
             for j in range(Cn): groups.append(p.group[i])
         jcount = Cn if p.closed else Cn - 1
+        holes = getattr(p, 'holes', [])
         for i in range(R - 1):
             for j in range(jcount):
                 j2 = (j + 1) % Cn
+                # a four-armed top leaves out the faces where a lower arm comes out of the ribs (four_armed)
+                if holes:
+                    cq = (p.P[i, j] + p.P[i + 1, j] + p.P[i + 1, j2] + p.P[i, j2]) / 4
+                    if any(np.linalg.norm(cq - hc) < hr for hc, hr in holes):
+                        continue
                 f = bm.faces.new((vs[i][j], vs[i + 1][j], vs[i + 1][j2], vs[i][j2]))
                 pfaces[-1].append(f)
                 for loop, (ii, jj) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
@@ -584,6 +603,15 @@ def build(gid, label, parts, slot='torso'):
                     v = v_top - pad - (v_top - v_bot - 2 * pad) * ii / (R - 1)
                     loop[uvl].uv = (u, v)
         y0 += h
+    # a hole's vertices (four_armed) belong to no face: gone, and listed in the .cloth.json so the chains' grid indices
+    # can be shifted to the mesh's
+    bm.verts.index_update()
+    loose = [v for v in bm.verts if not v.link_faces]
+    gone = sorted(v.index for v in loose)
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context='VERTS')
+        gs = set(gone)
+        groups = [g for i, g in enumerate(groups) if i not in gs]
     bm.verts.index_update()
     # faces out of the body, a part at a time (a grid's faces wind the same way): flipped together when most of them
     # face the skin. Face by face, a wing or a horn held off the body would flip back and forth
@@ -628,7 +656,16 @@ def build(gid, label, parts, slot='torso'):
         c = cloth_spec(p, off, slot)
         if c: specs.append(c)
         off += p.P.shape[0] * p.P.shape[1]
-    json.dump({'garment': gid, 'verts': off, 'parts': specs}, open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
+    # the lower pair's sleeves and armbands, as ranges of the mesh's vertices: make_mpfb.py weights them to the lower
+    # arms' joints (they have no holes, so each is one run)
+    lower, o = [], 0
+    for p in parts:
+        n = p.P.shape[0] * p.P.shape[1]
+        if '_sleeve2_' in p.name or '_armband2_' in p.name:
+            lower.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o)])
+        o += n
+    json.dump({'garment': gid, 'verts': off - len(gone), 'parts': specs, 'arms': 4 if gid in FOUR else 2, 'gone': gone, 'lower': lower},
+              open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
     print('GARMENT', gid, len(me.vertices), 'verts', len(me.polygons), 'quads,', sum(len(c['chains']) for c in specs), 'chains ->', d)
     return obj
 
@@ -654,6 +691,53 @@ def sleeves(gid, end, ease, paint, ease_end=None, rows=8, n=18):
         out.append(limb_tube('%s_sleeve_%s' % (gid, s[0]), None, None, ease, paint, n=n, rows=rows, ease_end=ease_end,
                              start_back=0.07, path=path, bvh=BVH_A, rmax=0.16))
     return out
+
+
+# ---- four-armed clothes (a body with a second pair of arms: tools/mods.py, arms2.py) ----
+# The lower pair's skin is the arms' skin moved where the lower pair hangs (BVH_A2), so a lower sleeve is fitted as an
+# upper one is; a top leaves holes where the lower arms come out of the ribs (four_armed). make_mpfb.py gives the lower
+# sleeves the lower joints' weights (by the garment's arms: 4 in its .cloth.json, FOUR here)
+FOUR = set()
+
+
+def low(p, side):
+    """a point on the upper arm of side 'Left' or 'Right' (Blender), where the lower pair has it"""
+    sx = 1 if side == 'Left' else -1
+    return arms2.from_gl(arms2.place(arms2.to_gl(p), arms2.to_gl(J(side + 'Arm'))[0], sx))[0]
+
+
+def _low_co():
+    out = CO.copy()
+    for side, sx in (('Left', 1), ('Right', -1)):
+        m = CO[:, 0] * sx > 0
+        out[m] = arms2.from_gl(arms2.place(arms2.to_gl(CO[m]), arms2.to_gl(J(side + 'Arm'))[0], sx))
+    return out
+BVH_A2 = BVHTree.FromPolygons([Vector(c) for c in _low_co()], [p for p in POLY if all(_LM[i] for i in p)])
+
+
+def sleeves2(gid, end, ease, paint, ease_end=None, rows=8, n=18):
+    """the lower pair's sleeves (as sleeves())"""
+    out = []
+    for s in (L, R):
+        a, e, h = J(s + 'Arm'), J(s + 'ForeArm'), J(s + 'Hand')
+        path = [a, e] if end == 'elbow' else [a, e, h - (h - e) * 0.08] if end == 'wrist' else [a, a + (e - a) * end]
+        out.append(limb_tube('%s_sleeve2_%s' % (gid, s[0]), None, None, ease, paint, n=n, rows=rows, ease_end=ease_end,
+                             start_back=0.04, path=[low(q, s) for q in path], bvh=BVH_A2, rmax=0.16))
+    return out
+
+
+def four_armed(gid, parts, r=0.075):
+    """a top for four arms: its body parts open where each lower arm comes out (r round the lower shoulder joint,
+    set in toward the ribs), and it goes in FOUR"""
+    FOUR.add(gid)
+    holes = []
+    for s in (L, R):
+        sx = 1 if s == 'Left' else -1
+        holes.append((low(J(s + 'Arm'), s) + np.array([-sx * 0.035, 0, 0]), r))
+    for p in parts:
+        if '_sleeve' not in p.name and '_armband' not in p.name:
+            p.holes = holes
+    return parts
 
 
 def sandal(gid, paint_sole, paint_strap, guard=False, laces=0, greave=False, strap_paint2=None):
@@ -1794,6 +1878,127 @@ for b, sex in (('male', 'm'), ('female', 'f')):
                           B('bottom', 0.03, 0.12, 'trencadis', 'tileblue', 'yuniyellow', 0.05), B('top', 0.0, 0.025, 'solid', 'violet'),
                           B('top', 0.025, 0.3, 'rays', 'yuniyellow', 'coral', 0.02)]), rows=14)]
     GARMENTS['yuni_%s_noble_hyperboloid' % sex] = ('head', b, 'Hyperboloid hat', _yhyp)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# the Giants (tools/giant.py: the man's body, scaled up by the pages). A temple guard of Dalab has four arms and wears
+# the god's gold over bare skin; the Free Giants of Giant Country dress as Gauls: a belted tunic, checked braccae, a
+# sagum pinned at the shoulder, a torc for a chief, a horned bronze helmet for a war leader. Their four-armed tops
+# (four_armed, sleeves2) are the only tops a four-armed body takes; two-armed ones leave the lower arms out
+def armbands2(gid, paint, f=0.45, w=0.035):
+    """armbands on the lower pair (as armbands())"""
+    out = []
+    for sd in (L, R):
+        a, e = low(J(sd + 'Arm'), sd), low(J(sd + 'ForeArm'), sd)
+        c = a + (e - a) * f
+        out.append(limb_tube('%s_armband2_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A2))
+    return out
+
+
+def _free_tunic(gid, arms, body, sl):
+    parts = [torso_tube(gid, TOP, CROTCH - 0.14, 0.014, body, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+             torso_tube(gid + '_belt', WAIST + 0.03, WAIST - 0.03, 0.026, P('leather', 0.05, [B('top', 0.0, 0.008, 'solid', 'bronze'),
+                        B('bottom', 0.0, 0.008, 'solid', 'bronze')]), rows=3, n=40, hull_from=WAIST + 0.1)]
+    parts += sleeves(gid, 'wrist', 0.016, sl, ease_end=0.03, rows=9)
+    if arms == 4:
+        parts = four_armed(gid, parts + sleeves2(gid, 'wrist', 0.016, sl, ease_end=0.03, rows=9))
+    return parts
+
+
+def _free_paint():
+    body = P('weld', 0.06, [B('top', 0.0, 0.015, 'solid', 'madder'), B('bottom', 0.0, 0.02, 'solid', 'madder'),
+                            B('bottom', 0.025, 0.07, 'knot', 'woad', 'weld', 0.09)], [PN(0.0, 1.0, 'tartan', 'madder', 'weld', 0.3)])
+    sl = P('weld', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'madder')], [PN(0.0, 1.0, 'tartan', 'madder', 'weld', 0.2)])
+    return body, sl
+
+
+@garment('giant_free_m_tunic', 'torso', 'male', 'Free Giant tunic')
+def _():
+    return _free_tunic('giant_free_m_tunic', 2, *_free_paint())
+
+
+@garment('giant_free_m_tunic4', 'torso', 'male', 'Free Giant tunic, four sleeves')
+def _():
+    return _free_tunic('giant_free_m_tunic4', 4, *_free_paint())
+
+
+@garment('giant_free_m_jerkin4', 'torso', 'male', 'Warrior\'s jerkin, four-armed')
+def _():
+    gid = 'giant_free_m_jerkin4'
+    hide = P('hide', 0.08, [B('top', 0.0, 0.02, 'solid', 'leather'), B('bottom', 0.0, 0.025, 'solid', 'leather'),
+                            B('bottom', 0.03, 0.06, 'teeth', 'bronze', 'hide', 0.05)])
+    bandp = P('bronze', 0.02, [B('top', 0.0, 0.2, 'knot', 'iron', 'bronze', 0.03)])
+    parts = [torso_tube(gid, TOP, CROTCH - 0.04, 0.02, hide, hang_from=WAIST - 0.02, flare=0.1, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+             band(gid + '_baldric', CROTCH + 0.04, SHOULDER + 0.04, 0.06, 0.03, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'bronze'),
+                  B('bottom', 0.0, 0.01, 'solid', 'bronze')]), high=math.pi / 2, rows=4),
+             torso_tube(gid + '_belt', WAIST + 0.035, WAIST - 0.035, 0.034, P('leather', 0.05, [B('top', 0.0, 0.3, 'beads', 'bronze', 'leather', 0.04)]),
+                        rows=3, n=40, hull_from=WAIST + 0.1)]
+    return four_armed(gid, parts + armbands(gid, bandp, f=0.35, w=0.06) + armbands2(gid, bandp, f=0.35, w=0.06))
+
+
+def _chief(gid, arms):
+    body = P('woad', 0.05, [B('top', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold'),
+                            B('bottom', 0.025, 0.08, 'knot', 'gold', 'woad', 0.09)], [PN(0.0, 1.0, 'tartan', 'black', 'woad', 0.3)])
+    sl = P('woad', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'gold')], [PN(0.0, 1.0, 'tartan', 'black', 'woad', 0.2)])
+    parts = _free_tunic(gid, arms, body, sl)
+    sagum = P('madder', 0.07, [B('bottom', 0.0, 0.03, 'solid', 'loden'), B('bottom', 0.035, 0.1, 'tartan', 'loden', 'madder', 0.12)])
+    torc = P('gold', 0.02, [B('top', 0.0, 0.5, 'stripes', 'bronze', 'gold', 0.012)])
+    # the sagum hangs from the shoulders behind (a cloak, not a sleeve: the lower arms come out under it); pinned on the
+    # right shoulder by a bronze brooch; the torc round the neck
+    d = np.array([-0.5, -1.0, 0.0]) / math.sqrt(1.25)
+    parts += [cape(gid + '_sagum', KNEE + 0.02, sagum, flare=0.3, span=1.35, ease=0.04, top=TOP - 0.02),
+              collar_disc(gid + '_torc', 0.035, torc, drop=0.012, scallop=0.0, ease=0.025, rows=2),
+              blob(gid + '_brooch', _out(spine_at(SHOULDER - 0.05), d, 0.035), (0.055, 0.025, 0.055), P('bronze', 0.02), out=d)]
+    return parts
+
+
+@garment('giant_free_m_chief', 'torso', 'male', 'Chief\'s tunic, sagum and torc')
+def _():
+    return _chief('giant_free_m_chief', 2)
+
+
+@garment('giant_free_m_chief4', 'torso', 'male', 'Chief\'s tunic, sagum and torc, four-armed')
+def _():
+    return _chief('giant_free_m_chief4', 4)
+
+
+@garment('giant_free_m_braccae', 'legs', 'male', 'Checked braccae')
+def _():
+    return trousers('giant_free_m_braccae', P('loden', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'umber')], [PN(0.0, 1.0, 'tartan', 'madder', 'loden', 0.25)]),
+                    ease=0.014, ease_end=0.026)
+
+
+@garment('giant_free_m_boots', 'feet', 'male', 'Wrapped boots')
+def _():
+    return boots('giant_free_m_boots', P('earth', 0.1), P('leather', 0.06), top=0.4, wraps=3, wrap_paint=P('heather', 0.06), wrap_over=0.2)
+
+
+@garment('giant_free_m_helmet', 'head', 'male', 'Horned bronze helmet')
+def _():
+    gid = 'giant_free_m_helmet'
+    a_, b_, up, bk, left = head_frame()
+    c = a_ + (b_ - a_) * 0.74
+    hornp = P('bronze', 0.02, [B('top', 0.0, 0.06, 'solid', 'gold'), B('top', 0.06, 0.5, 'stripes', 'gold', 'bronze', 0.0)])
+    horns = [horn('%s_horn%d' % (gid, k), [c + left * sd * 0.08, c + left * sd * 0.2 + up * 0.02, c + left * sd * 0.28 + up * 0.12,
+                                            c + left * sd * 0.27 + up * 0.26 - bk * 0.02], 0.036, 0.008, hornp, n=14, rows=14)
+             for k, sd in enumerate((-1, 1))]
+    cap = P('bronze', 0.02, [B('bottom', 0.0, 0.03, 'solid', 'gold'), B('bottom', 0.035, 0.12, 'knot', 'gold', 'bronze', 0.05)])
+    return [head_rings(gid, 0.5, 1.0, 0.025, cap, n=32, rows=7, apex=True)] + horns
+
+
+@garment('giant_dalab_m_harness4', 'torso', 'male', 'Temple guard\'s harness, four-armed')
+def _():
+    gid = 'giant_dalab_m_harness4'
+    pect = P('gold', 0.02, [B('top', 0.0, 0.3, 'rays', 'holyred', 'gold', 0.03), B('bottom', 0.0, 0.015, 'solid', 'holyred')])
+    strap = P('holyred', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')])
+    bandp = P('gold', 0.02, [B('top', 0.0, 0.2, 'steps', 'holyred', 'gold', 0.03)])
+    # the god's sun on the chest over bare green skin, two straps crossing to the belt, gold on all four arms
+    parts = [collar_disc(gid + '_pectoral', 0.15, pect, drop=0.07, scallop=0.0),
+             band(gid + '_strapL', CROTCH + 0.1, SHOULDER + 0.03, 0.05, 0.016, strap, high=math.pi / 2, rows=3),
+             band(gid + '_strapR', CROTCH + 0.1, SHOULDER + 0.03, 0.05, 0.016, strap, high=-math.pi / 2, rows=3),
+             torso_tube(gid + '_belt', WAIST + 0.04, WAIST - 0.04, 0.03, P('gold', 0.02, [B('top', 0.0, 0.3, 'steps', 'holyred', 'gold', 0.05)]),
+                        rows=3, n=40, hull_from=WAIST + 0.1)]
+    return four_armed(gid, parts + armbands(gid, bandp, f=0.3, w=0.08) + armbands2(gid, bandp, f=0.3, w=0.08), r=0.06)
 
 
 # ---------------------------------------------------------------------------------------------------------------

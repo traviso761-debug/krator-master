@@ -78,7 +78,14 @@ ITEMS = {
                     ('torso', 'Yuni grand boubou', 'yuni_m_trade_boubou'), ('legs', 'Yuni under-trousers', 'yuni_m_trade_trousers'),
                     ('feet', 'Yuni babouches', 'yuni_m_trade_slippers'), ('head', 'Yuni kufi', 'yuni_m_trade_kufi'),
                     ('torso', 'Yuni mosaic gown', 'yuni_m_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_m_noble_slippers'),
-                    ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid')]},
+                    ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid'),
+                    # the Giants' own (tools/giant.py: worn only by the giant, made on the man's body): the Free
+                    # Giants' Gaulish clothes and the temple guard's harness, four-armed tops among them
+                    ('torso', 'Free Giant tunic', 'giant_free_m_tunic'), ('torso', 'Free Giant tunic, four sleeves', 'giant_free_m_tunic4'),
+                    ('torso', 'Free Giant warrior\'s jerkin', 'giant_free_m_jerkin4'), ('torso', 'Free Giant chief\'s sagum', 'giant_free_m_chief'),
+                    ('torso', 'Free Giant chief\'s sagum, four-armed', 'giant_free_m_chief4'), ('legs', 'Free Giant braccae', 'giant_free_m_braccae'),
+                    ('feet', 'Free Giant wrapped boots', 'giant_free_m_boots'), ('head', 'Free Giant horned helmet', 'giant_free_m_helmet'),
+                    ('torso', 'Dalab temple guard\'s harness', 'giant_dalab_m_harness4')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -186,8 +193,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_'))
+            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni, the Giants) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_', 'giant_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

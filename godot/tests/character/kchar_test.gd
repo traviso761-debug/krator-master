@@ -242,8 +242,9 @@ func _init() -> void:
 		ok(g.player.has_animation("walk") and is_equal_approx(g.cadence, 1.0 / sqrt(g.size)), "giant: the man's clips, at %.2f pace" % g.cadence)
 		var grec := KChar.blank(g.kit)
 		grec["armour"]["legs"] = "voth_m_peasant_maxtlatl"
+		grec["mods"] = ["mod_arms_flesh"]
 		g.apply(grec)
-		ok(g.four_arms, "giant: four arms by default")
+		ok(g.four_arms, "giant: the flesh pair (a mod) gives four arms")
 		var la := g.skeleton.find_bone("Left2Arm")
 		var lf := g.skeleton.find_bone("Left2ForeArm")
 		g.play("idle")
@@ -260,21 +261,23 @@ func _init() -> void:
 		var d_lo := KChar._q(g.skel["joints"][la]["r"]).inverse() * g.skeleton.get_bone_pose_rotation(la)
 		ok(d_up.angle_to(d_lo) < 0.25 and not a0.is_equal_approx(g.skeleton.get_bone_pose_rotation(la)),
 			"giant: on the ladder the lower arms copy the upper (%.2f rad apart)" % d_up.angle_to(d_lo))
-		var mesh: MeshInstance3D = null
-		for mi in g._live.values():
-			if mi.visible and mi.mesh:
-				for s in mi.mesh.get_surface_count():
-					if mi.mesh.surface_get_name(s) == "Human.arms2":
-						mesh = mi
-		ok(mesh != null, "giant: the base has the lower arms' skin")
-		grec["arms"] = 2
+		var shown := func(prefix: String) -> bool:
+			for mi in g._live.values():
+				if mi.visible and String(mi.get_meta("part")["key"]).contains(prefix):
+					return true
+			return false
+		ok(shown.call("mod_arms_flesh"), "giant: the flesh pair's piece is drawn")
+		grec["mods"] = ["mod_arms_cyber", "mod_gills"]
 		g.apply(grec)
-		var gone := false
-		if mesh:
-			for s in mesh.mesh.get_surface_count():
-				if mesh.mesh.surface_get_name(s) == "Human.arms2":
-					gone = mesh.get_surface_override_material(s) == KCharFigure._gone()
-		ok(not g.four_arms and gone, "giant: two arms leaves the lower pair out")
+		ok(g.four_arms and shown.call("mod_arms_cyber") and shown.call("mod_gills") and not shown.call("mod_arms_flesh"), "giant: cybernetic arms and gills instead")
+		grec["mods"] = []
+		g.apply(grec)
+		ok(not g.four_arms and not shown.call("mod_arms"), "giant: no mod, two arms")
+		var p_h = null
+		for pp in j("peoples.json")["peoples"]:
+			if pp["id"] == "hykkousoi":
+				p_h = pp
+		ok(KChar.stranger(3, fig.kit, p_h).get("mods", []).has("mod_gills"), "the Hykkousoi's strangers have rib gills")
 		print("kchar_test: the giant checked (%d bones, %d clips)" % [g.skeleton.get_bone_count(), g.player.get_animation_list().size()])
 
 	print("kchar_test: %s" % ("all passed" if fails == 0 else "%d failed" % fails))

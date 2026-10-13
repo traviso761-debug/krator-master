@@ -15,7 +15,7 @@ canonical skeleton (data/mpfb_<body>/skeleton.json) and every clip is retargeted
 Each delete group becomes a bitset over the triangles of the base's skin primitive (material 'Human.body'):
 data/mpfb_<body>/kit.json, read by KCHAR (kit.style 'mpfb').
 """
-import base64, io, json, math, os, shutil, struct, subprocess, sys
+import base64, bisect, io, json, math, os, shutil, struct, subprocess, sys
 import numpy as np
 from PIL import Image
 from scipy.spatial import cKDTree
@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decimate
 import giant
 import glbio
+import mods
 import make_pieces as mp
 
 HERE = mp.HERE
@@ -414,14 +415,20 @@ def cloth_bones(j, b, item, spec, blobs):
     # the chains, their joints
     chains, parts_out, new_nodes, new_ibm = [], [], [], []
     where = {}                                   # garment vertex -> (part, row, col)
+    # a grid index -> the mesh's vertex: shifted past the vertices a four-armed top's holes dropped (make_garments.py)
+    gone = spec.get('gone', [])
+    gset = set(gone)
+    def vid(g):
+        return None if g in gset else g - bisect.bisect_left(gone, g)
     for pi, part in enumerate(spec['parts']):
         R, Cn, off = part['rows'], part['cols'], part['offset']
         for r in range(R):
             for c in range(Cn):
-                where[off + r * Cn + c] = (pi, r, c)
+                if vid(off + r * Cn + c) is not None:
+                    where[vid(off + r * Cn + c)] = (pi, r, c)
         ids = []
         for ch in part['chains']:
-            pts = [first.get(off + r * Cn + ch['col']) for r in ch['rows']]
+            pts = [first.get(vid(off + r * Cn + ch['col'])) for r in ch['rows']]
             if any(x is None for x in pts) or ch['parent'] not in names:
                 continue
             g = len(chains)
@@ -567,10 +574,10 @@ def colliders(c, J, base_glb, npz):
                 if abs(r1 - r0) > 2e-4:
                     dr[str(ti)] = round(r1 - r0, 4)
         out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr})
-    # a giant's lower arms (giant.py) are copies of the upper: the same capsules on their own joints
+    # the lower pair's joints (mods.py, on every body) are copies of the upper: the same capsules on their own joints
     for k, (a, b2) in enumerate(CAPSULES):
-        if 'Arm' in a and giant.lower(a) in J and giant.lower(b2) in J:
-            out.append(dict(out[k], a=J[giant.lower(a)], b=J[giant.lower(b2)]))
+        if 'Arm' in a and mods.lower(a) in J and mods.lower(b2) in J:
+            out.append(dict(out[k], a=J[mods.lower(a)], b=J[mods.lower(b2)]))
     return out
 
 
@@ -765,6 +772,18 @@ def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None, cover=None):
     return b'GSH1' + struct.pack('<I', len(js)) + js + bytes(blob)
 
 
+class NpzAlias:
+    """morphs.npz with some keys standing for others (a mod's deltas are the base's)"""
+    def __init__(self, npz, alias):
+        self.npz, self.alias = npz, alias
+
+    def __getitem__(self, k):
+        return self.npz[self.alias.get(k, k)]
+
+    def __contains__(self, k):
+        return self.alias.get(k, k) in self.npz.files
+
+
 def morph_kit(npz, J):
     """the sliders (kit.morphs), the ancestry triple, and per target the joints that move"""
     targets = [str(t) for t in npz['targets']]
@@ -785,8 +804,8 @@ def morph_kit(npz, J):
     bones = [glbio.short(str(b)) for b in npz['bones']]
     D = npz['d_joints']
     joints = {}
-    # a giant's lower-arm joints (giant.py) move as the joints they copy
-    alias = [(J[giant.lower(bn)], k) for k, bn in enumerate(bones) if giant.lower(bn) in J and giant.lower(bn) != bn]
+    # the lower pair's joints (mods.py) move as the joints they copy
+    alias = [(J[mods.lower(bn)], k) for k, bn in enumerate(bones) if mods.lower(bn) in J and mods.lower(bn) != bn]
     for t in range(D.shape[0]):
         rows = [[J[bn]] + [round(float(x), 5) for x in D[t, k]] for k, bn in enumerate(bones)
                 if bn in J and np.abs(D[t, k]).max() > 1e-4]
@@ -852,7 +871,7 @@ COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 
                'dalab_m_trade_cap', 'dalab_f_trade_cap', 'dalab_m_noble_mitre', 'dalab_f_noble_mitre', 'yuni_m_peasant_hat', 'yuni_f_peasant_wrap',
                'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
-CULTURE = {'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
+CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
            'yuni_': 'yuni'}
 
 
@@ -882,7 +901,7 @@ def rot_axis(a, t):
 def main():
     body, src = sys.argv[1], sys.argv[2]
     name = 'mpfb_' + body
-    big = body == 'giant'              # giant.py: from the man's export, with a second pair of arms
+    big = body == 'giant'              # giant.py: the man's export, made big
     pieces = os.path.join(HERE, 'pieces', name)
     data = os.path.join(HERE, 'data', name)
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
@@ -894,12 +913,8 @@ def main():
     roles = turn_glb(os.path.join(src, 'base.glb'), os.path.join(pieces, 'base.glb'),
                      role=lambda m: 'skin' if m.split('.')[-1] in SKIN_PARTS else 'hair' if 'eyebrow' in m else
                      'eye' if EYES in m else None)
-    if big:
-        made = giant.add_arms(os.path.join(pieces, 'base.glb'))
-        for src_mat, mat2 in giant.ARM_MATS.items():
-            if src_mat in roles:
-                roles[mat2] = roles[src_mat]
-        print(name, 'lower arms:', len(made['joints']), 'joints,', made['primitives'])
+    # every body's skeleton has a second pair of arms' joints, drawn only when a mod is worn (mods.py)
+    print(name, 'lower-arm joints:', len(mods.add_joints(os.path.join(pieces, 'base.glb'))))
     c = mp.load(os.path.join(pieces, 'base.glb'))
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
@@ -907,8 +922,12 @@ def main():
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
     if big:
-        man['items'] = [it for it in man['items'] if it['id'] in giant.ITEMS]
+        man['items'] = [it for it in man['items'] if giant.wears(it['id'])]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
+    # the mods (mods.py: a second pair of arms, flesh or cybernetic; rib gills), worn like items in slot 'mods'
+    mod_items, mod_roles = mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
+    roles.update(mod_roles)
+    print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
         cl = None
         if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
@@ -920,12 +939,20 @@ def main():
         if it['id'] in DECIMATE:
             print('%-8s decimated %s: %d -> %d triangles' % ((name, it['id']) + decimate.decimate_glb(os.path.join(pieces, it['id'] + '.glb'), DECIMATE[it['id']])))
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
+        if cl and cl['spec'].get('arms') == 4:
+            # a four-armed top (make_garments.py four_armed): only a four-armed body wears it (KCHAR.fits); its lower
+            # sleeves follow the lower arms
+            entry['arms'] = 4
+            print('%-8s %s: %d vertices on the lower arms' % (name, it['id'], mods.fit_four(os.path.join(pieces, it['id'] + '.glb'),
+                  os.path.join(pieces, 'mod_arms_flesh.glb'), cl['spec'].get('lower', []))))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
         if culture_of(it['id']):
             entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
         if big and it['slot'] not in ('hair', 'beard'):
-            entry['culture'] = 'giants'
+            # on the giant: the giants' own clothes keep their people (giant_dalab_, giant_free_); the man's others
+            # are the Dalab giants'
+            entry['culture'] = culture_of(it['id']) if it['id'].startswith(giant.PREFIX) else 'giants'
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
@@ -955,15 +982,17 @@ def main():
             entry['hide_by'] = 'rays'          # no delete group in the asset: covered() found it
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
+    items += mod_items
     npz_path = os.path.join(src, 'morphs.npz')
     morph = {}
     if os.path.exists(npz_path):
-        npz = np.load(npz_path)
+        # a mod's vertices name the MakeHuman vertex whose deltas move them: their deltas are the base's
+        npz = NpzAlias(np.load(npz_path), {'d_' + m['id']: 'd_base' for m in mod_items})
         always = man.get('always', [])
         ents = mesh_entries(os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
                             '_always%d' % always.index(n) if n in always else None)
         open(os.path.join(pieces, 'base.morph.bin'), 'wb').write(pack_morphs(ents, npz))
-        for it in man['items']:
+        for it in man['items'] + mod_items:
             ents = mesh_entries(os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'])
             open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(ents, npz))
         # the Godot twin's blend shapes (godot_shapes): the base's skin split by which items cover each triangle
@@ -978,7 +1007,7 @@ def main():
         open(os.path.join(pieces, 'base.gshapes.bin'), 'wb').write(godot_shapes(
             os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
             '_always%d' % always.index(n) if n in always else None, npz, tri_mask.reshape(-1), mat, cover))
-        for it in man['items']:
+        for it in man['items'] + mod_items:
             open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(
                 os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'], npz))
         morph = True

@@ -42,7 +42,7 @@ var _clip := ""
 var looping := "idle"                    # the clip a play-once clip returns to
 var size := 1.0                          # kit.scale: a giant's whole figure
 var cadence := 1.0                       # how fast clips play: 1 / sqrt(size)
-var four_arms := false                   # a giant shows its lower pair (record arms 4)
+var four_arms := false                   # a mod gives it a second pair of arms (KChar.arms)
 
 
 func load_body(data_dir: String, body_id: String) -> void:
@@ -383,7 +383,7 @@ func apply(rec: Dictionary) -> void:
 			worn[i] = true
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
-	four_arms = kit.has("arms2") and int(rec.get("arms", kit.get("arms", 2))) >= 4
+	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (kits/characters/tools/mods.py)
 	skeleton.position.y = 0.0
 	for mi in want:
 		var b: Dictionary = mi.get_meta("built")
@@ -399,9 +399,6 @@ func apply(rec: Dictionary) -> void:
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
-			if not four_arms and kit.get("arms2", []).has(mi.mesh.surface_get_name(s)):
-				mi.set_surface_override_material(s, _gone())       # a two-armed giant: the lower pair's skin is not drawn
-				continue
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -1204,7 +1201,7 @@ func _keep_len(ch: Dictionary) -> void:
 			x[k] = x[k - 1] + d * (float(ch["len"][k - 1]) / l)
 
 
-# ---- a giant's lower arms (the twin of arms2() in 50-figure.js) ----
+# ---- the lower arms of a body with a second pair (a mod; the twin of arms2() in 50-figure.js) ----
 # No clip moves Left2Arm...: each frame they take a pose from the upper pair's: in most clips a guard pose of their own
 # (GUARD) plus a share of the upper arms' motion (SHARE by clip group), in climbing, swimming and falling the upper
 # arms' motion whole; with no clip they hang as the upper pair does. They follow with a lag; _body_fix keeps them out
@@ -1216,7 +1213,6 @@ const SHARE := {"idle": 0.4, "move": 0.55, "melee": 0.3, "ranged": 0.2, "defend"
 const CLOSE := 0.45
 var _low := []
 var _low_w := 0.0
-static var _gone_mat: ShaderMaterial
 
 
 func _hands() -> Array:
@@ -1225,15 +1221,6 @@ func _hands() -> Array:
 		if skel.has("hands") and skel["hands"].has(sd):
 			out.append(sd)
 	return out
-
-
-static func _gone() -> ShaderMaterial:
-	if _gone_mat == null:
-		var sh := Shader.new()
-		sh.code = "shader_type spatial;\nrender_mode unshaded;\nvoid vertex() { POSITION = vec4(2.0, 2.0, 2.0, 1.0); }\nvoid fragment() { discard; }\n"
-		_gone_mat = ShaderMaterial.new()
-		_gone_mat.shader = sh
-	return _gone_mat
 
 
 func _low_setup() -> void:
@@ -1279,7 +1266,7 @@ func _low_setup() -> void:
 
 
 func _arms2(dt: float) -> void:
-	if _low.is_empty():
+	if _low.is_empty() or not four_arms:
 		return
 	var group := ""
 	for c in skel.get("clips", []):

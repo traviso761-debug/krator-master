@@ -140,7 +140,15 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
         <label class="sr" for="hold-pick">Holding</label>
         <select id="hold-pick"></select>
         <label class="sr" for="hold-low">Lower hands</label>
-        <select id="hold-low" hidden title="A giant's lower hands">
+        <label class="sr" for="mods-pick">Body mods</label>
+        <select id="mods-pick" title="Body mods on every figure (tools/mods.py)">
+          <option value="">Mods as cast</option>
+          <option value="mod_arms_flesh">Second pair of arms</option>
+          <option value="mod_arms_cyber">Cybernetic arms</option>
+          <option value="mod_gills">Rib gills</option>
+          <option value="mod_arms_flesh,mod_gills">Arms and gills</option>
+        </select>
+        <select id="hold-low" title="The lower hands, on a four-armed body">
           <option value="">Lower hands empty</option>
           <option value="L2:shield">Shield, lower left</option>
           <option value="R2:dagger,L2:shield">Dagger and shield below</option>

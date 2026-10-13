@@ -107,6 +107,12 @@ var wt = KCHAR.morphWeights({ morph:{ height:1, weight:-1 }, ancestry:{ african:
 var mj = KCHAR.morphJoints(mskel, mkit, wt), fb = KCHAR.fk(mskel, mskel.joints.map(function(j){ return j.t; })), fm = KCHAR.fk(mskel, mj.t);
 ok(mskel.joints.every(function(j, i){ return [0, 1, 2].every(function(a){ return near(fm.P[i][a], fb.P[i][a] + mj.d[i][a], 1e-6); }); }), 'morph: world rest = bind + delta');
 ok(mj.d.some(function(d){ return Math.abs(d[1]) > 0.02; }), 'morph: height +1 moves joints');
+// the Hykkousoi's strangers all have rib gills (a people's mods); others none
+(function(){
+  var H = peoples.filter(function(p){ return p.id === 'hykkousoi'; })[0];
+  ok(mkit.items.some(function(it){ return it.id === 'mod_gills'; }) ? [1, 2, 3].every(function(k){ return (KCHAR.stranger(k, mkit, H).mods || []).indexOf('mod_gills') >= 0; }) &&
+     !KCHAR.stranger(1, mkit, peoples[0]).mods : true, 'mods: Hykkousoi strangers have gills');
+})();
 // strangers: deterministic, within their people's ranges
 var P0 = peoples[0], s1 = KCHAR.stranger(9, mkit, P0);
 ok(JSON.stringify(s1) === JSON.stringify(KCHAR.stranger(9, mkit, P0)), 'stranger: same seed, same record');
@@ -138,12 +144,34 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   var J = {}; gs.joints.forEach(function(j, i){ J[j.name] = i; });
   ok(['Left2Shoulder', 'Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Right2HandThumb3'].every(function(n){ return J[n] !== undefined; }) &&
      gs.joints[J.Left2Arm].parent === J.Left2Shoulder && gs.joints[J.Left2Shoulder].parent === J.Spine2, 'giant: the lower pair hangs from Spine2');
-  ok(gk.scale > 1.5 && gk.arms === 4 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, arms, the man\'s clips, lower grips');
+  ok(gk.scale > 1.5 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, the man\'s clips, lower grips');
+  var mods = gk.items.filter(function(it){ return it.slot === 'mods'; }).map(function(it){ return it.id; }).sort();
+  ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_flesh","mod_gills"]', 'mods: ' + mods);
+  var rec = KCHAR.blank(gk), shirt = { id:'x', slot:'torso' }, shirt4 = { id:'y', slot:'torso', arms:4 };
+  ok(KCHAR.arms(rec, gk) === 2 && KCHAR.fits(shirt, rec, gk) && !KCHAR.fits(shirt4, rec, gk), 'mods: no mod, two arms, two-armed tops');
+  rec.mods = ['mod_arms_flesh', 'mod_arms_cyber', 'mod_gills'];
+  ok(KCHAR.arms(rec, gk) === 4 && !KCHAR.fits(shirt, rec, gk) && KCHAR.fits(shirt4, rec, gk) &&
+     KCHAR.mods(rec, gk).map(function(m){ return m.id; }).join() === 'mod_arms_flesh,mod_gills', 'mods: one pair of arms at a time; four-armed tops');
+  ok(KCHAR.parts(rec, gk).filter(function(p){ return p.role === 'mod'; }).length === 2, 'mods: drawn as parts');
   var w = KCHAR.morphWeights({ morph:{ height:1, muscle:1 } }, gk), mj = KCHAR.morphJoints(gs, gk, w);
   ok([0, 1, 2].every(function(a){ return near(mj.d[J.Left2Hand][a], mj.d[J.LeftHand][a], 1e-9); }), 'giant: a lower hand moves with the morphs as the upper does');
   var G = peoples.filter(function(p){ return p.id === 'giants'; })[0], arms = {};
-  for(var k = 1; k <= 40; k++){ var r = KCHAR.stranger(k, gk, G); arms[r.tier + r.arms] = 1; }
+  for(var k = 1; k <= 40; k++){ var r = KCHAR.stranger(k, gk, G); arms[r.tier + KCHAR.arms(r, gk)] = 1; }
   ok(arms.temple4 && arms.patrol2 && Object.keys(arms).length === 2, 'giant: temple guards four-armed, patrols two (' + Object.keys(arms) + ')');
+  // every stranger's torso fits its arms; the four-armed giants' tops are four-armed (make_garments.py four_armed)
+  var item = {}; gk.items.forEach(function(it){ item[it.id] = it; });
+  ok(['giant_free_m_tunic4', 'giant_free_m_jerkin4', 'giant_free_m_chief4', 'giant_dalab_m_harness4'].every(function(id){ return item[id] && item[id].arms === 4; }) &&
+     item.giant_free_m_tunic && !item.giant_free_m_tunic.arms, 'giant: four-armed tops say so');
+  var F = peoples.filter(function(p){ return p.id === 'free_giants'; })[0], seen = {}, fit = true;
+  [G, F].forEach(function(P){
+    for(var k = 1; k <= 60; k++){
+      var r = KCHAR.stranger(k, gk, P), t = r.armour.torso && item[r.armour.torso];
+      seen[P.id + '.' + r.tier + (t ? '.' + t.id : '')] = 1;
+      if(t && !KCHAR.fits(t, r, gk)) fit = false;
+    }
+  });
+  ok(fit && seen['giants.temple.giant_dalab_m_harness4'] && seen['free_giants.warrior.giant_free_m_jerkin4'] &&
+     seen['free_giants.clan.giant_free_m_tunic'] && seen['free_giants.chief.giant_free_m_chief4'], 'giant: strangers wear tops that fit (' + Object.keys(seen).length + ' kinds)');
 })();
 
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');

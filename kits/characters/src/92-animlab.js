@@ -47,12 +47,12 @@
                    skin:'#b98a66', hair_color:'#3a2a1e', eye_color:'#5a3a22' },
     mpfb_female: { hair:'braid01', beard:null, armour:{ torso:'joepal_crude_t-shirt_female', legs:'cortu_cargo_pants', feet:'toigo_ankle_boots_female' },
                    skin:'#c99a74', hair_color:'#2c2019', eye_color:'#4e6a80' },
-    mpfb_giant:  { hair:'short04', beard:null, armour:{ legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals' },
+    mpfb_giant:  { hair:'short04', beard:null, armour:{ torso:'giant_dalab_m_harness4', legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals' },
                    skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e', dye:{ legs:'#b8443a' } }
   };
   var BUILD = {
     giant:   { label:'Four arms', morph:{ muscle:0.7, weight:0.25 } },
-    heavy:   { label:'Four arms, heavy', morph:{ height:-0.4, weight:0.8, muscle:1 } },
+    heavy:   { label:'Cybernetic arms, heavy', morph:{ height:-0.4, weight:0.8, muscle:1 } },
     patrol:  { label:'Two arms', morph:{ muscle:0.7, weight:0.25 } },
     short:   { label:'Short, broad', morph:{ height:-0.8, weight:0.6, muscle:0.6 } },
     neutral: { label:'Neutral', morph:{} },
@@ -65,15 +65,17 @@
       CAST.push({ id:g[0] + '-' + b, sex:g[0], body:g[1], build:b, label:g[2] + ' · ' + BUILD[b].label.toLowerCase(), short:g[2].charAt(0) + ' ' + b });
     });
   });
-  // the Giants of Dalab (tools/giant.py), on their own filter: two four-armed temple guards and a two-armed patrol
-  if(D.bodies.mpfb_giant) [['giant', 4], ['heavy', 4], ['patrol', 2]].forEach(function(g){
-    CAST.push({ id:'g-' + g[0], sex:'g', body:'mpfb_giant', build:g[0], arms:g[1], label:'Giant · ' + BUILD[g[0]].label.toLowerCase(), short:'G ' + g[0] });
+  // the giants (tools/giant.py), on their own filter: a four-armed temple guard (the flesh pair), a heavy one with the
+  // cybernetic pair, and a two-armed patrol (tools/mods.py)
+  if(D.bodies.mpfb_giant) [['giant', ['mod_arms_flesh']], ['heavy', ['mod_arms_cyber']], ['patrol', []]].forEach(function(g){
+    CAST.push({ id:'g-' + g[0], sex:'g', body:'mpfb_giant', build:g[0], mods:g[1], label:'Giant · ' + BUILD[g[0]].label.toLowerCase(), short:'G ' + g[0] });
   });
-  // the clothes the six wear: plain (OUTFIT), or a people's outfit for one tier (data/peoples.json outfits)
+  // the clothes the cast wears: plain (OUTFIT), or a people's outfit for one tier (data/peoples.json outfits; the giants'
+  // peoples dress only the giants, a four-armed top only the four-armed among them)
   var DRESS = [];
   (D.peoples || []).forEach(function(p){
     (p.tiers || []).forEach(function(t){
-      if(p.outfits && (p.outfits.male || {})[t[0]]) DRESS.push({ id:p.id + '.' + t[0], label:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), p:p, tier:t[0] });
+      if(p.outfits && ((p.outfits.male || {})[t[0]] || (p.outfits.giant || {})[t[0]])) DRESS.push({ id:p.id + '.' + t[0], label:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), p:p, tier:t[0] });
     });
   });
   var dress = '';
@@ -86,7 +88,9 @@
     var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && (d.p.outfits[c.body.replace(/^mpfb_/, '')] || {})[d.tier];
     if(set) ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
     r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
-    if(c.arms) r.arms = c.arms;
+    // the cast's own mods, or what the Mods menu puts on everyone (a top made for two arms comes off a four-armed body)
+    var pick = $('mods-pick') && $('mods-pick').value;
+    r.mods = pick ? pick.split(',') : (c.mods || []).slice();
     r.ancestry = null;
     return r;
   }
@@ -400,7 +404,9 @@
     var sc = $('scrub');
     sc.addEventListener('input', function(){ scrubbing = true; setPaused(true); setTime(+sc.value / 1000 * duration()); });
     sc.addEventListener('change', function(){ scrubbing = false; });
-    $('hold-low').hidden = !D.bodies.mpfb_giant;
+    $('mods-pick').addEventListener('change', function(){
+      Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)); })).then(function(){ return holdFor(current); }).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); });
+    });
     $('hold-low').addEventListener('change', function(){ holdFor(current).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); }); });
     $('hold-pick').addEventListener('change', function(){ holdChoice = $('hold-pick').value; holdFor(current).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); }); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-who]'), function(b){

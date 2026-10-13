@@ -1,10 +1,11 @@
 # kits/characters
 
 The character editor and the data a city needs to populate itself: two MakeHuman bodies (a man and a woman), and the
-four-armed Giant of Dalab made from the man's (Giants, below), whose face, build and ancestry morph, with library clothes, hair and beards that follow the morphs, a skin tone and a hair
+Giant made from the man's (Giants, below), whose face, build and ancestry morph, with library clothes, hair and beards that follow the morphs, a skin tone and a hair
 colour, and **peoples** (`data/peoples.json`) that keep a culture's strangers within its range (Chichani: ashen-brown
 skin and dark hair; Beast Riders: Asiatic or Amerindian, blond to brown hair). One record per citizen; no separate
-model per person. Two pages are built over the same pieces:
+model per person. Body mods (a second pair of arms, flesh or cybernetic; rib gills) go on any of them. Two pages are
+built over the same pieces:
 
 - **Cosmetic Lab** (`dist/cosmetic-lab.html`): one figure and every cosmetic choice (people, face, hair and colour, beard,
   skin, eyes, build, clothes and dye), with the idle, walk and run to see clothes move. It is the start of the player
@@ -14,8 +15,8 @@ model per person. Two pages are built over the same pieces:
 - **Animation Lab** (`dist/animation-lab.html`): each body three ways (neutral; short and broad; tall and lanky: `CAST`
   and `BUILD` in `src/92-animlab.js`), all six in the same plain clothes, side by side. A clip from the ledger plays on
   all six in step with the props it holds; pause, slow down, scrub, step a frame, swap the prop, show one body or
-  both, orbit or close in on one figure; the Giants filter shows three giants instead (two four-armed, one two-armed),
-  with a menu for what the lower hands hold. One-shots repeat. Each clip gets a review mark (good, needs work, broken),
+  both, orbit or close in on one figure; the Giants filter shows three giants instead (flesh arms, cybernetic arms,
+  two arms), with menus for the mods everyone wears and what the lower hands hold. One-shots repeat. Each clip gets a review mark (good, needs work, broken),
   the bodies it looks wrong on and a note. The published lab keeps them in its shared store (collection `reviews`, one
   document per clip, which Claude reads); run locally it keeps them in the browser.
 
@@ -164,29 +165,63 @@ figure, flat calm colour fields with one accent, organic ornament. The tool's sh
 bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_disc`, `crest`, `pendants`,
 `animal_belts`.
 
-**Giants of Dalab** (`tools/giant.py`, `make_mpfb.py giant`): LORE.md's engineered giants, green and about 3.6 m
-(3.4 to 4.1 with the sliders): the priests' temple guards have four arms, the street patrols two. A giant is the man's
-MakeHuman body, built again from his export, with three changes:
-- **A second pair of arms.** In the base GLB, `add_arms` copies each arm's joints (`Left2Shoulder`, `Left2Arm` ...
-  `Left2HandThumb3`, and the right side's) and the skin and nails they carry. The copy hangs 25 cm lower and nearer the
-  axis, from Spine2, and 30 degrees steeper than the upper pair (`HANG`, near its usual pose). Its root is shrink-wrapped
-  onto the torso's skin and takes the torso's weights, fading over 9 cm from its open edge, so the arm grows out of the
-  side of the ribs and the joint bends with them. The copies keep their `_VIDX`, so the man's morph deltas move them as
-  they move his arms (and `morph_kit` gives the new joints their sources' deltas). The lower pair has capsules (cloth,
-  push) and grips (`hands.L2`, `hands.R2`) of its own.
+**Body mods** (`tools/mods.py`, `tools/arms2.py`): what a genetic or cybernetic mod adds to a body, worn like an
+item (kit items in slot `mods`, the Cosmetic Lab's *Body mods* chips, `rec.mods`). Every body's skeleton carries a
+second pair of arms' joints (`Left2Shoulder`, `Left2Arm` ... `Right2HandThumb3`), whether a mod uses them or not. The
+copy hangs 25 cm lower than the upper pair and nearer the axis, from Spine2, and 30 degrees steeper (`HANG`, near its
+usual pose); the joints get their sources' morph deltas (`morph_kit`), capsules (cloth, push) and grips (`hands.L2`,
+`hands.R2`). So the clips, the grips and the lower-arm controller are the same on every body, and nothing is drawn on
+the joints until a mod is worn:
+- `mod_arms_flesh`, the genetic pair: each arm's skin and nails copied onto the lower joints. Its root is
+  shrink-wrapped onto the ribs and takes the torso's weights, fading over 9 cm from its open edge, so the arm grows out
+  of the side of the ribs and bends with them.
+- `mod_arms_cyber`, the cybernetic pair: jointed limbs (bronze plates, steel joints), each part rigid on its bone, on a
+  mount plate on the ribs.
+- `mod_gills`, rib gills: four slits a side over the ribs, a lip of skin over a dark slit, ray-cast onto the body. The
+  Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
+
+A mod's vertices name the MakeHuman vertex whose deltas move them (`_VIDX`), so the sliders reshape them with the body;
+the flesh arms and the gills take the skin tint. A mod says what it grants (`grants.arms` 4, `grants.gills`) and its
+group (one pair of arms at a time). `KCHAR.arms(rec, kit)` is 4 when a worn mod grants it. No clip moves the lower
+arms: the figure drives them from the upper pair after each clip (`arms2` in `50-figure.js`, `_arms2` in
+`kchar_figure.gd`), only when the body has four. In most clips they keep a guard of their own (forearms forward, hands
+loosely closed before the belly) and take a share of the upper arms' motion by clip group (`SHARE`: a walk or a block
+half of it, a blow or a shot little); in climbing, swimming and falling they copy the upper arms whole. They follow
+with a lag of 0.09 s, and `bodyFix` keeps them out of the body, the thighs and the upper arms. `hold({ R2, L2 })` puts
+props in the lower hands.
+
+*Why not hidden arms baked into every body?* Invisible geometry costs every figure its vertices and morph deltas, and
+one fixed pair could not be both flesh and machine. The joints are cheap (some 40 bones that nothing weights until a
+mod does), so they are always there; the geometry comes with the mod.
+
+*Four-armed clothing.* Torso items carry an arm count (kit item `arms`, 2 when absent). A four-armed body wears only
+four-armed tops, a two-armed body never (`KCHAR.fits`: the wardrobe hides the rest, a stranger is not drawn in them, a
+torso that stops fitting when a mod goes on comes off). In `make_garments.py`, `four_armed` opens a top where each
+lower arm comes out of the ribs (its holes' vertices dropped, listed in `.cloth.json` `gone` so the cloth chains still
+find theirs), `sleeves2` and `armbands2` fit sleeves and bands to where the lower pair hangs, and `make_mpfb.py`
+(`mods.fit_four`) gives the lower sleeves the flesh arms' weights. The two-armed library and culture tops have no
+four-armed version: only the giants' clothes do, since giants are the four-armed people a city meets.
+
+**Giants** (`tools/giant.py`, `make_mpfb.py giant`): LORE.md's engineered giants, green and about 3.6 m (3.4 to 4.1
+with the sliders). A giant is the man's MakeHuman body, built again from his export, with two changes:
 - **Big and slow.** `kit.scale` (2.0) scales the whole figure, and its clips play at 1 / sqrt(scale) of their speed (a
   pendulum's pace, `fig.cadence`): a giant walks as something heavy does. A game moving one by a clip's `root_speed`
   multiplies it by sqrt(scale).
-- **The man's clips** (`kit.anims`: no anims.glb of its own). No clip moves the lower arms: the figure drives them
-  from the upper pair after each clip (`arms2` in `50-figure.js`, `_arms2` in `kchar_figure.gd`). In most clips they
-  keep a guard of their own (forearms forward, hands loosely closed before the belly) and take a share of the upper
-  arms' motion by clip group (`SHARE`: a walk or a block half of it, a blow or a shot little); in climbing, swimming
-  and falling they copy the upper arms whole. They follow with a lag of 0.09 s, and `bodyFix` keeps them out of the
-  body, the thighs and the upper arms. `hold({ R2, L2 })` puts props in the lower hands.
-The record's `arms` (4 or 2) shows or leaves out the lower pair (its skin is materials of its own, `kit.arms2`). The
-giants wear a few of the man's items (the Dalab kilt and sandals, the Voth loincloth, the bead cap, the sun sash; kit
-culture `giants`), and the Giants of Dalab people (`data/peoples.json`) dresses its strangers as patrols (70 %,
-two-armed) or temple guards (30 %, four-armed).
+- **The man's clips** (`kit.anims`: no anims.glb of its own).
+
+Its four arms are the flesh mod. NPC giants are of two peoples (`data/peoples.json`):
+- **Giants of Dalab** (`giants`): street patrols (70 %, two-armed, the Dalab kilt, sash and sandals) and the priests'
+  temple guards (30 %, the flesh pair; the god's harness: a gold pectoral of rays, red straps crossing to a gold belt,
+  gold bands on all four arms, `giant_dalab_m_harness4`).
+- **Free Giants** (`free_giants`), who rebelled and left for Giant Country, dressed as Gauls (weld-yellow and woad
+  wool in madder checks, `tartan` and `knot` motifs): clansmen in a belted long-sleeved tunic, checked braccae and
+  wrapped boots (55 %); four-armed clansmen (15 %, the tunic with four sleeves); warriors (22 %, four-armed: a hide
+  jerkin, a baldric, bronze bands on all four arms, the horned bronze helmet); chiefs (8 %, four-armed: a woad tunic
+  in black checks, a madder sagum pinned with a bronze brooch, a gold torc). The four-armed among them are temple
+  guards who escaped.
+The giants' own clothes (`giant_*`, made on the man's body) are worn only by the giant; of the man's items the giant
+wears a few (the Dalab kilt and sandals, the Voth loincloth, the bead cap, the sun sash, some hair and beards: kit
+culture `giants`).
 
 **Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
 garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
@@ -265,9 +300,10 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
-| `tools/giant.py` | the Giants of Dalab: the second pair of arms (`make_mpfb.py giant`) | |
+| `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
+| `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
-| `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab and Yuni clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

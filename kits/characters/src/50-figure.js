@@ -241,10 +241,10 @@ function KCharFigure(body, sliders, load){
           });
         }); }))
         .then(function(){
-          // a giant with two arms (record arms 2: a street patrol) leaves out the lower pair's skin
-          var four = (rec.arms || kit.arms || 2) >= 4;
-          Object.keys(live).forEach(function(k){ live[k].visible = !!want[k] && (four || !kit.arms2 || kit.arms2.indexOf(live[k].userData.srcMaterial) < 0); });
-          self.fourArms = four && !!kit.arms2;
+          Object.keys(live).forEach(function(k){ live[k].visible = !!want[k]; });
+          // a mod that grants a second pair of arms (tools/mods.py) brings their skin as a piece; the joints are there
+          // on every body, and arms2() drives them only when it is worn
+          self.fourArms = kit.style === 'mpfb' && KCHAR.arms(rec, kit) >= 4;
           var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
@@ -304,7 +304,7 @@ function KCharFigure(body, sliders, load){
   };
 
   /* ---- holding props (data/props.json, tools/make_props.py) ----
-     hold({ R:'sword', L:'shield' }) (and a giant's lower hands, R2 and L2): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
+     hold({ R:'sword', L:'shield' }) (and the lower hands of a four-armed body, R2 and L2): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
      gives (the props are modelled in it), and that hand's fingers close round it in the prop's grip style (fist,
      trigger, wide): their local rotation becomes the rest one times the curl, every frame after the clip (a clip's own
      finger motion gives way to the grip). With both, the left hand takes hold of the right's prop too (twoHands); a
@@ -863,7 +863,8 @@ function KCharFigure(body, sliders, load){
   }
   function afterClip(dt){ arms2(dt); bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
 
-  /* arms2: a giant's lower arms (tools/giant.py: Left2Arm..., copies of the upper pair hung lower on the ribs). No clip
+  /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
+     joints hung lower on the ribs, on every skeleton). No clip
      moves them: each frame they take a pose from the upper pair's. A clip's group picks how:
        guard  most clips: a resting pose of their own (GUARD: forward a little, elbows bent, the hands before the
               belly; the pair already hangs steeper than the upper at rest, tools/giant.py HANG) plus half the upper arms' motion over it, so they swing in a walk and shadow a blow
@@ -906,7 +907,7 @@ function KCharFigure(body, sliders, load){
     });
   })();
   function arms2(dt){
-    if(!LOW.length) return;
+    if(!LOW.length || !self.fourArms) return;
     var clip = self.action && meta[self.action.getClip().name], copy = clip && COPY[clip.group];
     var wantW = !self.action ? 0 : copy ? 0 : 1, k = !self.action ? 1 : copy ? 1 : (clip && SHARE[clip.group] !== undefined ? SHARE[clip.group] : 0.4);
     var a = dt === undefined ? 1 : 1 - Math.exp(-dt / LAG), aw = dt === undefined ? 1 : 1 - Math.exp(-dt / 0.3);

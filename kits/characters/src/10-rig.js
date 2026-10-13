@@ -102,7 +102,24 @@ var KCHAR = (function(){
   function mpfbItem(rec, kit, slot){
     var id = (slot === 'hair' || slot === 'beard') ? rec[slot] : (rec.armour || {})[slot];
     var it = id && byId(kit.items, id);
-    return it && it.slot === slot ? it : null;
+    return it && it.slot === slot && fits(it, rec, kit) ? it : null;
+  }
+  /* body mods (tools/mods.py, kit items in slot 'mods'): record.mods lists the ids worn. One of a group at a time
+     (one pair of arms); a mod that grants arms 4 gives the body four (the second pair's joints are on every skeleton) */
+  function modsOf(rec, kit){
+    var seen = {};
+    return (rec.mods || []).map(function(id){ return byId(kit.items || [], id); }).filter(function(it){
+      if(!it || it.slot !== 'mods' || seen[it.group]) return false;
+      seen[it.group] = 1; return true;
+    });
+  }
+  function arms(rec, kit){
+    return modsOf(rec, kit).some(function(m){ return m.grants && m.grants.arms >= 4; }) ? 4 : 2;
+  }
+  /* a torso item is made for two arms or four (kit item arms, 2 by default): a four-armed body wears only four-armed
+     tops, and the other way round */
+  function fits(it, rec, kit){
+    return it.slot !== 'torso' || (it.arms || 2) === arms(rec, kit);
   }
   function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
   function hairFor(kit, id, head, kind){
@@ -122,6 +139,7 @@ var KCHAR = (function(){
         var it = mpfbItem(rec, kit, slot);
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
       });
+      modsOf(rec, kit).forEach(function(m){ out.push({ key:key(m.glb), mesh:'*', role:'mod', slot:'mods' }); });
       return out;
     }
     kit.regions.forEach(function(r){ out.push({ key:key('pieces/' + kit.body + '/base.glb'), mesh:'base_' + r, role:'base', slot:r }); });
@@ -266,16 +284,19 @@ var KCHAR = (function(){
         if(x < acc || t === P.tiers.length - 1){ rec.tier = P.tiers[t][0]; outfit = outfits[rec.tier] || null; break; }
       }
     }
+    // a people's mods (the Hykkousoi's rib gills) and its tier's (a temple guard's second pair of arms), where the
+    // body has them; no draw of its own, so a people without mods draws as it always has
+    var mods = (P.mods || []).concat((outfit && outfit.mods) || []).filter(function(id){ return kit.items.some(function(it){ return it.id === id && it.slot === 'mods'; }); });
+    if(mods.length) rec.mods = mods;
     MPFB_SLOTS.forEach(function(slot){
       if(outfit && slot !== 'hair' && slot !== 'beard'){
         var want = outfit[slot] || null;
-        rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot; }) ? want : null;
-        if(outfit.arms) rec.arms = outfit.arms;       // a giant's tier: the temple guards four-armed, the patrols two
+        rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot && fits(it, rec, kit); }) ? want : null;
         return;
       }
       if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
       // a culture's own clothes (kit item culture) go only to its people's strangers
-      var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id); });
+      var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id) && fits(it, rec, kit); });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
       var id = have.length && r() < odds ? pick(have).id : null;
@@ -324,7 +345,7 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  return { pose:pose, parts:parts, hidden:hidden, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
            along:along, crowd:crowd, colliders:colliders };
 })();

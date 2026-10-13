@@ -2,8 +2,9 @@
 # bodies, holding props in clips (a drawn bow, a two-handed hoe and rifle). On a machine with no display:
 #   xvfb-run -a -s "-screen 0 1400x800x24" godot --path godot --rendering-method gl_compatibility \
 #     --rendering-driver opengl3 --script res://tests/character/kchar_shot.gd -- --out=/abs/path.png [--face] [--giant]
-# --giant: three Giants of Dalab instead (kits/characters/tools/giant.py): a temple guard with a spear above and a
-# shield below, walking; one idle; a two-armed street patrol
+# --giant: four giants instead (kits/characters/tools/giant.py, mods.py): a temple guard of Dalab in the god's harness,
+# a spear above and a shield below, walking; one with cybernetic arms, idle; a four-armed Free Giant warrior with a
+# sword and a shield, walking; a Free Giant chief in his sagum and torc
 extends SceneTree
 
 const DIR := "res://data/characters"
@@ -44,19 +45,28 @@ func _init() -> void:
 
 
 func _giants(peoples: Dictionary) -> void:
-	var plan := [[2, {"R": "spear", "L2": "shield"}, "walk"], [11, {"R": "spear"}, "idle"], [5, {}, "walk"]]
+	# [seed, people, tier, mods (null: the tier's), held, clip]
+	var plan := [[2, "giants", "temple", null, {"R": "spear", "L2": "shield"}, "walk"],
+		[11, "giants", "temple", ["mod_arms_cyber"], {"R": "spear"}, "idle"],
+		[5, "free_giants", "warrior", null, {"R": "sword", "L2": "shield"}, "walk"],
+		[8, "free_giants", "chief", null, {}, "idle"]]
 	for i in plan.size():
 		var fig := KCharFigure.new()
 		fig.load_body(DIR, "mpfb_giant")
-		fig.position = Vector3((i - 1) * 2.1, 0, 0)
+		fig.position = Vector3((i - 1.5) * 2.1, 0, 0)
 		root.add_child(fig)
-		var rec := KChar.stranger(plan[i][0], fig.kit, peoples["giants"])
-		rec["arms"] = 2 if i == 2 else 4
+		var p: Dictionary = peoples[plan[i][1]]
+		var rec := KChar.stranger(plan[i][0], fig.kit, p)
+		# the tier's outfit and mods, whatever tier the seed drew
+		var outfit: Dictionary = p["outfits"]["giant"][plan[i][2]]
+		for sl in ["head", "torso", "legs", "feet"]:
+			rec["armour"][sl] = outfit.get(sl, null)
+		rec["mods"] = plan[i][3] if plan[i][3] != null else outfit.get("mods", [])
 		fig.apply(rec)
-		fig.hold(plan[i][1])
-		fig.play(plan[i][2])
+		fig.hold(plan[i][4])
+		fig.play(plan[i][5])
 		walkers.append(fig)
-	_stage(Vector3(0.6, 2.2, 13.5), Vector3(0, 1.9, 0))
+	_stage(Vector3(0.6, 2.2, 15.5), Vector3(0, 1.9, 0))
 
 
 func _stage(eye: Vector3, at: Vector3) -> void:

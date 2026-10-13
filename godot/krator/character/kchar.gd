@@ -54,9 +54,34 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 	if id == null:
 		return null
 	for it in kit["items"]:
-		if it["id"] == id and it["slot"] == slot:
+		if it["id"] == id and it["slot"] == slot and fits(it, rec, kit):
 			return it
 	return null
+
+
+# body mods (kits/characters/tools/mods.py, kit items in slot "mods"): record.mods lists the ids worn, one of a group at
+# a time; a mod granting arms 4 gives the body four (as KCHAR.mods / arms / fits)
+static func mods(rec: Dictionary, kit: Dictionary) -> Array:
+	var out := []
+	var seen := {}
+	for id in rec.get("mods", []):
+		for it in kit["items"]:
+			if it["id"] == id and it["slot"] == "mods" and not seen.has(it.get("group")):
+				seen[it.get("group")] = true
+				out.append(it)
+	return out
+
+
+static func arms(rec: Dictionary, kit: Dictionary) -> int:
+	for m in mods(rec, kit):
+		if int(m.get("grants", {}).get("arms", 2)) >= 4:
+			return 4
+	return 2
+
+
+# a torso item is made for two arms or four (kit item arms, 2 by default)
+static func fits(it: Dictionary, rec: Dictionary, kit: Dictionary) -> bool:
+	return it["slot"] != "torso" or int(it.get("arms", 2)) == arms(rec, kit)
 
 
 static func parts(rec: Dictionary, kit: Dictionary) -> Array:
@@ -66,6 +91,8 @@ static func parts(rec: Dictionary, kit: Dictionary) -> Array:
 		var it = item(rec, kit, slot)
 		if it != null and not (slot == "hair" and hat != null and hat.get("covers_hair", false)):
 			out.append({"key": key(it["glb"]), "mesh": "*", "role": slot if slot == "hair" or slot == "beard" else "armour", "slot": slot})
+	for m in mods(rec, kit):
+		out.append({"key": key(m["glb"]), "mesh": "*", "role": "mod", "slot": "mods"})
 	return out
 
 
@@ -210,12 +237,20 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 				rec["tier"] = tiers[t][0]
 				outfit = outfits.get(rec["tier"])
 				break
+	# a people's mods and its tier's, where the body has them (no draw of their own)
+	var md := []
+	for id in P.get("mods", []) + (outfit.get("mods", []) if outfit != null else []):
+		for it in kit["items"]:
+			if it["id"] == id and it["slot"] == "mods":
+				md.append(id)
+	if md.size():
+		rec["mods"] = md
 	for slot in SLOTS:
 		if outfit != null and slot != "hair" and slot != "beard":
 			var want = outfit.get(slot)
 			var ok := false
 			for it in kit["items"]:
-				if want != null and it["id"] == want and it["slot"] == slot:
+				if want != null and it["id"] == want and it["slot"] == slot and fits(it, rec, kit):
 					ok = true
 			rec["armour"][slot] = want if ok else null
 			continue
@@ -224,7 +259,7 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 			continue
 		var have := []
 		for it in kit["items"]:            # a culture's own clothes go only to its people's strangers
-			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")):
+			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")) and fits(it, rec, kit):
 				have.append(it)
 		if slot == "hair" and styles != null:
 			var pref := []
