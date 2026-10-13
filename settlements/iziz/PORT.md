@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 209 (23%) | 24 (3%) | 52 (6%) | 47 (5%) | 593 (64%) |
+| KB | 212 (23%) | 24 (3%) | 52 (6%) | 67 (7%) | 570 (62%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -59,7 +59,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/83-amphitheater.js` | 8.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/84-fuel.js` | 4.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-factory.js` | 9.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/88y-iziz-matlib.js` | 4.7 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the material library on MAT and the city's late tables (KMAT.bindMat), and every material as a KMAT record naming its shader-library hook |
+| `src/88y-iziz-matlib.js` | 4.8 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the material library on MAT and the city's late tables (KMAT.bindMat), and every material as a KMAT record naming its shader-library hook |
 | `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 3.4 | [web] | 14 | 1 | 1 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 2.9 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |

@@ -129,7 +129,8 @@ At the last step the sidebar shows the **census**: an estimate of residents, the
 workplaces by kind of work (rates in `TUNE.census`; the Voth cantons' own people are not counted).
 
 **Power and light** (`37-vc-light.js`, `TUNE.power`, `TUNE.light`; owner, 2026-10-09):
-* Voth's power houses (`voth_generator`: the steam turbine hall and the fumarole vent house) are placed at step 9, on the
+* Voth's power houses (`voth_generator` v0, the steam turbine hall, and `voth_bldg_power_station`, the power station
+  that replaced the small fumarole house on 2026-10-12) are placed at step 9, on the
   avenues and main streets of the industry district, before its lots fill. They stand on HARD ground, as civic lots do,
   and the census staffs them (`TUNE.census.jobs.power`). The generator is no longer one of the random `industrial` pieces.
 * Electric light reaches the industry district, the guilds (guild halls, the Guild canton), the clan compounds and wealthy
@@ -347,6 +348,264 @@ that kit's own code, sealed like the embassies (about 100 KB of its source, proc
 * junks and cargo hulks along the long piers (`VC.berthShips`, `TUNE.harbour.ship`).
 
 The moored ones are records (`VC.MOOR`), each scaled to its berth's length and drawn as one InstancedMesh per mesh of its model (`VC.drawVessels`). Their sails flutter on the kit's clock.
+
+**Every building's interior** (`41-vc-building-interiors.js` records, `56b-vc-building-interiors-host.js` draws; `TUNE.ix`;
+phase A of `SIM-ROADMAP.md`, the owner's brief of 2026-10-12). Every standing lot building gets rooms and furniture, and the
+homes are checked against the brief's rule: per 2 residents a bed, an item store and a food store, and a dining or
+entertaining room where the plan allows. Residents are the census's (`TUNE.census.live`); a home that falls short is
+**reported, not forced** (the owner's answer to Q3).
+
+* **Types, not lots.** A lot draws a kit model (key, variant, slot), so every lot with the same model and programme has the
+  same building. It is planned and furnished once, in the model's frame, and placed by each lot's pose: 8,050 lot
+  buildings and 248 others are 124 types, about 8 s at load (no bake needed).
+* **The shell** is read off the kit model (`VC.ixProbe` builds it once and hands its boxes to `VC.ixShellFrom`): the main
+  block (the biggest volume that spans head height, stands on the ground and is not a thin wall; a round one as the square
+  inside it), its floor on any plinth, storeys of `TUNE.ix.storeyH`, the street door mid-front. The boxes are each mesh's
+  exact vertices (three.js r128's `Box3.setFromObject` overstates a turned mesh, and Voth's tapered blocks are 4-sided
+  cylinders turned 45 degrees). A model with no such block takes `TUNE.ix.fallback` of its footprint and is listed in
+  the report (none do now); `TUNE.ix.shells` overrides any `key|v|slot`.
+* **The programme** is by lot class (`TUNE.ix.programmes`, per storey, the last repeated upward; `TUNE.ix.single` for a
+  one-storey building), or by kit key (`TUNE.ix.byKey`: barracks, school, guild hall, customs house, smithy). A home's
+  bedrooms are `chamber`s: a bed and a chest, then as many more beds (`TUNE.ix.chamber`) and stores as the room holds.
+* **Furnished** by `kits/interiors` (`planBuilding`, `furnishRoom`) from the catalog, as the cantons are; a home that fails the
+  residence rule is furnished again with another seed (three tries).
+* **The cutaway (x)** now opens the building nearest the middle of the view when no canton is nearer: the same planes and
+  storey keys, its walls with their doors and windows, stairs and furniture drawn the first time it is opened. The inspector
+  names its pieces.
+* **The buildings off the lots** (session 2): Voth's own builders the city calls are logged by `build.py` with their
+  arguments (`VOTH.BUILT`: the monastery's dormitories, chapel and assembly hall, the funerary temple, the House of
+  Healing); the city's shrine and lighthouse models record their shells (`VC.ixSite`); the chinampas' stilt huts carry
+  their size (`VC.chin.hutList`). Each is planned as `TUNE.ix.sites` says. The House of Healing is counted from the wards
+  the city already furnished (its cots and dispensaries), not planned again. The huts' beds are reported as room to
+  spare: the census counts the chinampa growers' work, not their homes.
+* **Kit models with their own shell**: an ASSET may carry `ix: { block: [x, z, w, d], y, h, storeys }`, read before any
+  guess. The citizen simulation's eight new models (`kits/catalog/krator-master-buildings-voth.js`: watchhouse,
+  caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery) carry it; they stand nowhere yet (phase B
+  places them), so `VC.ixKitCheck` plans each as a lot of the class in `TUNE.ix.kitCheck` and the report lists them. Their
+  trades have room kinds of their own (`brewhouse`, `weaving`, `tanyard`, `butchery`, beside the cantons' `bakery`), each
+  requiring its trade's pieces by catalog role (the still, barrels and vat; the looms and dye vat; the vats).
+* **The density overlay (n)**: residents per hectare on 50 m cells (a diverging ramp round the city's mean), the homes short
+  of beds hatched; again for workplaces per hectare; again for off. Its legend has the totals.
+* **The report** (the "interiors report" button, and `verify.py`'s output): beds, item and food stores needed and held;
+  the shortfall by lot class and by district; the job table of the brief's 1.2 (a row per kind of work, a column per
+  furniture kind, with the census's workplaces, the 90% target and the posts placed); every type with its shell, storeys,
+  rooms and counts. `VC.ixSlots(i)` is what phase B's places will read; `VC.IX.export()` is all of it as JSON.
+
+**The citizens' places (phase B)** (`42-vc-sim-places.js`; `TUNE.sim`, `TUNE.census.byKey`; `SIM-ROADMAP.md` 2.3). What
+phase C's citizens will need, placed and declared, and its deficits reported before anyone walks:
+* **The buildings** (`VC.simBuildings`, after the street method and the owner's edits, before the census): the new kit
+  models go onto the plan. The trades (14 bakeries, 10 butchers, 8 weavers, 4 breweries, 3 tanneries, `TUNE.sim.place.trades`)
+  take shop, craft and industrial lots whose plot holds their model and whose new footprint clears every other building,
+  front kept on the street, spread over the city (each next lot the farthest from those its trade holds). Three
+  watchhouses take a house near the east, west and south of the city; the central one is the Fortress's armoury. The
+  caravanserai is placed at step 3, right after the avenues (`VC.simCaravanserai`, as the House of Healing is): on the
+  free ground nearest the River Gate's marker, inside the wall's clearance, fronting an avenue, so the streets and lots
+  of steps 6-12 are laid round it (owner, 2026-10-12). The coast-guard berth stands on the water off the Fortress's
+  apron, clear of every bridge, causeway and pier, on a stone footing. A converted lot counts in the census as its new
+  building (`TUNE.census.byKey`).
+* **More work furniture** where the 90% rule fell short (owner, 2026-10-12): dense work rooms used only by those
+  buildings' programmes: `factory` (the industrial lots), `enginehall` (the power houses), `drillhall` (the garrison and
+  barracks), `guardroom` (the watchhouses and the coast-guard berth), `alehouse` (the taverns and the caravanserai),
+  `counting` (the guild hall and the customs house), a stable at the caravanserai, a second storey in the funerary
+  temple; the Granary deck's granaries and the mustering ground are work places too.
+* **The wells** (`VC.wells`, after the park furniture): `voth_well` on the plazas and market squares and every 150 m along
+  the residential streets, none within 90 m of another (or of the parks' and the monastery's wells); the manors and clan
+  compounds have their own, in their courtyards (a DRINK on the home). They are a 'Wells' district's art: drawn and
+  inspected as the other furniture.
+* **The places** (`VC.simPlaces`, after the interiors): every building with an interior, every canton room, every well,
+  park, market and burial ground, the fields, piers, mines, quarries, mills and the wall's towers and gates are
+  `SIM.place`s (about 11,100), each with its activities (its furniture read through `TUNE.sim.furnAct` over
+  core/simulation's `SIM.FURN_ACT`: `SIM.slotsFromFurniture(pieces, map)`), its hours (`TUNE.sim.hours`), its pull for free
+  time (`TUNE.sim.pull`) and its work posts with their kind of work (`TUNE.sim.posts` per piece; a canton room's and the
+  outdoor work's are the census's).
+* **Session 2:** a piece's capacity by its size (`TUNE.sim.postWidth`: a 4.4 m workbench takes two; `seatWidth`: seats
+  round a table's edge), the places' `spots` (where people stand: a step before each work piece, seat, table and bed,
+  the work ones first, at most 48), an open place's reach `r` and `wander`, and each place's `workplaces`. The density
+  overlay's third mode (n) maps work posts against 90% of the workplaces: warm where short, cool where there is room.
+  The power station (`voth_bldg_power_station`, four engine halls of up to 20 workstations) took the small power
+  house's place, and every kind of work now meets the 90% rule.
+* **The 90% rule** (`VC.simWorkAudit`): for every kind of work the census counts, the posts against 90% of its
+  workplaces; a short kind is named with its buildings that have the most floor per post (where more posts would go).
+  In the report panel (the "interiors report" button) and in `verify.py`'s output.
+
+**The citizens (phase C)** (`43-vc-sim-nav.js`, `44-vc-sim-people.js`; `TUNE.sim.nav`, `TUNE.sim.people`; `SIM-ROADMAP.md`
+2.4). Session 1 made the walkable city and the people in it:
+* **The pedestrian layer** (`VC.pedNav`): core/simulation's NAV graph, registered as SIM's `pedestrian` layer (about 27,600
+  nodes and 35,000 edges, built in about a second at load). Every street of the plan, a node every 20 m, with a shared
+  node where two cross and a junction where one stops at another; a dead alley or lane end reached over to the street
+  behind it; each plaza a hub joined to the streets round it (a village's lanes start at its green); the park walks;
+  the cantons: each terrace a ring of nodes, each top deck a grid, the Ancestry ramp, the flights (stairs cost 1.6
+  times), the bridges over their arch, the causeways from canton to street, the canton doors. The layer is `yWeight`ed
+  (core/simulation's new opt-in): a place on a terrace finds its node on that terrace, not on the street under it.
+  `VC.pedAudit` checks it is one body and lists the places far from it. Not joined yet: the canton rooms (the canton
+  interiors' own graph) and the chinampa huts (by kayak, the water layer).
+* **The people** (`VC.simPeople`): every home's census residents become SIM actors (53,355, the census exactly), half
+  of them of working age (all of a barracks' or a dorm's). The jobs are the places' workplaces, dealt: a home that is
+  also a workplace fills its own posts first (not household service, which comes in from outside); 70% of the farm,
+  mine and quarry posts go to slaves, housed at the site and counted apart from the census (the owner's Q5); every other
+  post to the nearest free workers by the walk on the pedestrian layer (`SIM.nav.field`, core/simulation's new
+  multi-source search: one search labels the whole city with its nearest free post), never past 3 km walked. The gentry
+  (rich, manor, clan) take only the professions (`gentryJobs`) and otherwise live on their means. Each actor carries its
+  home, work, class and wealth (the owner's Q6 recommendation) and a plain day's schedule (session 2 brings the week).
+* **The report** (the "interiors report" button, first section; `verify.py`): people by class, workers employed and out
+  of work by district, every kind of work's posts filled and how, unfilled, the commutes in metres walked; the pedestrian
+  layer's counts and what is off it; an A* check of a sample of the commutes. `verify.py --assert` also asks a sample of
+  actors at 8 and at 2 where they go: each worker chooses its work, each sleeper its home.
+* **The outside stairs and ladders** (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): every
+  kit model records each stair and ladder it builds (its registry's `walkRec`; `settlements/voth/catalog/README.md`
+  "Walk records"); the model probe (`VC.ixProbe`) collects them per model, variant and seed slot (`VC.IX.walks`), and
+  `VC.pedNav` puts them at every standing lot: about 6,800 stairs and 4,700 ladders on 6,400 lots, each a `stairs` (or
+  `ladder`, three times the cost) edge from foot to head. A foot at the lot's ground joins its street; two ends of one lot
+  at one height (a landing between flights, a roof both reach) join each other; a foot up on a gallery or roof no other
+  stair reaches is reached through the house (an `indoor` edge, until the buildings' own graphs are joined). Every head
+  is on the main body. The first-person walker gets each stair as a core/walk strip with a landing at its head (not the
+  ladders). `verify.py --assert` routes a sample of the heads from the city's middle and stands the walker on a sample
+  of the stairs mid-flight.
+* **Session 2: the week, running** (`56c-vc-citizens-host.js`; `TUNE.sim.week`, `TUNE.sim.run`, `TUNE.sim.embody`):
+  every citizen is stepped once a simulated minute from the frame loop (the owner's Q1), on the page's clock; the hour
+  slider re-places everyone. Each kind of work has a shift (`TUNE.sim.week.shifts`, a share on nights for the guards,
+  soldiers, stokers and jailers), and each role three days built from it: `work` (8 hours' sleep ending an hour before
+  the shift, a meal, the shift, a meal, free time), `off` and `rest` (core/simulation's new `scheds` and `week`). Day 7 is
+  the rest day for all but the essential kinds; every worker has a rota day off among the other six (the owner's Q8).
+  Free time: SOCIALIZE out, RELAX, IDLE and REST at home (a chair or a bed: `TUNE.sim.alsoAct`, the owner's "chairs,
+  stools could be a good target for idle and beds etc for rest"); a house is private (`access: 'private'`). The clock
+  has 20x and 60x. The citizens near the view are drawn (up to 1,500 within 220 m: a figure whose tunic says what
+  they are doing). The census is sampled at 3, 10, 15 and 20 each day; the report's "The week, running" shows now,
+  the samples, and what people wanted and did not get. `verify.py --assert` runs a workday and the rest day's morning
+  headless (`VC.simDay`). To keep 54,000 decisions cheap, core/simulation gained a place grid per activity (exact
+  nearest-first, an empty answer remembered for the minute), lazy paths (decided from the straight line, found when
+  drawn), `SIM.REACH`, and a batched log.
+* **More company, the slaves' rest day, worship sized** (owner, 2026-10-12): every plaza and pocket park of the plan is a
+  place, its room by its area (`TUNE.sim.greens`: about 26,000 more places to socialize); a house's seats and table
+  places take VISIT, its own people and the neighbours within `TUNE.sim.visitR` m (core/simulation's `guests` on a
+  private place), and someone who finds no room out visits instead. Slaves work half their shift on the rest day
+  (`TUNE.sim.week.slaveRest`). A shrine's, chapel's, the funerary temple's and a canton shrine room's congregation is its
+  ground floor at 2.5 m2 a worshipper (`TUNE.sim.worship`); `VC.simWorshipNeed` sizes the rest day's worship (in the
+  report and `verify.py`).
+* **The rest day's worship** (owner, 2026-10-12: "3 with half; make 2 new unique temple models ... place one on the west
+  side and one on the southeast side at the pre-street phase; and make 3 small tomb size shrines ... Clan compounds can
+  also take this furniture shrine. Make a house size chapel that can go in the villages"): three services (8, 11, 17),
+  half the city dealt one each (core/simulation's actor `alias`: `TUNE.sim.worship.at`, `share`); the Temple of the Ash
+  Saints (a Velothi stepped hall under a drummed dome, fire pylons, a portico) and the Temple of the Tide Mother (a
+  Hlaalu basilica, its tower and forecourt), kits/catalog, placed at step 5 off an avenue on the west and southeast
+  (`VC.simTemples`, the caravanserai's search: `VC.simPrePlace`), each hall about 1,360 standing; a village chapel in
+  each village (the house nearest its green); three small shrines (`voth_shrine_stele`, `_lantern`, `_urn`, kits/catalog
+  furniture, `holds` 2-3) along the big parks' walks and in every pocket park of 120 m2 or more (`VC.parkShrines`), and
+  in every clan compound's shrine room (`clanshrine`, its hall in the small compound). Worship by floor (2.5 m2) and by
+  each shrine's `holds`.
+* **Benched squares and village shrines** (owner, 2026-10-12: "Add a couple village size shrines and benched squares
+  for that overflow"): the overflow was the cantons' people (nowhere within reach to sit with company on a working
+  afternoon) and the rest day's worshippers in the suburbs, farms and mines. `VC.simSquares` (`TUNE.sim.place.squares`)
+  clears a few house lots at each canton's foot (out from its apron, or from its causeway's land end: the Fortress) for
+  34 x 24 m squares fronting a street: a ring of 10 benches round the well `VC.wells` sets in the middle, benches along
+  the three inner sides, braziers at the corners (27 benches); each is a plaza green (standing room by area) whose
+  benches add seats (`Benched square (<canton>)`). `VC.simVillageShrines` (`TUNE.sim.place.villageShrine`) places the
+  `voth_bldg_village_shrine` (kits/catalog: a walled precinct, a pillared hall with a lantern cupola, a forecourt with a
+  stele, an offering basin and braziers; its nave holds 81) where the most worshippers are left without room when each
+  household's are given to the nearest place with room within 1.5 km, as the citizens choose (`VC.simClearable`,
+  `VC.simClearSpot`: the cleared ground both use).
+* **Needs, happiness, efficiency, loyalty** (phase C session 3; SIM-ROADMAP.md 2.4 items 4-6): core/simulation's new
+  `77-sim-6-needs.js` (opt-in: `SIM.needs`), tuned by `TUNE.sim.needs`. Every citizen carries a meter per need (eat,
+  drink, socialize, relax, contemplate, sleep; material waits for phase D's items), 0 met to 100 desperate, rising by the
+  hour (more for some trades: the monks' contemplation, less for the soldiers' material) and falling by what they do
+  (a meal: hunger and thirst; a tavern or a well: thirst and company; a shrine: contemplation; at home, sitting or
+  resting, there is water). Heavy labour (`labour` by trade, the slaves all of it) adds thirst and some hunger at work,
+  and a labourer whose thirst reaches 75 walks to the nearest drink (a well; the country's fields, mines and quarries
+  keep a water barrel) and back. The free hours of the schedule go where the meters ask: of socializing, relaxing at
+  home, a drink, contemplation at a shrine, rest or sitting at home, the one whose fills times the meters is highest and
+  that an open place within reach offers, held an hour; one no place takes settles for what it got. One trait each
+  (chatty, loner, pious, worldly, glutton, ascetic, restless, steady: a hash of the citizen) weighs a need a third more
+  or less. Happiness is 100 less the meters' weighted pain; its band (content, uneasy, unhappy, restless) sets the
+  efficiency at work (1, 0.92, 0.8, 0.65); loyalty follows it over three days (loyal, wavering, disloyal: their effects
+  are phase F's and G's). The report's "Needs and happiness" gives them by class and by kind of work (with the
+  efficiency of those at work now), the deficits by district and the free-time places full; the clock bar shows the mean
+  happiness; `verify.py` runs a second workday on from the first and checks the meters hold steady.
+* **Things: clothes, tools, food, shopping** (phase D; SIM-ROADMAP.md 2.5): core/simulation's new `77-sim-6-items.js`
+  (opt-in: `SIM.items`), set up by `45-vc-sim-items.js` from `TUNE.sim.items`. Stock was abstract in phase D (the owner's
+  Q7: every purchase succeeded and was logged by shop and item); phase E's economy (below) draws it from the warehouses. A shop sells by
+  its kit model (the alchemist poultices; the clothier, the weaver and the tannery clothes and shoes; the smithy tools,
+  arms and armour; the provisioner, the bakery, the butcher and the markets' stalls food; the trader, the enchanter and
+  the potter luxuries and household goods). Every citizen wears a set (shirt; trousers or a dress; shoes; a hat or hood
+  for some) in the six slots and keeps more at home by class (the owner's Q6: 1 to 6); the armed trades own armour and
+  arms, some of the rich a sword; a worker owns its trade's tool or draws it from the rack; labourers carry a waterskin,
+  chinampa growers a kayak. Clothes wear by the worn day (at least a year of wear: the owner; everyone starts at a hashed wear) and are replaced from home; a set short is bought on time off
+  (and the material meter feels it); a tool (a working year or more of use, at a hashed start) worn out at work is bought during the shift; a worked day may end hurt (a
+  poultice from an alchemist). A household keeps a food store: two foods make a meal worth three servings (the richer
+  table more), one food a bite, none scraps; a store below a day sends one of its people for three days' food. The
+  cantons' rooms, the dormitories, the barracks and the slaves' quarters eat at their mess. The slaves are issued
+  their clothes and tools and run no errands (the owner's Q5). The material meter rises slowly; when it is high a
+  citizen buys the best luxury or household good its wealth reaches. An errand goes when a seller is open and within
+  reach. A household shops when its store falls below two days and buys four (a buffer: a store that runs low after
+  the shops shut lasts the night). A meal is eaten out (a tavern, a market's stalls, the caravanserai) by a share that
+  grows with wealth, or when the store cannot make one. The chinampa growers' huts and beds are on the `kayak` layer
+  through a landing at the nearest street (`VC.simKayaks`): to town by kayak, then on foot. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
+  **The shipwright's docks** (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars,
+  kayaks. Nets could come from weaver"): `voth_bldg_shipwright` (kits/catalog: a yard on the shore, a slipway into the
+  water with a hull on the stocks, sheerlegs, a timber shed, the shop with oars and kayaks racked), placed by
+  `VC.simShipwrights` (`TUNE.sim.place.shipwright`) at the river port and on the nearest natural shore to the harbour
+  (the harbour's own coast is its quay deck, 4 m above the water: no slip runs off it). Its 14 shipwrights work the
+  slip (the ships they build are phase E's production); it sells oars and kayaks, the weavers nets, and the fishers
+  now own their nets (bought from a weaver when worn out).
+* **Production, stores, carts, imports** (phase E; SIM-ROADMAP.md 2.6): core/simulation's new `77-sim-6-economy.js`
+  (opt-in: `SIM.economy`), set up by `46-vc-sim-economy.js` from `TUNE.sim.economy`. The stock stops being abstract: a
+  shop sells from the settlement's store (the 487 warehouses and the Granary deck's granaries), so a purchase can fail
+  and a kitchen can run out. Food is counted in servings (a meal is two), the craft goods in lots. The producers make
+  their goods by the worked hour, times their workers' efficiency (the needs' band, a missing tool, a hurt), into
+  their own store: the 454 fields one crop each (wheat, corn or peppers by a hash, wheat three times as often), the
+  chinampas corn and peppers (whichever has fewer days left), the mushroom farms, the fishers' docks, the beetle ranches
+  eggs, the bakeries bread from wheat, the weavers cloth, the tanneries leather, the mines metal. Fifty carts (driven
+  actors the stepper leaves to the economy; drawn near the camera as a cart and its hauler) take the site whose good
+  has fewest days left, then the fullest no other cart is bound for, then the nearest, and unload at the emptiest of
+  the six nearest warehouses. Clothes draw cloth, shoes and waterskins leather, tools, arms and armour metal, oars and
+  kayaks wood, poultices herbs, luxuries the imported luxuries; a household's food, a meal out or at a mess the foods.
+  A good with an import route (wheat, corn, peppers, eggs by river or road; cloth and luxuries by sea; leather, metal,
+  wood, herbs) is sent for when it lasts under three days and arrives hours later (the ships, barges and caravans that
+  carry it are the next session's: only strider ports stand on the map's edge now). The report's "Production, stores,
+  carts, imports" section (per good: the warehouses, the sites, made, used and imported a day, days left);
+  `verify.py`'s economy check after two workdays (every producer, the carts, every food made and hauled, none short,
+  none under a day, the kitchens' meals, the imports delivered).
+* **The carriers** (phase E session 2; `TUNE.sim.economy.carriers`, `VC.simCarriers`): an import now comes as a group
+  of people. The road's goods come by caravan (a beetle, its driver and two guards a unit, three to five units) in by
+  the strider ports on the highways; it unloads at the caravanserai, lodges there ten hours and leaves the way it
+  came. The sea's goods come by ship (ten sailors, four marines) from the north edge to the harbour pier nearest it.
+  The lot lands in that place's store and the carts take it on. Leaving, a carrier buys the city's surplus: the good
+  with most days left, no more than the last day's surplus. The river's barges wait for a water way: the `water`
+  layer finds none from the river's upstream end to the quays, so river imports still come by timer (the report says
+  so). Drawn near the camera: a beetle under each driver, a hull under each crew, a mast on a ship. The shipwrights
+  now build boats from wood, and a kayak is bought from their stock. `VC.simDays(d0, n)` runs whole days from the
+  console (the owner's fast clock, Q2): a week held, every food's stock rising, three to four days left.
+* **The animals** (owner, 2026-10-13; `47-vc-sim-animals.js`, `TUNE.sim.animals`, the fauna kit's `farm` and `voth`
+  groups): beside the beetle ranches, dairy-cow pastures, pig sties and duck coops (by a pond) stand beside the
+  farmsteads (`VC.livestock`, `TUNE.country.livestock`), each its trade's work place (dairymen, swineherds, duck
+  keepers). Every pen keeps a herd of actors, the fauna kit's animals, on its own needs (hunger, thirst, sleep, ease):
+  in their free hours they feed at the trough, graze, drink, bed down or loaf by what their meters ask. Their
+  condition is their yield: eggs and milk by the animal-hour while their keepers tend them, and the dairymen make
+  cheese of the milk (four to one). Pork and fowl come by slaughter (owner: "a new animal born every time one is
+  slaughtered for meat, and it takes 1 year to grow up"): a share of the pigs and ducks is raised for meat, slaughtered
+  once grown for the fauna kit's meat (kg, four servings a kilo, times its condition), and a newborn takes its place
+  for a year: the young yield nothing and are drawn small (a pig as a piglet). With one birth a slaughter and a year
+  to grow, a herd of N gives at most N/365 a day: meat is rare until breeding comes. Milk, cheese, pork and fowl are foods: the provisioners, the
+  butchers and the markets sell them, and cheese makes a better meal (`quality`). The Arena's stables keep its beasts
+  (the arena tiger, the pit lizard, the pit beetle) on the same needs; at 11:00 and 16:00 a bout: the keepers' forced
+  command (core `SIM.command`) puts two sound beasts on the sand to fight, the stronger by mass, aggression and
+  condition wins, and the loser heals three days. `VC.arenaBout(a, b)` stages one by hand. The nearest 40 animals are
+  drawn by the fauna kit, walking, grazing, resting or idling as they do. **The pets** (owner, 2026-10-13): a dog and
+  a cat for every 40 citizens, each in a household; asleep at home by night, by day they roam the greens and squares
+  (moving on every two hours) and now and then mingle where people gather, by their own meters; no food yet. Drawn
+  from the fauna kit's baked dog and cat models (`fauna_bundle.bundle(..., mdl=['pets'])`, about 1.9 MB of the page).
+* **The wake** (`TUNE.sim.run.wake`, core/simulation `SIM.WAKE`): an actor is asked what it wants only at the soonest
+  minute it could change (its schedule's next change, an errand's or a dwell's end, a meter's crossing, a role's
+  cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to
+  about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks. **The lag** (`TUNE.sim.run.lag`, core
+  `SIM.LAG`): each citizen's day runs a hashed 0 to 10 minutes behind the clock, so nobody leaves on the dot and the
+  hour's decisions spread over its first minutes instead of all falling at :00. **The buckets** (`TUNE.sim.run.buckets`,
+  `VC.simBuckets`; owner: "stagger the jobs into 2 buckets separated by 1/2 hour"): the kinds of work are dealt, the
+  largest first, to the bucket with fewer workers, and half the city's trades keep their day a half-hour later (their
+  shifts, breaks and evenings); those without a trade by parity. Each hour's turn falls in two halves, at :00 and :30:
+  the worst minute 1.9 s against 2.5 s, the day's total about 9% more (a smoother day, not a cheaper one).
+* Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
+  stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
+  with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).
 
 ## Notes
 

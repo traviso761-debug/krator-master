@@ -80,15 +80,15 @@ SITE_VENDOR = VENDOR[:4] + [
 SITE_JSON = os.path.join(HERE, 'site', 'voth-site.json')
 # core/simulation (the ferry and elephant bug lines are its transport routes): the record core, places, ports, nav, motion, routes, export
 SIM_JS = ['../../core/simulation/' + f for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js',
-          '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-8-export.js')]
+          '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-8-export.js')]
 # the Voth city page: core/city (the city builder: 10 core, 20 plan, 31-32 steps 6-12, 50-52 drawing) under its own
 # tuning and steps 0-5, the site model and ground (targets/voth-site), core/simulation
 CITY = '../../core/city/'
 CITY_JS = [CITY + '10-city-core.js', 'targets/voth-city/15-vc-tune.js', CITY + '20-city-plan.js', CITY + '31-city-steps-b.js', CITY + '32-city-steps-c.js',
            'targets/voth-site/10-site-model.js', 'targets/voth-site/20-site-cantons.js', 'targets/voth-city/30-vc-site.js', 'targets/voth-city/31-vc-voth.js', 'targets/voth-city/31b-vc-chinampa.js',
            'targets/voth-city/32-vc-city.js', 'targets/voth-city/33-vc-country.js'] + SIM_JS + ['targets/voth-city/34-vc-transit.js',
-           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
-           CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/56-vc-interiors-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/59-vc-flora-edit.js', 'targets/voth-city/98-start.js']
+           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-city/41-vc-building-interiors.js', 'targets/voth-city/42-vc-sim-places.js', 'targets/voth-city/43-vc-sim-nav.js', 'targets/voth-city/44-vc-sim-people.js', 'targets/voth-city/45-vc-sim-items.js', 'targets/voth-city/46-vc-sim-economy.js', 'targets/voth-city/47-vc-sim-animals.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
+           CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/56-vc-interiors-host.js', 'targets/voth-city/56b-vc-building-interiors-host.js', 'targets/voth-city/56c-vc-citizens-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/59-vc-flora-edit.js', 'targets/voth-city/98-start.js']
 NL = '\n'
 
 
@@ -178,11 +178,22 @@ def voth_city_fragment():
              lift('78a-life-core.js', 'function lifeBridgeY('))   # the deck under a walker on a river bridge or a canton span
     code, names = vothlift.lift(CITY_SEEDS)
     body += code
+    # the builder log (41-vc-building-interiors.js reads it): each call of these Voth builders, its arguments and the
+    # primitives it pushed, so a building the city places through Voth's own code gets an interior without a copy of
+    # its geometry. The names are rebound inside this closure, so Voth's callers (monasteryCompound) log too.
+    body += 'var BUILT = [];' + NL + ''.join(
+        '%s = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); '
+        'BUILT.push({ fn: "%s", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(%s);%s' % (n, n, n, NL)
+        for n in ('monasteryDorm', 'monasteryChapel', 'monasteryAssemblyHall', 'funeraryTemple', 'houseOfHealing'))
     isl = lift('60-land.js', '/* ============================== 20. ISLETS', NL + '});' + NL)
     body += 'function buildIslets(){' + NL + isl + '}' + NL
     chin = read(os.path.join(VOTH_SRC, '55-chinampa.js'))
+    # each stilt hut's size too (its bed slot, bw x bl), for its interior
+    hut = 'window._chinampaHuts.push([x,z,ry]);'
+    assert hut in chin, '55-chinampa.js changed: the hut export is no longer where streetlab extends it'
+    chin = chin.replace(hut, 'window._chinampaHuts.push([x,z,ry,bw,bl]);')
     body += ('/* ---- settlements/voth/src/55-chinampa.js, whole, run on demand ---- */' + NL + 'function runChinampas(){' + NL + chin + NL +
-             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, units: finalUnits };' + NL + '}' + NL)
+             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, hutList: window._chinampaHuts, units: finalUnits };' + NL + '}' + NL)
     # the edited ground: every Voth builder reads terrainH by name, so it reads the site's edits too
     body += NL.join(['var __rawTerrainH = terrainH, __groundEdit = null;',
                      'terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };',
@@ -190,7 +201,7 @@ def voth_city_fragment():
     export = set(names) | set(('landDist groundTone CANTONS CIDX ISLES RIVER RIVER_HEAD DISTRICTS WATER SEA HW CITY_EXT CITY_LIM SPANS CAUSEWAYS '
                                'RBRIDGES CPIERS PIERS RPIERS BARGES DECK CWAY RLAND TONES TONES_POOR BASALTC MARBLEC DOMEC ROOFS GREYC FRUITC FIELDC MONASTERY LIFE_FISHDOCK_W LIFE_FISHDOCK_LEN PRIMS BOX FR8 FR6 FR3 DOME CYL CONE BLOB STK SLEN '
                                'shoreIn shoreNorm shoreS shoreAt riverAt riverHalf inRiver reseed rr pick chance mix buildIslets runChinampas '
-                               'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY').split())
+                               'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY BUILT').split())
     export.discard('terrainH')
     pairs = ['terrainH: __rawTerrainH', 'terrainHe: function (x, z) { return terrainH(x, z); }'] + ['%s: %s' % (n, n) for n in sorted(export)]
     return ('var VOTH = (function(){' + NL + '  var window = {};' + NL + body + NL +
@@ -267,11 +278,13 @@ def interiors_fragment():
 
 
 def fauna_fragment():
-    """kits/fauna's Voth group (the arena tiger, the pit lizard, the giant and staghorn beetles) for the Arena's stables,
-    as fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours)"""
+    """kits/fauna's Voth group (the arena tiger, the pit lizard, the giant and staghorn beetles) for the Arena's stables
+    and its bouts, and its farm group (the cattle, the pig, the duck) for the ranches' herds (47-vc-sim-animals.js), as
+    fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours); and its pets group
+    with their baked models only (the dog and the cat are models: about 1.9 MB), for the city's pets"""
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
     import fauna_bundle
-    return fauna_bundle.bundle(['voth'], tex=False) + NL
+    return fauna_bundle.bundle(['voth', 'farm', 'pets'], tex=False, mdl=['pets']) + NL
 
 
 def voth_pathviz_fragment():

@@ -24,8 +24,19 @@ python3 -m http.server 8000          # from the repo root
 | `registry/voth-warehouses.js` | `voth_warehouse_b`: canal warehouse with hoist bay, bonded grain store |
 | `registry/voth-civic.js` | school (Temple college, schoolhouse), generator (turbine hall, fumarole vent house), farmhouses (Velothi, chinampa, Hlaalu), governor's palace |
 | `registry/voth-military.js` | garrison (Velothi fortress, harbour fort), barracks (Hlaalu, Velothi), mustering grounds, army camp |
-| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (13 entries) |
+| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (27 entries): the 13 first ones, the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), the power station, and the rest day's two temples (the Ash Saints, the Tide Mother), the village chapel and the village shrine (2026-10-12), the shipwright's dock (2026-10-13), each with an `ix` shell for its interior (`settlements/streetlab` 41-vc-building-interiors.js) |
 | `registry/voth-city-captured.js` + `.data.js` | **generated**: every structure the city builds, pulled from a live build (see below) |
+
+## Walk records: stairs and ladders
+
+Every stair and ladder a person climbs on the outside of a building is also a record (owner, 2026-10-12: "make sure
+stairs on house exteriors are also navigable"). The registries' stair helpers (`K.flight`, `K.ladder` in housing;
+`K.stair`, `K.ladder` in manors, through the sub-frames' `walk`; `K.stair` in civic; `STAIR`, `TSTAIR`, `LADDER` in
+shops) and the hand-built flights (civic's farmhouse roof stair and ladder; the first-generation townhouse, guild hall,
+tavern and caravanserai) call `walkRec`, which pushes `{kind: 'stair'|'ladder', a, b, w}` (foot and head as `[x, z, y]`
+in the build's world, core/walk's `KWALK.strip` shape) to `window.KWALK_REC` while a host collects them, and does
+nothing otherwise. The Voth city (`settlements/streetlab`) collects them in its model probe and puts them on its
+pedestrian layer and the walker's floors. **A new stair goes through a helper, or calls `walkRec` itself.**
 
 ## Structures pulled from the city
 

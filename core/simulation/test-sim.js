@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -49,7 +49,12 @@ function world(seed){
  ok('a friendly faction is friendly, org to org through their factions',S.stance('folk','riders')==='friendly',S.stance('folk','riders')==='hostile');
  ok('an unknown pair is neutral; a faction is allied with itself',S.stance('riders','band')==='neutral'&&S.stance('folk','folk')==='allied',S.stance('riders','band')!=='neutral');
  const P=S.get('place','market');P.org='folk';
- ok('a public place lets a friendly org in and keeps a hostile one out',S.welcome('riders',P)&&!S.welcome('band',P),!S.welcome('riders',P));}
+ ok('a public place lets a friendly org in and keeps a hostile one out',S.welcome('riders',P)&&!S.welcome('band',P),!S.welcome('riders',P));
+ const H=S.get('place','homeA');H.access='private';
+ ok('a private place lets in its own people only',S.welcome(S.get('actor','f1'),H)&&!S.welcome(S.get('actor','f2'),H),S.welcome(S.get('actor','f2'),H));
+ H.guests={SOCIALIZE:200};
+ ok('a house that takes guests for an activity lets a neighbour in for it (home B 150 m off), and only for it',S.welcome(S.get('actor','f2'),H,'SOCIALIZE')&&!S.welcome(S.get('actor','f2'),H,'SLEEP'),S.welcome(S.get('actor','f2'),H,'SLEEP'));
+ H.guests={SOCIALIZE:100};ok('a neighbour farther than its guests\' reach is not let in',!S.welcome(S.get('actor','f2'),H,'SOCIALIZE'),S.welcome(S.get('actor','f2'),H,'SOCIALIZE'));}
 
 // 3. the resolver and the slots
 {const {S,clock}=world();
@@ -193,5 +198,346 @@ function world(seed){
  ok('two lines through one stop share its berth once queued together',before>0&&after===0,after>0);
  S.transport({id:'hw',layer:'pedestrian',stops:['homeA','homeB'],speed:2,dwell:10,headway:500});const H=S.transportBake('hw');
  ok('headway sets the number of vehicles (period / headway)',H.vehicles===Math.max(1,Math.round(H.period/500)),H.vehicles===Math.round(H.period/240)&&H.period/240>1.5);}
+
+{world(17);const S=window.SIM, ps=[{type:'rack'},{type:'bed'},{type:'bed'},{type:'table'}];
+ const base=S.slotsFromFurniture(ps), own=S.slotsFromFurniture(ps,{rack:'DRAW_TOOLS',table:null});
+ ok('a world\'s own map reads a piece the core does not (a rack as DRAW_TOOLS)',own.DRAW_TOOLS===1&&own.SLEEP===2,base.DRAW_TOOLS!=null);
+ ok('a key the map sets to null is no activity there, the rest as the core reads them',own.EAT==null&&base.EAT===1&&base.SLEEP===2,own.EAT===1);}
+
+// a stacked layer: a point's height picks its level (a terrace over a street), only when the layer asks for it
+{world(19);const S=window.SIM, nodes=[{id:'g',x:0,y:0,z:0},{id:'t',x:3,y:20,z:0}];
+ S.nav.layer('stack',{nodes,edges:[],yWeight:3});S.nav.layer('flat',{nodes,edges:[]});
+ const up=S.nav.nearest('stack',0,0,{y:20}), flat=S.nav.nearest('flat',0,0,{y:20}), noY=S.nav.nearest('stack',0,0);
+ ok('on a yWeight layer a point 20 m up finds the terrace node, not the street under it',up===1&&noY===0,up===0);
+ ok('a layer without yWeight ignores the height (as before)',flat===0,flat===1);}
+
+// a field: every node's cost from its nearest source, and which source; nothing past max, nothing off the graph
+{const {S}=world(23);const F=S.nav.field('pedestrian',[{node:0},{node:3,d:5}]);
+ ok('the field labels each node with its nearest source (node 1 from 0 at 50, node 4 from 3 at 5+50+60)',F.src[1]===0&&near(F.d[1],50)&&F.src[4]===1&&near(F.d[4],115),F.src[4]===0);
+ ok('an island node is not reached',F.src[5]===-1&&F.d[5]===Infinity,F.src[5]>=0);
+ const G=S.nav.field('pedestrian',[{node:0}],{max:60});
+ ok('past max nothing is labelled',G.src[1]===0&&G.src[2]===-1,G.src[2]===0);}
+
+// the week: named schedules by weekday, an actor's rota day off
+{const {S}=world(29);
+ S.activity({id:'WORK'});
+ S.role({id:'hand',org:'folk',scheds:{work:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[22,'SLEEP']],off:[[0,'SLEEP'],[8,'SOCIALIZE'],[22,'SLEEP']],rest:[[0,'SLEEP'],[9,'REST'],[22,'SLEEP']]},week:['work','work','work','work','work','work','rest']});
+ const a=S.actor({id:'h1',role:'hand',home:'homeA',off:2}),b=S.actor({id:'h2',role:'hand',home:'homeB'});
+ const at=(d,h)=>d*1440+h*60;
+ ok('on a workday the role works; on its rota day off (day 2) the actor takes the off schedule',S.desire(a,at(1,10))==='WORK'&&S.desire(a,at(2,10))==='SOCIALIZE'&&S.desire(b,at(2,10))==='WORK',S.desire(a,at(2,10))==='WORK');
+ ok('the rest day (weekday 6) holds for both; the week repeats (day 9 is weekday 2)',S.desire(a,at(6,10))==='REST'&&S.desire(b,at(6,10))==='REST'&&S.desire(a,at(9,10))==='SOCIALIZE',S.desire(b,at(6,10))==='WORK');
+ const c=S.actor({id:'h3',role:'hand',home:'homeA',alias:{rest:'off'}}),c2=S.actor({id:'h4',role:'hand',home:'homeA',alias:{rest:'nosuch'}});
+ ok('an alias makes the actor follow another of its role\'s schedules that day (rest -> off), an unknown one is ignored',S.desire(c,at(6,10))==='SOCIALIZE'&&S.desire(c2,at(6,10))==='REST',S.desire(c,at(6,10))==='REST');
+ let threw=false;try{S.role({id:'bad',org:'folk',scheds:{work:[[0,'SLEEP']]},week:['work']});}catch(e){threw=true;}
+ ok('a week that is not seven days throws',threw,!threw);}
+
+// the place grid: limit and near give exactly the first places of the full nearest-first list
+{const {S}=world(31);let same=0,tried=0,longer=0;
+ for(let i=0;i<400;i++) S.place({id:'g'+i,kind:i%3?'shop':'inn',x:((i*7919)%2003)-1000,z:((i*104729)%1999)-1000,activities:{BUY:1+(i%4),SOCIALIZE:i%5}});
+ for(let k=0;k<60;k++){const nr=[((k*389)%1800)-900,((k*733)%1800)-900],act=k%2?'BUY':'SOCIALIZE',kinds=k%3?null:['inn'];
+  const full=S.placesFor(act,null,null,{near:nr,kinds}),lim=S.placesFor(act,null,null,{near:nr,kinds,limit:4});tried++;
+  if(full.length>4) longer++; if(lim.length===Math.min(4,full.length)&&lim.every((P,j)=>P===full[j])) same++;}
+ ok('the grid gives the first places of the full list, every time',same===tried,same<tried);
+ ok('and the full list is longer (the grid looked at fewer)',longer>0,longer===0);
+ const far=S.placesFor('BUY',null,null,{near:[0,0],limit:50,maxR:150}),all=S.placesFor('BUY',null,null,{near:[0,0],limit:50});
+ ok('maxR returns nothing farther than it',far.every(P=>Math.hypot(P.x,P.z)<=150)&&far.length<all.length,far.length===all.length);
+ ok('an activity no place offers is answered at once, empty',S.placesFor('FLY',null,null,{near:[0,0],limit:3}).length===0,false);}
+
+// lazy routes: decided without the path, found when first asked, the arrival kept; an island still cannot be chosen
+{const {S,clock}=world(37);S.lazy={pedestrian:{detour:1.35}};
+ clock.h=6;clock.t=0;S.step();
+ const a=S.get('actor','f1'),T=a.task,L=T.legs[0];
+ ok('a lazy leg has no path at decision time, its duration from the straight line',L.route===null&&!!L.lazy&&near(T.dur,(150*1.35+0.5)/a.speed,0.01),L.route!==null);
+ const mid=S.pose(a,T.t0+T.dur/2);
+ ok('posing it finds the path (150 m) and keeps the arrival: half way at half the time',L.route&&near(L.route.len,150,0.01)&&near(mid.x,75,0.5)&&near(T.arrive,T.t0+T.dur,1e-6),!L.route);
+ const nowhere=S.get('place','nowhere'),f=S.leg('pedestrian',{x:0,z:0},nowhere.door,1.3,'walk',0);
+ ok('a place on another body is unreachable without searching (the bodies differ)',f===null,f!==null);
+ const b=S.get('actor','f2'),Tb=b.task,Lb=Tb.legs[0],q=S.pose(b,Tb.t0+Tb.dur/2,{cheap:true});
+ ok('a cheap pose (a decision asking where its actor is) reads the straight line and leaves the path unfound',Lb.route===null&&Number.isFinite(q.x),Lb.route!==null);
+ S.pose(b,Tb.t0+Tb.dur/2);ok('a drawn pose finds it',Lb.route!==null,Lb.route===null);}
+
+
+// needs (77-sim-6-needs.js): opt-in; lazy meters with the trip; happiness with traits; the free-time clause; the
+// interrupt; the decision's hook; the census
+{const {S,clock}=world(41);
+ ['WORK','DRINK'].forEach(a=>S.activity({id:a}));
+ S.place({id:'well',kind:'well',x:50,z:0,activities:{DRINK:4}});
+ S.role({id:'idler',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},REST:{pin:'home'}}});
+ S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}},needs:{labour:1}});
+ S.role({id:'clerk',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});
+ S.place({id:'yard',kind:'field',x:100,z:0,activities:{WORK:4}});
+ const i1=S.actor({id:'i1',role:'idler',home:'homeA'}),h1=S.actor({id:'h1',role:'hand',home:'homeA',work:'yard'}),c1=S.actor({id:'c1',role:'clerk',home:'homeA',work:'yard'});
+ const at=(h,d)=>(d||0)*1440+h*60;
+ ok('without SIM.needs the schedule decides alone',!S.NEED&&S.desire(i1,at(10))==='SOCIALIZE',!!S.NEED);
+ S.needs({list:['eat','drink','socialize','sleep'],rate:{eat:6,drink:4,socialize:3,sleep:4},work:{drink:6},
+   fill:{SLEEP:{sleep:12},REST:{sleep:20},SOCIALIZE:{socialize:30},DRINK:{drink:200},BUY:{eat:60}},
+   free:['SOCIALIZE','REST'],dwell:60,keep:1.2,done:10,interrupt:{drink:{at:70,act:'DRINK',until:20,max:40,cool:60}},
+   bands:[{label:'content',min:70,eff:1},{label:'unhappy',min:0,eff:0.7}],loyalty:{tau:600,bands:[{label:'loyal',min:50},{label:'disloyal',min:0}]},
+   traits:{chatty:{socialize:1.5}},secPerMinute:1,pain:1.5});
+ // the lazy meters
+ const M=at(10);i1.nd=[50,50,50,50];i1.ndT=M;i1.ndFrom=M+30;i1.activity='SOCIALIZE';
+ S.needsOf(i1,M+90);
+ ok('a meter rises on the way and falls by its activity once there (30 min trip, 60 there)',near(i1.nd[2],50+3*0.5-27,1e-6)&&near(i1.nd[0],50+6*1.5,1e-6),near(i1.nd[2],50+(3-30)*1.5,1e-6));
+ // happiness
+ i1.nd=[0,0,0,0];ok('every need met: happiness 100',near(S.happiness(i1),100),false);
+ i1.nd=[0,0,100,0];const h0=S.happiness(i1);i1.trait='chatty';const h1v=S.happiness(i1);i1.trait=null;
+ ok('one meter full of four: 75; a chatty actor minds the same unmet company more',near(h0,75,1e-6)&&h1v<h0,h1v>=h0);
+ ok('the band gives the efficiency',S.mood(i1).band==='content'&&S.efficiency(i1)===1,S.efficiency(i1)!==1);
+ // the free-time clause
+ clock.d=0;clock.h=10;i1.ndT=at(10);i1.ndFrom=at(10);i1.activity='SOCIALIZE';i1.fr=null;i1.nd=[0,0,10,90];
+ const tired=S.desire(i1,at(10));i1.fr=null;i1.nd=[0,0,90,10];const lonely=S.desire(i1,at(10));
+ ok('free time: the tired rest at home, the lonely go out',tired==='REST'&&lonely==='SOCIALIZE',tired===lonely);
+ i1.nd=[0,0,10,90];clock.h=10.5;const held=S.desire(i1,at(10)+30);clock.h=10+61/60;const later=S.desire(i1,at(10)+61);
+ ok('the choice holds its dwell, then the meters are asked again',held==='SOCIALIZE'&&later==='REST',held!=='SOCIALIZE');
+ ok('outside free time the schedule stands',S.desire(i1,at(2))==='SLEEP',false);
+ // a question about another minute changes nothing
+ {const nd0=i1.nd.slice(),T0=i1.ndT,fr0=i1.fr;clock.d=0;clock.h=10;S.desire(i1,at(10,6));
+  ok('asking what the actor will want days ahead leaves its meters and its choice alone',i1.ndT===T0&&i1.nd.every((v,j)=>v===nd0[j])&&i1.fr===fr0,i1.ndT!==T0);}
+ // the interrupt: the labourer goes to the well, the clerk does not
+ clock.h=12;[h1,c1].forEach(a=>{a.nd=[0,80,0,0];a.ndT=at(12);a.ndFrom=at(12);a.activity='WORK';});
+ const hw=S.desire(h1,at(12)),cw=S.desire(c1,at(12));
+ ok('a labourer thirsty at work goes for a drink, a clerk keeps working',hw==='DRINK'&&cw==='WORK',hw==='WORK');
+ h1.activity='DRINK';h1.ndFrom=at(12);clock.h=12+20/60;const back=S.desire(h1,at(12)+20);
+ ok('once drunk, back to work',back==='WORK'&&S.needsOf(h1,at(12)+20)[1]<=20,back!=='WORK');
+ clock.h=12+40/60;ok('and not again before its cool-down',(h1.nd[1]=90,h1.activity='WORK',S.desire(h1,at(12)+40))==='WORK',false);
+ // an interrupt with nowhere to go ends (the well closed): back to work, not left wanting a drink
+ {const W=S.R.place.well;W.closed=true;clock.d=0;clock.h=14;h1.intr=null;h1.intrCool=0;h1.nd=[0,90,0,0];h1.ndT=S.minute();h1.ndFrom=S.minute();h1.activity='WORK';h1.wanted=null;
+  S.decide(h1,S.minute(),clock.t);const back2=S.desire(h1,S.minute());W.closed=false;
+  ok('an interrupt no place takes is dropped and cools down: the labourer works on',h1.intr===null&&h1.intrCool>S.minute()&&back2==='WORK',h1.intr!==null);}
+ // the decision's hook: the trip counts, then the place fills
+ clock.d=1;clock.h=10;clock.t=0;i1.nd=[0,0,90,0];i1.trait=null;S.jump();
+ const s0=S.needsOf(i1,S.minute())[2],T=i1.task;
+ for(let m=1;m<=90;m++){clock.h=10+m/60;clock.t+=1;S.step();}
+ const s1=S.needsOf(i1,S.minute())[2];
+ ok('stepped: the lonely idler went out to socialize and its meter fell',i1.activity==='SOCIALIZE'&&s1<s0-20,s1>=s0);
+ // a free-time choice no place takes settles for what it got (not left wanting it)
+ S.place({id:'cell',kind:'cell',x:0,z:0,activities:{SOCIALIZE:1},open:[0,1]});
+ clock.h=11;S.R.place.market.closed=true;i1.nd=[0,0,95,0];i1.fr=null;i1.wanted=null;S.decide(i1,S.minute(),clock.t);
+ ok('a free choice with nowhere open settles for its fallback, and wants what it got',i1.activity!=='SOCIALIZE'&&i1.wanted===i1.activity&&i1.fr===i1.activity,i1.wanted==='SOCIALIZE');
+ S.R.place.market.closed=false;
+ const C=S.needsCensus(a=>a.role);
+ ok('the census by role: counts, happiness, means, the high meters',C.idler&&C.idler.n===1&&C.hand.n===1&&typeof C.idler.mean.socialize==='number'&&C.idler.happy>0,!C.idler);
+ ok('loyalty drifts toward happiness',i1.loyal!=null&&Math.abs(i1.loyal-S.happiness(i1))<100,i1.loyal==null);}
+
+
+// items (77-sim-6-items.js): the slots, wear and spares, errands to the nearest seller in free time or in work time, a
+// shop nobody has, meals from the household's store, the food errand, a hurt and its poultice
+{const {S,clock}=world(53);
+ ['WORK','EAT'].forEach(a=>S.activity({id:a}));
+ S.place({id:'yard',kind:'field',x:100,z:0,activities:{WORK:4}});
+ S.place({id:'smith',kind:'shop',x:50,z:0,activities:{BUY:3},open:[6,20]});
+ S.place({id:'cot',kind:'home',x:0,z:0,activities:{SLEEP:3,EAT:3,REST:3}});S.R.place.cot.people=2;
+ S.role({id:'idler',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[12,'EAT'],[13,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});
+ S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});
+ ok('without SIM.items there are no errands',!S.ITEMS&&S.desire(S.actor({id:'x0',role:'idler',home:'cot'}),600)==='SOCIALIZE',!!S.ITEMS);
+ S.items({kinds:{shirt:{cat:'clothes',slot:'torso',life:2},trousers:{cat:'clothes',slot:'legs',life:50},shoes:{cat:'clothes',slot:'feet',life:50},
+   cuirass:{cat:'armour',slot:'torso',layer:'armour',life:200},boots:{cat:'armour',slot:'feet',life:200},helm:{cat:'armour',slot:'head',life:200},
+   hoe:{cat:'tool',workLife:2},poultice:{cat:'medicine'},kayak:{cat:'gear'},corn:{cat:'food',food:true},fish:{cat:'food',food:true},trinket:{cat:'luxury',material:20}},
+   free:['SOCIALIZE'],secPerMinute:1,mins:10,cool:60,hurt:0,heal:3,low:1,days:2});
+ const run=(d,h0,h1)=>{clock.d=d;for(let m=h0*60;m<h1*60;m++){clock.h=m/60;clock.t+=1;S.step();}};
+ // the slots
+ const a=S.actor({id:'i1',role:'idler',home:'cot'});
+ S.equip(a,'shirt',0.6);S.equip(a,'cuirass');S.equip(a,'shoes');S.equip(a,'boots');S.equip(a,'helm');
+ ok('one clothing and one armour item on the torso; boots take the feet and the shoes go home',a.eq.torso.k==='shirt'&&a.eq['torso+'].k==='cuirass'&&a.eq.feet.k==='boots'&&a.inv.shoes===1&&S.itemsCheck(a).length===0,S.itemsCheck(a).length>0);
+ const bad={eq:{torso:{k:'cuirass',w:0}}};ok('a cuirass worn as a shirt is caught',S.itemsCheck(bad).length===1,S.itemsCheck(bad).length===0);
+ // wear and the spare, then the set short
+ a.wears=['shirt'];a.sets=2;S.give(a,'shirt',1);a.itDay=0;clock.d=1;clock.h=1;S.desire(a,S.minute());
+ ok('a worn-out shirt goes and the spare from home takes its place',a.eq.torso&&a.eq.torso.w===0&&!a.inv.shirt&&S.ITEMS.stats.worn.shirt===1,!a.eq.torso||a.eq.torso.w!==0);
+ ok('a set short: no seller, so nothing to go for (and it is said)',!a.errand&&S.ITEMS.stats.noShop.shirt===1,!!a.errand);
+ S.shop('smith',['shirt','hoe','poultice','corn','fish','trinket']);
+ a.itDay=1;clock.d=2;clock.h=1;S.desire(a,S.minute());
+ ok('with a seller, the short set is an errand for time off',a.errand&&a.errand.item==='shirt'&&a.errand.when==='free',!a.errand);
+ clock.h=2;ok('not while asleep',S.desire(a,S.minute())==='SLEEP',false);
+ {const sm=S.R.place.smith;sm.closed=true;clock.h=8;const w1=S.desire(a,S.minute());sm.closed=false;clock.h=8.5;const w2=S.desire(a,S.minute());clock.h=9;const w3=S.desire(a,S.minute());
+  ok('the errand waits while no seller is open (asked once an hour), and goes when one is',w1==='SOCIALIZE'&&w2==='SOCIALIZE'&&w3==='BUY',w1==='BUY');}
+ run(2,8,11);
+ ok('in free time it walks to the seller, buys, and the shirt is its own',!a.errand&&S.owns(a,'shirt')===2&&S.ITEMS.stats.bought.shirt===1&&S.ITEMS.stats.byShop.smith.shirt===1,S.owns(a,'shirt')!==2);
+ // a tool worn out at work: replaced during work time
+ const h=S.actor({id:'h1',role:'hand',home:'cot',work:'yard'});h.tool={k:'hoe',w:0.9};h.itDay=3;
+ run(3,5,9);
+ ok('a hoe worn out at work is bought during the shift and work goes on',S.ITEMS.stats.brokenAtWork===1&&S.ITEMS.stats.replacedAtWork===1&&h.tool&&h.tool.k==='hoe'&&h.activity==='WORK',S.ITEMS.stats.replacedAtWork!==1);
+ h.toolNeed='hoe';ok('a missing tool halves the worker',S.itemsEff(h)===0.5,S.itemsEff(h)===1);h.toolNeed=null;
+ // meals from the store
+ const H=S.R.place.cot;H.store={corn:2,fish:2};a.errand=null;clock.d=4;clock.h=12;a.wanted=null;S.decide(a,S.minute(),clock.t);
+ const b1=a.boost.EAT,left=H.store.corn+H.store.fish;H.store={corn:1};a.wanted=null;S.decide(a,S.minute()+1,clock.t);const b2=a.boost.EAT;H.store={};a.wanted=null;S.decide(a,S.minute()+2,clock.t);const b3=a.boost.EAT;
+ ok('two foods make a meal (x3), one food a bite (x1), an empty store scraps',b1===3&&left===2&&b2===1&&b3===0.2,b1===b2);
+ // the household's food errand
+ H.store={corn:1};H.shopper=null;a.errand=null;a.errCool=0;run(4,13,16);
+ ok('a low store sends one of the household to buy days of food; the store is filled',(H.store.corn||0)+(H.store.fish||0)>=8&&S.ITEMS.stats.done.food>=1,(H.store.corn||0)<=1);
+ // a hurt, and the poultice
+ S.ITEMS.hurt=1;h.workedDay=5;h.hurt=null;h.itDay=5;h.errand=null;clock.d=6;clock.h=17;S.desire(h,S.minute());
+ ok('a worked day can end hurt; the worker means to buy a poultice on time off',h.hurt===6&&h.errand&&h.errand.item==='poultice',h.hurt==null);
+ ok('hurt, it works at 0.7',S.itemsEff(h)===0.7,S.itemsEff(h)===1);
+ run(6,18,21);
+ ok('the poultice bought, it is well',h.hurt==null&&S.ITEMS.stats.poultice===1,h.hurt!=null);
+ // a treat: with needs, a high material meter buys what the wealth reaches, and the meter falls
+ S.needs({list:['material'],rate:{material:1},fill:{}});S.ITEMS.treat={at:50,items:[[0,'trinket'],[0.9,'kayak']]};
+ a.wealth=0.5;a.wears=[];a.nd=[80];a.ndT=null;a.errand=null;a.errCool=0;a.itDay=6;a.hurt=null;clock.d=7;clock.h=1;S.desire(a,S.minute());
+ ok('a high material meter means a treat its wealth reaches (not the rich one)',a.errand&&a.errand.item==='trinket',!a.errand);
+ run(7,8,11);
+ ok('bought, the material meter falls by its worth',S.ITEMS.stats.bought.trinket===1&&a.nd[0]<70,S.ITEMS.stats.bought.trinket!==1);
+ // issued: a worn-out item is replaced by its keeper, and no errand is run
+ {const sl=S.actor({id:'sl',role:'hand',home:'cot',work:'yard'});sl.issued=true;sl.wears=['shirt'];sl.sets=2;S.equip(sl,'shirt',0.9);sl.itDay=8;sl.hurt=null;clock.d=9;clock.h=1;S.desire(sl,S.minute());
+  ok('an issued actor gets its worn-out shirt replaced and runs no errand for the set short',sl.eq.torso&&sl.eq.torso.w===0&&!sl.errand&&S.ITEMS.stats.issued.shirt===1,!!sl.errand);}
+ // eating out: at a meal's start, at a seller of 'meal' (by the hash and wealth, or for an empty store); none open: home
+ {S.ITEMS.kinds.meal={id:'meal',cat:'meal'};S.place({id:'inn',kind:'tavern',x:50,z:0,activities:{EAT:5},open:[10,22]});S.shop('inn',['meal']);
+  const e=S.actor({id:'e1',role:'idler',home:'cot'});e.itDay=10;S.R.place.cot.store={corn:9,fish:9};S.ITEMS.eatOut={base:1,wealth:0};
+  clock.d=10;clock.h=11.5;e.activity='SOCIALIZE';run(10,11.9,12.5);
+  ok('a meal out: the actor eats at the inn, a full meal bought',e.activity==='EAT'&&e.place==='inn'&&e.boost.EAT===3&&S.ITEMS.stats.meals.bought>=1,e.place==='cot');
+  run(10,12.5,13.2);ok('and the errand ends with the meal hour',!e.errand&&S.ITEMS.stats.done.meal>=1,!!e.errand);
+  S.ITEMS.eatOut={base:0,wealth:0};run(11,11.9,12.5);
+  ok('with no wish to eat out and food at home, it eats at home',e.activity==='EAT'&&e.place==='cot',e.place==='inn');
+  S.R.place.cot.store={};S.ITEMS.eatOut={base:0,wealth:0};S.R.place.inn.closed=true;run(12,11.9,12.5);S.R.place.inn.closed=false;
+  ok('an empty store and the inn shut: scraps at home, no meal out left waiting',e.activity==='EAT'&&e.place==='cot'&&!(e.errand&&e.errand.item==='meal'),e.place==='inn');}
+ // kayaks: a hut on the water reached through a landing by the boat's own layer, and left the same way
+ {S.nav.layer('kayak',{route:(ax,az,bx,bz)=>({pts:[[ax,0,az],[bx,0,bz]]})});
+  S.place({id:'hut',kind:'hut',x:0,z:120,activities:{SLEEP:2},layer:'kayak',via:'boat'});S.place({id:'land',kind:'landing',x:100,z:60,activities:{BOARD:50}});
+  S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'}}});
+  const g=S.actor({id:'g1',role:'grower',home:'hut'});g.boat={dock:'land',layer:'kayak'};g.inVehicle='boat';g.pos={x:0,y:0,z:120};
+  clock.d=13;clock.h=8;const T1=S.plan(g,S.R.place.market,'SOCIALIZE',{x:0,y:0,z:120},clock.t);
+  ok('from the hut: by kayak to the landing, then on foot',T1.legs.length===2&&T1.legs[0].layer==='kayak'&&T1.legs[0].mode==='boat'&&T1.legs[1].layer==='pedestrian'&&!g.inVehicle,T1.legs[0].layer==='pedestrian');
+  const T2=S.plan(g,S.R.place.hut,'SLEEP',{x:100,y:0,z:60},clock.t);
+  ok('home: on foot to the landing, then by kayak to the hut',T2.legs.length>=1&&T2.legs[T2.legs.length-1].layer==='kayak'&&g.inVehicle==='boat',T2.legs[T2.legs.length-1].layer!=='kayak');}
+ ok('the slots still hold after it all',S.all('actor').every(x=>S.itemsCheck(x).length===0),false);}
+
+// the economy (77-sim-6-economy.js): production by worked hour and efficiency into the site's store up to its cap, the
+// good most needed made, inputs from the warehouses, carts by the brief's order to the warehouse with least, purchases
+// and meals drawn from the warehouses (a shop can be out), turnover and days left, an import sent and delivered
+{const {S,clock}=world(71);
+ ['WORK','EAT','HAUL'].forEach(a=>S.activity({id:a}));
+ ok('without SIM.economy nothing is stocked',!S.ECON&&S.supply('corn',3)===3,!!S.ECON);
+ S.place({id:'farm',kind:'field',x:150,z:0,activities:{WORK:6},open:[0,24]});
+ S.place({id:'oven',kind:'bakery',x:100,z:60,activities:{WORK:2},open:[0,24]});
+ S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'barn',kind:'warehouse',x:150,z:0,activities:{}});
+ S.place({id:'stall',kind:'shop',x:50,z:0,activities:{BUY:4},open:[0,24]});
+ S.place({id:'mess',kind:'mess',x:0,z:0,activities:{EAT:9}});S.R.place.mess.mess=true;
+ S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+ S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+ S.economy({goods:{wheat:{},corn:{},bread:{},herbs:{import:{route:'river',lot:50}}},inputs:{bread:{wheat:2}},every:60,
+   cart:{cap:30,load:5,unload:5,minLoad:5},imports:{days:3,scan:30},routes:{river:{minutes:90}},window:1,meal:{per:2,foods:['corn','bread']}});
+ S.store('shed',{kind:'warehouse'});S.store('barn',{kind:'warehouse'});
+ S.recipe('farm',{out:['wheat','corn'],rate:2,cap:40});S.recipe('oven',{out:['bread'],rate:1,cap:100});
+ const ws=[0,1,2].map(i=>S.actor({id:'g'+i,role:'grower',home:'homeA',work:'farm'}));
+ // production: three at work, two units an hour each; the good with fewest days left first (both unused: wheat, then by days)
+ clock.d=0;const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}};
+ run(0,3);const F=S.R.place.farm;const made1=(F.stock.wheat||0)+(F.stock.corn||0);
+ ok('three at work make about two units an hour each, into the field\'s store',made1>=8&&made1<=12,made1===0);
+ run(3,10);ok('the store stops at its cap (and says so)',(F.stock.wheat||0)+(F.stock.corn||0)<=40&&S.ECON.blocked['full: field']>0,(F.stock.wheat||0)+(F.stock.corn||0)>40);
+ // a cart: to the field, loads, to the warehouse with least of it
+ const c=S.actor({id:'cart1',role:'carter',home:'homeA'});S.cart(c);S.R.place.barn.stock.wheat=100;
+ run(10,14);
+ ok('a cart hauls from the site to a warehouse (the one with less of it)',S.ECON.trips>=1&&(S.R.place.shed.stock.wheat||0)+(S.R.place.shed.stock.corn||0)>0,S.ECON.trips===0);
+ ok('the stepper leaves the cart to the economy',c.activity==='HAUL'&&c.wanted==null,c.wanted!=null);
+ // consumption: a purchase draws on the warehouses; whole or nothing
+ const b0=S.stockOf('wheat');const got=S.supply('wheat',5);
+ ok('a draw takes from the warehouses (the fullest first)',got===5&&S.stockOf('wheat')===b0-5&&S.ECON.used.wheat>=5,got!==5);
+ ok('a whole draw with too little takes nothing',S.supply('herbs',1,true)===0&&S.ECON.short.herbs===1,S.supply('herbs',1,true)!==0);
+ // inputs: bread from wheat at the oven, from the warehouses
+ S.actor({id:'bk',role:'grower',home:'homeA',work:'oven'});const u0=S.ECON.used.wheat||0;run(14,17);
+ ok('bread is baked from the warehouses\' wheat, two a loaf',(S.R.place.oven.stock.bread||0)>=2&&S.ECON.used.wheat-u0===2*S.R.place.oven.stock.bread,(S.R.place.oven.stock.bread||0)===0);
+ // meals at a mess
+ S.R.place.shed.stock.corn=10;const c0=S.stockOf('corn')+S.stockOf('bread');
+ ok('a meal out takes two units of food from the warehouses',S.economyMeal()&&c0-(S.stockOf('corn')+S.stockOf('bread'))===2,!S.economyMeal());
+ // days left and the import
+ S.R.place.shed.stock.herbs=0;S.R.place.barn.stock.herbs=2;S.supply('herbs',1);
+ ok('days left: the stock over the day\'s use',S.economyDays('herbs')>0&&S.economyDays('herbs')<3,S.economyDays('herbs')===Infinity);
+ run(17,18);ok('under three days: an import is sent by its route',S.ECON.inflight.length===1&&S.ECON.inflight[0].good==='herbs',S.ECON.inflight.length!==1);
+ run(18,20);ok('and delivered to the warehouse with least of it after the route\'s minutes',S.ECON.imported.herbs===50&&S.ECON.inflight.length===0&&S.R.place.shed.stock.herbs===50,S.ECON.imported.herbs!==50);
+ const R=S.economyReport();ok('the report: per good, the carts, the sites',R.goods.herbs.imported===50&&R.goods.wheat.made>0&&R.sites.length===2&&Object.keys(R.carts).length>=1,!R.goods.herbs);
+ // the items module: a purchase of an item made of a good the warehouses lack fails and cools
+ S.items({kinds:{poultice:{cat:'medicine',good:'herbs',per:60},corn:{cat:'food',food:true}},free:['IDLE'],secPerMinute:1,mins:5,cool:60,hurt:0});
+ S.shop('stall',['poultice','corn']);S.role({id:'sick',org:'folk',sched:[[0,'IDLE']]});
+ const p=S.actor({id:'p1',role:'sick',home:'homeA'});p.hurt=0;p.itDay=Math.floor(S.minute()/1440);S.errand(p,'poultice');run(20,22);
+ ok('out of the herbs a poultice takes: the errand fails, nothing bought',S.ITEMS.stats.outOf.poultice===1&&!S.ITEMS.stats.bought.poultice&&p.hurt!=null,S.ITEMS.stats.bought.poultice===1);}
+
+// the economy's carriers: an import comes as a caravan by its port, unloads into the caravanserai's store on arrival,
+// stays, buys the city's most plentiful made good as it leaves, and goes out the way it came
+{const {S,clock}=world(73);
+ ['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+ S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'farm',kind:'field',x:150,z:0,activities:{WORK:4},open:[0,24]});
+ S.role({id:'driver',org:'riders',sched:[[0,'LODGE']]});S.role({id:'guard',org:'riders',sched:[[0,'LODGE']]});S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+ S.economy({goods:{salt:{import:{route:'road',lot:70}},corn:{}},window:1,imports:{days:3,scan:30},routes:{road:{minutes:600}},exports:{minDays:2},
+   carriers:{road:{kind:'caravan',org:'riders',from:['east'],unit:[{role:'driver',n:1},{role:'guard',n:2}],size:[1,4],cap:30,layer:'pedestrian',mode:'walk',speed:1.3,beasts:1,at:'serai',activity:'LODGE',mins:120}}});
+ S.store('shed',{kind:'warehouse'});S.store('serai',{kind:'site'});S.recipe('farm',{out:['corn'],rate:30});S.actor({id:'gr',role:'grower',home:'homeA',work:'farm'});
+ S.R.place.shed.stock={salt:2,corn:500};
+ const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=30;S.step();}};
+ run(0,1);S.supply('salt',1);S.supply('corn',10);run(1,3);
+ const G=S.all('group')[0];
+ ok('salt under three days: a caravan is sent for it by its port, three units for a lot of 70 at 30 a unit',G&&G.kind==='caravan'&&G.members.length===9&&S.LOG.some(e=>e.kind==='import'&&e.by===G.id),!G);
+ run(3,5);
+ ok('on arrival it unloads into the caravanserai\'s store (the carts take it on), not by a timer; landed, it counts: no second caravan',S.R.place.serai.stock.salt===70&&S.ECON.imported.salt===70&&S.ECON.inflight.length===0&&S.ECON.sent===1&&S.ECON.landed.carrier===1&&!S.ECON.landed.timer,S.R.place.serai.stock.salt!==70);
+ run(5,9);
+ ok('leaving, it buys the good the city has most days of (made, over the floor), no more than the day\'s surplus, and keeps the floor',G.cargo&&G.cargo.good==='corn'&&G.cargo.n>0&&G.cargo.n<=2*S.ECON.day[0].made.corn&&S.stockOf('corn')>=2*10*0.9,!G.cargo);
+ run(9,14);
+ ok('and goes out the way it came: the group is gone',!S.R.group[G.id]&&S.LOG.some(e=>e.kind==='left'&&e.group===G.id),!!S.R.group[G.id]);
+ const R=S.economyReport();ok('the report counts the export',R.goods.corn.exported===G.cargo.n,R.goods.corn.exported!==G.cargo.n);}
+
+// animals (the needs' role `free`, a herd recipe, SIM.command): a cow at its pen feeds, drinks and rests by its meters,
+// not by the citizens' free time; the herd makes milk by its condition; a command sends it elsewhere until it ends
+{const {S,clock}=world(79);
+ ['FEED','GRAZE','DRINK','REST','IDLE','FIGHT','WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+ S.place({id:'pen',kind:'ranch',x:150,z:0,activities:{FEED:4,GRAZE:6,DRINK:4,REST:6,IDLE:6},open:[0,24],r:6});
+ S.place({id:'sand',kind:'arena',x:100,z:60,activities:{FIGHT:2},open:[0,24]});
+ S.needs({list:['eat','drink','sleep','socialize'],rate:{eat:4,drink:5,sleep:3,socialize:2},fill:{FEED:{eat:40},GRAZE:{eat:20},DRINK:{drink:60},REST:{sleep:20},SOCIALIZE:{socialize:30}},
+   free:['SOCIALIZE','IDLE'],dwell:30,keep:1.2,done:10,init:[50,50,50,50],secPerMinute:1});
+ S.role({id:'cow',org:'folk',sched:[[0,'IDLE']],prefers:{FEED:{pin:'home'},GRAZE:{pin:'home'},DRINK:{pin:'home'},REST:{pin:'home'},IDLE:{pin:'home'}},
+   needs:{rate:{socialize:0},free:['FEED','GRAZE','DRINK','REST','IDLE']}});
+ const c=S.actor({id:'cow1',role:'cow',home:'pen'});c.herd='pen';c.nd=[90,20,20,0];c.ndT=0;c.ndFrom=0;
+ clock.d=0;clock.h=1;const w1=S.desire(c,S.minute());
+ ok('a hungry cow feeds (its own free choices: not the citizens\' socializing)',w1==='FEED',w1==='SOCIALIZE');
+ c.nd=[5,95,20,0];c.fr=null;clock.h=2;const w2=S.desire(c,S.minute());ok('a thirsty one drinks',w2==='DRINK',w2==='FEED');
+ S.economy({goods:{milk:{},cheese:{}},inputs:{cheese:{milk:4}}});S.recipe('pen',{out:['cheese'],rate:1,herd:{out:['milk'],rate:2}});
+ const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=30;S.step();}};
+ run(2,6);const milk=S.R.place.pen.stock.milk||0;
+ ok('the herd makes milk at home by the animal-hour (no workers)',milk>=4&&milk<=9&&!S.R.place.pen.stock.cheese,milk===0);
+ S.role({id:'dairyman',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}},needs:{rate:{eat:0,drink:0,sleep:0,socialize:0}}});S.R.place.pen.activities.WORK=2;
+ S.actor({id:'dm',role:'dairyman',home:'homeB',work:'pen'});S.R.place.pen.stock.milk=40;run(6,9);
+ ok('a dairyman turns the milk into cheese, four to one',(S.R.place.pen.stock.cheese||0)>=1&&S.ECON.used.milk===4*S.R.place.pen.stock.cheese,!S.R.place.pen.stock.cheese);
+ // the forced command
+ const cm=S.command(c,{act:'FIGHT',place:'sand',mins:60,by:'keeper'});run(9,9.2);
+ ok('commanded: it goes to the sand to fight, whatever its meters want',c.activity==='FIGHT'&&c.place==='sand',c.activity!=='FIGHT');
+ run(9.2,10.5);ok('and when the command ends it is back to its own wants',!c.cmd&&c.activity!=='FIGHT',!!c.cmd);
+ {S.place({id:'coop',kind:'coop',x:0,z:0,activities:{FEED:4,REST:4,IDLE:4},open:[0,24]});S.ECON.goods.eggs={id:'eggs'};S.ECON.goods.fowl={id:'fowl'};
+  S.recipe('coop',{herd:{out:['eggs','fowl'],share:[0.6,0.4],rate:10}});for(let i=0;i<5;i++){ const d=S.actor({id:'duck'+i,role:'cow',home:'coop'});d.herd='coop';d.place='coop';d.task=null; }
+  const e0=S.ECON.made.eggs||0;run(10.5,12.5);const ce=S.R.place.coop.stock;
+  ok('a herd with shares makes each co-product (a duck\'s eggs and its meat), not only the one most needed',(ce.eggs||0)>0&&(ce.fowl||0)>0&&Math.abs((ce.eggs||0)/((ce.eggs||0)+(ce.fowl||0))-0.6)<0.15,!(ce.fowl>0));}
+ {const P=S.R.place.pen, m0=S.ECON.made.milk||0; c.grownAt=S.minute()+365*1440; c.cmd=null;run(12.5,14.5);const m1=S.ECON.made.milk||0, s1=P.stock.milk||0;c.grownAt=null;
+  ok('the young yield nothing until grown',m1===m0,m1>m0);
+  const k=S.produce('pen','milk',12.7);ok('a one-off yield (a slaughter\'s meat) goes into the store, whole units, and counts as made',k===12&&(P.stock.milk||0)===s1+12&&S.ECON.made.milk===m1+12,k!==12);}
+ // food quality: cheese makes a better meal than milk
+ S.items({kinds:{milk:{cat:'food',food:true},cheese:{cat:'food',food:true,quality:1.5},bread:{cat:'food',food:true}},free:['SOCIALIZE'],secPerMinute:1,meal:{mult:3,single:1,none:0.2,mess:3}});
+ ['EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });S.place({id:'cot',kind:'home',x:0,z:0,activities:{EAT:3,SLEEP:3}});
+ S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const e=S.actor({id:'e1',role:'eater',home:'cot'});
+ S.R.place.cot.store={milk:5,bread:5};e.wanted=null;S.decide(e,S.minute(),clock.t);const b1=e.boost.EAT;
+ S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
+ ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
+
+
+// the wake (SIM.WAKE): asked only when its wish could change; no wish left waiting, far fewer questions
+{const run=(wake)=>{const {S,clock}=world(61);S.WAKE=wake;S.skipped=0;
+  for(let i=0;i<60;i++) S.actor({id:'w'+i,role:'farmer',home:i%2?'homeA':'homeB'});
+  let asked=0;const d0=S.desire;S.desire=function(a,m){asked++;return d0.apply(this,arguments);};
+  let stale=0;clock.d=0;for(let m=0;m<24*60;m++){clock.h=m/60;clock.t+=1;S.step();
+    if(m%7===0) S.all('actor').forEach(a=>{ if(a.present && a.task && d0(a,S.minute())!==a.wanted) stale++; });}
+  S.desire=d0;return {asked,stale,skipped:S.skipped,acts:S.all('actor').map(a=>a.activity+'@'+a.place).join(',')};};
+ const A=run(false),B=run(true);
+ ok('with the wake no wish is left waiting',B.stale===0,B.stale>0);
+ ok('the same day, the same places',A.acts===B.acts,A.acts!==B.acts);
+ ok('and far fewer questions (under a fifth)',B.asked<A.asked/5&&B.skipped>0,B.asked>=A.asked);}
+
+// the lag (SIM.LAG): a schedule change falls due over its first minutes, not all at :00; the same day's activities after
+{const run=(lag)=>{const {S,clock}=world(67);S.WAKE=true;S.LAG=lag;
+  for(let i=0;i<120;i++) S.actor({id:'l'+i,role:'farmer',home:i%2?'homeA':'homeB'});
+  let peak=0,acts10=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && m%60<=lag) peak=Math.max(peak,made);
+    if(m===10*60+lag+1) acts10=S.all('actor').map(a=>a.activity).sort().join(',');}
+  const lags=S.all('actor').map(a=>S.lagOf(a));return {peak,acts10,spread:new Set(lags).size,maxLag:Math.max(...lags)};};
+ const A=run(0),B=run(10);
+ ok('with a lag the hour\'s decisions spread over its minutes (a lower peak)',B.peak<A.peak/2&&B.spread>5&&B.maxLag<=10,B.peak>=A.peak);
+ ok('and once its minutes are past, everyone does what the schedule says, as without',B.acts10===A.acts10,B.acts10!==A.acts10);
+ // two buckets half an hour apart: half the actors' day 30 minutes later; each turn's peak about halved again
+ {const {S,clock}=world(67);S.WAKE=true;S.LAG=10;for(let i=0;i<120;i++){ const a=S.actor({id:'b'+i,role:'farmer',home:i%2?'homeA':'homeB'}); a.lagBase=i%2?30:0; }
+  let peak=0,at0=null,at30=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && (m%60<=10 || (m%60>=30 && m%60<=40))) peak=Math.max(peak,made);
+    if(m===10*60+15){ const mm=S.minute(); at0=S.all('actor').filter(a=>!a.lagBase && S.desire(a,mm)==='BUY').length; at30=S.all('actor').filter(a=>a.lagBase && S.desire(a,mm)==='BUY').length; } }
+  ok('two buckets: the half-hour bucket keeps its old hour until :30; the peak lower again',at30===0&&at0>40&&peak<=B.peak,at30>0);}}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

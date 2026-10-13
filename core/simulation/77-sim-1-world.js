@@ -8,7 +8,7 @@
 //   SIM.relation({a, b, stance:'allied'|'friendly'|'cordial'|'neutral'|'wary'|'hostile', trade?, travel?, settle?, trust?})
 //   SIM.presence({id, faction, settlement, status:'NONE'|'VISITING'|'TRADING'|'RESIDENT'|'ESTABLISHED'|'PERSECUTED'|'EXPELLED'})
 //   SIM.stance(a, b)              a's stance toward b (org ids or faction ids), falling back org -> faction -> 'neutral'
-//   SIM.welcome(actorOrOrg, place) true when the place lets them in: place.access 'public' (default) | 'org' (its own
+//   SIM.welcome(actorOrOrg, place, act?) true when the place lets them in: place.access 'public' (default) | 'org' (its own
 //                                 org only) | 'friendly' (orgs whose stance from the place's org is friendly or better)
 (function(root){
   'use strict';
@@ -29,11 +29,14 @@
     return rel(a,b) || rel(a,fb) || rel(fa,b) || rel(fa,fb) || 'neutral';
   };
   SIM.rank = function(stance){ return RANK[stance]; };
-  SIM.welcome = function(who, place){
+  SIM.welcome = function(who, place, act){
     var org = typeof who==='string' ? who : who.org, acc = place.access || 'public';
     if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
     if(acc==='org') return org===place.org;
     if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
+    if(acc==='private'){ if(typeof who==='string') return false; if(who.home===place.id || who.work===place.id) return true;   /* a home: its own people, */
+      var g=act && place.guests && place.guests[act], H=g && SIM.R.place[who.home];                                               /* and for an activity it takes guests for, the */
+      return !!(H && Math.hypot(H.x-place.x, H.z-place.z) <= g); }                                                                  /* neighbours whose home is within that many metres */
     return false;
   };
 })(typeof window!=='undefined'?window:globalThis);

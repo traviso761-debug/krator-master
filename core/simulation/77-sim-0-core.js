@@ -15,7 +15,7 @@
 //   SIM.load(json)                the hand-edited overlay (PLAN.md 4.2): a record with a known id overrides it field by
 //                                 field, a new id is added, {id, remove:true} deletes; then every reference is checked
 //   SIM.check()                   unknown references -> SIM.problems (and the host's err), returns the list
-//   SIM.logEvent(kind, data)      the decision log (a ring of SIM.LOG_MAX), what the export carries
+//   SIM.logEvent(kind, data)      the decision log (the last SIM.LOG_MAX, trimmed when it passes 1.25 times that), what the export carries
 (function(root){
   'use strict';
   var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port','transport'];
@@ -58,11 +58,11 @@
     if(!SIM.R[kind]) throw new Error('SIM.add: unknown kind '+kind);
     if(!rec || rec.id==null) throw new Error('SIM.add('+kind+'): a record needs an id');
     if(SIM.R[kind][rec.id]) throw new Error('SIM.add('+kind+'): duplicate id '+rec.id);
-    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); return rec;
+    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; return rec;
   };
   SIM.get = function(kind, id){ return SIM.R[kind] ? SIM.R[kind][id] : undefined; };
   SIM.all = function(kind){ var R=SIM.R[kind]; return SIM.order[kind].filter(function(id){ return R[id]; }).map(function(id){ return R[id]; }); };
-  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; };
+  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; };
 
   /* the overlay: what a hand-edited world/*.json says wins over what the geometry registered */
   var PLURAL = { activities:'activity', factions:'faction', orgs:'org', organizations:'org', relations:'relation', presence:'presence',
@@ -99,7 +99,9 @@
     SIM.all('org').forEach(function(o){ need(!o.faction || F[o.faction], 'org '+o.id+': unknown faction '+o.faction); });
     SIM.all('relation').forEach(function(r){ need(F[r.a]||O[r.a], 'relation: unknown party '+r.a); need(F[r.b]||O[r.b], 'relation: unknown party '+r.b); });
     SIM.all('place').forEach(function(p){ Object.keys(p.activities||{}).forEach(function(a){ need(A[a], 'place '+p.id+': unknown activity '+a); }); need(!p.org || O[p.org], 'place '+p.id+': unknown org '+p.org); });
-    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); }); });
+    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); });
+      Object.keys(r.scheds||{}).forEach(function(k){ (r.scheds[k]||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' ('+k+') at '+h+':00: unknown activity '+a); }); });
+      (r.week||[]).forEach(function(k){ need(r.scheds && r.scheds[k], 'role '+r.id+': its week names an unknown schedule '+k); }); });
     SIM.all('actor').forEach(function(a){ need(Ro[a.role], 'actor '+a.id+': unknown role '+a.role); need(!a.home || P[a.home], 'actor '+a.id+': unknown home '+a.home); need(!a.work || P[a.work], 'actor '+a.id+': unknown work place '+a.work); });
     SIM.all('event').forEach(function(e){ (e.from||[]).concat(Array.isArray(e.to)?e.to:[]).forEach(function(p){ need(SIM.R.port[p], 'event '+e.id+': unknown port '+p); }); need(!e.to || Array.isArray(e.to) || e.to==='other', 'event '+e.id+': to must be a port list or "other"'); (e.legs||[]).forEach(function(l){ need(A[l.activity], 'event '+e.id+': unknown activity '+l.activity); }); });
     SIM.all('transport').forEach(function(t){ need(SIM.nav.layers[t.layer], 'transport '+t.id+': unknown layer '+t.layer); need(!t.faction || F[t.faction], 'transport '+t.id+': unknown faction '+t.faction); need(!t.org || O[t.org], 'transport '+t.id+': unknown org '+t.org);
@@ -110,7 +112,7 @@
 
   SIM.logEvent = function(kind, data){
     var e = { m:SIM.minute(), kind:kind }; if(data) for(var k in data) e[k]=data[k];
-    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);
+    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX * 1.25) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);   /* trimmed in batches: a busy minute logs thousands */
     return e;
   };
   root.SIM = SIM;

@@ -257,6 +257,7 @@ VC.capture = function (name, step, fn) {
 /* ---------------------------------------------------------------- step 1-2: islets, landmarks, districts */
 VC.buildDistricts = function () {
   var B = VOTH, log = [];
+  VC.IX_SITES = [];                                  /* the buildings off the lots that record their shells (41-vc-building-interiors.js) */
   /* the islets as Voth builds them (60-land.js 20. ISLETS): the shrine islets (A, B), the lighthouse islet (LH), rocks */
   VC.capture('islets', 1, function () { B.buildIslets(); });
   /* the islets' shrine and lighthouse give way to the better models below (their pads stay) */
@@ -334,7 +335,8 @@ VC.shrineModel = function (x, y, z, ry, rad) {
   B.BOX(x, y - 1.2, z, rad * 0.86, 2.4, rad * 0.86, ry, dk);
   B.BOX(x, y + 1.2, z, rad * 0.70, 1.0, rad * 0.70, ry, B.shade(col, -0.08));
   var yb = y + 2.2, w = rad * 0.34, d = rad * 0.30, h = 7.5, m = Math.min(w, d);
-  /* the cella, its cornice, a drum and the dome with a finial */
+  /* the cella, its cornice, a drum and the dome with a finial (its interior: 41-vc-building-interiors.js) */
+  VC.ixSite({ kind: 'shrine', x: x, y: yb, z: z, ry: ry, w: w, d: d, h: h });
   B.BOX(x, yb, z, w, h, d, ry, col);
   B.BOX(x, yb + h - 0.6, z, w * 1.06, 0.9, d * 1.06, ry, trim);
   B.CYL(x, yb + h + 0.3, z, m * 0.42, 2.4, ry, B.shade(col, 0.05));
@@ -361,6 +363,8 @@ VC.lighthouseModel = function (x, y, z, ry, isleR) {
   /* an octagonal plinth with its door and steps */
   B.FR8(x, y + 1.8, z, 22, 4.0, 22, ry, dk); B.BOX(x, y + 5.6, z, 22.6, 0.6, 22.6, ry, trim);
   var yb = y + 5.8, ys = yb, stages = [[17.6, 10], [15.6, 10], [13.6, 9.5], [11.8, 8.5]];
+  /* its interior (41-vc-building-interiors.js): the square inside the top stage's octagon, up the four stages */
+  VC.ixSite({ kind: 'lighthouse', x: x, y: yb, z: z, ry: ry, w: 11.8 * 0.7, d: 11.8 * 0.7, h: 38, storeys: 4 });
   var dp = L(8.9, 0); B.BOX(dp[0], y + 1.8, dp[1], 0.4, 3.6, 2.4, ry, 0x4a3524, 'wood'); B.BOX(dp[0], y + 5.4, dp[1], 0.6, 0.5, 3.2, ry, frame);
   for (var i = 0; i < 3; i++) { var sp = L(11.6 + i * 1.2, 0); B.BOX(sp[0], y + 0.6 - i * 0.6, sp[1], 1.2, 1.2, 3.6, ry, B.shade(dk, -0.05 * i)); }
   /* the tower in four tapering stages, a string course at each, two lancet windows a stage on alternate faces */
@@ -386,6 +390,7 @@ VC.lighthouseModel = function (x, y, z, ry, isleR) {
   /* the keeper's cottage behind it, where the islet has the room */
   if (!isleR || isleR * 0.43 > 21) {
     var cp = L(-17, 0), cw = 8, cd = 10, ch = 5;
+    VC.ixSite({ kind: 'keeper', x: cp[0], y: y + 1.8, z: cp[1], ry: ry + Math.PI, w: cw, d: cd, h: ch });   /* its door faces away from the tower */
     B.BOX(cp[0], y + 1.8, cp[1], cw, ch, cd, ry, B.shade(col, 0.06));
     B.FR8(cp[0], y + 1.8 + ch, cp[1], cw * 1.08, 3.2, cd * 1.08, ry, B.pick(B.ROOFS), 'roof');
     B.monasteryOpenings(cp[0], cp[1], y + 1.8, cw, cd, ch, ry + Math.PI, { door: 0x4a3524, frame: frame });

@@ -337,31 +337,43 @@
  ],
  "77-sim-0-core.js": [
   "core/simulation",
-  "5ae9d87a20e8"
+  "45b83188a90f"
  ],
  "77-sim-1-world.js": [
   "core/simulation",
-  "79c5fc81d299"
+  "5f44b1f0e8ca"
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "076fa2694563"
+  "2b690f8a7cbe"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "0d0fe69ec70f"
+  "6584579e59a4"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
-  "121c5eb05cb4"
+  "04ea127a3c3a"
  ],
  "77-sim-5-motion.js": [
   "core/simulation",
-  "9088c18375f2"
+  "d16e3035ed5a"
  ],
  "77-sim-5r-routes.js": [
   "core/simulation",
   "ab6f36a600b9"
+ ],
+ "77-sim-6-economy.js": [
+  "core/simulation",
+  "b520e0c4e9d0"
+ ],
+ "77-sim-6-items.js": [
+  "core/simulation",
+  "7bf53b3f43bc"
+ ],
+ "77-sim-6-needs.js": [
+  "core/simulation",
+  "5c243c49932f"
  ],
  "77-sim-6-population.js": [
   "core/simulation",

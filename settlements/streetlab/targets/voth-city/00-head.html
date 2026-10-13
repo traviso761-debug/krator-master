@@ -56,6 +56,15 @@
   .pnl.min > :not(.pnl-min){display:none!important}
   .pnl.min::before{content:attr(data-title);color:#e0c98a;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
   #marks .mk-q{font-size:11.5px;color:#e0c98a;margin:2px 0 0 14px}
+  #ix{left:50%;top:60px;transform:translateX(-50%);width:min(960px,calc(100vw - 28px));max-height:calc(100vh - 90px);overflow:auto;display:none}
+  #ix table{border-collapse:collapse;margin:6px 0 10px;font-size:11.5px}
+  #ix th{text-align:left;color:#e0c98a;font-weight:normal;padding:3px 8px 3px 0;border-bottom:1px solid rgba(255,255,255,0.15);vertical-align:bottom}
+  #ix td{padding:2px 8px 2px 0;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top}
+  #ix td.n{text-align:right;font-variant-numeric:tabular-nums}
+  #ix .bad{color:#ff9a7a} #ix .ok{color:#9fd49a}
+  #ix h2{font-size:12.5px;color:#e0c98a;margin:10px 0 2px;font-weight:normal;letter-spacing:.04em;text-transform:uppercase}
+  #ixlegend{left:14px;bottom:14px;display:none;width:min(300px,calc(100vw - 28px))}
+  #ixlegend .ramp{height:10px;border-radius:3px;margin:4px 0 2px}
   @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
 </style>
 </head>
@@ -66,14 +75,16 @@
   <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it.</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button> <span id="cut-status" class="k"></span><br>
-  <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
+  <span id="clk">10:00</span> <button id="clk-run">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
   <div id="legend" class="lg"></div>
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
 <div id="tip" class="pnl"></div>
+<div id="ix" class="pnl" data-title="Interiors report"><b>Interiors report</b> <span class="k">(every lot building: 41-vc-building-interiors.js)</span> <button id="ix-close" style="float:right">&#10005;</button><div id="ix-body"></div></div>
+<div id="ixlegend" class="pnl"></div>
 <div id="cutbar" class="pnl"><b>Cutaway</b> <select id="cut-canton" title="the canton"></select>
   <button id="cut-down" title="the storey below (PageDown or [)">&#9660; down</button><span id="cut-storey"></span><button id="cut-up" title="the storey above (PageUp or ])">up &#9650;</button><button id="cut-close" title="leave the cutaway (x)">&#10005;</button>
   <span class="k">storeys: the buttons, PageUp / PageDown, [ and ], or the mouse wheel with Shift &middot; x leaves</span></div>
