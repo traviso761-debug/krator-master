@@ -6,7 +6,8 @@
 //               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
 //               free:[ACT..], dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
 //               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
-//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters)
+//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
+//   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
 //
 // A METER per need, 0 (met) to 100 (desperate), rises at `rate` (times the role's multiplier) every world hour, and
 // falls by the actor's activity's `fill` (the culture's own table first). WORK adds `work` times the role's `labour`
@@ -50,7 +51,7 @@
   /* the meters' slope (per hour) doing `act` (null: on the way) */
   function slope(a, act, i){ var N=SIM.NEED, rr=roleRate(a), r=N.rate[i]*(rr?rr[i]:1);
     if(act==='WORK') r += N.work[i]*labour(a);
-    if(act) r -= fillOf(a, act)[i];
+    if(act) r -= fillOf(a, act)[i]*(a.boost && a.boost[act]!=null ? a.boost[act] : 1);   /* a meal worth more than a bite (77-sim-6-items.js) */
     return r; }
   function ensure(a, minute){ var N=SIM.NEED; if(!a.nd){ a.nd = Array.isArray(N.init) ? N.init.slice() : N.list.map(function(){ return N.init; }); }
     if(a.ndT==null){ a.ndT=minute; a.ndFrom=minute; } }
@@ -74,7 +75,7 @@
   };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
   SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
-    return { happiness:h, band:B.label, eff:B.eff==null?1:B.eff, loyal:a.loyal, loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
+    return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
   SIM.efficiency = function(a){ var h=SIM.happiness(a); return h==null ? 1 : (bandOf(SIM.NEED.bands, h).eff==null ? 1 : bandOf(SIM.NEED.bands, h).eff); };
 
   /* ---------------------------------------------------------------- the resolver's clause (SIM.desire) */

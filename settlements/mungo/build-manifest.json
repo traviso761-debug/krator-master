@@ -329,7 +329,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "182eaf476121"
+  "c5ff1eb4c4dc"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -343,9 +343,13 @@
   "core/simulation",
   "ab6f36a600b9"
  ],
+ "77-sim-6-items.js": [
+  "core/simulation",
+  "b44ae6c2f813"
+ ],
  "77-sim-6-needs.js": [
   "core/simulation",
-  "e1f615c44146"
+  "f83dd1e88791"
  ],
  "77-sim-6-population.js": [
   "core/simulation",

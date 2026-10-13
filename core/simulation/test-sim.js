@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -318,5 +318,67 @@ function world(seed){
  const C=S.needsCensus(a=>a.role);
  ok('the census by role: counts, happiness, means, the high meters',C.idler&&C.idler.n===1&&C.hand.n===1&&typeof C.idler.mean.socialize==='number'&&C.idler.happy>0,!C.idler);
  ok('loyalty drifts toward happiness',i1.loyal!=null&&Math.abs(i1.loyal-S.happiness(i1))<100,i1.loyal==null);}
+
+
+// items (77-sim-6-items.js): the slots, wear and spares, errands to the nearest seller in free time or in work time, a
+// shop nobody has, meals from the household's store, the food errand, a hurt and its poultice
+{const {S,clock}=world(53);
+ ['WORK','EAT'].forEach(a=>S.activity({id:a}));
+ S.place({id:'yard',kind:'field',x:100,z:0,activities:{WORK:4}});
+ S.place({id:'smith',kind:'shop',x:50,z:0,activities:{BUY:3},open:[6,20]});
+ S.place({id:'cot',kind:'home',x:0,z:0,activities:{SLEEP:3,EAT:3,REST:3}});S.R.place.cot.people=2;
+ S.role({id:'idler',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[12,'EAT'],[13,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});
+ S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});
+ ok('without SIM.items there are no errands',!S.ITEMS&&S.desire(S.actor({id:'x0',role:'idler',home:'cot'}),600)==='SOCIALIZE',!!S.ITEMS);
+ S.items({kinds:{shirt:{cat:'clothes',slot:'torso',life:2},trousers:{cat:'clothes',slot:'legs',life:50},shoes:{cat:'clothes',slot:'feet',life:50},
+   cuirass:{cat:'armour',slot:'torso',layer:'armour',life:200},boots:{cat:'armour',slot:'feet',life:200},helm:{cat:'armour',slot:'head',life:200},
+   hoe:{cat:'tool',workLife:2},poultice:{cat:'medicine'},kayak:{cat:'gear'},corn:{cat:'food',food:true},fish:{cat:'food',food:true},trinket:{cat:'luxury',material:20}},
+   free:['SOCIALIZE'],secPerMinute:1,mins:10,cool:60,hurt:0,heal:3,low:1,days:2});
+ const run=(d,h0,h1)=>{clock.d=d;for(let m=h0*60;m<h1*60;m++){clock.h=m/60;clock.t+=1;S.step();}};
+ // the slots
+ const a=S.actor({id:'i1',role:'idler',home:'cot'});
+ S.equip(a,'shirt',0.6);S.equip(a,'cuirass');S.equip(a,'shoes');S.equip(a,'boots');S.equip(a,'helm');
+ ok('one clothing and one armour item on the torso; boots take the feet and the shoes go home',a.eq.torso.k==='shirt'&&a.eq['torso+'].k==='cuirass'&&a.eq.feet.k==='boots'&&a.inv.shoes===1&&S.itemsCheck(a).length===0,S.itemsCheck(a).length>0);
+ const bad={eq:{torso:{k:'cuirass',w:0}}};ok('a cuirass worn as a shirt is caught',S.itemsCheck(bad).length===1,S.itemsCheck(bad).length===0);
+ // wear and the spare, then the set short
+ a.wears=['shirt'];a.sets=2;S.give(a,'shirt',1);a.itDay=0;clock.d=1;clock.h=1;S.desire(a,S.minute());
+ ok('a worn-out shirt goes and the spare from home takes its place',a.eq.torso&&a.eq.torso.w===0&&!a.inv.shirt&&S.ITEMS.stats.worn.shirt===1,!a.eq.torso||a.eq.torso.w!==0);
+ ok('a set short: no seller, so nothing to go for (and it is said)',!a.errand&&S.ITEMS.stats.noShop.shirt===1,!!a.errand);
+ S.shop('smith',['shirt','hoe','poultice','corn','fish','trinket']);
+ a.itDay=1;clock.d=2;clock.h=1;S.desire(a,S.minute());
+ ok('with a seller, the short set is an errand for time off',a.errand&&a.errand.item==='shirt'&&a.errand.when==='free',!a.errand);
+ clock.h=2;ok('not while asleep',S.desire(a,S.minute())==='SLEEP',false);
+ {const sm=S.R.place.smith;sm.closed=true;clock.h=8;const w1=S.desire(a,S.minute());sm.closed=false;clock.h=8.5;const w2=S.desire(a,S.minute());clock.h=9;const w3=S.desire(a,S.minute());
+  ok('the errand waits while no seller is open (asked once an hour), and goes when one is',w1==='SOCIALIZE'&&w2==='SOCIALIZE'&&w3==='BUY',w1==='BUY');}
+ run(2,8,11);
+ ok('in free time it walks to the seller, buys, and the shirt is its own',!a.errand&&S.owns(a,'shirt')===2&&S.ITEMS.stats.bought.shirt===1&&S.ITEMS.stats.byShop.smith.shirt===1,S.owns(a,'shirt')!==2);
+ // a tool worn out at work: replaced during work time
+ const h=S.actor({id:'h1',role:'hand',home:'cot',work:'yard'});h.tool={k:'hoe',w:0.9};h.itDay=3;
+ run(3,5,9);
+ ok('a hoe worn out at work is bought during the shift and work goes on',S.ITEMS.stats.brokenAtWork===1&&S.ITEMS.stats.replacedAtWork===1&&h.tool&&h.tool.k==='hoe'&&h.activity==='WORK',S.ITEMS.stats.replacedAtWork!==1);
+ h.toolNeed='hoe';ok('a missing tool halves the worker',S.itemsEff(h)===0.5,S.itemsEff(h)===1);h.toolNeed=null;
+ // meals from the store
+ const H=S.R.place.cot;H.store={corn:2,fish:2};a.errand=null;clock.d=4;clock.h=12;a.wanted=null;S.decide(a,S.minute(),clock.t);
+ const b1=a.boost.EAT,left=H.store.corn+H.store.fish;H.store={corn:1};a.wanted=null;S.decide(a,S.minute()+1,clock.t);const b2=a.boost.EAT;H.store={};a.wanted=null;S.decide(a,S.minute()+2,clock.t);const b3=a.boost.EAT;
+ ok('two foods make a meal (x3), one food a bite (x1), an empty store scraps',b1===3&&left===2&&b2===1&&b3===0.2,b1===b2);
+ // the household's food errand
+ H.store={corn:1};H.shopper=null;a.errand=null;a.errCool=0;run(4,13,16);
+ ok('a low store sends one of the household to buy days of food; the store is filled',(H.store.corn||0)+(H.store.fish||0)>=8&&S.ITEMS.stats.done.food>=1,(H.store.corn||0)<=1);
+ // a hurt, and the poultice
+ S.ITEMS.hurt=1;h.workedDay=5;h.hurt=null;h.itDay=5;h.errand=null;clock.d=6;clock.h=17;S.desire(h,S.minute());
+ ok('a worked day can end hurt; the worker means to buy a poultice on time off',h.hurt===6&&h.errand&&h.errand.item==='poultice',h.hurt==null);
+ ok('hurt, it works at 0.7',S.itemsEff(h)===0.7,S.itemsEff(h)===1);
+ run(6,18,21);
+ ok('the poultice bought, it is well',h.hurt==null&&S.ITEMS.stats.poultice===1,h.hurt!=null);
+ // a treat: with needs, a high material meter buys what the wealth reaches, and the meter falls
+ S.needs({list:['material'],rate:{material:1},fill:{}});S.ITEMS.treat={at:50,items:[[0,'trinket'],[0.9,'kayak']]};
+ a.wealth=0.5;a.wears=[];a.nd=[80];a.ndT=null;a.errand=null;a.errCool=0;a.itDay=6;a.hurt=null;clock.d=7;clock.h=1;S.desire(a,S.minute());
+ ok('a high material meter means a treat its wealth reaches (not the rich one)',a.errand&&a.errand.item==='trinket',!a.errand);
+ run(7,8,11);
+ ok('bought, the material meter falls by its worth',S.ITEMS.stats.bought.trinket===1&&a.nd[0]<70,S.ITEMS.stats.bought.trinket!==1);
+ // issued: a worn-out item is replaced by its keeper, and no errand is run
+ {const sl=S.actor({id:'sl',role:'hand',home:'cot',work:'yard'});sl.issued=true;sl.wears=['shirt'];sl.sets=2;S.equip(sl,'shirt',0.9);sl.itDay=8;sl.hurt=null;clock.d=9;clock.h=1;S.desire(sl,S.minute());
+  ok('an issued actor gets its worn-out shirt replaced and runs no errand for the set short',sl.eq.torso&&sl.eq.torso.w===0&&!sl.errand&&S.ITEMS.stats.issued.shirt===1,!!sl.errand);}
+ ok('the slots still hold after it all',S.all('actor').every(x=>S.itemsCheck(x).length===0),false);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

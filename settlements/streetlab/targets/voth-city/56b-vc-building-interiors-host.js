@@ -398,6 +398,26 @@ VC.peopleReportHTML = function () {
       h += '<div>The deficits (how many at ' + hi + ' or more, the districts with the most): ' + (Object.keys(NR.deficits).map(function (n) { var D = NR.deficits[n]; return '<b>' + n + '</b> ' + f(D.n) + ' (' + D.where.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + ')'; }).join('; ') || 'none') + '.</div>';
       h += '<div>Free-time places full now: ' + (NR.full.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') || 'none') + '.</div>';
     }
+    var IR = VC.simItemsReport ? VC.simItemsReport() : null;
+    if (IR) {
+      var o2 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; }, SU = IR.setup || {};
+      h += '<h2>Things: clothes, tools, food, shopping</h2><div class="k">core/simulation 77-sim-6-items.js, TUNE.sim.items. Stock is abstract: every purchase succeeds and is logged, so what shows is which shops are missing or far. ' +
+        f(SU.shopPlaces) + ' places sell (' + o2(SU.shops) + '); ' + f(SU.stores) + ' households keep a food store, ' + f(SU.messes) + ' eat at a mess. ' +
+        'Owned: ' + f((SU.gear || {}).tools) + ' tools, ' + f((SU.gear || {}).rack) + ' drawn from racks, ' + f((SU.gear || {}).armed) + ' armed, ' + f((SU.gear || {}).waterskin) + ' waterskins, ' + f((SU.gear || {}).kayak) + ' kayaks.</div>';
+      h += '<table><tr><th>class</th><th>people</th><th>clothes kept of wanted</th><th>short a set</th><th>missing a worn item</th></tr>';
+      Object.keys(IR.kept).sort(function (p, q) { return IR.kept[q].n - IR.kept[p].n; }).forEach(function (k) { var K = IR.kept[k];
+        h += '<tr><td>' + k + '</td><td class="n">' + f(K.n) + '</td><td class="n">' + (K.want ? Math.round(K.have / K.want * 100) : 100) + '%</td><td class="n">' + f(K.short) + '</td><td class="n ' + (K.bare ? 'bad' : '') + '">' + f(K.bare) + '</td></tr>'; });
+      h += '</table>';
+      h += '<div>Bought: ' + o2(IR.bought) + '. By kind of shop: ' + Object.keys(IR.byShopKind).map(function (k) { return '<b>' + k + '</b> ' + o2(IR.byShopKind[k]); }).join('; ') + '.</div>';
+      h += '<div>Trips to buy (world minutes, mean / longest): ' + Object.keys(IR.trip).map(function (k) { return k + ' ' + IR.trip[k].mean + ' / ' + IR.trip[k].max; }).join(', ') + '. Errands now ' + f(IR.errandsNow) + '; ' +
+        '<span class="bad">no seller within reach: ' + o2(IR.failed) + '</span>.</div>';
+      h += '<div class="bad">No shop sells: ' + (IR.unsold.join(', ') || 'nothing missing') + (Object.keys(IR.noShop).length ? ' (wanted and not to be had: ' + o2(IR.noShop) + ')' : '') + '.</div>';
+      h += '<div>Worn out: ' + o2(IR.worn) + '. Tools broken at work ' + f(IR.tools.broken) + ', replaced during work time ' + f(IR.tools.replacedAtWork) + ', missing now ' + f(IR.tools.missingNow) + (IR.tools.missingNow ? ' (' + o2(IR.tools.missingBy) + ')' : '') +
+        '. Hurt at work ' + f(IR.hurt.total) + ' (now ' + f(IR.hurt.now) + '), poultices bought ' + f(IR.hurt.poultices) + ', healed ' + f(IR.hurt.healed) + '.</div>';
+      var M = IR.meals, mt = M.meal + M.single + M.none + M.bought + M.mess;
+      h += '<div>Meals: ' + f(M.meal) + ' at home of two foods, ' + f(M.single) + ' of one, <span class="' + (M.none ? 'bad' : '') + '">' + f(M.none) + ' of scraps</span>, ' + f(M.bought) + ' bought (taverns, stalls), ' + f(M.mess) + ' at a mess' + (mt ? ' (' + Math.round((M.meal + M.bought + M.mess) / mt * 100) + '% full meals)' : '') +
+        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
+    }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
       days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });

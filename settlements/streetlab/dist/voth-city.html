@@ -48208,7 +48208,8 @@ var TUNE = {
        77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
        `byTrade`), falls by the activity's `fill` an hour (at home, sitting, resting or with guests, there is water; asleep,
        hunger and thirst come slower; every workplace has a drink, a labourer's thirst outruns it); WORK adds `work` times the trade's `labour` (heavy labour:
-       thirst, some hunger; the slaves `slaveLabour`). Material waits for phase D's items (rate 0). In the hours the
+       thirst, some hunger; the slaves `slaveLabour`). EAT's fills are one serving's: a meal of two foods is worth three
+       (phase D: TUNE.sim.items.meal). Material rises slowly and falls with what is bought (TUNE.sim.items). In the hours the
        schedule gives to one of `free`, the citizen does what its meters ask (fills times meters times weights) that an
        open place within reach offers, the scheduled one favoured by `keep`, held `dwell` minutes (and up to `jitter` more,
        by the citizen, so the choices do not all fall due in one minute). A labourer whose
@@ -48219,8 +48220,8 @@ var TUNE = {
        `init` [lo, hi] each */
     needs: {
       list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
-      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0 },
-      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 70, drink: 35, socialize: 3 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
+      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.8 },
+      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
               SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
               CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 } },
       work: { drink: 4, eat: 1.5, relax: 1 },
@@ -48241,7 +48242,60 @@ var TUNE = {
       /* the outdoor work in the country keeps a water barrel (`barrel`: a drink for every so many posts), the slaves'
          quarters their rations and water */
       barrel: { kinds: ['field', 'mine', 'quarry', 'mushfarm'], per: 2 },
-      pain: 1.5, init: { eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+      pain: 1.5, init: { material: [5, 30], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+    },
+    /* items, inventory, equipment, shopping (phase D; SIM-ROADMAP.md 1.5, 2.5; core/simulation 77-sim-6-items.js). Stock is
+       abstract (the owner's Q7): every purchase succeeds and is logged by shop and item. `kinds`: food (a serving each),
+       clothes and armour (a slot, `life` in worn days: clothes at least a year worn every day, the owner 2026-10-13;
+       everyone starts at a hashed wear, so some wear out every day and the clothiers have custom), arms, tools (`workLife` in worked hours), gear, medicine, luxuries
+       and household goods (`material`: how much of the material meter a purchase fills). `shops`: what a building sells,
+       by its kit model; `market`: what a market's stalls sell. `sets` (the owner's Q6 recommendation): the clothes sets a
+       citizen keeps, by class. `tools`: a kind of work's tool, owned (an item) or drawn from the workplace's rack
+       ('rack'); `armed`: the kinds of work that own arms and armour; the rich carry a sword at `richSword`. A citizen
+       starts with its sets (the worn one at a hashed wear), its tool, a waterskin if it labours, a kayak if it grows the
+       chinampas, and its household's food for `foodDays` [lo, hi] days. `meal`: a meal (two foods) x3 of one serving, the
+       richer `rich` x wealth more; `hurt` a worked day's chance of an injury, `heal` days without a poultice; a store
+       below `low` days of meals sends one of the household for `days` days; `lack` material a day per set short; a
+       `treat` when material reaches `at`: the last item whose least wealth the citizen has; `mins` at the shop */
+    items: {
+      kinds: {
+        corn: { cat: 'food', food: true }, peppers: { cat: 'food', food: true }, mushrooms: { cat: 'food', food: true }, fish: { cat: 'food', food: true },
+        eggs: { cat: 'food', food: true }, bread: { cat: 'food', food: true },
+        shirt: { cat: 'clothes', slot: 'torso', life: 400 }, trousers: { cat: 'clothes', slot: 'legs', life: 450 }, dress: { cat: 'clothes', slot: 'legs', life: 450 },
+        shoes: { cat: 'clothes', slot: 'feet', life: 380 }, hat: { cat: 'clothes', slot: 'head', life: 600 }, hood: { cat: 'clothes', slot: 'head', life: 600 },
+        cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 1200 }, greaves: { cat: 'armour', slot: 'legs', layer: 'armour', life: 1200 },
+        boots: { cat: 'armour', slot: 'feet', life: 800 }, helm: { cat: 'armour', slot: 'head', life: 1500 },
+        sword: { cat: 'arms', slot: 'rhand' }, spear: { cat: 'arms', slot: 'rhand' }, shield: { cat: 'arms', slot: 'lhand' },
+        hoe: { cat: 'tool', workLife: 120 }, pick: { cat: 'tool', workLife: 80 }, maul: { cat: 'tool', workLife: 90 }, knife: { cat: 'tool', workLife: 150 },
+        hook: { cat: 'tool', workLife: 140 }, spade: { cat: 'tool', workLife: 120 }, shears: { cat: 'tool', workLife: 160 }, goad: { cat: 'tool', workLife: 200 },
+        hammer: { cat: 'tool', workLife: 100 }, shuttle: { cat: 'tool', workLife: 200 }, scraper: { cat: 'tool', workLife: 120 }, peel: { cat: 'tool', workLife: 200 },
+        cleaver: { cat: 'tool', workLife: 150 }, ladle: { cat: 'tool', workLife: 250 }, quill: { cat: 'tool', workLife: 60 }, oar: { cat: 'tool', workLife: 200 },
+        net: { cat: 'tool', workLife: 100 }, lancet: { cat: 'tool', workLife: 150 },
+        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' },
+        pottery: { cat: 'household', material: 25 }, lamp: { cat: 'household', material: 30 }, rug: { cat: 'household', material: 45 },
+        jewellery: { cat: 'luxury', material: 60 }, silks: { cat: 'luxury', material: 70 }
+      },
+      shops: {
+        voth_shop_alchemist: ['poultice'], voth_shop_clothier: ['shirt', 'trousers', 'dress', 'shoes', 'hat', 'hood'],
+        voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'waterskin', 'lamp'],
+        voth_shop_smithy: ['hoe', 'pick', 'maul', 'knife', 'hook', 'spade', 'shears', 'goad', 'hammer', 'scraper', 'cleaver', 'ladle', 'lancet', 'sword', 'spear', 'shield', 'cuirass', 'greaves', 'boots', 'helm'],
+        voth_shop_potter: ['pottery', 'lamp'], voth_shop_scribe: ['quill'], voth_shop_enchanter: ['jewellery'],
+        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
+        voth_bldg_butcher: ['fish', 'eggs']
+      },
+      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
+      shopBuy: 6,
+      sets: { slave: 1, poor: 2, canton: 2, farm: 2, tavern: 2, middle: 3, shop: 3, craft: 3, civic: 3, landmark: 3, monastery: 2, rich: 4, manor: 6, clan: 6, other: 2 },
+      tools: { 'farmhands and ploughmen': 'hoe', miners: 'pick', 'quarrymen and masons': 'maul', 'mushroom growers': 'knife', 'dockers and stevedores': 'hook',
+               'porters and warehousemen': 'hook', 'chinampa growers': 'spade', orchardmen: 'shears', 'beetle herders': 'goad', 'smiths and craftsmen': 'hammer',
+               'industrial workers': 'hammer', 'guild masters and journeymen': 'hammer', 'armourers and quartermasters': 'hammer', weavers: 'shuttle', tanners: 'scraper',
+               bakers: 'peel', 'cooks and bakers': 'ladle', butchers: 'cleaver', 'innkeepers and servers': 'ladle', 'household service': 'ladle',
+               'guild officers and clerks': 'quill', 'customs officers and clerks': 'quill', 'teachers and scholars': 'quill', 'palace household and officials': 'quill',
+               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'rack',
+               soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
+      armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
+      foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
+      treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
     }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
@@ -53028,6 +53082,7 @@ SL.pass13 = function () {
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
     var m=minute==null?SIM.minute():minute, s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
+    if(SIM.ITEMS) act=SIM.itemsDesire(a, m, act);                                /* an errand (77-sim-6-items.js), opt-in */
     return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
   function placeXZ(P){ return [P.x, P.z]; }
@@ -53035,6 +53090,7 @@ SL.pass13 = function () {
   /* the place for an activity: pinned, remembered, preferred kinds, anything; then the role's fallback */
   function choose(a, act, hour){
     var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, near=anchor(a), P;
+    if(SIM.ITEMS && a.errand && a.errand.act===act) return SIM.itemsChoose(a, act, hour);   /* the nearest seller (77-sim-6-items.js) */
     if(pref.pin==='home' && a.home){ P=SIM.R.place[a.home]; if(P && SIM.offers(P,act)) return P; }
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
@@ -53066,9 +53122,10 @@ SL.pass13 = function () {
         if(!T.failed){ task=T; break; }
         SIM.release(a); a.bad[P.id]=1; a.mem[act]=null; P=null; } }
     a.wanted = want;
-    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
+    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; if(SIM.ITEMS) SIM.itemsDecided(a, minute, null, null, act, want); SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
     a.mem[act]=P.id; a.activity=act; a.place=P.id; a.task=task; a.since=minute;
     if(SIM.NEED && task!==had) SIM.needsDecided(a, minute, task);
+    if(SIM.ITEMS) SIM.itemsDecided(a, minute, task!==had ? task : null, P, act, want);
     if(SIM.NEED && act!==want && a.fr===want){ a.fr=act; a.wanted=act; }       /* a free-time choice no place took: it settles for what it got */
     if(SIM.NEED && act!==want && a.intr && a.intr.act===want){ a.intrCool=minute+a.intr.cool; a.intr=null; a.wanted=null; }   /* an interrupt with nowhere to go: back to work next minute */
     SIM.logEvent('decide', { actor:a.id, act:act, place:P.id });
@@ -53248,7 +53305,7 @@ SL.pass13 = function () {
   /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); SIM.decide(a, minute, t);
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };
@@ -53588,6 +53645,183 @@ SL.pass13 = function () {
   SIM.stopsServing = function(stop){ return SIM.all('transport').filter(function(R){ return R.stops.indexOf(stop) >= 0; }).map(function(R){ return R.id; }); };
 })(typeof window!=='undefined'?window:globalThis);
 
+/* ---- ../../core/simulation/77-sim-6-items.js ---- */
+// ================================================================= CORE — simulation 6: items, inventory, equipment, shopping
+// The Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
+// SIM.items(config); a world without it decides exactly as before.
+//
+//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?}}, free:[ACT..], secPerMinute, mins,
+//               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
+//               treat:{at, items:[[least wealth, item], ...]} })
+//   SIM.shop(placeId, [item ids])      what a place sells (stock is abstract: every purchase succeeds, and is logged)
+//   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
+//   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
+//          clothes kept at home), eq {position: {k, w}}, wears [items it keeps], sets (how
+//          many of each), keep {item: n} (its own count for one: a soldier's one cuirass), tool
+//          {k, w} (owned) or toolRack (drawn at work), hurt (the day hurt), errand
+//   place: store {food: servings} (a household's), mess (fed by its institution)
+//
+// SLOTS: torso and legs take one clothing item ('torso', 'legs') and one armour item ('torso+', 'legs+'); feet take
+// shoes or armoured boots (one: 'feet'); head a hat, hood or helmet ('head'); each hand one thing ('lhand', 'rhand').
+// WEAR is lazy, per actor, at the first decision of a day: every worn item with a `life` (days) wears 1/life a day; worn
+// out it goes and a spare from home takes its place. A tool wears by the worked hour (`workLife` hours); worn out at
+// work, it is replaced at once, DURING WORK TIME (an errand that takes the worker off WORK to a shop selling it). With
+// fewer sets of a clothing item than the actor keeps, it buys one on its time off, and the material meter (77-sim-6-
+// needs.js) rises by `lack` a day for each set missing. A worked day carries a `hurt` chance (a hash of the actor and
+// the day): hurt, it buys a poultice on its time off (or heals in `heal` days).
+// ERRANDS: one at a time; `when` 'work' (in an hour of WORK) or 'free' (in an hour of one of `free`, once a seller is
+// open and within reach: looked at once an hour); its place the
+// nearest within reach that sells the item and has room (BUY); `mins` minutes there complete it (the item bought, the
+// purchase logged by place and item; a luxury or household good fills material); none within reach, it is dropped and
+// not tried again for `cool` minutes. FOOD: a household's store (servings by food) feeds its meals at home: two foods
+// make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more), one food `single`, none
+// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). A store with less than `low` days for its people sends one of them to buy `days` days of the foods
+// the nearest seller sells. Deterministic: no draws (hashes), and only a question about the present changes an actor.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.ITEMS = null;
+  var POS = ['torso', 'torso+', 'legs', 'legs+', 'feet', 'head', 'lhand', 'rhand'];
+  function hash(a, b, c){ var h=Math.imul((a|0)^0x9e3779b9, 0x85ebca6b) ^ Math.imul((b|0)+0x632be5ab, 0xc2b2ae35) ^ Math.imul((c|0)+0x27d4eb2f, 0x165667b1);
+    h^=h>>>15; h=Math.imul(h, 0x2c1b3c6d); h^=h>>>12; h=Math.imul(h, 0x297a2d39); h^=h>>>15; return (h>>>0)/4294967296; }
+  SIM.itemHash = hash;
+  SIM.items = function(o){
+    var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
+              stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
+              treat:o.treat||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0 } } };
+    Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
+    (o.free||[]).forEach(function(a){ I.free[a]=1; });
+    I.foods = Object.keys(I.kinds).filter(function(k){ return I.kinds[k].food; });
+    SIM.ITEMS = I; return I;
+  };
+  SIM.shop = function(placeId, items){ var I=SIM.ITEMS; if(!I) return; I.sells[placeId]=items.slice();
+    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); (I.sellers[k]||(I.sellers[k]=[])).push(placeId); }); I._food=null; };
+  function sellersOf(item){ var I=SIM.ITEMS; if(item!=='food') return I.sellers[item]||[];
+    if(!I._food){ var s={}; I.foods.forEach(function(f){ (I.sellers[f]||[]).forEach(function(id){ s[id]=1; }); }); I._food=Object.keys(s); } return I._food; }
+  SIM.sellersOf = sellersOf;
+  function pos(K){ return K.slot + ((K.slot==='torso' || K.slot==='legs') && K.layer==='armour' ? '+' : ''); }
+  SIM.give = function(a, k, n){ a.inv=a.inv||{}; a.inv[k]=(a.inv[k]||0)+(n==null?1:n); if(a.inv[k]<=0) delete a.inv[k]; };
+  SIM.equip = function(a, k, w){ var K=SIM.ITEMS.kinds[k]; if(!K || !K.slot) throw new Error('SIM.equip: '+k+' is not worn');
+    a.eq=a.eq||{}; var p=pos(K); if(a.eq[p]) SIM.give(a, a.eq[p].k, 1); a.eq[p]={ k:k, w:w||0 }; return p; };
+  SIM.owns = function(a, k){ var n=(a.inv && a.inv[k]) || 0; if(a.eq) POS.forEach(function(p){ if(a.eq[p] && a.eq[p].k===k) n++; }); if(a.tool && a.tool.k===k) n++; return n; };
+  /* the slot rules, for an audit: -> the broken ones */
+  SIM.itemsCheck = function(a){ var out=[], I=SIM.ITEMS; if(!a.eq) return out;
+    Object.keys(a.eq).forEach(function(p){ var e=a.eq[p]; if(!e) return; var K=I.kinds[e.k]; if(POS.indexOf(p)<0) out.push(p+': no such position');
+      else if(!K || !K.slot) out.push(p+': '+e.k+' is not worn'); else if(pos(K)!==p) out.push(p+': '+e.k+' belongs on '+pos(K)); if(!(e.w>=0 && e.w<1)) out.push(p+': wear '+e.w); });
+    return out; };
+  function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
+  function anchor(a){ var H=SIM.R.place[a.home]; return H ? [H.x, H.z] : (a.at || [0,0]); }
+
+  /* ---------------------------------------------------------------- the day: wear, the clothes kept, a hurt */
+  function day(a, d){
+    var I=SIM.ITEMS;
+    for(var dd=(a.itDay==null ? d : a.itDay)+1; dd<=d; dd++){                  /* a first look wears nothing */
+      if(a.eq) POS.forEach(function(p){ var e=a.eq[p]; if(!e) return; var K=I.kinds[e.k]; if(!K.life) return; e.w += 1/K.life;
+        if(e.w>=1){ stat(I.stats.worn, e.k); a.eq[p]=null; if(a.inv && a.inv[e.k]>0){ SIM.give(a, e.k, -1); a.eq[p]={ k:e.k, w:0 }; }
+          else if(a.issued){ a.eq[p]={ k:e.k, w:0 }; stat(I.stats.issued, e.k); } } });                  /* its keeper issues another */
+      if(a.hurt!=null && dd-a.hurt>=I.heal){ a.hurt=null; I.stats.healed++; }
+      if(a.workedDay===dd-1 && a.hurt==null && I.hurt && hash(a.k, dd, 7)<I.hurt){ a.hurt=dd; I.stats.hurt++; }
+    }
+    a.itDay=d;
+    /* the clothes kept: a set short is bought on time off, and the material meter feels it */
+    var short=0, want=null; (a.wears||[]).forEach(function(k){ var n=SIM.owns(a, k), keep=(a.keep && a.keep[k]) || a.sets || 1; if(n < keep){ short += keep-n; if(!want) want=k; } });
+    if(short && I.lack && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, d*1440); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.min(100, a.nd[mi]+I.lack*short); }
+    if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
+      /* a treat: the material meter high, the best luxury or household good its wealth reaches */
+      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
+        var best=null; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]) best=t[1]; }); if(best) errand(a, best, 'free', d*1440); } }
+  }
+  function errand(a, item, when, minute){
+    var I=SIM.ITEMS; if(a.errCool && minute<a.errCool) return false;
+    if(!sellersOf(item).length){ stat(I.stats.noShop, item); if(item==='poultice') a.owesP=true; return false; }
+    a.errand={ act:'BUY', item:item, when:when, since:minute }; stat(I.stats.errands, item); return true;
+  }
+  SIM.errand = function(a, item, when){ return errand(a, item, when||'free', SIM.minute()); };
+  function complete(a, E, minute){
+    var I=SIM.ITEMS, P=SIM.R.place[E.place], sold=(I.sells[E.place]||[]), K=I.kinds[E.item];
+    stat(I.stats.done, E.item); var tr=I.stats.trip[E.item]||(I.stats.trip[E.item]={ n:0, mins:0, max:0 }); tr.n++; tr.mins+=E.trip; tr.max=Math.max(tr.max, E.trip);
+    var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
+    if(E.item==='food'){
+      var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*I.days);
+      if(H && foods.length){ H.store=H.store||{}; foods.forEach(function(f, i){ var n=Math.floor(need/foods.length)+(i<need%foods.length?1:0); H.store[f]=(H.store[f]||0)+n; stat(I.stats.bought, f, n); stat(bs, f, n); }); }
+      if(H && H.shopper===a.id) H.shopper=null;
+    } else {
+      stat(I.stats.bought, E.item); stat(bs, E.item);
+      if(K.cat==='medicine'){ a.hurt=null; a.owesP=false; I.stats.poultice++; I.stats.healed++; }
+      else if(K.cat==='tool'){ a.tool={ k:E.item, w:0 }; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }
+      else if(K.slot){ var p=pos(K); if(!a.eq || !a.eq[p]) SIM.equip(a, E.item, 0); else SIM.give(a, E.item, 1); }
+      else SIM.give(a, E.item, 1);
+      if(K.material && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, minute); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.max(0, a.nd[mi]-K.material); }
+    }
+    a.errand=null; a.wanted=null;
+  }
+
+  /* ---------------------------------------------------------------- the resolver's clause (SIM.desire, before the needs') */
+  SIM.itemsDesire = function(a, minute, act){
+    var I=SIM.ITEMS; if(!I || !a.present || a.plan) return act;
+    var live = minute===SIM.minute();
+    if(live){
+      var d=Math.floor(minute/1440); if(a.itDay!==d) day(a, d);
+      /* the tool wears by the worked hour; worn out at work, it is replaced now */
+      if(act==='WORK' && a.activity==='WORK' && a.arrM!=null && minute>=a.arrM){ a.workedDay=d;
+        if(a.tool){ var K=I.kinds[a.tool.k], dw=a.wkT==null ? 0 : minute-a.wkT; if(dw<0 || dw>30) dw=0;   /* minutes stepped at work, not a gap */
+          if(K.workLife) a.tool.w += dw/60/K.workLife;
+          if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', minute); } }
+        a.wkT=minute; }
+      else a.wkT=null;
+      var E=a.errand;
+      if(E){
+        if(E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
+        else if(minute-E.since>I.stale){ if(E.item==='food'){ var H0=SIM.R.place[a.home]; if(H0 && H0.shopper===a.id) H0.shopper=null; } a.errand=null; E=null; }
+      }
+      /* a household's food: the first of its people with time off goes when the store runs low */
+      var hr=Math.floor(minute/60);
+      if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
+        if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
+          var tot=0; for(var f in H.store) tot+=H.store[f];
+          if(tot < H.people*I.meals*I.perMeal*I.low && errand(a, 'food', 'free', minute)) H.shopper=a.id; } }
+    }
+    var E2=a.errand; if(!E2) return act;
+    if(E2.when==='work' ? act==='WORK' : I.free[act]){
+      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open */
+      if(live){ var h2=Math.floor(minute/60); if(a.errOkH!==h2){ a.errOkH=h2; a.errOk=!!SIM.itemsChoose(a, E2.act, h2%24); } }
+      return a.errOk===false ? act : E2.act; }
+    return act;
+  };
+  /* SIM.choose for an errand: the nearest seller within reach with room */
+  SIM.itemsChoose = function(a, act, hour){
+    var E=a.errand; if(!E || E.act!==act) return undefined;
+    var W=E.when==='work' && SIM.R.place[a.work], near = W ? [W.x, W.z] : anchor(a), c=SIM.placesFor(act, a, hour, { near:near, ids:sellersOf(E.item), exclude:a.bad });
+    if(SIM.REACH!=null) c=c.filter(function(P){ return Math.hypot(P.x-near[0], P.z-near[1])<=SIM.REACH; });
+    return c[0] || null;
+  };
+  /* SIM.decide: where it arrives (world minutes), the errand's place, its meal; an errand no place took is dropped */
+  SIM.itemsDecided = function(a, minute, task, P, act, want){
+    var I=SIM.ITEMS; if(!I) return;
+    if(task) a.arrM = minute + (task.dur ? Math.round(task.dur/I.spm) : 0);
+    var E=a.errand;
+    if(E && want===E.act && act!==E.act){ stat(I.stats.failed, E.item); if(E.item==='food'){ var H=SIM.R.place[a.home]; if(H && H.shopper===a.id) H.shopper=null; }
+      a.errand=null; a.errCool=minute+I.cool; a.wanted=null; }
+    else if(E && act===E.act && P){ E.place=P.id; E.trip=task ? a.arrM-minute : 0; }   /* staying put: no trip */
+    if(act==='EAT' && P){ a.boost=a.boost||{}; a.boost.EAT = meal(a, P); }
+  };
+  function meal(a, P){
+    var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
+    var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
+    if(P.id!==a.home){ S.bought++; stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.mess){ S.mess++; return M.mess; }
+    var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
+    var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; S.meal++; return M.mult*fine; }
+    if(have.length===1){ st[have[0]]--; S.single++; return M.single; }
+    S.none++; return M.none;
+  }
+  /* the items' share of a worker's efficiency: a broken tool, a hurt */
+  SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
+  SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
+})(typeof window!=='undefined'?window:globalThis);
+
 /* ---- ../../core/simulation/77-sim-6-needs.js ---- */
 // ================================================================= CORE — simulation 6: needs, happiness, efficiency, loyalty
 // PLAN.md 8.2 and 8.3; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.4, 2.4 items 4 and 5). Opt-in: nothing
@@ -53597,7 +53831,8 @@ SL.pass13 = function () {
 //               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
 //               free:[ACT..], dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
 //               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
-//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters)
+//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
+//   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
 //
 // A METER per need, 0 (met) to 100 (desperate), rises at `rate` (times the role's multiplier) every world hour, and
 // falls by the actor's activity's `fill` (the culture's own table first). WORK adds `work` times the role's `labour`
@@ -53641,7 +53876,7 @@ SL.pass13 = function () {
   /* the meters' slope (per hour) doing `act` (null: on the way) */
   function slope(a, act, i){ var N=SIM.NEED, rr=roleRate(a), r=N.rate[i]*(rr?rr[i]:1);
     if(act==='WORK') r += N.work[i]*labour(a);
-    if(act) r -= fillOf(a, act)[i];
+    if(act) r -= fillOf(a, act)[i]*(a.boost && a.boost[act]!=null ? a.boost[act] : 1);   /* a meal worth more than a bite (77-sim-6-items.js) */
     return r; }
   function ensure(a, minute){ var N=SIM.NEED; if(!a.nd){ a.nd = Array.isArray(N.init) ? N.init.slice() : N.list.map(function(){ return N.init; }); }
     if(a.ndT==null){ a.ndT=minute; a.ndFrom=minute; } }
@@ -53665,7 +53900,7 @@ SL.pass13 = function () {
   };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
   SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
-    return { happiness:h, band:B.label, eff:B.eff==null?1:B.eff, loyal:a.loyal, loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
+    return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
   SIM.efficiency = function(a){ var h=SIM.happiness(a); return h==null ? 1 : (bandOf(SIM.NEED.bands, h).eff==null ? 1 : bandOf(SIM.NEED.bands, h).eff); };
 
   /* ---------------------------------------------------------------- the resolver's clause (SIM.desire) */
@@ -56555,7 +56790,8 @@ VC.simPeople = function () {
   var needsOf = function (id) {
     if (!NE) return undefined;
     var job = id.replace(/^[ws]\./, '').replace(/\/night$/, ''), lab = /^s\./.test(id) ? NE.slaveLabour : NE.labour[job] || 0;
-    return { labour: lab, rate: NE.byTrade[job] || undefined };
+    var rate = NE.byTrade[job] || undefined; if (/^s\./.test(id)) rate = Object.assign({}, rate || {}, { material: 0 });   /* the slaves: no material need (the owner's Q5) */
+    return { labour: lab, rate: rate };
   };
   /* a citizen's trait and starting meters, by a hash of its index (core/rand) */
   var temper = function (a, k) {
@@ -56588,6 +56824,7 @@ VC.simPeople = function () {
     if (u && u.residents) { res = u.residents; cls = u.cls; kind = u.site || u.cls; }
     else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; if (!P.activities.IDLE) P.activities.IDLE = Math.round(res); }   /* they sit in their room */
     res = Math.round(res); if (res > 0) homes.push({ P: P, res: res, cls: cls, kind: kind, c: comp(P), xz: at(P) });
+    if (res > 0 && (!P.activities.EAT || P.workplaces >= res)) P.mess = true;   /* fed by their institution (phase D: no food store of their own) */
     if (res > 0 && !P.activities.EAT) P.activities.EAT = res;   /* quarters with no kitchen (a canton's rooms, the monastery's dormitories) eat at their mess or refectory (phase C session 3: the Fortress is an island) */
   });
   var cum = 0, workers = [], deps = [];
@@ -56630,7 +56867,7 @@ VC.simPeople = function () {
     var n = Math.round(free[P.id] * T.slaveShare);
     for (var i = 0; i < n; i++) slaves.push({ P: P });
     free[P.id] -= n;
-    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
+    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; P.mess = true; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
   });
   /* 4. the deal, by the walk: each round one search over the pedestrian layer from every place with a free post labels
      every node with its nearest one (SIM.nav.field), and each place takes the workers nearest it among those it labels;
@@ -56714,6 +56951,7 @@ VC.simPeople = function () {
   R.ms = Date.now() - t0;
   if (SIM.placesChanged) SIM.placesChanged();   /* the slaves' quarters added SLEEP to their sites: the place grids rebuild */
   VC.PEOPLE = R;
+  if (VC.simItems) VC.simItems();   /* 45-vc-sim-items.js: the shops, the households' stores, everyone's things (phase D) */
   return R;
 };
 
@@ -56811,6 +57049,99 @@ VC.simNeedsReport = function (minute) {
     NE.free.forEach(function (act) { var c = SIM.offers(P, act); if (c > 0 && SIM.free(P, act) <= 0) { var k = P.kind + ' ' + act; full[k] = (full[k] || 0) + 1; } });
   });
   out.full = Object.keys(full).map(function (k) { return [k, full[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+  return out;
+};
+
+/* ---- targets/voth-city/45-vc-sim-items.js ---- */
+/* ============================== 5m. THE CITIZENS' THINGS (phase D) ============================== */
+/* [G data] Items, inventory, equipment, shopping (SIM-ROADMAP.md 1.5, 2.5; core/simulation 77-sim-6-items.js), tuned by
+   TUNE.sim.items. Stock is abstract (the owner's Q7): every purchase succeeds and is logged, so what shows first is
+   which shops are missing or far, not which goods.
+     - THE SHOPS: a building sells by its kit model (`shops`: the alchemist poultices, the clothier and the weaver
+       clothes, the smithy tools, arms and armour, the provisioner and the markets' stalls food, the trader luxuries...),
+       and takes `shopBuy` buyers at once; a tavern serves a meal (core: a meal bought).
+     - THE HOUSEHOLDS: every home knows its people (`people`); one with no kitchen of its own (a canton's rooms, a
+       dormitory, the slaves' quarters, a barracks) eats at its mess (`mess`); every other keeps a food store, started
+       at a hashed `foodDays` of meals.
+     - THE CITIZENS: the slaves are `issued` (the owner's Q5: no market trips; their keepers replace what wears out
+       and own their tools); everyone keeps the clothes sets of their class (`sets`: the worn set at a hashed wear, the rest at home), a hat or
+       hood for some (`hats`), a dress or trousers (`dress`); their work's tool (owned, at a hashed wear) or the rack's
+       (`tools`); arms and armour if their work is `armed` (one of each kept), a sword for some of the rich
+       (`richSword`); a waterskin if they labour, a kayak if they grow the chinampas.
+   VC.simItemsReport is the report's: what is kept against what is wanted, the purchases by item and by kind of shop,
+   the trips (world minutes), the errands that found no seller, the items no shop sells, the tools broken at work and
+   replaced in work time, the hurt and the poultices, the meals, the household stores. */
+VC.simItems = function () {
+  if (typeof SIM === 'undefined' || !SIM.items || !TUNE.sim.items) return null;
+  var T = TUNE.sim.items, NE = TUNE.sim.needs, t0 = Date.now();
+  SIM.items({ kinds: T.kinds, free: NE ? NE.free : ['SOCIALIZE', 'RELAX', 'IDLE'], secPerMinute: VC.simSecPerMin(), mins: T.mins, cool: T.cool, meal: T.meal, lack: T.lack,
+              hurt: T.hurt, heal: T.heal, low: T.low, days: T.days, treat: T.treat });
+  var u = function (k, a, b) { return KRAND.unit(KRAND.hash(5151, k, a, b || 0)); };
+  /* ---- the shops */
+  var shops = {}, n = 0;
+  SIM.all('place').forEach(function (P) {
+    var items = null, key = null;
+    if (P.unit != null) { var U = VC.IX.units[P.unit], L = U && U.lot >= 0 ? PLAN.lots[U.lot] : null; if (L && T.shops[L.key]) { items = T.shops[L.key]; key = L.key; } }
+    else if (P.kind === 'market') { items = T.market; key = 'market'; }
+    if (!items) return;
+    SIM.shop(P.id, items); P.activities.BUY = Math.max(P.activities.BUY || 0, T.shopBuy); P.shopKey = key; shops[key] = (shops[key] || 0) + 1; n++;
+  });
+  /* ---- the households */
+  var people = {}; SIM.all('actor').forEach(function (a) { if (a.home) people[a.home] = (people[a.home] || 0) + 1; });
+  var foods = Object.keys(T.kinds).filter(function (k) { return T.kinds[k].food; }), stores = 0, messes = 0;
+  Object.keys(people).forEach(function (id, i) {
+    var P = SIM.R.place[id]; if (!P) return; P.people = people[id];
+    if (P.mess) { messes++; return; }
+    var days = T.foodDays[0] + (T.foodDays[1] - T.foodDays[0]) * u(i, 1), serv = Math.round(P.people * 2 * 2 * days), k = 2 + Math.floor(u(i, 2) * 2);
+    P.store = {}; for (var j = 0; j < k; j++) { var f = foods[Math.floor(u(i, 3, j) * foods.length) % foods.length]; P.store[f] = (P.store[f] || 0) + Math.round(serv / k); }
+    stores++;
+  });
+  /* ---- the citizens */
+  var armed = {}; T.armed.forEach(function (j) { armed[j] = 1; });
+  var gear = { waterskin: 0, kayak: 0, sword: 0, armed: 0, tools: 0, rack: 0 };
+  SIM.all('actor').forEach(function (a, i) {
+    var k = a.k, sets = T.sets[a.cls] != null ? T.sets[a.cls] : T.sets.other, legs = u(k, 4) < T.dress ? 'dress' : 'trousers';
+    a.sets = sets; a.wears = ['shirt', legs, 'shoes'];
+    if (u(k, 5) < T.hats) a.wears.push(u(k, 6) < 0.5 ? 'hat' : 'hood');
+    a.wears.forEach(function (it, j) { SIM.equip(a, it, u(k, 7, j) * 0.999); if (sets > 1) SIM.give(a, it, sets - 1); });
+    if (armed[a.job]) {
+      a.keep = { cuirass: 1, greaves: 1, boots: 1, helm: 1 };
+      ['cuirass', 'greaves', 'boots', 'helm', 'sword', 'shield'].forEach(function (it, j) { SIM.equip(a, it, u(k, 8, j) * 0.999); });   /* boots on the feet, the shoes home */
+      a.wears = a.wears.concat(['cuirass', 'greaves', 'boots', 'helm']); gear.armed++;
+    } else if (a.cls === 'rich' && u(k, 9) < T.richSword) { SIM.give(a, 'sword', 1); gear.sword++; }
+    if (a.cls === 'slave') a.issued = true;   /* the owner's Q5: no market trips; their keepers clothe them and own their tools */
+    var tool = a.job ? (a.issued ? 'rack' : T.tools[a.job]) : null;
+    if (tool === 'rack') { a.toolRack = true; gear.rack++; }
+    else if (tool) { a.tool = { k: tool, w: u(k, 10) * 0.999 }; gear.tools++; }
+    var R = SIM.R.role[a.role]; if (R && R.needs && R.needs.labour > 0) { SIM.give(a, 'waterskin', 1); gear.waterskin++; }
+    if (a.job === 'chinampa growers') { SIM.give(a, 'kayak', 1); gear.kayak++; }
+  });
+  if (SIM.placesChanged) SIM.placesChanged();   /* the shops' BUY */
+  VC.SIMITEMS = { shops: shops, shopPlaces: n, stores: stores, messes: messes, gear: gear, ms: Date.now() - t0 };
+  return VC.SIMITEMS;
+};
+
+VC.simItemsReport = function () {
+  var I = typeof SIM !== 'undefined' && SIM.ITEMS; if (!I) return null;
+  var S = I.stats, T = TUNE.sim.items, A = SIM.all('actor'), out = { setup: VC.SIMITEMS };
+  /* what is kept against what is wanted, by class */
+  var kept = {}; A.forEach(function (a) { var K = kept[a.cls] || (kept[a.cls] = { n: 0, want: 0, have: 0, short: 0, bare: 0 });
+    K.n++; (a.wears || []).forEach(function (it) { var w = (a.keep && a.keep[it]) || a.sets || 1, h = SIM.owns(a, it); K.want += w; K.have += Math.min(w, h); if (h < w) K.short++; });
+    if (a.eq && (!a.eq.torso || !a.eq.legs || !a.eq.feet)) K.bare++; });
+  out.kept = kept;
+  /* purchases by kind of shop */
+  var byKey = {}; Object.keys(S.byShop).forEach(function (id) { var P = SIM.R.place[id], k = (P && P.shopKey) || (P ? P.kind : 'gone'), B = byKey[k] || (byKey[k] = {}); Object.keys(S.byShop[id]).forEach(function (it) { B[it] = (B[it] || 0) + S.byShop[id][it]; }); });
+  out.byShopKind = byKey; out.bought = S.bought; out.errands = S.errands; out.done = S.done; out.failed = S.failed; out.noShop = S.noShop; out.worn = S.worn;
+  out.trip = {}; Object.keys(S.trip).forEach(function (k) { var t = S.trip[k]; out.trip[k] = { n: t.n, mean: Math.round(t.mins / Math.max(1, t.n)), max: t.max }; });
+  out.unsold = Object.keys(T.kinds).filter(function (k) { return !SIM.sellersOf(k).length; });
+  out.tools = { broken: S.brokenAtWork, replacedAtWork: S.replacedAtWork, missingNow: A.filter(function (a) { return a.toolNeed; }).length,
+                missingBy: A.reduce(function (o, a) { if (a.toolNeed) o[a.toolNeed] = (o[a.toolNeed] || 0) + 1; return o; }, {}) };
+  out.hurt = { total: S.hurt, now: A.filter(function (a) { return a.hurt != null; }).length, poultices: S.poultice, healed: S.healed };
+  out.meals = S.meals;
+  var low = 0, homes = 0, days = 0; SIM.all('place').forEach(function (P) { if (!P.store || !P.people) return; homes++; var tot = 0; for (var f in P.store) tot += P.store[f]; var d = tot / (P.people * 4); days += d; if (d < T.low) low++; });
+  out.stores = { homes: homes, low: low, meanDays: homes ? Math.round(days / homes * 10) / 10 : 0 };
+  out.errandsNow = A.filter(function (a) { return a.errand; }).length;
+  out.slotErrors = A.reduce(function (s, a) { return s + SIM.itemsCheck(a).length; }, 0);
   return out;
 };
 
@@ -58967,6 +59298,26 @@ VC.peopleReportHTML = function () {
       h += '</table>';
       h += '<div>The deficits (how many at ' + hi + ' or more, the districts with the most): ' + (Object.keys(NR.deficits).map(function (n) { var D = NR.deficits[n]; return '<b>' + n + '</b> ' + f(D.n) + ' (' + D.where.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + ')'; }).join('; ') || 'none') + '.</div>';
       h += '<div>Free-time places full now: ' + (NR.full.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') || 'none') + '.</div>';
+    }
+    var IR = VC.simItemsReport ? VC.simItemsReport() : null;
+    if (IR) {
+      var o2 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; }, SU = IR.setup || {};
+      h += '<h2>Things: clothes, tools, food, shopping</h2><div class="k">core/simulation 77-sim-6-items.js, TUNE.sim.items. Stock is abstract: every purchase succeeds and is logged, so what shows is which shops are missing or far. ' +
+        f(SU.shopPlaces) + ' places sell (' + o2(SU.shops) + '); ' + f(SU.stores) + ' households keep a food store, ' + f(SU.messes) + ' eat at a mess. ' +
+        'Owned: ' + f((SU.gear || {}).tools) + ' tools, ' + f((SU.gear || {}).rack) + ' drawn from racks, ' + f((SU.gear || {}).armed) + ' armed, ' + f((SU.gear || {}).waterskin) + ' waterskins, ' + f((SU.gear || {}).kayak) + ' kayaks.</div>';
+      h += '<table><tr><th>class</th><th>people</th><th>clothes kept of wanted</th><th>short a set</th><th>missing a worn item</th></tr>';
+      Object.keys(IR.kept).sort(function (p, q) { return IR.kept[q].n - IR.kept[p].n; }).forEach(function (k) { var K = IR.kept[k];
+        h += '<tr><td>' + k + '</td><td class="n">' + f(K.n) + '</td><td class="n">' + (K.want ? Math.round(K.have / K.want * 100) : 100) + '%</td><td class="n">' + f(K.short) + '</td><td class="n ' + (K.bare ? 'bad' : '') + '">' + f(K.bare) + '</td></tr>'; });
+      h += '</table>';
+      h += '<div>Bought: ' + o2(IR.bought) + '. By kind of shop: ' + Object.keys(IR.byShopKind).map(function (k) { return '<b>' + k + '</b> ' + o2(IR.byShopKind[k]); }).join('; ') + '.</div>';
+      h += '<div>Trips to buy (world minutes, mean / longest): ' + Object.keys(IR.trip).map(function (k) { return k + ' ' + IR.trip[k].mean + ' / ' + IR.trip[k].max; }).join(', ') + '. Errands now ' + f(IR.errandsNow) + '; ' +
+        '<span class="bad">no seller within reach: ' + o2(IR.failed) + '</span>.</div>';
+      h += '<div class="bad">No shop sells: ' + (IR.unsold.join(', ') || 'nothing missing') + (Object.keys(IR.noShop).length ? ' (wanted and not to be had: ' + o2(IR.noShop) + ')' : '') + '.</div>';
+      h += '<div>Worn out: ' + o2(IR.worn) + '. Tools broken at work ' + f(IR.tools.broken) + ', replaced during work time ' + f(IR.tools.replacedAtWork) + ', missing now ' + f(IR.tools.missingNow) + (IR.tools.missingNow ? ' (' + o2(IR.tools.missingBy) + ')' : '') +
+        '. Hurt at work ' + f(IR.hurt.total) + ' (now ' + f(IR.hurt.now) + '), poultices bought ' + f(IR.hurt.poultices) + ', healed ' + f(IR.hurt.healed) + '.</div>';
+      var M = IR.meals, mt = M.meal + M.single + M.none + M.bought + M.mess;
+      h += '<div>Meals: ' + f(M.meal) + ' at home of two foods, ' + f(M.single) + ' of one, <span class="' + (M.none ? 'bad' : '') + '">' + f(M.none) + ' of scraps</span>, ' + f(M.bought) + ' bought (taverns, stalls), ' + f(M.mess) + ' at a mess' + (mt ? ' (' + Math.round((M.meal + M.bought + M.mess) / mt * 100) + '% full meals)' : '') +
+        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

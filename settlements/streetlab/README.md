@@ -520,6 +520,22 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   are phase F's and G's). The report's "Needs and happiness" gives them by class and by kind of work (with the
   efficiency of those at work now), the deficits by district and the free-time places full; the clock bar shows the mean
   happiness; `verify.py` runs a second workday on from the first and checks the meters hold steady.
+* **Things: clothes, tools, food, shopping** (phase D; SIM-ROADMAP.md 2.5): core/simulation's new `77-sim-6-items.js`
+  (opt-in: `SIM.items`), set up by `45-vc-sim-items.js` from `TUNE.sim.items`. Stock is abstract (the owner's Q7): every
+  purchase succeeds and is logged by shop and item, so the report shows which shops are missing or far. A shop sells by
+  its kit model (the alchemist poultices; the clothier, the weaver and the tannery clothes and shoes; the smithy tools,
+  arms and armour; the provisioner, the bakery, the butcher and the markets' stalls food; the trader, the enchanter and
+  the potter luxuries and household goods). Every citizen wears a set (shirt; trousers or a dress; shoes; a hat or hood
+  for some) in the six slots and keeps more at home by class (the owner's Q6: 1 to 6); the armed trades own armour and
+  arms, some of the rich a sword; a worker owns its trade's tool or draws it from the rack; labourers carry a waterskin,
+  chinampa growers a kayak. Clothes wear by the worn day (at least a year of wear: the owner; everyone starts at a hashed wear) and are replaced from home; a set short is bought on time off
+  (and the material meter feels it); a tool worn out at work is bought during the shift; a worked day may end hurt (a
+  poultice from an alchemist). A household keeps a food store: two foods make a meal worth three servings (the richer
+  table more), one food a bite, none scraps; a store below a day sends one of its people for three days' food. The
+  cantons' rooms, the dormitories, the barracks and the slaves' quarters eat at their mess. The slaves are issued
+  their clothes and tools and run no errands (the owner's Q5). The material meter rises slowly; when it is high a
+  citizen buys the best luxury or household good its wealth reaches. An errand goes when a seller is open and within
+  reach. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

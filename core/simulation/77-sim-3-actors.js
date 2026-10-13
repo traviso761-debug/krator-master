@@ -65,6 +65,7 @@
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
     var m=minute==null?SIM.minute():minute, s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
+    if(SIM.ITEMS) act=SIM.itemsDesire(a, m, act);                                /* an errand (77-sim-6-items.js), opt-in */
     return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
   function placeXZ(P){ return [P.x, P.z]; }
@@ -72,6 +73,7 @@
   /* the place for an activity: pinned, remembered, preferred kinds, anything; then the role's fallback */
   function choose(a, act, hour){
     var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, near=anchor(a), P;
+    if(SIM.ITEMS && a.errand && a.errand.act===act) return SIM.itemsChoose(a, act, hour);   /* the nearest seller (77-sim-6-items.js) */
     if(pref.pin==='home' && a.home){ P=SIM.R.place[a.home]; if(P && SIM.offers(P,act)) return P; }
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
@@ -103,9 +105,10 @@
         if(!T.failed){ task=T; break; }
         SIM.release(a); a.bad[P.id]=1; a.mem[act]=null; P=null; } }
     a.wanted = want;
-    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
+    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; if(SIM.ITEMS) SIM.itemsDecided(a, minute, null, null, act, want); SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
     a.mem[act]=P.id; a.activity=act; a.place=P.id; a.task=task; a.since=minute;
     if(SIM.NEED && task!==had) SIM.needsDecided(a, minute, task);
+    if(SIM.ITEMS) SIM.itemsDecided(a, minute, task!==had ? task : null, P, act, want);
     if(SIM.NEED && act!==want && a.fr===want){ a.fr=act; a.wanted=act; }       /* a free-time choice no place took: it settles for what it got */
     if(SIM.NEED && act!==want && a.intr && a.intr.act===want){ a.intrCool=minute+a.intr.cool; a.intr=null; a.wanted=null; }   /* an interrupt with nowhere to go: back to work next minute */
     SIM.logEvent('decide', { actor:a.id, act:act, place:P.id });
@@ -285,7 +288,7 @@
   /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); SIM.decide(a, minute, t);
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };

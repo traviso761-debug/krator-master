@@ -368,7 +368,8 @@ var TUNE = {
        77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
        `byTrade`), falls by the activity's `fill` an hour (at home, sitting, resting or with guests, there is water; asleep,
        hunger and thirst come slower; every workplace has a drink, a labourer's thirst outruns it); WORK adds `work` times the trade's `labour` (heavy labour:
-       thirst, some hunger; the slaves `slaveLabour`). Material waits for phase D's items (rate 0). In the hours the
+       thirst, some hunger; the slaves `slaveLabour`). EAT's fills are one serving's: a meal of two foods is worth three
+       (phase D: TUNE.sim.items.meal). Material rises slowly and falls with what is bought (TUNE.sim.items). In the hours the
        schedule gives to one of `free`, the citizen does what its meters ask (fills times meters times weights) that an
        open place within reach offers, the scheduled one favoured by `keep`, held `dwell` minutes (and up to `jitter` more,
        by the citizen, so the choices do not all fall due in one minute). A labourer whose
@@ -379,8 +380,8 @@ var TUNE = {
        `init` [lo, hi] each */
     needs: {
       list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
-      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0 },
-      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 70, drink: 35, socialize: 3 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
+      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.8 },
+      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
               SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
               CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 } },
       work: { drink: 4, eat: 1.5, relax: 1 },
@@ -401,7 +402,60 @@ var TUNE = {
       /* the outdoor work in the country keeps a water barrel (`barrel`: a drink for every so many posts), the slaves'
          quarters their rations and water */
       barrel: { kinds: ['field', 'mine', 'quarry', 'mushfarm'], per: 2 },
-      pain: 1.5, init: { eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+      pain: 1.5, init: { material: [5, 30], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+    },
+    /* items, inventory, equipment, shopping (phase D; SIM-ROADMAP.md 1.5, 2.5; core/simulation 77-sim-6-items.js). Stock is
+       abstract (the owner's Q7): every purchase succeeds and is logged by shop and item. `kinds`: food (a serving each),
+       clothes and armour (a slot, `life` in worn days: clothes at least a year worn every day, the owner 2026-10-13;
+       everyone starts at a hashed wear, so some wear out every day and the clothiers have custom), arms, tools (`workLife` in worked hours), gear, medicine, luxuries
+       and household goods (`material`: how much of the material meter a purchase fills). `shops`: what a building sells,
+       by its kit model; `market`: what a market's stalls sell. `sets` (the owner's Q6 recommendation): the clothes sets a
+       citizen keeps, by class. `tools`: a kind of work's tool, owned (an item) or drawn from the workplace's rack
+       ('rack'); `armed`: the kinds of work that own arms and armour; the rich carry a sword at `richSword`. A citizen
+       starts with its sets (the worn one at a hashed wear), its tool, a waterskin if it labours, a kayak if it grows the
+       chinampas, and its household's food for `foodDays` [lo, hi] days. `meal`: a meal (two foods) x3 of one serving, the
+       richer `rich` x wealth more; `hurt` a worked day's chance of an injury, `heal` days without a poultice; a store
+       below `low` days of meals sends one of the household for `days` days; `lack` material a day per set short; a
+       `treat` when material reaches `at`: the last item whose least wealth the citizen has; `mins` at the shop */
+    items: {
+      kinds: {
+        corn: { cat: 'food', food: true }, peppers: { cat: 'food', food: true }, mushrooms: { cat: 'food', food: true }, fish: { cat: 'food', food: true },
+        eggs: { cat: 'food', food: true }, bread: { cat: 'food', food: true },
+        shirt: { cat: 'clothes', slot: 'torso', life: 400 }, trousers: { cat: 'clothes', slot: 'legs', life: 450 }, dress: { cat: 'clothes', slot: 'legs', life: 450 },
+        shoes: { cat: 'clothes', slot: 'feet', life: 380 }, hat: { cat: 'clothes', slot: 'head', life: 600 }, hood: { cat: 'clothes', slot: 'head', life: 600 },
+        cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 1200 }, greaves: { cat: 'armour', slot: 'legs', layer: 'armour', life: 1200 },
+        boots: { cat: 'armour', slot: 'feet', life: 800 }, helm: { cat: 'armour', slot: 'head', life: 1500 },
+        sword: { cat: 'arms', slot: 'rhand' }, spear: { cat: 'arms', slot: 'rhand' }, shield: { cat: 'arms', slot: 'lhand' },
+        hoe: { cat: 'tool', workLife: 120 }, pick: { cat: 'tool', workLife: 80 }, maul: { cat: 'tool', workLife: 90 }, knife: { cat: 'tool', workLife: 150 },
+        hook: { cat: 'tool', workLife: 140 }, spade: { cat: 'tool', workLife: 120 }, shears: { cat: 'tool', workLife: 160 }, goad: { cat: 'tool', workLife: 200 },
+        hammer: { cat: 'tool', workLife: 100 }, shuttle: { cat: 'tool', workLife: 200 }, scraper: { cat: 'tool', workLife: 120 }, peel: { cat: 'tool', workLife: 200 },
+        cleaver: { cat: 'tool', workLife: 150 }, ladle: { cat: 'tool', workLife: 250 }, quill: { cat: 'tool', workLife: 60 }, oar: { cat: 'tool', workLife: 200 },
+        net: { cat: 'tool', workLife: 100 }, lancet: { cat: 'tool', workLife: 150 },
+        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' },
+        pottery: { cat: 'household', material: 25 }, lamp: { cat: 'household', material: 30 }, rug: { cat: 'household', material: 45 },
+        jewellery: { cat: 'luxury', material: 60 }, silks: { cat: 'luxury', material: 70 }
+      },
+      shops: {
+        voth_shop_alchemist: ['poultice'], voth_shop_clothier: ['shirt', 'trousers', 'dress', 'shoes', 'hat', 'hood'],
+        voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'waterskin', 'lamp'],
+        voth_shop_smithy: ['hoe', 'pick', 'maul', 'knife', 'hook', 'spade', 'shears', 'goad', 'hammer', 'scraper', 'cleaver', 'ladle', 'lancet', 'sword', 'spear', 'shield', 'cuirass', 'greaves', 'boots', 'helm'],
+        voth_shop_potter: ['pottery', 'lamp'], voth_shop_scribe: ['quill'], voth_shop_enchanter: ['jewellery'],
+        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
+        voth_bldg_butcher: ['fish', 'eggs']
+      },
+      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
+      shopBuy: 6,
+      sets: { slave: 1, poor: 2, canton: 2, farm: 2, tavern: 2, middle: 3, shop: 3, craft: 3, civic: 3, landmark: 3, monastery: 2, rich: 4, manor: 6, clan: 6, other: 2 },
+      tools: { 'farmhands and ploughmen': 'hoe', miners: 'pick', 'quarrymen and masons': 'maul', 'mushroom growers': 'knife', 'dockers and stevedores': 'hook',
+               'porters and warehousemen': 'hook', 'chinampa growers': 'spade', orchardmen: 'shears', 'beetle herders': 'goad', 'smiths and craftsmen': 'hammer',
+               'industrial workers': 'hammer', 'guild masters and journeymen': 'hammer', 'armourers and quartermasters': 'hammer', weavers: 'shuttle', tanners: 'scraper',
+               bakers: 'peel', 'cooks and bakers': 'ladle', butchers: 'cleaver', 'innkeepers and servers': 'ladle', 'household service': 'ladle',
+               'guild officers and clerks': 'quill', 'customs officers and clerks': 'quill', 'teachers and scholars': 'quill', 'palace household and officials': 'quill',
+               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'rack',
+               soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
+      armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
+      foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
+      treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
     }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */

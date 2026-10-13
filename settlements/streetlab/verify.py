@@ -293,6 +293,7 @@ CITY_CHECK = r"""() => {
       /* phase C session 3: a second workday on from the first (the meters carried over): do the needs hold steady? */
       out.simc.workday2 = SIM.NEED ? VC.simDay(2, 0, 24, [10, 20]) : null;
       out.simc.needs = VC.simNeedsReport ? VC.simNeedsReport() : null;
+      out.simc.items = VC.simItemsReport ? VC.simItemsReport() : null;   /* phase D: after the two workdays */
       if (out.simc.needs) { const NR = out.simc.needs, top = o => Object.keys(o).sort((p, q) => o[p].happy - o[q].happy).slice(0, 6).map(k => [k, o[k].n, o[k].happy, o[k].eff]);
         out.simc.needs = { all: NR.all, byClass: Object.keys(NR.byClass).map(k => [k, NR.byClass[k].n, NR.byClass[k].happy]), worstTrades: top(NR.byTrade), atWork: Object.keys(NR.atWork).length,
           deficits: NR.deficits, full: NR.full, traits: [...new Set(SIM.all('actor').map(a => a.trait))].length }; }
@@ -353,6 +354,27 @@ def needs_bad(sc):
     if over: return 'needs at 70 or more: %s' % over
     if not g(w1, 10).get('by', {}).get('DRINK') or not g(w2, 10).get('by', {}).get('DRINK'): return 'no well trips at 10:00'
     if n['traits'] < 8: return 'traits %s' % n['traits']
+    return None
+
+
+def items_bad(sc):
+    """phase D: after two workdays: every slot holds by the rules; next to nobody (0.1%: on their way to buy) is missing a
+    worn shirt, legs or feet; food,
+    clothes, a tool replaced during work time and a poultice were bought; most meals are full meals; the items no shop
+    sells are named (the report says so)"""
+    it = sc.get('items')
+    if not it: return 'no items'
+    if it['slotErrors']: return 'slot errors %d' % it['slotErrors']
+    bare, n = sum(k['bare'] for k in it['kept'].values()), sum(k['n'] for k in it['kept'].values())
+    if bare > 0.001 * n: return 'missing a worn item: %d' % bare   # a few are on their way to buy one
+    b = it['bought']
+    if not any(b.get(f) for f in ('corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread')): return 'no food bought'
+    if not any(b.get(c) for c in ('shirt', 'trousers', 'dress', 'shoes')): return 'no clothes bought'
+    if not it['tools']['replacedAtWork']: return 'no tool replaced during work time'
+    if not it['hurt']['poultices']: return 'no poultice bought'
+    m = it['meals']; tot = m['meal'] + m['single'] + m['none'] + m['bought'] + m['mess']
+    if not tot or (m['meal'] + m['bought'] + m['mess']) < 0.7 * tot: return 'full meals %s of %s' % (m['meal'] + m['bought'] + m['mess'], tot)
+    if not isinstance(it.get('unsold'), list): return 'no list of items no shop sells'
     return None
 
 
@@ -439,6 +461,13 @@ def verify_city(a, port, rel, sync_playwright):
         nr = sc['needs']
         print('  needs at the second workday\'s end: by class %s; the unhappiest trades %s; trades at work now %d; traits %d' % (json.dumps(nr['byClass']), json.dumps(nr['worstTrades']), nr['atWork'], nr['traits']))
         print('    deficits %s; full now %s; needs check: %s' % (json.dumps(nr['deficits']), json.dumps(nr['full']), needs_bad(sc) or 'OK'))
+    if sc.get('items'):
+        it = sc['items']
+        print('  things (phase D): setup %s' % json.dumps(it['setup']))
+        print('    kept by class %s' % json.dumps(it['kept']))
+        print('    bought %s; by kind of shop %s' % (json.dumps(it['bought']), json.dumps(it['byShopKind'])))
+        print('    trips %s; errands now %d; failed %s; no shop sells %s (wanted %s); worn out %s' % (json.dumps(it['trip']), it['errandsNow'], json.dumps(it['failed']), it['unsold'], json.dumps(it['noShop']), json.dumps(it['worn'])))
+        print('    tools %s; hurt %s; meals %s; stores %s; slot errors %d; items check: %s' % (json.dumps(it['tools']), json.dumps(it['hurt']), json.dumps(it['meals']), json.dumps(it['stores']), it['slotErrors'], items_bad(sc) or 'OK'))
     if sc.get('worship'):
         wo = sc['worship']
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
@@ -470,7 +499,7 @@ def verify_city(a, port, rel, sync_playwright):
                 or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['wrong'] or sc['d2']['failed'] or sc['d2']['none'] or sc['d2']['pinned'] < 0.95 * sc['d2']['asked'] \
                 or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
-                or not sc.get('workday') or week_bad(sc) or needs_bad(sc):
+                or not sc.get('workday') or week_bad(sc) or needs_bad(sc) or items_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
                 au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')

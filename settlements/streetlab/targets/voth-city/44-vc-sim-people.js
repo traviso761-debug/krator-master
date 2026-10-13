@@ -33,7 +33,8 @@ VC.simPeople = function () {
   var needsOf = function (id) {
     if (!NE) return undefined;
     var job = id.replace(/^[ws]\./, '').replace(/\/night$/, ''), lab = /^s\./.test(id) ? NE.slaveLabour : NE.labour[job] || 0;
-    return { labour: lab, rate: NE.byTrade[job] || undefined };
+    var rate = NE.byTrade[job] || undefined; if (/^s\./.test(id)) rate = Object.assign({}, rate || {}, { material: 0 });   /* the slaves: no material need (the owner's Q5) */
+    return { labour: lab, rate: rate };
   };
   /* a citizen's trait and starting meters, by a hash of its index (core/rand) */
   var temper = function (a, k) {
@@ -66,6 +67,7 @@ VC.simPeople = function () {
     if (u && u.residents) { res = u.residents; cls = u.cls; kind = u.site || u.cls; }
     else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; if (!P.activities.IDLE) P.activities.IDLE = Math.round(res); }   /* they sit in their room */
     res = Math.round(res); if (res > 0) homes.push({ P: P, res: res, cls: cls, kind: kind, c: comp(P), xz: at(P) });
+    if (res > 0 && (!P.activities.EAT || P.workplaces >= res)) P.mess = true;   /* fed by their institution (phase D: no food store of their own) */
     if (res > 0 && !P.activities.EAT) P.activities.EAT = res;   /* quarters with no kitchen (a canton's rooms, the monastery's dormitories) eat at their mess or refectory (phase C session 3: the Fortress is an island) */
   });
   var cum = 0, workers = [], deps = [];
@@ -108,7 +110,7 @@ VC.simPeople = function () {
     var n = Math.round(free[P.id] * T.slaveShare);
     for (var i = 0; i < n; i++) slaves.push({ P: P });
     free[P.id] -= n;
-    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
+    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; P.mess = true; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
   });
   /* 4. the deal, by the walk: each round one search over the pedestrian layer from every place with a free post labels
      every node with its nearest one (SIM.nav.field), and each place takes the workers nearest it among those it labels;
@@ -192,6 +194,7 @@ VC.simPeople = function () {
   R.ms = Date.now() - t0;
   if (SIM.placesChanged) SIM.placesChanged();   /* the slaves' quarters added SLEEP to their sites: the place grids rebuild */
   VC.PEOPLE = R;
+  if (VC.simItems) VC.simItems();   /* 45-vc-sim-items.js: the shops, the households' stores, everyone's things (phase D) */
   return R;
 };
 

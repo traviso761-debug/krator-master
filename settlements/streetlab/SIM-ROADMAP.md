@@ -308,6 +308,13 @@ house. Phase B is done: every kind of work meets the 90% rule.
    trader (luxuries). Stock is **abstract in this phase** (always available, every purchase logged as demand by shop),
    so deficits of shops, not of goods, show first. The report lists tools no shop sells.
 5. Meals: the morning and evening meal at home from the food store (two foods → a meal), or at a tavern or stall.
+   **Session 1 (2026-10-13): items 1-5 done** (core/simulation `77-sim-6-items.js`, opt-in by `SIM.items`; the city's
+   `45-vc-sim-items.js` and `TUNE.sim.items`; the report's "Things"). Differences from the plan: wear is counted per
+   worn day for clothes and per worked hour for tools (`life`, `workLife` on the item kinds, not a `TUNE.sim.wear`); the
+   material meter rises slowly and falls with a purchase (a luxury or household good bought when it is high, by
+   wealth); the slaves are issued their clothes and tools (Q5: no market trips); lamps are household goods, not worn;
+   nobody eats out yet (the meals are pinned home: a tavern's meal is counted as bought when it happens); the kayak is
+   owned but the chinampa growers still walk (the water layer is phase F's).
 
 ### 2.6 Phase E: production, stores, carts, imports (2 sessions)
 
