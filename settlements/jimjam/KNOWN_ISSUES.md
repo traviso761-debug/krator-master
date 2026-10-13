@@ -7,6 +7,10 @@
 - [ ] `jjPlinth` leaves open slits between its courses; `jjCivPlinth` is the local fix.
 - [ ] `jjWall`'s `band` option runs a course at mid-height that crosses windows on 3-storey and 9 m walls.
 - [ ] `useGroupXF` (vendored `50-registry.js`) uses the group's LOCAL matrix, so `JJFURN.place(buildingGroup, …)` lands near the world origin; `jjHospFurn` places furniture in the scene at the transformed point.
+      2026-10-13 (the Ancients re-vendor session): Iziz's `69c-vern-helpers.js` redefines `useGroupXF`/`endGroupXF` as a
+      stack that composes (Highlands, Xanadu, Reed Lake, Dalab and Ys vendor that file); `kits/ancients/src/50-registry.js`
+      still has the local-matrix version. Not moved upstream in that session: it changes every build that vendors
+      `50-registry.js` (Ys's copies are frozen meanwhile). `--vendor-check` that day: all available upstream fragments match.
 - [ ] Goods (crates, jars, spice cones, armour) are simple primitives; they read at eye level, not from the air.
 - [ ] Cut-out cloth (swallow-tailed banners, sun plates) casts rectangular shadows.
 - [ ] The amphitheater's front view shows the back of the stage building; the bowl reads from above and in its own views.
