@@ -263,14 +263,14 @@ const WATER_SHALLOW=new THREE.Color().setHSL(WHUE,.55,.46),WATER_MID=new THREE.C
 // bed. core/export's water section carries it, with WATER's own heights as probes, and a port draws it from the same maths
 // (godot/shaders/lib/water.gdshaderinc). The page draws the pond as a disc of 165 m (below), so outside that disc the bed
 // stands above the level and the port draws the same outline. `look` is how this page draws it, for that port: its
-// colours (linear; the mid-water and deep tints over core/water's shallow-to-deep ramp) and its flat sky, mixed in by the
-// view's grazing as MAT_WATER does (base .10, grazing .62 times (1 - n.v)^3).
+// colours (linear; the mid-water and deep tints over core/water's shallow-to-deep ramp), its flat sky, mixed in by the
+// view's grazing as MAT_WATER does (base .10, grazing .62 times (1 - n.v)^3), and that MAT_WATER takes no light (unlit).
 const POND_R=165;
 const POND_WATER=WATER.open({name:'The pond',level:PL,swell:[[.06,20,35,0,.03],[.035,12,-50,1.3,.03],[.015,6,80,2.2,.02]],field:0,
  bounds:[POND.x-POND_R-10,POND.z-POND_R-10,POND.x+POND_R+10,POND.z+POND_R+10],bedCell:4,
  bed:(x,z)=>Math.hypot(x-POND.x,z-POND.z)>POND_R?Math.max(terrainH(x,z),PL+.5):terrainH(x,z)});
 POND_WATER.look={colour:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),shallow:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),
- deep:'#'+WATER_DEEP.clone().convertSRGBToLinear().getHexString(),roughness:.08,transparent:true,
+ deep:'#'+WATER_DEEP.clone().convertSRGBToLinear().getHexString(),roughness:.08,transparent:true,unlit:true,
  sky:{colour:'#'+new THREE.Color(0xdfe6ec).convertSRGBToLinear().getHexString(),base:.10,grazing:.62}};
 const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
  uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xdfe6ec)}}]),
