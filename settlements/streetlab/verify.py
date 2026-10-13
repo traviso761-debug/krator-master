@@ -297,6 +297,7 @@ CITY_CHECK = r"""() => {
       if (out.simc.items) out.simc.items.legsBy = SIM.legsBy;
       out.simc.econ = VC.simEconomyReport ? VC.simEconomyReport() : null;   /* phase E: after the two workdays */
       out.simc.animals = VC.simAnimalsReport ? VC.simAnimalsReport() : null;   /* the animals: after the two workdays */
+      out.simc.buckets = VC.SIMBUCKETS ? { offsets: VC.SIMBUCKETS.offsets, workers: VC.SIMBUCKETS.workers, others: VC.SIMBUCKETS.others, lag: SIM.LAG } : null;
       if (out.simc.needs) { const NR = out.simc.needs, top = o => Object.keys(o).sort((p, q) => o[p].happy - o[q].happy).slice(0, 6).map(k => [k, o[k].n, o[k].happy, o[k].eff]);
         out.simc.needs = { all: NR.all, byClass: Object.keys(NR.byClass).map(k => [k, NR.byClass[k].n, NR.byClass[k].happy]), worstTrades: top(NR.byTrade), atWork: Object.keys(NR.atWork).length,
           deficits: NR.deficits, full: NR.full, traits: [...new Set(SIM.all('actor').map(a => a.trait))].length }; }
@@ -453,6 +454,8 @@ def animals_bad(sc):
     # the pets (owner, 2026-10-13): a dog and a cat for every 40 citizens; they roam and mingle by day, sleep at home, eat nothing
     pe, ph = an.get('pets') or {}, an.get('petHours') or {}
     want = (an.get('citizens') or 0) // (an.get('petsPer') or 40)
+    bk = sc.get('buckets') or {}
+    if bk.get('workers') and max(bk['workers']) > 1.1 * min(bk['workers']): return 'buckets unbalanced: %s' % bk['workers']
     if not want or pe.get('dog') != want or pe.get('cat') != want: return 'pets %s, want %s of each' % (json.dumps(pe), want)
     if not ph.get('ROAM') or not ph.get('MINGLE') or not ph.get('BED'): return 'pets do not roam, mingle and sleep: %s' % json.dumps(ph)
     if ph.get('EAT') or ph.get('FEED') or ph.get('DRINK'): return 'pets ate or drank: %s' % json.dumps(ph)
@@ -558,6 +561,9 @@ def verify_city(a, port, rel, sync_playwright):
             print('    %-10s stock %8d at sites %8d  made %7d used %7d imported %6d exported %6d a day  days left %s  short %d' % (k, G['stock'], G['atSites'], G['madeDay'], G['usedDay'], G['importedDay'], G.get('exportedDay', 0), G['days'], G['short']))
         print('    carriers %s; by timer %s; landed %s; under way %s' % (json.dumps(e['setup'].get('carriers')), json.dumps(e['setup'].get('noCarrier')), json.dumps(e.get('landed')), json.dumps(e.get('carriers'))))
         print('    held up %s; out of stock %s; meals the kitchens could not make %s; economy check: %s' % (json.dumps(e['blocked']), json.dumps(e.get('outOf')), e.get('mealsOut'), econ_bad(sc) or 'OK'))
+    if sc.get('buckets'):
+        bk = sc['buckets']
+        print('  the trades in buckets %s (lag %s): workers %s, others %s' % (bk['offsets'], bk['lag'], bk['workers'], bk['others']))
     if sc.get('animals'):
         an = sc['animals']
         print('  animals: setup %s' % json.dumps(an['setup']))

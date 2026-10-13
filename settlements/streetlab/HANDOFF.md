@@ -4,6 +4,16 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: the trades in two half-hour buckets
+
+The owner: "Can we stagger the jobs into 2 buckets separated by 1/2 hour to further reduce that load?"
+`VC.simBuckets` (`TUNE.sim.run.buckets: [0, 30]`; core: an actor's `lagBase` adds to `SIM.LAG`'s jitter): the kinds of
+work dealt largest first to the lighter bucket (11,702 and 11,708 workers), those without a trade by parity; half the
+city's day runs a half-hour later. A same-page A/B of a whole workday (lag on both): the worst minute 1.86 s against
+2.45 s (its decisions about 1,700 against 3,000), but the total 175 s against 161 s (+9%) for the same 644k decisions,
+and p50 70 against 48 ms: the hour's work now touches twenty minutes of every hour, not ten. A smoother day, not a
+cheaper one; `buckets: [0]` turns it off. `verify.py`: workdays' worst minutes 1.8 and 1.7 s, the buckets balanced.
+
 ## 2026-10-13: the lag (the hour's turn spread), and the pets
 
 The owner: "Do the decision spreading for further optimization. Also add 1 dog and 1 cat per 40 citizens. Both will

@@ -119,7 +119,8 @@ worn through; a command's end). An actor whose wish and decision differ is asked
 **The lag** (opt-in: `SIM.LAG` minutes, `77-sim-3-actors.js`). Each actor's day runs `SIM.lagOf(a)` minutes (a hash
 of the actor, 0 to `LAG`) behind the clock: its schedule, its weekday and its wake read the lagged minute, so a change
 of schedule falls due over the hour's first minutes instead of all at :00 (the hour's turn), and its wish and decision
-stay consistent (nothing waits).
+stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
+buckets, half of them a half-hour later).
 
 ## Navigation layers
 

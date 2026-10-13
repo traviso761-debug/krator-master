@@ -598,7 +598,11 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to
   about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks. **The lag** (`TUNE.sim.run.lag`, core
   `SIM.LAG`): each citizen's day runs a hashed 0 to 10 minutes behind the clock, so nobody leaves on the dot and the
-  hour's decisions spread over its first minutes instead of all falling at :00.
+  hour's decisions spread over its first minutes instead of all falling at :00. **The buckets** (`TUNE.sim.run.buckets`,
+  `VC.simBuckets`; owner: "stagger the jobs into 2 buckets separated by 1/2 hour"): the kinds of work are dealt, the
+  largest first, to the bucket with fewer workers, and half the city's trades keep their day a half-hour later (their
+  shifts, breaks and evenings); those without a trade by parity. Each hour's turn falls in two halves, at :00 and :30:
+  the worst minute 1.9 s against 2.5 s, the day's total about 9% more (a smoother day, not a cheaper one).
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

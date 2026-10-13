@@ -363,7 +363,7 @@ var TUNE = {
        a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
        re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH);
        `wake`: an actor is asked again only when its wish could change (core/simulation SIM.WAKE). The census is sampled at `samples` hours each day (the fast clock's stability check) */
-    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10 },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes */
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10, buckets: [0, 30] },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes; buckets: the trades dealt into these offsets (VC.simBuckets: half of them a half-hour later) */
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 60,   /* animals: the fauna kit's animals drawn at once, the nearest */

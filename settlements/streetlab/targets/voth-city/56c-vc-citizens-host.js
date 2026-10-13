@@ -28,7 +28,7 @@ VC.simCensusNow = function (cheap) {   /* cheap: asked only of those due (SIM.WA
 VC.simRun = function () {
   if (typeof SIM === 'undefined' || !VC.PEOPLE || !VC.clock) return;
   var R = TUNE.sim.run, C = VC.clock, S = VC.SIMRUN;
-  SIM.lazy = { pedestrian: { detour: R.detour } }; SIM.STEP_MAX = R.stepMax; SIM.REACH = R.reach; SIM.WAKE = R.wake !== false; SIM.LAG = R.lag == null ? 0 : R.lag;
+  SIM.lazy = { pedestrian: { detour: R.detour } }; SIM.STEP_MAX = R.stepMax; SIM.REACH = R.reach; SIM.WAKE = R.wake !== false; SIM.LAG = R.lag == null ? 0 : R.lag; if (R.buckets && R.buckets.length > 1 && VC.simBuckets) VC.simBuckets(R.buckets);
   var t0 = performance.now(); SIM.jump(); S.jumpMs = Math.round(performance.now() - t0); S.jumps++; S.last = SIM.minute();
   var sampled = {};
   (window._frameHooks = window._frameHooks || []).push(function () {

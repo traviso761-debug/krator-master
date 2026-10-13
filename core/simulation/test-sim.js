@@ -533,6 +533,11 @@ function world(seed){
   const lags=S.all('actor').map(a=>S.lagOf(a));return {peak,acts10,spread:new Set(lags).size,maxLag:Math.max(...lags)};};
  const A=run(0),B=run(10);
  ok('with a lag the hour\'s decisions spread over its minutes (a lower peak)',B.peak<A.peak/2&&B.spread>5&&B.maxLag<=10,B.peak>=A.peak);
- ok('and once its minutes are past, everyone does what the schedule says, as without',B.acts10===A.acts10,B.acts10!==A.acts10);}
+ ok('and once its minutes are past, everyone does what the schedule says, as without',B.acts10===A.acts10,B.acts10!==A.acts10);
+ // two buckets half an hour apart: half the actors' day 30 minutes later; each turn's peak about halved again
+ {const {S,clock}=world(67);S.WAKE=true;S.LAG=10;for(let i=0;i<120;i++){ const a=S.actor({id:'b'+i,role:'farmer',home:i%2?'homeA':'homeB'}); a.lagBase=i%2?30:0; }
+  let peak=0,at0=null,at30=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && (m%60<=10 || (m%60>=30 && m%60<=40))) peak=Math.max(peak,made);
+    if(m===10*60+15){ const mm=S.minute(); at0=S.all('actor').filter(a=>!a.lagBase && S.desire(a,mm)==='BUY').length; at30=S.all('actor').filter(a=>a.lagBase && S.desire(a,mm)==='BUY').length; } }
+  ok('two buckets: the half-hour bucket keeps its old hour until :30; the peak lower again',at30===0&&at0>40&&peak<=B.peak,at30>0);}}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

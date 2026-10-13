@@ -296,3 +296,17 @@ VC.simNeedsReport = function (minute) {
   out.full = Object.keys(full).map(function (k) { return [k, full[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
   return out;
 };
+
+/* the trades in half-hour buckets (owner, 2026-10-13: "stagger the jobs into 2 buckets separated by 1/2 hour"): every
+   kind of work is dealt, the largest first, to the bucket with the fewest workers so far; each actor's day (core
+   SIM.LAG's `lagBase`) runs its bucket's offset behind the clock: its shift, its breaks and its evening a half-hour
+   later, so each hour's turn falls in two halves (:00 and :30). Those without a trade (dependants, gentry, animals)
+   by the parity of their index */
+VC.simBuckets = function (offs) {
+  var A = SIM.all('actor'), by = {}, of = {}, load = offs.map(function () { return 0; }), rest = offs.map(function () { return 0; });
+  A.forEach(function (a) { if (a.job) by[a.job] = (by[a.job] || 0) + 1; });
+  Object.keys(by).sort(function (p, q) { return by[q] - by[p] || (p < q ? -1 : 1); }).forEach(function (j) { var i = load.indexOf(Math.min.apply(null, load)); of[j] = i; load[i] += by[j]; });
+  A.forEach(function (a) { var i = a.job && of[a.job] != null ? of[a.job] : a.k % offs.length; if (!a.job) rest[i]++; a.lagBase = offs[i]; a.lagFor = null; a.wake = null; });
+  VC.SIMBUCKETS = { offsets: offs, workers: load, others: rest, jobs: of };
+  return VC.SIMBUCKETS;
+};

@@ -333,8 +333,8 @@
    "sha256": "96bf8ff097bf55009f1712f1b778d4600a6fa78b15a6ab11df47bb0262233d0a"
   },
   "settlements/mungo/dist/mungo.html": {
-   "bytes": 3367580,
-   "sha256": "ce9a65f233fa7921c761c36d9316a52aa09fc262f851493b658519325d56c4e3"
+   "bytes": 3367872,
+   "sha256": "7604f77838e11ea2ba77698abdd467e49159c0eeec39fc8a707a1db2e0b309ea"
   },
   "settlements/noahs-regret/dist/noahs-regret.html": {
    "bytes": 6179152,
@@ -485,12 +485,12 @@
    "sha256": "955e0c5038504ed61c3cda7d951751154dcf2bce821542968c637a4f4e1c3718"
   },
   "settlements/shade/dist/shade.html": {
-   "bytes": 4151283,
-   "sha256": "5f8990f8f53bea4e5186c651b5dfceff52044eb3d2d5fb4933d3868e0bffe5ee"
+   "bytes": 4151575,
+   "sha256": "1e19a509f7412a4201fa72864a94c8728c28387a9bb23437dff011f5d8d01a67"
   },
   "settlements/streetlab/dist/voth-city.html": {
-   "bytes": 10663788,
-   "sha256": "bc711c4c0f113a9d137ce8bb59b7e4138bc5f2883f7483d0c44826b5e384192f"
+   "bytes": 10665491,
+   "sha256": "7e11e2675904139a273904998b1f281b3fd09726b29cb11faa80b1e6679153bd"
   },
   "settlements/streetlab/dist/voth-site.html": {
    "bytes": 3592870,

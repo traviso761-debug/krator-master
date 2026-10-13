@@ -49253,7 +49253,7 @@ var TUNE = {
        a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
        re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH);
        `wake`: an actor is asked again only when its wish could change (core/simulation SIM.WAKE). The census is sampled at `samples` hours each day (the fast clock's stability check) */
-    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10 },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes */
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10, buckets: [0, 30] },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes; buckets: the trades dealt into these offsets (VC.simBuckets: half of them a half-hour later) */
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 60,   /* animals: the fauna kit's animals drawn at once, the nearest */
@@ -54496,9 +54496,12 @@ SL.pass13 = function () {
   SIM.WAKE = false; SIM.skipped = 0; SIM.stepHooks = SIM.stepHooks || [];
   /* THE LAG (opt-in: SIM.LAG minutes): each actor's day runs a few minutes behind the clock, by a hash of the actor
      (0..LAG), so a change of schedule falls due over the hour's first minutes, not all at :00 (the hour's turn: the
-     minute everyone decides at once). Its schedule, its weekday and its wake all read the lagged minute */
+     minute everyone decides at once); plus its own `lagBase` minutes when the world gives one (a bucket of trades
+     half an hour later). Its schedule, its weekday and its wake all read the lagged minute */
   SIM.LAG = SIM.LAG || 0;
-  SIM.lagOf = function(a){ if(!SIM.LAG) return 0; if(a.lagFor!==SIM.LAG){ a.lagFor=SIM.LAG; a.lag=((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1); } return a.lag; };
+  /* `a.lagBase` (a world's: its bucket, the city's trades in two half-hour shifts) adds to the hashed jitter */
+  SIM.lagOf = function(a){ var base=a.lagBase||0; if(!SIM.LAG && !base) return 0; var key=SIM.LAG+':'+base;
+    if(a.lagFor!==key){ a.lagFor=key; a.lag=base + (SIM.LAG ? ((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1) : 0); } return a.lag; };
   /* A FORCED COMMAND: the actor does `act` at `place` (and at `spot`, when given) from now until `until` (a world
      minute; `mins` from now), whatever its schedule, needs and errands want; then it is free again. Asked at once (its
      wake cleared). An arena's handler sending a beast onto the sand, later a sergeant's order */
@@ -58616,6 +58619,20 @@ VC.simNeedsReport = function (minute) {
   return out;
 };
 
+/* the trades in half-hour buckets (owner, 2026-10-13: "stagger the jobs into 2 buckets separated by 1/2 hour"): every
+   kind of work is dealt, the largest first, to the bucket with the fewest workers so far; each actor's day (core
+   SIM.LAG's `lagBase`) runs its bucket's offset behind the clock: its shift, its breaks and its evening a half-hour
+   later, so each hour's turn falls in two halves (:00 and :30). Those without a trade (dependants, gentry, animals)
+   by the parity of their index */
+VC.simBuckets = function (offs) {
+  var A = SIM.all('actor'), by = {}, of = {}, load = offs.map(function () { return 0; }), rest = offs.map(function () { return 0; });
+  A.forEach(function (a) { if (a.job) by[a.job] = (by[a.job] || 0) + 1; });
+  Object.keys(by).sort(function (p, q) { return by[q] - by[p] || (p < q ? -1 : 1); }).forEach(function (j) { var i = load.indexOf(Math.min.apply(null, load)); of[j] = i; load[i] += by[j]; });
+  A.forEach(function (a) { var i = a.job && of[a.job] != null ? of[a.job] : a.k % offs.length; if (!a.job) rest[i]++; a.lagBase = offs[i]; a.lagFor = null; a.wake = null; });
+  VC.SIMBUCKETS = { offsets: offs, workers: load, others: rest, jobs: of };
+  return VC.SIMBUCKETS;
+};
+
 /* ---- targets/voth-city/45-vc-sim-items.js ---- */
 /* ============================== 5m. THE CITIZENS' THINGS (phase D) ============================== */
 /* [G data] Items, inventory, equipment, shopping (SIM-ROADMAP.md 1.5, 2.5; core/simulation 77-sim-6-items.js), tuned by
@@ -61299,7 +61316,7 @@ VC.simCensusNow = function (cheap) {   /* cheap: asked only of those due (SIM.WA
 VC.simRun = function () {
   if (typeof SIM === 'undefined' || !VC.PEOPLE || !VC.clock) return;
   var R = TUNE.sim.run, C = VC.clock, S = VC.SIMRUN;
-  SIM.lazy = { pedestrian: { detour: R.detour } }; SIM.STEP_MAX = R.stepMax; SIM.REACH = R.reach; SIM.WAKE = R.wake !== false; SIM.LAG = R.lag == null ? 0 : R.lag;
+  SIM.lazy = { pedestrian: { detour: R.detour } }; SIM.STEP_MAX = R.stepMax; SIM.REACH = R.reach; SIM.WAKE = R.wake !== false; SIM.LAG = R.lag == null ? 0 : R.lag; if (R.buckets && R.buckets.length > 1 && VC.simBuckets) VC.simBuckets(R.buckets);
   var t0 = performance.now(); SIM.jump(); S.jumpMs = Math.round(performance.now() - t0); S.jumps++; S.last = SIM.minute();
   var sampled = {};
   (window._frameHooks = window._frameHooks || []).push(function () {

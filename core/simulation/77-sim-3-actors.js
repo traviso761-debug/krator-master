@@ -303,9 +303,12 @@
   SIM.WAKE = false; SIM.skipped = 0; SIM.stepHooks = SIM.stepHooks || [];
   /* THE LAG (opt-in: SIM.LAG minutes): each actor's day runs a few minutes behind the clock, by a hash of the actor
      (0..LAG), so a change of schedule falls due over the hour's first minutes, not all at :00 (the hour's turn: the
-     minute everyone decides at once). Its schedule, its weekday and its wake all read the lagged minute */
+     minute everyone decides at once); plus its own `lagBase` minutes when the world gives one (a bucket of trades
+     half an hour later). Its schedule, its weekday and its wake all read the lagged minute */
   SIM.LAG = SIM.LAG || 0;
-  SIM.lagOf = function(a){ if(!SIM.LAG) return 0; if(a.lagFor!==SIM.LAG){ a.lagFor=SIM.LAG; a.lag=((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1); } return a.lag; };
+  /* `a.lagBase` (a world's: its bucket, the city's trades in two half-hour shifts) adds to the hashed jitter */
+  SIM.lagOf = function(a){ var base=a.lagBase||0; if(!SIM.LAG && !base) return 0; var key=SIM.LAG+':'+base;
+    if(a.lagFor!==key){ a.lagFor=key; a.lag=base + (SIM.LAG ? ((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1) : 0); } return a.lag; };
   /* A FORCED COMMAND: the actor does `act` at `place` (and at `spot`, when given) from now until `until` (a world
      minute; `mins` from now), whatever its schedule, needs and errands want; then it is free again. Asked at once (its
      wake cleared). An arena's handler sending a beast onto the sand, later a sergeant's order */
