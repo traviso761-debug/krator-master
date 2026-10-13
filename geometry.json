@@ -61,7 +61,7 @@
   "meshes": 94,
   "ready": true,
   "sceneTris": 5922486,
-  "seconds": 682,
+  "seconds": 681,
   "tris": 5904918
  },
  "biomes/hyperjungle/dist/hyperjungle.html": {
@@ -1377,7 +1377,7 @@
   "meshes": 297,
   "ready": true,
   "sceneTris": 753024,
-  "seconds": 58,
+  "seconds": 149,
   "tris": 679083
  },
  "kits/scyvoi/dist/scyvoi.html": {
@@ -1588,22 +1588,22 @@
  "settlements/locus/abyss-kit.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 83
+  "seconds": 26
  },
  "settlements/locus/locus-kit.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 97
+  "seconds": 78
  },
  "settlements/locus/locus-plants.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 79
+  "seconds": 85
  },
  "settlements/locus/locus.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 902
+  "seconds": 926
  },
  "settlements/mavs-refuge/mavs-refuge.html": {
   "errors": 1,
@@ -1613,37 +1613,117 @@
  "settlements/mungo/dist/mungo.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 754
+  "seconds": 901
  },
  "settlements/noahs-regret/dist/noahs-regret.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 917
- },
- "settlements/port/dist/cgBox.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 915
- },
- "settlements/port/dist/cgCrane.html": {
-  "errors": 1,
-  "ready": false,
   "seconds": 901
  },
+ "settlements/port/dist/cgBox.html": {
+  "calls": 111,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 56,
+  "instances": 8752,
+  "lodOff": {
+   "calls": 114,
+   "tris": 573084
+  },
+  "lodOn": {
+   "calls": 111,
+   "tris": 405215
+  },
+  "materials": 72,
+  "meshes": 114,
+  "ready": true,
+  "sceneTris": 528028,
+  "seconds": 40,
+  "tris": 409445
+ },
+ "settlements/port/dist/cgCrane.html": {
+  "calls": 149,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 56,
+  "instances": 8459,
+  "lodOff": {
+   "calls": 152,
+   "tris": 585086
+  },
+  "lodOn": {
+   "calls": 149,
+   "tris": 418543
+  },
+  "materials": 73,
+  "meshes": 152,
+  "ready": true,
+  "sceneTris": 540030,
+  "seconds": 75,
+  "tris": 424157
+ },
  "settlements/port/dist/cgEdges.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 908
+  "calls": 108,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 26,
+  "instances": 6407,
+  "lodOff": {
+   "calls": 112,
+   "tris": 505490
+  },
+  "lodOn": {
+   "calls": 108,
+   "tris": 380845
+  },
+  "materials": 40,
+  "meshes": 112,
+  "ready": true,
+  "sceneTris": 460434,
+  "seconds": 86,
+  "tris": 392275
  },
  "settlements/port/dist/cgStore.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 916
+  "calls": 118,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 50,
+  "instances": 9179,
+  "lodOff": {
+   "calls": 120,
+   "tris": 589684
+  },
+  "lodOn": {
+   "calls": 118,
+   "tris": 402022
+  },
+  "materials": 68,
+  "meshes": 120,
+  "ready": true,
+  "sceneTris": 544628,
+  "seconds": 117,
+  "tris": 410995
  },
  "settlements/port/dist/chHousing.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 902
+  "calls": 86,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 60,
+  "instances": 22418,
+  "lodOff": {
+   "calls": 89,
+   "tris": 774052
+  },
+  "lodOn": {
+   "calls": 86,
+   "tris": 606994
+  },
+  "materials": 77,
+  "meshes": 140,
+  "ready": true,
+  "sceneTris": 771928,
+  "seconds": 114,
+  "tris": 606994
  },
  "settlements/port/dist/ddDock.html": {
   "calls": 115,
@@ -1653,18 +1733,18 @@
   "instances": 8583,
   "lodOff": {
    "calls": 120,
-   "tris": 702870
+   "tris": 746630
   },
   "lodOn": {
    "calls": 115,
-   "tris": 381065
+   "tris": 424825
   },
   "materials": 77,
   "meshes": 120,
   "ready": true,
-  "sceneTris": 702870,
-  "seconds": 67,
-  "tris": 385982
+  "sceneTris": 701574,
+  "seconds": 122,
+  "tris": 430044
  },
  "settlements/port/dist/ddShed.html": {
   "calls": 123,
@@ -1674,18 +1754,18 @@
   "instances": 8917,
   "lodOff": {
    "calls": 126,
-   "tris": 649762
+   "tris": 693570
   },
   "lodOn": {
    "calls": 123,
-   "tris": 383142
+   "tris": 426950
   },
   "materials": 84,
   "meshes": 126,
   "ready": true,
-  "sceneTris": 649762,
-  "seconds": 97,
-  "tris": 393324
+  "sceneTris": 648514,
+  "seconds": 114,
+  "tris": 434758
  },
  "settlements/port/dist/ddYard.html": {
   "calls": 117,
@@ -1695,18 +1775,18 @@
   "instances": 8328,
   "lodOff": {
    "calls": 121,
-   "tris": 566732
+   "tris": 612298
   },
   "lodOn": {
    "calls": 117,
-   "tris": 364846
+   "tris": 410412
   },
   "materials": 74,
   "meshes": 121,
   "ready": true,
-  "sceneTris": 566732,
-  "seconds": 78,
-  "tris": 369112
+  "sceneTris": 567242,
+  "seconds": 112,
+  "tris": 415166
  },
  "settlements/port/dist/edges.html": {
   "calls": 146,
@@ -1716,39 +1796,39 @@
   "instances": 14553,
   "lodOff": {
    "calls": 142,
-   "tris": 876056
+   "tris": 922646
   },
   "lodOn": {
    "calls": 147,
-   "tris": 531729
+   "tris": 578319
   },
   "materials": 55,
   "meshes": 144,
   "ready": true,
-  "sceneTris": 876760,
-  "seconds": 82,
-  "tris": 557978
+  "sceneTris": 877270,
+  "seconds": 74,
+  "tris": 604568
  },
  "settlements/port/dist/harbour.html": {
-  "calls": 434,
+  "calls": 431,
   "errors": 0,
   "furnTris": 0,
   "instSets": 123,
   "instances": 32233,
   "lodOff": {
    "calls": 448,
-   "tris": 1717132
+   "tris": 1754078
   },
   "lodOn": {
    "calls": 419,
-   "tris": 896398
+   "tris": 933344
   },
   "materials": 177,
   "meshes": 455,
   "ready": true,
-  "sceneTris": 1726836,
-  "seconds": 135,
-  "tris": 957631
+  "sceneTris": 1724358,
+  "seconds": 131,
+  "tris": 1080931
  },
  "settlements/port/dist/hbEdges.html": {
   "calls": 106,
@@ -1758,18 +1838,18 @@
   "instances": 9407,
   "lodOff": {
    "calls": 95,
-   "tris": 906986
+   "tris": 950504
   },
   "lodOn": {
    "calls": 109,
-   "tris": 417457
+   "tris": 460975
   },
   "materials": 44,
   "meshes": 95,
   "ready": true,
-  "sceneTris": 906986,
-  "seconds": 127,
-  "tris": 484719
+  "sceneTris": 907496,
+  "seconds": 165,
+  "tris": 528237
  },
  "settlements/port/dist/hbFish.html": {
   "calls": 128,
@@ -1779,18 +1859,18 @@
   "instances": 11939,
   "lodOff": {
    "calls": 130,
-   "tris": 981914
+   "tris": 1027480
   },
   "lodOn": {
    "calls": 130,
-   "tris": 477287
+   "tris": 522853
   },
   "materials": 82,
   "meshes": 130,
   "ready": true,
-  "sceneTris": 981914,
-  "seconds": 80,
-  "tris": 507246
+  "sceneTris": 982424,
+  "seconds": 135,
+  "tris": 552812
  },
  "settlements/port/dist/hbHaven.html": {
   "calls": 134,
@@ -1800,18 +1880,18 @@
   "instances": 8254,
   "lodOff": {
    "calls": 133,
-   "tris": 687224
+   "tris": 732278
   },
   "lodOn": {
    "calls": 134,
-   "tris": 391042
+   "tris": 436096
   },
   "materials": 86,
   "meshes": 137,
   "ready": true,
-  "sceneTris": 687336,
-  "seconds": 80,
-  "tris": 395408
+  "sceneTris": 687846,
+  "seconds": 115,
+  "tris": 440462
  },
  "settlements/port/dist/hbMarina.html": {
   "calls": 124,
@@ -1821,18 +1901,18 @@
   "instances": 10971,
   "lodOff": {
    "calls": 127,
-   "tris": 878892
+   "tris": 924458
   },
   "lodOn": {
    "calls": 124,
-   "tris": 482615
+   "tris": 528181
   },
   "materials": 83,
   "meshes": 127,
   "ready": true,
-  "sceneTris": 878892,
-  "seconds": 47,
-  "tris": 490245
+  "sceneTris": 879402,
+  "seconds": 85,
+  "tris": 535811
  },
  "settlements/port/dist/lbAuthority.html": {
   "calls": 98,
@@ -1842,18 +1922,18 @@
   "instances": 8533,
   "lodOff": {
    "calls": 101,
-   "tris": 389112
+   "tris": 429558
   },
   "lodOn": {
    "calls": 98,
-   "tris": 349980
+   "tris": 390426
   },
   "materials": 81,
   "meshes": 103,
   "ready": true,
-  "sceneTris": 389210,
-  "seconds": 61,
-  "tris": 350476
+  "sceneTris": 389720,
+  "seconds": 78,
+  "tris": 390922
  },
  "settlements/port/dist/lbBlocks.html": {
   "calls": 208,
@@ -1863,18 +1943,18 @@
   "instances": 19641,
   "lodOff": {
    "calls": 212,
-   "tris": 812164
+   "tris": 854146
   },
   "lodOn": {
    "calls": 207,
-   "tris": 585135
+   "tris": 627117
   },
   "materials": 94,
   "meshes": 215,
   "ready": true,
-  "sceneTris": 812954,
-  "seconds": 51,
-  "tris": 596188
+  "sceneTris": 813464,
+  "seconds": 106,
+  "tris": 639190
  },
  "settlements/port/dist/lbStores.html": {
   "calls": 94,
@@ -1884,18 +1964,18 @@
   "instances": 7571,
   "lodOff": {
    "calls": 97,
-   "tris": 396080
+   "tris": 436526
   },
   "lodOn": {
    "calls": 94,
-   "tris": 351750
+   "tris": 392196
   },
   "materials": 74,
   "meshes": 97,
   "ready": true,
-  "sceneTris": 396080,
-  "seconds": 58,
-  "tris": 353430
+  "sceneTris": 396590,
+  "seconds": 61,
+  "tris": 393876
  },
  "settlements/port/dist/lbTanks.html": {
   "calls": 98,
@@ -1905,18 +1985,18 @@
   "instances": 7712,
   "lodOff": {
    "calls": 101,
-   "tris": 390180
+   "tris": 430626
   },
   "lodOn": {
    "calls": 98,
-   "tris": 348460
+   "tris": 388906
   },
   "materials": 78,
   "meshes": 103,
   "ready": true,
-  "sceneTris": 390208,
-  "seconds": 51,
-  "tris": 350168
+  "sceneTris": 390718,
+  "seconds": 98,
+  "tris": 391142
  },
  "settlements/port/dist/segment.html": {
   "calls": 144,
@@ -1926,39 +2006,39 @@
   "instances": 20509,
   "lodOff": {
    "calls": 144,
-   "tris": 946346
+   "tris": 989864
   },
   "lodOn": {
    "calls": 144,
-   "tris": 549730
+   "tris": 593248
   },
   "materials": 81,
   "meshes": 145,
   "ready": true,
-  "sceneTris": 946652,
-  "seconds": 74,
-  "tris": 569990
+  "sceneTris": 947162,
+  "seconds": 124,
+  "tris": 613508
  },
  "settlements/port/dist/showcase.html": {
-  "calls": 801,
+  "calls": 803,
   "errors": 0,
   "furnTris": 0,
   "instSets": 162,
   "instances": 124266,
   "lodOff": {
    "calls": 886,
-   "tris": 9057748
+   "tris": 9078230
   },
   "lodOn": {
    "calls": 826,
-   "tris": 1682453
+   "tris": 1702935
   },
   "materials": 243,
   "meshes": 910,
   "ready": true,
-  "sceneTris": 9078028,
-  "seconds": 261,
-  "tris": 5476400
+  "sceneTris": 9068302,
+  "seconds": 337,
+  "tris": 5314804
  },
  "settlements/port/dist/slBerth.html": {
   "calls": 136,
@@ -1968,18 +2048,18 @@
   "instances": 14986,
   "lodOff": {
    "calls": 138,
-   "tris": 752252
+   "tris": 797818
   },
   "lodOn": {
    "calls": 135,
-   "tris": 503014
+   "tris": 548580
   },
   "materials": 78,
   "meshes": 138,
   "ready": true,
-  "sceneTris": 752252,
-  "seconds": 189,
-  "tris": 515806
+  "sceneTris": 752762,
+  "seconds": 217,
+  "tris": 561372
  },
  "settlements/port/dist/slCarrier.html": {
   "calls": 118,
@@ -1989,18 +2069,18 @@
   "instances": 12229,
   "lodOff": {
    "calls": 121,
-   "tris": 609574
+   "tris": 655140
   },
   "lodOn": {
    "calls": 118,
-   "tris": 388213
+   "tris": 433779
   },
   "materials": 73,
   "meshes": 121,
   "ready": true,
-  "sceneTris": 609574,
-  "seconds": 42,
-  "tris": 410111
+  "sceneTris": 610084,
+  "seconds": 140,
+  "tris": 455403
  },
  "settlements/port/dist/slPen.html": {
   "calls": 129,
@@ -2010,18 +2090,18 @@
   "instances": 12750,
   "lodOff": {
    "calls": 126,
-   "tris": 725858
+   "tris": 771424
   },
   "lodOn": {
    "calls": 129,
-   "tris": 413767
+   "tris": 459333
   },
   "materials": 71,
   "meshes": 126,
   "ready": true,
-  "sceneTris": 725858,
-  "seconds": 70,
-  "tris": 430243
+  "sceneTris": 726368,
+  "seconds": 134,
+  "tris": 473467
  },
  "settlements/port/dist/slSub.html": {
   "calls": 106,
@@ -2031,18 +2111,18 @@
   "instances": 7562,
   "lodOff": {
    "calls": 109,
-   "tris": 496282
+   "tris": 541848
   },
   "lodOn": {
    "calls": 106,
-   "tris": 325569
+   "tris": 371135
   },
   "materials": 63,
   "meshes": 109,
   "ready": true,
-  "sceneTris": 496282,
-  "seconds": 74,
-  "tris": 337473
+  "sceneTris": 496792,
+  "seconds": 127,
+  "tris": 383697
  },
  "settlements/port/dist/spYard.html": {
   "calls": 202,

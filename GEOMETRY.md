@@ -109,30 +109,30 @@
 | `settlements/mavs-refuge/mavs-refuge.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/mungo/dist/mungo.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/noahs-regret/dist/noahs-regret.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/cgBox.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/cgCrane.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/cgEdges.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/cgStore.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/chHousing.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/port/dist/ddDock.html` | 115 | 386 k | 120 / 703 k | 115 / 381 k | 703 k |  | 120 | 54 | 8583 | 77 |
-| `settlements/port/dist/ddShed.html` | 123 | 393 k | 126 / 650 k | 123 / 383 k | 650 k |  | 126 | 61 | 8917 | 84 |
-| `settlements/port/dist/ddYard.html` | 117 | 369 k | 121 / 567 k | 117 / 365 k | 567 k |  | 121 | 55 | 8328 | 74 |
-| `settlements/port/dist/edges.html` | 146 | 558 k | 142 / 876 k | 147 / 532 k | 877 k |  | 144 | 35 | 15 k | 55 |
-| `settlements/port/dist/harbour.html` | 434 | 958 k | 448 / 1.72 M | 419 / 896 k | 1.73 M |  | 455 | 123 | 32 k | 177 |
-| `settlements/port/dist/hbEdges.html` | 106 | 485 k | 95 / 907 k | 109 / 417 k | 907 k |  | 95 | 34 | 9407 | 44 |
-| `settlements/port/dist/hbFish.html` | 128 | 507 k | 130 / 982 k | 130 / 477 k | 982 k |  | 130 | 69 | 12 k | 82 |
-| `settlements/port/dist/hbHaven.html` | 134 | 395 k | 133 / 687 k | 134 / 391 k | 687 k |  | 137 | 71 | 8254 | 86 |
-| `settlements/port/dist/hbMarina.html` | 124 | 490 k | 127 / 879 k | 124 / 483 k | 879 k |  | 127 | 68 | 11 k | 83 |
-| `settlements/port/dist/lbAuthority.html` | 98 | 350 k | 101 / 389 k | 98 / 350 k | 389 k |  | 103 | 60 | 8533 | 81 |
-| `settlements/port/dist/lbBlocks.html` | 208 | 596 k | 212 / 812 k | 207 / 585 k | 813 k |  | 215 | 65 | 20 k | 94 |
-| `settlements/port/dist/lbStores.html` | 94 | 353 k | 97 / 396 k | 94 / 352 k | 396 k |  | 97 | 54 | 7571 | 74 |
-| `settlements/port/dist/lbTanks.html` | 98 | 350 k | 101 / 390 k | 98 / 348 k | 390 k |  | 103 | 54 | 7712 | 78 |
-| `settlements/port/dist/segment.html` | 144 | 570 k | 144 / 946 k | 144 / 550 k | 947 k |  | 145 | 59 | 21 k | 81 |
-| `settlements/port/dist/showcase.html` | 801 | 5.48 M | 886 / 9.06 M | 826 / 1.68 M | 9.08 M |  | 910 | 162 | 124 k | 243 |
-| `settlements/port/dist/slBerth.html` | 136 | 516 k | 138 / 752 k | 135 / 503 k | 752 k |  | 138 | 59 | 15 k | 78 |
-| `settlements/port/dist/slCarrier.html` | 118 | 410 k | 121 / 610 k | 118 / 388 k | 610 k |  | 121 | 56 | 12 k | 73 |
-| `settlements/port/dist/slPen.html` | 129 | 430 k | 126 / 726 k | 129 / 414 k | 726 k |  | 126 | 55 | 13 k | 71 |
-| `settlements/port/dist/slSub.html` | 106 | 337 k | 109 / 496 k | 106 / 326 k | 496 k |  | 109 | 48 | 7562 | 63 |
+| `settlements/port/dist/cgBox.html` | 111 | 409 k | 114 / 573 k | 111 / 405 k | 528 k |  | 114 | 56 | 8752 | 72 |
+| `settlements/port/dist/cgCrane.html` | 149 | 424 k | 152 / 585 k | 149 / 419 k | 540 k |  | 152 | 56 | 8459 | 73 |
+| `settlements/port/dist/cgEdges.html` | 108 | 392 k | 112 / 505 k | 108 / 381 k | 460 k |  | 112 | 26 | 6407 | 40 |
+| `settlements/port/dist/cgStore.html` | 118 | 411 k | 120 / 590 k | 118 / 402 k | 545 k |  | 120 | 50 | 9179 | 68 |
+| `settlements/port/dist/chHousing.html` | 86 | 607 k | 89 / 774 k | 86 / 607 k | 772 k |  | 140 | 60 | 22 k | 77 |
+| `settlements/port/dist/ddDock.html` | 115 | 430 k | 120 / 747 k | 115 / 425 k | 702 k |  | 120 | 54 | 8583 | 77 |
+| `settlements/port/dist/ddShed.html` | 123 | 435 k | 126 / 694 k | 123 / 427 k | 649 k |  | 126 | 61 | 8917 | 84 |
+| `settlements/port/dist/ddYard.html` | 117 | 415 k | 121 / 612 k | 117 / 410 k | 567 k |  | 121 | 55 | 8328 | 74 |
+| `settlements/port/dist/edges.html` | 146 | 605 k | 142 / 923 k | 147 / 578 k | 877 k |  | 144 | 35 | 15 k | 55 |
+| `settlements/port/dist/harbour.html` | 431 | 1.08 M | 448 / 1.75 M | 419 / 933 k | 1.72 M |  | 455 | 123 | 32 k | 177 |
+| `settlements/port/dist/hbEdges.html` | 106 | 528 k | 95 / 951 k | 109 / 461 k | 907 k |  | 95 | 34 | 9407 | 44 |
+| `settlements/port/dist/hbFish.html` | 128 | 553 k | 130 / 1.03 M | 130 / 523 k | 982 k |  | 130 | 69 | 12 k | 82 |
+| `settlements/port/dist/hbHaven.html` | 134 | 440 k | 133 / 732 k | 134 / 436 k | 688 k |  | 137 | 71 | 8254 | 86 |
+| `settlements/port/dist/hbMarina.html` | 124 | 536 k | 127 / 924 k | 124 / 528 k | 879 k |  | 127 | 68 | 11 k | 83 |
+| `settlements/port/dist/lbAuthority.html` | 98 | 391 k | 101 / 430 k | 98 / 390 k | 390 k |  | 103 | 60 | 8533 | 81 |
+| `settlements/port/dist/lbBlocks.html` | 208 | 639 k | 212 / 854 k | 207 / 627 k | 813 k |  | 215 | 65 | 20 k | 94 |
+| `settlements/port/dist/lbStores.html` | 94 | 394 k | 97 / 437 k | 94 / 392 k | 397 k |  | 97 | 54 | 7571 | 74 |
+| `settlements/port/dist/lbTanks.html` | 98 | 391 k | 101 / 431 k | 98 / 389 k | 391 k |  | 103 | 54 | 7712 | 78 |
+| `settlements/port/dist/segment.html` | 144 | 614 k | 144 / 990 k | 144 / 593 k | 947 k |  | 145 | 59 | 21 k | 81 |
+| `settlements/port/dist/showcase.html` | 803 | 5.31 M | 886 / 9.08 M | 826 / 1.70 M | 9.07 M |  | 910 | 162 | 124 k | 243 |
+| `settlements/port/dist/slBerth.html` | 136 | 561 k | 138 / 798 k | 135 / 549 k | 753 k |  | 138 | 59 | 15 k | 78 |
+| `settlements/port/dist/slCarrier.html` | 118 | 455 k | 121 / 655 k | 118 / 434 k | 610 k |  | 121 | 56 | 12 k | 73 |
+| `settlements/port/dist/slPen.html` | 129 | 473 k | 126 / 771 k | 129 / 459 k | 726 k |  | 126 | 55 | 13 k | 71 |
+| `settlements/port/dist/slSub.html` | 106 | 384 k | 109 / 542 k | 106 / 371 k | 497 k |  | 109 | 48 | 7562 | 63 |
 | `settlements/port/dist/spYard.html` | 202 | 580 k | 208 / 923 k | 191 / 572 k | 924 k |  | 210 | 61 | 18 k | 82 |
 | `settlements/port/dist/tmEdges.html` | 101 | 414 k | 105 / 565 k | 101 / 407 k | 565 k |  | 105 | 39 | 12 k | 51 |
 | `settlements/port/dist/tmHeli.html` | 133 | 380 k | 139 / 542 k | 133 / 377 k | 542 k |  | 139 | 77 | 8384 | 91 |
