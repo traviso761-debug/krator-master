@@ -1,0 +1,4 @@
+# The first Voth (retired 2026-10-14) keeps its page and packed textures in Git LFS, as they were under
+# settlements/voth (the root .gitattributes rules there no longer reach them here).
+*.html filter=lfs diff=lfs merge=lfs -text
+tex/*.webp filter=lfs diff=lfs merge=lfs -text
