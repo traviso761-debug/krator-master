@@ -90,3 +90,19 @@
 | `openworld/little-demo/dist/little-demo.artifact.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `openworld/little-demo/dist/little-demo.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/dalab/dist/dalab-set.html` | 73 | 284 k | 157 / 540 k | 73 / 284 k | 571 k |  | 166 | 154 | 25 k | 163 |
+| `settlements/dalab/dist/dalab.html` | 176 | 9.81 M | 213 / 10.93 M | 182 / 9.39 M | 10.97 M |  | 232 | 184 | 697 k | 228 |
+| `settlements/dhelv/dist/dhelv.html` | 234 | 553 k |  |  | 4.64 M | 1.30 M | 3229 | 1255 | 123 k | 220 |
+| `settlements/girder/girder-hero.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/girder/girder.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/highlands/dist/highlands.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/highlands/dist/roketstad.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/iziz/dist/iziz-vernacular.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/iziz/dist/iziz.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/iziz/dist/w-a.html` | 71 | 54 k | 73 / 60 k | 71 / 54 k | 60 k |  | 73 | 50 | 2425 | 54 |
+| `settlements/iziz/dist/w-b.html` | 49 | 46 k | 49 / 48 k | 49 / 46 k | 48 k |  | 49 | 45 | 1458 | 49 |
+| `settlements/iziz/dist/w-c.html` | 83 | 241 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
+| `settlements/jimjam/dist/jimjam-kit.html` | 487 | 1.22 M | 532 / 1.78 M | 487 / 1.21 M | 1.78 M |  | 538 | 336 | 41 k | 348 |
+| `settlements/locus/abyss-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/locus/locus-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/locus/locus-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/locus/locus.html` | not ready |  |  |  |  |  |  |  |  |  |

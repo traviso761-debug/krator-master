@@ -1436,5 +1436,173 @@
   "sceneTris": 570756,
   "seconds": 31,
   "tris": 284183
+ },
+ "settlements/dalab/dist/dalab.html": {
+  "calls": 176,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 184,
+  "instances": 696551,
+  "lodOff": {
+   "calls": 213,
+   "tris": 10931563
+  },
+  "lodOn": {
+   "calls": 182,
+   "tris": 9389930
+  },
+  "materials": 228,
+  "meshes": 232,
+  "ready": true,
+  "sceneTris": 10967483,
+  "seconds": 311,
+  "tris": 9811525
+ },
+ "settlements/dhelv/dist/dhelv.html": {
+  "calls": 234,
+  "errors": 0,
+  "furnTris": 1300854,
+  "instSets": 1255,
+  "instances": 122842,
+  "materials": 220,
+  "meshes": 3229,
+  "ready": true,
+  "sceneTris": 4636451,
+  "seconds": 456,
+  "tris": 552600
+ },
+ "settlements/girder/girder-hero.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 192
+ },
+ "settlements/girder/girder.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 907
+ },
+ "settlements/highlands/dist/highlands.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 902
+ },
+ "settlements/highlands/dist/roketstad.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 908
+ },
+ "settlements/iziz/dist/iziz-vernacular.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 908
+ },
+ "settlements/iziz/dist/iziz.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 901
+ },
+ "settlements/iziz/dist/w-a.html": {
+  "calls": 71,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 50,
+  "instances": 2425,
+  "lodOff": {
+   "calls": 73,
+   "tris": 60154
+  },
+  "lodOn": {
+   "calls": 71,
+   "tris": 54152
+  },
+  "materials": 54,
+  "meshes": 73,
+  "ready": true,
+  "sceneTris": 60154,
+  "seconds": 15,
+  "tris": 54152
+ },
+ "settlements/iziz/dist/w-b.html": {
+  "calls": 49,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 45,
+  "instances": 1458,
+  "lodOff": {
+   "calls": 49,
+   "tris": 48436
+  },
+  "lodOn": {
+   "calls": 49,
+   "tris": 46156
+  },
+  "materials": 49,
+  "meshes": 49,
+  "ready": true,
+  "sceneTris": 48436,
+  "seconds": 20,
+  "tris": 46156
+ },
+ "settlements/iziz/dist/w-c.html": {
+  "calls": 83,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 60,
+  "instances": 8414,
+  "lodOff": {
+   "calls": 87,
+   "tris": 298154
+  },
+  "lodOn": {
+   "calls": 83,
+   "tris": 239276
+  },
+  "materials": 69,
+  "meshes": 87,
+  "ready": true,
+  "sceneTris": 298154,
+  "seconds": 32,
+  "tris": 240555
+ },
+ "settlements/jimjam/dist/jimjam-kit.html": {
+  "calls": 487,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 336,
+  "instances": 40516,
+  "lodOff": {
+   "calls": 532,
+   "tris": 1780398
+  },
+  "lodOn": {
+   "calls": 487,
+   "tris": 1208663
+  },
+  "materials": 348,
+  "meshes": 538,
+  "ready": true,
+  "sceneTris": 1781994,
+  "seconds": 82,
+  "tris": 1222297
+ },
+ "settlements/locus/abyss-kit.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 83
+ },
+ "settlements/locus/locus-kit.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 97
+ },
+ "settlements/locus/locus-plants.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 79
+ },
+ "settlements/locus/locus.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 902
  }
 }
