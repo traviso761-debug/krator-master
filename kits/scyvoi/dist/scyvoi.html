@@ -10293,6 +10293,8 @@ const KratorFaunaAPI = (function () {
   /* ---- animation: turns only, by the animal's gait (data.gait.type):
        quadruped  diagonal pairs swing about x (front left with hind right)      biped   two legs alternate, the head bobs
        sprawl     legs swing about y, body and tail weave (salamanders, lizards)  hexapod tripods alternate (0,3,4 / 1,2,5)
+       centaur    six limbs: the front pair arms (held forward, swinging), the hind pair legs, the middle pair arms at a walk and legs at a run
+                  (mode 'run', o.run, or o.speed between data.speed.walk and .run); the limbs swing about x (the ambiguous six-limbed beasts)
        octopod    alternating fours swing about y (spiders)                       multipede  a wave runs down the legs and segments
        flyer      wings flap about z (mode 'fly'; folded at 'idle'/'rest'), legs tucked in flight (flap.tuck); a flyer with legs
                   walks as a biped (2 legs), a quadruped (4) or a hexapod (6), and so does an insect
