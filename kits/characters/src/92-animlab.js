@@ -19,8 +19,20 @@
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
   var raws = {}, cache = {};
+  // a piece's file: its GLB, and on a second line its morph deltas (build.py); key + '.morph' asks for the second
+  var texts = {};
+  function fetchText(key){
+    var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
+    if(!texts[base]) texts[base] = fetch('pieces/' + base + '.txt').then(function(r){ if(!r.ok) throw new Error(base + ': ' + r.status); return r.text(); });
+    return texts[base].then(function(t){
+      var s = t.split('\n')[line];
+      if(s) return gunzip(b64(s));
+      // a piece published before the two were one file: its deltas in a file of their own
+      return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+    });
+  }
   function fetchPiece(key){
-    if(!raws[key]) raws[key] = fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+    if(!raws[key]) raws[key] = fetchText(key);
     return raws[key];
   }
   function load(key){

@@ -1,5 +1,5 @@
 # Headless: blender -b --python tools/make_garments.py -- <male|female> [--only <id>,...] [--render <png dir>]
-# Voth (Chichani), Izani (Iziz), Beast Rider and Hykkousoi clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
+# Voth (Chichani), Izani (Iziz), Beast Rider, Hykkousoi, Dalab and Yuni clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
 # MPFB's user data, so tools/mpfb_build.py fits, weights and morphs them like any library item.
 #
 # Each garment is built on the body it is for, from parts:
@@ -53,7 +53,12 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      # their wave-sun in gold
      'sealinen': (0.87, 0.85, 0.78), 'nacre': (0.91, 0.90, 0.92), 'nacrepink': (0.93, 0.80, 0.82), 'nacregreen': (0.78, 0.90, 0.86),
      'bronze': (0.64, 0.45, 0.20), 'olive': (0.42, 0.40, 0.24), 'slateblue': (0.32, 0.41, 0.54), 'deepsea': (0.10, 0.20, 0.31),
-     'ribpink': (0.86, 0.56, 0.62), 'ribgreen': (0.44, 0.74, 0.68)}
+     'ribpink': (0.86, 0.56, 0.62), 'ribgreen': (0.44, 0.74, 0.68),
+     # Dalab: terracotta, earth and cream; the holy red; The God's gold and its cold teal; priests' white
+     'terracotta': (0.70, 0.36, 0.22), 'holyred': (0.74, 0.10, 0.10), 'godteal': (0.28, 0.84, 0.80), 'white': (0.95, 0.94, 0.91),
+     # Yuni: the yellow of the hyperboloid, indigo and mud-cloth for the many, Gaudi's mosaic for the families
+     'yuniyellow': (0.96, 0.78, 0.18), 'mud': (0.40, 0.28, 0.18), 'sahel': (0.93, 0.91, 0.84), 'orderblue': (0.20, 0.36, 0.70),
+     'tileblue': (0.16, 0.50, 0.72), 'tilegreen': (0.34, 0.62, 0.36), 'coral': (0.92, 0.46, 0.36), 'violet': (0.42, 0.26, 0.56)}
 
 # ---------------------------------------------------------------------------------------------------------------
 # the body
@@ -449,6 +454,26 @@ def motif(style, w, h, fg, bg):
         img[v > 0.55 + 0.28 * np.sin(2 * np.pi * u) - 0.1 * np.cos(4 * np.pi * u)] = fg
     elif style == 'beads':
         img[(((u * 3) % 1 - 0.5) ** 2 + ((v * 2) % 1 - 0.5) ** 2) < 0.1] = fg
+    elif style == 'trencadis':                   # Gaudi's broken-tile mosaic: shards of fg and bg and their mix, grouted
+        rs = np.random.default_rng(w * 7 + h)
+        pts = rs.random((7, 2)); cols = [np.array(fg), np.array(bg), (np.array(fg) + np.array(bg)) / 2, np.array(fg) * 0.8 + 0.2,
+                                         np.array(bg) * 0.85, np.array(fg), np.array(bg) * 0.7 + 0.3]
+        d = np.stack([(u - px) ** 2 + (v - py) ** 2 for px, py in pts])
+        o = np.sort(d, 0)
+        k = np.argmin(d, 0)
+        for i in range(len(pts)): img[k == i] = cols[i]
+        img[(np.sqrt(o[1]) - np.sqrt(o[0])) < 0.03] = np.array(bg) * 0.35 + 0.55
+    elif style == 'bogolan':                     # mud-cloth: rows of dots between dashes and crosses
+        img[(np.abs(v - 0.2) < 0.06) & ((u * 4) % 1 < 0.6)] = fg
+        img[(np.abs(v - 0.8) < 0.06) & ((u * 4) % 1 < 0.6)] = fg
+        img[((u - 0.5) ** 2 + (v - 0.5) ** 2) < 0.012] = fg
+        img[(np.abs(np.abs(u - 0.5) - np.abs(v - 0.5)) < 0.04) & (np.abs(u - 0.5) < 0.22) & (np.abs(u - 0.5) > 0.1)] = fg
+    elif style == 'eye':                         # the one great eye of The God: an almond, its iris, its rays
+        ax, ay = (u - 0.5) * 2, (v - 0.5) * 2
+        alm = np.abs(ay) < 0.55 * (1 - ax ** 2)
+        img[alm] = (1, 1, 1)
+        img[alm & (ax ** 2 + ay ** 2 < 0.12)] = fg
+        img[alm & (ax ** 2 + ay ** 2 < 0.03)] = (0.05, 0.05, 0.05)
     elif style == 'rays':                        # stripes along the strip (a halo's rays, a wrap's turns)
         img[(u * 2).astype(int) % 2 == 0] = fg
     elif style == 'feather':                     # overlapping feather scales
@@ -1119,6 +1144,32 @@ def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9):
     return Part(name, np.array(Q), False, ['body'] * rows, paint)
 
 
+def tower_hat(name, height, profile, paint, f=0.64, ease=0.014, rows=12, n=32):
+    """a tall hat on the head's axis: its band fitted round the head at fraction f, then rings up 'height' with radius
+    profile(s) x the band's (s 0 at the band, 1 at the top), closed flat on top: a mitre, the hyperboloid of Yuni"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    base = []
+    for an in angles:
+        d = bk * math.cos(an) + left * math.sin(an)
+        base.append((d, (first_hit(c, d) or 0.09) + ease))
+    Q = []
+    for k in range(rows):
+        sk = k / (rows - 1)
+        Q.append([c + up * height * sk + d * r * profile(sk) for d, r in base])
+    top = c + up * height
+    Q.append([top + (q - top) * 0.02 for q in Q[-1]])
+    return Part(name, np.array(Q), True, ['body'] * (rows + 1), paint)
+
+
+def eye_disc(name, at, out, size, paint, iris_paint):
+    """The God's one eye: a flat almond facing 'out', a teal iris standing on it"""
+    out = out / np.linalg.norm(out)
+    return [blob(name, at, (size, size * 0.18, size * 0.6), paint, n=14, rows=6, out=out),
+            blob(name + '_iris', at + out * size * 0.1, (size * 0.36, size * 0.12, size * 0.36), iris_paint, n=10, rows=5, out=out)]
+
+
 def pendants(name, z, angles, size, paint, ease=0.04):
     """small hanging trophies (claws, teeth, shells) round the body at height z, by angle (0 the back, +pi/2 left)"""
     c = spine_at(z)
@@ -1544,6 +1595,203 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         h.cloth = None                        # the wave-sun: a scallop of nacre on gold, rigid
         return [head_rings(gid + '_band', 0.6, 0.7, 0.012, P('gold', 0.02, [B('top', 0.0, 0.2, 'wave', 'slateblue', 'gold', 0.04)]), n=36, rows=3), h]
     GARMENTS['hykk_%s_noble_crown' % sex] = ('head', b, 'Wave-sun diadem', _hcrown)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Dalab: the mound-builders, green-skinned (the photosynthesis mod), Cahokian earth and Tiwanaku stone, in the Moebius
+# line. Commoners dress for the sun, the skin bare to it: a kilt or wrap skirt, a sash, armbands; traders in a
+# sleeveless tabard with the step fret, a belt and pouches; the genepriests in white with the holy red, a gold
+# pectoral, and The God's image as a mitre: one great eye before a halo of rays
+def armbands(gid, paint, f=0.45, w=0.035):
+    out = []
+    for sd in (L, R):
+        a, e = J(sd + 'Arm'), J(sd + 'ForeArm')
+        c = a + (e - a) * f
+        out.append(limb_tube('%s_armband_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A))
+    return out
+
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _dtop(sex=sex):
+        gid = 'dalab_%s_peasant_sash' % sex
+        sash = P('cream', 0.04, [B('top', 0.0, 0.012, 'solid', 'terracotta'), B('bottom', 0.0, 0.012, 'solid', 'terracotta'),
+                                 B('top', 0.015, 0.06, 'steps', 'terracotta', 'cream', 0.06)])
+        bandp = P('turq', 0.02, [B('top', 0.0, 0.2, 'beads', 'cream', 'turq', 0.02)])
+        parts = [band(gid, CROTCH + 0.06, SHOULDER + 0.03, 0.07, 0.014, sash, high=-math.pi / 2, rows=4)] + armbands(gid, bandp)
+        if sex == 'f':                        # a band over the breasts; the shoulders and the belly to the sun
+            parts.append(torso_tube(gid + '_top', CHEST + 0.07, CHEST - 0.08, 0.012, P('cream', 0.04, [B('top', 0.0, 0.015, 'solid', 'terracotta'),
+                                    B('bottom', 0.0, 0.015, 'solid', 'terracotta')]), rows=6, hull_from=CHEST + 0.1))
+        return parts
+    GARMENTS['dalab_%s_peasant_sash' % sex] = ('torso', b, 'Sun sash and armbands' if sex == 'm' else 'Breast band and sun sash', _dtop)
+
+    def _dkilt(sex=sex):
+        p = P('terracotta', 0.06, [B('top', 0.0, 0.03, 'solid', 'earth'), B('bottom', 0.0, 0.015, 'solid', 'earth'),
+                                   B('bottom', 0.02, 0.08, 'steps', 'cream', 'terracotta', 0.08)])
+        hem = KNEE + 0.06 if sex == 'm' else ANKLE + 0.16
+        return [torso_tube('dalab_%s_peasant_kilt' % sex, WAIST + 0.01, hem, 0.009, p, hang_from=CROTCH + 0.06, flare=0.2, group_below=CROTCH + 0.04,
+                           rows=14 if sex == 'm' else 20, hull_from=WAIST)]
+    GARMENTS['dalab_%s_peasant_kilt' % sex] = ('legs', b, 'Kilt' if sex == 'm' else 'Wrap skirt', _dkilt)
+
+    def _dsand(sex=sex):
+        return sandal('dalab_%s_sandals' % sex, P('earth', 0.1), P('clay', 0.06))
+    GARMENTS['dalab_%s_sandals' % sex] = ('feet', b, 'Mound sandals', _dsand)
+
+    def _dtab(sex=sex):
+        gid = 'dalab_%s_trade_tabard' % sex
+        body = P('terracotta', 0.04, [B('top', 0.0, 0.02, 'solid', 'turq'), B('bottom', 0.0, 0.015, 'solid', 'earth'), B('bottom', 0.02, 0.09, 'fret', 'cream', 'terracotta', 0.08)],
+                 [PN(0.44, 0.56, 'steps', 'turq', 'cream', 0.12)])
+        hem = KNEE + 0.04 if sex == 'm' else KNEE - 0.14
+        return [torso_tube(gid, TOP, hem, 0.013, body, hang_from=WAIST - 0.03, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+            izani_belt(gid, P('earth', 0.05, [B('top', 0.0, 0.01, 'solid', 'turq'), B('bottom', 0.0, 0.01, 'solid', 'turq')]), P('clay', 0.06)) + \
+            armbands(gid, P('turq', 0.02, [B('top', 0.0, 0.2, 'beads', 'gold', 'turq', 0.02)]))
+    GARMENTS['dalab_%s_trade_tabard' % sex] = ('torso', b, 'Trader\'s tabard', _dtab)
+
+    def _dtrou(sex=sex):
+        return trousers('dalab_%s_trade_trousers' % sex, P('cream', 0.05, [B('bottom', 0.0, 0.03, 'steps', 'terracotta', 'cream', 0.04)]), ease=0.008, ease_end=0.03,
+                        cuff=ANKLE + 0.3 * (KNEE - ANKLE))
+    GARMENTS['dalab_%s_trade_trousers' % sex] = ('legs', b, 'Calf trousers', _dtrou)
+
+    def _dtsand(sex=sex):
+        return sandal('dalab_%s_trade_sandals' % sex, P('earth', 0.08), P('terracotta', 0.05), guard=True, laces=3, strap_paint2=P('turq', 0.03))
+    GARMENTS['dalab_%s_trade_sandals' % sex] = ('feet', b, 'Laced sandals', _dtsand)
+
+    def _dcap(sex=sex):
+        gid = 'dalab_%s_trade_cap' % sex
+        return [head_rings(gid, 0.6, 1.0, 0.02, P('turq', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'terracotta'), B('top', 0.0, 0.3, 'beads', 'cream', 'turq', 0.025)]),
+                           n=32, rows=6, apex=True)]
+    GARMENTS['dalab_%s_trade_cap' % sex] = ('head', b, 'Bead cap', _dcap)
+
+    def _drobe(sex=sex):
+        gid = 'dalab_%s_noble_robe' % sex
+        robe = P('white', 0.03, [B('top', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'holyred'), B('bottom', 0.025, 0.1, 'steps', 'holyred', 'white', 0.1),
+                                 B('bottom', 0.105, 0.115, 'solid', 'gold')],
+                 [PN(0.46, 0.54, 'eye', 'godteal', 'holyred', 0.22)])
+        pect = P('gold', 0.02, [B('top', 0.0, 0.3, 'rays', 'holyred', 'gold', 0.03), B('bottom', 0.0, 0.015, 'solid', 'holyred')])
+        sl = P('white', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'holyred'), B('bottom', 0.02, 0.05, 'steps', 'holyred', 'white', 0.05)])
+        parts = [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, robe, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                 collar_disc(gid + '_pectoral', 0.12, pect, drop=0.06, scallop=0.0),
+                 torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.024, P('holyred', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]),
+                            rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.07, rows=9)
+        if sex == 'f':
+            parts.append(cape(gid + '_cape', 0.05, P('holyred', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.02, 0.1, 'steps', 'gold', 'holyred', 0.1)]),
+                              flare=0.28, span=1.1, ease=0.034, top=TOP - 0.03))
+        return parts
+    GARMENTS['dalab_%s_noble_robe' % sex] = ('torso', b, 'Genepriest\'s robe and pectoral', _drobe)
+
+    def _dnsand(sex=sex):
+        return sandal('dalab_%s_noble_sandals' % sex, P('white', 0.03), P('gold', 0.03), guard=True, laces=2, strap_paint2=P('holyred', 0.03))
+    GARMENTS['dalab_%s_noble_sandals' % sex] = ('feet', b, 'Temple sandals', _dnsand)
+
+    def _dmitre(sex=sex):
+        gid = 'dalab_%s_noble_mitre' % sex
+        a_, b_, up, bk, left = head_frame()
+        mitre = tower_hat(gid, 0.26 if sex == 'm' else 0.22, lambda t: 1.0 + 0.35 * t, P('gold', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'holyred'),
+                          B('top', 0.0, 0.02, 'solid', 'holyred'), B('top', 0.03, 0.2, 'rays', 'holyred', 'gold', 0.04)]))
+        halo = fan(gid + '_halo', 0.08, 0.3 if sex == 'm' else 0.26, 1.7, P('gold', 0.02, [B('top', 0.0, 0.5, 'rays', 'white', 'gold', 0.035),
+                                                                                         B('top', 0.0, 0.04, 'solid', 'holyred')]), rows=6, cols=21, tilt=0.1, back=0.1, curl=0.0)
+        halo.cloth = None
+        # the eye on the mitre's face, high, out past its wall (the wall's radius there: the band's, flared)
+        hgt = 0.26 if sex == 'm' else 0.22
+        c = a_ + (b_ - a_) * 0.64 + up * hgt * 0.55
+        r = ((first_hit(a_ + (b_ - a_) * 0.64, FRONT) or 0.1) + 0.014) * (1 + 0.35 * 0.55)
+        return [mitre, halo] + eye_disc(gid + '_eye', c + FRONT * (r + 0.012), FRONT, 0.12, P('white', 0.02), P('godteal', 0.02))
+    GARMENTS['dalab_%s_noble_mitre' % sex] = ('head', b, 'Mitre of the Eye', _dmitre)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Yuni: the butte city, Sahelian, with Gaudi and Burmecia for the families, in the Moebius line. The Thatch in bogolan
+# mud-cloth: a short boubou or a wrapper, trousers, a Fulani cone hat or a head wrap; merchants in the indigo grand
+# boubou, its chest worked in yellow, a kufi or a towering gele; the families in trencadis mosaic, a beaded collar,
+# and the hyperboloid of Yuni as a hat
+MUDCLOTH = lambda: P('mud', 0.06, [B('bottom', 0.0, 0.012, 'solid', 'sahel'), B('bottom', 0.015, 0.075, 'bogolan', 'sahel', 'mud', 0.06),
+                                   B('top', 0.0, 0.015, 'solid', 'sahel'), B('top', 0.03, 0.09, 'bogolan', 'sahel', 'mud', 0.06)])
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _ytun(sex=sex):
+        gid = 'yuni_%s_peasant_boubou' % sex
+        hem = CROTCH - 0.16 if sex == 'm' else HIPS[2] - 0.06
+        return [torso_tube(gid, TOP, hem, 0.016, MUDCLOTH(), hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+            sleeves(gid, 'elbow', 0.024, P('mud', 0.06, [B('bottom', 0.0, 0.03, 'bogolan', 'sahel', 'mud', 0.04)]), ease_end=0.05, rows=6)
+    GARMENTS['yuni_%s_peasant_boubou' % sex] = ('torso', b, 'Mud-cloth boubou' if sex == 'm' else 'Mud-cloth blouse', _ytun)
+
+    def _ylegs(sex=sex):
+        if sex == 'm':
+            return trousers('yuni_m_peasant_trousers', P('sahel', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'mud')]), ease=0.008, ease_end=0.036, cuff=ANKLE + 0.04)
+        return [torso_tube('yuni_f_peasant_wrapper', WAIST + 0.01, ANKLE + 0.06, 0.008, P('indigo', 0.05, [B('top', 0.0, 0.03, 'solid', 'yuniyellow'),
+                           B('bottom', 0.0, 0.02, 'solid', 'yuniyellow'), B('bottom', 0.025, 0.12, 'bogolan', 'sahel', 'indigo', 0.07)]),
+                           hang_from=CROTCH + 0.06, flare=0.14, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
+    GARMENTS['yuni_%s_peasant_%s' % (sex, 'trousers' if sex == 'm' else 'wrapper')] = ('legs', b, 'Loose trousers' if sex == 'm' else 'Wrapper', _ylegs)
+
+    def _ysand(sex=sex):
+        return sandal('yuni_%s_sandals' % sex, P('mud', 0.1), P('ochre', 0.06))
+    GARMENTS['yuni_%s_sandals' % sex] = ('feet', b, 'Leather sandals', _ysand)
+
+    def _yhead(sex=sex):
+        if sex == 'm':                        # the Fulani cone: a broad straw cone, its crown in leather
+            return [brim('yuni_m_peasant_hat', 0.66, 0.2, P('sand', 0.08, [B('top', 0.0, 0.3, 'rays', 'ochre', 'sand', 0.025), B('bottom', 0.0, 0.015, 'solid', 'mud')]),
+                         droop=0.09, rows=6, n=40, ease=0.012),
+                    head_rings('yuni_m_peasant_hat_crown', 0.66, 1.0, 0.016, P('leather', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')]), n=32, rows=5, apex=True),
+                    horn('yuni_m_peasant_hat_tip', [J('Head', 'tail') + np.array([0, 0, 0.0]), J('Head', 'tail') + np.array([0, 0, 0.17])], 0.05, 0.006,
+                         P('leather', 0.05, [B('top', 0.0, 0.3, 'stripes', 'ochre', 'leather', 0.0)]), n=16, rows=6)]
+        gid = 'yuni_f_peasant_wrap'
+        return [head_rings(gid, 0.5, 1.0, 0.03, P('yuniyellow', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'indigo')]), n=32, rows=8, apex=True)]
+    GARMENTS['yuni_%s_peasant_%s' % (sex, 'hat' if sex == 'm' else 'wrap')] = ('head', b, 'Cone hat' if sex == 'm' else 'Head wrap', _yhead)
+
+    def _ygrand(sex=sex):
+        gid = 'yuni_%s_trade_boubou' % sex
+        base_ = 'indigo' if sex == 'm' else 'coral'
+        bou = P(base_, 0.03, [B('top', 0.0, 0.02, 'solid', 'yuniyellow'), B('top', 0.04, 0.26, 'diamonds', 'yuniyellow', base_, 0.07),
+                              B('top', 0.27, 0.285, 'solid', 'yuniyellow'), B('bottom', 0.0, 0.02, 'solid', 'yuniyellow'), B('bottom', 0.025, 0.07, 'fret', 'yuniyellow', base_, 0.07)])
+        # the grand boubou: one great sheet over the arms, falling from the shoulders to the shins
+        return [torso_tube(gid, TOP + 0.005, ANKLE + 0.14, 0.03, bou, n=48, hang_from=SHOULDER - 0.04, flare=0.14, group_below=CROTCH + 0.02,
+                           over_arms=True, stiff=0.2, layer=2),
+                torso_tube(gid + '_under', TOP, HIPS[2] - 0.1, 0.012, P('sahel', 0.04), hull_from=CHEST + 0.02)] + \
+            sleeves(gid, 'wrist', 0.014, P('sahel', 0.04, [B('bottom', 0.0, 0.02, 'solid', base_)]), ease_end=0.02, rows=8)
+    GARMENTS['yuni_%s_trade_boubou' % sex] = ('torso', b, 'Grand boubou', _ygrand)
+
+    def _ytrou(sex=sex):
+        return trousers('yuni_%s_trade_trousers' % sex, P('sahel', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'yuniyellow')]), ease=0.008, ease_end=0.026, cuff=ANKLE + 0.04)
+    GARMENTS['yuni_%s_trade_trousers' % sex] = ('legs', b, 'Under-trousers', _ytrou)
+
+    def _yslip(sex=sex):
+        return boots('yuni_%s_trade_slippers' % sex, P('ochre', 0.06), P('yuniyellow', 0.04, [B('top', 0.0, 0.015, 'solid', 'mud')]), top=0.06, ease_top=0.014)
+    GARMENTS['yuni_%s_trade_slippers' % sex] = ('feet', b, 'Babouches', _yslip)
+
+    def _yhead2(sex=sex):
+        if sex == 'm':
+            return [head_rings('yuni_m_trade_kufi', 0.62, 1.0, 0.016, P('sahel', 0.03, [B('bottom', 0.0, 0.05, 'diamonds', 'yuniyellow', 'sahel', 0.04),
+                                                                                      B('top', 0.0, 0.2, 'fret', 'indigo', 'sahel', 0.04)]), n=32, rows=6, apex=True)]
+        gid = 'yuni_f_trade_gele'              # the gele, tied high and fanned: the Moebius line
+        g = fan(gid + '_fan', 0.05, 0.24, 1.2, P('coral', 0.03, [B('top', 0.0, 0.5, 'stripes', 'yuniyellow', 'coral', 0.0), B('bottom', 0.0, 0.03, 'solid', 'yuniyellow')]),
+                rows=6, cols=15, tilt=0.05, back=0.03, curl=0.06)
+        g.cloth = None
+        return [head_rings(gid, 0.5, 1.0, 0.03, P('coral', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'yuniyellow')]), n=32, rows=8, apex=True), g]
+    GARMENTS['yuni_%s_trade_%s' % (sex, 'kufi' if sex == 'm' else 'gele')] = ('head', b, 'Kufi' if sex == 'm' else 'Gele', _yhead2)
+
+    def _ygown(sex=sex):
+        gid = 'yuni_%s_noble_gown' % sex
+        tiles = P('yuniyellow', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'tileblue'), B('bottom', 0.02, 0.2, 'trencadis', 'tileblue', 'yuniyellow', 0.07),
+                                       B('bottom', 0.2, 0.215, 'solid', 'tilegreen'), B('top', 0.0, 0.02, 'solid', 'tileblue'),
+                                       B('top', 0.02, 0.14, 'trencadis', 'tilegreen', 'yuniyellow', 0.07)])
+        collar = P('tileblue', 0.02, [B('top', 0.0, 0.4, 'trencadis', 'coral', 'tileblue', 0.04), B('bottom', 0.0, 0.015, 'solid', 'yuniyellow')])
+        sl = P('yuniyellow', 0.02, [B('bottom', 0.0, 0.08, 'trencadis', 'violet', 'yuniyellow', 0.05)])
+        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.014, tiles, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.22, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                collar_disc(gid + '_collar', 0.12, collar, drop=0.05, scallop=0.16)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.1, rows=10)
+    GARMENTS['yuni_%s_noble_gown' % sex] = ('torso', b, 'Mosaic gown and collar', _ygown)
+
+    def _yslip2(sex=sex):
+        return boots('yuni_%s_noble_slippers' % sex, P('tileblue', 0.04), P('violet', 0.03, [B('top', 0.0, 0.015, 'solid', 'yuniyellow')]), top=0.06, ease_top=0.014)
+    GARMENTS['yuni_%s_noble_slippers' % sex] = ('feet', b, 'Silk babouches', _yslip2)
+
+    def _yhyp(sex=sex):
+        gid = 'yuni_%s_noble_hyperboloid' % sex
+        hyp = lambda t: 0.62 + 1.25 * (t - 0.55) ** 2 + 0.12 * t
+        return [tower_hat(gid, 0.36 if sex == 'm' else 0.3, hyp, P('yuniyellow', 0.02, [B('bottom', 0.0, 0.03, 'solid', 'tileblue'),
+                          B('bottom', 0.03, 0.12, 'trencadis', 'tileblue', 'yuniyellow', 0.05), B('top', 0.0, 0.025, 'solid', 'violet'),
+                          B('top', 0.025, 0.3, 'rays', 'yuniyellow', 'coral', 0.02)]), rows=14)]
+    GARMENTS['yuni_%s_noble_hyperboloid' % sex] = ('head', b, 'Hyperboloid hat', _yhyp)
 
 
 # ---------------------------------------------------------------------------------------------------------------

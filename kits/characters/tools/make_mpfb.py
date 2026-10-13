@@ -809,9 +809,12 @@ _FIST = (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45
          ('Thumb', (20, 30, 25)))
 # headgear that covers the hair (KCHAR.parts leaves the hair out), and library items that hang loose over the legs
 COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 'iziz_f_peasant_hood', 'beast_m_trade_hat', 'beast_f_trade_hat',
-               'beast_m_noble_horns', 'beast_f_noble_wings', 'hykk_m_trade_helm', 'hykk_f_trade_helm', 'hykk_m_peasant_hat', 'hykk_f_peasant_hat'}
+               'beast_m_noble_horns', 'beast_f_noble_wings', 'hykk_m_trade_helm', 'hykk_f_trade_helm', 'hykk_m_peasant_hat', 'hykk_f_peasant_hat',
+               'dalab_m_trade_cap', 'dalab_f_trade_cap', 'dalab_m_noble_mitre', 'dalab_f_noble_mitre', 'yuni_m_peasant_hat', 'yuni_f_peasant_wrap',
+               'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
-CULTURE = {'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi'}
+CULTURE = {'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
+           'yuni_': 'yuni'}
 
 
 def culture_of(iid):

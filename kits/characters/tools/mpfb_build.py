@@ -65,7 +65,20 @@ ITEMS = {
                     ('torso', 'Hykkousoi nacre cuirass', 'hykk_m_trade_lorica'), ('legs', 'Hykkousoi strip skirt', 'hykk_m_trade_pteruges'),
                     ('feet', 'Hykkousoi greaves', 'hykk_m_trade_greaves'), ('head', 'Hykkousoi crested helmet', 'hykk_m_trade_helm'),
                     ('torso', 'Hykkousoi archon\'s chiton', 'hykk_m_noble_chiton'), ('feet', 'Hykkousoi gilded sandals', 'hykk_m_noble_sandals'),
-                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_m_noble_crown')]},
+                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_m_noble_crown'),
+                    # Dalab and Yuni clothing, also from tools/make_garments.py
+                    ('torso', 'Dalab sun sash', 'dalab_m_peasant_sash'), ('legs', 'Dalab kilt', 'dalab_m_peasant_kilt'),
+                    ('feet', 'Dalab sandals', 'dalab_m_sandals'),
+                    ('torso', 'Dalab trader\'s tabard', 'dalab_m_trade_tabard'), ('legs', 'Dalab calf trousers', 'dalab_m_trade_trousers'),
+                    ('feet', 'Dalab laced sandals', 'dalab_m_trade_sandals'), ('head', 'Dalab bead cap', 'dalab_m_trade_cap'),
+                    ('torso', 'Dalab genepriest\'s robe', 'dalab_m_noble_robe'), ('feet', 'Dalab temple sandals', 'dalab_m_noble_sandals'),
+                    ('head', 'Dalab mitre of the Eye', 'dalab_m_noble_mitre'),
+                    ('torso', 'Yuni mud-cloth boubou', 'yuni_m_peasant_boubou'), ('legs', 'Yuni loose trousers', 'yuni_m_peasant_trousers'), ('head', 'Yuni cone hat', 'yuni_m_peasant_hat'),
+                    ('feet', 'Yuni sandals', 'yuni_m_sandals'),
+                    ('torso', 'Yuni grand boubou', 'yuni_m_trade_boubou'), ('legs', 'Yuni under-trousers', 'yuni_m_trade_trousers'),
+                    ('feet', 'Yuni babouches', 'yuni_m_trade_slippers'), ('head', 'Yuni kufi', 'yuni_m_trade_kufi'),
+                    ('torso', 'Yuni mosaic gown', 'yuni_m_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_m_noble_slippers'),
+                    ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -118,7 +131,20 @@ ITEMS = {
                     ('torso', 'Hykkousoi nacre cuirass', 'hykk_f_trade_lorica'), ('legs', 'Hykkousoi strip skirt', 'hykk_f_trade_pteruges'),
                     ('feet', 'Hykkousoi greaves', 'hykk_f_trade_greaves'), ('head', 'Hykkousoi crested helmet', 'hykk_f_trade_helm'),
                     ('torso', 'Hykkousoi archon\'s chiton', 'hykk_f_noble_chiton'), ('feet', 'Hykkousoi gilded sandals', 'hykk_f_noble_sandals'),
-                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_f_noble_crown')]},
+                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_f_noble_crown'),
+                    # Dalab and Yuni clothing, also from tools/make_garments.py
+                    ('torso', 'Dalab sun sash', 'dalab_f_peasant_sash'), ('legs', 'Dalab wrap skirt', 'dalab_f_peasant_kilt'),
+                    ('feet', 'Dalab sandals', 'dalab_f_sandals'),
+                    ('torso', 'Dalab trader\'s tabard', 'dalab_f_trade_tabard'), ('legs', 'Dalab calf trousers', 'dalab_f_trade_trousers'),
+                    ('feet', 'Dalab laced sandals', 'dalab_f_trade_sandals'), ('head', 'Dalab bead cap', 'dalab_f_trade_cap'),
+                    ('torso', 'Dalab genepriest\'s robe', 'dalab_f_noble_robe'), ('feet', 'Dalab temple sandals', 'dalab_f_noble_sandals'),
+                    ('head', 'Dalab mitre of the Eye', 'dalab_f_noble_mitre'),
+                    ('torso', 'Yuni mud-cloth blouse', 'yuni_f_peasant_boubou'), ('legs', 'Yuni wrapper', 'yuni_f_peasant_wrapper'), ('head', 'Yuni head wrap', 'yuni_f_peasant_wrap'),
+                    ('feet', 'Yuni sandals', 'yuni_f_sandals'),
+                    ('torso', 'Yuni grand boubou', 'yuni_f_trade_boubou'), ('legs', 'Yuni under-trousers', 'yuni_f_trade_trousers'),
+                    ('feet', 'Yuni babouches', 'yuni_f_trade_slippers'), ('head', 'Yuni gele', 'yuni_f_trade_gele'),
+                    ('torso', 'Yuni mosaic gown', 'yuni_f_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_f_noble_slippers'),
+                    ('head', 'Yuni hyperboloid hat', 'yuni_f_noble_hyperboloid')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -160,8 +186,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the made garments (Voth, Izani, Beast Riders, Hykkousoi) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_'))
+            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

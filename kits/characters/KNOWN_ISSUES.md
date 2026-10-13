@@ -42,14 +42,20 @@
   the petasos brim and the shell collar are rigid (no chains); trophies and beads are small solids that ride the body;
   the deel's overlap is painted, not cut; the exomis bares the right shoulder but the rib-gills are not modelled. A
   wide brim or a tall crest can pass through a raised arm or a held prop.
-- **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi): a random
+- **The Dalab and Yuni clothing is generated too.** The mitre, its halo and the eye, the hyperboloid hat, the cone hat
+  and the gele are rigid; the grand boubou is one stiff sheet over the arms (it swings at the hem but has no folds and
+  does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
+  held overhead.
+- **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi, Dalab, Yuni): a random
   stranger of another people never draws them, but the editor's pickers still offer every item to every body.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below, and arms raised high pull a sweater's front off bare skin. The waistband tuck
   works above the hips only: a short tee over jeans in a deep crouch can still show denim at its hem.
-- **Download size.** About 50 MB of pieces as served (both bodies, every item and its deltas, gzipped; the page
-  unzips them with the browser's DecompressionStream), fetched per item as needed. Dense shoes (flats, pirate boots)
+- **Download size.** Pieces are served gzipped as base64 text (the page unzips them with the browser's
+  DecompressionStream), one file per item (its GLB and its morph deltas), fetched per item as needed. A published
+  artifact holds at most 512 files: both bodies' items now take about 230 of them, so there is room for the remaining
+  peoples but not for a third body without bundling further. Dense shoes (flats, pirate boots)
   are still the heaviest geometry; decimating them in Blender before the morph capture is the next saving.
 - **The peoples are mostly proposals.** Only the Chichani and the Beast Riders come from the owner; the others
   follow LORE.md's real-world references.

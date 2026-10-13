@@ -19,5 +19,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `01-animlab.html` | 13 |  |
 | `10-rig.js` | 19 | KCHAR: the character record and its pose. [G dat (1) |
 | `50-figure.js` | 49 **big** | KCharFigure: one body's character, drawn from ki (1) |
-| `90-editor.js` | 29 | the Cosmetic Lab: stage, camera, panel. [web] (h (1) |
-| `92-animlab.js` | 24 | the Animation Lab: six figures, one clip on all  (1) |
+| `90-editor.js` | 30 **big** | the Cosmetic Lab: stage, camera, panel. [web] (h (1) |
+| `92-animlab.js` | 25 | the Animation Lab: six figures, one clip on all  (1) |

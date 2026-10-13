@@ -135,7 +135,28 @@ The Hykkousoi are Greek and Roman, of the sea:
 - **The Archon's court:** a long sea-linen chiton, a nacre shell collar, the himation across from the left shoulder,
   a cloak, gilded sandals, and a diadem with the wave-sun as a scallop behind the head.
 
-Both sets follow the look LORE.md section 5 sets for every culture, Moebius and Jodorowsky's Dune: one big shape per
+**Dalab and Yuni clothing** (`dalab_*`, `yuni_*`). Dalab is Cahokian earth and Tiwanaku stone, and its people are
+green (the photosynthesis mod):
+- **Commoners** dress for the sun, the skin bare to it: a kilt or wrap skirt with the step fret, a sash from the left
+  shoulder, bead armbands, and a breast band for women.
+- **Traders:** a sleeveless terracotta tabard with a turquoise step panel, a belt with pouches, calf trousers, laced
+  sandals, a bead cap.
+- **Genepriests:** white with the holy red, The God's eye woven down the front, a gold pectoral of rays, bell sleeves,
+  a red train for women, and the mitre of the Eye (a tall gold mitre with the one great eye on its face before a halo
+  of rays).
+
+Yuni is Sahelian, with Gaudi and Burmecia for the families:
+- **Commoners** in bogolan mud-cloth: a boubou or blouse, loose trousers or an indigo wrapper, a Fulani cone hat or a
+  head wrap.
+- **Merchants:** the grand boubou (one great sheet over the arms from the shoulders to the shins, its chest worked in
+  yellow), under-trousers, babouches, a kufi or a towering gele.
+- **The families:** a gown banded in trencadis mosaic, a scalloped mosaic collar, bell sleeves, silk babouches, and the
+  hyperboloid of Yuni as a hat.
+
+Shapes added for them: `tower_hat` (a hat that rises from a band fitted to the head with any profile: the mitre, the
+hyperboloid), `eye_disc`, `armbands`; motifs `trencadis`, `bogolan`, `eye`.
+
+All these sets follow the look LORE.md section 5 sets for every culture, Moebius and Jodorowsky's Dune: one big shape per
 figure, flat calm colour fields with one accent, organic ornament. The tool's shapes for it: `band` (a tilted band:
 bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_disc`, `crest`, `pendants`,
 `animal_belts`.
@@ -209,7 +230,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
-| `tools/make_garments.py` | the Voth, Izani, Beast Rider and Hykkousoi clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab and Yuni clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

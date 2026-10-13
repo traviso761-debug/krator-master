@@ -11,7 +11,7 @@ The pages need a web server (they fetch their pieces):  python3 -m http.server -
 
   python3 build.py             # dist/<page>.html (whole pages) and dist/<page>.artifact.html (no <!doctype>/<html>/
                                # <body>, which the artifact host adds); both fetch dist/pieces/*.txt (the GLBs and
-                               # morph files, gzipped, as base64), published beside them, to stay under the host's 16 MB a page
+                               # morph deltas as a second line, gzipped, as base64), published beside them, to stay under the host's 16 MB a page
   python3 build.py --no-checks # skip the port lint and the node test
   python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
 
@@ -82,12 +82,18 @@ def main():
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):
             os.remove(os.path.join(out_dir, f))
+        # one file per piece: its GLB, and on a second line its morph deltas (make_mpfb.py), each gzipped (the page
+        # unzips them) as base64: one fetch, and half the files (a published artifact holds at most 512)
+        lines = {}
         for f in sorted(os.listdir(src_dir)):
-            if f.endswith('.glb') or f.endswith('.morph.bin'):         # a piece, or its morph deltas (make_mpfb.py)
+            if f.endswith('.glb') or f.endswith('.morph.bin'):
                 raw = read(os.path.join(src_dir, f), 'rb')
                 inputs['pieces/%s/%s' % (b, f)] = raw
-                with open(os.path.join(out_dir, f[:-4] + '.txt'), 'w') as o:     # gzipped (the page unzips it)
-                    o.write(base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode())
+                name, k = (f[:-10], 1) if f.endswith('.morph.bin') else (f[:-4], 0)
+                lines.setdefault(name, ['', ''])[k] = base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode()
+        for name, (glb, morph) in lines.items():
+            with open(os.path.join(out_dir, name + '.txt'), 'w') as o:
+                o.write(glb + ('\n' + morph if morph else ''))
     os.makedirs(DIST, exist_ok=True)
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
         if os.path.exists(os.path.join(DIST, old)):
