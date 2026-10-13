@@ -114,6 +114,22 @@ func _initialize() -> void:
 		"the shader's uniforms: 4 of 8 wave slots, each wave's products, the bed as a %d x %d texture and its box, the field's tilt" % [bt.get_width(), bt.get_height()])
 	var pu: Dictionary = S["water:1"].uniforms(0.0)
 	ok(pu["wtr_has_bed"] == false and float(pu["wtr_field"]) == 0.0 and not pu.has("wtr_bed"), "negative space: the pond has no bed and no field, and its uniforms say so")
+	# 5. the importer draws every kind, each mesh the page's own (count and sums from the record)
+	var wn := KratorWater.build(sec, null, atm)
+	var kinds := {}
+	var same := 0
+	var meshes := 0
+	for c in wn.get_children():
+		var m: Dictionary = c.get_meta("krator", {})
+		kinds[m.get("kind", "open")] = true
+		if m.has("matches_page"):
+			meshes += 1
+			if m["matches_page"] == true:
+				same += 1
+	var rep: Dictionary = wn.get_meta("report")
+	ok(kinds.has("flow") and kinds.has("fall") and kinds.has("plunge") and kinds.has("still") and meshes == 2 and same == 2 and (rep["drawn"] as Array).size() == 7,
+		"the importer draws every kind (%s; %d surfaces drawn), the river's ribbon and the fall's curtain each the page's mesh (%d of %d)" % [", ".join(PackedStringArray(kinds.keys())), (rep["drawn"] as Array).size(), same, meshes])
+	wn.free()
 	_phase2(g, sec, ALL)
 	_phase3(g, ALL)
 	_phase4(g, ALL)

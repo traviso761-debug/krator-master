@@ -56,6 +56,33 @@ void fragment() {
 	return sh
 
 
+# lib/water_kinds' functions at fixed arguments (the river's advected normal, the fall's streak and churn, the pool's
+# normal), one value a pixel in two bytes over [-1, 1], each against KWater's twin
+const KIND_ARGS := [[12.5, 3.0, 1.6, 0.4, 0.02], [431.0, -12.0, -0.3, 1.1, 0.09], [-2560.0, 530.0, 0.0, 0.0, 0.0]]
+func _kinds_shader(kind: String) -> Shader:
+	var sh := Shader.new()
+	var body := ""
+	if kind == "flow":
+		body = "vec4 a = A[i / 2]; vec3 n = wk_flow_n(a.xy, a.zw, S[i / 2]); v = (i % 2 == 0) ? n.x : n.z;"
+	elif kind == "fall":
+		body = "vec4 a = A[i / 2]; v = (i % 2 == 0) ? wk_streak(a.x, a.y) : wk_plunge_at(a.zw).x;"
+	else:
+		body = "vec4 a = A[i / 2]; vec3 n = wk_still_n(a.xy); v = (i % 2 == 0) ? n.x : n.z;"
+	sh.code = """shader_type canvas_item;
+#include "res://shaders/lib/water_kinds.gdshaderinc"
+uniform vec4 A[3];
+uniform float S[3];
+void fragment() {
+	int i = int(FRAGCOORD.x);
+	float v = 0.0;
+	%s
+	float h = v * 0.5 + 0.5;
+	float hi = floor(h * 255.0) / 255.0;
+	COLOR = vec4(hi, (h - hi) * 255.0, 0.0, 1.0);
+}""" % body
+	return sh
+
+
 func _lib_shader() -> Shader:
 	var sh := Shader.new()
 	sh.code = """shader_type canvas_item;
@@ -151,6 +178,32 @@ func _initialize() -> void:
 			sm.set_shader_parameter("pts", pts)
 			_viewport(N, sm)
 			_rows.append(["shore", {"w": w, "pts": pts}])
+	# the other kinds (flow, fall, still) on lib/water_kinds, from the golden's own surfaces
+	var all := {}
+	for w in KWater.from_section(g["section"], _atm, ["flow", "fall", "still"]):
+		all[w.kind] = w
+	for kind in ["flow", "fall", "still"]:
+		var w: KWater = all[kind]
+		var km := ShaderMaterial.new()
+		km.shader = _kinds_shader(kind)
+		var u := w.kind_uniforms()
+		for key in u:
+			km.set_shader_parameter(key, u[key])
+		var A := []
+		var S := []
+		for a in KIND_ARGS:
+			if kind == "fall":
+				var P := w.plunge()
+				A.append(Vector4(fposmod(a[0] * 0.013, 1.0), fposmod(absf(a[1]) * 0.0017, 1.0), P[0] + a[2] * 7.0 + 3.0, P[2] + a[3] * 9.0 - 2.0))
+			elif kind == "still":
+				A.append(Vector4(3000.0 + fposmod(a[0], 20.0), fposmod(absf(a[1]), 20.0), 0.0, 0.0))
+			else:
+				A.append(Vector4(a[0], a[1], a[2], a[3]))
+			S.append(a[4])
+		km.set_shader_parameter("A", A)
+		km.set_shader_parameter("S", S)
+		_viewport(6, km)
+		_rows.append(["kind", {"w": w, "A": A, "S": S}])
 	var lm := ShaderMaterial.new()
 	lm.shader = _lib_shader()
 	_viewport(20, lm)
@@ -214,6 +267,27 @@ func _process(_delta: float) -> bool:
 					print("  ", p, " depth gpu ", dep, " cpu ", want_d, " dist gpu ", sd, " cpu ", w.shore_dist(p.x, p.y))
 			var good := dw < 0.05 and sw < 2.0 * float(w.shore["band"]) / 255.0 + 0.05
 			print(("ok   " if good else "FAIL ") + "%s (%s): the shore grid on the GPU: the bed's depth within %.3f m, the shore distance within %.3f m (one byte: %.2f m)" % [w.id, w.name, dw, sw, 2.0 * float(w.shore["band"]) / 255.0])
+			if not good:
+				bad += 1
+		elif row[0] == "kind":
+			var D: Dictionary = row[1]
+			var w: KWater = D["w"]
+			var worst := 0.0
+			for i in 6:
+				var a: Vector4 = D["A"][i / 2]
+				var want := 0.0
+				if w.kind == "flow":
+					var n := w.flow_normal(a.x, a.y, a.z, a.w, D["S"][i / 2], T)
+					want = n[0] if i % 2 == 0 else n[2]
+				elif w.kind == "fall":
+					want = w.fall_streak(a.x, a.y, T) if i % 2 == 0 else w.plunge_at(a.z, a.w, T)[0]
+				else:
+					var n := w.still_normal(a.x, a.y, T)
+					want = n[0] if i % 2 == 0 else n[2]
+				var c := img.get_pixel(i, 0)
+				worst = maxf(worst, absf((c.r + c.g / 255.0 - 0.5) * 2.0 - want))
+			var good := worst < 0.01
+			print(("ok   " if good else "FAIL ") + "%s (%s): lib/water_kinds on the GPU against KWater at 6 values (worst %.5f, tolerance 0.01)" % [w.id, w.kind, worst])
 			if not good:
 				bad += 1
 		else:

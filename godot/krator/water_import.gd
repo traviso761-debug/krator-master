@@ -101,7 +101,7 @@ static func _kind_nodes(k: KWater) -> Array:
 		if L.has("deep"):
 			m.set_shader_parameter("deep", _lin(L["deep"]))
 		m.set_shader_parameter("margin", float(k.ribbon_opt.get("margin", k.presets["flow"]["margin"])))
-		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": R["count"], "rows": R["rows"]})
+		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": R["count"], "rows": R["rows"], "matches_page": _same_mesh(k.ribbon_opt, R["count"], P)})
 		out.append(mi)
 	elif k.kind == "fall":
 		var M := k.curtain(k.curtain_opt)
@@ -118,7 +118,7 @@ static func _kind_nodes(k: KWater) -> Array:
 		var mi: MeshInstance3D = mk.call(_mesh(v, M["idx"], n, t, null), SHADERS["fall"], "")
 		if L.has("colour"):
 			(mi.material_override as ShaderMaterial).set_shader_parameter("colour", _lin(L["colour"]))
-		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop})
+		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop, "matches_page": _same_mesh(k.curtain_opt, M["count"], P)})
 		out.append(mi)
 		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's)
 		var pl := k.plunge()
@@ -152,6 +152,17 @@ static func _kind_nodes(k: KWater) -> Array:
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "still", "level": y})
 		out.append(mi)
 	return out
+
+
+# the mesh built here against the page's own (the record's count and coordinate sums): true, false, or null (not recorded)
+static func _same_mesh(rec: Dictionary, count: int, pos: PackedFloat64Array):
+	if not rec.has("count") or not rec.has("sum"):
+		return null
+	var c := [0.0, 0.0, 0.0]
+	for i in pos.size():
+		c[i % 3] += pos[i]
+	var tol := 1e-6 * maxf(1.0, float(count))
+	return int(rec["count"]) == count and absf(c[0] - float(rec["sum"][0])) < tol * 1000.0 and absf(c[1] - float(rec["sum"][1])) < tol * 1000.0 and absf(c[2] - float(rec["sum"][2])) < tol * 1000.0
 
 
 # an ArrayMesh from vertices and core/water's indices (turned for Godot, unless turn is false), with normals, UVs and

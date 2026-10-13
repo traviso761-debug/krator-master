@@ -79,7 +79,7 @@ vec2 wk_plunge_at(vec2 p) {
 }
 
 // ---- STILL: a faint ripple, a fountain's rings
-uniform int wk_still_n = 0;
+uniform int wk_still_count = 0;
 uniform vec4 wk_still[4];                        // (slope, cos a / wavelength, sin a / wavelength, cycles per second)
 uniform vec4 wk_still_d[4];                      // (cos a, sin a, 0, 0)
 uniform vec4 wk_fountain = vec4(0.0, 0.0, 0.0, 0.0);      // (x, z, on, 0)
@@ -88,7 +88,7 @@ uniform vec4 wk_fountain_k = vec4(1.667, 0.7, 0.333, 0.0); // (1 / ring waveleng
 vec3 wk_still_n(vec2 p) {
 	vec2 s = vec2(0.0);
 	for (int i = 0; i < 4; i++) {
-		if (i >= wk_still_n) break;
+		if (i >= wk_still_count) break;
 		float c = cos(6.283185307 * (fract(p.x * wk_still[i].y) + fract(p.y * wk_still[i].z) - fract(atm_wave_t * wk_still[i].w))) * wk_still[i].x;
 		s += c * wk_still_d[i].xy;
 	}

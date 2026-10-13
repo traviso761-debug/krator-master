@@ -980,7 +980,7 @@ func kind_uniforms() -> Dictionary:
 				st.append(Vector4.ZERO)
 				sd.append(Vector4.ZERO)
 		var F: Dictionary = Q["fountain"]
-		u = {"wk_still_n": mini(R.size(), 4), "wk_still": st, "wk_still_d": sd,
+		u = {"wk_still_count": mini(R.size(), 4), "wk_still": st, "wk_still_d": sd,
 			"wk_fountain": Vector4(float(fountain[0]), float(fountain[1]), 1.0, 0.0) if fountain is Array else Vector4.ZERO,
 			"wk_fountain_k": Vector4(1.0 / float(F["ring"]), float(F["cycles"]) / period, 1.0 / float(F["r"]), 0.0)}
 	return u
