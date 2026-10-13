@@ -350,7 +350,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 6. **`core/tags` on the biome kits and ids on exported nodes** (stage 2c; `core/tags/PROPOSAL.md`).
 7. **`core/export`, M4 then M5** (stage 2d; `TODO.md` item 8's "Iziz's export on the `KRATOR_EXPORT` shape"). *M4 done
    2026-10-13* (sedesert's tile, stage 2d); M5 next.
-8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5.
+8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5. *The re-vendor
+   session done 2026-10-13* (the chain's `--vendor-check` shows only recorded ADAPTED drift; `verify --assert` unchanged); Ys's passes next.
 9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half). *The shader
    library done 2026-10-13* (with core/export's `water` section and sedesert's ground layers); Iziz next.
 10. **The host shell, narrowed** (`TODO.md` item 9; stage 3).

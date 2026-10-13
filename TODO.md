@@ -38,6 +38,17 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
+   **DONE 2026-10-13** (on `full-refactor`). The Ancients fragments were already current down the chain (the 2026-10-06
+   re-vendor holds: Iziz 35, Highlands 13, Jimjam all match); the session cleared the chain's other drift, each copy's
+   diff read: Iziz's four `core/biome` copies were only behind (re-vendored, `--vendor-bio`); Xanadu's and Reed Lake's
+   `91-probe.js` were behind Highlands (re-vendored; the new line is inert without `HLF`); Highlands' `91-probe.js` and
+   Reed Lake's `73-hl-carve.js` (pre-catalog furniture; Reed Lake has no `FURNISH`) are kept on purpose and named in a
+   new `ADAPTED` set in their build.py. Nothing was fixed upstream in `kits/ancients`. `verify --assert` before and
+   after: identical on Iziz's city, Xanadu, Erewhon and Reed Lake (each build's KNOWN_ISSUES.md); Iziz's verify.py runs
+   again (stage 0b had taken its `GL_ERR`). Every chain build's `--vendor-check` shows only recorded ADAPTED drift.
+   Open: the baseline rewrite for the five changed pages (Iziz's `iziz.html`, Xanadu's `xanadu.html` and `erewhon.html`,
+   Reed Lake's two) when the pages are committed; the composing `useGroupXF` (Iziz's 69c) is still not in
+   `kits/ancients`' 50-registry.js (Jimjam's open item); Dalab and Ys, outside this chain, keep their non-Ancients drift.
 4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). **Iziz DONE 2026-10-05** (its `PORT.md`: tags corrected by reading the code, split notes on 90a, 90b, 90c, 85 and the mask readers, the own-copies Notes; Voth's `68-props.js` split note added). Still to do: Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
