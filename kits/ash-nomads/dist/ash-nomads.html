@@ -8708,6 +8708,9 @@ const KratorFaunaAPI = (function () {
   /* ---- animation: turns only, by the animal's gait (data.gait.type):
        quadruped  diagonal pairs swing about x (front left with hind right)      biped   two legs alternate, the head bobs
        sprawl     legs swing about y, body and tail weave (salamanders, lizards)  hexapod tripods alternate (0,3,4 / 1,2,5)
+       gait.walk  a flyer with six legs walks as gait.walk ('centaur' for an arboreal glider); in flight its limbs swing out level to the angles in its
+                  'spread<i>' anchors (a bat-like web is drawn between them)
+       climb      (a centaur's extra mode) the whole animal pitches nose-up, g.rotation.x = -o.climb (default 1.3 rad, order YXZ), and the limbs reach overhead in tripods
        centaur    six limbs: the front pair arms (held forward, swinging), the hind pair legs, the middle pair arms at a walk and legs at a run
                   (mode 'run', o.run, or o.speed between data.speed.walk and .run); the limbs swing about x (the ambiguous six-limbed beasts)
        octopod    alternating fours swing about y (spiders)                       multipede  a wave runs down the legs and segments
@@ -8755,8 +8758,9 @@ const KratorFaunaAPI = (function () {
       if (fl.roll && P[n].rotation.order !== 'YZX') P[n].rotation.order = 'YZX';
       set(P[n], -roll, s * sweep, s * (n.indexOf('2') > 0 && !fl.sync ? -flapA : flapA)); }
     if (flying && type === 'flyer' && fl.tuck) legs.forEach(L => set(L, fl.tuck, 0, 0));
+    if (flying && type === 'flyer' && u.anchors && u.anchors.spread0) legs.forEach((L, i) => { const sp = u.anchors['spread' + i]; if (sp) set(L, 0, 0, ((i & 1) ? -1 : 1) * sp[0]); });   /* a glider's limbs swing out level: its builder gives the angles as 'spread<i>' anchors */
     if (type === 'flyer' && mode === 'fly' && body) body.position.y = 0.04 * (u.S || 1) * Math.sin(wf + 1);
-    const wt = (type === 'flyer' || type === 'insect') ? (legs.length === 2 ? 'biped' : legs.length === 4 ? 'quadruped' : legs.length === 6 ? 'hexapod' : type) : type;
+    const wt = (type === 'flyer' || type === 'insect') ? (legs.length === 2 ? 'biped' : legs.length === 4 ? 'quadruped' : legs.length === 6 ? (gait.walk || 'hexapod') : type) : type;
     if (mode === 'walk' && !(flying && type === 'flyer')) {
       if (wt === 'sprawl') {
         const a = 0.45;
@@ -8797,7 +8801,13 @@ const KratorFaunaAPI = (function () {
     }
     /* centaur: six limbs, the front pair always arms (held forward, swinging), the hind pair always legs, the middle pair arms at a walk and legs at a run:
        the blend is o.run, or o.speed between the animal's walk and run speeds */
-    if (type === 'centaur' && legs.length === 6) {
+    const cent = (type === 'centaur' || gait.walk === 'centaur') && legs.length === 6 && !flying;
+    if ((type === 'centaur' || gait.walk === 'centaur') && g.rotation.x !== 0 && mode !== 'climb') g.rotation.x = 0;       /* a climber levels out again off the trunk */
+    if (cent && mode === 'climb') {      /* climbing: the animal pitches nose-up (about its own axis, after the yaw) and the limbs reach overhead in alternating tripods; the host presses it to the trunk */
+      g.rotation.order = 'YXZ'; g.rotation.x = -(o.climb == null ? 1.3 : o.climb);
+      legs.forEach((L, i) => { const pair = i >> 1, ph0 = (i & 1) ? Math.PI : 0, tri = (pair === 1 ? Math.PI : 0), ww = w * 0.8;
+        set(L, [-2.1, -1.5, -0.7][pair] + [0.5, 0.4, 0.4][pair] * Math.sin(ww + ph0 + tri), 0, ((i & 1) ? 0.25 : -0.25)); });
+    } else if (cent) {
       const sp = D.speed || { walk: 1, run: 6 }, bl = o.run ? 1 : (o.speed != null ? Math.max(0, Math.min(1, (o.speed - sp.walk) / Math.max(0.01, sp.run - sp.walk))) : 0), wk = mode === 'walk', hold = mode === 'graze' ? -0.2 : -0.85;
       legs.forEach((L, i) => { const pair = i >> 1, ph0 = (i & 1) ? Math.PI : 0, ww = w * (1 + 0.6 * bl);
         if (pair === 2) set(L, wk ? 0.5 * Math.sin(ww + ph0) : 0);
