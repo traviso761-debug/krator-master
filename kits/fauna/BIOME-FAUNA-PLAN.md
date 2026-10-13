@@ -45,3 +45,5 @@ bodies, not 40 bespoke builds; birds and flyers reuse `faHiBird`; water animals 
 - **Left:** Korona, the scablands and tuff country (biomes not placed yet); a Meshy pass on any of these (credits).
 
 - **Domestic stock (2026-10-13):** donkey, mule, goose, turkey, rabbit, alpaca, reindeer, bactrian camel, homing pigeon, giant honeybee (tagged `domestic`, with traits for riding, draught and milk), rounding out the farm group's cattle, horse, sheep, pig, hen, goat, duck, dog, cat, yak, water buffalo and the lizard-world stock.
+- **Sea and lake fauna (2026-10-13):** ring dolphin, giant sea turtle, manta ray, giant ring squid, glass jellyfish, reef octopus, ring marlin, banner reef fish, ring cormorant (Ring Sea and the bays); giant pike, lake sturgeon, giant catfish, lake plesiosaur, lake diver (lakes and rivers).
+- **Meshy pass (pending credits):** the weakest procedural animals, to replace with baked models: goose, turkey, camel, and the biped/ small-bird builds; the account is at 6 credits (a preview is 20, a refine 10).
