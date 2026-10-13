@@ -39,6 +39,9 @@ def main():
     _, _, D0 = load(page0)
     G = ER.grid_fields(D)
     G0 = ER.grid_fields(D0)
+    # the books are 4.20's, as edit_rivers.py drew them: on 4.21 an outlet joins a lake to the ocean by water, and the
+    # books would count that lake as ocean and import the rain within IMPORT_KM of it as well
+    G.update(evap_k=G0['evap_k'], books=G0['books'], P=G0['P'])
     su, sv, E = G['su'], G['sv'], G['E']
     OW, OH = D['fullW'], D['fullH']
     KM2 = (2 / su) * (2 / sv)

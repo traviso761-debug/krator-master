@@ -149,6 +149,26 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   to ~1,200 m, all under water), the 8 shore cells under 2,400 m are raised as rock bars (by up to 245 m), and its
   outlet is cut by `OUTLETS`: 248 km to the Ancient's Valley lake, through 156 km at most 198 m deep. The river that
   leaves it, *Kaskejt Rivr*, carries ~880 m3/s.
+- **The NW lowlands' lake** (`OUTLETS`, `SETTLE`; the owner: it must not rise and drown the river valley north-west of it).
+  Closed and gaining ~1,400 m3/s, it would rise ~300 m. Its outlet runs 352 km north-west to the ocean at the map's edge
+  (only the edge ocean is its target: to the Ring Sea or the Ancient's Valley lake it would cut the north basin's rims or
+  join the lakes), cut through 332 km at most 582 m deep. Drawn at the ocean's own level, a gorge from it is an arm of the
+  sea, so the lake stands at 50 m (its hollow holds 28,762 km2 there, against 28,345 at 0 m) and the bed falls evenly to
+  just over the ocean's level, never under it (`cut_channel(..., floor)`; the ocean cell at the mouth, drawn as water
+  over 109 m of ground, is lowered under it, or it dams the gorge). The lake settles at 46 m (26,985 km2, drawn 26,408)
+  and *Farside river* runs out of it, ~1,430 m3/s.
+- **The lake north of Locus** (`SETTLE`; the owner: too big). The model draws 1,171 km2 at -2,305 m on the abyss floor and
+  the routing filled the flat hollow round it to its spill (2,903 km2 at -2,309 m). Settled on its own water it stands at
+  -2,329 m over 1,524 km2, short of the spill. (An outlet north to the north abyss lake was tried and stayed dry.)
+- **The north abyss lake** (`BREACHES`; the owner: bring it back). A gorge through the Region 62 saddle (60 km, at most
+  328 m deep) sends the hollow south of it, which had gathered its water, into it: ~120 m3/s. That is not enough: drawn at
+  2,134 km2 it still evaporates ~190 m3/s more than reaches it, and settles at ~350 km2. The lakes south of it stand lower
+  than it, so they cannot feed it; it keeps its drawn outline on the page. More rain in the north abyss, or a smaller lake,
+  is the owner's call.
+- **The rivers west of the abyss run into it** (`ABYSS_WEST_KM`, `ABYSS_CUT_M`; the owner). Every closed hollow on the
+  plateau within 300 km west of the abyss floor with at least 2,500 km2 of catchment is cut through to the floor from its
+  own floor (`cut_channel`), where that cuts no more than 600 m (as deep as the western outlets): 21 hollows, 1,432 km cut,
+  at most 566 m deep. Two are left (`abyss_left`): px 963,170 (806 m) and px 811,290 (1,327 m).
 - **The routing:** the Ring Sea (-1,500 m) and the oceans at the edge end flow, and so does every lake the model draws
   below its own spill (as drawn). Every other hollow fills and spills, unless what reaches it is less than its full lake
   would lose: then it is endorheic and its lake stands where the two balance. A hollow whose only way out is over frozen
@@ -158,7 +178,7 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   grid's (a gorge narrower than a cell), and the course is cut through, falling all the way; deeper, a river fills it,
   so it becomes a lake at its spill (`through lake`). Rounds of routing, cutting and routing again until no course
   climbs; then it asserts that every course falls (or runs level on water) from its source to its mouth.
-  4.21: 416 rivers (44 over 100 m3/s, 2 over 1,000) and 438 dry valleys.
+  4.21: 416 rivers (44 over 100 m3/s, 3 over 1,000) and 445 dry valleys.
 - **The Yuni river** keeps its drawn course and the routing is held to it. On the 4.20 heights it climbed four times
   (49, 135, 11 and 459 m: the escarpment's sharpening raised the lip above Locus after 4.19 cut its bed); its bed is
   cut to fall all the way.
@@ -185,11 +205,13 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   settlement it passes) and then from each tongue's own pool. 317 of 854 named, each with `tongue` and `gloss`: the
   Scyvoi's in Boruntun (*Borun Gulusu*, *Madır Kiriki*; the polity and both 'crater drylands'), Screamer Country's in
   plain English, the caravans' (*Howling Gulch*); the rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
-- **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
+- **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). Basin by basin, with the western outlets and the settled lakes, 12 grow and 15 shrink (30,338 km2
-  flooded, 38,264 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. The lake at Locus still rises ~590 m: the ranges round the
+  away). Basin by basin, with the outlets and the settled lakes, 24 are flagged: 8 grow and 16 shrink (13,428 km2
+  flooded, 41,505 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. Its water books are the
+  4.20 page's, as `edit_rivers.py` drew them: on 4.21 the NW outlet joins that lake to the ocean by water, and the books
+  read off 4.21 would count it as ocean and import the rain within 300 km of it too (18,600 m3/s, not 6,300). The lake at Locus still rises ~590 m: the ranges round the
   valley of Yuni (4.15-4.17) took 1,000 mm and more of rain from 4.18's recompute, 143 of its 337 m3/s. Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.

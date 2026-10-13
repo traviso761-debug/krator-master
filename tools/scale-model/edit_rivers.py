@@ -67,7 +67,12 @@ ARM_R, ARM_MIN = 2, 4
 # own water settles, in its own basin (east lobe 'dam 2', west lobe 'dam', the long-lake trough).
 SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-lake trough': (399, 218),
           # drained to the Ring Sea through OUTLETS: each stands at its outlet and runs out down it
-          'western lake (Ancient\'s Valley)': (164, 605), 'western lake (SW lowlands)': (294, 787)}
+          'western lake (Ancient\'s Valley)': (164, 605), 'western lake (SW lowlands)': (294, 787),
+          'NW lowlands lake': (160, 391),
+          # the owner: the lake on the abyss floor north of Locus is too big. The model draws 1,171 km2 at -2,305 m and
+          # the routing filled its flat hollow round it to the spill (2,903 km2 at -2,309 m); its own water stands
+          # lower, short of the spill (an outlet north to the north abyss lake at -2,350 m stayed dry: nothing to send)
+          'lake north of Locus': (1019, 615)}
 # 4.21, the owner: the Iron Republic's lake back to its drawn size. The model draws it at 3,600 m, over almost all of its
 # shore (149 of 156 shore cells lower, down to 2,175 m): the valley could never hold it there, and left to its water it
 # shrinks to 2,880 km2 at its outlet (2,772 m). It is kept to its drawn outline at `level`: the bed under the outline is
@@ -82,7 +87,21 @@ NOT_JOINED = ('east lake (dam 2)', 'west lake (dam)', 'long-lake trough')
 # it eased half way down as its walls. In order: the SW lowlands' lake first, then Ancient's Valley's, whose gorge may end in
 # the first (without one it rises to ~870 m: no lower pass leads out of its basin).
 OUTLETS = [('western lake (SW lowlands)', (294, 787)), ('western lake (Ancient\'s Valley)', (164, 605)),
-           ('Iron Republic lake', (323, 445))]     # the Yuni river's colour on the painted maps (4.19)
+           ('Iron Republic lake', (323, 445)),
+           # the owner: the NW lowlands' lake does not rise and drown the river valley north-west of it; its outlet
+           # runs north-west to the ocean at the map's edge (to the Ring Sea or the Ancient's Valley lake it would cut
+           # through the north basin's rims or join the two lakes). Drawn at the ocean's own level, a gorge from it would
+           # be an arm of the sea: the lake stands at 50 m (its hollow holds 28,762 km2 there against 28,345 at 0 m) and
+           # the bed falls evenly from it to the coast, never under the ocean's level, so the valley stays a river
+           ('NW lowlands lake', (160, 391), 'ocean', 50.0)]
+# 4.21, the owner: the north abyss lake (at px 1043, 497) fed again. The two lakes 4.21 found on the floor just south of
+# the Region 62 saddle (4.17) gathered its water; a gorge through the saddle from their hollow's floor lets it run north
+# into the lake. (name, near the hollow's floor, the lake it runs to; map px)
+BREACHES = [('saddle gorge (Region 62)', (1019, 551), (1043, 497))]
+# 4.21, the owner: the rivers west of the abyss run on into it; a closed hollow on the plateau within ABYSS_WEST_KM of
+# the abyss's floor, west of it, is cut through to the floor (cut_channel from its floor)
+ABYSS_WEST_KM = 300.0
+ABYSS_CUT_M = 600.0     # m: a hollow whose way to the floor would cut more than this is left (reported; as deep as the western outlets)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
 UI_ROW = ('    <span>wind</span><span id="rWind">—</span>\n',
@@ -247,6 +266,72 @@ def trace(rt, chan, key):
         mouth = joins if joins is not None else (tuple(rec[c]) if rec[c][0] >= 0 else None)
         out.append((path, mouth, joins is not None))
     return out
+
+
+def body_at(lab, x, y, su, sv):
+    """the labelled body nearest map px (x, y)"""
+    j, i = int(round(y * sv)), int(round(x * su))
+    ys, xs = np.nonzero(lab > 0)
+    c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
+    return lab == lab[ys[c], xs[c]]
+
+
+def cut_channel(En, src, lv, target, blocked, floor=None):
+    """the channel from the cells `src` (water at level lv, or a hollow's floor) to any cell of `target`: the course that
+    cuts the least ground over lv (Dijkstra), never through `blocked` water. Its sill stays at lv: up to the last ground
+    over lv the bed falls 1 m a cell and a hollow on the way is left to fill; beyond it the bed follows the land down.
+    The cells beside the cut are eased half way down as its walls. With `floor` (the level of the water it ends in) the
+    bed falls evenly from lv to just over floor along the whole course instead, and never under it. Edits En in place;
+    returns (path, end, cells cut, deepest cut)."""
+    S0 = En
+    dist = np.full(En.shape, np.inf)
+    prev = {}
+    pq = []
+    for a, b in zip(*np.nonzero(src)):
+        dist[a, b] = 0.0
+        pq.append((0.0, a, b))
+    heapq.heapify(pq)
+    end = None
+    while pq:
+        d, a, b = heapq.heappop(pq)
+        if d > dist[a, b]:
+            continue
+        if target[a, b] and not src[a, b]:
+            end = (a, b)
+            break
+        for da in (-1, 0, 1):
+            for db in (-1, 0, 1):
+                c_, e_ = a + da, b + db
+                if (da or db) and 0 <= c_ < En.shape[0] and 0 <= e_ < En.shape[1] and not blocked[c_, e_]:
+                    nd_ = d + max(0.0, S0[c_, e_] - lv) * math.hypot(da, db) + 1.0
+                    if nd_ < dist[c_, e_]:
+                        dist[c_, e_] = nd_
+                        prev[(c_, e_)] = (a, b)
+                        heapq.heappush(pq, (nd_, c_, e_))
+    if end is None:
+        sys.exit('no channel from %s finds its target' % (tuple(np.argwhere(src)[0]),))
+    path = [end]
+    while path[-1] in prev:
+        path.append(prev[path[-1]])
+    path = [p_ for p_ in path[::-1] if not src[p_]]
+    path = path[:next((n_ for n_, p_ in enumerate(path) if target[p_]), len(path))]
+    ridge = max([n_ for n_, p_ in enumerate(path) if En[p_] > lv] + [-1])
+    step = 1.0 if floor is None else (lv - floor - 1.0) / max(len(path), 1)
+    bed, cut_most, over = lv - step, 0.0, 0
+    for n_, c in enumerate(path):
+        bed = bed - step if n_ <= ridge else min(En[c], bed - step)
+        if floor is not None:
+            bed = max(bed, floor + 1.0)
+        if En[c] - bed > 0.5:
+            over += 1
+            cut_most = max(cut_most, En[c] - bed)
+            for dj in (-1, 0, 1):
+                for di in (-1, 0, 1):
+                    a, b = c[0] + dj, c[1] + di
+                    if (dj or di) and not blocked[a, b] and not target[a, b] and En[a, b] > bed:
+                        En[a, b] = min(En[a, b], bed + (En[a, b] - bed) * .5)
+            En[c] = bed
+    return path, end, over, cut_most
 
 
 def main():
@@ -435,70 +520,58 @@ def main():
     gorges = []
     if OUTLETS:
         bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
-        Sg = np.where(G['whas'], np.fmax(G['wlev'], En), En)
         target = H['sea'].copy()
         ends_in = {}
-        for nm, (x, y) in OUTLETS:
-            j, i = int(round(y * sv)), int(round(x * su))
-            ys, xs = np.nonzero(bl_ > 0)
-            c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
-            m = bl_ == bl_[ys[c], xs[c]]
-            lv = float(np.nanmedian(G['wlev'][m]))
-            dist = np.full(E.shape, np.inf)
-            prev = {}
-            pq = []
-            for a, b in zip(*np.nonzero(m)):
-                dist[a, b] = 0.0
-                pq.append((0.0, a, b))
-            heapq.heapify(pq)
-            end = None
-            while pq:
-                d, a, b = heapq.heappop(pq)
-                if d > dist[a, b]:
-                    continue
-                if target[a, b] and not m[a, b]:
-                    end = (a, b)
-                    break
-                for da in (-1, 0, 1):
-                    for db in (-1, 0, 1):
-                        c_, e_ = a + da, b + db
-                        if (da or db) and 0 <= c_ < E.shape[0] and 0 <= e_ < E.shape[1] and not (G['whas'][c_, e_] and not target[c_, e_] and not m[c_, e_]):
-                            nd_ = d + max(0.0, Sg[c_, e_] - lv) * math.hypot(da, db) + 1.0
-                            if nd_ < dist[c_, e_]:
-                                dist[c_, e_] = nd_
-                                prev[(c_, e_)] = (a, b)
-                                heapq.heappush(pq, (nd_, c_, e_))
-            to = ends_in.get(end, 'Ring Sea')
-            path = [end]
-            while path[-1] in prev:
-                path.append(prev[path[-1]])
-            path = [p_ for p_ in path[::-1] if not m[p_]]
-            # the sill stays at the lake's level: up to the last ground over it the bed falls 1 m a cell from the lake and
-            # a hollow on the way is left to fill as part of the lake; beyond it, the bed follows the land down
-            path = path[:next((n_ for n_, p_ in enumerate(path) if target[p_]), len(path))]
-            ridge = max([n_ for n_, p_ in enumerate(path) if En[p_] > lv] + [-1])
-            bed, cut_most, over = lv - 1.0, 0.0, 0
-            for n_, c in enumerate(path):
-                bed = bed - 1.0 if n_ <= ridge else min(En[c], bed - 1.0)
-                if En[c] - bed > 0.5:
-                    over += 1
-                    cut_most = max(cut_most, En[c] - bed)
-                    for dj in (-1, 0, 1):
-                        for di in (-1, 0, 1):
-                            a, b = c[0] + dj, c[1] + di
-                            if (dj or di) and not G['whas'][a, b] and En[a, b] > bed:
-                                En[a, b] = min(En[a, b], bed + (En[a, b] - bed) * .5)
-                    En[c] = bed
+        for o_ in OUTLETS:
+            nm, (x, y) = o_[0], o_[1]
+            m = body_at(bl_, x, y, su, sv)
+            lv = float(np.nanmedian(G['wlev'][m])) if len(o_) < 4 else float(o_[3])
+            tgt, floor_ = target, None
+            if len(o_) > 2 and isinstance(o_[2], tuple):     # to one lake, ending over its level
+                tgt = body_at(bl_, o_[2][0], o_[2][1], su, sv)
+                floor_ = float(np.nanmedian(G['wlev'][tgt]))
+            elif len(o_) > 2 and o_[2] == 'ocean':
+                sl_, sn_ = nd.label(H['sea'], structure=np.ones((3, 3)))
+                tgt = np.zeros(E.shape, bool)
+                for k_ in range(1, sn_ + 1):
+                    mm_ = sl_ == k_
+                    jj_, ii_ = np.nonzero(mm_)
+                    if jj_.min() == 0 or ii_.min() == 0 or jj_.max() == E.shape[0] - 1 or ii_.max() == E.shape[1] - 1:
+                        tgt |= mm_
+                floor_ = float(np.nanmedian(G['wlev'][tgt]))
+            path, end, over, cut_most = cut_channel(En, m, lv, tgt, G['whas'] & ~tgt & ~m, floor_)
+            if floor_ is not None:
+                # the water it ends in may be drawn over ground higher than the water (the ocean's cell at the NW
+                # gorge's mouth stands on 109 m): that ground would dam the gorge
+                En[end] = min(En[end], floor_ - 1.0)
+            to = ends_in.get(end, 'the lake at px %s' % (list(o_[2]),) if len(o_) > 2 and isinstance(o_[2], tuple) else 'the sea')
             target |= m                                   # a later lake may run to this one
             for c in zip(*np.nonzero(m)):
                 ends_in[c] = nm
             gorges.append({'name': nm + ' outlet', 'from': nm, 'to': to, 'px': [px(*p_) for p_ in path],
                            'bed_m': [round(float(En[p_])) for p_ in path], 'lake_level_m': round(lv)})
-            report['outlets'].append({'lake': nm, 'level_m': round(lv), 'length_km': round(len(path) * KM),
+            report['outlets'].append({'lake': nm, 'level_m': round(lv), 'to': to, 'length_km': round(len(path) * KM),
                                       'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
-            report['outlets'][-1]['to'] = to
-            print('outlet for %s (%d m): %d km to the %s, cut through %d km, at most %d m deep' % (
+            print('outlet for %s (%d m): %d km to %s, cut through %d km, at most %d m deep' % (
                 nm, lv, len(path) * KM, to, over * KM, cut_most))
+    # the breaches (BREACHES): a hollow's floor cut through to the water named
+    for nm, (fx, fy), (tx, ty) in BREACHES:
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        to_m = body_at(bl_, tx, ty, su, sv)
+        j, i = int(round(fy * sv)), int(round(fx * su))
+        win = np.zeros(E.shape, bool)
+        win[max(0, j - 6):j + 7, max(0, i - 6):i + 7] = True
+        floor = np.unravel_index(np.argmin(np.where(win & ~G['whas'], En, np.inf)), E.shape)
+        src = np.zeros(E.shape, bool)
+        src[floor] = True
+        lv = float(En[floor])
+        path, end, over, cut_most = cut_channel(En, src, lv, to_m, G['whas'] & ~to_m)
+        gorges.append({'name': nm, 'from': px(*floor), 'to': px(*end), 'px': [px(*p_) for p_ in path],
+                       'bed_m': [round(float(En[p_])) for p_ in path], 'floor_m': round(lv)})
+        report['outlets'].append({'breach': nm, 'floor_m': round(lv), 'length_km': round(len(path) * KM),
+                                  'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
+        print('breach %s: from the hollow floor at %d m, %d km, cut through %d km, at most %d m deep' % (
+            nm, lv, len(path) * KM, over * KM, cut_most))
     # the lakes resettled where their water stands (SETTLE)
     dried = np.zeros(E.shape, bool)
     settled = np.zeros(E.shape, bool)
@@ -549,6 +622,52 @@ def main():
         G['wlev'] = np.where(settled, settled_lv, np.where(flag, np.nan, G['wlev']))
         G['water'] = G['water'] & ~dried
         H = setup(G)
+    # the closed hollows west of the abyss, cut through to its floor (ABYSS_WEST_KM)
+    report['abyss_breaches'] = []
+    if ABYSS_WEST_KM:
+        ab = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == 'e abysss'), None)
+        if ab is None:
+            sys.exit("no region named 'e abysss'")
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in ab['points']], fill=1)
+        near = nd.binary_dilation(np.array(im).astype(bool), iterations=4)
+        Sa = np.where(G['whas'], np.fmax(G['wlev'], En), En)
+        floor = near & (Sa < -900)
+        dfl = nd.distance_transform_edt(~floor) * KM
+        rows = {j: np.nonzero(floor[j])[0].mean() for j in range(E.shape[0]) if floor[j].any()}
+        Ha = setup(dict(G, E=En))
+        print('finding the closed hollows west of the abyss')
+        ra = hydro.route(Ha['S'], Ha['term'], Ha['R'], Ha['PL'], Ha['lake'], Ha['frozen'], log=lambda *a: None)
+        area_a = hydro.accumulate_area(ra['order'], ra['rec'], np.where(ra['term'], 0.0, KM2))
+        report['abyss_left'] = []
+        for e in ra['ends']:
+            cells = e['cells'] & ~G['whas']
+            if not cells.any():
+                continue
+            j, i = np.argwhere(cells).mean(0)
+            jr = min(rows, key=lambda r: abs(r - j)) if rows else None
+            if jr is None or i >= rows[jr] or dfl[cells].min() > ABYSS_WEST_KM or (Sa[cells] < -900).any():
+                continue
+            # only where a course ends: a river or a dry valley's catchment (A_WADI) reaches the hollow
+            if area_a[nd.binary_dilation(e['cells'], structure=np.ones((3, 3)))].max() < A_WADI:
+                continue
+            src = np.zeros(E.shape, bool)
+            lo = np.unravel_index(np.argmin(np.where(cells, En, np.inf)), E.shape)
+            src[lo] = True
+            trial = En.copy()
+            _, _, _, need = cut_channel(trial, src, float(En[lo]), floor, G['whas'] & ~floor)
+            if need > ABYSS_CUT_M:
+                report['abyss_left'].append({'hollow_px': px(*lo), 'floor_m': round(float(En[lo])), 'cut_needed_m': round(need)})
+                continue
+            path, end, over, cut_most = cut_channel(En, src, float(En[lo]), floor, G['whas'] & ~floor)
+            gorges.append({'name': 'breach to the abyss', 'from': px(*lo), 'to': 'the abyss floor', 'px': [px(*p_) for p_ in path],
+                           'bed_m': [round(float(En[p_])) for p_ in path], 'floor_m': round(float(En[lo]))})
+            report['abyss_breaches'].append({'hollow_px': px(*lo), 'floor_m': round(float(En[lo])), 'km2': round(float(cells.sum() * KM2)),
+                                             'length_km': round(len(path) * KM), 'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
+        if report['abyss_breaches']:
+            b_ = report['abyss_breaches']
+            print('cut %d hollows west of the abyss through to its floor: %d km cut, deepest %d m; %d left (deeper than %d m)' % (
+                len(b_), sum(x['cut_km'] for x in b_), max(x['deepest_cut_m'] for x in b_), len(report['abyss_left']), ABYSS_CUT_M))
     through = np.zeros(E.shape, bool)           # the deep hollows' lakes
     through_lv = np.zeros(E.shape)
     hollows = []
