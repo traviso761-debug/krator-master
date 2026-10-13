@@ -27,6 +27,9 @@ uniform vec2 foam_noise = vec2(0.16, 0.9);
 // c = mix(c, sky, base + grazing * (1 - n.v)^3). A surface WATER.draw draws reflects the WorldEnvironment instead (0, 0)
 uniform vec3 sky_colour = vec3(0.75, 0.8, 0.84);
 uniform vec2 sky_k = vec2(0.0);
+// a page whose own water shader takes no light (look.unlit: sedesert's MAT_WATER): its colour is emitted, not lit; the
+// sun's highlight still comes from the specular term
+uniform bool unlit = false;
 
 varying vec2 v_p0;
 varying vec2 v_p;
@@ -65,7 +68,12 @@ void fragment() {
 		c = mix(c, sky_colour, clamp(sky_k.x + sky_k.y * fr * fr * fr, 0.0, 1.0));
 	}
 	c = mix(c, foam_colour, fk);
-	ALBEDO = k_albedo(c);
+	if (unlit) {
+		ALBEDO = vec3(0.0);
+		EMISSION = c;
+	} else {
+		ALBEDO = k_albedo(c);
+	}
 	ALPHA = a;
 	ROUGHNESS = mix(roughness, 0.85, fk);
 	METALLIC = metal * (1.0 - fk);

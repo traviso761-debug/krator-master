@@ -70,6 +70,7 @@ static func apply(mat: ShaderMaterial, w: KWater, spacing := 2.0) -> void:
 	mat.set_shader_parameter("roughness", float(L.get("roughness", 0.2)))
 	mat.set_shader_parameter("metal", float(L.get("metal", 0.2)))
 	mat.set_shader_parameter("transparent", bool(L.get("transparent", false)))
+	mat.set_shader_parameter("unlit", bool(L.get("unlit", false)))
 	if L.get("sky") is Dictionary:   # the page's own flat sky in its water (a page that draws its water itself)
 		mat.set_shader_parameter("sky_colour", _lin(L["sky"].get("colour", "#bfccd6")))
 		mat.set_shader_parameter("sky_k", Vector2(float(L["sky"].get("base", 0.0)), float(L["sky"].get("grazing", 0.0))))

@@ -103,7 +103,8 @@ func _initialize() -> void:
 	var bed: Texture2D = wm.get_shader_parameter("wtr_bed")
 	var S0: Dictionary = d["water"]["surfaces"][0]
 	ok(int(wm.get_shader_parameter("wtr_n")) == 3 and bool(wm.get_shader_parameter("wtr_has_bed")) and bed.get_width() == int(S0["bed"]["nx"])
-		and is_equal_approx(float(wm.get_shader_parameter("wtr_level")), float(S0["level"])) and bool(wm.get_shader_parameter("transparent")),
+		and is_equal_approx(float(wm.get_shader_parameter("wtr_level")), float(S0["level"])) and bool(wm.get_shader_parameter("transparent"))
+		and bool(wm.get_shader_parameter("unlit")) and is_equal_approx((wm.get_shader_parameter("sky_k") as Vector2).y, 0.62),
 		"its three ripples, its bed (%d x %d texels), its level %.3f m and its look are the shader's uniforms" % [bed.get_width(), bed.get_height(), float(S0["level"])])
 	var pr: Dictionary = wr.get("probes", {})
 	ok(pr.get("points", 0) == 108 and pr.get("max_abs_m", 1.0) < 1e-9,
