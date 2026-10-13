@@ -626,36 +626,63 @@ faWdAnimal(Object.assign({}, FA_WD_LAKE, { dom: false, key: 'lake-diver', name: 
    One hexapod builder, faWdHex: a head, a thorax, an abdomen, six jointed legs (a tripod walk), with options for elytra, a rostrum or mandibles,
    antennae, a jumping hind pair, spade fore-legs, a furred or plated coat, a pattern. Eight animals, each fitted to its country. */
 function faWdHex(A, o) {
-  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'chitin', k = faHiKit(A, S), yb = o.yb, th = o.th, ab = o.ab, R = o.R, Hh = o.Hh, lt = o.lt || 0.03;
+  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'chitin', k = faHiKit(A, S), yb = o.yb, th = o.th, ab = o.ab, R = o.R, Hh = o.Hh, lt = o.lt || 0.03, hb = o.hd;
   const el = (x, y, z, rx, ry, rz, col, op) => A.ellip(fam, x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 12 });
+  const rr = (rows, nt, ns, col, op) => faHjRows(A, fam, rows.map(r => r.map(x => x * S)), nt, ns, col, op);
   const colf = (x, y, z) => { const p = o.pat ? o.pat(x / S, y / S, z / S) : null; return p || mix(c.a, c.d, 0.25 * faNoise(x / S * 9, y / S * 9, z / S * 9)); };
   el(0, yb - ab.dy, -ab.z, ab.w, ab.h, ab.l, null, { seg: 16, colf: colf });
   el(0, yb, 0, th.w, th.h, th.l, null, { seg: 14, colf: colf });
   if (o.elytra) for (const s of [-1, 1]) el(s * th.w * 0.55, yb + th.h * 0.5, -ab.z * 0.55, ab.w * 0.62, ab.h * (o.elytra.h || 0.8), ab.l * (o.elytra.l || 1.05), mix(c.a, c.m || c.a, 0.3), { seg: 12, rz: s * 0.06 });
-  if (o.shellDome) el(0, yb + th.h * 0.2, -ab.z * 0.3, (th.w + ab.w) * 0.55, th.h * 1.1, (th.l + ab.l) * 0.9, null, { seg: 18, colf: colf });
-  const hz = th.l + o.hd.l * 0.7;
-  A.part('head', [0, yb * S, th.l * 0.8 * S], () => {
-    el(0, yb, hz, o.hd.w, o.hd.h, o.hd.l, mix(c.a, c.d, 0.15), { seg: 12 });
+  if (o.shellDome) el(0, yb + th.h * (o.shellDome === true ? 0.2 : o.shellDome), -ab.z * 0.3, (th.w + ab.w) * 0.55, th.h * 1.1, (th.l + ab.l) * 0.9, null, { seg: 18, colf: colf });
+  /* the neck, if long: from the thorax up and forward to the head */
+  const nk = o.neck, hy = yb + (nk ? nk.rise : 0), hz = th.l + (nk ? nk.len : 0) + hb.l * 0.7;
+  if (nk) rr([[0, yb + th.h * 0.3, th.l * 0.5, nk.w * 1.5, nk.w * 1.6], [0, yb + nk.rise * 0.5, th.l + nk.len * 0.35, nk.w * 1.0, nk.w * 1.1], [0, hy, hz - hb.l * 0.9, nk.w * 0.8, nk.w * 0.8]], 12, 12, null, { colf: (t, a) => mix(c.a, c.d, 0.2 + 0.2 * Math.sin(t * 20)) });
+  /* scythes: long curved blades sweeping out, up and back from the shoulders */
+  if (o.scythes) for (const s of [-1, 1]) { const L = o.scythes.len, w = o.scythes.w; rr([[s * th.w * 0.8, yb + th.h * 0.7, th.l * 0.3, 0.03, w * 0.6], [s * (th.w + 0.35 * L), yb + th.h + 0.45 * L, th.l * 0.5, 0.025, w], [s * (th.w + 0.25 * L), yb + th.h + 0.95 * L, th.l * 0.2, 0.02, w * 0.7], [s * (th.w - 0.05 * L), yb + th.h + 1.15 * L, -th.l * 0.5 - 0.2 * L, 0.004, w * 0.1]], 16, 6, mix(c.m || c.d, c.d, 0.4), { round: [0, 0.1] }); }
+  /* clubs: fans of club-ended spines up from the back */
+  if (o.clubs) for (let n = 0; n < o.clubs.n; n++) { const f = (n - (o.clubs.n - 1) / 2) * o.clubs.spread, bz = th.l * 0.2 - n * 0.28 * o.clubs.len * 0.5 - 0.1, base = [0, yb + th.h * 0.8, bz], tip = [0, base[1] + o.clubs.len * Math.cos(f * 0.5), bz - o.clubs.len * Math.sin(f)];
+    k.co(base, tip, 0.1, 0.07, mix(c.a, c.d, 0.3), 6); el(tip[0], tip[1], tip[2], 0.22, 0.32, 0.26, mix(c.a, c.d, 0.4), { seg: 8, rx: 0.3 }); }
+  if (o.tail) A.part('tail', [0, (yb - ab.dy) * S, -ab.z * S], () => rr([[0, yb - ab.dy, -ab.z - ab.l * 0.4, ab.w * 0.7, ab.h * 0.7], [0, yb - ab.dy - o.tail.len * 0.1, -ab.z - ab.l - o.tail.len * 0.45, ab.w * 0.35, ab.h * 0.35], [0, yb - ab.dy - o.tail.len * 0.25, -ab.z - ab.l - o.tail.len, ab.w * 0.04, ab.h * 0.04]], 12, 12, null, { round: [0, 0.2], colf: (t, a) => mix(c.a, c.d, 0.3 * t) }));
+  A.part('head', [0, hy * S, (hz - hb.l) * S], () => {
+    el(0, hy, hz, hb.w, hb.h, hb.l, mix(c.a, c.d, 0.15), { seg: 12 });
     for (const s of [-1, 1]) {
-      el(s * o.hd.w * 0.85, yb + o.hd.h * 0.3, hz + o.hd.l * 0.3, o.hd.w * 0.4, o.hd.h * 0.5, o.hd.w * 0.45, 0x120a06, { seg: 8 });
-      if (o.mand) { k.co([s * o.hd.w * 0.4, yb - o.hd.h * 0.4, hz + o.hd.l * 0.8], [s * o.hd.w * 0.3, yb - o.hd.h * 0.7, hz + o.hd.l * 0.8 + o.mand], o.hd.w * 0.3, o.hd.w * 0.05, c.m || c.d, 5); }
-      if (o.ant) { k.co([s * o.hd.w * 0.3, yb + o.hd.h * 0.6, hz + o.hd.l * 0.6], [s * o.ant * 0.25, yb + o.ant * 0.35, hz + o.ant * 0.55], 0.012, 0.004, c.d, 4); k.co([s * o.ant * 0.25, yb + o.ant * 0.35, hz + o.ant * 0.55], [s * o.ant * 0.5, yb + o.ant * 0.2, hz + o.ant], 0.004, 0.0015, c.d, 4); }
+      el(s * hb.w * 0.85, hy + hb.h * 0.3, hz + hb.l * 0.3, hb.w * 0.4, hb.h * 0.5, hb.w * 0.45, 0x120a06, { seg: 8 });
+      if (o.mand) k.co([s * hb.w * 0.4, hy - hb.h * 0.4, hz + hb.l * 0.8], [s * hb.w * 0.3, hy - hb.h * 0.7, hz + hb.l * 0.8 + o.mand], hb.w * 0.3, hb.w * 0.05, c.m || c.d, 5);
+      if (o.trunks) rr([[s * hb.w * 0.5, hy - hb.h * 0.4, hz + hb.l * 0.7, o.trunks * 0.25, o.trunks * 0.22], [s * hb.w * 0.8, hy - o.trunks, hz + hb.l * 0.9 + o.trunks * 0.4, o.trunks * 0.18, o.trunks * 0.16], [s * hb.w * 0.5, hy - o.trunks * 1.6, hz + hb.l * 0.8 + o.trunks * 0.9, o.trunks * 0.06, o.trunks * 0.06]], 8, 8, mix(c.a, c.d, 0.3), { round: [0, 0.2] });
+      if (o.whisk) for (let q = 0; q < 3; q++) rr([[s * hb.w * 0.3, hy - hb.h * 0.2, hz + hb.l * 0.8, 0.008, 0.008], [s * (hb.w * 0.5 + 0.2 * q), hy - 0.15 - 0.1 * q, hz + hb.l + o.whisk * 0.5, 0.004, 0.004], [s * (hb.w * 0.8 + 0.4 * q), hy - 0.5 - 0.2 * q, hz + hb.l + o.whisk, 0.002, 0.002]], 8, 4, mix(c.m || c.d, c.b || c.d, 0.4), { round: [0, 0.3] });
+      if (o.ant) { k.co([s * hb.w * 0.3, hy + hb.h * 0.6, hz + hb.l * 0.6], [s * o.ant * 0.25, hy + o.ant * 0.35, hz + o.ant * 0.55], 0.012, 0.004, c.d, 4); k.co([s * o.ant * 0.25, hy + o.ant * 0.35, hz + o.ant * 0.55], [s * o.ant * 0.5, hy + o.ant * 0.2, hz + o.ant], 0.004, 0.0015, c.d, 4); }
     }
-    if (o.snout) k.rows([[0, yb - 0.02, hz + o.hd.l * 0.6, o.hd.w * 0.3, o.hd.h * 0.3], [0, yb - o.snout * 0.25, hz + o.hd.l * 0.6 + o.snout * 0.6, o.hd.w * 0.2, o.hd.h * 0.2], [0, yb - o.snout * 0.5, hz + o.hd.l * 0.6 + o.snout, o.hd.w * 0.12, o.hd.h * 0.12]], 8, 8, c.m || c.d, { round: [0, 0.2] });
-    if (o.horn) k.rows([[0, yb + o.hd.h * 0.4, hz + o.hd.l * 0.2, 0.04, 0.04], [0, yb + o.horn * 0.6, hz + o.horn * 0.5, 0.03, 0.03], [0, yb + o.horn, hz + o.horn * 0.3, 0.008, 0.008]], 8, 8, c.m || c.d, { round: [0, 0.2] });
+    if (o.maw) {      /* a great gaping jaw: the lower jaw hung open, teeth along both */
+      el(0, hy - hb.h * 1.2, hz + hb.l * 0.2, hb.w * 0.9, hb.h * 0.45, hb.l * 0.85, mix(c.a, c.d, 0.3), { seg: 12, rx: 0.25 });
+      el(0, hy - hb.h * 0.6, hz + hb.l * 0.3, hb.w * 0.6, hb.h * 0.25, hb.l * 0.7, 0x6a1a1c, { seg: 10 });
+      for (let q = 0; q < 8; q++) { const z = hz - hb.l * 0.2 + q * hb.l * 0.14, x = hb.w * (0.65 - 0.04 * Math.abs(q - 3)); for (const s of [-1, 1]) { k.co([s * x, hy - hb.h * 0.5, z], [s * x, hy - hb.h * 0.5 - o.maw * (q > 5 ? 1.2 : 0.8), z + 0.02], o.maw * 0.18, 0.003, 0xe8e0c8, 4); k.co([s * x * 0.9, hy - hb.h * 0.95, z], [s * x * 0.9, hy - hb.h * 0.95 + o.maw * 0.8, z + 0.02], o.maw * 0.15, 0.003, 0xe8e0c8, 4); } }
+    }
+    if (o.spade) el(0, hy - hb.h * 0.3, hz + hb.l + o.spade * 0.5, hb.w * 0.8, 0.04, o.spade * 0.6, mix(c.a, c.d, 0.2), { seg: 10 });
+    if (o.wedge) rr([[0, hy + hb.h * 0.6, hz - hb.l * 0.3, hb.w * 0.8, 0.02], [0, hy + hb.h * 1.6, hz - hb.l * 1.2, hb.w * 1.2, 0.03], [0, hy + hb.h * 2.6, hz - hb.l * 1.8, hb.w * 1.6, 0.04]], 8, 6, mix(c.a, c.d, 0.3), { round: [0, 0.1] });    /* a swept crest */
+    if (o.snout) k.rows([[0, hy - 0.02, hz + hb.l * 0.6, hb.w * 0.3, hb.h * 0.3], [0, hy - o.snout * 0.25, hz + hb.l * 0.6 + o.snout * 0.6, hb.w * 0.2, hb.h * 0.2], [0, hy - o.snout * 0.5, hz + hb.l * 0.6 + o.snout, hb.w * 0.12, hb.h * 0.12]], 8, 8, c.m || c.d, { round: [0, 0.2] });
+    if (o.horn) k.rows([[0, hy + hb.h * 0.4, hz + hb.l * 0.2, 0.04, 0.04], [0, hy + o.horn * 0.6, hz + o.horn * 0.5, 0.03, 0.03], [0, hy + o.horn, hz + o.horn * 0.3, 0.008, 0.008]], 8, 8, c.m || c.d, { round: [0, 0.2] });
   });
   for (let i = 0; i < 6; i++) {
-    const s = (i & 1) ? -1 : 1, p = i >> 1, z0 = [th.l * 0.6, 0, -th.l * 0.6][p], reach = R * [0.9, 1.0, 0.95][p], hb = o.hindBig && p === 2, dg = o.digger && p === 0;
+    const s = (i & 1) ? -1 : 1, p = i >> 1, z0 = [th.l * 0.6, 0, -th.l * 0.6][p], reach = R * [0.9, 1.0, 0.95][p], hbg = o.hindBig && p === 2, dg = o.digger && p === 0, mid = o.midShort && p === 0;
     const root = [s * th.w * 0.7, yb - th.h * 0.2, z0];
-    const knee = hb ? [s * 0.3 * reach, yb + Hh * 0.9, z0 - 0.35 * reach] : [s * 0.45 * reach, Hh, z0 + [0.25, 0.05, -0.25][p] * reach * 0.6];
-    const foot = hb ? [s * 0.75 * reach, 0, z0 - 0.7 * reach] : [s * reach * (dg ? 0.7 : 0.95), 0, z0 + [0.55, 0.1, -0.5][p] * reach * 0.7];
-    const m = (hb ? 1.8 : 1) * (dg ? 2.4 : 1);
+    const kh = o.knees ? Hh * o.knees : Hh;
+    const knee = hbg ? [s * 0.3 * reach, yb + Hh * 0.9, z0 - 0.35 * reach] : [s * 0.45 * reach, kh, z0 + [0.25, 0.05, -0.25][p] * reach * 0.6];
+    const fy = o.pillar ? 0 : lt * 0.55, foot = hbg ? [s * 0.75 * reach, fy, z0 - 0.7 * reach] : [s * reach * (dg ? 0.7 : 0.95), fy, z0 + [0.55, 0.1, -0.5][p] * reach * 0.7];
+    const m = (hbg ? 1.8 : 1) * (dg ? 2.4 : 1) * (mid ? 0.6 : 1);
     A.part('leg' + i, [root[0] * S, root[1] * S, root[2] * S], () => {
-      k.leg([root, knee, foot], [lt * 1.3 * m, lt * 0.95 * m, lt * 0.45 * (dg ? 2.2 : 1)], mix(c.a, c.d, 0.3), dg ? 0.12 : 0.04);
-      if (dg) for (let d = -1; d <= 1; d++) k.co([foot[0], 0.03, foot[2]], [foot[0] + s * 0.02 * d, 0.0, foot[2] + 0.14], 0.02, 0.004, 0x1a1410, 4);
+      if (o.pillar) {        /* pillar legs: thick, banded with rings, ending in a broad foot */
+        const pts = [root, [knee[0] * 0.9, (root[1] + knee[1]) * 0.45, knee[2]], foot];
+        rr(pts.map((q, n) => [q[0], q[1], q[2], lt * [1.2, 1.0, 0.85][n], lt * [1.2, 1.0, 0.85][n]]), 10, 10, mix(c.a, c.d, 0.2), { round: [0.1, 0.1], colf: (t, a) => mix(c.a, c.d, 0.25 + 0.3 * (Math.sin(t * 38) > 0.5 ? 1 : 0)) });
+        el(foot[0], 0.07, foot[2] + 0.06, lt * 1.3, 0.07, lt * 1.6, mix(c.a, c.d, 0.4), { seg: 8 });
+        for (let d = -1; d <= 1; d++) k.co([foot[0] + d * lt * 0.6, 0.04, foot[2] + lt], [foot[0] + d * lt * 0.7, 0.0, foot[2] + lt * 1.9], lt * 0.35, lt * 0.08, 0x1a1410, 5);
+      } else {
+        k.leg([root, knee, foot], [lt * 1.3 * m, lt * 0.95 * m, lt * 0.45 * (dg ? 2.2 : 1)], mix(c.a, c.d, 0.3), dg ? 0.12 : 0.04);
+        if (dg) for (let d = -1; d <= 1; d++) k.co([foot[0], 0.03, foot[2]], [foot[0] + s * 0.02 * d, 0.0, foot[2] + 0.14], 0.02, 0.004, 0x1a1410, 4);
+        if (o.hook) k.co([foot[0], 0.01, foot[2]], [foot[0], o.hook, foot[2] - o.hook * 0.4], lt * 0.4, lt * 0.05, 0x1a1410, 5);   /* an upturned hook on the toe */
+      }
     });
   }
-  A.anchor('lead', k.Q([0, yb, hz + o.hd.l])); A.anchor('headRoot', k.Q([0, yb, th.l * 0.8])); A.anchor('tailRoot', k.Q([0, yb - ab.dy, -ab.z - ab.l]));
+  A.anchor('lead', k.Q([0, hy, hz + hb.l])); A.anchor('headRoot', k.Q([0, hy, hz - hb.l])); A.anchor('tailRoot', k.Q([0, yb - ab.dy, -ab.z - ab.l]));
 }
 const FA_WD_HX = { legs: 6, gait: { type: 'hexapod', freq: 1.4, stride: 0.4 }, hexs: 1 };
 faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['sedesert', 'eastabyss', 'ebadlands'], koppen: ['BWh', 'BSh', 'BWk'], aridity: ['arid', 'semiarid'], climate: ['tropic', 'temperate'], key: 'dune-runner', name: 'Dune runner', kind: faWdHex, dim: [2.2, 2.4, 1.3], mass: 90, meat: 30, extra: { chitin: { amount: 4, note: 'a long-legged beetle\'s plates: light, pale, sun-reflecting' } }, tags: { diet: 'omnivore', feeding: 'mixed', temperament: 'skittish', activity: 'diurnal', habitat: ['ground'], locomotion: ['walks', 'runs'] },
@@ -690,3 +717,25 @@ faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['ebadlands', 'sedesert', 'crat
   note: 'a furred, spade-handed mole-cricket the size of a badger, tunnelling the badland clay for roots and grubs and surfacing at night; its burrows undermine the scarps', herd: 'alone, a burrow to a digger', life: [1, 6, 100, 30], speed: { walk: 0.6, run: 4 }, flee: 3, aggr: 0.4, gait: { type: 'hexapod', freq: 1.4, stride: 0.3 }, grazePitch: 0.3,
   spec: { fam: 'coat', yb: 0.5, th: { w: 0.26, h: 0.24, l: 0.5 }, ab: { w: 0.24, h: 0.2, l: 0.5, z: 0.5, dy: 0.02 }, hd: { w: 0.13, h: 0.12, l: 0.16 }, ant: 0.4, R: 0.6, Hh: 0.4, lt: 0.035, digger: true },
   variants: [['clay brown', { a: 0x7a5a38, b: 0xa88858, m: 0x4a3418, d: 0x3a2814 }], ['grey', { a: 0x6a6860, b: 0x9a988c, m: 0x3a3830, d: 0x2a2820 }], ['red clay', { a: 0x8a4a30, b: 0xb88868, m: 0x4a2014, d: 0x3a1a10 }]] }));
+
+/* ---------------------------------------------------------------- hexapods after the reference plates (2026-10-13): five large forms */
+faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['crater-drylands', 'sedesert', 'ebadlands'], koppen: ['BSk', 'BWk', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['temperate'], key: 'scytheback', name: 'Scytheback', kind: faWdHex, dim: [6.00, 8.00, 6.11], mass: 6000, meat: 1800, hide: 0, extra: { chitin: { amount: 300, note: 'the scythe-blades and shell plates: the badland smiths\' finest stock, curved blades a man could not lift' } }, tags: { diet: 'omnivore', feeding: 'mixed', temperament: 'defensive', activity: 'diurnal', habitat: ['ground', 'rock'], locomotion: ['walks'] },
+  note: 'a vast, domed, rock-skinned beetle of the badlands and the crater drylands, walking in herds of hundreds on six banded pillar legs, trunk-like mandibles sweeping the ground for lichen and carrion, and two huge curved scythe-blades swept back over the shell, which it uses to rake roots and to fight', herd: 'migrating herds of two hundred, calves under the cows', life: [12, 120, 60, 200], speed: { walk: 0.8, run: 3 }, flee: 20, aggr: 0.4, gait: { type: 'hexapod', freq: 0.5, stride: 1.0 }, grazePitch: 0.5,
+  spec: { yb: 2.2, th: { w: 0.9, h: 0.8, l: 1.0 }, ab: { w: 1.0, h: 0.9, l: 1.3, z: 1.2, dy: 0.1 }, hd: { w: 0.5, h: 0.45, l: 0.55 }, trunks: 0.8, pillar: true, lt: 0.32, R: 1.9, Hh: 1.6, shellDome: 0.45, scythes: { len: 2.8, w: 0.4 }, pat: (x, y, z) => (faNoise(x * 6, y * 6, z * 6) > 0.72 ? 0xa83a6a : (faNoise(x * 3, y * 3, z * 3) > 0.6 ? 0x4a5a3a : null)) },
+  variants: [['slate and moss', { a: 0x6a6a58, b: 0x8a8a74, m: 0x4a4a3a, d: 0x3a3a2e }], ['rust', { a: 0x7a5a3a, b: 0xa08a68, m: 0x5a3a24, d: 0x3a2814 }], ['grey, violet-flecked', { a: 0x6a6870, b: 0x8a8890, m: 0x484650, d: 0x2a2830 }]] }));
+faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['rift', 'ebadlands'], koppen: ['X', 'BSk'], aridity: ['arid'], climate: ['temperate'], key: 'hookstalker', name: 'Hookstalker', kind: faWdHex, dim: [8.0, 8.0, 6.0], mass: 900, meat: 200, tags: { diet: 'carnivore', feeding: 'predator', temperament: 'aggressive', activity: 'crepuscular', habitat: ['ground', 'rock'], locomotion: ['walks', 'runs'] }, sch: 'hunt',
+  note: 'a gaunt, stilt-legged hunter of the open Rift and the badlands, its six angular legs folded high over a small body and ending in long hooked toes; the head is a swept wedge with a ridged crest, and it strides over a herd and hooks a straggler up', herd: 'alone, or a loose pack at a herd', life: [6, 40, 4, 150], speed: { walk: 1.5, run: 12 }, flee: 10, aggr: 0.8, gait: { type: 'hexapod', freq: 0.9, stride: 1.4 }, grazePitch: 0.2,
+  spec: { yb: 3.2, th: { w: 0.32, h: 0.3, l: 0.6 }, ab: { w: 0.38, h: 0.32, l: 0.7, z: 0.6, dy: 0.1 }, hd: { w: 0.26, h: 0.2, l: 0.42 }, wedge: true, hook: 0.55, R: 3.2, Hh: 3.6, lt: 0.1, mand: 0.2, pat: (x, y, z) => (Math.sin(z * 10) > 0.8 ? 0x1c1c1e : null) },
+  variants: [['ash grey', { a: 0x6a6a68, b: 0x8a8a86, m: 0x4a4a48, d: 0x2e2e2c }], ['bone', { a: 0xa8a290, b: 0xc8c2b0, m: 0x7a7462, d: 0x4a4638 }], ['black', { a: 0x2a2a2c, b: 0x4a4a4c, m: 0x1a1a1c, d: 0x0c0c0e }]] }));
+faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['hyperjungle', 'swlowlands'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], key: 'reedneck', name: 'Reedneck', kind: faWdHex, dim: [4.00, 7.95, 7.00], mass: 2500, meat: 900, hide: 0, tags: { diet: 'herbivore', feeding: 'browser', temperament: 'wary', activity: 'diurnal', habitat: ['ground', 'marsh', 'canopy'], locomotion: ['walks'] },
+  note: 'a giant, long-necked hexapod browser of the hyperjungle\'s fern-palm glades, reaching its flat, plated head into the crowns and trailing a spray of whisker-tendrils that feel for the leaves; it wades the shallows and stands on four of its six legs to reach up', herd: 'herds of eight along a river', life: [10, 70, 1, 380], speed: { walk: 1.2, run: 6 }, flee: 25, aggr: 0.1, gait: { type: 'hexapod', freq: 0.6, stride: 1.2 }, grazePitch: 0.1,
+  spec: { yb: 2.3, th: { w: 0.6, h: 0.6, l: 1.0 }, ab: { w: 0.6, h: 0.55, l: 1.1, z: 1.0, dy: 0.1 }, neck: { len: 1.2, rise: 2.8, w: 0.22 }, hd: { w: 0.22, h: 0.17, l: 0.5 }, whisk: 1.2, tail: { len: 1.4 }, R: 1.6, Hh: 1.5, lt: 0.14, midShort: true },
+  variants: [['olive', { a: 0x6a6a28, b: 0x9a9a5a, m: 0x4a4a1a, d: 0x2a3a1a }], ['ochre', { a: 0x9a7a30, b: 0xc0a058, m: 0x6a5018, d: 0x3a2c10 }], ['teal', { a: 0x3a6a62, b: 0x6a9a8a, m: 0x244a42, d: 0x12302a }]] }));
+faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['rift', 'throne'], koppen: ['X', 'H'], aridity: ['arid', 'semiarid'], climate: ['temperate'], key: 'gapemaw', name: 'Gapemaw', kind: faWdHex, dim: [4.5, 7.0, 4.0], mass: 3500, meat: 0, tags: { diet: 'carnivore', feeding: 'predator', temperament: 'aggressive', activity: 'cathemeral', habitat: ['ground', 'rock'], locomotion: ['walks', 'runs'] }, sch: 'hunt',
+  note: 'a bulky, pale, red-striped hexapod predator of the Rift\'s spore-forests, built round a vast hinged maw lined with white teeth; it ambushes among the giant lace-caps and swallows a stalker whole', herd: 'alone', life: [8, 50, 2, 200], speed: { walk: 1.0, run: 9 }, flee: 3, aggr: 0.9, gait: { type: 'hexapod', freq: 0.8, stride: 0.9 }, grazePitch: 0.3,
+  spec: { yb: 1.6, th: { w: 0.9, h: 0.8, l: 1.0 }, ab: { w: 0.9, h: 0.75, l: 1.2, z: 1.1, dy: 0.05 }, hd: { w: 0.62, h: 0.5, l: 0.7 }, maw: 0.22, pillar: true, lt: 0.3, R: 1.4, Hh: 1.1, tail: { len: 1.0 }, pat: (x, y, z) => (Math.sin(z * 7 + y * 3) > 0.62 ? 0xb83a46 : null) },
+  variants: [['white, red-striped', { a: 0xe0d8d4, b: 0xf0e8e4, m: 0xc8b8b4, d: 0x9a8a88 }], ['grey, blood-striped', { a: 0xa8a4a4, b: 0xc8c4c4, m: 0x8a8484, d: 0x5a5454 }], ['bone and violet', { a: 0xd8d0c4, b: 0xe8e0d4, m: 0xb0a8c0, d: 0x8a809a }]] }));
+faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['crater-drylands', 'ebadlands', 'xanadu'], koppen: ['BSk', 'BWk', 'ET'], aridity: ['arid', 'semiarid'], climate: ['temperate', 'cold'], key: 'clubback', name: 'Clubback', kind: faWdHex, dim: [4.5, 8.0, 6.0], mass: 4500, meat: 1500, tags: { diet: 'herbivore', feeding: 'browser', temperament: 'docile', activity: 'diurnal', habitat: ['ground', 'rock'], locomotion: ['walks'] },
+  note: 'a heavy, brown, smooth-skinned hexapod of the red deserts with a fan of club-ended spines on its back, which it flushes and rattles to display and to shed heat, a spade-shaped snout for rooting the hard desert shrubs, and thick pillar legs', herd: 'small groups of six, a bull with his cows', life: [12, 90, 1, 380], speed: { walk: 0.9, run: 4 }, flee: 15, aggr: 0.2, gait: { type: 'hexapod', freq: 0.6, stride: 1.0 }, grazePitch: 0.6,
+  spec: { yb: 1.9, th: { w: 0.7, h: 0.7, l: 1.0 }, ab: { w: 0.7, h: 0.65, l: 1.3, z: 1.1, dy: 0.1 }, hd: { w: 0.36, h: 0.3, l: 0.5 }, spade: 0.9, clubs: { n: 4, len: 1.9, spread: 0.35 }, pillar: true, lt: 0.26, R: 1.4, Hh: 1.2, tail: { len: 1.7 } },
+  variants: [['brown', { a: 0x6a4030, b: 0x8a5a44, m: 0x4a2a1c, d: 0x2e1a10 }], ['red-brown', { a: 0x8a4a30, b: 0xa86a4c, m: 0x5a2a1a, d: 0x3a1a10 }], ['dun', { a: 0x8a7a60, b: 0xaa9a80, m: 0x5a4a34, d: 0x3a2e1c }]] }));
