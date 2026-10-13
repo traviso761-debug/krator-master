@@ -139,7 +139,7 @@
   "meshes": 60,
   "ready": true,
   "sceneTris": 12704728,
-  "seconds": 398,
+  "seconds": 250,
   "tris": 12704796
  },
  "biomes/shighlands/dist/shighlands.html": {
@@ -1492,14 +1492,46 @@
   "seconds": 908
  },
  "settlements/iziz/dist/iziz-vernacular.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 908
+  "calls": 61,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 124,
+  "instances": 17025,
+  "lodOff": {
+   "calls": 128,
+   "tris": 426276
+  },
+  "lodOn": {
+   "calls": 61,
+   "tris": 242980
+  },
+  "materials": 135,
+  "meshes": 167,
+  "ready": true,
+  "sceneTris": 460782,
+  "seconds": 190,
+  "tris": 242980
  },
  "settlements/iziz/dist/iziz.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 901
+  "calls": 858,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 342,
+  "instances": 232247,
+  "lodOff": {
+   "calls": 889,
+   "tris": 6727306
+  },
+  "lodOn": {
+   "calls": 858,
+   "tris": 4530976
+  },
+  "materials": 359,
+  "meshes": 930,
+  "ready": true,
+  "sceneTris": 6734840,
+  "seconds": 267,
+  "tris": 4957502
  },
  "settlements/iziz/dist/w-a.html": {
   "calls": 71,
@@ -1519,7 +1551,7 @@
   "meshes": 73,
   "ready": true,
   "sceneTris": 60154,
-  "seconds": 15,
+  "seconds": 20,
   "tris": 54152
  },
  "settlements/iziz/dist/w-b.html": {
@@ -1540,7 +1572,7 @@
   "meshes": 49,
   "ready": true,
   "sceneTris": 48436,
-  "seconds": 20,
+  "seconds": 17,
   "tris": 46156
  },
  "settlements/iziz/dist/w-c.html": {

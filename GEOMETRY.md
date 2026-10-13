@@ -96,8 +96,8 @@
 | `settlements/girder/girder.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/highlands/dist/highlands.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/highlands/dist/roketstad.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/iziz/dist/iziz-vernacular.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/iziz/dist/iziz.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/iziz/dist/iziz-vernacular.html` | 61 | 243 k | 128 / 426 k | 61 / 243 k | 461 k |  | 167 | 124 | 17 k | 135 |
+| `settlements/iziz/dist/iziz.html` | 858 | 4.96 M | 889 / 6.73 M | 858 / 4.53 M | 6.73 M |  | 930 | 342 | 232 k | 359 |
 | `settlements/iziz/dist/w-a.html` | 71 | 54 k | 73 / 60 k | 71 / 54 k | 60 k |  | 73 | 50 | 2425 | 54 |
 | `settlements/iziz/dist/w-b.html` | 49 | 46 k | 49 / 48 k | 49 / 46 k | 48 k |  | 49 | 45 | 1458 | 49 |
 | `settlements/iziz/dist/w-c.html` | 83 | 241 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
