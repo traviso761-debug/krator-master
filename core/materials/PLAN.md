@@ -480,6 +480,14 @@ Iziz, from its palette:
 | `patterns/iziz/banner` | Flat, front-on decorative panel of hand-woven banner cloth with a visible plain weave, slightly faded and uneven dye. Ground of Iziz orange (#e07a2a) with a large cream (#f1dba6) device repeated in a half-drop grid: a ring with a vertical bar and a short horizontal bar crossing it, each device framed by a thin deep red (#9c2d2d) border line. Teal (#2f8f8a) stripes run along the top and bottom of each cell. The pattern repeats in both directions. Full colour. |
 | `patterns/iziz/gilt` | Flat, front-on decorative panel of gilt work: hammered gold leaf (#d0a53c, darker #8a6a2a in the recesses and #e4c46a on the raised edges) laid over dark brown (#5a4632) timber, in a repeating ornament of a row of small round bosses between double fillets, with a ring-and-cross rosette motif between them. Slightly worn so the brown shows at the edges. The pattern repeats horizontally. Full colour. |
 
+Iziz, owed by the second pilot (2026-10-13; `settlements/iziz/KNOWN_ISSUES.md`, "The second material pilot and M5": the
+two surfaces that stay as they were because no set fits; base template first, with the tintable sentence):
+
+| id | Material line |
+|---|---|
+| `metal.bronze.cast` (new id, Iziz, neutral) | Cast bronze surface of a large outdoor statue: smooth cast metal with very fine casting porosity and a soft hammer-dressed undulation, a thin warm brown patina with small mottled patches of pale green verdigris gathered in the hollows; no seams, rivets, panels, letters or edges, isotropic with no direction. For the heroic statues and the embassy's gilt and brass (`metal.bronze` is a riveted panel). |
+| `concrete.rust.streaked` (new id, Iziz, neutral) | Weathered poured concrete stained by rust: smooth grey board-formed concrete with faint horizontal formwork lines and small round tie holes, long vertical rust-brown streaks and drips running down from small rusted bolts near the top edge, water stains and a little grime in the board joints. For `MAT.concRust`, the rust-streaked skyscraper skin. |
+
 Voth, owner-written:
 
 | id | Material line |

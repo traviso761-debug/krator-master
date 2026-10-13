@@ -406,6 +406,21 @@ Not yet: Iziz as the second material pilot (the other half of stage 2e); records
 (its pilot is Voth's, the Voth branch's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
 `detail_*`); bark variants as a texture array; pre-compiling the library at load.
 
+*Status 2026-10-13 (ROADMAP.md stage 2e, the pilot half): **Iziz is the second pilot.*** Its vernacular, the Ancients MAT
+and the Voth embassy were on the library since 2026-10-06; now the city's own materials too, as `city*` families of
+`settlements/iziz/materials.json` bound through an alias table in `src/88y-iziz-matlib.js` (Verge, which packs Iziz's
+families, leaves them out): the painting's walls, towers, gates and palace on `stone.cut.b` (the scan-style ashlar of
+the Iziz delivery; `stone.cut` already serves the vernacular stone), its rock on `rock.rock_face`, the hills' escarpments
+on `rock.sandstone`, every rust on `metal.rust.fine` (the isotropic rust the plate rusts could not be), the Ancient Iziz
+style's planks and skins on the existing wood, white and concrete families. The other city sets the plan lists are in
+use: `plaster` (the vernacular), `roof.tile` (the embassy), `brick` as `brick.red` (the Ancients MAT), `earth.banco` for
+the banco (`earth.adobe` has no Iziz surface of its own), the paving as `concrete.ancient.b`. Every material is a KMAT
+record naming its library hook (`world-uv`, `breakup`, `glass`). Two
+surfaces have no good library texture and stay as they were, with prompts written for the owner
+(`settlements/iziz/KNOWN_ISSUES.md`): a cast statue bronze (`metal.bronze.cast`) and a rust-streaked concrete
+(`concrete.rust.streaked`). `verify --assert` unchanged; screenshots in that file. Not yet: a ground detail layer for
+Iziz's painted streets; lib/glass wired into the library shader.
+
 **Content and status: `core/materials/PLAN.md`.** That file holds the library itself: about 45 shared PBR
 surfaces tinted per culture, culture pattern sheets, where each comes from (scan libraries, generated
 images, procedural), the generation prompts, and the processing script `tools/textures/process.py`. Status

@@ -214,7 +214,9 @@ def main():
     import matlib_pack
     izp = os.path.join(ROOT, 'settlements', 'iziz')
     izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
-    frags['46-matlib-pack-iziz.js'] = (matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith('fauna')], side=SIDE),
+    # not the fauna sheets, and not the families of Iziz's city (names starting 'city': its walls, rock, escarpments and rust,
+    # which Verge does not draw; settlements/iziz/src/88y-iziz-matlib.js binds them through an alias)
+    frags['46-matlib-pack-iziz.js'] = (matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=SIDE),
                                        'GENERATED: settlements/iziz/tex (maps in verge.tex.js)')
     frags['46-matlib-pack-locus.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus', side=SIDE),
                                         'GENERATED: settlements/locus/tex (maps in verge.tex.js)')

@@ -382,6 +382,7 @@ cityTerrainMesh();   // now: every plot is levelled
 })();
 // ---------------------------------------------------------------- 8. bakes and labels
 if(AWNINGS.length){const byC={};for(const w of AWNINGS)(byC[w.c]||(byC[w.c]=[])).push(w.g);for(const c in byC){const m=MAT.cloth.clone();m.onBeforeCompile=MAT.cloth.onBeforeCompile;m.color=vC(+c);meshMerged(byC[c],m,scene);}}
+if(typeof izizMatlibLate==="function")izizMatlibLate();   // the library on the city's late materials (88y), before kbake clones them
 kbake(scene);TRANS.bake(scene);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-BUILD_T0);window._occ=OCC.list.length;
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);

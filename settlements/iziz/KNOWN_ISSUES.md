@@ -27,8 +27,10 @@ saying what fixed it.
       reads both as LF and `--vendor-bio` wraps before opening the copy. Re-vendored: the hyperjungle's harvest data, its
       single-tree `make`/`grow`, the pandan keys, and its limbs and dead wood bound to the library's bark (`limb`, `wood`).
       `--help` still runs a full build.
-- [ ] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
+- [x] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
       patterns/iziz/mosaic-b, glass.frosted.b; PLAN.md) but Iziz has not adopted the library; its materials are still the procedural ones.
+      **Adopted 2026-10-13** (the second material pilot, below): the vernacular, the Ancients MAT and the embassy were bound since 2026-10-06;
+      now the city's own materials too (stone.cut.b on the painting's walls; see "The second material pilot and M5").
 
 ## Vernacular set (round 1)
 - [x] Windows on the battered stone ground storey (Stone manor) sit on the face at
@@ -277,5 +279,50 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
 - [ ] (2026-10-06) The vernacular takes the material library (materials.json; src/88y-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient MAT is bound too (but rust; see below); the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+      2026-10-13: `rust` (and 77z's scrap and rustified panels) takes `metal.rust.fine` (family cityRust, through IZIZ_MATALIAS), the
+      isotropic rust PROMPTS-ready.md asked for: it has no plate or streak direction, so a stretched UV leaves no stripes.
 - [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
       vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
+
+## The second material pilot and M5 (2026-10-13; ROADMAP.md stages 2d and 2e)
+
+`verify.py dist/iziz.html --assert` before and after: the same six asserts with the same numbers (766 volumes, 7,288,255
+scene triangles, 858 calls, 760 registered volumes, 122,908 baked instances); only the LOD streaming count at the South
+gate shot moved (4.83 M to 4.81 M managed triangles). The city page grew from 21.0 to 24.6 MB (the four new families'
+maps, base64); it was already over the gallery's 16 MB a file.
+
+- [ ] **The city's own materials take the library** (src/88y-iziz-matlib.js, materials.json families `city*`): the painting's
+      walls, towers, gates and palace (izWall, izWallDark, izCap, izSand) `stone.cut.b` at their 4 m world-UV tile (contrast 2:
+      at 1.0 the courses vanished at the South gate's distance); izRock `rock.rock_face`; the hills' escarpments (90a's izEsc)
+      `rock.sandstone`; MAT.rust, 77z's scrap and the rustified panels `metal.rust.fine` (tinted to the procedural rust's mean,
+      #7b6353); the Ancient Iziz style's planks, sand panels and concrete skins and 79's izConcOrange the existing wood, white
+      and concrete families. Means measured from the maps they replace (TEX.stone 0.691, TEX.concrete 0.703, TEX.rust 0.402;
+      the strata set by eye at 0.62).
+      Looked at: the opening view reads the same; at the South gate the towers and wall read with a finer, slightly flatter
+      grain than the procedural noise (the courses show); close at the palace's grand entrance a wall that drew flat now
+      shows its ashlar. An escarpment close (the palace hill's, verify --cam 365,38,-120,305,36,-130) reads as layered rock
+      where it read as a board grid, a little greyer and cooler than the procedural tan (first packed at contrast 1.3 and
+      the concrete's mean it read near white; now mean 0.62, normal scale 0.6). `?mat=proc`
+      shows the old look. Verge leaves the `city*` families out of its copy of the pack (its build.py), so its page is unchanged.
+- [ ] **Two surfaces have no good library texture** (the owner sources them; prompts in core/materials/PLAN.md's template,
+      base text first, then the material line):
+      `metal.bronze.cast` for the heroic statues (izBronze, izBronzeCyl, izBronzeD on MAT.bronze, bronzeDark) and the embassy's
+      vpGilt and vpBrass, which stay plain metal: `metal.bronze` is a riveted, seamed verdigris panel, wrong on a cast figure,
+      and the statues' kit UVs stretch with each instance's scale. Material line: "Cast bronze surface of a large outdoor
+      statue: smooth cast metal with very fine casting porosity and a soft hammer-dressed undulation, a thin warm brown patina
+      with small mottled patches of pale green verdigris gathered in the hollows; no seams, rivets, panels, letters or edges,
+      isotropic with no direction. Keep colours natural but slightly muted and even, so the texture can be tinted to
+      different palettes without looking stained."
+      `concrete.rust.streaked` for MAT.concRust (the rust-streaked skyscraper skin, 112k triangles), which stays procedural:
+      no library concrete carries the streaks. Material line: "Weathered poured concrete stained by rust: smooth grey
+      board-formed concrete with faint horizontal formwork lines and small round tie holes, long vertical rust-brown streaks
+      and drips running down from small rusted bolts near the top edge, water stains and a little grime in the board joints.
+      Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking
+      stained."
+- [ ] The painted ground stays the 4 m painted canvas at eye level: the library has the street sets (`ground.road.ruts`,
+      `paving.*`), but Iziz's ground shader has no detail layer to take them (a ground-layer hook weighted by the road mask,
+      core/export's `EXPORT.groundLayers`, is the shape). Not a texture gap.
+- [ ] A world-UV material (vWorldUV, core/materials/opt/69a-world-uv.js) replaces three's uv transform, so a bound map's
+      `repeat` never applies to it: an instance tiles at 1/K m whatever materials.json's `scale` says, a plain mesh at its
+      own UVs. The `city*` families take scale = 1/K so the two agree; the 2026-10-06 families (stone at 2 m with K 0.25,
+      wood at 2 x 1.7 m with K 0.5) do not, and the export records what the page draws (`worldUV: {K}`, repeat 1).

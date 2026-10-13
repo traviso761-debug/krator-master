@@ -294,6 +294,12 @@ and the cross-build report.
   `tests/shaders/library_test.gd` checks the wiring. Open: Iziz (the pilot half); a record that selects `cloth-sway`,
   `flag`, `glass` or `coursing` on an exported mesh; the other biome hosts' ground layers (one `groundLayers` call each)
   and their water (sedesert's river and cataract too: flow and fall are core/water's phase 3); the strata on rock.
+  *The pilot half done 2026-10-13* (GODOT-PLAN.md Phase 3; `settlements/iziz/KNOWN_ISSUES.md`): Iziz's own city
+  materials join the vernacular, Ancients and embassy ones on the library, as `city*` families bound through an alias
+  (`stone.cut.b` on the painting's walls and towers, `rock.rock_face` on its rock, `rock.sandstone` on the escarpments,
+  `metal.rust.fine` on every rust, the planks and skins on existing families); every material is a KMAT record naming its
+  hook. `verify --assert` unchanged. Two gaps with prompts for the owner: a cast statue bronze, a rust-streaked
+  concrete. Open: lib/glass in the library shader, a ground detail layer for Iziz's painted streets.
 
 ### Stage 3: the host shell, narrowed (the plan's Phase 1, after stage 0b made it smaller)
 
@@ -353,7 +359,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5. *The re-vendor
    session done 2026-10-13* (the chain's `--vendor-check` shows only recorded ADAPTED drift; `verify --assert` unchanged); Ys's passes next.
 9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half). *The shader
-   library done 2026-10-13* (with core/export's `water` section and sedesert's ground layers); Iziz next.
+   library done 2026-10-13* (with core/export's `water` section and sedesert's ground layers); *Iziz done 2026-10-13*
+   (its city materials on the library, every record naming its hook).
 10. **The host shell, narrowed** (`TODO.md` item 9; stage 3).
 11. **The Godot project graduates; the round-trip test; the streamer** (stage 4).
 12. **Verge then Voth onto `core/simulation`; M6** (stage 5).

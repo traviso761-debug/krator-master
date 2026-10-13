@@ -76,7 +76,7 @@ GATES.forEach((g,i)=>{izGate(scene,g,wallR(g),CITY.PLATEAU,i);const R=wallR(g);B
 // as a flat ring on a smooth slope.) A ring surface laid on the face, 2 m cells, pushed out and in by two noise octaves
 // into buttresses and crags, lifted a little off the terrain, its board-formed texture running along the contours as
 // strata; cut where the ramp climbs.
-{const ESC=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x9a8670,roughness:.97,metalness:0,side:THREE.DoubleSide});
+{const ESC=MAT.izEsc=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x9a8670,roughness:.97,metalness:0,side:THREE.DoubleSide});   // MAT.izEsc: the library binds it (88y, izizMatlibLate)
  for(const k of HILLKEYS){const H=HILL[k],rm=H.r0+H.E/2,nu=Math.round(TAU*rm/2.2),nv=Math.max(10,Math.round((H.E+4)/2));
   const geo=gridSurface((u,v)=>{const a=u*TAU,r=H.r0-1+v*(H.E+4),bump=Math.sin(Math.PI*v);const n=fbm(a*9+H.x*.01,v*3,7.3,3),cr=fbm(a*33,v*8,5.1,2);
     const dr=((n-.5)*5+(cr-.5)*2.4)*bump,R=r+dr;const x=H.x+R*Math.cos(a),z=H.z+R*Math.sin(a);
