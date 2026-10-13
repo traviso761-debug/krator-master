@@ -79,6 +79,13 @@ ITEMS = {
                     ('feet', 'Yuni babouches', 'yuni_m_trade_slippers'), ('head', 'Yuni kufi', 'yuni_m_trade_kufi'),
                     ('torso', 'Yuni mosaic gown', 'yuni_m_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_m_noble_slippers'),
                     ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid'),
+                    # the Iron Republic, also from tools/make_garments.py
+                    ('torso', 'Republic kosovorotka', 'rep_m_peasant_shirt'), ('legs', 'Republic work trousers', 'rep_m_peasant_trousers'),
+                    ('feet', 'Republic felt boots', 'rep_m_valenki'), ('head', 'Republic felt cap', 'rep_m_peasant_cap'),
+                    ('torso', 'Republic guild jacket', 'rep_m_trade_jacket'), ('legs', 'Republic breeches', 'rep_m_trade_breeches'),
+                    ('feet', 'Republic work boots', 'rep_m_trade_boots'), ('head', 'Republic ushanka', 'rep_m_trade_ushanka'),
+                    ('torso', 'Republic greatcoat', 'rep_m_noble_greatcoat'), ('legs', 'Republic cream breeches', 'rep_m_noble_breeches'),
+                    ('feet', 'Republic riding boots', 'rep_m_noble_boots'), ('head', 'Republic papakha', 'rep_m_noble_papakha'),
                     # the Giants' own (tools/giant.py: worn only by the giant, made on the man's body): the Free
                     # Giants' Gaulish clothes and the temple guard's harness, four-armed tops among them
                     ('torso', 'Free Giant tunic', 'giant_free_m_tunic'), ('torso', 'Free Giant tunic, four sleeves', 'giant_free_m_tunic4'),
@@ -151,7 +158,14 @@ ITEMS = {
                     ('torso', 'Yuni grand boubou', 'yuni_f_trade_boubou'), ('legs', 'Yuni under-trousers', 'yuni_f_trade_trousers'),
                     ('feet', 'Yuni babouches', 'yuni_f_trade_slippers'), ('head', 'Yuni gele', 'yuni_f_trade_gele'),
                     ('torso', 'Yuni mosaic gown', 'yuni_f_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_f_noble_slippers'),
-                    ('head', 'Yuni hyperboloid hat', 'yuni_f_noble_hyperboloid')]},
+                    ('head', 'Yuni hyperboloid hat', 'yuni_f_noble_hyperboloid'),
+                    # the Iron Republic, also from tools/make_garments.py
+                    ('torso', 'Republic sarafan', 'rep_f_peasant_sarafan'), ('feet', 'Republic felt boots', 'rep_f_valenki'),
+                    ('head', 'Republic headscarf', 'rep_f_peasant_platok'),
+                    ('torso', 'Republic Saxon coat', 'rep_f_trade_coat'), ('legs', 'Republic black skirt', 'rep_f_trade_skirt'),
+                    ('feet', 'Republic work boots', 'rep_f_trade_boots'), ('head', 'Republic Borten', 'rep_f_trade_borten'),
+                    ('torso', 'Republic velvet gown', 'rep_f_noble_gown'), ('feet', 'Republic red boots', 'rep_f_noble_boots'),
+                    ('head', 'Republic kokoshnik', 'rep_f_noble_kokoshnik')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -193,8 +207,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni, the Giants) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_', 'giant_'))
+            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni, the Giants, the Republic) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_', 'giant_', 'rep_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

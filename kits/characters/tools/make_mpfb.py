@@ -871,7 +871,7 @@ COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 
                'dalab_m_trade_cap', 'dalab_f_trade_cap', 'dalab_m_noble_mitre', 'dalab_f_noble_mitre', 'yuni_m_peasant_hat', 'yuni_f_peasant_wrap',
                'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
-CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
+CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'rep_': 'iron_republic', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
            'yuni_': 'yuni'}
 
 

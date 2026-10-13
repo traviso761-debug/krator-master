@@ -157,6 +157,22 @@ Yuni is Sahelian, with Gaudi and Burmecia for the families:
 - **The families:** a gown banded in trencadis mosaic, a scalloped mosaic collar, bell sleeves, silk babouches, and the
   hyperboloid of Yuni as a hat.
 
+**Iron Republic clothing** (`rep_*`, `iron_republic`). Highland Russian and Transylvanian Saxon over a salvage
+culture (LORE.md 6.3), in the Republic's deep red, ochre and cream:
+- **Commoners:** a linen kosovorotka worked in red cross-stitch at the collar, front, cuffs and hem, a red sash, grey
+  work trousers, felt boots (valenki) and a felt cap with a fur band; for women a red sarafan with a cross-stitched
+  front and a rosette hem over a linen blouse with full sleeves, a black apron, a red headscarf.
+- **Guildsfolk** (Salvagers, Smiths, Mechanics, Rocketeers): a padded ochre jacket in diamond quilting with iron
+  salvage plates on the shoulders, a leather apron, a belt and pouches, breeches, tall work boots, an ushanka; for
+  women the long belted Saxon coat in red with ochre facings, a black skirt with a rosette band, and the Borten, the
+  Saxon girl's tall black velvet cylinder with red and ochre ribbons hanging behind.
+- **The Hall of the Republic:** a red greatcoat frogged in ochre down the front, a row of triskelions (the Republic's
+  sword-arms) at the hem and cuffs, ochre epaulettes, a cream sash, cream breeches, riding boots and a dark fur
+  papakha with a red crown; for women a red velvet gown with a cross-stitched front and a triskelion hem, a cream
+  lace collar, a fur-edged black cape and the kokoshnik.
+Motifs added for them: `cross` (Slavic cross-stitch), `rose` (a Saxon rosette), `triskele`, `frog` (frogging),
+`quilt`.
+
 Shapes added for them: `tower_hat` (a hat that rises from a band fitted to the head with any profile: the mitre, the
 hyperboloid), `eye_disc`, `armbands`; motifs `trencadis`, `bogolan`, `eye`.
 
@@ -311,7 +327,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
-| `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |
