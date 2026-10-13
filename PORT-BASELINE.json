@@ -1,60 +1,60 @@
 {
  "pages": {
   "biomes/crater-drylands/dist/crater-drylands.html": {
-   "bytes": 3599120,
-   "sha256": "6b9da3184cfd9e2cd023f71d635c00fd6e5d2bdda72607c75a2327a6092ded54"
+   "bytes": 3610284,
+   "sha256": "0c8ebc9a5fd1cd1c736abe6afe786e30d7ea7b8f720f653593f170043c69a89e"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 6630357,
-   "sha256": "d926544cfae1d2878f42a51489955b88971c910df4f739af7872ed646a42bece"
+   "bytes": 6641521,
+   "sha256": "79c3921232948e54b54cf7831ad22e5047b2de74462e10b8bc74f844b24e68a8"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
-   "bytes": 4249170,
-   "sha256": "98dd06ef4c1e202fbde9274699d726e476f7c6d63a59efb7a897c9c72d244f8d"
+   "bytes": 4260334,
+   "sha256": "3672e75fbc990c7b0e9cfc3edd5d1f85172faa828b4787b995f22c13fd471fce"
   },
   "biomes/ehighlands/dist/ehighlands.html": {
-   "bytes": 1704301,
-   "sha256": "40505f2d2a0db280d0739327669d1e0a46bbebb769564db515afa96af9f8bb84"
+   "bytes": 1715465,
+   "sha256": "870bad9c9e2cd1ab1b7fde1e9f74548f2c1c683da719aa44d4c333ea6130b43f"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 586855,
-   "sha256": "15327c2a0be6802cd92619c3cf5f64197246fac6c5d38907718c46b4b7859c92"
+   "bytes": 598019,
+   "sha256": "8695c07f234e3610b41e14f2bd5c3e9bd2895175c82a2791d5a6f394ccd27782"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 4368133,
-   "sha256": "7b882505d2142395609213afdb96e72e982cb86f29b5fb037f1f1154eaf5609d"
+   "bytes": 4379297,
+   "sha256": "89d93e3043ba69a6d603073a459c2e4799994e117c878ecf903f9bcb96acf4de"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 6124787,
-   "sha256": "8bef7f04b9b13f58814fd9c9cdfba9fb6e67db7a761ec2c552c5e09a54b37703"
+   "bytes": 6135951,
+   "sha256": "993c2e314d368202fadc922530fe7d4c46e9c084bc3520679f941c6f343f5d1b"
   },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 7367825,
-   "sha256": "f9a92dd6b4d2800b54e897077dea5526a5207ebb346aa50aa23e8c09df6c19c9"
+   "bytes": 7378989,
+   "sha256": "e572e731a11419afbefa9376c996b65ad98cc8e12b8008e6316f0015f6f6f855"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 6277082,
-   "sha256": "b08e900892109014a8f88a9939dcf2bfb83a9b43f4cd40e9494c5382408b0768"
+   "bytes": 6288246,
+   "sha256": "6e8100328f6302ac219612ea8b39c4a0c79fafb4310082bbf119c92c8ca88b43"
   },
   "biomes/rift/dist/rift.html": {
-   "bytes": 6290984,
-   "sha256": "28e42c9f687505963d0527e8d989962cc7a0874a0015fc2dd0d7564d123e0776"
+   "bytes": 6302148,
+   "sha256": "30b0fdcb2c9f5f26939ed74ea0dd83ee758e03caf9ad0e50dbcea1c030f782a7"
   },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 4703992,
-   "sha256": "27944ce19e0daf66f9500c57f881eb08208189d3f6a0a46716a7410e6ff75b77"
+   "bytes": 4734009,
+   "sha256": "4ef11b69bcaff25189da7ffafb39e68543ee98af1620d0f37203e1e58c6a9324"
   },
   "biomes/shighlands/dist/shighlands.html": {
-   "bytes": 1655771,
-   "sha256": "04bfc7583cba04712a452137cc83f1311aa657e6979ad19d0536b8b1509780e2"
+   "bytes": 1666935,
+   "sha256": "b9ff91a917a0e0717f1776bbfc968a633dc0b014ecef5ca48b20162a1c1034bf"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 6239685,
-   "sha256": "8acd3b94b9630643134dc16bb1a4212831c9883b631084f8511018a2391632ed"
+   "bytes": 6250849,
+   "sha256": "e9d73b9479003ac16af99de46fadf8a0a817e23b8b69ab5b8f0bba46cdb787df"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 6220577,
-   "sha256": "52e84bc23e1effd322777d40deddbdfbaf9611a15700359835802fb95166502c"
+   "bytes": 6231741,
+   "sha256": "17ee6d701788939cf378eb479d4601f61763016ac0f0b8726b8d7d52a93ba5b6"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 463064,
@@ -101,8 +101,8 @@
    "sha256": "631fd7e2e9526982182d6dc515a8def1cb3a48ccd316c1299a50476cae2eace0"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 5210986,
-   "sha256": "32181ed59b538d0a23e8fdfcdf64acee75ce2966d3fc1311721a03c186ba03d5"
+   "bytes": 5222150,
+   "sha256": "f3797e5cd7898f42b6367f2514ef8644584c28076c694bdb11ba2b7ddcc209ce"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 179086,
