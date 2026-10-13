@@ -340,11 +340,16 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 
 ### Stage 5: the simulation (Phase 5; `core/simulation/PLAN.md` owns it)
 
-- **Voth's sim first (owner, 2026-10-13):** the `Voth-sim` branch has taken Voth's simulation far past Verge's (the
-  wake; phase E's production, stores, carts and imports), so stage 5 starts from it, merged as that branch hands it
-  over, not from Verge. Voth's citizens per `PLAN.md` Phase 2 (places from `LIFE_DOORS`, actors' `sched[24]`, the
-  pedestrian NAV), accepted by census parity; ships' random departures become scheduled (the clock rule). Verge's
-  `SIM` follows onto the same `core/simulation`, proven against its golden trace.
+- **Done on `Voth-sim` and merged (2026-10-14, `fbdb7d6c`; `settlements/streetlab/HANDOFF-REFACTOR.md`):** Voth's
+  citizens on `core/simulation` (places, the pedestrian layer, 53k actors with homes, jobs and rotas; needs, items,
+  economy, carriers, animals and pets; the wake, the lag and the half-hour buckets). The owner forks back off it to
+  keep tuning the economy; that work stays the Voth branch's (streetlab, voth, core/simulation, core/city). Next: the
+  handoff's known defects (river barges by timer, happiness drifting down over a week, the arena's beast paths and
+  double drawing, verify's windows, the scarcity decision), Phase E's remainder (porters, barges, fodder, breeding,
+  beef), Phase F (guards and the night watch, Ordinators and priests, arena bouts, dhows, taxis, the pleasure barge),
+  then Verge onto the same core against its golden trace. For the refactor: the place grid
+  (`77-sim-2-places.js`) onto `KSPACE`; Godot replays baked tasks (a lazy leg resolved by `SIM.legRoute` before it is
+  baked; the export carries the economy's and animals' records when the runtime needs them).
 - Adopt ChatGPT §22's three levels explicitly in `SCHEMA.md`: record (exists), abstract (travels, works, eats,
   no animation), presentation (near the player only). `PLAN.md` implies it; naming it keeps the Godot runtime
   from being written against nodes.
