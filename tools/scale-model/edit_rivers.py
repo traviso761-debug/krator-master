@@ -66,17 +66,23 @@ ARM_R, ARM_MIN = 2, 4
 # runs down each breach channel). Each one's drawn water is taken away and the land routed again: it stands where its
 # own water settles, in its own basin (east lobe 'dam 2', west lobe 'dam', the long-lake trough).
 SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-lake trough': (399, 218),
-          # the owner: the 3,600 m lake's north-western valley is a river valley, not drowned by the lake
-          'highland lake (3,600 m)': (324, 435),
           # drained to the Ring Sea through OUTLETS: each stands at its outlet and runs out down it
           'western lake (Ancient\'s Valley)': (164, 605), 'western lake (SW lowlands)': (294, 787)}
+# 4.21, the owner: the Iron Republic's lake back to its drawn size. The model draws it at 3,600 m, over almost all of its
+# shore (149 of 156 shore cells lower, down to 2,175 m): the valley could never hold it there, and left to its water it
+# shrinks to 2,880 km2 at its outlet (2,772 m). It is kept to its drawn outline at `level`: the bed under the outline is
+# deepened below the level (a glacier-scoured basin, `depth` m under it at the shore and more toward the middle), and the
+# few shore cells under the level are raised to it as rock bars (`bar` m over it). Its outlet is cut by OUTLETS: the
+# hollow beside its lowest shore drains only over a pass at 2,772 m, so a sill there would leave the lake closed.
+RESHAPE = {'Iron Republic lake': dict(px=(323, 445), level=2400.0, depth=40.0, bar=20.0)}
 NOT_JOINED = ('east lake (dam 2)', 'west lake (dam)', 'long-lake trough')
 # 4.21, the owner: the western ring's two great lakes drain to the Ring Sea. The western ring catches the ocean's
 # moisture and is closed below 957 m; each lake gets an outlet gorge, the course to the Ring Sea (or to a lake that
 # already drains to it) that cuts the least ground, its bed falling from the lake's level all the way, the cells beside
 # it eased half way down as its walls. In order: the SW lowlands' lake first, then Ancient's Valley's, whose gorge may end in
 # the first (without one it rises to ~870 m: no lower pass leads out of its basin).
-OUTLETS = [('western lake (SW lowlands)', (294, 787)), ('western lake (Ancient\'s Valley)', (164, 605))]     # the Yuni river's colour on the painted maps (4.19)
+OUTLETS = [('western lake (SW lowlands)', (294, 787)), ('western lake (Ancient\'s Valley)', (164, 605)),
+           ('Iron Republic lake', (323, 445))]     # the Yuni river's colour on the painted maps (4.19)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
 UI_ROW = ('    <span>wind</span><span id="rWind">—</span>\n',
@@ -391,6 +397,39 @@ def main():
         report['yuni_course'] = {'cells': len(path), 'cut_most_m': round(most, 1), 'climbs_on_4_20_m': climbs, 'source_m': round(float(En[path[0]])),
                                  'last_cell_m': round(float(En[path[-1]]))}
         print('Yuni river held to its drawn course: %d cells, its bed cut by up to %.0f m' % (len(path), most))
+    # the lakes kept to their drawn outline (RESHAPE)
+    report['reshaped'] = []
+    reshaped = np.zeros(E.shape, bool)
+    reshaped_lv = np.zeros(E.shape)
+    for nm, r_ in RESHAPE.items():
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        x, y = r_['px']
+        j, i = int(round(y * sv)), int(round(x * su))
+        ys, xs = np.nonzero(bl_ > 0)
+        c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
+        m = bl_ == bl_[ys[c], xs[c]]
+        L = r_['level']
+        inner = nd.distance_transform_edt(m)                 # cells from the shore, inside
+        bed = L - r_['depth'] - 25.0 * (inner - 1)
+        lowered = float(np.clip(En - bed, 0, None)[m].max())
+        En = np.where(m, np.minimum(En, bed), En)
+        ring = nd.binary_dilation(m, structure=np.ones((3, 3))) & ~m & ~G['whas']
+        under = ring & (En < L)
+        sill = None
+        raised = float((L + r_['bar'] - En[under]).max()) if under.any() else 0.0
+        En = np.where(under, L + r_['bar'], En)
+        lv0 = float(np.nanmedian(G['wlev'][m]))
+        G['wlev'] = np.where(m, L, G['wlev'])
+        reshaped |= m
+        reshaped_lv[m] = L
+        report['reshaped'].append({'lake': nm, 'drawn_level_m': round(lv0),
+                                   'level_m': L, 'km2': round(float(m.sum() * KM2)), 'bed_lowered_most_m': round(lowered),
+                                   'bars': int(under.sum()) - (1 if sill else 0), 'bar_raised_most_m': round(raised),
+                                   'sill_px': px(*sill) if sill else None})
+        print('reshaped %s: %d km2 kept at %d m; bed lowered by up to %d m; %d shore cells raised as bars (by up to %d m), sill at px %s' % (
+            nm, m.sum() * KM2, L, lowered, under.sum() - (1 if sill else 0), raised, px(*sill) if sill else None))
+    if RESHAPE:
+        H = setup(dict(G, E=En))
     # the outlet gorges (OUTLETS)
     report['outlets'] = []
     gorges = []
@@ -580,7 +619,7 @@ def main():
             len(found), len(found) - len(deep), ncut, len(deep)))
     else:
         sys.exit('courses still climb after 8 rounds')
-    cut = np.where(graded, 0.0, E - En)
+    cut = np.where(graded | reshaped, 0.0, E - En)
     report['hollows'] = sorted(hollows, key=lambda h: -h['depth_m'])
     report['cuts'] = {'cells': int((cut > 0.05).sum()), 'deepest_m': round(float(cut.max()), 1),
                       'mean_m': round(float(cut[cut > 0.05].mean()), 1) if (cut > 0.05).any() else 0}
@@ -781,13 +820,16 @@ def main():
         h2[..., 0], h2[..., 1] = q_ >> 8, q_ & 255
         h2[..., 2] = np.where(arms | dried, 0, h2[..., 2])
         rep['h'] = b64(Image.fromarray(h2.astype(np.uint8), 'RGB'), optimize=True)
-    if newlake.any() or arms.any() or settled.any():
+    if newlake.any() or arms.any() or settled.any() or reshaped.any():
         wl = raster(D, 'wl').astype(np.int64)
         wl[..., 2] = np.where(arms | dried, 0, wl[..., 2])
         encs = np.round(np.clip((settled_lv - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
         wl[..., 0] = np.where(settled, encs >> 8, wl[..., 0])
         wl[..., 1] = np.where(settled, encs & 255, wl[..., 1])
         wl[..., 2] = np.where(settled, 255, wl[..., 2])
+        encr = np.round(np.clip((reshaped_lv - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
+        wl[..., 0] = np.where(reshaped, encr >> 8, wl[..., 0])
+        wl[..., 1] = np.where(reshaped, encr & 255, wl[..., 1])
         encw = np.round(np.clip((newlv - LO) / (HI - LO), 0, 1) * 65535).astype(np.int64)
         add = newlake & ~G['whas']
         wl[..., 0] = np.where(add, encw >> 8, wl[..., 0])
