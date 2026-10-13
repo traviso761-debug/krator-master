@@ -106,3 +106,55 @@
 | `settlements/locus/locus-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/locus/locus-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/locus/locus.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/mavs-refuge/mavs-refuge.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/mungo/dist/mungo.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/noahs-regret/dist/noahs-regret.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/cgBox.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/cgCrane.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/cgEdges.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/cgStore.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/chHousing.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/port/dist/ddDock.html` | 115 | 386 k | 120 / 703 k | 115 / 381 k | 703 k |  | 120 | 54 | 8583 | 77 |
+| `settlements/port/dist/ddShed.html` | 123 | 393 k | 126 / 650 k | 123 / 383 k | 650 k |  | 126 | 61 | 8917 | 84 |
+| `settlements/port/dist/ddYard.html` | 117 | 369 k | 121 / 567 k | 117 / 365 k | 567 k |  | 121 | 55 | 8328 | 74 |
+| `settlements/port/dist/edges.html` | 146 | 558 k | 142 / 876 k | 147 / 532 k | 877 k |  | 144 | 35 | 15 k | 55 |
+| `settlements/port/dist/harbour.html` | 434 | 958 k | 448 / 1.72 M | 419 / 896 k | 1.73 M |  | 455 | 123 | 32 k | 177 |
+| `settlements/port/dist/hbEdges.html` | 106 | 485 k | 95 / 907 k | 109 / 417 k | 907 k |  | 95 | 34 | 9407 | 44 |
+| `settlements/port/dist/hbFish.html` | 128 | 507 k | 130 / 982 k | 130 / 477 k | 982 k |  | 130 | 69 | 12 k | 82 |
+| `settlements/port/dist/hbHaven.html` | 134 | 395 k | 133 / 687 k | 134 / 391 k | 687 k |  | 137 | 71 | 8254 | 86 |
+| `settlements/port/dist/hbMarina.html` | 124 | 490 k | 127 / 879 k | 124 / 483 k | 879 k |  | 127 | 68 | 11 k | 83 |
+| `settlements/port/dist/lbAuthority.html` | 98 | 350 k | 101 / 389 k | 98 / 350 k | 389 k |  | 103 | 60 | 8533 | 81 |
+| `settlements/port/dist/lbBlocks.html` | 208 | 596 k | 212 / 812 k | 207 / 585 k | 813 k |  | 215 | 65 | 20 k | 94 |
+| `settlements/port/dist/lbStores.html` | 94 | 353 k | 97 / 396 k | 94 / 352 k | 396 k |  | 97 | 54 | 7571 | 74 |
+| `settlements/port/dist/lbTanks.html` | 98 | 350 k | 101 / 390 k | 98 / 348 k | 390 k |  | 103 | 54 | 7712 | 78 |
+| `settlements/port/dist/segment.html` | 144 | 570 k | 144 / 946 k | 144 / 550 k | 947 k |  | 145 | 59 | 21 k | 81 |
+| `settlements/port/dist/showcase.html` | 801 | 5.48 M | 886 / 9.06 M | 826 / 1.68 M | 9.08 M |  | 910 | 162 | 124 k | 243 |
+| `settlements/port/dist/slBerth.html` | 136 | 516 k | 138 / 752 k | 135 / 503 k | 752 k |  | 138 | 59 | 15 k | 78 |
+| `settlements/port/dist/slCarrier.html` | 118 | 410 k | 121 / 610 k | 118 / 388 k | 610 k |  | 121 | 56 | 12 k | 73 |
+| `settlements/port/dist/slPen.html` | 129 | 430 k | 126 / 726 k | 129 / 414 k | 726 k |  | 126 | 55 | 13 k | 71 |
+| `settlements/port/dist/slSub.html` | 106 | 337 k | 109 / 496 k | 106 / 326 k | 496 k |  | 109 | 48 | 7562 | 63 |
+| `settlements/port/dist/spYard.html` | 202 | 580 k | 208 / 923 k | 191 / 572 k | 924 k |  | 210 | 61 | 18 k | 82 |
+| `settlements/port/dist/tmEdges.html` | 101 | 414 k | 105 / 565 k | 101 / 407 k | 565 k |  | 105 | 39 | 12 k | 51 |
+| `settlements/port/dist/tmHeli.html` | 133 | 380 k | 139 / 542 k | 133 / 377 k | 542 k |  | 139 | 77 | 8384 | 91 |
+| `settlements/port/dist/tmPass.html` | 121 | 406 k | 123 / 593 k | 121 / 402 k | 593 k |  | 123 | 64 | 12 k | 79 |
+| `settlements/port/dist/tmShip.html` | 119 | 374 k | 123 / 538 k | 119 / 370 k | 538 k |  | 123 | 65 | 9111 | 79 |
+| `settlements/port/dist/vsFeeder.html` | 125 | 372 k | 128 / 547 k | 125 / 355 k | 547 k |  | 129 | 52 | 9676 | 76 |
+| `settlements/port/dist/vsGiant.html` | 134 | 527 k | 138 / 734 k | 134 / 501 k | 734 k |  | 139 | 53 | 24 k | 77 |
+| `settlements/port/dist/vsPanamax.html` | 126 | 405 k | 129 / 580 k | 126 / 383 k | 580 k |  | 130 | 51 | 12 k | 77 |
+| `settlements/reedlake/dist/reedlake-village.html` | 148 | 219 k | 148 / 223 k | 148 / 219 k | 223 k |  | 148 | 65 | 5976 | 137 |
+| `settlements/reedlake/dist/reedlake.html` | 101 | 409 k | 118 / 507 k | 101 / 409 k | 619 k |  | 355 | 66 | 15 k | 320 |
+| `settlements/screamers/dist/furniture.html` | 17 | 13 k | 17 / 13 k | 17 / 13 k | 26 k |  | 18 | 13 | 251 | 18 |
+| `settlements/screamers/dist/screamers.html` | 128 | 3.28 M | 149 / 3.58 M | 126 / 3.06 M | 3.60 M | 99 k | 151 | 70 | 258 k | 145 |
+| `settlements/shade/dist/shade.html` | 48 | 3.25 M |  |  | 3.47 M |  | 82 | 32 | 109 k | 70 |
+| `settlements/streetlab/dist/voth-city.html` | 1047 | 34.88 M |  |  | 40.95 M | 615 k | 3591 | 3147 | 657 k | 239 |
+| `settlements/streetlab/dist/voth-site.html` | 132 | 600 k |  |  | 1.14 M | 762 k | 52 | 6 | 8308 | 8 |
+| `settlements/verge/dist/verge.html` | 1012 | 18.22 M |  |  | 9.88 M | 439 k | 778 | 260 | 331 k | 352 |
+| `settlements/voth/voth.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/xanadu/dist/erewhon.html` | 1029 | 9.53 M | 1255 / 20.95 M | 1031 / 9.36 M | 21.99 M |  | 1639 | 1579 | 1.02 M | 1435 |
+| `settlements/xanadu/dist/xanadu.html` | 89 | 990 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
+| `settlements/ys/dist/kit.html` | 99 | 4.21 M |  |  | 4.26 M |  | 107 | 35 | 16 k | 57 |
+| `settlements/ys/dist/mock.html` | 58 | 502 k |  |  | 502 k |  | 56 | 30 | 2328 | 45 |
+| `settlements/ys/dist/ys.html` | 187 | 29.43 M |  |  | 29.49 M |  | 204 | 100 | 394 k | 178 |
+| `settlements/yuni/yuni-assets.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/yuni/yuni-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/yuni/yuni.html` | not ready |  |  |  |  |  |  |  |  |  |

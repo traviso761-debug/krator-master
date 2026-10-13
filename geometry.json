@@ -1604,5 +1604,849 @@
   "errors": 1,
   "ready": false,
   "seconds": 902
+ },
+ "settlements/mavs-refuge/mavs-refuge.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 166
+ },
+ "settlements/mungo/dist/mungo.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 754
+ },
+ "settlements/noahs-regret/dist/noahs-regret.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 917
+ },
+ "settlements/port/dist/cgBox.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 915
+ },
+ "settlements/port/dist/cgCrane.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 901
+ },
+ "settlements/port/dist/cgEdges.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 908
+ },
+ "settlements/port/dist/cgStore.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 916
+ },
+ "settlements/port/dist/chHousing.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 902
+ },
+ "settlements/port/dist/ddDock.html": {
+  "calls": 115,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 54,
+  "instances": 8583,
+  "lodOff": {
+   "calls": 120,
+   "tris": 702870
+  },
+  "lodOn": {
+   "calls": 115,
+   "tris": 381065
+  },
+  "materials": 77,
+  "meshes": 120,
+  "ready": true,
+  "sceneTris": 702870,
+  "seconds": 67,
+  "tris": 385982
+ },
+ "settlements/port/dist/ddShed.html": {
+  "calls": 123,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 61,
+  "instances": 8917,
+  "lodOff": {
+   "calls": 126,
+   "tris": 649762
+  },
+  "lodOn": {
+   "calls": 123,
+   "tris": 383142
+  },
+  "materials": 84,
+  "meshes": 126,
+  "ready": true,
+  "sceneTris": 649762,
+  "seconds": 97,
+  "tris": 393324
+ },
+ "settlements/port/dist/ddYard.html": {
+  "calls": 117,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 55,
+  "instances": 8328,
+  "lodOff": {
+   "calls": 121,
+   "tris": 566732
+  },
+  "lodOn": {
+   "calls": 117,
+   "tris": 364846
+  },
+  "materials": 74,
+  "meshes": 121,
+  "ready": true,
+  "sceneTris": 566732,
+  "seconds": 78,
+  "tris": 369112
+ },
+ "settlements/port/dist/edges.html": {
+  "calls": 146,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 35,
+  "instances": 14553,
+  "lodOff": {
+   "calls": 142,
+   "tris": 876056
+  },
+  "lodOn": {
+   "calls": 147,
+   "tris": 531729
+  },
+  "materials": 55,
+  "meshes": 144,
+  "ready": true,
+  "sceneTris": 876760,
+  "seconds": 82,
+  "tris": 557978
+ },
+ "settlements/port/dist/harbour.html": {
+  "calls": 434,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 123,
+  "instances": 32233,
+  "lodOff": {
+   "calls": 448,
+   "tris": 1717132
+  },
+  "lodOn": {
+   "calls": 419,
+   "tris": 896398
+  },
+  "materials": 177,
+  "meshes": 455,
+  "ready": true,
+  "sceneTris": 1726836,
+  "seconds": 135,
+  "tris": 957631
+ },
+ "settlements/port/dist/hbEdges.html": {
+  "calls": 106,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 34,
+  "instances": 9407,
+  "lodOff": {
+   "calls": 95,
+   "tris": 906986
+  },
+  "lodOn": {
+   "calls": 109,
+   "tris": 417457
+  },
+  "materials": 44,
+  "meshes": 95,
+  "ready": true,
+  "sceneTris": 906986,
+  "seconds": 127,
+  "tris": 484719
+ },
+ "settlements/port/dist/hbFish.html": {
+  "calls": 128,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 69,
+  "instances": 11939,
+  "lodOff": {
+   "calls": 130,
+   "tris": 981914
+  },
+  "lodOn": {
+   "calls": 130,
+   "tris": 477287
+  },
+  "materials": 82,
+  "meshes": 130,
+  "ready": true,
+  "sceneTris": 981914,
+  "seconds": 80,
+  "tris": 507246
+ },
+ "settlements/port/dist/hbHaven.html": {
+  "calls": 134,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 71,
+  "instances": 8254,
+  "lodOff": {
+   "calls": 133,
+   "tris": 687224
+  },
+  "lodOn": {
+   "calls": 134,
+   "tris": 391042
+  },
+  "materials": 86,
+  "meshes": 137,
+  "ready": true,
+  "sceneTris": 687336,
+  "seconds": 80,
+  "tris": 395408
+ },
+ "settlements/port/dist/hbMarina.html": {
+  "calls": 124,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 68,
+  "instances": 10971,
+  "lodOff": {
+   "calls": 127,
+   "tris": 878892
+  },
+  "lodOn": {
+   "calls": 124,
+   "tris": 482615
+  },
+  "materials": 83,
+  "meshes": 127,
+  "ready": true,
+  "sceneTris": 878892,
+  "seconds": 47,
+  "tris": 490245
+ },
+ "settlements/port/dist/lbAuthority.html": {
+  "calls": 98,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 60,
+  "instances": 8533,
+  "lodOff": {
+   "calls": 101,
+   "tris": 389112
+  },
+  "lodOn": {
+   "calls": 98,
+   "tris": 349980
+  },
+  "materials": 81,
+  "meshes": 103,
+  "ready": true,
+  "sceneTris": 389210,
+  "seconds": 61,
+  "tris": 350476
+ },
+ "settlements/port/dist/lbBlocks.html": {
+  "calls": 208,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 65,
+  "instances": 19641,
+  "lodOff": {
+   "calls": 212,
+   "tris": 812164
+  },
+  "lodOn": {
+   "calls": 207,
+   "tris": 585135
+  },
+  "materials": 94,
+  "meshes": 215,
+  "ready": true,
+  "sceneTris": 812954,
+  "seconds": 51,
+  "tris": 596188
+ },
+ "settlements/port/dist/lbStores.html": {
+  "calls": 94,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 54,
+  "instances": 7571,
+  "lodOff": {
+   "calls": 97,
+   "tris": 396080
+  },
+  "lodOn": {
+   "calls": 94,
+   "tris": 351750
+  },
+  "materials": 74,
+  "meshes": 97,
+  "ready": true,
+  "sceneTris": 396080,
+  "seconds": 58,
+  "tris": 353430
+ },
+ "settlements/port/dist/lbTanks.html": {
+  "calls": 98,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 54,
+  "instances": 7712,
+  "lodOff": {
+   "calls": 101,
+   "tris": 390180
+  },
+  "lodOn": {
+   "calls": 98,
+   "tris": 348460
+  },
+  "materials": 78,
+  "meshes": 103,
+  "ready": true,
+  "sceneTris": 390208,
+  "seconds": 51,
+  "tris": 350168
+ },
+ "settlements/port/dist/segment.html": {
+  "calls": 144,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 59,
+  "instances": 20509,
+  "lodOff": {
+   "calls": 144,
+   "tris": 946346
+  },
+  "lodOn": {
+   "calls": 144,
+   "tris": 549730
+  },
+  "materials": 81,
+  "meshes": 145,
+  "ready": true,
+  "sceneTris": 946652,
+  "seconds": 74,
+  "tris": 569990
+ },
+ "settlements/port/dist/showcase.html": {
+  "calls": 801,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 162,
+  "instances": 124266,
+  "lodOff": {
+   "calls": 886,
+   "tris": 9057748
+  },
+  "lodOn": {
+   "calls": 826,
+   "tris": 1682453
+  },
+  "materials": 243,
+  "meshes": 910,
+  "ready": true,
+  "sceneTris": 9078028,
+  "seconds": 261,
+  "tris": 5476400
+ },
+ "settlements/port/dist/slBerth.html": {
+  "calls": 136,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 59,
+  "instances": 14986,
+  "lodOff": {
+   "calls": 138,
+   "tris": 752252
+  },
+  "lodOn": {
+   "calls": 135,
+   "tris": 503014
+  },
+  "materials": 78,
+  "meshes": 138,
+  "ready": true,
+  "sceneTris": 752252,
+  "seconds": 189,
+  "tris": 515806
+ },
+ "settlements/port/dist/slCarrier.html": {
+  "calls": 118,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 56,
+  "instances": 12229,
+  "lodOff": {
+   "calls": 121,
+   "tris": 609574
+  },
+  "lodOn": {
+   "calls": 118,
+   "tris": 388213
+  },
+  "materials": 73,
+  "meshes": 121,
+  "ready": true,
+  "sceneTris": 609574,
+  "seconds": 42,
+  "tris": 410111
+ },
+ "settlements/port/dist/slPen.html": {
+  "calls": 129,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 55,
+  "instances": 12750,
+  "lodOff": {
+   "calls": 126,
+   "tris": 725858
+  },
+  "lodOn": {
+   "calls": 129,
+   "tris": 413767
+  },
+  "materials": 71,
+  "meshes": 126,
+  "ready": true,
+  "sceneTris": 725858,
+  "seconds": 70,
+  "tris": 430243
+ },
+ "settlements/port/dist/slSub.html": {
+  "calls": 106,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 48,
+  "instances": 7562,
+  "lodOff": {
+   "calls": 109,
+   "tris": 496282
+  },
+  "lodOn": {
+   "calls": 106,
+   "tris": 325569
+  },
+  "materials": 63,
+  "meshes": 109,
+  "ready": true,
+  "sceneTris": 496282,
+  "seconds": 74,
+  "tris": 337473
+ },
+ "settlements/port/dist/spYard.html": {
+  "calls": 202,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 61,
+  "instances": 18114,
+  "lodOff": {
+   "calls": 208,
+   "tris": 923456
+  },
+  "lodOn": {
+   "calls": 191,
+   "tris": 572363
+  },
+  "materials": 82,
+  "meshes": 210,
+  "ready": true,
+  "sceneTris": 923684,
+  "seconds": 77,
+  "tris": 580061
+ },
+ "settlements/port/dist/tmEdges.html": {
+  "calls": 101,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 39,
+  "instances": 11562,
+  "lodOff": {
+   "calls": 105,
+   "tris": 564982
+  },
+  "lodOn": {
+   "calls": 101,
+   "tris": 407001
+  },
+  "materials": 51,
+  "meshes": 105,
+  "ready": true,
+  "sceneTris": 564982,
+  "seconds": 72,
+  "tris": 414383
+ },
+ "settlements/port/dist/tmHeli.html": {
+  "calls": 133,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 77,
+  "instances": 8384,
+  "lodOff": {
+   "calls": 139,
+   "tris": 541574
+  },
+  "lodOn": {
+   "calls": 133,
+   "tris": 377060
+  },
+  "materials": 91,
+  "meshes": 139,
+  "ready": true,
+  "sceneTris": 541574,
+  "seconds": 53,
+  "tris": 380123
+ },
+ "settlements/port/dist/tmPass.html": {
+  "calls": 121,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 64,
+  "instances": 11556,
+  "lodOff": {
+   "calls": 123,
+   "tris": 593104
+  },
+  "lodOn": {
+   "calls": 121,
+   "tris": 401593
+  },
+  "materials": 79,
+  "meshes": 123,
+  "ready": true,
+  "sceneTris": 593104,
+  "seconds": 51,
+  "tris": 405686
+ },
+ "settlements/port/dist/tmShip.html": {
+  "calls": 119,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 65,
+  "instances": 9111,
+  "lodOff": {
+   "calls": 123,
+   "tris": 538074
+  },
+  "lodOn": {
+   "calls": 119,
+   "tris": 370244
+  },
+  "materials": 79,
+  "meshes": 123,
+  "ready": true,
+  "sceneTris": 538074,
+  "seconds": 59,
+  "tris": 374468
+ },
+ "settlements/port/dist/vsFeeder.html": {
+  "calls": 125,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 52,
+  "instances": 9676,
+  "lodOff": {
+   "calls": 128,
+   "tris": 547276
+  },
+  "lodOn": {
+   "calls": 125,
+   "tris": 354892
+  },
+  "materials": 76,
+  "meshes": 129,
+  "ready": true,
+  "sceneTris": 547336,
+  "seconds": 38,
+  "tris": 371729
+ },
+ "settlements/port/dist/vsGiant.html": {
+  "calls": 134,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 53,
+  "instances": 23562,
+  "lodOff": {
+   "calls": 138,
+   "tris": 733750
+  },
+  "lodOn": {
+   "calls": 134,
+   "tris": 501408
+  },
+  "materials": 77,
+  "meshes": 139,
+  "ready": true,
+  "sceneTris": 734056,
+  "seconds": 75,
+  "tris": 526581
+ },
+ "settlements/port/dist/vsPanamax.html": {
+  "calls": 126,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 51,
+  "instances": 12084,
+  "lodOff": {
+   "calls": 129,
+   "tris": 579812
+  },
+  "lodOn": {
+   "calls": 126,
+   "tris": 383327
+  },
+  "materials": 77,
+  "meshes": 130,
+  "ready": true,
+  "sceneTris": 579848,
+  "seconds": 78,
+  "tris": 404989
+ },
+ "settlements/reedlake/dist/reedlake-village.html": {
+  "calls": 148,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 65,
+  "instances": 5976,
+  "lodOff": {
+   "calls": 148,
+   "tris": 223296
+  },
+  "lodOn": {
+   "calls": 148,
+   "tris": 218528
+  },
+  "materials": 137,
+  "meshes": 148,
+  "ready": true,
+  "sceneTris": 223296,
+  "seconds": 72,
+  "tris": 218528
+ },
+ "settlements/reedlake/dist/reedlake.html": {
+  "calls": 101,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 66,
+  "instances": 14716,
+  "lodOff": {
+   "calls": 118,
+   "tris": 507078
+  },
+  "lodOn": {
+   "calls": 101,
+   "tris": 409346
+  },
+  "materials": 320,
+  "meshes": 355,
+  "ready": true,
+  "sceneTris": 618558,
+  "seconds": 60,
+  "tris": 409346
+ },
+ "settlements/screamers/dist/furniture.html": {
+  "calls": 17,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 13,
+  "instances": 251,
+  "lodOff": {
+   "calls": 17,
+   "tris": 13492
+  },
+  "lodOn": {
+   "calls": 17,
+   "tris": 13492
+  },
+  "materials": 18,
+  "meshes": 18,
+  "ready": true,
+  "sceneTris": 25588,
+  "seconds": 37,
+  "tris": 13492
+ },
+ "settlements/screamers/dist/screamers.html": {
+  "calls": 128,
+  "errors": 0,
+  "furnTris": 99471,
+  "instSets": 70,
+  "instances": 257534,
+  "lodOff": {
+   "calls": 149,
+   "tris": 3584087
+  },
+  "lodOn": {
+   "calls": 126,
+   "tris": 3055588
+  },
+  "materials": 145,
+  "meshes": 151,
+  "ready": true,
+  "sceneTris": 3596695,
+  "seconds": 198,
+  "tris": 3281986
+ },
+ "settlements/shade/dist/shade.html": {
+  "calls": 48,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 32,
+  "instances": 108567,
+  "materials": 70,
+  "meshes": 82,
+  "ready": true,
+  "sceneTris": 3472965,
+  "seconds": 382,
+  "tris": 3254283
+ },
+ "settlements/streetlab/dist/voth-city.html": {
+  "calls": 1047,
+  "errors": 0,
+  "furnTris": 615178,
+  "instSets": 3147,
+  "instances": 656899,
+  "materials": 239,
+  "meshes": 3591,
+  "ready": true,
+  "sceneTris": 40951856,
+  "seconds": 597,
+  "tris": 34876944
+ },
+ "settlements/streetlab/dist/voth-site.html": {
+  "calls": 132,
+  "errors": 0,
+  "furnTris": 762494,
+  "instSets": 6,
+  "instances": 8308,
+  "materials": 8,
+  "meshes": 52,
+  "ready": true,
+  "sceneTris": 1142258,
+  "seconds": 271,
+  "tris": 600236
+ },
+ "settlements/verge/dist/verge.html": {
+  "calls": 1012,
+  "errors": 0,
+  "furnTris": 439353,
+  "instSets": 260,
+  "instances": 331215,
+  "materials": 352,
+  "meshes": 778,
+  "ready": true,
+  "sceneTris": 9881598,
+  "seconds": 333,
+  "tris": 18224080
+ },
+ "settlements/voth/voth.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 91
+ },
+ "settlements/xanadu/dist/erewhon.html": {
+  "calls": 1029,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 1579,
+  "instances": 1016933,
+  "lodOff": {
+   "calls": 1255,
+   "tris": 20950982
+  },
+  "lodOn": {
+   "calls": 1031,
+   "tris": 9356101
+  },
+  "materials": 1435,
+  "meshes": 1639,
+  "ready": true,
+  "sceneTris": 21991302,
+  "seconds": 982,
+  "tris": 9534182
+ },
+ "settlements/xanadu/dist/xanadu.html": {
+  "calls": 89,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 168,
+  "instances": 259446,
+  "lodOff": {
+   "calls": 174,
+   "tris": 5407288
+  },
+  "lodOn": {
+   "calls": 88,
+   "tris": 887637
+  },
+  "materials": 196,
+  "meshes": 199,
+  "ready": true,
+  "sceneTris": 5423766,
+  "seconds": 428,
+  "tris": 989517
+ },
+ "settlements/ys/dist/kit.html": {
+  "calls": 99,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 35,
+  "instances": 16097,
+  "materials": 57,
+  "meshes": 107,
+  "ready": true,
+  "sceneTris": 4258722,
+  "seconds": 366,
+  "tris": 4206566
+ },
+ "settlements/ys/dist/mock.html": {
+  "calls": 58,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 30,
+  "instances": 2328,
+  "materials": 45,
+  "meshes": 56,
+  "ready": true,
+  "sceneTris": 501704,
+  "seconds": 127,
+  "tris": 501706
+ },
+ "settlements/ys/dist/ys.html": {
+  "calls": 187,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 100,
+  "instances": 393672,
+  "materials": 178,
+  "meshes": 204,
+  "ready": true,
+  "sceneTris": 29491107,
+  "seconds": 445,
+  "tris": 29427353
+ },
+ "settlements/yuni/yuni-assets.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 144
+ },
+ "settlements/yuni/yuni-plants.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 36
+ },
+ "settlements/yuni/yuni.html": {
+  "errors": 1,
+  "ready": false,
+  "seconds": 783
  }
 }
