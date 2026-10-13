@@ -69,10 +69,14 @@ SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-l
           # drained to the Ring Sea through OUTLETS: each stands at its outlet and runs out down it
           'western lake (Ancient\'s Valley)': (164, 605), 'western lake (SW lowlands)': (294, 787),
           'NW lowlands lake': (160, 391),
-          # the owner: the lake on the abyss floor north of Locus is too big. The model draws 1,171 km2 at -2,305 m and
-          # the routing filled its flat hollow round it to the spill (2,903 km2 at -2,309 m); its own water stands
-          # lower, short of the spill (an outlet north to the north abyss lake at -2,350 m stayed dry: nothing to send)
-          'lake north of Locus': (1019, 615)}
+          # the Hyperjungle's lake (px 739, 635): drawn at -1,160 m over 8,053 km2 with no shore on its west, straight
+          # over the salt lake's depression on the Iziz plain (2,435 m lower); its water settles with the depression's
+          # as one lake at its outlet to the Ring Sea (OUTLETS). SHALLOWS then makes it smaller
+          'Hyperjungle lake': (739, 635)}
+# 4.21, the owner: the Hyperjungle's lake smaller, off the Empire of Iziz's core (Iziz, Fridon, Fort Vaklu and Port
+# Tobin stand on the plain round it): after SETTLE, its bed under less than `shallow` m of water is raised to land,
+# `bar` m over its level and rising inland, so only its deep water stays (it still spills to the Ring Sea)
+SHALLOWS = {'Hyperjungle lake': dict(shallow=200.0, bar=10.0)}
 # 4.21, the owner: the Iron Republic's lake back to its drawn size. The model draws it at 3,600 m, over almost all of its
 # shore (149 of 156 shore cells lower, down to 2,175 m): the valley could never hold it there, and left to its water it
 # shrinks to 2,880 km2 at its outlet (2,772 m). It is kept to its drawn outline at `level`: the bed under the outline is
@@ -93,14 +97,32 @@ OUTLETS = [('western lake (SW lowlands)', (294, 787)), ('western lake (Ancient\'
            # through the north basin's rims or join the two lakes). Drawn at the ocean's own level, a gorge from it would
            # be an arm of the sea: the lake stands at 50 m (its hollow holds 28,762 km2 there against 28,345 at 0 m) and
            # the bed falls evenly from it to the coast, never under the ocean's level, so the valley stays a river
-           ('NW lowlands lake', (160, 391), 'ocean', 50.0)]
+           ('NW lowlands lake', (160, 391), 'ocean', 50.0),
+           # the owner: the Hyperjungle's lake smaller (SETTLE, SHALLOWS). Settled with the salt lake's depression
+           # beside it, it would stand at their pass (-1,393 m), over Iziz (-1,423 m): an outlet at -1,495 m holds it
+           # just over the Ring Sea, and runs to the sea itself, round the depression (dry ground under the sea's level)
+           ('Hyperjungle lake', (739, 635), 'Ring Sea', -1495.0)]
 # 4.21, the owner: the north abyss lake (at px 1043, 497) fed again. The two lakes 4.21 found on the floor just south of
 # the Region 62 saddle (4.17) gathered its water; a gorge through the saddle from their hollow's floor lets it run north
 # into the lake. (name, near the hollow's floor, the lake it runs to; map px)
-BREACHES = [('saddle gorge (Region 62)', (1019, 551), (1043, 497))]
+BREACHES = []      # 4.21 had the Region 62 saddle gorge to the north abyss lake; ABYSS_LAKES rebuilt that floor
 # 4.21, the owner: the rivers west of the abyss run on into it; a closed hollow on the plateau within ABYSS_WEST_KM of
 # the abyss's floor, west of it, is cut through to the floor (cut_channel from its floor)
 ABYSS_WEST_KM = 300.0
+# 4.21, the owner: the eastern abyss's floor rebuilt with scattered long, snaky lakes, about as much water as before.
+# On the floor (the region's cells under `zone_m`, away from the lake round Locus by `keep_km`, which stays) the drawn
+# lakes are taken away and the water routed: it settles in blobs and salt pans (endorheic, or full and overflowing).
+# Each of those over `min_km2` is laid out again in the basin it lies in (the floor is a chain of pits between sills
+# 1-3 km high), as a lake of its area x `spare` (so it still balances): along the basin's long axis (the cells within
+# `span` m over its level), swinging across the basin's width in bends `bend` cells long (seeded, deterministic), as wide as it takes (`r` cells in
+# radius, tapering at the ends), `gap` cells from the others (it may take in a smaller, higher lake's bed, never a lower
+# one's); its bed cut `depth`
+# m under the level, its walls kept `rim` m over it, the rest of the old lake's bed filled to just over the level,
+# falling `slope` m a cell towards it. A lake with no room for a trough holding most of its water (a moat round a mound,
+# a pit hemmed in) stays as it settles. The filled beds are blended into the ground round them (`blend` cells), and
+# repainted on the maps from the land round them. Then the water is routed again onto the new floor.
+ABYSS_LAKES = dict(region='e abysss', zone_m=-1400.0, deep_m=-1900.0, keep=(987, 715), keep_km=24.0, seed=4021,
+                   min_km2=40.0, spare=1.15, r=(1.2, 2.4), bend=(12, 20), gap=2, depth=120.0, rim=10.0, slope=3.0, span=400.0, blend=1.5)
 ABYSS_CUT_M = 600.0     # m: a hollow whose way to the floor would cut more than this is left (reported; as deep as the western outlets)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
@@ -274,6 +296,184 @@ def body_at(lab, x, y, su, sv):
     ys, xs = np.nonzero(lab > 0)
     c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
     return lab == lab[ys[c], xs[c]]
+
+
+def inpaint(arr, hole):
+    """the pixels of `hole` painted from the picture round them: each from the nearest scale of a normalized blur
+    that reaches enough of it (fine at the edges, broad inside), then blended in over a pixel"""
+    out = arr.astype(float).copy()
+    valid = (~hole).astype(float)
+    done = np.zeros(hole.shape, bool)
+    for sg in (1.5, 3.0, 6.0, 12.0, 24.0, 48.0):
+        w = nd.gaussian_filter(valid, sg)
+        ok = hole & ~done & (w > 0.15)
+        if ok.any():
+            for c in range(out.shape[2]):
+                out[..., c][ok] = (nd.gaussian_filter(arr[..., c].astype(float) * valid, sg)[ok] / w[ok])
+            done |= ok
+    if (hole & ~done).any():
+        _, (iy, ix) = nd.distance_transform_edt(hole, return_indices=True)
+        out[hole & ~done] = arr[iy, ix][hole & ~done]
+    soft = np.clip(nd.gaussian_filter(hole.astype(float), 1.0) * 1.5, 0, 1)[..., None]
+    return np.clip(arr * (1 - soft) + out * soft, 0, 255).astype(np.uint8)
+
+
+def biggest(m):
+    """the largest 8-connected piece of a mask"""
+    lab, n = nd.label(m, structure=np.ones((3, 3)))
+    return lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1) if n > 1 else m
+
+
+def snake_lakes(En, zone, w0, lv0, A_, KM2):
+    """ABYSS_LAKES' layout: each lake of w0 (levels lv0) laid out again as a long, winding one in the basin it lies in.
+    Returns (En, rows (cells, not px), the troughs, the old beds filled, deepest cut, highest fill)."""
+    E = En
+    jj, ii = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
+
+    def lay(P, rad):
+        """the cells within rad of the points P, and how near each is to the line (1 on it)"""
+        m_, core_ = np.zeros(E.shape, bool), np.zeros(E.shape)
+        for (y, x), r_ in zip(P, rad):
+            y0_, y1_ = int(max(0, y - 4)), int(min(E.shape[0], y + 5))
+            x0_, x1_ = int(max(0, x - 4)), int(min(E.shape[1], x + 5))
+            d_ = np.hypot(jj[y0_:y1_, x0_:x1_] - y, ii[y0_:y1_, x0_:x1_] - x)
+            m_[y0_:y1_, x0_:x1_] |= d_ <= r_
+            core_[y0_:y1_, x0_:x1_] = np.maximum(core_[y0_:y1_, x0_:x1_], np.clip(1 - d_ / (r_ + 0.5), 0, 1))
+        return m_, core_
+    blab, bn = nd.label(w0, structure=np.ones((3, 3)))
+    sizes = nd.sum(np.ones(E.shape), blab, range(1, bn + 1))
+    rng = np.random.default_rng(A_['seed'])
+    snakes = np.zeros(E.shape, bool)
+    taken = np.zeros(E.shape, bool)                      # old lake beds a trough has taken (its own, or crossed)
+    rows, cut_most, fill_most, filled = [], 0.0, 0.0, np.zeros(E.shape, bool)
+    for k in np.argsort(-sizes) + 1:
+        b = (blab == k) & ~taken                          # what an earlier trough has not taken over
+        if b.sum() * KM2 < A_['min_km2']:
+            continue
+        lv = float(np.median(lv0[blab == k]))
+        others = nd.binary_dilation(snakes, iterations=A_['gap']) if snakes.any() else np.zeros(E.shape, bool)
+        bo = b & ~others & ~nd.binary_dilation(w0 & (blab != k) & (lv0 < lv - 1.0) & ~taken, iterations=1)
+        if not bo.any():
+            continue                                         # all of it beside a trough: its bed is filled with the rest
+        seed_ = tuple(np.argwhere(bo)[np.argmin(En[bo])])
+        lower = nd.binary_dilation(w0 & (blab != k) & (lv0 < lv - 1.0) & ~taken, iterations=1)   # never into a lower lake
+        rl, _ = nd.label(((zone & (En < lv + A_['span'])) | b) & ~others & ~lower, structure=np.ones((3, 3)))
+        R = rl == rl[seed_]
+        if R.sum() < 4:
+            continue
+        Q = np.argwhere(R).astype(float)
+        c0 = Q.mean(0)
+        w_, V = np.linalg.eigh(np.cov((Q - c0).T))
+        u, v = V[:, 1], np.array([-V[1, 1], V[0, 1]])
+        t, n = (Q - c0) @ u, (Q - c0) @ v
+        ts = np.arange(np.percentile(t, 3) + 1.0, np.percentile(t, 97) - 1.0, 0.5)
+        if len(ts) < 4:
+            ts = np.array([0.0])
+        mid, half = np.full(len(ts), np.nan), np.zeros(len(ts))
+        for q, tq in enumerate(ts):
+            sel = np.abs(t - tq) < 1.0
+            if sel.any():
+                mid[q], half[q] = 0.5 * (n[sel].min() + n[sel].max()), 0.5 * (n[sel].max() - n[sel].min())
+        ok_ = ~np.isnan(mid)
+        mid = np.interp(np.arange(len(ts)), np.nonzero(ok_)[0], mid[ok_]) if ok_.any() else np.zeros(len(ts))
+        mid = nd.gaussian_filter1d(mid, 4.0) if len(ts) > 4 else mid
+        half = nd.minimum_filter1d(half, 5) if len(ts) > 4 else half
+        lam, ph = rng.uniform(*A_['bend']), rng.uniform(0, 2 * np.pi)
+        want = b.sum() * A_['spare']
+        for r_ in np.arange(A_['r'][0], A_['r'][1] + 1e-6, 0.2):
+            amp = np.clip(half - r_ - 0.5, 0, 0.3 * lam)
+            off = mid + amp * np.sin(2 * np.pi * ts / lam + ph)
+            P = c0 + np.outer(ts, u) + np.outer(off, v)
+            ins = np.array([0 <= y < E.shape[0] and 0 <= x < E.shape[1] and R[int(round(y)), int(round(x))] for y, x in P])
+            # the unbroken stretch of the line inside the basin nearest the old lake's lowest point
+            runs, a_ = [], None
+            for q, f_ in enumerate(list(ins) + [False]):
+                if f_ and a_ is None:
+                    a_ = q
+                elif not f_ and a_ is not None:
+                    runs.append((a_, q))
+                    a_ = None
+            if runs:
+                dq = np.hypot(P[:, 0] - seed_[0], P[:, 1] - seed_[1])
+                a_, z_ = min(runs, key=lambda r: dq[r[0]:r[1]].min())
+                P = P[a_:z_]
+            else:
+                P = np.array([[float(seed_[0]), float(seed_[1])]])
+            fade = np.clip(np.minimum(np.arange(len(P)), np.arange(len(P))[::-1]) / 4.0, 0.45, 1.0)
+            m, core = lay(P, r_ * fade)
+            m = biggest(m & R)
+            if m.sum() >= want:
+                break
+        if m.sum() > want * 1.2 and len(P) > 8:
+            # longer than its water needs: the stretch round the old lake's lowest point that holds it
+            q0 = int(np.argmin(np.hypot(P[:, 0] - seed_[0], P[:, 1] - seed_[1])))
+            lo_, hi_ = 2, len(P)
+            while hi_ - lo_ > 1:
+                h_ = (lo_ + hi_) // 2
+                a_, z_ = max(0, q0 - h_), min(len(P), q0 + h_ + 1)
+                if z_ - a_ < 2 * h_ + 1:              # against one end: take the window from that end
+                    a_, z_ = (0, min(len(P), 2 * h_ + 1)) if a_ == 0 else (max(0, len(P) - 2 * h_ - 1), len(P))
+                Pw = P[a_:z_]
+                fw = np.clip(np.minimum(np.arange(len(Pw)), np.arange(len(Pw))[::-1]) / 4.0, 0.45, 1.0)
+                mw, cw = lay(Pw, r_ * fw)
+                if (mw & R).sum() >= want:
+                    hi_ = h_
+                else:
+                    lo_ = h_
+            a_, z_ = max(0, q0 - hi_), min(len(P), q0 + hi_ + 1)
+            if z_ - a_ < 2 * hi_ + 1:
+                a_, z_ = (0, min(len(P), 2 * hi_ + 1)) if a_ == 0 else (max(0, len(P) - 2 * hi_ - 1), len(P))
+            P = P[a_:z_]
+            fade = np.clip(np.minimum(np.arange(len(P)), np.arange(len(P))[::-1]) / 4.0, 0.45, 1.0)
+            m, core = lay(P, r_ * fade)
+            m = biggest(m & R)
+        seg = np.r_[0, np.cumsum(np.hypot(*np.diff(P, axis=0).T))] if len(P) > 1 else np.zeros(1)
+        if m.sum() < 0.85 * want:
+            # no room for a trough (a moat round a mound, a pit hemmed in): the lake stays as its water settles
+            taken |= b
+            snakes |= b
+            j, i = np.argwhere(b).mean(0)
+            rows.append({'at_cell': (round(j), round(i)), 'was_cells': int(b.sum()), 'level_m': round(lv), 'cut_most_m': 0,
+                         'filled_most_m': 0, 'cells': int(b.sum()), 'length_cells': 0.0, 'kept': True})
+            continue
+        bed = np.maximum(lv - A_['depth'] * (0.35 + 0.65 * core), LO + 5)
+        cut_k = float((En - bed)[m].max())
+        cut_most = max(cut_most, cut_k)
+        En = np.where(m, np.minimum(En, bed), En)
+        dsn = nd.distance_transform_edt(~m)
+        fl = b & ~m                                      # the rest of its bed: just over the level, falling to it
+        taken |= b | (m & w0)
+        up = np.maximum(En, lv + A_['rim'] + A_['slope'] * dsn)
+        if fl.any():
+            fill_most = max(fill_most, float((up - En)[fl].max()))
+        En = np.where(fl, up, En)
+        filled |= fl
+        ring = nd.binary_dilation(m, structure=np.ones((3, 3))) & ~m & ~b
+        En = np.where(ring, np.maximum(En, lv + A_['rim']), En)
+        snakes |= m
+        j, i = np.argwhere(m).mean(0)
+        rows.append({'at_cell': (round(j), round(i)), 'was_cells': int(b.sum()), 'level_m': round(lv),
+                     'cut_most_m': round(cut_k), 'filled_most_m': round(float((up - E)[fl].max())) if fl.any() else 0,
+                     'cells': int(m.sum()), 'length_cells': float(seg[-1])})
+    # old beds no trough took (lakes too small, or the rest of one a trough crossed): filled over their level,
+    # falling towards the nearest trough
+    left = w0 & ~taken & ~snakes
+    if left.any() and snakes.any():
+        dsn = nd.distance_transform_edt(~snakes)
+        up = np.maximum(En, lv0 + A_['rim'] + A_['slope'] * dsn)
+        fill_most = max(fill_most, float((up - En)[left].max()))
+        En = np.where(left, up, En)
+        filled |= left
+    if filled.any():
+        # the filled beds blended into the ground round them (no old shoreline left as a step), the troughs and their
+        # walls untouched; then every hollow the blending left in them filled again, so they still drain
+        wall = nd.binary_dilation(snakes, structure=np.ones((3, 3)), iterations=1)
+        wgt = np.clip(nd.gaussian_filter(filled.astype(float), A_['blend']) * 2.0, 0, 1) * ~wall
+        En = En * (1 - wgt) + nd.gaussian_filter(En, A_['blend']) * wgt
+        soft = (wgt > 0.01) & ~wall
+        Fz, _ = hydro.fill(En, ~soft)
+        En = np.where(soft, np.maximum(En, Fz), En)
+    return En, rows, snakes, filled, cut_most, fill_most
 
 
 def cut_channel(En, src, lv, target, blocked, floor=None):
@@ -513,6 +713,11 @@ def main():
                                    'sill_px': px(*sill) if sill else None})
         print('reshaped %s: %d km2 kept at %d m; bed lowered by up to %d m; %d shore cells raised as bars (by up to %d m), sill at px %s' % (
             nm, m.sum() * KM2, L, lowered, under.sum() - (1 if sill else 0), raised, px(*sill) if sill else None))
+    # the settlements' cells (an outlet's gorge never runs through one)
+    towns = np.zeros(E.shape, bool)
+    for st_ in SET:
+        towns[min(E.shape[0] - 1, int(round(st_['py'] * sv))), min(E.shape[1] - 1, int(round(st_['px'] * su)))] = True
+    towns = nd.binary_dilation(towns, structure=np.ones((3, 3)))
     if RESHAPE:
         H = setup(dict(G, E=En))
     # the outlet gorges (OUTLETS)
@@ -530,6 +735,9 @@ def main():
             if len(o_) > 2 and isinstance(o_[2], tuple):     # to one lake, ending over its level
                 tgt = body_at(bl_, o_[2][0], o_[2][1], su, sv)
                 floor_ = float(np.nanmedian(G['wlev'][tgt]))
+            elif len(o_) > 2 and o_[2] == 'Ring Sea':
+                tgt = H['sea'] & (np.abs(G['wlev'] - GRADE['Beast Riders']['sea']) < 1)
+                floor_ = GRADE['Beast Riders']['sea']
             elif len(o_) > 2 and o_[2] == 'ocean':
                 sl_, sn_ = nd.label(H['sea'], structure=np.ones((3, 3)))
                 tgt = np.zeros(E.shape, bool)
@@ -539,7 +747,10 @@ def main():
                     if jj_.min() == 0 or ii_.min() == 0 or jj_.max() == E.shape[0] - 1 or ii_.max() == E.shape[1] - 1:
                         tgt |= mm_
                 floor_ = float(np.nanmedian(G['wlev'][tgt]))
-            path, end, over, cut_most = cut_channel(En, m, lv, tgt, G['whas'] & ~tgt & ~m, floor_)
+            blk = (G['whas'] & ~tgt & ~m) | towns                 # never through a settlement
+            if len(o_) > 2 and o_[2] == 'Ring Sea':
+                blk |= ~G['whas'] & (En < floor_)          # dry ground under the sea it ends in: never through it
+            path, end, over, cut_most = cut_channel(En, m, lv, tgt, blk, floor_)
             if floor_ is not None:
                 # the water it ends in may be drawn over ground higher than the water (the ocean's cell at the NW
                 # gorge's mouth stands on 109 m): that ground would dam the gorge
@@ -621,6 +832,26 @@ def main():
         G['whas'] = (G['whas'] & ~flag) | settled
         G['wlev'] = np.where(settled, settled_lv, np.where(flag, np.nan, G['wlev']))
         G['water'] = G['water'] & ~dried
+        # the settled lakes made smaller (SHALLOWS): the bed under their shallow water raised to land
+        for nm, r_ in SHALLOWS.items():
+            m0 = next(m for nm_, m in picks if nm_ == nm)
+            sl_, _ = nd.label(settled, structure=np.ones((3, 3)))
+            body = np.isin(sl_, np.unique(sl_[settled & nd.binary_dilation(m0, iterations=1)])) & (sl_ > 0)
+            L = float(np.median(settled_lv[body]))
+            dep = L - En
+            off = body & (dep < r_['shallow'])
+            up = float((L + r_['bar'] + 0.25 * np.clip(r_['shallow'] - dep, 0, None) - En)[off].max()) if off.any() else 0.0
+            En = np.where(off, np.maximum(En, L + r_['bar'] + 0.25 * np.clip(r_['shallow'] - dep, 0, None)), En)
+            settled &= ~off
+            dried |= off
+            G['whas'] &= ~off
+            G['wlev'] = np.where(off, np.nan, G['wlev'])
+            G['water'] &= ~off
+            rec_ = next(x for x in report['settled'] if x['lake'] == nm)
+            rec_['shallows_raised_km2'] = round(float(off.sum() * KM2))
+            rec_['km2'] = round(float((body & ~off).sum() * KM2))
+            print('  %s: its bed under less than %d m of water raised to land (%d km2, by up to %d m): %d km2 left at %d m' % (
+                nm, r_['shallow'], off.sum() * KM2, up, (body & ~off).sum() * KM2, L))
         H = setup(G)
     # the closed hollows west of the abyss, cut through to its floor (ABYSS_WEST_KM)
     report['abyss_breaches'] = []
@@ -668,6 +899,74 @@ def main():
             b_ = report['abyss_breaches']
             print('cut %d hollows west of the abyss through to its floor: %d km cut, deepest %d m; %d left (deeper than %d m)' % (
                 len(b_), sum(x['cut_km'] for x in b_), max(x['deepest_cut_m'] for x in b_), len(report['abyss_left']), ABYSS_CUT_M))
+    # the abyss's floor rebuilt with long, snaky lakes (ABYSS_LAKES)
+    report['abyss_lakes'] = None
+    abyss_beds = np.zeros(E.shape, bool)
+    if ABYSS_LAKES:
+        A_ = ABYSS_LAKES
+        ab = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == A_['region']), None)
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in ab['points']], fill=1)
+        near = nd.binary_dilation(np.array(im).astype(bool), iterations=4)
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        kept = body_at(bl_, A_['keep'][0], A_['keep'][1], su, sv)
+        keepz = nd.distance_transform_edt(~kept) * KM <= A_['keep_km']
+        zone = near & (En < A_['zone_m']) & ~keepz & ~H['sea']
+        flag = np.isin(bl_, np.unique(bl_[zone & G['whas']])) & (bl_ > 0) & ~kept
+        before_km2 = float((flag & zone).sum() * KM2)
+
+        def settle_zone(En_):
+            """the zone's water routed with its drawn lakes taken away: (water cells, level per cell)"""
+            Gx = dict(G, E=En_, whas=G['whas'] & ~flag, wlev=np.where(flag, np.nan, G['wlev']))
+            Hx = setup(Gx)
+            rx = hydro.route(Hx['S'], Hx['term'], Hx['R'], Hx['PL'], Hx['lake'], Hx['frozen'], log=lambda *a: None)
+            w_, lv_ = np.zeros(E.shape, bool), np.zeros(E.shape)
+            zd = zone
+            for e in rx['ends']:
+                c_ = e['cells'] & ~Gx['whas'] & zd
+                if c_.any():
+                    w_ |= c_
+                    lv_[c_] = e['level']
+            for u in set(np.unique(rx['unit'][zone & (rx['unit'] > 0)])):
+                full = (rx['unit'] == u) & (rx['F'] - rx['S'] > 0.5) & ~Gx['whas'] & ~w_ & zd
+                if full.any():
+                    w_ |= full
+                    lv_[full] = float(rx['F'][full].max())
+            return w_, lv_
+        print('abyss floor: where its water settles as the floor stands')
+        w0, lv0 = settle_zone(En)
+        # each of those lakes laid out again as a long, winding one of about its area (so it still balances), in the
+        # basin it lies in (the floor is a chain of pits between sills 1-3 km high): a centreline along the basin's
+        # long axis, swinging across its width, the lake as wide as it takes to hold the area; its bed cut `depth` m
+        # under its level and walled over it, the rest of its old bed filled to just over the level, falling to it
+        En, rows, snakes, filled, cut_most, fill_most = snake_lakes(En, zone, w0, lv0, A_, KM2)
+        abyss_beds = filled | (flag & ~snakes)
+        for r_ in rows:
+            r_['at_px'] = px(*r_.pop('at_cell'))
+            r_['trough_km2'] = round(r_.pop('cells') * KM2)
+            r_['was_km2'] = round(r_.pop('was_cells') * KM2)
+            r_['length_km'] = round(r_.pop('length_cells') * KM)
+        print('abyss floor: %d lakes laid out as troughs, cut up to %d m; %d km2 of their old beds filled (up to %d m); routing' % (
+            len(rows), cut_most, filled.sum() * KM2, fill_most))
+        neww, lvw = settle_zone(En)
+        settled_lv[neww] = lvw[neww]
+        outside = neww & ~nd.binary_dilation(snakes, iterations=1)
+        report['abyss_lakes'] = {'drawn_km2': round(before_km2), 'settled_before_km2': round(float(w0.sum() * KM2)),
+                                 'troughs': len(rows), 'trough_km2': round(float(snakes.sum() * KM2)),
+                                 'water_km2': round(float(neww.sum() * KM2)), 'water_off_troughs_km2': round(float(outside.sum() * KM2)),
+                                 'trough_cut_most_m': round(cut_most), 'filled_km2': round(float(filled.sum() * KM2)),
+                                 'filled_most_m': round(fill_most), 'lakes': rows}
+        print('abyss floor: %d km2 drawn, %d km2 where its water settled, %d km2 now in %d troughs (%d km2 off them)' % (
+            before_km2, w0.sum() * KM2, neww.sum() * KM2, len(rows), outside.sum() * KM2))
+        for r_ in rows:
+            print('  lake at px %s (%d m): was %d km2, trough %d km long, %d km2; cut up to %d m, old bed filled up to %d m' % (
+                r_['at_px'], r_['level_m'], r_['was_km2'], r_['length_km'], r_['trough_km2'], r_['cut_most_m'], r_['filled_most_m']))
+        settled |= neww
+        dried |= flag & ~neww
+        G['whas'] = (G['whas'] & ~flag) | neww
+        G['wlev'] = np.where(neww, settled_lv, np.where(flag, np.nan, G['wlev']))
+        G['water'] = G['water'] & ~(flag & ~neww)
+        H = setup(G)
     through = np.zeros(E.shape, bool)           # the deep hollows' lakes
     through_lv = np.zeros(E.shape)
     hollows = []
@@ -974,13 +1273,21 @@ def main():
         from edit_heights import relight
         imgs, _, _ = relight(D, E, np.where(graded, E, En), keys=('st', 't'))   # the gorges shaded into the maps
         DP = dict(D, **imgs)
+    # the old lakes' beds that are land now (dried, the abyss's filled floor): painted from the land round them,
+    # so no old shoreline shows on the maps
+    old = (dried | abyss_beds) & ~G['whas']
+    oF = nd.zoom(old.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW] > .35
+    oF = nd.binary_dilation(oF, iterations=1) & ~(nd.zoom(G['whas'].astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
     for key in ('st', 't'):
         src = Image.open(io.BytesIO(__import__('base64').b64decode(DP[key])))
-        if graded.any():
+        if graded.any() or oF.any():
             arr = np.array(src.convert('RGB'))
-            land = arr[iy, ix]
-            soft = nd.gaussian_filter(gF.astype(float), 1.0)[..., None]
-            arr = np.clip(arr * (1 - soft) + land * soft, 0, 255).astype(np.uint8)
+            if graded.any():
+                land = arr[iy, ix]
+                soft = nd.gaussian_filter(gF.astype(float), 1.0)[..., None]
+                arr = np.clip(arr * (1 - soft) + land * soft, 0, 255).astype(np.uint8)
+            if oF.any():
+                arr = inpaint(arr, oF)
             src2 = Image.fromarray(arr)
             src2.quantization = getattr(src, 'quantization', None)
             im = src2.convert('RGBA')
