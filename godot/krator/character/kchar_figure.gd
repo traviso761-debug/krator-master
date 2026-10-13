@@ -390,12 +390,12 @@ func apply(rec: Dictionary) -> void:
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
 			if b["regions"][s]:
-				var hide := PackedFloat32Array()
-				hide.resize(SKIN_REGIONS)
-				for r in mini(b["cover"].size(), SKIN_REGIONS):
+				var nreg: int = maxi(1, b["cover"].size())
+				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
+				for r in b["cover"].size():
 					for i in b["cover"][r]:
 						if worn.has(int(i)):
-							hide[r] = 1.0
+							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
 			mi.set_surface_override_material(s, m)
 		if b["ground"] != null:
@@ -1050,9 +1050,8 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	return pm
 
 
-# the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it
-const SKIN_REGIONS := 256
-func _skin_mat(m2: BaseMaterial3D, hide: PackedFloat32Array) -> ShaderMaterial:
+# the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it (a texel each)
+func _skin_mat(m2: BaseMaterial3D, hide: Image) -> ShaderMaterial:
 	var sm := ShaderMaterial.new()
 	sm.shader = SKIN_SHADER
 	sm.set_shader_parameter("tex", m2.albedo_texture)
@@ -1061,7 +1060,7 @@ func _skin_mat(m2: BaseMaterial3D, hide: PackedFloat32Array) -> ShaderMaterial:
 		sm.set_shader_parameter("ntex", m2.normal_texture)
 		sm.set_shader_parameter("nscale", m2.normal_scale)
 	sm.set_shader_parameter("rough", m2.roughness)
-	sm.set_shader_parameter("hide", hide)
+	sm.set_shader_parameter("hide_tex", ImageTexture.create_from_image(hide))
 	return sm
 
 

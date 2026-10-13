@@ -135,9 +135,9 @@ func _init() -> void:
 			for s in base.mesh.get_surface_count():
 				if base.get_meta("built")["regions"][s]:
 					joined += 1
-					var h: PackedFloat32Array = base.get_surface_override_material(s).get_shader_parameter("hide")
+					var h: Image = (base.get_surface_override_material(s).get_shader_parameter("hide_tex") as ImageTexture).get_image()
 					for r in nreg:
-						hid += int(h[r] > 0.5)
+						hid += int(h.get_pixel(r, 0).r > 0.5)
 			ok(joined == 1 and nreg > 8, "the skin is one surface of %d regions" % nreg)
 			ok(hid > 0 and hid < nreg - 3, "worn items hide %d of %d skin regions" % [hid, nreg])
 		# at rest every bone's global pose times its (moved) bind is the identity: the skinned rest is the morphed mesh

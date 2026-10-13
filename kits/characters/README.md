@@ -118,6 +118,28 @@ tube: the woven tabard). Made clothes that hang (tunics, coats, robes, skirts, n
 their leg weights, are pushed out of the legs and hide no skin below half height; `culture` comes from the prefix.
 `data/peoples.json` dresses Izani strangers by class: 55 % commoners, 32 % guild, 13 % court.
 
+**Beast Rider and Hykkousoi clothing** (`beast_*`, `hykk_*`). The Beast Riders are Mongol and Apache:
+- **Tribesfolk:** a fringed buckskin shirt with a bead yoke, leggings and a breechcloth, knee moccasins, a headband
+  with a tail.
+- **Riders:** the deel (the wrap coat, its closure off to the right), a sash under a stack of animal belts (tiger,
+  snake, teeth, claw) with trophies hanging, a bandolier of teeth, a fur pauldron, riding boots, a fur-brimmed hat
+  with a spike and two quills.
+- **Chiefs:** the tribes' green deel with a quetzal mantle and outsized bone pauldrons (men), under bone horns on a
+  fur cap (men) or the Khalkha winged headdress hung with beads (women).
+
+The Hykkousoi are Greek and Roman, of the sea:
+- **Sailors:** the exomis, pinned over the left shoulder so the right and its gills are bare (a short chiton for
+  women), a rope belt, sea sandals, a broad petasos.
+- **Marines:** a cuirass of nacre ribs (pink and green by turns) over a tunic, nacre pauldrons, a short cloak, a
+  strip skirt, laced sandals with bronze greaves, a bronze helmet with a sea-blue crest.
+- **The Archon's court:** a long sea-linen chiton, a nacre shell collar, the himation across from the left shoulder,
+  a cloak, gilded sandals, and a diadem with the wave-sun as a scallop behind the head.
+
+Both sets follow the look LORE.md section 5 sets for every culture, Moebius and Jodorowsky's Dune: one big shape per
+figure, flat calm colour fields with one accent, organic ornament. The tool's shapes for it: `band` (a tilted band:
+bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_disc`, `crest`, `pendants`,
+`animal_belts`.
+
 **Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
 garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
 ~12 cm, shorter near the top), from the row where the cloth starts to hang down to the hem, each chain hanging from
@@ -187,7 +209,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
-| `tools/make_garments.py` | the Voth and Izani clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/make_garments.py` | the Voth, Izani, Beast Rider and Hykkousoi clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

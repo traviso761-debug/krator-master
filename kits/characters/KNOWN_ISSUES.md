@@ -38,7 +38,11 @@
 - **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
   and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex
   of the Ancient plate is painted, not modelled. Each class has one cut per body.
-- **A people's clothes are tagged with its culture** (`culture` in the kit: Voth items `chichani`, Izani `izani`): a random
+- **The Beast Rider and Hykkousoi clothing is generated too.** Horns, quills, the Khalkha wings, the helmet's crest,
+  the petasos brim and the shell collar are rigid (no chains); trophies and beads are small solids that ride the body;
+  the deel's overlap is painted, not cut; the exomis bares the right shoulder but the rib-gills are not modelled. A
+  wide brim or a tall crest can pass through a raised arm or a held prop.
+- **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi): a random
   stranger of another people never draws them, but the editor's pickers still offer every item to every body.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so

@@ -20,8 +20,8 @@ func _init() -> void:
 	var peoples := {}
 	for p in JSON.parse_string(FileAccess.get_file_as_string(DIR + "/peoples.json"))["peoples"]:
 		peoples[p["id"]] = p
-	var cast := [["mpfb_male", "chichani", 3], ["mpfb_female", "izani", 4], ["mpfb_male", "rustic_clansmen", 5],
-		["mpfb_female", "yuni", 6], ["mpfb_male", "dalabites", 7]]
+	var cast := [["mpfb_male", "chichani", 3], ["mpfb_female", "izani", 4], ["mpfb_male", "beast_riders", 5],
+		["mpfb_female", "yuni", 6], ["mpfb_male", "hykkousoi", 7]]
 	for i in cast.size():
 		var fig := KCharFigure.new()
 		fig.load_body(DIR, cast[i][0])

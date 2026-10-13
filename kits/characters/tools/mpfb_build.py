@@ -52,7 +52,20 @@ ITEMS = {
                     ('torso', 'Izani guild coat', 'iziz_m_trade_coat'), ('legs', 'Izani guild trousers', 'iziz_m_trade_trousers'),
                     ('feet', 'Izani tall boots', 'iziz_m_trade_boots'),
                     ('torso', 'Izani court robe', 'iziz_m_noble_robe'), ('legs', 'Izani court trousers', 'iziz_m_noble_trousers'),
-                    ('feet', 'Izani court boots', 'iziz_m_noble_boots'), ('head', 'Izani sun crown', 'iziz_m_noble_crown')]},
+                    ('feet', 'Izani court boots', 'iziz_m_noble_boots'), ('head', 'Izani sun crown', 'iziz_m_noble_crown'),
+                    # Beast Rider and Hykkousoi clothing, also from tools/make_garments.py
+                    ('torso', 'Beast Rider fringed shirt', 'beast_m_peasant_shirt'), ('legs', 'Beast Rider leggings', 'beast_m_peasant_trousers'),
+                    ('feet', 'Beast Rider moccasins', 'beast_m_peasant_moccasins'), ('head', 'Beast Rider headband', 'beast_m_peasant_headband'),
+                    ('torso', 'Beast Rider deel', 'beast_m_trade_deel'), ('legs', 'Beast Rider riding trousers', 'beast_m_trade_trousers'),
+                    ('feet', 'Beast Rider riding boots', 'beast_m_trade_boots'), ('head', 'Beast Rider fur hat', 'beast_m_trade_hat'),
+                    ('torso', 'Beast Rider chief\'s deel', 'beast_m_noble_deel'), ('feet', 'Beast Rider chief\'s boots', 'beast_m_noble_boots'),
+                    ('head', 'Beast Rider horned cap', 'beast_m_noble_horns'),
+                    ('torso', 'Hykkousoi exomis', 'hykk_m_peasant_exomis'), ('feet', 'Hykkousoi sandals', 'hykk_m_sandals'),
+                    ('head', 'Hykkousoi petasos', 'hykk_m_peasant_hat'),
+                    ('torso', 'Hykkousoi nacre cuirass', 'hykk_m_trade_lorica'), ('legs', 'Hykkousoi strip skirt', 'hykk_m_trade_pteruges'),
+                    ('feet', 'Hykkousoi greaves', 'hykk_m_trade_greaves'), ('head', 'Hykkousoi crested helmet', 'hykk_m_trade_helm'),
+                    ('torso', 'Hykkousoi archon\'s chiton', 'hykk_m_noble_chiton'), ('feet', 'Hykkousoi gilded sandals', 'hykk_m_noble_sandals'),
+                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_m_noble_crown')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -92,7 +105,20 @@ ITEMS = {
                     ('torso', 'Izani guild coat', 'iziz_f_trade_coat'), ('legs', 'Izani guild trousers', 'iziz_f_trade_trousers'),
                     ('feet', 'Izani tall boots', 'iziz_f_trade_boots'),
                     ('torso', 'Izani court gown', 'iziz_f_noble_gown'), ('legs', 'Izani court skirt', 'iziz_f_noble_skirt'),
-                    ('feet', 'Izani court boots', 'iziz_f_noble_boots'), ('head', 'Izani sun crown', 'iziz_f_noble_crown')]},
+                    ('feet', 'Izani court boots', 'iziz_f_noble_boots'), ('head', 'Izani sun crown', 'iziz_f_noble_crown'),
+                    # Beast Rider and Hykkousoi clothing, also from tools/make_garments.py
+                    ('torso', 'Beast Rider fringed shirt', 'beast_f_peasant_shirt'), ('legs', 'Beast Rider leggings', 'beast_f_peasant_trousers'),
+                    ('feet', 'Beast Rider moccasins', 'beast_f_peasant_moccasins'), ('head', 'Beast Rider headband', 'beast_f_peasant_headband'),
+                    ('torso', 'Beast Rider deel', 'beast_f_trade_deel'), ('legs', 'Beast Rider riding trousers', 'beast_f_trade_trousers'),
+                    ('feet', 'Beast Rider riding boots', 'beast_f_trade_boots'), ('head', 'Beast Rider fur hat', 'beast_f_trade_hat'),
+                    ('torso', 'Beast Rider chief\'s deel', 'beast_f_noble_deel'), ('feet', 'Beast Rider chief\'s boots', 'beast_f_noble_boots'),
+                    ('head', 'Beast Rider winged headdress', 'beast_f_noble_wings'),
+                    ('torso', 'Hykkousoi short chiton', 'hykk_f_peasant_exomis'), ('feet', 'Hykkousoi sandals', 'hykk_f_sandals'),
+                    ('head', 'Hykkousoi petasos', 'hykk_f_peasant_hat'),
+                    ('torso', 'Hykkousoi nacre cuirass', 'hykk_f_trade_lorica'), ('legs', 'Hykkousoi strip skirt', 'hykk_f_trade_pteruges'),
+                    ('feet', 'Hykkousoi greaves', 'hykk_f_trade_greaves'), ('head', 'Hykkousoi crested helmet', 'hykk_f_trade_helm'),
+                    ('torso', 'Hykkousoi archon\'s chiton', 'hykk_f_noble_chiton'), ('feet', 'Hykkousoi gilded sandals', 'hykk_f_noble_sandals'),
+                    ('head', 'Hykkousoi wave-sun diadem', 'hykk_f_noble_crown')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -134,8 +160,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the made garments (Voth, Izani) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_'))
+            # the made garments (Voth, Izani, Beast Riders, Hykkousoi) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

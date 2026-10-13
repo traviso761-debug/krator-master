@@ -1,5 +1,5 @@
 # Headless: blender -b --python tools/make_garments.py -- <male|female> [--only <id>,...] [--render <png dir>]
-# Voth (Chichani) and Izani (Iziz) clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
+# Voth (Chichani), Izani (Iziz), Beast Rider and Hykkousoi clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
 # MPFB's user data, so tools/mpfb_build.py fits, weights and morphs them like any library item.
 #
 # Each garment is built on the body it is for, from parts:
@@ -42,7 +42,18 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      # in verdigris and cream with copper, its sun and orb in gold; the ghost-white of salvaged Ancient plate
      'oat': (0.70, 0.64, 0.52), 'moss': (0.30, 0.33, 0.21), 'bark': (0.30, 0.23, 0.17), 'sand': (0.78, 0.62, 0.42),
      'saddle': (0.45, 0.27, 0.14), 'slate': (0.27, 0.29, 0.31), 'verdigris': (0.26, 0.52, 0.46), 'cream': (0.88, 0.84, 0.74),
-     'copper': (0.62, 0.35, 0.18), 'ancient': (0.86, 0.88, 0.89), 'sunorange': (0.86, 0.47, 0.13), 'deepgreen': (0.10, 0.24, 0.21)}
+     'copper': (0.62, 0.35, 0.18), 'ancient': (0.86, 0.88, 0.89), 'sunorange': (0.86, 0.47, 0.13), 'deepgreen': (0.10, 0.24, 0.21),
+     # Beast Riders: buckskin, bone, fur; the tribes' green; Mongol silk blue, saffron and maroon; Apache turquoise and
+     # rose; and Moebius's pastels (peach, mint, lilac, sky) as flat fields with one strong accent
+     'buck': (0.72, 0.56, 0.38), 'bone': (0.88, 0.84, 0.72), 'fur': (0.44, 0.33, 0.22), 'darkfur': (0.20, 0.15, 0.11),
+     'jungle': (0.20, 0.44, 0.26), 'mint': (0.60, 0.82, 0.70), 'rose': (0.84, 0.54, 0.50), 'lilac': (0.64, 0.56, 0.78),
+     'turq': (0.20, 0.62, 0.62), 'mongolblue': (0.16, 0.30, 0.58), 'saffron': (0.93, 0.66, 0.20), 'maroon': (0.42, 0.11, 0.14),
+     'peach': (0.95, 0.74, 0.58), 'sky': (0.56, 0.76, 0.88),
+     # Hykkousoi: sea-linen, nacre (pearl, its pink and its green), bronze, olive wood, slate blue and the deep sea;
+     # their wave-sun in gold
+     'sealinen': (0.87, 0.85, 0.78), 'nacre': (0.91, 0.90, 0.92), 'nacrepink': (0.93, 0.80, 0.82), 'nacregreen': (0.78, 0.90, 0.86),
+     'bronze': (0.64, 0.45, 0.20), 'olive': (0.42, 0.40, 0.24), 'slateblue': (0.32, 0.41, 0.54), 'deepsea': (0.10, 0.20, 0.31),
+     'ribpink': (0.86, 0.56, 0.62), 'ribgreen': (0.44, 0.74, 0.68)}
 
 # ---------------------------------------------------------------------------------------------------------------
 # the body
@@ -427,6 +438,17 @@ def motif(style, w, h, fg, bg):
         img[h > 0.36] = fg
     elif style == 'chevron':
         img[np.abs(v - (0.25 + 0.5 * np.abs(u - 0.5) * 2)) < 0.14] = fg
+    elif style == 'teeth':                       # a row of teeth or claws hanging from the band's top
+        img[v < (1 - np.abs(u - 0.5) * 2) * 0.85] = fg
+    elif style == 'claw':                        # the claw of the Beast Riders: three raked marks
+        for k in range(3):
+            img[(np.abs((u - 0.22 - 0.28 * k) - (v - 0.5) * 0.45) < 0.06) & (v > 0.12) & (v < 0.88)] = fg
+    elif style == 'tiger':
+        img[np.sin(2 * np.pi * (u * 2 + 0.35 * np.sin(2 * np.pi * v))) > 0.55] = fg
+    elif style == 'wave':                        # the running wave of the Hykkousoi
+        img[v > 0.55 + 0.28 * np.sin(2 * np.pi * u) - 0.1 * np.cos(4 * np.pi * u)] = fg
+    elif style == 'beads':
+        img[(((u * 3) % 1 - 0.5) ** 2 + ((v * 2) % 1 - 0.5) ** 2) < 0.1] = fg
     elif style == 'rays':                        # stripes along the strip (a halo's rays, a wrap's turns)
         img[(u * 2).astype(int) % 2 == 0] = fg
     elif style == 'feather':                     # overlapping feather scales
@@ -515,8 +537,9 @@ def build(gid, label, parts, slot='torso'):
     lens = [p.lengths() for p in parts]
     share = np.array([max(0.12, l[1]) for l in lens]); share = share / share.sum()
     img = np.zeros((TEX, TEX, 3))
-    y0, groups = 0, []
+    y0, groups, pfaces = 0, [], []
     for k, (p, (circ, length)) in enumerate(zip(parts, lens)):
+        pfaces.append([])
         h = TEX - y0 if k == len(parts) - 1 else int(round(share[k] * TEX))
         img[y0:y0 + h] = paint_strip(p.paint, TEX, h, circ, length)
         v_top, v_bot = 1 - y0 / TEX, 1 - (y0 + h) / TEX
@@ -530,18 +553,24 @@ def build(gid, label, parts, slot='torso'):
             for j in range(jcount):
                 j2 = (j + 1) % Cn
                 f = bm.faces.new((vs[i][j], vs[i + 1][j], vs[i + 1][j2], vs[i][j2]))
+                pfaces[-1].append(f)
                 for loop, (ii, jj) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
                     u = jj / (Cn if p.closed else Cn - 1)
                     v = v_top - pad - (v_top - v_bot - 2 * pad) * ii / (R - 1)
                     loop[uvl].uv = (u, v)
         y0 += h
     bm.verts.index_update()
-    # faces out of the body: flip the part's faces where they face in (by the first face's centre against the skin)
+    # faces out of the body, a part at a time (a grid's faces wind the same way): flipped together when most of them
+    # face the skin. Face by face, a wing or a horn held off the body would flip back and forth
     bm.normal_update()
-    for f in bm.faces:
-        c = f.calc_center_median()
-        loc, n = nearest(np.array(c[:]))
-        if np.array(f.normal[:]).dot(np.array(c[:]) - loc) < 0: f.normal_flip()
+    for fs in pfaces:
+        vote = 0.0
+        for f in fs:
+            c = np.array(f.calc_center_median()[:])
+            loc, n = nearest(c)
+            vote += np.sign(np.array(f.normal[:]).dot(c - loc)) * f.calc_area()
+        if vote < 0:
+            for f in fs: f.normal_flip()
     bm.to_mesh(me); bm.free()
     obj = bpy.data.objects.new(gid, me)
     bpy.context.collection.objects.link(obj)
@@ -966,6 +995,142 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# shapes for the Moebius line (LORE.md 5): bands across the body, horns, wings, brims, collars and crests
+def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=3, iters=2):
+    """a band round the torso on a tilted plane: highest (z_high) on the side at angle 'high' (0 the back, +pi/2 the
+    body's left), lowest opposite: a bandolier or a himation over the left shoulder to the right hip, the strap of an
+    exomis"""
+    zm, amp = (z_high + z_low) / 2, (z_high - z_low) / 2
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    Q = []
+    for r in range(rows):
+        dz = (r / (rows - 1) - 0.5) * width
+        row = []
+        for a in angles:
+            z = zm + amp * math.cos(a - high) - dz
+            c = spine_at(z)
+            d = x * math.cos(a) + y * math.sin(a)
+            h = first_hit(c, d, bvh=BVH_T)
+            row.append(c + d * ((h if h is not None else 0.14) + ease))
+        Q.append(row)
+    Q = smooth_push(np.array(Q), True, ease, iters=iters, bvh=BVH_T)
+    return Part(name, Q, True, ['body'] * rows, paint)
+
+
+def horn(name, path, r0, r1, paint, n=10, rows=10):
+    """a tapering tube along a path, closed at its tip: a horn, a quill, a spike"""
+    pts = np.array(path, float)
+    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
+    x, _ = frame(pts[1] - pts[0])
+    Q = []
+    for k in range(rows):
+        sd = cum[-1] * k / (rows - 1)
+        i = min(len(seg) - 1, int(np.searchsorted(cum, sd, side='right') - 1))
+        c = pts[i] + (pts[i + 1] - pts[i]) * (sd - cum[i]) / seg[i]
+        t = (pts[i + 1] - pts[i]) / seg[i]
+        x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
+        r = r0 + (r1 - r0) * k / (rows - 1)
+        Q.append([c + (x * math.cos(a) + y * math.sin(a)) * r for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
+    return Part(name, np.array(Q), True, ['body'] * rows, paint)
+
+
+def head_frame():
+    a, b = J('Head'), J('Head', 'tail')
+    up = (b - a) / np.linalg.norm(b - a)
+    bk = np.array([0, 1.0, 0]) - up * up[1]; bk /= np.linalg.norm(bk)
+    left = np.cross(bk, up); left /= np.linalg.norm(left)
+    if left[0] < 0: left = -left
+    return a, b, up, bk, left
+
+
+def brim(name, f, width, paint, ease=0.025, rows=4, n=36, droop=0.0, lift=0.0, scallop=0.0):
+    """a flat ring round the head at fraction f of its height, out 'width' past the skin: a hat's brim; its edge
+    droops (or lifts) and can be scalloped"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    Q = []
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    inner = []
+    for an in angles:
+        d = bk * math.cos(an) + left * math.sin(an)
+        h = first_hit(c, d) or 0.09
+        inner.append((d, h + ease))
+    for k in range(rows):
+        s = k / (rows - 1)
+        Q.append([c + d * (r + s * width * (1 + scallop * math.cos(12 * an))) + up * (lift - droop) * s * s for (d, r), an in zip(inner, angles)])
+    return Part(name, np.array(Q), True, ['body'] * rows, paint)
+
+
+def wing(name, side, span, height, paint, rows=6, cols=9, rise=0.04, curl=0.05, f=0.62):
+    """a flat wing out from the side of the head (side +1 left, -1 right): span out, height down, curling back"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    h = first_hit(c, left * side) or 0.08
+    root = c + left * side * (h + 0.02)
+    Q = []
+    for i in range(rows):
+        v = i / (rows - 1)
+        row = []
+        for j in range(cols):
+            u = j / (cols - 1)
+            out = left * side * span * u
+            down = -up * height * (v - 0.25) * (1 + 0.4 * u)
+            row.append(root + out + down + up * rise * u * u + bk * curl * u * u)
+        Q.append(row)
+    return Part(name, np.array(Q), False, ['body'] * rows, paint)
+
+
+def collar_disc(name, width, paint, drop=0.05, rows=4, n=48, scallop=0.12, ease=0.02):
+    """a broad flat collar round the neck lying over the shoulders, its edge scalloped: a shell"""
+    zs = TOP + 0.005
+    c = spine_at(zs)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    Q = []
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    for k in range(rows):
+        s = k / (rows - 1)
+        row = []
+        for an in angles:
+            d = x * math.cos(an) + y * math.sin(an)
+            h = first_hit(c, d, bvh=BVH) or 0.07
+            r = h + ease + s * width * (1 + scallop * abs(math.cos(8 * an)))
+            row.append(c + d * r + np.array([0, 0, -drop * s * s]))
+        Q.append(row)
+    Q = smooth_push(np.array(Q), True, ease, iters=1, fix_top=True)
+    return Part(name, Q, True, ['body'] * rows, paint)
+
+
+def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9):
+    """a crest standing on the head front to back (a helmet's plume): from the skull out by 'height', sweeping back"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * 0.55
+    Q = []
+    for i in range(rows):
+        v = i / (rows - 1)
+        row = []
+        for j in range(cols):
+            phi = a0 + (a1 - a0) * j / (cols - 1)
+            d = up * math.cos(phi) + bk * math.sin(phi)
+            base = first_hit(c, d) or 0.1
+            hh = height * math.sin(math.pi * (j + 0.5) / cols) ** 0.6
+            row.append(c + d * (base + 0.03 + hh * v) + bk * sweep * v)
+        Q.append(row)
+    return Part(name, np.array(Q), False, ['body'] * rows, paint)
+
+
+def pendants(name, z, angles, size, paint, ease=0.04):
+    """small hanging trophies (claws, teeth, shells) round the body at height z, by angle (0 the back, +pi/2 left)"""
+    c = spine_at(z)
+    out = []
+    for k, an in enumerate(angles):
+        d = np.array([math.sin(an), math.cos(an), 0])
+        h = first_hit(c, d, bvh=BVH_T) or 0.14
+        out.append(blob('%s%d' % (name, k), c + d * (h + ease) + np.array([0, 0, -size[2] * 0.6]), size, paint, n=8, rows=5, out=d))
+    return out
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # the Izani (Iziz): science fantasy without the machines. A thousand years in the Ancients' ruins in a rain jungle:
 # wrap tunics, sashes, hoods and leg wraps for the poor; long open coats, belts and pouches and a salvaged Ancient
 # shoulder plate for the guilds; the court in long robes with high collars and the sun of Iziz on a tabard, a gold
@@ -1124,6 +1289,261 @@ def _():
                           B('bottom', 0.065, 0.13, 'orb', 'gold', 'cream', 0.09), B('bottom', 0.135, 0.145, 'solid', 'verdigris'),
                           B('top', 0.0, 0.03, 'solid', 'copper')])
     return [torso_tube('iziz_f_noble_skirt', WAIST + 0.015, 0.035, 0.007, p, hang_from=CROTCH + 0.06, flare=0.3, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST)]
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# the Beast Riders (Mav's Refuge, Girder): Mongol and Apache, in the Moebius line. Tribesfolk in fringed buckskin over
+# leggings and a breechcloth, knee moccasins, a headband; riders in the deel (the Mongol wrap coat) with a sash and a
+# stack of animal belts (tiger, snake, tooth and claw), trophies hanging, a bandolier, a fur-brimmed hat with quills;
+# chiefs in the tribes' green with bone pauldrons, a quetzal mantle, horns (men) or the Khalkha wings (women)
+BELTS = {'tiger': lambda: P('saffron', 0.03, [B('top', 0.0, 0.2, 'tiger', 'darkfur', 'saffron', 0.06)]),
+         'snake': lambda: P('jungle', 0.03, [B('top', 0.0, 0.2, 'feather', 'mint', 'jungle', 0.03)]),
+         'teeth': lambda: P('darkfur', 0.04, [B('top', 0.0, 0.04, 'teeth', 'bone', 'darkfur', 0.03)]),
+         'claw': lambda: P('maroon', 0.03, [B('top', 0.0, 0.2, 'claw', 'bone', 'maroon', 0.06)]),
+         'beads': lambda: P('turq', 0.02, [B('top', 0.0, 0.2, 'beads', 'rose', 'turq', 0.03)])}
+
+
+def animal_belts(gid, kinds, ease0=0.028, z0=None, trophies=3):
+    """belts stacked from the waist down over the hips, each a beast's (BELTS), and trophies hanging off the lowest"""
+    z = WAIST + 0.02 if z0 is None else z0
+    parts = []
+    for k, kind in enumerate(kinds):
+        parts.append(torso_tube('%s_belt%d' % (gid, k), z, z - 0.04, ease0 + 0.008 * k, BELTS[kind](), rows=3, n=40, hull_from=WAIST + 0.1))
+        z -= 0.042
+    if trophies:
+        parts += pendants(gid + '_trophy', z + 0.01, np.linspace(-0.9, 0.9, trophies) + math.pi, (0.02, 0.012, 0.05), P('bone', 0.02), ease=ease0 + 0.03)
+    return parts
+
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _bshirt(sex=sex):
+        gid = 'beast_%s_peasant_shirt' % sex
+        body = P('buck', 0.05, [B('top', 0.0, 0.015, 'solid', 'maroon'), B('top', 0.03, 0.07, 'beads', 'turq', 'buck', 0.03),
+                                B('top', 0.075, 0.085, 'solid', 'maroon'), B('bottom', 0.0, 0.07, 'rays', 'buck', 'fur', 0.012),
+                                B('bottom', 0.07, 0.085, 'solid', 'turq')])
+        sl = P('buck', 0.05, [B('bottom', 0.0, 0.04, 'rays', 'buck', 'fur', 0.012)])
+        hem = CROTCH - 0.12 if sex == 'm' else KNEE - 0.04
+        return [torso_tube(gid, TOP, hem, 0.014, body, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+            sleeves(gid, 'elbow', 0.02, sl, ease_end=0.035, rows=6) + animal_belts(gid, ['claw', 'teeth']) + \
+            [band(gid + '_bandolier', CROTCH + 0.04, SHOULDER + 0.03, 0.035, 0.03, BELTS['beads']())]
+    GARMENTS['beast_%s_peasant_shirt' % sex] = ('torso', b, 'Fringed shirt and belts', _bshirt)
+
+    def _btrou(sex=sex):
+        gid = 'beast_%s_peasant_trousers' % sex
+        parts = trousers(gid, P('buck', 0.05, [B('bottom', 0.0, 0.03, 'rays', 'buck', 'fur', 0.012)]), ease=0.008, ease_end=0.01, cuff=ANKLE + 0.03)
+        if sex == 'm':                       # the breechcloth over the leggings, front and back
+            cloth_ = P('mongolblue', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.03, 0.08, 'claw', 'bone', 'mongolblue', 0.08),
+                                             B('top', 0.0, 0.02, 'solid', 'maroon')])
+            for side, out in (('front', np.array([0, -1.0, 0])), ('back', np.array([0, 1.0, 0]))):
+                parts.append(flap('%s_%s' % (gid, side), _out(spine_at(WAIST - 0.04), out, 0.03), 0.2, WAIST - 0.04 - (KNEE + 0.02), out, cloth_,
+                                  group_below=CROTCH + 0.02, sway=0.03))
+        return parts
+    GARMENTS['beast_%s_peasant_trousers' % sex] = ('legs', b, 'Leggings and breechcloth', _btrou)
+
+    def _bmocc(sex=sex):
+        return boots('beast_%s_peasant_moccasins' % sex, P('fur', 0.08), P('buck', 0.05, [B('top', 0.0, 0.03, 'beads', 'turq', 'buck', 0.025)]),
+                     top=0.72, ease_top=0.022, cuff_paint=P('buck', 0.05, [B('bottom', 0.0, 0.03, 'rays', 'buck', 'fur', 0.01)]))
+    GARMENTS['beast_%s_peasant_moccasins' % sex] = ('feet', b, 'Knee moccasins', _bmocc)
+
+    def _bband(sex=sex):
+        gid = 'beast_%s_peasant_headband' % sex
+        a_, b_, up, bk, left = head_frame()
+        c = a_ + (b_ - a_) * 0.66
+        t = flap(gid + '_tail', _out(c, bk, 0.03), 0.05, 0.32, bk, P('rose', 0.03, [B('bottom', 0.0, 0.04, 'rays', 'rose', 'maroon', 0.01)]),
+                 cols=3, rows=8, ease=0.025, sway=0.02)
+        t.cloth['layer'] = 2
+        return [head_rings(gid, 0.6, 0.72, 0.012, P('rose', 0.02, [B('top', 0.0, 0.2, 'beads', 'turq', 'rose', 0.03)]), n=36, rows=3), t]
+    GARMENTS['beast_%s_peasant_headband' % sex] = ('head', b, 'Headband', _bband)
+
+    def _bdeel(sex=sex):
+        gid = 'beast_%s_trade_deel' % sex
+        # the deel closes over to the right: its edge a saffron stripe off the front
+        deel = P('mongolblue', 0.03, [B('top', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.0, 0.03, 'solid', 'saffron'),
+                                      B('bottom', 0.03, 0.09, 'claw', 'saffron', 'mongolblue', 0.1)],
+                 [PN(0.40, 0.425, 'solid', 'saffron', 'saffron')])
+        sl = P('mongolblue', 0.03, [B('bottom', 0.0, 0.06, 'solid', 'saffron'), B('bottom', 0.06, 0.07, 'solid', 'maroon')])
+        hem = KNEE - 0.16 if sex == 'm' else ANKLE + 0.14
+        return [torso_tube(gid, TOP, hem, 0.014, deel, hang_from=WAIST - 0.04, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                izani_collar(gid, P('saffron', 0.02, [B('top', 0.0, 0.012, 'solid', 'maroon')]), high=0.075),
+                pauldron(gid + '_fur', R, P('darkfur', 0.08, [B('top', 0.0, 0.3, 'feather', 'fur', 'darkfur', 0.025)]), reach=0.55, ease=0.03)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.03, rows=9) + \
+            [torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.026, P('saffron', 0.03), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            animal_belts(gid, ['tiger', 'snake', 'teeth'], ease0=0.034, z0=WAIST - 0.035, trophies=4) + \
+            [band(gid + '_bandolier', WAIST + 0.02, SHOULDER + 0.03, 0.04, 0.032, BELTS['teeth'](), high=-math.pi / 2)]
+    GARMENTS['beast_%s_trade_deel' % sex] = ('torso', b, 'Rider\'s deel and animal belts', _bdeel)
+
+    def _btrou2(sex=sex):
+        return trousers('beast_%s_trade_trousers' % sex, P('darkfur', 0.05), ease=0.012, ease_end=0.016, cuff=ANKLE + 0.06)
+    GARMENTS['beast_%s_trade_trousers' % sex] = ('legs', b, 'Riding trousers', _btrou2)
+
+    def _bboot(sex=sex):
+        return boots('beast_%s_trade_boots' % sex, P('darkfur', 0.08), P('maroon', 0.03, [B('top', 0.0, 0.03, 'solid', 'saffron'), B('top', 0.04, 0.1, 'claw', 'saffron', 'maroon', 0.07)]),
+                     top=0.66, cuff_paint=P('fur', 0.1, [B('top', 0.0, 0.3, 'feather', 'darkfur', 'fur', 0.02)]))
+    GARMENTS['beast_%s_trade_boots' % sex] = ('feet', b, 'Riding boots', _bboot)
+
+    def _bhat(sex=sex):
+        gid = 'beast_%s_trade_hat' % sex
+        a_, b_, up, bk, left = head_frame()
+        top = b_ + up * 0.04
+        quills = []
+        for side in (-1, 1):                  # two quills swept back from the crown (the Moebius line)
+            quills.append(horn('%s_quill%d' % (gid, side + 1), [top - bk * 0.02 + left * side * 0.02, top + up * 0.12 + bk * 0.08 + left * side * 0.07,
+                                                                 top + up * 0.22 + bk * 0.22 + left * side * 0.12], 0.008, 0.002, P('bone', 0.02, [B('bottom', 0.0, 0.05, 'solid', 'maroon')]), n=8, rows=8))
+        return [head_rings(gid, 0.5, 1.0, 0.03, P('maroon', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'saffron')]), n=32, rows=7, apex=True),
+                brim(gid + '_brim', 0.55, 0.045, P('fur', 0.1, [B('top', 0.0, 0.3, 'feather', 'darkfur', 'fur', 0.02)]), lift=0.035),
+                horn(gid + '_spike', [b_ + up * 0.01, b_ + up * 0.09], 0.012, 0.003, P('saffron', 0.02))] + quills
+    GARMENTS['beast_%s_trade_hat' % sex] = ('head', b, 'Fur hat and quills', _bhat)
+
+    def _bnboot(sex=sex):
+        return boots('beast_%s_noble_boots' % sex, P('darkfur', 0.06), P('jungle', 0.03, [B('top', 0.0, 0.03, 'solid', 'saffron'), B('top', 0.04, 0.12, 'claw', 'bone', 'jungle', 0.07)]),
+                     top=0.66, cuff_paint=P('bone', 0.02, [B('top', 0.0, 0.3, 'teeth', 'darkfur', 'bone', 0.025)]))
+    GARMENTS['beast_%s_noble_boots' % sex] = ('feet', b, 'Chief\'s boots', _bnboot)
+
+    def _bndeel(sex=sex):
+        gid = 'beast_%s_noble_deel' % sex
+        deel = P('jungle', 0.03, [B('top', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.0, 0.02, 'solid', 'saffron'),
+                                  B('bottom', 0.02, 0.12, 'claw', 'saffron', 'jungle', 0.12), B('bottom', 0.12, 0.135, 'solid', 'mint')],
+                 [PN(0.40, 0.43, 'beads', 'turq', 'saffron', 0.04)])
+        sl = P('jungle', 0.03, [B('bottom', 0.0, 0.07, 'feather', 'mint', 'jungle', 0.03), B('bottom', 0.07, 0.085, 'solid', 'saffron')])
+        mantle = P('turq', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'saffron'), B('bottom', 0.03, 0.4, 'feather', 'jungle', 'turq', 0.05),
+                                  B('top', 0.0, 0.03, 'solid', 'saffron')])
+        bonep = P('bone', 0.03, [B('top', 0.0, 0.3, 'stripes', 'peach', 'bone', 0.0)])
+        parts = [torso_tube(gid, TOP, ANKLE + 0.1, 0.014, deel, hang_from=WAIST - 0.04, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                 izani_collar(gid, P('saffron', 0.02, [B('top', 0.0, 0.012, 'solid', 'jungle')]), high=0.085),
+                 cape(gid + '_mantle', KNEE - 0.05, mantle, flare=0.25, span=1.35, ease=0.036, top=TOP - 0.03)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.04, rows=9) + \
+            [torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.026, P('saffron', 0.03), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            animal_belts(gid, ['claw', 'tiger', 'snake', 'teeth'], ease0=0.034, z0=WAIST - 0.035, trophies=6) + \
+            [band(gid + '_bandolier', WAIST + 0.0, SHOULDER + 0.03, 0.045, 0.034, BELTS['teeth']())]
+        if sex == 'm':                        # bone plates over both shoulders, outsized
+            parts += [pauldron(gid + '_plateL', L, bonep, reach=0.6, ease=0.04), pauldron(gid + '_plateR', R, bonep, reach=0.6, ease=0.04)]
+        return parts
+    GARMENTS['beast_%s_noble_deel' % sex] = ('torso', b, 'Chief\'s deel, mantle and belts', _bndeel)
+
+
+@garment('beast_m_noble_horns', 'head', 'male', 'Horned fur cap')
+def _():
+    gid = 'beast_m_noble_horns'
+    a_, b_, up, bk, left = head_frame()
+    c = a_ + (b_ - a_) * 0.78
+    hornp = P('bone', 0.03, [B('top', 0.0, 0.05, 'solid', 'saffron'), B('top', 0.05, 0.5, 'stripes', 'peach', 'bone', 0.0)])
+    horns = [horn('%s_horn%d' % (gid, k), [c + left * sd * 0.06, c + left * sd * 0.17 + up * 0.05, c + left * sd * 0.24 + up * 0.17 + bk * 0.04,
+                                            c + left * sd * 0.21 + up * 0.31 + bk * 0.13], 0.042, 0.006, hornp, n=14, rows=14)
+             for k, sd in enumerate((-1, 1))]
+    return [head_rings(gid, 0.45, 1.0, 0.03, P('darkfur', 0.08, [B('top', 0.0, 0.5, 'feather', 'fur', 'darkfur', 0.025)]), n=32, rows=7, apex=True),
+            head_rings(gid + '_band', 0.55, 0.64, 0.04, P('saffron', 0.02, [B('top', 0.0, 0.2, 'claw', 'jungle', 'saffron', 0.05)]), n=36, rows=3)] + horns
+
+
+@garment('beast_f_noble_wings', 'head', 'female', 'Winged headdress')
+def _():
+    gid = 'beast_f_noble_wings'
+    wp = P('jungle', 0.03, [B('top', 0.0, 0.025, 'solid', 'saffron'), B('bottom', 0.0, 0.025, 'solid', 'saffron'),
+                            B('top', 0.03, 0.2, 'feather', 'mint', 'jungle', 0.04)])
+    a_, b_, up, bk, left = head_frame()
+    parts = [head_rings(gid, 0.5, 1.0, 0.025, P('darkfur', 0.06, [B('bottom', 0.0, 0.03, 'beads', 'turq', 'darkfur', 0.03)]), n=32, rows=7, apex=True),
+             wing(gid + '_wingL', 1, 0.24, 0.16, wp), wing(gid + '_wingR', -1, 0.24, 0.16, wp)]
+    for sd in (-1, 1):                         # strands of beads and teeth hanging from each wing's tip
+        tip = a_ + (b_ - a_) * 0.62 + left * sd * 0.32 - up * 0.08 + bk * 0.04
+        for k in range(3):
+            parts.append(blob('%s_bead%d_%d' % (gid, sd + 1, k), tip - up * 0.035 * k, (0.022, 0.022, 0.026), P('turq' if k % 2 else 'bone', 0.02), n=8, rows=5))
+    return parts
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# the Hykkousoi (Ys): Greek and Roman, of the sea, in the Moebius line. Sailors in the exomis (the right shoulder and
+# the gills bare) or a short chiton, a rope belt, sandals and a broad petasos; marines in a cuirass of nacre ribs over
+# a tunic, a strip skirt, a short cloak, bronze greaves and a crested helmet; the Archon's court in long sea-linen,
+# a shell collar, the himation over the left shoulder, a diadem with the wave-sun as a scallop behind the head
+WAVE_HEM = lambda base_, fg: [B('bottom', 0.0, 0.015, 'solid', fg), B('bottom', 0.02, 0.07, 'wave', fg, base_, 0.07), B('bottom', 0.075, 0.085, 'solid', fg)]
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _hsail(sex=sex):
+        gid = 'hykk_%s_peasant_exomis' % sex
+        body = P('sealinen', 0.04, WAVE_HEM('sealinen', 'slateblue'))
+        rope = P('olive', 0.05, [B('top', 0.0, 0.2, 'rays', 'sand', 'olive', 0.02)])
+        if sex == 'm':                       # from under the arms, held up by a strap over the left shoulder
+            return [torso_tube(gid, CHEST - 0.02, CROTCH - 0.16, 0.016, body, hang_from=WAIST - 0.02, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.05),
+                    band(gid + '_strap', CHEST - 0.06, SHOULDER + 0.035, 0.05, 0.012, P('sealinen', 0.04, [B('top', 0.0, 0.01, 'solid', 'slateblue')])),
+                    torso_tube(gid + '_rope', WAIST + 0.02, WAIST - 0.02, 0.026, rope, rows=3, n=40, hull_from=WAIST + 0.1)]
+        return [torso_tube(gid, TOP, KNEE - 0.02, 0.014, body, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_rope', CHEST - 0.06, CHEST - 0.09, 0.02, rope, rows=3, n=40)] + \
+            sleeves(gid, 0.35, 0.024, P('sealinen', 0.04, [B('bottom', 0.0, 0.012, 'solid', 'slateblue')]), ease_end=0.04, rows=4)
+    GARMENTS['hykk_%s_peasant_exomis' % sex] = ('torso', b, 'Exomis and rope' if sex == 'm' else 'Short chiton and rope', _hsail)
+
+    def _hsand(sex=sex):
+        return sandal('hykk_%s_sandals' % sex, P('olive', 0.08), P('leather', 0.06))
+    GARMENTS['hykk_%s_sandals' % sex] = ('feet', b, 'Sea sandals', _hsand)
+
+    def _hhat(sex=sex):
+        gid = 'hykk_%s_peasant_hat' % sex
+        straw = P('sand', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'slateblue')])
+        return [head_rings(gid, 0.62, 1.0, 0.03, straw, n=32, rows=5, apex=True),
+                brim(gid + '_brim', 0.64, 0.17, P('sand', 0.06, [B('bottom', 0.0, 0.015, 'solid', 'slateblue'), B('top', 0.0, 0.2, 'rays', 'peach', 'sand', 0.02)]),
+                     droop=0.03, rows=5, n=40)]
+    GARMENTS['hykk_%s_peasant_hat' % sex] = ('head', b, 'Petasos', _hhat)
+
+    def _hlor(sex=sex):
+        gid = 'hykk_%s_trade_lorica' % sex
+        tunic = P('slateblue', 0.03, WAVE_HEM('slateblue', 'nacre'))
+        # the cuirass in ribs of nacre, pink and green by turns (the gills it covers)
+        ribs = P('nacre', 0.02, [B('top', 0.03 + 0.05 * k, 0.05 + 0.05 * k, 'solid', 'ribpink' if k % 2 else 'ribgreen') for k in range(9)] +
+                 [B('top', 0.0, 0.02, 'solid', 'bronze'), B('bottom', 0.0, 0.02, 'solid', 'bronze')])
+        plates = P('nacre', 0.02, [B('top', 0.02 + 0.04 * k, 0.035 + 0.04 * k, 'solid', 'ribgreen') for k in range(5)])
+        cloak = P('deepsea', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'bronze'), B('bottom', 0.02, 0.07, 'wave', 'slateblue', 'deepsea', 0.08)])
+        return [torso_tube(gid + '_tunic', TOP, CROTCH - 0.12, 0.012, tunic, hang_from=WAIST - 0.03, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid, TOP - 0.01, WAIST - 0.05, 0.03, ribs, hull_from=CHEST + 0.02, rows=12),
+                pauldron(gid + '_plateL', L, plates, reach=0.5, ease=0.036), pauldron(gid + '_plateR', R, plates, reach=0.5, ease=0.036),
+                cape(gid + '_cloak', CROTCH - 0.05, cloak, flare=0.2, span=1.2, ease=0.04, top=TOP - 0.03)] + \
+            sleeves(gid, 0.4, 0.02, P('slateblue', 0.03), ease_end=0.03, rows=4)
+    GARMENTS['hykk_%s_trade_lorica' % sex] = ('torso', b, 'Nacre cuirass and cloak', _hlor)
+
+    def _hpter(sex=sex):
+        p = P('leather', 0.03, [B('top', 0.0, 0.03, 'solid', 'bronze'), B('top', 0.03, 0.4, 'rays', 'bronze', 'leather', 0.05),
+                                B('bottom', 0.0, 0.02, 'solid', 'bronze')])
+        return [torso_tube('hykk_%s_trade_pteruges' % sex, WAIST - 0.03, CROTCH - 0.16, 0.034, p, hang_from=CROTCH + 0.06, flare=0.2, group_below=CROTCH + 0.04,
+                           rows=12, hull_from=WAIST)]
+    GARMENTS['hykk_%s_trade_pteruges' % sex] = ('legs', b, 'Strip skirt', _hpter)
+
+    def _hgreave(sex=sex):
+        return sandal('hykk_%s_trade_greaves' % sex, P('olive', 0.06), P('leather', 0.05), guard=True, laces=3,
+                      greave=P('bronze', 0.03, [B('top', 0.0, 0.01, 'solid', 'deepsea'), B('top', 0.02, 0.4, 'stripes', 'bronze', 'olive', 0.0)]))
+    GARMENTS['hykk_%s_trade_greaves' % sex] = ('feet', b, 'Laced sandals and greaves', _hgreave)
+
+    def _hhelm(sex=sex):
+        gid = 'hykk_%s_trade_helm' % sex
+        return [head_rings(gid, 0.52, 1.0, 0.02, P('bronze', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'deepsea'), B('bottom', 0.03, 0.06, 'wave', 'nacre', 'bronze', 0.05)]),
+                           n=36, rows=8, apex=True),
+                crest(gid + '_crest', 0.15, P('deepsea', 0.03, [B('bottom', 0.0, 0.025, 'solid', 'bronze'), B('top', 0.0, 0.02, 'solid', 'gold'),
+                                                              B('top', 0.02, 0.4, 'rays', 'slateblue', 'deepsea', 0.014)]))]
+    GARMENTS['hykk_%s_trade_helm' % sex] = ('head', b, 'Crested helmet', _hhelm)
+
+    def _hnob(sex=sex):
+        gid = 'hykk_%s_noble_chiton' % sex
+        body = P('sealinen', 0.03, [B('top', 0.0, 0.015, 'solid', 'gold')] + WAVE_HEM('sealinen', 'gold'))
+        shell = P('nacre', 0.02, [B('top', 0.0, 0.3, 'rays', 'nacrepink', 'nacre', 0.025), B('bottom', 0.0, 0.012, 'solid', 'gold')])
+        drape = P('deepsea', 0.03, [B('top', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold'), B('top', 0.03, 0.1, 'wave', 'gold', 'deepsea', 0.09)])
+        back = P('deepsea', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.02, 0.1, 'wave', 'slateblue', 'deepsea', 0.1)])
+        # the chiton hangs from the waist, so the himation lies across cloth that follows the body, ending over the
+        # right hip above the part that swings
+        return [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, body, hang_from=WAIST - 0.03, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                collar_disc(gid + '_shell', 0.11, shell, drop=0.05),
+                band(gid + '_himation', WAIST + 0.04, SHOULDER + 0.03, 0.16, 0.026, drape, rows=6),
+                cape(gid + '_cloak', KNEE - 0.1, back, flare=0.22, span=1.2, ease=0.034, top=TOP - 0.03)] + \
+            sleeves(gid, 'elbow', 0.02, P('sealinen', 0.03, [B('bottom', 0.0, 0.015, 'solid', 'gold')]), ease_end=0.06, rows=7)
+    GARMENTS['hykk_%s_noble_chiton' % sex] = ('torso', b, 'Archon\'s chiton, shell collar and himation', _hnob)
+
+    def _hnsand(sex=sex):
+        return sandal('hykk_%s_noble_sandals' % sex, P('gold', 0.04), P('slateblue', 0.04), guard=True, laces=2, strap_paint2=P('gold', 0.03))
+    GARMENTS['hykk_%s_noble_sandals' % sex] = ('feet', b, 'Gilded sandals', _hnsand)
+
+    def _hcrown(sex=sex):
+        gid = 'hykk_%s_noble_crown' % sex
+        h = fan(gid, 0.06, 0.26 if sex == 'm' else 0.22, 1.5, P('gold', 0.02, [B('top', 0.0, 0.4, 'rays', 'ribpink', 'gold', 0.03), B('bottom', 0.0, 0.03, 'solid', 'deepsea'),
+                                                                               B('top', 0.0, 0.02, 'solid', 'ribgreen')]),
+                rows=6, cols=19, tilt=0.18, back=0.09, curl=0.03)
+        h.cloth = None                        # the wave-sun: a scallop of nacre on gold, rigid
+        return [head_rings(gid + '_band', 0.6, 0.7, 0.012, P('gold', 0.02, [B('top', 0.0, 0.2, 'wave', 'slateblue', 'gold', 0.04)]), n=36, rows=3), h]
+    GARMENTS['hykk_%s_noble_crown' % sex] = ('head', b, 'Wave-sun diadem', _hcrown)
 
 
 # ---------------------------------------------------------------------------------------------------------------
