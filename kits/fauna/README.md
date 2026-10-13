@@ -40,7 +40,8 @@ yields and life; **Polygon (P)**.
 ## Meshy model variants
 
 Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
-cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. Today: the four giant flyers, the draught
+cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. `mdl` may also be a list of groups: only
+their models are packed (the Voth city takes the pets' two without the farm's dozen). Today: the four giant flyers, the draught
 millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:

@@ -3219,7 +3219,7 @@ SEDESERT.buildFauna=function(R,q){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
     var m=minute==null?SIM.minute():minute;
     if(a.cmd){ if(m<a.cmd.until) return a.cmd.act; if(m===SIM.minute()){ a.cmd=null; } }          /* a forced command (SIM.command), until it ends */
-    var s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
+    var ml=m-SIM.lagOf(a), s=schedOf(a, ml), act=s ? s[hourOf(ml)] : 'IDLE';                 /* its own day runs `lag` minutes behind the clock */
     if(SIM.ITEMS) act=SIM.itemsDesire(a, m, act);                                /* an errand (77-sim-6-items.js), opt-in */
     return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
@@ -3453,6 +3453,11 @@ SEDESERT.buildFauna=function(R,q){
      clauses (SIM.needsWake, SIM.itemsWake: a dwell ending, a meter crossing, an errand done, a tool worn through); at
      once while its wish and its decision differ (a decision the minute's budget left for the next) */
   SIM.WAKE = false; SIM.skipped = 0; SIM.stepHooks = SIM.stepHooks || [];
+  /* THE LAG (opt-in: SIM.LAG minutes): each actor's day runs a few minutes behind the clock, by a hash of the actor
+     (0..LAG), so a change of schedule falls due over the hour's first minutes, not all at :00 (the hour's turn: the
+     minute everyone decides at once). Its schedule, its weekday and its wake all read the lagged minute */
+  SIM.LAG = SIM.LAG || 0;
+  SIM.lagOf = function(a){ if(!SIM.LAG) return 0; if(a.lagFor!==SIM.LAG){ a.lagFor=SIM.LAG; a.lag=((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1); } return a.lag; };
   /* A FORCED COMMAND: the actor does `act` at `place` (and at `spot`, when given) from now until `until` (a world
      minute; `mins` from now), whatever its schedule, needs and errands want; then it is free again. Asked at once (its
      wake cleared). An arena's handler sending a beast onto the sand, later a sergeant's order */
@@ -3463,11 +3468,11 @@ SEDESERT.buildFauna=function(R,q){
     if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
     /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
        or in free time (the items' hourly looks: a shop open, the household's store) */
-    var sc=SIM.schedOf(a, minute), h=Math.floor((minute%1440)/60), nh=h+1, midnight=minute-minute%1440+1440;
+    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=Math.floor((ml%1440)/60), nh=h+1, midnight=ml-ml%1440+1440+lg;   /* on its own (lagged) day */
     if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
-    var w=Math.min(midnight, minute-minute%60+(nh-h)*60), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    var w=Math.min(midnight, ml-ml%60+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
     if(a.cmd) w=Math.min(w, a.cmd.until);                                           /* a command's end */
-    if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60);
+    if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60+lg);   /* the items' hourly look, its lag after the hour */
     if(a.task.failed) w=Math.min(w, minute-minute%15+15);
     if(cyc && a.since!=null) w=Math.min(w, a.since+cyc);
     if(SIM.NEED) w=Math.min(w, SIM.needsWake(a, minute, sc ? sc[h] : a.wanted));

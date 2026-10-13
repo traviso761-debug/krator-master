@@ -4,6 +4,27 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: the lag (the hour's turn spread), and the pets
+
+The owner: "Do the decision spreading for further optimization. Also add 1 dog and 1 cat per 40 citizens. Both will
+have no food demand for now but will wander the city and seek socialize (pets) from time to time."
+- **The lag** (core `SIM.LAG`, `TUNE.sim.run.lag` 10): each actor's day runs a hashed 0-10 minutes behind the clock
+  (its schedule, weekday and wake read the lagged minute), so a schedule change falls due over the hour's first
+  minutes. The probe's worst minute fell from about 4 s (6,000 decisions, the budget) to 2.5 s (3,103); nothing
+  waits (2 pending at 10:00), everyone who wants to work is at work.
+- **The pets** (`47-vc-sim-animals.js`, `TUNE.sim.animals.pets`): 1,334 dogs and 1,334 cats (one of each per 40 of
+  the 53,387 citizens and slaves), each in a household by a hash, asleep at home by night, roaming the greens and
+  squares by day (moving on every two hours) and mingling where people gather by their meters; no hunger or thirst. Nowhere
+  to go, they stay home (not the citizens' places). Drawn from the fauna kit's baked dog and cat models: the bundle
+  now takes models for chosen groups only (`mdl=['pets']`), the page 10.4 MB.
+- **Cost** (an A/B on the rest day's morning, 7-12, in one page): the lag leaves the total as it was (43 s against
+  44 s) and lowers the worst minute (2.2 s against 2.6 s), raising p90 a little (210 against 172 ms: the hour's work
+  moves into its next minutes); the pets add about a fifth (44 s against 36 s, 169k decisions against 141k: each is
+  mobile all day and decided about twice an hour), so they now move on every two hours. A pet's decision is a
+  citizen's (a place search and a lazy path); a cheaper wander (a random walk along the street graph near home, no
+  place search) is the next saving if it matters. The verify's rest day is its first after the workdays and reads
+  higher (p50 157 ms) than a second run (69 ms).
+
 ## 2026-10-13: phase E session 2 (the carriers) and the animals
 
 The owner: "Continue" (phase E's second session), then, mid-way: "Pull in the fauna work from the other session. We can

@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 620 (68%) | 0 (0%) | 0 (0%) | 257 (28%) | 32 (3%) |
+| KB | 625 (68%) | 0 (0%) | 0 (0%) | 257 (28%) | 32 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `targets/voth-city/00-head.html` | 10.5 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `targets/voth-city/15-vc-tune.js` | 75.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/voth-city/15-vc-tune.js` | 77.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/voth-city/30-vc-site.js` | 37.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | the site read into the plan: ground, landmarks, districts, avenues, highways, wall |
 | `targets/voth-city/31-vc-voth.js` | 46.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 108 | 0 | 0 | 0 | 0 | 0 | where Voth's own builders run; they push primitives (VOTH.PRIMS), no three.js |
 | `targets/voth-city/31b-vc-chinampa.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | the chinampa beds as primitive records (VOTH.PRIMS shim) and flora and hut records; KRAND per bed, no three.js |
@@ -32,11 +32,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/voth-city/44-vc-sim-people.js` | 24.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | phase C: the census's people as SIM actors, jobs dealt by the walk (SIM.nav.field), slaves, the report and its checks |
 | `targets/voth-city/45-vc-sim-items.js` | 10.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | phase D as records: the shops by kit model, the households' stores and messes, every citizen's clothes, tool, arms and gear; the items report |
 | `targets/voth-city/46-vc-sim-economy.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | phase E as records: the producers by kind and kit model, the warehouses and their opening stock, what the items are made of, the carts, the import routes; the economy report |
-| `targets/voth-city/47-vc-sim-animals.js` | 13.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the animals as records: the pens' herds (species, spots, needs), the arena's beasts, its bouts by command and their results; the report |
+| `targets/voth-city/47-vc-sim-animals.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the animals as records: the pens' herds (species, spots, needs), the arena's beasts, its bouts by command and their results; the report |
 | `targets/voth-city/55-vc-host.js` | 54.6 | [web] | 37 | 5 | 11 | 16 | 2 | 14 | 0 | 10 | 3 | 2 | 0 |  |
 | `targets/voth-city/56-vc-interiors-host.js` | 26.1 | [web] | 15 | 0 | 4 | 6 | 3 | 5 | 1 | 7 | 0 | 0 | 0 | the interiors furnished (kits/interiors) and drawn instanced per storey; the cutaway's clipping planes and its keys |
-| `targets/voth-city/56b-vc-building-interiors-host.js` | 50.4 | [web] | 13 | 1 | 11 | 5 | 3 | 2 | 0 | 3 | 2 | 0 | 0 | the kit models probed for their boxes (the one browser step the shells need), a building's interior drawn, the cutaway on any building, the density overlay, the report panel |
-| `targets/voth-city/56c-vc-citizens-host.js` | 18.5 | [web] | 13 | 0 | 0 | 0 | 4 | 11 | 0 | 3 | 0 | 0 | 0 | phase C: the citizens stepped from the frame loop, the near ones drawn (instanced figures), the day run headless (VC.simDay) |
+| `targets/voth-city/56b-vc-building-interiors-host.js` | 50.5 | [web] | 13 | 1 | 11 | 5 | 3 | 2 | 0 | 3 | 2 | 0 | 0 | the kit models probed for their boxes (the one browser step the shells need), a building's interior drawn, the cutaway on any building, the density overlay, the report panel |
+| `targets/voth-city/56c-vc-citizens-host.js` | 18.6 | [web] | 13 | 0 | 0 | 0 | 4 | 11 | 0 | 3 | 0 | 0 | 0 | phase C: the citizens stepped from the frame loop, the near ones drawn (instanced figures), the day run headless (VC.simDay) |
 | `targets/voth-city/57-vc-marks.js` | 10.5 | [web] | 8 | 0 | 8 | 12 | 0 | 3 | 0 | 0 | 1 | 2 | 2 |  |
 | `targets/voth-city/58-vc-tools.js` | 25.6 | [web] | 14 | 1 | 7 | 15 | 0 | 5 | 0 | 0 | 2 | 1 | 1 | the dev tools: Paths (Voth's pathviz), the pin (G, F), the plan editor |
 | `targets/voth-city/59-vc-flora-edit.js` | 10.4 | [web] | 3 | 0 | 2 | 2 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | the editor's flora mode: pick, delete (hide the tree's instances and triangles), plant; the swbay veto and record hooks |

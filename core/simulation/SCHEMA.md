@@ -116,6 +116,11 @@ latest), hourly with an errand waiting or in free time, a failed task's retry, a
 items' clauses (`SIM.needsWake`: a dwell ending, a meter reaching an interrupt; `SIM.itemsWake`: an errand done, a tool
 worn through; a command's end). An actor whose wish and decision differ is asked again the next minute. A jump clears every wake.
 
+**The lag** (opt-in: `SIM.LAG` minutes, `77-sim-3-actors.js`). Each actor's day runs `SIM.lagOf(a)` minutes (a hash
+of the actor, 0 to `LAG`) behind the clock: its schedule, its weekday and its wake read the lagged minute, so a change
+of schedule falls due over the hour's first minutes instead of all at :00 (the hour's turn), and its wish and decision
+stay consistent (nothing waits).
+
 ## Navigation layers
 
 `pedestrian` (people), `road` (wheels and caravans: routes ask `minW`), `water` (boats), `animal` (riders across

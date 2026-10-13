@@ -280,10 +280,11 @@ def interiors_fragment():
 def fauna_fragment():
     """kits/fauna's Voth group (the arena tiger, the pit lizard, the giant and staghorn beetles) for the Arena's stables
     and its bouts, and its farm group (the cattle, the pig, the duck) for the ranches' herds (47-vc-sim-animals.js), as
-    fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours)"""
+    fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours); and its pets group
+    with their baked models only (the dog and the cat are models: about 1.9 MB), for the city's pets"""
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
     import fauna_bundle
-    return fauna_bundle.bundle(['voth', 'farm'], tex=False) + NL
+    return fauna_bundle.bundle(['voth', 'farm', 'pets'], tex=False, mdl=['pets']) + NL
 
 
 def voth_pathviz_fragment():

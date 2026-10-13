@@ -449,6 +449,7 @@ VC.peopleReportHTML = function () {
         '; ' + f(AR2.hurt) + ' beasts healing.' + ((AS.why || []).length ? ' <span class="bad">' + AS.why.join('; ') + '</span>' : '') + '</div>';
       h += '<div>Slaughtered for meat (a newborn in each one\u2019s place, a year to grow): ' + (Object.keys(AR2.slaughter).map(function (k) { return k + ' ' + f(AR2.slaughter[k].n) + ' (' + f(Math.round(AR2.slaughter[k].servings)) + ' servings)'; }).join(', ') || 'none yet') +
         '. Young now: ' + o4(AR2.young) + (AR2.nextSlaughterMins != null ? '; the next grown in ' + Math.round(AR2.nextSlaughterMins / 60) + ' hours' : '') + '.</div>';
+      if (AR2.pets) h += '<div>Pets (a dog and a cat for every ' + AR2.petsPer + ' citizens, no food yet): ' + o4(AR2.pets) + '; their hours so far: ' + o4(AR2.petHours) + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

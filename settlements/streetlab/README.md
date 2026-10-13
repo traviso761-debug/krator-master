@@ -589,11 +589,16 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   (the arena tiger, the pit lizard, the pit beetle) on the same needs; at 11:00 and 16:00 a bout: the keepers' forced
   command (core `SIM.command`) puts two sound beasts on the sand to fight, the stronger by mass, aggression and
   condition wins, and the loser heals three days. `VC.arenaBout(a, b)` stages one by hand. The nearest 40 animals are
-  drawn by the fauna kit, walking, grazing, resting or idling as they do.
+  drawn by the fauna kit, walking, grazing, resting or idling as they do. **The pets** (owner, 2026-10-13): a dog and
+  a cat for every 40 citizens, each in a household; asleep at home by night, by day they roam the greens and squares
+  (moving on every two hours) and now and then mingle where people gather, by their own meters; no food yet. Drawn
+  from the fauna kit's baked dog and cat models (`fauna_bundle.bundle(..., mdl=['pets'])`, about 1.9 MB of the page).
 * **The wake** (`TUNE.sim.run.wake`, core/simulation `SIM.WAKE`): an actor is asked what it wants only at the soonest
   minute it could change (its schedule's next change, an errand's or a dwell's end, a meter's crossing, a role's
   cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to
-  about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks.
+  about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks. **The lag** (`TUNE.sim.run.lag`, core
+  `SIM.LAG`): each citizen's day runs a hashed 0 to 10 minutes behind the clock, so nobody leaves on the dot and the
+  hour's decisions spread over its first minutes instead of all falling at :00.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

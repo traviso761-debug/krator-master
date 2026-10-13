@@ -16,6 +16,9 @@
      - SLAUGHTER AND BIRTH (owner, 2026-10-13): a species' `meat` share is raised for meat, slaughtered once grown (a
        year: `growDays`) for its meat into the pen's store, a newborn in its place; the young yield nothing (core: herds
        count the grown) and are drawn small (a pig's piglet). Breeding and real maturity times come later.
+     - THE PETS (owner, 2026-10-13): a dog and a cat for every `pets.per` citizens, each in a household (a hash),
+       asleep at home by night; by day they roam the greens and squares, moving on (`cycle`), and now and then mingle
+       where people gather, by their meters (socialize, ease, sleep); no hunger, no thirst for now.
      - THE ARENA: the Arena canton's stables (its interior's `stable` rooms) keep `arena.perStable` beasts each (the
        arena tiger, the pit lizard, the pit beetle), on the same needs. A BOUT (`arena.bouts`: the hours, the minutes):
        its keepers' forced command (core SIM.command) sends two sound beasts from the stables onto the sand, face to
@@ -85,6 +88,31 @@ VC.simAnimals = function () {
   } else out.why.push('no arena');
   if (SIM.stepHooks.indexOf(VC.animalsStep) < 0) SIM.stepHooks.push(VC.animalsStep);
   out.slaughter = {};
+  /* ---- the pets: a dog and a cat for every `per` citizens */
+  var PT = T.pets;
+  if (PT) {
+    ['ROAM', 'MINGLE'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a }); });
+    SIM.all('place').forEach(function (P) { if (PT.kinds.indexOf(P.kind) < 0) return; var soc = P.activities.SOCIALIZE || 0;   /* where they roam and mingle: the greens and squares */
+      P.activities.ROAM = Math.max(P.activities.ROAM || 0, Math.max(10, soc)); P.activities.MINGLE = Math.max(P.activities.MINGLE || 0, Math.max(2, Math.ceil(soc * PT.mingle))); });
+    var citizens = SIM.all('actor').filter(function (a) { return !a.animal && !a.driven && !a.transient; }).length, n = Math.floor(citizens / PT.per);
+    var homes = SIM.all('place').filter(function (P) { return P.kind === 'home' && P.people > 0 && !P.mess; });
+    out.pets = {};
+    Object.keys(PT.species).forEach(function (sp, si) {
+      var S = PT.species[sp], id = 'pet.' + sp, order = homes.map(function (P, k) { return [u(k, si, 21), P]; }).sort(function (p, q) { return p[0] - q[0]; }).map(function (x) { return x[1]; });
+      if (!SIM.R.role[id]) SIM.role({ id: id, org: 'livestock', name: S.name, sched: [[0, 'BED'], [PT.night[1], 'ROAM'], [PT.night[0], 'BED']], speed: S.speed, cycle: { ROAM: PT.cycle }, fallback: { ROAM: 'BED', MINGLE: 'BED' },   /* nowhere to go: home, not the citizens' places */
+        prefers: { BED: { pin: 'home' }, ROAM: { kinds: PT.kinds, spread: PT.spread, reach: PT.reach }, MINGLE: { kinds: PT.kinds, spread: 3, reach: PT.reach } }, needs: { rate: S.rate, free: PT.free } });
+      for (var j = 0; j < n && order.length; j++) {
+        var H = order[j % order.length], a = SIM.actor({ id: id + '.' + j, role: id, home: H.id, cls: 'animal', job: null });
+        H.activities.BED = (H.activities.BED || 0) + 1;
+        a.animal = { sp: sp, fauna: S.fauna, variant: S.variants[0], seed: (si * 7919 + j) | 0, mass: S.mass, aggression: S.aggression }; a.pet = true; a.issued = true;
+        if (SIM.NEED) a.nd = SIM.NEED.list.map(function (nm) { return Math.round(10 + 40 * u(j, si, nm.length + 40)); });
+        a.pos = { x: H.door.x, y: H.door.y || 0, z: H.door.z };
+      }
+      out.pets[sp] = Math.min(n, n && order.length ? n : 0); out.animals += out.pets[sp];
+    });
+    out.petHours = {}; out.petsPer = PT.per; out.citizens = citizens;
+    if (SIM.stepHooks.indexOf(VC.petsStep) < 0) SIM.stepHooks.push(VC.petsStep);
+  }
   if (SIM.placesChanged) SIM.placesChanged();
   out.ms = Date.now() - t0; VC.SIMANIMALS = out;
   return out;
@@ -102,6 +130,12 @@ VC.animalsStep = function (minute) {
     if (SIM.NEED && a.nd) { a.nd = SIM.NEED.list.map(function () { return 20; }); a.ndT = minute; a.ndFrom = minute; }
     var R = st[o.sp] || (st[o.sp] = { n: 0, servings: 0 }); R.n++; R.servings += got;
     SIM.logEvent('slaughter', { animal: a.id, sp: o.sp, good: M.good, n: got }); });
+};
+
+/* the pets' day, tallied each hour (SIM.stepHooks): pet-hours by what they do (the report's, verify's) */
+VC.petsStep = function (minute) {
+  if (minute % 60 !== 0 || !VC.SIMANIMALS) return; var H = VC.SIMANIMALS.petHours;
+  SIM.all('actor').forEach(function (a) { if (a.pet && a.present) H[a.activity || 'none'] = (H[a.activity || 'none'] || 0) + 1; });
 };
 
 /* a bout: the keepers' forced command (core SIM.command) puts `a` and `b` on the sand face to face for `mins` minutes */
@@ -143,5 +177,6 @@ VC.simAnimalsReport = function () {
   var m = SIM.minute(), young = {}, next = Infinity; A.forEach(function (a) { if (a.grownAt > m) { young[a.animal.sp] = (young[a.animal.sp] || 0) + 1; if (a.animal.meat) next = Math.min(next, a.grownAt - m); } });
   var ages = A.filter(function (a) { return a.grownAt > m && a.grownAt - a.born !== TUNE.sim.animals.growDays * 1440; }).length;   /* every young one a year from its birth to grown */
   return { setup: S, bySpecies: by, doing: act, bouts: bouts, hurt: A.filter(function (a) { return a.hurtTill > m; }).length,
-           slaughter: JSON.parse(JSON.stringify(S.slaughter || {})), young: young, nextSlaughterMins: next === Infinity ? null : next, badAges: ages };
+           slaughter: JSON.parse(JSON.stringify(S.slaughter || {})), young: young, nextSlaughterMins: next === Infinity ? null : next, badAges: ages,
+           pets: S.pets || null, petHours: JSON.parse(JSON.stringify(S.petHours || {})), petsPer: S.petsPer, citizens: S.citizens };
 };

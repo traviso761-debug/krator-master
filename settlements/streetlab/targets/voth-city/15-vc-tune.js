@@ -363,10 +363,10 @@ var TUNE = {
        a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
        re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH);
        `wake`: an actor is asked again only when its wish could change (core/simulation SIM.WAKE). The census is sampled at `samples` hours each day (the fast clock's stability check) */
-    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true },
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10 },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes */
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
-    embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 40,   /* animals: the fauna kit's animals drawn at once, the nearest */
+    embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 60,   /* animals: the fauna kit's animals drawn at once, the nearest */
               colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, CONTEMPLATE: 0xb070c0, REST: 0x50607a, other: 0x8a7a6a } },
     /* needs, happiness, efficiency, loyalty (phase C session 3; SIM-ROADMAP.md 1.4, 2.4 items 4 and 5; core/simulation
        77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
@@ -388,7 +388,7 @@ var TUNE = {
       fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
               SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
               CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 },
-              FEED: { eat: 45 }, GRAZE: { eat: 18, relax: 6 }, WATER: { drink: 90 }, BED: { sleep: 16, relax: 4 }, LOAF: { relax: 12 } },   /* the animals' (47-vc-sim-animals.js) */
+              FEED: { eat: 45 }, GRAZE: { eat: 18, relax: 6 }, WATER: { drink: 90 }, BED: { sleep: 16, relax: 4 }, LOAF: { relax: 12 }, ROAM: { relax: 12, socialize: 4 }, MINGLE: { socialize: 30, relax: 4 } },   /* the animals' (47-vc-sim-animals.js) */
       work: { drink: 4, eat: 1.5, relax: 1 },
       labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
                 'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, dairymen: 0.6, swineherds: 0.6, 'duck keepers': 0.5, 'industrial workers': 0.7,
@@ -536,7 +536,15 @@ var TUNE = {
         pitbeetle: { name: 'pit beetle', fauna: 'giant-beetle', variants: [2], breed: 'pit', mass: 1370, aggression: 0.6, speed: 0.8,
                      rate: { eat: 1.2, drink: 0.8, sleep: 0.8, socialize: 0, relax: 0.6, contemplate: 0, material: 0 } }
       },
-      arena: { perStable: 2, species: ['tiger', 'lizard', 'pitbeetle'], apart: 9, mins: 30, heal: 3, bouts: { hours: [11, 16] } }
+      arena: { perStable: 2, species: ['tiger', 'lizard', 'pitbeetle'], apart: 9, mins: 30, heal: 3, bouts: { hours: [11, 16] } },
+      /* the pets (owner, 2026-10-13: "1 dog and 1 cat per 40 citizens; no food demand for now; they wander the city and seek
+         socialize from time to time"): `per` citizens a dog and a cat, each in a household by a hash; asleep at home by
+         night (BED); by day they ROAM the greens and squares (moving on every `cycle` minutes, within `reach`) or MINGLE
+         where people gather, by their meters; no hunger, no thirst. Their fauna-kit look is a baked model */
+      pets: { per: 40, free: ['ROAM', 'MINGLE', 'BED'], night: [22, 6], kinds: ['green', 'square'], cycle: 120, reach: 800, spread: 4, mingle: 0.25,
+              species: {
+                dog: { name: 'dog', fauna: 'dog', variants: [0], mass: 25, aggression: 0.3, speed: 1.3, rate: { eat: 0, drink: 0, sleep: 0.8, socialize: 1.3, relax: 0.8, contemplate: 0, material: 0 } },
+                cat: { name: 'cat', fauna: 'cat', variants: [0], mass: 4, aggression: 0.2, speed: 1.0, rate: { eat: 0, drink: 0, sleep: 1.3, socialize: 0.6, relax: 1, contemplate: 0, material: 0 } } } }
     }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */

@@ -450,6 +450,13 @@ def animals_bad(sc):
     if not (an.get('young') or {}).get('pig') or not (an.get('young') or {}).get('duck'): return 'no young pigs or ducks: %s' % json.dumps(an.get('young'))
     if not sum(v['n'] for v in sl.values()) and not (an.get('nextSlaughterMins') is not None and an['nextSlaughterMins'] <= 1440): return 'no slaughter, the next in %s minutes' % an.get('nextSlaughterMins')
     if sl.get('pig') and not (g.get('pork') or {}).get('made'): return 'pigs slaughtered, no pork'
+    # the pets (owner, 2026-10-13): a dog and a cat for every 40 citizens; they roam and mingle by day, sleep at home, eat nothing
+    pe, ph = an.get('pets') or {}, an.get('petHours') or {}
+    want = (an.get('citizens') or 0) // (an.get('petsPer') or 40)
+    if not want or pe.get('dog') != want or pe.get('cat') != want: return 'pets %s, want %s of each' % (json.dumps(pe), want)
+    if not ph.get('ROAM') or not ph.get('MINGLE') or not ph.get('BED'): return 'pets do not roam, mingle and sleep: %s' % json.dumps(ph)
+    if ph.get('EAT') or ph.get('FEED') or ph.get('DRINK'): return 'pets ate or drank: %s' % json.dumps(ph)
+    if any(ph.get(k) for k in ('SOCIALIZE', 'REST', 'IDLE', 'RELAX')): return 'pets in the citizens\' places: %s' % json.dumps(ph)
     if len(an['bouts']) < 2 or any(not B['won'] for B in an['bouts'][:-1]): return 'bouts %s' % json.dumps(an['bouts'])
     return None
 
@@ -555,6 +562,7 @@ def verify_city(a, port, rel, sync_playwright):
         an = sc['animals']
         print('  animals: setup %s' % json.dumps(an['setup']))
         print('    slaughtered %s; young %s; the next grown in %s minutes' % (json.dumps(an.get('slaughter')), json.dumps(an.get('young')), an.get('nextSlaughterMins')))
+        print('    pets %s (one of each per %s of %s citizens); pet-hours %s' % (json.dumps(an.get('pets')), an.get('petsPer'), an.get('citizens'), json.dumps(an.get('petHours'))))
         print('    by species %s; doing %s; bouts %d (%s); healing %d; animals check: %s' % (json.dumps(an['bySpecies']), json.dumps(an['doing']), len(an['bouts']), json.dumps(an['bouts'][-3:]), an['hurt'], animals_bad(sc) or 'OK'))
     if sc.get('worship'):
         wo = sc['worship']

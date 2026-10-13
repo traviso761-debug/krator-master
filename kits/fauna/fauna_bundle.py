@@ -84,7 +84,9 @@ def bundle(groups=None, tex=True, mdl=False):
     fs = files(groups)
     body = ''.join('/* ---- kits/fauna/%s ---- */\n%s\n' % (f, read(f)) for f in fs[:-1])
     body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(tex)
-    body += '/* ---- the packed baked models (models/, models_pack.py) ---- */\n' + models(groups, mdl)
+    # mdl: True takes the baked models of every bundled group; a list takes only those groups' (a city wanting its pets'
+    # models without the farm's dozen)
+    body += '/* ---- the packed baked models (models/, models_pack.py) ---- */\n' + (models(mdl, True) if isinstance(mdl, (list, tuple)) else models(groups, mdl))
     body += '/* ---- kits/fauna/%s ---- */\n%s\n' % (fs[-1], read(fs[-1]))
     return safe('/* kits/fauna bundle (fauna_bundle.py): %s. GENERATED; edit the kit files. */\n'
                 'var KratorFauna = (function () {\n%s\nreturn KratorFaunaAPI;\n})();\n' % (', '.join(fs), body))

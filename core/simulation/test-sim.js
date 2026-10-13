@@ -525,4 +525,14 @@ function world(seed){
  ok('the same day, the same places',A.acts===B.acts,A.acts!==B.acts);
  ok('and far fewer questions (under a fifth)',B.asked<A.asked/5&&B.skipped>0,B.asked>=A.asked);}
 
+// the lag (SIM.LAG): a schedule change falls due over its first minutes, not all at :00; the same day's activities after
+{const run=(lag)=>{const {S,clock}=world(67);S.WAKE=true;S.LAG=lag;
+  for(let i=0;i<120;i++) S.actor({id:'l'+i,role:'farmer',home:i%2?'homeA':'homeB'});
+  let peak=0,acts10=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && m%60<=lag) peak=Math.max(peak,made);
+    if(m===10*60+lag+1) acts10=S.all('actor').map(a=>a.activity).sort().join(',');}
+  const lags=S.all('actor').map(a=>S.lagOf(a));return {peak,acts10,spread:new Set(lags).size,maxLag:Math.max(...lags)};};
+ const A=run(0),B=run(10);
+ ok('with a lag the hour\'s decisions spread over its minutes (a lower peak)',B.peak<A.peak/2&&B.spread>5&&B.maxLag<=10,B.peak>=A.peak);
+ ok('and once its minutes are past, everyone does what the schedule says, as without',B.acts10===A.acts10,B.acts10!==A.acts10);}
+
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);
