@@ -6553,7 +6553,8 @@
     "arms": 4
    },
    "group": "arms",
-   "kind": "cybernetic"
+   "kind": "cybernetic",
+   "bare": true
   },
   {
    "id": "mod_arms_loader",
@@ -6564,7 +6565,8 @@
     "arms": 4
    },
    "group": "arms",
-   "kind": "cybernetic"
+   "kind": "cybernetic",
+   "bare": true
   },
   {
    "id": "mod_arms_surgical",
@@ -6575,7 +6577,8 @@
     "arms": 4
    },
    "group": "arms",
-   "kind": "cybernetic"
+   "kind": "cybernetic",
+   "bare": true
   },
   {
    "id": "mod_gills",
