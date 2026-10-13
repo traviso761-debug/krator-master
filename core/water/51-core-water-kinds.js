@@ -54,7 +54,7 @@
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
    transparent:o.transparent!==false,depthWrite:o.transparent===false});sky(mat,o);
   const CH='#include <atmos_waves>\n'+W.flowGLSL()+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;';
-  const T2=per/Q.phases;
+  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;')
     .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
@@ -84,7 +84,7 @@
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(M.nrm,3));g.setAttribute('wtrUF',new T.Float32BufferAttribute(M.uv,2));g.setIndex(M.idx);g.computeBoundingSphere();
   const col=o.color==null?0xb8d4d6:o.color,op=o.opacity==null?.92:o.opacity;
   const mat=new T.MeshStandardMaterial({color:col,roughness:.42,metalness:0,transparent:true,depthWrite:false,side:T.DoubleSide});sky(mat,o);
-  const CH='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec2 vWtrUF;';
+  const CH='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec2 vWtrUF;';mat.customProgramCacheKey=()=>'wtr-fall:'+W.hashStr(CH+op);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
@@ -94,7 +94,7 @@
   const D={S,mesh,material:mat,curtain:M};
   // the plunge pool: a disc of churned white water at the foot, its rings running out
   if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
-   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});
+   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S));
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);const C2='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec3 vWtrW;';
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);');};
@@ -112,7 +112,7 @@
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(M.pos.length).map((v,i)=>i%3===1?1:0),3));g.setIndex(M.idx);g.computeBoundingSphere();
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness,
    transparent:o.opacity!=null&&o.opacity<1,opacity:o.opacity==null?1:o.opacity,depthWrite:!(o.opacity!=null&&o.opacity<1)});sky(mat,o);
-  const CH='#include <atmos_waves>\n'+W.stillGLSL(S)+'\nvarying vec3 vWtrW;';
+  const CH='#include <atmos_waves>\n'+W.stillGLSL(S)+'\nvarying vec3 vWtrW;';mat.customProgramCacheKey=()=>'wtr-still:'+W.hashStr(CH);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrStillN(vWtrW.xz),0.0)).xyz);');};
@@ -123,7 +123,7 @@
  // still be a WATER.still record (the twin). o: {THREE, color, roughness, metalness, envMapIntensity}
  W.stillMaterial=o=>{o=o||{};const A=ATMOS,T=o.THREE||A.T;
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness});sky(mat,o);
-  const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;varying float vWtrNy;';
+  const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;varying float vWtrNy;';mat.customProgramCacheKey=()=>'wtr-stillmat';
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
     'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');
@@ -141,6 +141,7 @@
    'vec3 wtrWetAlbedo(vec3 c,float w){return c*(1.0-'+f(Q.dark)+'*w);}\nfloat wtrWetRough(float r,float w,float film){return mix(mix(r,r*'+f(1-Q.gloss)+',w),0.06,film);}\n';
   Object.assign(uniforms,U);return ch;};
  W.wetGround=(mat,o)=>{o=o||{};const S=o.surface||null,prev=mat.onBeforeCompile;
+  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>prev?prev.toString():'';mat.customProgramCacheKey=()=>pk()+'|wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain');
   mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);const CH=W.wetChunk(S,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
     'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');

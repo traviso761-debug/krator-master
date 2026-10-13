@@ -114,6 +114,8 @@
   A.hook(t=>{S.U.wtrLevel.value=S.levelAt(t);});return S.U;};
  W.shaderOn=(S,sh)=>{ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));return'#include <atmos_waves>\n'+W.glsl(S)+'\n';};
 
+ // FNV-1a of a string (a program cache key)
+ W.hashStr=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
  W.drawn=[];
  W.draw=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,C=Object.assign({},W.PRESETS.cdlod,o.cdlod||{}),F=W.PRESETS.foam,f=glf,N=C.grid;
   // the node: (N+1)^2 vertices on [0,1]^2 in x,z
@@ -143,6 +145,9 @@
   // draws relative to it, so the view transform is taken in doubles on the CPU (a world a million metres across draws
   // without the float jitter of world-space vertices); the waves still read world coordinates
   const U2={wtrOrigin:{value:new T.Vector2()}};
+  // the program's cache key: its GLSL (every surface writes its own literals, and three.js would otherwise share one
+  // program among materials whose onBeforeCompile has the same source text)
+  mat.customProgramCacheKey=()=>'wtr-open:'+W.hashStr(W.glsl(S)+fragColor+VARY+(o.origin?'o':'')+(o.normalMap?'n':''));
   mat.onBeforeCompile=sh=>{const CH=W.shaderOn(S,sh)+VARY;
    if(o.origin)sh.uniforms.wtrOrigin=U2.wtrOrigin;
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;'+(o.origin?'uniform vec2 wtrOrigin;':''))
