@@ -25,7 +25,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 287 | 108 | 12 | 6 | 111 | 49 | 1 | biome | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1803 | 412 | 0 | 106 | 107 | 1178 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 65 | 947 | 463 | 19 | 10 | 70 | 385 | 6 |  | yes | yes |
-| [`settlements/ys`](settlements/ys/PORT.md) | 140 | 2005 | 334 | 53 | 105 | 115 | 1398 | 8 |  | yes | yes |
+| [`settlements/ys`](settlements/ys/PORT.md) | 141 | 2009 | 334 | 57 | 105 | 116 | 1397 | 8 | atmos | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 60 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 222 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |

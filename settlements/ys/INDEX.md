@@ -64,10 +64,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `70-vern-dwellings.js` | 20 | POOR (9); MIDDLE (61); RICH (126) |
 | `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (58); the grown-on base (the G frame: origin on the ho (105); the trade dressings (F from a base: at(th,y,out) (132); the free-standing stores (row 'Shops') (293); the grown-on stores (row 'Grown-on shops', the G (364) |
-| `71-port-terrain.js` | 22 | the natural coast (7); stamps (24); materials (103); the terrain grid (196) |
+| `71-port-terrain.js` | 21 | the natural coast (7); stamps (24); materials (103); the terrain grid (198) |
 | `71-sky-h.js` | 5 |  |
 | `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (154) |
 | `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
+| `71w-port-sea.js` | 4 |  |
 | `72-datacenter.js` | 8 |  |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `72-hyk-hospitality.js` | 34 **big** | shared helpers (7) |
@@ -123,7 +124,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8al-alt-06-library.js` | 7 |  |
 | `8al-alt-10-police.js` | 5 |  |
 | `8al-alt-11-hospital.js` | 5 |  |
-| `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (34) |
+| `90-ys-scene.js` | 8 | the sky and the clock (16); core/atmos for the sea (core/water, 71w-port-sea (34); the port: stamps, terrain, sea, builders, bake (44) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
 | `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |

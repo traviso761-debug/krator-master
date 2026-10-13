@@ -8,6 +8,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   every tower that builds through it (D, E, F, H) is cut at a storey when the city names a height. One line.
 - `71-port-terrain.js` (from `settlements/port/src`): `portNatH` delegates to `YS_NAT` when the city target
   defines it, and the port's nature scatter is skipped in that case (the biome plants the ground). Two lines.
+  Since 2026-10-13 the port's sea is core/water's (`71w-port-sea.js`, vendored byte-identical; the port's
+  `portBuildTerrain` calls `portSea` instead of building its flat sheet): this copy takes the same change, so its
+  drift from the port is still the lines above and no more.
 - `52-sky-abc.js` (from `kits/ancients/src`): `ysCutY(d)` is the `y1` of a ruined (decay 1) body when
   `YS_CUT` is set, so a drowned host is cut at a datum instead of at the kit's own ruin height; `ysPodiumR`
   shrinks `skyPlinth` to `YS_CUT.podium` (apron and plinth decor dropped); `ysWallHole` adds the way-in pods'
@@ -100,7 +103,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The nacre material fades underwater only through its own hook (`hkNacreHook` calls `portUWsh` first);
       any new shell material with an `onBeforeCompile` must do the same or it will glow under the sea.
 - [ ] The sea plane shows moiré at the mockup's low grazing presets (the port's sea at a 10 m tensor cell);
-      revisit with the Ys terrain mesh in phase 3.
+      revisit with the Ys terrain mesh in phase 3. 2026-10-13: the sea is core/water's CDLOD mesh now (the port's
+      `71w-port-sea.js`), not the tensor-cell sheet; not yet looked at in the mock's grazing presets.
+- [ ] Nothing rides the sea. It is core/water's open water since 2026-10-13 (`WATER.heightAt`, `WATER.ride`), with the
+      port's calm share of the wave field (at most 14 cm): the moles' boats, the ferries and the pontoons are baked or
+      fixed, so they keep their waterlines rather than ride it.
 - [ ] `ysHostMembers` mirrors the kit's strut and leg constants for Skyscrapers A and B (positions, counts,
       which are gone when ruined). Re-read `kits/ancients/src/52-sky-abc.js` whenever the kit is re-vendored,
       and add C, D–K as hosts of those kinds are placed.
