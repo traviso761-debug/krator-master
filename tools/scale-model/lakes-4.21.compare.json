@@ -350,5 +350,21 @@
   "km2_after": 4059,
   "change": "drains",
   "n": 22
+ },
+ {
+  "at_px": [
+   1033,
+   521
+  ],
+  "level_m": -2321,
+  "km2": 64,
+  "inflow_m3s": 7.0,
+  "balance_m3s": 1.5,
+  "finding": "no outlet at its level, gains water",
+  "settles": "balances (evaporation meets inflow)",
+  "level_after_m": -2321,
+  "km2_after": 64,
+  "change": "drains",
+  "n": 23
  }
 ]

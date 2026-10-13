@@ -119,10 +119,13 @@ ABYSS_WEST_KM = 300.0
 # one's); its bed cut `depth`
 # m under the level, its walls kept `rim` m over it, the rest of the old lake's bed filled to just over the level,
 # falling `slope` m a cell towards it. A lake with no room for a trough holding most of its water (a moat round a mound,
-# a pit hemmed in) stays as it settles. The filled beds are blended into the ground round them (`blend` cells), and
+# a pit hemmed in) stays as it settles. `merge`: pairs of lakes (map px in each) made one at the higher one's level
+# (the owner: old lake 18's moat round its island joined to the lake north of it), the lower one's basin and island
+# filled over that level round it as it lies, within `merge_reach` cells, and a channel cut between. The filled beds are blended into the ground round them (`blend` cells), and
 # repainted on the maps from the land round them. Then the water is routed again onto the new floor.
 ABYSS_LAKES = dict(region='e abysss', zone_m=-1400.0, deep_m=-1900.0, keep=(987, 715), keep_km=24.0, seed=4021,
-                   min_km2=40.0, spare=1.15, r=(1.2, 2.4), bend=(12, 20), gap=2, depth=120.0, rim=10.0, slope=3.0, span=400.0, blend=1.5)
+                   min_km2=40.0, spare=1.15, r=(1.2, 2.4), bend=(12, 20), gap=2, depth=120.0, rim=10.0, slope=3.0, span=400.0, blend=1.5,
+                   merge=[((1041, 493), (1039, 465))], merge_reach=20)
 ABYSS_CUT_M = 600.0     # m: a hollow whose way to the floor would cut more than this is left (reported; as deep as the western outlets)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
@@ -324,8 +327,10 @@ def biggest(m):
     return lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1) if n > 1 else m
 
 
-def snake_lakes(En, zone, w0, lv0, A_, KM2):
+def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=()):
     """ABYSS_LAKES' layout: each lake of w0 (levels lv0) laid out again as a long, winding one in the basin it lies in.
+    merges: pairs of cells, one in each of two lakes to be made one, at the higher one's level: the lower one's basin
+    (and any island in it) is filled over that level round the lake as it lies, and a channel joins them.
     Returns (En, rows (cells, not px), the troughs, the old beds filled, deepest cut, highest fill)."""
     E = En
     jj, ii = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
@@ -344,6 +349,7 @@ def snake_lakes(En, zone, w0, lv0, A_, KM2):
     sizes = nd.sum(np.ones(E.shape), blab, range(1, bn + 1))
     rng = np.random.default_rng(A_['seed'])
     snakes = np.zeros(E.shape, bool)
+    lvmap = np.full(E.shape, np.nan)                     # each lake's level on its cells
     taken = np.zeros(E.shape, bool)                      # old lake beds a trough has taken (its own, or crossed)
     rows, cut_most, fill_most, filled = [], 0.0, 0.0, np.zeros(E.shape, bool)
     for k in np.argsort(-sizes) + 1:
@@ -432,6 +438,7 @@ def snake_lakes(En, zone, w0, lv0, A_, KM2):
             # no room for a trough (a moat round a mound, a pit hemmed in): the lake stays as its water settles
             taken |= b
             snakes |= b
+            lvmap[b] = lv
             j, i = np.argwhere(b).mean(0)
             rows.append({'at_cell': (round(j), round(i)), 'was_cells': int(b.sum()), 'level_m': round(lv), 'cut_most_m': 0,
                          'filled_most_m': 0, 'cells': int(b.sum()), 'length_cells': 0.0, 'kept': True})
@@ -451,10 +458,52 @@ def snake_lakes(En, zone, w0, lv0, A_, KM2):
         ring = nd.binary_dilation(m, structure=np.ones((3, 3))) & ~m & ~b
         En = np.where(ring, np.maximum(En, lv + A_['rim']), En)
         snakes |= m
+        lvmap[m] = lv
         j, i = np.argwhere(m).mean(0)
         rows.append({'at_cell': (round(j), round(i)), 'was_cells': int(b.sum()), 'level_m': round(lv),
                      'cut_most_m': round(cut_k), 'filled_most_m': round(float((up - E)[fl].max())) if fl.any() else 0,
                      'cells': int(m.sum()), 'length_cells': float(seg[-1])})
+    # lakes made one (merges): at the higher one's level
+    for ca, cb in merges:
+        sl_, _ = nd.label(snakes, structure=np.ones((3, 3)))
+        _, (iy, ix) = nd.distance_transform_edt(~snakes, return_indices=True)
+        A = sl_ == sl_[iy[ca], ix[ca]]
+        B = sl_ == sl_[iy[cb], ix[cb]]
+        L = float(max(np.nanmax(lvmap[A]), np.nanmax(lvmap[B])))
+        low = A if np.nanmax(lvmap[A]) < L else B
+        both = A | B
+        # the lower one's basin round it (and its island) filled over the level, falling towards the water
+        near_low = nd.distance_transform_edt(~low) <= A_['merge_reach']
+        others_ = nd.binary_dilation(snakes & ~both, iterations=A_['gap'])
+        pl, _ = nd.label(((En < L + A_['rim']) & near_low & ~others_) | low, structure=np.ones((3, 3)))
+        pit = np.isin(pl, np.unique(pl[low])) & (pl > 0)
+        isle = nd.binary_fill_holes(low) & ~low
+        rise = (pit | isle) & ~both
+        dsn = nd.distance_transform_edt(~both)
+        up = np.maximum(En, L + A_['rim'] + A_['slope'] * dsn)
+        if rise.any():
+            fill_most = max(fill_most, float((up - En)[rise].max()))
+        En = np.where(rise, up, En)
+        filled |= rise
+        # the channel between them, along the shortest way
+        _, (by, bx) = nd.distance_transform_edt(~B, return_indices=True)
+        pa = tuple(np.argwhere(A)[np.argmin(np.where(A, nd.distance_transform_edt(~B), np.inf)[A])])
+        pb = (by[pa], bx[pa])
+        nst = int(max(abs(pb[0] - pa[0]), abs(pb[1] - pa[1]))) * 2 + 1
+        P = np.stack([np.linspace(pa[0], pb[0], nst), np.linspace(pa[1], pb[1], nst)], 1)
+        ch, core = lay(P, np.full(len(P), A_['r'][0]))
+        ch &= ~both
+        bed = L - A_['depth'] * (0.35 + 0.65 * core)
+        cut_ch = float((En - bed)[ch].max()) if ch.any() else 0.0
+        cut_most = max(cut_most, cut_ch)
+        En = np.where(ch, np.minimum(En, bed), En)
+        wall = nd.binary_dilation(ch | both, structure=np.ones((3, 3))) & ~(ch | both)
+        En = np.where(wall, np.maximum(En, L + A_['rim']), En)
+        snakes |= ch
+        lvmap[ch | both] = L
+        rows.append({'at_cell': tuple(int(v) for v in np.argwhere(both).mean(0).round()), 'was_cells': int(both.sum()),
+                     'level_m': round(L), 'cut_most_m': round(cut_ch), 'filled_most_m': round(float((up - E)[rise].max())) if rise.any() else 0,
+                     'cells': int((both | ch).sum()), 'length_cells': 0.0, 'merged': True})
     # old beds no trough took (lakes too small, or the rest of one a trough crossed): filled over their level,
     # falling towards the nearest trough
     left = w0 & ~taken & ~snakes
@@ -928,10 +977,23 @@ def main():
                     w_ |= c_
                     lv_[c_] = e['level']
             for u in set(np.unique(rx['unit'][zone & (rx['unit'] > 0)])):
-                full = (rx['unit'] == u) & (rx['F'] - rx['S'] > 0.5) & ~Gx['whas'] & ~w_ & zd
+                if ((rx['unit'] == u) & w_).any():
+                    continue                                 # endorheic: its lake balances under the brim
+                full = (rx['unit'] == u) & (rx['F'] - rx['S'] > 0.5) & ~Gx['whas'] & zd
                 if full.any():
                     w_ |= full
                     lv_[full] = float(rx['F'][full].max())
+            # joined water stands at one level: a lake the routing grew as two units takes the higher one's level,
+            # with the ground under it that joins it
+            wl_, wn_ = nd.label(w_, structure=np.ones((3, 3)))
+            for k_ in range(1, wn_ + 1):
+                c_ = wl_ == k_
+                if np.ptp(lv_[c_]) > 1.0:
+                    Lm = float(lv_[c_].max())
+                    gl_, _ = nd.label(((En_ < Lm) & zd) | c_, structure=np.ones((3, 3)))
+                    reg = np.isin(gl_, np.unique(gl_[c_])) & (gl_ > 0)
+                    w_ |= reg
+                    lv_[reg] = Lm
             return w_, lv_
         print('abyss floor: where its water settles as the floor stands')
         w0, lv0 = settle_zone(En)
@@ -939,7 +1001,9 @@ def main():
         # basin it lies in (the floor is a chain of pits between sills 1-3 km high): a centreline along the basin's
         # long axis, swinging across its width, the lake as wide as it takes to hold the area; its bed cut `depth` m
         # under its level and walled over it, the rest of its old bed filled to just over the level, falling to it
-        En, rows, snakes, filled, cut_most, fill_most = snake_lakes(En, zone, w0, lv0, A_, KM2)
+        cell = lambda x, y: (int(round(y * sv)), int(round(x * su)))
+        En, rows, snakes, filled, cut_most, fill_most = snake_lakes(
+            En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())])
         abyss_beds = filled | (flag & ~snakes)
         for r_ in rows:
             r_['at_px'] = px(*r_.pop('at_cell'))

@@ -759,50 +759,50 @@
  ],
  "abyss_lakes": {
   "drawn_km2": 3594,
-  "settled_before_km2": 8840,
-  "troughs": 18,
-  "trough_km2": 9642,
-  "water_km2": 9418,
-  "water_off_troughs_km2": 898,
-  "trough_cut_most_m": 490,
-  "filled_km2": 4605,
-  "filled_most_m": 327,
+  "settled_before_km2": 9193,
+  "troughs": 19,
+  "trough_km2": 10027,
+  "water_km2": 8760,
+  "water_off_troughs_km2": 1091,
+  "trough_cut_most_m": 492,
+  "filled_km2": 6642,
+  "filled_most_m": 734,
   "lakes": [
    {
+    "level_m": -1975,
+    "cut_most_m": 492,
+    "filled_most_m": 225,
+    "at_px": [
+     1013.3,
+     554.8
+    ],
+    "trough_km2": 1653,
+    "was_km2": 1380,
+    "length_km": 144
+   },
+   {
     "level_m": -1817,
-    "cut_most_m": 404,
+    "cut_most_m": 433,
     "filled_most_m": 275,
     "at_px": [
      1039.3,
-     464.7
+     462.7
     ],
-    "trough_km2": 1572,
+    "trough_km2": 1508,
     "was_km2": 1300,
-    "length_km": 96
+    "length_km": 127
    },
    {
     "level_m": -2323,
-    "cut_most_m": 292,
-    "filled_most_m": 92,
+    "cut_most_m": 436,
+    "filled_most_m": 84,
     "at_px": [
-     1009.3,
+     1011.3,
      614.9
     ],
-    "trough_km2": 1492,
+    "trough_km2": 1508,
     "was_km2": 1283,
-    "length_km": 164
-   },
-   {
-    "level_m": -1975,
-    "cut_most_m": 490,
-    "filled_most_m": 223,
-    "at_px": [
-     1013.3,
-     548.8
-    ],
-    "trough_km2": 1572,
-    "was_km2": 1267,
-    "length_km": 120
+    "length_km": 103
    },
    {
     "level_m": -2294,
@@ -826,21 +826,21 @@
      1041.3,
      492.7
     ],
-    "trough_km2": 1011,
-    "was_km2": 1011,
+    "trough_km2": 1091,
+    "was_km2": 1091,
     "length_km": 0
    },
    {
     "level_m": -1829,
-    "cut_most_m": 483,
-    "filled_most_m": 82,
+    "cut_most_m": 465,
+    "filled_most_m": 85,
     "at_px": [
      957.2,
      713.0
     ],
-    "trough_km2": 610,
-    "was_km2": 481,
-    "length_km": 54
+    "trough_km2": 786,
+    "was_km2": 642,
+    "length_km": 61
    },
    {
     "level_m": -1508,
@@ -868,75 +868,75 @@
    },
    {
     "level_m": -2157,
-    "cut_most_m": 250,
-    "filled_most_m": 30,
+    "cut_most_m": 178,
+    "filled_most_m": 27,
     "at_px": [
-     1003.3,
-     665.0
+     1005.3,
+     663.0
     ],
-    "trough_km2": 193,
+    "trough_km2": 176,
     "was_km2": 144,
-    "length_km": 30
+    "length_km": 22
    },
    {
     "level_m": -1913,
-    "cut_most_m": 245,
-    "filled_most_m": 327,
+    "cut_most_m": 374,
+    "filled_most_m": 333,
     "at_px": [
-     1029.3,
-     544.8
+     1031.3,
+     520.7
     ],
     "trough_km2": 160,
     "was_km2": 128,
-    "length_km": 17
+    "length_km": 20
    },
    {
     "level_m": -1571,
-    "cut_most_m": 68,
-    "filled_most_m": 44,
+    "cut_most_m": 171,
+    "filled_most_m": 42,
     "at_px": [
-     989.3,
-     656.9
+     981.3,
+     675.0
     ],
-    "trough_km2": 144,
+    "trough_km2": 176,
     "was_km2": 112,
-    "length_km": 28
+    "length_km": 33
    },
    {
     "level_m": -1708,
-    "cut_most_m": 206,
-    "filled_most_m": 82,
+    "cut_most_m": 200,
+    "filled_most_m": 86,
     "at_px": [
      1025.3,
-     518.7
+     510.7
     ],
     "trough_km2": 128,
     "was_km2": 80,
-    "length_km": 26
+    "length_km": 20
    },
    {
     "level_m": -1444,
-    "cut_most_m": 110,
+    "cut_most_m": 97,
     "filled_most_m": 256,
     "at_px": [
      943.2,
      719.0
     ],
-    "trough_km2": 80,
+    "trough_km2": 64,
     "was_km2": 64,
-    "length_km": 12
+    "length_km": 8
    },
    {
     "level_m": -1705,
-    "cut_most_m": 122,
-    "filled_most_m": 128,
+    "cut_most_m": 23,
+    "filled_most_m": 124,
     "at_px": [
-     1035.3,
-     452.7
+     1037.3,
+     460.7
     ],
-    "trough_km2": 64,
+    "trough_km2": 48,
     "was_km2": 48,
-    "length_km": 12
+    "length_km": 0
    },
    {
     "level_m": -1880,
@@ -977,15 +977,28 @@
    },
    {
     "level_m": -1596,
-    "cut_most_m": 218,
+    "cut_most_m": 92,
     "filled_most_m": 57,
     "at_px": [
-     1021.3,
-     524.8
+     1023.3,
+     498.7
     ],
-    "trough_km2": 64,
+    "trough_km2": 80,
     "was_km2": 48,
-    "length_km": 12
+    "length_km": 18
+   },
+   {
+    "level_m": -1817,
+    "cut_most_m": 290,
+    "filled_most_m": 734,
+    "merged": true,
+    "at_px": [
+     1041.3,
+     474.7
+    ],
+    "trough_km2": 2695,
+    "was_km2": 2599,
+    "length_km": 0
    }
   ]
  },
@@ -4716,20 +4729,6 @@
   },
   {
    "round": 1,
-   "course": "river",
-   "q_m3s": 48.4,
-   "depth_m": 11.7,
-   "spill_m": -2324,
-   "floor_m": -2335,
-   "cells": 64,
-   "at_px": [
-    1027.3,
-    632.9
-   ],
-   "action": "cut"
-  },
-  {
-   "round": 1,
    "course": "wadi",
    "q_m3s": 9.7,
    "depth_m": 11.7,
@@ -5627,6 +5626,20 @@
   {
    "round": 1,
    "course": "river",
+   "q_m3s": 26.5,
+   "depth_m": 2.4,
+   "spill_m": 2128,
+   "floor_m": 2125,
+   "cells": 1,
+   "at_px": [
+    1073.4,
+    648.9
+   ],
+   "action": "cut"
+  },
+  {
+   "round": 1,
+   "course": "river",
    "q_m3s": 20.9,
    "depth_m": 2.4,
    "spill_m": 115,
@@ -5649,20 +5662,6 @@
    "at_px": [
     458.6,
     833.2
-   ],
-   "action": "cut"
-  },
-  {
-   "round": 1,
-   "course": "river",
-   "q_m3s": 26.5,
-   "depth_m": 2.4,
-   "spill_m": 2128,
-   "floor_m": 2125,
-   "cells": 1,
-   "at_px": [
-    1073.4,
-    648.9
    ],
    "action": "cut"
   },
@@ -5990,9 +5989,9 @@
   }
  ],
  "cuts": {
-  "cells": 4492,
+  "cells": 4520,
   "deepest_m": 1547.5,
-  "mean_m": 177.3
+  "mean_m": 177.2
  },
  "lakes": [
   {
@@ -6238,15 +6237,15 @@
   },
   {
    "at_px": [
-    983.3,
+    985.3,
     316.5
    ],
-   "km2": 417,
+   "km2": 481,
    "level_m": -1750,
    "spill_m": -41,
    "closed": true,
    "inflow_m3s": 6.9,
-   "balance_m3s": -44.7
+   "balance_m3s": -52.6
   },
   {
    "at_px": [
@@ -6422,21 +6421,20 @@
   },
   {
    "at_px": [
-    1039.3,
-    464.7
+    1041.3,
+    480.7
    ],
-   "km2": 1380,
-   "level_m": -1884,
+   "km2": 1813,
+   "level_m": -1915,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 147.9,
-   "balance_m3s": 0.2,
-   "finding": "closed lake gains 0 m3/s: it would rise 1842 m to spill"
+   "inflow_m3s": 246.3,
+   "balance_m3s": -10.4
   },
   {
    "at_px": [
-    1035.3,
-    454.7
+    1037.3,
+    460.7
    ],
    "km2": 16,
    "level_m": -1823,
@@ -6447,15 +6445,39 @@
   },
   {
    "at_px": [
-    1041.3,
-    492.7
+    1021.3,
+    496.7
    ],
-   "km2": 1604,
-   "level_m": -2417,
+   "km2": 16,
+   "level_m": -1793,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 104.5,
-   "balance_m3s": -143.7
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.8
+  },
+  {
+   "at_px": [
+    1023.3,
+    506.7
+   ],
+   "km2": 16,
+   "level_m": -1803,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.5
+  },
+  {
+   "at_px": [
+    1029.3,
+    514.7
+   ],
+   "km2": 16,
+   "level_m": -2394,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -2.1
   },
   {
    "at_px": [
@@ -6471,52 +6493,29 @@
   },
   {
    "at_px": [
-    1031.3,
-    516.7
+    1033.3,
+    520.7
    ],
-   "km2": 16,
-   "level_m": -2504,
+   "km2": 64,
+   "level_m": -2321,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 0.1,
-   "balance_m3s": -1.9
-  },
-  {
-   "at_px": [
-    1017.3,
-    526.8
-   ],
-   "km2": 16,
-   "level_m": -1874,
-   "spill_m": -41,
-   "closed": true,
-   "inflow_m3s": 0.0,
-   "balance_m3s": -1.7
+   "inflow_m3s": 7.0,
+   "balance_m3s": 1.5,
+   "finding": "closed lake gains 1 m3/s: it would rise 2279 m to spill"
   },
   {
    "at_px": [
     1013.3,
-    550.8
+    556.8
    ],
-   "km2": 1203,
-   "level_m": -2052,
+   "km2": 1380,
+   "level_m": -2051,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 158.7,
-   "balance_m3s": 18.4,
-   "finding": "closed lake gains 18 m3/s: it would rise 2010 m to spill"
-  },
-  {
-   "at_px": [
-    1029.3,
-    544.8
-   ],
-   "km2": 160,
-   "level_m": -1903,
-   "spill_m": -41,
-   "closed": true,
-   "inflow_m3s": 0.0,
-   "balance_m3s": -16.3
+   "inflow_m3s": 159.5,
+   "balance_m3s": 2.7,
+   "finding": "closed lake gains 3 m3/s: it would rise 2009 m to spill"
   },
   {
    "at_px": [
@@ -6532,15 +6531,15 @@
   },
   {
    "at_px": [
-    1011.3,
-    614.9
+    1013.3,
+    612.9
    ],
-   "km2": 1845,
+   "km2": 1829,
    "level_m": -2313,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 94.8,
-   "balance_m3s": -193.6
+   "inflow_m3s": 48.5,
+   "balance_m3s": -248.2
   },
   {
    "at_px": [
@@ -6569,29 +6568,27 @@
   },
   {
    "at_px": [
-    1003.3,
-    665.0
+    1007.3,
+    640.9
    ],
-   "km2": 144,
-   "level_m": -2242,
+   "km2": 209,
+   "level_m": -2313,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 18.6,
-   "balance_m3s": 0.6,
-   "finding": "closed lake gains 1 m3/s: it would rise 2200 m to spill"
+   "inflow_m3s": 3.8,
+   "balance_m3s": -26.3
   },
   {
    "at_px": [
-    989.3,
-    660.9
+    1005.3,
+    663.0
    ],
-   "km2": 16,
-   "level_m": -1809,
+   "km2": 257,
+   "level_m": -2144,
    "spill_m": -41,
    "closed": true,
-   "inflow_m3s": 11.6,
-   "balance_m3s": 9.8,
-   "finding": "closed lake gains 10 m3/s: it would rise 1767 m to spill"
+   "inflow_m3s": 30.2,
+   "balance_m3s": -1.3
   },
   {
    "at_px": [
@@ -6604,6 +6601,54 @@
    "closed": true,
    "inflow_m3s": 0.0,
    "balance_m3s": -1.6
+  },
+  {
+   "at_px": [
+    979.3,
+    675.0
+   ],
+   "km2": 16,
+   "level_m": -1675,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.7
+  },
+  {
+   "at_px": [
+    989.3,
+    675.0
+   ],
+   "km2": 16,
+   "level_m": -1716,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.6
+  },
+  {
+   "at_px": [
+    981.3,
+    679.0
+   ],
+   "km2": 16,
+   "level_m": -1686,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.7
+  },
+  {
+   "at_px": [
+    983.3,
+    685.0
+   ],
+   "km2": 16,
+   "level_m": -1812,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 0.0,
+   "balance_m3s": -1.7
   },
   {
    "at_px": [
@@ -6645,23 +6690,11 @@
   },
   {
    "at_px": [
-    957.2,
-    713.0
-   ],
-   "km2": 401,
-   "level_m": -1912,
-   "spill_m": -41,
-   "closed": true,
-   "inflow_m3s": 38.3,
-   "balance_m3s": -1.3
-  },
-  {
-   "at_px": [
-    967.2,
-    701.0
+    973.3,
+    697.0
    ],
    "km2": 16,
-   "level_m": -1824,
+   "level_m": -1805,
    "spill_m": -41,
    "closed": true,
    "inflow_m3s": 0.0,
@@ -6669,16 +6702,28 @@
   },
   {
    "at_px": [
+    957.2,
+    713.0
+   ],
+   "km2": 417,
+   "level_m": -1920,
+   "spill_m": -41,
+   "closed": true,
+   "inflow_m3s": 38.3,
+   "balance_m3s": -3.1
+  },
+  {
+   "at_px": [
     943.2,
     719.0
    ],
-   "km2": 80,
+   "km2": 64,
    "level_m": -1434,
    "spill_m": -41,
    "closed": true,
    "inflow_m3s": 11.7,
-   "balance_m3s": 4.1,
-   "finding": "closed lake gains 4 m3/s: it would rise 1392 m to spill"
+   "balance_m3s": 5.5,
+   "finding": "closed lake gains 5 m3/s: it would rise 1392 m to spill"
   },
   {
    "at_px": [
@@ -6882,6 +6927,18 @@
    "km2": 1348,
    "spill_m": 2654,
    "climate": "BSk",
+   "kind": "salt lake",
+   "surplus_m3s": 0.0
+  },
+  {
+   "at_px": [
+    1023.3,
+    630.9
+   ],
+   "level_m": -2314,
+   "km2": 1300,
+   "spill_m": -2313,
+   "climate": "XW",
    "kind": "salt lake",
    "surplus_m3s": 0.0
   },
@@ -8574,7 +8631,7 @@
   "q_mouth_m3s": 55.2
  },
  "new_water": {
-  "cells": 3785,
-  "km2": 60726
+  "cells": 3866,
+  "km2": 62025
  }
 }

@@ -166,12 +166,15 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   inland (5,487 km2): 7,525 km2 stay at -1,499 m, against ~14,700 shown before (the lake and the salt lake together).
 - **The eastern abyss's floor rebuilt** (`ABYSS_LAKES`; the owner: scattered long, snaky lakes, about as much water). The
   floor is a chain of pits between sills 1-3 km high. Its drawn lakes (all but the lake round Locus, where the Yuni river
-  ends, which stays) are taken away and the water routed: it settles over 8,840 km2. Each of those lakes is laid out
+  ends, which stays) are taken away and the water routed: it settles over 9,193 km2 (a basin whose lake balances under
+  its brim holds only that lake; joined water stands at one level). Each of those lakes is laid out
   again in its own basin as a winding lake of its area x 1.15, along the basin's long axis and swinging across its width
   (seeded, deterministic), its bed cut 120 m under its level (cuts up to 490 m), its walls kept over it, the rest of its
-  old bed filled to just over the level and falling to it (4,605 km2, up to 327 m), then blended into the ground round
-  it; three with no room (old lake 18's moat round its mound among them) stay as they settle. Routed again: 9,418 km2 of
-  water in 18 lakes (898 km2 off the troughs). The old beds are repainted on the satellite and relief maps from the land
+  old bed filled to just over the level and falling to it, then blended into the ground round it; three with no room
+  stay as they settle. Old lake 18's moat round its island is joined to the lake north of it (`merge`, the owner): at
+  that lake's level (-1,817 m) the moat's basin round it and the island's flanks are filled over the level (up to 734
+  m), and a channel cut between them; together they balance at -1,915 m over 1,813 km2. In all 6,642 km2 of old beds
+  filled; routed again, 8,760 km2 of water in 19 lakes (1,091 km2 off the troughs). The old beds are repainted on the satellite and relief maps from the land
   round them (`inpaint`), so no old shoreline shows. Lake 18's saddle gorge and the settling of the lake north of Locus
   went with the old floor.
 - **The rivers west of the abyss run into it** (`ABYSS_WEST_KM`, `ABYSS_CUT_M`; the owner). Every closed hollow on the
@@ -217,7 +220,7 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). Basin by basin, with the outlets and the settled lakes, 22 are flagged: 7 grow and 15 shrink (6,834 km2
+  away). Basin by basin, with the outlets and the settled lakes, 23 are flagged: 7 grow and 16 shrink (6,834 km2
   flooded, 37,061 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. Its water books are the
   4.20 page's, as `edit_rivers.py` drew them: on 4.21 the NW outlet joins that lake to the ocean by water, and the books
   read off 4.21 would count it as ocean and import the rain within 300 km of it too (18,600 m3/s, not 6,300). The lake round Locus, left to its water, keeps 1,444 of its
