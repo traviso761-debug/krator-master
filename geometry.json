@@ -1593,8 +1593,8 @@
   "meshes": 87,
   "ready": true,
   "sceneTris": 298154,
-  "seconds": 32,
-  "tris": 240555
+  "seconds": 19,
+  "tris": 239276
  },
  "settlements/jimjam/dist/jimjam-kit.html": {
   "calls": 487,
@@ -2363,7 +2363,7 @@
   "meshes": 356,
   "ready": true,
   "sceneTris": 619070,
-  "seconds": 104,
+  "seconds": 339,
   "tris": 481536
  },
  "settlements/screamers/dist/furniture.html": {
@@ -2483,11 +2483,11 @@
   "meshes": 1639,
   "ready": true,
   "sceneTris": 21991302,
-  "seconds": 982,
-  "tris": 9534182
+  "seconds": 322,
+  "tris": 9532383
  },
  "settlements/xanadu/dist/xanadu.html": {
-  "calls": 89,
+  "calls": 88,
   "errors": 0,
   "furnTris": 0,
   "instSets": 168,
@@ -2504,8 +2504,8 @@
   "meshes": 199,
   "ready": true,
   "sceneTris": 5423766,
-  "seconds": 428,
-  "tris": 989517
+  "seconds": 47,
+  "tris": 887637
  },
  "settlements/ys/dist/kit.html": {
   "calls": 99,

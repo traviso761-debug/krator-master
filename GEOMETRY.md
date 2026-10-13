@@ -100,7 +100,7 @@
 | `settlements/iziz/dist/iziz.html` | 858 | 4.96 M | 889 / 6.73 M | 858 / 4.53 M | 6.73 M |  | 930 | 342 | 232 k | 359 |
 | `settlements/iziz/dist/w-a.html` | 71 | 54 k | 73 / 60 k | 71 / 54 k | 60 k |  | 73 | 50 | 2425 | 54 |
 | `settlements/iziz/dist/w-b.html` | 49 | 46 k | 49 / 48 k | 49 / 46 k | 48 k |  | 49 | 45 | 1458 | 49 |
-| `settlements/iziz/dist/w-c.html` | 83 | 241 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
+| `settlements/iziz/dist/w-c.html` | 83 | 239 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
 | `settlements/jimjam/dist/jimjam-kit.html` | 487 | 1.22 M | 532 / 1.78 M | 487 / 1.21 M | 1.78 M |  | 538 | 336 | 41 k | 348 |
 | `settlements/locus/abyss-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/locus/locus-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
@@ -151,7 +151,7 @@
 | `settlements/verge/dist/verge.html` | 1012 | 18.22 M |  |  | 9.88 M | 439 k | 778 | 260 | 331 k | 352 |
 | `settlements/voth/voth.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/xanadu/dist/erewhon.html` | 1029 | 9.53 M | 1255 / 20.95 M | 1031 / 9.36 M | 21.99 M |  | 1639 | 1579 | 1.02 M | 1435 |
-| `settlements/xanadu/dist/xanadu.html` | 89 | 990 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
+| `settlements/xanadu/dist/xanadu.html` | 88 | 888 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
 | `settlements/ys/dist/kit.html` | 99 | 4.26 M |  |  | 4.26 M |  | 108 | 35 | 16 k | 58 |
 | `settlements/ys/dist/mock.html` | 58 | 561 k |  |  | 502 k |  | 57 | 30 | 2328 | 46 |
 | `settlements/ys/dist/ys.html` | 187 | 29.50 M |  |  | 29.49 M |  | 205 | 100 | 394 k | 180 |
