@@ -248,7 +248,9 @@ culture `giants`).
 
 **Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
 garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
-~12 cm, shorter near the top), from the row where the cloth starts to hang down to the hem, each chain hanging from
+~12 cm, shorter near the top), from the row where the cloth starts to hang down to the hem (a robe or dress that
+reaches below the crotch hangs at the back from just under the seat, not from the chest or waist, so the buttocks
+never push through it), each chain hanging from
 the spine joint above it, and writes them beside the garment (`<id>.cloth.json`). `make_mpfb.py cloth_bones` turns
 them into joints of the garment's GLB ('cloth:<item>:<chain>:<bone>', inverse bind T(-p) at an anchor vertex) and
 weights the cloth below each chain's top to the two chains either side and the bone of its stretch; `kit.json` keeps

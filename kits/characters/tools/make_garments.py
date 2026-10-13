@@ -307,7 +307,13 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
     start = None
     if hang_from is not None:
         hs = hang_side if hang_side is not None else hang_from
-        start = [near(hs) if abs(math.sin(a)) > 0.55 else near(hang_from) for a in angles]
+        # at the back, a garment that reaches below the crotch hangs from just under the seat: falling from the
+        # chest or the waist it would hang straight past the buttocks, and a pose that sets the hips back pushes them
+        # through it (capes and sheets over the arms hang from the shoulders as they are)
+        hb = hang_from
+        if arc is None and not over_arms and z1 < CROTCH and hang_from > CROTCH + 0.02:
+            hb = CROTCH + 0.02
+        start = [near(hs) if abs(math.sin(a)) > 0.55 else near(hb) if math.cos(a) > 0 else near(hang_from) for a in angles]
         P = hang(P, axes, start, flare)
     P = smooth_push(P, arc is None, ease, iters=iters, rows_ease=Es, bvh=bvh)
     if hang_from is not None:
