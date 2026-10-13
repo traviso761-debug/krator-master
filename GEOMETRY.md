@@ -1,6 +1,6 @@
 # Krator: geometry report
 
-*Written by `tools/geometry_report.py`. Do not edit; rerun it. Opening view, headless Chromium (SwiftShader), 1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod.*
+*Written by `tools/geometry_report.py`. Do not edit; rerun it. Opening view, headless Chromium (SwiftShader), 1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod. A * on the draw calls: the page keeps its camera private, so calls and triangles are its own last frame.*
 
 | Page | Draw calls | Triangles drawn | LOD off: calls / tris | LOD on: calls / tris | Scene triangles | Furniture tris | Meshes | Instanced sets | Instances | Materials |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -87,28 +87,28 @@
 | `kits/ringsea/dist/ringsea.html` | 223 | 679 k |  |  | 753 k |  | 297 | 16 | 579 | 155 |
 | `kits/scyvoi/dist/scyvoi.html` | 753 | 890 k |  |  | 890 k | 475 k | 752 | 0 | 0 | 80 |
 | `kits/zeijani/dist/zeijani.html` | 460 | 1.57 M |  |  | 1.61 M | 712 k | 487 | 0 | 0 | 120 |
-| `openworld/little-demo/dist/little-demo.artifact.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `openworld/little-demo/dist/little-demo.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `openworld/little-demo/dist/little-demo.artifact.html` | no global scene to count |  |  |  |  |  |  |  |  |  |
+| `openworld/little-demo/dist/little-demo.html` | no global scene to count |  |  |  |  |  |  |  |  |  |
 | `settlements/dalab/dist/dalab-set.html` | 73 | 284 k | 157 / 540 k | 73 / 284 k | 571 k |  | 166 | 154 | 25 k | 163 |
 | `settlements/dalab/dist/dalab.html` | 176 | 9.81 M | 213 / 10.93 M | 182 / 9.39 M | 10.97 M |  | 232 | 184 | 697 k | 228 |
 | `settlements/dhelv/dist/dhelv.html` | 234 | 553 k |  |  | 4.64 M | 1.30 M | 3229 | 1255 | 123 k | 220 |
-| `settlements/girder/girder-hero.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/girder/girder.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/highlands/dist/highlands.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/highlands/dist/roketstad.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/iziz/dist/iziz-vernacular.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/iziz/dist/iziz.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/girder/girder-hero.html` | 171* | 3.83 M | 161 / 3.91 M | 166 / 3.82 M | 5.82 M | 3.01 M | 162 | 53 | 100 k | 161 |
+| `settlements/girder/girder.html` | 170* | 3.55 M | 157 / 3.67 M | 166 / 3.54 M | 5.45 M | 2.65 M | 157 | 53 | 100 k | 156 |
+| `settlements/highlands/dist/highlands.html` | 163 | 1.42 M | 300 / 3.35 M | 163 / 1.28 M | 3.44 M | 791 k | 341 | 279 | 139 k | 318 |
+| `settlements/highlands/dist/roketstad.html` | 361 | 10.62 M | 376 / 10.63 M | 377 / 7.94 M | 11.00 M | 3.35 M | 475 | 326 | 358 k | 370 |
+| `settlements/iziz/dist/iziz-vernacular.html` | 61 | 243 k | 128 / 426 k | 61 / 243 k | 461 k |  | 167 | 124 | 17 k | 135 |
+| `settlements/iziz/dist/iziz.html` | 858 | 4.96 M | 889 / 6.73 M | 858 / 4.53 M | 6.73 M |  | 930 | 342 | 232 k | 359 |
 | `settlements/iziz/dist/w-a.html` | 71 | 54 k | 73 / 60 k | 71 / 54 k | 60 k |  | 73 | 50 | 2425 | 54 |
 | `settlements/iziz/dist/w-b.html` | 49 | 46 k | 49 / 48 k | 49 / 46 k | 48 k |  | 49 | 45 | 1458 | 49 |
-| `settlements/iziz/dist/w-c.html` | 83 | 241 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
+| `settlements/iziz/dist/w-c.html` | 83 | 239 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
 | `settlements/jimjam/dist/jimjam-kit.html` | 487 | 1.22 M | 532 / 1.78 M | 487 / 1.21 M | 1.78 M |  | 538 | 336 | 41 k | 348 |
-| `settlements/locus/abyss-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/locus/locus-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/locus/locus-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/locus/locus.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/mavs-refuge/mavs-refuge.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/mungo/dist/mungo.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/noahs-regret/dist/noahs-regret.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/locus/abyss-kit.html` | 111* | 640 k | 105 / 747 k | 106 / 616 k | 749 k | 175 k | 109 | 70 | 17 k | 109 |
+| `settlements/locus/locus-kit.html` | 94* | 289 k | 90 / 292 k | 88 / 275 k | 292 k | 32 k | 90 | 65 | 8916 | 90 |
+| `settlements/locus/locus-plants.html` | 16* | 64 k | 11 / 52 k | 10 / 50 k | 52 k |  | 11 | 10 | 399 | 11 |
+| `settlements/locus/locus.html` | 185* | 9.24 M | 216 / 10.24 M | 180 / 8.98 M | 10.17 M | 178 k | 224 | 146 | 690 k | 193 |
+| `settlements/mavs-refuge/mavs-refuge.html` | 87* | 4.42 M | 77 / 5.15 M | 94 / 4.07 M | 5.15 M | 1.22 M | 77 | 41 | 180 k | 75 |
+| `settlements/mungo/dist/mungo.html` | 438* | 8.13 M | 452 / 8.39 M | 436 / 7.58 M | 8.31 M | 85 k | 454 | 183 | 459 k | 382 |
+| `settlements/noahs-regret/dist/noahs-regret.html` | 53 | 1.51 M |  |  | 1.45 M | 378 k | 1970 | 1918 | 0 | 1942 |
 | `settlements/port/dist/cgBox.html` | 111 | 409 k | 114 / 573 k | 111 / 405 k | 528 k |  | 114 | 56 | 8752 | 72 |
 | `settlements/port/dist/cgCrane.html` | 149 | 424 k | 152 / 585 k | 149 / 419 k | 540 k |  | 152 | 56 | 8459 | 73 |
 | `settlements/port/dist/cgEdges.html` | 108 | 392 k | 112 / 505 k | 108 / 381 k | 460 k |  | 112 | 26 | 6407 | 40 |
@@ -149,12 +149,12 @@
 | `settlements/streetlab/dist/voth-city.html` | 1047 | 34.88 M |  |  | 40.95 M | 615 k | 3591 | 3147 | 657 k | 239 |
 | `settlements/streetlab/dist/voth-site.html` | 132 | 600 k |  |  | 1.14 M | 762 k | 52 | 6 | 8308 | 8 |
 | `settlements/verge/dist/verge.html` | 1012 | 18.22 M |  |  | 9.88 M | 439 k | 778 | 260 | 331 k | 352 |
-| `settlements/voth/voth.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/voth/voth.html` | 77* | 2.92 M | 69 / 4.22 M | 71 / 2.91 M | 4.22 M |  | 69 | 67 | 127 k | 69 |
 | `settlements/xanadu/dist/erewhon.html` | 1029 | 9.53 M | 1255 / 20.95 M | 1031 / 9.36 M | 21.99 M |  | 1639 | 1579 | 1.02 M | 1435 |
-| `settlements/xanadu/dist/xanadu.html` | 89 | 990 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
+| `settlements/xanadu/dist/xanadu.html` | 88 | 888 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
 | `settlements/ys/dist/kit.html` | 99 | 4.26 M |  |  | 4.26 M |  | 108 | 35 | 16 k | 58 |
 | `settlements/ys/dist/mock.html` | 58 | 561 k |  |  | 502 k |  | 57 | 30 | 2328 | 46 |
 | `settlements/ys/dist/ys.html` | 187 | 29.50 M |  |  | 29.49 M |  | 205 | 100 | 394 k | 180 |
-| `settlements/yuni/yuni-assets.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/yuni/yuni-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/yuni/yuni.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/yuni/yuni-assets.html` | 116* | 1.45 M | 123 / 1.76 M | 113 / 982 k | 1.76 M |  | 140 | 96 | 21 k | 120 |
+| `settlements/yuni/yuni-plants.html` | 13* | 56 k | 9 / 46 k | 8 / 45 k | 46 k |  | 25 | 8 | 175 | 11 |
+| `settlements/yuni/yuni.html` | 151* | 7.42 M | 154 / 8.19 M | 157 / 5.80 M | 8.21 M |  | 173 | 114 | 261 k | 151 |

@@ -137,7 +137,7 @@ canvas{display:block;width:100vw;height:100vh}
 //   SIM.load(json)                the hand-edited overlay (PLAN.md 4.2): a record with a known id overrides it field by
 //                                 field, a new id is added, {id, remove:true} deletes; then every reference is checked
 //   SIM.check()                   unknown references -> SIM.problems (and the host's err), returns the list
-//   SIM.logEvent(kind, data)      the decision log (a ring of SIM.LOG_MAX), what the export carries
+//   SIM.logEvent(kind, data)      the decision log (the last SIM.LOG_MAX, trimmed when it passes 1.25 times that), what the export carries
 (function(root){
   'use strict';
   var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port','transport'];
@@ -180,11 +180,11 @@ canvas{display:block;width:100vw;height:100vh}
     if(!SIM.R[kind]) throw new Error('SIM.add: unknown kind '+kind);
     if(!rec || rec.id==null) throw new Error('SIM.add('+kind+'): a record needs an id');
     if(SIM.R[kind][rec.id]) throw new Error('SIM.add('+kind+'): duplicate id '+rec.id);
-    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); return rec;
+    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; return rec;
   };
   SIM.get = function(kind, id){ return SIM.R[kind] ? SIM.R[kind][id] : undefined; };
   SIM.all = function(kind){ var R=SIM.R[kind]; return SIM.order[kind].filter(function(id){ return R[id]; }).map(function(id){ return R[id]; }); };
-  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; };
+  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; if(kind==='place') SIM.placeVersion=(SIM.placeVersion||0)+1; };
 
   /* the overlay: what a hand-edited world/*.json says wins over what the geometry registered */
   var PLURAL = { activities:'activity', factions:'faction', orgs:'org', organizations:'org', relations:'relation', presence:'presence',
@@ -221,7 +221,9 @@ canvas{display:block;width:100vw;height:100vh}
     SIM.all('org').forEach(function(o){ need(!o.faction || F[o.faction], 'org '+o.id+': unknown faction '+o.faction); });
     SIM.all('relation').forEach(function(r){ need(F[r.a]||O[r.a], 'relation: unknown party '+r.a); need(F[r.b]||O[r.b], 'relation: unknown party '+r.b); });
     SIM.all('place').forEach(function(p){ Object.keys(p.activities||{}).forEach(function(a){ need(A[a], 'place '+p.id+': unknown activity '+a); }); need(!p.org || O[p.org], 'place '+p.id+': unknown org '+p.org); });
-    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); }); });
+    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); });
+      Object.keys(r.scheds||{}).forEach(function(k){ (r.scheds[k]||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' ('+k+') at '+h+':00: unknown activity '+a); }); });
+      (r.week||[]).forEach(function(k){ need(r.scheds && r.scheds[k], 'role '+r.id+': its week names an unknown schedule '+k); }); });
     SIM.all('actor').forEach(function(a){ need(Ro[a.role], 'actor '+a.id+': unknown role '+a.role); need(!a.home || P[a.home], 'actor '+a.id+': unknown home '+a.home); need(!a.work || P[a.work], 'actor '+a.id+': unknown work place '+a.work); });
     SIM.all('event').forEach(function(e){ (e.from||[]).concat(Array.isArray(e.to)?e.to:[]).forEach(function(p){ need(SIM.R.port[p], 'event '+e.id+': unknown port '+p); }); need(!e.to || Array.isArray(e.to) || e.to==='other', 'event '+e.id+': to must be a port list or "other"'); (e.legs||[]).forEach(function(l){ need(A[l.activity], 'event '+e.id+': unknown activity '+l.activity); }); });
     SIM.all('transport').forEach(function(t){ need(SIM.nav.layers[t.layer], 'transport '+t.id+': unknown layer '+t.layer); need(!t.faction || F[t.faction], 'transport '+t.id+': unknown faction '+t.faction); need(!t.org || O[t.org], 'transport '+t.id+': unknown org '+t.org);
@@ -232,7 +234,7 @@ canvas{display:block;width:100vw;height:100vh}
 
   SIM.logEvent = function(kind, data){
     var e = { m:SIM.minute(), kind:kind }; if(data) for(var k in data) e[k]=data[k];
-    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);
+    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX * 1.25) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);   /* trimmed in batches: a busy minute logs thousands */
     return e;
   };
   root.SIM = SIM;
@@ -249,7 +251,7 @@ canvas{display:block;width:100vw;height:100vh}
 //   SIM.relation({a, b, stance:'allied'|'friendly'|'cordial'|'neutral'|'wary'|'hostile', trade?, travel?, settle?, trust?})
 //   SIM.presence({id, faction, settlement, status:'NONE'|'VISITING'|'TRADING'|'RESIDENT'|'ESTABLISHED'|'PERSECUTED'|'EXPELLED'})
 //   SIM.stance(a, b)              a's stance toward b (org ids or faction ids), falling back org -> faction -> 'neutral'
-//   SIM.welcome(actorOrOrg, place) true when the place lets them in: place.access 'public' (default) | 'org' (its own
+//   SIM.welcome(actorOrOrg, place, act?) true when the place lets them in: place.access 'public' (default) | 'org' (its own
 //                                 org only) | 'friendly' (orgs whose stance from the place's org is friendly or better)
 (function(root){
   'use strict';
@@ -270,11 +272,14 @@ canvas{display:block;width:100vw;height:100vh}
     return rel(a,b) || rel(a,fb) || rel(fa,b) || rel(fa,fb) || 'neutral';
   };
   SIM.rank = function(stance){ return RANK[stance]; };
-  SIM.welcome = function(who, place){
+  SIM.welcome = function(who, place, act){
     var org = typeof who==='string' ? who : who.org, acc = place.access || 'public';
     if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
     if(acc==='org') return org===place.org;
     if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
+    if(acc==='private'){ if(typeof who==='string') return false; if(who.home===place.id || who.work===place.id) return true;   /* a home: its own people, */
+      var g=act && place.guests && place.guests[act], H=g && SIM.R.place[who.home];                                               /* and for an activity it takes guests for, the */
+      return !!(H && Math.hypot(H.x-place.x, H.z-place.z) <= g); }                                                                  /* neighbours whose home is within that many metres */
     return false;
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -293,9 +298,16 @@ canvas{display:block;width:100vw;height:100vh}
 //              are one person's room. Without it each activity's slots stand alone)})
 //   SIM.offers(P, act) -> slots (0 if not offered)            SIM.isOpen(P, act, hour)
 //   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
-//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...]}) -> candidates, nearest first, open, free and
-//                                 letting the actor in (SIM.welcome)
-//   SIM.slotsFromFurniture(pieces) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3)
+//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit}) -> candidates, nearest first, open, free
+//                                 and letting the actor in (SIM.welcome). With `limit` and `near` (and no ids) only the
+//                                 nearest `limit` are returned, found on a grid of the places (rings out from `near`):
+//                                 exactly the first `limit` of the full list, without looking at every place (a grid per
+//                                 activity; a host that changes places' activities after searching calls SIM.placesChanged());
+//                                 `maxR` (metres) stops the search there (nothing farther is returned). An EMPTY answer is
+//                                 remembered for the rest of the simulated minute for its grid cell, activity, hour, kinds
+//                                 and org (a crowd of 20,000 finding every tavern full asks once per cell, not once each)
+//   SIM.slotsFromFurniture(pieces, map?) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3);
+//                                 map: a world's own {job|type|role: ACT} over SIM.FURN_ACT
 (function(root){
   'use strict';
   var SIM = root.SIM;
@@ -321,26 +333,65 @@ canvas{display:block;width:100vw;height:100vh}
     var s=a.slot; if(!s) return; var P=SIM.R.place[s.place]; a.slot=null; if(!P) return;
     P.occ[s.act] = Math.max(0, (P.occ[s.act]||0) - 1); delete P.who[a.id];
   };
+  function passes(P, act, actor, hour, opt){
+    if(!SIM.offers(P, act)) return false;
+    if(opt.kinds && opt.kinds.indexOf(P.kind)<0) return false;
+    if(opt.exclude && opt.exclude[P.id]) return false;
+    if(hour!=null && !SIM.isOpen(P, act, hour)) return false;
+    if(!opt.ignoreSlots && SIM.free(P, act) <= 0) return false;
+    if(actor && SIM.welcome && !SIM.welcome(actor, P, act)) return false;
+    return true;
+  }
+  function byNear(near){ return function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); }; }
+  /* a grid per activity of the places offering it, rebuilt when places are added or removed, or when a host says their
+     activities changed (SIM.placesChanged()); a place with a `bias` makes the nearest-first order not a distance, so
+     the grid stands aside. An activity no place offers is answered at once. A private place (a home) is not on the grids:
+     its own people reach it by their pins (it lets no one else in), but for an activity it takes guests for (`guests:
+     {ACT: metres}`: a house the neighbours visit) it is on that activity's grid */
+  var GRIDS={}, GSIG=null, GCELL=120, EMPTY={ m:null, k:{} };
+  SIM.placesChanged = function(){ SIM.placeVersion=(SIM.placeVersion||0)+1; EMPTY={ m:null, k:{} }; };
+  function grid(act){
+    var sig=SIM.order.place.length+':'+(SIM.placeVersion||0);
+    if(GSIG!==sig){ GRIDS={}; GSIG=sig; }
+    if(GRIDS[act]) return GRIDS[act];
+    var G={ cells:{}, n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
+    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
+      if(P.bias) G.bias=true; G.x0=Math.min(G.x0,P.x); G.x1=Math.max(G.x1,P.x); G.z0=Math.min(G.z0,P.z); G.z1=Math.max(G.z1,P.z); });
+    return (GRIDS[act]=G);
+  }
   SIM.placesFor = function(act, actor, hour, opt){
-    opt = opt || {}; var out=[], near=opt.near, kinds=opt.kinds, ids=opt.ids;
+    opt = opt || {}; var out=[], near=opt.near, ids=opt.ids;
+    if(opt.limit && near && !ids){ var G=grid(act); if(!G.n) return out; if(!G.bias){
+      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR;
+        var mm=SIM.host ? SIM.minute() : 0; if(EMPTY.m!==mm){ EMPTY={ m:mm, k:{} }; } if(EMPTY.k[ek]) return out; }
+      /* rings of cells out from `near`: once `limit` are found, a ring whose inner edge lies past the limit-th distance
+         cannot change the first `limit`, so stop there */
+      var ci=Math.floor(near[0]/GCELL), cj=Math.floor(near[1]/GCELL), D=function(P){ return Math.hypot(P.x-near[0], P.z-near[1]); };
+      var rmax=Math.ceil(Math.max(Math.abs(near[0]-G.x0), Math.abs(near[0]-G.x1), Math.abs(near[1]-G.z0), Math.abs(near[1]-G.z1))/GCELL)+1;
+      for(var r=0;r<=rmax;r++){
+        for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue;
+          var C=G.cells[i+','+j]; if(!C) continue; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }
+        if(out.length>=opt.limit){ out.sort(byNear(near)); if(D(out[opt.limit-1]) < r*GCELL) break; }
+        if(opt.maxR!=null && r*GCELL > opt.maxR) break;
+      }
+      out.sort(byNear(near)); if(opt.maxR!=null) out=out.filter(function(P){ return D(P) <= opt.maxR; });
+      if(!out.length && ek) EMPTY.k[ek]=1;
+      return out.slice(0, opt.limit);
+    } }
     var list = ids ? ids.map(function(id){ return SIM.R.place[id]; }).filter(Boolean) : SIM.all('place');
-    for(var i=0;i<list.length;i++){ var P=list[i];
-      if(!SIM.offers(P, act)) continue;
-      if(kinds && kinds.indexOf(P.kind)<0) continue;
-      if(opt.exclude && opt.exclude[P.id]) continue;
-      if(hour!=null && !SIM.isOpen(P, act, hour)) continue;
-      if(!opt.ignoreSlots && SIM.free(P, act) <= 0) continue;
-      if(actor && SIM.welcome && !SIM.welcome(actor, P)) continue;
-      out.push(P); }
-    if(near) out.sort(function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); });
+    for(var k=0;k<list.length;k++) if(passes(list[k], act, actor, hour, opt)) out.push(list[k]);
+    if(near) out.sort(byNear(near));
     return out;
   };
   /* furniture -> slots. A catalog piece carries `job` (FURN_JOBS) or a `type` / interiors walker target type */
   SIM.FURN_ACT = { bed:'SLEEP', mat:'SLEEP', bunk:'SLEEP', seat:'EAT', chair:'EAT', bench:'SOCIALIZE', stool:'DRINK', table:'EAT',
     counter:'KEEP_SHOP', stall:'SELL', stove:'COOK', hearth:'COOK', desk:'STUDY', altar:'WORSHIP', shrine:'WORSHIP',
     forge:'CRAFT', anvil:'CRAFT', loom:'WEAVE', smithing:'CRAFT', fishing:'MEND_NETS', farming:'FARM', carpentry:'CRAFT', milling:'CRAFT' };
-  SIM.slotsFromFurniture = function(pieces){
-    var out={}; (pieces||[]).forEach(function(p){ var a = SIM.FURN_ACT[p.job] || SIM.FURN_ACT[p.type] || SIM.FURN_ACT[p.role]; if(a) out[a]=(out[a]||0)+(p.seats||1); });
+  /* map: a world's own vocabulary over SIM.FURN_ACT (Voth's city: a rack is DRAW_TOOLS, a well DRINK, a tomb HONOUR);
+     a key it maps to null is no activity there */
+  SIM.slotsFromFurniture = function(pieces, map){
+    var M = map ? Object.assign({}, SIM.FURN_ACT, map) : SIM.FURN_ACT, out={};
+    (pieces||[]).forEach(function(p){ var a = M[p.job] || M[p.type] || M[p.role]; if(a) out[a]=(out[a]||0)+(p.seats||1); });
     return out;
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -356,7 +407,7 @@ canvas{display:block;width:100vw;height:100vh}
 //
 //   SIM.role({id, org, name, sched, prefers?:{ACT:{pin?:'home'|'work', kinds?:[..], ids?:[..], via?:'boat'|'buggy'}},
 //             speed?, layer?, mode?, fallback?:{ACT:ACT}})
-//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock}, speed?})
+//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock, pier?, layer?}, speed?})
 //   SIM.group({id, kind, org, members:[actor ids], beasts?, mount?, vehicle?})
 //   SIM.event({id, kind, org, every:[minH,maxH] (world hours between firings), window?:[h0,h1], from:[ports], to:[ports]|'other',
 //              spread?: metres either side of the leader its members walk in pairs (1.6, a caravan 1.1); 0: single file, 1.4 m apart
@@ -367,13 +418,29 @@ canvas{display:block;width:100vw;height:100vh}
 //   SIM.step()                                          one simulated minute (the host calls it as the world minute advances)
 //   SIM.jump()                                          the clock jumped: everyone is re-placed from the schedule (a share mid-trip)
 //   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
+//   THE WEEK: a role may carry named schedules `scheds: {work:..., off:..., rest:...}` and `week: [7 names]` (the
+//   schedule each weekday, SIM.weekday(minute) = day % SIM.WEEK); an actor's `off` (a weekday) takes the role's `off`
+//   schedule that day (a rota: each worker its own day off); an actor's `alias: {name: name}` follows another of the role's
+//   schedules in place of one (its own service hour on the rest day). Without them the role's `sched` holds every day.
+//   SIM.schedOf(actor, minute) -> the 24 hours it follows that day
+//   LAZY ROUTES (SIM.lazy = {layer: {detour}}, opt-in): on such a graph layer a leg is decided without its path: its
+//   duration from the straight line times `detour`, its reachability from the layer's connected bodies; the path is
+//   found the first time something asks where on it the actor is (SIM.legRoute: the embodiment, near the camera), and
+//   walked at the speed that keeps the arrival. A city of 50,000 decides in microseconds what it draws for hundreds.
 (function(root){
   'use strict';
   var SIM = root.SIM;
   SIM.STEP_MAX = 260;           /* decisions per simulated minute; the rest wait a minute (rotating start) */
+  SIM.REACH = null;             /* a world's limit (metres) on how far an actor looks for a place (a role's prefers.reach overrides); null: no limit */
   SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
   SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
-  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched); o.prefers=o.prefers||{}; return SIM.add('role', o); };
+  SIM.WEEK = 7;
+  SIM.legsBy = {};
+  SIM.weekday = function(minute){ var d=Math.floor((minute==null?SIM.minute():minute)/1440); return ((d % SIM.WEEK) + SIM.WEEK) % SIM.WEEK; };
+  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched);
+    if(o.scheds){ for(var k in o.scheds) o.scheds[k]=SIM.sched(o.scheds[k]); if(!o.sched) o.sched=o.scheds.work || o.scheds[Object.keys(o.scheds)[0]]; }
+    if(o.week && o.week.length!==SIM.WEEK) throw new Error('SIM.role '+o.id+': week needs '+SIM.WEEK+' schedule names');
+    o.prefers=o.prefers||{}; return SIM.add('role', o); };
   SIM.port = function(o){ o.layer=o.layer||'pedestrian'; return SIM.add('port', o); };
   SIM.group = function(o){ o.members=o.members||[]; return SIM.add('group', o); };
   SIM.event = function(o){ o.fired=0; o.next=null; return SIM.add('event', o); };
@@ -386,24 +453,37 @@ canvas{display:block;width:100vw;height:100vh}
     o.k = SIM.order.actor.length;
     return SIM.add('actor', o);
   };
-  function schedOf(a){ return a.sched || SIM.R.role[a.role].sched; }
+  function schedOf(a, minute){
+    if(a.sched) return a.sched; var R=SIM.R.role[a.role]; if(!R) return null;
+    if(R.week && R.scheds){ var d=SIM.weekday(minute), k=R.week[d]; if(a.off!=null && a.off===d && R.scheds.off) k='off';
+      if(a.alias && a.alias[k] && R.scheds[a.alias[k]]) k=a.alias[k];   /* the actor's own version of that day (its service hour) */
+      return R.scheds[k] || R.sched; }
+    return R.sched;
+  }
+  SIM.schedOf = schedOf;
   function hourOf(m){ return Math.floor((m%1440)/60); }
 
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
-    var s=schedOf(a); return s ? s[hourOf(minute==null?SIM.minute():minute)] : 'IDLE';
+    var m=minute==null?SIM.minute():minute;
+    if(a.cmd){ if(m<a.cmd.until) return a.cmd.act; if(m===SIM.minute()){ a.cmd=null; } }          /* a forced command (SIM.command), until it ends */
+    var ml=m-SIM.lagOf(a), s=schedOf(a, ml), act=s ? s[hourOf(ml)] : 'IDLE';                 /* its own day runs `lag` minutes behind the clock */
+    if(SIM.ITEMS) act=SIM.itemsDesire(a, m, act);                                /* an errand (77-sim-6-items.js), opt-in */
+    return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
   function placeXZ(P){ return [P.x, P.z]; }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? placeXZ(H) : (a.at || [0,0]); }
   /* the place for an activity: pinned, remembered, preferred kinds, anything; then the role's fallback */
   function choose(a, act, hour){
     var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, near=anchor(a), P;
+    if(a.cmd && a.cmd.act===act && a.cmd.place){ P=SIM.R.place[a.cmd.place]; if(P) return P; }   /* commanded there */
+    if(SIM.ITEMS && a.errand && a.errand.act===act) return SIM.itemsChoose(a, act, hour);   /* the nearest seller (77-sim-6-items.js) */
     if(pref.pin==='home' && a.home){ P=SIM.R.place[a.home]; if(P && SIM.offers(P,act)) return P; }
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
     var m=a.mem[act]; if(m){ P=SIM.R.place[m]; if(P && SIM.isOpen(P,act,hour) && (SIM.free(P,act)>0 || P.who[a.id]===act)) return P; }
-    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad });
+    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad, limit:pref.spread||3, maxR:pref.reach!=null ? pref.reach : SIM.REACH });
     if(c.length){ /* the nearest few, one picked from SIM.rng so a crowd spreads over a district's taverns and shops */
       var k=Math.min(c.length, pref.spread||3); return c[Math.floor(SIM.rng.next()*k)]; }
     return null;
@@ -415,8 +495,9 @@ canvas{display:block;width:100vw;height:100vh}
     minute = minute==null ? SIM.minute() : minute; t = t==null ? SIM.time() : t;
     var hour=hourOf(minute), want=SIM.desire(a, minute), R=SIM.R.role[a.role];
     var chain=[want].concat((R.fallback&&R.fallback[want]) ? [R.fallback[want]] : []).concat(SIM.FALLBACK);
-    var from=SIM.pose(a, t), P=null, act=want, task=null;
+    var from=SIM.pose(a, t, { cheap:true }), P=null, act=want, task=null, had=a.task;
     a.bad = a.bad || {};
+    if(SIM.NEED) SIM.needsOf(a, minute);                                        /* the meters to now, on what it was doing */
     for(var i=0; i<chain.length && !task; i++){ act=chain[i];
       /* a place the actor cannot reach is struck off for it and the next one tried (three at most per activity) */
       for(var tries=0; tries<3; tries++){
@@ -429,8 +510,12 @@ canvas{display:block;width:100vw;height:100vh}
         if(!T.failed){ task=T; break; }
         SIM.release(a); a.bad[P.id]=1; a.mem[act]=null; P=null; } }
     a.wanted = want;
-    if(!task){ a.activity=act; a.task=a.task||null; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
+    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; if(SIM.ITEMS) SIM.itemsDecided(a, minute, null, null, act, want); SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
     a.mem[act]=P.id; a.activity=act; a.place=P.id; a.task=task; a.since=minute;
+    if(SIM.NEED && task!==had) SIM.needsDecided(a, minute, task);
+    if(SIM.ITEMS) SIM.itemsDecided(a, minute, task!==had ? task : null, P, act, want);
+    if(SIM.NEED && act!==want && a.fr===want){ a.fr=act; a.wanted=act; }       /* a free-time choice no place took: it settles for what it got */
+    if(SIM.NEED && act!==want && a.intr && a.intr.act===want){ a.intrCool=minute+a.intr.cool; a.intr=null; a.wanted=null; }   /* an interrupt with nowhere to go: back to work next minute */
     SIM.logEvent('decide', { actor:a.id, act:act, place:P.id });
     return P;
   };
@@ -444,31 +529,50 @@ canvas{display:block;width:100vw;height:100vh}
     return { x:P.x+Math.cos(ang)*rr, z:P.z+Math.sin(ang)*rr, y:P.y };
   }
   function leg(layer, from, to, speed, mode, minW){
+    var Z=SIM.lazy && SIM.lazy[layer], NL=SIM.nav.layers[layer];
+    if(Z && NL && NL.kind==='graph'){
+      /* lazy: reachable when both ends' nodes lie on one body; the duration from the straight line */
+      var s=SIM.nav.nearest(layer, from.x, from.z, NL.yw ? { minW:minW||0, y:from.y } : { minW:minW||0 }), t=SIM.nav.nearest(layer, to.x, to.z, NL.yw ? { minW:minW||0, y:to.y } : { minW:minW||0 });
+      if(s<0 || t<0 || SIM.nav.body(layer, s)!==SIM.nav.body(layer, t)){ SIM.routeFail.push({ layer:layer, why:'no path (bodies)', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
+      var d=Math.hypot(to.x-from.x, to.z-from.z)*(Z.detour||1.35)+0.5;
+      return { route:null, lazy:{ from:{x:from.x,z:from.z,y:from.y}, to:{x:to.x,z:to.z,y:to.y}, minW:minW||0 }, speed:speed, mode:mode, layer:layer, dur:d/speed };
+    }
     var r=SIM.nav.route(layer, from, to, { minW:minW||0 }); if(!r) return null;
     return { route:r, speed:speed, mode:mode, layer:layer, dur:r.len/speed };
   }
+  SIM.leg = leg;
+  /* a lazy leg's path, found when first asked; walked at the speed that keeps its arrival (a straight line if, against
+     the bodies' say, no path is found) */
+  SIM.legRoute = function(L){
+    if(L.route || !L.lazy) return L.route;
+    var z=L.lazy, r=SIM.nav.route(L.layer, z.from, z.to, { minW:z.minW });
+    if(!r){ var a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]); r={ pts:[a,b], cum:[0,len], len:len, layer:L.layer, straight:true }; }
+    L.route=r; L.speed = L.dur>0 ? r.len/L.dur : L.speed; SIM.lazyResolved=(SIM.lazyResolved||0)+1;
+    return r;
+  };
   /* the legs to a place: walk (or ride / drive) on the actor's layer; a place on another layer is reached through a
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
-    var spot=spotOf(a, P), cur=from, inVeh = a.inVehicle;           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : a.cmd && a.cmd.spot && a.cmd.place===P.id ? { x:a.cmd.spot.x, z:a.cmd.spot.z, y:a.cmd.spot.y==null?P.y:a.cmd.spot.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle;   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
       if(B){ var l1=leg(layer, cur, B.door, a.speed, mode, 0); if(l1){ legs.push(l1); cur=B.door; }
-        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?'water':'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
+        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?bl:'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
         var board = via==='boat' && a.boat && a.boat.pier ? a.boat.pier : B.door;
         var l2=leg(vl, board, P.layer===vl?spot:P.door, vs, vm, vm==='drive'?5:0); if(l2){ legs.push(l2); } a.inVehicle = vm==='boat'?'boat':'buggy'; } }
-    else if(inVeh && P.layer!==(inVeh==='boat'?'water':'road')){                   /* back from the water / the road: to the base, then walk */
-      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?'water':'road';
+    else if(inVeh && P.layer!==(inVeh==='boat'?bl:'road')){                        /* back from the water / the road: to the base, then walk */
+      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?bl:'road';
       if(base){ var land = inVeh==='boat' && a.boat && a.boat.pier ? a.boat.pier : base.door;
         var l3=leg(vl2, cur, land, SIM.SPEED[inVeh==='boat'?'boat':'drive'], inVeh==='boat'?'boat':'drive', inVeh==='boat'?0:5); if(l3){ legs.push(l3); cur=base.door; } }
       a.inVehicle = null;
       var l4=leg(layer, cur, spot, a.speed, mode, 0); if(l4) legs.push(l4); }
     else {
-      var lay = inVeh ? (inVeh==='boat'?'water':'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
+      var lay = inVeh ? (inVeh==='boat'?bl:'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
       var l5=leg(lay, cur, spot, inVeh?SIM.SPEED[inVeh==='boat'?'boat':'drive']:a.speed, inVeh?(inVeh==='boat'?'boat':'drive'):mode, a.minW||0); if(l5) legs.push(l5); }
     var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3 };
-    legs.forEach(function(L){ T.dur+=L.dur; }); T.arrive=t+T.dur;
+    legs.forEach(function(L){ T.dur+=L.dur; SIM.legsBy[L.layer]=(SIM.legsBy[L.layer]||0)+1; }); T.arrive=t+T.dur;   /* legs planned, by layer (an audit) */
     if(T.failed) SIM.logEvent('nopath', { actor:a.id, place:P.id });
     return T;
   };
@@ -477,7 +581,7 @@ canvas{display:block;width:100vw;height:100vh}
   function nextFiring(E, minute){ var e=E.every||[6,12]; return minute + Math.round(SIM.rng.range(e[0], e[1])*60); }
   function pickPort(list, not){ var L=(list||[]).filter(function(p){ return p!==not && SIM.R.port[p]; }); return L.length ? L[Math.floor(SIM.rng.next()*L.length)] : null; }
   SIM.fire = function(E, minute, t){
-    var from=pickPort(E.from), to = E.to==='other' || !E.to ? pickPort(E.from, from) || from : pickPort(E.to, from);
+    var from=pickPort(E.from), to = E.to==='same' ? from : E.to==='other' || !E.to ? pickPort(E.from, from) || from : pickPort(E.to, from);   /* 'same': out the way it came */
     if(!from){ SIM.err('event '+E.id+': no port'); return null; }
     if(E.kind==='excursion') return excursion(E, minute, t, from);
     var P0=SIM.R.port[from], units=SIM.rng.int(E.size?E.size[0]:1, E.size?E.size[1]:1), gid=E.id+'#'+(++E.fired), members=[];
@@ -504,9 +608,9 @@ canvas{display:block;width:100vw;height:100vh}
      it, and leaves by its port after the last (Shade's convoy: water, trade, rest, out by the switchback) */
   function itinerary(E, G, members, P0, to, minute, t){
     var at=[P0.x, P0.z], plan=[];
-    E.legs.forEach(function(L){ var P=SIM.placesFor(L.activity, null, null, { near:at, kinds:L.kinds, ignoreSlots:true })[0];
+    E.legs.forEach(function(L){ var P=L.place ? SIM.R.place[L.place] : SIM.placesFor(L.activity, null, null, { near:at, kinds:L.kinds, ignoreSlots:true })[0];   /* a leg may name its place */
       if(!P){ SIM.err('event '+E.id+': no place offers '+L.activity); return; }
-      plan.push({ activity:L.activity, place:P.id, together:true, mins:L.mins||0 }); at=[P.x, P.z]; });
+      plan.push({ activity:L.activity, place:P.id, together:true, mins:L.mins||0, stop:L.stop||null }); at=[P.x, P.z]; });   /* stop: what the economy does there (77-sim-6-economy.js) */
     plan.push({ activity:'DEPART', port:to, together:true });
     G.plan = { legs:true, phase:'arrive' };
     members.forEach(function(id, i){ var a=SIM.R.actor[id]; a.plan=plan.map(function(L){ var o={}; for(var k in L) o[k]=L[k]; return o; }); a.planI=0; a.fi=i; });
@@ -561,8 +665,9 @@ canvas{display:block;width:100vw;height:100vh}
     SIM.all('group').forEach(function(G){ if(G.done || !G.plan) return; var lead=SIM.R.actor[G.leader]; if(!lead) return;
       if(G.phase==='arrive' && t >= G.legArrive && G.plan.legs){ var Lc=lead.plan[lead.planI];      /* an itinerary stop: stay its minutes */
         G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); }); G.phase='dwell'; G.until=minute+(Lc.mins||0);
-        SIM.logEvent('arrived', { group:G.id, place:Lc.place, act:Lc.activity }); }
-      else if(G.phase==='dwell' && minute >= G.until){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI++; }); groupLeg(G, minute, t); }
+        SIM.logEvent('arrived', { group:G.id, place:Lc.place, act:Lc.activity }); if(Lc.stop && SIM.ECON) SIM.economyStop(G, Lc, 'arrive', minute); }
+      else if(G.phase==='dwell' && minute >= G.until){ var Ld=lead.plan[lead.planI]; if(Ld && Ld.stop && SIM.ECON) SIM.economyStop(G, Ld, 'leave', minute);
+        G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI++; }); groupLeg(G, minute, t); }
       else if(G.phase==='arrive' && t >= G.legArrive){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); a.planI=1; a.task=null; a.wanted=null; }); G.phase='stay'; SIM.logEvent('arrived', { group:G.id, place:G.dest }); }
       else if(G.phase==='stay' && minute >= G.plan.stayUntil){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI=2; }); groupLeg(G, minute, t); }
       else if(G.phase==='depart' && t >= G.legArrive){ G.done=true; G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.present=false; SIM.remove('actor', id); });
@@ -579,19 +684,59 @@ canvas{display:block;width:100vw;height:100vh}
         if(L && L.activity==='DRIVE_BACK' && a.task && t >= a.task.arrive){ a.pos=SIM.pose(a, t); a.plan=null; a.inVehicle=null; a.task=null; a.activity=null; a.wanted=null; }
         if(L && (L.together || L.away)) continue;                                  /* the group (or the trip) moves it */
       }
-      if(!a.present) continue;
+      if(!a.present || a.driven) continue;                                         /* a cart: the economy drives it */
+      if(SIM.WAKE && a.wake!=null && minute<a.wake && a.task){ SIM.skipped++; continue; }   /* nothing it wants can change before then */
       var want=SIM.desire(a, minute), Rr=SIM.R.role[a.role], cyc=Rr.cycle && Rr.cycle[a.activity];
       if(want!==a.wanted || !a.task || (a.task.failed && (minute%15===0))){ SIM.decide(a, minute, t); budget--; made++; }
       else if(cyc && a.since!=null && minute-a.since >= cyc && t >= a.task.arrive && a.activity===want){   /* a role that moves on (the watch, a merchant doing the rounds) */
         var here=a.place; a.mem[want]=null; a.bad=a.bad||{}; var had=a.bad[here]; a.bad[here]=1; SIM.decide(a, minute, t); if(!had) delete a.bad[here]; budget--; made++; }
+      if(SIM.WAKE) a.wake = SIM.wakeOf(a, minute, want);
     }
+    if(SIM.ECON) SIM.economyStep(minute, t);                                        /* production, the carts, the imports */
+    for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     return made;
+  };
+  /* THE WAKE (SIM.WAKE, opt-in): an actor is asked again only at the soonest minute anything it wants could change: the
+     next hour its schedule changes (midnight at the latest; every hour with an errand waiting or in free time, for the
+     items' hourly looks), a failed task's retry (every 15 minutes), a role's cycle, the needs' and the items'
+     clauses (SIM.needsWake, SIM.itemsWake: a dwell ending, a meter crossing, an errand done, a tool worn through); at
+     once while its wish and its decision differ (a decision the minute's budget left for the next) */
+  SIM.WAKE = false; SIM.skipped = 0; SIM.stepHooks = SIM.stepHooks || [];
+  /* THE LAG (opt-in: SIM.LAG minutes): each actor's day runs a few minutes behind the clock, by a hash of the actor
+     (0..LAG), so a change of schedule falls due over the hour's first minutes, not all at :00 (the hour's turn: the
+     minute everyone decides at once); plus its own `lagBase` minutes when the world gives one (a bucket of trades
+     half an hour later). Its schedule, its weekday and its wake all read the lagged minute */
+  SIM.LAG = SIM.LAG || 0;
+  /* `a.lagBase` (a world's: its bucket, the city's trades in two half-hour shifts) adds to the hashed jitter */
+  SIM.lagOf = function(a){ var base=a.lagBase||0; if(!SIM.LAG && !base) return 0; var key=SIM.LAG+':'+base;
+    if(a.lagFor!==key){ a.lagFor=key; a.lag=base + (SIM.LAG ? ((Math.imul(a.k+1, 2654435761)>>>0)>>>7) % (SIM.LAG+1) : 0); } return a.lag; };
+  /* A FORCED COMMAND: the actor does `act` at `place` (and at `spot`, when given) from now until `until` (a world
+     minute; `mins` from now), whatever its schedule, needs and errands want; then it is free again. Asked at once (its
+     wake cleared). An arena's handler sending a beast onto the sand, later a sergeant's order */
+  SIM.command = function(a, o){
+    var minute=SIM.minute(); a.cmd={ act:o.act, place:o.place||null, spot:o.spot||null, until:o.until!=null ? o.until : minute+(o.mins||60), by:o.by||null };
+    a.wake=null; a.wanted=null; a.fr=null; SIM.logEvent('command', { actor:a.id, act:o.act, place:o.place||null, until:a.cmd.until, by:o.by||null }); return a.cmd; };
+  SIM.wakeOf = function(a, minute, want){
+    if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
+    /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
+       or in free time (the items' hourly looks: a shop open, the household's store) */
+    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=Math.floor((ml%1440)/60), nh=h+1, midnight=ml-ml%1440+1440+lg;   /* on its own (lagged) day */
+    if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
+    var w=Math.min(midnight, ml-ml%60+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    if(a.cmd) w=Math.min(w, a.cmd.until);                                           /* a command's end */
+    if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60+lg);   /* the items' hourly look, its lag after the hour */
+    if(a.task.failed) w=Math.min(w, minute-minute%15+15);
+    if(cyc && a.since!=null) w=Math.min(w, a.since+cyc);
+    if(SIM.NEED) w=Math.min(w, SIM.needsWake(a, minute, sc ? sc[h] : a.wanted));
+    if(SIM.ITEMS) w=Math.min(w, SIM.itemsWake(a, minute, a.wanted));
+    return Math.max(minute+1, w);
   };
   /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; SIM.decide(a, minute, t);
-      if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; } });
+    if(SIM.ECON) SIM.economyJump(minute);
+    SIM.all('actor').forEach(function(a){ a.wake=null; if(!a.present || a.plan || a.driven) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
+      if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -603,10 +748,16 @@ canvas{display:block;width:100vw;height:100vh}
 // binary heap, a cost and a speed factor per edge kind, `w` per edge so a caravan keeps to roads wide enough for it).
 // A GRID layer (a host's own water or cross-country grid) registers a route function instead and answers the same call.
 //
-//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}})       a graph layer
+//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}, yWeight?})       a graph layer; yWeight: a layer whose
+//                                     levels stack (canton terraces, storeys) finds a point's nearest node by sqrt(dxz^2 + (yWeight*dy)^2)
+//                                     when the point has a y (a room on the third terrace is not walked to from the street under it)
 //   SIM.nav.layer(name, {route:(ax,az,bx,bz,opt)=>{pts:[[x,y,z]...]}|null})      a grid (host) layer
-//   SIM.nav.nearest(layer, x, z, {minW}) -> node index (graph layers)
+//   SIM.nav.nearest(layer, x, z, {minW, y}) -> node index (graph layers; y counts only on a yWeight layer)
 //   SIM.nav.route(layer, from:{x,z,y?,node?}, to:{x,z,y?,node?}, {minW}) -> {pts, cum, len} or null (SIM.routeFail)
+//   SIM.nav.field(layer, [{node, d?}], {max?, minW?}) -> {d: Float64Array, src: Int32Array} (graph layers): every node's
+//                                     cost from the nearest source and which source (an index into the list; -1 past max).
+//                                     One search answers "the nearest free job / well / tavern" for a whole city at once.
+//   SIM.nav.body(layer, node) -> the connected body the node lies on (graph layers; one label per body, found once)
 //   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
 (function(root){
   'use strict';
@@ -624,7 +775,7 @@ canvas{display:block;width:100vw;height:100vh}
     var adjTo=new Int32Array(adjStart[n]), adjE=new Int32Array(adjStart[n]), fill=new Int32Array(n);
     E.forEach(function(e,ei){ var a=idx[e.a], b=idx[e.b]; adjTo[adjStart[a]+fill[a]]=b; adjE[adjStart[a]+fill[a]++]=ei; adjTo[adjStart[b]+fill[b]]=a; adjE[adjStart[b]+fill[b]++]=ei; });
     var hash={}; N.forEach(function(nd,i){ var k=Math.floor(nd.x/CELL)+','+Math.floor(nd.z/CELL); (hash[k]||(hash[k]=[])).push(i); });
-    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0 };
+    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0, yw:o.yWeight||0 };
     /* the widest edge at each node: a wheeled mover may only start or stop where it fits */
     L.nodeW = new Float32Array(n); E.forEach(function(e){ var w=e.w==null?99:e.w; [idx[e.a],idx[e.b]].forEach(function(j){ if(w>L.nodeW[j]) L.nodeW[j]=w; }); });
     return L;
@@ -634,14 +785,15 @@ canvas{display:block;width:100vw;height:100vh}
     layer: function(name, o){ NAVS[name] = o.route ? { name:name, kind:'grid', route:o.route, nearest:o.nearest||null, searches:0 } : graphLayer(name, o); return NAVS[name]; },
     nearest: function(layer, x, z, opt){
       var L=NAVS[layer]; if(!L || L.kind!=='graph') return -1; var minW=(opt&&opt.minW)||0, best=-1, bd=1e18;
+      var yw=L.yw && opt && opt.y!=null ? L.yw : 0, y=yw ? opt.y : 0;   /* a stacked layer: the height counts (the ring bound below still holds: 3D >= 2D) */
       /* rings of hash cells outward; once something is found, a ring further out cannot hold anything nearer
          than r*CELL, so stop when the best is inside that */
       var ci=Math.floor(x/CELL), cj=Math.floor(z/CELL);
       for(var r=0;r<14;r++){
         for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue; var cell=L.hash[i+','+j]; if(!cell) continue;
-          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(d<bd){ bd=d; best=k; } } }
+          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(yw) d+=yw*yw*((nd.y||0)-y)*((nd.y||0)-y); if(d<bd){ bd=d; best=k; } } }
         if(best>=0 && Math.sqrt(bd) <= r*CELL) break; }
-      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(d2<bd){ bd=d2; best=m; } } }
+      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(yw) d2+=yw*yw*((nd2.y||0)-y)*((nd2.y||0)-y); if(d2<bd){ bd=d2; best=m; } } }
       return best;
     },
     /* the node path between two node indices, cached */
@@ -663,9 +815,10 @@ canvas{display:block;width:100vw;height:100vh}
       var L=NAVS[layer]; opt=opt||{};
       if(!L){ SIM.routeFail.push({ layer:layer, why:'no layer' }); return null; }
       var pts;
-      if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, opt); if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
+      if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, { minW:opt.minW, ay:from.y, by:to.y });   /* the ends' heights: a straight layer climbs between them */ if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
       else {
-        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, opt), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, opt);
+        var oa = L.yw ? { minW:opt.minW, y:from.y } : opt, ob = L.yw ? { minW:opt.minW, y:to.y } : opt;
+        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, oa), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, ob);
         if(s==null || t==null || s<0 || t<0){ SIM.routeFail.push({ layer:layer, why:'no node', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
         var p = SIM.nav.path(layer, s, t, opt.minW);
         if(!p){ SIM.routeFail.push({ layer:layer, why:'no path', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
@@ -678,6 +831,25 @@ canvas{display:block;width:100vw;height:100vh}
       if(clean.length===1) clean.push(clean[0].slice());
       var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
       return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
+    },
+    body: function(layer, k){
+      var L=NAVS[layer]; if(!L || L.kind!=='graph' || k==null || k<0) return -1;
+      if(!L.body){ var n=L.nodes.length, p=new Int32Array(n); for(var i=0;i<n;i++) p[i]=i;
+        var f=function(i){ while(p[i]!==i){ p[i]=p[p[i]]; i=p[i]; } return i; };
+        L.edges.forEach(function(e){ var a=f(L.idx[e.a]), b=f(L.idx[e.b]); if(a!==b) p[a]=b; });
+        for(var j=0;j<n;j++) p[j]=f(j); L.body=p; }
+      return L.body[k];
+    },
+    field: function(layer, sources, opt){
+      var L=NAVS[layer]; opt=opt||{}; if(!L || L.kind!=='graph') return null;
+      var N=L.nodes, n=N.length, d=new Float64Array(n).fill(Infinity), src=new Int32Array(n).fill(-1), closed=new Uint8Array(n), h=new Heap(), max=opt.max==null?Infinity:opt.max, minW=opt.minW||0;
+      sources.forEach(function(S, i){ var k=S.node, d0=S.d||0; if(k==null || k<0 || k>=n || d0>max) return; if(d0<d[k]){ d[k]=d0; src[k]=i; h.push(k, d0); } });
+      while(h.k.length){ var c=h.pop(); if(closed[c]) continue; closed[c]=1;
+        for(var q=L.adjStart[c]; q<L.adjStart[c+1]; q++){ var o=L.adjTo[q], e=L.edges[L.adjE[q]]; if(closed[o]) continue;
+          if(minW && e.w!=null && e.w < minW) continue;
+          var len=e.len!=null?e.len:Math.hypot(N[o].x-N[c].x,N[o].z-N[c].z), cst=d[c]+len*(L.cost[e.kind]||1)*(e.cost||1);
+          if(cst<d[o] && cst<=max){ d[o]=cst; src[o]=src[c]; h.push(o, cst); } } }
+      L.searches++; return { d:d, src:src };
     },
     stats: function(){ var o={}; for(var k in NAVS){ var L=NAVS[k]; o[k]={ kind:L.kind, nodes:L.nodes?L.nodes.length:0, edges:L.edges?L.edges.length:0, searches:L.searches, cacheHits:L.hits||0 }; } return o; }
   };
@@ -704,8 +876,12 @@ canvas{display:block;width:100vw;height:100vh}
   };
   function seg(P, i, u){ var a=P[Math.max(0,Math.min(i,P.length-1))], b=P[Math.max(0,Math.min(i+1,P.length-1))], dx=b[0]-a[0], dz=b[2]-a[2], L=Math.hypot(dx,dz)||1;
     return { x:a[0]+dx*u, y:a[1]+(b[1]-a[1])*u, z:a[2]+dz*u, tx:dx/L, tz:dz/L }; }
+  function straight(L){ var z=L.lazy, a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]), d=L.dur*L.speed||len;
+    return { pts:[a,b], cum:[0,d], len:d }; }   /* the straight line stretched to the leg's length, so the fraction along it is the time's */
   function h32(a,b){ var h=Math.imul((a|0)^0x9E3779B1, 0x85ebca6b) ^ Math.imul(b|0, 0xc2b2ae35); h^=h>>>15; h=Math.imul(h,0x27d4eb2d); h^=h>>>13; return (h>>>0)/4294967296; }
-  SIM.pose = function(a, t){
+  /* opt.cheap: a lazy leg not yet resolved is read as its straight line (a decision asking where its actor is now does
+     not search a path no one will see) */
+  SIM.pose = function(a, t, opt){
     var o={ x:0, y:0, z:0, h:a.h0||0, moving:false, hidden:false, mode:'walk', act:a.activity, leg:-1 };
     var T=a.task;
     if(!T){ var p=a.pos; if(!p){ var H=SIM.R.place[a.home]; p = H ? H.door : { x:(a.at||[0,0])[0], y:0, z:(a.at||[0,0])[1] }; o.hidden = !!H; }
@@ -713,14 +889,16 @@ canvas{display:block;width:100vw;height:100vh}
     var dt=t-T.t0;
     for(var i=0;i<T.legs.length;i++){ var L=T.legs[i];
       if(dt < L.dur){                    /* a group member trails `back` metres behind its leader, and stops there */
-        var s=Math.max(0, Math.min(dt*L.speed, L.route.len) - (L.back||0)), q=SIM.at(L.route, s);
-        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<L.route.len; o.mode=L.mode; o.leg=i;
+        var Rt=L.route || (opt && opt.cheap ? straight(L) : SIM.legRoute(L));   /* a lazy leg finds its path now (77-sim-3-actors.js) */
+        var s=Math.max(0, Math.min(dt*L.speed, Rt.len) - (L.back||0)), q=SIM.at(Rt, s);
+        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<Rt.len; o.mode=L.mode; o.leg=i;
         if(!a.present) o.hidden=true; return o; }
       dt -= L.dur; }
     /* arrived: at the spot; a group's member where its walk stopped, `back` metres behind its leader ALONG the way (straight
        back off the last bend would stand it in a wall where a way turns at its end), so a caravan does not stand in one place */
     var sp=T.spot, lastL=T.legs[T.legs.length-1], back=lastL?(lastL.back||0):0, side=lastL?(lastL.side||0):0, tx=0, tz=1;
-    if(lastL){ var e=SIM.at(lastL.route, Math.max(0, lastL.route.len-back)); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode;
+    var Rl = lastL ? (lastL.route || (lastL.lazy ? straight(lastL) : null)) : null;   /* a lazy leg arrived by its straight line */
+    if(Rl){ var e=SIM.at(Rl, Math.max(0, Rl.len-back)); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode;
       o.x = e.x - tz*side; o.z = e.z + tx*side; o.y = back ? e.y : (sp.y||0); }
     else { o.x = sp.x; o.z = sp.z; o.y = sp.y||0; }
     var W=T.wander; if(W>0 && !T.indoor){ var P=SIM.WANDER.period, k=a.k||0, c=Math.floor((t+k*3.7)/P), u=((t+k*3.7)/P)-c;
@@ -897,6 +1075,588 @@ canvas{display:block;width:100vw;height:100vh}
     return null;
   };
   SIM.stopsServing = function(stop){ return SIM.all('transport').filter(function(R){ return R.stops.indexOf(stop) >= 0; }).map(function(R){ return R.id; }); };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-economy.js
+// ================================================================= CORE — simulation 6: production, stores, carts, imports
+// PLAN.md's reserved economy slot; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.6, 2.6: phase E). Opt-in:
+// nothing here runs until a world calls SIM.economy(config).
+//
+//   SIM.economy({ goods:{id:{import?:{route, lot}, minLoad?, export?}}, inputs:{good:{input: per unit}}, every (minutes between ticks),
+//                 cart:{cap, load, unload, minLoad, near}, imports:{days, scan}, routes:{name:{port, minutes}},
+//                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made} })
+//   SIM.store(place, {kind:'site'|'warehouse', cap})      a place's store: place.stock {good: n}
+//   SIM.recipe(place, {out:[goods], rate, cap, herd?:{out, rate, tended, share}})   a producer: `rate` units a worker-hour (times the
+//                                                           workers' efficiency), each unit of the good in `out` most needed;
+//                                                           a herd's `rate` an animal-hour (actors with `herd` = the place, at
+//                                                           home and grown (`grownAt` past), times their condition: SIM.mood; `tended`: only while
+//                                                           its workers are there; `share`: each of `out` in its share, not
+//                                                           the one most needed)
+//   SIM.cart(actor)                                        an actor the economy drives (SIM.step leaves it alone)
+//   SIM.supply(good, n, whole?) -> n had                   a draw on the warehouses (`whole`: all of n or nothing)
+//   SIM.produce(place, good, n) -> n stored                a one-off yield (a slaughter's meat) into a place's store
+//   SIM.economyMeal() -> true if the meal was there        a meal cooked out (a tavern, a mess): `meal.per` units of
+//                                                           the `meal.foods` the warehouses hold most of
+//   SIM.economyDays(good) -> days its stock lasts          SIM.economyReport() -> per good and per site
+//
+// PRODUCTION (a tick every `every` world minutes): a producer's workers at work (arrived, doing WORK there) times their
+// efficiency (SIM.mood: the needs' band and the items' tool and hurt) times `rate` units an hour, each unit of the good
+// in its `out` whose city stock lasts fewest days, made only if its `inputs` are in the producer's own store or the
+// warehouses, into the producer's store up to its `cap`. CARTS (the brief's pick order): an idle cart goes to the site
+// whose stored good is most in demand (fewest days left), then the most stored that no other cart is bound for, then the
+// nearest (a good's own `minLoad` worth a trip, else the cart's); loads up to `cap`, takes it to the warehouse with the least of that good among the `near` nearest (all when
+// unset; the nearest of equals), unloads, and is idle again. CONSUMPTION: SIM.supply and SIM.economyMeal take from the warehouses (the one holding most first); the
+// items module asks them for every purchase and every meal out or at a mess when this module is on (a shop sells from
+// the settlement's store: it can be out). TURNOVER: what is used a day, over the last `window` days and today so far;
+// DAYS LEFT the warehoused stock over it. IMPORTS: every `imports.scan` minutes, a good whose stock lasts fewer than
+// `imports.days` days (counting what the sites hold, not yet hauled) and has an `import` sends for a lot by its route. CARRIERS (`carriers:{route:{kind, org, from:
+// [ports], unit:[{role, n}], size:[least, most units], cap (a unit's load), layer, mode, speed, beasts, mount, at (the
+// place it unloads at), activity, mins (its stay)}]}`): the lot comes as a group (SIM.fire's itinerary: in by a port,
+// to `at`, its stay, out by the same port) that unloads into `at`'s store on arrival (the carts take it on; the
+// emptiest warehouse when `at` keeps no store) and, leaving, buys the good the city has most days of (made in the last
+// day, over `exports.minDays`), as much as it carries, less what keeps `minDays`, and no more than the last day's
+// surplus (made less used) times `exports.days`. A route with no carrier (or no port)
+// delivers by timer after its `minutes`. Deterministic: no draws but SIM.fire's (the core's seeded RNG).
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.ECON = null;
+  SIM.economy = function(o){
+    var E = { goods:{}, inputs:o.inputs||{}, every:o.every||60, cart:Object.assign({ cap:500, load:20, unload:20, minLoad:20 }, o.cart||{}),
+              imports:Object.assign({ days:3, scan:60 }, o.imports||{}), routes:o.routes||{}, window:o.window||2, meal:o.meal||null,
+              stores:{}, warehouses:[], sites:[], recipes:{}, carts:[], inflight:[], last:null, lastScan:null, dl:null, dlAt:null,
+              made:{}, used:{}, imported:{}, exported:{}, short:{}, blocked:{}, day:{}, trips:0, hauled:{}, sent:0,
+              carriers:o.carriers||{}, exports:Object.assign({ minDays:6, made:true }, o.exports||{}), fired:0, landed:{} };
+    Object.keys(o.goods||{}).forEach(function(g){ E.goods[g]=Object.assign({ id:g }, o.goods[g]); });
+    SIM.ECON = E; return E;
+  };
+  function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
+  function today(){ return Math.floor(SIM.minute()/1440); }
+  function dayStat(kind, g, n){ var E=SIM.ECON, d=today(), D=E.day[d]||(E.day[d]={ made:{}, used:{}, imported:{}, exported:{} }); stat(D[kind], g, n); stat(E[kind], g, n); }
+  SIM.store = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; o=o||{};
+    P.stock=P.stock||{}; P.cap=o.cap==null?Infinity:o.cap; P.storeKind=o.kind||'site'; E.stores[id]=P;
+    if(P.storeKind==='warehouse'){ if(E.warehouses.indexOf(P)<0) E.warehouses.push(P); } else if(E.sites.indexOf(P)<0) E.sites.push(P); return P; };
+  SIM.recipe = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; if(!E.stores[id]) SIM.store(id, { kind:'site', cap:o.cap });
+    var outs=(o.out||[]).concat(o.herd ? o.herd.out : []); outs.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
+    E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null }; return P; };
+  /* a one-off yield (a slaughter's meat): into the place's store, up to its cap; -> what went in */
+  SIM.produce = function(id, g, n){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P || !E.goods[g] || !(n>0)) return 0; if(!E.stores[id]) SIM.store(id, { kind:'site' });
+    var k=Math.max(0, Math.min(Math.floor(n), P.cap-held(P))); if(k<Math.floor(n)) stat(E.blocked, 'full: '+P.kind); if(k){ P.stock[g]=(P.stock[g]||0)+k; dayStat('made', g, k); } return k; };
+  SIM.cart = function(a){ var E=SIM.ECON; a.driven=true; a.cart={ phase:'idle' }; E.carts.push(a); return a; };
+  function held(P){ var n=0; for(var g in P.stock) n+=P.stock[g]; return n; }
+  SIM.stockOf = function(g){ var E=SIM.ECON, n=0; E.warehouses.forEach(function(W){ n+=W.stock[g]||0; }); return n; };
+  /* what a good is used a day, over the last `window` whole days and today so far (from its second hour) */
+  function useRate(g){ var E=SIM.ECON, d=today(), m=SIM.minute()%1440, tot=0, days=0;
+    for(var k=Math.max(0, d-E.window); k<d; k++){ if(E.day[k]){ tot+=E.day[k].used[g]||0; days++; } }
+    var td=E.day[d]; if(td && m>60){ tot+=td.used[g]||0; days+=m/1440; }
+    return days>0 ? tot/days : 0; }
+  SIM.economyDays = function(g){ var r=useRate(g), s=SIM.stockOf(g); return r>0 ? s/r : Infinity; };
+  /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
+  function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }
+  function byMost(g){ return function(p, q){ return (q.stock[g]||0)-(p.stock[g]||0) || (p.id<q.id?-1:1); }; }
+  SIM.supply = function(g, n, whole){ var E=SIM.ECON; if(!E || !E.goods[g]) return n;
+    if(whole && SIM.stockOf(g)<n){ stat(E.short, g, n); return 0; }
+    var want=n, got=0, W=E.warehouses.filter(function(P){ return (P.stock[g]||0)>0; }).sort(byMost(g));
+    for(var i=0;i<W.length && want>0;i++){ var t=Math.min(want, W[i].stock[g]); W[i].stock[g]-=t; want-=t; got+=t; }
+    if(got){ dayStat('used', g, got); if(E.dlAt!=null) E.dl[g]=null; } if(got<n) stat(E.short, g, n-got);
+    return got; };
+  SIM.economyMeal = function(){ var E=SIM.ECON, M=E && E.meal; if(!M) return true; var per=M.per||2, left=per;
+    var have=M.foods.filter(function(f){ return SIM.stockOf(f)>0; }).sort(function(x, y){ return SIM.stockOf(y)-SIM.stockOf(x) || (x<y?-1:1); });
+    for(var i=0;i<have.length && left>0;i++) left-=SIM.supply(have[i], 1);
+    for(i=0;i<have.length && left>0;i++) left-=SIM.supply(have[i], left);
+    if(left>0) stat(E.short, 'meal'); return left<per; };
+  function inputsFor(P, g){ var E=SIM.ECON, need=E.inputs[g]; if(!need) return true;
+    return Object.keys(need).every(function(i){ return (P.stock[i]||0)+SIM.stockOf(i) >= need[i]; }); }
+  function useInputs(P, g){ var E=SIM.ECON, need=E.inputs[g]; if(!need) return;
+    Object.keys(need).forEach(function(i){ var t=Math.min(need[i], P.stock[i]||0); P.stock[i]=(P.stock[i]||0)-t; if(t) dayStat('used', i, t); if(need[i]-t>0) SIM.supply(i, need[i]-t); }); }   /* its own store first: a use too */
+
+  /* ---------------------------------------------------------------- the tick: production */
+  /* `units` (with the place's carry under `ck`) of the goods in `outs`, each the one with fewest days left whose inputs
+     are there, into the place's store up to its cap */
+  function make(P, outs, units, ck){
+    var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
+    for(var u=0; u<whole; u++){
+      if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
+      var best=null, bd=Infinity; outs.forEach(function(g){ if(!inputsFor(P, g)) return; var d=daysOf(g); if(best==null || d<bd){ bd=d; best=g; } });
+      if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
+      useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
+    }
+  }
+  function tick(minute, t){
+    var E=SIM.ECON, hrs=(minute-E.last)/60; E.last=minute; if(hrs<=0) return;
+    var W={}, H={};   /* each producer's workers at work and its animals at home (SIM.recipe's herd), their efficiency summed */
+    SIM.all('actor').forEach(function(a){
+      if(a.herd!=null){ if(a.grownAt!=null && a.grownAt>minute) return;   /* the young yield nothing until grown */
+        if(a.present && a.place===a.herd && E.recipes[a.herd] && E.recipes[a.herd].herd && (!a.task || t>=a.task.arrive)){ var mh=SIM.mood ? SIM.mood(a) : null; H[a.herd]=(H[a.herd]||0)+(mh ? mh.eff : 1); } return; }
+      if(a.activity!=='WORK' || !a.place || !E.recipes[a.place] || !a.task || t<a.task.arrive) return;
+      var m=SIM.mood ? SIM.mood(a) : null; W[a.place]=(W[a.place]||0)+(m ? m.eff : 1); });
+    Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
+      if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
+      else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
+    Object.keys(W).forEach(function(id){ var R=E.recipes[id]; if(R.out.length && R.rate) make(SIM.R.place[id], R.out, W[id]*R.rate*hrs, 'carry'); });
+  }
+  /* ---------------------------------------------------------------- the imports: sent for, delivered */
+  function emptiest(g){ return SIM.ECON.warehouses.slice().sort(function(p, q){ return (p.stock[g]||0)-(q.stock[g]||0) || (p.id<q.id?-1:1); })[0]; }
+  /* a shipment lands: into the store of the place it is unloaded at (the carts take it on), else the emptiest warehouse */
+  function land(s, P){ var E=SIM.ECON, W=P && E.stores[P.id] ? P : emptiest(s.good); s.done=true; if(!W) return; stat(E.landed, s.group && P ? 'carrier' : 'timer');
+    W.stock[s.good]=(W.stock[s.good]||0)+s.n; dayStat('imported', s.good, s.n); if(E.dlAt!=null) E.dl[s.good]=null; SIM.logEvent('delivered', { good:s.good, n:s.n, to:W.id, by:s.group||'timer' }); }
+  /* its carrier: a group by its route (SIM.fire's itinerary: in by a port, to the place `at`, a stay of `mins`, out by
+     the same port), as many units as the lot needs at `cap` a unit within `size` */
+  function carry(s, minute, t){ var E=SIM.ECON, C=E.carriers[s.route]; if(!C || !SIM.R.place[C.at] || !(C.from||[]).some(function(p){ return SIM.R.port[p]; })) return null;
+    var u=Math.max(C.size[0], Math.min(C.size[1], Math.ceil(s.n/C.cap))), ev={ id:'import.'+s.good+'.'+(++E.fired), fired:0, kind:C.kind, org:C.org, from:C.from, unit:C.unit, size:[u, u],
+      layer:C.layer, mode:C.mode, speed:C.speed, beasts:C.beasts, mount:C.mount, to:'same', legs:[{ place:C.at, activity:C.activity||'LODGE', mins:C.mins||0, stop:{ ship:s, cap:u*C.cap } }] };
+    var G=SIM.fire(ev, minute, t); return G ? G.id : null; }
+  function scanImports(minute, t){
+    var E=SIM.ECON;
+    Object.keys(E.goods).forEach(function(g){ var im=E.goods[g].import; if(!im) return;
+      if(E.inflight.some(function(s){ return s.good===g; })) return;
+      var r=useRate(g), near=SIM.stockOf(g)+E.sites.reduce(function(n, P){ return n+(P.stock[g]||0); }, 0);   /* a lot landed or made, not yet hauled, counts */
+      if(!(r>0) || near/r >= E.imports.days) return;
+      var R=E.routes[im.route]||{ minutes:240 }, s={ good:g, n:im.lot, route:im.route, port:R.port||null, sent:minute, eta:minute+R.minutes }; E.sent++;
+      s.group=carry(s, minute, t); if(s.group) s.eta=null; E.inflight.push(s);
+      SIM.logEvent('import', { good:g, n:im.lot, route:im.route, by:s.group||'timer', days:Math.round(daysOf(g)*10)/10 }); });
+    E.inflight = E.inflight.filter(function(s){ if(s.done) return false;
+      if(s.group){ if(SIM.R.group[s.group]) return true; land(s, null); return false; }   /* a carrier gone without unloading: the timer's way */
+      if(minute<s.eta) return true; land(s, null); return false; });
+  }
+  /* a carrier's stop (SIM.step's itinerary): on arrival it unloads; leaving, it buys the good the city has most days of
+     (made in the last day, and over `exports.minDays`), as much as it carries less what keeps `minDays`, at most the
+     last day's surplus times `exports.days` */
+  SIM.economyStop = function(G, L, phase, minute){
+    var E=SIM.ECON, S=L.stop; if(!E || !S) return;
+    if(phase==='arrive' && S.ship && !S.ship.done){ land(S.ship, SIM.R.place[L.place]); return; }
+    if(phase!=='leave' || G.cargo) return;
+    var d=today(), D=E.day[d-1]||E.day[d]||{ made:{} }, best=null, bd=0;
+    Object.keys(E.goods).forEach(function(g){ if(E.goods[g].export===false || (E.exports.made && !(D.made[g]>0))) return; var dl=daysOf(g); if(dl!==Infinity && dl>=E.exports.minDays && dl>bd){ bd=dl; best=g; } });
+    if(!best) return; var surplus=Math.max(0, (D.made[best]||0)-((D.used||{})[best]||0))*(E.exports.days||2);   /* no more than the last day's surplus over `days` */
+    var n=Math.min(S.cap||0, surplus, Math.floor(SIM.stockOf(best)-E.exports.minDays*useRate(best))); if(n<=0) return;
+    var left=n, W=E.warehouses.filter(function(P){ return (P.stock[best]||0)>0; }).sort(byMost(best));
+    for(var i=0;i<W.length && left>0;i++){ var k=Math.min(left, W[i].stock[best]); W[i].stock[best]-=k; left-=k; }
+    G.cargo={ good:best, n:n-left }; dayStat('exported', best, n-left); if(E.dlAt!=null) E.dl[best]=null; SIM.logEvent('export', { group:G.id, good:best, n:n-left });
+  };
+
+  /* ---------------------------------------------------------------- the carts */
+  function go(a, P, minute, t){
+    var from=SIM.pose(a, t, { cheap:true }), T=SIM.plan(a, P, 'HAUL', { x:from.x, y:from.y, z:from.z }, t);
+    a.task=T; a.activity='HAUL'; a.place=P.id; a.since=minute;
+  }
+  function cartStep(minute, t){
+    var E=SIM.ECON, C=E.cart, bound={};
+    E.carts.forEach(function(a){ if(a.cart.site) bound[a.cart.site]=1; });
+    E.carts.forEach(function(a){
+      var K=a.cart;
+      if(a.task && t<a.task.arrive) return;                                                     /* on the way */
+      if(K.until!=null && minute<K.until) return;                                               /* loading, unloading, waiting */
+      K.until=null;
+      if(K.phase==='toSite'){ var S=SIM.R.place[K.site], g=K.good, n=Math.min(C.cap, S.stock[g]||0); S.stock[g]-=n; K.load={ good:g, n:n }; K.phase='loading'; K.until=minute+C.load; return; }
+      if(K.phase==='loading'){
+        var here=SIM.pose(a, t, { cheap:true }), lg=K.load.good;
+        var dist=function(P){ return Math.hypot(P.x-here.x, P.z-here.z); }, Ws=E.warehouses.slice();
+        if(C.near) Ws=Ws.sort(function(p, q){ return dist(p)-dist(q) || (p.id<q.id?-1:1); }).slice(0, C.near);   /* the nearest few */
+        var Wh=Ws.sort(function(p, q){ return (p.stock[lg]||0)-(q.stock[lg]||0) || dist(p)-dist(q); })[0];
+        if(!Wh){ K.phase='idle'; return; }
+        delete bound[K.site]; K.site=null; K.wh=Wh.id; K.phase='toWarehouse'; go(a, Wh, minute, t); return; }
+      if(K.phase==='toWarehouse'){ var Wp=SIM.R.place[K.wh]; Wp.stock[K.load.good]=(Wp.stock[K.load.good]||0)+K.load.n; stat(E.hauled, K.load.good, K.load.n); E.trips++;
+        if(E.dlAt!=null) E.dl[K.load.good]=null; K.load=null; K.phase='unloading'; K.until=minute+C.unload; return; }
+      /* idle (or unloaded): the site whose stored good is most in demand, then the most stored nobody is bound for, then the nearest */
+      var at=SIM.pose(a, t, { cheap:true }), best=null, bk=null;
+      E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity;
+        for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad; if(S.stock[g]<ml) continue; var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } }
+        if(top==null) return; var key=[Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];
+        if(!bk || key[0]<bk[0] || (key[0]===bk[0] && (key[1]<bk[1] || (key[1]===bk[1] && key[2]<bk[2])))){ bk=key; best={ S:S, g:top }; } });
+      if(!best){ K.phase='idle'; K.until=minute+30; return; }
+      K.site=best.S.id; K.good=best.g; bound[K.site]=1; K.phase='toSite'; go(a, best.S, minute, t);
+    });
+  }
+
+  /* SIM.step's last act, once a minute */
+  SIM.economyStep = function(minute, t){
+    var E=SIM.ECON; if(!E) return;
+    if(E.last==null) E.last=minute;
+    if(minute-E.last >= E.every) tick(minute, t);
+    if(E.lastScan==null || minute-E.lastScan >= E.imports.scan){ E.lastScan=minute; scanImports(minute, t); }
+    cartStep(minute, t);
+  };
+  /* the clock jumped: production restarts from now (no output for the hours skipped); the carts go on */
+  SIM.economyJump = function(minute){ var E=SIM.ECON; if(!E) return; E.last=minute; E.lastScan=null; };
+
+  /* ---------------------------------------------------------------- the panel's numbers */
+  SIM.economyReport = function(){
+    var E=SIM.ECON; if(!E) return null; var d=today(), D=E.day[d-1]||E.day[d]||{ made:{}, used:{}, imported:{}, exported:{} };
+    var out={ goods:{}, sites:[], carts:{}, inflight:E.inflight.map(function(s){ return { good:s.good, n:s.n, route:s.route, eta:s.eta, by:s.group||null }; }), trips:E.trips, sent:E.sent, landed:Object.assign({}, E.landed), short:Object.assign({}, E.short), blocked:Object.assign({}, E.blocked), minute:SIM.minute() };   /* copies: a report is a snapshot */
+    Object.keys(E.goods).forEach(function(g){ out.goods[g]={ stock:SIM.stockOf(g), atSites:E.sites.reduce(function(s, P){ return s+(P.stock[g]||0); }, 0),
+      madeDay:D.made[g]||0, usedDay:Math.round(useRate(g)), importedDay:D.imported[g]||0, days:Math.round(SIM.economyDays(g)*10)/10,
+      made:E.made[g]||0, used:E.used[g]||0, imported:E.imported[g]||0, hauled:E.hauled[g]||0, short:E.short[g]||0, exportedDay:(D.exported||{})[g]||0, exported:E.exported[g]||0 }; });
+    out.carriers = SIM.all('group').filter(function(G){ return /^import\./.test(G.id); }).map(function(G){ return { id:G.id, kind:G.kind, phase:G.phase, people:G.members.length, cargo:G.cargo||null }; });
+    E.carts.forEach(function(a){ stat(out.carts, a.cart.phase); });
+    out.sites = E.sites.map(function(P){ var b=E.carts.filter(function(a){ return a.cart.site===P.id; }).length; return { id:P.id, kind:P.kind, held:held(P), cap:P.cap, carts:b }; })
+      .sort(function(p, q){ return q.held-p.held || (p.id<q.id?-1:1); });
+    return out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-items.js
+// ================================================================= CORE — simulation 6: items, inventory, equipment, shopping
+// The Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
+// SIM.items(config); a world without it decides exactly as before.
+//
+//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
+//               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
+//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
+//   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
+//   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
+//   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
+//          clothes kept at home), eq {position: {k, w}}, wears [items it keeps], sets (how
+//          many of each), keep {item: n} (its own count for one: a soldier's one cuirass), tool
+//          {k, w} (owned) or toolRack (drawn at work), hurt (the day hurt), errand
+//   place: store {food: servings} (a household's), mess (fed by its institution)
+//
+// SLOTS: torso and legs take one clothing item ('torso', 'legs') and one armour item ('torso+', 'legs+'); feet take
+// shoes or armoured boots (one: 'feet'); head a hat, hood or helmet ('head'); each hand one thing ('lhand', 'rhand').
+// WEAR is lazy, per actor, at the first decision of a day: every worn item with a `life` (days) wears 1/life a day; worn
+// out it goes and a spare from home takes its place. A tool wears by the worked hour (`workLife` hours); worn out at
+// work, it is replaced at once, DURING WORK TIME (an errand that takes the worker off WORK to a shop selling it). With
+// fewer sets of a clothing item than the actor keeps, it buys one on its time off, and the material meter (77-sim-6-
+// needs.js) rises by `lack` a day for each set missing. A worked day carries a `hurt` chance (a hash of the actor and
+// the day): hurt, it buys a poultice on its time off (or heals in `heal` days).
+// ERRANDS: one at a time; `when` 'work' (in an hour of WORK) or 'free' (in an hour of one of `free`, once a seller is
+// open and within reach: looked at once an hour); its place the
+// nearest within reach that sells the item and has room (BUY); `mins` minutes there complete it (the item bought, the
+// purchase logged by place and item; a luxury or household good fills material); none within reach, it is dropped and
+// not tried again for `cool` minutes. FOOD: a household's store (servings by food) feeds its meals at home: two foods
+// make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more, times the foods' mean
+// `quality`: cheese over milk), one food `single`, none
+// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). EATING
+// OUT: at the start of a meal an actor eats at the nearest open seller of the item 'meal' (a tavern, a stall) by a hash
+// under `eatOut.base` + `eatOut.wealth` times its wealth, or when its household's store cannot make a meal; none open,
+// it eats at home. A store with less than `low` days for its people sends one of them to buy `days` days of the foods
+// the nearest seller sells. STOCK (with 77-sim-6-economy.js on): a purchase draws its kind's `good` (`per` units) from
+// the settlement's warehouses, all or nothing (none: the errand fails and cools); food buys what the warehouses hold;
+// food buys what the warehouses hold, the foods in proportion to their stock (one short: more of the others); a meal
+// out or at a mess draws a meal's food (SIM.economyMeal: none, a `none` meal). Deterministic: no draws
+// (hashes), and only a question about the present changes an actor.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.ITEMS = null;
+  var POS = ['torso', 'torso+', 'legs', 'legs+', 'feet', 'head', 'lhand', 'rhand'];
+  function hash(a, b, c){ var h=Math.imul((a|0)^0x9e3779b9, 0x85ebca6b) ^ Math.imul((b|0)+0x632be5ab, 0xc2b2ae35) ^ Math.imul((c|0)+0x27d4eb2f, 0x165667b1);
+    h^=h>>>15; h=Math.imul(h, 0x2c1b3c6d); h^=h>>>12; h=Math.imul(h, 0x297a2d39); h^=h>>>15; return (h>>>0)/4294967296; }
+  SIM.itemHash = hash;
+  SIM.items = function(o){
+    var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
+              stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
+              treat:o.treat||null, eatOut:o.eatOut||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0, out:0 }, outOf:{} } };
+    Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
+    (o.free||[]).forEach(function(a){ I.free[a]=1; });
+    I.foods = Object.keys(I.kinds).filter(function(k){ return I.kinds[k].food; });
+    SIM.ITEMS = I; return I;
+  };
+  SIM.shop = function(placeId, items){ var I=SIM.ITEMS; if(!I) return; I.sells[placeId]=items.slice();
+    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); (I.sellers[k]||(I.sellers[k]=[])).push(placeId); }); I._food=null; };
+  function sellersOf(item){ var I=SIM.ITEMS; if(item!=='food') return I.sellers[item]||[];
+    if(!I._food){ var s={}; I.foods.forEach(function(f){ (I.sellers[f]||[]).forEach(function(id){ s[id]=1; }); }); I._food=Object.keys(s); } return I._food; }
+  SIM.sellersOf = sellersOf;
+  function pos(K){ return K.slot + ((K.slot==='torso' || K.slot==='legs') && K.layer==='armour' ? '+' : ''); }
+  SIM.give = function(a, k, n){ a.inv=a.inv||{}; a.inv[k]=(a.inv[k]||0)+(n==null?1:n); if(a.inv[k]<=0) delete a.inv[k]; };
+  SIM.equip = function(a, k, w){ var K=SIM.ITEMS.kinds[k]; if(!K || !K.slot) throw new Error('SIM.equip: '+k+' is not worn');
+    a.eq=a.eq||{}; var p=pos(K); if(a.eq[p]) SIM.give(a, a.eq[p].k, 1); a.eq[p]={ k:k, w:w||0 }; return p; };
+  SIM.owns = function(a, k){ var n=(a.inv && a.inv[k]) || 0; if(a.eq) POS.forEach(function(p){ if(a.eq[p] && a.eq[p].k===k) n++; }); if(a.tool && a.tool.k===k) n++; return n; };
+  /* the slot rules, for an audit: -> the broken ones */
+  SIM.itemsCheck = function(a){ var out=[], I=SIM.ITEMS; if(!a.eq) return out;
+    Object.keys(a.eq).forEach(function(p){ var e=a.eq[p]; if(!e) return; var K=I.kinds[e.k]; if(POS.indexOf(p)<0) out.push(p+': no such position');
+      else if(!K || !K.slot) out.push(p+': '+e.k+' is not worn'); else if(pos(K)!==p) out.push(p+': '+e.k+' belongs on '+pos(K)); if(!(e.w>=0 && e.w<1)) out.push(p+': wear '+e.w); });
+    return out; };
+  function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
+  function anchor(a){ var H=SIM.R.place[a.home]; return H ? [H.x, H.z] : (a.at || [0,0]); }
+
+  /* ---------------------------------------------------------------- the day: wear, the clothes kept, a hurt */
+  function day(a, d){
+    var I=SIM.ITEMS;
+    for(var dd=(a.itDay==null ? d : a.itDay)+1; dd<=d; dd++){                  /* a first look wears nothing */
+      if(a.eq) POS.forEach(function(p){ var e=a.eq[p]; if(!e) return; var K=I.kinds[e.k]; if(!K.life) return; e.w += 1/K.life;
+        if(e.w>=1){ stat(I.stats.worn, e.k); a.eq[p]=null; if(a.inv && a.inv[e.k]>0){ SIM.give(a, e.k, -1); a.eq[p]={ k:e.k, w:0 }; }
+          else if(a.issued){ a.eq[p]={ k:e.k, w:0 }; stat(I.stats.issued, e.k); } } });                  /* its keeper issues another */
+      if(a.hurt!=null && dd-a.hurt>=I.heal){ a.hurt=null; I.stats.healed++; }
+      if(a.workedDay===dd-1 && a.hurt==null && I.hurt && hash(a.k, dd, 7)<I.hurt){ a.hurt=dd; I.stats.hurt++; }
+    }
+    a.itDay=d;
+    /* the clothes kept: a set short is bought on time off, and the material meter feels it */
+    var short=0, want=null; (a.wears||[]).forEach(function(k){ var n=SIM.owns(a, k), keep=(a.keep && a.keep[k]) || a.sets || 1; if(n < keep){ short += keep-n; if(!want) want=k; } });
+    if(short && I.lack && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, d*1440); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.min(100, a.nd[mi]+I.lack*short); }
+    if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
+      /* a treat: the material meter high, the best luxury or household good its wealth reaches */
+      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
+        var best=null; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]) best=t[1]; }); if(best) errand(a, best, 'free', d*1440); } }
+  }
+  function errand(a, item, when, minute){
+    var I=SIM.ITEMS; if(a.errCool && minute<a.errCool) return false;
+    if(!sellersOf(item).length){ stat(I.stats.noShop, item); if(item==='poultice') a.owesP=true; return false; }
+    a.errand={ act:'BUY', item:item, when:when, since:minute }; stat(I.stats.errands, item); return true;
+  }
+  SIM.errand = function(a, item, when){ return errand(a, item, when||'free', SIM.minute()); };
+  function complete(a, E, minute){
+    var I=SIM.ITEMS, P=SIM.R.place[E.place], sold=(I.sells[E.place]||[]), K=I.kinds[E.item];
+    stat(I.stats.done, E.item); var tr=I.stats.trip[E.item]||(I.stats.trip[E.item]={ n:0, mins:0, max:0 }); tr.n++; tr.mins+=E.trip; tr.max=Math.max(tr.max, E.trip);
+    var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
+    if(E.item==='food'){
+      var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*I.days);
+      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; stat(I.stats.bought, f, n); stat(bs, f, n); };
+        var wt=foods.map(function(f){ return SIM.ECON ? SIM.stockOf(f)+1 : 1; }), ws=wt.reduce(function(x, y){ return x+y; }, 0), cut=0;   /* by what is on the shelf (the warehouses' stock) */
+        var share=foods.map(function(f, i){ var n=Math.floor(need*wt[i]/ws); cut+=n; return n; }); share[0]+=need-cut;
+        foods.forEach(function(f, i){ var n=share[i];
+          if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n){ stat(I.stats.outOf, f, n-got); lack+=n-got; } n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
+          buy(f, n); });
+        for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } } }   /* one food out: more of the others it sells */
+      if(H && H.shopper===a.id) H.shopper=null;
+    } else {
+      if(SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
+        stat(I.stats.outOf, E.item); stat(I.stats.failed, E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
+      stat(I.stats.bought, E.item); stat(bs, E.item);
+      if(K.cat==='medicine'){ a.hurt=null; a.owesP=false; I.stats.poultice++; I.stats.healed++; }
+      else if(K.cat==='tool'){ a.tool={ k:E.item, w:0 }; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }
+      else if(K.slot){ var p=pos(K); if(!a.eq || !a.eq[p]) SIM.equip(a, E.item, 0); else SIM.give(a, E.item, 1); }
+      else SIM.give(a, E.item, 1);
+      if(K.material && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, minute); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.max(0, a.nd[mi]-K.material); }
+    }
+    a.errand=null; a.wanted=null;
+  }
+
+  /* ---------------------------------------------------------------- the resolver's clause (SIM.desire, before the needs') */
+  SIM.itemsDesire = function(a, minute, act){
+    var I=SIM.ITEMS; if(!I || !a.present || a.plan) return act;
+    var live = minute===SIM.minute();
+    if(live){
+      var d=Math.floor(minute/1440); if(a.itDay!==d) day(a, d);
+      /* the tool wears by the worked hour; worn out at work, it is replaced now */
+      if(act==='WORK' && a.activity==='WORK' && a.arrM!=null && minute>=a.arrM){ a.workedDay=d;
+        if(a.tool){ var K=I.kinds[a.tool.k], dw=a.wkT==null ? 0 : minute-a.wkT; if(dw<0 || dw>90) dw=0;   /* minutes at work since last asked (the step's wake: at most an hour), not a gap */
+          if(K.workLife) a.tool.w += dw/60/K.workLife;
+          if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', minute); } }
+        a.wkT=minute; }
+      else a.wkT=null;
+      var E=a.errand;
+      if(E && E.item==='meal' && act!=='EAT'){ if(E.place) stat(I.stats.done, 'meal'); a.errand=null; E=null; }   /* the meal out is over with its hour */
+      if(E){
+        if(E.item!=='meal' && E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
+        else if(minute-E.since>I.stale){ if(E.item==='food'){ var H0=SIM.R.place[a.home]; if(H0 && H0.shopper===a.id) H0.shopper=null; } a.errand=null; E=null; }
+      }
+      /* a household's food: the first of its people with time off goes when the store runs low */
+      var hr=Math.floor(minute/60);
+      /* a meal out: at the start of a meal, by a hash and the actor's wealth (`eatOut`), or when the household's store
+         cannot make a meal; at a seller of 'meal' (a tavern, a stall) */
+      if(!a.errand && act==='EAT' && a.activity!=='EAT' && I.eatOut && sellersOf('meal').length){ var Hm=SIM.R.place[a.home];
+        if(Hm && !Hm.mess && a.mealH!==hr){ a.mealH=hr; var st0=Hm.store||{}, kinds=0; for(var f0 in st0) if(st0[f0]>0) kinds++;
+          if(kinds<2 || hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0)){ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
+      if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
+        if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
+          var tot=0; for(var f in H.store) tot+=H.store[f];
+          if(tot < H.people*I.meals*I.perMeal*I.low && errand(a, 'food', 'free', minute)) H.shopper=a.id; } }
+    }
+    var E2=a.errand; if(!E2) return act;
+    if(E2.when==='work' ? act==='WORK' : E2.when==='free' ? I.free[act] : act===E2.when){
+      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open (a
+         meal out with none open is eaten at home) */
+      if(live){ var h2=Math.floor(minute/60); if(a.errOkH!==h2){ a.errOkH=h2; a.errOk=!!SIM.itemsChoose(a, E2.act, h2%24); } }
+      if(a.errOk===false && E2.item==='meal'){ if(live) a.errand=null; return act; }
+      return a.errOk===false ? act : E2.act; }
+    return act;
+  };
+  /* the soonest minute this clause could answer otherwise (SIM.step's wake): an errand done at its shop, an errand gone
+     stale, a tool worn through at work (the hours, the day, the shops' opening are the hour's: the step wakes on it) */
+  SIM.itemsWake = function(a, minute, act){
+    var I=SIM.ITEMS; if(!I) return Infinity; var w=Infinity, E=a.errand;
+    if(E){ if(E.place && E.item!=='meal' && a.arrM!=null) w=Math.min(w, a.arrM+I.mins); w=Math.min(w, E.since+I.stale+1); }
+    if(act==='WORK' && a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) w=Math.min(w, minute+Math.max(1, Math.floor((1-a.tool.w)*K.workLife*60))); }
+    if(act==='WORK' && a.arrM!=null && a.arrM>minute) w=Math.min(w, a.arrM);   /* the tool starts wearing when it arrives */
+    return w;
+  };
+  /* SIM.choose for an errand: the nearest seller within reach with room */
+  SIM.itemsChoose = function(a, act, hour){
+    var E=a.errand; if(!E || E.act!==act) return undefined;
+    var W=E.when==='work' && SIM.R.place[a.work], near = W ? [W.x, W.z] : anchor(a), c=SIM.placesFor(act, a, hour, { near:near, ids:sellersOf(E.item), exclude:a.bad });
+    if(SIM.REACH!=null) c=c.filter(function(P){ return Math.hypot(P.x-near[0], P.z-near[1])<=SIM.REACH; });
+    return c[0] || null;
+  };
+  /* SIM.decide: where it arrives (world minutes), the errand's place, its meal; an errand no place took is dropped */
+  SIM.itemsDecided = function(a, minute, task, P, act, want){
+    var I=SIM.ITEMS; if(!I) return;
+    if(task) a.arrM = minute + (task.dur ? Math.round(task.dur/I.spm) : 0);
+    var E=a.errand;
+    if(E && want===E.act && act!==E.act){ stat(I.stats.failed, E.item); if(E.item==='food'){ var H=SIM.R.place[a.home]; if(H && H.shopper===a.id) H.shopper=null; }
+      a.errand=null; a.errCool=minute+I.cool; a.wanted=null; }
+    else if(E && act===E.act && P){ E.place=P.id; E.trip=task ? a.arrM-minute : 0; }   /* staying put: no trip */
+    if(act==='EAT' && P){ a.boost=a.boost||{}; a.boost.EAT = meal(a, P); }
+  };
+  function meal(a, P){
+    var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
+    var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
+    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ S.out++; return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
+    if(P.id!==a.home){ S.bought++; stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.mess){ S.mess++; return M.mess; }
+    var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
+    var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
+    var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; S.meal++; if(Q(have[0])>1 || Q(have[1])>1) S.fine=(S.fine||0)+1; return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; S.single++; return M.single*Q(have[0]); }
+    S.none++; return M.none;
+  }
+  /* the items' share of a worker's efficiency: a broken tool, a hurt */
+  SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
+  SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-needs.js
+// ================================================================= CORE — simulation 6: needs, happiness, efficiency, loyalty
+// PLAN.md 8.2 and 8.3; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.4, 2.4 items 4 and 5). Opt-in: nothing
+// here runs until a world calls SIM.needs(config); a world without it decides exactly as before.
+//
+//   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},
+//               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
+//               free:[ACT..] (a role's needs.free its own: an animal's), dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
+//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
+//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
+//   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
+//
+// A METER per need, 0 (met) to 100 (desperate), rises at `rate` (times the role's multiplier) every world hour, and
+// falls by the actor's activity's `fill` (the culture's own table first). WORK adds `work` times the role's `labour`
+// (heavy labour: thirst, a little hunger). The meters are advanced lazily: only when the actor decides, or something
+// asks (SIM.needsOf), over the stretch since: first the trip (the task's duration over `secPerMinute` motion seconds a
+// world minute: nothing fills on the way), then the activity. HAPPINESS is 100 less the weighted mean pain of the
+// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones); the trait multiplies a
+// need's weight (about +-33%: "more happiness from some needs, less unhappiness when they go unmet"). EFFICIENCY is the
+// happiness band's `eff` (8.2: a score with bands); LOYALTY drifts toward happiness with time constant `tau` minutes.
+//
+// THE RESOLVER (SIM.desire): in an hour the schedule gives to one of `free`, the actor does the free activity whose
+// fills times its meters (times the weights) is highest and that some open place within reach offers, the scheduled one
+// favoured by `keep`; the choice holds `dwell` minutes (plus the actor's index modulo `jitter`). An INTERRUPT takes a worker with labour off WORK when a meter
+// reaches `at` (the midday well trip for a drink) until it falls to `until`, at most `max` minutes, then not again for
+// `cool` minutes. Deterministic: no draws, ties by the order of `free`.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.NEED = null;
+  SIM.needs = function(o){
+    var N = { list:o.list.slice(), idx:{}, rate:[], fill:{}, work:[], weight:[], traits:{}, cultures:{}, free:(o.free||[]).slice(), freeSet:{},
+              dwell:o.dwell==null?60:o.dwell, jitter:o.jitter|0, keep:o.keep==null?1.25:o.keep, done:o.done==null?15:o.done, interrupt:[], bands:o.bands||[{ label:'content', min:0, eff:1 }],
+              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain };
+    var vec = function(t, d){ return N.list.map(function(n){ return t && t[n]!=null ? t[n] : d; }); };
+    N.list.forEach(function(n, i){ N.idx[n]=i; });
+    N.rate = vec(o.rate, 0); N.work = vec(o.work, 0); N.weight = vec(o.weight, 1);
+    Object.keys(o.fill||{}).forEach(function(act){ N.fill[act]=vec(o.fill[act], 0); });
+    Object.keys(o.traits||{}).forEach(function(t){ N.traits[t]=vec(o.traits[t], 1); });
+    Object.keys(o.cultures||{}).forEach(function(c){ var F={}; Object.keys((o.cultures[c]||{}).fill||{}).forEach(function(act){ F[act]=vec(o.cultures[c].fill[act], 0); }); N.cultures[c]={ fill:F }; });
+    N.free.forEach(function(a){ N.freeSet[a]=1; });
+    Object.keys(o.interrupt||{}).forEach(function(n){ var I=o.interrupt[n]; if(N.idx[n]==null) throw new Error('SIM.needs: interrupt on an unknown need '+n);
+      N.interrupt.push({ need:n, i:N.idx[n], at:I.at, act:I.act, until:I.until==null?20:I.until, max:I.max==null?45:I.max, cool:I.cool==null?60:I.cool }); });
+    N.bands.sort(function(a,b){ return b.min-a.min; });
+    if(N.loyalty && N.loyalty.bands) N.loyalty.bands.sort(function(a,b){ return b.min-a.min; });
+    N.zero = vec(null, 0);
+    SIM.NEED = N; return N;
+  };
+  function roleRate(a){ var R=SIM.R.role[a.role], m=R && R.needs && R.needs.rate; if(!m) return null; if(!R._nr) R._nr=SIM.NEED.list.map(function(n){ return m[n]!=null?m[n]:1; }); return R._nr; }
+  function labour(a){ var R=SIM.R.role[a.role]; return (R && R.needs && R.needs.labour) || 0; }
+  /* a role's own free-time choices (an animal's: feed, graze, drink, rest, idle), else the world's `free` */
+  function freeOf(a){ var R=SIM.R.role[a.role], F=R && R.needs && R.needs.free; if(!F) return SIM.NEED; if(!R._nf){ R._nf={ free:F, freeSet:{} }; F.forEach(function(x){ R._nf.freeSet[x]=1; }); } return R._nf; }
+  function fillOf(a, act){ var N=SIM.NEED, C=a.culture && N.cultures[a.culture]; return (C && C.fill[act]) || N.fill[act] || N.zero; }
+  /* the meters' slope (per hour) doing `act` (null: on the way) */
+  function slope(a, act, i){ var N=SIM.NEED, rr=roleRate(a), r=N.rate[i]*(rr?rr[i]:1);
+    if(act==='WORK') r += N.work[i]*labour(a);
+    if(act) r -= fillOf(a, act)[i]*(a.boost && a.boost[act]!=null ? a.boost[act] : 1);   /* a meal worth more than a bite (77-sim-6-items.js) */
+    return r; }
+  function ensure(a, minute){ var N=SIM.NEED; if(!a.nd){ a.nd = Array.isArray(N.init) ? N.init.slice() : N.list.map(function(){ return N.init; }); }
+    if(a.ndT==null){ a.ndT=minute; a.ndFrom=minute; } }
+  function run(a, act, mins){ if(mins<=0) return; var nd=a.nd; for(var i=0;i<nd.length;i++){ var v=nd[i]+slope(a, act, i)*mins/60; nd[i]= v<0?0:v>100?100:v; } }
+  /* bring the meters to `minute` */
+  SIM.needsOf = function(a, minute){
+    var N=SIM.NEED; if(!N) return null; minute = minute==null ? SIM.minute() : minute; ensure(a, minute);
+    var dt=minute-a.ndT; if(dt<=0) return a.nd;
+    var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
+    run(a, null, trip); run(a, a.activity, dt-trip);
+    if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-dt/(N.loyalty.tau||4320))); }
+    a.ndT=minute; return a.nd;
+  };
+  /* where a meter would be at `minute` if the actor keeps on (no change to the actor) */
+  function peek(a, i, minute){ var dt=minute-a.ndT; if(dt<=0) return a.nd[i]; var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
+    var v=a.nd[i]+slope(a, null, i)*trip/60+slope(a, a.activity, i)*(dt-trip)/60; return v<0?0:v>100?100:v; }
+  SIM.happiness = function(a){
+    var N=SIM.NEED; if(!N || !a.nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
+    for(var i=0;i<a.nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(a.nd[i]/100, N.pain); w+=wi; }
+    return w ? 100 - s/w : 100;
+  };
+  function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
+  SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
+    return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
+  SIM.efficiency = function(a){ var h=SIM.happiness(a); return h==null ? 1 : (bandOf(SIM.NEED.bands, h).eff==null ? 1 : bandOf(SIM.NEED.bands, h).eff); };
+
+  /* ---------------------------------------------------------------- the resolver's clause (SIM.desire) */
+  function available(a, act, minute){
+    var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, hour=Math.floor((minute%1440)/60);
+    if(pref.pin==='home'){ var H=SIM.R.place[a.home]; return !!(H && SIM.offers(H, act)); }
+    var H2=SIM.R.place[a.home], near=H2 ? [H2.x, H2.z] : (a.at||[0,0]);
+    return SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, limit:1, maxR:pref.reach!=null?pref.reach:SIM.REACH }).length>0;
+  }
+  /* Only a question about the present (the stepper's, the decision's) changes the actor: one about another minute (the
+     report asking what the rest day will want) reads the meters as they would be and leaves everything as it is */
+  SIM.needsDesire = function(a, minute, act){
+    var N=SIM.NEED; if(!N || !a.present || a.plan) return act;
+    ensure(a, minute); var live = minute===SIM.minute();
+    /* an interrupt (the well trip off a labourer's shift) */
+    if(N.interrupt.length && act==='WORK' && labour(a)>0){
+      if(a.intr){ var I=a.intr; if(peek(a, I.i, minute)<=I.until || minute-a.intrSince>=I.max){ if(!live) return act; a.intr=null; a.intrCool=minute+I.cool; } else return I.act; }
+      if(minute>=(a.intrCool||0)) for(var k=0;k<N.interrupt.length;k++){ var J=N.interrupt[k]; if(peek(a, J.i, minute)>=J.at){ if(live){ a.intr=J; a.intrSince=minute; } return J.act; } }
+      return act;
+    }
+    if(a.intr && live){ a.intr=null; }
+    var FR=freeOf(a); if(!FR.freeSet[act]) return act;
+    /* free time: what the meters ask for, held `dwell` minutes (and the actor's share of `jitter`, so a district's
+       choices do not all fall due in one minute) */
+    if(a.fr && a.frFor===act && minute>=a.frSince && minute-a.frSince<N.dwell+(N.jitter ? a.k%N.jitter : 0)) return a.fr;
+    var nd=a.nd.map(function(v, i){ return peek(a, i, minute); }), T=a.trait && N.traits[a.trait], sc=[];
+    FR.free.forEach(function(opt, j){ var F=fillOf(a, opt), s=0; for(var i=0;i<F.length;i++) if(F[i]>0 && nd[i]>N.done) s+=F[i]*nd[i]*N.weight[i]*(T?T[i]:1);
+      if(opt===act) s=s*N.keep+1e-6; sc.push([s, j, opt]); });
+    sc.sort(function(p, q){ return q[0]-p[0] || p[1]-q[1]; });
+    var pick=act;
+    for(var m=0;m<sc.length;m++){ if(sc[m][2]===act || available(a, sc[m][2], minute)){ pick=sc[m][2]; break; } }
+    if(live){ a.fr=pick; a.frFor=act; a.frSince=minute; }
+    return pick;
+  };
+  /* the soonest minute this clause could answer otherwise (SIM.step's wake): a free choice's dwell running out, a
+     labourer's meter reaching an interrupt's `at` (from the steeper of its slope at work and on the way), an interrupt
+     under way (each minute), a cool-down ending */
+  SIM.needsWake = function(a, minute, act){
+    var N=SIM.NEED; if(!N || !a.nd || a.ndT==null) return Infinity; var w=Infinity;
+    if(a.intr) return minute+1;
+    if(act==='WORK' && N.interrupt.length && labour(a)>0){
+      if(a.intrCool && a.intrCool>minute) w=Math.min(w, a.intrCool);
+      for(var k=0;k<N.interrupt.length;k++){ var J=N.interrupt[k], v=peek(a, J.i, minute), sl=Math.max(slope(a, null, J.i), slope(a, 'WORK', J.i));
+        if(sl>0) w=Math.min(w, minute+Math.max(1, Math.floor((J.at-v)/sl*60))); }
+    }
+    if(a.fr && a.frFor===act) w=Math.min(w, a.frSince+N.dwell+(N.jitter ? a.k%N.jitter : 0));
+    return w;
+  };
+  /* SIM.decide: the meters brought to now on the old activity; the new one fills from its arrival */
+  SIM.needsDecided = function(a, minute, task){
+    var N=SIM.NEED; if(!N) return; SIM.needsOf(a, minute);
+    a.ndFrom = minute + (task && task.dur ? Math.round(task.dur/N.secPerMinute) : 0);
+  };
+  /* SIM.jump: the clock moved without the world living it: the meters stay, the gap is not counted */
+  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
+
+  /* ---------------------------------------------------------------- the census of needs */
+  /* by `key(actor)` (or all): how many, mean happiness, mean efficiency, the band counts, each need's mean and how many
+     have it at `high` or more; the meters brought to `minute` first */
+  SIM.needsCensus = function(key, opt){
+    var N=SIM.NEED; if(!N) return null; opt=opt||{}; var minute=opt.minute==null?SIM.minute():opt.minute, high=opt.high==null?70:opt.high, out={};
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.driven || a.transient || (a.animal && !opt.animals) || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
+      var k=key ? key(a) : 'all'; if(k==null) return; var G=out[k] || (out[k]={ n:0, happy:0, eff:0, bands:{}, mean:N.list.map(function(){ return 0; }), high:N.list.map(function(){ return 0; }), loyal:0, loyalty:{} });
+      var M=SIM.mood(a); G.n++; G.happy+=M.happiness; G.eff+=M.eff; G.bands[M.band]=(G.bands[M.band]||0)+1; if(M.loyal!=null){ G.loyal+=M.loyal; if(M.loyalty) G.loyalty[M.loyalty]=(G.loyalty[M.loyalty]||0)+1; }
+      for(var i=0;i<a.nd.length;i++){ G.mean[i]+=a.nd[i]; if(a.nd[i]>=high) G.high[i]++; } });
+    Object.keys(out).forEach(function(k){ var G=out[k], n=G.n||1; G.happy=Math.round(G.happy/n*10)/10; G.eff=Math.round(G.eff/n*1000)/1000; G.loyal=Math.round(G.loyal/n*10)/10;
+      var mean={}, hi={}; N.list.forEach(function(nm, i){ mean[nm]=Math.round(G.mean[i]/n*10)/10; hi[nm]=G.high[i]; }); G.mean=mean; G.high=hi; });
+    return out;
+  };
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/77-sim-6-population.js

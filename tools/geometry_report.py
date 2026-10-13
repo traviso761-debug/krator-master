@@ -28,7 +28,10 @@ CENSUS_JS = r"""()=>{
   let f=false;for(let p=o;p;p=p.parent)if(p.userData&&p.userData.furniture){f=true;break;} if(f) r.furnTris+=t*n;
   (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m&&mats.add(m.uuid)); });
  r.materials=mats.size; r.sceneTris=Math.round(r.sceneTris); r.furnTris=Math.round(r.furnTris);
- renderer.render(scene,camera); r.calls=renderer.info.render.calls; r.tris=renderer.info.render.triangles;
+ // the Yuni lineage keeps its camera inside the page's closure: there the numbers are the page's own last frame
+ const cam=typeof camera!=='undefined'?camera:(window._api&&_api.camera)||null;
+ if(cam) renderer.render(scene,cam); else r.lastFrame=true;
+ r.calls=renderer.info.render.calls; r.tris=renderer.info.render.triangles;
  if(window.LOD&&LOD.measure){ try{ const m=LOD.measure(2); r.lodOff={calls:m.off.calls,tris:m.off.tris}; r.lodOn={calls:m.on.calls,tris:m.on.tris}; }catch(e){} }
  return r; }"""
 
@@ -69,18 +72,22 @@ def write(data):
     json.dump(data, open(OUT_JSON, 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     rows = ['# Krator: geometry report', '',
             '*Written by `tools/geometry_report.py`. Do not edit; rerun it. Opening view, headless Chromium (SwiftShader), '
-            '1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod.*', '',
+            '1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod. A * on the draw calls: the page keeps its '
+            'camera private, so calls and triangles are its own last frame.*', '',
             '| Page | Draw calls | Triangles drawn | LOD off: calls / tris | LOD on: calls / tris | Scene triangles | '
             'Furniture tris | Meshes | Instanced sets | Instances | Materials |',
             '|---|---|---|---|---|---|---|---|---|---|---|']
     for page in sorted(data):
         r = data[page]
-        if not r.get('ready') or r.get('calls') is None:
+        if not r.get('ready'):
             rows.append('| `%s` | not ready |  |  |  |  |  |  |  |  |  |' % page)
+            continue
+        if r.get('calls') is None:
+            rows.append('| `%s` | no global scene to count |  |  |  |  |  |  |  |  |  |' % page)
             continue
         lo, ln = r.get('lodOff'), r.get('lodOn')
         rows.append('| `%s` | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (
-            page, r['calls'], fmt(r['tris']), '%s / %s' % (lo['calls'], fmt(lo['tris'])) if lo else '',
+            page, '%s%s' % (r['calls'], '*' if r.get('lastFrame') else ''), fmt(r['tris']), '%s / %s' % (lo['calls'], fmt(lo['tris'])) if lo else '',
             '%s / %s' % (ln['calls'], fmt(ln['tris'])) if ln else '', fmt(r['sceneTris']), fmt(r['furnTris']) if r['furnTris'] else '',
             r['meshes'], r['instSets'], fmt(r['instances']), r['materials']))
     open(OUT_MD, 'w', encoding='utf-8', newline='\n').write('\n'.join(rows) + '\n')

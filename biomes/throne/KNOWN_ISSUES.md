@@ -96,3 +96,15 @@
   show the same face). The crevasses are painted slots, not cut (the ground is one 6.5 m mesh); the caves are
   shells standing on the shelf, not hollows in the glacier (a carve patch, `core/terrain`, could cut a portal into the
   snout). The snow does not settle as it falls, and nothing moves on the ice (no calving, no meltwater on the surface).
+
+## The host (core/host, 2026-10-12)
+
+- [ ] **Every page of the Throne is on core/host**: station 1's `src/99-host-take.js` and each station's own
+      `stations/<name>/99-host-take.js` hand the page to `KHOST.take` (the stations' 90-host-camera.js and
+      91-host-probe.js are gone; no core/host file is overridden). The caldera and the tube draw through `HEAT.render`
+      (`draw`), the tube keeps its own camera clamp in the tube (`clampCam`), and the five stations with a Weather select
+      put it in the host's `#ui` after `KHOST.take` (their 89-host-atmos.js ran before there was one). The Day / Night
+      buttons and N are the kit's (`controls`, `keys`); the light of a preset is set by `onView`. Two things moved with the
+      loop: a tick's second argument is now the clock's motion time, not seconds since the page opened, so an animation
+      stands at another phase at a given moment (identical with time frozen, which is how the pages were proven); and the
+      heat shimmer's `dt` is the clock's, so it holds still while the clock is paused.

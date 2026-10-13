@@ -10,6 +10,8 @@ VC.census = function () {
   /* homes */
   alive.forEach(function (L) {
     var place = L.deck ? 'canton' : L.country ? 'country' : 'city';
+    var BK = K.byKey && K.byKey[L.key];                 /* the citizen simulation's buildings, by kit key (phase B) */
+    if (BK) { if (BK.live) addL(place === 'country' ? (L.country === 'suburb' ? 'suburbs' : 'farms and villages') : place === 'canton' ? 'canton decks' : 'city houses', BK.live); if (BK.jobs) addJ(BK.job, BK.jobs, BK.where); return; }
     if (L.cls === 'clan') { addL('clan compounds', K.live.clan); addJ('household service', K.jobs.clanService, 'clan compounds'); return; }
     if (L.cls === 'farm') { addL('farms and villages', L.w * L.d > 6000 ? K.live.bigFarm : K.live.farm); return; }
     if (L.role === 'garrison') { addL('garrison and barracks', K.live.garrison); addJ('soldiers', K.jobs.garrison, 'garrison castle'); return; }
@@ -46,6 +48,8 @@ VC.census = function () {
   addJ('miners', ((VC.industry && VC.industry.mines) || []).length * K.jobs.mine, 'mines');
   addJ('granary keepers and millers', ((VC.industry && VC.industry.watermills) || []).length * K.jobs.watermill, 'watermills');
   addJ('beetle herders', ((VC.industry && VC.industry.ranches) || 0) * K.jobs.ranch, 'beetle ranches');
+  var LS = (VC.industry && VC.industry.livestock) || {};   /* the livestock (owner, 2026-10-13: 33-vc-country.js VC.livestock) */
+  addJ('dairymen', (LS.cow || 0) * K.jobs.dairy, 'dairy pastures'); addJ('swineherds', (LS.pig || 0) * K.jobs.sty, 'pig sties'); addJ('duck keepers', (LS.duck || 0) * K.jobs.coop, 'duck coops');
   addJ('mushroom growers', ((VC.industry && VC.industry.mush) || []).length * K.jobs.mushFarm, 'mushroom farms');
   addJ('quarrymen and masons', ((VC.industry && VC.industry.quarries) || []).length * K.jobs.quarry, 'quarries');
   addJ('granary keepers and millers', (VC.granaryCount || 0) * K.jobs.granary, 'granaries');

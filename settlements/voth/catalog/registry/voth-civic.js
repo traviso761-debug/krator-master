@@ -34,6 +34,16 @@
 
   /* ------------------------------------------------------------- kit
      Helper closures over one build frame F. */
+  /* the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
   function kit(F) {
     const K = {};
     function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
@@ -155,6 +165,7 @@
       o = o || {};
       const n = Math.max(1, Math.round((y1 - y0) / (o.rise || 0.3))), r = (y1 - y0) / n, run = o.run || 0.3;
       const ax = dir[1] === 'x', sg = dir[0] === '+' ? 1 : -1;
+      walkRec(F, 'stair', x, y0, z, ax ? x + sg * n * run : x, y1, ax ? z : z + sg * n * run, w);
       for (let i = 0; i < n; i++) {
         const al = (i + 0.5) * run * sg, top = y0 + (i + 1) * r;
         const bot = o.flying ? top - r - 0.18 : (o.base != null ? o.base : 0);
@@ -1070,6 +1081,7 @@
     bw(2, -3.2, 1.4, 0.6, 1.2);
 
     /* stair up the east face to the roof, balustrade on its outer edge */
+    walkRec(F, 'stair', 2.15, 0, 2.3, 2.15, R, 2.3 - 22 * 0.27, 1.5);
     for (let i = 0; i < 22; i++) {
       const top = (i + 1) * R / 22, z = 2.3 - (i + 0.5) * 0.27;
       const x0 = HX + hf(top) - 0.05, x1 = 2.9;
@@ -1225,6 +1237,7 @@
       for (let k = 0; k < 5; k++) F.box(4.0 + k * 0.45, HT + 0.95, z, 0.1, 0.5, 0.2, 0, 0x9aa0a0, 'fish');
     });
     /* ladder from the mound to the roof */
+    walkRec(F, 'ladder', 3.6, Y, -2.8, 3.6, HT + 0.8, -3.55, 0.6);
     [3.3, 3.9].forEach(function (x) { F.rod(x, Y, -2.8, x, HT + 0.8, -3.55, 0.05, TIMBER, 'wood'); });
     for (let k = 1; k < 12; k++) {
       const t = k / 12;

@@ -102,7 +102,7 @@ def main():
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
     groups = sys.argv[sys.argv.index('--groups') + 1].split(',') if '--groups' in sys.argv else None
-    bundle = fauna_bundle.bundle(groups)
+    bundle = fauna_bundle.bundle(groups, mdl=True)
     parts = [('krator-asset-engine.js', read(ENGINE)), (BUNDLE, bundle)] + [(f, read(os.path.join(SRC, f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)

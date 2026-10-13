@@ -66,7 +66,7 @@ const FAUNA_VOCAB = {
   temperament: ['skittish', 'wary', 'docile', 'defensive', 'aggressive'],   /* from bolting first to attacking first */
   habitat: ['ground', 'rock', 'canopy', 'trunks', 'sky', 'water', 'shallows', 'deep water', 'marsh', 'burrow', 'pen'],
   locomotion: ['walks', 'runs', 'climbs', 'flies', 'glides', 'swims', 'wades', 'burrows', 'leaps'],
-  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
+  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'centaur', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
   traits: ['edible', 'milkable', 'tameable', 'rideable', 'draught', 'eggs'],
   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
 };

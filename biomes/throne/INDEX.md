@@ -13,11 +13,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 8 | the land before the lava (42); the plume (90) |
 | `46-biome-throne-flows.js` | 6 |  |
 | `47-host-land.js` | 10 | what is cut after the lava (22); the fields (cached below; these are the definiti (59); the host binding (88) |
@@ -29,7 +33,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `83-host-heat.js` | 5 |  |
 | `84-host-ground.js` | 17 | the ground (18); the water: the acid lake, the hot pools (111); the steam (133) |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 10 |  |
-| `91-host-probe.js` | 10 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 15 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (61); the page, handed to the host (130) |
 | `99-tail.html` | <1 |  |

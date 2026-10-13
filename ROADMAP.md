@@ -238,6 +238,16 @@ Three principles the evaluations converge on, stated as rules the repo can check
 The five rows of the table in section 4, in that order. Each lands with its measurement in the build's README
 and the cross-build report.
 
+**Done 2026-10-14.** The indexed furniture batch (vertices 1.7-3x fewer), the spatial index (KSPACE), Voth's
+placement on `core/mask`, size-aware catalog segments (57 % of the catalog's triangles at detail 1, 13.6 % on the
+furnished pages), and the first cross-build report: `GEOMETRY.md` and `geometry.json`, all 154 pages, by
+`tools/geometry_report.py` (draw calls, triangles, LOD off/on, meshes, instanced sets, instances, materials,
+furniture triangles). The heaviest are Streetlab's city (34.9 M triangles, 1,047 calls), Ys (29.5 M) and the Throne's
+pages (19-22 M); the contact sheets draw piece by piece (catalog 43k calls, interiors sets 47k); core/lod saves
+10-80 % of triangles on the 87 pages that take it. Pages that keep their camera private (the Yuni lineage) are
+counted from their own last frame (marked *). Rerun a row with `python3 tools/geometry_report.py <page>` after a
+change; a whole run takes most of a day under SwiftShader on a loaded box, so run pages one browser at a time.
+
 ### Stage 2: the substrate (the plan's Phase 2 and 4, in the plan's order)
 
 - **a. `core/terrain`'s field**: Float32 heightmap at a fixed step, water levels, carve patches, land cover;
@@ -330,9 +340,16 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 
 ### Stage 5: the simulation (Phase 5; `core/simulation/PLAN.md` owns it)
 
-- Verge's `SIM` onto `core/simulation` first (it has the golden trace, so the move is provable), then Voth's
-  citizens per `PLAN.md` Phase 2 (places from `LIFE_DOORS`, actors' `sched[24]`, the pedestrian NAV), accepted by
-  census parity. Ships' random departures become scheduled (the clock rule).
+- **Done on `Voth-sim` and merged (2026-10-14, `fbdb7d6c`; `settlements/streetlab/HANDOFF-REFACTOR.md`):** Voth's
+  citizens on `core/simulation` (places, the pedestrian layer, 53k actors with homes, jobs and rotas; needs, items,
+  economy, carriers, animals and pets; the wake, the lag and the half-hour buckets). The owner forks back off it to
+  keep tuning the economy; that work stays the Voth branch's (streetlab, voth, core/simulation, core/city). Next: the
+  handoff's known defects (river barges by timer, happiness drifting down over a week, the arena's beast paths and
+  double drawing, verify's windows, the scarcity decision), Phase E's remainder (porters, barges, fodder, breeding,
+  beef), Phase F (guards and the night watch, Ordinators and priests, arena bouts, dhows, taxis, the pleasure barge),
+  then Verge onto the same core against its golden trace. For the refactor: the place grid
+  (`77-sim-2-places.js`) onto `KSPACE`; Godot replays baked tasks (a lazy leg resolved by `SIM.legRoute` before it is
+  baked; the export carries the economy's and animals' records when the runtime needs them).
 - Adopt ChatGPT §22's three levels explicitly in `SCHEMA.md`: record (exists), abstract (travels, works, eats,
   no animation), presentation (near the player only). `PLAN.md` implies it; naming it keeps the Godot runtime
   from being written against nodes.
@@ -497,7 +514,20 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
 **Naming:** `settlements/port` is the **Ancient Port kit**, not a settlement (it will build Hook). The geyser kit
 (`biomes/geyser`) is new; it draws its own sea and creek and is a first taker of `core/water`.
 
-### The order from here (2026-10-12)
+### The order from here (owner, 2026-10-13)
+
+1. Finish stage 2: `core/water` phases 2 to 4, and the Throne on `core/host` (section 10 step 1's last piece).
+2. **Merge stages 0 to 2 into `main`** (the owner's go-ahead): `full-refactor` into `main`, its CI and nightly job
+   switch on there, and `main`'s CLAUDE.md "refactor paused" section becomes the rules of the merged tree (the known
+   bugs it lists are fixed: the irid kind, lossless normals, the indexed furniture batch). Pull in `Voth-sim` in the same
+   pass if it has been handed over by then (it takes the fauna branch, `ccr-05259b8d-kuy4pm`, itself; merge that branch
+   separately only if `Voth-sim` as pushed does not contain it); each is merged,
+   rebuilt and proven like the other branches (verify, smoke, baseline).
+3. Stage 3 (section 10, steps 2 to 6): Girder, Iziz and Highlands, fauna mode on the merged fauna kit, the rest,
+   then Streetlab and Voth with their branch.
+4. Stage 5 starts from Voth's sim, not Verge's (above).
+
+### The order before that (2026-10-12)
 
 1. Stage 0j (the scripted walk) and 0f (the lossless normal repack, one baseline rewrite).
 2. Stage 1: land `wip/furniture-indexed` and `wip/biome-spatial-index` verified; size-aware segments; the first
@@ -548,10 +578,10 @@ and sheet, 97 minimap (moved from `core/minimap/88a`), 98 edit modes (emit opera
 | Step | What | Sessions |
 |---|---|---|
 | 0 | **Done 2026-10-12.** `core/edits` and its node test; the Streetlab converter's round trip; the save route; record the Streetlab file hashes the host is copied from, checked read-only at each session's start | 1 |
-| 1 | camera, loop, panel and probe on hyperjungle, then the other fifteen biome kits (their only host contact is `BIO.init`). **Done 2026-10-12 for fifteen kits** (`core/host/README.md`; verify unchanged, chrome-hidden shots identical, smoke clean); the Throne and its ten stations are written but unproven (each page loaded in 30-60 min on a loaded box) | 2 |
+| 1 | camera, loop, panel and probe on hyperjungle, then the other fifteen biome kits (their only host contact is `BIO.init`). **Done 2026-10-12** for all sixteen kits, the Throne's eleven pages (station 1 and its ten stations) the last (`core/host/README.md`; on every page verify unchanged, chrome-hidden shots identical, the meshes the same, smoke clean) | 2 |
 | 2 | Girder (the Voth lineage, not Voth): inspector, marks, picture menu, minimap, edit modes (place, remove, flora), cutaway on its interiors | 2 |
 | 3 | Iziz (the Ancients lineage, full registry), then Highlands (the same camera) | 2 |
-| 4 | fauna mode (`kits/fauna`) and ground brushes on `KFIELD` | 1 |
+| 4 | fauna mode and ground brushes on `KFIELD`. **Owner, 2026-10-13:** the fauna kit was fleshed out on its own branch (`ccr-05259b8d-kuy4pm`: the six-limbed beasts, the centaur, arboreal and climbing gaits, the Rift and lowland gliders, the plumelands' ash runner and racer), so fauna mode is built on that kit once it is merged: it places and edits animals from `kits/fauna`'s registry and life data (biome, diet, activity, traits, gait), as ADD/MOVE/REMOVE ops in `core/edits`, not a copy of Streetlab's flora mode | 1 |
 | 5 | every other settlement and kit sheet: Dalab, Xanadu, Reed Lake, Screamers, Jimjam, Mav's Refuge, Yuni, Locus, Mungo, Shade, Verge, Noah's Regret, Ys, Dhelv, the kits | about half a session each |
 | 6 | Streetlab and Voth onto it, with the Voth branch, when it pauses | with that branch |
 

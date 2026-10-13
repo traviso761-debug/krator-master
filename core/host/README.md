@@ -138,10 +138,9 @@ here: nothing in Streetlab was edited (the files and their blobs are in `streetl
 5. Prove it: `verify.py --assert` the same as before, screenshots of two presets the same with `?chrome=0`, the smoke test,
    the baked geometry unchanged (`core/README.md`, "Proving a change").
 
-**Used by** (2026-10-12) fifteen of the sixteen biome kits: `biomes/hyperjungle`, `crater-drylands`, `eastabyss`,
-`ebadlands`, `ehighlands`, `geyser`, `nhighlands`, `nwbay`, `nwlowlands`, `rift`, `sedesert`, `shighlands`, `swbay`,
-`swlowlands`, `xanadu`. The six of them that had the polygon tool take `94-host-polytool.js`. **Not yet:** `biomes/throne`
-(station 1 and its ten stations, eleven pages, each station with its own `stations/<name>/99-host-take.js`): written,
-built and checked by its own verify on station 1, but not proven page by page, so not committed. The caldera and the
-tube need `draw` (their `HEAT.render`) and the tube its own `clampCam`, which the shell already takes. Next (ROADMAP.md
-section 10, step 1's tail, then step 2): the Throne, then Girder.
+**Used by** (2026-10-12) all sixteen biome kits: `biomes/hyperjungle`, `crater-drylands`, `eastabyss`, `ebadlands`,
+`ehighlands`, `geyser`, `nhighlands`, `nwbay`, `nwlowlands`, `rift`, `sedesert`, `shighlands`, `swbay`, `swlowlands`,
+`throne`, `xanadu`. The seven of them that had the polygon tool take `94-host-polytool.js`. The Throne is eleven pages
+(station 1 from `src/99-host-take.js`, each of its ten stations from its own `stations/<name>/99-host-take.js`); the
+caldera and the tube draw through `draw` (their `HEAT.render`), the tube keeps its own `clampCam`, and the five stations
+with a weather select put it in `KHOST.ui` after the take. Next (ROADMAP.md section 10, step 2): Girder.

@@ -19,4 +19,4 @@ ATMOS.weather({mode:'clear',snow:true,ash:true,apply:W=>{const s=W.snow||0,a=W.a
  sun.intensity=WXB.sunI*(1-.45*s-.4*s*s)*(1-.8*a*a)*(1-.5*fg);hemi.intensity=WXB.hemiI*(1+.1*s)*(1-.4*a*a)+f*1.4;
  SKYVEIL.material.color.copy(_wf);SKYVEIL.material.opacity=clamp(Math.max(smooth(.3,.95,s),smooth(.35,.95,a))+.7*fg,0,1);}});
 ATMOS.finish();
-ATMOS.weatherUI(document.getElementById('ui'));
+// the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

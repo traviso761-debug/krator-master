@@ -384,7 +384,7 @@ controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.
 copied and generalised (Streetlab's own files are the Voth branch's; `sources.py` says when they change). A build lists
 them with `host.py` (`CORE_HOST = khost.SHELL`, which adds `clock/20-core-clock.js`), hands its page to `KHOST.take`, and
 keeps no camera, loop, panel or probe of its own; `94-host-polytool.js` (the inspect, polygon and path tools) is opt-in.
-Read `host/README.md`. **Used by** every biome kit in `biomes/` but the Throne (next).
+Read `host/README.md`. **Used by** every biome kit in `biomes/`, the Throne's eleven pages included.
 
 ## `rand/`
 

@@ -50,6 +50,17 @@
   const DOOR = 0x1c1a16, TIMBER = 0x4a3a28, IRON = 0x3a2f22, GLOW = 0xffcf87, ROPE = 0x6b5a3a;
   const WATER = 0x3f5e60, BED = 0x2e3430, SOIL = 0x4e4232, HAY = 0xb8a060, GUAR = 0x7a6a50;
 
+  /* ---------------------------------------------------------- the walk records (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): each stair and ladder
+     a person climbs, foot a to head b as [x, z, y] in the build's world (core/walk's KWALK.strip shape), pushed to
+     window.KWALK_REC while a host collects them (the Voth city's probe: 56b-vc-building-interiors-host.js); a no-op
+     otherwise. A sub-frame passes its own `walk` that turns the points into its parent's frame */
+  function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
+    if (F.walk) { F.walk(kind, ax, ay, az, bx, by, bz, w); return; }
+    const R = typeof window !== 'undefined' ? window.KWALK_REC : null; if (!R) return;
+    const c = Math.cos(F.ry || 0), s = Math.sin(F.ry || 0), y = F.y || 0;
+    R.push({ kind: kind, a: [F.x + ax * c + az * s, F.z - ax * s + az * c, y + ay], b: [F.x + bx * c + bz * s, F.z - bx * s + bz * c, y + by], w: w });
+  }
+
   /* ---------------------------------------------------------- sub-frame */
   function sub(P, ox, oy, oz, q) {
     const th = (q || 0) * Math.PI / 2;
@@ -61,6 +72,7 @@
       G[k] = function (x, y, z, r, h, r2, col, fam) { const p = T(x, z); P[k](p[0], oy + y, p[1], r, h, (r2 || 0) + th, col, fam); };
     });
     G.ball = function (x, y, z, r, col, fam) { const p = T(x, z); P.ball(p[0], oy + y, p[1], r, col, fam); };
+    G.walk = function (kind, ax, ay, az, bx, by, bz, w) { const a = T(ax, az), b = T(bx, bz); walkRec(P, kind, a[0], oy + ay, a[1], b[0], oy + by, b[1], w); };
     G.frustum = function (x, y, z, rb, rt, h, r2, col, fam, sides) { const p = T(x, z); P.frustum(p[0], oy + y, p[1], rb, rt, h, (r2 || 0) + th, col, fam, sides); };
     G.pyrRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.pyrRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
     G.hipRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.hipRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
@@ -299,6 +311,7 @@
     /* ladder leaning on face s, foot out from the wall, top 0.9 above y1 */
     K.ladder = function (x, z, y0, y1, s) {
       const n = nrm(s), t = tan(s), foot = 0.75, top = y1 + 0.9;
+      walkRec(G, 'ladder', x + n[0] * foot, y0, z + n[1] * foot, x + n[0] * 0.16, y1, z + n[1] * 0.16, 0.6);
       [-1, 1].forEach(function (k) {
         G.rod(x + t[0] * k * 0.28 + n[0] * foot, y0, z + t[1] * k * 0.28 + n[1] * foot,
           x + t[0] * k * 0.28 + n[0] * 0.16, top, z + t[1] * k * 0.28 + n[1] * 0.16, 0.05, TIMBER, 'wood');
@@ -319,6 +332,7 @@
           dx ? tread : width, r * (i + 1), dx ? width : tread, 0, i % 2 ? col : shade(col, 0.04), 'stone');
       }
       const L = n * tread;
+      walkRec(G, 'stair', x, y0, z, x + dx * L, y1, z + dz * L, width);
       /* one long mass inside the flight so it survives the LOD cull of the small treads */
       if (n > 3) {
         G.beam(x + dx * tread * 1.5, y0 + r * 0.9, z + dz * tread * 1.5, x + dx * (L - tread), y1 - r * 1.6, z + dz * (L - tread),

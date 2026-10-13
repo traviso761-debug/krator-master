@@ -560,42 +560,11 @@ VC.panels = function () {
    33-vc-country.js lays the decks out again. */
 VC.stripCantons = function () {
   var D = window.VOTH_CITY_CAPTURE; if (!D) return 0;
-  var gone = 0;
-  VC.DECKS.forEach(function (n) {
-    var c = VOTH.CIDX[n], vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!c || !v) return;
-    var pl = null; v.r.forEach(function (q) { if (q[0] !== 9 && (!pl || q[5] * q[7] > pl[5] * pl[7])) pl = q; });
-    var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), hw = c.r * 0.97 * Math.pow(0.86, c.tiers), dy = c.top + 0.12 * c.tiers - bed, n0 = v.r.length;
-    v.r = v.r.filter(function (q) {
-      if (q[0] === 9 || q[3] < dy - 1.5) return true;
-      var lx = q[2] - pl[2], lz = q[4] - pl[4], shape = D.shapes[q[0]];
-      if (q[5] * q[7] > 2000) return true;                                           /* the paving slab */
-      if (Math.max(Math.abs(lx), Math.abs(lz)) > hw * 0.95) return true;               /* the parapets */
-      if (Math.hypot(lx, lz) < 7 && (shape === 'cyl' || shape === 'fr3')) return true;  /* the obelisk */
-      return false;
-    });
-    gone += n0 - v.r.length;
+  var S = VC.stripSet(), gone = 0;   /* the records that go (33-vc-country.js): the decks' generic buildings, the Port's sheds */
+  VC.DECKS.concat(['Port']).forEach(function (n) {
+    var vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!v) return;
+    var n0 = v.r.length; v.r = v.r.filter(function (q) { return !S.has(q); }); gone += n0 - v.r.length;
   });
-  /* the Port canton's shed() warehouses (Voth's portDeckV2: deck and quays): each is found by its fr8 roof and the
-     body box under it, and goes with its cornice and door; the lighthouse, the guild hall, the stairs, the piers and
-     the crane stay */
-  var pv = D.entries.voth_city_canton_port && D.entries.voth_city_canton_port[0];
-  if (pv) {
-    var R0 = pv.r, n1 = R0.length, regions = [];
-    R0.forEach(function (q) {
-      if (q[0] === 9 || D.shapes[q[0]] !== 'fr8' || D.fams[q[1]] !== 'roof') return;
-      var body = R0.filter(function (b) { return b !== q && b[0] !== 9 && D.shapes[b[0]] === 'box' && Math.abs(b[2] - q[2]) < 0.05 && Math.abs(b[4] - q[4]) < 0.05 && Math.abs(b[5] * 1.02 - q[5]) < 0.3; })[0];
-      if (body) regions.push({ c: [q[2], q[4]], ry: q[8], hw: q[5] / 2 + 1.5, hd: q[7] / 2 + 1.5, y0: body[3] - 0.5, y1: q[3] + q[6] + 0.5 });
-    });
-    pv.r = R0.filter(function (q) {
-      if (q[0] === 9) return true;
-      return !regions.some(function (g) {
-        if (q[3] < g.y0 || q[3] > g.y1) return false;
-        var dx = q[2] - g.c[0], dz = q[4] - g.c[1], cs = Math.cos(g.ry), sn = Math.sin(g.ry), lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
-        return Math.abs(lx) <= g.hw && Math.abs(lz) <= g.hd;
-      });
-    });
-    gone += n1 - pv.r.length;
-  }
   return gone;
 };
 
@@ -703,5 +672,10 @@ VC.start = function () {
   /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
   Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
   VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
-  VC.ui(); VC.clockUI(); VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
+  try { VC.simPlaces(); VC.simWorkAudit(); } catch (e) { console.error('sim places: ' + (e.stack || e)); VC.SIMB.error = String(e.stack || e); }   /* 42-vc-sim-places.js */
+  try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */
+  VC.ui(); VC.ixUI(); VC.clockUI();
+  try { VC.simRun(); VC.simBodies(); } catch (e) { console.error('sim run: ' + (e.stack || e)); VC.SIMRUN.error = String(e.stack || e); }   /* 56c-vc-citizens-host.js */
+  VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
 };

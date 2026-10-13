@@ -135,16 +135,17 @@ VC.buildMonastery = function (d) {
     put('hall', (hw * 1.05 + span + 1.2) / 2 + 2, Math.max(hd, span) * 0.55 + 2, function (c) { return V.dist(c.p, gateP) + (c.de < 30 ? 400 : 0); },
       function (c, y, ry) { B.monasteryAssemblyHall(c[0], c[1], y, hw, hd, B.rr(30, 34), ry, col, {}); },
       { ry: function (c) { return B.faceToward(c[0], c[1], gateP[0], gateP[1]); }, offset: -((hw * 0.5 + span + 1.2) - hw * 0.55) / 2 });
-    /* dormitories round the chapel (owner: more of them) */
+    }
+    /* dormitories round the chapel, or round Voth's compound (owner: more of them; they were inside the branch above, so
+       with the compound placed none were added: 2 dormitories of TUNE.monastery.dorms 6, 2026-10-12) */
     var ds = counts.compound || 1, dw = fx * 0.20 * 1.5 * ds, dd = fz * 0.17 * 2.0 * ds, roof = B.shade(B.GREYC[1], -0.05);   /* round Voth's compound: at its scale */
     for (var k = counts.dorm; k < M.dorms; k++) put('dorm', dw / 2 + 2, dd / 2 + 2, function (c) { return V.dist(c.p, cen) + B.rr(0, 30); },
       function (c, y, ry) { B.monasteryDorm(c[0], y, c[1], dw, dd, B.rr(20, 25), ry, col, { roof: roof }); });
     /* stores (Voth's warehouse: a shed with a door) near the hall */
     for (var w2 = 0; w2 < M.stores; w2++) put('store', fx * 0.11 + 2, fz * 0.075 + 2, function (c) { return V.dist(c.p, gateP) * 0.6 + V.dist(c.p, cen) * 0.4 + B.rr(0, 40); },
       function (c, y, ry) { B.shed(c[0], y, c[1], fx * 0.22, fz * 0.15, B.rr(9, 12), ry, col); });
-    /* the well at the heart of the cluster */
-    put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
-    }
+    /* the well at the heart of the cluster (the compound has its own) */
+    if (!counts.compound) put('well', MO.wellR * 2.2, MO.wellR * 2.2, function (c) { return V.dist(c.p, cen); }, function (c, y, ry) { B.monasteryWell(c[0], y, c[1], MO.wellR, ry); }, { gap: 3 });
     /* pens and coops between the buildings and the fields */
     var ring = function (f) { return function (c) { return Math.abs(c.de / maxDe - f) * 300 + B.rr(0, 60); }; };
     for (var p2 = 0; p2 < M.pens; p2++) put('pen', MO.penW / 2 + 3, MO.penD / 2 + 3, ring(0.45), function (c, y, ry) { B.monasteryPen(c[0], y, c[1], MO.penW / 2, MO.penD / 2, ry); });
@@ -245,11 +246,53 @@ VC.deckOf = function (n) {
 /* a footprint against the canton's captured model (owner, 2026-10-09: "lot of clipping going on here" on the Port's
    deck): any piece of that canton not cut from its capture standing in the footprint, grown TUNE.decks.capturedPad, from
    just above the deck to TUNE.decks.capturedH over it (the lighthouse, the guild hall, sheds, cranes, parapets) */
+/* what the host strips from the captured cantons (55-vc-host.js VC.stripCantons), as a Set of capture records: the
+   generic deck buildings of the four plain rim cantons, the Port's shed() warehouses. The deck test below skips them,
+   since the deck is laid out again where they stood (they were counted as standing there, so no deck building fit:
+   2026-10-12, 0 granaries, 0 barracks and 0 embassy plots). Read once, before the host filters the capture. */
+VC.stripSet = function () {
+  if (VC._strip) return VC._strip;
+  var S = VC._strip = new Set(), D = typeof VOTH_CITY_CAPTURE !== "undefined" ? VOTH_CITY_CAPTURE : null; if (!D) return S;
+  VC.DECKS.forEach(function (n) {
+    var c = VOTH.CIDX[n], vs = D.entries['voth_city_canton_' + n.toLowerCase()], v = vs && vs[0]; if (!c || !v) return;
+    var pl = null; v.r.forEach(function (q) { if (q[0] !== 9 && (!pl || q[5] * q[7] > pl[5] * pl[7])) pl = q; });
+    var bed = Math.min(-6, VOTH.terrainH(c.x, c.z)), hw = c.r * 0.97 * Math.pow(0.86, c.tiers), dy = c.top + 0.12 * c.tiers - bed;
+    v.r.forEach(function (q) {
+      if (q[0] === 9 || q[3] < dy - 1.5) return;
+      var lx = q[2] - pl[2], lz = q[4] - pl[4], shape = D.shapes[q[0]];
+      if (q[5] * q[7] > 2000) return;                                           /* the paving slab */
+      if (Math.max(Math.abs(lx), Math.abs(lz)) > hw * 0.95) return;               /* the parapets */
+      if (Math.hypot(lx, lz) < 7 && (shape === 'cyl' || shape === 'fr3')) return;  /* the obelisk */
+      S.add(q);
+    });
+  });
+  /* the Port canton's shed() warehouses (Voth's portDeckV2: deck and quays): each is found by its fr8 roof and the
+     body box under it, and goes with its cornice and door; the lighthouse, the guild hall, the stairs, the piers and
+     the crane stay */
+  var pv = D.entries.voth_city_canton_port && D.entries.voth_city_canton_port[0];
+  if (pv) {
+    var R0 = pv.r, regions = [];
+    R0.forEach(function (q) {
+      if (q[0] === 9 || D.shapes[q[0]] !== 'fr8' || D.fams[q[1]] !== 'roof') return;
+      var body = R0.filter(function (b) { return b !== q && b[0] !== 9 && D.shapes[b[0]] === 'box' && Math.abs(b[2] - q[2]) < 0.05 && Math.abs(b[4] - q[4]) < 0.05 && Math.abs(b[5] * 1.02 - q[5]) < 0.3; })[0];
+      if (body) regions.push({ c: [q[2], q[4]], ry: q[8], hw: q[5] / 2 + 1.5, hd: q[7] / 2 + 1.5, y0: body[3] - 0.5, y1: q[3] + q[6] + 0.5 });
+    });
+    R0.forEach(function (q) {
+      if (q[0] === 9) return;
+      if (regions.some(function (g) {
+        if (q[3] < g.y0 || q[3] > g.y1) return false;
+        var dx = q[2] - g.c[0], dz = q[4] - g.c[1], cs = Math.cos(g.ry), sn = Math.sin(g.ry), lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
+        return Math.abs(lx) <= g.hw && Math.abs(lz) <= g.hd;
+      })) S.add(q);
+    });
+  }
+  return S;
+};
 VC.capturedHit = function (n, o, y) {
   var M = CANT.by[n]; if (!M) return false;
-  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {};
+  var C = obbCorners(VC.grow(o, TUNE.decks.capturedPad)), xs = C.map(function (p) { return p[0]; }), zs = C.map(function (p) { return p[1]; }), cut = CANT.cuts[n] || {}, gone = VC.stripSet();
   return CANT.hits([Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs), y + 0.35, y + TUNE.decks.capturedH]).some(function (P) {
-    if (P.M !== M || cut[P.k]) return false;
+    if (P.M !== M || cut[P.k] || gone.has(P.q)) return false;
     var q = obb([(P.x0 + P.x1) / 2, (P.z0 + P.z1) / 2], [1, 0], (P.x1 - P.x0) / 2, (P.z1 - P.z0) / 2);
     return SL.pen(VC.grow(o, TUNE.decks.capturedPad), q) > 0;
   });
@@ -285,7 +328,7 @@ VC.deckFill = function (dk, mix, rs, n) {
 };
 VC.cantonDecks = function () {
   var B = VOTH, rs = SL.stream(2003), K = TUNE.decks, log = [];
-  VC.decks = {};
+  VC.decks = {}; VC.granarySites = [];
   VC.DECKS.forEach(function (n) { if (B.CIDX[n]) VC.decks[n] = VC.deckOf(n); });
   VC.capture('decks', 2, function () {
     /* Granary: Voth's own granary() (65k-granary-mills-ranch.js, built there but never placed), a yard of them */
@@ -296,6 +339,7 @@ VC.cantonDecks = function () {
         var w = rs.rr(12, 15), d = w * rs.rr(0.75, 0.85), sp = VC.deckSpot(g, w / 2 + 3, d / 2 + 4, function (x, z) { return Math.abs(Math.max(Math.abs(x), Math.abs(z)) - g.use * 0.6) + rs.rr(0, 8); });
         if (!sp) break;
         B.granary(sp.c[0], g.y, sp.c[1], Math.atan2(-sp.f[1], sp.f[0]), null, { w: w, d: d }); g.placed.push(sp.o); gn++;
+        (VC.granarySites = VC.granarySites || []).push([sp.c[0], sp.c[1]]);   /* the granary keepers' work places (42-vc-sim-places.js) */
       }
       VC.granaryCount = gn;
       /* windmills toward the deck's windy edge */
@@ -794,19 +838,51 @@ VC.waterMills = function (rs) {
 };
 /* beetle ranches (Voth's beetleRanch(), 65k, built but never placed): a fenced pen beside about one farmstead in five */
 VC.ranches = function (rs) {
-  var B = VOTH, K = TUNE.country.ranches, made = 0;
+  var B = VOTH, K = TUNE.country.ranches, made = 0; VC.industry.ranchAt = [];
   PLAN.lots.filter(function (L) { return L.died == null && L.cls === 'farm'; }).forEach(function (L) {
     if (!rs.chance(K.perFarm)) return;
     for (var t = 0; t < 12; t++) {
       var a = rs.rr(0, 6.283), r = Math.max(L.w, L.d) / 2 + rs.rr(K.near[0], K.near[1]), c = [L.x + Math.cos(a) * r, L.z + Math.sin(a) * r], ry = Math.atan2(-(L.z - c[1]), L.x - c[0]);
       var o = obb(c, [Math.cos(ry), -Math.sin(ry)], 15, 12);
       if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
-      VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, {}); });
-      VC.big.push(o); made++; break;
+      VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, { beetleCount: -1 }); });   /* drawn empty: its beetles are the sim's (47-vc-sim-animals.js) */
+      VC.big.push(o); VC.industry.ranchAt.push([c[0], c[1]]); (VC.industry.pens = VC.industry.pens || []).push({ kind: 'beetle', x: c[0], z: c[1], y: baseH(c[0], c[1]), ry: ry, w: 26, d: 20, i: made }); made++; break;
     }
   });
   VC.industry.ranches = made;
   return made + ' beetle ranches';
+};
+/* the livestock (owner, 2026-10-13: "in addition to beetle ranches, add pigs, ducks, cow ranches / coops"): beside
+   the farmsteads, each kind by its share of them (TUNE.country.livestock, a KRAND hash of the farm and the kind: not
+   the order of the draws), a dairy-cow pasture and a pig sty (Voth's ranch pen and byre, drawn empty) and a duck coop
+   (the monastery's henhouse on legs and its run) by a pond; their animals are the sim's (47-vc-sim-animals.js) */
+VC.livestock = function () {
+  var B = VOTH, K = TUNE.country.livestock, out = {}, u = function (a, b, c) { return KRAND.unit(KRAND.hash(7373, a, b, c || 0)); };
+  VC.industry.pens = VC.industry.pens || [];
+  var farms = PLAN.lots.filter(function (L) { return L.died == null && L.cls === 'farm'; });
+  Object.keys(K.kinds).forEach(function (kind, ki) {
+    var k = K.kinds[kind], n = 0; VC.industry[kind + 'At'] = [];
+    farms.forEach(function (L, li) {
+      if (u(li, ki, 1) >= k.perFarm) return;
+      for (var t = 0; t < 12; t++) {
+        var a = u(li, ki, 10 + t) * 6.283, r = Math.max(L.w, L.d) / 2 + K.near[0] + u(li, ki, 30 + t) * (K.near[1] - K.near[0]);
+        var c = [L.x + Math.cos(a) * r, L.z + Math.sin(a) * r], ry = Math.atan2(-(L.z - c[1]), L.x - c[0]), ext = (k.pond ? k.pond[0] : 0);
+        var o = obb(c, [Math.cos(ry), -Math.sin(ry)], k.w / 2 + 2 + ext / 2, k.d / 2 + 2);
+        if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
+        var y = baseH(c[0], c[1]), i = n;
+        VC.capture(kind + 'pen' + i, 13, function () {
+          if (k.draw === 'coop') {
+            B.monasteryCoop(c[0], y, c[1], k.w / 2, k.d / 2, ry);
+            var dx = k.w / 2 + k.pond[0] / 2 + 1, pc = [c[0] + Math.cos(ry) * dx, c[1] - Math.sin(ry) * dx]; B.BOX(pc[0], y + 0.04, pc[1], k.pond[0], 0.12, k.pond[1], ry, 0x3e5b60, 'stone');   /* the ducks' pond */
+          } else B.beetleRanch(c[0], y, c[1], ry, null, { w: k.w, d: k.d, beetleCount: -1 });
+        });
+        VC.big.push(o); VC.industry[kind + 'At'].push([c[0], c[1]]); VC.industry.pens.push({ kind: kind, x: c[0], z: c[1], y: y, ry: ry, w: k.w, d: k.d, i: i }); n++; break;
+      }
+    });
+    out[kind] = n;
+  });
+  VC.industry.livestock = out;
+  return 'livestock: ' + Object.keys(out).map(function (k) { return out[k] + ' ' + k; }).join(', ');
 };
 
 /* orchards on the slopes of the west hill (owner, 2026-10-09), Voth's terraced orchards (70-veg.js): rows of fruit
@@ -911,7 +987,7 @@ SL.pass13 = function () {
   log.push(lanesN + ' lanes and tracks; ' + sub + ' suburban houses (S, SE, NE); ' + farms + ' farmsteads with ' + (fieldsN + extra) + ' fields');
   log.push(VC.orchards(rs));
   log.push(VC.farmMills(rs));
-  log.push(VC.waterMills(rs)); log.push(VC.ranches(rs));
+  log.push(VC.waterMills(rs)); log.push(VC.ranches(rs)); log.push(VC.livestock());
   log.push(VC.fieldsOffWays() + ' fields taken up from under a road');
   PLAN.country = { lots: PLAN.lots.length - n0, fields: PLAN.fields.length, villages: VC.villages };
   SL.note(13, log.join('; '));

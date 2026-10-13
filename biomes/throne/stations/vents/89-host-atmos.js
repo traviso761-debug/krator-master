@@ -22,4 +22,4 @@ ATMOS.weather({mode:'clear',ash:true,apply:W=>{const a=W.ash||0,fg=W.fog||0,f=W.
 (function(){reseed(8903);const pts=[],L=BIO.LOD();for(let k=0;k<5000&&pts.length<420;k++){const x=rr(-2400,2400),z=rr(-2400,2400);if(BIO.lodD(x,z)>L.mid)continue;
   if(FIELD.graben(x,z)<.5&&FIELD.valley(x,z)<.3&&FIELD.marsh(x,z)<.3)continue;pts.push([x,terrainH(x,z)+rr(1,6),z]);}ATMOS.fogBank(pts);})();
 ATMOS.finish();
-ATMOS.weatherUI(document.getElementById('ui'));
+// the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

@@ -102,6 +102,9 @@ ANIMAL({
   life: { maturity: 6, lifespan: 45, litter: 2, gestation: 80, note: 'eggs (gestation: days of incubation); a chick is ridden from its sixth year' },
   poses: ['perch', 'fly'],
   w: 2.3, d: 6.3, h: 5.8,
+  /* variant 1: the baked Meshy model (kits/fauna/models/quetzalcoatlus.json, models_pack.py): the animal's own clips for idle (perch), walk, fly (flap, glide); the box covers every pose, wings spread */
+  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Meshy model (baked maps)'],
+  variantDims: [{ w: 2.3, d: 6.3, h: 5.8 }, { w: 12.1, d: 6.6, h: 6.95 }], models: { 1: 'quetzalcoatlus' }, modelData: { 1: { budget: 14000 } },
   data: { mass: 280, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.6, run: 4, fly: [18, 24] }, gait: { type: 'flyer', freq: 0.8, stride: 1.4 },
     flap: { freq: 0.7, amp: 0.62, glide: 0.6, fold: 0 }, grazePitch: 1.0,
     herd: 'a pair in the wild; a rookery keeps 20 to 70 in stalls', fleeDistance: 12, aggression: 0.35,
@@ -191,6 +194,9 @@ ANIMAL({
   life: { maturity: 3, lifespan: 30, litter: 1, gestation: 160, note: 'one pup a year, carried in flight for its first month' },
   poses: ['perch', 'fly'],
   w: 2.5, d: 3.4, h: 2.0,
+  /* variant 1: the baked Meshy model (kits/fauna/models/giant-bat.json, models_pack.py): the animal's own clips for idle (perch), walk, fly (flap, glide); the box covers every pose, wings spread */
+  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Meshy model (baked maps)'],
+  variantDims: [{ w: 2.5, d: 3.4, h: 2.0 }, { w: 9.05, d: 4.3, h: 6.6 }], models: { 1: 'giant-bat' }, modelData: { 1: { budget: 14000 } },
   data: { mass: 140, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.0, run: 2.5, fly: [12, 16] }, gait: { type: 'flyer', freq: 1.2, stride: 0.6 },
     flap: { freq: 2.0, amp: 0.78, glide: 0.1, fold: 0 }, grazePitch: 0.5,
     herd: 'a colony of 30 to 200 in a hollow trunk; the riders keep them on roost beams', fleeDistance: 10, aggression: 0.2,
@@ -314,6 +320,9 @@ ANIMAL({
   life: { maturity: 3, lifespan: 22, litter: 3, gestation: 50, note: 'eggs (gestation: days of incubation)' },
   poses: ['perch', 'fly'],
   w: 2.8, d: 7.2, h: 3.5,
+  /* variant 1: the baked Meshy model (kits/fauna/models/giant-archaeopteryx.json, models_pack.py): the animal's own clips for idle (perch), walk, fly (flap, glide); the box covers every pose, wings spread */
+  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Meshy model (baked maps)'],
+  variantDims: [{ w: 2.8, d: 7.2, h: 3.5 }, { w: 7.2, d: 7.8, h: 5.3 }], models: { 1: 'giant-archaeopteryx' }, modelData: { 1: { budget: 14000 } },
   data: { mass: 160, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.5, run: 7, fly: [14, 20] }, gait: { type: 'flyer', freq: 1.2, stride: 0.9 },
     flap: { freq: 1.4, amp: 0.8, glide: 0.35, fold: 0 }, grazePitch: 0.85,
     herd: 'alone or a mated pair; the rookeries keep them in single stalls, apart', fleeDistance: 6, aggression: 0.55,
@@ -404,6 +413,9 @@ ANIMAL({
   life: { maturity: 2, lifespan: 5, litter: 300, gestation: 25, note: 'eggs laid in still water (gestation: days to hatch); two years a nymph in the marsh pools, then three on the wing' },
   poses: ['perch', 'fly'],
   w: 7.3, d: 7.0, h: 1.9,
+  /* variant 1: the baked Meshy model (kits/fauna/models/giant-dragonfly.json, models_pack.py): the animal's own clips for idle (perch), walk, fly (flap, glide); the box covers every pose, wings spread */
+  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Meshy model (baked maps)'],
+  variantDims: [{ w: 7.3, d: 7.0, h: 1.9 }, { w: 7.4, d: 7.0, h: 3.9 }], models: { 1: 'giant-dragonfly' }, modelData: { 1: { budget: 14000 } },
   data: { mass: 90, legs: 6, wings: 2, budget: 9000, speed: { walk: 0.5, run: 1, fly: [25, 35] }, gait: { type: 'flyer', freq: 1.5, stride: 0.3 },
     flap: { freq: 9, amp: 0.5, glide: 0, fold: 0 }, grazePitch: 0.3,
     herd: 'alone, holding a stretch of water; the riders keep them in open stalls by the pools', fleeDistance: 15, aggression: 0.1,

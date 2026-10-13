@@ -139,7 +139,7 @@
   "meshes": 60,
   "ready": true,
   "sceneTris": 12704728,
-  "seconds": 398,
+  "seconds": 250,
   "tris": 12704796
  },
  "biomes/shighlands/dist/shighlands.html": {
@@ -1472,34 +1472,132 @@
   "tris": 552600
  },
  "settlements/girder/girder-hero.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 192
+  "calls": 171,
+  "errors": 0,
+  "furnTris": 3013220,
+  "instSets": 53,
+  "instances": 100419,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 161,
+   "tris": 3914322
+  },
+  "lodOn": {
+   "calls": 166,
+   "tris": 3815043
+  },
+  "materials": 161,
+  "meshes": 162,
+  "ready": true,
+  "sceneTris": 5823930,
+  "seconds": 186,
+  "tris": 3825431
  },
  "settlements/girder/girder.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 907
+  "calls": 170,
+  "errors": 0,
+  "furnTris": 2651204,
+  "instSets": 53,
+  "instances": 100432,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 157,
+   "tris": 3671073
+  },
+  "lodOn": {
+   "calls": 166,
+   "tris": 3536227
+  },
+  "materials": 156,
+  "meshes": 157,
+  "ready": true,
+  "sceneTris": 5445495,
+  "seconds": 176,
+  "tris": 3553025
  },
  "settlements/highlands/dist/highlands.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 902
+  "calls": 163,
+  "errors": 0,
+  "furnTris": 791390,
+  "instSets": 279,
+  "instances": 139412,
+  "lodOff": {
+   "calls": 300,
+   "tris": 3353410
+  },
+  "lodOn": {
+   "calls": 163,
+   "tris": 1281464
+  },
+  "materials": 318,
+  "meshes": 341,
+  "ready": true,
+  "sceneTris": 3435158,
+  "seconds": 49,
+  "tris": 1424470
  },
  "settlements/highlands/dist/roketstad.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 908
+  "calls": 361,
+  "errors": 0,
+  "furnTris": 3352322,
+  "instSets": 326,
+  "instances": 357726,
+  "lodOff": {
+   "calls": 376,
+   "tris": 10628053
+  },
+  "lodOn": {
+   "calls": 377,
+   "tris": 7940439
+  },
+  "materials": 370,
+  "meshes": 475,
+  "ready": true,
+  "sceneTris": 11004747,
+  "seconds": 318,
+  "tris": 10621379
  },
  "settlements/iziz/dist/iziz-vernacular.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 908
+  "calls": 61,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 124,
+  "instances": 17025,
+  "lodOff": {
+   "calls": 128,
+   "tris": 426276
+  },
+  "lodOn": {
+   "calls": 61,
+   "tris": 242980
+  },
+  "materials": 135,
+  "meshes": 167,
+  "ready": true,
+  "sceneTris": 460782,
+  "seconds": 190,
+  "tris": 242980
  },
  "settlements/iziz/dist/iziz.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 901
+  "calls": 858,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 342,
+  "instances": 232247,
+  "lodOff": {
+   "calls": 889,
+   "tris": 6727306
+  },
+  "lodOn": {
+   "calls": 858,
+   "tris": 4530976
+  },
+  "materials": 359,
+  "meshes": 930,
+  "ready": true,
+  "sceneTris": 6734840,
+  "seconds": 267,
+  "tris": 4957502
  },
  "settlements/iziz/dist/w-a.html": {
   "calls": 71,
@@ -1519,7 +1617,7 @@
   "meshes": 73,
   "ready": true,
   "sceneTris": 60154,
-  "seconds": 15,
+  "seconds": 20,
   "tris": 54152
  },
  "settlements/iziz/dist/w-b.html": {
@@ -1540,7 +1638,7 @@
   "meshes": 49,
   "ready": true,
   "sceneTris": 48436,
-  "seconds": 20,
+  "seconds": 17,
   "tris": 46156
  },
  "settlements/iziz/dist/w-c.html": {
@@ -1561,8 +1659,8 @@
   "meshes": 87,
   "ready": true,
   "sceneTris": 298154,
-  "seconds": 32,
-  "tris": 240555
+  "seconds": 19,
+  "tris": 239276
  },
  "settlements/jimjam/dist/jimjam-kit.html": {
   "calls": 487,
@@ -1586,39 +1684,149 @@
   "tris": 1222297
  },
  "settlements/locus/abyss-kit.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 26
+  "calls": 111,
+  "errors": 0,
+  "furnTris": 174730,
+  "instSets": 70,
+  "instances": 16846,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 105,
+   "tris": 746760
+  },
+  "lodOn": {
+   "calls": 106,
+   "tris": 615894
+  },
+  "materials": 109,
+  "meshes": 109,
+  "ready": true,
+  "sceneTris": 749128,
+  "seconds": 35,
+  "tris": 639732
  },
  "settlements/locus/locus-kit.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 78
+  "calls": 94,
+  "errors": 0,
+  "furnTris": 31620,
+  "instSets": 65,
+  "instances": 8916,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 90,
+   "tris": 291968
+  },
+  "lodOn": {
+   "calls": 88,
+   "tris": 274719
+  },
+  "materials": 90,
+  "meshes": 90,
+  "ready": true,
+  "sceneTris": 291968,
+  "seconds": 23,
+  "tris": 288671
  },
  "settlements/locus/locus-plants.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 85
+  "calls": 16,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 10,
+  "instances": 399,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 11,
+   "tris": 51879
+  },
+  "lodOn": {
+   "calls": 10,
+   "tris": 50143
+  },
+  "materials": 11,
+  "meshes": 11,
+  "ready": true,
+  "sceneTris": 51879,
+  "seconds": 13,
+  "tris": 64095
  },
  "settlements/locus/locus.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 926
+  "calls": 185,
+  "errors": 0,
+  "furnTris": 177892,
+  "instSets": 146,
+  "instances": 690112,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 216,
+   "tris": 10235696
+  },
+  "lodOn": {
+   "calls": 180,
+   "tris": 8978456
+  },
+  "materials": 193,
+  "meshes": 224,
+  "ready": true,
+  "sceneTris": 10171424,
+  "seconds": 273,
+  "tris": 9240122
  },
  "settlements/mavs-refuge/mavs-refuge.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 166
+  "calls": 87,
+  "errors": 0,
+  "furnTris": 1218198,
+  "instSets": 41,
+  "instances": 180442,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 77,
+   "tris": 5146686
+  },
+  "lodOn": {
+   "calls": 94,
+   "tris": 4067670
+  },
+  "materials": 75,
+  "meshes": 77,
+  "ready": true,
+  "sceneTris": 5147006,
+  "seconds": 129,
+  "tris": 4418482
  },
  "settlements/mungo/dist/mungo.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 901
+  "calls": 438,
+  "errors": 0,
+  "furnTris": 84931,
+  "instSets": 183,
+  "instances": 459173,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 452,
+   "tris": 8385054
+  },
+  "lodOn": {
+   "calls": 436,
+   "tris": 7582412
+  },
+  "materials": 382,
+  "meshes": 454,
+  "ready": true,
+  "sceneTris": 8312350,
+  "seconds": 181,
+  "tris": 8133513
  },
  "settlements/noahs-regret/dist/noahs-regret.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 901
+  "calls": 53,
+  "errors": 0,
+  "furnTris": 378228,
+  "instSets": 1918,
+  "instances": 0,
+  "materials": 1942,
+  "meshes": 1970,
+  "ready": true,
+  "sceneTris": 1447422,
+  "seconds": 184,
+  "tris": 1506302
  },
  "settlements/port/dist/cgBox.html": {
   "calls": 111,
@@ -2331,7 +2539,7 @@
   "meshes": 356,
   "ready": true,
   "sceneTris": 619070,
-  "seconds": 104,
+  "seconds": 339,
   "tris": 481536
  },
  "settlements/screamers/dist/furniture.html": {
@@ -2429,9 +2637,26 @@
   "tris": 18224080
  },
  "settlements/voth/voth.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 91
+  "calls": 77,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 67,
+  "instances": 127423,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 69,
+   "tris": 4220134
+  },
+  "lodOn": {
+   "calls": 71,
+   "tris": 2910544
+  },
+  "materials": 69,
+  "meshes": 69,
+  "ready": true,
+  "sceneTris": 4220134,
+  "seconds": 66,
+  "tris": 2920934
  },
  "settlements/xanadu/dist/erewhon.html": {
   "calls": 1029,
@@ -2451,11 +2676,11 @@
   "meshes": 1639,
   "ready": true,
   "sceneTris": 21991302,
-  "seconds": 982,
-  "tris": 9534182
+  "seconds": 322,
+  "tris": 9532383
  },
  "settlements/xanadu/dist/xanadu.html": {
-  "calls": 89,
+  "calls": 88,
   "errors": 0,
   "furnTris": 0,
   "instSets": 168,
@@ -2472,8 +2697,8 @@
   "meshes": 199,
   "ready": true,
   "sceneTris": 5423766,
-  "seconds": 428,
-  "tris": 989517
+  "seconds": 47,
+  "tris": 887637
  },
  "settlements/ys/dist/kit.html": {
   "calls": 99,
@@ -2515,18 +2740,69 @@
   "tris": 29503127
  },
  "settlements/yuni/yuni-assets.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 144
+  "calls": 116,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 96,
+  "instances": 20682,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 123,
+   "tris": 1760129
+  },
+  "lodOn": {
+   "calls": 113,
+   "tris": 981901
+  },
+  "materials": 120,
+  "meshes": 140,
+  "ready": true,
+  "sceneTris": 1764217,
+  "seconds": 48,
+  "tris": 1453245
  },
  "settlements/yuni/yuni-plants.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 36
+  "calls": 13,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 8,
+  "instances": 175,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 9,
+   "tris": 45771
+  },
+  "lodOn": {
+   "calls": 8,
+   "tris": 45431
+  },
+  "materials": 11,
+  "meshes": 25,
+  "ready": true,
+  "sceneTris": 45803,
+  "seconds": 12,
+  "tris": 55819
  },
  "settlements/yuni/yuni.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 783
+  "calls": 151,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 114,
+  "instances": 260506,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 154,
+   "tris": 8190151
+  },
+  "lodOn": {
+   "calls": 157,
+   "tris": 5800694
+  },
+  "materials": 151,
+  "meshes": 173,
+  "ready": true,
+  "sceneTris": 8206143,
+  "seconds": 166,
+  "tris": 7421615
  }
 }

@@ -17,4 +17,4 @@ ATMOS.weather({mode:'fog',apply:W=>{const clear=W.mode==='clear';scene.fog.densi
  for(let k=0;k<5000&&pts.length<700;k++){const x=rr(-2450,2450),z=rr(-2450,2450);if(BIO.lodD(x,z)>L.mid)continue;if(FIELD.lee(x,z)>.5)continue;pts.push([x,terrainH(x,z)+rr(2,10),z]);}
  ATMOS.fogBank(pts);})();
 ATMOS.finish();
-ATMOS.weatherUI(document.getElementById('ui'));
+// the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

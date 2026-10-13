@@ -222,7 +222,7 @@ core/simulation/
     77-sim-3-actors.js    actor, role, schedule, group; behaviour resolution
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
-    77-sim-6-economy.js   stockpiles, production/consumption flows (Phase 5)
+    77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
     77-sim-7-lod.js       tiers 0–2 (Phase 5+)
     77-sim-8-export.js    SIM.export() / SIM.download(), format 'krator-sim' (Phase 7)
     77-sim-9-debug.js     window._sim, census, audits, pathviz hooks
