@@ -6257,12 +6257,19 @@ function faWdHex(A, o) {
   A.part('head', [0, hy * S, (hz - hb.l) * S], () => {
     el(0, hy, hz, hb.w, hb.h, hb.l, mix(c.a, c.d, 0.15), { seg: 12 });
     for (const s of [-1, 1]) {
-      if (o.amb) { el(s * hb.w * 0.92, hy + hb.h * 0.25, hz + hb.l * 0.25, hb.w * 0.15, hb.w * 0.15, hb.w * 0.15, 0x140a06, { seg: 8 }); el(s * hb.w * 0.99, hy + hb.h * 0.27, hz + hb.l * 0.27, hb.w * 0.07, hb.w * 0.07, hb.w * 0.07, o.eyeC || 0xc8a030, { seg: 6 }); }
+      if (o.primate) { /* forward-set eyes, below */ }
+      else if (o.amb) { el(s * hb.w * 0.92, hy + hb.h * 0.25, hz + hb.l * 0.25, hb.w * 0.15, hb.w * 0.15, hb.w * 0.15, 0x140a06, { seg: 8 }); el(s * hb.w * 0.99, hy + hb.h * 0.27, hz + hb.l * 0.27, hb.w * 0.07, hb.w * 0.07, hb.w * 0.07, o.eyeC || 0xc8a030, { seg: 6 }); }
       else el(s * hb.w * 0.85, hy + hb.h * 0.3, hz + hb.l * 0.3, hb.w * 0.4, hb.h * 0.5, hb.w * 0.45, 0x120a06, { seg: 8 });
       if (o.mand) k.co([s * hb.w * 0.4, hy - hb.h * 0.4, hz + hb.l * 0.8], [s * hb.w * 0.3, hy - hb.h * 0.7, hz + hb.l * 0.8 + o.mand], hb.w * 0.3, hb.w * 0.05, c.m || c.d, 5);
       if (o.trunks) rr([[s * hb.w * 0.5, hy - hb.h * 0.4, hz + hb.l * 0.7, o.trunks * 0.25, o.trunks * 0.22], [s * hb.w * 0.8, hy - o.trunks, hz + hb.l * 0.9 + o.trunks * 0.4, o.trunks * 0.18, o.trunks * 0.16], [s * hb.w * 0.5, hy - o.trunks * 1.6, hz + hb.l * 0.8 + o.trunks * 0.9, o.trunks * 0.06, o.trunks * 0.06]], 8, 8, mix(c.a, c.d, 0.3), { round: [0, 0.2] });
       if (o.whisk) for (let q = 0; q < 3; q++) rr([[s * hb.w * 0.3, hy - hb.h * 0.2, hz + hb.l * 0.8, 0.008, 0.008], [s * (hb.w * 0.5 + 0.2 * q), hy - 0.15 - 0.1 * q, hz + hb.l + o.whisk * 0.5, 0.004, 0.004], [s * (hb.w * 0.8 + 0.4 * q), hy - 0.5 - 0.2 * q, hz + hb.l + o.whisk, 0.002, 0.002]], 8, 4, mix(c.m || c.d, c.b || c.d, 0.4), { round: [0, 0.3] });
       if (o.ant) { k.co([s * hb.w * 0.3, hy + hb.h * 0.6, hz + hb.l * 0.6], [s * o.ant * 0.25, hy + o.ant * 0.35, hz + o.ant * 0.55], 0.012, 0.004, c.d, 4); k.co([s * o.ant * 0.25, hy + o.ant * 0.35, hz + o.ant * 0.55], [s * o.ant * 0.5, hy + o.ant * 0.2, hz + o.ant], 0.004, 0.0015, c.d, 4); }
+    }
+    if (o.primate) {      /* a primate head: a rounded skull, a heavy brow, a short flat muzzle, forward eyes, small round ears */
+      el(0, hy + hb.h * 0.38, hz + hb.l * 0.5, hb.w * 1.05, hb.h * 0.2, hb.l * 0.32, mix(c.a, c.d, 0.45), { seg: 10 });
+      el(0, hy - hb.h * 0.32, hz + hb.l * 0.95, hb.w * 0.55, hb.h * 0.42, hb.l * 0.4, mix(c.b || c.a, c.a, 0.3), { seg: 10 });
+      el(0, hy - hb.h * 0.45, hz + hb.l * 1.3, hb.w * 0.22, hb.h * 0.12, 0.04, 0x1a1410, { seg: 6 });
+      for (const s of [-1, 1]) { el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.82, hb.w * 0.2, hb.w * 0.2, hb.w * 0.16, 0xe8dcc0, { seg: 8 }); el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.9, hb.w * 0.11, hb.w * 0.11, hb.w * 0.08, o.eyeC || 0x6a3a14, { seg: 6 }); el(s * hb.w * 0.43, hy + hb.h * 0.16, hz + hb.l * 0.95, hb.w * 0.05, hb.w * 0.05, hb.w * 0.04, 0x0a0806, { seg: 5 }); el(s * hb.w * 1.02, hy + hb.h * 0.05, hz - hb.l * 0.1, hb.w * 0.1, hb.w * 0.28, hb.w * 0.22, mix(c.a, c.d, 0.3), { seg: 8 }); }
     }
     if (o.maw) {      /* a great gaping jaw: the lower jaw hung open, teeth along both */
       el(0, hy - hb.h * 1.2, hz + hb.l * 0.2, hb.w * 0.9, hb.h * 0.45, hb.l * 0.85, mix(c.a, c.d, 0.3), { seg: 12, rx: 0.25 });
@@ -6289,9 +6296,13 @@ function faWdHex(A, o) {
         for (let d = -1; d <= 1; d++) k.co([foot[0] + d * lt * 0.6, 0.04, foot[2] + lt], [foot[0] + d * lt * 0.7, 0.0, foot[2] + lt * 1.9], lt * 0.35, lt * 0.08, 0x1a1410, 5);
       } else if (o.amb) {        /* a limb, not an insect leg: a thick thigh, a knee, a tapering shank, a padded foot with blunt toes */
         rr([[root[0], root[1], root[2], lt * 1.5, lt * 1.5], [knee[0], knee[1], knee[2], lt * 1.0, lt * 1.0], [(knee[0] + foot[0]) / 2, (knee[1] + foot[1]) / 2, (knee[2] + foot[2]) / 2, lt * 0.8, lt * 0.8], [foot[0], foot[1] + lt * 0.5, foot[2], lt * 0.7, lt * 0.7]], 12, 10, mix(c.a, c.d, 0.2), { round: [0.1, 0.05], colf: (t, a) => mix(c.a, c.d, 0.15 + 0.25 * t) });
+        if (o.primate) {        /* a hand: a broad palm and four long, hooked fingers */
+          el(foot[0], lt * 0.5, foot[2] + lt * 0.6, lt * 0.9, lt * 0.35, lt * 1.1, mix(c.a, c.d, 0.5), { seg: 8 });
+          for (let d = -1.5; d <= 1.5; d += 1) rr([[foot[0] + d * lt * 0.45, lt * 0.5, foot[2] + lt * 1.2, lt * 0.2, lt * 0.2], [foot[0] + d * lt * 0.55, lt * 0.7, foot[2] + lt * 3.2, lt * 0.15, lt * 0.15], [foot[0] + d * lt * 0.6, lt * 0.2, foot[2] + lt * 5.2, lt * 0.06, lt * 0.06]], 6, 5, mix(c.a, c.d, 0.55), { round: [0, 0.25] });
+        } else {
         el(foot[0], lt * 0.35, foot[2] + lt * 0.5, lt * 1.1, lt * 0.35, lt * 1.5, mix(c.a, c.d, 0.4), { seg: 8 });
-        for (let d = -1; d <= 1; d++) k.co([foot[0] + d * lt * 0.5, lt * 0.25, foot[2] + lt * 1.2], [foot[0] + d * lt * 0.6, lt * 0.05, foot[2] + lt * 2.2], lt * 0.28, lt * 0.12, 0x2a2018, 5);
-        if (o.hook) k.co([foot[0], lt * 0.2, foot[2]], [foot[0], o.hook, foot[2] - o.hook * 0.4], lt * 0.4, lt * 0.05, 0x1a1410, 5);
+        for (let d = -1; d <= 1; d++) k.co([foot[0] + d * lt * 0.5, lt * 0.25, foot[2] + lt * 1.2], [foot[0] + d * lt * 0.6, lt * 0.05, foot[2] + lt * 2.2], lt * 0.28, lt * 0.12, 0x2a2018, 5); }
+        if (o.hook && !o.primate) k.co([foot[0], lt * 0.2, foot[2]], [foot[0], o.hook, foot[2] - o.hook * 0.4], lt * 0.4, lt * 0.05, 0x1a1410, 5);
       } else {
         k.leg([root, knee, foot], [lt * 1.3 * m, lt * 0.95 * m, lt * 0.45 * (dg ? 2.2 : 1)], mix(c.a, c.d, 0.3), dg ? 0.12 : 0.04);
         if (dg) for (let d = -1; d <= 1; d++) k.co([foot[0], 0.03, foot[2]], [foot[0] + s * 0.02 * d, 0.0, foot[2] + 0.14], 0.02, 0.004, 0x1a1410, 4);
@@ -6341,9 +6352,9 @@ faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['crater-drylands', 'sedesert',
   spec: { amb: true, fam: 'scale', yb: 2.2, th: { w: 0.9, h: 0.8, l: 1.0 }, ab: { w: 1.0, h: 0.9, l: 1.3, z: 1.2, dy: 0.1 }, hd: { w: 0.5, h: 0.45, l: 0.55 }, trunks: 0.8, pillar: true, lt: 0.32, R: 1.9, Hh: 1.6, shellDome: 0.45, scythes: { len: 2.8, w: 0.4 }, pat: (x, y, z) => (faNoise(x * 6, y * 6, z * 6) > 0.72 ? 0xa83a6a : (faNoise(x * 3, y * 3, z * 3) > 0.6 ? 0x4a5a3a : null)) },
   variants: [['slate and moss', { a: 0x6a6a58, b: 0x8a8a74, m: 0x4a4a3a, d: 0x3a3a2e }], ['rust', { a: 0x7a5a3a, b: 0xa08a68, m: 0x5a3a24, d: 0x3a2814 }], ['grey, violet-flecked', { a: 0x6a6870, b: 0x8a8890, m: 0x484650, d: 0x2a2830 }]] }));
 faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['rift', 'ebadlands'], koppen: ['X', 'BSk'], aridity: ['arid'], climate: ['temperate'], key: 'hookstalker', name: 'Hookstalker', kind: faWdHex, dim: [8.0, 8.0, 6.0], mass: 900, meat: 200, tags: { diet: 'carnivore', feeding: 'predator', temperament: 'aggressive', activity: 'crepuscular', habitat: ['ground', 'rock'], locomotion: ['walks', 'runs'] }, sch: 'hunt',
-  note: 'a gaunt, stilt-legged hunter of the open Rift and the badlands, its six angular legs folded high over a small body and ending in long hooked toes; the head is a swept wedge with a ridged crest, and it strides over a herd and hooks a straggler up', herd: 'alone, or a loose pack at a herd', life: [6, 40, 4, 150], speed: { walk: 1.5, run: 12 }, flee: 10, aggr: 0.8, gait: { type: 'hexapod', freq: 0.9, stride: 1.4 }, grazePitch: 0.2,
-  spec: { amb: true, fam: 'skin', yb: 3.2, th: { w: 0.32, h: 0.3, l: 0.6 }, ab: { w: 0.38, h: 0.32, l: 0.7, z: 0.6, dy: 0.1 }, hd: { w: 0.26, h: 0.2, l: 0.42 }, wedge: true, hook: 0.55, R: 3.2, Hh: 3.6, lt: 0.1, pat: (x, y, z) => (Math.sin(z * 10) > 0.8 ? 0x1c1c1e : null) },
-  variants: [['ash grey', { a: 0x6a6a68, b: 0x8a8a86, m: 0x4a4a48, d: 0x2e2e2c }], ['bone', { a: 0xa8a290, b: 0xc8c2b0, m: 0x7a7462, d: 0x4a4638 }], ['black', { a: 0x2a2a2c, b: 0x4a4a4c, m: 0x1a1a1c, d: 0x0c0c0e }]] }));
+  note: 'a gaunt, long-limbed, primate-like stalker of the open Rift and the badlands: a small furred body slung between six impossibly long angular limbs that end in hooked, four-fingered hands, a round, brow-ridged, forward-eyed head and a long prehensile tail; it strides over a herd and hooks a straggler up', herd: 'alone, or a loose pack at a herd', life: [6, 40, 4, 150], speed: { walk: 1.5, run: 12 }, flee: 10, aggr: 0.8, gait: { type: 'hexapod', freq: 0.9, stride: 1.4 }, grazePitch: 0.2,
+  spec: { amb: true, primate: true, fam: 'coat', yb: 2.9, th: { w: 0.52, h: 0.5, l: 0.75 }, ab: { w: 0.42, h: 0.38, l: 0.65, z: 0.6, dy: 0.1 }, hd: { w: 0.4, h: 0.36, l: 0.44 }, tail: { len: 3.4 }, R: 1.7, Hh: 3.1, lt: 0.17, pat: (x, y, z) => (y < 0 ? 0x8a7a68 : null) },
+  variants: [['dark brown', { a: 0x3a2c22, b: 0x6a5a48, m: 0x2a2018, d: 0x1c1410 }], ['ash grey', { a: 0x6a6a68, b: 0x9a9a94, m: 0x4a4a48, d: 0x2e2e2c }], ['rust', { a: 0x7a3e24, b: 0xa8704a, m: 0x4a2414, d: 0x2e160c }]] }));
 faWdAnimal(Object.assign({}, FA_WD_HX, { biomes: ['hyperjungle', 'swlowlands'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], key: 'reedneck', name: 'Reedneck', kind: faWdHex, dim: [4.00, 7.95, 7.00], mass: 2500, meat: 900, hide: 0, tags: { diet: 'herbivore', feeding: 'browser', temperament: 'wary', activity: 'diurnal', habitat: ['ground', 'marsh', 'canopy'], locomotion: ['walks'] },
   note: 'a giant, long-necked hexapod browser of the hyperjungle\'s fern-palm glades, reaching its flat, plated head into the crowns and trailing a spray of whisker-tendrils that feel for the leaves; it wades the shallows and stands on four of its six legs to reach up', herd: 'herds of eight along a river', life: [10, 70, 1, 380], speed: { walk: 1.2, run: 6 }, flee: 25, aggr: 0.1, gait: { type: 'hexapod', freq: 0.6, stride: 1.2 }, grazePitch: 0.1,
   spec: { amb: true, fam: 'skin', yb: 2.3, th: { w: 0.6, h: 0.6, l: 1.0 }, ab: { w: 0.6, h: 0.55, l: 1.1, z: 1.0, dy: 0.1 }, neck: { len: 1.2, rise: 2.8, w: 0.22 }, hd: { w: 0.22, h: 0.17, l: 0.5 }, whisk: 1.2, tail: { len: 1.4 }, R: 1.6, Hh: 1.5, lt: 0.14, midShort: true },
