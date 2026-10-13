@@ -60,22 +60,45 @@
    'float wtrFoam(vec2 p,float mpp,float j0){float f=wtrCap(j0);vec3 j;'+Array.from({length:F.taps-1},(_,i)=>'j=wtrTroJv(p,mpp,atmWaveT-'+f((i+1)*F.step)+');f=max(f,wtrCap(j.x*j.z-j.y*j.y)*'+f(Math.exp(-(i+1)*F.step/F.decay))+');').join('')+'return f;}',
    // the bed (20's bakeBed): depth below the surface, and the calm it gives the shallows
    S.bed?'float wtrBedDecode(vec2 c){return (c.y>0.004&&c.y<0.996)?'+f(B.fine[0])+'+c.y*'+f(B.fine[1]-B.fine[0])+':'+f(B.deep[0])+'+c.x*c.x*'+f(B.deep[1]-B.deep[0])+';}'+
+    // a shore grid's A channel: the depth linear over PRESETS.shore.mid, the deep channel past it (21's bedDecodeShore)
+    (S.shore?'float wtrBedDecode4(vec4 c){return c.w<0.996?'+f(W.PRESETS.shore.mid[0])+'+c.w*'+f(W.PRESETS.shore.mid[1]-W.PRESETS.shore.mid[0])+':'+f(B.deep[0])+'+c.x*c.x*'+f(B.deep[1]-B.deep[0])+';}':'')+
     'float wtrDepth(vec2 p){vec2 uv=(p-vec2('+f(S.bed.x0)+','+f(S.bed.z0)+'))*vec2('+f(1/(S.bed.cell*S.bed.nx))+','+f(1/(S.bed.cell*S.bed.nz))+');'+
-    'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return wtrLevel-wtrBase+'+f(B.deep[1])+';return wtrLevel-wtrBase+wtrBedDecode(texture2D(wtrBed,uv).xy);}'+
-    'float wtrDamp(vec2 p){return smoothstep(0.0,'+f(S.dampDepth)+',wtrDepth(p));}'
+    'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return wtrLevel-wtrBase+'+f(B.deep[1])+';return wtrLevel-wtrBase+'+(S.shore?'wtrBedDecode4(texture2D(wtrBed,uv))':'wtrBedDecode(texture2D(wtrBed,uv).xy)')+';}'+
+    (S.shore?W.shoreGLSL(S):'float wtrDamp(vec2 p){return smoothstep(0.0,'+f(S.dampDepth)+',wtrDepth(p));}')
     :'float wtrDepth(vec2 p){return 1.0e9;}float wtrDamp(vec2 p){return 1.0;}',
    // the drawn surface at rest point p0 with vertex spacing sp: (x, y, z, damping)
    'vec4 wtrSurface(vec2 p0,float sp){vec3 d=wtrTroD(p0,sp);float m=wtrDamp(p0);vec2 p=p0+d.xz*m;float h=d.y;'+
-    (field?'h+='+f(field)+'*atmWaveHeight(p,'+f(S.chop)+'*(1.0-smoothstep('+f(L[0])+','+f(L[1])+','+f(S.kChop)+'*sp)));':'')+'return vec4(p.x,wtrLevel+h*m,p.y,m);}',
+    (field?'h+='+f(field)+'*atmWaveHeight(p,'+f(S.chop)+'*(1.0-smoothstep('+f(L[0])+','+f(L[1])+','+f(S.kChop)+'*sp)));':'')+'return vec4(p.x,wtrLevel+h*m'+(S.shore?'+wtrSurf(p)':'')+',p.y,m);}',
    // the height at a WORLD point (three Newton steps back to the rest point): wakes and anything drawn on the water
    'float wtrHeight(vec2 p){vec2 p0=p;vec3 d;vec3 j;vec2 r;float m;float a;float b;float c;'+(wv.length?[0,1,2].map(()=>'d=wtrTroD(p0,0.0);j=wtrTroJv(p0,0.0,atmWaveT);m=wtrDamp(p0);'+
     'a=1.0+(j.x-1.0)*m;b=j.y*m;c=1.0+(j.z-1.0)*m;r=p0+d.xz*m-p;p0-=vec2(c*r.x-b*r.y,a*r.y-b*r.x)/(a*c-b*b);').join(''):'')+'return wtrSurface(p0,0.0).y;}',
    // the shading normal: the trochoids' frame plus the field's slope (tilted), calmed by the damping
-   'vec3 wtrNormal(vec4 nj,vec2 p,float d,float m){vec2 s=-nj.xz/nj.y;'+(field?'s+=atmWaveSlope(p,d).xy*'+f(field*tilt)+';':'')+'s*=m;return normalize(vec3(-s.x,1.0,-s.y));}',
+   'vec3 wtrNormal(vec4 nj,vec2 p,float d,float m){vec2 s=-nj.xz/nj.y;'+(field?'s+=atmWaveSlope(p,d).xy*'+f(field*tilt)+';':'')+'s*=m;'+(S.shore?'s+=wtrSurfSlope(p);':'')+'return normalize(vec3(-s.x,1.0,-s.y));}',
    // the CDLOD morph of grid point g (0..1) in node n (x0, z0, size, level): (x, z, vertex spacing)
    'vec3 wtrMorph(vec2 g,vec4 n){vec2 w=n.xy+g*n.z;float d=distance(cameraPosition,vec3(w.x,wtrLevel,w.y));float e='+f(C.range)+'*n.z;float s=e*'+f(C.morph)+';'+
     'float m=clamp((d-s)/(e-s),0.0,1.0);w-=fract(g*'+f(C.grid*.5)+')*'+f(2/C.grid)+'*n.z*m;return vec3(w,n.z*'+f(1/C.grid)+'*(1.0+m));}'];
   return o.join('\n');};
+
+ // ---- a shore grid's functions (21-core-water-shore.js's twins): the damping with Green's shoaling, the signed shore
+ // distance from the bed texture's B channel, the breakers' height, slope and foam, the beach's wetness
+ W.shoreGLSL=S=>{const f=glf,G=S.bed,Q=W.PRESETS.shore,H=Q.shoal,U=Q.surf,E=Q.wet,per=W.period(),n=W.surfCycles();
+  return['float wtrShoalK(float d){return d>='+f(H.depth)+'?1.0:min('+f(H.max)+',pow('+f(H.depth)+'/max(d,'+f(H.min)+'),0.25));}',
+   'float wtrDamp(vec2 p){float d=wtrDepth(p);return smoothstep(0.0,'+f(S.dampDepth)+',d)*wtrShoalK(d);}',
+   'float wtrShoreDist(vec2 p){vec2 uv=(p-vec2('+f(G.x0)+','+f(G.z0)+'))*vec2('+f(1/(G.cell*G.nx))+','+f(1/(G.cell*G.nz))+');'+
+    'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return '+f(G.band)+';return (texture2D(wtrBed,uv).z-0.5)*'+f(2*G.band)+';}',
+   'bool wtrWet(vec2 p){return wtrShoreDist(p)>'+f(-G.clip*G.cell)+';}',
+   'float wtrSurfPh(float d){return 6.283185307*(fract(d*'+f(1/U.lambda)+')+fract(atmWaveT*'+f(n/per)+'));}',
+   'float wtrSurfEnv(float d,float dp){return smoothstep('+f(G.band)+','+f(G.band*(1-U.born))+',d)*smoothstep('+f(U.depth[1])+','+f(U.depth[0])+',dp);}',
+   'float wtrSurfBrk(float dp){return 1.0-smoothstep('+f(U.depth[0]*.4)+','+f(U.depth[0])+',dp);}',
+   'float wtrSurf(vec2 p){float d=wtrShoreDist(p);float dp=wtrDepth(p);float e=wtrSurfEnv(d,dp);float a=wtrSurfPh(d);'+
+    'return '+f(U.amp)+'*e*wtrShoalK(dp)*(sin(a)+'+f(U.skew)+'*wtrSurfBrk(dp)*sin(2.0*a));}',
+   'vec2 wtrSurfSlope(vec2 p){return vec2(wtrSurf(p+vec2('+f(U.h)+',0.0))-wtrSurf(p-vec2('+f(U.h)+',0.0)),wtrSurf(p+vec2(0.0,'+f(U.h)+'))-wtrSurf(p-vec2(0.0,'+f(U.h)+')))*'+f(1/(2*U.h))+';}',
+   'float wtrSurfFoam(vec2 p){float d=wtrShoreDist(p);float dp=wtrDepth(p);float e=wtrSurfEnv(d,dp);float a=wtrSurfPh(d);'+
+    'float pr=(sin(a)+'+f(U.skew)+'*sin(2.0*a))*'+f(1/(1+U.skew))+';return '+f(U.foam)+'*wtrSurfBrk(dp)*smoothstep(0.15,0.85,pr)*smoothstep(0.0,0.25,e);}',
+   // the beach (the ground's shader): (wet, film) for ground at height gy; the swash runs up and back once per breaker
+   'vec2 wtrWetGround(vec2 p,float gy){float d=wtrShoreDist(p);float r=gy-wtrLevel;if(d<'+f(-E.band)+'||r>'+f(E.runup)+')return vec2(0.0);'+
+    'float sw='+f(E.runup)+'*(0.2+0.8*(0.5+0.5*sin(6.283185307*fract(atmWaveT*'+f(n/per)+')-0.6)));'+
+    'return vec2(smoothstep('+f(E.runup)+','+f(E.runup*.25)+',r)*smoothstep('+f(-E.band)+','+f(-E.band*.6)+',d),r<0.0?0.0:smoothstep(sw,sw-0.12,r));}'].join('');};
 
  // ---- the uniforms a surface's shaders share (one set per surface: the drawn mesh, its wakes)
  W.uniformsOf=S=>{if(S.U)return S.U;const A=AT(),T=A.T;S.U={wtrLevel:{value:S.levelAt(A.clock?A.clock.t:0)},wtrBase:{value:S.base}};
@@ -105,6 +128,7 @@
     'wtrFoamK=max(wtrFoamK,0.55*(1.0-smoothstep(0.1,1.4,wtrDp))*(0.5+0.5*sin(wtrDp*5.0-6.283185307*fract(atmWaveT*'+f(surf/per)+')+sin(vWtrP.x*0.05)*2.0)));':'',
    o.transparent?'diffuseColor.a*=mix(0.86,0.97,smoothstep(0.0,2.0,wtrDp))*smoothstep(-0.1,0.15,wtrDp);':'',
    S.bounds?'if(vWtrP.x<'+f(S.bounds[0])+'||vWtrP.y<'+f(S.bounds[1])+'||vWtrP.x>'+f(S.bounds[2])+'||vWtrP.y>'+f(S.bounds[3])+')discard;':'',
+   S.shore?'if(!wtrWet(vWtrP))discard;wtrFoamK=max(wtrFoamK,wtrSurfFoam(vWtrP));':'',
    'diffuseColor.rgb=mix(diffuseColor.rgb,'+col(F.color)+',wtrFoamK);'].join('\n');
   const VARY='varying vec2 vWtrP0;varying vec2 vWtrP;varying float vWtrDamp;';
   mat.onBeforeCompile=sh=>{const CH=W.shaderOn(S,sh)+VARY;
@@ -124,7 +148,7 @@
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   // the nodes for the camera that is about to render (every render of the scene: the attribute uploads in that render)
   const fu=new T.Frustum(),pm=new T.Matrix4(),box=new T.Box3(),cam=[0,0,0],B=S.bounds;
-  const inView=(x0,z0,s)=>{if(B&&(x0>B[2]||z0>B[3]||x0+s<B[0]||z0+s<B[1]))return false;const lv=U.wtrLevel.value;box.min.set(x0,lv-S.amp,z0);box.max.set(x0+s,lv+S.amp,z0+s);return fu.intersectsBox(box);};
+  const inView=(x0,z0,s)=>{if(B&&(x0>B[2]||z0>B[3]||x0+s<B[0]||z0+s<B[1]))return false;if(S.shore&&!S.wetIn(x0,z0,x0+s,z0+s))return false;const lv=U.wtrLevel.value;box.min.set(x0,lv-S.amp,z0);box.max.set(x0+s,lv+S.amp,z0+s);return fu.intersectsBox(box);};
   const update=camera=>{pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);fu.setFromProjectionMatrix(pm);const e=camera.matrixWorld.elements;cam[0]=e[12];cam[1]=e[13];cam[2]=e[14];
    const n=W.cdlod(cam,U.wtrLevel.value,inView,nodes);g.instanceCount=n;na.updateRange.offset=0;na.updateRange.count=n*4;na.needsUpdate=true;D.nodes=n;};
   const prev=scene.onBeforeRender;scene.onBeforeRender=function(r,s,c,rt){if(prev)prev.call(this,r,s,c,rt);if(mesh.visible)update(c);};

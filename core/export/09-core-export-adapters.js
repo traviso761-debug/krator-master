@@ -69,7 +69,7 @@ const extentOf = (S, W) => {   // [x0, z0, x1, z1] a surface can wet, or null (e
  if(S.kind === 'shore') return S.of ? extentOf(S.of, W) : null;
  if(S.kind === 'flow'){ const r = Math.max(...S.pts.map(p => p.w)) / 2;
   return [Math.min(...S.pts.map(p => p.x)) - r, Math.min(...S.pts.map(p => p.z)) - r, Math.max(...S.pts.map(p => p.x)) + r, Math.max(...S.pts.map(p => p.z)) + r]; }
- if(S.kind === 'fall'){ const L = S.lip, xs = L.map(p => p[0]), zs = L.map(p => p[1]), d = S.speed * S.tFall;
+ if(S.kind === 'fall'){ const L = S.lip, xs = L.map(p => p[0]), zs = L.map(p => p[1]), d = S.speed * S.tFall + (S.spread || 0);
   return [Math.min(...xs) - d, Math.min(...zs) - d, Math.max(...xs) + d, Math.max(...zs) + d]; }
  return null;
 };
@@ -103,6 +103,20 @@ E.register('water', ctx => {
     const x = b[0] + (b[2] - b[0]) * (k + 0.37) / 6, z = b[1] + (b[3] - b[1]) * (j + 0.61) / 6;
     probes.push([x, z, t, S.heightAt(x, z, t), r.id]); }
   }
+  // flow, fall and still (core/water phases 3 and 4): the mesh a port must rebuild, checked by its vertex count and sums
+  // (22-core-water-flow.js builds it; godot/krator/water.gd builds the same), the twin's heights and currents as probes
+  const sum = a => { const c = [0, 0, 0]; for(let i = 0; i < a.length; i++) c[i % 3] += a[i]; return c; };
+  if(S.kind === 'flow' && W.ribbon){
+   const o2 = S.ribbonOpt || {}, R = W.ribbon(S, o2);
+   r.ribbon = Object.assign({}, o2, { count: R.count, rows: R.rows, sum: sum(R.pos) });
+   const n = S.pts.length; for(let k = 0; k < 8; k++){ const i = Math.min(n - 2, Math.floor(k * (n - 1) / 8)), a = S.pts[i], b = S.pts[i + 1], u = .37,
+     x = a.x + (b.x - a.x) * u, z = a.z + (b.z - a.z) * u; if(box && (x < box[0] || z < box[1] || x >= box[2] || z >= box[3])) continue;
+    const fl = S.flowAt(x, z); probes.push([x, z, 0, S.heightAt(x, z), r.id, fl[0], fl[1], fl[2], fl[3]]); }
+  }
+  if(S.kind === 'fall' && W.curtain){ const o2 = S.curtainOpt || {}, M = W.curtain(S, o2), P = W.plunge(S);
+   r.curtain = Object.assign({}, o2, { count: M.count, sum: sum(M.pos) }); r.plungePoint = [P.x, P.y, P.z, P.r]; }
+  if(S.kind === 'still' && W.stillMesh){ const M = W.stillMesh(S); r.mesh = { triangles: M.idx.length / 3, sum: sum(M.pos) }; }
+  if(S.look && S.kind !== 'open') r.look = plain(S.look);
   out.push(r);
  });
  if(!out.length) return null;
