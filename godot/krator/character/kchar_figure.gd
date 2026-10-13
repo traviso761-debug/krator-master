@@ -13,8 +13,9 @@
 #   bind0 * T(-d[bone]), so the skinned rest is exactly the morphed mesh. A bone the skeleton lacks (an exporter's
 #   'neutral_bone') takes Head's bind. The feet stay on the ground from the skin's lowest vertices.
 # - Skin, hair and eye colours as in the page (kit.tint): albedo = linear(colour) * gain; the eyes use kchar_eye.gdshader.
-# The shapes come prebuilt from make_mpfb.py (<piece>.gshapes.bin: absolute positions per target, the skin's regions,
-# the ground), so building a piece is bulk conversions, not a GDScript loop over deltas. A game would save the built
+# The shapes come prebuilt from make_mpfb.py (<piece>.gshapes.bin: each target's positions and normals whole, blended
+# NORMALIZED so a reshaped body's normals turn as the page's do; the skin's regions; the ground), so building a piece
+# is bulk conversions, not a GDScript loop over deltas. A game would save the built
 # meshes as resources.
 class_name KCharFigure
 extends Node3D
@@ -130,11 +131,14 @@ static func _build(glb: String) -> Array:
 		var info: Dictionary = H["meshes"].get(m0.resource_name if m0 else "", {"shapes": [], "surfaces": []})
 		var shapes := PackedInt32Array(info["shapes"])
 		var mesh := ArrayMesh.new()
-		mesh.blend_shape_mode = Mesh.BLEND_SHAPE_MODE_RELATIVE
+		# whole shapes (make_mpfb.py godot_shapes): NORMALIZED blends base * (1 - sum w) + sum w * shape, so the
+		# normals blend linearly too; an older file has offsets, blended RELATIVE with the base's normals
+		var whole: bool = H.get("whole", false)
+		mesh.blend_shape_mode = Mesh.BLEND_SHAPE_MODE_NORMALIZED if whole else Mesh.BLEND_SHAPE_MODE_RELATIVE
 		for t in shapes:
 			mesh.add_blend_shape("t%d" % t)
 		var regions := []
-		var verts0 = null                 # the first surface's positions and shape offsets (the cloth chains' rest)
+		var verts0 = null                 # the first surface's positions and shapes (the cloth chains' rest)
 		var offs0 := []
 		for s in src.get_surface_count():
 			var arrays := src.surface_get_arrays(s)
@@ -159,12 +163,18 @@ static func _build(glb: String) -> Array:
 					if k < sf["pos"].size():
 						var off: int = o0 + int(sf["pos"][k])
 						sh[Mesh.ARRAY_VERTEX] = B.slice(off, off + 12 * int(sf["n"])).to_vector3_array()
+					elif whole:
+						sh[Mesh.ARRAY_VERTEX] = arr[Mesh.ARRAY_VERTEX]
 					else:
 						var zero := PackedVector3Array()
 						zero.resize(arr[Mesh.ARRAY_VERTEX].size())
 						sh[Mesh.ARRAY_VERTEX] = zero
-					# relative shapes add weight * normal before normalising: the base's own normal leaves it as it is
-					sh[Mesh.ARRAY_NORMAL] = arr[Mesh.ARRAY_NORMAL]
+					if whole and k < sf.get("nrm", []).size():
+						var offn: int = o0 + int(sf["nrm"][k])
+						sh[Mesh.ARRAY_NORMAL] = B.slice(offn, offn + 12 * int(sf["n"])).to_vector3_array()
+					else:
+						# the base's own normal: no turn either way (RELATIVE adds weight * normal before normalising)
+						sh[Mesh.ARRAY_NORMAL] = arr[Mesh.ARRAY_NORMAL]
 					if arr[Mesh.ARRAY_TANGENT] != null:
 						sh[Mesh.ARRAY_TANGENT] = arr[Mesh.ARRAY_TANGENT]
 					bs.append(sh)
@@ -191,7 +201,7 @@ static func _build(glb: String) -> Array:
 		for sf in info["surfaces"]:
 			if sf.get("region") != null:
 				ground = H.get("ground")
-		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0})
+		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0, "whole": whole})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -357,16 +367,10 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		sm.set_shader_parameter("tint", Vector3(c.r * g, c.g * g, c.b * g))
 		return sm
 	var m2 := mat.duplicate() as BaseMaterial3D
-	if _is_loose(part):
+	if part["role"] == "armour" and (part["slot"] == "torso" or part["slot"] == "legs"):
 		var dye0 = rec.get("dye", {}).get(part["slot"])
-		var pm := ShaderMaterial.new()
-		pm.shader = PUSH_SHADER
-		pm.set_shader_parameter("tex", m2.albedo_texture)
-		pm.set_shader_parameter("albedo", Color(dye0) if dye0 != null else Color.WHITE)
-		# a torso garment pushes 1.2 cm further, so a robe's hem lies over the skirt it covers (as pushOut in 50-figure.js)
-		pm.set_shader_parameter("kcP", 0.012 if part["slot"] == "torso" else 0.0)
-		_push_mats.append(pm)
-		return pm
+		m2.albedo_color = Color(dye0) if dye0 != null else Color.WHITE
+		return _garment(m2, part, rec)
 	if role == "skin":
 		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
 	elif role == "hair":
@@ -750,7 +754,8 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 				var v: Vector3 = base[int(i)]
 				for s in shapes.size():
 					if w[shapes[s]] != 0.0:
-						v += w[shapes[s]] * ((offs[s] as PackedVector3Array)[int(i)])
+						var o: Vector3 = (offs[s] as PackedVector3Array)[int(i)]
+						v += w[shapes[s]] * (o - base[int(i)] if b.get("whole", false) else o)
 				P.append(v)
 			ch["p"] = P
 			ch["len"] = []
@@ -800,7 +805,7 @@ func _cloth_step(dt: float) -> void:
 			items.append(_cloth[key])
 	if items.is_empty():
 		return
-	if not cloth or dt < 0.0:
+	if dt < 0.0:                         # a still pose: the chains hang rigid
 		for c in items:
 			for ch in c["chains"]:
 				for k in ch["bones"].size():
@@ -823,7 +828,8 @@ func _cloth_step(dt: float) -> void:
 				ch["x"] = ch["tw"].duplicate()
 				ch["xp"] = ch["tw"].duplicate()
 		c["reset"] = false
-	_cacc = minf(_cacc + dt, 4 * C_STEP)
+	# cloth off: no swing; each frame starts from the rigid rest and only the collisions move the chains
+	_cacc = minf(_cacc + dt, 4 * C_STEP) if cloth else C_STEP
 	var h := C_STEP
 	while _cacc >= h:
 		_cacc -= h
@@ -832,6 +838,11 @@ func _cloth_step(dt: float) -> void:
 				var kS := 1.0 - pow(1.0 - float(ch["stiff"]), h * 60.0)
 				var x: Array = ch["x"]
 				var xp: Array = ch["xp"]
+				if not cloth:
+					for k in x.size():
+						x[k] = ch["tw"][k]
+						xp[k] = ch["tw"][k]
+					continue
 				x[0] = ch["tw"][0]
 				xp[0] = ch["tw"][0]
 				for k in range(1, x.size()):
@@ -948,19 +959,48 @@ func _is_loose(part: Dictionary) -> bool:
 	return false
 
 
+# a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
+const TUCK := 0.025
+func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
+	var pm := ShaderMaterial.new()
+	pm.shader = PUSH_SHADER
+	pm.set_shader_parameter("tex", m2.albedo_texture)
+	pm.set_shader_parameter("albedo", m2.albedo_color)
+	if m2.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR:
+		pm.set_shader_parameter("alpha_cut", m2.alpha_scissor_threshold)
+	if m2.normal_enabled and m2.normal_texture != null:
+		pm.set_shader_parameter("ntex", m2.normal_texture)
+		pm.set_shader_parameter("nscale", m2.normal_scale)
+	pm.set_shader_parameter("rough", m2.roughness)
+	pm.set_shader_parameter("metal", m2.metallic)
+	var loose := _is_loose(part)
+	pm.set_shader_parameter("kcL", 1.0 if loose else 0.0)
+	# a loose top pushes 1.2 cm further, so a robe's hem lies over the skirt it covers
+	pm.set_shader_parameter("kcP", 0.012 if loose and part["slot"] == "torso" else 0.0)
+	var top = null
+	for x in kit["items"]:
+		if x["id"] == rec.get("armour", {}).get("torso"):
+			top = x
+	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
+	_push_mats.append(pm)
+	return pm
+
+
 func _leg_caps() -> void:
 	if _push_mats.is_empty() or _caps.is_empty():
 		return
 	var A := []
 	var Bv := []
 	var legs := [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"],
-		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"]]
+		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"], ["LeftArm", "LeftForeArm"], ["RightArm", "RightForeArm"],
+		["LeftForeArm", "LeftHand"], ["RightForeArm", "RightHand"]]
 	for i in legs.size():
 		var a := skeleton.find_bone(legs[i][0])
 		var b := skeleton.find_bone(legs[i][1])
-		# a foot has no collider of its own: it takes its shin's radius
-		var ca := a if i < 4 else skeleton.find_bone(legs[i - 2][0])
-		var cb := b if i < 4 else a
+		# a foot has no collider of its own: it takes its shin's radius; the arms' capsules (6-9) are hard
+		var foot: bool = i == 4 or i == 5
+		var ca := skeleton.find_bone(legs[i - 2][0]) if foot else a
+		var cb := a if foot else b
 		var r := 0.0
 		for cp in _caps:
 			if cp["a"] == ca and cp["b"] == cb:
@@ -971,7 +1011,7 @@ func _leg_caps() -> void:
 		var pa := _gp(a).origin
 		var pb := _gp(b).origin
 		A.append(Vector4(pa.x, pa.y, pa.z, r))
-		Bv.append(Vector4(pb.x, pb.y, pb.z, 0.0))
+		Bv.append(Vector4(pb.x, pb.y, pb.z, 1.0 if i >= 6 else 0.0))
 	var hip := _gp(_hips).origin
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)

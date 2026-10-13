@@ -204,11 +204,20 @@ func _init() -> void:
 						finite = finite and q.is_finite()
 						moved = maxf(moved, q.angle_to(fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()))
 			ok(finite and moved > 0.05, "cloth swings in a walk (largest turn %.3f rad, finite %s)" % [moved, finite])
+			# cloth off: no swing, only the legs' push; with no clip the chains hang at rest
 			fig.cloth = false
-			fig._process(1.0 / 30.0)
-			ok(fig.skeleton.get_bone_pose_rotation(cb).is_equal_approx(fig.skeleton.get_bone_rest(cb).basis.get_rotation_quaternion()), "cloth off: the chains hang at rest")
-			fig.cloth = true
+			var off := 0.0
+			for k in 20:
+				fig._process(1.0 / 30.0)
+				for i in fig.skeleton.get_bone_count():
+					if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
+						var q := fig.skeleton.get_bone_pose_rotation(i)
+						finite = finite and q.is_finite()
+						off = maxf(off, q.angle_to(fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()))
+			ok(finite and off < moved, "cloth off: the legs push the chains but they do not swing (%.3f < %.3f rad)" % [off, moved])
 			fig.play("")
+			ok(fig.skeleton.get_bone_pose_rotation(cb).is_equal_approx(fig.skeleton.get_bone_rest(cb).basis.get_rotation_quaternion()), "cloth off: with no clip the chains hang at rest")
+			fig.cloth = true
 		fig.apply(rec)
 		# a clip moves the bones
 		fig.play("walk")

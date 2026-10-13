@@ -86,7 +86,10 @@ function KCharFigure(body, sliders, load){
       m.userData = { part:part, ibm:ibm, index0:geo.index ? geo.index.array.slice() : null, srcMaterial:s.material.name };
       m.bind(new THREE.Skeleton(bones.concat(extra), ibm.map(function(x){ return x.clone(); })), new THREE.Matrix4());
       if(cl) cl.meshes.push(m);
-      if((itemByKey[part.key] || {}).loose) pushOut(m.material, part.slot === 'torso' ? 0.012 : 0);
+      if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
+        var it0 = itemByKey[part.key] || {};
+        pushOut(m.material, it0.loose && part.slot === 'torso' ? 0.012 : 0, !!it0.loose, part.slot === 'legs');
+      }
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -236,6 +239,8 @@ function KCharFigure(body, sliders, load){
         .then(function(){
           Object.keys(live).forEach(function(k){ live[k].visible = !!want[k]; });
           var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
+          var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
+          pushU.kcT.value = top && top.tucks ? TUCK : 0;
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
@@ -462,7 +467,8 @@ function KCharFigure(body, sliders, load){
      lowland air's drag and, for a loop that walks or runs in place, the wind of its root_speed act on it; it keeps its
      length to the point above, keeps near its neighbours round a skirt, and stays out of the body's capsules
      (skeleton.json colliders, KCHAR.colliders) and above the floor. Each bone then turns to point at the next
-     particle. fig.cloth = false: the chains hang rigid */
+     particle. fig.cloth = false: no swing; each frame the chains start from their rigid rest and only the collisions
+     move them, so a stride still cannot open a skirt (with no clip playing they hang rigid) */
   this.cloth = true;
   this.clothState = function(){ return { items:clothItems, caps:caps }; };      // verify.py, the labs
   var GRAV = 7.4, DRAG = 1.6, DAMP = 0.04, STEP = 1 / 60, PAD = 0.022;
@@ -536,8 +542,8 @@ function KCharFigure(body, sliders, load){
     var items = Object.keys(clothItems).map(function(k){ return clothItems[k]; }).filter(function(c){ return c.on && c.chains.length && c.chains[0].p.length; });
     if(!items.length) return;
     self.group.updateMatrixWorld(true);
-    var live = self.cloth && dt !== undefined;
-    if(!live){
+    var dyn = self.cloth;
+    if(dt === undefined){
       items.forEach(function(c){ c.chains.forEach(function(ch){ ch.bones.forEach(function(b, k){ if(k === 0) b.quaternion.copy(ch.q0); else b.quaternion.identity(); }); }); c.reset = true; });
       return;
     }
@@ -558,13 +564,14 @@ function KCharFigure(body, sliders, load){
       });
       c.reset = false;
     });
-    clothAcc = Math.min(clothAcc + dt, 4 * STEP);
+    clothAcc = dyn ? Math.min(clothAcc + dt, 4 * STEP) : STEP;
     var h = STEP;
     while(clothAcc >= h){
       clothAcc -= h;
       items.forEach(function(c){
         c.chains.forEach(function(ch){
           var kS = 1 - Math.pow(1 - ch.stiff, h * 60);
+          if(!dyn){ ch.x.forEach(function(x, k){ x.copy(ch.tw[k]); ch.xp[k].copy(ch.tw[k]); }); return; }
           ch.x[0].copy(ch.tw[0]); ch.xp[0].copy(ch.tw[0]);
           for(var k = 1; k < ch.x.length; k++){
             var x = ch.x[k], xp = ch.xp[k];
@@ -663,45 +670,56 @@ function KCharFigure(body, sliders, load){
 
   /* pushOut: a garment that hangs loose over the legs (kit item loose: skirts, robes, the kimono) has each vertex
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
-     The capsules (legCaps: thighs, shins, feet) are the body's, in the figure's inner space, padded by the cloth's
+     The capsules (legCaps: thighs, shins, feet, and hard ones for the arms, so a raised arm lifts a mantle's hem) are
+     the body's, in the figure's inner space, padded by the cloth's
      thickness, and a torso garment by 1.2 cm more, so a robe's hem lies over the skirt it covers. The push is a soft
      shell, not a projection: a vertex d from the bone within r + 4 cm lands at r + d * 4 cm / (r + 4 cm), so two
      tiers of one skirt keep their order instead of meeting on one surface */
-  var pushU = { kcA:{ value:[0, 1, 2, 3, 4, 5].map(function(){ return new THREE.Vector4(); }) },
-                kcB:{ value:[0, 1, 2, 3, 4, 5].map(function(){ return new THREE.Vector4(); }) }, kcH:{ value:new THREE.Vector3() } };
-  function pushOut(mat, pad){
-    var prev = mat.onBeforeCompile, padU = { value:pad || 0 };
+  var pushU = { kcA:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) },
+                kcB:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) }, kcH:{ value:new THREE.Vector3() },
+                kcT:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025;
+  /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
+     under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
+     toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose */
+  function pushOut(mat, pad, loose, legs){
+    var prev = mat.onBeforeCompile, padU = { value:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
       sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
+      sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
-      // cloth behind the knee
-      sh.vertexShader = 'uniform vec4 kcA[6];\nuniform vec4 kcB[6];\nuniform vec3 kcH;\nuniform float kcP;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 6; ci++){\n\t\tif(kcA[ci].w <= 0.0) continue;\n' +
-        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float cr = kcA[ci].w + kcP, cR = cr + 0.04;\n' +
+      // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface
+      sh.vertexShader = 'uniform vec4 kcA[10];\nuniform vec4 kcB[10];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 10; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
+        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.04;\n' +
+        '\t\tfloat cr = kcA[ci].w + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
         '\t\tfloat ct = clamp(dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), 0.0, 1.0);\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
-        '\t\t\tif(cl < cr && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
-        '\t\t\ttransformed = cq + normalize(cd) * (cr + cl * 0.04 / cR);\n\t\t}\n\t}');
+        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
+        '\t\t\ttransformed = cq + normalize(cd) * (cr + cl * csh / cR);\n\t\t}\n\t}\n' +
+        '\tif(kcT > 0.0){\n\t\tfloat tf = smoothstep(kcH.y - 0.02, kcH.y + 0.06, transformed.y);\n' +
+        '\t\tvec2 td = transformed.xz - kcH.xz; float tl = length(td);\n' +
+        '\t\tif(tf > 0.0 && tl > 1e-4) transformed.xz = kcH.xz + td * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');
     };
     mat.customProgramCacheKey = function(){ return 'kchar-push'; };
     mat.needsUpdate = true;
   }
   var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot'],
-              ['LeftFoot', 'LeftToeBase'], ['RightFoot', 'RightToeBase']], legInv = new THREE.Matrix4();
+              ['LeftFoot', 'LeftToeBase'], ['RightFoot', 'RightToeBase'], ['LeftArm', 'LeftForeArm'], ['RightArm', 'RightForeArm'],
+              ['LeftForeArm', 'LeftHand'], ['RightForeArm', 'RightHand']], legInv = new THREE.Matrix4();
   function legCaps(){
     if(!caps.length) return;
     self.inner.updateMatrixWorld(true);
     legInv.copy(self.inner.matrixWorld).invert();
     LEGS.forEach(function(lg, i){
       // a foot has no collider of its own: it takes its shin's radius
-      var a = byName[lg[0]], b = byName[lg[1]], sh = i < 4 ? a : byName[LEGS[i - 2][0]];
-      var cp = caps.filter(function(c){ return c.a === sh && c.b === (i < 4 ? b : a); })[0];
+      var foot = i === 4 || i === 5, a = byName[lg[0]], b = byName[lg[1]], sh = foot ? byName[LEGS[i - 2][0]] : a;
+      var cp = caps.filter(function(c){ return c.a === sh && c.b === (foot ? a : b); })[0];
       if(!cp || b === undefined) return;
       bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
-      pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
+      pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, i >= 6 ? 1 : 0);
     });
     bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
   }

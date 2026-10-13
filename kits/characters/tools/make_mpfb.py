@@ -558,6 +558,23 @@ def covered(BP, BT, path, out=0.025, inward=0.02):
     return np.nonzero(hit[BT].all(1))[0]
 
 
+def encloses(c, path, rise=(0.02, 0.08), n=24):
+    """whether a top closes all round the body just above the hips (rays out from the hips' vertical axis at two
+    heights, all but one of each ring meeting it), so trousers or a skirt worn under it can be tucked in: an open
+    cloak or a cape leaves the waist in view"""
+    from make_kit import ray_hits
+    AP, AT = all_triangles(path)
+    h = c.jpos[c.J['Hips']]
+    a = np.arange(n) * 2 * np.pi / n
+    D = np.stack([np.cos(a), np.zeros(n), np.sin(a)], 1)
+    for dy in rise:
+        O = np.tile([h[0], h[1] + dy, h[2]], (n, 1))
+        t, _ = ray_hits(O, D, AP, AT, 0.45, step=0.02)
+        if np.isfinite(t).sum() < n - 1:
+            return False
+    return True
+
+
 def bits(n, idx):
     a = np.zeros((n + 7) // 8 * 8, np.uint8)
     a[np.asarray(idx, int)] = 1
@@ -638,13 +655,25 @@ def pack_morphs(entries, npz):
 def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
     """GSH1: what the Godot twin (godot/krator/character/kchar_figure.gd) needs to make a piece's blend shapes without
     looping over deltas in GDScript. Per mesh (keyed by its first material), the targets that move it and per surface
-    each target's offsets (float32 xyz, in the glTF's vertex order, which Godot's importer keeps: a RELATIVE blend
-    shape in Godot is base + weight * shape). The skin
+    each target's shape whole (float32 xyz, in the glTF's vertex order, which Godot's importer keeps): its positions
+    (base + delta) and its normals (the base's turned by how the target turns the faces, summed per source vertex so
+    a UV seam's halves agree). Godot blends them in NORMALIZED mode, base * (1 - sum w) + sum w * shape, which for
+    normals is the linear blend the page gets by re-summing them (a RELATIVE shape's normal is made unit before it
+    is added, so a small turn cannot be given that way). The skin
     surface (skin_mat) is split into regions by tri_mask (per triangle, the bits of the items that cover it): per
     region its triangles, the vertices they use (keep) and the shapes over those. Also the skin's 64 lowest vertices
     and how each target moves them (the ground). Layout: b'GSH1', u32 json length, json, pad to 4, blob."""
     j, b = glbio.read_glb(open(path, 'rb').read())
-    blob, out = bytearray(), {'meshes': {}}
+    blob, out = bytearray(), {'meshes': {}, 'whole': True}
+
+    def vnormals(P, T, vid):
+        f = np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]])
+        n = np.zeros((vid.max() + 1, 3))
+        for k in range(3):
+            for a in range(3):
+                n[:, a] += np.bincount(vid[T[:, k]], f[:, a], minlength=len(n))
+        n = n[vid]
+        return n / np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
 
     def put(arr, dt):
         while len(blob) % 4:
@@ -664,10 +693,17 @@ def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
             P = glbio.accessor(j, b, p['attributes']['POSITION']).astype(np.float32)
             vid = np.rint(glbio.accessor(j, b, p['attributes']['_VIDX']).reshape(-1)).astype(int)
             T = glbio.accessor(j, b, p['indices']).reshape(-1, 3).astype(int)
-            prims.append((mat, P, vid, T))
-        moved = sorted({t for t in range(D.shape[0]) for _, _, vid, _ in prims if np.abs(D[t, vid]).max() > 2e-4})
+            NG = glbio.accessor(j, b, p['attributes']['NORMAL']).astype(float)
+            prims.append((mat, P, vid, T, NG))
+        moved = sorted({t for t in range(D.shape[0]) for _, _, vid, _, _ in prims if np.abs(D[t, vid]).max() > 2e-4})
         surfs = []
-        for mat, P, vid, T in prims:
+        for mat, P, vid, T, NG in prims:
+            N0 = vnormals(P.astype(float), T, vid)
+            sgn = np.where((N0 * NG).sum(1, keepdims=True) < 0, -1.0, 1.0)      # the file's winding, whichever way
+            NT = {}
+            for t in moved:
+                n = NG + sgn * (vnormals(P + D[t, vid], T, vid) - N0)
+                NT[t] = n / np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
             parts = [(None, None, None)]
             if tri_mask is not None and mat == skin_mat:
                 parts = []
@@ -681,7 +717,8 @@ def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
             for m, tris, keep in parts:
                 sel = keep if keep is not None else np.arange(len(P))
                 sf = {'material': mat, 'n': int(len(sel)), 'region': m,
-                      'pos': [put(D[t, vid[sel]], np.float32) for t in moved]}
+                      'pos': [put(P[sel] + D[t, vid[sel]], np.float32) for t in moved],
+                      'nrm': [put(NT[t][sel], np.float32) for t in moved]}
                 if keep is not None:
                     sf['keep'] = put(keep, np.uint32)
                     sf['tris'] = [put(tris, np.uint32), int(len(tris))]
@@ -832,6 +869,8 @@ def main():
             entry['culture'] = 'chichani'  # a stranger of another people never draws it (KCHAR.stranger)
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
+        if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
+            entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
         if it['id'] in LOOSE or (it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs')):
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
         pts = np.array(dg.get(it['id'], []), float)
