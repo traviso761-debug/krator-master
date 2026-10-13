@@ -16,6 +16,8 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `desert` | desert kite, wadi swift, sand strider, rock lizard, mule deer, coyote |
 | `bay` | bay soarer, canopy darter, plains grazer, savannah stalker, bay swimmer, savannah glider, cap moth, bloom glint |
 | `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth, and procedural giant insects and jungle fauna (grown large by the ~2 atm lowland air): lattice mantis, stilt walkingstick, horned scarab, harvester ant, leaf katydid, giant caterpillar, gilded orb spider; flyers: atlas moth, emperor hornet, jewel macaw, sparkle hummer, lantern-fly; lantern tree frog, forest tapir, vine boa |
+| `ringsea` | giant sea lion (needs the `hyperjungle` file's helpers) |
+| `wild` | the biome pass (BIOME-FAUNA-PLAN.md), first wave: north-west lowlands, Dalab, Xanadu, the Rift, the eastern badlands, the Throne and the geyser fields: 29 animals (grazers, predators, flyers, water creatures) from the shared builders `faWdQuad`, `faWdFish`, `faWdSerpent`; needs the `hyperjungle` file's helpers |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
 | `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |

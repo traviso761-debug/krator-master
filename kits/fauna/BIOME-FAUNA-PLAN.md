@@ -34,3 +34,11 @@ crater drylands', the glacier Xanadu's yak and cloud leopard, the isle and coast
 **Count.** About 55 new animals across 17 biome rows (3 to 6 variants each). Land animals need a shared procedural quadruped builder
 (a body, neck and head, four jointed legs, a tail, coat or scale bands, horns and antlers as options) so they are variants of a few
 bodies, not 40 bespoke builds; birds and flyers reuse `faHiBird`; water animals need a swimmer builder (fish, ray, newt, crab).
+
+## Progress
+
+- **Wave 1 (2026-10-13), built:** north-west lowlands, south-west lowlands (Dalab), Xanadu, the Rift, eastern badlands, the Throne and the
+  geyser fields (29 animals in `krator-fauna-wild.js`, tagged by their biomes; the pumice petrel also `ringsea`). The Ring Sea has its sea lion
+  (`krator-fauna-ringsea.js`). Hyperjungle already had its set.
+- **Next:** northern highlands, southern highlands, eastern highlands, north-west bay, south-west bay (one grazer), eastern abyss, eastern high
+  desert (grazer and water), crater drylands (flyer, water), and the Ring Sea's own isle tortoise, shore iguana, tide fox, ring shark and ring whale.

@@ -698,19 +698,19 @@ function faHiBird(A, o) {
   const M = A.S * o.k, R = rows => rows.map(r => [r[0] * M, r[1] * M, r[2] * M, r[3] * M, r[4] * M]), mix = faHiMix;
   const bw = o.bw || 1, tipC = mix(o.wing, o.tip, 0.8);
   const plum = (t, f, q) => { const up = Math.cos(f); return mix(mix(o.body, o.belly, faHjSm(0.0, -0.7, up)), o.wing, 0.35 * faHjSm(0.1, 0.5, up) * (q[2] / M < 0.1 ? 1 : 0)); };
-  faHjRows(A, 'feather', R([[0, 0.236, -0.3, 0.025 * bw, 0.02 * bw], [0, 0.228, -0.24, 0.06 * bw, 0.055 * bw], [0, 0.218, -0.13, 0.095 * bw, 0.092 * bw], [0, 0.212, -0.01, 0.11 * bw, 0.11 * bw],
+  faHjRows(A, o.bodyFam || 'feather', R([[0, 0.236, -0.3, 0.025 * bw, 0.02 * bw], [0, 0.228, -0.24, 0.06 * bw, 0.055 * bw], [0, 0.218, -0.13, 0.095 * bw, 0.092 * bw], [0, 0.212, -0.01, 0.11 * bw, 0.11 * bw],
     [0, 0.222, 0.1, 0.1 * bw, 0.105 * bw], [0, 0.245, 0.18, 0.08 * bw, 0.085 * bw], [0, 0.27, 0.23, 0.062 * bw, 0.066 * bw]]), 16, 14, null, { round: [0.1, 0], colf: plum });
   A.part('head', [0, 0.26 * M, 0.2 * M], () => {
-    faHjRows(A, 'feather', R([[0, 0.262, 0.18, 0.06 * bw, 0.064 * bw], [0, 0.284, 0.25, 0.075 * bw, 0.074 * bw], [0, 0.29, 0.31, 0.077 * bw, 0.074 * bw], [0, 0.285, 0.36, 0.06 * bw, 0.055 * bw], [0, 0.28, 0.395, 0.034 * bw, 0.03 * bw]]),
+    faHjRows(A, o.bodyFam || 'feather', R([[0, 0.262, 0.18, 0.06 * bw, 0.064 * bw], [0, 0.284, 0.25, 0.075 * bw, 0.074 * bw], [0, 0.29, 0.31, 0.077 * bw, 0.074 * bw], [0, 0.285, 0.36, 0.06 * bw, 0.055 * bw], [0, 0.28, 0.395, 0.034 * bw, 0.03 * bw]]),
       12, 14, null, { round: [0, 0.22], colf: (t, f) => mix(o.head, o.belly, 0.5 * faHjSm(-0.2, -0.8, Math.cos(f))) });
     const bl = o.beakL, bk = o.hook || 0;      /* the beak: along z, its tip dropping by `hook` */
     faHjTube(A, 'horn', faHjPath([[0, 0.29 * M, 0.37 * M], [0, (0.285 - bk * 0.3) * M, (0.37 + bl * 0.5) * M], [0, (0.27 - bk) * M, (0.37 + bl) * M]]), t => [o.beakW * M * (1 - 0.9 * t), o.beakW * 0.75 * M * (1 - 0.85 * t)], 8, 8, o.beak, { round: [0, 0.08] });
     for (const s of [-1, 1]) { A.ellip('feather', s * 0.062 * M * bw, 0.3 * M, 0.315 * M, 0.018 * M, 0.018 * M, 0.017 * M, o.belly, { seg: 8 }); A.ellip('eye', s * 0.07 * M * bw, 0.301 * M, 0.317 * M, 0.012 * M, 0.012 * M, 0.012 * M, 0x0a0806, { seg: 8 }); }
     if (o.crest) for (let k = 0; k < 4; k++) A.cone('feather', [0, 0.33 * M, (0.27 + k * 0.025) * M], [0, (0.33 + o.crest) * M, (0.2 + k * 0.02) * M], 0.008 * M, 0.001 * M, o.tail, 4);
   });
-  A.part('tail', [0, 0.232 * M, -0.27 * M], () => faHjPlate(A, 'feather', (u, w) => { const a = 2 * u - 1, L = o.tailL * (1 - 0.2 * a * a);
+  A.part('tail', [0, 0.232 * M, -0.27 * M], () => faHjPlate(A, o.bodyFam || 'feather', (u, w) => { const a = 2 * u - 1, L = o.tailL * (1 - 0.2 * a * a);
     return [a * (0.02 + o.tailW * w) * M, (0.236 + 0.012 * w) * M, (-0.27 - L * w) * M]; }, (u, w) => [0.005 * M * (1 - 0.8 * w), 0.002 * M * (1 - w)], 10, 5, (u, w, sd) => mix(o.tail, o.tip, faHjSm(0.65, 0.95, w) * 0.8)));
-  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.07 * M, 0.27 * M, 0.07 * M], () => faHjPlate(A, 'feather', (u, w) => {
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.07 * M, 0.27 * M, 0.07 * M], () => faHjPlate(A, o.wingFam || 'feather', (u, w) => {
     const le = 0.09 - 0.12 * Math.pow(u, 1.4); let ch = (u < 0.35 ? 0.17 + 0.03 * u / 0.35 : 0.2 * (1 - Math.pow((u - 0.35) / 0.65, 1.3)) + 0.03) * o.chord;
     if (u > 0.4) ch *= 1 - 0.07 * Math.abs(Math.sin(u * Math.PI * 7)) * w;
     return [s * (0.07 + o.span * u) * M, (0.27 + 0.035 * u) * M, (le - ch * w) * M]; }, (u, w) => [0.012 * M * (1 - 0.6 * u) * Math.sin(Math.PI * Math.pow(Math.max(0.0001, w), 0.6)), 0.004 * M * Math.sin(Math.PI * w)], 20, 6,
