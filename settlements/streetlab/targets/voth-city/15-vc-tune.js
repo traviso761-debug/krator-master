@@ -407,7 +407,8 @@ var TUNE = {
     /* items, inventory, equipment, shopping (phase D; SIM-ROADMAP.md 1.5, 2.5; core/simulation 77-sim-6-items.js). Stock is
        abstract (the owner's Q7): every purchase succeeds and is logged by shop and item. `kinds`: food (a serving each),
        clothes and armour (a slot, `life` in worn days: clothes at least a year worn every day, the owner 2026-10-13;
-       everyone starts at a hashed wear, so some wear out every day and the clothiers have custom), arms, tools (`workLife` in worked hours), gear, medicine, luxuries
+       everyone starts at a hashed wear, so some wear out every day and the clothiers have custom), arms, tools
+       (`workLife` in worked hours: at least a working year, about 3,000 hours, the owner 2026-10-13; a hashed start), gear, medicine, luxuries
        and household goods (`material`: how much of the material meter a purchase fills). `shops`: what a building sells,
        by its kit model; `market`: what a market's stalls sell. `sets` (the owner's Q6 recommendation): the clothes sets a
        citizen keeps, by class. `tools`: a kind of work's tool, owned (an item) or drawn from the workplace's rack
@@ -426,11 +427,11 @@ var TUNE = {
         cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 1200 }, greaves: { cat: 'armour', slot: 'legs', layer: 'armour', life: 1200 },
         boots: { cat: 'armour', slot: 'feet', life: 800 }, helm: { cat: 'armour', slot: 'head', life: 1500 },
         sword: { cat: 'arms', slot: 'rhand' }, spear: { cat: 'arms', slot: 'rhand' }, shield: { cat: 'arms', slot: 'lhand' },
-        hoe: { cat: 'tool', workLife: 120 }, pick: { cat: 'tool', workLife: 80 }, maul: { cat: 'tool', workLife: 90 }, knife: { cat: 'tool', workLife: 150 },
-        hook: { cat: 'tool', workLife: 140 }, spade: { cat: 'tool', workLife: 120 }, shears: { cat: 'tool', workLife: 160 }, goad: { cat: 'tool', workLife: 200 },
-        hammer: { cat: 'tool', workLife: 100 }, shuttle: { cat: 'tool', workLife: 200 }, scraper: { cat: 'tool', workLife: 120 }, peel: { cat: 'tool', workLife: 200 },
-        cleaver: { cat: 'tool', workLife: 150 }, ladle: { cat: 'tool', workLife: 250 }, quill: { cat: 'tool', workLife: 60 }, oar: { cat: 'tool', workLife: 200 },
-        net: { cat: 'tool', workLife: 100 }, lancet: { cat: 'tool', workLife: 150 },
+        hoe: { cat: 'tool', workLife: 3500 }, pick: { cat: 'tool', workLife: 3000 }, maul: { cat: 'tool', workLife: 3200 }, knife: { cat: 'tool', workLife: 4000 },
+        hook: { cat: 'tool', workLife: 3600 }, spade: { cat: 'tool', workLife: 3500 }, shears: { cat: 'tool', workLife: 4000 }, goad: { cat: 'tool', workLife: 5000 },
+        hammer: { cat: 'tool', workLife: 3200 }, shuttle: { cat: 'tool', workLife: 5000 }, scraper: { cat: 'tool', workLife: 3600 }, peel: { cat: 'tool', workLife: 5000 },
+        cleaver: { cat: 'tool', workLife: 4000 }, ladle: { cat: 'tool', workLife: 5000 }, quill: { cat: 'tool', workLife: 3000 }, oar: { cat: 'tool', workLife: 4500 },
+        net: { cat: 'tool', workLife: 3000 }, lancet: { cat: 'tool', workLife: 4000 },
         waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' },
         pottery: { cat: 'household', material: 25 }, lamp: { cat: 'household', material: 30 }, rug: { cat: 'household', material: 45 },
         jewellery: { cat: 'luxury', material: 60 }, silks: { cat: 'luxury', material: 70 }

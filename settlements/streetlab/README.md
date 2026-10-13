@@ -529,7 +529,7 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   for some) in the six slots and keeps more at home by class (the owner's Q6: 1 to 6); the armed trades own armour and
   arms, some of the rich a sword; a worker owns its trade's tool or draws it from the rack; labourers carry a waterskin,
   chinampa growers a kayak. Clothes wear by the worn day (at least a year of wear: the owner; everyone starts at a hashed wear) and are replaced from home; a set short is bought on time off
-  (and the material meter feels it); a tool worn out at work is bought during the shift; a worked day may end hurt (a
+  (and the material meter feels it); a tool (a working year or more of use, at a hashed start) worn out at work is bought during the shift; a worked day may end hurt (a
   poultice from an alchemist). A household keeps a food store: two foods make a meal worth three servings (the richer
   table more), one food a bite, none scraps; a store below a day sends one of its people for three days' food. The
   cantons' rooms, the dormitories, the barracks and the slaves' quarters eat at their mess. The slaves are issued
