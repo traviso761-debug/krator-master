@@ -5,7 +5,8 @@ kinds as data with CPU twins, the node test (`core/water/test-water.js`, which r
 twins), and open water drawn on a CDLOD mesh with the shared wave field, skylight and Jacobian foam with decay. First
 takers: `kits/ringsea` (its Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (its sea); on 2026-10-13
 Reed Lake, Noah's Regret, Port, Ys, Locus and Mungo.
-The rest of Phase 1's row (little-demo) and phases 2 to 6 are still to do; Voth waits for the
+The rest of Phase 1's row (little-demo: its lakes at many levels and its falling rivers share one sheet per chunk, so it
+waits for a wet mask or the shore field; `core/water/README.md`) and phases 2 to 6 are still to do; Voth waits for the
 Voth branch (`ROADMAP.md` section 9). Written 2026-10-10 as a plan; `TODO.md`, "Water", points here.
 
 Sources: an audit of every water surface in the repo (section 1), and **Halcyon** (github.com/billpwchan/halcyon,

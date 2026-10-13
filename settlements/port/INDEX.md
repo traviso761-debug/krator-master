@@ -29,7 +29,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
-| `71-port-terrain.js` | 19 | the natural coast (7); stamps (23); materials (101); the terrain grid (181) |
+| `71-port-terrain.js` | 20 | the natural coast (7); stamps (23); materials (101); the terrain grid (196) |
 | `71w-port-sea.js` | 4 |  |
 | `72-port-kit.js` | 9 | materials (11); geometry (56) |
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |

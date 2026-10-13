@@ -22,6 +22,14 @@ old sheet, the two split on the shoreline by one baked mask both shaders sample;
 `src/90w-lake.js`); `settlements/mungo`, which reads Locus's fragment by name (its lake and
 the Reed Lake kit's islands on it; the reed boats ride it).
 
+**Not taken: `openworld/little-demo`** (2026-10-13). Its water is not one surface at a level: the sea, the lakes
+at their own levels from the scale model's 4 km water raster (`WORLD.lakeWater`) and the named rivers, which fall along
+their courses (`WORLD.riverWater`), share one sheet per streamed terrain chunk, each vertex at its own level. `WATER.open`
+is one level clipped only by a rectangle (`bounds`), so a lake drawn this way floods every lower hollow inside its box,
+and a river cannot be one at all. It needs either a surface per water body with a wet mask (a raster `bounds` or a
+`clip` texture: an addition to `WATER.draw`) or Phase 2's shore field on `core/mask`; and at 1:1 over 1,300 km the
+draw's world-space vertex shader wants a camera-relative origin. The ripple sheets stay until then.
+
 | File | Tag | What |
 |---|---|---|
 | `20-core-water.js` | [G data] | `WATER`: the presets, the six kinds as records, the CPU twins, `heightAt`, `flowAt`, `seaLevel`, `ride`, `export`. No THREE, no DOM |

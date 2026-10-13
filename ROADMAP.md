@@ -434,7 +434,8 @@ baseline, and `core/materials/PROMPTS-ready.md`, where the Zeijani prompts stay 
     after the terrain field is merged, since the flow and shore fields are built on it and on `core/mask`.
     **Done 2026-10-12** (`core/water/`, `node core/water/test-water.js`): the Ring Sea kit and the geyser's sea are
     on it (Ring Sea `verify.py --assert` holds, hull poses equal `WATER.rideAt`, the GPU surface is within 0.06 mm
-    of the CPU twin). On 2026-10-13 Reed Lake, Noah's Regret, Port, Ys, Locus and Mungo took it. Still to take Phase 1: little-demo.
+    of the CPU twin). On 2026-10-13 Reed Lake, Noah's Regret, Port, Ys, Locus and Mungo took it. Still to take Phase 1: little-demo, which needs a wet mask or a surface per water body first (its
+    lakes stand at many levels and its rivers fall, all on one sheet per streamed chunk; `core/water/README.md`).
     Depth-buffer absorption is not built yet. Streetlab's page carries the Ring Sea's `rsSeaH`/`rsRide` as aliases
     of `WATER` that it never calls, so it loads without `core/water`.
   - Phases 2 to 4 (shore, flow and falls, still water and `W.wet`) follow `core/export`; Phase 5 (the FFT backend,
