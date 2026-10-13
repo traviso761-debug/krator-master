@@ -79,6 +79,11 @@ for f in CORE_BIOME:
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+# core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,
+# materials, textures and terrain (42-core-export.js), 43 its stage, the adapters its registry. A src/ copy wins.
+CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
+for f in CORE_EXPORT:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water

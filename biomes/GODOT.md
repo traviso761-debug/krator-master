@@ -16,6 +16,10 @@ apart from **how** three.js draws it (shader hooks).
 
 ## Getting the data out
 
+Since 2026-10-13 the port reads a tile through core/export's one container (`krator-world`, `core/export/README.md`):
+`python3 tools/harness.py export <page> --out godot/data/<case>/ --box x0,z0,x1,z1`. `BIO.export` below is unchanged and
+still what the spike's `biome` cases read.
+
 In a kit's page, after it has built (the probe's `window._ready`):
 
 ```js
@@ -267,6 +271,10 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
 - The kits' shader hooks as core material kinds (named as data since 2026-10-05; the hook code is still each
   kit's); materials on the plan's shared vocabulary. *(`convention.colours` per table: done 2026-10-05.)*
 - `BIO.download()` moved to the host (`core/host`): the export's one browser line. *(Split out to `core/biome/43-core-export-host.js` [web] 2026-10-03; it joins `core/host/` in Phase 1.)*
-- `BIO.export` folded into `core/export/` (`krator-world`, Phase 4). (`tools/audit_port.py` sees it in every
-  build that lists `42-core-export.js` since 2026-10-02.)
-- A converter from this JSON to `.glb` / `.tscn` (`MultiMesh` resources).
+- ~~`BIO.export` folded into `core/export/` (`krator-world`, Phase 4).~~ Done 2026-10-13 (`core/export/README.md`): the
+  biome core gives the container its items, buckets, materials, textures, terrain and stage from `BIO.exportParts`, with
+  ids, a tile's buckets compacted and library maps by reference; `BIO.export` is the krator-biome envelope over the same
+  parts and writes what it wrote before (byte-identical). Every kit but the Throne lists core/export (`CORE_EXPORT`).
+- ~~A converter from this JSON to `.glb` / `.tscn` (`MultiMesh` resources).~~ The `.glb` half: `EXPORT.glb` writes a
+  tile's meshes as one glb (`EXT_mesh_gpu_instancing`, the per-instance extras as `_AN`, `_AC2`, `_AP0`, `_AP1`);
+  `godot/krator/world_import.gd` reads it. No `.tscn` yet.

@@ -10,11 +10,15 @@ const HALO := preload("res://shaders/halo.gdshader")
 
 
 static func build(path: String) -> Node3D:
+	return build_from(KData.read_json(path), path)
+
+
+# the same from the object itself (a krator-world's atmos section: krator/world_import.gd)
+static func build_from(d: Variant, path: String) -> Node3D:
 	var t0 := Time.get_ticks_msec()
 	var root := Node3D.new()
 	root.name = "Atmos"
 	var report := {"route": "krator-atmos JSON", "file": path, "gaps": {}, "counts": {}}
-	var d = KData.read_json(path)
 	if not (d is Dictionary) or d.get("format") != "krator-atmos":
 		report["gaps"]["format"] = "not a krator-atmos file"
 		root.set_meta("report", report)

@@ -1,6 +1,6 @@
 # The spike's one scene (GODOT-PLAN.md Phase 7): load one export case at a time and show what came through.
 #
-#   godot --path godot                          the window; keys 1-8 switch case, F1 help
+#   godot --path godot                          the window; keys 1-9 switch case, F1 help
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert"]
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -20,6 +20,7 @@ const ABOUT := {
 	"verge": "krator-sim + krator-verge-place: the twin cities' buildings as stand-ins and the caravans, porters, nomads and patrols moved by the exported timetable (KratorVergeSim)",
 	"dhelv": "krator-dhelv-place + krator-walk + krator-sim motion: the cave city's sites as stand-ins, its walk floors baked to a navmesh with an agent walking gate to temple, the ramblers posed by KSim (core/simulation's twin)",
 	"sedesert": "krator-biome JSON with a krator-field ground: one sedesert tile round the pond, its ground the page's baked core/terrain field (terrain mesh + HeightMapShape3D)",
+	"world-sedesert": "krator-world (core/export, M4): the same sedesert tile through the one container: world.json (records, materials, library maps by reference, the field, the stage) beside world.glb (EXT_mesh_gpu_instancing)",
 }
 
 var current := ""
@@ -124,6 +125,18 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
+		"world-sedesert":   # core/export's krator-world (krator/world_import.gd): the M4 tile
+			var wv := KratorWorld.build(dir + "world.json")
+			world.add_child(wv)
+			report = wv.get_meta("report")
+			var wbox: Array = wv.get_meta("krator", {}).get("box", [0, 0, 0, 0])
+			focus = Vector3((wbox[0] + wbox[2]) * 0.5, 0, (wbox[1] + wbox[3]) * 0.5)
+			if wv.has_meta("stage"):
+				stage = wv.get_meta("stage")
+			if wv.has_meta("ground"):
+				if terrain:
+					terrain.queue_free()
+				terrain = wv.get_meta("ground")
 		"hyperjungle", "rift", "sedesert":
 			var b := KratorBiome.build(dir + "biome.json")
 			world.add_child(b)
@@ -312,7 +325,7 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-8 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "\n1-9 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -320,7 +333,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if not (e is InputEventKey and e.pressed and not e.echo):
 		return
 	var k := (e as InputEventKey).keycode
-	if k >= KEY_1 and k <= KEY_8:
+	if k >= KEY_1 and k <= KEY_9 and k - KEY_1 < CASES.size():
 		_load_case(CASES[k - KEY_1])
 	elif k == KEY_F1:
 		help_on = not help_on

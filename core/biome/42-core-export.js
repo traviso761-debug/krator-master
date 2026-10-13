@@ -7,6 +7,12 @@
 //                                                                         heights and water on a 2 m grid, and the
 //                                                                         host's baked field as ground.field if it has one)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
+//   BIO.exportParts(opt)                                        -> the lists and the ground BIO.export wraps (below)
+//
+// core/export (2026-10-13, ROADMAP.md stage 2d): this file also gives the krator-world container (EXPORT.world,
+// core/export/README.md) its items, buckets, materials, textures and terrain, from the same parts with ids, a tile's
+// buckets compacted and library maps by reference. BIO.export is now the thin krator-biome envelope over the parts and
+// writes what it wrote before; a page without core/export never sees the difference.
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
 // here is called by a build: a page with it loaded draws exactly what it drew without it.
@@ -69,21 +75,37 @@ function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;con
  if(Array.isArray(v))return v.map(x=>plain(x,texId,depth+1));
  if(t==='object'&&Object.getPrototypeOf(v)===Object.prototype){const o={};for(const k in v){const x=plain(v[k],texId,depth+1);if(x!==undefined)o[k]=x;}return o;}
  return undefined;}
-BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
- const out={format:'krator-biome',version:1,
-  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
-   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
-    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
-  core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
- const mats=new Map(),texs=new Map();
+// THE PARTS. BIO.exportParts(opt) is what the page placed, as lists (items, buckets, materials, textures), its ground and
+// its counts: BIO.export below wraps them as the krator-biome object, and core/export's krator-world takes them as its
+// sections (registered at the end of this file). The krator-world contributor passes four options BIO.export leaves off,
+// so BIO.export's object is what it was:
+//   opt.ids      each item and bucket gets an id ('<kit>/<name>', '@<chunk>' for a LOD chunk, '~<n>' on a repeat)
+//   opt.compact  a tile's bucket keeps only the vertices its triangles use, renumbered (EXPORT.compact; ROADMAP finding 10)
+//   opt.libRef   a texture that is a material-library map (KMAT.packs: the page's pack) is named by reference
+//                ({from: 'library', lib, pack, family, slot}: the build's tex/pack.json file), not encoded as a PNG
+//   opt.vocab    each material also carries the material records' vocabulary (core/materials/record: family, roughness,
+//                metal, specular, hook, lib, scale, tint, normalMap, roughnessMap) beside its biome fields; each texture
+//                its offset and `from`
+const HOOK_KINDS={leaf:1,anim:1,'anim-phase':1,irid:1,gloss:1,far:1,hang:1};
+function libIndex(){const L=new Map();if(typeof KMAT==='undefined'||!KMAT||!KMAT.packs)return L;
+ for(const b in KMAT.packs){const P=KMAT.packs[b]||{};for(const fam in P){const e=P[fam];if(!e)continue;
+  for(const slot of ['map','normalMap','roughnessMap'])if(typeof e[slot]==='string')L.set(e[slot],{pack:b,family:fam,slot,lib:e.lib||null});}}
+ return L;}
+function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
+ const out={items:[],buckets:[],materials:[],textures:[],ground:null,stats:null,tags:null};
+ const mats=new Map(),texs=new Map(),LIB=opt.libRef?libIndex():null,seenId=new Map();
+ const idOf=(kind,kit,name,lod)=>{const id=(kit?kit+'/':'')+name+(lod&&lod.chunk!=null?'@'+lod.chunk:'');const n=(seenId.get(kind+id)||0)+1;seenId.set(kind+id,n);return n>1?id+'~'+n:id;};
  // core/tags (BIO.init({tags})): ids on what the export carries (biomes/GODOT.md, "Records")
  const TR=BIO.tagReg?BIO.tagReg():null,vols=TR&&opt.records!==false?volumeIndex(TR):null,recs={items:0,instances:0,buckets:0,bucketRecords:0};
  // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
  // The PNG is the image as stored, so an importer flips v only where flipY is true. Encoding a PNG is the host's
  // job (BIO.texPNG, 43-core-export-host.js); without one a record says why it has no image.
  const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y],flipY:!!t.flipY};
-  if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
-   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
+  if(opt.vocab){r.offset=[t.offset.x,t.offset.y];r.from='none';}
+  const src=LIB&&t.image&&typeof t.image.src==='string'?t.image.src:null,lib=src?LIB.get(src):null;
+  if(lib){r.from='library';r.lib=lib.lib;r.pack=lib.pack;r.family=lib.family;r.slot=lib.slot;if(t.image.width)r.size=[t.image.width,t.image.height];}
+  else if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
+   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;if(opt.vocab)r.from='png';}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
@@ -91,6 +113,11 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
    options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
    hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+  if(opt.vocab){let t=null;for(const x of texs.values())if(x.id===r.map)t=x;
+   Object.assign(r,{family:r.kind,roughness:m.roughness==null?1:m.roughness,metal:m.metalness||0,specular:0.5,
+    hook:HOOK_KINDS[r.kind]?r.kind:r.hooked?'unnamed':null,lib:t&&t.from==='library'?t.lib:null,
+    scale:m.userData&&m.userData.libScale?m.userData.libScale:null,tint:true,
+    normalMap:texId(m.normalMap||null),roughnessMap:texId(m.roughnessMap||null)});}
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
@@ -103,7 +130,7 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    for(const k in extra)xA[k]=new Float32Array(keep.length*extra[k].size);
    keep.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=M[i*16+q];if(cA)for(let q=0;q<3;q++)cA[j*3+q]=C[i*3+q];
     for(const k in extra){const s=extra[k].size;for(let q=0;q<s;q++)xA[k][j*s+q]=extra[k].a[i*s+q];}});
-   const rec=Object.assign(base,{count:keep.length,dynamic:m.instanceMatrix.usage===BIO.host.THREE.DynamicDrawUsage,
+   const rec=Object.assign(opt.ids?{id:idOf('i',kit,base.name,base.lod)}:{},base,{count:keep.length,dynamic:m.instanceMatrix.usage===BIO.host.THREE.DynamicDrawUsage,
     geometry:geoRec(g),matrices:pack(mA),colours:cA?pack(cA):null,extras:{}});
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    // core/tags (a page with BIO.init({tags})): the item set this mesh draws, and per instance, aligned with the
@@ -121,8 +148,8 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
      const keep=opt.cut!=='triangle'?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
      if(keep)k.push(I[t],I[t+1],I[t+2]);}
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
-   const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
-   const brec=Object.assign(base,{triangles:idx.length/3,geometry:geo});
+   const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list (BIO.export): an importer drops the unused ones
+   const brec=Object.assign(opt.ids?{id:idOf('b',kit,base.name,base.lod)}:{},base,{triangles:idx.length/3,geometry:geo});
    // core/tags: the records this bucket merges. Each piece (a bole, a limb, a log) belongs to the smallest registered
    // volume (a tree, a log, a herd: BIO.record) that holds its foot; records lists their uids once each, recordIds their
    // ids, pieces how many pieces the bucket holds and how many of them lie in no volume (boulders, ground cover)
@@ -131,6 +158,11 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
      const v=vols.at(own.x[r],own.lowY[r],own.z[r]);if(!v){none++;continue;}if(!seen.has(v.uid+' '+v.id))seen.set(v.uid+' '+v.id,v);}
     const L=[...seen.values()];brec.records=L.map(v=>v.uid);brec.recordIds=L.map(v=>v.id);brec.pieces={n:np,unowned:none};
     recs.buckets++;recs.bucketRecords+=L.length;}
+   // opt.compact (core/export's tile): only the vertices the kept triangles use, renumbered (ROADMAP.md finding 10)
+   if(opt.compact&&box&&typeof EXPORT!=='undefined'&&EXPORT&&EXPORT.compact){const A={};
+    for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)A[k]=[a.array,a.itemSize];}
+    const c=EXPORT.compact(A,idx),cg={};for(const k in c.arrays)cg[k]=pack(c.arrays[k]);cg.index=pack(c.index);
+    brec.geometry=cg;brec.compacted={vertices:c.vertices,dropped:c.dropped};}
    out.buckets.push(brec);}}
  // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
  // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
@@ -144,5 +176,26 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  if(TR){out.tags={build:TR.build,format:'krator-tags'};out.stats.records=recs;}
+ return out;}
+BIO.exportParts=parts;
+// the krator-biome object (biomes/GODOT.md): the parts in their envelope, as before core/export
+BIO.export=function(opt){opt=opt||{};const box=opt.box||null,p=parts(opt);
+ const out={format:'krator-biome',version:1,
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
+   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
+    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
+  core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:p.items,buckets:p.buckets,materials:p.materials,textures:p.textures};
+ if(p.ground)out.ground=p.ground;
+ out.stats=p.stats;if(p.tags)out.tags=p.tags;
  return out;};
+// core/export (krator-world, core/export/README.md): the biome core fills items, buckets, materials, textures and terrain,
+// from one pass of exportParts per world() call (ctx.memo): a tile's buckets compacted, library maps by reference.
+// Queued when core/export loads after this file; a page without core/export never reads the queue.
+(function(){const R=typeof window!=='undefined'?window:globalThis;
+ const reg=(s,f)=>{const a=[s,f,{by:'biome'}];if(typeof EXPORT!=='undefined'&&EXPORT&&EXPORT.register)EXPORT.register.apply(null,a);else (R.EXPORT_QUEUE=R.EXPORT_QUEUE||[]).push(a);};
+ const P=c=>c.memo('biome',()=>parts({box:c.box,kit:c.opt.kit,textures:c.opt.textures,records:c.opt.records,cut:c.opt.cut,ground:false,
+  ids:true,compact:c.opt.compact!==false,libRef:c.opt.libRef!==false,vocab:true}));
+ reg('items',c=>P(c).items);reg('buckets',c=>P(c).buckets);reg('materials',c=>P(c).materials);reg('textures',c=>P(c).textures);
+ reg('terrain',c=>{if(!BIO.host||!BIO.terrainH)return null;const F=BIO.host.field&&c.opt.field!==false?BIO.host.field:null;
+  return EXPORT.terrain(c.box,{h:BIO.terrainH,water:BIO.waterH,field:F,step:c.opt.ground});});})();
 })();

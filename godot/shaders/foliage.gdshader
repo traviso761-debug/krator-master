@@ -13,6 +13,7 @@ uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, r
 uniform bool has_tex = true;
 uniform vec3 colour = vec3(1.0);         // the material colour (linear)
 uniform vec2 uv_repeat = vec2(1.0);         // texture.repeat
+uniform vec2 uv_offset = vec2(0.0);         // texture.offset (a card that shows one cell of a library sheet)
 uniform bool flip_v = true;                // the texture's flipY: a canvas (true) is uploaded flipped, a DataTexture (false) is not
 uniform float alpha_test = 0.42;
 uniform float sway_a = 0.06;             // o.swayA
@@ -57,7 +58,8 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 tx = has_tex ? texture(albedo_tex, vec2(UV.x * uv_repeat.x, flip_v ? 1.0 - UV.y * uv_repeat.y : UV.y * uv_repeat.y)) : vec4(1.0);
+	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
+	vec4 tx = has_tex ? texture(albedo_tex, vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y)) : vec4(1.0);
 	vec3 c = COLOR.rgb * colour;
 	if (irid) {
 		vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);

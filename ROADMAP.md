@@ -262,6 +262,21 @@ and the cross-build report.
   fn)` so each module contributes its part, written headless by the harness into `godot/data/`. Keep glTF with
   `EXT_mesh_gpu_instancing` for meshes (it works) and JSON for everything else; the tile's vertex list compacted
   after cutting (finding 10). M4 (a biome tile) and M5 (Iziz) are this stage's proofs.
+  *Done 2026-10-13, and M4 with it* (`core/export/README.md`): `EXPORT.register(section, fn)` and `EXPORT.world({box,
+  sections})` (a section that throws is reported and skipped; an unknown name is refused), `EXPORT.check` (every id
+  joins), `EXPORT.glb` (meshes as one glb with `EXT_mesh_gpu_instancing`, the rest as JSON). Filled: `items`,
+  `buckets` (a tile's vertex list compacted), `materials` (one vocabulary: the KMAT fields beside the biome's own),
+  `textures` (library maps by reference to the build's pack), `terrain` (the KFIELD cropped, a sampled grid, probes),
+  `stage` and `registry` (core/tags, cropped to the tile) by the biome core; `atmos` by an adapter over `ATMOS.export`.
+  Stubs with a written contract: `fixtures`, `interiors`, `furniture` (the per-look scheme), `sim`, `city` (the Voth
+  branch's; only its registration point is here). `BIO.export` is a thin envelope over the same parts and writes
+  byte-identical JSON. `tools/harness.py export <page> --out godot/data/<case>/ --box ...` writes it headless;
+  `godot/krator/world_import.gd` builds the tile from the spike's own importers. The proof is sedesert's tile
+  (`godot/data/world-sedesert`, `godot/tests/export/world_test.gd`): 7,280 instances, every uid recomputed in GDScript
+  from the glb, 0 mismatches; every material and map resolves (18 library maps by reference); `KField.h` matches the
+  page's `h` at 256 probes to 3e-12 m; a side-by-side screenshot from one camera. Open: M5 (Iziz as the second
+  contributor: its `REGISTER` on the `KRATOR_EXPORT` record shape), the stubs, the adapters moving into their modules,
+  the Throne and Verge listing core/export (the harness injects it).
 - **e. Materials**: Iziz as the second library pilot; the shader library as `.gdshaderinc` files named by the
   hooks (`world-uv`, `cloth-sway`, foliage, bark, breakup, coursing). The three JS vocabularies stay; the export
   carries one.
@@ -319,7 +334,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
    friend's Voth route.
 5. **The biome reseeding event with `core/terrain`'s field** (`TODO.md` item 5; stage 2a-b).
 6. **`core/tags` on the biome kits and ids on exported nodes** (stage 2c; `core/tags/PROPOSAL.md`).
-7. **`core/export`, M4 then M5** (stage 2d; `TODO.md` item 8's "Iziz's export on the `KRATOR_EXPORT` shape").
+7. **`core/export`, M4 then M5** (stage 2d; `TODO.md` item 8's "Iziz's export on the `KRATOR_EXPORT` shape"). *M4 done
+   2026-10-13* (sedesert's tile, stage 2d); M5 next.
 8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5.
 9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half).
 10. **The host shell, narrowed** (`TODO.md` item 9; stage 3).
@@ -377,7 +393,8 @@ Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant b
   four cities already on `core/mask` (Iziz, Dalab, Erewhon, Roketstad), then Ys's placement pass, each proven with
   a placement hash and a screenshot pair.
 - **`core/export` gets a `city` section** (ways, lots, greens and their steps), so Godot receives a city as records
-  and baked meshes.
+  and baked meshes. *The section exists as a registration point with a written contract (2026-10-13,
+  `core/export/README.md`, "Stubs"); `core/city` registers into it when the Voth branch pauses.*
 - **Stage 5 starts from the transport routes.** Voth's ferries, elephant bugs and ships used random departures
   that Godot could not reproduce; `SIM.transportBake` and `SIM.vehiclePose` make them timetables, which is the
   Phase 5 rule. Verge's own `SIM` moves onto the core with them.
@@ -452,7 +469,7 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
 2. Stage 1: land `wip/furniture-indexed` and `wip/biome-spatial-index` verified; size-aware segments; the first
    geometry report.
 3. Stage 2: merge `refactor/terrain-field`; `BIO.iridBarkMat` as a core material kind; `core/tags` on the biome kits
-   with ids on exported nodes; `core/export`; then `core/water` phases 0 and 1.
+   with ids on exported nodes; `core/export` (done 2026-10-13, M4); then `core/water` phases 0 and 1.
 4. Stage 0h, the fragment splits, outside the Voth branch's area, whenever a session has room.
 
 ## 10. One interface for every settlement: Streetlab's viewer and editor as `core/host` (owner, 2026-10-12)

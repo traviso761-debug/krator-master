@@ -6,7 +6,8 @@ runs on), `terrain/` (the baked terrain field, carve patches and relief function
 dressing), `water/` (every wet surface: open water on a CDLOD mesh, the CPU twins things float on), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
 (the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
-thing is: ids, class, tags) and `space/` (the one spatial index placement passes share).
+thing is: ids, class, tags), `space/` (the one spatial index placement passes share) and `export/` (the one
+`krator-world` container every module gives its part to, for Godot).
 
 ## `materials/`
 
@@ -105,7 +106,7 @@ additions are in it, each marked with the kit it came from:
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear (`BIO.clearOf`, `clearOf3`; both and `scatter`'s spacing read a `core/space` grid when the page loads it), surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, and keep-clear and scatter on `KSPACE` equal to the linear scans they replaced (frozen in the test), each check with a negative |
 | `test-tags.js` | `node core/biome/test-tags.js`: the biome core on core/tags (one kit built with tags and without: identical meshes; every instance names its set and the uid of its own position; the export's ids), each check with a negative |
-| `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
+| `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`); `BIO.exportParts`, the same parts given to core/export's `krator-world` (items, buckets, materials, textures, terrain) |
 | `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
 | `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
 
@@ -424,6 +425,22 @@ vocabulary), for the inspector, the minimap, the exporters and Godot node metada
 | `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
 | `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
+
+## `export/`
+
+The one exporter (GODOT-PLAN.md Phase 4, ROADMAP.md stage 2d; 2026-10-13): `EXPORT.world({box})` returns one
+`krator-world` object per build or tile, which each module fills with its part through `EXPORT.register(section, fn)`.
+`export/README.md` has the API, the container, the convention, every section's shape (the stubs' contracts too), the
+harness command and the M4 proof. **Used by** the fifteen biome kits other than the Throne (`CORE_EXPORT` in each
+`build.py`); the biome core fills `items`, `buckets`, `materials`, `textures`, `terrain` and `stage`
+(`biome/42-core-export.js`, `43-core-export-host.js`). `python3 tools/harness.py export <page> --out godot/data/<case>/
+--box ...` writes it; `godot/krator/world_import.gd` reads it.
+
+| File | What |
+|---|---|
+| `07-core-export.js` | [G data] `EXPORT`: `register`, `world`, `check` (ids join), `glb` (meshes as glTF with `EXT_mesh_gpu_instancing`, the rest JSON), `compact`, `terrain`, `pack`/`unpack`; the sections, the convention, the stubs' contracts. No THREE, no DOM |
+| `09-core-export-adapters.js` | [G data] the parts of core/tags (`registry`), core/atmos (`atmos`) and the material records (`materials`) until those modules register themselves; `EXPORT.ground` for a build's terrain |
+| `test-export.js` | `node core/export/test-export.js`: a biome page built in node, exported; each check with a negative |
 
 ## `mask/`
 

@@ -17,8 +17,13 @@ and as a scripted walk (stage 0j): hold real keys along a route and check the wa
 console stayed clean:
 
     python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:20f --start auto --min 2 --dir 0,-1
+
+and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world container written headless for Godot
+(world.json, world.glb, the library pack's maps; core/export/README.md):
+
+    python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
 """
-import asyncio, contextlib, functools, glob, http.server, os, re, socketserver, sys, threading, time
+import asyncio, contextlib, functools, glob, http.server, json, os, re, socketserver, sys, threading, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
@@ -118,10 +123,11 @@ async def route_three(pg, folder, here=None):
             route.fulfill(path=three, content_type="application/javascript")))
 
 
-async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None):
+async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None, init=()):
     """A new page on `html`, served on `port` from `root` (default: the page's folder; give the repo root for a page
     that loads siblings by relative path, as kits/ancients-interiors loads ../../catalog/), three.js routed, waiting
-    until the world is built (`window._ready`) or the error panel fills. Returns (page, page_errors, ready)."""
+    until the world is built (`window._ready`) or the error panel fills. `init`: scripts (paths) run before the page's
+    own (godot/tools/stage_hook.js, for KSTAGE). Returns (page, page_errors, ready)."""
     folder = os.path.dirname(os.path.abspath(html))
     name = os.path.relpath(os.path.abspath(html), os.path.abspath(root or folder)).replace(os.sep, '/')
     W, H = [int(t) for t in size.split("x")]
@@ -129,6 +135,9 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
     pg.set_default_timeout(600000)
     errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
+    for f in init:
+        with open(f, encoding='utf-8') as fh:
+            await pg.add_init_script(fh.read())
     await route_three(pg, folder, here)
     await pg.goto(f"http://127.0.0.1:{port}/{name}{query}", timeout=LOAD_MS)
     ready = True
@@ -280,7 +289,137 @@ async def walk_main(argv):
     return 1 if fails else 0
 
 
+EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
+STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
+STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
+EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null });
+  if (!split) return { world: w, check: chk };
+  const g = EXPORT.glb(w);
+  return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
+
+
+def _pack_dir(name, page):
+    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first)."""
+    d = os.path.dirname(os.path.abspath(page))
+    if os.path.basename(d) == 'dist':
+        d = os.path.dirname(d)
+    cands = [d] + sorted(os.path.dirname(os.path.dirname(p)) for p in glob.glob(os.path.join(ROOT, '*', '*', 'tex', 'pack.json')))
+    for c in cands:
+        pj = os.path.join(c, 'tex', 'pack.json')
+        if os.path.isfile(pj):
+            with open(pj, encoding='utf-8') as f:
+                if json.load(f).get('build') == name:
+                    return os.path.join(c, 'tex')
+    return None
+
+
+async def export_main(argv):
+    """python3 tools/harness.py export <page> --out godot/data/<case>/ [--box x0,z0,x1,z1] [--sections a,b] [--sky 1024]
+                                             [--json] [--query ?..]
+    The krator-world container (core/export/README.md) written headless: load the page, wait for it and its library
+    textures, call EXPORT.world({box, sections}) and EXPORT.check, and write <out>/world.json (everything but the meshes)
+    and <out>/world.glb (the meshes: EXT_mesh_gpu_instancing), or one world.json with the meshes inline (--json); the
+    library packs the textures name by reference are copied to <out>/tex/; <out>/meta.json says where it came from.
+    A page built without core/export gets it injected (its modules queued their parts). Exit 1 when the page is not
+    ready or dirty, a section reported an error, or a join failed."""
+    import argparse, shutil
+    from playwright.async_api import async_playwright
+    ap = argparse.ArgumentParser(prog='harness.py export')
+    ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
+    ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
+    a = ap.parse_args(argv)
+    opt = {}
+    if a.box:
+        opt['box'] = [float(v) for v in a.box.split(',')]
+    if a.sections:
+        opt['sections'] = [s.strip() for s in a.sections.split(',') if s.strip()]
+    if a.sky is not None:
+        opt['sky'] = a.sky
+    out = os.path.abspath(a.out)
+    os.makedirs(out, exist_ok=True)
+    fails, t0 = [], time.time()
+    async with async_playwright() as p:
+        b = await launch_chromium(p)
+        with serve(ROOT) as port:
+            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=ROOT, query=a.query, init=[STAGE_HOOK])
+            if not ready:
+                fails.append('page never ready')
+            print('%s: built in %.0f s (%d page errors)' % (a.html, time.time() - t0, len(errs)), flush=True)
+            try:   # the library maps decode asynchronously (core/materials/record/25-matlib-host.js counts them)
+                await pg.wait_for_function("!window._texPending", timeout=180000)
+            except Exception:
+                fails.append('library textures still decoding after 180 s')
+            injected = []
+            if not await pg.evaluate("typeof EXPORT !== 'undefined'"):
+                for f in EXPORT_FILES:
+                    await pg.add_script_tag(path=f)
+                injected.append('core/export')
+            if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):
+                await pg.add_script_tag(path=STAGE_JS)
+                injected.append('core/biome/44-core-stage.js')
+            await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
+            t1 = time.time()
+            res = await pg.evaluate(EXPORT_JS, [opt, not a.json])
+            panel = await pg.evaluate("document.getElementById('errs')?document.getElementById('errs').textContent:''")
+            await pg.close()
+        await b.close()
+    w = res['world']
+    files = {}
+
+    def dump(name, obj):
+        with open(os.path.join(out, name), 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(obj, f, separators=(',', ':'))
+        files[name] = os.path.getsize(os.path.join(out, name))
+    dump('world.json', w)
+    if not a.json:
+        import base64
+        with open(os.path.join(out, 'world.glb'), 'wb') as f:
+            f.write(base64.b64decode(res['glb']))
+        files['world.glb'] = os.path.getsize(os.path.join(out, 'world.glb'))
+    packs = sorted({t['pack'] for t in w.get('textures', []) if t.get('from') == 'library'})
+    if packs:
+        dst = os.path.join(out, 'tex')
+        shutil.rmtree(dst, ignore_errors=True)
+        os.makedirs(dst)
+        for name in packs:
+            src = _pack_dir(name, a.html)
+            if not src:
+                fails.append('no tex/pack.json for library pack %s' % name)
+                continue
+            with open(os.path.join(src, 'pack.json'), encoding='utf-8') as f:
+                pj = json.load(f)
+            used = {t['family'] for t in w['textures'] if t.get('pack') == name}
+            for fam in sorted(used):
+                for fn in sorted(set(pj['families'].get(fam, {}).get('files', {}).values())):
+                    shutil.copyfile(os.path.join(src, fn), os.path.join(dst, fn))
+            shutil.copyfile(os.path.join(src, 'pack.json'), os.path.join(dst, 'pack.json' if len(packs) == 1 else name + '.pack.json'))
+        files['tex/'] = sum(os.path.getsize(os.path.join(dst, f)) for f in os.listdir(dst))
+    chk = res['check']
+    meta = {'case': os.path.basename(out.rstrip('/\\')), 'page': os.path.relpath(os.path.abspath(a.html), ROOT).replace(os.sep, '/'),
+            'kind': 'world', 'route': 'tools/harness.py export (core/export)', 'box': opt.get('box'), 'sections': w['sections'],
+            'files': files, 'injected': injected, 'stats': w['stats'], 'glb': res.get('glbStats'), 'check': chk['joins'],
+            'page_errors': errs[:20], 'exported': time.strftime('%Y-%m-%d')}
+    dump('meta.json', meta)
+    if errs or panel:
+        fails.append('page errors: ' + '; '.join(errs[:3])[:300] + (' panel: ' + panel[:200] if panel else ''))
+    if w['errors']:
+        fails.append('section errors: ' + json.dumps(w['errors'])[:400])
+    if not chk['ok']:
+        fails.append('joins: ' + '; '.join(chk['problems'][:5]))
+    print('exported in %.0f s: %s' % (time.time() - t1, json.dumps(w['stats'])))
+    print('sections: ' + ', '.join('%s %s' % (k, v['status']) for k, v in w['sections'].items()))
+    print('joins: ' + json.dumps(chk['joins']))
+    if res.get('glbStats'):
+        print('glb: ' + json.dumps(res['glbStats']))
+    print('wrote ' + ', '.join('%s %.1f MB' % (k, v / 1e6) for k, v in files.items()) + ' in ' + os.path.relpath(out, ROOT).replace(os.sep, '/'))
+    print('FAILED: ' + ' | '.join(fails) if fails else 'OK')
+    return 1 if fails else 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 2 and sys.argv[1] == "export":
+        sys.exit(asyncio.run(export_main(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "smoke":
         sys.exit(asyncio.run(smoke(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "walk":

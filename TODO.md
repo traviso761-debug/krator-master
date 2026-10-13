@@ -184,7 +184,10 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   colour, map, roughness, metal, emissive, doubleSided, alphaTest, hook}`, with `hook` naming a library shader
   (the kinds above); a `convention.colour` per table (the biome export is linear, the atmosphere's sRGB); then
   fold it into `core/export/` as the `krator-world` template. The canvas painters (3 to 9 per kit) bake to
-  PNG, which the export already does.
+  PNG, which the export already does. *Done 2026-10-13 (`core/export/README.md`, M4):* in the `krator-world`
+  container each biome material carries the KMAT vocabulary (family, roughness, metal, specular, hook, lib, scale,
+  tint) beside its own kind and options, and library maps travel by reference; `BIO.export` itself is unchanged.
+  Open: `hook` still names the kit's kind, not a library shader (stage 2e).
 - **[G native] Preview LOD: adopt `core/lod`, stop growing the kits' own.** The plan freezes runtime LOD as
   preview-only. A kit's per-chunk `BIO.range`/`minRange` is data (it becomes Godot's `visibility_range`) and
   stays; `BIO.lodTick` is preview machinery. `core/lod` already knows the biome sets (class `biome`,

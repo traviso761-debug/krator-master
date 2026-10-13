@@ -1,6 +1,8 @@
 # EXT_mesh_gpu_instancing for Godot 4 (4.5 does not import it itself): a node that carries the extension becomes a
 # MultiMeshInstance3D of its mesh, one instance per TRANSLATION / ROTATION / SCALE, coloured by a custom _COLOR
-# (linear rgb) when there is one. godot/tools/spike_export.js writes it for three's InstancedMesh.
+# (linear rgb) when there is one. godot/tools/spike_export.js writes it for three's InstancedMesh; core/export's world.glb
+# (a node whose extras name a krator_item) also carries _AN, _AC2 (packed into the colour's alpha and the custom data, as
+# the biome importer packs them) and _AP0, _AP1 (kept as metadata).
 # Registered by krator/gltf_region.gd for runtime loads and by addons/krator_gltf for the editor's importer.
 class_name KratorGltfInstancing
 extends GLTFDocumentExtension
@@ -31,6 +33,46 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 	var mesh: Mesh = state.get_meshes()[gltf_node.mesh].mesh.get_mesh()
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var gi := state.get_nodes().find(gltf_node)
+	var ex = (state.json["nodes"][gi] as Dictionary).get("extras", {}) if gi >= 0 else {}
+	if ex is Dictionary and ex.has("krator_item"):
+		# core/export's world.glb (core/export/07-core-export.js): a biome item, packed as krator/biome_import.gd packs it
+		# (biomes/GODOT.md, "In Godot"): COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b)
+		var AN := _floats(state, attrs.get("_AN", -1))
+		var C2 := _floats(state, attrs.get("_AC2", -1))
+		mm.use_colors = true
+		mm.use_custom_data = true
+		mm.mesh = mesh
+		mm.instance_count = n
+		var buf := PackedFloat32Array()
+		buf.resize(n * 20)
+		for i in n:
+			var q := Quaternion(R[i * 4], R[i * 4 + 1], R[i * 4 + 2], R[i * 4 + 3]) if R.size() > 0 else Quaternion.IDENTITY
+			var s := Vector3(S[i * 3], S[i * 3 + 1], S[i * 3 + 2]) if S.size() > 0 else Vector3.ONE
+			var bs := Basis(q).scaled_local(s)
+			var b := i * 20
+			buf[b] = bs.x.x; buf[b + 1] = bs.y.x; buf[b + 2] = bs.z.x; buf[b + 3] = T[i * 3] if T.size() > 0 else 0.0
+			buf[b + 4] = bs.x.y; buf[b + 5] = bs.y.y; buf[b + 6] = bs.z.y; buf[b + 7] = T[i * 3 + 1] if T.size() > 0 else 0.0
+			buf[b + 8] = bs.x.z; buf[b + 9] = bs.y.z; buf[b + 10] = bs.z.z; buf[b + 11] = T[i * 3 + 2] if T.size() > 0 else 0.0
+			buf[b + 12] = C[i * 3] if C.size() > 0 else 1.0
+			buf[b + 13] = C[i * 3 + 1] if C.size() > 0 else 1.0
+			buf[b + 14] = C[i * 3 + 2] if C.size() > 0 else 1.0
+			buf[b + 15] = C2[i * 3] if C2.size() > 0 else 1.0
+			if AN.size() > 0:
+				var e := KData.oct_encode(Vector3(AN[i * 3], AN[i * 3 + 1], AN[i * 3 + 2]))
+				buf[b + 16] = e.x; buf[b + 17] = e.y
+			buf[b + 18] = C2[i * 3 + 1] if C2.size() > 0 else 1.0
+			buf[b + 19] = C2[i * 3 + 2] if C2.size() > 0 else 1.0
+		mm.buffer = buf
+		var it := MultiMeshInstance3D.new()
+		it.multimesh = mm
+		it.name = gltf_node.resource_name
+		it.set_meta("krator_instances", n)
+		it.set_meta("krator_item", ex["krator_item"])
+		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): kept as data; the anim shader is not ported
+			if attrs.has(k):
+				it.set_meta("krator" + k.to_lower(), _floats(state, attrs[k]))
+		return it
 	mm.use_colors = C.size() > 0
 	mm.mesh = mesh
 	mm.instance_count = n
@@ -52,9 +94,7 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 	mmi.set_meta("krator_instances", n)
 	# core/tags: the side table the exporter writes in the node's extras (krator_records: one uid per instance, in the
 	# order of the TRS rows above), so the editor's import route keeps it too (krator/gltf_region.gd does the same at runtime)
-	var gi := state.get_nodes().find(gltf_node)
 	if gi >= 0:
-		var ex = (state.json["nodes"][gi] as Dictionary).get("extras", {})
 		if ex is Dictionary and ex.get("krator_records") is Array and (ex["krator_records"] as Array).size() == n:
 			mmi.set_meta("krator_records", PackedStringArray(ex["krator_records"]))
 			if ex.has("krator"):
