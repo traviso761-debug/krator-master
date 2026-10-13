@@ -135,6 +135,15 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   stands where its water settles, in its own basin: the east lake at -64 m (14,568 km2), the west lake at -85 m
   (4,059 km2), the long-lake trough at 426 m (28,494 km2); asserted not joined. A river runs down each breach: 42 m3/s
   from the east notch (838 m) into the west lake, 13 m3/s from the west notch (688 m) into the trough.
+- **The western lakes drain to the Ring Sea** (`OUTLETS`; the owner). The western ring catches the ocean's moisture and is
+  closed below 957 m, so its two great lakes rose and joined. Each now has an outlet gorge, the course that cuts the
+  least ground, its sill at the lake's level (a hollow on the way fills as part of the lake), its bed falling all the
+  way, its walls eased half down. The SW lowlands' lake: 204 km to the Ring Sea, cut through 152 km, at most 627 m deep.
+  Ancient's Valley's: 180 km into the SW lowlands' lake, at most 476 m deep (without it the lake rises to ~870 m). Both
+  stand near their drawn level (-8 m, 22 m) and run out: the great river down the SW gorge carries ~5,700 m3/s. The
+  gorges are written as `DATA.outlets` (course, bed) and shaded into the satellite and relief maps.
+- **Lake 4, the 3,600 m lake**, is settled too (`SETTLE`; the owner: its north-western valley stays a river): it stands at
+  2,772 m over 2,887 km2 instead of drowning the valley.
 - **The routing:** the Ring Sea (-1,500 m) and the oceans at the edge end flow, and so does every lake the model draws
   below its own spill (as drawn). Every other hollow fills and spills, unless what reaches it is less than its full lake
   would lose: then it is endorheic and its lake stands where the two balance. A hollow whose only way out is over frozen
@@ -144,7 +153,7 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   grid's (a gorge narrower than a cell), and the course is cut through, falling all the way; deeper, a river fills it,
   so it becomes a lake at its spill (`through lake`). Rounds of routing, cutting and routing again until no course
   climbs; then it asserts that every course falls (or runs level on water) from its source to its mouth.
-  4.21: 551 cells cut (36 m on average); 408 rivers (41 over 100 m3/s) and 438 dry valleys.
+  4.21: 402 rivers (44 over 100 m3/s, 2 over 1,000) and 433 dry valleys.
 - **The Yuni river** keeps its drawn course and the routing is held to it. On the 4.20 heights it climbed four times
   (49, 135, 11 and 459 m: the escarpment's sharpening raised the lip above Locus after 4.19 cut its bed); its bed is
   cut to fall all the way.
@@ -168,17 +177,15 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
   through that tongue's regular changes (Vothic *Tzolt Rivrh* salt river, Izani *Rrivar Rreda*, Dalab *Folriba*,
   Tl'aai *Tl'aa Baatar*, Dasri *Wadi al-Jost*, Xanadui *Alph* for its greatest, Yuni *Saltie Rivvo*...), the word chosen
   from the course itself (salt where it ends in a salt basin, cold, swift, falls, long, red in a dry land, the
-  settlement it passes) and then from each tongue's own pool. 312 of 846 named, each with `tongue` and `gloss`: the
+  settlement it passes) and then from each tongue's own pool. 315 of 852 named, each with `tongue` and `gloss`: the
   Scyvoi's in Boruntun (*Borun Gulusu*, *Madır Kiriki*; the polity and both 'crater drylands'), Screamer Country's in
   plain English, the caravans' (*Howling Gulch*); the rest keep provisional names (no tongue on record for their region). The list: `river-names-4.21.md`.
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the 36 lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). Basin by basin, 14 grow and 16 shrink (174,170 km2 flooded, 48,853 km2 laid dry); the rift's
-  terminal seas and the eastern basins' lakes now balance. The lake at Locus still rises ~590 m: the ranges round the
-  valley of Yuni (4.15-4.17) took 1,000 mm and more of rain from 4.18's recompute, 143 of its 337 m3/s. The western level-0 lakes (1, 2) still rise to 957 m and join: the western ring catches the
-  ocean's moisture and is closed below 957 m. An outlet from lake 2 to the Ring Sea would be a canyon 144 km long, up to
-  1.2 km deep, through the Inner Wall (the owner's call). Kept as
+  away). Basin by basin, with the western outlets and the settled lakes, 12 grow and 15 shrink (30,322 km2
+  flooded, 38,264 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. The lake at Locus still rises ~590 m: the ranges round the
+  valley of Yuni (4.15-4.17) took 1,000 mm and more of rain from 4.18's recompute, 143 of its 337 m3/s. Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and

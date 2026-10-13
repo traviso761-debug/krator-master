@@ -1,67 +1,19 @@
 [
  {
   "at_px": [
-   164,
-   605
-  ],
-  "level_m": 0,
-  "km2": 21563,
-  "inflow_m3s": 2694.2,
-  "balance_m3s": 2591.3,
-  "finding": "stands 722 m over its lowest shore",
-  "settles": "fills and overflows",
-  "level_after_m": 957,
-  "km2_after": 206660,
-  "change": "rises",
-  "n": 1
- },
- {
-  "at_px": [
-   294,
-   787
-  ],
-  "level_m": 0,
-  "km2": 41361,
-  "inflow_m3s": 3031.3,
-  "balance_m3s": 3374.7,
-  "finding": "stands 781 m over its lowest shore",
-  "settles": "fills and overflows",
-  "level_after_m": 957,
-  "km2_after": 206660,
-  "change": "rises",
-  "n": 2
- },
- {
-  "at_px": [
    160,
    391
   ],
   "level_m": 0,
   "km2": 27499,
-  "inflow_m3s": 2008.0,
-  "balance_m3s": 1390.7,
+  "inflow_m3s": 2004.5,
+  "balance_m3s": 1384.7,
   "finding": "stands 584 m over its lowest shore",
   "settles": "fills and overflows",
   "level_after_m": 304,
   "km2_after": 40382,
   "change": "rises",
-  "n": 3
- },
- {
-  "at_px": [
-   324,
-   435
-  ],
-  "level_m": 3600,
-  "km2": 14151,
-  "inflow_m3s": 417.7,
-  "balance_m3s": 546.5,
-  "finding": "stands 828 m over its lowest shore",
-  "settles": "fills and overflows",
-  "level_after_m": 3145,
-  "km2_after": 3562,
-  "change": "drains",
-  "n": 4
+  "n": 1
  },
  {
   "at_px": [
@@ -70,14 +22,14 @@
   ],
   "level_m": -717,
   "km2": 10461,
-  "inflow_m3s": 146.8,
-  "balance_m3s": -513.4,
+  "inflow_m3s": 147.0,
+  "balance_m3s": -514.0,
   "finding": "stands 1030 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -725,
   "km2_after": 3963,
   "change": "drains",
-  "n": 5
+  "n": 2
  },
  {
   "at_px": [
@@ -86,14 +38,14 @@
   ],
   "level_m": -990,
   "km2": 9562,
-  "inflow_m3s": 286.5,
-  "balance_m3s": -287.8,
+  "inflow_m3s": 286.2,
+  "balance_m3s": -289.1,
   "finding": "stands 226 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1080,
-  "km2_after": 4572,
+  "km2_after": 4556,
   "change": "drains",
-  "n": 6
+  "n": 3
  },
  {
   "at_px": [
@@ -102,14 +54,14 @@
   ],
   "level_m": -2099,
   "km2": 9081,
-  "inflow_m3s": 169.3,
-  "balance_m3s": -459.2,
+  "inflow_m3s": 169.0,
+  "balance_m3s": -461.2,
   "finding": "stands 214 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2016,
   "km2_after": 6032,
   "change": "rises",
-  "n": 7
+  "n": 4
  },
  {
   "at_px": [
@@ -118,14 +70,14 @@
   ],
   "level_m": -1160,
   "km2": 14760,
-  "inflow_m3s": 904.4,
-  "balance_m3s": 472.7,
+  "inflow_m3s": 903.2,
+  "balance_m3s": 469.6,
   "finding": "stands 417 m over its lowest shore",
   "settles": "fills and overflows",
   "level_after_m": -1393,
   "km2_after": 17151,
   "change": "rises",
-  "n": 8
+  "n": 5
  },
  {
   "at_px": [
@@ -135,13 +87,13 @@
   "level_m": 1150,
   "km2": 2423,
   "inflow_m3s": 52.8,
-  "balance_m3s": -31.0,
+  "balance_m3s": -31.2,
   "finding": "stands 988 m over its lowest shore",
   "settles": "fills and overflows",
   "level_after_m": 929,
   "km2_after": 160,
   "change": "drains",
-  "n": 9
+  "n": 6
  },
  {
   "at_px": [
@@ -150,14 +102,14 @@
   ],
   "level_m": -2019,
   "km2": 3353,
-  "inflow_m3s": 65.0,
-  "balance_m3s": -556.5,
+  "inflow_m3s": 64.9,
+  "balance_m3s": -557.6,
   "finding": "stands 549 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2440,
   "km2_after": 1091,
   "change": "drains",
-  "n": 10
+  "n": 7
  },
  {
   "at_px": [
@@ -166,14 +118,14 @@
   ],
   "level_m": 2000,
   "km2": 2743,
-  "inflow_m3s": 70.8,
+  "inflow_m3s": 70.9,
   "balance_m3s": 46.1,
   "finding": "no outlet at its level, gains water",
   "settles": "fills and overflows",
   "level_after_m": 2155,
   "km2_after": 4877,
   "change": "rises",
-  "n": 11
+  "n": 8
  },
  {
   "at_px": [
@@ -182,14 +134,14 @@
   ],
   "level_m": -2234,
   "km2": 2134,
-  "inflow_m3s": 89.0,
-  "balance_m3s": -168.1,
+  "inflow_m3s": 88.8,
+  "balance_m3s": -168.7,
   "finding": "stands 366 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2519,
   "km2_after": 369,
   "change": "drains",
-  "n": 12
+  "n": 9
  },
  {
   "at_px": [
@@ -198,14 +150,14 @@
   ],
   "level_m": -2400,
   "km2": 1620,
-  "inflow_m3s": 467.9,
-  "balance_m3s": 324.2,
+  "inflow_m3s": 467.1,
+  "balance_m3s": 323.1,
   "finding": "stands 199 m over its lowest shore",
   "settles": "fills and overflows",
   "level_after_m": -1807,
   "km2_after": 3337,
   "change": "rises",
-  "n": 13
+  "n": 10
  },
  {
   "at_px": [
@@ -214,14 +166,14 @@
   ],
   "level_m": -64,
   "km2": 14568,
-  "inflow_m3s": 644.0,
-  "balance_m3s": 64.8,
+  "inflow_m3s": 643.2,
+  "balance_m3s": 62.5,
   "finding": "no outlet at its level, gains water",
   "settles": "balances (evaporation meets inflow)",
-  "level_after_m": -27,
-  "km2_after": 16252,
+  "level_after_m": -28,
+  "km2_after": 16188,
   "change": "rises",
-  "n": 14
+  "n": 11
  },
  {
   "at_px": [
@@ -231,13 +183,13 @@
   "level_m": -1980,
   "km2": 2022,
   "inflow_m3s": 40.5,
-  "balance_m3s": -114.1,
+  "balance_m3s": -114.6,
   "finding": "stands 500 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2061,
   "km2_after": 513,
   "change": "drains",
-  "n": 15
+  "n": 12
  },
  {
   "at_px": [
@@ -246,14 +198,14 @@
   ],
   "level_m": -1890,
   "km2": 2760,
-  "inflow_m3s": 80.8,
-  "balance_m3s": -149.7,
+  "inflow_m3s": 80.7,
+  "balance_m3s": -150.4,
   "finding": "stands 290 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1741,
   "km2_after": 1267,
   "change": "rises",
-  "n": 16
+  "n": 13
  },
  {
   "at_px": [
@@ -262,14 +214,14 @@
   ],
   "level_m": -1300,
   "km2": 1845,
-  "inflow_m3s": 34.0,
-  "balance_m3s": -105.4,
+  "inflow_m3s": 33.9,
+  "balance_m3s": -105.8,
   "finding": "stands 327 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1524,
   "km2_after": 562,
   "change": "drains",
-  "n": 17
+  "n": 14
  },
  {
   "at_px": [
@@ -278,14 +230,14 @@
   ],
   "level_m": -1686,
   "km2": 12418,
-  "inflow_m3s": 477.8,
-  "balance_m3s": 104.0,
+  "inflow_m3s": 478.4,
+  "balance_m3s": 104.1,
   "finding": "stands 168 m over its lowest shore",
   "settles": "fills and overflows",
   "level_after_m": -1523,
   "km2_after": 11166,
   "change": "rises",
-  "n": 18
+  "n": 15
  },
  {
   "at_px": [
@@ -294,14 +246,14 @@
   ],
   "level_m": 380,
   "km2": 4139,
-  "inflow_m3s": 100.6,
-  "balance_m3s": -102.3,
+  "inflow_m3s": 100.4,
+  "balance_m3s": -102.9,
   "finding": "stands 885 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -216,
   "km2_after": 3000,
   "change": "drains",
-  "n": 19
+  "n": 16
  },
  {
   "at_px": [
@@ -310,14 +262,14 @@
   ],
   "level_m": -1290,
   "km2": 1556,
-  "inflow_m3s": 57.7,
-  "balance_m3s": -43.8,
+  "inflow_m3s": 57.6,
+  "balance_m3s": -44.1,
   "finding": "stands 565 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1443,
   "km2_after": 433,
   "change": "drains",
-  "n": 20
+  "n": 17
  },
  {
   "at_px": [
@@ -326,14 +278,14 @@
   ],
   "level_m": -1619,
   "km2": 1267,
-  "inflow_m3s": 41.0,
-  "balance_m3s": -196.6,
+  "inflow_m3s": 40.8,
+  "balance_m3s": -197.1,
   "finding": "stands 485 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2057,
   "km2_after": 289,
   "change": "drains",
-  "n": 21
+  "n": 18
  },
  {
   "at_px": [
@@ -342,14 +294,14 @@
   ],
   "level_m": 705,
   "km2": 834,
-  "inflow_m3s": 132.7,
-  "balance_m3s": 79.5,
+  "inflow_m3s": 132.8,
+  "balance_m3s": 79.6,
   "finding": "no outlet at its level, gains water",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": 790,
   "km2_after": 1604,
   "change": "rises",
-  "n": 22
+  "n": 19
  },
  {
   "at_px": [
@@ -358,14 +310,14 @@
   ],
   "level_m": -1747,
   "km2": 1588,
-  "inflow_m3s": 47.0,
-  "balance_m3s": -53.1,
+  "inflow_m3s": 46.9,
+  "balance_m3s": -53.5,
   "finding": "stands 383 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1760,
   "km2_after": 834,
   "change": "drains",
-  "n": 23
+  "n": 20
  },
  {
   "at_px": [
@@ -381,7 +333,7 @@
   "level_after_m": 3955,
   "km2_after": 1139,
   "change": "rises",
-  "n": 24
+  "n": 21
  },
  {
   "at_px": [
@@ -391,13 +343,13 @@
   "level_m": -1680,
   "km2": 866,
   "inflow_m3s": 14.4,
-  "balance_m3s": -60.9,
+  "balance_m3s": -61.1,
   "finding": "stands 451 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -1927,
   "km2_after": 241,
   "change": "drains",
-  "n": 25
+  "n": 22
  },
  {
   "at_px": [
@@ -406,14 +358,14 @@
   ],
   "level_m": -85,
   "km2": 4059,
-  "inflow_m3s": 222.8,
-  "balance_m3s": 24.1,
+  "inflow_m3s": 222.5,
+  "balance_m3s": 23.4,
   "finding": "no outlet at its level, gains water",
   "settles": "balances (evaporation meets inflow)",
-  "level_after_m": -5,
-  "km2_after": 4524,
+  "level_after_m": -7,
+  "km2_after": 4508,
   "change": "rises",
-  "n": 26
+  "n": 23
  },
  {
   "at_px": [
@@ -422,30 +374,14 @@
   ],
   "level_m": 620,
   "km2": 10589,
-  "inflow_m3s": 114.5,
+  "inflow_m3s": 114.6,
   "balance_m3s": 1.8,
   "finding": "no outlet at its level, gains water",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": 593,
   "km2_after": 10830,
   "change": "drains",
-  "n": 27
- },
- {
-  "at_px": [
-   324,
-   120
-  ],
-  "level_m": 0,
-  "km2": 2535,
-  "inflow_m3s": 187.0,
-  "balance_m3s": 58.3,
-  "finding": "stands 401 m over its lowest shore",
-  "settles": "balances (evaporation meets inflow)",
-  "level_after_m": 16,
-  "km2_after": 2695,
-  "change": "drains",
-  "n": 28
+  "n": 24
  },
  {
   "at_px": [
@@ -461,7 +397,23 @@
   "level_after_m": 2264,
   "km2_after": 529,
   "change": "rises",
-  "n": 29
+  "n": 25
+ },
+ {
+  "at_px": [
+   324,
+   120
+  ],
+  "level_m": 0,
+  "km2": 2535,
+  "inflow_m3s": 186.6,
+  "balance_m3s": 57.7,
+  "finding": "stands 401 m over its lowest shore",
+  "settles": "balances (evaporation meets inflow)",
+  "level_after_m": 12,
+  "km2_after": 2679,
+  "change": "drains",
+  "n": 26
  },
  {
   "at_px": [
@@ -470,13 +422,13 @@
   ],
   "level_m": -2342,
   "km2": 1011,
-  "inflow_m3s": 135.9,
-  "balance_m3s": -30.0,
+  "inflow_m3s": 135.7,
+  "balance_m3s": -30.5,
   "finding": "stands 257 m over its lowest shore",
   "settles": "balances (evaporation meets inflow)",
   "level_after_m": -2435,
   "km2_after": 882,
   "change": "drains",
-  "n": 30
+  "n": 27
  }
 ]

@@ -30,7 +30,7 @@ Reads the page as saved (Artifact read) and the two collections (one JSON list e
    the method and the thresholds. The page's hover readout gains a 'river' row.
 6. THE PAINT. Rivers drawn on the satellite and relief maps (st, t), wider with flow; dry valleys are not painted.
 """
-import io, json, math, os, re, sys
+import heapq, io, json, math, os, re, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage as nd
@@ -65,7 +65,18 @@ ARM_R, ARM_MIN = 2, 4
 # distinctly different heights; the east dam burst first and broke the west one; today they are not joined, and a river
 # runs down each breach channel). Each one's drawn water is taken away and the land routed again: it stands where its
 # own water settles, in its own basin (east lobe 'dam 2', west lobe 'dam', the long-lake trough).
-SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-lake trough': (399, 218)}     # the Yuni river's colour on the painted maps (4.19)
+SETTLE = {'east lake (dam 2)': (599, 110), 'west lake (dam)': (447, 90), 'long-lake trough': (399, 218),
+          # the owner: the 3,600 m lake's north-western valley is a river valley, not drowned by the lake
+          'highland lake (3,600 m)': (324, 435),
+          # drained to the Ring Sea through OUTLETS: each stands at its outlet and runs out down it
+          'western lake (Ancient\'s Valley)': (164, 605), 'western lake (SW lowlands)': (294, 787)}
+NOT_JOINED = ('east lake (dam 2)', 'west lake (dam)', 'long-lake trough')
+# 4.21, the owner: the western ring's two great lakes drain to the Ring Sea. The western ring catches the ocean's
+# moisture and is closed below 957 m; each lake gets an outlet gorge, the course to the Ring Sea (or to a lake that
+# already drains to it) that cuts the least ground, its bed falling from the lake's level all the way, the cells beside
+# it eased half way down as its walls. In order: the SW lowlands' lake first, then Ancient's Valley's, whose gorge may end in
+# the first (without one it rises to ~870 m: no lower pass leads out of its basin).
+OUTLETS = [('western lake (SW lowlands)', (294, 787)), ('western lake (Ancient\'s Valley)', (164, 605))]     # the Yuni river's colour on the painted maps (4.19)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
 UI_ROW = ('    <span>wind</span><span id="rWind">—</span>\n',
@@ -380,6 +391,75 @@ def main():
         report['yuni_course'] = {'cells': len(path), 'cut_most_m': round(most, 1), 'climbs_on_4_20_m': climbs, 'source_m': round(float(En[path[0]])),
                                  'last_cell_m': round(float(En[path[-1]]))}
         print('Yuni river held to its drawn course: %d cells, its bed cut by up to %.0f m' % (len(path), most))
+    # the outlet gorges (OUTLETS)
+    report['outlets'] = []
+    gorges = []
+    if OUTLETS:
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        Sg = np.where(G['whas'], np.fmax(G['wlev'], En), En)
+        target = H['sea'].copy()
+        ends_in = {}
+        for nm, (x, y) in OUTLETS:
+            j, i = int(round(y * sv)), int(round(x * su))
+            ys, xs = np.nonzero(bl_ > 0)
+            c = np.argmin((ys - j) ** 2 + (xs - i) ** 2)
+            m = bl_ == bl_[ys[c], xs[c]]
+            lv = float(np.nanmedian(G['wlev'][m]))
+            dist = np.full(E.shape, np.inf)
+            prev = {}
+            pq = []
+            for a, b in zip(*np.nonzero(m)):
+                dist[a, b] = 0.0
+                pq.append((0.0, a, b))
+            heapq.heapify(pq)
+            end = None
+            while pq:
+                d, a, b = heapq.heappop(pq)
+                if d > dist[a, b]:
+                    continue
+                if target[a, b] and not m[a, b]:
+                    end = (a, b)
+                    break
+                for da in (-1, 0, 1):
+                    for db in (-1, 0, 1):
+                        c_, e_ = a + da, b + db
+                        if (da or db) and 0 <= c_ < E.shape[0] and 0 <= e_ < E.shape[1] and not (G['whas'][c_, e_] and not target[c_, e_] and not m[c_, e_]):
+                            nd_ = d + max(0.0, Sg[c_, e_] - lv) * math.hypot(da, db) + 1.0
+                            if nd_ < dist[c_, e_]:
+                                dist[c_, e_] = nd_
+                                prev[(c_, e_)] = (a, b)
+                                heapq.heappush(pq, (nd_, c_, e_))
+            to = ends_in.get(end, 'Ring Sea')
+            path = [end]
+            while path[-1] in prev:
+                path.append(prev[path[-1]])
+            path = [p_ for p_ in path[::-1] if not m[p_]]
+            # the sill stays at the lake's level: up to the last ground over it the bed falls 1 m a cell from the lake and
+            # a hollow on the way is left to fill as part of the lake; beyond it, the bed follows the land down
+            path = path[:next((n_ for n_, p_ in enumerate(path) if target[p_]), len(path))]
+            ridge = max([n_ for n_, p_ in enumerate(path) if En[p_] > lv] + [-1])
+            bed, cut_most, over = lv - 1.0, 0.0, 0
+            for n_, c in enumerate(path):
+                bed = bed - 1.0 if n_ <= ridge else min(En[c], bed - 1.0)
+                if En[c] - bed > 0.5:
+                    over += 1
+                    cut_most = max(cut_most, En[c] - bed)
+                    for dj in (-1, 0, 1):
+                        for di in (-1, 0, 1):
+                            a, b = c[0] + dj, c[1] + di
+                            if (dj or di) and not G['whas'][a, b] and En[a, b] > bed:
+                                En[a, b] = min(En[a, b], bed + (En[a, b] - bed) * .5)
+                    En[c] = bed
+            target |= m                                   # a later lake may run to this one
+            for c in zip(*np.nonzero(m)):
+                ends_in[c] = nm
+            gorges.append({'name': nm + ' outlet', 'from': nm, 'to': to, 'px': [px(*p_) for p_ in path],
+                           'bed_m': [round(float(En[p_])) for p_ in path], 'lake_level_m': round(lv)})
+            report['outlets'].append({'lake': nm, 'level_m': round(lv), 'length_km': round(len(path) * KM),
+                                      'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
+            report['outlets'][-1]['to'] = to
+            print('outlet for %s (%d m): %d km to the %s, cut through %d km, at most %d m deep' % (
+                nm, lv, len(path) * KM, to, over * KM, cut_most))
     # the lakes resettled where their water stands (SETTLE)
     dried = np.zeros(E.shape, bool)
     settled = np.zeros(E.shape, bool)
@@ -423,7 +503,7 @@ def main():
             print('  %s: drawn at %d m over %d km2, settles at %s m over %d km2' % (
                 nm, report['settled'][-1]['drawn_level_m'], m.sum() * KM2, report['settled'][-1]['level_m'], new.sum() * KM2))
         joined = nd.label(settled, structure=np.ones((3, 3)))[0]
-        ids = [set(np.unique(joined[settled & nd.binary_dilation(m, iterations=1)])) - {0} for _, m in picks]
+        ids = [set(np.unique(joined[settled & nd.binary_dilation(m, iterations=1)])) - {0} for nm_, m in picks if nm_ in NOT_JOINED]
         assert all(not (a & b) for n_, a in enumerate(ids) for b in ids[n_ + 1:]), 'two settled lakes are joined'
         dried = flag & ~settled
         G['whas'] = (G['whas'] & ~flag) | settled
@@ -728,8 +808,13 @@ def main():
             ok = (a > 1) & gF
             a = np.where(ok, np.round(a - 6.5 * np.clip(dz, 0, None) / 1000), a)
             rep[k] = b64(Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), 'L'), optimize=True)
+    DP = D
+    if gorges:
+        from edit_heights import relight
+        imgs, _, _ = relight(D, E, np.where(graded, E, En), keys=('st', 't'))   # the gorges shaded into the maps
+        DP = dict(D, **imgs)
     for key in ('st', 't'):
-        src = Image.open(io.BytesIO(__import__('base64').b64decode(D[key])))
+        src = Image.open(io.BytesIO(__import__('base64').b64decode(DP[key])))
         if graded.any():
             arr = np.array(src.convert('RGB'))
             land = arr[iy, ix]
@@ -765,6 +850,8 @@ def main():
         s = s[:a] + v + s[s.index('"', a):]
     s = set_data(s, 'rivers', out_recs)
     s = set_data(s, 'basins', basins)
+    if gorges:
+        s = set_data(s, 'outlets', gorges)
     s = set_data(s, 'hydro', {
         'version': VERSION, 'grid_km': round(KM, 3), 'runoff': 'Turc: P - P/sqrt(0.9+(P/L)^2), L = 300+25T+0.05T^3 mm/yr',
         'lake_evaporation': 'L at the cell', 'evap_k': round(G['evap_k'], 3), 'books': G['books'], 'q': 'mean annual discharge, m3/s', 'width_depth': 'w = 4.5 Q^0.5, d = 0.35 Q^0.38 (m)',
