@@ -15,11 +15,14 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `abyss` | flamingo, frilled lizard, marsh emu, pack lizard, riding lizard, dromedary |
 | `desert` | desert kite, wadi swift, sand strider, rock lizard, mule deer, coyote |
 | `bay` | bay soarer, canopy darter, plains grazer, savannah stalker, bay swimmer, savannah glider, cap moth, bloom glint |
-| `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth |
+| `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth, and procedural giant insects and jungle fauna (grown large by the ~2 atm lowland air): lattice mantis, stilt walkingstick, horned scarab, harvester ant, leaf katydid, giant caterpillar, gilded orb spider; flyers: atlas moth, emperor hornet, jewel macaw, sparkle hummer, lantern-fly; lantern tree frog, forest tapir, vine boa |
+| `ringsea` | giant sea lion (needs the `hyperjungle` file's helpers) |
+| `wild` | the biome pass (BIOME-FAUNA-PLAN.md), three waves covering every biome of the plan, and ten more domestic animals (donkey, mule, goose, turkey, rabbit, alpaca, reindeer, bactrian camel, homing pigeon, giant honeybee), and sea and lake fauna (ring dolphin, giant sea turtle, manta ray, giant ring squid, glass jellyfish, reef octopus, ring marlin, banner reef fish, ring cormorant, giant pike, lake sturgeon, giant catfish, lake plesiosaur, lake diver), and eight large hexapods of different countries (dune runner, frost trunker, marsh strider, cavern leaper, cinder crawler, plains hopper, tide crawler, badland digger), and five large hexapods after the owner's reference plates (scytheback, hookstalker, reedneck, gapemaw, clubback), and eight more six-limbed beasts after a second set of plates (burden beast, a saddle and draught animal as massive as a hippo; ember bull; horncrest; barbed ravager; capstilt; slabhorn; gapebill; dunewalker, a desert mount): and six arboreal hyperjungle critters on the `centaur` gait (canopy runner, moss sloth, bough panther, bark skulker, fruit gibber, veil glider): and the fang glider (a six-limbed reptilian glider): and four gliders of the lowlands (all climbers on the centaur gait) (meadow skimmer, hedge glider, cypress glider, sail skimmer), the eastern abyss's rim glider, and four gliders of the Rift's spore-forests, from raccoon to quetzalcoatlus size (lamp glider, spore drifter, gloam hanger, Rift sailwing), and the plumelands' ash racer (a raccoon-sized six-limbed runner): 125 animals, with a new `centaur` gait (grazers, predators, flyers, water creatures) from the shared builders `faWdQuad`, `faWdFish`, `faWdSerpent`, `faWdCrab`, `faWdRay`, `faWdSquid`, `faWdJelly`, `faWdOcto`, `faWdHex` (a flipper option on `faWdQuad` draws paddles); needs the `hyperjungle` file's helpers |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
 | `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
+| `pets` | dog, cat (baked Meshy models only) |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -33,6 +36,16 @@ The sheet: a row per animal, every variant and breed, a 1.75 m figure for scale.
 **Fly (Y)**, **Swim (U)** set what they are all doing (Fly shows an animal's `'fly'` pose build where it has one);
 `?only=key,key` lays out just those; **Night (N)**; **Hover tags (T)** names the animal under the pointer with its tags, traits,
 yields and life; **Polygon (P)**.
+
+## Meshy model variants
+
+Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
+cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. Today: the four giant flyers, the draught
+millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
+own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
+animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
+`fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
+a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`.
 
 ## What an animal carries (data first)
 

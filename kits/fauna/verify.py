@@ -101,10 +101,10 @@ ASSERT_JS = r"""()=>{const KF=KratorFauna,V=KF.VOCAB,Y=KF.YIELDS,R=[];const fail
    if(nan)fails.build.push(tag+' NaN');
    const bw=box.max.x-box.min.x,bd=box.max.z-box.min.z,bh=box.max.y;
    if(bw>u.w*1.1||bd>u.d*1.1||bh>u.h*1.1)fails.box.push(tag+' '+bw.toFixed(2)+'x'+bd.toFixed(2)+'x'+bh.toFixed(2)+' vs '+u.w.toFixed(2)+'x'+u.d.toFixed(2)+'x'+u.h.toFixed(2));
-   const nLegs=D.legs==null?4:D.legs;if(!u.parts.body||(!u.parts.head&&!D.noHead)||u.parts.legs.filter(Boolean).length!==nLegs)fails.parts.push(tag+' legs '+u.parts.legs.filter(Boolean).length+'/'+nLegs);
-   if(D.wings&&!(u.parts.wingL&&u.parts.wingR))fails.parts.push(tag+' wings');
+   const Dv=Object.assign({},D,(E.modelData||{})[v]||{});const nLegs=Dv.legs==null?4:Dv.legs;if(!u.parts.body||(!u.parts.head&&!D.noHead)||u.parts.legs.filter(Boolean).length!==nLegs)fails.parts.push(tag+' legs '+u.parts.legs.filter(Boolean).length+'/'+nLegs);
+   if(Dv.wings&&!(u.parts.wingL&&u.parts.wingR))fails.parts.push(tag+' wings');
    if(nLegs>0&&Math.abs(box.min.y)>0.05)fails.ground.push(tag+' lowest '+box.min.y.toFixed(3));
-   if(u.tris>(D.budget||9000))fails.tris.push(tag+' '+u.tris+' > '+(D.budget||9000));
+   if(u.tris>(Dv.budget||9000))fails.tris.push(tag+' '+u.tris+' > '+(Dv.budget||9000));
    for(const m of ['idle','graze','walk','rest','fly','swim']){try{for(const t of [0,.37,1.9])KF.animate(g,t,m,{phase:1});g.updateMatrixWorld(true);const b2=new THREE.Box3().setFromObject(g);
     if(!(b2.max.x-b2.min.x<u.w*1.6&&b2.max.z-b2.min.z<u.d*1.4))fails.anim.push(tag+' '+m+' grows');}catch(e){fails.anim.push(tag+' '+m+' '+e.message);}}
    const g2=KF.build(L.key,{variant:v,breed:b,seed:3});if(g2.userData.tris!==u.tris)fails.det.push(tag);}}
