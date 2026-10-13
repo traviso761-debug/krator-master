@@ -283,6 +283,39 @@ const LAKE=W.open({name:'tarn',level:10,swell:[[.12,24,20,0,.12],[.07,15,-40,1.1
  const open2=W.shoreGrid({ground:F,level:1,box:[-64,-64,64,64],cell:2,seeds:[[-40,0]]});
  ok('a core/mask raster marks land: the dike holds the flood west of it ('+flat.wetCells+' wet cells), a KFIELD gives the ground',at(flat,-40,0)&&!at(flat,40,0)&&!at(flat,1,0),!at(open2,40,0));}
 
+// ---- a MASK and a moving shore WINDOW (a sea or a lake at 1:1: little-demo)
+{// two basins, each under the level: the mask lets the surface into the west one only (as a world's coarse water raster
+ // would); the window follows a camera, re-baked whole or a slice at a time, to the same bytes as a grid baked there
+ const ground2=(x,z)=>Math.min(2+Math.hypot(x+300,z)**2/2000,30,1+Math.hypot(x-300,z)**2/2000);
+ const md=new Uint8Array(12*6);for(let j=0;j<6;j++)for(let i=0;i<12;i++)md[j*12+i]=i<6?255:0;
+ const SEA2=W.open({name:'masked sea',level:10,field:.5,swell:[[.1,20,10,0,.1]],bounds:[-600,-150,600,150],bed:ground2,mask:{x0:-600,z0:-150,cell:100,nx:12,nz:6,data:md},
+  shore:{window:400,cell:4,seeds:(x,z)=>W.maskSample({x0:-600,z0:-150,cell:100,nx:12,nz:6,data:md},x,z)>.5,band:40}});
+ ok('a window surface starts as open water (no grid yet: deep, far from shore, drawable)',SEA2.bed.blank&&SEA2.depthAt(-300,0,0)>30&&SEA2.wetAt(300,0),!SEA2.bed.blank);
+ ok('the mask keeps the surface to its own basin: contains in the west ('+SEA2.contains(-300,0)+'), not in the east basin as deep under the level ('+SEA2.contains(300,0)+')',
+  SEA2.contains(-300,0)&&!SEA2.contains(300,0)&&ground2(300,0)<10,SEA2.contains(300,0));
+ W.moveShore(SEA2,-250,10);const B1=SEA2.bed,ref=W.shoreGrid({ground:ground2,level:10,box:W.shoreBox(SEA2,-250,10),cell:4,seeds:SEA2.shoreWin.seeds,band:40});
+ const job=W.shoreJob(SEA2,-250,10);let steps=0;while(!job.step(0))steps++;const B2=SEA2.bed;
+ ok('the window bakes where the camera is ('+B1.nx+' x '+B1.nz+' cells at '+B1.cell+' m), whole or in '+(steps+1)+' slices, to the bytes of a grid baked there',
+  B1.data.every((v,k)=>v===ref.data[k])&&B2.data.every((v,k)=>v===ref.data[k])&&steps>2&&B1.x0===ref.x0,B1.blank);
+ const shore0=Math.sqrt(2000*8)-300;   // the west basin's shoreline at z = 0 on its east side (2 + r^2/2000 = 10)
+ ok('...and now the shore is real: '+SEA2.shoreDist(shore0-20,0).toFixed(1)+' m out on the water 20 m from it, the waves shoal and break',
+  Math.abs(SEA2.shoreDist(shore0-20,0)-20)<4&&SEA2.depthAt(shore0-20,0,0)<3,false);
+ // the GLSL: the window's box from its uniform, the mask from its texture
+ const Mt={x0:-600,z0:-150,cell:100,nx:12,nz:6,data:md},mtex=(s,uv)=>{const fx=uv[0]*12-.5,fz=uv[1]*6-.5,i0=Math.floor(fx),j0=Math.floor(fz),ax=fx-i0,az=fz-j0,C=(i,j)=>md[Math.min(5,Math.max(0,j))*12+Math.min(11,Math.max(0,i))]/255;
+  const v=(C(i0,j0)*(1-ax)+C(i0+1,j0)*ax)*(1-az)+(C(i0,j0+1)*(1-ax)+C(i0+1,j0+1)*ax)*az;return[v,0,0,1];};
+ const bt=texOf(SEA2.bed),tx=(s,uv)=>s==='mask'?mtex(s,uv):bt(s,uv),G=SEA2.bed;
+ const Pg=prog(SEA2,5.5,{texture2D:tx,wtrBed:'bed',wtrMask:'mask',wtrBedBox:[G.x0,G.z0,1/(G.cell*G.nx),1/(G.cell*G.nz)]});
+ let wd=0,ws=0,agree=0,n=0;for(let x=-590;x<590;x+=23.3)for(let z=-140;z<140;z+=31.7){n++;
+  agree+=(!!Pg.run('wtrMaskOk',[x,z]))===(W.maskSample(Mt,x,z)>.5);wd=Math.max(wd,Math.abs(Pg.run('wtrShoreDist',[x,z])-SEA2.shoreDist(x,z)));
+  const g=Pg.run('wtrSurface',[x,z],0),c=SEA2.surfaceAt(x,z,5.5,0);ws=Math.max(ws,Math.abs(g[1]-c[1]));}
+ const Pbad=prog(SEA2,5.5,{texture2D:tx,wtrBed:'bed',wtrMask:'mask',wtrBedBox:[G.x0+40,G.z0,1/(G.cell*G.nx),1/(G.cell*G.nz)]}),dbad=Math.abs(Pbad.run('wtrShoreDist',[shore0-20,0])-SEA2.shoreDist(shore0-20,0));
+ ok('the GLSL reads the window from its uniform box and the mask from its texture as the twins do ('+agree+' of '+n+' mask tests agree, distance '+wd.toExponential(1)+', surface '+ws.toExponential(1)+' m); negative: the box 40 m off moves the distance '+dbad.toFixed(1)+' m',
+  agree===n&&wd<1e-9&&ws<1e-8&&dbad>5,false);
+ const out=new Float32Array(C.maxNodes*4),cam=[0,40,0],inB=(x0,z0,s)=>!(x0>600||z0>150||x0+s<-600||z0+s<-150);
+ const all=W.cdlod(cam,10,inB,out),own=W.cdlod(cam,10,(x0,z0,s)=>inB(x0,z0,s)&&SEA2.maskIn(x0,z0,x0+s,z0+s),out);let east=0;
+ for(let k=0;k<own;k++)if(out[k*4]>=0)east++;
+ ok('the CDLOD selection keeps to the mask ('+all+' nodes in the box, '+own+' over the mask, '+east+' wholly east of it)',own<all&&east===0,own===all);
+ W.surfaces.splice(W.surfaces.indexOf(SEA2),1);}
 // ================================================================ PHASE 3: flow and falls (22-core-water-flow.js, 51-core-water-kinds.js)
 const GP=(text,t,extra)=>glslProgram(A.waveGLSL()+'\n'+text,Object.assign({atmWaveT:A.waveWrap(t),atmWaveAmp:PW.amp,cameraPosition:[0,0,0]},extra||{}));
 {// a river from KRELIEF.river-shaped points: down a valley, round a bend, over a riffle

@@ -44,7 +44,9 @@
  // ---- THE CHUNK for surface S: functions and its uniforms, the same text in both stages (after #include <atmos_waves>)
  W.glsl=S=>{const P=W.PRESETS,F=P.foam,B=P.bed,C=P.cdlod,A=AT(),f=glf,L=S.lod,X=S.px,wv=S.waves;
   const field=S.field&&A?S.field:0,tilt=A?S.tilt*A.PRESETS.waves.tilt:0,K=w=>v3([w.tx,w.tz,w.tc]);
-  const o=['uniform float wtrLevel;uniform float wtrBase;'+(S.bed?'uniform sampler2D wtrBed;':''),
+  // (a mask, 20's S.maskAt: the cells this water may cover)
+  const M=S.mask,o=['uniform float wtrLevel;uniform float wtrBase;'+(S.bed?'uniform sampler2D wtrBed;':'')+(S.shoreWin?'uniform vec4 wtrBedBox;':'')+(M?'uniform sampler2D wtrMask;\n'+
+    'bool wtrMaskOk(vec2 p){vec2 uv=(p-vec2('+f(M.x0)+','+f(M.z0)+'))*vec2('+f(1/(M.cell*M.nx))+','+f(1/(M.cell*M.nz))+');if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return false;return texture2D(wtrMask,uv).x>0.5;}':''),
    'float wtrPh(vec2 p,vec3 k,float ph,float t){return 6.283185307*(fract(p.x*k.x)+fract(p.y*k.y)-fract(t*k.z))+ph;}',
    // displacement of the rest point p (vertex): (dx, h, dz), each trochoid faded by k*sp
    'vec3 wtrTroD(vec2 p,float sp){vec3 r=vec3(0.0);float a;float l;'+wv.map(w=>'a=wtrPh(p,'+K(w)+','+f(w.ph)+',atmWaveT);l=1.0-smoothstep('+f(L[0])+','+f(L[1])+','+f(w.k)+'*sp);'+
@@ -62,7 +64,7 @@
    S.bed?'float wtrBedDecode(vec2 c){return (c.y>0.004&&c.y<0.996)?'+f(B.fine[0])+'+c.y*'+f(B.fine[1]-B.fine[0])+':'+f(B.deep[0])+'+c.x*c.x*'+f(B.deep[1]-B.deep[0])+';}'+
     // a shore grid's A channel: the depth linear over PRESETS.shore.mid, the deep channel past it (21's bedDecodeShore)
     (S.shore?'float wtrBedDecode4(vec4 c){return c.w<0.996?'+f(W.PRESETS.shore.mid[0])+'+c.w*'+f(W.PRESETS.shore.mid[1]-W.PRESETS.shore.mid[0])+':'+f(B.deep[0])+'+c.x*c.x*'+f(B.deep[1]-B.deep[0])+';}':'')+
-    'float wtrDepth(vec2 p){vec2 uv=(p-vec2('+f(S.bed.x0)+','+f(S.bed.z0)+'))*vec2('+f(1/(S.bed.cell*S.bed.nx))+','+f(1/(S.bed.cell*S.bed.nz))+');'+
+    'float wtrDepth(vec2 p){vec2 uv='+(S.shoreWin?'(p-wtrBedBox.xy)*wtrBedBox.zw;':'(p-vec2('+f(S.bed.x0)+','+f(S.bed.z0)+'))*vec2('+f(1/(S.bed.cell*S.bed.nx))+','+f(1/(S.bed.cell*S.bed.nz))+');')+
     'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return wtrLevel-wtrBase+'+f(B.deep[1])+';return wtrLevel-wtrBase+'+(S.shore?'wtrBedDecode4(texture2D(wtrBed,uv))':'wtrBedDecode(texture2D(wtrBed,uv).xy)')+';}'+
     (S.shore?W.shoreGLSL(S):'float wtrDamp(vec2 p){return smoothstep(0.0,'+f(S.dampDepth)+',wtrDepth(p));}')
     :'float wtrDepth(vec2 p){return 1.0e9;}float wtrDamp(vec2 p){return 1.0;}',
@@ -84,7 +86,7 @@
  W.shoreGLSL=S=>{const f=glf,G=S.bed,Q=W.PRESETS.shore,H=Q.shoal,U=Q.surf,E=Q.wet,per=W.period(),n=W.surfCycles();
   return['float wtrShoalK(float d){return d>='+f(H.depth)+'?1.0:min('+f(H.max)+',pow('+f(H.depth)+'/max(d,'+f(H.min)+'),0.25));}',
    'float wtrDamp(vec2 p){float d=wtrDepth(p);return smoothstep(0.0,'+f(S.dampDepth)+',d)*wtrShoalK(d);}',
-   'float wtrShoreDist(vec2 p){vec2 uv=(p-vec2('+f(G.x0)+','+f(G.z0)+'))*vec2('+f(1/(G.cell*G.nx))+','+f(1/(G.cell*G.nz))+');'+
+   'float wtrShoreDist(vec2 p){vec2 uv='+(S.shoreWin?'(p-wtrBedBox.xy)*wtrBedBox.zw;':'(p-vec2('+f(G.x0)+','+f(G.z0)+'))*vec2('+f(1/(G.cell*G.nx))+','+f(1/(G.cell*G.nz))+');')+
     'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return '+f(G.band)+';return (texture2D(wtrBed,uv).z-0.5)*'+f(2*G.band)+';}',
    'bool wtrWet(vec2 p){return wtrShoreDist(p)>'+f(-G.clip*G.cell)+';}',
    'float wtrSurfPh(float d){return 6.283185307*(fract(d*'+f(1/U.lambda)+')+fract(atmWaveT*'+f(n/per)+'));}',
@@ -102,13 +104,18 @@
 
  // ---- the uniforms a surface's shaders share (one set per surface: the drawn mesh, its wakes)
  W.uniformsOf=S=>{if(S.U)return S.U;const A=AT(),T=A.T;S.U={wtrLevel:{value:S.levelAt(A.clock?A.clock.t:0)},wtrBase:{value:S.base}};
+  if(S.mask){const M=S.mask,d=new Uint8Array(M.nx*M.nz*4);for(let k=0;k<M.nx*M.nz;k++){d[k*4]=M.data[k];d[k*4+3]=255;}const tx=new T.DataTexture(d,M.nx,M.nz,T.RGBAFormat,T.UnsignedByteType);
+   tx.minFilter=tx.magFilter=T.LinearFilter;tx.wrapS=tx.wrapT=T.ClampToEdgeWrapping;tx.generateMipmaps=false;tx.flipY=false;tx.needsUpdate=true;S.U.wtrMask={value:tx};}
+  // a shore window: its box as a uniform, and its bytes refreshed in place each time it is re-baked (the same size)
+  if(S.shoreWin){const B=S.bed;S.U.wtrBedBox={value:new T.Vector4(B.x0,B.z0,1/(B.cell*B.nx),1/(B.cell*B.nz))};
+   const prev=S.onShore;S.onShore=G=>{if(prev)prev(G);const tx=S.U.wtrBed.value;tx.image.data.set(G.data);tx.needsUpdate=true;S.U.wtrBedBox.value.set(G.x0,G.z0,1/(G.cell*G.nx),1/(G.cell*G.nz));};}
   if(S.bed){const B=S.bed,tx=new T.DataTexture(B.data,B.nx,B.nz,T.RGBAFormat,T.UnsignedByteType);tx.minFilter=tx.magFilter=T.LinearFilter;tx.wrapS=tx.wrapT=T.ClampToEdgeWrapping;
    tx.generateMipmaps=false;tx.flipY=false;tx.needsUpdate=true;S.U.wtrBed={value:tx};}
   A.hook(t=>{S.U.wtrLevel.value=S.levelAt(t);});return S.U;};
  W.shaderOn=(S,sh)=>{ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));return'#include <atmos_waves>\n'+W.glsl(S)+'\n';};
 
  W.drawn=[];
- W.draw=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,C=W.PRESETS.cdlod,F=W.PRESETS.foam,f=glf,N=C.grid;
+ W.draw=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,C=Object.assign({},W.PRESETS.cdlod,o.cdlod||{}),F=W.PRESETS.foam,f=glf,N=C.grid;
   // the node: (N+1)^2 vertices on [0,1]^2 in x,z
   const pos=[],uv=[],idx=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){pos.push(i/N,0,j/N);uv.push(i/N,j/N);}
   // one diagonal direction everywhere: a node fully morphed is then exactly the next level's triangles (no flip when it swaps)
@@ -129,12 +136,18 @@
    o.transparent?'diffuseColor.a*=mix(0.86,0.97,smoothstep(0.0,2.0,wtrDp))*smoothstep(-0.1,0.15,wtrDp);':'',
    S.bounds?'if(vWtrP.x<'+f(S.bounds[0])+'||vWtrP.y<'+f(S.bounds[1])+'||vWtrP.x>'+f(S.bounds[2])+'||vWtrP.y>'+f(S.bounds[3])+')discard;':'',
    S.shore?'if(!wtrWet(vWtrP))discard;wtrFoamK=max(wtrFoamK,wtrSurfFoam(vWtrP));':'',
+   S.mask?'if(!wtrMaskOk(vWtrP))discard;':'',
    'diffuseColor.rgb=mix(diffuseColor.rgb,'+col(F.color)+',wtrFoamK);'].join('\n');
   const VARY='varying vec2 vWtrP0;varying vec2 vWtrP;varying float vWtrDamp;';
+  // a camera-relative origin (o.origin: its snap in m): the mesh stands at a point near the camera and the vertex shader
+  // draws relative to it, so the view transform is taken in doubles on the CPU (a world a million metres across draws
+  // without the float jitter of world-space vertices); the waves still read world coordinates
+  const U2={wtrOrigin:{value:new T.Vector2()}};
   mat.onBeforeCompile=sh=>{const CH=W.shaderOn(S,sh)+VARY;
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;')
+   if(o.origin)sh.uniforms.wtrOrigin=U2.wtrOrigin;
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;'+(o.origin?'uniform vec2 wtrOrigin;':''))
     .replace('#include <beginnormal_vertex>','vec3 objectNormal=vec3(0.0,1.0,0.0);')
-    .replace('#include <begin_vertex>','vec3 wtrM=wtrMorph(position.xz,wtrNode);vec4 wtrS=wtrSurface(wtrM.xy,wtrM.z);vWtrP0=wtrM.xy;vWtrP=wtrS.xz;vWtrDamp=wtrS.w;vec3 transformed=wtrS.xyz;'+
+    .replace('#include <begin_vertex>','vec3 wtrM=wtrMorph(position.xz,wtrNode);vec4 wtrS=wtrSurface(wtrM.xy,wtrM.z);vWtrP0=wtrM.xy;vWtrP=wtrS.xz;vWtrDamp=wtrS.w;vec3 transformed=wtrS.xyz'+(o.origin?'-vec3(wtrOrigin.x,0.0,wtrOrigin.y)':'')+';'+
      (o.normalMap?'\n#ifdef USE_UV\nvUv=(uvTransform*vec3(wtrS.xz*'+f(1/(o.detailSize||46))+',1.0)).xy;\n#endif\n':''));
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+'\n'+
      'float wtrHash(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}\n'+
@@ -148,9 +161,10 @@
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   // the nodes for the camera that is about to render (every render of the scene: the attribute uploads in that render)
   const fu=new T.Frustum(),pm=new T.Matrix4(),box=new T.Box3(),cam=[0,0,0],B=S.bounds;
-  const inView=(x0,z0,s)=>{if(B&&(x0>B[2]||z0>B[3]||x0+s<B[0]||z0+s<B[1]))return false;if(S.shore&&!S.wetIn(x0,z0,x0+s,z0+s))return false;const lv=U.wtrLevel.value;box.min.set(x0,lv-S.amp,z0);box.max.set(x0+s,lv+S.amp,z0+s);return fu.intersectsBox(box);};
+  const inView=(x0,z0,s)=>{if(B&&(x0>B[2]||z0>B[3]||x0+s<B[0]||z0+s<B[1]))return false;if(S.shore&&!S.wetIn(x0,z0,x0+s,z0+s))return false;if(S.mask&&!S.maskIn(x0,z0,x0+s,z0+s))return false;const lv=U.wtrLevel.value;box.min.set(x0,lv-S.amp,z0);box.max.set(x0+s,lv+S.amp,z0+s);return fu.intersectsBox(box);};
   const update=camera=>{pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);fu.setFromProjectionMatrix(pm);const e=camera.matrixWorld.elements;cam[0]=e[12];cam[1]=e[13];cam[2]=e[14];
-   const n=W.cdlod(cam,U.wtrLevel.value,inView,nodes);g.instanceCount=n;na.updateRange.offset=0;na.updateRange.count=n*4;na.needsUpdate=true;D.nodes=n;};
+   const n=W.cdlod(cam,U.wtrLevel.value,inView,nodes,C);g.instanceCount=n;na.updateRange.offset=0;na.updateRange.count=n*4;na.needsUpdate=true;D.nodes=n;
+   if(o.origin){const s=o.origin,ox=Math.round(cam[0]/s)*s,oz=Math.round(cam[2]/s)*s;mesh.position.set(ox,0,oz);mesh.updateMatrixWorld();U2.wtrOrigin.value.set(ox,oz);}};
   const prev=scene.onBeforeRender;scene.onBeforeRender=function(r,s,c,rt){if(prev)prev.call(this,r,s,c,rt);if(mesh.visible)update(c);};
   // the sky's light (b-skylight's capture) and the detail normals' scroll, on the module clock
   A.hook(()=>{const E=A.skyEnv,tx=E&&E.target&&E.target.texture;if(tx&&mat.envMap!==tx){mat.envMap=tx;mat.needsUpdate=true;}

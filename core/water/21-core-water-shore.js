@@ -83,6 +83,25 @@
  W.maskLand=(mask,toPx,thresh)=>{const w=mask.width,h=mask.height,d=mask.data,t=thresh==null?127:thresh;
   return(x,z)=>{const p=toPx(x,z),i=Math.floor(p[0]),j=Math.floor(p[1]);return i>=0&&j>=0&&i<w&&j<h&&d[(j*w+i)*4]>t;};};
 
+ // ---- a shore WINDOW (WATER.open with shore.window): a grid that follows the camera
+ // its grid before the first bake: open water everywhere (deep, far from any shore), every cell drawable
+ W.shoreBlank=S=>{const Q=S.shoreWin,n=Q.n,data=new Uint8Array(n*n*4).fill(255),sat=new Int32Array((n+1)*(n+1));
+  for(let j=1;j<=n;j++)for(let i=1;i<=n;i++)sat[j*(n+1)+i]=i*j;
+  return{x0:-n*Q.cell/2,z0:-n*Q.cell/2,cell:Q.cell,nx:n,nz:n,data,level:S.base,shore:true,band:Q.band,clip:Q.clip==null?P().clip:Q.clip,wetCells:n*n,seeded:Q.seeds!=null,sat,blank:true};};
+ // its box centred on (cx, cz), snapped to its cells (so a move re-samples the same lattice)
+ W.shoreBox=(S,cx,cz)=>{const Q=S.shoreWin,h=Q.n*Q.cell/2,x0=Math.round((cx-h)/Q.cell)*Q.cell,z0=Math.round((cz-h)/Q.cell)*Q.cell;return[x0,z0,x0+Q.n*Q.cell,z0+Q.n*Q.cell];};
+ // re-bake it there now
+ W.moveShore=(S,cx,cz)=>{const Q=S.shoreWin;S.bed=W.shoreGrid({ground:Q.ground,level:S.base,box:W.shoreBox(S,cx,cz),cell:Q.cell,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip});
+  if(S.onShore)S.onShore(S.bed);return S.bed;};
+ // ... or a job that samples the ground a slice at a time (step(ms) -> true when the new grid is in place), so a streamed
+ // world re-bakes as the camera moves without a long frame; the flood, the transform and the bytes run in the last step
+ W.shoreJob=(S,cx,cz)=>{const Q=S.shoreWin,box=W.shoreBox(S,cx,cz),n=Q.n,c=Q.cell,gfn=typeof Q.ground==='function'?Q.ground:(x,z)=>Q.ground.h(x,z),H=new Float64Array(n*n);let k=0;
+  const now=()=>typeof performance!=='undefined'?performance.now():Date.now();
+  return{box,done:false,step(ms){const t0=now();
+   while(k<n*n){const i=k%n,j=(k-i)/n;H[k]=gfn(box[0]+(i+.5)*c,box[1]+(j+.5)*c);k++;if((k&63)===0&&now()-t0>ms)return false;}
+   S.bed=W.shoreGrid({ground:(x,z)=>H[Math.min(n-1,Math.floor((z-box[1])/c))*n+Math.min(n-1,Math.floor((x-box[0])/c))],level:S.base,box,cell:c,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip});
+   if(S.onShore)S.onShore(S.bed);this.done=true;return true;}};};
+
  // ---- the twins on a grid (G as W.shoreGrid makes it, or as an export carries it: the bytes are the truth)
  // channel k (0..3) bilinear over the texel centres, clamped at the edges, as the GPU filters; null outside the box
  W.gridSample=(G,x,z,k)=>{const u=(x-G.x0)/(G.cell*G.nx),v=(z-G.z0)/(G.cell*G.nz);if(u<0||v<0||u>1||v>1)return null;

@@ -12,6 +12,8 @@
 //        o: {color, opacity, rows, cols, plunge (false: none), plungeY, spray (false: none), renderOrder}
 //   WATER.drawStill(S, o)  a still surface (a box or a polygon) flat at its level: the sky in it, a faint ripple, a
 //        fountain's rings (wtrStillN, twin WATER.stillNormal). o: {color, roughness, metalness, envMapIntensity, opacity}
+//   WATER.stillMaterial(o)  one still material for many small pools a build draws itself (an instanced trough box): the
+//        ripple on their tops, the sky in them
 //   WATER.wetGround(material, {surface, rain})  a ground material darkens and shines where it is wet: the beach the swash
 //        reaches (a shore surface's wtrWetGround) and, with rain, every up-facing surface by the weather's W.wet (Phase 4;
 //        WATER.wetGroundRain). For MeshStandard/Phong/Lambert materials; a build with its own ShaderMaterial takes
@@ -112,6 +114,18 @@
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrStillN(vWtrW.xz),0.0)).xyz);');};
   const mesh=tag(new T.Mesh(g,mat),S);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={S,mesh,material:mat};W.drawn.push(D);return D;};
+ // one still-water material for many small pools drawn by a build's own (instanced) meshes: troughs, wallows, basins.
+ // Their tops take wtrStillN's ripple (no fountain) and the sky; their sides keep their own normals. Each pool should
+ // still be a WATER.still record (the twin). o: {THREE, color, roughness, metalness, envMapIntensity}
+ W.stillMaterial=o=>{o=o||{};const A=ATMOS,T=o.THREE||A.T;
+  const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness});sky(mat,o);
+  const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;varying float vWtrNy;';
+  mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
+    'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\n'+
+    'if(vWtrNy>0.7)normal=normalize((viewMatrix*vec4(wtrStillN(vWtrW.xz),0.0)).xyz);');};
+  return mat;};
 
  // ---- WET GROUND: the chunk (wtrWetGround(p, gy) from a shore surface, or none; wtrRain the weather's wetness)
  W.wetChunk=(S,uniforms)=>{const A=AT(),U={wtrRain:{value:W.wet()}};A.hook(()=>{U.wtrRain.value=W.wet();});
