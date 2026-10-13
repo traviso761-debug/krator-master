@@ -93,12 +93,12 @@
  // re-bake it there now
  W.moveShore=(S,cx,cz)=>{const Q=S.shoreWin;S.bed=W.shoreGrid({ground:Q.ground,level:S.base,box:W.shoreBox(S,cx,cz),cell:Q.cell,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip});
   if(S.onShore)S.onShore(S.bed);return S.bed;};
- // ... or a job that samples the ground a slice at a time (step(ms) -> true when the new grid is in place), so a streamed
- // world re-bakes as the camera moves without a long frame; the flood, the transform and the bytes run in the last step
+ // ... or a job that samples the ground a slice at a time (step(n): n samples, -> true when the new grid is in place; the
+ // host decides how many fit its frame), so a streamed world re-bakes as the camera moves without a long frame; the
+ // flood, the transform and the bytes run in the last step
  W.shoreJob=(S,cx,cz)=>{const Q=S.shoreWin,box=W.shoreBox(S,cx,cz),n=Q.n,c=Q.cell,gfn=typeof Q.ground==='function'?Q.ground:(x,z)=>Q.ground.h(x,z),H=new Float64Array(n*n);let k=0;
-  const now=()=>typeof performance!=='undefined'?performance.now():Date.now();
-  return{box,done:false,step(ms){const t0=now();
-   while(k<n*n){const i=k%n,j=(k-i)/n;H[k]=gfn(box[0]+(i+.5)*c,box[1]+(j+.5)*c);k++;if((k&63)===0&&now()-t0>ms)return false;}
+  return{box,done:false,left:()=>n*n-k,step(m){const end=Math.min(n*n,k+Math.max(1,m==null?n*n:m));
+   while(k<end){const i=k%n,j=(k-i)/n;H[k]=gfn(box[0]+(i+.5)*c,box[1]+(j+.5)*c);k++;}if(k<n*n)return false;
    S.bed=W.shoreGrid({ground:(x,z)=>H[Math.min(n-1,Math.floor((z-box[1])/c))*n+Math.min(n-1,Math.floor((x-box[0])/c))],level:S.base,box,cell:c,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip});
    if(S.onShore)S.onShore(S.bed);this.done=true;return true;}};};
 

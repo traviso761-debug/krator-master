@@ -5,7 +5,8 @@
 //   WATER.drawFlow(S, o)   a flow surface as its ribbon (22's WATER.ribbon): one mesh, the surface falling with the line;
 //        the normals advected along the current (WATER.flowGLSL's wtrFlowN, twin WATER.flowNormal), white water where the
 //        bed steepens and along the banks (wtrFlowFoam), the shallows paler toward the banks. o: {color, shallow, deep,
-//        roughness, metalness, envMapIntensity, transparent, step, across, margin, renderOrder}
+//        roughness, metalness, envMapIntensity, transparent, step, across, margin, renderOrder, origin (vertices local to
+//        the ribbon's middle: a long river far out)}
 //   WATER.drawFall(S, o)   a fall's curtain (WATER.curtain: it arcs), streaked with a pattern that falls with the water
 //        (wtrStreak, twin WATER.fallStreak), whiter toward the foot; its plunge pool's churn (wtrPlunge, twin WATER.plungeAt)
 //        as a disc at the foot; spray from core/atmos's particles where the page has them (ATMOS.smoke 'spray').
@@ -21,7 +22,7 @@
 // Every drawing returns {mesh, material, ...}; meshes carry userData.probeSkip and lodSkip and are named 'water:<name>'.
 (function(){const W=WATER,TAU=Math.PI*2;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},f=glf;
- const AT=()=>typeof ATMOS!=='undefined'?ATMOS:null;
+ const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
  const lin=(T,c)=>{const q=new T.Color(c);return'vec3('+[q.r,q.g,q.b].map(glf).join(',')+')';};
  const tag=(m,S)=>{m.name='water:'+S.name;m.userData.probeSkip=true;m.userData.lodSkip=true;m.userData.water=S.id;m.raycast=()=>{};return m;};
  // the sky's light on a material (b-skylight's capture), as WATER.draw takes it
@@ -44,7 +45,10 @@
  W.drawFlow=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period();
   S.ribbonOpt={step:o.step==null?Q.step:o.step,across:o.across==null?Q.across:o.across,margin:o.margin==null?Q.margin:o.margin};
   const R=W.ribbon(S,S.ribbonOpt),g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(R.pos,3));g.setAttribute('wtrFlow',new T.Float32BufferAttribute(R.flow,2));
+  // o.origin: the mesh stands at the ribbon's middle and its vertices are local to it (a river a hundred km long, a
+  // million metres out, keeps its float precision); the shader still reads world positions through modelMatrix
+  const org=[0,0,0];if(o.origin){let n=R.count;for(let i=0;i<n;i++){org[0]+=R.pos[i*3]/n;org[2]+=R.pos[i*3+2]/n;}org[0]=Math.round(org[0]);org[2]=Math.round(org[2]);}
+  g.setAttribute('position',new T.Float32BufferAttribute(o.origin?R.pos.map((v,i)=>v-org[i%3]):R.pos,3));g.setAttribute('wtrFlow',new T.Float32BufferAttribute(R.flow,2));
   g.setAttribute('wtrSlope',new T.Float32BufferAttribute(R.slope,1));g.setAttribute('wtrBank',new T.Float32BufferAttribute(R.bank,1));
   g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(R.count*3).map((v,i)=>i%3===1?1:0),3));g.setIndex(R.idx);g.computeBoundingSphere();
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
@@ -65,7 +69,7 @@
      (o.transparent!==false?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);':''))
     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);')
     .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrFlowN(vWtrW.xz,vWtrF,vWtrS),0.0)).xyz);');};
-  const mesh=tag(new T.Mesh(g,mat),S);mesh.renderOrder=o.renderOrder==null?1:o.renderOrder;scene.add(mesh);
+  const mesh=tag(new T.Mesh(g,mat),S);mesh.renderOrder=o.renderOrder==null?1:o.renderOrder;mesh.position.set(org[0],0,org[2]);scene.add(mesh);
   const D={S,mesh,material:mat,ribbon:R};W.drawn.push(D);return D;};
 
  // ---- FALLS: wtrStreak(u, f) and wtrFallFoam(f, s) for fall S; wtrPlunge(p) -> (foam, ring) for its pool
@@ -140,8 +144,9 @@
   mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);const CH=W.wetChunk(S,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
     'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
-    'vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);')
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);');};
+   // after everything that sets the albedo (a build's own colour hooks included) and the roughness, before the light
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <emissivemap_fragment>',
+    '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
+    '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
   mat.needsUpdate=true;return mat;};
 })();

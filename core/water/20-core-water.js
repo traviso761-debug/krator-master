@@ -14,7 +14,8 @@
 // Without core/atmos loaded the field is 0 and the period 600 s.
 const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  const fr=x=>x-Math.floor(x),cl=(x,a,b)=>x<a?a:x>b?b:x,ss=(a,b,x)=>{const t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t);};
- const AT=()=>typeof ATMOS!=='undefined'&&ATMOS.PRESETS&&ATMOS.PRESETS.waves?ATMOS:null;
+ // (a page that declares ATMOS later in the same script has it in its temporal dead zone until then: typeof throws)
+ const AT=()=>{try{return typeof ATMOS!=='undefined'&&ATMOS.PRESETS&&ATMOS.PRESETS.waves?ATMOS:null;}catch(e){return null;}};
  W.ss=ss;W.fr=fr;
  W.KINDS=['open','shore','flow','fall','still','wet'];
  // THE PRESETS (every number the twins and the shaders read; change them before making a surface)
@@ -77,7 +78,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   return{x0:box[0],z0:box[1],cell:c,nx,nz,data,level};};
  // the two channels -> metres (the GLSL's wtrBedDecode): the fine channel where it is not clamped, the deep one elsewhere
  // a mask's value at (x,z): its bytes bilinear over the cell centres (clamped), 0 outside it (the GLSL's wtrMaskOk)
- W.maskSample=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/(M.cell*M.nz);if(u<0||v<0||u>1||v>1)return 0;
+ W.maskSample=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/((M.cellZ==null?M.cell:M.cellZ)*M.nz);if(u<0||v<0||u>1||v>1)return 0;
   const fx=u*M.nx-.5,fz=v*M.nz-.5,i0=Math.floor(fx),j0=Math.floor(fz),ax=fx-i0,az=fz-j0,ch=(i,j)=>M.data[cl(j,0,M.nz-1)*M.nx+cl(i,0,M.nx-1)]/255;
   return(ch(i0,j0)*(1-ax)+ch(i0+1,j0)*ax)*(1-az)+(ch(i0,j0+1)*(1-ax)+ch(i0+1,j0+1)*ax)*az;};
  W.bedDecode=(r,g)=>{const P=W.PRESETS.bed,D=P.deep,F=P.fine;return(g>.004&&g<.996)?F[0]+g*(F[1]-F[0]):D[0]+r*r*(D[1]-D[0]);};
@@ -106,14 +107,15 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   else if(o.bed){const b=o.bedBox||o.bounds;if(!b)throw new Error('WATER.open: a bed needs bedBox or bounds');
    // with `shore` (21-core-water-shore.js) the bed is a shore grid: the same depth bytes, plus the flood and the distance
    const H=o.shore;S.bed=H?W.shoreGrid({ground:o.bed,level:S.base,box:b,cell:H.cell==null?o.bedCell:H.cell,seeds:H.seeds,land:H.land,band:H.band,clip:H.clip}):W.bakeBed(o.bed,b,S.base,o.bedCell);}
-  // a MASK: a coarse raster of the cells this water may cover ({x0, z0, cell, nx, nz, data: a byte per cell, > 127 = may}),
+  // a MASK: a coarse raster of the cells this water may cover ({x0, z0, cell, cellZ (default cell), nx, nz, data: a byte
+  // per cell, > 127 = may}),
   // so a sea or a lake drawn by one surface keeps off every basin that is not its own (the drawing discards the rest, the
   // CDLOD selection drops nodes over none of its cells); S.maskAt is its twin (bilinear over the cells, as the GPU filters)
   if(o.mask){const M=o.mask,sat=new Int32Array((M.nx+1)*(M.nz+1));
    for(let j=0;j<M.nz;j++){let row=0;for(let i=0;i<M.nx;i++){row+=M.data[j*M.nx+i]>127?1:0;sat[(j+1)*(M.nx+1)+i+1]=sat[j*(M.nx+1)+i+1]+row;}}
-   S.mask={x0:M.x0,z0:M.z0,cell:M.cell,nx:M.nx,nz:M.nz,data:M.data,sat};
+   S.mask={x0:M.x0,z0:M.z0,cell:M.cell,cellZ:M.cellZ==null?M.cell:M.cellZ,nx:M.nx,nz:M.nz,data:M.data,sat};
    S.maskAt=(x,z)=>W.maskSample(S.mask,x,z)>.5;
-   S.maskIn=(x0,z0,x1,z1)=>{const G=S.mask,c=G.cell,i0=cl(Math.floor((x0-G.x0)/c),0,G.nx),j0=cl(Math.floor((z0-G.z0)/c),0,G.nz),i1=cl(Math.ceil((x1-G.x0)/c),0,G.nx),j1=cl(Math.ceil((z1-G.z0)/c),0,G.nz);
+   S.maskIn=(x0,z0,x1,z1)=>{const G=S.mask,c=G.cell,cz=G.cellZ,i0=cl(Math.floor((x0-G.x0)/c),0,G.nx),j0=cl(Math.floor((z0-G.z0)/cz),0,G.nz),i1=cl(Math.ceil((x1-G.x0)/c),0,G.nx),j1=cl(Math.ceil((z1-G.z0)/cz),0,G.nz);
     if(i1<=i0||j1<=j0)return false;const T=G.sat,w=G.nx+1;return T[j1*w+i1]-T[j0*w+i1]-T[j1*w+i0]+T[j0*w+i0]>0;};}
   S.shore=!!(S.bed&&S.bed.shore);
   // depth below the surface at (x,z) and t; the damping it gives (1 where there is no bed); on a shore grid the waves
@@ -207,7 +209,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    bed:S.bed?{x0:S.bed.x0,z0:S.bed.z0,cell:S.bed.cell,nx:S.bed.nx,nz:S.bed.nz,level:S.bed.level}:null},
    // a shore grid (Phase 2): the bed's B channel is the signed shore distance over [-band, band]; clip in cells
    S.shore?{shore:{band:S.bed.band,clip:S.bed.clip,seeded:S.bed.seeded,wetCells:S.bed.wetCells,window:S.shoreWin?S.shoreWin.n*S.shoreWin.cell:null}}:{},
-   S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,nx:S.mask.nx,nz:S.mask.nz}}:{});
+   S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,cellZ:S.mask.cellZ,nx:S.mask.nx,nz:S.mask.nz}}:{});
   else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{});
   else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{});
   else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain});

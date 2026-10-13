@@ -294,7 +294,7 @@ const LAKE=W.open({name:'tarn',level:10,swell:[[.12,24,20,0,.12],[.07,15,-40,1.1
  ok('the mask keeps the surface to its own basin: contains in the west ('+SEA2.contains(-300,0)+'), not in the east basin as deep under the level ('+SEA2.contains(300,0)+')',
   SEA2.contains(-300,0)&&!SEA2.contains(300,0)&&ground2(300,0)<10,SEA2.contains(300,0));
  W.moveShore(SEA2,-250,10);const B1=SEA2.bed,ref=W.shoreGrid({ground:ground2,level:10,box:W.shoreBox(SEA2,-250,10),cell:4,seeds:SEA2.shoreWin.seeds,band:40});
- const job=W.shoreJob(SEA2,-250,10);let steps=0;while(!job.step(0))steps++;const B2=SEA2.bed;
+ const job=W.shoreJob(SEA2,-250,10);let steps=0;while(!job.step(64))steps++;const B2=SEA2.bed;
  ok('the window bakes where the camera is ('+B1.nx+' x '+B1.nz+' cells at '+B1.cell+' m), whole or in '+(steps+1)+' slices, to the bytes of a grid baked there',
   B1.data.every((v,k)=>v===ref.data[k])&&B2.data.every((v,k)=>v===ref.data[k])&&steps>2&&B1.x0===ref.x0,B1.blank);
  const shore0=Math.sqrt(2000*8)-300;   // the west basin's shoreline at z = 0 on its east side (2 + r^2/2000 = 10)

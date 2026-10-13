@@ -27,7 +27,7 @@
 // with wtrHeight(xz) (the height at a world point, 3 Newton steps) for anything drawn on the water.
 (function(){const W=WATER;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},v3=a=>'vec3('+a.map(glf).join(',')+')';
- const AT=()=>typeof ATMOS!=='undefined'?ATMOS:null;
+ const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
  // ---- the CDLOD selection (data: no THREE): fills out with [x0, z0, size, level] per node, returns the count.
  // cam [x,y,z]; level the surface's height; inView(x0,z0,size) false drops a node and its children (null: keep all)
  W.cdlod=(cam,level,inView,out,C)=>{C=C||W.PRESETS.cdlod;const root=C.leaf*Math.pow(2,C.levels-1),half=root/2,max=out?out.length/4:C.maxNodes,
@@ -46,7 +46,7 @@
   const field=S.field&&A?S.field:0,tilt=A?S.tilt*A.PRESETS.waves.tilt:0,K=w=>v3([w.tx,w.tz,w.tc]);
   // (a mask, 20's S.maskAt: the cells this water may cover)
   const M=S.mask,o=['uniform float wtrLevel;uniform float wtrBase;'+(S.bed?'uniform sampler2D wtrBed;':'')+(S.shoreWin?'uniform vec4 wtrBedBox;':'')+(M?'uniform sampler2D wtrMask;\n'+
-    'bool wtrMaskOk(vec2 p){vec2 uv=(p-vec2('+f(M.x0)+','+f(M.z0)+'))*vec2('+f(1/(M.cell*M.nx))+','+f(1/(M.cell*M.nz))+');if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return false;return texture2D(wtrMask,uv).x>0.5;}':''),
+    'bool wtrMaskOk(vec2 p){vec2 uv=(p-vec2('+f(M.x0)+','+f(M.z0)+'))*vec2('+f(1/(M.cell*M.nx))+','+f(1/(M.cellZ*M.nz))+');if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return false;return texture2D(wtrMask,uv).x>0.5;}':''),
    'float wtrPh(vec2 p,vec3 k,float ph,float t){return 6.283185307*(fract(p.x*k.x)+fract(p.y*k.y)-fract(t*k.z))+ph;}',
    // displacement of the rest point p (vertex): (dx, h, dz), each trochoid faded by k*sp
    'vec3 wtrTroD(vec2 p,float sp){vec3 r=vec3(0.0);float a;float l;'+wv.map(w=>'a=wtrPh(p,'+K(w)+','+f(w.ph)+',atmWaveT);l=1.0-smoothstep('+f(L[0])+','+f(L[1])+','+f(w.k)+'*sp);'+
@@ -165,7 +165,9 @@
   const update=camera=>{pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);fu.setFromProjectionMatrix(pm);const e=camera.matrixWorld.elements;cam[0]=e[12];cam[1]=e[13];cam[2]=e[14];
    const n=W.cdlod(cam,U.wtrLevel.value,inView,nodes,C);g.instanceCount=n;na.updateRange.offset=0;na.updateRange.count=n*4;na.needsUpdate=true;D.nodes=n;
    if(o.origin){const s=o.origin,ox=Math.round(cam[0]/s)*s,oz=Math.round(cam[2]/s)*s;mesh.position.set(ox,0,oz);mesh.updateMatrixWorld();U2.wtrOrigin.value.set(ox,oz);}};
-  const prev=scene.onBeforeRender;scene.onBeforeRender=function(r,s,c,rt){if(prev)prev.call(this,r,s,c,rt);if(mesh.visible)update(c);};
+  // (o.hideEmpty: the mesh hides itself while it selects no node, and D.active, not its visibility, decides whether it selects)
+  const prev=scene.onBeforeRender;scene.onBeforeRender=function(r,s,c,rt){if(prev)prev.call(this,r,s,c,rt);
+   if(o.hideEmpty?D.active!==false:mesh.visible){update(c);if(o.hideEmpty)mesh.visible=D.nodes>0&&D.active!==false;}};
   // the sky's light (b-skylight's capture) and the detail normals' scroll, on the module clock
   A.hook(()=>{const E=A.skyEnv,tx=E&&E.target&&E.target.texture;if(tx&&mat.envMap!==tx){mat.envMap=tx;mat.needsUpdate=true;}
    if(o.normalMap){const wt=A.U.waveTime.value;o.normalMap.offset.set(W.fr(wt*dc[0]/per),W.fr(wt*dc[1]/per));}});
