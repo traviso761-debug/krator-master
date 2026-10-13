@@ -1474,22 +1474,54 @@
  "settlements/girder/girder-hero.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 192
+  "seconds": 125
  },
  "settlements/girder/girder.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 907
+  "seconds": 118
  },
  "settlements/highlands/dist/highlands.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 902
+  "calls": 163,
+  "errors": 0,
+  "furnTris": 791390,
+  "instSets": 279,
+  "instances": 139412,
+  "lodOff": {
+   "calls": 300,
+   "tris": 3353410
+  },
+  "lodOn": {
+   "calls": 163,
+   "tris": 1281464
+  },
+  "materials": 318,
+  "meshes": 341,
+  "ready": true,
+  "sceneTris": 3435158,
+  "seconds": 49,
+  "tris": 1424470
  },
  "settlements/highlands/dist/roketstad.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 908
+  "calls": 361,
+  "errors": 0,
+  "furnTris": 3352322,
+  "instSets": 326,
+  "instances": 357726,
+  "lodOff": {
+   "calls": 376,
+   "tris": 10628053
+  },
+  "lodOn": {
+   "calls": 377,
+   "tris": 7940439
+  },
+  "materials": 370,
+  "meshes": 475,
+  "ready": true,
+  "sceneTris": 11004747,
+  "seconds": 318,
+  "tris": 10621379
  },
  "settlements/iziz/dist/iziz-vernacular.html": {
   "calls": 61,
@@ -1618,39 +1650,64 @@
   "tris": 1222297
  },
  "settlements/locus/abyss-kit.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 26
+  "calls": 111,
+  "errors": 0,
+  "furnTris": 174730,
+  "instSets": 70,
+  "instances": 16846,
+  "lastFrame": true,
+  "lodOff": {
+   "calls": 105,
+   "tris": 746760
+  },
+  "lodOn": {
+   "calls": 106,
+   "tris": 615894
+  },
+  "materials": 109,
+  "meshes": 109,
+  "ready": true,
+  "sceneTris": 749128,
+  "seconds": 35,
+  "tris": 639732
  },
  "settlements/locus/locus-kit.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 78
+  "seconds": 21
  },
  "settlements/locus/locus-plants.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 85
+  "seconds": 13
  },
  "settlements/locus/locus.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 926
+  "seconds": 253
  },
  "settlements/mavs-refuge/mavs-refuge.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 166
+  "seconds": 118
  },
  "settlements/mungo/dist/mungo.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 901
+  "seconds": 233
  },
  "settlements/noahs-regret/dist/noahs-regret.html": {
-  "errors": 1,
-  "ready": false,
-  "seconds": 901
+  "calls": 53,
+  "errors": 0,
+  "furnTris": 378228,
+  "instSets": 1918,
+  "instances": 0,
+  "materials": 1942,
+  "meshes": 1970,
+  "ready": true,
+  "sceneTris": 1447422,
+  "seconds": 184,
+  "tris": 1506302
  },
  "settlements/port/dist/cgBox.html": {
   "calls": 111,
@@ -2463,7 +2520,7 @@
  "settlements/voth/voth.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 91
+  "seconds": 71
  },
  "settlements/xanadu/dist/erewhon.html": {
   "calls": 1029,
@@ -2549,16 +2606,16 @@
  "settlements/yuni/yuni-assets.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 144
+  "seconds": 45
  },
  "settlements/yuni/yuni-plants.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 36
+  "seconds": 14
  },
  "settlements/yuni/yuni.html": {
   "errors": 1,
   "ready": false,
-  "seconds": 783
+  "seconds": 143
  }
 }

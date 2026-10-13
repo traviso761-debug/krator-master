@@ -1,6 +1,6 @@
 # Krator: geometry report
 
-*Written by `tools/geometry_report.py`. Do not edit; rerun it. Opening view, headless Chromium (SwiftShader), 1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod.*
+*Written by `tools/geometry_report.py`. Do not edit; rerun it. Opening view, headless Chromium (SwiftShader), 1280x800. "LOD off / on" is `LOD.measure()` where the page takes core/lod. A * on the draw calls: the page keeps its camera private, so calls and triangles are its own last frame.*
 
 | Page | Draw calls | Triangles drawn | LOD off: calls / tris | LOD on: calls / tris | Scene triangles | Furniture tris | Meshes | Instanced sets | Instances | Materials |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -87,28 +87,28 @@
 | `kits/ringsea/dist/ringsea.html` | 223 | 679 k |  |  | 753 k |  | 297 | 16 | 579 | 155 |
 | `kits/scyvoi/dist/scyvoi.html` | 753 | 890 k |  |  | 890 k | 475 k | 752 | 0 | 0 | 80 |
 | `kits/zeijani/dist/zeijani.html` | 460 | 1.57 M |  |  | 1.61 M | 712 k | 487 | 0 | 0 | 120 |
-| `openworld/little-demo/dist/little-demo.artifact.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `openworld/little-demo/dist/little-demo.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `openworld/little-demo/dist/little-demo.artifact.html` | no global scene to count |  |  |  |  |  |  |  |  |  |
+| `openworld/little-demo/dist/little-demo.html` | no global scene to count |  |  |  |  |  |  |  |  |  |
 | `settlements/dalab/dist/dalab-set.html` | 73 | 284 k | 157 / 540 k | 73 / 284 k | 571 k |  | 166 | 154 | 25 k | 163 |
 | `settlements/dalab/dist/dalab.html` | 176 | 9.81 M | 213 / 10.93 M | 182 / 9.39 M | 10.97 M |  | 232 | 184 | 697 k | 228 |
 | `settlements/dhelv/dist/dhelv.html` | 234 | 553 k |  |  | 4.64 M | 1.30 M | 3229 | 1255 | 123 k | 220 |
 | `settlements/girder/girder-hero.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/girder/girder.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/highlands/dist/highlands.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/highlands/dist/roketstad.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/highlands/dist/highlands.html` | 163 | 1.42 M | 300 / 3.35 M | 163 / 1.28 M | 3.44 M | 791 k | 341 | 279 | 139 k | 318 |
+| `settlements/highlands/dist/roketstad.html` | 361 | 10.62 M | 376 / 10.63 M | 377 / 7.94 M | 11.00 M | 3.35 M | 475 | 326 | 358 k | 370 |
 | `settlements/iziz/dist/iziz-vernacular.html` | 61 | 243 k | 128 / 426 k | 61 / 243 k | 461 k |  | 167 | 124 | 17 k | 135 |
 | `settlements/iziz/dist/iziz.html` | 858 | 4.96 M | 889 / 6.73 M | 858 / 4.53 M | 6.73 M |  | 930 | 342 | 232 k | 359 |
 | `settlements/iziz/dist/w-a.html` | 71 | 54 k | 73 / 60 k | 71 / 54 k | 60 k |  | 73 | 50 | 2425 | 54 |
 | `settlements/iziz/dist/w-b.html` | 49 | 46 k | 49 / 48 k | 49 / 46 k | 48 k |  | 49 | 45 | 1458 | 49 |
 | `settlements/iziz/dist/w-c.html` | 83 | 239 k | 87 / 298 k | 83 / 239 k | 298 k |  | 87 | 60 | 8414 | 69 |
 | `settlements/jimjam/dist/jimjam-kit.html` | 487 | 1.22 M | 532 / 1.78 M | 487 / 1.21 M | 1.78 M |  | 538 | 336 | 41 k | 348 |
-| `settlements/locus/abyss-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/locus/abyss-kit.html` | 111* | 640 k | 105 / 747 k | 106 / 616 k | 749 k | 175 k | 109 | 70 | 17 k | 109 |
 | `settlements/locus/locus-kit.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/locus/locus-plants.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/locus/locus.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/mavs-refuge/mavs-refuge.html` | not ready |  |  |  |  |  |  |  |  |  |
 | `settlements/mungo/dist/mungo.html` | not ready |  |  |  |  |  |  |  |  |  |
-| `settlements/noahs-regret/dist/noahs-regret.html` | not ready |  |  |  |  |  |  |  |  |  |
+| `settlements/noahs-regret/dist/noahs-regret.html` | 53 | 1.51 M |  |  | 1.45 M | 378 k | 1970 | 1918 | 0 | 1942 |
 | `settlements/port/dist/cgBox.html` | 111 | 409 k | 114 / 573 k | 111 / 405 k | 528 k |  | 114 | 56 | 8752 | 72 |
 | `settlements/port/dist/cgCrane.html` | 149 | 424 k | 152 / 585 k | 149 / 419 k | 540 k |  | 152 | 56 | 8459 | 73 |
 | `settlements/port/dist/cgEdges.html` | 108 | 392 k | 112 / 505 k | 108 / 381 k | 460 k |  | 112 | 26 | 6407 | 40 |
