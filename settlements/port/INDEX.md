@@ -29,7 +29,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
-| `71-port-terrain.js` | 22 | the natural coast (7); stamps (23); materials (101); the terrain grid (194) |
+| `71-port-terrain.js` | 19 | the natural coast (7); stamps (23); materials (101); the terrain grid (181) |
+| `71w-port-sea.js` | 4 |  |
 | `72-port-kit.js` | 9 | materials (11); geometry (56) |
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
 | `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
@@ -62,7 +63,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89b-ch-court.js` | 13 | yard props (16); the compound (50); chCourt (125) |
 | `89c-ch-tank.js` | 16 |  |
 | `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
-| `90-scene.js` | 7 | scene (1); THE PORT (27) |
+| `90-scene.js` | 8 | scene (1); THE PORT (36) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
 | `92-camera.js` | 14 | camera control (1); DAY / NIGHT (2); SEGMENT BOUNDARIES (29); INSPECTOR (68) |
 | `99-tail.html` | <1 |  |

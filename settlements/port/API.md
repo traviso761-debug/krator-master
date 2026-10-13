@@ -28,7 +28,8 @@ and the r128 pitfalls still holds here; this file covers what is new.
 |---|---|
 | `00`-`69` | copied from `kits/ancients/src` (see README) — the kit, materials, `REGISTER`, salvage |
 | `70-port-core.js` | `PORT`, registry, layouts, vessel hook, `pbAdd` batching, `boxUV`, `portH`, views |
-| `71-port-terrain.js` | natural coast, stamps, `terrainH`, terrain mesh, the sea, underwater fade |
+| `71-port-terrain.js` | natural coast, stamps, `terrainH`, terrain mesh, underwater fade; calls `portSea` |
+| `71w-port-sea.js` | the sea on core/water: `portSea(scene, box)` (a `WATER.open` surface, `PORT_SEA`, drawn by `WATER.draw`, `PORT_SEA_DRAW`; dry pits cut out; the night's colour); `WATER.heightAt` is its height |
 | `72-port-kit.js` | the `pk*` kit items and their materials |
 | `73-port-edges.js` | paving, quay wall, revetment, side closure, deck on columns |
 | `74-port-dress.js` | containers, container houses, lamps, rails, boats, people, stalls, gardens, sheds |

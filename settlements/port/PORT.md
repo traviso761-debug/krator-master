@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 43 (6%) | 0 (0%) | 0 (0%) | 32 (4%) | 686 (90%) |
+| KB | 43 (6%) | 4 (1%) | 0 (0%) | 33 (4%) | 683 (89%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,7 +24,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/54-mat-concrete.js` | 4.2 | [draw] | 8 | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69-mat-salvage.js` | 12.1 | [draw] | 31 | 5 | 0 | 0 | 0 | 14 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/70-port-core.js` | 38.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 7 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/71-port-terrain.js` | 21.5 | [draw] | 16 | 2 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/71-port-terrain.js` | 19.1 | [draw] | 9 | 2 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/71w-port-sea.js` | 3.9 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | the sea's binding of core/water (its shader is core/water's: the dry-pit cut and the night tint are the only GLSL here) |
 | `src/72-port-kit.js` | 9.4 | [draw] | 44 | 4 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73-port-edges.js` | 17.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-port-dress.js` | 11.6 | [draw] | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -57,9 +58,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89b-ch-court.js` | 12.9 | [draw] | 17 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89c-ch-tank.js` | 15.7 | [draw] | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89y-sp-1-yard.js` | 33.7 | [draw] | 30 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-scene.js` | 6.6 | [web] | 12 | 1 | 1 | 0 | 0 | 5 | 3 | 1 | 0 | 0 | 0 |  |
+| `src/90-scene.js` | 7.5 | [web] | 15 | 1 | 1 | 0 | 0 | 5 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.9 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 13.9 | [web] | 15 | 2 | 11 | 9 | 3 | 2 | 0 | 3 | 3 | 0 | 0 |  |
+| `src/92-camera.js` | 14.0 | [web] | 15 | 2 | 11 | 9 | 3 | 2 | 0 | 3 | 3 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/cgBox/89z-rows.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/cgBox/91z-views.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

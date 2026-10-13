@@ -4,8 +4,8 @@
 kinds as data with CPU twins, the node test (`core/water/test-water.js`, which runs the shaders' own GLSL against the
 twins), and open water drawn on a CDLOD mesh with the shared wave field, skylight and Jacobian foam with decay. First
 takers: `kits/ringsea` (its Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (its sea); on 2026-10-13
-Reed Lake and Noah's Regret.
-The rest of Phase 1's row (little-demo, Locus, Mungo, Port, Ys) and phases 2 to 6 are still to do; Voth waits for the
+Reed Lake, Noah's Regret and Port.
+The rest of Phase 1's row (little-demo, Locus, Mungo, Ys) and phases 2 to 6 are still to do; Voth waits for the
 Voth branch (`ROADMAP.md` section 9). Written 2026-10-10 as a plan; `TODO.md`, "Water", points here.
 
 Sources: an audit of every water surface in the repo (section 1), and **Halcyon** (github.com/billpwchan/halcyon,
@@ -143,7 +143,7 @@ flow over a bed. What helps, in order:
 | Phase | Work | Rebuild and check |
 |---|---|---|
 | 0 (done 2026-10-12) | `core/water/README.md`: the kinds, the API (`WATER.open/shore/flow/fall/still`, `heightAt`, `flowAt`, `seaLevel`), a node test for the twins | none |
-| 1 (ringsea, geyser done 2026-10-12; reed lake, noah's regret 2026-10-13) | CDLOD mesh + the shared field + skylight + Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` move into it | voth, noahs-regret, little-demo, locus, mungo, ringsea, geyser, port, ys, reedlake; `port_baseline` |
+| 1 (ringsea, geyser done 2026-10-12; reed lake, noah's regret, port 2026-10-13) | CDLOD mesh + the shared field + skylight + Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` move into it | voth, noahs-regret, little-demo, locus, mungo, ringsea, geyser, port, ys, reedlake; `port_baseline` |
 | 2 | shore field + shore waves + wet sand; `seaLevel(t)` | the coast builds above plus every biome host with a bay |
 | 3 | the flow field and one flow shader; falls that arc; plunge pools; spray from atmos | girder, mavs-refuge, yuni, shade, verge, every biome host with a ribbon |
 | 4 | still water and `W.wet` | xanadu, jimjam, iziz, dalab, highlands |

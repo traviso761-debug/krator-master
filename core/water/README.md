@@ -14,7 +14,9 @@ drawn yet: phases 2 to 4.
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
 `src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
 whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
-`src/82-nr-water.js`).
+`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
+seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors).
 
 | File | Tag | What |
 |---|---|---|
@@ -191,5 +193,5 @@ hull's own preset view (the triangle over the hull, from the vertex shader's twi
 - Phase 4: still water and `W.wet`.
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo, Locus, Mungo, Port, Ys. (Taken 2026-10-13: Reed Lake, Noah's Regret.)
+- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo, Locus, Mungo, Ys. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port.)
   Voth and Streetlab wait for the Voth branch (ROADMAP.md section 9).
