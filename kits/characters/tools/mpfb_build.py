@@ -80,11 +80,11 @@ ITEMS = {
                     ('torso', 'Yuni mosaic gown', 'yuni_m_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_m_noble_slippers'),
                     ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid'),
                     # the Iron Republic, also from tools/make_garments.py
-                    ('torso', 'Republic kosovorotka', 'rep_m_peasant_shirt'), ('legs', 'Republic work trousers', 'rep_m_peasant_trousers'),
-                    ('feet', 'Republic felt boots', 'rep_m_valenki'), ('head', 'Republic felt cap', 'rep_m_peasant_cap'),
-                    ('torso', 'Republic guild jacket', 'rep_m_trade_jacket'), ('legs', 'Republic breeches', 'rep_m_trade_breeches'),
+                    ('torso', 'Republic citizen\'s tunic', 'rep_m_peasant_tunic'), ('legs', 'Republic grey trousers', 'rep_m_peasant_trousers'),
+                    ('feet', 'Republic tall boots', 'rep_m_peasant_boots'), ('head', 'Republic cloth cap', 'rep_m_peasant_cap'),
+                    ('torso', 'Republic guild jacket', 'rep_m_trade_jacket'), ('legs', 'Republic work breeches', 'rep_m_trade_breeches'),
                     ('feet', 'Republic work boots', 'rep_m_trade_boots'), ('head', 'Republic ushanka', 'rep_m_trade_ushanka'),
-                    ('torso', 'Republic greatcoat', 'rep_m_noble_greatcoat'), ('legs', 'Republic cream breeches', 'rep_m_noble_breeches'),
+                    ('torso', 'Republic greatcoat', 'rep_m_noble_greatcoat'), ('legs', 'Republic officer\'s breeches', 'rep_m_noble_breeches'),
                     ('feet', 'Republic riding boots', 'rep_m_noble_boots'), ('head', 'Republic papakha', 'rep_m_noble_papakha'),
                     # the Giants' own (tools/giant.py: worn only by the giant, made on the man's body): the Free
                     # Giants' Gaulish clothes and the temple guard's harness, four-armed tops among them
@@ -160,12 +160,12 @@ ITEMS = {
                     ('torso', 'Yuni mosaic gown', 'yuni_f_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_f_noble_slippers'),
                     ('head', 'Yuni hyperboloid hat', 'yuni_f_noble_hyperboloid'),
                     # the Iron Republic, also from tools/make_garments.py
-                    ('torso', 'Republic sarafan', 'rep_f_peasant_sarafan'), ('feet', 'Republic felt boots', 'rep_f_valenki'),
+                    ('torso', 'Republic plain dress', 'rep_f_peasant_dress'), ('feet', 'Republic tall boots', 'rep_f_peasant_boots'),
                     ('head', 'Republic headscarf', 'rep_f_peasant_platok'),
-                    ('torso', 'Republic Saxon coat', 'rep_f_trade_coat'), ('legs', 'Republic black skirt', 'rep_f_trade_skirt'),
-                    ('feet', 'Republic work boots', 'rep_f_trade_boots'), ('head', 'Republic Borten', 'rep_f_trade_borten'),
-                    ('torso', 'Republic velvet gown', 'rep_f_noble_gown'), ('feet', 'Republic red boots', 'rep_f_noble_boots'),
-                    ('head', 'Republic kokoshnik', 'rep_f_noble_kokoshnik')]},
+                    ('torso', 'Republic guild jacket', 'rep_f_trade_jacket'), ('legs', 'Republic work skirt', 'rep_f_trade_skirt'),
+                    ('feet', 'Republic work boots', 'rep_f_trade_boots'), ('head', 'Republic ushanka', 'rep_f_trade_ushanka'),
+                    ('torso', 'Republic greatcoat', 'rep_f_noble_greatcoat'), ('legs', 'Republic black skirt', 'rep_f_noble_skirt'),
+                    ('feet', 'Republic riding boots', 'rep_f_noble_boots'), ('head', 'Republic papakha', 'rep_f_noble_papakha')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}

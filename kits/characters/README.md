@@ -157,21 +157,20 @@ Yuni is Sahelian, with Gaudi and Burmecia for the families:
 - **The families:** a gown banded in trencadis mosaic, a scalloped mosaic collar, bell sleeves, silk babouches, and the
   hyperboloid of Yuni as a hat.
 
-**Iron Republic clothing** (`rep_*`, `iron_republic`). Highland Russian and Transylvanian Saxon over a salvage
-culture (LORE.md 6.3), in the Republic's deep red, ochre and cream:
-- **Commoners:** a linen kosovorotka worked in red cross-stitch at the collar, front, cuffs and hem, a red sash, grey
-  work trousers, felt boots (valenki) and a felt cap with a fur band; for women a red sarafan with a cross-stitched
-  front and a rosette hem over a linen blouse with full sleeves, a black apron, a red headscarf.
-- **Guildsfolk** (Salvagers, Smiths, Mechanics, Rocketeers): a padded ochre jacket in diamond quilting with iron
-  salvage plates on the shoulders, a leather apron, a belt and pouches, breeches, tall work boots, an ushanka; for
-  women the long belted Saxon coat in red with ochre facings, a black skirt with a rosette band, and the Borten, the
-  Saxon girl's tall black velvet cylinder with red and ochre ribbons hanging behind.
-- **The Hall of the Republic:** a red greatcoat frogged in ochre down the front, a row of triskelions (the Republic's
-  sword-arms) at the hem and cuffs, ochre epaulettes, a cream sash, cream breeches, riding boots and a dark fur
-  papakha with a red crown; for women a red velvet gown with a cross-stitched front and a triskelion hem, a cream
-  lace collar, a fur-edged black cape and the kokoshnik.
-Motifs added for them: `cross` (Slavic cross-stitch), `rose` (a Saxon rosette), `triskele`, `frog` (frogging),
-`quilt`.
+**Iron Republic clothing** (`rep_*`, `iron_republic`). The Republic was born of a legion's mutiny (LORE.md 6.3) and is
+austere and military: its citizens dress as a citizen army, in field grey, drab and iron black wool cut like uniforms,
+the Republic's red only as piping and collar tabs, brass only on buttons and buckles, no folk ornament:
+- **Citizens:** a grey wool tunic with a standing collar piped red, a button placket and a belt, grey trousers, tall
+  black boots, a cloth cap with a red band; for women a plain dark wool dress to mid-calf with a high collar, a belt,
+  a drab apron and a plain headscarf.
+- **Guildsfolk** (Salvagers, Smiths, Mechanics, Rocketeers), men and women alike: a quilted drab jacket with iron
+  salvage plates on the shoulders, a leather apron, a belt with pouches, breeches or a work skirt, work boots, an
+  ushanka.
+- **The Hall of the Republic:** a double-breasted iron-black greatcoat with two rows of brass buttons, red piping,
+  the triskelion of sword-arms small on the collar, plain epaulettes, a leather cross-belt, breeches or a black skirt,
+  riding boots and a grey papakha with a red crown.
+Motifs added for them: `buttons`, `buttons2`, `quilt`, `triskele`, `frog`; `cross` (Slavic cross-stitch) and `rose`
+(a Saxon rosette) are there for the Rustic Clansmen or anyone else.
 
 Shapes added for them: `tower_hat` (a hat that rises from a band fitted to the head with any profile: the mitre, the
 hyperboloid), `eye_disc`, `armbands`; motifs `trencadis`, `bogolan`, `eye`.
