@@ -136,6 +136,20 @@ peoples.forEach(function(P){
      'crowd: each record redraws from its seed');
 })();
 
+// ---- the arm mods on the normal-size bodies: every design on the man and the woman, four arms, no two-armed top
+['mpfb_male', 'mpfb_female'].forEach(function(b){
+  var f = path.join(HERE, 'data', b, 'kit.json');
+  if(!fs.existsSync(f)) return;
+  var k = JSON.parse(fs.readFileSync(f)), arms = k.items.filter(function(it){ return it.slot === 'mods' && it.grants && it.grants.arms === 4; });
+  var top = k.items.filter(function(it){ return it.slot === 'torso' && !it.arms; })[0];
+  ok(arms.length === 4 && arms.every(function(m){
+    var r = KCHAR.blank(k); r.mods = [m.id]; r.armour.torso = top.id;
+    return KCHAR.arms(r, k) === 4 && !KCHAR.fits(top, r, k) &&
+           KCHAR.parts(r, k).some(function(p){ return p.role === 'mod'; }) && !KCHAR.parts(r, k).some(function(p){ return p.slot === 'torso'; }) &&
+           (r.mods = [], KCHAR.parts(r, k).some(function(p){ return p.slot === 'torso'; }));
+  }), b + ': four arm mods, each four-armed, a two-armed top left off (' + arms.map(function(m){ return m.id; }) + ')');
+});
+
 // ---- a Giant of Dalab (tools/giant.py): the lower pair's joints move with the morphs as the upper do, and the giants'
 // strangers come in their two tiers, four-armed temple guards and two-armed patrols ----
 if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function(){
@@ -146,7 +160,7 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
      gs.joints[J.Left2Arm].parent === J.Left2Shoulder && gs.joints[J.Left2Shoulder].parent === J.Spine2, 'giant: the lower pair hangs from Spine2');
   ok(gk.scale > 1.5 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, the man\'s clips, lower grips');
   var mods = gk.items.filter(function(it){ return it.slot === 'mods'; }).map(function(it){ return it.id; }).sort();
-  ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_flesh","mod_gills"]', 'mods: ' + mods);
+  ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_flesh","mod_arms_loader","mod_arms_surgical","mod_gills"]', 'mods: ' + mods);
   var rec = KCHAR.blank(gk), shirt = { id:'x', slot:'torso' }, shirt4 = { id:'y', slot:'torso', arms:4 };
   ok(KCHAR.arms(rec, gk) === 2 && KCHAR.fits(shirt, rec, gk) && !KCHAR.fits(shirt4, rec, gk), 'mods: no mod, two arms, two-armed tops');
   rec.mods = ['mod_arms_flesh', 'mod_arms_cyber', 'mod_gills'];

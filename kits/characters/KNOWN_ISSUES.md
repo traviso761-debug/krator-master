@@ -60,8 +60,12 @@
   and goes bare-chested; the library's and the cultures' tops are two-armed. A four-armed top's lower sleeves are
   weighted to the lower arms, but their shape under the body sliders follows the skin MakeHuman fitted them to (the
   side of the ribs and the upper arm), so a very muscular or heavy giant's lower sleeves fit looser or tighter than
-  his lower arms. The cybernetic arms wear a four-armed top's sleeves as the flesh arms do: thin plates under cloth
-  sized for flesh.
+  his lower arms. The cybernetic arms wear a four-armed top's sleeves as the flesh arms do, under cloth sized for
+  flesh: the surgical pair is lost in them, and the loader's rams and shoulder domes poke through.
+- **The cybernetic arms are hard-surface parts on rigid bones, flat-shaded and untextured.** Each part is a
+  prism, a box or a ball on one bone, so an elbow or a knuckle bent far shows the gap between two parts, and a ram
+  runs along its own segment (it does not span the joint it would drive). The colours are flat (no wear, no panel
+  lines); a texture set for them is a gap in the material library.
 - **Rib gills are painted slits on a lip, not openings.** They are lit as skin, do not move with breath, and a top
   hides them.
 - **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi, Dalab, Yuni): a random

@@ -175,8 +175,12 @@ the joints until a mod is worn:
 - `mod_arms_flesh`, the genetic pair: each arm's skin and nails copied onto the lower joints. Its root is
   shrink-wrapped onto the ribs and takes the torso's weights, fading over 9 cm from its open edge, so the arm grows out
   of the side of the ribs and bends with them.
-- `mod_arms_cyber`, the cybernetic pair: jointed limbs (bronze plates, steel joints), each part rigid on its bone, on a
-  mount plate on the ribs.
+- The cybernetic pairs, one builder (`cyber_arms`) and three designs (`CYBER`): jointed limbs, each part rigid on its
+  bone, on a mount plate on the ribs, sized to the body's own arm (`ARM_REF`, the man's), so they fit the woman too.
+  `mod_arms_cyber` bronze plates with steel joints and five fingers; `mod_arms_loader` heavy steel with hazard-yellow
+  bands, hydraulic rams along each segment and three-fingered claws; `mod_arms_surgical` slim white ceramic with teal
+  bands, a cable bundle from the mount into the shoulder and fine fingers. A new design is a `CYBER` entry and a `MODS`
+  row. The Animation Lab's Body mods menu puts any of them on the whole cast.
 - `mod_gills`, rib gills: four slits a side over the ribs, a lip of skin over a dark slit, ray-cast onto the body. The
   Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
 

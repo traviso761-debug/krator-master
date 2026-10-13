@@ -7,8 +7,10 @@ the same on every body. Nothing is drawn on them until a mod is worn:
 
   mod_arms_flesh   the genetic pair: each arm's skin and nails copied onto the lower joints, its root grown out of the
                    ribs (shrink-wrapped onto the torso and given the torso's weights, BLEND from its open edge)
-  mod_arms_cyber   the cybernetic pair: jointed limbs (bronze plates, steel joints) on the same joints, each part rigid
-                   on its bone, on a mount plate on the ribs
+  mod_arms_cyber, mod_arms_loader, mod_arms_surgical
+                   the cybernetic pairs (CYBER: bronze; heavy steel with rams and claws; slim ceramic with cables):
+                   jointed limbs on the same joints, each part rigid on its bone, on a mount plate on the ribs, sized
+                   to the body's arm
   mod_gills        rib gills (the Hykkousoi's, or anyone's with the mod): four slits a side over the ribs, a lip of skin
                    over a dark slit, ray-cast onto the body
 
@@ -363,11 +365,50 @@ class _Mesh:
                 'VID': np.array(self.VID), 'T': T}
 
 
-def cyber_arms(body, out):
-    """mod_arms_cyber: per lower arm a mount plate on the ribs (on Spine2), ball joints, plated upper arm and forearm,
-    a palm and jointed fingers, each part rigid on its bone; bronze plates, steel joints"""
+def _qout(m, a, b, c, d, centre, bone, vid):
+    """a quad wound to face away from centre"""
+    n = np.cross(b - a, c - a)
+    if n.dot((a + b + c + d) / 4 - centre) < 0:
+        a, b, c, d = d, c, b, a
+    m.quad(a, b, c, d, bone, vid)
+
+
+def _box(m, c, ax, ay, az, bone, vid):
+    """a box at c, its half axes ax, ay, az"""
+    pts = {(i, j, k): c + i * ax + j * ay + k * az for i in (-1, 1) for j in (-1, 1) for k in (-1, 1)}
+    for f in ((0, 1), (0, -1), (1, 1), (1, -1), (2, 1), (2, -1)):
+        cs = [q for q in pts if q[f[0]] == f[1]]
+        o = [i for i in range(3) if i != f[0]]
+        cs.sort(key=lambda q: math.atan2(q[o[1]], q[o[0]]))
+        _qout(m, *[pts[q] for q in cs], c, bone, vid)
+
+
+def _perp(d, v):
+    """v made perpendicular to d, unit"""
+    v = np.asarray(v, float) - d * d.dot(v)
+    return v / np.linalg.norm(v)
+
+
+# the cybernetic pairs: one builder, three designs. bulk: thickness against the man's arm; pistons: hydraulic rams
+# along the upper arm and forearm; cables: a bundle from the rib mount into the shoulder; fingers: which, and how thick;
+# claw: pointed tips. Colours: plate, trim (end bands, the shoulder dome), joint (balls, rams, cables)
+CYBER = {
+    'mod_arms_cyber': {'bulk': 1.0, 'fingers': ('Index', 'Middle', 'Ring', 'Pinky', 'Thumb'), 'finger_r': 0.0085,
+                       'plate': ('#b08d57', 0.35, 0.4), 'trim': ('#6b4e2a', 0.4, 0.45), 'joint': ('#34363b', 0.4, 0.5)},
+    'mod_arms_loader': {'bulk': 1.35, 'pistons': True, 'fingers': ('Index', 'Ring', 'Thumb'), 'finger_r': 0.013, 'claw': True,
+                        'plate': ('#6b6e72', 0.5, 0.45), 'trim': ('#d9a521', 0.1, 0.55), 'joint': ('#25272a', 0.5, 0.55)},
+    'mod_arms_surgical': {'bulk': 0.8, 'cables': True, 'fingers': ('Index', 'Middle', 'Ring', 'Pinky', 'Thumb'), 'finger_r': 0.0065,
+                          'plate': ('#e6e4de', 0.05, 0.3), 'trim': ('#3fc6c0', 0.1, 0.35), 'joint': ('#2a2c30', 0.4, 0.4)},
+}
+ARM_REF = 0.262        # the man's upper arm (Left2Arm to Left2ForeArm): a design's sizes are for it, scaled to the body's
+
+
+def cyber_arms(body, out, mid='mod_arms_cyber'):
+    """a cybernetic pair (CYBER[mid]): per lower arm a mount plate on the ribs (on Spine2), ball joints, plated upper
+    arm and forearm with bands at their ends, a palm and jointed fingers or claws, each part rigid on its bone"""
+    st = CYBER[mid]
     B = body.prims['Human.body']
-    plate, joint = _Mesh(), _Mesh()
+    plate, trim, joint = _Mesh(), _Mesh(), _Mesh()
     vid = lambda p: int(B['VID'][body.skin_at(np.asarray([p]))[0]])
     allv = cKDTree(B['POSITION'].astype(float))
     vid_any = lambda p: int(B['VID'][allv.query(p)[1]])       # the skin at the upper joint this part copies
@@ -377,34 +418,66 @@ def cyber_arms(body, out):
         P = lambda n: body.P(S2 + n)
         U = lambda n: vid_any(body.P(S + n))
         sp2 = body.jidx['Spine2']
-        sh = P('Arm')
+        sh, el, wr = P('Arm'), P('ForeArm'), P('Hand')
+        k = st['bulk'] * np.linalg.norm(el - sh) / ARM_REF
         mount = sh + np.array([-sx * 0.03, 0.0, 0.0])
         out_ax = np.array([sx, 0.0, 0.0])
-        plate.prism(mount - out_ax * 0.008, mount + out_ax * 0.006, 0.06, 0.052, sp2, vid(mount), n=10)
-        joint.prism(mount + out_ax * 0.006, mount + out_ax * 0.016, 0.034, 0.03, sp2, vid(mount), n=10)
-        joint.ball(sh, 0.04, J('Arm'), U('Arm'))
-        el, wr = P('ForeArm'), P('Hand')
+        plate.prism(mount - out_ax * 0.008, mount + out_ax * 0.006, 0.06 * k, 0.052 * k, sp2, vid(mount), n=10)
+        trim.prism(mount + out_ax * 0.006, mount + out_ax * 0.016, 0.036 * k, 0.032 * k, sp2, vid(mount), n=10)
+        if st.get('cables'):
+            for q in range(3):
+                a = 2 * math.pi * q / 3
+                o = np.array([0, math.cos(a), math.sin(a)]) * 0.022 * k
+                joint.prism(mount + o + out_ax * 0.01, sh + o * 0.4, 0.0055 * k, 0.0055 * k, sp2, vid(mount), n=5)
         d1 = (el - sh) / np.linalg.norm(el - sh)
-        plate.prism(sh + d1 * 0.03, el - d1 * 0.022, 0.036, 0.028, J('Arm'), U('Arm'))
-        joint.ball(el, 0.028, J('ForeArm'), U('ForeArm'))
         d2 = (wr - el) / np.linalg.norm(wr - el)
-        plate.prism(el + d2 * 0.022, wr - d2 * 0.018, 0.029, 0.022, J('ForeArm'), U('ForeArm'))
-        joint.ball(wr, 0.02, J('Hand'), U('Hand'))
+        joint.ball(sh, 0.04 * k, J('Arm'), U('Arm'))
+        trim.ball(sh + d1 * 0.012 * k, 0.046 * k, J('Arm'), U('Arm'), n=14, m=9)
+        # the upper arm: a shell between bands
+        a0, a1 = sh + d1 * 0.04 * k, el - d1 * 0.026 * k
+        plate.prism(a0, a1, 0.036 * k, 0.03 * k, J('Arm'), U('Arm'), n=8)
+        trim.prism(a1 - d1 * 0.014 * k, a1, 0.033 * k, 0.033 * k, J('Arm'), U('Arm'), n=8)
+        joint.ball(el, 0.028 * k, J('ForeArm'), U('ForeArm'))
+        # the forearm: swelling toward its middle, a band at the wrist
+        b0, b2 = el + d2 * 0.026 * k, wr - d2 * 0.02 * k
+        bm = b0 + (b2 - b0) * 0.4
+        plate.prism(b0, bm, 0.027 * k, 0.034 * k, J('ForeArm'), U('ForeArm'), n=8, caps=False)
+        plate.prism(bm, b2, 0.034 * k, 0.024 * k, J('ForeArm'), U('ForeArm'), n=8)
+        trim.prism(b2 - d2 * 0.014 * k, b2, 0.027 * k, 0.026 * k, J('ForeArm'), U('ForeArm'), n=8)
+        if st.get('pistons'):
+            # a ram along the front of each segment: a cylinder and its rod, on the segment's bone
+            for (p0, p1, dd, bone, v) in ((a0, a1, d1, J('Arm'), U('Arm')), (b0, b2, d2, J('ForeArm'), U('ForeArm'))):
+                o = _perp(dd, [0, 0, 1.0]) * 0.042 * k
+                q0, q1 = p0 + o + dd * 0.01, p1 + o - dd * 0.01
+                qm = q0 + (q1 - q0) * 0.55
+                joint.prism(q0, qm, 0.011 * k, 0.011 * k, bone, v, n=6)
+                trim.prism(qm, q1, 0.0055 * k, 0.0055 * k, bone, v, n=6)
+                joint.ball(q0, 0.012 * k, bone, v, n=6, m=4)
+                joint.ball(q1, 0.009 * k, bone, v, n=6, m=4)
+        joint.ball(wr, 0.02 * k, J('Hand'), U('Hand'))
+        # the palm: a box from the wrist to the knuckles
         knuck = np.mean([P('Hand%s1' % f) for f in ('Index', 'Middle', 'Ring', 'Pinky')], 0)
-        plate.prism(wr + (knuck - wr) * 0.15, knuck, 0.026, 0.03, J('Hand'), U('Hand'), n=6)
-        for f in ('Index', 'Middle', 'Ring', 'Pinky', 'Thumb'):
-            js = [S2 + 'Hand%s%d' % (f, k) for k in (1, 2, 3) if S2 + 'Hand%s%d' % (f, k) in body.jidx]
+        ax = (knuck - wr) * 0.45
+        across = _perp(ax / np.linalg.norm(ax), P('HandIndex1') - P('HandPinky1'))
+        thick = np.cross(ax / np.linalg.norm(ax), across)
+        width = max(0.03, np.linalg.norm(P('HandIndex1') - P('HandPinky1')) * 0.62) * k / st['bulk'] ** 0.5
+        _box(plate, wr + (knuck - wr) * 0.55, ax, across * width, thick * 0.014 * k, J('Hand'), U('Hand'))
+        for f in st['fingers']:
+            js = [S2 + 'Hand%s%d' % (f, q) for q in (1, 2, 3) if S2 + 'Hand%s%d' % (f, q) in body.jidx]
             if not js:
                 continue
             pts = [body.P(n) for n in js]
             pts.append(pts[-1] + (pts[-1] - pts[-2]) * 0.9 if len(pts) > 1 else pts[-1] + (pts[-1] - wr) * 0.4)
-            r = 0.0105 if f == 'Thumb' else 0.0085
-            for k, n in enumerate(js):
-                joint.ball(pts[k], r * 1.05, body.jidx[n], vid_any(body.P(upper(n))), n=6, m=4)
-                plate.prism(pts[k], pts[k + 1], r, r * 0.9, body.jidx[n], vid_any(body.P(upper(n))), n=6)
-    write_piece(body, out, 'mod_arms_cyber', [
-        plate.prim({'name': 'Mod.cyber_plate', 'metallic': 0.35, 'rough': 0.4}, flat('#b08d57')),
-        joint.prim({'name': 'Mod.cyber_joint', 'metallic': 0.4, 'rough': 0.5}, flat('#34363b'))])
+            r = st['finger_r'] * (1.25 if f == 'Thumb' else 1.0) * k / st['bulk']
+            for q, n in enumerate(js):
+                v = vid_any(body.P(upper(n)))
+                joint.ball(pts[q], r * 1.08, body.jidx[n], v, n=6, m=4)
+                tip = q == len(js) - 1 and st.get('claw')
+                (trim if tip else plate).prism(pts[q], pts[q + 1] + (pts[q + 1] - pts[q]) * (0.35 if tip else 0), r, r * (0.12 if tip else 0.9),
+                                               body.jidx[n], v, n=6)
+    mats = [(m, st[key]) for m, key in ((plate, 'plate'), (trim, 'trim'), (joint, 'joint'))]
+    write_piece(body, out, mid, [m.prim({'name': 'Mod.%s_%s' % (mid[4:], key), 'metallic': c[1], 'rough': c[2]}, flat(c[0]))
+                                 for (m, c), key in zip(mats, ('plate', 'trim', 'joint'))])
 
 
 def _ray_hits(o, d, P, T):
@@ -514,7 +587,9 @@ def gills(body, out):
 MODS = [
     ('mod_arms_flesh', 'Second pair of arms', {'arms': 4}, 'arms', 'genetic', flesh_arms,
      {'Mod.arms_flesh': 'skin', 'Mod.arms_flesh_nails': 'skin'}),
-    ('mod_arms_cyber', 'Cybernetic arms', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_cyber', 'Cybernetic arms, bronze', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_loader', 'Loader arms (hydraulic, claws)', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_surgical', 'Surgical arms (slim, cabled)', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
     ('mod_gills', 'Rib gills', {'gills': True}, 'gills', 'genetic', gills, {'Mod.gills': 'skin'}),
 ]
 
@@ -598,7 +673,10 @@ def make_all(base_path, pieces, body_name):
     entries, roles = [], {}
     import os
     for mid, label, grants, group, kind, build, rl in MODS:
-        build(body, os.path.join(pieces, mid + '.glb'))
+        if build is cyber_arms:
+            build(body, os.path.join(pieces, mid + '.glb'), mid)
+        else:
+            build(body, os.path.join(pieces, mid + '.glb'))
         entries.append({'id': mid, 'name': label, 'slot': 'mods', 'glb': 'pieces/%s/%s.glb' % (body_name, mid),
                         'grants': grants, 'group': group, 'kind': kind})
         roles.update(rl)
