@@ -112,8 +112,8 @@ shader without reading JavaScript. In a tile it keeps the surfaces whose extent 
 
 `look` is the material of the `WATER.draw` that draws the surface (`colour, roughness, metal, envMapIntensity,
 transparent`), or what a build that draws its water itself writes on the surface record (`S.look`: sedesert's pond:
-`colour, shallow, deep` as linear hex, `roughness`, `transparent`, and `sky {colour, base, grazing}`, its shader's flat sky
-mixed in by `base + grazing (1 - n.v)^3`). Godot: `godot/krator/water.gd` (`KWater`) is the twin; `water_import.gd` draws
+`colour, shallow, deep` as linear hex, `roughness`, `transparent`, `sky {colour, base, grazing}`, its shader's flat sky
+mixed in by `base + grazing (1 - n.v)^3`, and `unlit`: its shader takes no light, so Godot emits the colour). Godot: `godot/krator/water.gd` (`KWater`) is the twin; `water_import.gd` draws
 each open surface on `shaders/water.gdshader` (the library's `lib/water.gdshaderinc`, `WATER.glsl`'s maths with the waves
 as uniforms). Flow, fall, still and shore travel as data and are not drawn: core/water draws none of them yet either.
 
@@ -225,11 +225,15 @@ and the stage through `krator/stage.gd`. Node metadata as `biomes/GODOT.md` "Rec
 | terrain | `KField.h` against the page's own `h` at 256 probes off the lattice: max 2.9e-12 m (tolerance 1e-4 m); rays onto the HeightMapShape3D at 200 lattice points: max 1.6e-4 m (tolerance 1e-2 m); between lattice points the shape's triangles and the field's bilinear cells differ by up to 0.92 m (0.45 m at the probes): the HeightMapShape3D's own triangulation, reported, not a defect of the export |
 
 Side by side from one camera (`python3 godot/tools/compare_shots.py world-sedesert`, `godot/shots/compare/`): the
-pond's outline, every tree, bush, flower and grass clump stand in the same places. What differs: the water (the page's
-lit, rippled water is the host's, not in any section: Godot draws `KData.water_sheet`'s flat dark sheet at the mean
-level; `core/water` phases 2 to 4 export it); the ground (the page multiplies the library's crack and detail layers over
-its painted ground in a host hook; the stage carries the painted map only, so Godot's ground is smooth); the far
-scenery (the stage's panorama, taken from 40 m over the tile's centre: blurred, and the mesas outside the tile shift by
+pond's outline, every tree, bush, flower and grass clump stand in the same places. Two gaps of the first pair are closed
+(stage 2e, 2026-10-13): the ground's crack and detail layers (they travel as a `world-uv` material record and Godot's
+ground shader multiplies them: the mud cracks round the pond read in both) and the water (the pond is a core/water
+surface in the `water` section, drawn by the library's water shader with the page's colours and flat sky, unlit as the
+page's is; before, Godot drew a flat dark sheet at the mean wet level). What still differs at the pond: the shoreline
+follows each engine's own ground mesh (on the right Godot shows water the page does not: most likely the page's 17.8 m
+ground triangles stand above the level where the field's 8.9 m lattice dips under it; not measured), Godot shows core/water's surf lap as a pale rim in the shallows (the page's own pond has none), and its ripples
+are the surface's trochoids (regular bands) where the page shades four sine ripples. Elsewhere: the strata on rock, the
+far scenery (the stage's panorama, taken from 40 m over the tile's centre: blurred, and the mesas outside the tile shift by
 parallax seen from another eye); the light is a little flatter and warmer in Godot.
 
 ## Not done

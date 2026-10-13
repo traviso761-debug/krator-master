@@ -280,6 +280,20 @@ and the cross-build report.
 - **e. Materials**: Iziz as the second library pilot; the shader library as `.gdshaderinc` files named by the
   hooks (`world-uv`, `cloth-sway`, foliage, bark, breakup, coursing). The three JS vocabularies stay; the export
   carries one.
+  *The shader half done 2026-10-13* (`godot/README.md`, "The shader library"): `godot/shaders/lib/` (not
+  `core/godot/shaders/`: `res://` cannot reach outside `godot/`) holds `world-uv`, `breakup`, `foliage`, `bark`,
+  `cloth-sway`, `flag`, `glass`, `coursing` and `water`, each naming its three.js hook; a record's `hook` selects them
+  (`godot/krator/khooks.gd`; the biome kinds are aliases; an unknown hook is reported). The spike's library, foliage,
+  bark and ground shaders draw through them. The M4 side-by-side's two gaps are closed on sedesert: the ground's crack
+  and detail layers travel as one `world-uv` material record (`EXPORT.groundLayers`, the crack weight on the tile's grid)
+  and are multiplied in Godot's ground shader; the pond is a core/water surface (sedesert takes core/water's data side),
+  exported by a new `water` section (`krator-water`: kind, level, swell, field share, bounds, waves in turns, the bed's
+  bytes, the twin's probes) and drawn by `shaders/water.gdshader` on `lib/water` (`WATER.glsl`'s maths, the waves as
+  uniforms). `KWater` (GDScript) equals `WATER.heightAt` within 1.1e-14 m at fixed (x, z, t) (tolerance 1e-9 m;
+  `godot/tests/water/water_test.gd`), the include within 0.5 mm of it on a GPU (`tests/shaders/library_gpu_check.gd`);
+  `tests/shaders/library_test.gd` checks the wiring. Open: Iziz (the pilot half); a record that selects `cloth-sway`,
+  `flag`, `glass` or `coursing` on an exported mesh; the other biome hosts' ground layers (one `groundLayers` call each)
+  and their water (sedesert's river and cataract too: flow and fall are core/water's phase 3); the strata on rock.
 
 ### Stage 3: the host shell, narrowed (the plan's Phase 1, after stage 0b made it smaller)
 
@@ -337,7 +351,8 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 7. **`core/export`, M4 then M5** (stage 2d; `TODO.md` item 8's "Iziz's export on the `KRATOR_EXPORT` shape"). *M4 done
    2026-10-13* (sedesert's tile, stage 2d); M5 next.
 8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5.
-9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half).
+9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half). *The shader
+   library done 2026-10-13* (with core/export's `water` section and sedesert's ground layers); Iziz next.
 10. **The host shell, narrowed** (`TODO.md` item 9; stage 3).
 11. **The Godot project graduates; the round-trip test; the streamer** (stage 4).
 12. **Verge then Voth onto `core/simulation`; M6** (stage 5).
