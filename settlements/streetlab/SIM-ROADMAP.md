@@ -312,9 +312,11 @@ house. Phase B is done: every kind of work meets the 90% rule.
    `45-vc-sim-items.js` and `TUNE.sim.items`; the report's "Things"). Differences from the plan: wear is counted per
    worn day for clothes and per worked hour for tools (`life`, `workLife` on the item kinds, not a `TUNE.sim.wear`); the
    material meter rises slowly and falls with a purchase (a luxury or household good bought when it is high, by
-   wealth); the slaves are issued their clothes and tools (Q5: no market trips); lamps are household goods, not worn;
-   nobody eats out yet (the meals are pinned home: a tavern's meal is counted as bought when it happens); the kayak is
-   owned but the chinampa growers still walk (the water layer is phase F's).
+   wealth); the slaves are issued their clothes and tools (Q5: no market trips); lamps are household goods, not worn.
+   **Session 2 (2026-10-13): phase D done.** Meals out at taverns, stalls and the caravanserai (by wealth, or for an
+   empty store); the chinampa growers' kayaks on their own straight `kayak` layer through landings (the canals'
+   own water routing is phase F's, with the boats); the shipwright's docks sell oars and kayaks, the weavers nets; the
+   household stores keep a two-day buffer.
 
 ### 2.6 Phase E: production, stores, carts, imports (2 sessions)
 

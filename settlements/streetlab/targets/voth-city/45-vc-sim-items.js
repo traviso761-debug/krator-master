@@ -15,19 +15,21 @@
        (`richSword`); a waterskin if they labour, a kayak if they grow the chinampas.
    VC.simItemsReport is the report's: what is kept against what is wanted, the purchases by item and by kind of shop,
    the trips (world minutes), the errands that found no seller, the items no shop sells, the tools broken at work and
-   replaced in work time, the hurt and the poultices, the meals, the household stores. */
+   replaced in work time, the hurt and the poultices, the meals (at home, out, at a mess), the household stores; the
+   chinampa growers' kayaks (VC.simKayaks). */
 VC.simItems = function () {
   if (typeof SIM === 'undefined' || !SIM.items || !TUNE.sim.items) return null;
   var T = TUNE.sim.items, NE = TUNE.sim.needs, t0 = Date.now();
   SIM.items({ kinds: T.kinds, free: NE ? NE.free : ['SOCIALIZE', 'RELAX', 'IDLE'], secPerMinute: VC.simSecPerMin(), mins: T.mins, cool: T.cool, meal: T.meal, lack: T.lack,
-              hurt: T.hurt, heal: T.heal, low: T.low, days: T.days, treat: T.treat });
+              hurt: T.hurt, heal: T.heal, low: T.low, days: T.days, treat: T.treat, eatOut: T.eatOut });
   var u = function (k, a, b) { return KRAND.unit(KRAND.hash(5151, k, a, b || 0)); };
   /* ---- the shops */
   var shops = {}, n = 0;
   SIM.all('place').forEach(function (P) {
     var items = null, key = null;
     if (P.unit != null) { var U = VC.IX.units[P.unit], L = U && U.lot >= 0 ? PLAN.lots[U.lot] : null; if (L && T.shops[L.key]) { items = T.shops[L.key]; key = L.key; } }
-    else if (P.kind === 'market') { items = T.market; key = 'market'; }
+    if (!items && P.kind === 'market') { items = T.market; key = 'market'; }
+    if (!items && P.kind === 'tavern' && P.activities.EAT && P.access !== 'private') { items = ['meal']; key = 'tavern'; }   /* a meal out: the taverns and the caravanserai */
     if (!items) return;
     SIM.shop(P.id, items); P.activities.BUY = Math.max(P.activities.BUY || 0, T.shopBuy); P.shopKey = key; shops[key] = (shops[key] || 0) + 1; n++;
   });
@@ -61,9 +63,33 @@ VC.simItems = function () {
     var R = SIM.R.role[a.role]; if (R && R.needs && R.needs.labour > 0) { SIM.give(a, 'waterskin', 1); gear.waterskin++; }
     if (a.job === 'chinampa growers') { SIM.give(a, 'kayak', 1); gear.kayak++; }
   });
+  var K = VC.simKayaks();
   if (SIM.placesChanged) SIM.placesChanged();   /* the shops' BUY */
-  VC.SIMITEMS = { shops: shops, shopPlaces: n, stores: stores, messes: messes, gear: gear, ms: Date.now() - t0 };
+  VC.SIMITEMS = { shops: shops, shopPlaces: n, stores: stores, messes: messes, gear: gear, kayaks: K, ms: Date.now() - t0 };
   return VC.SIMITEMS;
+};
+
+/* the kayaks (the brief, 1.5: "chinampa workers mostly live on the chinampas and carry a kayak, used automatically on
+   water"): the stilt huts and the chinampa work sites stand on the beds, off the pedestrian layer. Each such place is on
+   the 'kayak' layer (a straight line over the water and the beds) and reached through a landing (a place at the
+   pedestrian node nearest it); everyone who lives or works on the beds keeps a kayak there (core/simulation: an actor's
+   boat {dock, layer}, a place's via 'boat'): to town by kayak to the landing, then on foot; home the other way */
+VC.simKayaks = function () {
+  if (!SIM.nav.layers.kayak) SIM.nav.layer('kayak', { route: function (ax, az, bx, bz) { return { pts: [[ax, 0, az], [bx, 0, bz]] }; } });
+  var far = TUNE.sim.nav.far, landing = {}, onBeds = {}, n = 0, P0 = VC.PED;
+  SIM.all('place').forEach(function (P) {
+    if ((P.kind !== 'chinampa hut' && P.kind !== 'chinampa') || P.navNode == null || !(P.navOff > far)) return;
+    var nd = P0.nodes[P.navNode], id = 'landing.' + P.navNode;
+    if (!landing[id]) { SIM.place({ id: id, kind: 'landing', name: 'Kayak landing', x: nd.x, z: nd.z, y: nd.y || 0, activities: {}, layer: 'pedestrian', tags: ['chinampa'] }); landing[id] = SIM.R.place[id]; landing[id].navNode = P.navNode; landing[id].navOff = 0; }
+    P.layer = 'kayak'; P.via = 'boat'; P.landing = id; onBeds[P.id] = 1; n++;
+  });
+  var people = 0;
+  SIM.all('actor').forEach(function (a) {
+    var H = onBeds[a.home] ? SIM.R.place[a.home] : null, W = a.work && onBeds[a.work] ? SIM.R.place[a.work] : null; if (!H && !W) return;
+    a.boat = { dock: (H || W).landing, layer: 'kayak' }; if (H) a.inVehicle = 'boat';   /* at home on the beds: afloat */
+    if (!SIM.owns(a, 'kayak')) SIM.give(a, 'kayak', 1); people++;
+  });
+  return { places: n, landings: Object.keys(landing).length, people: people };
 };
 
 VC.simItemsReport = function () {
@@ -87,5 +113,7 @@ VC.simItemsReport = function () {
   out.stores = { homes: homes, low: low, meanDays: homes ? Math.round(days / homes * 10) / 10 : 0 };
   out.errandsNow = A.filter(function (a) { return a.errand; }).length;
   out.slotErrors = A.reduce(function (s, a) { return s + SIM.itemsCheck(a).length; }, 0);
+  out.kayakNow = A.filter(function (a) { return a.task && a.task.legs && a.task.legs.some(function (L) { return L.layer === 'kayak'; }) && SIM.time() < a.task.arrive; }).length;
+  out.emptyStores = SIM.all('place').filter(function (P) { if (!P.store || !P.people) return false; for (var f in P.store) if (P.store[f] > 0) return false; return true; }).length;
   return out;
 };

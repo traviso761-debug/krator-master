@@ -407,7 +407,7 @@ canvas{display:block;width:100vw;height:100vh}
 //
 //   SIM.role({id, org, name, sched, prefers?:{ACT:{pin?:'home'|'work', kinds?:[..], ids?:[..], via?:'boat'|'buggy'}},
 //             speed?, layer?, mode?, fallback?:{ACT:ACT}})
-//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock}, speed?})
+//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock, pier?, layer?}, speed?})
 //   SIM.group({id, kind, org, members:[actor ids], beasts?, mount?, vehicle?})
 //   SIM.event({id, kind, org, every:[minH,maxH] (world hours between firings), window?:[h0,h1], from:[ports], to:[ports]|'other',
 //              size:[a,b] (units), unit:[{role, n}], arrive:{kinds:[..]}, stay:{untilHour, nights}, layer, mode, speed, beasts?, mount?,
@@ -433,6 +433,7 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
   SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
   SIM.WEEK = 7;
+  SIM.legsBy = {};
   SIM.weekday = function(minute){ var d=Math.floor((minute==null?SIM.minute():minute)/1440); return ((d % SIM.WEEK) + SIM.WEEK) % SIM.WEEK; };
   SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched);
     if(o.scheds){ for(var k in o.scheds) o.scheds[k]=SIM.sched(o.scheds[k]); if(!o.sched) o.sched=o.scheds.work || o.scheds[Object.keys(o.scheds)[0]]; }
@@ -549,23 +550,24 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
     var spot=spotOf(a, P), cur=from, inVeh = a.inVehicle;           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
       if(B){ var l1=leg(layer, cur, B.door, a.speed, mode, 0); if(l1){ legs.push(l1); cur=B.door; }
-        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?'water':'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
+        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?bl:'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
         var board = via==='boat' && a.boat && a.boat.pier ? a.boat.pier : B.door;
         var l2=leg(vl, board, P.layer===vl?spot:P.door, vs, vm, vm==='drive'?5:0); if(l2){ legs.push(l2); } a.inVehicle = vm==='boat'?'boat':'buggy'; } }
-    else if(inVeh && P.layer!==(inVeh==='boat'?'water':'road')){                   /* back from the water / the road: to the base, then walk */
-      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?'water':'road';
+    else if(inVeh && P.layer!==(inVeh==='boat'?bl:'road')){                        /* back from the water / the road: to the base, then walk */
+      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?bl:'road';
       if(base){ var land = inVeh==='boat' && a.boat && a.boat.pier ? a.boat.pier : base.door;
         var l3=leg(vl2, cur, land, SIM.SPEED[inVeh==='boat'?'boat':'drive'], inVeh==='boat'?'boat':'drive', inVeh==='boat'?0:5); if(l3){ legs.push(l3); cur=base.door; } }
       a.inVehicle = null;
       var l4=leg(layer, cur, spot, a.speed, mode, 0); if(l4) legs.push(l4); }
     else {
-      var lay = inVeh ? (inVeh==='boat'?'water':'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
+      var lay = inVeh ? (inVeh==='boat'?bl:'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
       var l5=leg(lay, cur, spot, inVeh?SIM.SPEED[inVeh==='boat'?'boat':'drive']:a.speed, inVeh?(inVeh==='boat'?'boat':'drive'):mode, a.minW||0); if(l5) legs.push(l5); }
     var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3 };
-    legs.forEach(function(L){ T.dur+=L.dur; }); T.arrive=t+T.dur;
+    legs.forEach(function(L){ T.dur+=L.dur; SIM.legsBy[L.layer]=(SIM.legsBy[L.layer]||0)+1; }); T.arrive=t+T.dur;   /* legs planned, by layer (an audit) */
     if(T.failed) SIM.logEvent('nopath', { actor:a.id, place:P.id });
     return T;
   };
@@ -1034,7 +1036,7 @@ canvas{display:block;width:100vw;height:100vh}
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]} })
+//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
 //   SIM.shop(placeId, [item ids])      what a place sells (stock is abstract: every purchase succeeds, and is logged)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -1057,7 +1059,10 @@ canvas{display:block;width:100vw;height:100vh}
 // purchase logged by place and item; a luxury or household good fills material); none within reach, it is dropped and
 // not tried again for `cool` minutes. FOOD: a household's store (servings by food) feeds its meals at home: two foods
 // make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more), one food `single`, none
-// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). A store with less than `low` days for its people sends one of them to buy `days` days of the foods
+// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). EATING
+// OUT: at the start of a meal an actor eats at the nearest open seller of the item 'meal' (a tavern, a stall) by a hash
+// under `eatOut.base` + `eatOut.wealth` times its wealth, or when its household's store cannot make a meal; none open,
+// it eats at home. A store with less than `low` days for its people sends one of them to buy `days` days of the foods
 // the nearest seller sells. Deterministic: no draws (hashes), and only a question about the present changes an actor.
 (function(root){
   'use strict';
@@ -1070,7 +1075,7 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.items = function(o){
     var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
               stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
-              treat:o.treat||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              treat:o.treat||null, eatOut:o.eatOut||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
               stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0 } } };
     Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
     (o.free||[]).forEach(function(a){ I.free[a]=1; });
@@ -1153,21 +1158,29 @@ canvas{display:block;width:100vw;height:100vh}
         a.wkT=minute; }
       else a.wkT=null;
       var E=a.errand;
+      if(E && E.item==='meal' && act!=='EAT'){ if(E.place) stat(I.stats.done, 'meal'); a.errand=null; E=null; }   /* the meal out is over with its hour */
       if(E){
-        if(E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
+        if(E.item!=='meal' && E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
         else if(minute-E.since>I.stale){ if(E.item==='food'){ var H0=SIM.R.place[a.home]; if(H0 && H0.shopper===a.id) H0.shopper=null; } a.errand=null; E=null; }
       }
       /* a household's food: the first of its people with time off goes when the store runs low */
       var hr=Math.floor(minute/60);
+      /* a meal out: at the start of a meal, by a hash and the actor's wealth (`eatOut`), or when the household's store
+         cannot make a meal; at a seller of 'meal' (a tavern, a stall) */
+      if(!a.errand && act==='EAT' && a.activity!=='EAT' && I.eatOut && sellersOf('meal').length){ var Hm=SIM.R.place[a.home];
+        if(Hm && !Hm.mess && a.mealH!==hr){ a.mealH=hr; var st0=Hm.store||{}, kinds=0; for(var f0 in st0) if(st0[f0]>0) kinds++;
+          if(kinds<2 || hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0)){ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
       if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
         if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
           var tot=0; for(var f in H.store) tot+=H.store[f];
           if(tot < H.people*I.meals*I.perMeal*I.low && errand(a, 'food', 'free', minute)) H.shopper=a.id; } }
     }
     var E2=a.errand; if(!E2) return act;
-    if(E2.when==='work' ? act==='WORK' : I.free[act]){
-      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open */
+    if(E2.when==='work' ? act==='WORK' : E2.when==='free' ? I.free[act] : act===E2.when){
+      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open (a
+         meal out with none open is eaten at home) */
       if(live){ var h2=Math.floor(minute/60); if(a.errOkH!==h2){ a.errOkH=h2; a.errOk=!!SIM.itemsChoose(a, E2.act, h2%24); } }
+      if(a.errOk===false && E2.item==='meal'){ if(live) a.errand=null; return act; }
       return a.errOk===false ? act : E2.act; }
     return act;
   };

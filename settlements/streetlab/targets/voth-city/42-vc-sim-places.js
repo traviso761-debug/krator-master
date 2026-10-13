@@ -364,7 +364,8 @@ VC.simVillageShrines = function (step) {
    directions `look` m out), clear by `clear` m of the piers, the causeways and the cantons and by `markClear` m of
    Voth's landmarks, over nothing but house and warehouse lots of `from` (cleared), off the streets and the hard ground
    (the harbour's quay deck is drawn over it: a `quay` role would allow it), off the roads beyond the city's raster and
-   off the greens and benched squares. Its land height is its back's */
+   off the greens and benched squares; the water left open: `channel` m of it beyond the slip's end, no ferry's way within
+   `laneClear` m of the slip, and the slip taken off the boats' grid once it stands. Its land height is its back's */
 VC.simShipwrights = function (step) {
   var S = TUNE.sim.place.shipwright, D = SL.dims(S.key, 0), out = [], R = SL.R; VC.SIMB.shipwrights = out;
   if (!D) return out;
@@ -373,6 +374,8 @@ VC.simShipwrights = function (step) {
   (CANT.causewayList || []).forEach(function (cw) { for (var k = 1; k < cw.pts.length; k++) segs.push([cw.pts[k - 1], cw.pts[k], cw.width / 2]); });
   CANT.spans.forEach(function (sp) { segs.push([[sp.ax, sp.az], [sp.bx, sp.bz], sp.w / 2]); });
   var at = function (c, f, x, z) { var u = V.perp(f); return [c[0] + u[0] * x + f[0] * z, c[1] + u[1] * x + f[1] * z]; };
+  /* the boats' ways: every leg of the water lines (ferries) as a polyline */
+  var lanes = []; SIM.all('transport').forEach(function (T) { if (T.layer !== 'water') return; (T.legs || []).forEach(function (L) { if (L.path && L.path.pts) lanes.push(L.path.pts); }); });
   var gcen = {}, why = {}, no = function (k) { why[k] = (why[k] || 0) + 1; return null; };
   var tryAt = function (c) {
     if (baseH(c[0], c[1]) < S.land) return no('wet middle');
@@ -390,6 +393,12 @@ VC.simShipwrights = function (step) {
     if (hmax - hmin > S.slope) return no('steep');
     if (marks.some(function (m) { return Math.hypot(m[0] - c[0], m[1] - c[1]) < S.markClear; })) return no('a landmark');
     for (var x2 = -3; x2 <= 3; x2 += 3) for (var z2 = S.waterFrom; z2 <= hd - 0.5; z2 += 2) { var w = at(c, f, x2, z2), hw2 = baseH(w[0], w[1]); if (hw2 > VOTH.SEA - (z2 >= hd - S.endLen ? S.depth : 0)) return no('slip dry'); }
+    /* the river (or the bay) stays open: water `channel` m beyond the slip's end (or as far as `channelLook`: open water),
+       no boat's way within `laneClear` m of the slip */
+    var E = at(c, f, 0, hd), open = 0; while (open < S.channelLook) { var e2 = V.add(E, V.mul(f, open + 5)); if (baseH(e2[0], e2[1]) > VOTH.SEA - 0.3) break; open += 5; }
+    if (open < S.channel) return no('the channel too narrow');
+    var slip = obb(at(c, f, 0, (S.waterFrom + hd) / 2), V.perp(f), 4.5, (hd - S.waterFrom) / 2 + 1);
+    if (lanes.some(function (P) { for (var i = 1; i < P.length; i++) { var a = [P[i - 1][0], P[i - 1][2]], b = [P[i][0], P[i][2]], L = V.dist(a, b); for (var u = 0; u <= L; u += 4) if (VC.simInObb(V.lerp(a, b, L ? u / L : 0), slip, S.laneClear)) return true; } return false; })) return no('a boat\u2019s way');
     var o = obb(c, V.perp(f), hw, hd), C = obbCorners(o).concat([c]);
     if (PLAN.greens.some(function (G, gi) { if (!G.poly) return false; var gc = gcen[gi] || (gcen[gi] = polyCentroid(G.poly)); if (Math.abs(gc[0] - c[0]) > 150 || Math.abs(gc[1] - c[1]) > 150) return false;
       return C.some(function (q) { return inPoly(q, G.poly); }) || G.poly.concat([gc]).some(function (q) { return VC.simInObb(q, o, 1); }); })) return no('a green or square');
@@ -397,7 +406,7 @@ VC.simShipwrights = function (step) {
     var g2 = VC.grow(o, 1.5), bad = false;
     PLAN.lots.forEach(function (L) { if (bad || L.died != null || !L.bo || Math.abs(L.x - c[0]) > 80 || Math.abs(L.z - c[1]) > 80 || SL.pen(g2, L.bo) <= 0.1) return; if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; });
     if (bad) return no('a lot not to clear'); if (VC.anyHit(o, VC.big || [], 1)) return no('a big plot');
-    return { c: c, f: f, back: hmin };
+    return { c: c, f: f, back: hmin, slip: slip, open: open };
   };
   var hardOk = false, marks = (PLAN.voth || []).map(function (q) { return [q.x, q.z]; }).concat((PLAN.landmarks || []).map(function (q) { return [q.x, q.z]; }));
   S.roles.forEach(function (role) {
@@ -410,7 +419,9 @@ VC.simShipwrights = function (step) {
     var L = VC.placedLot({ key: S.key, v: 0, x: got.c[0], z: got.c[1], ry: Math.atan2(got.f[0], got.f[1]) }, step);
     if (!L) { out.push({ role: role, why: 'the model would not place' }); return; }
     L.placed = false; L.cls = 'craft'; L.role = 'shipwright'; L.y = Math.max(VOTH.SEA + 0.3, got.back);
-    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r });
+    /* the slip comes off the boats' water (VC.navGrid): a route found later goes round it */
+    var NV = VC.NAV; if (NV) for (var k = 0; k < NV.wet.length; k++) if (NV.wet[k] && VC.simInObb(NV.at(k), got.slip, NV.c)) NV.wet[k] = 0;
+    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r, open: got.open, slip: { c: got.slip.c.slice(), u: got.slip.u, v: got.slip.v, hw: got.slip.hw, hd: got.slip.hd } });
   });
   SL.note(step, 'shipwright’s docks: ' + out.map(function (q) { return q.lot != null ? q.role + ' (' + q.r + ' m from its middle)' : q.why; }).join('; '));
   return out;

@@ -294,6 +294,7 @@ CITY_CHECK = r"""() => {
       out.simc.workday2 = SIM.NEED ? VC.simDay(2, 0, 24, [10, 20]) : null;
       out.simc.needs = VC.simNeedsReport ? VC.simNeedsReport() : null;
       out.simc.items = VC.simItemsReport ? VC.simItemsReport() : null;   /* phase D: after the two workdays */
+      if (out.simc.items) out.simc.items.legsBy = SIM.legsBy;
       if (out.simc.needs) { const NR = out.simc.needs, top = o => Object.keys(o).sort((p, q) => o[p].happy - o[q].happy).slice(0, 6).map(k => [k, o[k].n, o[k].happy, o[k].eff]);
         out.simc.needs = { all: NR.all, byClass: Object.keys(NR.byClass).map(k => [k, NR.byClass[k].n, NR.byClass[k].happy]), worstTrades: top(NR.byTrade), atWork: Object.keys(NR.atWork).length,
           deficits: NR.deficits, full: NR.full, traits: [...new Set(SIM.all('actor').map(a => a.trait))].length }; }
@@ -316,6 +317,13 @@ CITY_CHECK = r"""() => {
       Object.keys(SQ).forEach(gid => { const G = PLAN.greens[gid], o = obb(polyCentroid(G.poly), V.norm(V.sub(G.poly[1], G.poly[0])), V.dist(G.poly[0], G.poly[1]) / 2 - 0.5, V.dist(G.poly[1], G.poly[2]) / 2 - 0.5);
         sqBy[SQ[gid].canton] = (sqBy[SQ[gid].canton] || 0) + 1;
         PLAN.lots.forEach(L => { if (L.died == null && L.bo && Math.hypot(L.x - o.c[0], L.z - o.c[1]) < 80 && SL.pen(o, L.bo) > 0.3) sqHit.push(gid + ':' + L.id); }); });
+      /* the shipwright's docks (owner, 2026-10-13: "make sure the river shipwright doesn't actually block the river"):
+         each placed, open water beyond its slip, no ferry's way over its slip (the routes as baked) */
+      const SW = (B.shipwrights || []).filter(q => q.lot != null), lanes = [];
+      SIM.all('transport').forEach(T => { if (T.layer === 'water') (T.legs || []).forEach(L => { if (L.path && L.path.pts) lanes.push(L.path.pts); }); });
+      out.simc.shipwrights = { placed: SW.length, want: TUNE.sim.place.shipwright.roles.length, why: (B.shipwrights || []).filter(q => q.lot == null).map(q => q.why),
+        docks: SW.map(q => { const o = q.slip, hit = lanes.reduce((n, P) => { for (let i = 0; i < P.length; i++) if (VC.simInObb([P[i][0], P[i][2]], o, TUNE.sim.place.shipwright.laneClear - 1)) n++; return n; }, 0);
+          return { role: q.role, open: q.open, laneHits: hit }; }) };
       out.simc.squares = { by: sqBy, want: TUNE.sim.place.squares.cantons.map(c => c[0]), hit: sqHit.slice(0, 10), places: SIM.all('place').filter(p => /^Benched square/.test(p.name || '') && p.activities.SOCIALIZE > 0 && (p.spots || []).length).length, n: Object.keys(SQ).length };
       out.simc.roles = SIM.all('role').length; out.simc.firstJumpMs = VC.SIMRUN.jumpMs; out.simc.bodies = !!(VC.SIMBODY && VC.SIMBODY.mesh);
     }
@@ -335,7 +343,8 @@ def week_bad(sc):
         or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1) \
         or len(sc['faith']['temples']) < 2 or sc['faith']['chapels'] < 3 or not (sc['faith']['shrines'] or {}).get('pocket') or sc['faith']['clanShrines'] != sc['faith']['clans'] \
         or sc['worship']['short'] or sc['faith'].get('villageShrines', 0) < sc['faith'].get('villageWant', 2) \
-        or any(not sc['squares']['by'].get(c) for c in sc['squares']['want']) or sc['squares']['hit'] or sc['squares']['places'] != sc['squares']['n']
+        or any(not sc['squares']['by'].get(c) for c in sc['squares']['want']) or sc['squares']['hit'] or sc['squares']['places'] != sc['squares']['n'] \
+        or sc['shipwrights']['placed'] < sc['shipwrights']['want'] or any(d['open'] < 40 or d['laneHits'] for d in sc['shipwrights']['docks'])
     return bad
 
 
@@ -360,8 +369,8 @@ def needs_bad(sc):
 def items_bad(sc):
     """phase D: after two workdays: every slot holds by the rules; next to nobody (0.1%: on their way to buy) is missing a
     worn shirt, legs or feet; food,
-    clothes, a tool replaced during work time and a poultice were bought; most meals are full meals; the items no shop
-    sells are named (the report says so)"""
+    clothes, a tool replaced during work time and a poultice were bought; most meals are full meals, some eaten out, next
+    to none (0.2%) scraps; every item has a seller; the chinampa growers go by kayak"""
     it = sc.get('items')
     if not it: return 'no items'
     if it['slotErrors']: return 'slot errors %d' % it['slotErrors']
@@ -375,6 +384,11 @@ def items_bad(sc):
     m = it['meals']; tot = m['meal'] + m['single'] + m['none'] + m['bought'] + m['mess']
     if not tot or (m['meal'] + m['bought'] + m['mess']) < 0.7 * tot: return 'full meals %s of %s' % (m['meal'] + m['bought'] + m['mess'], tot)
     if not isinstance(it.get('unsold'), list): return 'no list of items no shop sells'
+    if it['unsold']: return 'no shop sells %s' % it['unsold']
+    if not m['bought']: return 'nobody ate out'
+    if m['none'] > 0.002 * tot: return 'scraps %d of %d meals' % (m['none'], tot)
+    k = (it.get('setup') or {}).get('kayaks') or {}
+    if not k.get('people') or not (it.get('legsBy') or {}).get('kayak'): return 'no kayak trips (%s, legs %s)' % (json.dumps(k), json.dumps(it.get('legsBy')))
     return None
 
 
@@ -467,13 +481,14 @@ def verify_city(a, port, rel, sync_playwright):
         print('    kept by class %s' % json.dumps(it['kept']))
         print('    bought %s; by kind of shop %s' % (json.dumps(it['bought']), json.dumps(it['byShopKind'])))
         print('    trips %s; errands now %d; failed %s; no shop sells %s (wanted %s); worn out %s' % (json.dumps(it['trip']), it['errandsNow'], json.dumps(it['failed']), it['unsold'], json.dumps(it['noShop']), json.dumps(it['worn'])))
-        print('    tools %s; hurt %s; meals %s; stores %s; slot errors %d; items check: %s' % (json.dumps(it['tools']), json.dumps(it['hurt']), json.dumps(it['meals']), json.dumps(it['stores']), it['slotErrors'], items_bad(sc) or 'OK'))
+        print('    tools %s; hurt %s; meals %s; stores %s (empty %s); legs by layer %s; slot errors %d; items check: %s' % (json.dumps(it['tools']), json.dumps(it['hurt']), json.dumps(it['meals']), json.dumps(it['stores']), it.get('emptyStores'), json.dumps(it.get('legsBy')), it['slotErrors'], items_bad(sc) or 'OK'))
     if sc.get('worship'):
         wo = sc['worship']
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
         for o in wo['options']: print('    %d service(s), %d%% attend: %d at once, short %d: %s more shrines, or %s more of the largest' % (o['services'], round(o['attend'] * 100), o['atOnce'], o['short'], o['shrines'], o['largest']))
     if sc.get('faith'): print('  the rest day\'s buildings: %s' % json.dumps(sc['faith']))
     if sc.get('squares'): print('  benched squares by the cantons: %s' % json.dumps(sc['squares']))
+    if sc.get('shipwrights'): print('  shipwright\'s docks: %s' % json.dumps(sc['shipwrights']))
     if sc.get('worship'): print('    the busiest service: %d want it at %d:00, room %d, short %d; per service %s' % (sc['worship']['want'], sc['worship']['hour'], sc['worship']['room'], sc['worship']['short'], json.dumps(sc['worship']['perService'])))
     if sc.get('workday'): print('  the run: %d roles, the first jump %s ms, stuck %d, no path %d, route failures %d, working on the rest day outside the essential kinds %d, slaves on the half shift %d of %d, bodies %s' % (sc['roles'], sc['firstJumpMs'], sc['stuck'], sc['nopath'], sc['routeFail'], sc['restWorkers'], sc.get('slavesHalf', 0), sc.get('slaves', 0), sc['bodies']))
     print('  A* check %s; decisions at 8 %s; at 2 %s; SIM.check %s; actors %d' % (json.dumps(sc['walk']), json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['check']), sc['actors']))

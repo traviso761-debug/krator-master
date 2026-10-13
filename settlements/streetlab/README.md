@@ -535,7 +535,10 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   cantons' rooms, the dormitories, the barracks and the slaves' quarters eat at their mess. The slaves are issued
   their clothes and tools and run no errands (the owner's Q5). The material meter rises slowly; when it is high a
   citizen buys the best luxury or household good its wealth reaches. An errand goes when a seller is open and within
-  reach. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
+  reach. A household shops when its store falls below two days and buys four (a buffer: a store that runs low after
+  the shops shut lasts the night). A meal is eaten out (a tavern, a market's stalls, the caravanserai) by a share that
+  grows with wealth, or when the store cannot make one. The chinampa growers' huts and beds are on the `kayak` layer
+  through a landing at the nearest street (`VC.simKayaks`): to town by kayak, then on foot. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
   **The shipwright's docks** (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars,
   kayaks. Nets could come from weaver"): `voth_bldg_shipwright` (kits/catalog: a yard on the shore, a slipway into the
   water with a hull on the stocks, sheerlegs, a timber shed, the shop with oars and kayaks racked), placed by

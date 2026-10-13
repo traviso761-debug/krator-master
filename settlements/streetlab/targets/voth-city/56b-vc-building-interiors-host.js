@@ -416,7 +416,9 @@ VC.peopleReportHTML = function () {
         '. Hurt at work ' + f(IR.hurt.total) + ' (now ' + f(IR.hurt.now) + '), poultices bought ' + f(IR.hurt.poultices) + ', healed ' + f(IR.hurt.healed) + '.</div>';
       var M = IR.meals, mt = M.meal + M.single + M.none + M.bought + M.mess;
       h += '<div>Meals: ' + f(M.meal) + ' at home of two foods, ' + f(M.single) + ' of one, <span class="' + (M.none ? 'bad' : '') + '">' + f(M.none) + ' of scraps</span>, ' + f(M.bought) + ' bought (taverns, stalls), ' + f(M.mess) + ' at a mess' + (mt ? ' (' + Math.round((M.meal + M.bought + M.mess) / mt * 100) + '% full meals)' : '') +
-        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
+        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day (a trip for food on its way), ' + f(IR.emptyStores) + ' empty, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
+      var KY = SU.kayaks || {};
+      h += '<div>Kayaks: ' + f(KY.places) + ' huts and chinampa work sites on the beds, reached through ' + f(KY.landings) + ' landings by ' + f(KY.people) + ' people (to town by kayak, then on foot); ' + f(IR.kayakNow) + ' afloat now. Meals out (a tavern, a stall, the caravanserai): ' + f(M.bought) + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

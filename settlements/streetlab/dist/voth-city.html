@@ -48156,7 +48156,7 @@ var TUNE = {
                        homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
                        reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
       /* the shipwright's docks (VC.simShipwrights): by the sea harbour and the river port */
-      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60,
+      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60, channel: 40, channelLook: 300, laneClear: 15,
                     from: ['poor', 'middle', 'shop', 'craft', 'warehouse', 'tavern'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
@@ -48328,7 +48328,10 @@ var TUNE = {
        starts with its sets (the worn one at a hashed wear), its tool, a waterskin if it labours, a kayak if it grows the
        chinampas, and its household's food for `foodDays` [lo, hi] days. `meal`: a meal (two foods) x3 of one serving, the
        richer `rich` x wealth more; `hurt` a worked day's chance of an injury, `heal` days without a poultice; a store
-       below `low` days of meals sends one of the household for `days` days; `lack` material a day per set short; a
+       below `low` days of meals sends one of the household for `days` days (two and four: a buffer, so a store that
+       runs low after the shops shut lasts the night; the owner asked where the low stores came from, 2026-10-13); a
+       meal is eaten out (a tavern, a stall, the caravanserai: the item 'meal') at `eatOut.base` + `eatOut.wealth` x
+       wealth, or when the store cannot make one; `lack` material a day per set short; a
        `treat` when material reaches `at`: the last item whose least wealth the citizen has; `mins` at the shop */
     items: {
       kinds: {
@@ -48344,7 +48347,7 @@ var TUNE = {
         hammer: { cat: 'tool', workLife: 3200 }, shuttle: { cat: 'tool', workLife: 5000 }, scraper: { cat: 'tool', workLife: 3600 }, peel: { cat: 'tool', workLife: 5000 },
         cleaver: { cat: 'tool', workLife: 4000 }, ladle: { cat: 'tool', workLife: 5000 }, quill: { cat: 'tool', workLife: 3000 }, oar: { cat: 'tool', workLife: 4500 },
         net: { cat: 'tool', workLife: 3000 }, lancet: { cat: 'tool', workLife: 4000 },
-        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' },
+        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' }, meal: { cat: 'meal' },
         pottery: { cat: 'household', material: 25 }, lamp: { cat: 'household', material: 30 }, rug: { cat: 'household', material: 45 },
         jewellery: { cat: 'luxury', material: 60 }, silks: { cat: 'luxury', material: 70 }
       },
@@ -48356,7 +48359,7 @@ var TUNE = {
         voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle', 'net'], voth_bldg_shipwright: ['oar', 'kayak'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
         voth_bldg_butcher: ['fish', 'eggs']
       },
-      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
+      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery', 'meal'],
       shopBuy: 6,
       sets: { slave: 1, poor: 2, canton: 2, farm: 2, tavern: 2, middle: 3, shop: 3, craft: 3, civic: 3, landmark: 3, monastery: 2, rich: 4, manor: 6, clan: 6, other: 2 },
       tools: { 'farmhands and ploughmen': 'hoe', miners: 'pick', 'quarrymen and masons': 'maul', 'mushroom growers': 'knife', 'dockers and stevedores': 'hook',
@@ -48367,7 +48370,8 @@ var TUNE = {
                'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'net', 'shipwrights and boatbuilders': 'hammer',
                soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
       armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
-      foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
+      foodDays: [1.5, 4], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 2, days: 4, lack: 4,
+      eatOut: { base: 0.04, wealth: 0.2 }, kayakLanding: 'landing',
       treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
     }
   },
@@ -53099,7 +53103,7 @@ SL.pass13 = function () {
 //
 //   SIM.role({id, org, name, sched, prefers?:{ACT:{pin?:'home'|'work', kinds?:[..], ids?:[..], via?:'boat'|'buggy'}},
 //             speed?, layer?, mode?, fallback?:{ACT:ACT}})
-//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock}, speed?})
+//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock, pier?, layer?}, speed?})
 //   SIM.group({id, kind, org, members:[actor ids], beasts?, mount?, vehicle?})
 //   SIM.event({id, kind, org, every:[minH,maxH] (world hours between firings), window?:[h0,h1], from:[ports], to:[ports]|'other',
 //              size:[a,b] (units), unit:[{role, n}], arrive:{kinds:[..]}, stay:{untilHour, nights}, layer, mode, speed, beasts?, mount?,
@@ -53125,6 +53129,7 @@ SL.pass13 = function () {
   SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
   SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
   SIM.WEEK = 7;
+  SIM.legsBy = {};
   SIM.weekday = function(minute){ var d=Math.floor((minute==null?SIM.minute():minute)/1440); return ((d % SIM.WEEK) + SIM.WEEK) % SIM.WEEK; };
   SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched);
     if(o.scheds){ for(var k in o.scheds) o.scheds[k]=SIM.sched(o.scheds[k]); if(!o.sched) o.sched=o.scheds.work || o.scheds[Object.keys(o.scheds)[0]]; }
@@ -53241,23 +53246,24 @@ SL.pass13 = function () {
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
     var spot=spotOf(a, P), cur=from, inVeh = a.inVehicle;           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
       if(B){ var l1=leg(layer, cur, B.door, a.speed, mode, 0); if(l1){ legs.push(l1); cur=B.door; }
-        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?'water':'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
+        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?bl:'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
         var board = via==='boat' && a.boat && a.boat.pier ? a.boat.pier : B.door;
         var l2=leg(vl, board, P.layer===vl?spot:P.door, vs, vm, vm==='drive'?5:0); if(l2){ legs.push(l2); } a.inVehicle = vm==='boat'?'boat':'buggy'; } }
-    else if(inVeh && P.layer!==(inVeh==='boat'?'water':'road')){                   /* back from the water / the road: to the base, then walk */
-      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?'water':'road';
+    else if(inVeh && P.layer!==(inVeh==='boat'?bl:'road')){                        /* back from the water / the road: to the base, then walk */
+      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?bl:'road';
       if(base){ var land = inVeh==='boat' && a.boat && a.boat.pier ? a.boat.pier : base.door;
         var l3=leg(vl2, cur, land, SIM.SPEED[inVeh==='boat'?'boat':'drive'], inVeh==='boat'?'boat':'drive', inVeh==='boat'?0:5); if(l3){ legs.push(l3); cur=base.door; } }
       a.inVehicle = null;
       var l4=leg(layer, cur, spot, a.speed, mode, 0); if(l4) legs.push(l4); }
     else {
-      var lay = inVeh ? (inVeh==='boat'?'water':'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
+      var lay = inVeh ? (inVeh==='boat'?bl:'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
       var l5=leg(lay, cur, spot, inVeh?SIM.SPEED[inVeh==='boat'?'boat':'drive']:a.speed, inVeh?(inVeh==='boat'?'boat':'drive'):mode, a.minW||0); if(l5) legs.push(l5); }
     var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3 };
-    legs.forEach(function(L){ T.dur+=L.dur; }); T.arrive=t+T.dur;
+    legs.forEach(function(L){ T.dur+=L.dur; SIM.legsBy[L.layer]=(SIM.legsBy[L.layer]||0)+1; }); T.arrive=t+T.dur;   /* legs planned, by layer (an audit) */
     if(T.failed) SIM.logEvent('nopath', { actor:a.id, place:P.id });
     return T;
   };
@@ -53726,7 +53732,7 @@ SL.pass13 = function () {
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]} })
+//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
 //   SIM.shop(placeId, [item ids])      what a place sells (stock is abstract: every purchase succeeds, and is logged)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -53749,7 +53755,10 @@ SL.pass13 = function () {
 // purchase logged by place and item; a luxury or household good fills material); none within reach, it is dropped and
 // not tried again for `cool` minutes. FOOD: a household's store (servings by food) feeds its meals at home: two foods
 // make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more), one food `single`, none
-// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). A store with less than `low` days for its people sends one of them to buy `days` days of the foods
+// `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). EATING
+// OUT: at the start of a meal an actor eats at the nearest open seller of the item 'meal' (a tavern, a stall) by a hash
+// under `eatOut.base` + `eatOut.wealth` times its wealth, or when its household's store cannot make a meal; none open,
+// it eats at home. A store with less than `low` days for its people sends one of them to buy `days` days of the foods
 // the nearest seller sells. Deterministic: no draws (hashes), and only a question about the present changes an actor.
 (function(root){
   'use strict';
@@ -53762,7 +53771,7 @@ SL.pass13 = function () {
   SIM.items = function(o){
     var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
               stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
-              treat:o.treat||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              treat:o.treat||null, eatOut:o.eatOut||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
               stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0 } } };
     Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
     (o.free||[]).forEach(function(a){ I.free[a]=1; });
@@ -53845,21 +53854,29 @@ SL.pass13 = function () {
         a.wkT=minute; }
       else a.wkT=null;
       var E=a.errand;
+      if(E && E.item==='meal' && act!=='EAT'){ if(E.place) stat(I.stats.done, 'meal'); a.errand=null; E=null; }   /* the meal out is over with its hour */
       if(E){
-        if(E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
+        if(E.item!=='meal' && E.place && a.activity===E.act && a.place===E.place && a.arrM!=null && minute>=a.arrM+I.mins){ complete(a, E, minute); E=null; }
         else if(minute-E.since>I.stale){ if(E.item==='food'){ var H0=SIM.R.place[a.home]; if(H0 && H0.shopper===a.id) H0.shopper=null; } a.errand=null; E=null; }
       }
       /* a household's food: the first of its people with time off goes when the store runs low */
       var hr=Math.floor(minute/60);
+      /* a meal out: at the start of a meal, by a hash and the actor's wealth (`eatOut`), or when the household's store
+         cannot make a meal; at a seller of 'meal' (a tavern, a stall) */
+      if(!a.errand && act==='EAT' && a.activity!=='EAT' && I.eatOut && sellersOf('meal').length){ var Hm=SIM.R.place[a.home];
+        if(Hm && !Hm.mess && a.mealH!==hr){ a.mealH=hr; var st0=Hm.store||{}, kinds=0; for(var f0 in st0) if(st0[f0]>0) kinds++;
+          if(kinds<2 || hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0)){ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
       if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
         if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
           var tot=0; for(var f in H.store) tot+=H.store[f];
           if(tot < H.people*I.meals*I.perMeal*I.low && errand(a, 'food', 'free', minute)) H.shopper=a.id; } }
     }
     var E2=a.errand; if(!E2) return act;
-    if(E2.when==='work' ? act==='WORK' : I.free[act]){
-      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open */
+    if(E2.when==='work' ? act==='WORK' : E2.when==='free' ? I.free[act] : act===E2.when){
+      /* only when a seller is open and within reach (asked once an hour): the errand waits for the shops to open (a
+         meal out with none open is eaten at home) */
       if(live){ var h2=Math.floor(minute/60); if(a.errOkH!==h2){ a.errOkH=h2; a.errOk=!!SIM.itemsChoose(a, E2.act, h2%24); } }
+      if(a.errOk===false && E2.item==='meal'){ if(live) a.errand=null; return act; }
       return a.errOk===false ? act : E2.act; }
     return act;
   };
@@ -56234,7 +56251,8 @@ VC.simVillageShrines = function (step) {
    directions `look` m out), clear by `clear` m of the piers, the causeways and the cantons and by `markClear` m of
    Voth's landmarks, over nothing but house and warehouse lots of `from` (cleared), off the streets and the hard ground
    (the harbour's quay deck is drawn over it: a `quay` role would allow it), off the roads beyond the city's raster and
-   off the greens and benched squares. Its land height is its back's */
+   off the greens and benched squares; the water left open: `channel` m of it beyond the slip's end, no ferry's way within
+   `laneClear` m of the slip, and the slip taken off the boats' grid once it stands. Its land height is its back's */
 VC.simShipwrights = function (step) {
   var S = TUNE.sim.place.shipwright, D = SL.dims(S.key, 0), out = [], R = SL.R; VC.SIMB.shipwrights = out;
   if (!D) return out;
@@ -56243,6 +56261,8 @@ VC.simShipwrights = function (step) {
   (CANT.causewayList || []).forEach(function (cw) { for (var k = 1; k < cw.pts.length; k++) segs.push([cw.pts[k - 1], cw.pts[k], cw.width / 2]); });
   CANT.spans.forEach(function (sp) { segs.push([[sp.ax, sp.az], [sp.bx, sp.bz], sp.w / 2]); });
   var at = function (c, f, x, z) { var u = V.perp(f); return [c[0] + u[0] * x + f[0] * z, c[1] + u[1] * x + f[1] * z]; };
+  /* the boats' ways: every leg of the water lines (ferries) as a polyline */
+  var lanes = []; SIM.all('transport').forEach(function (T) { if (T.layer !== 'water') return; (T.legs || []).forEach(function (L) { if (L.path && L.path.pts) lanes.push(L.path.pts); }); });
   var gcen = {}, why = {}, no = function (k) { why[k] = (why[k] || 0) + 1; return null; };
   var tryAt = function (c) {
     if (baseH(c[0], c[1]) < S.land) return no('wet middle');
@@ -56260,6 +56280,12 @@ VC.simShipwrights = function (step) {
     if (hmax - hmin > S.slope) return no('steep');
     if (marks.some(function (m) { return Math.hypot(m[0] - c[0], m[1] - c[1]) < S.markClear; })) return no('a landmark');
     for (var x2 = -3; x2 <= 3; x2 += 3) for (var z2 = S.waterFrom; z2 <= hd - 0.5; z2 += 2) { var w = at(c, f, x2, z2), hw2 = baseH(w[0], w[1]); if (hw2 > VOTH.SEA - (z2 >= hd - S.endLen ? S.depth : 0)) return no('slip dry'); }
+    /* the river (or the bay) stays open: water `channel` m beyond the slip's end (or as far as `channelLook`: open water),
+       no boat's way within `laneClear` m of the slip */
+    var E = at(c, f, 0, hd), open = 0; while (open < S.channelLook) { var e2 = V.add(E, V.mul(f, open + 5)); if (baseH(e2[0], e2[1]) > VOTH.SEA - 0.3) break; open += 5; }
+    if (open < S.channel) return no('the channel too narrow');
+    var slip = obb(at(c, f, 0, (S.waterFrom + hd) / 2), V.perp(f), 4.5, (hd - S.waterFrom) / 2 + 1);
+    if (lanes.some(function (P) { for (var i = 1; i < P.length; i++) { var a = [P[i - 1][0], P[i - 1][2]], b = [P[i][0], P[i][2]], L = V.dist(a, b); for (var u = 0; u <= L; u += 4) if (VC.simInObb(V.lerp(a, b, L ? u / L : 0), slip, S.laneClear)) return true; } return false; })) return no('a boat\u2019s way');
     var o = obb(c, V.perp(f), hw, hd), C = obbCorners(o).concat([c]);
     if (PLAN.greens.some(function (G, gi) { if (!G.poly) return false; var gc = gcen[gi] || (gcen[gi] = polyCentroid(G.poly)); if (Math.abs(gc[0] - c[0]) > 150 || Math.abs(gc[1] - c[1]) > 150) return false;
       return C.some(function (q) { return inPoly(q, G.poly); }) || G.poly.concat([gc]).some(function (q) { return VC.simInObb(q, o, 1); }); })) return no('a green or square');
@@ -56267,7 +56293,7 @@ VC.simShipwrights = function (step) {
     var g2 = VC.grow(o, 1.5), bad = false;
     PLAN.lots.forEach(function (L) { if (bad || L.died != null || !L.bo || Math.abs(L.x - c[0]) > 80 || Math.abs(L.z - c[1]) > 80 || SL.pen(g2, L.bo) <= 0.1) return; if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; });
     if (bad) return no('a lot not to clear'); if (VC.anyHit(o, VC.big || [], 1)) return no('a big plot');
-    return { c: c, f: f, back: hmin };
+    return { c: c, f: f, back: hmin, slip: slip, open: open };
   };
   var hardOk = false, marks = (PLAN.voth || []).map(function (q) { return [q.x, q.z]; }).concat((PLAN.landmarks || []).map(function (q) { return [q.x, q.z]; }));
   S.roles.forEach(function (role) {
@@ -56280,7 +56306,9 @@ VC.simShipwrights = function (step) {
     var L = VC.placedLot({ key: S.key, v: 0, x: got.c[0], z: got.c[1], ry: Math.atan2(got.f[0], got.f[1]) }, step);
     if (!L) { out.push({ role: role, why: 'the model would not place' }); return; }
     L.placed = false; L.cls = 'craft'; L.role = 'shipwright'; L.y = Math.max(VOTH.SEA + 0.3, got.back);
-    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r });
+    /* the slip comes off the boats' water (VC.navGrid): a route found later goes round it */
+    var NV = VC.NAV; if (NV) for (var k = 0; k < NV.wet.length; k++) if (NV.wet[k] && VC.simInObb(NV.at(k), got.slip, NV.c)) NV.wet[k] = 0;
+    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r, open: got.open, slip: { c: got.slip.c.slice(), u: got.slip.u, v: got.slip.v, hw: got.slip.hw, hd: got.slip.hd } });
   });
   SL.note(step, 'shipwright’s docks: ' + out.map(function (q) { return q.lot != null ? q.role + ' (' + q.r + ' m from its middle)' : q.why; }).join('; '));
   return out;
@@ -57204,19 +57232,21 @@ VC.simNeedsReport = function (minute) {
        (`richSword`); a waterskin if they labour, a kayak if they grow the chinampas.
    VC.simItemsReport is the report's: what is kept against what is wanted, the purchases by item and by kind of shop,
    the trips (world minutes), the errands that found no seller, the items no shop sells, the tools broken at work and
-   replaced in work time, the hurt and the poultices, the meals, the household stores. */
+   replaced in work time, the hurt and the poultices, the meals (at home, out, at a mess), the household stores; the
+   chinampa growers' kayaks (VC.simKayaks). */
 VC.simItems = function () {
   if (typeof SIM === 'undefined' || !SIM.items || !TUNE.sim.items) return null;
   var T = TUNE.sim.items, NE = TUNE.sim.needs, t0 = Date.now();
   SIM.items({ kinds: T.kinds, free: NE ? NE.free : ['SOCIALIZE', 'RELAX', 'IDLE'], secPerMinute: VC.simSecPerMin(), mins: T.mins, cool: T.cool, meal: T.meal, lack: T.lack,
-              hurt: T.hurt, heal: T.heal, low: T.low, days: T.days, treat: T.treat });
+              hurt: T.hurt, heal: T.heal, low: T.low, days: T.days, treat: T.treat, eatOut: T.eatOut });
   var u = function (k, a, b) { return KRAND.unit(KRAND.hash(5151, k, a, b || 0)); };
   /* ---- the shops */
   var shops = {}, n = 0;
   SIM.all('place').forEach(function (P) {
     var items = null, key = null;
     if (P.unit != null) { var U = VC.IX.units[P.unit], L = U && U.lot >= 0 ? PLAN.lots[U.lot] : null; if (L && T.shops[L.key]) { items = T.shops[L.key]; key = L.key; } }
-    else if (P.kind === 'market') { items = T.market; key = 'market'; }
+    if (!items && P.kind === 'market') { items = T.market; key = 'market'; }
+    if (!items && P.kind === 'tavern' && P.activities.EAT && P.access !== 'private') { items = ['meal']; key = 'tavern'; }   /* a meal out: the taverns and the caravanserai */
     if (!items) return;
     SIM.shop(P.id, items); P.activities.BUY = Math.max(P.activities.BUY || 0, T.shopBuy); P.shopKey = key; shops[key] = (shops[key] || 0) + 1; n++;
   });
@@ -57250,9 +57280,33 @@ VC.simItems = function () {
     var R = SIM.R.role[a.role]; if (R && R.needs && R.needs.labour > 0) { SIM.give(a, 'waterskin', 1); gear.waterskin++; }
     if (a.job === 'chinampa growers') { SIM.give(a, 'kayak', 1); gear.kayak++; }
   });
+  var K = VC.simKayaks();
   if (SIM.placesChanged) SIM.placesChanged();   /* the shops' BUY */
-  VC.SIMITEMS = { shops: shops, shopPlaces: n, stores: stores, messes: messes, gear: gear, ms: Date.now() - t0 };
+  VC.SIMITEMS = { shops: shops, shopPlaces: n, stores: stores, messes: messes, gear: gear, kayaks: K, ms: Date.now() - t0 };
   return VC.SIMITEMS;
+};
+
+/* the kayaks (the brief, 1.5: "chinampa workers mostly live on the chinampas and carry a kayak, used automatically on
+   water"): the stilt huts and the chinampa work sites stand on the beds, off the pedestrian layer. Each such place is on
+   the 'kayak' layer (a straight line over the water and the beds) and reached through a landing (a place at the
+   pedestrian node nearest it); everyone who lives or works on the beds keeps a kayak there (core/simulation: an actor's
+   boat {dock, layer}, a place's via 'boat'): to town by kayak to the landing, then on foot; home the other way */
+VC.simKayaks = function () {
+  if (!SIM.nav.layers.kayak) SIM.nav.layer('kayak', { route: function (ax, az, bx, bz) { return { pts: [[ax, 0, az], [bx, 0, bz]] }; } });
+  var far = TUNE.sim.nav.far, landing = {}, onBeds = {}, n = 0, P0 = VC.PED;
+  SIM.all('place').forEach(function (P) {
+    if ((P.kind !== 'chinampa hut' && P.kind !== 'chinampa') || P.navNode == null || !(P.navOff > far)) return;
+    var nd = P0.nodes[P.navNode], id = 'landing.' + P.navNode;
+    if (!landing[id]) { SIM.place({ id: id, kind: 'landing', name: 'Kayak landing', x: nd.x, z: nd.z, y: nd.y || 0, activities: {}, layer: 'pedestrian', tags: ['chinampa'] }); landing[id] = SIM.R.place[id]; landing[id].navNode = P.navNode; landing[id].navOff = 0; }
+    P.layer = 'kayak'; P.via = 'boat'; P.landing = id; onBeds[P.id] = 1; n++;
+  });
+  var people = 0;
+  SIM.all('actor').forEach(function (a) {
+    var H = onBeds[a.home] ? SIM.R.place[a.home] : null, W = a.work && onBeds[a.work] ? SIM.R.place[a.work] : null; if (!H && !W) return;
+    a.boat = { dock: (H || W).landing, layer: 'kayak' }; if (H) a.inVehicle = 'boat';   /* at home on the beds: afloat */
+    if (!SIM.owns(a, 'kayak')) SIM.give(a, 'kayak', 1); people++;
+  });
+  return { places: n, landings: Object.keys(landing).length, people: people };
 };
 
 VC.simItemsReport = function () {
@@ -57276,6 +57330,8 @@ VC.simItemsReport = function () {
   out.stores = { homes: homes, low: low, meanDays: homes ? Math.round(days / homes * 10) / 10 : 0 };
   out.errandsNow = A.filter(function (a) { return a.errand; }).length;
   out.slotErrors = A.reduce(function (s, a) { return s + SIM.itemsCheck(a).length; }, 0);
+  out.kayakNow = A.filter(function (a) { return a.task && a.task.legs && a.task.legs.some(function (L) { return L.layer === 'kayak'; }) && SIM.time() < a.task.arrive; }).length;
+  out.emptyStores = SIM.all('place').filter(function (P) { if (!P.store || !P.people) return false; for (var f in P.store) if (P.store[f] > 0) return false; return true; }).length;
   return out;
 };
 
@@ -59451,7 +59507,9 @@ VC.peopleReportHTML = function () {
         '. Hurt at work ' + f(IR.hurt.total) + ' (now ' + f(IR.hurt.now) + '), poultices bought ' + f(IR.hurt.poultices) + ', healed ' + f(IR.hurt.healed) + '.</div>';
       var M = IR.meals, mt = M.meal + M.single + M.none + M.bought + M.mess;
       h += '<div>Meals: ' + f(M.meal) + ' at home of two foods, ' + f(M.single) + ' of one, <span class="' + (M.none ? 'bad' : '') + '">' + f(M.none) + ' of scraps</span>, ' + f(M.bought) + ' bought (taverns, stalls), ' + f(M.mess) + ' at a mess' + (mt ? ' (' + Math.round((M.meal + M.bought + M.mess) / mt * 100) + '% full meals)' : '') +
-        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
+        '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day (a trip for food on its way), ' + f(IR.emptyStores) + ' empty, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
+      var KY = SU.kayaks || {};
+      h += '<div>Kayaks: ' + f(KY.places) + ' huts and chinampa work sites on the beds, reached through ' + f(KY.landings) + ' landings by ' + f(KY.people) + ' people (to town by kayak, then on foot); ' + f(IR.kayakNow) + ' afloat now. Meals out (a tavern, a stall, the caravanserai): ' + f(M.bought) + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

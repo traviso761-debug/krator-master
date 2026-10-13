@@ -4,6 +4,27 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: phase D session 2: phase D done (meals out, kayaks, the food buffer, the river yard checked)
+
+The owner: "Make sure the river shipwright doesn't actually block the river. After this, finish phase D. And where did
+the low food stocks / under a day of food issue come from?"
+- **The river yard** leaves 95 m of open water beyond its slip, no ferry's way within 15 m of it (the placement
+  requires both, the slip is taken off the boats' grid once it stands, and `verify.py` checks it on the routes as baked).
+- **The low stores** were the trigger, not a shortage: a household went for food when its store fell below one day,
+  which the evening meal often did after the shops had shut (19:00); the trip waited for the morning, and breakfast
+  (5-6) came before the shops opened (7). Every low household had its trip on the way; the start was also hashed as
+  low as half a day. Now a household shops below two days and buys four: scraps 145 meals in two days (1,254 before),
+  5 stores empty.
+- **Phase D finished:** meals out at the taverns, the markets' stalls and the caravanserai (a share that grows with
+  wealth, or for a store that cannot make a meal); the chinampa growers' kayaks (their huts and beds on a straight
+  `kayak` layer through landings at the nearest street: core/simulation's boat `layer`); every item has a seller.
+
+**Where we're at** (`verify.py`, two workdays then the rest day's morning): 18,197 meals eaten out at the 80 taverns,
+the stalls and the caravanserai (about 6% of the meals), 141 scraps, 5 empty stores; 8,314 kayak legs. The step's
+cost has grown with phases C and D: p50 109 ms on a workday (61 before the needs), 173 on the rest day's morning,
+its slowest minute 2.7 s. **Next:** phase E (production, stores, carts, imports: the stock stops being abstract, the
+shipwrights' ships and the farms' crops are made).
+
 ## 2026-10-13: phase D session 1: things (clothes, tools, food, shopping)
 
 The owner: "Continue phase d"; then "Shirts and clothes ought to last at least one year under normal conditions but they

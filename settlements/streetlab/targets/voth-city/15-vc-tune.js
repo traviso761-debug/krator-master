@@ -247,7 +247,7 @@ var TUNE = {
                        homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
                        reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
       /* the shipwright's docks (VC.simShipwrights): by the sea harbour and the river port */
-      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60,
+      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60, channel: 40, channelLook: 300, laneClear: 15,
                     from: ['poor', 'middle', 'shop', 'craft', 'warehouse', 'tavern'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
@@ -419,7 +419,10 @@ var TUNE = {
        starts with its sets (the worn one at a hashed wear), its tool, a waterskin if it labours, a kayak if it grows the
        chinampas, and its household's food for `foodDays` [lo, hi] days. `meal`: a meal (two foods) x3 of one serving, the
        richer `rich` x wealth more; `hurt` a worked day's chance of an injury, `heal` days without a poultice; a store
-       below `low` days of meals sends one of the household for `days` days; `lack` material a day per set short; a
+       below `low` days of meals sends one of the household for `days` days (two and four: a buffer, so a store that
+       runs low after the shops shut lasts the night; the owner asked where the low stores came from, 2026-10-13); a
+       meal is eaten out (a tavern, a stall, the caravanserai: the item 'meal') at `eatOut.base` + `eatOut.wealth` x
+       wealth, or when the store cannot make one; `lack` material a day per set short; a
        `treat` when material reaches `at`: the last item whose least wealth the citizen has; `mins` at the shop */
     items: {
       kinds: {
@@ -435,7 +438,7 @@ var TUNE = {
         hammer: { cat: 'tool', workLife: 3200 }, shuttle: { cat: 'tool', workLife: 5000 }, scraper: { cat: 'tool', workLife: 3600 }, peel: { cat: 'tool', workLife: 5000 },
         cleaver: { cat: 'tool', workLife: 4000 }, ladle: { cat: 'tool', workLife: 5000 }, quill: { cat: 'tool', workLife: 3000 }, oar: { cat: 'tool', workLife: 4500 },
         net: { cat: 'tool', workLife: 3000 }, lancet: { cat: 'tool', workLife: 4000 },
-        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' },
+        waterskin: { cat: 'gear' }, kayak: { cat: 'gear' }, poultice: { cat: 'medicine' }, meal: { cat: 'meal' },
         pottery: { cat: 'household', material: 25 }, lamp: { cat: 'household', material: 30 }, rug: { cat: 'household', material: 45 },
         jewellery: { cat: 'luxury', material: 60 }, silks: { cat: 'luxury', material: 70 }
       },
@@ -447,7 +450,7 @@ var TUNE = {
         voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle', 'net'], voth_bldg_shipwright: ['oar', 'kayak'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
         voth_bldg_butcher: ['fish', 'eggs']
       },
-      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
+      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery', 'meal'],
       shopBuy: 6,
       sets: { slave: 1, poor: 2, canton: 2, farm: 2, tavern: 2, middle: 3, shop: 3, craft: 3, civic: 3, landmark: 3, monastery: 2, rich: 4, manor: 6, clan: 6, other: 2 },
       tools: { 'farmhands and ploughmen': 'hoe', miners: 'pick', 'quarrymen and masons': 'maul', 'mushroom growers': 'knife', 'dockers and stevedores': 'hook',
@@ -458,7 +461,8 @@ var TUNE = {
                'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'net', 'shipwrights and boatbuilders': 'hammer',
                soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
       armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
-      foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
+      foodDays: [1.5, 4], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 2, days: 4, lack: 4,
+      eatOut: { base: 0.04, wealth: 0.2 }, kayakLanding: 'landing',
       treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
     }
   },

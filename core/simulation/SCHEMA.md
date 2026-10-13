@@ -70,7 +70,9 @@ replaced from home, a short set is an errand on time off, a tool worn out at wor
 may end `hurt` (an errand for a poultice). An errand (`BUY`, its item) goes to the nearest seller within reach in an
 hour of WORK or of the `free` activities; a meal at home takes two foods from the household's store (or one, or
 none: the actor's `boost` of EAT); a store running low sends one of its people for days of food; a high material meter
-buys a `treat` by wealth. `SIM.itemsEff(a)` (a missing tool, a hurt) multiplies the needs' efficiency.
+buys a `treat` by wealth; a meal is eaten out (a seller of the item `meal`) by `eatOut` or for an empty store.
+`SIM.itemsEff(a)` (a missing tool, a hurt) multiplies the needs' efficiency. An actor's `boat.layer` names its boat's
+water layer (a kayak's own, in place of `water`); `SIM.legsBy` counts the legs planned by layer.
 
 ## Navigation layers
 

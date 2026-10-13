@@ -379,6 +379,25 @@ function world(seed){
  // issued: a worn-out item is replaced by its keeper, and no errand is run
  {const sl=S.actor({id:'sl',role:'hand',home:'cot',work:'yard'});sl.issued=true;sl.wears=['shirt'];sl.sets=2;S.equip(sl,'shirt',0.9);sl.itDay=8;sl.hurt=null;clock.d=9;clock.h=1;S.desire(sl,S.minute());
   ok('an issued actor gets its worn-out shirt replaced and runs no errand for the set short',sl.eq.torso&&sl.eq.torso.w===0&&!sl.errand&&S.ITEMS.stats.issued.shirt===1,!!sl.errand);}
+ // eating out: at a meal's start, at a seller of 'meal' (by the hash and wealth, or for an empty store); none open: home
+ {S.ITEMS.kinds.meal={id:'meal',cat:'meal'};S.place({id:'inn',kind:'tavern',x:50,z:0,activities:{EAT:5},open:[10,22]});S.shop('inn',['meal']);
+  const e=S.actor({id:'e1',role:'idler',home:'cot'});e.itDay=10;S.R.place.cot.store={corn:9,fish:9};S.ITEMS.eatOut={base:1,wealth:0};
+  clock.d=10;clock.h=11.5;e.activity='SOCIALIZE';run(10,11.9,12.5);
+  ok('a meal out: the actor eats at the inn, a full meal bought',e.activity==='EAT'&&e.place==='inn'&&e.boost.EAT===3&&S.ITEMS.stats.meals.bought>=1,e.place==='cot');
+  run(10,12.5,13.2);ok('and the errand ends with the meal hour',!e.errand&&S.ITEMS.stats.done.meal>=1,!!e.errand);
+  S.ITEMS.eatOut={base:0,wealth:0};run(11,11.9,12.5);
+  ok('with no wish to eat out and food at home, it eats at home',e.activity==='EAT'&&e.place==='cot',e.place==='inn');
+  S.R.place.cot.store={};S.ITEMS.eatOut={base:0,wealth:0};S.R.place.inn.closed=true;run(12,11.9,12.5);S.R.place.inn.closed=false;
+  ok('an empty store and the inn shut: scraps at home, no meal out left waiting',e.activity==='EAT'&&e.place==='cot'&&!(e.errand&&e.errand.item==='meal'),e.place==='inn');}
+ // kayaks: a hut on the water reached through a landing by the boat's own layer, and left the same way
+ {S.nav.layer('kayak',{route:(ax,az,bx,bz)=>({pts:[[ax,0,az],[bx,0,bz]]})});
+  S.place({id:'hut',kind:'hut',x:0,z:120,activities:{SLEEP:2},layer:'kayak',via:'boat'});S.place({id:'land',kind:'landing',x:100,z:60,activities:{BOARD:50}});
+  S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'}}});
+  const g=S.actor({id:'g1',role:'grower',home:'hut'});g.boat={dock:'land',layer:'kayak'};g.inVehicle='boat';g.pos={x:0,y:0,z:120};
+  clock.d=13;clock.h=8;const T1=S.plan(g,S.R.place.market,'SOCIALIZE',{x:0,y:0,z:120},clock.t);
+  ok('from the hut: by kayak to the landing, then on foot',T1.legs.length===2&&T1.legs[0].layer==='kayak'&&T1.legs[0].mode==='boat'&&T1.legs[1].layer==='pedestrian'&&!g.inVehicle,T1.legs[0].layer==='pedestrian');
+  const T2=S.plan(g,S.R.place.hut,'SLEEP',{x:100,y:0,z:60},clock.t);
+  ok('home: on foot to the landing, then by kayak to the hut',T2.legs.length>=1&&T2.legs[T2.legs.length-1].layer==='kayak'&&g.inVehicle==='boat',T2.legs[T2.legs.length-1].layer!=='kayak');}
  ok('the slots still hold after it all',S.all('actor').every(x=>S.itemsCheck(x).length===0),false);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);
