@@ -252,10 +252,10 @@ const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{su
  window._carve=BIO.carve.patches.map(Q=>Object.assign({id:Q.id},Q.stats));return M;})();
 
 // ---------------------------------------------------------------- the water
-// The river is a ribbon at WL(x) following its channel, the pond a disc at PL,
-// both in one vertex-coloured ripple material (SEDESERT_WATER's hue: the teal
-// of a wadi pool, paler over gravel shallows). The cataract is a curtain of
-// its own material, falling from the notch to the Abyss floor, with mist.
+// The pond is a disc at PL in the page's vertex-coloured ripple material (SEDESERT_WATER's hue: the teal of a
+// wadi pool, paler over gravel shallows). The river, the cataract and its plunge pool are core/water's (Phases 3
+// and 4, 2026-10-13): their records here (WATER.flow down the canyon floor, WATER.fall from the notch, WATER.still on
+// the Abyss floor), drawn in 89w-host-water.js once core/atmos is bound; the mist stays the page's sprites.
 const WHUE=SEDESERT_WATER.hue;
 const WATER_SHALLOW=new THREE.Color().setHSL(WHUE,.55,.46),WATER_MID=new THREE.Color().setHSL(WHUE,.62,.30),WATER_DEEP=new THREE.Color().setHSL(WHUE,.6,.15),WATER_PALE=new THREE.Color().setHSL(WHUE-.03,.35,.62);
 // The pond as core/water data (20-core-water.js; the page still draws it with MAT_WATER below): an open surface at PL with
@@ -292,20 +292,24 @@ function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,waterH(x,z)-h)
  // rapids: whitewater in the mountain gorge where the bed steepens, and a riffle at the notch
  const rap=Math.max(smooth(-2200,-2700,x),smooth(TERR.RIM-80,TERR.RIM+20,x))*smooth(.48,.66,fbm(x*.06,z*.08,606,2));out.lerp(FOAM,rap*.85);return out;}
 (function(){
- // the river ribbon: 12 m steps along x, 9 vertices across the channel (half-width 12 m)
- const pos=[],col=[],c=new THREE.Color(),NW=8,HW=12;
+ const pos=[],col=[],c=new THREE.Color(),idx=[];
  const push=(x,z)=>{const y=WL(x);waterColorAt(x,z,c);c.convertSRGBToLinear();pos.push(x,y,z);col.push(c.r,c.g,c.b);};
- const X0=-TERR.R*1.1,X1=TERR.RIM+34;let n=0;const rows=[];
- for(let x=X0;x<=X1;x+=12){const zr=zR(x),row=[];for(let k=0;k<=NW;k++){const z=zr+(k/NW-.5)*2*HW;row.push(pos.length/3);push(x,z);}rows.push(row);}
- const idx=[];for(let r=0;r<rows.length-1;r++)for(let k=0;k<NW;k++){const a=rows[r][k],b=rows[r][k+1],cc=rows[r+1][k],dd=rows[r+1][k+1];idx.push(a,dd,cc,a,b,dd);}   // wound to face UP: the single-sided water is seen from above (it faced down, and every camera saw the bed)
  // the pond: a fan
  const pc=pos.length/3;push(POND.x,POND.z);const PN=40,PR=[];for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=POND_R;PR.push(pos.length/3);push(POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
  for(let k=0;k<PN;k++)idx.push(pc,PR[k+1],PR[k]);
  // the pond's vertices sit at PL, the river's at WL(x): fix the pond ring
  for(let k=pc;k<pos.length/3;k++)pos[k*3+1]=PL;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The river';m.renderOrder=1;scene.add(m);})();
-// the cataract: a curtain from the notch at the rim to the Abyss floor, streaked, foaming white at the lip and at the plunge pool
+ const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The pond';m.renderOrder=1;scene.add(m);})();
+// THE RIVER (core/water Phase 3): a flow line down the canyon floor at WL(x) every 12 m, from the mountain gorge to the
+// notch, the surface never climbing downstream (where WL(x) rises over the bed's noise the water holds its level), 22 m
+// wide with 1.5 m tucked under each bank (the old ribbon's 24 m); its speed rises in the gorge and toward the notch,
+// where the old ribbon painted its rapids (the flow shader whitens wherever the line steepens)
+const RIVER_PTS=[];for(let x=-TERR.R*1.1;x<=TERR.RIM+34;x+=12){const y=WL(x),n=RIVER_PTS.length;RIVER_PTS.push([x,zR(x),n?Math.min(y,RIVER_PTS[n-1][2]):y]);}
+const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:22,speed:RIVER_PTS.map(p=>1.1+1.4*smooth(-2200,-2900,p[0])+1.6*smooth(TERR.RIM-260,TERR.RIM+20,p[0]))});
+// the cataract: a curtain from the notch at the rim to the Abyss floor, streaked, foaming white at the lip and at the plunge pool.
+// Since 2026-10-13 it is core/water's (WATER.fall below, drawn in 89w-host-water.js); TEX_FALL and MAT_FALL stay defined
+// because TEX_FALL's painter draws from rng(), and every placement after it reads the same sequence
 const TEX_FALL=BIO.canvasTex(128,512,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect(0,0,w,h);
  for(let i=0;i<260;i++){const x=rng()*w,l=rr(40,200);g.strokeStyle='rgba('+(rng()<.5?'150,190,200':'255,255,255')+','+(.2+rng()*.5).toFixed(2)+')';g.lineWidth=rr(1,4);g.beginPath();g.moveTo(x,rng()*h);g.lineTo(x+rr(-3,3),rng()*h+l);g.stroke();}});
 const MAT_FALL=new THREE.ShaderMaterial({fog:true,transparent:true,depthWrite:false,side:THREE.DoubleSide,
@@ -322,12 +326,12 @@ const MAT_FALL=new THREE.ShaderMaterial({fog:true,transparent:true,depthWrite:fa
 MAT_FALL.uniforms.fogColor.value=scene.fog.color;MAT_FALL.uniforms.fogDensity.value=scene.fog.density;
 TICKS.push(dt=>{MAT_FALL.uniforms.uT.value+=dt;});
 const FALL={x:TERR.RIM+34,z:zR(TERR.RIM+34),y:WL(TERR.RIM+34),floor:-700};
-(function(){const pos=[],uv=[],idx=[],NS=44,HW=13,H=FALL.y-FALL.floor;
- for(let i=0;i<=NS;i++){const t=i/NS,y=FALL.y-H*t,x=FALL.x+40*(1-Math.exp(-t*3))+t*t*90,w=HW*(1+t*2.2);
-  for(let k=-1;k<=1;k+=2){pos.push(x,y,FALL.z+k*w);uv.push(k<0?0:1,t);}}
- for(let i=0;i<NS;i++){const a=i*2,b=a+1,c2=a+2,d=a+3;idx.push(a,c2,d,a,d,b);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_FALL);m.userData.probeSkip=true;m.userData.inspectLabel='The cataract';m.renderOrder=2;scene.add(m);FALL.mesh=m;
+// THE CATARACT (core/water Phase 3): the lip across the notch, 26 m wide; the water leaves it at 10.5 m/s (a riffle
+// over the promontory's sill) and ARCS, a parabola from that speed, 730 m down to the Abyss floor, landing about 128 m
+// out (where the old hand-drawn curtain landed) and widening 29 m a side (the old curtain's 13 to 42 m half-width).
+// FALL.mesh is its drawn curtain (89w-host-water.js), which the host's rock checks read
+const CATARACT=WATER.fall({name:'The cataract',lip:[[FALL.x,FALL.z-13,FALL.y],[FALL.x,FALL.z+13,FALL.y]],dir:[1,0],speed:10.5,drop:FALL.y-FALL.floor,spread:29});
+(function(){const H=FALL.y-FALL.floor;
  // mist: soft sprites at the plunge and up the fall; the rising column drifts
  const mistTex=BIO.canvasTex(128,128,(gg,w,h)=>{const gr=gg.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(.45,'rgba(240,246,250,.45)');gr.addColorStop(1,'rgba(240,246,250,0)');gg.fillStyle=gr;gg.fillRect(0,0,w,h);});
  const SPR=[];
@@ -338,10 +342,9 @@ const FALL={x:TERR.RIM+34,z:zR(TERR.RIM+34),y:WL(TERR.RIM+34),floor:-700};
  for(let i=0;i<8;i++){const sm=new THREE.SpriteMaterial({map:mistTex,transparent:true,depthWrite:false,opacity:rr(.2,.35),fog:true,color:0xffffff});
   const sp=new THREE.Sprite(sm);sp.position.set(FALL.x+rr(-4,26),FALL.y+rr(2,18),FALL.z+rr(-16,16));const s=rr(10,26);sp.scale.set(s,s*rr(.8,1.2),1);sp.userData.probeSkip=true;sp.userData.inspectLabel='Spray';sp.userData.ph=rr(0,TAU);sp.userData.y0=sp.position.y;scene.add(sp);SPR.push(sp);}
  TICKS.push((dt,t)=>{for(let i=0;i<SPR.length;i++){const s=SPR[i];s.position.y=s.userData.y0+8*Math.sin(t*.25+s.userData.ph);}});
- // the plunge pool on the Abyss floor: a fan of water, foam white where the fall lands, the floor's rocks standing out of it
- {const px=FALL.x+40+90+40,pz=FALL.z,py=-703,pos=[px,py,pz],col=[],cf=FOAM.clone().convertSRGBToLinear(),cd=WATER_DEEP.clone().convertSRGBToLinear();col.push(cf.r,cf.g,cf.b);const PN=36,idx=[];
-  for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=150*(1+.15*Math.sin(3*a)+.1*Math.sin(5*a+1));pos.push(px+Math.cos(a)*r,py,pz+Math.sin(a)*r);const c=cd.clone().lerp(cf,.15);col.push(c.r,c.g,c.b);}
-  for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
-  const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The plunge pool';m.renderOrder=1;scene.add(m);}
+ // the plunge pool on the Abyss floor (core/water Phase 4: still water, its outline the old fan's), the floor's rocks
+ // standing out of it; the fall's own churn is drawn where the curtain lands (89w-host-water.js)
+ {const px=FALL.x+40+90+40,pz=FALL.z,PN=36,poly=[];
+  for(let k=0;k<PN;k++){const a=k/PN*TAU,r=150*(1+.15*Math.sin(3*a)+.1*Math.sin(5*a+1));poly.push([px+Math.cos(a)*r,pz+Math.sin(a)*r]);}
+  FALL.pool=WATER.still({name:'The plunge pool',level:-703,poly});}
  REGISTER({name:'The cataract',x:FALL.x+60,z:FALL.z,y:FALL.floor,r:160,h:H+40});})();

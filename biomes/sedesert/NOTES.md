@@ -129,6 +129,32 @@ detail and crack layers are described once by `EXPORT.groundLayers` (a `world-uv
 on the tile's grid). Not described yet: the river and the cataract (core/water's flow and fall are its phase 3), the
 strata on rock, the cave's occlusion.
 
+## The river and the cataract on core/water (2026-10-13, phases 3 and 4)
+The river, the cataract and its plunge pool are core/water's (`core/water/README.md`, "Flow and falls"): records in
+`45-host-stage.js`, drawn in `89w-host-water.js`, which binds core/atmos (its clock, its wave chunk and the sky's light:
+`ATMOS.skylight` captures this page's dome and giant for the water only, so the page's own materials keep their light).
+`build.py` lists core/atmos's 0-core, 0p-presets, a-waves and b-skylight and core/water's 21, 22, 50, 51.
+
+- **The river** (`RIVER`): a `WATER.flow` line at WL(x) every 12 m from the mountain gorge to the notch (576 points),
+  never climbing downstream, 22 m wide plus 1.5 m a side under the banks, its current 1.1 m/s on the plateau, faster in
+  the gorge and toward the notch. Drawn as its ribbon: the ripples carried down the current (not scrolled), white where
+  the line steepens and along the banks, the sky in it. `WATER.heightAt` at (900, zR(900)) is 2.75 m, WL(900) exactly;
+  `WATER.flowAt` there 1.1 m/s along the line.
+- **The cataract** (`CATARACT`): a `WATER.fall` from a 26 m lip at the notch, leaving at 10.5 m/s and arcing 730 m down
+  to the Abyss floor in 11.9 s, widening 29 m a side (the old hand-drawn curtain's landing, its 13 to 42 m half-width);
+  `FALL.mesh` is its curtain, which the host's rock checks read. Streaks fall with the water; a churned disc where it
+  lands. The mist and the lip's spray stay the page's sprites.
+- **The plunge pool** (`FALL.pool`): a `WATER.still` polygon at -703 m (the old fan's outline), drawn flat, the sky in it.
+- TEX_FALL and MAT_FALL are still made, unused: TEX_FALL's painter draws from `rng()`, and every placement after it
+  reads the same sequence (so not one plant moved).
+
+`verify.py --assert`: every check and negative passes as before (544452 instances, 3955 volumes, 12020042 scene
+triangles); the curtain the rock checks read has 405 vertices (was 90). Draw calls: 94 -> 95 at the opening camera (the
+river is its own mesh, the pond keeps the old one), the same at the four water views (95/52/83/57 at 'The linear oasis',
+'The wadi gorge', 'The cataract', 'Behind the cataract'); triangles 12.70 -> 12.71 M. core/export's water section now
+carries the river (its ribbon's count and sums, 8 probes with heights and currents), the cataract (its curtain, its plunge
+point) and the pool; Godot draws them (`godot/data/world-sedesert-falls`, `godot/tools/compare_shots.py`).
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

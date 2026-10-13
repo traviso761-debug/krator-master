@@ -18,11 +18,14 @@ Read before changing anything here. `build.py` prints the open count.
       to be their own kit.
 - [ ] The zone weights (SEDESERT.zones) are thresholds on the ten fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
-- [ ] The river's water is a ribbon of fixed half-width (12 m) at WL(x); the channel
-      is cut 2.6 m below the floor so the ribbon's edges hide under the banks. A world
-      whose channel is wider must widen the ribbon (45-host-stage, `HW`).
-- [ ] The cataract's plunge pool is a flat fan at -703 m with the Abyss floor's rocks
-      standing out of it; the rapids are foam in the ribbon's vertex colour, not geometry.
+- [ ] The river's water is core/water's flow (2026-10-13, `RIVER` in 45, drawn in `89w-host-water.js`): a ribbon
+      22 m wide plus 1.5 m a side under the banks along WL(x); the channel is cut 2.6 m below the floor so its edges hide
+      under the banks. A world whose channel is wider must widen it (`width`). Where WL(x) rises downstream over the
+      bed's noise the line holds its level (the surface never climbs), so a few metres of ribbon may sit under the cut.
+      The rapids are the flow shader's (white where the line steepens: the mountain gorge is a 20-40 % cascade, white
+      almost throughout), not geometry.
+- [ ] The cataract's plunge pool is core/water's still water (a polygon at -703 m, the old fan's outline) with the
+      Abyss floor's rocks standing out of it, and the fall's churn disc where the curtain lands.
 - [ ] THE GROUND IS A BAKED FIELD (2026-10-08, `core/terrain/30-core-field.js`; GODOT-PLAN.md Phase 2 item 2). At
       load `terrainH0` (the closure, with the cave's recess) is baked once onto a 841 x 841 Float32 grid at 8.905 m
       (half the ground mesh's 17.8 m cell) over the map's 7480 m square, plus a 145 x 133 inset at 1.484 m over the
@@ -76,8 +79,11 @@ Read before changing anything here. `build.py` prints the open count.
       than as the canyon floor above them, and the cave's interior shows no strata.
 - [ ] TODO: `waterH` still reports the river's surface over the cave (canyonU < 1.1, x < RIM+40),
       so the cave floor counts as 63 m under water (it keeps plants off it; nothing else reads it).
-- [ ] TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap,
-      and no spray rises from the cave's floor behind it.
+- [x] ~~TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap.~~ 2026-10-13:
+      core/water's fall (`CATARACT`): the water leaves the 26 m lip at 10.5 m/s (the sill's riffle: what clears the
+      promontory) and arcs, a parabola, 730 m down in 11.9 s, landing ~125 m out and widening 29 m a side; 405
+      vertices; the host's rock checks pass on it (none in the rock, the top row on rock; both negatives fail). Still
+      open: no spray rises from the cave's floor behind it (the mist is the page's sprites, on the old path's offsets).
 - [ ] TODO: meshing and baking the undercut takes ~0.9 s at load, on the main thread; the finer
       ground's own cost is not measured.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
