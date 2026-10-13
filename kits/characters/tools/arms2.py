@@ -1,7 +1,7 @@
 """Where a second pair of arms hangs (tools/mods.py makes them; tools/make_garments.py fits four-armed clothes to them).
 numpy only, so Blender's Python can import it too.
 
-The lower pair is the upper pair's joints copied DROP lower, INSET nearer the body's axis and FWD forward, from Spine2,
+The lower pair is the upper pair's joints copied drop() lower (DROP on the man, RIB on any body), INSET nearer the body's axis and FWD forward, from Spine2,
 and from the shoulder joint down turned HANG degrees steeper (toward the body), near the pose it is mostly in. All in
 glTF space (y up, the figure facing +z); to_gl / from_gl convert Blender's (z up, facing -y)."""
 import math
@@ -9,14 +9,28 @@ import math
 import numpy as np
 
 DROP = 0.25            # metres below the upper pair, on the man's base (1.78 m)
+RIB = 0.81             # on every body the lower shoulder sits this far from Spine up to Spine1 (the man's 0.25 m drop):
+                       # it comes out of the lower ribs whatever the torso's length (the woman's is about 0.20 m)
 INSET = 0.045          # toward the body's axis
 FWD = 0.015            # forward: the lower pair comes out of the side of the ribs, a little ahead of the lats
 HANG = 30              # degrees steeper than the upper pair, at rest
 
 
-def offset(sx):
-    """the lower pair's shift on side sx (+1 left, -1 right), glTF"""
-    return np.array([-sx * INSET, -DROP, FWD])
+def drop(y_arm, y_spine, y_spine1):
+    """how far below its upper arm joint a body's lower one hangs (RIB); the man's is DROP exactly"""
+    d = y_arm - (y_spine + RIB * (y_spine1 - y_spine))
+    return DROP if abs(d - DROP) < 0.003 else d
+
+
+def drop_of(bind, jidx):
+    """drop() from a skin's bind matrices (glTF, y up) and joint index"""
+    y = lambda n: bind[jidx[n]][1, 3]
+    return drop(y('LeftArm'), y('Spine'), y('Spine1'))
+
+
+def offset(sx, d=DROP):
+    """the lower pair's shift on side sx (+1 left, -1 right), glTF, d below"""
+    return np.array([-sx * INSET, -d, FWD])
 
 
 def turn(sx):

@@ -1,7 +1,7 @@
 """Body mods: what a genetic or cybernetic mod adds to a MakeHuman body, worn like an item (kit items in slot 'mods').
 
 Every body's skeleton carries a second pair of arms' joints (add_joints: Left2Shoulder, Left2Arm ... Right2HandThumb3,
-hung from Spine2 DROP below the first pair, INSET nearer the axis, HANG steeper), whether a mod uses them or not: the
+hung from Spine2 below the first pair (arms2.drop: out of the lower ribs on any torso), INSET nearer the axis, HANG steeper), whether a mod uses them or not: the
 clips, the grips (skeleton hands L2, R2), the capsules and the figure's lower-arm controller (50-figure.js arms2) are
 the same on every body. Nothing is drawn on them until a mod is worn:
 
@@ -30,7 +30,7 @@ from scipy.spatial import cKDTree
 
 import glbio
 
-from arms2 import DROP, INSET, FWD, HANG, lower, upper      # where the lower pair hangs (shared with make_garments.py)
+from arms2 import INSET, FWD, HANG, drop_of, lower, upper  # where the lower pair hangs (shared with make_garments.py)
 
 BLEND = 0.09           # metres: how far from the flesh copy's open edge it blends into the torso
 TUCK = 0.05            # the point inside the ribs the copy's open root is drawn toward, in from its shoulder joint
@@ -45,7 +45,7 @@ def hang(S, sx, bind, jidx):
     """(pivot, R): the lower arm's turn at rest, about its shoulder joint, down toward the body by HANG"""
     a = -sx * np.radians(HANG)
     R = np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1.0]])
-    return bind[jidx[S + 'Arm']][:3, 3] + np.array([-sx * INSET, -DROP, FWD]), R
+    return bind[jidx[S + 'Arm']][:3, 3] + np.array([-sx * INSET, -drop_of(bind, jidx), FWD]), R
 
 
 def _quat(R):
@@ -94,7 +94,7 @@ def add_joints(path):
     jidx = {n: k for k, n in enumerate(names)}
     new_names, new_bind, new_par, remap = [], [], [], {}
     for sx, S in zip((1, -1), SIDES):
-        off = np.array([-sx * INSET, -DROP, FWD])
+        off = np.array([-sx * INSET, -drop_of(bind, jidx), FWD])
         for n in chain_names(names, S):
             k = jidx[n]
             B = bind[k].copy()
@@ -266,7 +266,7 @@ def flesh_arms(body, out):
             vmap[used] = np.arange(len(used))
             tri = vmap[tri]
             w = w_all[used]
-            off = np.array([-sx * INSET, -DROP, FWD])
+            off = np.array([-sx * INSET, -drop_of(body.bind, body.jidx), FWD])
             pv, R = hang(S, sx, body.bind, body.jidx)
             turn = np.clip((w - 0.5) / 0.4, 0, 1)[:, None]
             v = A['POSITION'][used].astype(float) + off

@@ -168,7 +168,8 @@ bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_dis
 **Body mods** (`tools/mods.py`, `tools/arms2.py`): what a genetic or cybernetic mod adds to a body, worn like an
 item (kit items in slot `mods`, the Cosmetic Lab's *Body mods* chips, `rec.mods`). Every body's skeleton carries a
 second pair of arms' joints (`Left2Shoulder`, `Left2Arm` ... `Right2HandThumb3`), whether a mod uses them or not. The
-copy hangs 25 cm lower than the upper pair and nearer the axis, from Spine2, and 30 degrees steeper (`HANG`, near its
+copy hangs lower than the upper pair (out of the lower ribs on any torso: `arms2.drop`, 25 cm on the man and the
+giant, 20 cm on the woman's shorter torso) and nearer the axis, from Spine2, and 30 degrees steeper (`HANG`, near its
 usual pose); the joints get their sources' morph deltas (`morph_kit`), capsules (cloth, push) and grips (`hands.L2`,
 `hands.R2`). So the clips, the grips and the lower-arm controller are the same on every body, and nothing is drawn on
 the joints until a mod is worn:
