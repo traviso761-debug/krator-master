@@ -527,6 +527,20 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
    then Streetlab and Voth with their branch.
 4. Stage 5 starts from Voth's sim, not Verge's (above).
 
+### Voth, Streetlab and the city-layout module (owner, 2026-10-14)
+
+- **The first Voth is retired.** `settlements/voth/voth.html` is off the gallery and the nightly list and is no longer
+  kept up to date; it stays only as a source to port from. `settlements/voth/catalog/` stays live (core/city builds
+  Voth's lots with it). The gallery's "Voth" is the city plan on `core/city`, under the old slug.
+- **One city-layout module.** `core/city` becomes the layout module every city takes (Verge and Iziz first, then new
+  builds): the general layout the new Voth grew in `settlements/streetlab` moves into it, parameterised; Ys's block
+  infill joins it as an alternative strategy a build can choose; a city's site, districts and kit stay per world.
+  A read-only survey comes first (what in Streetlab is general layout vs Voth content vs simulation vs host).
+- **Then Streetlab is retired.** Voth's city target (`targets/voth-city`, its site data, its simulation fragments)
+  moves to `settlements/voth`, which is Voth's home again; the first Voth's source moves to `archive/`; Streetlab's
+  remaining experiment pages are retired or become the module's example. The owner's economy fork merges
+  `full-refactor` just after the move (git carries its edits across the rename); the move is announced first.
+
 ### The order before that (2026-10-12)
 
 1. Stage 0j (the scripted walk) and 0f (the lossless normal repack, one baseline rewrite).
