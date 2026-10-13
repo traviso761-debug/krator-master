@@ -3,7 +3,7 @@
    (KCHAR.crowd). The clips are tried on six bodies at once in the Animation Lab (92-animlab.js).
    KCHAR_DATA (build.py): { sliders, bodies: { male: { skeleton, kit }, female: {...} } }. The pieces are fetched when a
    record needs them: pieces/<key>.txt (a base64 GLB), or KCHAR_GLB[key] when build.py inlined them. Chip pictures are
-   thumbs/<key>__<mesh>.png (tools/thumbs.mjs). Everything the panel changes goes through one record and fig.apply().
+   thumbs/<body>.png, an atlas of tools/thumbs.mjs's thumbnails (build.py pack_thumbs). Everything the panel changes goes through one record and fig.apply().
    A MakeHuman body (kit.style 'mpfb') morphs: its Body and Face tabs are kit.morph's sliders (record.morph) and the
    ancestry triple; its Head tab picks a people (data/peoples.json), skin tone, hair, hair colour and beard.
 */
@@ -46,7 +46,22 @@
   load.raw = function(key){
     return fetchPiece(key);
   };
-  function thumb(key, mesh){ return 'thumbs/' + key + '__' + mesh + '.png'; }
+  /* a chip's picture: its cell of the body's thumbnail atlas (build.py pack_thumbs: thumbs/<body>.png and .json). The
+     index is fetched the first time a body's chip asks, and the panel is drawn again when it comes */
+  var THUMBS = {};
+  function thumb(key, mesh){
+    var body = key.split('/')[0], name = key.slice(body.length + 1) + '__' + mesh, t = THUMBS[body];
+    if(t === undefined){
+      THUMBS[body] = null;
+      fetch('thumbs/' + body + '.json').then(function(r){ return r.ok ? r.json() : false; })
+        .then(function(j){ THUMBS[body] = j || false; if(j && rec) buildPanel(); }, function(){ THUMBS[body] = false; });
+      return null;
+    }
+    if(!t || t.keys[name] === undefined) return null;
+    var i = t.keys[name], c = i % t.cols, r = Math.floor(i / t.cols);
+    return { atlas:'thumbs/' + body + '.png', size:t.cols * 100 + '% ' + t.rows * 100 + '%',
+             at:(t.cols > 1 ? c / (t.cols - 1) * 100 : 0) + '% ' + (t.rows > 1 ? r / (t.rows - 1) * 100 : 0) + '%' };
+  }
 
   /* ---- stage ---- */
   var cam = { yaw:0.35, pitch:0.1, dist:4.2, ty:0.9, want:{ dist:4.2, ty:0.9, pitch:0.1 }, spin:false, face:false };
@@ -147,9 +162,8 @@
     items.forEach(function(it){
       var b = document.createElement('button'); b.className = 'chip'; b.id = it.domId;
       b.setAttribute('aria-pressed', it.id === current);
-      b.innerHTML = (it.img ? '<img alt="" loading="lazy" src="' + it.img + '">' : compact ? '' : '<span class="none"></span>') + '<span>' + it.name + '</span>';
-      var img = b.querySelector('img');
-      if(img) img.onerror = function(){ var n = document.createElement('span'); n.className = 'none'; img.replaceWith(n); };
+      b.innerHTML = (it.img ? '<i class="th" style="background-image:url(' + it.img.atlas + ');background-size:' + it.img.size +
+                     ';background-position:' + it.img.at + '"></i>' : compact ? '' : '<span class="none"></span>') + '<span>' + it.name + '</span>';
       b.addEventListener('click', function(){ onPick(it.id); });
       grid.appendChild(b);
     });

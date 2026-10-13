@@ -67,7 +67,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .slot h3 small { font: 400 12px var(--body); color: var(--muted); letter-spacing: 0; }
 .chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .chip { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; overflow: hidden; background: var(--chip); border: 1px solid var(--line); border-radius: 8px; text-align: left; }
-.chip img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--stage); }
+.chip .th { display: block; width: 100%; aspect-ratio: 1; background-color: var(--stage); background-repeat: no-repeat; }
 .chip .none { display: block; width: 100%; aspect-ratio: 1; background: repeating-linear-gradient(135deg, var(--stage), var(--stage) 6px, var(--chip) 6px, var(--chip) 12px); }
 .chip span { padding: 5px 7px 6px; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chip[aria-pressed="true"] { background: var(--chip-on); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); color: var(--ink); }

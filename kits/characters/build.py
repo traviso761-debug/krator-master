@@ -115,12 +115,34 @@ def main():
     if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
         if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
             print('build.py: thumbs.mjs failed; the chips show names only')
+    pack_thumbs()
     man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
     for page, whole in wholes.items():
         man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
     json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
     print('%s  pieces %.1f MB' % ('  '.join('dist/%s.html %.2f MB' % (p, len(w) / 1e6) for p, w in sorted(wholes.items())), sum(
         os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(os.path.join(DIST, 'pieces')) for f in fs) / 1e6))
+
+
+def pack_thumbs(size=128, cols=16):
+    """each body's thumbnails as one atlas (dist/thumbs/<body>.png, cols across) and its index (<body>.json: per
+    '<name>__<mesh>', its cell): one file where there were a hundred (an artifact holds at most 512)"""
+    from PIL import Image
+    root = os.path.join(DIST, 'thumbs')
+    if not os.path.isdir(root):
+        return
+    for body in sorted(d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))):
+        names = sorted(f[:-4] for f in os.listdir(os.path.join(root, body)) if f.endswith('.png'))
+        if not names:
+            continue
+        rows = (len(names) + cols - 1) // cols
+        atlas = Image.new('RGBA', (cols * size, rows * size), (0, 0, 0, 0))
+        for i, n in enumerate(names):
+            im = Image.open(os.path.join(root, body, n + '.png')).convert('RGBA').resize((size, size), Image.LANCZOS)
+            atlas.paste(im, ((i % cols) * size, (i // cols) * size))
+        atlas.save(os.path.join(root, body + '.png'), optimize=True)
+        json.dump({'cols': cols, 'rows': rows, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w'),
+                  separators=(',', ':'))
 
 
 if __name__ == '__main__':
