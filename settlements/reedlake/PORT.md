@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 55 (15%) | 33 (9%) | 0 (0%) | 27 (8%) | 243 (68%) |
+| KB | 55 (15%) | 33 (9%) | 0 (0%) | 27 (8%) | 244 (68%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -41,7 +41,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88y-reedlake-matlib.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-rl-scene.js` | 6.7 | [web] | 15 | 1 | 1 | 0 | 0 | 4 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/90w-rl-lake.js` | 2.9 | [draw] | 5 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the host binding of core/water (the lake) and core/atmos (clock, skylight) |
-| `src/91-probe.js` | 2.9 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/90x-rl-still.js` | 1.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the troughs' still water: WATER.still records (core/water, data) and their InstancedMesh on WATER.stillMaterial |
+| `src/91-probe.js` | 3.1 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/91a-rl-budget.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 9.8 | [web] | 12 | 0 | 20 | 14 | 4 | 2 | 0 | 1 | 3 | 0 | 0 |  |
 | `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |

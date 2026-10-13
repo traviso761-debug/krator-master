@@ -90,3 +90,14 @@ view and at 2 m over the water off the family mudhif: the same draw calls (101, 
 -> 460k, 373k -> 462k (the 2-triangle plane became ~160 CDLOD nodes); the sun's glint is broken by the ripple and the
 far water takes the sky's gradient. `verify.py --assert` passes before and after with the same numbers (615178 scene
 triangles, 101 draw calls, 14716 baked instances).
+
+## 2026-10-13: the troughs and the wallow on core/water (Phase 4, still water)
+The small waters inside the islands (every `hRLWaterB` box: the buffalo wallows, the log trough, the duck pans and the
+vats, 8 in the whole kit) are core/water's still water (`src/90x-rl-still.js`): each box is a `WATER.still` record at its
+top over its turned footprint, so `WATER.heightAt` answers inside them (0.16 m in the pen's wallow, the lake's -0.44 m
+outside) and core/export carries them; their one InstancedMesh now draws with `WATER.stillMaterial` (the sky's capture in
+the water, a faint ripple on the one clock) instead of the scrolled canvas map (`MAT.rlWater` is kept for nothing else).
+`build.py` lists core/water's new files (21, 22, 51). At a camera over the animal pen (12.5, 4.2, 274 -> 7.5, 0.1,
+267.2): the same 159 draw calls and 0.53 M triangles; the wallow and the trough take the sky's gradient where they were a
+flat teal. `verify.py --assert` passes with the same numbers as before (615178 scene triangles, 101 draw calls, 14716
+baked instances, 51 volumes).
