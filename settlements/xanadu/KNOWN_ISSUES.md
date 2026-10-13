@@ -15,6 +15,12 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed
       earth (earth.adobe) has no lift lines, which the procedural map drew; a rammed-earth set would bring them back. ?mat=proc shows the old look.
 
+- [ ] **Erewhon's water is not on core/water** (2026-10-13): the kit page's pools, basins and bowls are `WATER.still`
+      (`targets/xanadu/90-xa-still.js`), but the city bakes per 480 m chunk (`90b-er-build.js` clears `KIT.items` after
+      each) under its own sky (KratorSky), so its still records would be taken per chunk before the clear and its skylight
+      captured from that sky. The rill ramps, the mill race and the falling sheets are running water: no record on the
+      kit page (they draw with the boxes' still material), `MAT.xWater` on Erewhon; core/water's flow and fall would take them.
+
 ## Upstream: world-UV materials share one program (highlands, iziz, ancients) — fixed 2026-10-01
 2026-10-01: fixed upstream. `vWorldUV` is one shared copy in `core/materials/opt/69a-world-uv.js` (built with
 `Function()` plus `customProgramCacheKey`, an optional second K for v); Iziz, Highlands, Xanadu and the Ancients kit

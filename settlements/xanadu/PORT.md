@@ -76,6 +76,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/erewhon/91z-views.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/erewhon/93-er-ui.js` | 3.0 | [web] | 2 | 2 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/xanadu/89z-rows.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/xanadu/90-xa-still.js` | 2.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the kit's still water: WATER.still records (core/water, data) for every flat xWaterB box and xDiscWater disc, their InstancedMeshes on WATER.stillMaterial |
 | `targets/xanadu/91z-views.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
