@@ -39,9 +39,36 @@ calls and triangles as three.js counts them; sky passes not included):
 | highlands: first preset (opening) | 291 / 3.16 M | 156 / 1.13 M |
 | highlands: second preset | 291 / 3.16 M | 174 / 515k |
 | highlands: third preset | 307 / 3.17 M | 193 / 396k |
-| roketstad: opening | 364 / 7.67 M | 345 / 7.62 M |
-| roketstad: Overview | 400 / 5.56 M | 362 / 5.07 M |
-| roketstad: Streets, eye level | 351 / 10.96 M | 296 / 10.63 M |
+| roketstad: opening | 375 / 13.18 M | 375 / 10.42 M |
+| roketstad: Overview | 416 / 8.92 M | 398 / 5.37 M |
+| roketstad: Streets, eye level | 351 / 13.12 M | 290 / 10.90 M |
+
+Roketstad's three rows above were re-measured on 2026-10-14 at 1280x800 (the verify.py default), with the old forest
+(the vendored north-west lowlands), as the "before" of the North Highlands move; the rows below are the same views,
+measured the same way, on the North Highlands kit:
+
+| View (roketstad, North Highlands forest) | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| opening | 590 / 12.03 M | 567 / 8.98 M |
+| Overview | 501 / 8.20 M | 459 / 4.67 M |
+| Streets, eye level | 493 / 14.28 M | 404 / 12.04 M |
 
 Roketstad's own instance LOD (RKLOD) is on in both columns, so the shared LOD adds little there: the merged meshes and
-the biome, and fewer draw calls.
+the biome, and fewer draw calls. The North Highlands kit's runtime LOD (`BIO.lodTick`, every frame) is on in both: it
+draws a chunk of hero trees or floor only near the camera, so fewer triangles are drawn at the opening and the Overview
+than with the old forest, and more draw calls (the near floor's item types, one call each per chunk in range).
+
+## The forest (Roketstad)
+
+Roketstad's forest is the North Highlands biome kit (`biomes/nhighlands`), its temperate band, read IN PLACE with
+`core/biome` and `core/space` (build.py `TARGET_BIO`, as `biomes/geyser` reads the hyperjungle; `biomes/WORLD.md`).
+Nothing of the kit is vendored; the one local fragment is the host binding, `targets/roketstad/86-bio-45-init.js`: the
+mask (unchanged: no flora in the town, on a road, field, yard, plaza or building, on the wall band or the pads; the
+trees stand 9 m back from roads and 70 m from the wall; all read from the core/mask grids), the climate fields (cold low
+and rising east toward the Inner Wall, a few boulder fields, mist in the low ground; KRAND noise), the LOD spine (the
+N, S and W gates and the port) and the registration (hero trees in `REG` for the inspector, every flora item and tree a
+core/tags record in the page's registry, `KTAGS.page`). The kit's own species decide: round the town the broadleaves
+lead (blue beech, moss maple, forest lime) under great spruce, cathedral cedar and shadow hemlock, with silver fir,
+great trumpets and their understorey colonies, the old wood (gnarled oak, elder yew) on the boulder fields, and the
+montane mix (Norway spruce, mountain maple) toward the east edge; ferns, moss, sorrel, bluebells and fallen giants
+under them. `window._biome` and `window._biomeSpecies` count what was placed.

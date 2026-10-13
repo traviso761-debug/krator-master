@@ -120,6 +120,24 @@ def srcpath(f, base=None):
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
 TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
+# A target's BIOME, read IN PLACE (biomes/WORLD.md: several kits on one page; as biomes/geyser reads the hyperjungle):
+# core/space, core/biome and one biome kit's fragments, under slot names in the 86-bio- band, so they load after the
+# terrain (84) and the painted masks (85), round the target's own host binding (86-bio-45-init.js, kept local), and
+# before the layout. The band is IIFE-scoped (SCOPED_PREFIXES), as the kits are written. Nothing is vendored, so
+# --vendor-check has nothing to compare: it says where the band is read from. 'kit' also names the material-library
+# pack inlined ahead of it (86-bio-00-matlib-pack.js, from the kit's tex/).
+_BIO = lambda *p: os.path.join(ROOT, *p)
+TARGET_BIO = {'roketstad': {'kit': 'nhighlands', 'files': {
+    '86-bio-05-core-space.js': _BIO('core', 'space', '20-core-space.js'),            # KSPACE: the core's keep-clear index
+    '86-bio-10-core-head.js': _BIO('core', 'biome', '10-core-head.js'),
+    '86-bio-20-core-kit.js': _BIO('core', 'biome', '20-core-kit.js'),
+    '86-bio-30-core-foliage.js': _BIO('core', 'biome', '30-core-foliage.js'),
+    '86-bio-40-core-place.js': _BIO('core', 'biome', '40-core-place.js'),
+    '86-bio-50-biome-nhighlands-species.js': _BIO('biomes', 'nhighlands', 'src', '50-biome-nhighlands-species.js'),
+    '86-bio-55-biome-nhighlands-trees.js': _BIO('biomes', 'nhighlands', 'src', '55-biome-nhighlands-trees.js'),
+    '86-bio-60-biome-nhighlands-floor.js': _BIO('biomes', 'nhighlands', 'src', '60-biome-nhighlands-floor.js'),
+    '86-bio-65-biome-nhighlands-dress.js': _BIO('biomes', 'nhighlands', 'src', '65-biome-nhighlands-dress.js'),
+    '86-bio-70-biome-nhighlands.js': _BIO('biomes', 'nhighlands', 'src', '70-biome-nhighlands.js')}}}
 TARGET_OUT = {
     'highlands': 'highlands.html',            # the whole kit: Republican, Rustic, Tribal rows + the cliff settlement
     'roketstad': 'roketstad.html',            # the town: Roketstad and its spaceport (reclaimed East Highland Republican)
@@ -293,6 +311,12 @@ def build_one(target, do_checks, assert_origin):
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
+    bio = TARGET_BIO.get(target)
+    if bio:
+        twice = set(bio['files']) & set(tgt)
+        if twice:
+            sys.exit('target %s keeps a local copy of a fragment it reads in place: %s' % (target, ', '.join(sorted(twice))))
+        tgt.update(bio['files'])
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
@@ -310,8 +334,8 @@ def build_one(target, do_checks, assert_origin):
     import matlib_pack
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands')
     order = sorted(order + [MATLIB_PACK])
-    if any(f.startswith('86-bio-') for f in order):   # the vendored nwlowlands biome: its library pack, before the biome code
-        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'nwlowlands'), 'nwlowlands')
+    if bio:   # the biome kit's library pack (its tex/), before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', bio['kit']), bio['kit'])
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
@@ -375,6 +399,10 @@ def vendor_check():
                                                             if adapted else '')
         print('vendor-check %s: %s' % (up_name, ('all ' + same) if not diff else same + ('; DRIFT in ' + ', '.join(drift)
               + ' - re-vendor or add to ADAPTED and note it in KNOWN_ISSUES.md' if drift else '')))
+    for target, bio in sorted(TARGET_BIO.items()):   # read in place: nothing to drift; say so, and that every path is there
+        missing = [p for p in bio['files'].values() if not os.path.isfile(p)]
+        print('vendor-check biome (%s): %d fragments of core/space, core/biome and biomes/%s read in place, none vendored%s'
+              % (target, len(bio['files']), bio['kit'], ('; MISSING ' + ', '.join(missing)) if missing else ''))
 
 
 def main():
