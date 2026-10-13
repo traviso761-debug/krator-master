@@ -86,6 +86,13 @@ ITEMS = {
                     ('feet', 'Republic work boots', 'rep_m_trade_boots'), ('head', 'Republic ushanka', 'rep_m_trade_ushanka'),
                     ('torso', 'Republic greatcoat', 'rep_m_noble_greatcoat'), ('legs', 'Republic officer\'s breeches', 'rep_m_noble_breeches'),
                     ('feet', 'Republic riding boots', 'rep_m_noble_boots'), ('head', 'Republic papakha', 'rep_m_noble_papakha'),
+                    # its festive dress (feast days and the Hall's ceremonies)
+                    ('torso', 'Republic kosovorotka', 'rep_m_fest_peasant_shirt'), ('legs', 'Republic grey-blue trousers', 'rep_m_fest_peasant_trousers'),
+                    ('feet', 'Republic felt boots', 'rep_m_fest_valenki'), ('head', 'Republic felt cap', 'rep_m_fest_peasant_cap'),
+                    ('torso', 'Republic ochre guild jacket', 'rep_m_fest_trade_jacket'), ('legs', 'Republic brown breeches', 'rep_m_fest_trade_breeches'),
+                    ('head', 'Republic grey ushanka', 'rep_m_fest_trade_ushanka'),
+                    ('torso', 'Republic red greatcoat', 'rep_m_fest_noble_greatcoat'), ('legs', 'Republic cream breeches', 'rep_m_fest_noble_breeches'),
+                    ('feet', 'Republic riding boots, brass', 'rep_m_fest_noble_boots'), ('head', 'Republic black papakha', 'rep_m_fest_noble_papakha'),
                     # the Giants' own (tools/giant.py: worn only by the giant, made on the man's body): the Free
                     # Giants' Gaulish clothes and the temple guard's harness, four-armed tops among them
                     ('torso', 'Free Giant tunic', 'giant_free_m_tunic'), ('torso', 'Free Giant tunic, four sleeves', 'giant_free_m_tunic4'),
@@ -165,7 +172,14 @@ ITEMS = {
                     ('torso', 'Republic guild jacket', 'rep_f_trade_jacket'), ('legs', 'Republic work skirt', 'rep_f_trade_skirt'),
                     ('feet', 'Republic work boots', 'rep_f_trade_boots'), ('head', 'Republic ushanka', 'rep_f_trade_ushanka'),
                     ('torso', 'Republic greatcoat', 'rep_f_noble_greatcoat'), ('legs', 'Republic black skirt', 'rep_f_noble_skirt'),
-                    ('feet', 'Republic riding boots', 'rep_f_noble_boots'), ('head', 'Republic papakha', 'rep_f_noble_papakha')]},
+                    ('feet', 'Republic riding boots', 'rep_f_noble_boots'), ('head', 'Republic papakha', 'rep_f_noble_papakha'),
+                    # its festive dress (feast days and the Hall's ceremonies)
+                    ('torso', 'Republic sarafan', 'rep_f_fest_peasant_sarafan'), ('feet', 'Republic felt boots', 'rep_f_fest_valenki'),
+                    ('head', 'Republic red headscarf', 'rep_f_fest_peasant_platok'),
+                    ('torso', 'Republic Saxon coat', 'rep_f_fest_trade_coat'), ('legs', 'Republic rose skirt', 'rep_f_fest_trade_skirt'),
+                    ('head', 'Republic Borten', 'rep_f_fest_trade_borten'),
+                    ('torso', 'Republic velvet gown', 'rep_f_fest_noble_gown'), ('feet', 'Republic red boots', 'rep_f_fest_noble_boots'),
+                    ('head', 'Republic kokoshnik', 'rep_f_fest_noble_kokoshnik')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}

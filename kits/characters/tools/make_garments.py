@@ -2067,6 +2067,159 @@ for b, sex in (('male', 'm'), ('female', 'f')):
     GARMENTS['rep_%s_noble_papakha' % sex] = ('head', b, 'Papakha', _rnhead)
 
 
+# the Republic's festive dress, beside the austere set: its folk side (Russian and Transylvanian Saxon), worn for feast
+# days, weddings and the Hall's ceremonies (data/peoples.json tiers *_fest): linen and red cross-stitch, the sarafan,
+# felt boots, the Saxon coat and the Borten, the red frogged greatcoat with its triskelion hem, the velvet gown and the
+# kokoshnik. Its ids are rep_<sex>_fest_*; the work boots are the austere set's
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _frtop(sex=sex):
+        if sex == 'm':                        # the kosovorotka: a linen shirt to the hips, worn out, with a red sash
+            gid = 'rep_m_fest_peasant_shirt'
+            shirt = P('linen', 0.07, [B('top', 0.0, 0.04, 'cross', 'repred', 'linen', 0.045), B('bottom', 0.0, 0.012, 'solid', 'repred'),
+                                      B('bottom', 0.015, 0.06, 'cross', 'repred', 'linen', 0.05)], [PN(0.53, 0.58, 'cross', 'repred', 'linen', 0.05)])
+            sl = P('linen', 0.07, [B('bottom', 0.0, 0.045, 'cross', 'repred', 'linen', 0.045)])
+            return [torso_tube(gid, TOP, CROTCH - 0.06, 0.018, shirt, hang_from=WAIST - 0.03, flare=0.12, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                    torso_tube(gid + '_belt', WAIST + 0.02, WAIST - 0.03, 0.03, P('repred', 0.05, [B('top', 0.0, 0.006, 'solid', 'repochre'),
+                               B('bottom', 0.0, 0.006, 'solid', 'repochre')]), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+                sleeves(gid, 'wrist', 0.02, sl, ease_end=0.035, rows=9)
+        # the sarafan: a red pinafore from the bust to the ankles over a linen blouse with full sleeves, a dark apron
+        gid = 'rep_f_fest_peasant_sarafan'
+        saraf = P('repred', 0.05, [B('top', 0.0, 0.02, 'solid', 'repochre'), B('bottom', 0.0, 0.02, 'solid', 'repochre'),
+                                   B('bottom', 0.025, 0.1, 'rose', 'repochre', 'repred', 0.09)], [PN(0.47, 0.53, 'cross', 'repochre', 'repred', 0.05)])
+        blouse = P('linen', 0.06, [B('top', 0.0, 0.035, 'cross', 'repred', 'linen', 0.04)])
+        sl = P('linen', 0.06, [B('bottom', 0.0, 0.05, 'cross', 'repred', 'linen', 0.045)])
+        apron = P('velvet', 0.05, [B('bottom', 0.0, 0.015, 'solid', 'repochre'), B('bottom', 0.02, 0.09, 'rose', 'repred', 'velvet', 0.08)])
+        return [torso_tube(gid, CHEST + 0.06, ANKLE + 0.05, 0.014, saraf, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.22, group_below=CROTCH + 0.02,
+                           hull_from=CHEST + 0.07),
+                torso_tube(gid + '_blouse', TOP, CHEST + 0.03, 0.012, blouse, hull_from=CHEST + 0.02, rows=8),
+                flap(gid + '_apron', _front(WAIST - 0.01, 0.03), 0.3, WAIST - KNEE + 0.02, np.array([0, -1.0, 0]), apron,
+                     group_below=CROTCH + 0.02, sway=0.02)] + \
+            sleeves(gid, 'wrist', 0.022, sl, ease_end=0.05, rows=9)
+    GARMENTS['rep_%s_fest_peasant_%s' % (sex, 'shirt' if sex == 'm' else 'sarafan')] = ('torso', b, 'Kosovorotka and sash' if sex == 'm' else 'Sarafan and apron', _frtop)
+
+    if sex == 'm':
+        def _frlegs():
+            return trousers('rep_m_fest_peasant_trousers', P('greyblue', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'felt')]), ease=0.012, ease_end=0.028,
+                            cuff=ANKLE + 0.4 * (KNEE - ANKLE))
+        GARMENTS['rep_m_fest_peasant_trousers'] = ('legs', b, 'Grey-blue trousers', _frlegs)
+
+    def _frfelt(sex=sex):                      # valenki: grey felt boots to below the knee
+        return boots('rep_%s_fest_valenki' % sex, P('felt', 0.1), P('felt', 0.12, [B('top', 0.0, 0.02, 'solid', 'umber')]), top=0.72, ease_top=0.03)
+    GARMENTS['rep_%s_fest_valenki' % sex] = ('feet', b, 'Felt boots', _frfelt)
+
+    def _frhead(sex=sex):
+        if sex == 'm':                        # a felt kolpak with a fur band
+            gid = 'rep_m_fest_peasant_cap'
+            return [tower_hat(gid, 0.07, lambda t: 1.0 + 0.12 * t, P('felt', 0.1, [B('top', 0.0, 0.03, 'solid', 'felt')]), rows=6),
+                    head_rings(gid + '_fur', 0.58, 0.7, 0.03, P('darkfur', 0.1, [B('top', 0.0, 0.5, 'feather', 'fur', 'darkfur', 0.02)]), n=36, rows=3)]
+        return [hood('rep_f_fest_peasant_platok', P('repred', 0.05, [B('bottom', 0.0, 0.05, 'rose', 'repcream', 'repred', 0.06),
+                                                                B('bottom', 0.0, 0.008, 'solid', 'repochre')]), ease=0.02, ease_low=0.035, open_front=0.95, low=-0.3)]
+    GARMENTS['rep_%s_fest_peasant_%s' % (sex, 'cap' if sex == 'm' else 'platok')] = ('head', b, 'Felt cap, fur band' if sex == 'm' else 'Red headscarf', _frhead)
+
+    def _frwork(sex=sex):
+        if sex == 'm':                        # a guildsman: the padded jacket, iron salvage plates, a leather apron, a belt
+            gid = 'rep_m_fest_trade_jacket'
+            quilt = P('repochre', 0.06, [B('top', 0.0, 0.025, 'solid', 'umber'), B('bottom', 0.0, 0.02, 'solid', 'umber')],
+                      [PN(0.0, 1.0, 'quilt', 'ochre', 'repochre', 0.07)])
+            sl = P('repochre', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'umber')], [PN(0.0, 1.0, 'quilt', 'ochre', 'repochre', 0.07)])
+            plate = P('iron', 0.03, [B('top', 0.0, 0.3, 'dots', 'ancient', 'iron', 0.04), B('bottom', 0.0, 0.01, 'solid', 'rust')])
+            apron = P('leather', 0.06, [B('top', 0.0, 0.012, 'solid', 'brass'), B('bottom', 0.0, 0.015, 'solid', 'umber')])
+            return [torso_tube(gid, TOP, CROTCH - 0.02, 0.026, quilt, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                    flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
+                         group_below=CROTCH + 0.02, sway=0.01),
+                    pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.045), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.045)] + \
+                izani_belt(gid, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')]), P('umber', 0.06),
+                           ease=0.06) + sleeves(gid, 'wrist', 0.026, sl, ease_end=0.03, rows=8)
+        # a guildswoman: the long belted Saxon coat in red wool, ochre facings, over a linen blouse
+        gid = 'rep_f_fest_trade_coat'
+        coat = P('repred', 0.06, [B('top', 0.0, 0.03, 'solid', 'repochre'), B('bottom', 0.0, 0.02, 'solid', 'repochre'),
+                                  B('bottom', 0.025, 0.08, 'cross', 'repochre', 'repred', 0.06)], [PN(0.47, 0.53, 'solid', 'repochre', 'repred', 1.0)])
+        sl = P('repred', 0.06, [B('bottom', 0.0, 0.04, 'solid', 'repochre')])
+        return [torso_tube(gid, TOP, KNEE - 0.12, 0.018, coat, hang_from=WAIST - 0.02, hang_side=WAIST, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_belt', WAIST + 0.025, WAIST - 0.025, 0.026, P('velvet', 0.03, [B('top', 0.0, 0.3, 'beads', 'brass', 'velvet', 0.03)]),
+                           rows=3, n=40, hull_from=WAIST + 0.1)] + sleeves(gid, 'wrist', 0.018, sl, ease_end=0.04, rows=9)
+    GARMENTS['rep_%s_fest_trade_%s' % (sex, 'jacket' if sex == 'm' else 'coat')] = ('torso', b, 'Ochre guild jacket, plates and apron' if sex == 'm' else 'Saxon coat', _frwork)
+
+    def _frlegs2(sex=sex):
+        if sex == 'm':
+            return trousers('rep_m_fest_trade_breeches', P('umber', 0.06), ease=0.012, ease_end=0.02, cuff=KNEE - 0.08)
+        return [torso_tube('rep_f_fest_trade_skirt', WAIST + 0.01, ANKLE + 0.05, 0.01, P('velvet', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'repochre'),
+                           B('bottom', 0.025, 0.11, 'rose', 'repred', 'velvet', 0.09)]), hang_from=CROTCH + 0.06, flare=0.16, group_below=CROTCH + 0.04,
+                           rows=20, hull_from=WAIST)]
+    GARMENTS['rep_%s_fest_trade_%s' % (sex, 'breeches' if sex == 'm' else 'skirt')] = ('legs', b, 'Brown breeches' if sex == 'm' else 'Black skirt', _frlegs2)
+
+    def _frhead2(sex=sex):
+        a_, b_, up, bk, left = head_frame()
+        if sex == 'm':                        # the ushanka: a fur crown and ear flaps
+            gid = 'rep_m_fest_trade_ushanka'
+            fur = P('fur', 0.14)
+            out = [head_rings(gid, 0.5, 1.0, 0.035, P('greyblue', 0.06, [B('top', 0.0, 0.03, 'solid', 'umber')]), n=32, rows=7, apex=True),
+                   head_rings(gid + '_brim', 0.5, 0.64, 0.05, fur, n=36, rows=3)]
+            for k, sd in enumerate((-1, 1)):
+                f = flap('%s_ear%d' % (gid, k), a_ + (b_ - a_) * 0.5 + left * sd * 0.105, 0.085, 0.11, left * sd, fur, cols=5, rows=5, ease=0.02)
+                f.cloth = None
+                out.append(f)
+            return out
+        # the Borten: the Saxon girl's tall black velvet cylinder, ribbons hanging behind
+        gid = 'rep_f_fest_trade_borten'
+        rib = flap(gid + '_ribbons', a_ + (b_ - a_) * 0.7 + bk * 0.1, 0.09, 0.4, bk, P('repred', 0.03, [B('top', 0.0, 0.5, 'stripes', 'repochre', 'repred', 0.0)]),
+                   cols=4, rows=9, ease=0.02, sway=0.02)
+        return [tower_hat(gid, 0.13, lambda t: 1.04, P('velvet', 0.02, [B('bottom', 0.0, 0.03, 'rose', 'repred', 'velvet', 0.035), B('top', 0.0, 0.02, 'solid', 'velvet')]),
+                          rows=8), rib]
+    GARMENTS['rep_%s_fest_trade_%s' % (sex, 'ushanka' if sex == 'm' else 'borten')] = ('head', b, 'Grey ushanka' if sex == 'm' else 'Borten', _frhead2)
+
+    def _frnob(sex=sex):
+        if sex == 'm':                        # the Hall of the Republic: a red greatcoat, frogged, the sash, epaulettes
+            gid = 'rep_m_fest_noble_greatcoat'
+            coat = P('repred', 0.03, [B('top', 0.0, 0.025, 'solid', 'repochre'), B('bottom', 0.0, 0.02, 'solid', 'repochre'),
+                                      B('bottom', 0.025, 0.11, 'triskele', 'repochre', 'repred', 0.11), B('bottom', 0.115, 0.125, 'solid', 'repochre')],
+                     [PN(0.42, 0.58, 'frog', 'repochre', 'repred', 0.07)])
+            sl = P('repred', 0.03, [B('bottom', 0.0, 0.06, 'triskele', 'repochre', 'repred', 0.06), B('bottom', 0.06, 0.07, 'solid', 'repochre')])
+            ep = P('brass', 0.02, [B('bottom', 0.0, 0.3, 'stripes', 'repochre', 'brass', 0.0)])
+            return [torso_tube(gid, TOP, KNEE - 0.06, 0.02, coat, hang_from=WAIST - 0.03, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                    band(gid + '_sash', WAIST - 0.01, SHOULDER + 0.04, 0.065, 0.034, P('repcream', 0.03, [B('top', 0.0, 0.008, 'solid', 'repochre'),
+                         B('bottom', 0.0, 0.008, 'solid', 'repochre')]), high=-math.pi / 2, rows=4),
+                    torso_tube(gid + '_belt', WAIST + 0.03, WAIST - 0.03, 0.03, P('velvet', 0.03, [B('top', 0.0, 0.3, 'beads', 'brass', 'velvet', 0.05)]),
+                               rows=3, n=40, hull_from=WAIST + 0.1),
+                    pauldron(gid + '_ep_L', L, ep, reach=0.22, ease=0.032), pauldron(gid + '_ep_R', R, ep, reach=0.22, ease=0.032)] + \
+                sleeves(gid, 'wrist', 0.018, sl, ease_end=0.03, rows=9)
+        # a gown in red velvet to the floor, its front worked in ochre, a cream lace collar, a fur-edged cape
+        gid = 'rep_f_fest_noble_gown'
+        gown = P('repred', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'repochre'), B('bottom', 0.025, 0.12, 'triskele', 'repochre', 'repred', 0.1),
+                                  B('bottom', 0.125, 0.135, 'solid', 'repochre'), B('top', 0.0, 0.02, 'solid', 'repochre')],
+                 [PN(0.45, 0.55, 'cross', 'repochre', 'repred', 0.06)])
+        sl = P('repred', 0.02, [B('bottom', 0.0, 0.05, 'cross', 'repochre', 'repred', 0.05)])
+        return [torso_tube(gid, TOP, ANKLE + 0.03, 0.014, gown, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.24, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                collar_disc(gid + '_lace', 0.07, P('repcream', 0.02, [B('top', 0.0, 0.5, 'dots', 'white', 'repcream', 0.02)]), drop=0.04, scallop=0.2),
+                cape(gid + '_cape', KNEE - 0.1, P('velvet', 0.03, [B('top', 0.0, 0.06, 'feather', 'fur', 'darkfur', 0.02), B('bottom', 0.0, 0.03, 'solid', 'repochre')]),
+                     flare=0.28, span=1.2, ease=0.034, top=TOP - 0.02)] + sleeves(gid, 'wrist', 0.016, sl, ease_end=0.06, rows=10)
+    GARMENTS['rep_%s_fest_noble_%s' % (sex, 'greatcoat' if sex == 'm' else 'gown')] = ('torso', b, 'Greatcoat, sash and epaulettes' if sex == 'm' else 'Velvet gown and cape', _frnob)
+
+    if sex == 'm':
+        def _frnlegs():
+            return trousers('rep_m_fest_noble_breeches', P('repcream', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'repochre')]), ease=0.01, ease_end=0.016, cuff=KNEE - 0.1)
+        GARMENTS['rep_m_fest_noble_breeches'] = ('legs', b, 'Cream breeches', _frnlegs)
+
+    def _frnboot(sex=sex):
+        if sex == 'm':
+            return boots('rep_m_fest_noble_boots', P('velvet', 0.03), P('black', 0.02, [B('top', 0.0, 0.025, 'solid', 'brass')]), top=0.9, ease_top=0.026)
+        return boots('rep_f_fest_noble_boots', P('velvet', 0.03), P('repred', 0.02, [B('top', 0.0, 0.015, 'solid', 'repochre')]), top=0.3, ease_top=0.018)
+    GARMENTS['rep_%s_fest_noble_boots' % sex] = ('feet', b, 'Riding boots, brass' if sex == 'm' else 'Red boots', _frnboot)
+
+    def _frnhead(sex=sex):
+        if sex == 'm':                        # the papakha: a tall fur hat, its crown red with an ochre cross
+            gid = 'rep_m_fest_noble_papakha'
+            # (a tower hat's strip runs up from the band: its 'bottom' end is the crown)
+            return [tower_hat(gid, 0.17, lambda t: 1.08 + 0.06 * t, P('darkfur', 0.24, [B('bottom', 0.0, 0.04, 'cross', 'repochre', 'repred', 0.05)]), rows=10)]
+        # the kokoshnik: a tall crescent standing over the brow, red and gold, pearls along its edge
+        gid = 'rep_f_fest_noble_kokoshnik'
+        k = fan(gid + '_crest', 0.07, 0.19, 1.25, P('repred', 0.02, [B('top', 0.0, 0.03, 'beads', 'white', 'repochre', 0.02),
+                                                                  B('top', 0.03, 0.5, 'rose', 'repochre', 'repred', 0.05)]), rows=5, cols=17, tilt=-0.05, back=-0.035, curl=0.0)
+        k.cloth = None
+        return [head_rings(gid, 0.55, 0.7, 0.02, P('repochre', 0.02, [B('top', 0.0, 0.5, 'beads', 'white', 'repochre', 0.02)]), n=36, rows=3), k]
+    GARMENTS['rep_%s_fest_noble_%s' % (sex, 'papakha' if sex == 'm' else 'kokoshnik')] = ('head', b, 'Black papakha' if sex == 'm' else 'Kokoshnik', _frnhead)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # the Giants (tools/giant.py: the man's body, scaled up by the pages). A temple guard of Dalab has four arms and wears
 # the god's gold over bare skin; the Free Giants of Giant Country dress as Gauls: a belted tunic, checked braccae, a

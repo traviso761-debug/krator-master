@@ -169,8 +169,17 @@ the Republic's red only as piping and collar tabs, brass only on buttons and buc
 - **The Hall of the Republic:** a double-breasted iron-black greatcoat with two rows of brass buttons, red piping,
   the triskelion of sword-arms small on the collar, plain epaulettes, a leather cross-belt, breeches or a black skirt,
   riding boots and a grey papakha with a red crown.
-Motifs added for them: `buttons`, `buttons2`, `quilt`, `triskele`, `frog`; `cross` (Slavic cross-stitch) and `rose`
-(a Saxon rosette) are there for the Rustic Clansmen or anyone else.
+**Its festive dress** (`rep_*_fest_*`, tiers `*_fest`, about one stranger in ten; an alternative set beside the
+austere one, for feast days, weddings and the Hall's ceremonies): the Republic's folk side, Russian and Transylvanian
+Saxon. Citizens in a linen kosovorotka worked in red cross-stitch with a red sash, grey-blue trousers, felt boots and
+a felt cap with a fur band; women in a red sarafan over a linen blouse, a black apron with a rosette border, a red
+headscarf. Guildsfolk in the ochre quilted jacket and brown breeches; women in the long belted Saxon coat in red, a
+black skirt with a rosette band and the Borten (the tall black velvet cylinder with ribbons behind). The Hall in
+state: a red greatcoat frogged in ochre with a row of triskelions at the hem and cuffs, epaulettes, a cream sash,
+cream breeches, a black papakha with a red crown; women in a red velvet gown, a lace collar, a fur-edged cape and
+the kokoshnik.
+Motifs added for them: `buttons`, `buttons2`, `quilt`, `triskele`, `frog`, `cross` (Slavic cross-stitch), `rose`
+(a Saxon rosette).
 
 Shapes added for them: `tower_hat` (a hat that rises from a band fitted to the head with any profile: the mitre, the
 hyperboloid), `eye_disc`, `armbands`; motifs `trencadis`, `bogolan`, `eye`.
