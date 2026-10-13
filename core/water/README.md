@@ -17,7 +17,10 @@ whole field as before, no trochoids while the floats are baked, the bed from `te
 `src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
 share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
 seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
-sky copy in the water, a flat pick plane named `sea`).
+sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
+old sheet, the two split on the shoreline by one baked mask both shaders sample; the life layer's boats ride it;
+`src/90w-lake.js`); `settlements/mungo`, which reads Locus's fragment by name (its lake and
+the Reed Lake kit's islands on it; the reed boats ride it).
 
 | File | Tag | What |
 |---|---|---|
@@ -198,5 +201,5 @@ hull's own preset view (the triangle over the hull, from the vertex shader's twi
 - Phase 4: still water and `W.wet`.
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo, Locus, Mungo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys.)
+- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo.)
   Voth and Streetlab wait for the Voth branch (ROADMAP.md section 9).

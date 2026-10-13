@@ -13,9 +13,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 882 | 199 | 23 | 52 | 47 | 561 | 6 | atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 429 | 7 | 23 | 10 | 34 | 355 | 5 |  | yes | yes |
-| [`settlements/locus`](settlements/locus/PORT.md) | 64 | 950 | 94 | 0 | 16 | 161 | 678 | 11 | atmos | yes | yes |
+| [`settlements/locus`](settlements/locus/PORT.md) | 65 | 956 | 94 | 5 | 16 | 162 | 679 | 11 | atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 705 | 56 | 0 | 15 | 321 | 313 | 4 |  | yes | yes |
-| [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 212 | 110 | 0 | 5 | 64 | 35 | 4 | atmos | yes | yes |
+| [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 213 | 110 | 0 | 5 | 64 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 33 | 280 | 30 | 13 | 10 | 71 | 156 | 4 | atmos | yes | yes |
 | [`settlements/port`](settlements/port/PORT.md) | 114 | 764 | 43 | 4 | 0 | 33 | 683 | 4 | atmos | yes | yes |
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 39 | 358 | 55 | 33 | 0 | 27 | 243 | 4 | atmos | yes | yes |

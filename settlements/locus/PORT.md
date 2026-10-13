@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 94 (10%) | 0 (0%) | 16 (2%) | 161 (17%) | 678 (71%) |
+| KB | 94 (10%) | 5 (1%) | 16 (2%) | 162 (17%) | 679 (71%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -61,19 +61,20 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/71-catalog.js` | 3.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/71g-locus-grid.js` | 9.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-lights.js` | 5.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-terrain.js` | 13.3 | [draw] | 23 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/75-terrain.js` | 14.2 | [draw] | 24 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/76-locus-anim.js` | 8.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 |  |
 | `src/80-camera.js` | 12.7 | [web] | 7 | 0 | 10 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
 | `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/83-locus-fauna.js` | 12.4 | [draw] | 8 | 0 | 0 | 0 | 0 | 18 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/84-life.js` | 50.8 | [web] | 13 | 0 | 0 | 0 | 2 | 15 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
+| `src/84-life.js` | 50.9 | [web] | 13 | 0 | 0 | 0 | 1 | 15 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/85-probe.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-inspect.js` | 3.9 | [web] | 0 | 0 | 7 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/87-pathviz.js` | 4.0 | [web] | 5 | 0 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88b-locus-minimap.js` | 3.2 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-sheetui.js` | 4.1 | [web] | 1 | 0 | 10 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-atmos-host.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/90-atmos-host.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/90w-lake.js` | 5.1 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | the open lake's binding of core/water (its shader is core/water's; the shoreline mask and the plume are the only GLSL here) |
 | `src/98-start.js` | 0.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

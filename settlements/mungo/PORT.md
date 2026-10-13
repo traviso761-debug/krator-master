@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 110 (52%) | 0 (0%) | 5 (2%) | 64 (30%) | 35 (16%) |
+| KB | 110 (51%) | 0 (0%) | 5 (2%) | 64 (30%) | 35 (17%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -25,10 +25,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/69z-locus-flora.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/71g-mungo-grid.js` | 8.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-lights.js` | 4.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-terrain.js` | 13.4 | [draw] | 23 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/75-terrain.js` | 14.3 | [draw] | 24 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/78b-mungo-world.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world as SIM data: nav layers (grid routes on RG), places from the built geometry, ports, SIM.load of world/*.json, SIM.populate |
 | `src/80-camera.js` | 13.3 | [web] | 7 | 0 | 10 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
-| `src/84-mungo-life.js` | 18.3 | [web] | 8 | 0 | 5 | 1 | 2 | 18 | 0 | 2 | 0 | 0 | 0 | split: the embodiment reads SIM.pose (port: the Godot life autoload); the census panel and path-viz registry are [web] |
+| `src/84-mungo-life.js` | 18.4 | [web] | 8 | 0 | 5 | 1 | 2 | 18 | 0 | 2 | 0 | 0 | 0 | split: the embodiment reads SIM.pose (port: the Godot life autoload); the census panel and path-viz registry are [web] |
 | `src/85-probe.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88c-mungo-minimap.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/reed/90-mungo-reed-glue.js` | 6.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the Reed Lake kit's mungo_reed_village def and the API Mungo calls; runs inside the wrapped kit |

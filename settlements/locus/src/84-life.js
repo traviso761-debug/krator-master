@@ -485,8 +485,9 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
       put(mMount, nm, r.x, r.y+bob, r.z, r.ry, 1,1,1, 0xffffff); WHO.mount[nm]=Q; nm++;
       person(Q, r.x, r.y+1.75+bob, r.z, r.ry, r.cloth, r.skin, 0, false, false, true); }); });
     for(i=0;i<BOATS.length;i++){ var B=BOATS[i], bdx=B.x-cx, bdz=B.z-cz; if(bdx*bdx+bdz*bdz > far*3 || nbo>=40) continue;
-      var rock=Math.sin(performance.now()*0.0011+B.id)*0.03; put(mBoat, nbo, B.x+B.ox, 0.05, B.z+B.oz, B.ry, 1,1,1, B.hull, rock); WHO.boat[nbo]=B; nbo++;
-      if(B.crew && B.crew.aboard) person(B.crew, B.x+B.ox-Math.sin(B.ry)*1.6, 0.35, B.z+B.oz-Math.cos(B.ry)*1.6, B.ry, B.crew.garb, B.crew.skin, 0, B.state==='fishing', false, B.crew.hat); }
+      /* on the open lake a boat rides core/water's surface (90w-lake.js lakeHeave); its rock runs on core/atmos's clock */
+      var rock=Math.sin(ATMOS.clock.t*1.1+B.id)*0.03, hv=lakeHeave(B.x+B.ox, B.z+B.oz); put(mBoat, nbo, B.x+B.ox, 0.05+hv, B.z+B.oz, B.ry, 1,1,1, B.hull, rock); WHO.boat[nbo]=B; nbo++;
+      if(B.crew && B.crew.aboard) person(B.crew, B.x+B.ox-Math.sin(B.ry)*1.6, 0.35+hv, B.z+B.oz-Math.cos(B.ry)*1.6, B.ry, B.crew.garb, B.crew.skin, 0, B.state==='fishing', false, B.crew.hat); }
     /* the buggies: the kit's groups, wheels rolled by the distance driven, lamps on after dark while driven */
     for(i=0;i<BUGGIES.length;i++){ var Bq=BUGGIES[i]; if(Bq.state==='away') continue; Bq.g.position.set(Bq.x, Bq.y, Bq.z); Bq.g.rotation.y=Bq.ry;
       if(Bq.dist>0 && Bq.dist<40){ try{ KratorVehicles.roll(Bq.g, Bq.dist); }catch(e){} } Bq.dist=0;

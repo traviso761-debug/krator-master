@@ -62,3 +62,12 @@ lane to the nearest street, which the causeway pass then raises.
 Life: `CUT_REED` at four reed-cutting grounds at the marsh's edge (`REEDCUT`, each by a street or track); a new role
 `reed_cutter` (10, reed folk) and the weavers' first two hours; the reed is delivered to the weavers' workshops, the
 reed warehouses and the builders' yard. The shore fishers' spots moved up the north shore and onto the marsh's edge.
+
+## 2026-10-13: the open lake on core/water
+Mungo takes Locus's `90w-lake.js` by name (Locus's `LOCUS-NOTES.md`, the same date, says what it does): the salt lake is
+core/water's open water, calm (at most 6 cm: the Reed Lake kit's islands, pontoons and boats are baked and keep their
+waterlines), the sky's light on the lake only, the river and the marsh on `75-terrain.js`'s sheet (this build's copy
+takes the same shoreline split as Locus's). The reed fishing boats ride the lake (`84-mungo-life.js`: `lakeHeave` under
+their own bob). `build.py` lists core/water among the core modules. From the reed village, Reed's Local and the
+overview: draw calls +1 to +3, triangles within 1.5% of 7.7 M; `verify.py --assert` the same PASS set before and after
+(draw calls 430 -> 431 of 459, triangles 8.00 M -> 8.06 M of 10 M).
