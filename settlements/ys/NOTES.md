@@ -682,3 +682,17 @@ warehouse and its office, the embassy's reception hall, envoy's chamber, tower s
 chapterhouse's reading hall, archive and scriptorium. Every spot clears its room's walls, its door's swing and every
 other spot by the city's own rule (`spots-fit-their-rooms`, checked offline first), every bedroom has its bed, food and
 store. `foreign-trade-rooms`: 14 of 14 buildings, 37 rooms.
+
+## The sea on core/water (2026-10-13)
+The sea is the port kit's core/water sea (`core/water/README.md`; the port's `src/71w-port-sea.js`, vendored
+byte-identical, which `portBuildTerrain` calls in this build's adapted `71-port-terrain.js` as in the port's): a
+`WATER.open` surface at sea level with a calm share of the shared wave field (at most 14 cm: the boats and pontoons are
+baked or fixed), no swell of its own, on core/atmos's clock (`ATMOS.init` in `90-ys-scene.js`, on `FRAME_HOOKS`), its bed
+baked from the stamped ground, drawn by `WATER.draw` on the CDLOD water mesh with the old sheet's colour, opacity and
+fresnel opacity and the port's ripple map as its detail; the dry pits cut out. The sky in it is core/atmos's skylight,
+a capture of a copy of the Krator sky (`YS_SKYC`, which follows the sun, the moon and the giant each frame) given to the
+water only. The water mesh does not raycast, so a flat invisible plane named `sea` at y 0 is the inspector's and the
+polygon tool's open sea. The river strip (88b) keeps `MAT.pkSea`, the old sheet's material (the flow kind is a later
+phase). From the bay at sea and from the overview: the same draw calls (196, 203), triangles +56 k and +29 k of 29.5 M;
+`verify.py --assert` the same 41 PASS before and after (scene triangles 28564843 -> 28564841, the flat sheet's two gone).
+`--vendor-check`: 58 identical (71w added), the same 18 adapted, the same pre-existing biome drift.

@@ -70,7 +70,7 @@ for _slot, _rel in (('69a1-bio-core-head.js', 'core/biome/10-core-head.js'), ('6
                     ('69c5-bio-eastabyss.js', 'biomes/eastabyss/src/70-biome-eastabyss.js')):
     BIO_CANON[_slot] = (os.path.join(ROOT, *_rel.split('/')), _rel.rsplit('/', 1)[0])
 # shared core modules, by folder; every digit-named .js in each (core/<m>/README.md says what each is)
-CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation']
+CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation', 'water']
 
 SIDE = {}   # the library packs' maps, written to dist/mungo.tex.<key>.js (tools/textures/matlib_pack.py write_sidecar)
 MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record (virtual_bodies)
@@ -85,6 +85,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js', '88c-mungo-minimap.js'}
 DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
+DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and Locus's lake binding (no rnd())
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}
 # PARTS: Locus's fragments cut at their section markers so they can be read (settlements/locus/build.py CONTINUES)

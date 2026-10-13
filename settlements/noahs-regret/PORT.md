@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 30 (11%) | 14 (5%) | 10 (3%) | 71 (25%) | 156 (56%) |
+| KB | 30 (11%) | 13 (5%) | 10 (3%) | 71 (25%) | 156 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -36,13 +36,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/64-nr-flora.js` | 2.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | placeholder flora builders; replace with a biome kit's |
 | `src/70-nr-interiors.js` | 37.0 | [web] | 4 | 0 | 0 | 0 | 3 | 2 | 0 | 4 | 0 | 0 | 0 | split: the room data (cabins, templates, records: data) and the instanced drawing and stream tick (web) |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/82-nr-water.js` | 5.2 | [G shader] | 12 | 0 | 0 | 0 | 0 | 2 | 6 | 0 | 0 | 0 | 0 |  |
+| `src/82-nr-water.js` | 4.4 | [G shader] | 9 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/89-nr-views.js` | 10.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-scene.js` | 4.6 | [web] | 15 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/90-scene.js` | 4.5 | [web] | 14 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/91f-furnish.js` | 7.0 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91n-night.js` | 2.7 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 14.1 | [web] | 13 | 0 | 23 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |
+| `src/92-camera.js` | 14.0 | [web] | 13 | 0 | 23 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |
 | `src/93-anim.js` | 2.5 | [draw] | 5 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

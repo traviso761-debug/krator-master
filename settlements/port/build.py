@@ -91,6 +91,13 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
+# (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the sea is a WATER.open surface
+# (src/71w-port-sea.js). Listed by name; a src/ copy with the same name wins.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell,
 # the port core, the per-target tables. Anything else must contain a builder.
@@ -103,7 +110,9 @@ DETERMINISTIC = {
     '74-port-dress.js',
     '90-scene.js', '91-probe.js', '92-camera.js', '97-lod-auto.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
+    '71w-port-sea.js',                    # the sea on core/water
 }
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
 SEED_COLLISION_EXCEPTIONS = set()
 
@@ -211,6 +220,8 @@ def build_one(target, do_checks):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})   # a src/ copy overrides
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
+    src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)

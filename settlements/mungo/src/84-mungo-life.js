@@ -94,12 +94,13 @@ var LIFE = null;
     for(var i=0;i<A.length;i++){ var a=A[i], L=look(a);
       var p = a.present ? SIM.pose(a, t) : null;
       /* the boat stays moored at its dock until its fisher is in it */
-      if(a.boat && nbo<80 && !(p && p.mode==='boat')){ var P0=dockMoor(a); if(P0){ put(mBoat, nbo, P0.x, -0.05+0.03*Math.sin(t*0.9+a.k), P0.z, P0.ry, 1); WHO.boat[nbo++]=a; } }
+      if(a.boat && nbo<80 && !(p && p.mode==='boat')){ var P0=dockMoor(a); if(P0){ put(mBoat, nbo, P0.x, -0.05+0.03*Math.sin(t*0.9+a.k)+lakeHeave(P0.x,P0.z), P0.z, P0.ry, 1); WHO.boat[nbo++]=a; } }
       if(!p){ stats.hidden++; continue; }
       if(p.hidden){ stats.hidden++; continue; }
       if(nb>=MAXP) continue;
       var x=p.x, z=p.z, s=L.scale, bob=p.moving ? Math.abs(Math.sin(t*7.5+a.k))*0.05 : 0, y, pitch=0;
-      if(p.mode==='boat'){ y=0.05+0.04*Math.sin(t*1.1+a.k); if(nbo<80){ put(mBoat, nbo, x, y-0.1, z, p.h, 1); WHO.boat[nbo++]=a; } y+=0.25; stats.boatsOut++; }
+      if(p.mode==='boat'){ y=0.05+0.04*Math.sin(t*1.1+a.k)+lakeHeave(x,z);   /* on the open lake, core/water's surface (90w-lake.js) */
+        if(nbo<80){ put(mBoat, nbo, x, y-0.1, z, p.h, 1); WHO.boat[nbo++]=a; } y+=0.25; stats.boatsOut++; }
       else if(p.mode==='drive'){ continue; }                                     /* in the buggy: the buggy is drawn below */
       else if(p.mode==='ride'){ y=groundY(x,z,p.y); if(nm<60){ put(mMount, nm, x, y+bob, z, p.h, 1); WHO.mount[nm++]=a; } y+=1.45; stats.riders++; }
       else { y=groundY(x,z,p.y)+bob; if(!p.moving && BENT[p.act]) pitch=BENT[p.act]; }

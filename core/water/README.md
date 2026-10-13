@@ -10,6 +10,26 @@ drawing of **open** water (the CDLOD mesh, the shared wave field, the sky in the
 Sea off the basin's beach). Shore, flow, fall, still and wet are recorded (their data and twins work and are tested) but not
 drawn yet: phases 2 to 4.
 
+**Phase 1's other takers (2026-10-13):** `settlements/reedlake` (the lake: no swell of its own, a calm share of the field
+so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
+`src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
+whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
+`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
+seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
+sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
+old sheet, the two split on the shoreline by one baked mask both shaders sample; the life layer's boats ride it;
+`src/90w-lake.js`); `settlements/mungo`, which reads Locus's fragment by name (its lake and
+the Reed Lake kit's islands on it; the reed boats ride it).
+
+**Not taken: `openworld/little-demo`** (2026-10-13). Its water is not one surface at a level: the sea, the lakes
+at their own levels from the scale model's 4 km water raster (`WORLD.lakeWater`) and the named rivers, which fall along
+their courses (`WORLD.riverWater`), share one sheet per streamed terrain chunk, each vertex at its own level. `WATER.open`
+is one level clipped only by a rectangle (`bounds`), so a lake drawn this way floods every lower hollow inside its box,
+and a river cannot be one at all. It needs either a surface per water body with a wet mask (a raster `bounds` or a
+`clip` texture: an addition to `WATER.draw`) or Phase 2's shore field on `core/mask`; and at 1:1 over 1,300 km the
+draw's world-space vertex shader wants a camera-relative origin. The ripple sheets stay until then.
+
 | File | Tag | What |
 |---|---|---|
 | `20-core-water.js` | [G data] | `WATER`: the presets, the six kinds as records, the CPU twins, `heightAt`, `flowAt`, `seaLevel`, `ride`, `export`. No THREE, no DOM |
@@ -46,6 +66,10 @@ reflects the sky. `envMapIntensity` sets how much: the Ring Sea takes a fifth (m
 **Picking and walking.** The water mesh's raycast is off (its geometry is a unit grid; the shape is made in the vertex
 shader). Keep a flat, invisible plane for the camera's ground picks (`new THREE.MeshBasicMaterial({visible: false})`, as
 `kits/ringsea/src/90-rs-scene.js` does) and use `WATER.heightAt` for anything that needs the surface.
+
+**Level of detail.** The mesh carries `userData.lodSkip` (2026-10-13): core/lod's automatic pass (`97-lod-auto.js`) took it
+for a static mesh, culled its unit grid by its size at the origin and moved it off layer 0, so in Locus the lake vanished
+once the camera was far from the origin. The CDLOD selection is the water's own level of detail.
 
 ## The six kinds
 
@@ -185,5 +209,5 @@ hull's own preset view (the triangle over the hull, from the vertex shader's twi
 - Phase 4: still water and `W.wet`.
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5): Noah's Regret, little-demo, Locus, Mungo, Port, Ys, Reed Lake.
+- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo.)
   Voth and Streetlab wait for the Voth branch (ROADMAP.md section 9).

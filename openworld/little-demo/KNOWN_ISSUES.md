@@ -44,6 +44,11 @@
       the extractor keeps the same rule as a guard and now lowers nothing.
 - [x] **The water takes the shared wave field** (`core/atmos`, as Voth's bay). Not yet: the sky's reflection as an
       environment map (`b-skylight` takes standard materials only).
+- [ ] **The water is not on core/water yet** (2026-10-13; `core/water/README.md`, "Not taken"). The other Phase 1 takers
+      moved their open water onto `WATER.open` and the CDLOD mesh; this world's sea, lakes and rivers share one sheet per
+      chunk with a level per vertex, which one `WATER.open` surface (one level, clipped by a rectangle) cannot draw: a
+      lake would flood every lower hollow in its box. It waits for a wet mask on `WATER.draw` (or a surface per water
+      body) or Phase 2's shore field, and a camera-relative origin for the draw at this scale.
 - [ ] **Only named rivers carry water** (the Yuni river, scale model 4.19): the drainage channels are dry beds and
       canyons, even where the climate is wet (the hyperjungle, the abyss); the kits' `flow` field is set, so their
       riparian flora grows on the banks. A river is drawn on the terrain chunks' water grid, so from far off (coarse

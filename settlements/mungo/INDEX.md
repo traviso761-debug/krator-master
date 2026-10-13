@@ -28,7 +28,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `69z-locus-flora.js` | 5 | 19Z. MUNGO — planting the biome (Locus's, re-poi (1) |
 | `71g-mungo-grid.js` | 8 | 18a. THE GEOMANCERS' GRID — MUNGO (Locus's 71g,  (1) |
 | `72-lights.js` | 5 | 18. FIXED LAMPS — MUNGO (Locus's fittings) (1) |
-| `75-terrain.js` | 13 | 20. EMIT + GROUND + WATER — MUNGO (Locus's, re-p (1) |
+| `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — MUNGO (Locus's, re-p (1) |
 | `78b-mungo-world.js` | 17 | 21. MUNGO'S WORLD AS DATA — the simulation's pla (1) |
 | `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (161) |
 | `84-mungo-life.js` | 18 | 20. THE LIFE LAYER — MUNGO: the embodiment (1) |

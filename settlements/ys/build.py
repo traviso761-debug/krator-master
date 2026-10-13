@@ -59,6 +59,13 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook the ve
 # its TEX would clash with the lineage's TEX texture table (core/materials/20-textures.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+# the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
+# (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the sea is a WATER.open surface (the port
+# kit's 71w-port-sea.js, vendored). Every target takes them; a src/ copy with the same name wins.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
 
@@ -123,7 +130,7 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
            '46-bunker.js', '48-library.js', '73-police.js', '74-hospital.js', '75-hotel.js', '79-government.js', '89-lab.js', '72-datacenter.js'] \
         + VENDORED_DROWNED:
     VENDORED[_f] = 'kits/ancients/src'
-for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
+for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
@@ -200,7 +207,9 @@ DETERMINISTIC = {
     # the foreign quarter: the Highlands kit's textures, materials, motifs, helpers and carving carry no builder; the
     # city's foreign pass (88c) picks and places from KRAND streams, and every builder it calls reseeds itself
     '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '88c-city-foreign.js',
+    '71w-port-sea.js',   # the sea on core/water (vendored from the port kit)
 }
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
 # declarations live inside a closure and they keep their own PRNG.
@@ -295,6 +304,8 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
+    src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
+    src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})

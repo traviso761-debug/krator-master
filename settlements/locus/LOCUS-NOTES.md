@@ -131,3 +131,21 @@ a highway's end, it is off the map for 1.5-4 minutes, and it comes back (maybe b
 timers, like this layer's caravans and riders, so trips run while the world clock is held. `_life.buggies()`,
 `lookBuggy(i)`, `tripNow()`, `simBuggies(sec)` (steps only the buggies: a full trip in simulated time); `verify.py`'s
 `geomancer-buggy-park`. Mungo's buggies do the same on `core/simulation` (`geo_trip`).
+
+## 2026-10-13: the open lake on core/water
+The open salt lake is core/water's open water (`core/water/README.md`; `src/90w-lake.js`, after `90-atmos-host.js`,
+which Mungo reads by name too): a `WATER.open` surface on the water plane with a calm share of the shared wave field
+(`LAKE_FIELD` .12: at most 6 cm, so the reed decks and jetties keep their waterlines; `LAKE_TILT` 8 so its chop shades as
+the old sheet's did), no swell of its own, on core/atmos's clock, its bed baked from `terrainH` over the lake shore (8 m
+cells: the shallows' colour by depth, the water calmed to nothing at the waterline; no surf lap or whitecaps, which on a
+shelf this gentle whitened a band hundreds of metres wide), drawn by `WATER.draw` on the CDLOD water mesh, the sky's
+light (core/atmos's skylight, a capture of `skyScene`) given to the lake only (this is a Lambert world). The river, the
+delta's channels, the canal and the marsh pools stay on `75-terrain.js`'s sheet (core/water's flow and still kinds are
+later phases). The two split on the shoreline through one baked mask (`LAKE_MASK`: R the lake's side of `lakeDist`, G
+the river's fresh water running out into the lake), which both shaders sample the same way; the lake takes the river's
+colour by G, so a mouth meets the sheet in one colour. The life layer's boats ride the lake (`lakeHeave`; their rock now
+runs on core/atmos's clock). core/lod's automatic pass had taken the water mesh for a static mesh and hidden it (it
+moved it off layer 0); core/water's mesh now carries `userData.lodSkip`. From the lake at 120 m, over the delta, at 11 m
+off a mouth and at the fishing docks: draw calls +1 (185 -> 186, 159 -> 160, 104 -> 105, 164 -> 165), triangles +65 to
++95 k of 9 M; `verify.py --assert` the same 13 PASS and budgets before and after (draw calls 178 -> 179 of 190,
+triangles 8.90 M -> 8.98 M of 10 M).

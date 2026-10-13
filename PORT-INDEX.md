@@ -13,19 +13,19 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 882 | 199 | 23 | 52 | 47 | 561 | 6 | atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 429 | 7 | 23 | 10 | 34 | 355 | 5 |  | yes | yes |
-| [`settlements/locus`](settlements/locus/PORT.md) | 64 | 950 | 94 | 0 | 16 | 161 | 678 | 11 | atmos | yes | yes |
+| [`settlements/locus`](settlements/locus/PORT.md) | 65 | 956 | 94 | 5 | 16 | 162 | 679 | 11 | atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 705 | 56 | 0 | 15 | 321 | 313 | 4 |  | yes | yes |
-| [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 212 | 110 | 0 | 5 | 64 | 35 | 4 | atmos | yes | yes |
-| [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 33 | 281 | 30 | 14 | 10 | 71 | 156 | 4 | atmos | yes | yes |
-| [`settlements/port`](settlements/port/PORT.md) | 113 | 762 | 43 | 0 | 0 | 32 | 686 | 4 |  | yes | yes |
-| [`settlements/reedlake`](settlements/reedlake/PORT.md) | 38 | 354 | 55 | 33 | 0 | 27 | 240 | 4 |  | yes | yes |
+| [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 213 | 110 | 0 | 5 | 64 | 35 | 4 | atmos | yes | yes |
+| [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 33 | 280 | 30 | 13 | 10 | 71 | 156 | 4 | atmos | yes | yes |
+| [`settlements/port`](settlements/port/PORT.md) | 114 | 765 | 43 | 4 | 0 | 33 | 685 | 4 | atmos | yes | yes |
+| [`settlements/reedlake`](settlements/reedlake/PORT.md) | 39 | 358 | 55 | 33 | 0 | 27 | 243 | 4 | atmos | yes | yes |
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 78 | 581 | 23 | 19 | 27 | 44 | 468 | 6 |  | yes | yes |
 | [`settlements/shade`](settlements/shade/PORT.md) | 29 | 323 | 76 | 15 | 14 | 74 | 144 | 3 |  | yes | yes |
 | [`settlements/streetlab`](settlements/streetlab/PORT.md) | 28 | 602 | 383 | 0 | 0 | 187 | 32 | 0 |  |  | yes |
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 287 | 108 | 12 | 6 | 111 | 49 | 1 | biome | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1803 | 412 | 0 | 106 | 107 | 1178 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 65 | 947 | 463 | 19 | 10 | 70 | 385 | 6 |  | yes | yes |
-| [`settlements/ys`](settlements/ys/PORT.md) | 140 | 2005 | 334 | 53 | 105 | 115 | 1398 | 8 |  | yes | yes |
+| [`settlements/ys`](settlements/ys/PORT.md) | 141 | 2009 | 334 | 57 | 105 | 116 | 1397 | 8 | atmos | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 60 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 222 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
@@ -58,7 +58,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1948 | 25739 | 4333 (17%) | 573 (2%) | 1068 (4%) | 3214 (12%) | 16551 (64%) | 262 | | | |
+| **all** | 1952 | 25757 | 4333 (17%) | 585 (2%) | 1068 (4%) | 3217 (12%) | 16553 (64%) | 262 | | | |
 
 ## Host-shell copies
 

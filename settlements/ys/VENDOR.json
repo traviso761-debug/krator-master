@@ -167,7 +167,7 @@
  "71-port-terrain.js": {
   "adapted": true,
   "from": "settlements/port/src",
-  "sha1": "ed208e100433"
+  "sha1": "290185169664"
  },
  "71-sky-h.js": {
   "adapted": true,
@@ -183,6 +183,11 @@
   "adapted": false,
   "from": "settlements/highlands/src",
   "sha1": "bf315ee9ebc6"
+ },
+ "71w-port-sea.js": {
+  "adapted": false,
+  "from": "settlements/port/src",
+  "sha1": "713609384546"
  },
  "72-datacenter.js": {
   "adapted": false,

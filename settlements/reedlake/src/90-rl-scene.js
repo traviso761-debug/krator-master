@@ -49,9 +49,10 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1400,1400,1);giant.userData.probeSkip=true;scene.add(giant);
 
-// the lake: one plane of water at RL.WATER, tiled in world units, scrolled by 94-rl-anim.js; the lake bed below it
+// the lake: its water is core/water's (90w-rl-lake.js); here the flat plane at RL.WATER the camera picks against (invisible)
+// and the lake bed below it. TEX.rlWater (the troughs' still water, 94-rl-anim.js) keeps its world-unit tiling
 TEX.rlWater.repeat.set(400,400);
-groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),MAT.rlWater);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,RL.WATER,GROUND_C);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
+groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),new THREE.MeshBasicMaterial({visible:false}));groundM.rotation.x=-Math.PI/2;groundM.position.set(0,RL.WATER,GROUND_C);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
 {const bed=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),new THREE.MeshStandardMaterial({color:0x2a3a30,roughness:1}));bed.rotation.x=-Math.PI/2;bed.position.set(0,RL.WATER-2.5,GROUND_C);bed.userData.probeSkip=true;scene.add(bed);}
 // distant reed beds along the lake's edges, so the horizon is not bare water
 {reseed(25990);const zEnd=Math.max(0,...HL_ROWS.map(r=>r.z+r.d/2))+300,xEnd=Math.max(220,...HL_ROWS.map(r=>r.w/2+120));

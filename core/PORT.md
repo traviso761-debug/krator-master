@@ -91,7 +91,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/39-core-cavern.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `walk/20-core-walk.js` | 10.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |
 | `water/20-core-water.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WATER: the six kinds, the CPU twins, ride, export; becomes a Water autoload (core/water/README.md, "Godot") |
-| `water/50-core-water-draw.js` | 15.1 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 12 | 1 | 0 | 0 | 0 | the GLSL becomes water_open.gdshader (generated, like atmos_waves); the CDLOD selection (WATER.cdlod) is data and ports to GDScript with a MultiMesh |
+| `water/50-core-water-draw.js` | 15.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 12 | 1 | 0 | 0 | 0 | the GLSL becomes water_open.gdshader (generated, like atmos_waves); the CDLOD selection (WATER.cdlod) is data and ports to GDScript with a MultiMesh |
 
 ## Notes
 

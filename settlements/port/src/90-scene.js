@@ -23,6 +23,15 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(3000,3000,1);giant.userData.probeSkip=true;scene.add(giant);
 const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
+// core/atmos (its clock, the open-water wave field and the sky's light) for the sea (core/water, 71w-port-sea.js): the
+// frame loop (92-camera.js) runs PORT_FRAME; the skylight captures the dome and the giant and is given to the water only
+// (PORT_ENV), so the kit's tuned materials are unchanged; it recaptures when the night is switched
+const PORT_FRAME=[];
+ATMOS.init({THREE,scene,camera,hour:()=>(typeof NIGHT!=='undefined'&&NIGHT)?0:13,onFrame:fn=>PORT_FRAME.push(fn),ground:(x,z)=>terrainH(x,z),seed:7110,
+ err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
+const PORT_SKY=new THREE.Scene(),PORT_ENV={environment:null};
+PORT_SKY.add(new THREE.Mesh(sky.geometry,skyMat));{const g=giant.clone();g.position.copy(giantDir).multiplyScalar(7000);PORT_SKY.add(g);}
+ATMOS.skylight({renderer,sky:PORT_SKY,scene:PORT_ENV,ground:()=>new THREE.Color(0x0e2a33),key:()=>(typeof NIGHT!=='undefined'&&NIGHT)?'n':'d'});
 
 // ---------------------------------------------------------------- THE PORT
 // There is no flat ground plane: the terrain replaces it. Order, and why:

@@ -64,7 +64,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
 | `71g-locus-grid.js` | 9 | 18a. THE TOWN GRID — LOCUS (2026-10-01) (1) |
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
-| `75-terrain.js` | 13 | 20. EMIT + GROUND + WATER — LOCUS (1) |
+| `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (164) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
@@ -77,5 +77,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `88b-locus-minimap.js` | 3 | MINIMAP (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
+| `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
 | `98-start.js` | <1 | 99. START (1) |
 | `99-tail.html` | <1 |  |
