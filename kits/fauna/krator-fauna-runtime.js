@@ -162,6 +162,8 @@ const KratorFaunaAPI = (function () {
   /* ---- animation: turns only, by the animal's gait (data.gait.type):
        quadruped  diagonal pairs swing about x (front left with hind right)      biped   two legs alternate, the head bobs
        sprawl     legs swing about y, body and tail weave (salamanders, lizards)  hexapod tripods alternate (0,3,4 / 1,2,5)
+       centaur    six limbs: the front pair arms (held forward, swinging), the hind pair legs, the middle pair arms at a walk and legs at a run
+                  (mode 'run', o.run, or o.speed between data.speed.walk and .run); the limbs swing about x (the ambiguous six-limbed beasts)
        octopod    alternating fours swing about y (spiders)                       multipede  a wave runs down the legs and segments
        flyer      wings flap about z (mode 'fly'; folded at 'idle'/'rest'), legs tucked in flight (flap.tuck); a flyer with legs
                   walks as a biped (2 legs), a quadruped (4) or a hexapod (6), and so does an insect
@@ -181,7 +183,8 @@ const KratorFaunaAPI = (function () {
        idle        { headYaw, headPitch, tailYaw } radians: how far the head looks about and the tail sways at idle */
   function animate(g, t, mode, o) {
     if (g.userData._mx) return animateModel(g, t, mode, o);   /* a model variant plays its own clips */
-    o = o || {}; const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
+    o = o || {}; if (mode === 'run') { o = Object.assign({}, o, { run: 1 }); mode = 'walk'; }   /* 'run' is a walk at the animal's run blend (only a 'centaur' gait reads it) */
+    const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
     const ph = (o.phase || 0), f = gait.freq || 1.5, w = TAU * f * t + ph, type = gait.type || 'quadruped';
     const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
     const legs = P.legs.filter(Boolean), body = P.body, segs = P.segs || [];
@@ -245,6 +248,17 @@ const KratorFaunaAPI = (function () {
       const k = mode === 'rest' ? 0.4 : 1, I = D.idle || {};
       if (type === 'sprawl' || type === 'octopod' || type === 'multipede') { set(P.tail, 0, (I.tailYaw == null ? 0.16 : I.tailYaw) * k * Math.sin(TAU * 0.11 * t + ph), 0); set(P.head, (I.headPitch == null ? 0.03 : I.headPitch) * Math.sin(TAU * 0.09 * t + ph), (I.headYaw == null ? 0.12 : I.headYaw) * k * Math.sin(TAU * 0.05 * t + ph * 1.7), 0); }
       else if (type !== 'none') { set(P.tail, 0.2 * k * Math.max(0, Math.sin(TAU * 0.5 * t + ph)), (I.tailYaw == null ? 0.1 : I.tailYaw) * Math.sin(TAU * 0.3 * t), 0); set(P.head, -0.05 + (I.headPitch == null ? 0.05 : I.headPitch) * Math.sin(TAU * 0.07 * t + ph), (I.headYaw == null ? 0.35 : I.headYaw) * k * Math.sin(TAU * 0.04 * t + ph * 1.3), 0); }
+    }
+    /* centaur: six limbs, the front pair always arms (held forward, swinging), the hind pair always legs, the middle pair arms at a walk and legs at a run:
+       the blend is o.run, or o.speed between the animal's walk and run speeds */
+    if (type === 'centaur' && legs.length === 6) {
+      const sp = D.speed || { walk: 1, run: 6 }, bl = o.run ? 1 : (o.speed != null ? Math.max(0, Math.min(1, (o.speed - sp.walk) / Math.max(0.01, sp.run - sp.walk))) : 0), wk = mode === 'walk', hold = mode === 'graze' ? -0.2 : -0.85;
+      legs.forEach((L, i) => { const pair = i >> 1, ph0 = (i & 1) ? Math.PI : 0, ww = w * (1 + 0.6 * bl);
+        if (pair === 2) set(L, wk ? 0.5 * Math.sin(ww + ph0) : 0);
+        else if (pair === 0) set(L, hold + (wk ? 0.35 * Math.sin(ww + ph0 + Math.PI * 0.5) : 0.07 * Math.sin(TAU * 0.35 * t + ph0)) + 0.1 * bl * Math.sin(ww + ph0), 0, (i & 1) ? 0.08 : -0.08);
+        else { const armX = -0.7 + (wk ? 0.3 * Math.sin(ww + ph0 + Math.PI * 1.5) : 0.05 * Math.sin(TAU * 0.3 * t + ph0 + 1)), legX = wk ? 0.5 * Math.sin(ww + ph0 + Math.PI) : 0; set(L, armX * (1 - bl) + legX * bl, 0, ((i & 1) ? 0.08 : -0.08) * (1 - bl)); }
+      });
+      if (wk && body) body.position.y += 0.012 * (u.S || 1) * Math.abs(Math.sin(w));
     }
     for (const n of ['earL', 'earR']) if (P[n]) set(P[n], 0, 0, (n === 'earL' ? 1 : -1) * 0.18 * Math.max(0, Math.sin(TAU * 0.23 * t + ph * 3)) ** 8);
   }

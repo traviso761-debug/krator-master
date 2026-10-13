@@ -8948,7 +8948,7 @@ const FAUNA_VOCAB = {
   temperament: ['skittish', 'wary', 'docile', 'defensive', 'aggressive'],   /* from bolting first to attacking first */
   habitat: ['ground', 'rock', 'canopy', 'trunks', 'sky', 'water', 'shallows', 'deep water', 'marsh', 'burrow', 'pen'],
   locomotion: ['walks', 'runs', 'climbs', 'flies', 'glides', 'swims', 'wades', 'burrows', 'leaps'],
-  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
+  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'centaur', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
   traits: ['edible', 'milkable', 'tameable', 'rideable', 'draught', 'eggs'],
   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
 };
@@ -9327,10 +9327,11 @@ ANIMAL({
   yields: { meat: { amount: 300, note: 'dressed; eaten at feasts, the rest of the year it works' }, milk: { amount: 5, note: 'rich milk, about 250 days a year: curd and ghee' },
     hide: { amount: 1, hideM2: 5, note: 'thick leather: boat lashings, shields, sandals' }, horn: { amount: 2.5, note: 'a pair: bows, knife grips, the puma prows\' inlay' } },
   life: { maturity: 2.5, lifespan: 25, litter: 1, gestation: 315 },
-  variants: 2, variantNames: ['cow, slate grey', 'bull, near-black, heavy horns'],
+  variants: 3, variantNames: ['cow, slate grey', 'bull, near-black, heavy horns', 'water buffalo, slate (Meshy model)'],
   w: 1.45, d: 3.05, h: 2.05,
-  variantDims: [{ w: 1.45, d: 3.05, h: 2.05 }, { w: 1.7, d: 3.3, h: 2.3 }],
-  data: { mass: [650, 850], legs: 4, speed: { walk: 1.1, run: 6 }, gait: { type: 'quadruped', freq: 0.9, stride: 0.75 }, grazePitch: 1.15,
+  variantDims: [{ w: 1.45, d: 3.05, h: 2.05 }, { w: 1.7, d: 3.3, h: 2.3 }, { w: 1.0, d: 2.6, h: 1.6 }],
+  models: { 2: 'buffalo' }, modelData: { 2: { budget: 12000 } },   /* the Meshy model variant (models/buffalo.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [650, 850, 700], legs: 4, speed: { walk: 1.1, run: 6 }, gait: { type: 'quadruped', freq: 0.9, stride: 0.75 }, grazePitch: 1.15,
     herd: 'one or two to an island farm; a child rides it down to the water', fleeDistance: 2, aggression: 0.15,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'MILK', 'WORK', 'WORK', 'WORK', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'MILK', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
@@ -9377,9 +9378,11 @@ ANIMAL({
     hide: { amount: 1, hideM2: 3.6, note: 'boots, boat skins, the herders\' tents' }, hair: { amount: 1.5, note: 'the long skirt hair, cut each summer: tent cloth, rope, slings' },
     wool: { amount: 0.6, note: 'the soft down combed out in spring: the finest shawls of the valley' }, horn: { amount: 1.5, note: 'a pair' } },
   life: { maturity: 3, lifespan: 22, litter: 1, gestation: 258 },
-  variants: 3, variantNames: ['black', 'brown', 'dun'],
+  variants: 4, variantNames: ['black', 'brown', 'dun', 'yak, shaggy dark brown (Meshy model)'],
   w: 1.5, d: 2.65, h: 1.65,
-  data: { mass: [450, 420, 400], legs: 4, speed: { walk: 1.1, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.6 }, grazePitch: 0.9,
+  variantDims: [{ w: 1.5, d: 2.65, h: 1.65 }, { w: 1.5, d: 2.65, h: 1.65 }, { w: 1.5, d: 2.65, h: 1.65 }, { w: 0.8, d: 2.3, h: 1.9 }],
+  models: { 3: 'yak' }, modelData: { 3: { budget: 12000 } },   /* the Meshy model variant (models/yak.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [450, 420, 400, 450], legs: 4, speed: { walk: 1.1, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.6 }, grazePitch: 0.9,
     herd: 'a family\'s few in the yard; the herds go up to the high pastures in summer', fleeDistance: 5, aggression: 0.2,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'MILK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
@@ -9449,10 +9452,11 @@ ANIMAL({
     wool: { amount: 0.8, note: 'the soft underwool shed with it in clumps: felt and the warmest yarn' },
     horn: { amount: 1.2, note: 'a pair: cups, spoons, oil flasks' } },
   life: { maturity: 3, lifespan: 20, litter: 1, gestation: 285 },
-  variants: 3, variantNames: ['bull', 'cow', 'calf (red-coated)'],
+  variants: 4, variantNames: ['bull', 'cow', 'calf (red-coated)', 'bison bull, shaggy (Meshy model)'],
   w: 1.25, d: 2.78, h: 1.9,
-  variantDims: [{ w: 1.25, d: 2.78, h: 1.9 }, { w: 1.06, d: 2.36, h: 1.6 }, { w: 0.6, d: 1.54, h: 1.0 }],
-  data: { mass: [900, 500, 120], legs: 4, speed: { walk: 1.2, run: 14 }, gait: { type: 'quadruped', freq: 0.95, stride: 0.7 }, grazePitch: 0.85,
+  variantDims: [{ w: 1.25, d: 2.78, h: 1.9 }, { w: 1.06, d: 2.36, h: 1.6 }, { w: 0.6, d: 1.54, h: 1.0 }, { w: 1.05, d: 2.8, h: 1.95 }],
+  models: { 3: 'bison' }, modelData: { 3: { budget: 12000 } },   /* the Meshy model variant (models/bison.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [900, 500, 120, 900], legs: 4, speed: { walk: 1.2, run: 14 }, gait: { type: 'quadruped', freq: 0.95, stride: 0.7 }, grazePitch: 0.85,
     herd: 'a Scyvoi band drives a herd of twenty to sixty between the seeps, the bulls apart; the calves are penned at night in the kopje\'s lee', fleeDistance: 12, aggression: 0.4,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
@@ -9539,9 +9543,11 @@ ANIMAL({
   yields: { meat: { amount: 200, note: 'eaten only in hard winters, or an old horse at the end' }, hide: { amount: 1, hideM2: 3.6, note: 'strong leather: harness, belts' },
     hair: { amount: 0.3, note: 'mane and tail hair: bowstrings, fiddle bows, brushes, the Republic\'s horsehair upholstery' } },
   life: { maturity: 3, lifespan: 28, litter: 1, gestation: 340 },
-  variants: 4, variantNames: ['bay, black points', 'black', 'dun', 'grey'],
+  variants: 5, variantNames: ['bay, black points', 'black', 'dun', 'grey', 'bay horse, black points (Meshy model)'],
   w: 0.7, d: 2.56, h: 2.2,
-  data: { mass: 520, legs: 4, speed: { walk: 1.6, run: 13 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.5,
+  variantDims: [{ w: 0.7, d: 2.56, h: 2.2 }, { w: 0.7, d: 2.56, h: 2.2 }, { w: 0.7, d: 2.56, h: 2.2 }, { w: 0.7, d: 2.56, h: 2.2 }, { w: 1.15, d: 2.1, h: 2.3 }],
+  models: { 4: 'horse' }, modelData: { 4: { budget: 12000 } },   /* the Meshy model variant (models/horse.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [520, 520, 520, 520, 520], legs: 4, speed: { walk: 1.6, run: 13 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.5,
     herd: 'a team of two to a cart, four to a coach; the coaching inns stable a dozen', fleeDistance: 8, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'GRAZE', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'REST'] },
   build: function (A) {
@@ -9811,9 +9817,11 @@ ANIMAL({
   yields: { meat: { amount: 1.8, note: 'dressed; smoked over the reed fires' }, eggs: { amount: 150, note: 'laid in the reed nests on the islands' },
     feathers: { amount: 0.15, note: 'the down: quilts against the lake\'s night damp' } },
   life: { maturity: 0.6, lifespan: 10, litter: 10, gestation: 28, note: 'litter: a clutch; gestation: the days on the eggs' },
-  variants: 3, variantNames: ['white', 'brown', 'dun'],
+  variants: 4, variantNames: ['white', 'brown', 'dun', 'duck, white (Meshy model)'],
   w: 0.28, d: 0.58, h: 0.45,
-  data: { mass: 2.6, legs: 2, wings: 1, speed: { walk: 0.4, run: 2.5 }, gait: { type: 'biped', freq: 2.0, stride: 0.1 }, grazePitch: 1.2,
+  variantDims: [{ w: 0.28, d: 0.58, h: 0.45 }, { w: 0.28, d: 0.58, h: 0.45 }, { w: 0.28, d: 0.58, h: 0.45 }, { w: 0.23, d: 0.48, h: 0.54 }],
+  models: { 3: 'duck' }, modelData: { 3: { wings: 0, budget: 12000 } },   /* the Meshy model variant (models/duck.json, models_pack.py, rig/qmodel.py) */
+  data: { mass: [2.6, 2.6, 2.6, 2.6], legs: 2, wings: 1, speed: { walk: 0.4, run: 2.5 }, gait: { type: 'biped', freq: 2.0, stride: 0.1 }, grazePitch: 1.2,
     swim: { freq: 0.8, amp: 0.15 }, herd: 'a dozen to an island, driven out onto the water by day', fleeDistance: 3, aggression: 0.02,
     schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'GRAZE', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'REST', 'REST', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'GRAZE', 'GRAZE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
   build: function (A) {
@@ -9869,15 +9877,16 @@ ANIMAL({
   yields: { meat: { amount: 90, note: 'a meat cow dressed: the lowlands\' common meat' }, eggs: { amount: 24, note: 'one clutch a year, gathered from the paddock nests: a market food' },
     hide: { amount: 1, hideM2: 2.6, note: 'banded lizard leather: the Dalab boots, belts and saddlery' } },
   life: { maturity: 2, lifespan: 25, litter: 18, gestation: 70, note: 'litter: a clutch; gestation: the days to hatching; a product of the genepriests\' breeding program (Daranch)' },
-  variants: 4, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown'],
+  variants: 5, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown', 'cow, olive with ochre bands (Meshy model)'],
   breeds: { meat: { scale: 1, mass: 240, role: 'the ranch\'s meat herd' }, riding: { scale: 1.3, mass: 520, role: 'the inn\'s riding and pack lizard' } },
   w: 1.57, d: 2.62, h: 0.75,
-  variantDims: [{ w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.95 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.75 }],
+  variantDims: [{ w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.95 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.5, d: 2.45, h: 1.0 }],
+  models: { 4: 'dalab-lizard' }, modelData: { 4: { budget: 12000 } },   /* the Meshy model variant (models/dalab-lizard.json, models_pack.py, rig/qmodel.py: a sprawl rig) */
   data: { mass: 240, legs: 4, speed: { walk: 1.0, run: 5 }, gait: { type: 'sprawl', freq: 0.9, stride: 0.6 }, grazePitch: 0.35, sizeRange: [0.7, 1.5],
     herd: 'a paddock of 4 to 8 with a crested bull', fleeDistance: 2, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
-    const v = A.variant, S = A.S, hide = [0x6a8a3a, 0x7a9a44, 0x9a8a4a, 0x8a4a2a][v], band = [0xd8a838, 0xa8382a, 0x3f9a88, 0xd8a838][v], belly = faFmMix(hide, 0xd8d0a0, 0.45);
+    const v = A.variant, S = A.S, hide = [0x6a8a3a, 0x7a9a44, 0x9a8a4a, 0x8a4a2a, 0x6a8a3a][v], band = [0xd8a838, 0xa8382a, 0x3f9a88, 0xd8a838, 0xd8a838][v], belly = faFmMix(hide, 0xd8d0a0, 0.45);
     const BANDS = [-0.37, -0.12, 0.12, 0.37];
     const skin = (t, a) => { const z = faFmLizKey(t, 1), top = Math.cos(a);
       if (top < -0.55) return belly;
@@ -10303,7 +10312,8 @@ const KratorFaunaAPI = (function () {
        idle        { headYaw, headPitch, tailYaw } radians: how far the head looks about and the tail sways at idle */
   function animate(g, t, mode, o) {
     if (g.userData._mx) return animateModel(g, t, mode, o);   /* a model variant plays its own clips */
-    o = o || {}; const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
+    o = o || {}; if (mode === 'run') { o = Object.assign({}, o, { run: 1 }); mode = 'walk'; }   /* 'run' is a walk at the animal's run blend (only a 'centaur' gait reads it) */
+    const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
     const ph = (o.phase || 0), f = gait.freq || 1.5, w = TAU * f * t + ph, type = gait.type || 'quadruped';
     const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
     const legs = P.legs.filter(Boolean), body = P.body, segs = P.segs || [];
@@ -10367,6 +10377,17 @@ const KratorFaunaAPI = (function () {
       const k = mode === 'rest' ? 0.4 : 1, I = D.idle || {};
       if (type === 'sprawl' || type === 'octopod' || type === 'multipede') { set(P.tail, 0, (I.tailYaw == null ? 0.16 : I.tailYaw) * k * Math.sin(TAU * 0.11 * t + ph), 0); set(P.head, (I.headPitch == null ? 0.03 : I.headPitch) * Math.sin(TAU * 0.09 * t + ph), (I.headYaw == null ? 0.12 : I.headYaw) * k * Math.sin(TAU * 0.05 * t + ph * 1.7), 0); }
       else if (type !== 'none') { set(P.tail, 0.2 * k * Math.max(0, Math.sin(TAU * 0.5 * t + ph)), (I.tailYaw == null ? 0.1 : I.tailYaw) * Math.sin(TAU * 0.3 * t), 0); set(P.head, -0.05 + (I.headPitch == null ? 0.05 : I.headPitch) * Math.sin(TAU * 0.07 * t + ph), (I.headYaw == null ? 0.35 : I.headYaw) * k * Math.sin(TAU * 0.04 * t + ph * 1.3), 0); }
+    }
+    /* centaur: six limbs, the front pair always arms (held forward, swinging), the hind pair always legs, the middle pair arms at a walk and legs at a run:
+       the blend is o.run, or o.speed between the animal's walk and run speeds */
+    if (type === 'centaur' && legs.length === 6) {
+      const sp = D.speed || { walk: 1, run: 6 }, bl = o.run ? 1 : (o.speed != null ? Math.max(0, Math.min(1, (o.speed - sp.walk) / Math.max(0.01, sp.run - sp.walk))) : 0), wk = mode === 'walk', hold = mode === 'graze' ? -0.2 : -0.85;
+      legs.forEach((L, i) => { const pair = i >> 1, ph0 = (i & 1) ? Math.PI : 0, ww = w * (1 + 0.6 * bl);
+        if (pair === 2) set(L, wk ? 0.5 * Math.sin(ww + ph0) : 0);
+        else if (pair === 0) set(L, hold + (wk ? 0.35 * Math.sin(ww + ph0 + Math.PI * 0.5) : 0.07 * Math.sin(TAU * 0.35 * t + ph0)) + 0.1 * bl * Math.sin(ww + ph0), 0, (i & 1) ? 0.08 : -0.08);
+        else { const armX = -0.7 + (wk ? 0.3 * Math.sin(ww + ph0 + Math.PI * 1.5) : 0.05 * Math.sin(TAU * 0.3 * t + ph0 + 1)), legX = wk ? 0.5 * Math.sin(ww + ph0 + Math.PI) : 0; set(L, armX * (1 - bl) + legX * bl, 0, ((i & 1) ? 0.08 : -0.08) * (1 - bl)); }
+      });
+      if (wk && body) body.position.y += 0.012 * (u.S || 1) * Math.abs(Math.sin(w));
     }
     for (const n of ['earL', 'earR']) if (P[n]) set(P[n], 0, 0, (n === 'earL' ? 1 : -1) * 0.18 * Math.max(0, Math.sin(TAU * 0.23 * t + ph * 3)) ** 8);
   }
