@@ -53,7 +53,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 12 | 152 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 14 | 189 | 53 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 12 | 201 | 61 | Biome kit: see `biomes/README.md`. |
-| [`biomes/throne`](biomes/throne/INDEX.md) | 16 | 278 | 79 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
+| [`biomes/throne`](biomes/throne/INDEX.md) | 14 | 266 | 79 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 14 | 213 | 67 | Biome kit: see `biomes/README.md`. |
 | [`openworld/little-demo`](openworld/little-demo/INDEX.md) | 17 | 157 | 32 | Little Demo: the scale model's eastern desert region at 1:1 (1.3 million km2), streamed: terrain from the scale model's heights, the sedesert, eastabyss, hyperjungle and ebadlands kits' flora placed by climate as cell-seeded instances, settlements marked. |
 

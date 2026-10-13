@@ -33,10 +33,11 @@ system on the shared biome core (`core/biome/`, read through `CORE_BIOME` in eac
 
 Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.html --assert --views "..."`.
 
-**The host shell (2026-10-12).** Every kit but the Throne (next) takes its camera, frame loop and world clock, panel and `window._api` from
+**The host shell (2026-10-12).** Every kit takes its camera, frame loop and world clock, panel and `window._api` from
 `core/host` (`CORE_HOST` in its `build.py`; `core/host/README.md`), and hands it the page from `src/99-host-take.js`
-(`KHOST.take`: the preset views, the inspector's words, the budgets and the kit's own checks). The chrome is the same on
-every page: the bar (views, the kit's own buttons, layers, time, export), stats, the inspector, `?chrome=0` for shots.
+(`KHOST.take`: the preset views, the inspector's words, the budgets and the kit's own checks; each of the Throne's ten
+stations from its own `stations/<name>/99-host-take.js`). The chrome is the same on every page: the bar (views, the
+kit's own buttons, layers, time, export), stats, the inspector, `?chrome=0` for shots.
 
 Worlds that use a biome (`settlements/iziz/`, `settlements/screamers/`, `kits/ancients/`) carry their own vendored copies
 of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-check` reports drift.

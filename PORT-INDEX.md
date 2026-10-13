@@ -55,10 +55,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 12 | 152 | 14 | 0 | 13 | 31 | 95 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 14 | 189 | 1 | 0 | 10 | 34 | 143 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 12 | 201 | 1 | 0 | 13 | 32 | 155 | 5 | biome | yes | yes |
-| [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
+| [`biomes/throne`](biomes/throne/PORT.md) | 14 | 266 | 45 | 22 | 15 | 35 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1952 | 25757 | 4333 (17%) | 585 (2%) | 1068 (4%) | 3217 (12%) | 16553 (64%) | 262 | | | |
+| **all** | 1950 | 25745 | 4333 (17%) | 585 (2%) | 1068 (4%) | 3205 (12%) | 16553 (64%) | 262 | | | |
 
 ## Host-shell copies
 
@@ -80,10 +80,10 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `inspect` | 5 | 5 | 31 |
 | `hover` | 5 | 5 | 18 |
 | `polygon` | 4 | 4 | 19 |
-| `host-camera` | 3 | 3 | 31 |
-| `host-probe` | 3 | 3 | 41 |
-| `host-polytool` | 2 | 2 | 12 |
+| `host-camera` | 2 | 2 | 22 |
+| `host-probe` | 2 | 2 | 32 |
 | `sheetui` | 2 | 1 | 8 |
 | `polytool` | 2 | 2 | 10 |
+| `host-polytool` | 1 | 1 | 6 |
 | `walk` | 1 | 1 | 19 |
 | `underview` | 1 | 1 | 3 |

@@ -1,26 +1,70 @@
-// ================================================================= HOST — probe (window._api)
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
+// 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
+// kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
+// the presets are FOUND on the map rather than typed: the features where the data put them, and a tree preset frames
+// the nearest built hero of its species
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const SPI=k=>THRONE.SPECIES.indexOf(THRONE.byKey[k]);
+const coneOf=k=>CONES.find(c=>c.key===k),flowOf=k=>FLOWS.flows.find(f=>f.key===k);
+// where the plume's edge crosses a line of latitude (z)
+const seamX=z=>{let bx=0,bd=9;for(let x=-2400;x<=2400;x+=20){const d=Math.abs(plumeAt(x,z)-.5);if(d<bd){bd=d;bx=x;}}return bx;};
+function nearTree(key,x,z,minH){return THRONE.nearestTree(SPI(key),x,z,minH)||THRONE.nearestTree(SPI(key),x,z)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.6:ty),T.z];}
+// from a point, looking a given way across the ground
+const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
+const NC=coneOf('newcone'),SN=coneOf('sentinel'),FN=flowOf('new'),SK=TUBE.sky[Math.floor(TUBE.sky.length/2)]||{x:0,z:0,r:12,d:10};
+const FNp=FN&&FN.path?FN.path[Math.floor(FN.path.length*.45)]:{x:NC.x,z:NC.z+400};
+const s0=seamX(200),G0=GULLY[0];
+const VMODE={};
+const VIEWS={
+ 'The plume\'s edge':across(s0-420,200,-.05,900,3.2,6),
+ 'The rift from above':look(-1600,-2300,700,700,900,0),
+ 'The new cone, steaming':across(NC.x-420,NC.z+260,-.55,480,6,40),
+ 'The new flow (two years old)':across(FNp.x-30,FNp.z-40,Math.atan2(FN.path[FN.path.length-1].z-FNp.z,FN.path[FN.path.length-1].x-FNp.x),240,3,2),
+ 'The acid lake':(function(){const x=PIT.x+DN[0]*PIT.r*1.35+PERP[0]*PIT.r*.3,z=PIT.z+DN[1]*PIT.r*1.35+PERP[1]*PIT.r*.3;return[x,gh(x,z,22),z,PIT.x-DN[0]*PIT.r*.2,PIT.lake,PIT.z-DN[1]*PIT.r*.2];})(),
+ 'The hot pools':[POOLS[0].x-40,POOLL[0]+9,POOLS[0].z-30,POOLS[1].x,POOLL[1]+1,POOLS[1].z],
+ 'Bone bells in the steam':atTree(nearTree('bonebell',NC.x,NC.z),30,2.6,4,.5),
+ 'A wild Ranj tree':atTree(nearTree('spice',s0,0,9),11,2.2,2.5,.45),
+ 'Gill-parasols on the seam':atTree(nearTree('gillparasol',s0,200,14),40,3.0,4,.6),
+ 'Under the plume: pagoda caps':atTree(nearTree('pagoda',1700,300,14),38,2.8,3,.55),
+ 'Drizzle trumpets':atTree(nearTree('drizzle',1500,600),16,2.4,2.5,.6),
+ 'Puffball rope-trees':atTree(nearTree('ropepuff',1600,-300),20,3.4,3,.55),
+ 'Stilt parasols in a gully':atTree(nearTree('stilt',G0.x,G0.z,16),30,1.0,3,.6),
+ 'The shoulder: ash pines and trumpet trees':atTree(nearTree('ashpine',-1500,-600,20),46,.4,4,.5),
+ 'Star aloes on a young flow':atTree(nearTree('staraloe',-500,800),14,2.0,2.4,.5),
+ 'A skylight into the tube':[SK.x+SK.r*1.6,gh(SK.x,SK.z,SK.d+6),SK.z+SK.r*.8,SK.x,gh(SK.x,SK.z,1),SK.z],
+ 'Night: lamp caps under the plume':atTree(nearTree('lampcap',1500,400),5,2.0,1.2,.4),
+ 'Night: under the plume':across(1300,-200,1.3,600,5,2),
+ 'From afar':look(-1800,2600,260,400,-1200,60),
+};
+VMODE['Night: lamp caps under the plume']='night';VMODE['Night: under the plume']='night';
+const goLight=k=>{setLightMode(VMODE[k]||'day');};   // the host's onView: the preset's light (and weather); the host sets the camera
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ // the classification and the tags (README.md, DEV TOOLS)
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&THRONE.plantOfItem(item);
+ const S=best&&best.key&&THRONE.byKey[best.key],tg=S?S.tags:(PLT?PLT.tags:null);
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab;
+ const cls=S||isItem?'flora · the Throne'+(tg&&tg.origin==='native'?' · Krator\'s own (native)':tg&&tg.origin==='krator'?' · a crater standby':tg&&tg.origin==='earth'?' · Earth\'s descendant':''):'terrain / water';
+ // the ground's own history at the point: the flow under it and its age; how far under the plume
+ const fl=THRONE.flowAt(p.x,p.z),gr=fl?fl.name+', '+ageLabel(fl.age)+' old':'the shield\'s old ground (no flow in the record)';
+ return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · '+tg.origin+' · lives: '+tg.plume+' · Koppen '+tg.koppen.join(' '):'')+
+  (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
+  '\nground: '+gr+' · plume '+plumeAt(p.x,p.z).toFixed(2)+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
  showcase:{tris:20000000,calls:140},   // a ceiling, not a target: measure and record it in KNOWN_ISSUES
  cls:{pass:16000000,host:900000},
  type:{'throne/trees':'pass','throne/floor':'pass','host':'host'},
 };
-function _probePoints(){
- const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
- scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
-  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
-  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
- return pts;}
-function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
- REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
- return REG.map((r,i)=>({name:r.name,n:n[i]}));}
-function nanSweep(){const bad=[];let badInst=0;
- scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
-  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
-  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
- return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
-function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
@@ -83,12 +127,23 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('a tree on the pit crater\'s wall',HCHK.cliffs([{x:bx,z:bz,sp:0}]));}
  add('a camera in the acid lake',HCHK.camerasOut([{view:'under',x:PIT.x,y:PIT.floor-5,z:PIT.z}]));
  return R;}
-window._api={BUDGET,REG,hostChecks,hostNegatives,
+// ---------------------------------------------------------------- the page, handed to the host
+const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',title:'Night (N): Krator\'s own life glows',on:()=>setLightMode('night')}];
+// the tree variants (VARIANTS) follow the eye, after the camera is placed
+KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.take({build:'throne',title:'Krator biome — the Throne',
+ hint:"The Throne, station 1: the plume's edge on the south-east shoulder (~1.9 km). A rift of cinder cones, a pit crater's acid lake and steaming vents; lava flows of every age; the shoulder's familiar trees giving way, under the plume, to Krator's own life (ideal type) · N night",
+ scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
- typeStats,regOccupancy,nanSweep,setLightMode,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),go:k=>go(k),
+ setLightMode,
  biome:()=>window._biome,
  flows:()=>({flows:FLOWS.flows.map(f=>({key:f.key,age:f.age,cells:f.cells,steps:f.path.length})),shares:FLOWS.shares()}),
  // the climate at a point, for the probe and for --eval: the fields, the flow and the kit's zones
- at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),age:FLOWS.ageAt(x,z),thick:FLOWS.thickAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=THRONE.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
-window._registered=REG.length;
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),age:FLOWS.ageAt(x,z),thick:FLOWS.thickAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=THRONE.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});

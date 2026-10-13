@@ -23,4 +23,4 @@ ATMOS.weather({mode:'ashfall',ash:true,apply:W=>{const a=W.ash||0,f=W.flash||0,n
 // a few fog banks in the hollows between the dunes, up only in fog
 (function(){reseed(8903);const pts=[],L=BIO.LOD();for(let k=0;k<3000&&pts.length<260;k++){const x=rr(-2400,2400),z=rr(-2400,2400);if(BIO.lodD(x,z)>L.mid)continue;pts.push([x,terrainH(x,z)+rr(1,6),z]);}ATMOS.fogBank(pts);})();
 ATMOS.finish();
-ATMOS.weatherUI(document.getElementById('ui'));
+// the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take
