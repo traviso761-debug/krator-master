@@ -955,19 +955,27 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 	var hip := _gp(_hips).origin
 	for k in range(1, x.size()):
 		var p: Vector3 = x[k]
+		var up: Vector3 = x[k - 1]
 		for cp in W:
 			var ab: Vector3 = cp["b"] - cp["a"]
 			var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
 			var q: Vector3 = cp["a"] + ab * t
 			var dd := p.distance_to(q)
 			if dd < cp["r"] and dd > 1e-6:
+				# across a limb nearer level than upright (a seated thigh, a raised arm), out on the side of the point
+				# above, so the chain drapes over it; along an upright one, out the side away from the body's axis
+				# (collide() in 50-figure.js)
 				var d := p - q
-				var o := Vector3(q.x - hip.x, 0.0, q.z - hip.z)
-				if o.length_squared() > 1e-8:
+				var ax := ab.normalized()
+				var o := (up - q) - ax * (up - q).dot(ax)
+				if absf(ax.y) < 0.7 and o.length() > 1e-4:
 					o = o.normalized()
-					var sd := d.dot(o)
-					if sd < 0.0:
-						d -= 2.0 * sd * o
+				else:
+					o = Vector3(q.x - hip.x, 0.0, q.z - hip.z)
+					o = o.normalized() if o.length_squared() > 1e-8 else Vector3.ZERO
+				var sd := d.dot(o)
+				if sd < 0.0:
+					d -= 2.0 * sd * o
 				p = q + d.normalized() * float(cp["r"])
 		if p.y < ground:
 			p.y = ground
@@ -1039,12 +1047,19 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("metal", m2.metallic)
 	var loose := _is_loose(part)
 	pm.set_shader_parameter("kcL", 1.0 if loose else 0.0)
-	# a loose top pushes 1.2 cm further, so a robe's hem lies over the skirt it covers
-	pm.set_shader_parameter("kcP", 0.012 if loose and part["slot"] == "torso" else 0.0)
 	var top = null
+	var legs = null
 	for x in kit["items"]:
 		if x["id"] == rec.get("armour", {}).get("torso"):
 			top = x
+		if x["id"] == rec.get("armour", {}).get("legs"):
+			legs = x
+	# a loose top pushes 1.2 cm further, so a robe's hem lies over the skirt it covers, and 2 cm more over trousers
+	# (PAD_TOP, PAD_OVER in 50-figure.js)
+	var pad := 0.0
+	if loose and part["slot"] == "torso":
+		pad = 0.012 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
+	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
 	_push_mats.append(pm)
 	return pm

@@ -1743,8 +1743,10 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         base_ = 'indigo' if sex == 'm' else 'coral'
         bou = P(base_, 0.03, [B('top', 0.0, 0.02, 'solid', 'yuniyellow'), B('top', 0.04, 0.26, 'diamonds', 'yuniyellow', base_, 0.07),
                               B('top', 0.27, 0.285, 'solid', 'yuniyellow'), B('bottom', 0.0, 0.02, 'solid', 'yuniyellow'), B('bottom', 0.025, 0.07, 'fret', 'yuniyellow', base_, 0.07)])
-        # the grand boubou: one great sheet over the arms, falling from the shoulders to the shins
-        return [torso_tube(gid, TOP + 0.005, ANKLE + 0.14, 0.03, bou, n=48, hang_from=SHOULDER - 0.04, flare=0.14, group_below=CROTCH + 0.02,
+        # the grand boubou: one great sheet over the arms, falling from the shoulders to the shins. It hangs free from
+        # the shoulders at the sides (over the arms) but from the waist at the front and back, as a robe does: a chain
+        # from the chest would pass through a seated lap rather than lie on it
+        return [torso_tube(gid, TOP + 0.005, ANKLE + 0.14, 0.03, bou, n=48, hang_from=WAIST - 0.03, hang_side=SHOULDER - 0.04, flare=0.14, group_below=CROTCH + 0.02,
                            over_arms=True, stiff=0.2, layer=2),
                 torso_tube(gid + '_under', TOP, HIPS[2] - 0.1, 0.012, P('sahel', 0.04), hull_from=CHEST + 0.02)] + \
             sleeves(gid, 'wrist', 0.014, P('sahel', 0.04, [B('bottom', 0.0, 0.02, 'solid', base_)]), ease_end=0.02, rows=8)

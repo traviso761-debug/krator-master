@@ -21,7 +21,7 @@ uniform float metal = 0.0;
 uniform vec4 kcA[10];
 uniform vec4 kcB[10];
 uniform vec3 kcH;
-// 1.2 cm more for a loose top: a robe's hem lies over the skirt it covers
+// 1.2 cm more for a loose top (a robe's hem lies over the skirt it covers), 3.2 cm over trousers
 uniform float kcP = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;

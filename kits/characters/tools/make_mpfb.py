@@ -21,6 +21,7 @@ from PIL import Image
 from scipy.spatial import cKDTree
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import decimate
 import glbio
 import make_pieces as mp
 
@@ -36,6 +37,9 @@ TINT_MEAN = {'skin': 0.80, 'hair': 0.72, 'eye': 0.5}
 # items exported but left out: they render broken on this body (the same asset can fit the other one)
 SKIP = {'male': ('culturalibre_hair_13', 'half_bald', 'punkduck_alpha7_long2'), 'female': ('elvs_wavy_bob',)}
 RENAME = {'culturalibre_hair_13': 'Short crop'}     # a label the export got wrong (mpfb_build.py has it right now)
+# items far denser than they look (twice the body's triangles in a pair of shoes): kept to this share of their
+# triangles by decimate.py, which keeps a subset of their own vertices, so the morph deltas still match
+DECIMATE = {'grinsegold_female_pirate_boots': 0.1, 'toigo_flats': 0.1}
 EYES = 'low-poly'               # the eye mesh's material (MakeHuman's low-poly eyes)
 SKIN_PARTS = ('body', 'nipple', 'lips', 'fingernails', 'toenails', 'ears')     # the base's MakeSkin slots on one texture
 
@@ -332,12 +336,46 @@ def skirt_weights(j, b, y0, band=0.12):
             b[ow:ow + WW.nbytes] = WW.tobytes()
 
 
-def cover_weights(P, V, where, spec, JJ, WW):
+def take_weights(JJ, WW, gi, src, f):
+    """vertex gi's weights moved toward vertex src's by f (the four heaviest kept, normalized)"""
+    mix = {}
+    for jj, ww in zip(JJ[gi], WW[gi]):
+        mix[int(jj)] = mix.get(int(jj), 0) + ww * (1 - f)
+    for jj, ww in zip(JJ[src], WW[src]):
+        mix[int(jj)] = mix.get(int(jj), 0) + ww * f
+    top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
+    tot = sum(x for _, x in top) or 1.0
+    top += [(0, 0.0)] * (4 - len(top))
+    JJ[gi] = [q for q, _ in top]
+    WW[gi] = [x / tot for _, x in top]
+
+
+def cover_weights(P, V, where, spec, JJ, WW, names=()):
     """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1): each of its vertices the outer
     part covers takes the nearest outer vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm
-    from it, so where the two overlap they move as one and the under-tier cannot swing through"""
+    from it, so where the two overlap they move as one and the under-tier cannot swing through.
+    A part that does not hang (the grand boubou's under-tunic, a robe's body under its mantle) under one that does
+    over the arms (layer 2): each of its vertices inside the outer part and within 8 cm of it takes the nearest outer
+    vertex's weights (in full within 5 cm), so a seated or crouching body cannot carry it out through the sheet the
+    chains hold. Sleeves (weighted to the arms) and what lies outside the outer part (a belt, a collar) keep theirs"""
     layer = [pt.get('layer', 0) for pt in spec['parts']]
     part = np.array([where.get(int(v), (-1,))[0] for v in V])
+    arm = [any(s in n for s in ('Arm', 'Hand')) for n in names]
+    free = [gi for gi in np.nonzero(part == -1)[0]
+            if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm) and arm[int(jj)]) < 0.5]
+    rad = np.hypot(P[:, 0], P[:, 2])
+    for po in [q for q in range(len(layer)) if layer[q] == 2]:
+        O = np.nonzero(part == po)[0]
+        if not len(O):
+            continue
+        for gi in free:
+            d = np.linalg.norm(P[O] - P[gi], axis=1)
+            k = int(np.argmin(d))
+            f = float(np.clip((0.08 - d[k]) / 0.03, 0, 1))
+            out = np.array([P[gi, 0], 0, P[gi, 2]]) / max(rad[gi], 1e-6)
+            # covered: the outer vertex lies outward of it, not off to one side (a belt across an open coat's gap)
+            if f > 0 and rad[gi] < rad[O[k]] - 0.005 and (P[O[k]] - P[gi]) @ out > 0.6 * d[k]:
+                take_weights(JJ, WW, gi, O[k], f)
     for po in [q for q in range(len(layer)) if layer[q] == 1]:
         O = np.nonzero(part == po)[0]
         if not len(O):
@@ -348,18 +386,8 @@ def cover_weights(P, V, where, spec, JJ, WW):
                 d = np.linalg.norm(P[O] - P[gi], axis=1)
                 k = int(np.argmin(d))
                 f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
-                if f <= 0:
-                    continue
-                mix = {}
-                for jj, ww in zip(JJ[gi], WW[gi]):
-                    mix[int(jj)] = mix.get(int(jj), 0) + ww * (1 - f)
-                for jj, ww in zip(JJ[O[k]], WW[O[k]]):
-                    mix[int(jj)] = mix.get(int(jj), 0) + ww * f
-                top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
-                tot = sum(x for _, x in top) or 1.0
-                top += [(0, 0.0)] * (4 - len(top))
-                JJ[gi] = [q for q, _ in top]
-                WW[gi] = [x / tot for _, x in top]
+                if f > 0:
+                    take_weights(JJ, WW, gi, O[k], f)
 
 
 def cloth_bones(j, b, item, spec, blobs):
@@ -479,7 +507,7 @@ def cloth_bones(j, b, item, spec, blobs):
         top += [(0, 0.0)] * (4 - len(top))
         JJ[gi] = [q for q, _ in top]
         WW[gi] = [x / tot for _, x in top]
-    cover_weights(P, V, where, spec, JJ, WW)
+    cover_weights(P, V, where, spec, JJ, WW, names)
     big = JJ.max() > 255
     jt = np.uint16 if big else glbio.CT[aj['componentType']]
     if big:
@@ -869,6 +897,8 @@ def main():
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
                      skirt=crotch if hangs(it) else None, cloth=cl)
         roles.update(r)
+        if it['id'] in DECIMATE:
+            print('%-8s decimated %s: %d -> %d triangles' % ((name, it['id']) + decimate.decimate_glb(os.path.join(pieces, it['id'] + '.glb'), DECIMATE[it['id']])))
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']

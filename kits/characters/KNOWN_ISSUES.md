@@ -33,7 +33,10 @@
   cloth: no wrinkles, no self-collision, and layers are kept apart only at the chain points (a cape over a hem over
   a skirt, README). Between chains the cloth is interpolated; the GPU push (README, Clipping) keeps the legs and arms
   inside a loose garment, but it works on capsules, so a heavy thigh's front can still graze a tight skirt's top and
-  a shoulder (no capsule) can show through a mantle in a full overhead reach.
+  a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
+  the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
+  whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
+  can still show one through another for a frame or two where the chains swing.
   The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
 - **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
   and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex
@@ -47,7 +50,8 @@
   does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
   held overhead.
 - **A people's clothes are tagged with its culture** (`culture` in the kit, by prefix: Voth `chichani`, Izani `izani`, Beast Riders, Hykkousoi, Dalab, Yuni): a random
-  stranger of another people never draws them, but the editor's pickers still offer every item to every body.
+  stranger of another people never draws them. The Cosmetic Lab's pickers show one wardrobe at a time (a people's, the
+  library's, or all), but nothing stops a Voth body in Yuni clothes: that is the editor's freedom, not a rule.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below, and arms raised high pull a sweater's front off bare skin. The waistband tuck
@@ -55,8 +59,9 @@
 - **Download size.** Pieces are served gzipped as base64 text (the page unzips them with the browser's
   DecompressionStream), one file per item (its GLB and its morph deltas), fetched per item as needed. A published
   artifact holds at most 512 files: both bodies' items now take about 230 of them, so there is room for the remaining
-  peoples but not for a third body without bundling further. Dense shoes (flats, pirate boots)
-  are still the heaviest geometry; decimating them in Blender before the morph capture is the next saving.
+  peoples but not for a third body without bundling further. The two densest shoes (flats, pirate boots) are cut to a
+  tenth of their triangles (`tools/decimate.py`); the heaviest pieces left are the braided and dreadlocked hair and
+  the full beards, whose strand cards a decimation would tear.
 - **The peoples are mostly proposals.** Only the Chichani and the Beast Riders come from the owner; the others
   follow LORE.md's real-world references.
 - **Ancestry is MakeHuman's three reference sets** (African, Asian, Caucasian). It moves face and build only; the

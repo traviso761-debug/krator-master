@@ -88,7 +88,7 @@ function KCharFigure(body, sliders, load){
       if(cl) cl.meshes.push(m);
       if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
         var it0 = itemByKey[part.key] || {};
-        pushOut(m.material, it0.loose && part.slot === 'torso' ? 0.012 : 0, !!it0.loose, part.slot === 'legs');
+        m.userData.pad = pushOut(m.material, it0.loose && part.slot === 'torso' ? PAD_TOP : 0, !!it0.loose, part.slot === 'legs');
       }
       self.inner.add(m);
       live[id] = m;
@@ -241,6 +241,9 @@ function KCharFigure(body, sliders, load){
           var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
+          // trousers (legs, not loose) under a loose top: the top's push clears them too (PAD_OVER more)
+          var legs = rec.armour && rec.armour.legs && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.legs; })[0];
+          Object.keys(want).forEach(function(k){ var u = want[k].userData.pad; if(u && u.base) u.value = u.base + (legs && !legs.loose ? PAD_OVER : 0); });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
@@ -615,21 +618,29 @@ function KCharFigure(body, sliders, load){
     });
   }
   // out of the capsules and above the floor (last: a point may stretch its bone a little rather than sink in)
-  var hipW = new THREE.Vector3(), cO = new THREE.Vector3();
+  var hipW = new THREE.Vector3(), cO = new THREE.Vector3(), cAx = new THREE.Vector3();
   function collide(ch, W){
     bones[byName.Hips].getWorldPosition(hipW);
     for(var k = 1; k < ch.x.length; k++){
-      var x = ch.x[k];
+      var x = ch.x[k], up = ch.x[k - 1];
       W.forEach(function(cp){
         cV.subVectors(cp.b, cp.a);
         var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+        cAx.copy(cV).normalize();
         cV2.copy(cp.a).addScaledVector(cV, t);
         var d = x.distanceTo(cV2);
         if(d < cp.r && d > 1e-6){
-          // out the side away from the body's axis: cloth never ends up behind a limb
+          // across a limb that lies across the cloth's fall (a seated thigh, a raised arm: nearer level than upright),
+          // out on the side of the point above, so the chain drapes over it rather than passing under; along an
+          // upright limb, out the side away from the body's axis, so cloth never ends up behind a leg in a stride
           cV.subVectors(x, cV2);
-          cO.set(cV2.x - hipW.x, 0, cV2.z - hipW.z);
-          if(cO.lengthSq() > 1e-8){ cO.normalize(); var cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+          cO.subVectors(up, cV2); cO.addScaledVector(cAx, -cO.dot(cAx));
+          var ol = Math.abs(cAx.y) < 0.7 ? cO.length() : 0, cs = 0;
+          if(ol > 1e-4){ cO.divideScalar(ol); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+          if(ol <= 1e-4){
+            cO.set(cV2.x - hipW.x, 0, cV2.z - hipW.z);
+            if(cO.lengthSq() > 1e-8){ cO.normalize(); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+          }
           x.copy(cV2).addScaledVector(cV.normalize(), cp.r);
         }
       });
@@ -672,17 +683,18 @@ function KCharFigure(body, sliders, load){
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
      The capsules (legCaps: thighs, shins, feet, and hard ones for the arms, so a raised arm lifts a mantle's hem) are
      the body's, in the figure's inner space, padded by the cloth's
-     thickness, and a torso garment by 1.2 cm more, so a robe's hem lies over the skirt it covers. The push is a soft
+     thickness, and a torso garment by 1.2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and 2 cm more again over
+     trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a soft
      shell, not a projection: a vertex d from the bone within r + 4 cm lands at r + d * 4 cm / (r + 4 cm), so two
      tiers of one skirt keep their order instead of meeting on one surface */
   var pushU = { kcA:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) },
                 kcB:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025;
+                kcT:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.012, PAD_OVER = 0.02;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
      toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose */
   function pushOut(mat, pad, loose, legs){
-    var prev = mat.onBeforeCompile, padU = { value:pad || 0 }, looseU = { value:loose ? 1 : 0 };
+    var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
       sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
@@ -705,6 +717,7 @@ function KCharFigure(body, sliders, load){
     };
     mat.customProgramCacheKey = function(){ return 'kchar-push'; };
     mat.needsUpdate = true;
+    return padU;
   }
   var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot'],
               ['LeftFoot', 'LeftToeBase'], ['RightFoot', 'RightToeBase'], ['LeftArm', 'LeftForeArm'], ['RightArm', 'RightForeArm'],

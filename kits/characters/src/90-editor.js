@@ -254,8 +254,23 @@
     row.querySelector('input').addEventListener('input', function(e){ set(e.target.value); });
     box.appendChild(row);
   }
+  // the clothing pickers show one wardrobe: null every item, 'library' MakeHuman's own (no culture), or a people's
+  // (kit item culture); the item worn stays offered whatever the wardrobe
+  var wardrobe = null;
+  function inWardrobe(x){ return !wardrobe || (wardrobe === 'library' ? !x.culture : x.culture === wardrobe); }
+  function wardrobeChips(kit, gear){
+    var have = {}; kit.items.forEach(function(x){ if(x.culture) have[x.culture] = true; });
+    var list = [{ id:null, name:'All' }, { id:'library', name:'Library' }].concat((D.peoples || []).filter(function(p){ return have[p.id]; })
+      .map(function(p){ return { id:p.id, name:p.name }; }));
+    var cur = list.filter(function(x){ return x.id === wardrobe; })[0];
+    var s = section(gear, 'Wardrobe', cur ? cur.name : 'All');
+    chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-wardrobe-' + (x.id || 'all') }; }), wardrobe, function(id){
+      wardrobe = id; buildPanel();
+    }, true);
+  }
   function itemChips(page, kit, slot, title){
-    var list = kit.items.filter(function(x){ return x.slot === slot; });
+    var worn = (slot === 'hair' || slot === 'beard') ? rec[slot] : rec.armour[slot];
+    var list = kit.items.filter(function(x){ return x.slot === slot && (slot === 'hair' || slot === 'beard' || x.id === worn || inWardrobe(x)); });
     if(!list.length) return null;
     var cur = (slot === 'hair' || slot === 'beard') ? rec[slot] : rec.armour[slot];
     var it = list.filter(function(x){ return x.id === cur; })[0];
@@ -277,7 +292,7 @@
     var sex = kit.body.replace(/^mpfb_/, ''), list = [];
     (D.peoples || []).forEach(function(p){
       var o = p.outfits && p.outfits[sex];
-      if(!o) return;
+      if(!o || (wardrobe && wardrobe !== p.id)) return;
       (p.tiers || Object.keys(o).map(function(k){ return [k]; })).forEach(function(t){
         if(o[t[0]]) list.push({ id:p.id + '.' + t[0], name:p.name + ' ' + ((p.tier_labels || {})[t[0]] || t[0]).toLowerCase(), set:o[t[0]] });
       });
@@ -293,6 +308,7 @@
     }, true);
   }
   function buildMpfb(kit, gear, headp){
+    wardrobeChips(kit, gear);
     outfitChips(kit, gear);
     ['head', 'torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
     var gh = document.createElement('p'); gh.className = 'hint';
@@ -303,7 +319,10 @@
     var ps = section(headp, 'People', cur ? cur.name : 'Any');
     chips(ps, [{ id:null, name:'Any', domId:'chip-people-any' }].concat((D.peoples || []).map(function(p){
       return { id:p.id, name:p.name, domId:'chip-people-' + p.id };
-    })), rec.people || null, function(id){ rollLook(PEOPLE[id] || null); apply(); buildPanel(); note(id ? 'A stranger of the ' + PEOPLE[id].name + '. Pick them again for another.' : 'A stranger of no people in particular.'); }, true);
+    })), rec.people || null, function(id){
+      rollLook(PEOPLE[id] || null);
+      if(id && kit.items.some(function(x){ return x.culture === id; })) wardrobe = id; else if(!id) wardrobe = null;
+      apply(); buildPanel(); note(id ? 'A stranger of the ' + PEOPLE[id].name + '. Pick them again for another.' : 'A stranger of no people in particular.'); }, true);
     var pn = document.createElement('p'); pn.className = 'hint';
     pn.textContent = cur ? cur.note + '. Picking a people draws a new face, body, skin and hair from its range; the sliders below can then take it anywhere.' :
       'Pick a people to draw a stranger from its range of skin, hair, ancestry and build (data/peoples.json).';
