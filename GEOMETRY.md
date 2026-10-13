@@ -18,3 +18,11 @@
 | `biomes/shighlands/dist/shighlands.html` | 96 | 19.03 M |  |  | 19.03 M |  | 69 | 38 | 404 k | 32 |
 | `biomes/swbay/dist/swbay.html` | 172 | 5.70 M |  |  | 10.82 M |  | 676 | 515 | 540 k | 91 |
 | `biomes/swlowlands/dist/swlowlands.html` | 299 | 6.70 M |  |  | 12.16 M |  | 1008 | 798 | 855 k | 57 |
+| `biomes/throne/dist/throne-ash.html` | 130 | 17.91 M |  |  | 17.89 M |  | 132 | 118 | 278 k | 130 |
+| `biomes/throne/dist/throne-caldera.html` | 19 | 5.55 M |  |  | 5.50 M |  | 17 | 6 | 49 k | 16 |
+| `biomes/throne/dist/throne-cloud.html` | 75 | 22.53 M |  |  | 22.55 M |  | 84 | 56 | 1.71 M | 77 |
+| `biomes/throne/dist/throne-frontier.html` | 92 | 7.67 M |  |  | 7.69 M |  | 95 | 69 | 443 k | 89 |
+| `biomes/throne/dist/throne-glacier.html` | 42 | 6.31 M |  |  | 7.05 M |  | 51 | 31 | 151 k | 45 |
+| `biomes/throne/dist/throne-isle.html` | 121 | 16.94 M |  |  | 17.31 M |  | 126 | 87 | 1.23 M | 106 |
+| `biomes/throne/dist/throne-kipuka.html` | 101 | 9.17 M |  |  | 9.19 M |  | 104 | 81 | 725 k | 96 |
+| `biomes/throne/dist/throne-savanna.html` | 73 | 17.97 M |  |  | 17.99 M |  | 84 | 58 | 786 k | 67 |
