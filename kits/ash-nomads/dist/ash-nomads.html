@@ -7595,11 +7595,11 @@ const FA_AS_RUN = [{ base: 0x6a6052, band: 0xb07a30, belly: 0xb8ab92, crest: 0xc
   { base: 0x8a7c68, band: 0x5a4a38, belly: 0xc8bea8, crest: 0xa08050 }];
 ANIMAL({
   key: 'ash-runner', name: 'Ash runner', group: 'ash',
-  tags: { biomes: ['swbay', 'crater-drylands'], koppen: ['BSh', 'BSk', 'BWh'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+  tags: { biomes: ['swbay', 'crater-drylands', 'plumelands'], koppen: ['BSh', 'BSk', 'BWh'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
     domestic: true, herdedBy: ['ashnomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
     habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   size: { length: 2.1, height: 0.75 },
-  source: [{ build: 'kits/fauna', file: 'krator-fauna-ash.js', note: 'first drawn here (2026-10-07) for the Ash Nomads (kits/catalog krator-master-furniture-ashnomad.js: "a pig-sized six-legged runner (hides, eggs, meat)"); no ash-plain biome yet: swbay and crater-drylands stand in' }],
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-ash.js', note: 'first drawn here (2026-10-07) for the Ash Nomads (kits/catalog krator-master-furniture-ashnomad.js: "a pig-sized six-legged runner (hides, eggs, meat)"); the ash plain is the plumelands (added 2026-10-13); swbay and crater-drylands stay as its other ranges' }],
   traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
   yields: { meat: { amount: 32, note: 'dressed: dark, lean; smoked over the dung fire' },
     eggs: { amount: 30, note: 'two or three clutches a year in a scrape of warm ash; the leathery eggs keep for weeks' },
