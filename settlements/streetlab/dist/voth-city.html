@@ -48203,7 +48203,46 @@ var TUNE = {
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600,
-              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, CONTEMPLATE: 0xb070c0, REST: 0x50607a, other: 0x8a7a6a } },
+    /* needs, happiness, efficiency, loyalty (phase C session 3; SIM-ROADMAP.md 1.4, 2.4 items 4 and 5; core/simulation
+       77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
+       `byTrade`), falls by the activity's `fill` an hour (at home, sitting, resting or with guests, there is water; asleep,
+       hunger and thirst come slower; every workplace has a drink, a labourer's thirst outruns it); WORK adds `work` times the trade's `labour` (heavy labour:
+       thirst, some hunger; the slaves `slaveLabour`). Material waits for phase D's items (rate 0). In the hours the
+       schedule gives to one of `free`, the citizen does what its meters ask (fills times meters times weights) that an
+       open place within reach offers, the scheduled one favoured by `keep`, held `dwell` minutes (and up to `jitter` more,
+       by the citizen, so the choices do not all fall due in one minute). A labourer whose
+       thirst reaches `interrupt.drink.at` at work walks to the nearest drink (a well) until it is down to `until`
+       (at most `max` minutes, not again for `cool`). Happiness: 100 less the weighted mean pain of the meters
+       (pain = 100 (m/100)^`pain`), a trait (dealt by hash, `traits`) weighing a need more or less; its band gives the
+       efficiency at work (`bands`); loyalty drifts toward it over `loyalty.tau` minutes. The meters start at a hashed
+       `init` [lo, hi] each */
+    needs: {
+      list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
+      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0 },
+      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 70, drink: 35, socialize: 3 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
+              SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
+              CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 } },
+      work: { drink: 4, eat: 1.5, relax: 1 },
+      labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
+                'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, 'industrial workers': 0.7,
+                'smiths and craftsmen': 0.6, tanners: 0.7, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
+      slaveLabour: 1,
+      byTrade: { soldiers: { material: 0.5 }, 'Ordinator garrison': { material: 0.5, contemplate: 1.3 }, 'town guard': { material: 0.7 },
+                 'monks and lay brothers (chapel, fields, coops)': { contemplate: 2, socialize: 0.6, material: 0.5 }, 'temple priests and servants': { contemplate: 1.5 },
+                 'shrine keepers': { contemplate: 1.5 } },
+      weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
+      traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
+                ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
+      free: ['SOCIALIZE', 'RELAX', 'DRINK', 'CONTEMPLATE', 'REST', 'IDLE'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
+      interrupt: { drink: { at: 75, act: 'DRINK', until: 25, max: 40, cool: 90 } },
+      bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
+      loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
+      /* the outdoor work in the country keeps a water barrel (`barrel`: a drink for every so many posts), the slaves'
+         quarters their rations and water */
+      barrel: { kinds: ['field', 'mine', 'quarry', 'mushfarm'], per: 2 },
+      pain: 1.5, init: { eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+    }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
@@ -52988,7 +53027,8 @@ SL.pass13 = function () {
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
-    var m=minute==null?SIM.minute():minute, s=schedOf(a, m); return s ? s[hourOf(m)] : 'IDLE';
+    var m=minute==null?SIM.minute():minute, s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
+    return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
   function placeXZ(P){ return [P.x, P.z]; }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? placeXZ(H) : (a.at || [0,0]); }
@@ -53011,8 +53051,9 @@ SL.pass13 = function () {
     minute = minute==null ? SIM.minute() : minute; t = t==null ? SIM.time() : t;
     var hour=hourOf(minute), want=SIM.desire(a, minute), R=SIM.R.role[a.role];
     var chain=[want].concat((R.fallback&&R.fallback[want]) ? [R.fallback[want]] : []).concat(SIM.FALLBACK);
-    var from=SIM.pose(a, t, { cheap:true }), P=null, act=want, task=null;
+    var from=SIM.pose(a, t, { cheap:true }), P=null, act=want, task=null, had=a.task;
     a.bad = a.bad || {};
+    if(SIM.NEED) SIM.needsOf(a, minute);                                        /* the meters to now, on what it was doing */
     for(var i=0; i<chain.length && !task; i++){ act=chain[i];
       /* a place the actor cannot reach is struck off for it and the next one tried (three at most per activity) */
       for(var tries=0; tries<3; tries++){
@@ -53025,8 +53066,11 @@ SL.pass13 = function () {
         if(!T.failed){ task=T; break; }
         SIM.release(a); a.bad[P.id]=1; a.mem[act]=null; P=null; } }
     a.wanted = want;
-    if(!task){ a.activity=act; a.task=a.task||null; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
+    if(!task){ a.activity=act; a.task=a.task||null; if(SIM.NEED) a.ndFrom=minute; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
     a.mem[act]=P.id; a.activity=act; a.place=P.id; a.task=task; a.since=minute;
+    if(SIM.NEED && task!==had) SIM.needsDecided(a, minute, task);
+    if(SIM.NEED && act!==want && a.fr===want){ a.fr=act; a.wanted=act; }       /* a free-time choice no place took: it settles for what it got */
+    if(SIM.NEED && act!==want && a.intr && a.intr.act===want){ a.intrCool=minute+a.intr.cool; a.intr=null; a.wanted=null; }   /* an interrupt with nowhere to go: back to work next minute */
     SIM.logEvent('decide', { actor:a.id, act:act, place:P.id });
     return P;
   };
@@ -53204,8 +53248,8 @@ SL.pass13 = function () {
   /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; SIM.decide(a, minute, t);
-      if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; } });
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); SIM.decide(a, minute, t);
+      if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -53542,6 +53586,141 @@ SL.pass13 = function () {
     return null;
   };
   SIM.stopsServing = function(stop){ return SIM.all('transport').filter(function(R){ return R.stops.indexOf(stop) >= 0; }).map(function(R){ return R.id; }); };
+})(typeof window!=='undefined'?window:globalThis);
+
+/* ---- ../../core/simulation/77-sim-6-needs.js ---- */
+// ================================================================= CORE — simulation 6: needs, happiness, efficiency, loyalty
+// PLAN.md 8.2 and 8.3; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.4, 2.4 items 4 and 5). Opt-in: nothing
+// here runs until a world calls SIM.needs(config); a world without it decides exactly as before.
+//
+//   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},
+//               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
+//               free:[ACT..], dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
+//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
+//   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters)
+//
+// A METER per need, 0 (met) to 100 (desperate), rises at `rate` (times the role's multiplier) every world hour, and
+// falls by the actor's activity's `fill` (the culture's own table first). WORK adds `work` times the role's `labour`
+// (heavy labour: thirst, a little hunger). The meters are advanced lazily: only when the actor decides, or something
+// asks (SIM.needsOf), over the stretch since: first the trip (the task's duration over `secPerMinute` motion seconds a
+// world minute: nothing fills on the way), then the activity. HAPPINESS is 100 less the weighted mean pain of the
+// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones); the trait multiplies a
+// need's weight (about +-33%: "more happiness from some needs, less unhappiness when they go unmet"). EFFICIENCY is the
+// happiness band's `eff` (8.2: a score with bands); LOYALTY drifts toward happiness with time constant `tau` minutes.
+//
+// THE RESOLVER (SIM.desire): in an hour the schedule gives to one of `free`, the actor does the free activity whose
+// fills times its meters (times the weights) is highest and that some open place within reach offers, the scheduled one
+// favoured by `keep`; the choice holds `dwell` minutes (plus the actor's index modulo `jitter`). An INTERRUPT takes a worker with labour off WORK when a meter
+// reaches `at` (the midday well trip for a drink) until it falls to `until`, at most `max` minutes, then not again for
+// `cool` minutes. Deterministic: no draws, ties by the order of `free`.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.NEED = null;
+  SIM.needs = function(o){
+    var N = { list:o.list.slice(), idx:{}, rate:[], fill:{}, work:[], weight:[], traits:{}, cultures:{}, free:(o.free||[]).slice(), freeSet:{},
+              dwell:o.dwell==null?60:o.dwell, jitter:o.jitter|0, keep:o.keep==null?1.25:o.keep, done:o.done==null?15:o.done, interrupt:[], bands:o.bands||[{ label:'content', min:0, eff:1 }],
+              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain };
+    var vec = function(t, d){ return N.list.map(function(n){ return t && t[n]!=null ? t[n] : d; }); };
+    N.list.forEach(function(n, i){ N.idx[n]=i; });
+    N.rate = vec(o.rate, 0); N.work = vec(o.work, 0); N.weight = vec(o.weight, 1);
+    Object.keys(o.fill||{}).forEach(function(act){ N.fill[act]=vec(o.fill[act], 0); });
+    Object.keys(o.traits||{}).forEach(function(t){ N.traits[t]=vec(o.traits[t], 1); });
+    Object.keys(o.cultures||{}).forEach(function(c){ var F={}; Object.keys((o.cultures[c]||{}).fill||{}).forEach(function(act){ F[act]=vec(o.cultures[c].fill[act], 0); }); N.cultures[c]={ fill:F }; });
+    N.free.forEach(function(a){ N.freeSet[a]=1; });
+    Object.keys(o.interrupt||{}).forEach(function(n){ var I=o.interrupt[n]; if(N.idx[n]==null) throw new Error('SIM.needs: interrupt on an unknown need '+n);
+      N.interrupt.push({ need:n, i:N.idx[n], at:I.at, act:I.act, until:I.until==null?20:I.until, max:I.max==null?45:I.max, cool:I.cool==null?60:I.cool }); });
+    N.bands.sort(function(a,b){ return b.min-a.min; });
+    if(N.loyalty && N.loyalty.bands) N.loyalty.bands.sort(function(a,b){ return b.min-a.min; });
+    N.zero = vec(null, 0);
+    SIM.NEED = N; return N;
+  };
+  function roleRate(a){ var R=SIM.R.role[a.role], m=R && R.needs && R.needs.rate; if(!m) return null; if(!R._nr) R._nr=SIM.NEED.list.map(function(n){ return m[n]!=null?m[n]:1; }); return R._nr; }
+  function labour(a){ var R=SIM.R.role[a.role]; return (R && R.needs && R.needs.labour) || 0; }
+  function fillOf(a, act){ var N=SIM.NEED, C=a.culture && N.cultures[a.culture]; return (C && C.fill[act]) || N.fill[act] || N.zero; }
+  /* the meters' slope (per hour) doing `act` (null: on the way) */
+  function slope(a, act, i){ var N=SIM.NEED, rr=roleRate(a), r=N.rate[i]*(rr?rr[i]:1);
+    if(act==='WORK') r += N.work[i]*labour(a);
+    if(act) r -= fillOf(a, act)[i];
+    return r; }
+  function ensure(a, minute){ var N=SIM.NEED; if(!a.nd){ a.nd = Array.isArray(N.init) ? N.init.slice() : N.list.map(function(){ return N.init; }); }
+    if(a.ndT==null){ a.ndT=minute; a.ndFrom=minute; } }
+  function run(a, act, mins){ if(mins<=0) return; var nd=a.nd; for(var i=0;i<nd.length;i++){ var v=nd[i]+slope(a, act, i)*mins/60; nd[i]= v<0?0:v>100?100:v; } }
+  /* bring the meters to `minute` */
+  SIM.needsOf = function(a, minute){
+    var N=SIM.NEED; if(!N) return null; minute = minute==null ? SIM.minute() : minute; ensure(a, minute);
+    var dt=minute-a.ndT; if(dt<=0) return a.nd;
+    var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
+    run(a, null, trip); run(a, a.activity, dt-trip);
+    if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-dt/(N.loyalty.tau||4320))); }
+    a.ndT=minute; return a.nd;
+  };
+  /* where a meter would be at `minute` if the actor keeps on (no change to the actor) */
+  function peek(a, i, minute){ var dt=minute-a.ndT; if(dt<=0) return a.nd[i]; var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
+    var v=a.nd[i]+slope(a, null, i)*trip/60+slope(a, a.activity, i)*(dt-trip)/60; return v<0?0:v>100?100:v; }
+  SIM.happiness = function(a){
+    var N=SIM.NEED; if(!N || !a.nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
+    for(var i=0;i<a.nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(a.nd[i]/100, N.pain); w+=wi; }
+    return w ? 100 - s/w : 100;
+  };
+  function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
+  SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
+    return { happiness:h, band:B.label, eff:B.eff==null?1:B.eff, loyal:a.loyal, loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
+  SIM.efficiency = function(a){ var h=SIM.happiness(a); return h==null ? 1 : (bandOf(SIM.NEED.bands, h).eff==null ? 1 : bandOf(SIM.NEED.bands, h).eff); };
+
+  /* ---------------------------------------------------------------- the resolver's clause (SIM.desire) */
+  function available(a, act, minute){
+    var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, hour=Math.floor((minute%1440)/60);
+    if(pref.pin==='home'){ var H=SIM.R.place[a.home]; return !!(H && SIM.offers(H, act)); }
+    var H2=SIM.R.place[a.home], near=H2 ? [H2.x, H2.z] : (a.at||[0,0]);
+    return SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, limit:1, maxR:pref.reach!=null?pref.reach:SIM.REACH }).length>0;
+  }
+  /* Only a question about the present (the stepper's, the decision's) changes the actor: one about another minute (the
+     report asking what the rest day will want) reads the meters as they would be and leaves everything as it is */
+  SIM.needsDesire = function(a, minute, act){
+    var N=SIM.NEED; if(!N || !a.present || a.plan) return act;
+    ensure(a, minute); var live = minute===SIM.minute();
+    /* an interrupt (the well trip off a labourer's shift) */
+    if(N.interrupt.length && act==='WORK' && labour(a)>0){
+      if(a.intr){ var I=a.intr; if(peek(a, I.i, minute)<=I.until || minute-a.intrSince>=I.max){ if(!live) return act; a.intr=null; a.intrCool=minute+I.cool; } else return I.act; }
+      if(minute>=(a.intrCool||0)) for(var k=0;k<N.interrupt.length;k++){ var J=N.interrupt[k]; if(peek(a, J.i, minute)>=J.at){ if(live){ a.intr=J; a.intrSince=minute; } return J.act; } }
+      return act;
+    }
+    if(a.intr && live){ a.intr=null; }
+    if(!N.freeSet[act]) return act;
+    /* free time: what the meters ask for, held `dwell` minutes (and the actor's share of `jitter`, so a district's
+       choices do not all fall due in one minute) */
+    if(a.fr && a.frFor===act && minute>=a.frSince && minute-a.frSince<N.dwell+(N.jitter ? a.k%N.jitter : 0)) return a.fr;
+    var nd=a.nd.map(function(v, i){ return peek(a, i, minute); }), T=a.trait && N.traits[a.trait], sc=[];
+    N.free.forEach(function(opt, j){ var F=fillOf(a, opt), s=0; for(var i=0;i<F.length;i++) if(F[i]>0 && nd[i]>N.done) s+=F[i]*nd[i]*N.weight[i]*(T?T[i]:1);
+      if(opt===act) s=s*N.keep+1e-6; sc.push([s, j, opt]); });
+    sc.sort(function(p, q){ return q[0]-p[0] || p[1]-q[1]; });
+    var pick=act;
+    for(var m=0;m<sc.length;m++){ if(sc[m][2]===act || available(a, sc[m][2], minute)){ pick=sc[m][2]; break; } }
+    if(live){ a.fr=pick; a.frFor=act; a.frSince=minute; }
+    return pick;
+  };
+  /* SIM.decide: the meters brought to now on the old activity; the new one fills from its arrival */
+  SIM.needsDecided = function(a, minute, task){
+    var N=SIM.NEED; if(!N) return; SIM.needsOf(a, minute);
+    a.ndFrom = minute + (task && task.dur ? Math.round(task.dur/N.secPerMinute) : 0);
+  };
+  /* SIM.jump: the clock moved without the world living it: the meters stay, the gap is not counted */
+  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
+
+  /* ---------------------------------------------------------------- the census of needs */
+  /* by `key(actor)` (or all): how many, mean happiness, mean efficiency, the band counts, each need's mean and how many
+     have it at `high` or more; the meters brought to `minute` first */
+  SIM.needsCensus = function(key, opt){
+    var N=SIM.NEED; if(!N) return null; opt=opt||{}; var minute=opt.minute==null?SIM.minute():opt.minute, high=opt.high==null?70:opt.high, out={};
+    SIM.all('actor').forEach(function(a){ if(!a.present || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
+      var k=key ? key(a) : 'all'; if(k==null) return; var G=out[k] || (out[k]={ n:0, happy:0, eff:0, bands:{}, mean:N.list.map(function(){ return 0; }), high:N.list.map(function(){ return 0; }), loyal:0, loyalty:{} });
+      var M=SIM.mood(a); G.n++; G.happy+=M.happiness; G.eff+=M.eff; G.bands[M.band]=(G.bands[M.band]||0)+1; if(M.loyal!=null){ G.loyal+=M.loyal; if(M.loyalty) G.loyalty[M.loyalty]=(G.loyalty[M.loyalty]||0)+1; }
+      for(var i=0;i<a.nd.length;i++){ G.mean[i]+=a.nd[i]; if(a.nd[i]>=high) G.high[i]++; } });
+    Object.keys(out).forEach(function(k){ var G=out[k], n=G.n||1; G.happy=Math.round(G.happy/n*10)/10; G.eff=Math.round(G.eff/n*1000)/1000; G.loyal=Math.round(G.loyal/n*10)/10;
+      var mean={}, hi={}; N.list.forEach(function(nm, i){ mean[nm]=Math.round(G.mean[i]/n*10)/10; hi[nm]=G.high[i]; }); G.mean=mean; G.high=hi; });
+    return out;
+  };
 })(typeof window!=='undefined'?window:globalThis);
 
 /* ---- ../../core/simulation/77-sim-8-export.js ---- */
@@ -55971,7 +56150,9 @@ VC.simPlaces = function () {
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
-  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i); reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: n, workplaces: n,
+  var BR = TUNE.sim.needs && TUNE.sim.needs.barrel;   /* the country's outdoor work keeps a water barrel (phase C session 3) */
+  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i), acts = {}; if (BR && BR.kinds.indexOf(kind) >= 0 && n > 0) acts.DRINK = Math.max(1, Math.ceil(n / BR.per));
+    reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: acts, open: [6, 19], job: job, posts: n, workplaces: n,
     r: q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, wander: T.outdoorR[kind] || 12, tags: ['outdoor'] }); }); };
   var fields = (PLAN.fields || []).filter(function (F) { return F.kind !== 'garden'; });
   outdoor('farmhands and ploughmen', fields.map(function (F) { return [F.bo.c[0], F.bo.c[1], 4 * F.bo.hw * F.bo.hd / 1e4]; }), function (q) { return q[2] * K.jobs.perHectare; }, 'field');
@@ -56357,13 +56538,31 @@ VC.pedAudit = function () {
    they were filled), the commutes (metres walked, by class and kind of work); VC.simWalkSample checks them with A*.
    Schedules are a plain day for now (TUNE.sim.people.sched); the week, the rota and the shifts are session 2's. */
 VC.PEOPLE = null;
+/* motion seconds a world minute: the clock's day over 1440, times the motion's timeScale (55-vc-host.js: VC.motionT) */
+VC.simSecPerMin = function () { return ((VC.clock && VC.clock.dayLength) || 4320) / 1440 * (TUNE.timeScale || 1); };
 
 VC.simPeople = function () {
   if (typeof SIM === 'undefined' || !SIM.actor || !VC.PED || !VC.PED.comp) return null;
   var T = TUNE.sim.people, share = TUNE.census.workingShare, t0 = Date.now();
   if (!SIM.R.faction.voth) SIM.faction({ id: 'voth' });
   ['citizens', 'slaves'].forEach(function (o) { if (!SIM.R.org[o]) SIM.org({ id: o, faction: 'voth' }); });
-  var WK = TUNE.sim.week;
+  var WK = TUNE.sim.week, NE = TUNE.sim.needs;
+  /* needs, happiness, efficiency, loyalty (phase C session 3: core/simulation 77-sim-6-needs.js) */
+  if (NE && SIM.needs) SIM.needs({ list: NE.list, rate: NE.rate, fill: NE.fill, work: NE.work, weight: NE.weight, traits: NE.traits, free: NE.free, dwell: NE.dwell, jitter: NE.jitter, keep: NE.keep, done: NE.done,
+                                   interrupt: NE.interrupt, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, secPerMinute: VC.simSecPerMin() });
+  var TRAITS = NE ? Object.keys(NE.traits) : [];
+  /* a role's needs: its trade's labour and rates (the slaves' labour `slaveLabour`) */
+  var needsOf = function (id) {
+    if (!NE) return undefined;
+    var job = id.replace(/^[ws]\./, '').replace(/\/night$/, ''), lab = /^s\./.test(id) ? NE.slaveLabour : NE.labour[job] || 0;
+    return { labour: lab, rate: NE.byTrade[job] || undefined };
+  };
+  /* a citizen's trait and starting meters, by a hash of its index (core/rand) */
+  var temper = function (a, k) {
+    if (!NE || !a) return;
+    a.trait = TRAITS[KRAND.hash(4747, k, 1) % TRAITS.length];
+    a.nd = NE.list.map(function (n, i) { var r = NE.init[n]; return NE.rate[n] && r ? r[0] + (r[1] - r[0]) * KRAND.unit(KRAND.hash(4747, k, 10 + i)) : 0; });
+  };
   /* a role of a kind of work on a shift: its work, off and rest days (VC.simWeek), its week (essential kinds work the
      rest day), its pins (sleep and eat at home, work at work) */
   var roleOf = function (id, org, name, shift, essential) {
@@ -56373,7 +56572,7 @@ VC.simPeople = function () {
       var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
       (S.services || []).forEach(function (sv, i) { sc['rest_' + i] = sv; });   /* the rest day with one of the services (an actor's alias picks it) */
       if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
-      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential, needs: needsOf(id),
                  prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' }, WORSHIP: { pin: 'home' } } });   /* WORSHIP at home where it has a shrine (a clan compound's), else the nearest */   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
@@ -56387,8 +56586,9 @@ VC.simPeople = function () {
   places.forEach(function (P) {
     var u = P.unit != null ? VC.IX.units[P.unit] : null, res = 0, cls = 'other', kind = P.kind;
     if (u && u.residents) { res = u.residents; cls = u.cls; kind = u.site || u.cls; }
-    else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; }
+    else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; if (!P.activities.IDLE) P.activities.IDLE = Math.round(res); }   /* they sit in their room */
     res = Math.round(res); if (res > 0) homes.push({ P: P, res: res, cls: cls, kind: kind, c: comp(P), xz: at(P) });
+    if (res > 0 && !P.activities.EAT) P.activities.EAT = res;   /* quarters with no kitchen (a canton's rooms, the monastery's dormitories) eat at their mess or refectory (phase C session 3: the Fortress is an island) */
   });
   var cum = 0, workers = [], deps = [];
   homes.forEach(function (H) {
@@ -56430,7 +56630,7 @@ VC.simPeople = function () {
     var n = Math.round(free[P.id] * T.slaveShare);
     for (var i = 0; i < n; i++) slaves.push({ P: P });
     free[P.id] -= n;
-    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.quarters = n; }   /* they sleep at the site: quarters the plan has not built (the report says so) */
+    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
   });
   /* 4. the deal, by the walk: each round one search over the pedestrian layer from every place with a free post labels
      every node with its nearest one (SIM.nav.field), and each place takes the workers nearest it among those it labels;
@@ -56472,15 +56672,16 @@ VC.simPeople = function () {
     if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
     wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
                        off: wk.job && WK.rota ? offDay() : undefined, alias: service() });
-    made++;
+    temper(wk.a, n); made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
-    made++;
+    var H = d.H, a = SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
+    temper(a, n); made++;
   });
   slaves.forEach(function (s, i) {
     s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', 'enslaved ' + s.P.job, WK.slaveShift, false), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false,
                          off: WK.slaveRota ? offDay() : undefined });
+    temper(s.a, 900000 + i);
   });
   /* ---- the report */
   var R = { citizens: made, census: PLAN.census ? PLAN.census.population : null, homes: homes.length, workers: workers.length, dependants: deps.length, slaves: slaves.length,
@@ -56586,6 +56787,31 @@ VC.simWorshipNeed = function () {
   Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(allWant / Wo.share * at / sv), short = Math.max(0, need - room);
     opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
   return { hour: hour, want: want, perService: perService, allWant: allWant, room: room, short: Math.max(0, want - room), byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
+};
+
+/* the census of needs (SIM-ROADMAP.md 2.4 item 6): everyone, by class, by kind of work (the dependants 'household'),
+   the efficiency of those at work now by kind of work, and the deficits named: for each need the districts where most
+   have it at TUNE.sim.needs.high or more (by home), and the free-time places full now (by kind and activity) */
+VC.simNeedsReport = function (minute) {
+  if (typeof SIM === 'undefined' || !SIM.NEED) return null;
+  var NE = TUNE.sim.needs, o = { minute: minute, high: NE.high };
+  var district = function (a) { var H = SIM.R.place[a.home]; return H ? ((H.tags || [])[1] || (H.tags || [])[0] || H.kind) : 'none'; };
+  var out = { all: SIM.needsCensus(null, o).all, byClass: SIM.needsCensus(function (a) { return a.cls || 'other'; }, o),
+              byTrade: SIM.needsCensus(function (a) { return a.job || 'household'; }, o),
+              atWork: SIM.needsCensus(function (a) { return a.activity === 'WORK' && a.task && SIM.time() >= a.task.arrive ? a.job || 'other' : null; }, o) };
+  var byD = SIM.needsCensus(district, o);
+  out.deficits = {};
+  NE.list.forEach(function (n) {
+    var L = Object.keys(byD).map(function (k) { return [k, byD[k].high[n], byD[k].n]; }).filter(function (x) { return x[1] > 0; }).sort(function (a, b) { return b[1] - a[1] || (a[0] < b[0] ? -1 : 1); });
+    var tot = L.reduce(function (s, x) { return s + x[1]; }, 0); if (tot) out.deficits[n] = { n: tot, where: L.slice(0, 5) };
+  });
+  var full = {};
+  SIM.all('place').forEach(function (P) {
+    if (P.access === 'private') return;
+    NE.free.forEach(function (act) { var c = SIM.offers(P, act); if (c > 0 && SIM.free(P, act) <= 0) { var k = P.kind + ' ' + act; full[k] = (full[k] || 0) + 1; } });
+  });
+  out.full = Object.keys(full).map(function (k) { return [k, full[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+  return out;
 };
 
 /* ---- targets/voth-site/50-site-scene.js ---- */
@@ -58727,6 +58953,21 @@ VC.peopleReportHTML = function () {
     if (Wn) h += '<div>Worship on the rest day at ' + Wn.hour + ':00: ' + f(Wn.want) + ' want it, <span class="bad">room for ' + f(Wn.room) + ' at once</span> (a shrine holds ' + f(Wn.shrineRoom) + ', the largest place ' + f(Wn.largestRoom) + '; the Temple canton is not counted yet). To hold the rest: ' +
       Wn.options.map(function (o) { return o.services + ' service' + (o.services > 1 ? 's' : '') + ', ' + Math.round(o.attend * 100) + '% attending: ' + f(o.shrines) + ' more shrines (or ' + f(o.largest) + ' of the largest)'; }).join('; ') + '.</div>';
     h += '<div>Company at home now: ' + f(now.visiting) + ' visiting housemates or neighbours (no room out).</div>';
+    var NR = VC.simNeedsReport ? VC.simNeedsReport() : null;
+    if (NR && NR.all) {
+      var NL = TUNE.sim.needs.list, hi = TUNE.sim.needs.high, b = function (G) { return ['content', 'uneasy', 'unhappy', 'restless'].map(function (k) { return f(G.bands[k]); }).join(' / '); };
+      var row = function (k, G, eff) { return '<tr><td>' + k + '</td><td class="n">' + f(G.n) + '</td><td class="n ' + (G.happy < 50 ? 'bad' : 'ok') + '">' + G.happy.toFixed(1) + '</td><td class="n">' + (eff != null ? eff.toFixed(2) : G.eff.toFixed(2)) + '</td><td class="n">' + b(G) + '</td>' +
+        NL.map(function (n) { return '<td class="n' + (G.mean[n] >= hi ? ' bad' : '') + '">' + Math.round(G.mean[n]) + (G.high[n] ? ' <span class="k">(' + f(G.high[n]) + ')</span>' : '') + '</td>'; }).join('') + '<td class="n">' + G.loyal.toFixed(1) + '</td></tr>'; };
+      var head = '<tr><th></th><th>people</th><th>happiness</th><th>efficiency</th><th>content / uneasy / unhappy / restless</th>' + NL.map(function (n) { return '<th>' + n + '</th>'; }).join('') + '<th>loyalty</th></tr>';
+      h += '<h2>Needs and happiness</h2><div class="k">core/simulation 77-sim-6-needs.js: a meter per need, 0 met to 100 desperate (the mean; in brackets how many have it at ' + hi + ' or more). Free time goes where the meters ask; a labourer thirsty at work walks to a well. Happiness: 100 less the meters\' weighted pain, a trait weighing one need more or less; its band the efficiency at work; loyalty follows it over days. Material waits for phase D\'s items.</div>';
+      h += '<table>' + head + row('everyone', NR.all);
+      Object.keys(NR.byClass).sort(function (p, q) { return NR.byClass[q].n - NR.byClass[p].n; }).forEach(function (k) { h += row(k, NR.byClass[k]); });
+      h += '</table><table>' + head.replace('<th>efficiency</th>', '<th>efficiency at work now</th>');
+      Object.keys(NR.byTrade).sort(function (p, q) { return NR.byTrade[p].happy - NR.byTrade[q].happy; }).forEach(function (k) { var W2 = NR.atWork[k]; h += row(k, NR.byTrade[k], W2 ? W2.eff : null); });
+      h += '</table>';
+      h += '<div>The deficits (how many at ' + hi + ' or more, the districts with the most): ' + (Object.keys(NR.deficits).map(function (n) { var D = NR.deficits[n]; return '<b>' + n + '</b> ' + f(D.n) + ' (' + D.where.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + ')'; }).join('; ') || 'none') + '.</div>';
+      h += '<div>Free-time places full now: ' + (NR.full.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') || 'none') + '.</div>';
+    }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
       days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });
@@ -58778,7 +59019,7 @@ VC.ixUI = function () {
    - THE BODIES (VC.simBodies): the citizens within TUNE.sim.embody.r of the view's centre (the orbit target, or the
      walker), the nearest TUNE.sim.embody.max of them, as instanced figures posed by SIM.pose; hidden indoors; the
      tunic by what they are doing (TUNE.sim.embody.colours). Drawn only when the view is close (TUNE.sim.embody.dist).
-   - The clock bar's line: at work, asleep, out and about, walking, the step's cost. */
+   - The clock bar's line: at work, asleep, out and about, walking, the mean happiness (77-sim-6-needs.js), the step's cost. */
 VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
 
 VC.simCensusNow = function () {
@@ -58815,7 +59056,8 @@ VC.simRun = function () {
   if (el) (window._frameHooks = window._frameHooks || []).push(function (now) {
     if (now - lastTxt < 1000) return; lastTxt = now;
     var c = VC.simCensusNow(), b = c.by, ms = S.ms.slice().sort(function (p, q) { return p - q; }), f = function (v) { return (v || 0).toLocaleString(); };
-    el.textContent = 'day ' + (SIM.weekday() + 1) + ' of 7 · at work ' + f(b.WORK) + ' · asleep ' + f(b.SLEEP) + ' · walking ' + f(c.moving) + ' · step ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms';
+    if (SIM.NEED && now - (S.moodAt || 0) > 5000) { S.moodAt = now; var G = SIM.needsCensus(null).all; S.mood = G ? G.happy : null; }   /* happiness every 5 s: it walks every meter */
+    el.textContent = 'day ' + (SIM.weekday() + 1) + ' of 7 · at work ' + f(b.WORK) + ' · asleep ' + f(b.SLEEP) + ' · walking ' + f(c.moving) + (S.mood != null ? ' · happiness ' + S.mood.toFixed(0) : '') + ' · step ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms';
   });
 };
 
@@ -58865,15 +59107,16 @@ VC.simBodies = function () {
 };
 
 /* a day run headless (verify.py, the report's check): the clock held, every minute of `day` stepped from `h0` to `h1`
-   with the motion clock moved on 3 s a minute, the census at `at` hours: what everyone does, what they wanted and did
+   with the motion clock moved on as the page moves it (VC.simSecPerMin: 18 s a minute), the census at `at` hours: what everyone does, what they wanted and did
    not get, the decisions still waiting, how many wanted to work and how many do; the steps' cost */
 VC.simDay = function (day, h0, h1, at) {
-  var C = VC.clock, run = C.running; C.run(false); C.day = day; C.set(h0); SIM.jump();
+  var C = VC.clock, run = C.running, spm = VC.simSecPerMin(); C.run(false); C.day = day; C.set(h0); SIM.jump();
   var ms = [], out = { day: day, weekday: SIM.weekday(), samples: {}, top: [] }, wantWork = function () { var n = 0, m = SIM.minute(); SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORK') n++; }); return n; };
   for (var m = h0 * 60; m < h1 * 60; m++) {
-    C.hour = m / 60; VC.motionT = (VC.motionT || 0) + 3;
+    C.hour = m / 60; VC.motionT = (VC.motionT || 0) + spm;
     var ts = performance.now(), made = SIM.step(), d = performance.now() - ts; ms.push(d); out.top.push([m, Math.round(d), made]);
-    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
+    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork(),
+      needs: SIM.NEED ? SIM.needsCensus(null).all : null }; }
   }
   ms.sort(function (a, b) { return a - b; }); out.top.sort(function (a, b) { return b[1] - a[1]; }); out.top = out.top.slice(0, 5);
   out.p50 = Math.round(ms[ms.length >> 1]); out.p90 = Math.round(ms[Math.floor(ms.length * 0.9)]); out.max = Math.round(ms[ms.length - 1]);

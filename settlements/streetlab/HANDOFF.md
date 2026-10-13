@@ -4,6 +4,30 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: phase C session 3: needs, happiness, efficiency, loyalty (and eight village shrines)
+
+The owner: "Put in 6 more village shrines then do next stage of sim build".
+- **Eight village shrines** (`TUNE.sim.place.villageShrine.n`); their estimate now counts Voth's landmark shrines, the
+  funerary temple and the monastery's chapel (not lots: they were missed). The rest day's worship: 35 short at 8:00,
+  294 at 11:00 (209 and 528 with two); with the needs below 43 and 146.
+- **SIM-ROADMAP 2.4 items 4-6** (README "Needs, happiness, efficiency, loyalty"): core/simulation `77-sim-6-needs.js`
+  (opt-in; its tests in `test-sim.js`, SCHEMA.md "Needs") and the city's `TUNE.sim.needs`. Six meters (material waits
+  for phase D), rates by trade, fills by activity, labour (thirst at work: the well trip), eight traits, happiness,
+  efficiency bands, loyalty; free time goes where the meters ask. The report's "Needs and happiness", the clock bar's
+  happiness, verify's second workday.
+- Fixed on the way: the headless day moved the motion clock 3 s a world minute where the page moves it 18 (trips took
+  six times too long in world minutes; `VC.simSecPerMin`); quarters with no kitchen (the cantons' rooms, the monastery's
+  dormitories) eat at their mess; the slaves are fed and watered at their quarters; the country's fields, mines and
+  quarries keep a water barrel.
+
+**Where we're at** (`verify.py`): happiness 89-93 through two workdays (90.4 and 89.5 at 20:00: steady), efficiency
+0.99-1. By class: the clans 96, the rich 93, the poor 90.5, the cantons 85, the monastery 83, the slaves 63 (their
+quarters at the fields, nothing near to socialize or relax: the brief counts them apart). The unhappiest trades are the
+country's labourers: quarrymen 61, farmhands 64, miners 67 (thirst and no company out there). Nobody is left wanting
+what they chose (a free-time choice no place takes settles for what it got). Step cost p50 61 ms, p90 125.
+
+**Next** (SIM-ROADMAP 2.5, phase D): items, inventory, equipment, shopping; the material meter starts then.
+
 ## 2026-10-12: phase C session 2, follow-up: benched squares, village shrines, the bread oven
 
 The owner: "Add a couple village size shrines and benched squares for that overflow. Fix the oven." Done (README

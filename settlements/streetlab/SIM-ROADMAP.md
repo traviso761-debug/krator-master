@@ -291,6 +291,10 @@ house. Phase B is done: every kind of work meets the 90% rule.
    and reachable in the hours left (one extra clause in `SIM.decide`); sleep at home.
 6. **Census** panel: jobs worked by category now and their mean efficiency; happiness by trade and class; the unmet-need
    histogram; deficits named (which need, which district, which place is full).
+   **Session 3 (2026-10-12): items 4-6 done** (core/simulation `77-sim-6-needs.js`, opt-in by `SIM.needs`; the city's
+   `TUNE.sim.needs`; the report's "Needs and happiness"). Material is a meter with no rate until phase D's items; the
+   culture tables are in core (`cultures`) but the city is all Voth; loyalty bands are scored, their effects (unrest,
+   migration) wait for phases F and G; efficiency is reported, its use is phase E's production.
 
 ### 2.5 Phase D: items, inventory, equipment, shopping (1–2 sessions)
 

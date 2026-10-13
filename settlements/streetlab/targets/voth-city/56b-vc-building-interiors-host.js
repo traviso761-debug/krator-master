@@ -383,6 +383,21 @@ VC.peopleReportHTML = function () {
     if (Wn) h += '<div>Worship on the rest day at ' + Wn.hour + ':00: ' + f(Wn.want) + ' want it, <span class="bad">room for ' + f(Wn.room) + ' at once</span> (a shrine holds ' + f(Wn.shrineRoom) + ', the largest place ' + f(Wn.largestRoom) + '; the Temple canton is not counted yet). To hold the rest: ' +
       Wn.options.map(function (o) { return o.services + ' service' + (o.services > 1 ? 's' : '') + ', ' + Math.round(o.attend * 100) + '% attending: ' + f(o.shrines) + ' more shrines (or ' + f(o.largest) + ' of the largest)'; }).join('; ') + '.</div>';
     h += '<div>Company at home now: ' + f(now.visiting) + ' visiting housemates or neighbours (no room out).</div>';
+    var NR = VC.simNeedsReport ? VC.simNeedsReport() : null;
+    if (NR && NR.all) {
+      var NL = TUNE.sim.needs.list, hi = TUNE.sim.needs.high, b = function (G) { return ['content', 'uneasy', 'unhappy', 'restless'].map(function (k) { return f(G.bands[k]); }).join(' / '); };
+      var row = function (k, G, eff) { return '<tr><td>' + k + '</td><td class="n">' + f(G.n) + '</td><td class="n ' + (G.happy < 50 ? 'bad' : 'ok') + '">' + G.happy.toFixed(1) + '</td><td class="n">' + (eff != null ? eff.toFixed(2) : G.eff.toFixed(2)) + '</td><td class="n">' + b(G) + '</td>' +
+        NL.map(function (n) { return '<td class="n' + (G.mean[n] >= hi ? ' bad' : '') + '">' + Math.round(G.mean[n]) + (G.high[n] ? ' <span class="k">(' + f(G.high[n]) + ')</span>' : '') + '</td>'; }).join('') + '<td class="n">' + G.loyal.toFixed(1) + '</td></tr>'; };
+      var head = '<tr><th></th><th>people</th><th>happiness</th><th>efficiency</th><th>content / uneasy / unhappy / restless</th>' + NL.map(function (n) { return '<th>' + n + '</th>'; }).join('') + '<th>loyalty</th></tr>';
+      h += '<h2>Needs and happiness</h2><div class="k">core/simulation 77-sim-6-needs.js: a meter per need, 0 met to 100 desperate (the mean; in brackets how many have it at ' + hi + ' or more). Free time goes where the meters ask; a labourer thirsty at work walks to a well. Happiness: 100 less the meters\' weighted pain, a trait weighing one need more or less; its band the efficiency at work; loyalty follows it over days. Material waits for phase D\'s items.</div>';
+      h += '<table>' + head + row('everyone', NR.all);
+      Object.keys(NR.byClass).sort(function (p, q) { return NR.byClass[q].n - NR.byClass[p].n; }).forEach(function (k) { h += row(k, NR.byClass[k]); });
+      h += '</table><table>' + head.replace('<th>efficiency</th>', '<th>efficiency at work now</th>');
+      Object.keys(NR.byTrade).sort(function (p, q) { return NR.byTrade[p].happy - NR.byTrade[q].happy; }).forEach(function (k) { var W2 = NR.atWork[k]; h += row(k, NR.byTrade[k], W2 ? W2.eff : null); });
+      h += '</table>';
+      h += '<div>The deficits (how many at ' + hi + ' or more, the districts with the most): ' + (Object.keys(NR.deficits).map(function (n) { var D = NR.deficits[n]; return '<b>' + n + '</b> ' + f(D.n) + ' (' + D.where.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') + ')'; }).join('; ') || 'none') + '.</div>';
+      h += '<div>Free-time places full now: ' + (NR.full.map(function (x) { return x[0] + ' ' + f(x[1]); }).join(', ') || 'none') + '.</div>';
+    }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';
       days.slice(-7).forEach(function (d) { Object.keys(S.days[d]).forEach(function (hh) { var c = S.days[d][hh]; h += '<tr><td>' + (+d + 1) + '</td><td>' + hh + ':00</td><td>' + u(c.by) + '</td><td>' + u(c.unmet) + '</td></tr>'; }); });

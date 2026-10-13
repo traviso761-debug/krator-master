@@ -8,7 +8,7 @@
    - THE BODIES (VC.simBodies): the citizens within TUNE.sim.embody.r of the view's centre (the orbit target, or the
      walker), the nearest TUNE.sim.embody.max of them, as instanced figures posed by SIM.pose; hidden indoors; the
      tunic by what they are doing (TUNE.sim.embody.colours). Drawn only when the view is close (TUNE.sim.embody.dist).
-   - The clock bar's line: at work, asleep, out and about, walking, the step's cost. */
+   - The clock bar's line: at work, asleep, out and about, walking, the mean happiness (77-sim-6-needs.js), the step's cost. */
 VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
 
 VC.simCensusNow = function () {
@@ -45,7 +45,8 @@ VC.simRun = function () {
   if (el) (window._frameHooks = window._frameHooks || []).push(function (now) {
     if (now - lastTxt < 1000) return; lastTxt = now;
     var c = VC.simCensusNow(), b = c.by, ms = S.ms.slice().sort(function (p, q) { return p - q; }), f = function (v) { return (v || 0).toLocaleString(); };
-    el.textContent = 'day ' + (SIM.weekday() + 1) + ' of 7 · at work ' + f(b.WORK) + ' · asleep ' + f(b.SLEEP) + ' · walking ' + f(c.moving) + ' · step ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms';
+    if (SIM.NEED && now - (S.moodAt || 0) > 5000) { S.moodAt = now; var G = SIM.needsCensus(null).all; S.mood = G ? G.happy : null; }   /* happiness every 5 s: it walks every meter */
+    el.textContent = 'day ' + (SIM.weekday() + 1) + ' of 7 · at work ' + f(b.WORK) + ' · asleep ' + f(b.SLEEP) + ' · walking ' + f(c.moving) + (S.mood != null ? ' · happiness ' + S.mood.toFixed(0) : '') + ' · step ' + (ms.length ? ms[ms.length >> 1].toFixed(1) : '-') + ' ms';
   });
 };
 
@@ -95,15 +96,16 @@ VC.simBodies = function () {
 };
 
 /* a day run headless (verify.py, the report's check): the clock held, every minute of `day` stepped from `h0` to `h1`
-   with the motion clock moved on 3 s a minute, the census at `at` hours: what everyone does, what they wanted and did
+   with the motion clock moved on as the page moves it (VC.simSecPerMin: 18 s a minute), the census at `at` hours: what everyone does, what they wanted and did
    not get, the decisions still waiting, how many wanted to work and how many do; the steps' cost */
 VC.simDay = function (day, h0, h1, at) {
-  var C = VC.clock, run = C.running; C.run(false); C.day = day; C.set(h0); SIM.jump();
+  var C = VC.clock, run = C.running, spm = VC.simSecPerMin(); C.run(false); C.day = day; C.set(h0); SIM.jump();
   var ms = [], out = { day: day, weekday: SIM.weekday(), samples: {}, top: [] }, wantWork = function () { var n = 0, m = SIM.minute(); SIM.all('actor').forEach(function (a) { if (a.present && SIM.desire(a, m) === 'WORK') n++; }); return n; };
   for (var m = h0 * 60; m < h1 * 60; m++) {
-    C.hour = m / 60; VC.motionT = (VC.motionT || 0) + 3;
+    C.hour = m / 60; VC.motionT = (VC.motionT || 0) + spm;
     var ts = performance.now(), made = SIM.step(), d = performance.now() - ts; ms.push(d); out.top.push([m, Math.round(d), made]);
-    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork() }; }
+    if (m % 60 === 0 && at.indexOf(m / 60) >= 0) { var c = VC.simCensusNow(); out.samples[m / 60] = { by: c.by, unmet: c.unmet, visiting: c.visiting, pending: c.pending, moving: c.moving, wantWork: wantWork(),
+      needs: SIM.NEED ? SIM.needsCensus(null).all : null }; }
   }
   ms.sort(function (a, b) { return a - b; }); out.top.sort(function (a, b) { return b[1] - a[1]; }); out.top = out.top.slice(0, 5);
   out.p50 = Math.round(ms[ms.length >> 1]); out.p90 = Math.round(ms[Math.floor(ms.length * 0.9)]); out.max = Math.round(ms[ms.length - 1]);

@@ -80,7 +80,7 @@ SITE_VENDOR = VENDOR[:4] + [
 SITE_JSON = os.path.join(HERE, 'site', 'voth-site.json')
 # core/simulation (the ferry and elephant bug lines are its transport routes): the record core, places, ports, nav, motion, routes, export
 SIM_JS = ['../../core/simulation/' + f for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js',
-          '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-8-export.js')]
+          '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-6-needs.js', '77-sim-8-export.js')]
 # the Voth city page: core/city (the city builder: 10 core, 20 plan, 31-32 steps 6-12, 50-52 drawing) under its own
 # tuning and steps 0-5, the site model and ground (targets/voth-site), core/simulation
 CITY = '../../core/city/'

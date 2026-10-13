@@ -329,7 +329,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "51392f57b918"
+  "182eaf476121"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -342,6 +342,10 @@
  "77-sim-5r-routes.js": [
   "core/simulation",
   "ab6f36a600b9"
+ ],
+ "77-sim-6-needs.js": [
+  "core/simulation",
+  "e1f615c44146"
  ],
  "77-sim-6-population.js": [
   "core/simulation",

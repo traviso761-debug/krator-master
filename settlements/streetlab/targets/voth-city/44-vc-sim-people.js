@@ -16,13 +16,31 @@
    they were filled), the commutes (metres walked, by class and kind of work); VC.simWalkSample checks them with A*.
    Schedules are a plain day for now (TUNE.sim.people.sched); the week, the rota and the shifts are session 2's. */
 VC.PEOPLE = null;
+/* motion seconds a world minute: the clock's day over 1440, times the motion's timeScale (55-vc-host.js: VC.motionT) */
+VC.simSecPerMin = function () { return ((VC.clock && VC.clock.dayLength) || 4320) / 1440 * (TUNE.timeScale || 1); };
 
 VC.simPeople = function () {
   if (typeof SIM === 'undefined' || !SIM.actor || !VC.PED || !VC.PED.comp) return null;
   var T = TUNE.sim.people, share = TUNE.census.workingShare, t0 = Date.now();
   if (!SIM.R.faction.voth) SIM.faction({ id: 'voth' });
   ['citizens', 'slaves'].forEach(function (o) { if (!SIM.R.org[o]) SIM.org({ id: o, faction: 'voth' }); });
-  var WK = TUNE.sim.week;
+  var WK = TUNE.sim.week, NE = TUNE.sim.needs;
+  /* needs, happiness, efficiency, loyalty (phase C session 3: core/simulation 77-sim-6-needs.js) */
+  if (NE && SIM.needs) SIM.needs({ list: NE.list, rate: NE.rate, fill: NE.fill, work: NE.work, weight: NE.weight, traits: NE.traits, free: NE.free, dwell: NE.dwell, jitter: NE.jitter, keep: NE.keep, done: NE.done,
+                                   interrupt: NE.interrupt, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, secPerMinute: VC.simSecPerMin() });
+  var TRAITS = NE ? Object.keys(NE.traits) : [];
+  /* a role's needs: its trade's labour and rates (the slaves' labour `slaveLabour`) */
+  var needsOf = function (id) {
+    if (!NE) return undefined;
+    var job = id.replace(/^[ws]\./, '').replace(/\/night$/, ''), lab = /^s\./.test(id) ? NE.slaveLabour : NE.labour[job] || 0;
+    return { labour: lab, rate: NE.byTrade[job] || undefined };
+  };
+  /* a citizen's trait and starting meters, by a hash of its index (core/rand) */
+  var temper = function (a, k) {
+    if (!NE || !a) return;
+    a.trait = TRAITS[KRAND.hash(4747, k, 1) % TRAITS.length];
+    a.nd = NE.list.map(function (n, i) { var r = NE.init[n]; return NE.rate[n] && r ? r[0] + (r[1] - r[0]) * KRAND.unit(KRAND.hash(4747, k, 10 + i)) : 0; });
+  };
   /* a role of a kind of work on a shift: its work, off and rest days (VC.simWeek), its week (essential kinds work the
      rest day), its pins (sleep and eat at home, work at work) */
   var roleOf = function (id, org, name, shift, essential) {
@@ -32,7 +50,7 @@ VC.simPeople = function () {
       var sc = shift ? { work: S.work, off: S.off, rest: S.rest } : { day: S.day, off: S.day, rest: S.rest };
       (S.services || []).forEach(function (sv, i) { sc['rest_' + i] = sv; });   /* the rest day with one of the services (an actor's alias picks it) */
       if (half) sc.half = VC.simWeek([shift[0], Math.round(shift[1] / 2)]).work;   /* the slaves' rest day: half the shift */
-      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential,
+      SIM.role({ id: id, org: org, name: name, fallback: TUNE.sim.week.fallback, scheds: sc, week: week, shift: shift, essential: !!essential, needs: needsOf(id),
                  prefers: { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, IDLE: { pin: 'home' }, REST: { pin: 'home' }, RELAX: { pin: 'home' }, WORK: { pin: 'work' }, WORSHIP: { pin: 'home' } } });   /* WORSHIP at home where it has a shrine (a clan compound's), else the nearest */   /* RELAX at home (its chairs), SOCIALIZE out */
     }
     return id;
@@ -46,8 +64,9 @@ VC.simPeople = function () {
   places.forEach(function (P) {
     var u = P.unit != null ? VC.IX.units[P.unit] : null, res = 0, cls = 'other', kind = P.kind;
     if (u && u.residents) { res = u.residents; cls = u.cls; kind = u.site || u.cls; }
-    else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; }
+    else if (/^canton-/.test(P.kind) && P.activities.SLEEP) { res = P.activities.SLEEP; cls = 'canton'; if (!P.activities.IDLE) P.activities.IDLE = Math.round(res); }   /* they sit in their room */
     res = Math.round(res); if (res > 0) homes.push({ P: P, res: res, cls: cls, kind: kind, c: comp(P), xz: at(P) });
+    if (res > 0 && !P.activities.EAT) P.activities.EAT = res;   /* quarters with no kitchen (a canton's rooms, the monastery's dormitories) eat at their mess or refectory (phase C session 3: the Fortress is an island) */
   });
   var cum = 0, workers = [], deps = [];
   homes.forEach(function (H) {
@@ -89,7 +108,7 @@ VC.simPeople = function () {
     var n = Math.round(free[P.id] * T.slaveShare);
     for (var i = 0; i < n; i++) slaves.push({ P: P });
     free[P.id] -= n;
-    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.quarters = n; }   /* they sleep at the site: quarters the plan has not built (the report says so) */
+    if (n) { P.activities.SLEEP = (P.activities.SLEEP || 0) + n; P.activities.EAT = (P.activities.EAT || 0) + n; P.activities.DRINK = Math.max(P.activities.DRINK || 0, Math.ceil(n / 4)); P.quarters = n; }   /* they sleep, are fed and watered at the site: quarters the plan has not built (the report says so) */
   });
   /* 4. the deal, by the walk: each round one search over the pedestrian layer from every place with a free post labels
      every node with its nearest one (SIM.nav.field), and each place takes the workers nearest it among those it labels;
@@ -131,15 +150,16 @@ VC.simPeople = function () {
     if (wk.job) { var N = isNight(wk.job) ? WK.night[wk.job] : null; role = roleOf('w.' + wk.job + (N ? '/night' : ''), 'citizens', wk.job + (N ? ' (night)' : ''), N ? [N[1], N[2]] : shiftOf(wk.job), WK.essential.indexOf(wk.job) >= 0); }
     wk.a = SIM.actor({ id: 'c' + (n++), role: role, home: H.P.id, work: wk.work || undefined, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, job: wk.job, how: wk.how, workAt: wk.at,
                        off: wk.job && WK.rota ? offDay() : undefined, alias: service() });
-    made++;
+    temper(wk.a, n); made++;
   });
   deps.forEach(function (d) {
-    var H = d.H; SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
-    made++;
+    var H = d.H, a = SIM.actor({ id: 'c' + (n++), role: roleOf('dependant', 'citizens', 'household', null), home: H.P.id, cls: H.cls, wealth: T.wealth[H.cls] != null ? T.wealth[H.cls] : T.wealth.other, alias: service() });
+    temper(a, n); made++;
   });
   slaves.forEach(function (s, i) {
     s.a = SIM.actor({ id: 's' + i, role: roleOf('s.' + s.P.job, 'slaves', 'enslaved ' + s.P.job, WK.slaveShift, false), home: s.P.id, work: s.P.id, cls: 'slave', wealth: T.wealth.slave, job: s.P.job, how: 'slave', quarters: false,
                          off: WK.slaveRota ? offDay() : undefined });
+    temper(s.a, 900000 + i);
   });
   /* ---- the report */
   var R = { citizens: made, census: PLAN.census ? PLAN.census.population : null, homes: homes.length, workers: workers.length, dependants: deps.length, slaves: slaves.length,
@@ -245,4 +265,29 @@ VC.simWorshipNeed = function () {
   Wo.services.forEach(function (sv) { Wo.attend.forEach(function (at) { var need = Math.ceil(allWant / Wo.share * at / sv), short = Math.max(0, need - room);
     opts.push({ services: sv, attend: at, atOnce: need, short: short, shrines: shrine ? Math.ceil(short / shrine) : null, largest: big ? Math.ceil(short / big) : null }); }); });
   return { hour: hour, want: want, perService: perService, allWant: allWant, room: room, short: Math.max(0, want - room), byKind: byKind, shrineRoom: shrine, largestRoom: big, options: opts };
+};
+
+/* the census of needs (SIM-ROADMAP.md 2.4 item 6): everyone, by class, by kind of work (the dependants 'household'),
+   the efficiency of those at work now by kind of work, and the deficits named: for each need the districts where most
+   have it at TUNE.sim.needs.high or more (by home), and the free-time places full now (by kind and activity) */
+VC.simNeedsReport = function (minute) {
+  if (typeof SIM === 'undefined' || !SIM.NEED) return null;
+  var NE = TUNE.sim.needs, o = { minute: minute, high: NE.high };
+  var district = function (a) { var H = SIM.R.place[a.home]; return H ? ((H.tags || [])[1] || (H.tags || [])[0] || H.kind) : 'none'; };
+  var out = { all: SIM.needsCensus(null, o).all, byClass: SIM.needsCensus(function (a) { return a.cls || 'other'; }, o),
+              byTrade: SIM.needsCensus(function (a) { return a.job || 'household'; }, o),
+              atWork: SIM.needsCensus(function (a) { return a.activity === 'WORK' && a.task && SIM.time() >= a.task.arrive ? a.job || 'other' : null; }, o) };
+  var byD = SIM.needsCensus(district, o);
+  out.deficits = {};
+  NE.list.forEach(function (n) {
+    var L = Object.keys(byD).map(function (k) { return [k, byD[k].high[n], byD[k].n]; }).filter(function (x) { return x[1] > 0; }).sort(function (a, b) { return b[1] - a[1] || (a[0] < b[0] ? -1 : 1); });
+    var tot = L.reduce(function (s, x) { return s + x[1]; }, 0); if (tot) out.deficits[n] = { n: tot, where: L.slice(0, 5) };
+  });
+  var full = {};
+  SIM.all('place').forEach(function (P) {
+    if (P.access === 'private') return;
+    NE.free.forEach(function (act) { var c = SIM.offers(P, act); if (c > 0 && SIM.free(P, act) <= 0) { var k = P.kind + ' ' + act; full[k] = (full[k] || 0) + 1; } });
+  });
+  out.full = Object.keys(full).map(function (k) { return [k, full[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+  return out;
 };

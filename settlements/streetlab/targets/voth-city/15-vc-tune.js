@@ -363,7 +363,46 @@ var TUNE = {
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600,
-              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, other: 0x8a7a6a } }
+              colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, CONTEMPLATE: 0xb070c0, REST: 0x50607a, other: 0x8a7a6a } },
+    /* needs, happiness, efficiency, loyalty (phase C session 3; SIM-ROADMAP.md 1.4, 2.4 items 4 and 5; core/simulation
+       77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
+       `byTrade`), falls by the activity's `fill` an hour (at home, sitting, resting or with guests, there is water; asleep,
+       hunger and thirst come slower; every workplace has a drink, a labourer's thirst outruns it); WORK adds `work` times the trade's `labour` (heavy labour:
+       thirst, some hunger; the slaves `slaveLabour`). Material waits for phase D's items (rate 0). In the hours the
+       schedule gives to one of `free`, the citizen does what its meters ask (fills times meters times weights) that an
+       open place within reach offers, the scheduled one favoured by `keep`, held `dwell` minutes (and up to `jitter` more,
+       by the citizen, so the choices do not all fall due in one minute). A labourer whose
+       thirst reaches `interrupt.drink.at` at work walks to the nearest drink (a well) until it is down to `until`
+       (at most `max` minutes, not again for `cool`). Happiness: 100 less the weighted mean pain of the meters
+       (pain = 100 (m/100)^`pain`), a trait (dealt by hash, `traits`) weighing a need more or less; its band gives the
+       efficiency at work (`bands`); loyalty drifts toward it over `loyalty.tau` minutes. The meters start at a hashed
+       `init` [lo, hi] each */
+    needs: {
+      list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
+      rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0 },
+      fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 70, drink: 35, socialize: 3 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
+              SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
+              CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 } },
+      work: { drink: 4, eat: 1.5, relax: 1 },
+      labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
+                'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, 'industrial workers': 0.7,
+                'smiths and craftsmen': 0.6, tanners: 0.7, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
+      slaveLabour: 1,
+      byTrade: { soldiers: { material: 0.5 }, 'Ordinator garrison': { material: 0.5, contemplate: 1.3 }, 'town guard': { material: 0.7 },
+                 'monks and lay brothers (chapel, fields, coops)': { contemplate: 2, socialize: 0.6, material: 0.5 }, 'temple priests and servants': { contemplate: 1.5 },
+                 'shrine keepers': { contemplate: 1.5 } },
+      weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
+      traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
+                ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
+      free: ['SOCIALIZE', 'RELAX', 'DRINK', 'CONTEMPLATE', 'REST', 'IDLE'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
+      interrupt: { drink: { at: 75, act: 'DRINK', until: 25, max: 40, cool: 90 } },
+      bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
+      loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
+      /* the outdoor work in the country keeps a water barrel (`barrel`: a drink for every so many posts), the slaves'
+         quarters their rations and water */
+      barrel: { kinds: ['field', 'mine', 'quarry', 'mushfarm'], per: 2 },
+      pain: 1.5, init: { eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }, high: 70
+    }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },

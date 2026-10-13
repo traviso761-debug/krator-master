@@ -504,6 +504,22 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   stele, an offering basin and braziers; its nave holds 81) where the most worshippers are left without room when each
   household's are given to the nearest place with room within 1.5 km, as the citizens choose (`VC.simClearable`,
   `VC.simClearSpot`: the cleared ground both use).
+* **Needs, happiness, efficiency, loyalty** (phase C session 3; SIM-ROADMAP.md 2.4 items 4-6): core/simulation's new
+  `77-sim-6-needs.js` (opt-in: `SIM.needs`), tuned by `TUNE.sim.needs`. Every citizen carries a meter per need (eat,
+  drink, socialize, relax, contemplate, sleep; material waits for phase D's items), 0 met to 100 desperate, rising by the
+  hour (more for some trades: the monks' contemplation, less for the soldiers' material) and falling by what they do
+  (a meal: hunger and thirst; a tavern or a well: thirst and company; a shrine: contemplation; at home, sitting or
+  resting, there is water). Heavy labour (`labour` by trade, the slaves all of it) adds thirst and some hunger at work,
+  and a labourer whose thirst reaches 75 walks to the nearest drink (a well; the country's fields, mines and quarries
+  keep a water barrel) and back. The free hours of the schedule go where the meters ask: of socializing, relaxing at
+  home, a drink, contemplation at a shrine, rest or sitting at home, the one whose fills times the meters is highest and
+  that an open place within reach offers, held an hour; one no place takes settles for what it got. One trait each
+  (chatty, loner, pious, worldly, glutton, ascetic, restless, steady: a hash of the citizen) weighs a need a third more
+  or less. Happiness is 100 less the meters' weighted pain; its band (content, uneasy, unhappy, restless) sets the
+  efficiency at work (1, 0.92, 0.8, 0.65); loyalty follows it over three days (loyal, wavering, disloyal: their effects
+  are phase F's and G's). The report's "Needs and happiness" gives them by class and by kind of work (with the
+  efficiency of those at work now), the deficits by district and the free-time places full; the clock bar shows the mean
+  happiness; `verify.py` runs a second workday on from the first and checks the meters hold steady.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

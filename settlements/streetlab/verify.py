@@ -290,6 +290,12 @@ CITY_CHECK = r"""() => {
     if (R && VC.simDay) {
       const lf0 = SIM.LOG.length, rf0 = SIM.routeFail.length;
       out.simc.workday = VC.simDay(1, 0, 24, [3, 10, 15, 20]);
+      /* phase C session 3: a second workday on from the first (the meters carried over): do the needs hold steady? */
+      out.simc.workday2 = SIM.NEED ? VC.simDay(2, 0, 24, [10, 20]) : null;
+      out.simc.needs = VC.simNeedsReport ? VC.simNeedsReport() : null;
+      if (out.simc.needs) { const NR = out.simc.needs, top = o => Object.keys(o).sort((p, q) => o[p].happy - o[q].happy).slice(0, 6).map(k => [k, o[k].n, o[k].happy, o[k].eff]);
+        out.simc.needs = { all: NR.all, byClass: Object.keys(NR.byClass).map(k => [k, NR.byClass[k].n, NR.byClass[k].happy]), worstTrades: top(NR.byTrade), atWork: Object.keys(NR.atWork).length,
+          deficits: NR.deficits, full: NR.full, traits: [...new Set(SIM.all('actor').map(a => a.trait))].length }; }
       out.simc.restday = VC.simDay(1 + ((TUNE.sim.week.rest - 1 + 7) % 7), 7, 12, [8, 10, 11]);
       out.simc.stuck = SIM.LOG.filter(e => e.kind === 'stuck').length; out.simc.nopath = SIM.LOG.filter(e => e.kind === 'nopath').length; out.simc.routeFail = SIM.routeFail.length - rf0;
       const restOf = a => { const Ro = SIM.R.role[a.role]; return Ro.week && Ro.week[TUNE.sim.week.rest]; };
@@ -319,17 +325,35 @@ CITY_CHECK = r"""() => {
 
 def week_bad(sc):
     """phase C session 2: a workday and the rest day, run headless: asleep at 3, everyone who wants to work at work by 10
-    with nothing waiting, the rest day's work only the essential kinds' (fewer than half the workday's), the steps
+    with next to nothing waiting (0.5%: with needs, wishes change all day), the rest day's work only the essential kinds' (fewer than half the workday's), the steps
     bounded, nothing stuck or unroutable"""
     w, r = sc['workday'], sc['restday']; s3, s10, r10 = w['samples'].get('3') or w['samples'].get(3), w['samples'].get('10') or w['samples'].get(10), r['samples'].get('10') or r['samples'].get(10)
     n = sum(s3['by'].values())
-    bad = s3['by'].get('SLEEP', 0) < 0.9 * n or s10['pending'] or s10['by'].get('WORK', 0) < 0.98 * s10['wantWork'] \
+    bad = s3['by'].get('SLEEP', 0) < 0.9 * n or s10['pending'] > 0.005 * n or s10['by'].get('WORK', 0) < 0.98 * s10['wantWork'] \
         or r10['by'].get('WORK', 0) >= 0.5 * s10['by'].get('WORK', 1) or sc['restWorkers'] or w['p50'] > 120 or w['max'] > 4000 \
         or sc['stuck'] or sc['nopath'] or sc['routeFail'] or not sc['bodies'] or sc.get('slavesHalf', 0) != sc.get('slaves', -1) \
         or len(sc['faith']['temples']) < 2 or sc['faith']['chapels'] < 3 or not (sc['faith']['shrines'] or {}).get('pocket') or sc['faith']['clanShrines'] != sc['faith']['clans'] \
         or sc['worship']['short'] or sc['faith'].get('villageShrines', 0) < sc['faith'].get('villageWant', 2) \
         or any(not sc['squares']['by'].get(c) for c in sc['squares']['want']) or sc['squares']['hit'] or sc['squares']['places'] != sc['squares']['n']
     return bad
+
+
+def needs_bad(sc):
+    """phase C session 3: the needs: everyone has meters and a trait, nothing NaN; at 20:00 on the second workday the mean
+    happiness is between 40 and 99 and within 8 of the first workday's (the meters hold steady), no need's mean at 70 or
+    more (material waits for phase D); labourers leave work for a drink at 10:00 on both workdays (the well trip)"""
+    n, w1, w2 = sc.get('needs'), sc.get('workday'), sc.get('workday2')
+    if not n or not w2: return 'no needs'
+    g = lambda d, h: (d['samples'].get(str(h)) or d['samples'].get(h) or {})
+    a, b = g(w1, 20).get('needs'), g(w2, 20).get('needs')
+    if not a or not b: return 'no needs sampled'
+    if any(v != v for v in [b['happy']] + list(b['mean'].values())): return 'NaN'
+    if not (40 <= b['happy'] <= 99) or abs(b['happy'] - a['happy']) > 8: return 'happiness %s then %s' % (a['happy'], b['happy'])
+    over = [k for k, v in b['mean'].items() if v >= 70]
+    if over: return 'needs at 70 or more: %s' % over
+    if not g(w1, 10).get('by', {}).get('DRINK') or not g(w2, 10).get('by', {}).get('DRINK'): return 'no well trips at 10:00'
+    if n['traits'] < 8: return 'traits %s' % n['traits']
+    return None
 
 
 def verify_city(a, port, rel, sync_playwright):
@@ -404,12 +428,17 @@ def verify_city(a, port, rel, sync_playwright):
     print('  pedestrian layer: %s nodes, %s edges, %s bodies, %s crossings, %s joins, %s reached, %s islands joined, %s plaza hubs, %s ms; cantons %s; off the network %s; canton rooms not joined %s, chinampa huts %s' % (
         au.get('nodes'), au.get('edges'), au.get('bodies'), sc['crossings'], sc['joins'], sc['reached'], sc['islands'], sc['plazas'], sc['ms'], json.dumps(sc['cant']), json.dumps(au.get('far')), au.get('cantonRooms'), au.get('chinampaHuts')))
     print('  outside stairs and ladders: %s' % json.dumps(sc['stairs']))
-    for k in ('workday', 'restday'):
+    for k in ('workday', 'workday2', 'restday'):
         d = sc.get(k)
         if d:
             print('  %s (day %d, weekday %d): steps p50 %s ms, p90 %s, max %s; slowest %s' % (k, d['day'], d['weekday'], d['p50'], d['p90'], d['max'], d['top']))
             for h, c in sorted(d['samples'].items(), key=lambda kv: int(kv[0])):
                 print('    %s:00 %s; visiting (company at home) %d; wanted, not had %s; waiting %d; walking %d; want to work %d' % (h, json.dumps(c['by']), c.get('visiting', 0), json.dumps(c['unmet']), c['pending'], c['moving'], c['wantWork']))
+                if c.get('needs'): print('      needs: happiness %s, efficiency %s, bands %s, means %s, at 70+ %s' % (c['needs']['happy'], c['needs']['eff'], json.dumps(c['needs']['bands']), json.dumps(c['needs']['mean']), json.dumps(c['needs']['high'])))
+    if sc.get('needs'):
+        nr = sc['needs']
+        print('  needs at the second workday\'s end: by class %s; the unhappiest trades %s; trades at work now %d; traits %d' % (json.dumps(nr['byClass']), json.dumps(nr['worstTrades']), nr['atWork'], nr['traits']))
+        print('    deficits %s; full now %s; needs check: %s' % (json.dumps(nr['deficits']), json.dumps(nr['full']), needs_bad(sc) or 'OK'))
     if sc.get('worship'):
         wo = sc['worship']
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
@@ -441,7 +470,7 @@ def verify_city(a, port, rel, sync_playwright):
                 or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['wrong'] or sc['d2']['failed'] or sc['d2']['none'] or sc['d2']['pinned'] < 0.95 * sc['d2']['asked'] \
                 or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
-                or not sc.get('workday') or week_bad(sc):
+                or not sc.get('workday') or week_bad(sc) or needs_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
                 au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')

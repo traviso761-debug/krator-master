@@ -589,7 +589,9 @@ VC.simPlaces = function () {
   });
   /* the outdoor work the census counts without furniture: its posts are the census's workplaces there (each its own
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
-  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i); reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: {}, open: [6, 19], job: job, posts: n, workplaces: n,
+  var BR = TUNE.sim.needs && TUNE.sim.needs.barrel;   /* the country's outdoor work keeps a water barrel (phase C session 3) */
+  var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i), acts = {}; if (BR && BR.kinds.indexOf(kind) >= 0 && n > 0) acts.DRINK = Math.max(1, Math.ceil(n / BR.per));
+    reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: acts, open: [6, 19], job: job, posts: n, workplaces: n,
     r: q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, wander: T.outdoorR[kind] || 12, tags: ['outdoor'] }); }); };
   var fields = (PLAN.fields || []).filter(function (F) { return F.kind !== 'garden'; });
   outdoor('farmhands and ploughmen', fields.map(function (F) { return [F.bo.c[0], F.bo.c[1], 4 * F.bo.hw * F.bo.hd / 1e4]; }), function (q) { return q[2] * K.jobs.perHectare; }, 'field');

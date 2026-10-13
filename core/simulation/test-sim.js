@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -255,5 +255,68 @@ function world(seed){
  const b=S.get('actor','f2'),Tb=b.task,Lb=Tb.legs[0],q=S.pose(b,Tb.t0+Tb.dur/2,{cheap:true});
  ok('a cheap pose (a decision asking where its actor is) reads the straight line and leaves the path unfound',Lb.route===null&&Number.isFinite(q.x),Lb.route!==null);
  S.pose(b,Tb.t0+Tb.dur/2);ok('a drawn pose finds it',Lb.route!==null,Lb.route===null);}
+
+
+// needs (77-sim-6-needs.js): opt-in; lazy meters with the trip; happiness with traits; the free-time clause; the
+// interrupt; the decision's hook; the census
+{const {S,clock}=world(41);
+ ['WORK','DRINK'].forEach(a=>S.activity({id:a}));
+ S.place({id:'well',kind:'well',x:50,z:0,activities:{DRINK:4}});
+ S.role({id:'idler',org:'folk',sched:[[0,'SLEEP'],[8,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},REST:{pin:'home'}}});
+ S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}},needs:{labour:1}});
+ S.role({id:'clerk',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});
+ S.place({id:'yard',kind:'field',x:100,z:0,activities:{WORK:4}});
+ const i1=S.actor({id:'i1',role:'idler',home:'homeA'}),h1=S.actor({id:'h1',role:'hand',home:'homeA',work:'yard'}),c1=S.actor({id:'c1',role:'clerk',home:'homeA',work:'yard'});
+ const at=(h,d)=>(d||0)*1440+h*60;
+ ok('without SIM.needs the schedule decides alone',!S.NEED&&S.desire(i1,at(10))==='SOCIALIZE',!!S.NEED);
+ S.needs({list:['eat','drink','socialize','sleep'],rate:{eat:6,drink:4,socialize:3,sleep:4},work:{drink:6},
+   fill:{SLEEP:{sleep:12},REST:{sleep:20},SOCIALIZE:{socialize:30},DRINK:{drink:200},BUY:{eat:60}},
+   free:['SOCIALIZE','REST'],dwell:60,keep:1.2,done:10,interrupt:{drink:{at:70,act:'DRINK',until:20,max:40,cool:60}},
+   bands:[{label:'content',min:70,eff:1},{label:'unhappy',min:0,eff:0.7}],loyalty:{tau:600,bands:[{label:'loyal',min:50},{label:'disloyal',min:0}]},
+   traits:{chatty:{socialize:1.5}},secPerMinute:1,pain:1.5});
+ // the lazy meters
+ const M=at(10);i1.nd=[50,50,50,50];i1.ndT=M;i1.ndFrom=M+30;i1.activity='SOCIALIZE';
+ S.needsOf(i1,M+90);
+ ok('a meter rises on the way and falls by its activity once there (30 min trip, 60 there)',near(i1.nd[2],50+3*0.5-27,1e-6)&&near(i1.nd[0],50+6*1.5,1e-6),near(i1.nd[2],50+(3-30)*1.5,1e-6));
+ // happiness
+ i1.nd=[0,0,0,0];ok('every need met: happiness 100',near(S.happiness(i1),100),false);
+ i1.nd=[0,0,100,0];const h0=S.happiness(i1);i1.trait='chatty';const h1v=S.happiness(i1);i1.trait=null;
+ ok('one meter full of four: 75; a chatty actor minds the same unmet company more',near(h0,75,1e-6)&&h1v<h0,h1v>=h0);
+ ok('the band gives the efficiency',S.mood(i1).band==='content'&&S.efficiency(i1)===1,S.efficiency(i1)!==1);
+ // the free-time clause
+ clock.d=0;clock.h=10;i1.ndT=at(10);i1.ndFrom=at(10);i1.activity='SOCIALIZE';i1.fr=null;i1.nd=[0,0,10,90];
+ const tired=S.desire(i1,at(10));i1.fr=null;i1.nd=[0,0,90,10];const lonely=S.desire(i1,at(10));
+ ok('free time: the tired rest at home, the lonely go out',tired==='REST'&&lonely==='SOCIALIZE',tired===lonely);
+ i1.nd=[0,0,10,90];clock.h=10.5;const held=S.desire(i1,at(10)+30);clock.h=10+61/60;const later=S.desire(i1,at(10)+61);
+ ok('the choice holds its dwell, then the meters are asked again',held==='SOCIALIZE'&&later==='REST',held!=='SOCIALIZE');
+ ok('outside free time the schedule stands',S.desire(i1,at(2))==='SLEEP',false);
+ // a question about another minute changes nothing
+ {const nd0=i1.nd.slice(),T0=i1.ndT,fr0=i1.fr;clock.d=0;clock.h=10;S.desire(i1,at(10,6));
+  ok('asking what the actor will want days ahead leaves its meters and its choice alone',i1.ndT===T0&&i1.nd.every((v,j)=>v===nd0[j])&&i1.fr===fr0,i1.ndT!==T0);}
+ // the interrupt: the labourer goes to the well, the clerk does not
+ clock.h=12;[h1,c1].forEach(a=>{a.nd=[0,80,0,0];a.ndT=at(12);a.ndFrom=at(12);a.activity='WORK';});
+ const hw=S.desire(h1,at(12)),cw=S.desire(c1,at(12));
+ ok('a labourer thirsty at work goes for a drink, a clerk keeps working',hw==='DRINK'&&cw==='WORK',hw==='WORK');
+ h1.activity='DRINK';h1.ndFrom=at(12);clock.h=12+20/60;const back=S.desire(h1,at(12)+20);
+ ok('once drunk, back to work',back==='WORK'&&S.needsOf(h1,at(12)+20)[1]<=20,back!=='WORK');
+ clock.h=12+40/60;ok('and not again before its cool-down',(h1.nd[1]=90,h1.activity='WORK',S.desire(h1,at(12)+40))==='WORK',false);
+ // an interrupt with nowhere to go ends (the well closed): back to work, not left wanting a drink
+ {const W=S.R.place.well;W.closed=true;clock.d=0;clock.h=14;h1.intr=null;h1.intrCool=0;h1.nd=[0,90,0,0];h1.ndT=S.minute();h1.ndFrom=S.minute();h1.activity='WORK';h1.wanted=null;
+  S.decide(h1,S.minute(),clock.t);const back2=S.desire(h1,S.minute());W.closed=false;
+  ok('an interrupt no place takes is dropped and cools down: the labourer works on',h1.intr===null&&h1.intrCool>S.minute()&&back2==='WORK',h1.intr!==null);}
+ // the decision's hook: the trip counts, then the place fills
+ clock.d=1;clock.h=10;clock.t=0;i1.nd=[0,0,90,0];i1.trait=null;S.jump();
+ const s0=S.needsOf(i1,S.minute())[2],T=i1.task;
+ for(let m=1;m<=90;m++){clock.h=10+m/60;clock.t+=1;S.step();}
+ const s1=S.needsOf(i1,S.minute())[2];
+ ok('stepped: the lonely idler went out to socialize and its meter fell',i1.activity==='SOCIALIZE'&&s1<s0-20,s1>=s0);
+ // a free-time choice no place takes settles for what it got (not left wanting it)
+ S.place({id:'cell',kind:'cell',x:0,z:0,activities:{SOCIALIZE:1},open:[0,1]});
+ clock.h=11;S.R.place.market.closed=true;i1.nd=[0,0,95,0];i1.fr=null;i1.wanted=null;S.decide(i1,S.minute(),clock.t);
+ ok('a free choice with nowhere open settles for its fallback, and wants what it got',i1.activity!=='SOCIALIZE'&&i1.wanted===i1.activity&&i1.fr===i1.activity,i1.wanted==='SOCIALIZE');
+ S.R.place.market.closed=false;
+ const C=S.needsCensus(a=>a.role);
+ ok('the census by role: counts, happiness, means, the high meters',C.idler&&C.idler.n===1&&C.hand.n===1&&typeof C.idler.mean.socialize==='number'&&C.idler.happy>0,!C.idler);
+ ok('loyalty drifts toward happiness',i1.loyal!=null&&Math.abs(i1.loyal-S.happiness(i1))<100,i1.loyal==null);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);
