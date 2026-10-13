@@ -34,6 +34,7 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/water/water_test.gd',
+               'res://tests/water/falls_case_test.gd',
                'res://tests/shaders/library_test.gd']
 
 

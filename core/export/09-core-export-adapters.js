@@ -109,9 +109,11 @@ E.register('water', ctx => {
   if(S.kind === 'flow' && W.ribbon){
    const o2 = S.ribbonOpt || {}, R = W.ribbon(S, o2);
    r.ribbon = Object.assign({}, o2, { count: R.count, rows: R.rows, sum: sum(R.pos) });
-   const n = S.pts.length; for(let k = 0; k < 8; k++){ const i = Math.min(n - 2, Math.floor(k * (n - 1) / 8)), a = S.pts[i], b = S.pts[i + 1], u = .37,
-     x = a.x + (b.x - a.x) * u, z = a.z + (b.z - a.z) * u; if(box && (x < box[0] || z < box[1] || x >= box[2] || z >= box[3])) continue;
-    const fl = S.flowAt(x, z); probes.push([x, z, 0, S.heightAt(x, z), r.id, fl[0], fl[1], fl[2], fl[3]]); }
+   // 8 points down the part of the line in the tile (the whole line untiled), 37 % along their segments
+   const seg = []; for(let i = 0; i + 1 < S.pts.length; i++){ const a = S.pts[i], b = S.pts[i + 1], x = a.x + (b.x - a.x) * .37, z = a.z + (b.z - a.z) * .37;
+    if(!box || !(x < box[0] || z < box[1] || x >= box[2] || z >= box[3])) seg.push([x, z]); }
+   for(let k = 0; k < Math.min(8, seg.length); k++){ const q = seg[Math.floor(k * seg.length / Math.min(8, seg.length))], fl = S.flowAt(q[0], q[1]);
+    probes.push([q[0], q[1], 0, S.heightAt(q[0], q[1]), r.id, fl[0], fl[1], fl[2], fl[3]]); }
   }
   if(S.kind === 'fall' && W.curtain){ const o2 = S.curtainOpt || {}, M = W.curtain(S, o2), P = W.plunge(S);
    r.curtain = Object.assign({}, o2, { count: M.count, sum: sum(M.pos) }); r.plungePoint = [P.x, P.y, P.z, P.r]; }
