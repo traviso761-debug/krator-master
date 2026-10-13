@@ -1,5 +1,7 @@
 // The atmosphere's shared state (core/atmos/GODOT.md): global shader parameters declared in project.godot and set
 // every frame by the Atmos autoload (krator/atmos.gd). Use atm_time, never TIME, so pause and time-lapse work.
+#ifndef K_ATMOS_INC
+#define K_ATMOS_INC
 global uniform float atm_time;
 global uniform float atm_hour;
 global uniform float atm_night;
@@ -27,3 +29,4 @@ vec3 oct_decode(vec2 e) {
 	if (v.z < 0.0) v.xy = (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);
 	return normalize(v);
 }
+#endif
