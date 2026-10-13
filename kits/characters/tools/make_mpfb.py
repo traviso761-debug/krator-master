@@ -652,7 +652,7 @@ def pack_morphs(entries, npz):
     return b''.join(out)
 
 
-def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
+def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None, cover=None):
     """GSH1: what the Godot twin (godot/krator/character/kchar_figure.gd) needs to make a piece's blend shapes without
     looping over deltas in GDScript. Per mesh (keyed by its first material), the targets that move it and per surface
     each target's shape whole (float32 xyz, in the glTF's vertex order, which Godot's importer keeps): its positions
@@ -660,11 +660,14 @@ def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None):
     a UV seam's halves agree). Godot blends them in NORMALIZED mode, base * (1 - sum w) + sum w * shape, which for
     normals is the linear blend the page gets by re-summing them (a RELATIVE shape's normal is made unit before it
     is added, so a small turn cannot be given that way). The skin
-    surface (skin_mat) is split into regions by tri_mask (per triangle, the bits of the items that cover it): per
-    region its triangles, the vertices they use (keep) and the shapes over those. Also the skin's 64 lowest vertices
+    surface (skin_mat) is split into regions by tri_mask (per triangle, its region; cover: per region, the indices in
+    kit.items of the items that hide it): per region its triangles, the vertices they use (keep) and the shapes over
+    those; Godot joins them into one surface again and hides a region by its index (kchar_skin.gdshader). Also the skin's 64 lowest vertices
     and how each target moves them (the ground). Layout: b'GSH1', u32 json length, json, pad to 4, blob."""
     j, b = glbio.read_glb(open(path, 'rb').read())
     blob, out = bytearray(), {'meshes': {}, 'whole': True}
+    if cover is not None:
+        out['cover'] = cover
 
     def vnormals(P, T, vid):
         f = np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]])
@@ -805,7 +808,19 @@ def hands(c, J):
 _FIST = (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45)), ('Pinky', (74, 80, 45)),
          ('Thumb', (20, 30, 25)))
 # headgear that covers the hair (KCHAR.parts leaves the hair out), and library items that hang loose over the legs
-COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap'}
+COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 'iziz_f_peasant_hood'}
+# the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
+CULTURE = {'voth_': 'chichani', 'iziz_': 'izani'}
+
+
+def culture_of(iid):
+    return next((v for k, v in CULTURE.items() if iid.startswith(k)), None)
+
+
+def hangs(it):
+    """a made garment that hangs from the waist or shoulders (a tunic, coat, robe or skirt, not trousers): its legs'
+    weights pool below the crotch, it is pushed out of the legs, and it hides no skin below half the body's height"""
+    return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') and 'trousers' not in it['id']
 LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
 GRIP_STYLES = {'fist': _FIST,
                # a bow drawn with three fingers on the string, the thumb and little finger tucked
@@ -848,18 +863,18 @@ def main():
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs') else None, cloth=cl)
+                     skirt=crotch if hangs(it) else None, cloth=cl)
         roles.update(r)
         entry = {'id': it['id'], 'name': RENAME.get(it['id'], it['name']), 'slot': it['slot'], 'glb': 'pieces/%s/%s.glb' % (name, it['id'])}
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
-        if it['id'].startswith('voth_'):
-            entry['culture'] = 'chichani'  # a stranger of another people never draws it (KCHAR.stranger)
+        if culture_of(it['id']):
+            entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
             entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
-        if it['id'] in LOOSE or (it['id'].startswith('voth_') and it['slot'] in ('torso', 'legs')):
+        if it['id'] in LOOSE or hangs(it):
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
@@ -874,8 +889,8 @@ def main():
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
             tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'))
-            if it['id'].startswith('voth_'):
-                # the Voth clothing (make_garments.py) hangs loose below the hips: a flap or a skirt that lies over a
+            if hangs(it):
+                # made clothing (make_garments.py) that hangs loose below the hips: a flap or a skirt that lies over a
                 # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
                 top = BP[:, 1].max() - BP[:, 1].min()
                 tris = tris[(BP[BT[tris], 1] > BP[:, 1].min() + 0.5 * top).all(1)]
@@ -896,14 +911,17 @@ def main():
             ents = mesh_entries(os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'])
             open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(ents, npz))
         # the Godot twin's blend shapes (godot_shapes): the base's skin split by which items cover each triangle
-        tri_mask = np.zeros(len(BT), np.int64)
-        for i, e in enumerate(items):
-            if 'hide' in e:
-                hb = np.unpackbits(np.frombuffer(base64.b64decode(e['hide']), np.uint8), bitorder='little')[:len(BT)]
-                tri_mask[hb.astype(bool)] |= 1 << i
+        # (a region per set of covering items: tri_mask is the region of each triangle, cover the items of each region,
+        # by their index in kit.items; there are more items than a 64-bit mask holds)
+        hid = [i for i, e in enumerate(items) if 'hide' in e]
+        H = np.zeros((len(BT), len(hid)), bool)
+        for k, i in enumerate(hid):
+            H[:, k] = np.unpackbits(np.frombuffer(base64.b64decode(items[i]['hide']), np.uint8), bitorder='little')[:len(BT)].astype(bool)
+        rows, tri_mask = np.unique(H, axis=0, return_inverse=True)
+        cover = [[hid[k] for k in np.nonzero(r)[0]] for r in rows]
         open(os.path.join(pieces, 'base.gshapes.bin'), 'wb').write(godot_shapes(
             os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
-            '_always%d' % always.index(n) if n in always else None, npz, tri_mask, mat))
+            '_always%d' % always.index(n) if n in always else None, npz, tri_mask.reshape(-1), mat, cover))
         for it in man['items']:
             open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(
                 os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'], npz))

@@ -2,8 +2,9 @@
 
 - **The Godot twin blends normals linearly.** Its blend shapes carry each target's normals (NORMALIZED mode), so a
   reshaped body's normals turn, but as a weighted sum of the targets' turns, where the page re-sums them from the
-  morphed faces: close, not exact, when many targets stack. Its skin is split into 32-37 cover regions (one draw call
-  each); merging the small ones is the next saving there. `godot/data/characters/pieces/` is about 700 MB of copies
+  morphed faces: close, not exact, when many targets stack. Its skin is one surface of cover regions (the triangles the
+  same items cover); the skin shader drops the regions worn items cover (`kchar_skin.gdshader`), one draw call. A
+  region is all or nothing, as on the page. `godot/data/characters/pieces/` is about 700 MB of copies
   (`sync_core.py`, the shapes whole with their normals), gitignored.
 - **Morphs blend linearly.** MakeHuman's macros are piecewise (its age, weight and height targets switch between
   combinations), and its race targets interact with them; a sum of deltas measured one at a time is close, not exact.
@@ -34,7 +35,10 @@
   inside a loose garment, but it works on capsules, so a heavy thigh's front can still graze a tight skirt's top and
   a shoulder (no capsule) can show through a mantle in a full overhead reach.
   The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
-- **A people's clothes are tagged with its culture** (`culture` in the kit, Voth items `chichani`): a random
+- **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
+  and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex
+  of the Ancient plate is painted, not modelled. Each class has one cut per body.
+- **A people's clothes are tagged with its culture** (`culture` in the kit: Voth items `chichani`, Izani `izani`): a random
   stranger of another people never draws them, but the editor's pickers still offer every item to every body.
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so

@@ -128,12 +128,18 @@ func _init() -> void:
 			for s in shapes.size():
 				wok = wok and absf(base.get_blend_shape_value(s) - w[shapes[s]]) < 1e-6
 			ok(wok, "blend shape weights are the record's")
-			# the sweater hides skin: some skin region drawn as nothing, and not all of them
+			# the sweater hides skin: the skin is one surface, some of its regions drawn as nothing, and not all of them
 			var hid := 0
+			var nreg: int = base.get_meta("built")["cover"].size()
+			var joined := 0
 			for s in base.mesh.get_surface_count():
-				if base.get_surface_override_material(s) == fig._hidden_mat:
-					hid += 1
-			ok(hid > 0 and hid < base.mesh.get_surface_count() - 3, "worn items hide %d of %d base surfaces" % [hid, base.mesh.get_surface_count()])
+				if base.get_meta("built")["regions"][s]:
+					joined += 1
+					var h: PackedFloat32Array = base.get_surface_override_material(s).get_shader_parameter("hide")
+					for r in nreg:
+						hid += int(h[r] > 0.5)
+			ok(joined == 1 and nreg > 8, "the skin is one surface of %d regions" % nreg)
+			ok(hid > 0 and hid < nreg - 3, "worn items hide %d of %d skin regions" % [hid, nreg])
 		# at rest every bone's global pose times its (moved) bind is the identity: the skinned rest is the morphed mesh
 		fig.rest_pose()
 		var worst := 0.0

@@ -1,5 +1,5 @@
 # Headless: blender -b --python tools/make_garments.py -- <male|female> [--only <id>,...] [--render <png dir>]
-# Voth (Chichani) clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
+# Voth (Chichani) and Izani (Iziz) clothing for the MakeHuman bodies, made as MakeHuman clothes (.mhclo + .obj + .mhmat + texture) in
 # MPFB's user data, so tools/mpfb_build.py fits, weights and morphs them like any library item.
 #
 # Each garment is built on the body it is for, from parts:
@@ -37,7 +37,12 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      'ochre': (0.66, 0.42, 0.13), 'madder': (0.58, 0.18, 0.12), 'indigo': (0.10, 0.13, 0.28), 'rust': (0.55, 0.28, 0.14),
      'clay': (0.66, 0.38, 0.24), 'umber': (0.30, 0.21, 0.15), 'purple': (0.17, 0.06, 0.22), 'ash': (0.86, 0.84, 0.82),
      'crimson': (0.42, 0.04, 0.07), 'gold': (0.86, 0.64, 0.22), 'jade': (0.16, 0.48, 0.36), 'quetzal': (0.10, 0.42, 0.30),
-     'leather': (0.36, 0.22, 0.12), 'hide': (0.58, 0.42, 0.28), 'black': (0.06, 0.05, 0.05), 'teal': (0.12, 0.36, 0.38)}
+     'leather': (0.36, 0.22, 0.12), 'hide': (0.58, 0.42, 0.28), 'black': (0.06, 0.05, 0.05), 'teal': (0.12, 0.36, 0.38),
+     # the Izani (Iziz): undyed oat, moss and bark for the poor; sand, saddle leather and slate for the guilds; the court
+     # in verdigris and cream with copper, its sun and orb in gold; the ghost-white of salvaged Ancient plate
+     'oat': (0.70, 0.64, 0.52), 'moss': (0.30, 0.33, 0.21), 'bark': (0.30, 0.23, 0.17), 'sand': (0.78, 0.62, 0.42),
+     'saddle': (0.45, 0.27, 0.14), 'slate': (0.27, 0.29, 0.31), 'verdigris': (0.26, 0.52, 0.46), 'cream': (0.88, 0.84, 0.74),
+     'copper': (0.62, 0.35, 0.18), 'ancient': (0.86, 0.88, 0.89), 'sunorange': (0.86, 0.47, 0.13), 'deepgreen': (0.10, 0.24, 0.21)}
 
 # ---------------------------------------------------------------------------------------------------------------
 # the body
@@ -406,6 +411,24 @@ def motif(style, w, h, fg, bg):
         img[(v * 4).astype(int) % 2 == 0] = fg
     elif style == 'dots':
         img[((u - 0.5) ** 2 + (v - 0.5) ** 2) < 0.06] = fg
+    elif style == 'sun':                         # the Izani sun: a disc and its rays
+        d = np.hypot(u - 0.5, v - 0.5); an = np.arctan2(v - 0.5, u - 0.5)
+        img[d < 0.2] = fg
+        img[(d > 0.26) & (d < 0.46) & (((an / (2 * np.pi) * 12) % 1) < 0.45)] = fg
+    elif style == 'orb':                         # the orb of the palace: a ringed sphere
+        d = np.hypot(u - 0.5, v - 0.5)
+        img[(d < 0.16) | ((d > 0.28) & (d < 0.36))] = fg
+    elif style == 'hex':                         # Ancient hex plate, its seams
+        x, y = u * 2, v * 2 * 0.866
+        r = (y / 0.866).astype(int)
+        x = x + 0.5 * (r % 2)
+        cx, cy = x % 1 - 0.5, (y % 0.866) - 0.433
+        h = np.maximum(np.abs(cx) * 0.866 + np.abs(cy) * 0.5, np.abs(cy))
+        img[h > 0.36] = fg
+    elif style == 'chevron':
+        img[np.abs(v - (0.25 + 0.5 * np.abs(u - 0.5) * 2)) < 0.14] = fg
+    elif style == 'rays':                        # stripes along the strip (a halo's rays, a wrap's turns)
+        img[(u * 2).astype(int) % 2 == 0] = fg
     elif style == 'feather':                     # overlapping feather scales
         uu = (u + 0.5 * (v > 0.5)) % 1
         vv = (v * 2) % 1
@@ -433,6 +456,14 @@ def paint_strip(spec, W, H, circ, length):
         cell = motif(style, cw, r1 - r0, np.array(fg), np.array(bg if bg is not None else spec['base']))
         band = np.tile(cell, (1, W // cw + 1, 1))[:, :W]
         img[r0:r1] = band * (1 + rng.normal(0, 0.02, (r1 - r0, W, 1)))
+    # panels: a column of the strip from u0 to u1 (0 at the back of a tube, 0.5 at the front), its motif repeating
+    # down every 'rep' metres (a tabard woven into a robe)
+    for u0, u1, style, fg, bg, rep in spec.get('panels', []):
+        c0, c1 = int(u0 * W), int(u1 * W)
+        n_rep = max(1, int(round(length / rep))) if rep else 1
+        ch = max(2, H // n_rep)
+        cell = motif(style, c1 - c0, ch, np.array(fg), np.array(bg))
+        img[:, c0:c1] = np.tile(cell, (H // ch + 1, 1, 1))[:H] * (1 + rng.normal(0, 0.02, (H, c1 - c0, 1)))
     return img.clip(0, 1)
 
 
@@ -550,7 +581,11 @@ def build(gid, label, parts, slot='torso'):
 
 # ---------------------------------------------------------------------------------------------------------------
 # the garments. Ease in metres off the skin; bands in metres from an edge
-def P(base, weave=0.07, bands=()): return {'base': C[base] if isinstance(base, str) else base, 'weave': weave, 'bands': list(bands)}
+def P(base, weave=0.07, bands=(), panels=()):
+    return {'base': C[base] if isinstance(base, str) else base, 'weave': weave, 'bands': list(bands), 'panels': list(panels)}
+
+
+def PN(u0, u1, style, fg, bg, rep=0.25): return (u0, u1, style, C[fg], C[bg], rep)
 def B(where, a, b, style, fg, bg=None, rep=0.08): return (where, a, b, style, C[fg], C[bg] if bg else None, rep)
 
 L, R = 'Left', 'Right'
@@ -661,6 +696,99 @@ def fan(name, r0, r1, spread, paint, rows=7, cols=13, tilt=0.35, back=0.07, curl
     part = Part(name, np.array(P), False, ['body'] * rows, paint)
     part.cloth = {'start': 0, 'stiff': stiff, 'layer': 2}
     return part
+
+
+def trousers(gid, paint, ease=0.012, ease_end=0.02, cuff=None, seat_paint=None, n=18, rows=12):
+    """trousers: a seat round the pelvis from the waist to just below the crotch (spanning between the legs), and a
+    leg per side from the hip through the knee to the cuff (a height); they follow the legs, they do not swing"""
+    out = [torso_tube(gid + '_seat', WAIST + 0.01, CROTCH - 0.02, ease, seat_paint or paint, n=36, rows=8, hull_from=WAIST - 0.02)]
+    for s in (L, R):
+        hip, knee, foot = J(s + 'UpLeg'), J(s + 'Leg'), J(s + 'Foot')
+        z = cuff if cuff is not None else ANKLE + 0.05
+        f = (knee[2] - z) / max(1e-6, knee[2] - foot[2])
+        end = knee + (foot - knee) * min(1.0, f)
+        out.append(limb_tube('%s_leg_%s' % (gid, s[0]), None, None, ease, paint, n=n, rows=rows, ease_end=ease_end,
+                             start_back=0.06, path=[hip, knee, end], rmax=0.2))
+    return out
+
+
+def boots(gid, paint_sole, paint_upper, top=0.45, wraps=0, wrap_paint=None, cuff_paint=None, ease_top=0.03, wrap_over=None):
+    """a closed boot: the sole, and an upper from 'top' (a fraction of the way up the shin) down over the ankle and
+    along the foot to the toe, closed there, roomy at the top so trousers tuck into it; wraps: bands of cloth wound up
+    the shin over it, standing further off above wrap_over (a fraction up the shin: over the trousers' cuff)"""
+    parts = []
+    for s in (L, R):
+        foot, toe, tip, knee = J(s + 'Foot'), J(s + 'ToeBase'), J(s + 'ToeBase', 'tail'), J(s + 'Leg')
+        heel = np.array([foot[0], foot[1] + 0.05, 0.0]); front = np.array([tip[0], tip[1] - 0.012, 0.0])
+        axis = front - heel
+        rows, n = 10, 16
+        Q = []
+        for k in range(rows):
+            c = heel + axis * k / (rows - 1)
+            c[2] = 0.008
+            width = 0.05 + 0.012 * math.sin(math.pi * min(1, k / (rows - 1) * 1.2))
+            Q.append([c + np.array([math.cos(a) * width, 0, math.sin(a) * 0.008]) for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
+        parts.append(Part('%s_sole_%s' % (gid, s[0]), np.array(Q), True, ['body'] * rows, paint_sole))
+        up = foot + (knee - foot) * top
+        # the shaft, straight down the shin to below the ankle; the foot, a tube heel to toe (the front is -Y), closed
+        # past the toes; the two overlap round the ankle
+        parts.append(limb_tube('%s_shaft_%s' % (gid, s[0]), up, np.array([foot[0], foot[1], 0.03]), ease_top, paint_upper, n=18,
+                               rows=9, ease_end=0.012, rmax=0.14))
+        hb = first_hit(np.array([foot[0], foot[1], 0.035]), np.array([0, 1.0, 0]), maxd=0.15) or 0.05   # the heel's back
+        fa = np.array([foot[0], foot[1] + hb - 0.008, 0.04]); fb = np.array([tip[0], tip[1] - 0.016, 0.026])
+        u = limb_tube('%s_foot_%s' % (gid, s[0]), fa, fb, 0.012, paint_upper, n=18, rows=12, ease_end=0.015, rmax=0.09)
+        for k in (0, -1):                              # closed at the heel (inside the shaft) and past the toes
+            c = u.P[k].mean(0)
+            u.P[k] = c + (u.P[k] - c) * 0.3
+        parts.append(u)
+        if cuff_paint is not None:
+            parts.append(limb_tube('%s_cuff_%s' % (gid, s[0]), up - (knee - foot) * 0.06, up + (knee - foot) * 0.02, ease_top + 0.008, cuff_paint, n=18, rows=3))
+        for k in range(wraps):
+            f = 0.08 + (0.6 - 0.08) * k / max(1, wraps - 1)
+            c = foot + (knee - foot) * f
+            e = 0.042 if wrap_over is not None and f > wrap_over else 0.014
+            parts.append(limb_tube('%s_wrap%d_%s' % (gid, k, s[0]), c, c + (knee - foot) * 0.05, e, wrap_paint, n=16, rows=2))
+    return parts
+
+
+def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, rows=14, n=34, peak=0.05):
+    """a hood: rings round the head's axis from below the jaw (low, a fraction of the head below its joint: the cowl
+    over the neck) up over the crown, open at the face (open_front radians either side of the front, narrowing above
+    the brow so it closes over the head), its top drawn back to a peak"""
+    a, b = J('Head'), J('Head', 'tail')
+    t = (b - a) / np.linalg.norm(b - a)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
+    fs = np.linspace(low, 1.0, rows)
+    eases = np.interp(fs, [low, 0.1, 1.0], [ease_low, ease, ease])
+    opens = np.interp(fs, [low, 0.55, 0.92], [open_front, open_front, 0.03])
+    Q = np.array([ring_points(a + (b - a) * f, x, y, np.linspace(-(math.pi - o), math.pi - o, n), e, rmin=0.04, rmax=0.22)
+                  for f, e, o in zip(fs, eases, opens)])
+    c = a + (b - a) * 1.0
+    Q[-1] = c + (Q[-1] - c) * 0.2 + t * ease + x * peak
+    Q[-2] = c + (Q[-2] - c) * 0.65 + t * ease * 0.6 + x * peak * 0.5
+    Q = smooth_push(Q, False, ease, iters=2, rows_ease=eases)
+    return Part(gid, Q, False, ['body'] * rows, paint)
+
+
+def blob(name, c, size, paint, n=12, rows=5, out=None):
+    """a small closed solid (a pouch, the orb): an ellipsoid at c, size (across, deep, high), its depth along 'out'"""
+    out = np.array([0, -1.0, 0]) if out is None else out / np.linalg.norm(out)
+    side = np.cross(np.array([0, 0, 1.0]), out); side /= np.linalg.norm(side)
+    Q = []
+    for i in range(rows):
+        ph = math.pi * (0.06 + 0.88 * i / (rows - 1))
+        r, z = math.sin(ph), math.cos(ph)
+        Q.append([c + side * math.cos(a) * r * size[0] / 2 + out * math.sin(a) * r * size[1] / 2 + np.array([0, 0, z * size[2] / 2])
+                  for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
+    return Part(name, np.array(Q), True, ['body'] * rows, paint)
+
+
+def pauldron(name, side, paint, reach=0.5, ease=0.028):
+    """a plate over one shoulder and the top of the upper arm (its outer half)"""
+    a, e = J(side + 'Arm'), J(side + 'ForeArm')
+    return limb_tube(name, None, None, ease, paint, n=12, rows=6, ease_end=ease * 0.7, start_back=0.06,
+                     path=[a, a + (e - a) * reach], arc=(-1.7, 1.7), bvh=BVH_A, rmax=0.16)
 
 
 GARMENTS = {}
@@ -838,6 +966,167 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# the Izani (Iziz): science fantasy without the machines. A thousand years in the Ancients' ruins in a rain jungle:
+# wrap tunics, sashes, hoods and leg wraps for the poor; long open coats, belts and pouches and a salvaged Ancient
+# shoulder plate for the guilds; the court in long robes with high collars and the sun of Iziz on a tabard, a gold
+# circlet with the palace's orb and a sun halo behind the head
+FRONT = np.array([0, -1.0, 0])
+
+
+def _out(c, d, extra):
+    h = first_hit(c, d)
+    return c + d * ((h or 0.12) + extra)
+
+
+def izani_sash(gid, paint, tail_paint, ease=0.026, tail=0.34):
+    c = spine_at(WAIST - 0.02)
+    d = np.array([0.85, -0.5, 0]); d /= np.linalg.norm(d)
+    t = flap(gid + '_sash_tail', _out(c, d, ease + 0.01), 0.09, tail, d, tail_paint, cols=4, rows=8, ease=0.02, sway=0.02)
+    return [torso_tube(gid + '_sash', WAIST + 0.03, WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1), t]
+
+
+def izani_belt(gid, paint, pouch_paint, ease=0.042):
+    c = spine_at(WAIST - 0.015)
+    parts = [torso_tube(gid + '_belt', WAIST + 0.02, WAIST - 0.05, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1)]
+    for k, d in enumerate((np.array([-0.75, -0.66, 0]), np.array([0.8, 0.6, 0]), np.array([0.98, -0.2, 0]))):
+        d = d / np.linalg.norm(d)
+        parts.append(blob('%s_pouch%d' % (gid, k), _out(c, d, ease + 0.03), (0.075, 0.04, 0.085), pouch_paint, out=d))
+    return parts
+
+
+def izani_collar(gid, paint, high=0.07, arc=None):
+    return torso_tube(gid + '_collar', TOP + high, TOP - 0.005, 0.02, paint, n=32, rows=4, ease_bottom=0.034, arc=arc)
+
+
+def izani_crown(gid, band, halo, orb, big):
+    a, b = J('Head'), J('Head', 'tail')
+    c = a + (b - a) * 0.66
+    h = fan(gid, 0.06, 0.25 if big else 0.21, 1.95, halo, rows=6, cols=21, tilt=0.12, back=0.085, curl=0.0)
+    h.cloth = None                                    # rigid: worked copper, not feathers
+    return [head_rings(gid + '_band', 0.6, 0.7, 0.012, band, n=36, rows=3), h,
+            blob(gid + '_orb', _out(c, FRONT, 0.03), (0.03, 0.03, 0.03), orb, n=12, rows=6)]
+
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    # ---- the poor: undyed oat and moss, bark-brown trousers, a rain hood ----
+    def _tunic(sex=sex):
+        body = P('oat', 0.11, [B('top', 0.0, 0.03, 'solid', 'bark'), B('bottom', 0.0, 0.025, 'solid', 'moss'),
+                               B('bottom', 0.03, 0.04, 'solid', 'bark')])
+        sl = P('oat', 0.11, [B('bottom', 0.0, 0.03, 'solid', 'oat'), B('bottom', 0.03, 0.04, 'solid', 'bark')])
+        hem = CROTCH - 0.14 if sex == 'm' else KNEE + 0.02
+        gid = 'iziz_%s_peasant_tunic' % sex
+        return [torso_tube(gid, TOP, hem, 0.014, body, hang_from=WAIST - 0.02, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+            sleeves(gid, 'elbow', 0.02, sl, ease_end=0.032, rows=6) + \
+            izani_sash(gid, P('moss', 0.08, [B('top', 0.0, 0.01, 'solid', 'bark'), B('bottom', 0.0, 0.01, 'solid', 'bark')]),
+                       P('moss', 0.08, [B('bottom', 0.0, 0.03, 'stripes', 'bark', 'moss', 0.0)]))
+    GARMENTS['iziz_%s_peasant_tunic' % sex] = ('torso', b, 'Wrap tunic and sash', _tunic)
+
+    def _ptrou(sex=sex):
+        return trousers('iziz_%s_peasant_trousers' % sex, P('bark', 0.12, [B('bottom', 0.0, 0.02, 'solid', 'umber')]),
+                        ease=0.016, ease_end=0.03, cuff=ANKLE + 0.4 * (KNEE - ANKLE))
+    GARMENTS['iziz_%s_peasant_trousers' % sex] = ('legs', b, 'Field trousers', _ptrou)
+
+    def _wraps(sex=sex):
+        return boots('iziz_%s_peasant_wraps' % sex, P('bark', 0.15), P('oat', 0.12, [B('top', 0.0, 0.02, 'solid', 'bark')]), top=0.2,
+                     ease_top=0.012, wraps=6, wrap_paint=P('oat', 0.12, [B('top', 0.0, 0.008, 'solid', 'bark'), B('bottom', 0.0, 0.008, 'solid', 'bark')]), wrap_over=0.36)
+    GARMENTS['iziz_%s_peasant_wraps' % sex] = ('feet', b, 'Wrapped shoes', _wraps)
+
+    def _hood(sex=sex):
+        return [hood('iziz_%s_peasant_hood' % sex, P('moss', 0.12, [B('bottom', 0.0, 0.03, 'solid', 'bark'), B('top', 0.0, 0.02, 'solid', 'bark')]))]
+    GARMENTS['iziz_%s_peasant_hood' % sex] = ('head', b, 'Rain hood', _hood)
+
+    # ---- the guilds (salvagers, hunters, the Watch): sand under saddle leather, a belt and pouches, Ancient plate ----
+    def _coat(sex=sex):
+        gid = 'iziz_%s_trade_coat' % sex
+        under = P('sand', 0.07, [B('top', 0.0, 0.02, 'solid', 'saddle'), B('bottom', 0.0, 0.02, 'solid', 'saddle')])
+        sl = P('sand', 0.07, [B('bottom', 0.0, 0.03, 'solid', 'saddle')])
+        coat = P('saddle', 0.05, [B('bottom', 0.0, 0.015, 'solid', 'bark'), B('bottom', 0.02, 0.06, 'chevron', 'sand', 'saddle', 0.06),
+                                  B('bottom', 0.065, 0.075, 'solid', 'bark'), B('top', 0.0, 0.02, 'solid', 'bark')])
+        open_ = (-(math.pi - 0.34), math.pi - 0.34)
+        hem = KNEE + 0.02 if sex == 'm' else KNEE - 0.12
+        return [torso_tube(gid + '_under', TOP, HIPS[2] - 0.12, 0.012, under, hang_from=WAIST, flare=0.1, hull_from=CHEST + 0.02),
+                torso_tube(gid, TOP - 0.005, hem, 0.03, coat, n=40, arc=open_, hang_from=WAIST - 0.03, flare=0.2,
+                           group_below=CROTCH + 0.02, layer=2),
+                izani_collar(gid, P('bark', 0.05, [B('top', 0.0, 0.012, 'solid', 'sand')]), high=0.06, arc=open_),
+                pauldron(gid + '_plate', L, P('ancient', 0.02, [B('top', 0.0, 0.3, 'hex', 'slate', 'ancient', 0.05)]))] + \
+            sleeves(gid, 'wrist', 0.014, sl, ease_end=0.022, rows=9) + \
+            izani_belt(gid, P('bark', 0.05, [B('top', 0.0, 0.01, 'solid', 'copper'), B('bottom', 0.0, 0.01, 'solid', 'copper')]),
+                       P('saddle', 0.06, [B('top', 0.0, 0.02, 'solid', 'bark')]))
+    GARMENTS['iziz_%s_trade_coat' % sex] = ('torso', b, 'Guild coat, belt and plate', _coat)
+
+    def _ttrou(sex=sex):
+        return trousers('iziz_%s_trade_trousers' % sex, P('slate', 0.08), ease=0.01, ease_end=0.014, cuff=ANKLE + 0.05)
+    GARMENTS['iziz_%s_trade_trousers' % sex] = ('legs', b, 'Guild trousers', _ttrou)
+
+    def _tboots(sex=sex):
+        return boots('iziz_%s_trade_boots' % sex, P('bark', 0.1), P('saddle', 0.06), top=0.6,
+                     cuff_paint=P('bark', 0.06, [B('top', 0.0, 0.01, 'solid', 'copper')]))
+    GARMENTS['iziz_%s_trade_boots' % sex] = ('feet', b, 'Tall boots', _tboots)
+
+    # ---- the court: verdigris and cream, copper and gold; the sun of Iziz and the palace's orb ----
+    def _nfeet(sex=sex):
+        return boots('iziz_%s_noble_boots' % sex, P('copper', 0.04), P('cream', 0.04, [B('top', 0.0, 0.015, 'solid', 'verdigris')]), top=0.3,
+                     cuff_paint=P('gold', 0.03))
+    GARMENTS['iziz_%s_noble_boots' % sex] = ('feet', b, 'Court boots', _nfeet)
+
+    def _crown(sex=sex):
+        return izani_crown('iziz_%s_noble_crown' % sex, P('gold', 0.02, [B('top', 0.0, 0.004, 'solid', 'copper'), B('bottom', 0.0, 0.004, 'solid', 'copper')]),
+                           P('gold', 0.03, [B('top', 0.0, 0.3, 'rays', 'sunorange', 'gold', 0.035), B('bottom', 0.0, 0.03, 'solid', 'copper')]),
+                           P('verdigris', 0.02), sex == 'm')
+    GARMENTS['iziz_%s_noble_crown' % sex] = ('head', b, 'Sun crown and orb', _crown)
+
+
+def _sun_robe(base_, trim, panels=()):
+    return P(base_, 0.04, [B('top', 0.0, 0.015, 'solid', trim), B('bottom', 0.0, 0.015, 'solid', trim), B('bottom', 0.02, 0.09, 'sun', 'gold', base_, 0.09),
+                           B('bottom', 0.095, 0.105, 'solid', trim)], panels)
+
+
+@garment('iziz_m_noble_robe', 'torso', 'male', 'Court robe and cape')
+def _():
+    gid = 'iziz_m_noble_robe'
+    sl = P('verdigris', 0.04, [B('bottom', 0.0, 0.015, 'solid', 'copper'), B('bottom', 0.02, 0.07, 'orb', 'gold', 'verdigris', 0.06)])
+    cloak = P('sunorange', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'copper'), B('top', 0.0, 0.02, 'solid', 'copper')])
+    # the tabard is woven in: a cream panel down the front (u 0.5), the sun repeating down it
+    tabard = [PN(0.455, 0.545, 'sun', 'gold', 'cream', 0.2), PN(0.442, 0.455, 'solid', 'copper', 'copper'), PN(0.545, 0.558, 'solid', 'copper', 'copper')]
+    return [torso_tube(gid, TOP - 0.01, ANKLE + 0.07, 0.012, _sun_robe('verdigris', 'copper', tabard), hang_from=CHEST - 0.06, hang_side=WAIST, flare=0.12,
+                       group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+            izani_collar(gid, P('copper', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]), high=0.08),
+            cape(gid + '_cape', KNEE - 0.12, cloak, flare=0.2, span=1.25, ease=0.034, top=TOP - 0.03)] + \
+        sleeves(gid, 'wrist', 0.016, sl, ease_end=0.085, rows=10) + \
+        izani_sash(gid, P('copper', 0.04, [B('top', 0.0, 0.008, 'solid', 'gold'), B('bottom', 0.0, 0.008, 'solid', 'gold')]),
+                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.03, tail=0.5)
+
+
+@garment('iziz_m_noble_trousers', 'legs', 'male', 'Court trousers')
+def _():
+    return trousers('iziz_m_noble_trousers', P('cream', 0.04), ease=0.01, ease_end=0.014, cuff=ANKLE + 0.05)
+
+
+@garment('iziz_f_noble_gown', 'torso', 'female', 'Court gown, collar and train')
+def _():
+    gid = 'iziz_f_noble_gown'
+    bod = P('verdigris', 0.04, [B('top', 0.0, 0.015, 'solid', 'copper'), B('top', 0.04, 0.10, 'sun', 'gold', 'verdigris', 0.09),
+                                B('bottom', 0.0, 0.015, 'solid', 'copper')])
+    sl = P('verdigris', 0.04, [B('bottom', 0.0, 0.015, 'solid', 'copper'), B('bottom', 0.02, 0.07, 'orb', 'gold', 'verdigris', 0.06)])
+    train = P('deepgreen', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'copper'), B('bottom', 0.02, 0.12, 'sun', 'gold', 'deepgreen', 0.14),
+                                  B('top', 0.0, 0.02, 'solid', 'copper')])
+    return [torso_tube(gid, TOP, HIPS[2] - 0.07, 0.011, bod, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.06, hull_from=CHEST + 0.02),
+            izani_collar(gid, P('copper', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]), high=0.085),
+            cape(gid + '_train', 0.04, train, flare=0.3, span=1.15, ease=0.034, top=TOP - 0.03)] + \
+        sleeves(gid, 'wrist', 0.014, sl, ease_end=0.09, rows=10) + \
+        izani_sash(gid, P('copper', 0.04, [B('top', 0.0, 0.008, 'solid', 'gold'), B('bottom', 0.0, 0.008, 'solid', 'gold')]),
+                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.022, tail=0.45)
+
+
+@garment('iziz_f_noble_skirt', 'legs', 'female', 'Court skirt')
+def _():
+    p = P('cream', 0.04, [B('bottom', 0.0, 0.015, 'solid', 'copper'), B('bottom', 0.015, 0.06, 'solid', 'verdigris'),
+                          B('bottom', 0.065, 0.13, 'orb', 'gold', 'cream', 0.09), B('bottom', 0.135, 0.145, 'solid', 'verdigris'),
+                          B('top', 0.0, 0.03, 'solid', 'copper')])
+    return [torso_tube('iziz_f_noble_skirt', WAIST + 0.015, 0.035, 0.007, p, hang_from=CROTCH + 0.06, flare=0.3, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST)]
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # the xref cache MPFB's matching reads (made once per machine)
 cache = LocationService.get_user_cache('basemesh_xref')
 if not os.path.exists(cache) or not os.listdir(cache):
@@ -868,8 +1157,8 @@ if RENDER:
     cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
     cam.data.lens = 85
     os.makedirs(RENDER, exist_ok=True)
-    tier = lambda g: 'noble' if 'noble' in g else 'trade' if 'trade' in g else 'peasant'
-    for t in ('peasant', 'trade', 'noble'):
+    tier = lambda g: g.split('_')[0] + '_' + ('noble' if 'noble' in g else 'trade' if 'trade' in g else 'peasant')
+    for t in sorted({tier(g) for g in made}):
         objs = []
         for gid in made:
             if tier(gid) != t: continue

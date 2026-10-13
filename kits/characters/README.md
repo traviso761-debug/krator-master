@@ -35,7 +35,7 @@ godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 | Step | Where | What |
 |---|---|---|
 | 1. Blender | `tools/mpfb_build.py` | Builds an MPFB human (Mixamo rig, `detailed_helpers` so the rig lands right), loads the brows, lashes, eyes and every library item in `ITEMS` (clothes per slot, hair, beards: MakeHuman fits each to the body and interpolates its weights from it), exports the base and each item as a GLB on the same rig, with a `_VIDX` attribute (each vertex's Blender index) and each item's delete group. Then, per slider end (macros: age, muscle, weight, height, proportions, and bust and firmness on the woman; the three ancestry shares; 35 face targets), it sets the target, lets MPFB refit the rig and every item, and records how far each vertex of every mesh and each joint moved: `morphs.npz`. |
-| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images. Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
+| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images. Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
 | 3. Record | `src/10-rig.js` | `KCHAR.morphWeights(record)`: one weight per target (a slider at v < 0 weighs its minus end by -v, at v > 0 its plus end by v, times its reach; ancestry weighs each race by its share minus the base's). `KCHAR.morphJoints`: each joint's rest moves by the weighted sum of its deltas. `KCHAR.stranger(seed, kit, people)`: a record drawn from a people's ranges with `KRAND`. |
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
 | 5. Pages | `src/90-editor.js`, `src/92-animlab.js` | The Cosmetic Lab: Gear (clothes, dye), Head (people, skin tone, hair, hair colour, beard, eye colour), Body (ancestry, build), Face (35 sliders), Record (the record as text, roll a stranger, strangers in bulk). The Animation Lab: six figures, the clips, review marks. |
@@ -102,6 +102,21 @@ feather scales). `--render <dir>` loads the garments back through MPFB and rende
 `data/peoples.json` gives the Chichani `outfits` per class (torso, legs, feet and, above the peasants, head) and `tiers` (60 % peasants, 30 % tradesfolk, 10 % court):
 their strangers and crowds are dressed by class (`record.tier`), and the Cosmetic Lab's Gear tab puts any of the six
 outfits on with one chip.
+
+**Izani clothing** (the same tool, `iziz_*`): Iziz's people, science fantasy without the machines (a thousand years
+in the Ancients' ruins, in a rain jungle; LORE.md 6.2, `settlements/iziz/DESIGN.md`). Commoners in undyed oat and moss:
+a wrap tunic with a sash and its hanging end, bark-brown field trousers, shoes with cloth wound up the shin, and a rain
+hood with a cowl (it hides the hair). The guilds (salvagers, hunters, the Watch) in sand under saddle leather: a tunic
+under a long open-fronted coat with a standing collar, a belt with pouches, a plate of salvaged Ancient hex armour on
+the left shoulder, slate trousers tucked into tall boots. The court in verdigris and cream with copper: a long robe with
+bell sleeves, a high collar, the sun of Iziz woven down the front as a tabard and a sun-orange cape (a gown with a
+floor-length train over a cream skirt for women), soft court boots, and a sun crown: a gold circlet with the palace's
+orb at the brow and a rigid sun halo of copper rays behind the head. The parts the Voth set lacked are in the tool:
+`trousers` (a seat and two legs through the knees), `boots` (sole, shaft and a foot closed past the toes, roomy at the
+top so trousers tuck in), `hood`, `blob` (pouches, the orb), `pauldron`, and paint `panels` (a column of motif down a
+tube: the woven tabard). Made clothes that hang (tunics, coats, robes, skirts, not trousers: `make_mpfb.hangs`) pool
+their leg weights, are pushed out of the legs and hide no skin below half height; `culture` comes from the prefix.
+`data/peoples.json` dresses Izani strangers by class: 55 % commoners, 32 % guild, 13 % court.
 
 **Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
 garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
@@ -172,7 +187,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
-| `tools/make_garments.py` | the Voth clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/make_garments.py` | the Voth and Izani clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

@@ -7,8 +7,9 @@
 # - Morphs are blend shapes. Each piece is rebuilt once as an ArrayMesh with one shape per morph target that moves it
 #   ("t<target index>", relative: Godot adds weight * offset; base normals); a character is only its weights. The meshes are shared
 #   by every figure of a body (a static cache), so a crowd costs one copy of the geometry.
-# - Hidden skin is regions. Godot cannot drop triangles per instance, so the skin surface is split by which items
-#   cover each triangle (kit items' hide bitsets); a worn item's regions get a discard material.
+# - Hidden skin is regions. Godot cannot drop triangles per instance, so the skin's triangles are grouped by which
+#   items cover them (kit items' hide bitsets) and each vertex carries its group; kchar_skin.gdshader draws the groups a
+#   worn item covers as nothing (one surface, one draw call).
 # - The joints and inverse binds move as in the page: bone pose position = KChar.morph_joints t, and each bind is
 #   bind0 * T(-d[bone]), so the skinned rest is exactly the morphed mesh. A bone the skeleton lacks (an exporter's
 #   'neutral_bone') takes Head's bind. The feet stay on the ground from the skin's lowest vertices.
@@ -21,7 +22,7 @@ class_name KCharFigure
 extends Node3D
 
 const EYE_SHADER := preload("res://krator/character/kchar_eye.gdshader")
-const HIDDEN_SHADER := preload("res://krator/character/kchar_hidden.gdshader")
+const SKIN_SHADER := preload("res://krator/character/kchar_skin.gdshader")
 const PUSH_SHADER := preload("res://krator/character/kchar_push.gdshader")
 
 static var _cache := {}                  # piece path -> Array of built meshes (see _build)
@@ -39,7 +40,6 @@ var _hips := -1
 var _head := -1
 var _clip := ""
 var looping := "idle"                    # the clip a play-once clip returns to
-var _hidden_mat: ShaderMaterial
 
 
 func load_body(data_dir: String, body_id: String) -> void:
@@ -59,8 +59,6 @@ func load_body(data_dir: String, body_id: String) -> void:
 	skeleton.reset_bone_poses()
 	_hips = skeleton.find_bone("Hips")
 	_head = skeleton.find_bone("Head")
-	_hidden_mat = ShaderMaterial.new()
-	_hidden_mat.shader = HIDDEN_SHADER
 	player = AnimationPlayer.new()
 	player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	add_child(player)
@@ -114,7 +112,8 @@ static func _gsh(path: String) -> Dictionary:
 
 
 # one built mesh per MeshInstance3D of the GLB: { mesh: ArrayMesh, skin: Skin, shapes: PackedInt32Array (target per
-# blend shape), regions: Array (per surface: the item bits that hide it, or 0), ground: the skin's lowest vertices or null }
+# blend shape), regions: Array (per surface: whether it is the joined skin), cover: per skin region the kit.items indices
+# that hide it, ground: the skin's lowest vertices or null }
 static func _build(glb: String) -> Array:
 	if _cache.has(glb):
 		return _cache[glb]
@@ -137,7 +136,8 @@ static func _build(glb: String) -> Array:
 		mesh.blend_shape_mode = Mesh.BLEND_SHAPE_MODE_NORMALIZED if whole else Mesh.BLEND_SHAPE_MODE_RELATIVE
 		for t in shapes:
 			mesh.add_blend_shape("t%d" % t)
-		var regions := []
+		var regions := []                 # per surface: whether it is the joined skin (hidden by region)
+		var joined := {}
 		var verts0 = null                 # the first surface's positions and shapes (the cloth chains' rest)
 		var offs0 := []
 		for s in src.get_surface_count():
@@ -178,6 +178,12 @@ static func _build(glb: String) -> Array:
 					if arr[Mesh.ARRAY_TANGENT] != null:
 						sh[Mesh.ARRAY_TANGENT] = arr[Mesh.ARRAY_TANGENT]
 					bs.append(sh)
+				if sf.has("keep"):
+					# a region of the skin: joined to the others below, each vertex carrying its region (CUSTOM0)
+					_join(joined, arr, bs, int(sf["region"]))
+					joined["mat"] = mat
+					joined["name"] = nm
+					continue
 				var flags := 0
 				if arr[Mesh.ARRAY_BONES] != null and arr[Mesh.ARRAY_BONES].size() == arr[Mesh.ARRAY_VERTEX].size() * 8:
 					flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
@@ -189,7 +195,17 @@ static func _build(glb: String) -> Array:
 				if mat:
 					mesh.surface_set_material(mesh.get_surface_count() - 1, mat)
 				mesh.surface_set_name(mesh.get_surface_count() - 1, nm)
-				regions.append(int(sf["region"]) if sf["region"] != null else 0)
+				regions.append(false)
+		if joined.has("arr"):
+			var ja: Array = joined["arr"]
+			var flags := Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT
+			if ja[Mesh.ARRAY_BONES] != null and ja[Mesh.ARRAY_BONES].size() == ja[Mesh.ARRAY_VERTEX].size() * 8:
+				flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+			mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, ja, joined["bs"], {}, flags)
+			if joined["mat"]:
+				mesh.surface_set_material(mesh.get_surface_count() - 1, joined["mat"])
+			mesh.surface_set_name(mesh.get_surface_count() - 1, joined["name"])
+			regions.append(true)
 		var skin: Skin = mi.skin.duplicate(true) if mi.skin else null
 		if skin:
 			for k in skin.get_bind_count():
@@ -201,10 +217,53 @@ static func _build(glb: String) -> Array:
 		for sf in info["surfaces"]:
 			if sf.get("region") != null:
 				ground = H.get("ground")
-		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0, "whole": whole})
+		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0,
+			"whole": whole, "cover": H.get("cover", [])})
 	scene.free()
 	_cache[glb] = built
 	return built
+
+
+# the skin's regions as one surface: each region's arrays and shapes appended, its indices moved past the vertices
+# before it, and its region number in every vertex's CUSTOM0 (kchar_skin.gdshader draws a covered region as nothing:
+# one draw call for the skin instead of one per region)
+static func _join(J: Dictionary, arr: Array, bs: Array, region: int) -> void:
+	var nv: int = arr[Mesh.ARRAY_VERTEX].size()
+	var c := PackedFloat32Array()
+	c.resize(nv * 4)
+	c.fill(float(region))
+	if not J.has("arr"):
+		# copies of every array: packed arrays are shared by reference (a shape's tangents are the surface's own)
+		var a0 := arr.duplicate(true)
+		a0[Mesh.ARRAY_CUSTOM0] = c
+		J["arr"] = a0
+		J["bs"] = []
+		for sh in bs:
+			J["bs"].append(sh.duplicate(true))
+		return
+	var A: Array = J["arr"]
+	var base: int = A[Mesh.ARRAY_VERTEX].size()
+	var ix: PackedInt32Array = arr[Mesh.ARRAY_INDEX].duplicate()
+	for k in ix.size():
+		ix[k] += base
+	for a in Mesh.ARRAY_MAX:
+		if A[a] == null:
+			continue
+		var x = A[a]
+		if a == Mesh.ARRAY_INDEX:
+			x.append_array(ix)
+		elif a == Mesh.ARRAY_CUSTOM0:
+			x.append_array(c)
+		elif arr[a] != null:
+			x.append_array(arr[a])
+		A[a] = x
+	for k in bs.size():
+		var S: Array = J["bs"][k]
+		for a in [Mesh.ARRAY_VERTEX, Mesh.ARRAY_NORMAL, Mesh.ARRAY_TANGENT]:
+			if S[a] != null and bs[k][a] != null:
+				var y = S[a]
+				y.append_array(bs[k][a])
+				S[a] = y
 
 
 # a region of a surface: the vertices it keeps (in the order the shapes were written), its triangles renumbered
@@ -306,13 +365,13 @@ func apply(rec: Dictionary) -> void:
 	for i in skel["joints"].size():
 		if i != _hips:
 			skeleton.set_bone_pose_position(i, morph["t"][i])
-	# the items worn, as bits of kit.items: their skin regions hide
-	var worn := 0
+	# the items worn, by index in kit.items: the skin regions they cover hide
+	var worn := {}
 	var items: Array = kit["items"]
 	for i in items.size():
 		var it = KChar.item(rec, kit, items[i]["slot"])
 		if it != null and it["id"] == items[i]["id"]:
-			worn |= 1 << i
+			worn[i] = true
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	skeleton.position.y = 0.0
@@ -329,11 +388,16 @@ func apply(rec: Dictionary) -> void:
 					mi.skin.set_bind_pose(k, bind0[k] * Transform3D(Basis(), -d[bone]))
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
-			var region: int = b["regions"][s]
-			if region & worn:
-				mi.set_surface_override_material(s, _hidden_mat)
-				continue
-			mi.set_surface_override_material(s, _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain))
+			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
+			if b["regions"][s]:
+				var hide := PackedFloat32Array()
+				hide.resize(SKIN_REGIONS)
+				for r in mini(b["cover"].size(), SKIN_REGIONS):
+					for i in b["cover"][r]:
+						if worn.has(int(i)):
+							hide[r] = 1.0
+				m = _skin_mat(m as BaseMaterial3D, hide)
+			mi.set_surface_override_material(s, m)
 		if b["ground"] != null:
 			var G: Dictionary = b["ground"]
 			var low := INF
@@ -984,6 +1048,21 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
 	_push_mats.append(pm)
 	return pm
+
+
+# the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it
+const SKIN_REGIONS := 256
+func _skin_mat(m2: BaseMaterial3D, hide: PackedFloat32Array) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.shader = SKIN_SHADER
+	sm.set_shader_parameter("tex", m2.albedo_texture)
+	sm.set_shader_parameter("albedo", m2.albedo_color)
+	if m2.normal_enabled and m2.normal_texture != null:
+		sm.set_shader_parameter("ntex", m2.normal_texture)
+		sm.set_shader_parameter("nscale", m2.normal_scale)
+	sm.set_shader_parameter("rough", m2.roughness)
+	sm.set_shader_parameter("hide", hide)
+	return sm
 
 
 func _leg_caps() -> void:

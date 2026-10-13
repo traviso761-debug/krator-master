@@ -45,7 +45,14 @@ ITEMS = {
                     ('feet', 'Voth heeled sandals', 'voth_m_trade_sandals'),
                     ('torso', 'Voth court robe', 'voth_m_noble_robe'), ('legs', 'Voth court skirt', 'voth_m_noble_skirt'),
                     ('feet', 'Voth gilded sandals', 'voth_m_noble_sandals'),
-                    ('head', 'Voth head wrap', 'voth_m_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_m_noble_headdress')]},
+                    ('head', 'Voth head wrap', 'voth_m_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_m_noble_headdress'),
+                    # Izani (Iziz) clothing, also from tools/make_garments.py
+                    ('torso', 'Izani wrap tunic', 'iziz_m_peasant_tunic'), ('legs', 'Izani field trousers', 'iziz_m_peasant_trousers'),
+                    ('feet', 'Izani wrapped shoes', 'iziz_m_peasant_wraps'), ('head', 'Izani rain hood', 'iziz_m_peasant_hood'),
+                    ('torso', 'Izani guild coat', 'iziz_m_trade_coat'), ('legs', 'Izani guild trousers', 'iziz_m_trade_trousers'),
+                    ('feet', 'Izani tall boots', 'iziz_m_trade_boots'),
+                    ('torso', 'Izani court robe', 'iziz_m_noble_robe'), ('legs', 'Izani court trousers', 'iziz_m_noble_trousers'),
+                    ('feet', 'Izani court boots', 'iziz_m_noble_boots'), ('head', 'Izani sun crown', 'iziz_m_noble_crown')]},
  'female': {'skin': 'young_caucasian_female/young_caucasian_female.mhmat',
           'macro': {'gender': 0.0, 'muscle': 0.55, 'height': 0.5},
           'always': [('eyebrows', 'eyebrow002'), ('eyelashes', 'eyelashes02'), ('eyes', 'low-poly')],
@@ -78,7 +85,14 @@ ITEMS = {
                     ('feet', 'Voth heeled sandals', 'voth_f_trade_sandals'),
                     ('torso', 'Voth court huipil', 'voth_f_noble_gown'), ('legs', 'Voth court skirt', 'voth_f_noble_skirt'),
                     ('feet', 'Voth gilded sandals', 'voth_f_noble_sandals'),
-                    ('head', 'Voth head wrap', 'voth_f_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_f_noble_headdress')]},
+                    ('head', 'Voth head wrap', 'voth_f_trade_wrap'), ('head', 'Voth quetzal headdress', 'voth_f_noble_headdress'),
+                    # Izani (Iziz) clothing, also from tools/make_garments.py
+                    ('torso', 'Izani wrap tunic', 'iziz_f_peasant_tunic'), ('legs', 'Izani field trousers', 'iziz_f_peasant_trousers'),
+                    ('feet', 'Izani wrapped shoes', 'iziz_f_peasant_wraps'), ('head', 'Izani rain hood', 'iziz_f_peasant_hood'),
+                    ('torso', 'Izani guild coat', 'iziz_f_trade_coat'), ('legs', 'Izani guild trousers', 'iziz_f_trade_trousers'),
+                    ('feet', 'Izani tall boots', 'iziz_f_trade_boots'),
+                    ('torso', 'Izani court gown', 'iziz_f_noble_gown'), ('legs', 'Izani court skirt', 'iziz_f_noble_skirt'),
+                    ('feet', 'Izani court boots', 'iziz_f_noble_boots'), ('head', 'Izani sun crown', 'iziz_f_noble_crown')]},
 }[body]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
@@ -120,8 +134,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the Voth garments are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith('voth_')
+            # the made garments (Voth, Izani) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own
