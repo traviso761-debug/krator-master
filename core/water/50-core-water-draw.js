@@ -21,7 +21,7 @@
 // o: {THREE, scene (default ATMOS's), color, roughness, metalness, envMapIntensity, normalMap + detailSize m + detailCycles
 //    [x,z] (a detail normal map scrolled whole cycles per period), normalScale, transparent, shallow, deep (colours with a bed),
 //    surf (cycles of the surf lap per period), renderOrder, name}
-// -> {mesh, material, uniforms, update(camera), count()} ; mesh.userData.probeSkip, its raycast is off (a build keeps its own
+// -> {mesh, material, uniforms, update(camera), count()} ; mesh.userData.probeSkip and lodSkip, its raycast is off (a build keeps its own
 // flat pick plane), name 'water:<name>'.
 // WATER.shaderOn(S, sh) gives another material (a wake, a buoy's ring) the surface's uniforms and returns the chunk to inject,
 // with wtrHeight(xz) (the height at a world point, 3 Newton steps) for anything drawn on the water.
@@ -120,6 +120,7 @@
     .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.0-wtrFoamK;')
     .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrN,0.0)).xyz);');};
   const mesh=new T.Mesh(g,mat);mesh.name='water:'+S.name;mesh.frustumCulled=false;mesh.raycast=()=>{};mesh.userData.probeSkip=true;mesh.userData.water=S.id;
+  mesh.userData.lodSkip=true;   // the CDLOD mesh is its own level of detail: core/lod's pass must not take it (it would cull or copy the unit grid)
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   // the nodes for the camera that is about to render (every render of the scene: the attribute uploads in that render)
   const fu=new T.Frustum(),pm=new T.Matrix4(),box=new T.Box3(),cam=[0,0,0],B=S.bounds;

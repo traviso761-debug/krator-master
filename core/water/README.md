@@ -56,6 +56,10 @@ reflects the sky. `envMapIntensity` sets how much: the Ring Sea takes a fifth (m
 shader). Keep a flat, invisible plane for the camera's ground picks (`new THREE.MeshBasicMaterial({visible: false})`, as
 `kits/ringsea/src/90-rs-scene.js` does) and use `WATER.heightAt` for anything that needs the surface.
 
+**Level of detail.** The mesh carries `userData.lodSkip` (2026-10-13): core/lod's automatic pass (`97-lod-auto.js`) took it
+for a static mesh, culled its unit grid by its size at the origin and moved it off layer 0, so in Locus the lake vanished
+once the camera was far from the origin. The CDLOD selection is the water's own level of detail.
+
 ## The six kinds
 
 | Kind | Call | Data | Twin | Drawn |
