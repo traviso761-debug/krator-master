@@ -460,8 +460,8 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
         ax = (knuck - wr) * 0.45
         across = _perp(ax / np.linalg.norm(ax), P('HandIndex1') - P('HandPinky1'))
         thick = np.cross(ax / np.linalg.norm(ax), across)
-        width = max(0.03, np.linalg.norm(P('HandIndex1') - P('HandPinky1')) * 0.62) * k / st['bulk'] ** 0.5
-        _box(plate, wr + (knuck - wr) * 0.55, ax, across * width, thick * 0.014 * k, J('Hand'), U('Hand'))
+        half = max(0.015, np.linalg.norm(P('HandIndex1') - P('HandPinky1')) * 0.42) * k / st['bulk'] ** 0.5
+        _box(plate, wr + (knuck - wr) * 0.55, ax, across * half, thick * 0.013 * k, J('Hand'), U('Hand'))
         for f in st['fingers']:
             js = [S2 + 'Hand%s%d' % (f, q) for q in (1, 2, 3) if S2 + 'Hand%s%d' % (f, q) in body.jidx]
             if not js:

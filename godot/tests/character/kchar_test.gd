@@ -277,7 +277,24 @@ func _init() -> void:
 		for pp in j("peoples.json")["peoples"]:
 			if pp["id"] == "hykkousoi":
 				p_h = pp
-		ok(KChar.stranger(3, fig.kit, p_h).get("mods", []).has("mod_gills"), "the Hykkousoi's strangers have rib gills")
+		ok(KChar.stranger(3, g.kit, p_h).get("mods", []).has("mod_gills"), "the Hykkousoi's strangers have rib gills")
+		# the cybernetic designs on the normal-size bodies: each makes a man or a woman four-armed and is drawn
+		for body in ["mpfb_male", "mpfb_female"]:
+			var nf := KCharFigure.new()
+			nf.load_body(DIR, body)
+			root.add_child(nf)
+			var nrec := KChar.blank(nf.kit)
+			var good := true
+			for mid in ["mod_arms_cyber", "mod_arms_loader", "mod_arms_surgical"]:
+				nrec["mods"] = [mid]
+				nf.apply(nrec)
+				var drawn := false
+				for mi in nf._live.values():
+					if mi.visible and String(mi.get_meta("part")["key"]).contains(mid):
+						drawn = true
+				good = good and nf.four_arms and drawn
+			ok(good, "%s: the three cybernetic pairs, four-armed and drawn" % body)
+			nf.queue_free()
 		print("kchar_test: the giant checked (%d bones, %d clips)" % [g.skeleton.get_bone_count(), g.player.get_animation_list().size()])
 
 	print("kchar_test: %s" % ("all passed" if fails == 0 else "%d failed" % fails))

@@ -6546,9 +6546,31 @@
   },
   {
    "id": "mod_arms_cyber",
-   "name": "Cybernetic arms",
+   "name": "Cybernetic arms, bronze",
    "slot": "mods",
    "glb": "pieces/mpfb_female/mod_arms_cyber.glb",
+   "grants": {
+    "arms": 4
+   },
+   "group": "arms",
+   "kind": "cybernetic"
+  },
+  {
+   "id": "mod_arms_loader",
+   "name": "Loader arms (hydraulic, claws)",
+   "slot": "mods",
+   "glb": "pieces/mpfb_female/mod_arms_loader.glb",
+   "grants": {
+    "arms": 4
+   },
+   "group": "arms",
+   "kind": "cybernetic"
+  },
+  {
+   "id": "mod_arms_surgical",
+   "name": "Surgical arms (slim, cabled)",
+   "slot": "mods",
+   "glb": "pieces/mpfb_female/mod_arms_surgical.glb",
    "grants": {
     "arms": 4
    },
@@ -12226,6 +12248,9 @@
    "Human.ears": "skin",
    "Human.eyebrow002": "hair",
    "Human.low-poly": "eye",
+   "Mod.arms_flesh": "skin",
+   "Mod.arms_flesh_nails": "skin",
+   "Mod.gills": "skin",
    "Human.bob02": "hair",
    "Human.long01": "hair",
    "Human.ponytail01": "hair",
@@ -12257,10 +12282,7 @@
    "Human.punkduck_alpha7_curly2": "hair",
    "Human.culturalibre_hair_17": "hair",
    "Human.o4saken_chinesebob01": "hair",
-   "Human.culturalibre_hair_13": "hair",
-   "Mod.arms_flesh": "skin",
-   "Mod.arms_flesh_nails": "skin",
-   "Mod.gills": "skin"
+   "Human.culturalibre_hair_13": "hair"
   },
   "gain": {
    "skin": 1.6561,

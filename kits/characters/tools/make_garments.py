@@ -1970,7 +1970,8 @@ def _():
 
 @garment('giant_free_m_boots', 'feet', 'male', 'Wrapped boots')
 def _():
-    return boots('giant_free_m_boots', P('earth', 0.1), P('leather', 0.06), top=0.4, wraps=3, wrap_paint=P('heather', 0.06), wrap_over=0.2)
+    # tall enough that the braccae tuck in (wraps over loose braccae stand off them as rings)
+    return boots('giant_free_m_boots', P('earth', 0.1), P('leather', 0.06, [B('top', 0.0, 0.03, 'solid', 'heather')]), top=0.55, ease_top=0.045)
 
 
 @garment('giant_free_m_helmet', 'head', 'male', 'Horned bronze helmet')
@@ -1979,8 +1980,9 @@ def _():
     a_, b_, up, bk, left = head_frame()
     c = a_ + (b_ - a_) * 0.74
     hornp = P('bronze', 0.02, [B('top', 0.0, 0.06, 'solid', 'gold'), B('top', 0.06, 0.5, 'stripes', 'gold', 'bronze', 0.0)])
-    horns = [horn('%s_horn%d' % (gid, k), [c + left * sd * 0.08, c + left * sd * 0.2 + up * 0.02, c + left * sd * 0.28 + up * 0.12,
-                                            c + left * sd * 0.27 + up * 0.26 - bk * 0.02], 0.036, 0.008, hornp, n=14, rows=14)
+    # short horns, as on the bronze helmets of the La Tene smiths: out from the sides and up
+    horns = [horn('%s_horn%d' % (gid, k), [c + left * sd * 0.07, c + left * sd * 0.12 + up * 0.01, c + left * sd * 0.16 + up * 0.06,
+                                            c + left * sd * 0.165 + up * 0.13 - bk * 0.01], 0.026, 0.006, hornp, n=12, rows=12)
              for k, sd in enumerate((-1, 1))]
     cap = P('bronze', 0.02, [B('bottom', 0.0, 0.03, 'solid', 'gold'), B('bottom', 0.035, 0.12, 'knot', 'gold', 'bronze', 0.05)])
     return [head_rings(gid, 0.5, 1.0, 0.025, cap, n=32, rows=7, apex=True)] + horns
