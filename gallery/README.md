@@ -240,6 +240,7 @@ added after Scyvoi, the Scyvoi, Fauna and Master catalog cards updated. One publ
 Version 69 (2026-10-10): `worlds/geyser.html` added (the geyser basin, `biomes/geyser`: 0.4 MB and its two sidecars,
 `geyser.tex.geyser.js` and `geyser.tex.hyperjungle.js`, 6.2 MB in all), from `main` at 4c1a53d9. The live index (version 68)
 was kept, its card added after the Eastern highlands. One publish call. The Voth item below is still pending.
-Pending (2026-10-09): `ENTRIES` renames the first Voth's card "Voth - old" and adds "Voth - new", the city plan on
-`core/city` (`settlements/streetlab/dist/voth-city.html`, 6.8 MB, as `worlds/voth-new.html`). Not yet published: publish the
-index (edited from the live version 68: the Voth card renamed, the new card after it) and the one page, in one call.
+Pending (2026-10-14, the owner): the first Voth (`settlements/voth/voth.html`) is retired from the gallery, and the
+city plan on `core/city` (`settlements/streetlab/dist/voth-city.html`) is now simply "Voth", under the old slug
+(`worlds/voth.html`, so links keep working). `ENTRIES` says so; it goes out with the next gallery rebuild: the index
+(the live one's Voth card retitled and re-described, no second Voth card) and the one page, in one call.

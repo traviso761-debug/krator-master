@@ -1,4 +1,9 @@
-# Voth
+# Voth (the first one: retired)
+
+**Retired (owner, 2026-10-14).** Voth is now `settlements/streetlab`'s city plan on `core/city` (`dist/voth-city.html`),
+which the gallery calls "Voth". This page (`voth.html`) is no longer kept up to date and is off the gallery and the nightly
+checks: a shared change that breaks it need not be fixed here. It stays only as the source things are ported from.
+`catalog/` is NOT retired: `core/city`'s drawing (`52-city-host-buildings.js`) builds every Voth lot with its builder.
 
 A Venice/Vivec-like Dunmer city on an enclosed brackish bay, generated
 procedurally in Three.js and built into one self-contained HTML file.

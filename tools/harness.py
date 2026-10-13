@@ -11,7 +11,7 @@ here and reaches every build that imports it.
 It also runs on its own, as a smoke test (load each page, wait for `window._ready`, report the error panel, page
 errors, draw calls and triangles; exit 1 if any page is dirty or never gets ready):
 
-    python3 tools/harness.py smoke settlements/voth/voth.html biomes/rift/dist/rift.html ...
+    python3 tools/harness.py smoke settlements/streetlab/dist/voth-city.html biomes/rift/dist/rift.html ...
 
 and as a scripted walk (stage 0j): hold real keys along a route and check the walker moved, stayed up and the
 console stayed clean:
