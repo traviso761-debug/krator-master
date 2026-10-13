@@ -48,6 +48,8 @@ VC.census = function () {
   addJ('miners', ((VC.industry && VC.industry.mines) || []).length * K.jobs.mine, 'mines');
   addJ('granary keepers and millers', ((VC.industry && VC.industry.watermills) || []).length * K.jobs.watermill, 'watermills');
   addJ('beetle herders', ((VC.industry && VC.industry.ranches) || 0) * K.jobs.ranch, 'beetle ranches');
+  var LS = (VC.industry && VC.industry.livestock) || {};   /* the livestock (owner, 2026-10-13: 33-vc-country.js VC.livestock) */
+  addJ('dairymen', (LS.cow || 0) * K.jobs.dairy, 'dairy pastures'); addJ('swineherds', (LS.pig || 0) * K.jobs.sty, 'pig sties'); addJ('duck keepers', (LS.duck || 0) * K.jobs.coop, 'duck coops');
   addJ('mushroom growers', ((VC.industry && VC.industry.mush) || []).length * K.jobs.mushFarm, 'mushroom farms');
   addJ('quarrymen and masons', ((VC.industry && VC.industry.quarries) || []).length * K.jobs.quarry, 'quarries');
   addJ('granary keepers and millers', (VC.granaryCount || 0) * K.jobs.granary, 'granaries');

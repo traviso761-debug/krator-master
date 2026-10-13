@@ -4,7 +4,7 @@
 //
 //   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},
 //               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
-//               free:[ACT..], dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
+//               free:[ACT..] (a role's needs.free its own: an animal's), dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
 //               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
 //   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
 //   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
@@ -47,6 +47,8 @@
   };
   function roleRate(a){ var R=SIM.R.role[a.role], m=R && R.needs && R.needs.rate; if(!m) return null; if(!R._nr) R._nr=SIM.NEED.list.map(function(n){ return m[n]!=null?m[n]:1; }); return R._nr; }
   function labour(a){ var R=SIM.R.role[a.role]; return (R && R.needs && R.needs.labour) || 0; }
+  /* a role's own free-time choices (an animal's: feed, graze, drink, rest, idle), else the world's `free` */
+  function freeOf(a){ var R=SIM.R.role[a.role], F=R && R.needs && R.needs.free; if(!F) return SIM.NEED; if(!R._nf){ R._nf={ free:F, freeSet:{} }; F.forEach(function(x){ R._nf.freeSet[x]=1; }); } return R._nf; }
   function fillOf(a, act){ var N=SIM.NEED, C=a.culture && N.cultures[a.culture]; return (C && C.fill[act]) || N.fill[act] || N.zero; }
   /* the meters' slope (per hour) doing `act` (null: on the way) */
   function slope(a, act, i){ var N=SIM.NEED, rr=roleRate(a), r=N.rate[i]*(rr?rr[i]:1);
@@ -97,12 +99,12 @@
       return act;
     }
     if(a.intr && live){ a.intr=null; }
-    if(!N.freeSet[act]) return act;
+    var FR=freeOf(a); if(!FR.freeSet[act]) return act;
     /* free time: what the meters ask for, held `dwell` minutes (and the actor's share of `jitter`, so a district's
        choices do not all fall due in one minute) */
     if(a.fr && a.frFor===act && minute>=a.frSince && minute-a.frSince<N.dwell+(N.jitter ? a.k%N.jitter : 0)) return a.fr;
     var nd=a.nd.map(function(v, i){ return peek(a, i, minute); }), T=a.trait && N.traits[a.trait], sc=[];
-    N.free.forEach(function(opt, j){ var F=fillOf(a, opt), s=0; for(var i=0;i<F.length;i++) if(F[i]>0 && nd[i]>N.done) s+=F[i]*nd[i]*N.weight[i]*(T?T[i]:1);
+    FR.free.forEach(function(opt, j){ var F=fillOf(a, opt), s=0; for(var i=0;i<F.length;i++) if(F[i]>0 && nd[i]>N.done) s+=F[i]*nd[i]*N.weight[i]*(T?T[i]:1);
       if(opt===act) s=s*N.keep+1e-6; sc.push([s, j, opt]); });
     sc.sort(function(p, q){ return q[0]-p[0] || p[1]-q[1]; });
     var pick=act;
@@ -137,7 +139,7 @@
      have it at `high` or more; the meters brought to `minute` first */
   SIM.needsCensus = function(key, opt){
     var N=SIM.NEED; if(!N) return null; opt=opt||{}; var minute=opt.minute==null?SIM.minute():opt.minute, high=opt.high==null?70:opt.high, out={};
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.driven || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.driven || a.transient || (a.animal && !opt.animals) || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
       var k=key ? key(a) : 'all'; if(k==null) return; var G=out[k] || (out[k]={ n:0, happy:0, eff:0, bands:{}, mean:N.list.map(function(){ return 0; }), high:N.list.map(function(){ return 0; }), loyal:0, loyalty:{} });
       var M=SIM.mood(a); G.n++; G.happy+=M.happiness; G.eff+=M.eff; G.bands[M.band]=(G.bands[M.band]||0)+1; if(M.loyal!=null){ G.loyal+=M.loyal; if(M.loyalty) G.loyalty[M.loyalty]=(G.loyalty[M.loyalty]||0)+1; }
       for(var i=0;i<a.nd.length;i++){ G.mean[i]+=a.nd[i]; if(a.nd[i]>=high) G.high[i]++; } });

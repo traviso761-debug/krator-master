@@ -278,7 +278,7 @@ CITY_CHECK = r"""() => {
     out.simc = { err: D.error || null, audit: D.audit || null, ms: D.ms, crossings: D.crossings, joins: D.joins, reached: D.reached, islands: D.islands, plazas: D.plazas, cant: D.cant,
       people: R ? Object.assign({}, R, { byJob: Object.keys(R.byJob).map(k => [k, R.byJob[k].posts, R.byJob[k].filled, R.byJob[k].how, R.unfilledByJob[k] ? R.unfilledByJob[k].posts : 0, R.byJob[k].commute]),
         byClass: Object.keys(R.byClass).map(k => [k, R.byClass[k].people, R.byClass[k].workers, R.byClass[k].employed, R.byClass[k].gentry || 0, R.byClass[k].commute]) }) : null,
-      actors: SIM.all ? SIM.all('actor').filter(a => !a.driven).length : 0, check: SIM.check ? SIM.check() : null,
+      actors: SIM.all ? SIM.all('actor').filter(a => !a.driven && !a.transient && !a.animal).length : 0, check: SIM.check ? SIM.check() : null,
       walk: R ? VC.simWalkSample(300) : null, d8: R ? VC.simDecideSample(200, 8) : null, d2: R ? VC.simDecideSample(200, 2) : null,
       html: R ? /Phase C/.test(VC.peopleReportHTML()) : false };
     /* the outside stairs: the walker stands on each sampled one mid-flight at its height (core/walk KWALK) */
@@ -296,6 +296,7 @@ CITY_CHECK = r"""() => {
       out.simc.items = VC.simItemsReport ? VC.simItemsReport() : null;   /* phase D: after the two workdays */
       if (out.simc.items) out.simc.items.legsBy = SIM.legsBy;
       out.simc.econ = VC.simEconomyReport ? VC.simEconomyReport() : null;   /* phase E: after the two workdays */
+      out.simc.animals = VC.simAnimalsReport ? VC.simAnimalsReport() : null;   /* the animals: after the two workdays */
       if (out.simc.needs) { const NR = out.simc.needs, top = o => Object.keys(o).sort((p, q) => o[p].happy - o[q].happy).slice(0, 6).map(k => [k, o[k].n, o[k].happy, o[k].eff]);
         out.simc.needs = { all: NR.all, byClass: Object.keys(NR.byClass).map(k => [k, NR.byClass[k].n, NR.byClass[k].happy]), worstTrades: top(NR.byTrade), atWork: Object.keys(NR.atWork).length,
           deficits: NR.deficits, full: NR.full, traits: [...new Set(SIM.all('actor').map(a => a.trait))].length }; }
@@ -399,7 +400,8 @@ FOODS = ('corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread')
 def econ_bad(sc):
     """phase E: after two workdays: every kind of producer, the warehouses and the 50 carts are set up; every food was
     made and hauled; no food ran out in the warehouses (short under 1% of what was used) or lasts under a day; the
-    kitchens made nearly every meal (0.2%); an import sent was delivered or is on its way"""
+    kitchens made nearly every meal (0.2%); an import sent was delivered or is on its way; the road's caravans and the
+    sea's ships are set up, and imports come by carrier"""
     e = sc.get('econ')
     if not e: return 'no economy'
     su = e.get('setup') or {}
@@ -416,6 +418,39 @@ def econ_bad(sc):
     if e.get('mealsOut', 0) > 0.002 * max(1, sum(g[f]['used'] for f in FOODS) / 4): return 'kitchens short %s meals' % e.get('mealsOut')
     imp = sum(G['imported'] for G in g.values())
     if e['sent'] and not imp and not e['inflight']: return 'imports sent %s, none delivered or on the way' % e['sent']
+    cr = su.get('carriers') or {}
+    if 'road' not in cr or 'sea' not in cr: return 'carriers %s (by timer: %s)' % (sorted(cr), json.dumps(su.get('noCarrier')))
+    ld = e.get('landed') or {}
+    if imp and not ld.get('carrier'): return 'no import came by a carrier (%s)' % json.dumps(ld)
+    return None
+
+
+def animals_bad(sc):
+    """the animals (owner, 2026-10-13): after two workdays: every kind of pen has its herd and the arena its beasts; they
+    feed, drink and rest by their needs (a good share doing each over the run is not checked: what they do now is one
+    sample) and are in fair condition (happiness 50 or more on average); milk and cheese were made; meat animals are
+    slaughtered once grown, a newborn in their place; the arena held its bouts and each was decided"""
+    an = sc.get('animals')
+    if not an: return 'no animals'
+    su = an.get('setup') or {}
+    he = su.get('herds') or {}
+    miss = [k for k in ('beetle', 'cow', 'pig', 'duck') if not he.get(k)]
+    if miss: return 'no herds of %s' % miss
+    if not (su.get('arena') or {}).get('beasts'): return 'no arena beasts (%s)' % json.dumps(su.get('why'))
+    bad = [k for k, B in an['bySpecies'].items() if B['happy'] < 50]
+    if bad: return 'animals in poor condition: %s' % json.dumps({k: an['bySpecies'][k] for k in bad})
+    e = sc.get('econ') or {}
+    g = e.get('goods') or {}
+    nomade = [k for k in ('milk', 'cheese') if not (g.get(k) or {}).get('made')]
+    if nomade: return 'not made: %s' % nomade
+    # slaughter and birth (owner, 2026-10-13): meat animals are slaughtered once grown, a newborn a year from grown in each
+    # one's place; the young of pigs and ducks exist; a slaughter happened, or the next is due within a day
+    sl = an.get('slaughter') or {}
+    if an.get('badAges'): return 'young not a year from grown: %s' % an['badAges']
+    if not (an.get('young') or {}).get('pig') or not (an.get('young') or {}).get('duck'): return 'no young pigs or ducks: %s' % json.dumps(an.get('young'))
+    if not sum(v['n'] for v in sl.values()) and not (an.get('nextSlaughterMins') is not None and an['nextSlaughterMins'] <= 1440): return 'no slaughter, the next in %s minutes' % an.get('nextSlaughterMins')
+    if sl.get('pig') and not (g.get('pork') or {}).get('made'): return 'pigs slaughtered, no pork'
+    if len(an['bouts']) < 2 or any(not B['won'] for B in an['bouts'][:-1]): return 'bouts %s' % json.dumps(an['bouts'])
     return None
 
 
@@ -513,8 +548,14 @@ def verify_city(a, port, rel, sync_playwright):
         e = sc['econ']
         print('  economy (phase E): producers %s; %s warehouses, %s carts (%s), %d loads, %d imports sent, in flight %s' % (json.dumps(e['setup']['producers']), e['setup']['warehouses'], e['setup']['carts'], json.dumps(e['carts']), e['trips'], e['sent'], json.dumps(e['inflight'])))
         for k, G in e['goods'].items():
-            print('    %-10s stock %8d at sites %8d  made %7d used %7d imported %6d a day  days left %s  short %d' % (k, G['stock'], G['atSites'], G['madeDay'], G['usedDay'], G['importedDay'], G['days'], G['short']))
+            print('    %-10s stock %8d at sites %8d  made %7d used %7d imported %6d exported %6d a day  days left %s  short %d' % (k, G['stock'], G['atSites'], G['madeDay'], G['usedDay'], G['importedDay'], G.get('exportedDay', 0), G['days'], G['short']))
+        print('    carriers %s; by timer %s; landed %s; under way %s' % (json.dumps(e['setup'].get('carriers')), json.dumps(e['setup'].get('noCarrier')), json.dumps(e.get('landed')), json.dumps(e.get('carriers'))))
         print('    held up %s; out of stock %s; meals the kitchens could not make %s; economy check: %s' % (json.dumps(e['blocked']), json.dumps(e.get('outOf')), e.get('mealsOut'), econ_bad(sc) or 'OK'))
+    if sc.get('animals'):
+        an = sc['animals']
+        print('  animals: setup %s' % json.dumps(an['setup']))
+        print('    slaughtered %s; young %s; the next grown in %s minutes' % (json.dumps(an.get('slaughter')), json.dumps(an.get('young')), an.get('nextSlaughterMins')))
+        print('    by species %s; doing %s; bouts %d (%s); healing %d; animals check: %s' % (json.dumps(an['bySpecies']), json.dumps(an['doing']), len(an['bouts']), json.dumps(an['bouts'][-3:]), an['hurt'], animals_bad(sc) or 'OK'))
     if sc.get('worship'):
         wo = sc['worship']
         print('  worship on the rest day at %d:00: %d want it, room for %d at once %s; a shrine holds %d, the largest place %d' % (wo['hour'], wo['want'], wo['room'], json.dumps(wo['byKind']), wo['shrineRoom'], wo['largestRoom']))
@@ -547,7 +588,7 @@ def verify_city(a, port, rel, sync_playwright):
                 or sc['d8']['wrong'] or sc['d8']['failed'] or sc['d8']['none'] or sc['d2']['wrong'] or sc['d2']['failed'] or sc['d2']['none'] or sc['d2']['pinned'] < 0.95 * sc['d2']['asked'] \
                 or not sc['stairs'] or not sc['stairs']['stairs'] or sc['stairs']['headsOnMain'] != sc['stairs']['heads'] or sc['stairs']['routed'] != sc['stairs']['tried'] \
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
-                or not sc.get('workday') or week_bad(sc) or needs_bad(sc) or items_bad(sc) or econ_bad(sc):
+                or not sc.get('workday') or week_bad(sc) or needs_bad(sc) or items_bad(sc) or econ_bad(sc) or animals_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
                 au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')

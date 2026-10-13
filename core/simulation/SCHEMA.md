@@ -89,11 +89,32 @@ out or at a mess `meal.per` units of food. `SIM.economyDays(good)` is the wareho
 at the warehouse with least of it. `SIM.economyReport()` per good (stock, at the sites, made, used, imported a day,
 days left, hauled, short), the carts by phase, the shipments in flight, the sites by what they hold.
 
+**Carriers and exports** (the economy's `carriers`, `exports`). An import whose route has a carrier comes as a group
+(`SIM.fire`'s itinerary: in by one of its `from` ports, to the place `at`, a stay of `mins` doing `activity`, out by the
+same port: `to: 'same'`), as many units as the lot needs at `cap` a unit within `size`; it unloads into `at`'s store on
+arrival (`SIM.economyStop`, called by the stepper at an itinerary leg's `stop`) and, leaving, buys the good with most
+days left (made the day before, over `exports.minDays`), at most the day's surplus times `exports.days`. An import
+decision counts what the sites hold. A route without a carrier or a port delivers by timer. `landed` counts both ways.
+
+**Animals** (a world's: the Voth city's 47-vc-sim-animals.js). An actor with `animal` is counted apart (the needs'
+census leaves it out unless `opt.animals`); `herd` names the place it is kept at. A role's `needs.free` is its own list
+of free-time choices (an animal's feeding, grazing, drinking, resting, loafing) in place of the world's `free`. A recipe's
+`herd: {out, rate, tended}` makes `rate` units an animal-hour of the herd at home, times each one's `SIM.mood`
+efficiency (`tended`: only while its workers are at work there), the young (`grownAt` still to come) left out; a
+site's own inputs used count as used. `SIM.produce(place, good, n)` puts a one-off yield (a slaughter's meat) into a
+place's store and counts it made. A food kind's
+`quality` multiplies the meal it is in (cheese over milk).
+
+**Commands and hooks** (`77-sim-3-actors.js`). `SIM.command(actor, {act, place, spot?, until | mins, by})` overrides
+the actor's schedule, needs and errands until `until`: it does `act` at `place` (at `spot` when given), then is free
+again (an arena's keepers sending a beast onto the sand; later a sergeant's order). `SIM.stepHooks` are a world's own
+functions called with (minute, t) at the end of each `SIM.step`.
+
 **The wake** (opt-in: `SIM.WAKE = true`, `77-sim-3-actors.js`). The stepper skips an actor until `a.wake`, the
 soonest minute anything it wants could change (`SIM.wakeOf`): the next hour its schedule changes (midnight at the
 latest), hourly with an errand waiting or in free time, a failed task's retry, a role's cycle, and the needs' and the
 items' clauses (`SIM.needsWake`: a dwell ending, a meter reaching an interrupt; `SIM.itemsWake`: an errand done, a tool
-worn through). An actor whose wish and decision differ is asked again the next minute. A jump clears every wake.
+worn through; a command's end). An actor whose wish and decision differ is asked again the next minute. A jump clears every wake.
 
 ## Navigation layers
 

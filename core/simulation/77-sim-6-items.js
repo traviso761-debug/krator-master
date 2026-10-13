@@ -2,7 +2,7 @@
 // The Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
 // SIM.items(config); a world without it decides exactly as before.
 //
-//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, good?, per?}}, free:[ACT..], secPerMinute, mins,
+//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
 //               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
@@ -26,14 +26,16 @@
 // nearest within reach that sells the item and has room (BUY); `mins` minutes there complete it (the item bought, the
 // purchase logged by place and item; a luxury or household good fills material); none within reach, it is dropped and
 // not tried again for `cool` minutes. FOOD: a household's store (servings by food) feeds its meals at home: two foods
-// make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more), one food `single`, none
+// make a meal (`meal.mult` times the meal's fills, and `rich` times the actor's wealth more, times the foods' mean
+// `quality`: cheese over milk), one food `single`, none
 // `none`; a mess (`mess`) and a tavern or stall serve a full meal (77-sim-6-needs.js: the actor's `boost` of EAT). EATING
 // OUT: at the start of a meal an actor eats at the nearest open seller of the item 'meal' (a tavern, a stall) by a hash
 // under `eatOut.base` + `eatOut.wealth` times its wealth, or when its household's store cannot make a meal; none open,
 // it eats at home. A store with less than `low` days for its people sends one of them to buy `days` days of the foods
 // the nearest seller sells. STOCK (with 77-sim-6-economy.js on): a purchase draws its kind's `good` (`per` units) from
 // the settlement's warehouses, all or nothing (none: the errand fails and cools); food buys what the warehouses hold;
-// a meal out or at a mess draws a meal's food (SIM.economyMeal: none, a `none` meal). Deterministic: no draws
+// food buys what the warehouses hold, the foods in proportion to their stock (one short: more of the others); a meal
+// out or at a mess draws a meal's food (SIM.economyMeal: none, a `none` meal). Deterministic: no draws
 // (hashes), and only a question about the present changes an actor.
 (function(root){
   'use strict';
@@ -102,9 +104,13 @@
     var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
     if(E.item==='food'){
       var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*I.days);
-      if(H && foods.length){ H.store=H.store||{}; foods.forEach(function(f, i){ var n=Math.floor(need/foods.length)+(i<need%foods.length?1:0);
-        if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n) stat(I.stats.outOf, f, n-got); n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
-        H.store[f]=(H.store[f]||0)+n; stat(I.stats.bought, f, n); stat(bs, f, n); }); }
+      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; stat(I.stats.bought, f, n); stat(bs, f, n); };
+        var wt=foods.map(function(f){ return SIM.ECON ? SIM.stockOf(f)+1 : 1; }), ws=wt.reduce(function(x, y){ return x+y; }, 0), cut=0;   /* by what is on the shelf (the warehouses' stock) */
+        var share=foods.map(function(f, i){ var n=Math.floor(need*wt[i]/ws); cut+=n; return n; }); share[0]+=need-cut;
+        foods.forEach(function(f, i){ var n=share[i];
+          if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n){ stat(I.stats.outOf, f, n-got); lack+=n-got; } n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
+          buy(f, n); });
+        for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } } }   /* one food out: more of the others it sells */
       if(H && H.shopper===a.id) H.shopper=null;
     } else {
       if(SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
@@ -193,8 +199,9 @@
     if(P.mess){ S.mess++; return M.mess; }
     var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; S.meal++; return M.mult*fine; }
-    if(have.length===1){ st[have[0]]--; S.single++; return M.single; }
+    var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; S.meal++; if(Q(have[0])>1 || Q(have[1])>1) S.fine=(S.fine||0)+1; return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; S.single++; return M.single*Q(have[0]); }
     S.none++; return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */

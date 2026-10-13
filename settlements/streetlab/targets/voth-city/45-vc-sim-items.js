@@ -7,7 +7,7 @@
        and takes `shopBuy` buyers at once; a tavern serves a meal (core: a meal bought).
      - THE HOUSEHOLDS: every home knows its people (`people`); one with no kitchen of its own (a canton's rooms, a
        dormitory, the slaves' quarters, a barracks) eats at its mess (`mess`); every other keeps a food store, started
-       at a hashed `foodDays` of meals.
+       at a hashed `foodDays` of meals of the staples (`storeFoods`).
      - THE CITIZENS: the slaves are `issued` (the owner's Q5: no market trips; their keepers replace what wears out
        and own their tools); everyone keeps the clothes sets of their class (`sets`: the worn set at a hashed wear, the rest at home), a hat or
        hood for some (`hats`), a dress or trousers (`dress`); their work's tool (owned, at a hashed wear) or the rack's
@@ -35,7 +35,7 @@ VC.simItems = function () {
   });
   /* ---- the households */
   var people = {}; SIM.all('actor').forEach(function (a) { if (a.home) people[a.home] = (people[a.home] || 0) + 1; });
-  var foods = Object.keys(T.kinds).filter(function (k) { return T.kinds[k].food; }), stores = 0, messes = 0;
+  var foods = T.storeFoods || Object.keys(T.kinds).filter(function (k) { return T.kinds[k].food; }), stores = 0, messes = 0;   /* a store opens with the staples (`storeFoods`): milk, cheese, pork and fowl come by the shops */
   Object.keys(people).forEach(function (id, i) {
     var P = SIM.R.place[id]; if (!P) return; P.people = people[id];
     if (P.mess) { messes++; return; }
@@ -94,7 +94,7 @@ VC.simKayaks = function () {
 
 VC.simItemsReport = function () {
   var I = typeof SIM !== 'undefined' && SIM.ITEMS; if (!I) return null;
-  var S = I.stats, T = TUNE.sim.items, A = SIM.all('actor'), out = { setup: VC.SIMITEMS };
+  var S = I.stats, T = TUNE.sim.items, A = SIM.all('actor').filter(function (a) { return !a.transient && !a.driven && !a.animal; }), out = { setup: VC.SIMITEMS };   /* the citizens: not the carts, the visiting crews or the animals */
   /* what is kept against what is wanted, by class */
   var kept = {}; A.forEach(function (a) { var K = kept[a.cls] || (kept[a.cls] = { n: 0, want: 0, have: 0, short: 0, bare: 0 });
     K.n++; (a.wears || []).forEach(function (it) { var w = (a.keep && a.keep[it]) || a.sets || 1, h = SIM.owns(a, it); K.want += w; K.have += Math.min(w, h); if (h < w) K.short++; });

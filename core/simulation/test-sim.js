@@ -450,6 +450,68 @@ function world(seed){
  const p=S.actor({id:'p1',role:'sick',home:'homeA'});p.hurt=0;p.itDay=Math.floor(S.minute()/1440);S.errand(p,'poultice');run(20,22);
  ok('out of the herbs a poultice takes: the errand fails, nothing bought',S.ITEMS.stats.outOf.poultice===1&&!S.ITEMS.stats.bought.poultice&&p.hurt!=null,S.ITEMS.stats.bought.poultice===1);}
 
+// the economy's carriers: an import comes as a caravan by its port, unloads into the caravanserai's store on arrival,
+// stays, buys the city's most plentiful made good as it leaves, and goes out the way it came
+{const {S,clock}=world(73);
+ ['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+ S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'farm',kind:'field',x:150,z:0,activities:{WORK:4},open:[0,24]});
+ S.role({id:'driver',org:'riders',sched:[[0,'LODGE']]});S.role({id:'guard',org:'riders',sched:[[0,'LODGE']]});S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+ S.economy({goods:{salt:{import:{route:'road',lot:70}},corn:{}},window:1,imports:{days:3,scan:30},routes:{road:{minutes:600}},exports:{minDays:2},
+   carriers:{road:{kind:'caravan',org:'riders',from:['east'],unit:[{role:'driver',n:1},{role:'guard',n:2}],size:[1,4],cap:30,layer:'pedestrian',mode:'walk',speed:1.3,beasts:1,at:'serai',activity:'LODGE',mins:120}}});
+ S.store('shed',{kind:'warehouse'});S.store('serai',{kind:'site'});S.recipe('farm',{out:['corn'],rate:30});S.actor({id:'gr',role:'grower',home:'homeA',work:'farm'});
+ S.R.place.shed.stock={salt:2,corn:500};
+ const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=30;S.step();}};
+ run(0,1);S.supply('salt',1);S.supply('corn',10);run(1,3);
+ const G=S.all('group')[0];
+ ok('salt under three days: a caravan is sent for it by its port, three units for a lot of 70 at 30 a unit',G&&G.kind==='caravan'&&G.members.length===9&&S.LOG.some(e=>e.kind==='import'&&e.by===G.id),!G);
+ run(3,5);
+ ok('on arrival it unloads into the caravanserai\'s store (the carts take it on), not by a timer; landed, it counts: no second caravan',S.R.place.serai.stock.salt===70&&S.ECON.imported.salt===70&&S.ECON.inflight.length===0&&S.ECON.sent===1&&S.ECON.landed.carrier===1&&!S.ECON.landed.timer,S.R.place.serai.stock.salt!==70);
+ run(5,9);
+ ok('leaving, it buys the good the city has most days of (made, over the floor), no more than the day\'s surplus, and keeps the floor',G.cargo&&G.cargo.good==='corn'&&G.cargo.n>0&&G.cargo.n<=2*S.ECON.day[0].made.corn&&S.stockOf('corn')>=2*10*0.9,!G.cargo);
+ run(9,14);
+ ok('and goes out the way it came: the group is gone',!S.R.group[G.id]&&S.LOG.some(e=>e.kind==='left'&&e.group===G.id),!!S.R.group[G.id]);
+ const R=S.economyReport();ok('the report counts the export',R.goods.corn.exported===G.cargo.n,R.goods.corn.exported!==G.cargo.n);}
+
+// animals (the needs' role `free`, a herd recipe, SIM.command): a cow at its pen feeds, drinks and rests by its meters,
+// not by the citizens' free time; the herd makes milk by its condition; a command sends it elsewhere until it ends
+{const {S,clock}=world(79);
+ ['FEED','GRAZE','DRINK','REST','IDLE','FIGHT','WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+ S.place({id:'pen',kind:'ranch',x:150,z:0,activities:{FEED:4,GRAZE:6,DRINK:4,REST:6,IDLE:6},open:[0,24],r:6});
+ S.place({id:'sand',kind:'arena',x:100,z:60,activities:{FIGHT:2},open:[0,24]});
+ S.needs({list:['eat','drink','sleep','socialize'],rate:{eat:4,drink:5,sleep:3,socialize:2},fill:{FEED:{eat:40},GRAZE:{eat:20},DRINK:{drink:60},REST:{sleep:20},SOCIALIZE:{socialize:30}},
+   free:['SOCIALIZE','IDLE'],dwell:30,keep:1.2,done:10,init:[50,50,50,50],secPerMinute:1});
+ S.role({id:'cow',org:'folk',sched:[[0,'IDLE']],prefers:{FEED:{pin:'home'},GRAZE:{pin:'home'},DRINK:{pin:'home'},REST:{pin:'home'},IDLE:{pin:'home'}},
+   needs:{rate:{socialize:0},free:['FEED','GRAZE','DRINK','REST','IDLE']}});
+ const c=S.actor({id:'cow1',role:'cow',home:'pen'});c.herd='pen';c.nd=[90,20,20,0];c.ndT=0;c.ndFrom=0;
+ clock.d=0;clock.h=1;const w1=S.desire(c,S.minute());
+ ok('a hungry cow feeds (its own free choices: not the citizens\' socializing)',w1==='FEED',w1==='SOCIALIZE');
+ c.nd=[5,95,20,0];c.fr=null;clock.h=2;const w2=S.desire(c,S.minute());ok('a thirsty one drinks',w2==='DRINK',w2==='FEED');
+ S.economy({goods:{milk:{},cheese:{}},inputs:{cheese:{milk:4}}});S.recipe('pen',{out:['cheese'],rate:1,herd:{out:['milk'],rate:2}});
+ const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=30;S.step();}};
+ run(2,6);const milk=S.R.place.pen.stock.milk||0;
+ ok('the herd makes milk at home by the animal-hour (no workers)',milk>=4&&milk<=9&&!S.R.place.pen.stock.cheese,milk===0);
+ S.role({id:'dairyman',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}},needs:{rate:{eat:0,drink:0,sleep:0,socialize:0}}});S.R.place.pen.activities.WORK=2;
+ S.actor({id:'dm',role:'dairyman',home:'homeB',work:'pen'});S.R.place.pen.stock.milk=40;run(6,9);
+ ok('a dairyman turns the milk into cheese, four to one',(S.R.place.pen.stock.cheese||0)>=1&&S.ECON.used.milk===4*S.R.place.pen.stock.cheese,!S.R.place.pen.stock.cheese);
+ // the forced command
+ const cm=S.command(c,{act:'FIGHT',place:'sand',mins:60,by:'keeper'});run(9,9.2);
+ ok('commanded: it goes to the sand to fight, whatever its meters want',c.activity==='FIGHT'&&c.place==='sand',c.activity!=='FIGHT');
+ run(9.2,10.5);ok('and when the command ends it is back to its own wants',!c.cmd&&c.activity!=='FIGHT',!!c.cmd);
+ {S.place({id:'coop',kind:'coop',x:0,z:0,activities:{FEED:4,REST:4,IDLE:4},open:[0,24]});S.ECON.goods.eggs={id:'eggs'};S.ECON.goods.fowl={id:'fowl'};
+  S.recipe('coop',{herd:{out:['eggs','fowl'],share:[0.6,0.4],rate:10}});for(let i=0;i<5;i++){ const d=S.actor({id:'duck'+i,role:'cow',home:'coop'});d.herd='coop';d.place='coop';d.task=null; }
+  const e0=S.ECON.made.eggs||0;run(10.5,12.5);const ce=S.R.place.coop.stock;
+  ok('a herd with shares makes each co-product (a duck\'s eggs and its meat), not only the one most needed',(ce.eggs||0)>0&&(ce.fowl||0)>0&&Math.abs((ce.eggs||0)/((ce.eggs||0)+(ce.fowl||0))-0.6)<0.15,!(ce.fowl>0));}
+ {const P=S.R.place.pen, m0=S.ECON.made.milk||0; c.grownAt=S.minute()+365*1440; c.cmd=null;run(12.5,14.5);const m1=S.ECON.made.milk||0, s1=P.stock.milk||0;c.grownAt=null;
+  ok('the young yield nothing until grown',m1===m0,m1>m0);
+  const k=S.produce('pen','milk',12.7);ok('a one-off yield (a slaughter\'s meat) goes into the store, whole units, and counts as made',k===12&&(P.stock.milk||0)===s1+12&&S.ECON.made.milk===m1+12,k!==12);}
+ // food quality: cheese makes a better meal than milk
+ S.items({kinds:{milk:{cat:'food',food:true},cheese:{cat:'food',food:true,quality:1.5},bread:{cat:'food',food:true}},free:['SOCIALIZE'],secPerMinute:1,meal:{mult:3,single:1,none:0.2,mess:3}});
+ ['EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });S.place({id:'cot',kind:'home',x:0,z:0,activities:{EAT:3,SLEEP:3}});
+ S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const e=S.actor({id:'e1',role:'eater',home:'cot'});
+ S.R.place.cot.store={milk:5,bread:5};e.wanted=null;S.decide(e,S.minute(),clock.t);const b1=e.boost.EAT;
+ S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
+ ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
+
 
 // the wake (SIM.WAKE): asked only when its wish could change; no wish left waiting, far fewer questions
 {const run=(wake)=>{const {S,clock}=world(61);S.WAKE=wake;S.skipped=0;

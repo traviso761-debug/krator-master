@@ -4,6 +4,36 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: phase E session 2 (the carriers) and the animals
+
+The owner: "Continue" (phase E's second session), then, mid-way: "Pull in the fauna work from the other session. We can
+wire up some basic needs for animals as part of their ranch (feeding, idling) and arena (the former, plus a forced
+command to move and engage in combat). In addition to beetle ranches, add pigs, ducks, cow ranches / coops. Cows and
+other appropriate animals to be able to make milk which can be cooked with or converted to cheese, a higher quality
+food item."
+- **The fauna work** (`origin/ccr-05259b8d-kuy4pm`: kits/fauna and the three nomad kits it rebuilt) is merged into
+  `Voth-sim`; the city's page now takes the fauna bundle's `farm` group with `voth`.
+- **The carriers** (README, "The carriers"): caravans and ships carry the road's and the sea's imports, unload into
+  the caravanserai's or the pier's store for the carts, and buy the surplus as they leave; the river's barges wait for
+  a water way (by timer meanwhile); a week's run held. Fixed on the way: a lot landed but not yet hauled no longer
+  sends a second carrier; exports are capped at the last day's surplus (day 1 of the week sold 4,946 cloth).
+- **The animals** (README, "The animals"; `47-vc-sim-animals.js`): 845 animals in 56 pens (beetle ranches drawn empty
+  now, dairy pastures, pig sties, duck coops), 8 beasts in the Arena's stables, all on their needs (core: a role's own
+  `needs.free`), happiness about 90; herds yield by condition (core: a recipe's `herd`, `tended`); the dairymen make
+  cheese; core `SIM.command` and two bouts a day on the sand. Milk, cheese, pork and fowl are scarce next to the
+  staples (a few thousand servings a day against 280,000): shoppers buy by what is on the shelf, and the opening
+  household stores are staples only. Fixed on the way: the tune's essential list named two trades unquoted (the page
+  stopped at load); the beasts walked to the sand under the deck (core: a grid layer's route gets the ends' heights).
+- **Slaughter and birth** (owner, late in the session: "a new animal born every time one is slaughtered for meat, and
+  it takes 1 year to grow up; actual reproduction rates and maturity times later"): pork and fowl now come only by
+  slaughter of grown meat animals (80% of the pigs, 40% of the ducks), a newborn in each one's place, a year to grow;
+  so a herd of N gives at most N/365 a day, and pork and fowl are rare (a pig or two a day city-wide). The herds' eggs
+  and milk count only the grown.
+
+**Next:** the animals' feed as a good (fodder from the fields, drawn by FEED), herds that grow and are slaughtered
+(pork from the herd's size, not a rate), the arena's spectators and `78j`'s bout rounds; the river barges' water way;
+the warehouse → market porters; phase F.
+
 ## 2026-10-13: the wake, and phase E session 1 (production, stores, carts, imports)
 
 The owner: "Anything we can do to optimize task finding and per minute load further? Work on phase e."

@@ -88,6 +88,10 @@ staghorn beetle (with a profile too) and silt strider carry anchors the same way
 Bundle them like the catalog: `fauna_bundle.bundle(['livestock', 'mounts'])` in the world's `build.py` (one closure, one
 global `KratorFauna`), then `KratorFauna.build(key, {variant, breed, pose, seed})` per animal and `animate` from the frame
 loop. `kits/scyvoi/src/56-sa-beasts.js` is the worked example (`saFauna`, `saFlush`).
+The Voth city (`settlements/streetlab`, `build.py` `fauna_fragment`) takes `['voth', 'farm']`: its ranches' herds
+(giant beetles, dairy cows, pigs, ducks) and the Arena's beasts are simulation actors with needs
+(`targets/voth-city/47-vc-sim-animals.js`), each built fresh while near the camera and played by what it does
+(`56c-vc-citizens-host.js`); `lifeOf(key).schedule` gives their resting hours.
 
 ## Next
 

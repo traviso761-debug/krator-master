@@ -845,12 +845,44 @@ VC.ranches = function (rs) {
       var a = rs.rr(0, 6.283), r = Math.max(L.w, L.d) / 2 + rs.rr(K.near[0], K.near[1]), c = [L.x + Math.cos(a) * r, L.z + Math.sin(a) * r], ry = Math.atan2(-(L.z - c[1]), L.x - c[0]);
       var o = obb(c, [Math.cos(ry), -Math.sin(ry)], 15, 12);
       if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
-      VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, {}); });
-      VC.big.push(o); VC.industry.ranchAt.push([c[0], c[1]]); made++; break;
+      VC.capture('ranch' + made, 13, function () { B.beetleRanch(c[0], baseH(c[0], c[1]), c[1], ry, null, { beetleCount: -1 }); });   /* drawn empty: its beetles are the sim's (47-vc-sim-animals.js) */
+      VC.big.push(o); VC.industry.ranchAt.push([c[0], c[1]]); (VC.industry.pens = VC.industry.pens || []).push({ kind: 'beetle', x: c[0], z: c[1], y: baseH(c[0], c[1]), ry: ry, w: 26, d: 20, i: made }); made++; break;
     }
   });
   VC.industry.ranches = made;
   return made + ' beetle ranches';
+};
+/* the livestock (owner, 2026-10-13: "in addition to beetle ranches, add pigs, ducks, cow ranches / coops"): beside
+   the farmsteads, each kind by its share of them (TUNE.country.livestock, a KRAND hash of the farm and the kind: not
+   the order of the draws), a dairy-cow pasture and a pig sty (Voth's ranch pen and byre, drawn empty) and a duck coop
+   (the monastery's henhouse on legs and its run) by a pond; their animals are the sim's (47-vc-sim-animals.js) */
+VC.livestock = function () {
+  var B = VOTH, K = TUNE.country.livestock, out = {}, u = function (a, b, c) { return KRAND.unit(KRAND.hash(7373, a, b, c || 0)); };
+  VC.industry.pens = VC.industry.pens || [];
+  var farms = PLAN.lots.filter(function (L) { return L.died == null && L.cls === 'farm'; });
+  Object.keys(K.kinds).forEach(function (kind, ki) {
+    var k = K.kinds[kind], n = 0; VC.industry[kind + 'At'] = [];
+    farms.forEach(function (L, li) {
+      if (u(li, ki, 1) >= k.perFarm) return;
+      for (var t = 0; t < 12; t++) {
+        var a = u(li, ki, 10 + t) * 6.283, r = Math.max(L.w, L.d) / 2 + K.near[0] + u(li, ki, 30 + t) * (K.near[1] - K.near[0]);
+        var c = [L.x + Math.cos(a) * r, L.z + Math.sin(a) * r], ry = Math.atan2(-(L.z - c[1]), L.x - c[0]), ext = (k.pond ? k.pond[0] : 0);
+        var o = obb(c, [Math.cos(ry), -Math.sin(ry)], k.w / 2 + 2 + ext / 2, k.d / 2 + 2);
+        if (!VC.countryOk(o, { road: 3, relief: 4 })) continue;
+        var y = baseH(c[0], c[1]), i = n;
+        VC.capture(kind + 'pen' + i, 13, function () {
+          if (k.draw === 'coop') {
+            B.monasteryCoop(c[0], y, c[1], k.w / 2, k.d / 2, ry);
+            var dx = k.w / 2 + k.pond[0] / 2 + 1, pc = [c[0] + Math.cos(ry) * dx, c[1] - Math.sin(ry) * dx]; B.BOX(pc[0], y + 0.04, pc[1], k.pond[0], 0.12, k.pond[1], ry, 0x3e5b60, 'stone');   /* the ducks' pond */
+          } else B.beetleRanch(c[0], y, c[1], ry, null, { w: k.w, d: k.d, beetleCount: -1 });
+        });
+        VC.big.push(o); VC.industry[kind + 'At'].push([c[0], c[1]]); VC.industry.pens.push({ kind: kind, x: c[0], z: c[1], y: y, ry: ry, w: k.w, d: k.d, i: i }); n++; break;
+      }
+    });
+    out[kind] = n;
+  });
+  VC.industry.livestock = out;
+  return 'livestock: ' + Object.keys(out).map(function (k) { return out[k] + ' ' + k; }).join(', ');
 };
 
 /* orchards on the slopes of the west hill (owner, 2026-10-09), Voth's terraced orchards (70-veg.js): rows of fruit
@@ -955,7 +987,7 @@ SL.pass13 = function () {
   log.push(lanesN + ' lanes and tracks; ' + sub + ' suburban houses (S, SE, NE); ' + farms + ' farmsteads with ' + (fieldsN + extra) + ' fields');
   log.push(VC.orchards(rs));
   log.push(VC.farmMills(rs));
-  log.push(VC.waterMills(rs)); log.push(VC.ranches(rs));
+  log.push(VC.waterMills(rs)); log.push(VC.ranches(rs)); log.push(VC.livestock());
   log.push(VC.fieldsOffWays() + ' fields taken up from under a road');
   PLAN.country = { lots: PLAN.lots.length - n0, fields: PLAN.fields.length, villages: VC.villages };
   SL.note(13, log.join('; '));

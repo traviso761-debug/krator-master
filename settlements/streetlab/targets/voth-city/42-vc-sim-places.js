@@ -700,6 +700,7 @@ VC.simPlaces = function () {
   share('elephant bug handlers and station hands', stops('strider-station'), 'station');
   share('chinampa growers', ((VC.chin && VC.chin.hutList) || []).filter(function (q) { return q[3]; }).map(function (q) { return [q[0], q[1]]; }), 'chinampa');
   share('beetle herders', IND.ranchAt || [], 'ranch');
+  share('dairymen', IND.cowAt || [], 'dairy'); share('swineherds', IND.pigAt || [], 'sty'); share('duck keepers', IND.duckAt || [], 'coop');   /* the livestock (47-vc-sim-animals.js keeps their animals) */
   var OP = TUNE.country.orchard.poly; if (VC.orchardTrees) share('orchardmen', [polyCentroid(OP).concat([Math.abs(polyArea(OP)) / 1e4])], 'orchard');
   /* what is left of a kind of work with no site of its own: one place at the city's middle, for the workplaces (and the
      posts) the sites above and the buildings do not already hold */

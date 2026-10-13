@@ -425,14 +425,30 @@ VC.peopleReportHTML = function () {
       var o3 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; }, ES = ER.setup || {};
       h += '<h2>Production, stores, carts, imports</h2><div class="k">core/simulation 77-sim-6-economy.js, TUNE.sim.economy (phase E). Producers: ' + o3(ES.producers) + '; ' + f(ES.carts) + ' carts. ' +
         'Food in servings, the rest in lots. A shop sells from the warehouses: when they are out, a purchase fails. Days left: the warehoused stock over the use a day (the last two days and today so far).</div>';
-      h += '<table><tr><th>good</th><th>in the warehouses</th><th>at the sites</th><th>made a day</th><th>used a day</th><th>imported a day</th><th>days left</th><th>hauled in all</th><th>short in all</th></tr>';
+      h += '<table><tr><th>good</th><th>in the warehouses</th><th>at the sites</th><th>made a day</th><th>used a day</th><th>imported a day</th><th>exported a day</th><th>days left</th><th>hauled in all</th><th>short in all</th></tr>';
       Object.keys(ER.goods).forEach(function (g) { var G = ER.goods[g];
-        h += '<tr><td>' + g + '</td><td class="n">' + f(G.stock) + '</td><td class="n">' + f(G.atSites) + '</td><td class="n">' + f(G.madeDay) + '</td><td class="n">' + f(G.usedDay) + '</td><td class="n">' + f(G.importedDay) +
+        h += '<tr><td>' + g + '</td><td class="n">' + f(G.stock) + '</td><td class="n">' + f(G.atSites) + '</td><td class="n">' + f(G.madeDay) + '</td><td class="n">' + f(G.usedDay) + '</td><td class="n">' + f(G.importedDay) + '</td><td class="n">' + f(G.exportedDay) +
           '</td><td class="n ' + (G.days < 3 ? 'bad' : '') + '">' + (G.days === Infinity ? '-' : G.days) + '</td><td class="n">' + f(G.hauled) + '</td><td class="n ' + (G.short ? 'bad' : '') + '">' + f(G.short) + '</td></tr>'; });
       h += '</table>';
-      h += '<div>Carts: ' + o3(ER.carts) + '; ' + f(ER.trips) + ' loads delivered. Imports sent ' + f(ER.sent) + ', in flight: ' + (ER.inflight.map(function (s) { return s.good + ' ' + f(s.n) + ' by ' + s.route; }).join(', ') || 'none') +
+      var CS = ES.carriers || {};
+      h += '<div>Carriers: ' + (Object.keys(CS).map(function (r) { var c = CS[r]; return '<b>' + r + '</b> ' + c.kind + 's by ' + c.ports.join(', ') + ' to ' + c.at + ' (' + c.km + ' km)'; }).join('; ') || 'none') +
+        (Object.keys(ES.noCarrier || {}).length ? '; <span class="bad">by timer: ' + Object.keys(ES.noCarrier).map(function (r) { return r + ' (' + ES.noCarrier[r] + ')'; }).join(', ') + '</span>' : '') +
+        '. Under way now: ' + ((ER.carriers || []).map(function (G) { return G.kind + ' of ' + G.people + ' ' + G.phase + (G.cargo ? ', taking ' + f(G.cargo.n) + ' ' + G.cargo.good : ''); }).join('; ') || 'none') + '.</div>';
+      h += '<div>Carts: ' + o3(ER.carts) + '; ' + f(ER.trips) + ' loads delivered. Imports sent ' + f(ER.sent) + ', in flight: ' + (ER.inflight.map(function (s) { return s.good + ' ' + f(s.n) + ' by ' + s.route + (s.by ? '' : ' (timer)'); }).join(', ') || 'none') +
         '. Production held up: ' + o3(ER.blocked) + '. <span class="' + (ER.mealsOut ? 'bad' : '') + '">Meals the kitchens could not make ' + f(ER.mealsOut) + '</span>; out of stock: ' + o3(ER.outOf) + '.</div>';
       h += '<div>The fullest sites: ' + ER.sites.map(function (x) { return x.kind + ' ' + f(x.held) + (x.carts ? ' (a cart bound)' : ''); }).join(', ') + '.</div>';
+    }
+    var AR2 = VC.simAnimalsReport ? VC.simAnimalsReport() : null;
+    if (AR2) {
+      var AS = AR2.setup || {}, o4 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; };
+      h += '<h2>The animals: the ranches\u2019 herds, the arena\u2019s beasts</h2><div class="k">47-vc-sim-animals.js, TUNE.sim.animals (owner, 2026-10-13). ' + f(AS.animals) + ' animals in ' + f(AS.pens) + ' pens (' + o4(AS.herds) + ') and ' +
+        f((AS.arena || {}).beasts) + ' beasts in the Arena\u2019s ' + f((AS.arena || {}).stables) + ' stables, on the needs (hunger, thirst, sleep, ease); their condition is their yield (eggs, milk, pork, fowl; the dairymen\u2019s cheese).</div>';
+      h += '<table><tr><th>species</th><th>head</th><th>happiness</th><th>condition</th></tr>';
+      Object.keys(AR2.bySpecies).forEach(function (k) { var B = AR2.bySpecies[k]; h += '<tr><td>' + k + '</td><td class="n">' + f(B.n) + '</td><td class="n">' + B.happy + '</td><td class="n">' + B.eff + '</td></tr>'; });
+      h += '</table><div>Doing now: ' + o4(AR2.doing) + '. Bouts on the sand: ' + f(AR2.bouts.length) + (AR2.bouts.length ? ' (the last: ' + AR2.bouts.slice(-3).map(function (B) { return B.a.replace(/^animal\./, '') + ' against ' + B.b.replace(/^animal\./, '') + (B.won ? ', won by ' + B.won.replace(/^animal\./, '') : ', under way'); }).join('; ') + ')' : '') +
+        '; ' + f(AR2.hurt) + ' beasts healing.' + ((AS.why || []).length ? ' <span class="bad">' + AS.why.join('; ') + '</span>' : '') + '</div>';
+      h += '<div>Slaughtered for meat (a newborn in each one\u2019s place, a year to grow): ' + (Object.keys(AR2.slaughter).map(function (k) { return k + ' ' + f(AR2.slaughter[k].n) + ' (' + f(Math.round(AR2.slaughter[k].servings)) + ' servings)'; }).join(', ') || 'none yet') +
+        '. Young now: ' + o4(AR2.young) + (AR2.nextSlaughterMins != null ? '; the next grown in ' + Math.round(AR2.nextSlaughterMins / 60) + ' hours' : '') + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

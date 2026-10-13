@@ -71,7 +71,7 @@
       var L=NAVS[layer]; opt=opt||{};
       if(!L){ SIM.routeFail.push({ layer:layer, why:'no layer' }); return null; }
       var pts;
-      if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, opt); if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
+      if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, { minW:opt.minW, ay:from.y, by:to.y });   /* the ends' heights: a straight layer climbs between them */ if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
       else {
         var oa = L.yw ? { minW:opt.minW, y:from.y } : opt, ob = L.yw ? { minW:opt.minW, y:to.y } : opt;
         var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, oa), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, ob);

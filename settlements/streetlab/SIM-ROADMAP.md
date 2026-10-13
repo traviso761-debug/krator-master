@@ -344,6 +344,15 @@ house. Phase B is done: every kind of work meets the 90% rule.
    map has strider ports only; the sea and river routes need water ports). Also session 2: the warehouse → market
    porters, the shipwrights' ships as production, and a week's fast run for stability (Q2).
 
+   **Session 2 (2026-10-13): the carriers.** Caravans (strider ports → the caravanserai, a ten-hour stay, out the way
+   they came) and ships (a north-edge water port → the nearest harbour pier) carry the imports, unload into that
+   place's store for the carts, and buy the city's surplus as they leave (capped at the last day's surplus); a lot
+   landed or made but not hauled counts against an import. The river's barges fall back to the timer: the `water`
+   layer has no way from the river's upstream end to the quays (a river channel on the water grid would open it).
+   The shipwrights build boats from wood. A week's run (`VC.simDays`, the owner's Q2) held: every food's stock rose,
+   three to four days left, step p50 53-62 ms. **Left:** the warehouse → market porters; the barges; the surplus
+   carried off by a visible departing load.
+
 ### 2.7 Phase F: guards, Ordinators, monks, priests, arena, boats (3 sessions)
 
 1. Guards and night watch: orgs, watchhouses as DRAW_TOOLS places, patrol routes as `cycle` over avenue and market
@@ -354,6 +363,10 @@ house. Phase B is done: every kind of work meets the 90% rule.
    with a RITUAL activity that multiplies visitors' contemplation fill.
 4. Arena: port `78j`'s bout state machine as an arena place's event on days 3 and 7, injuries instead of deaths, the
    cohort ship at 50% stock; spectators from the off-day pool.
+   **Started 2026-10-13 (owner: "the arena (feeding, idling) plus a forced command to move and engage in combat"):**
+   the stables' beasts are actors on their needs, `SIM.command` (core) puts two on the sand, a bout's result by mass,
+   aggression, condition and a hash, the loser healing three days (47-vc-sim-animals.js). Left: `78j`'s state machine
+   (the gladiators, the rounds), the spectators, the bout days.
 5. Fishing dhows, water taxis, the pleasure barge as transport routes or excursions (the schema's `excursion` kind),
    passengers through `SIM.board`.
 6. Vessel avoidance: `lifeAvoidNudge2` from `78b` as a **visual** offset in the embodiment (PLAN.md §4.5: never a

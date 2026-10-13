@@ -297,7 +297,7 @@ var TUNE = {
     seatWidth: { table: 0.8, bench: 0.6, seating: 0.6 },
     spotStep: 0.45, spotsMax: 48,
     spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
-    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20, ferry: 10, station: 14, chinampa: 25, ranch: 18 },
+    outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20, ferry: 10, station: 14, chinampa: 25, ranch: 18, dairy: 18, sty: 14, coop: 12 },
     /* phase C: the pedestrian layer (43-vc-sim-nav.js). A street is a node every `step` m; a street's end joins the street
        it meets when it stops within that street's half-width + `snap` m; crossings share a node. A canton terrace is a
        ring of nodes every `ring` m, a top deck a grid every `deck` m; a park walk's loose end joins a street within
@@ -347,7 +347,7 @@ var TUNE = {
       /* slaves: the rest day is a half shift (owner, 2026-10-12: "slaves work a half shift on rest day") */
       slaveRest: 'half',
       shifts: { default: [7, 10], 'farmhands and ploughmen': [6, 12], miners: [6, 12], 'quarrymen and masons': [6, 12], 'mushroom growers': [6, 12],
-                'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
+                'chinampa growers': [6, 11], orchardmen: [6, 11], 'beetle herders': [6, 11], dairymen: [5, 12], swineherds: [6, 11], 'duck keepers': [6, 11], fishers: [5, 10], bakers: [4, 10], 'cooks and bakers': [5, 11],
                 'innkeepers and servers': [10, 12], 'innkeepers and grooms': [8, 12], 'market traders': [7, 11], 'dockers and stevedores': [6, 11],
                 'monks and lay brothers (chapel, fields, coops)': [5, 11], 'household service': [6, 12] },
       night: { 'town guard': [0.34, 20, 8], soldiers: [0.34, 20, 8], 'Ordinator garrison': [0.34, 20, 8], 'coast guard': [0.34, 20, 8], 'power-house stokers and engineers': [0.34, 20, 8],
@@ -355,7 +355,7 @@ var TUNE = {
       essential: ['soldiers', 'town guard', 'Ordinator garrison', 'coast guard', 'power-house stokers and engineers', 'innkeepers and servers', 'innkeepers and grooms',
                   'market traders', 'healers and nurses', 'ferrymen', 'elephant bug handlers and station hands', 'household service', 'cooks and bakers', 'bakers',
                   'temple priests and servants', 'shrine keepers', 'priests and undertakers', 'jailers', 'lighthouse keepers', 'palace household and officials',
-                  'monks and lay brothers (chapel, fields, coops)', 'gladiators and arena keepers', 'beetle herders'],
+                  'monks and lay brothers (chapel, fields, coops)', 'gladiators and arena keepers', 'beetle herders', 'dairymen', 'swineherds', 'duck keepers'],
       slaveShift: [6, 12]
     },
     /* running the simulation in the page (56c-vc-citizens-host.js): the pedestrian layer is lazy (a leg is decided from
@@ -366,7 +366,7 @@ var TUNE = {
     run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true },
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
-    embody: { r: 220, max: 1500, every: 400, dist: 600,
+    embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 40,   /* animals: the fauna kit's animals drawn at once, the nearest */
               colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, CONTEMPLATE: 0xb070c0, REST: 0x50607a, other: 0x8a7a6a } },
     /* needs, happiness, efficiency, loyalty (phase C session 3; SIM-ROADMAP.md 1.4, 2.4 items 4 and 5; core/simulation
        77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's
@@ -387,10 +387,11 @@ var TUNE = {
       rate: { eat: 4, drink: 5, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.8 },
       fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 3 }, REST: { sleep: 6, relax: 10, drink: 8 }, EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, DRINK: { drink: 150, socialize: 8, relax: 3 },
               SOCIALIZE: { socialize: 24, relax: 4 }, VISIT: { socialize: 18, relax: 5, drink: 6 }, RELAX: { relax: 18, socialize: 2, drink: 10 }, IDLE: { relax: 7, drink: 8 },
-              CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 } },
+              CONTEMPLATE: { contemplate: 30, relax: 6 }, WORSHIP: { contemplate: 45, socialize: 5 }, HONOUR: { contemplate: 25 }, LODGE: { sleep: 12 },
+              FEED: { eat: 45 }, GRAZE: { eat: 18, relax: 6 }, WATER: { drink: 90 }, BED: { sleep: 16, relax: 4 }, LOAF: { relax: 12 } },   /* the animals' (47-vc-sim-animals.js) */
       work: { drink: 4, eat: 1.5, relax: 1 },
       labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
-                'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, 'industrial workers': 0.7,
+                'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, dairymen: 0.6, swineherds: 0.6, 'duck keepers': 0.5, 'industrial workers': 0.7,
                 'smiths and craftsmen': 0.6, tanners: 0.7, 'shipwrights and boatbuilders': 0.8, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
       slaveLabour: 1,
       byTrade: { soldiers: { material: 0.5 }, 'Ordinator garrison': { material: 0.5, contemplate: 1.3 }, 'town guard': { material: 0.7 },
@@ -429,6 +430,7 @@ var TUNE = {
       kinds: {
         corn: { cat: 'food', food: true }, peppers: { cat: 'food', food: true }, mushrooms: { cat: 'food', food: true }, fish: { cat: 'food', food: true },
         eggs: { cat: 'food', food: true }, bread: { cat: 'food', food: true },
+        milk: { cat: 'food', food: true }, cheese: { cat: 'food', food: true, quality: 1.5 }, pork: { cat: 'food', food: true, quality: 1.25 }, fowl: { cat: 'food', food: true, quality: 1.2 },
         shirt: { cat: 'clothes', slot: 'torso', life: 400 }, trousers: { cat: 'clothes', slot: 'legs', life: 450 }, dress: { cat: 'clothes', slot: 'legs', life: 450 },
         shoes: { cat: 'clothes', slot: 'feet', life: 380 }, hat: { cat: 'clothes', slot: 'head', life: 600 }, hood: { cat: 'clothes', slot: 'head', life: 600 },
         cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 1200 }, greaves: { cat: 'armour', slot: 'legs', layer: 'armour', life: 1200 },
@@ -445,24 +447,24 @@ var TUNE = {
       },
       shops: {
         voth_shop_alchemist: ['poultice'], voth_shop_clothier: ['shirt', 'trousers', 'dress', 'shoes', 'hat', 'hood'],
-        voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'waterskin', 'lamp'],
+        voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'milk', 'cheese', 'waterskin', 'lamp'],
         voth_shop_smithy: ['hoe', 'pick', 'maul', 'knife', 'hook', 'spade', 'shears', 'goad', 'hammer', 'scraper', 'cleaver', 'ladle', 'lancet', 'sword', 'spear', 'shield', 'cuirass', 'greaves', 'boots', 'helm'],
         voth_shop_potter: ['pottery', 'lamp'], voth_shop_scribe: ['quill'], voth_shop_enchanter: ['jewellery'],
         voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle', 'net'], voth_bldg_shipwright: ['oar', 'kayak'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
-        voth_bldg_butcher: ['fish', 'eggs']
+        voth_bldg_butcher: ['fish', 'eggs', 'pork', 'fowl']
       },
-      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery', 'meal'],
+      market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'milk', 'cheese', 'pork', 'fowl', 'pottery', 'meal'],
       shopBuy: 6,
       sets: { slave: 1, poor: 2, canton: 2, farm: 2, tavern: 2, middle: 3, shop: 3, craft: 3, civic: 3, landmark: 3, monastery: 2, rich: 4, manor: 6, clan: 6, other: 2 },
       tools: { 'farmhands and ploughmen': 'hoe', miners: 'pick', 'quarrymen and masons': 'maul', 'mushroom growers': 'knife', 'dockers and stevedores': 'hook',
-               'porters and warehousemen': 'hook', 'chinampa growers': 'spade', orchardmen: 'shears', 'beetle herders': 'goad', 'smiths and craftsmen': 'hammer',
+               'porters and warehousemen': 'hook', 'chinampa growers': 'spade', orchardmen: 'shears', 'beetle herders': 'goad', dairymen: 'knife', swineherds: 'goad', 'duck keepers': 'knife', 'smiths and craftsmen': 'hammer',
                'industrial workers': 'hammer', 'guild masters and journeymen': 'hammer', 'armourers and quartermasters': 'hammer', weavers: 'shuttle', tanners: 'scraper',
                bakers: 'peel', 'cooks and bakers': 'ladle', butchers: 'cleaver', 'innkeepers and servers': 'ladle', 'household service': 'ladle',
                'guild officers and clerks': 'quill', 'customs officers and clerks': 'quill', 'teachers and scholars': 'quill', 'palace household and officials': 'quill',
                'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'net', 'shipwrights and boatbuilders': 'hammer',
                soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
       armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
-      foodDays: [1.5, 4], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 2, days: 4, lack: 4,
+      foodDays: [1.5, 4], storeFoods: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread'], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 2, days: 4, lack: 4,
       eatOut: { base: 0.04, wealth: 0.2 }, kayakLanding: 'landing',
       treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
     },
@@ -474,22 +476,67 @@ var TUNE = {
        threshold; the routes (the layer of their map-edge port, the minutes a shipment takes) */
     economy: {
       goods: { wheat: { import: { route: 'river', lot: 20000 } }, corn: { import: { route: 'river', lot: 20000 } }, peppers: { import: { route: 'road', lot: 15000 } },
-               mushrooms: {}, fish: {}, eggs: { import: { route: 'road', lot: 10000 } }, bread: {},
-               cloth: { import: { route: 'sea', lot: 2000 } }, leather: { import: { route: 'road', lot: 300 } }, metal: { import: { route: 'road', lot: 400 } },
-               wood: { import: { route: 'river', lot: 300 } }, herbs: { import: { route: 'road', lot: 300 } }, luxuries: { import: { route: 'sea', lot: 1500 } } },
-      inputs: { bread: { wheat: 1 } },
+               mushrooms: {}, fish: {}, eggs: { import: { route: 'road', lot: 10000 } }, bread: {}, milk: { minLoad: 50, export: false }, cheese: { minLoad: 20, export: false }, pork: { minLoad: 20, export: false }, fowl: { minLoad: 20, export: false },
+               cloth: { import: { route: 'sea', lot: 2000 }, minLoad: 50 }, leather: { import: { route: 'road', lot: 300 }, minLoad: 30 }, metal: { import: { route: 'road', lot: 400 }, minLoad: 30 },
+               wood: { import: { route: 'river', lot: 600 } }, herbs: { import: { route: 'road', lot: 300 } }, luxuries: { import: { route: 'sea', lot: 1500 } }, boats: { minLoad: 5 } },
+      inputs: { bread: { wheat: 1 }, boats: { wood: 3 }, cheese: { milk: 4 } },
       producers: [{ kind: 'field', out: ['wheat', 'corn', 'peppers'], weights: [3, 1, 1], one: true, rate: 36, cap: 20000 }, { kind: 'chinampa', out: ['corn', 'peppers'], rate: 6, cap: 20000 },
                   { kind: 'mushfarm', out: ['mushrooms'], rate: 65, cap: 20000 }, { kind: 'fishdock', out: ['fish'], rate: 30, cap: 20000 },
-                  { kind: 'ranch', out: ['eggs'], rate: 60, cap: 20000 }, { lot: 'voth_bldg_bakery', out: ['bread'], rate: 120, cap: 20000 },
+                  { kind: 'ranch', herd: { out: ['eggs'], rate: 40, tended: true }, cap: 20000 },   /* the beetles lay while their herders tend them (47-vc-sim-animals.js) */
+                  { kind: 'dairy', out: ['cheese'], rate: 1, herd: { out: ['milk'], rate: 3, tended: true }, cap: 20000 },   /* milked while tended; the dairymen make cheese of about half of it */
+                  { kind: 'sty', cap: 5000 }, { kind: 'coop', herd: { out: ['eggs'], rate: 0.12, tended: true }, cap: 5000 },   /* pork and fowl by slaughter (TUNE.sim.animals.species[].meat) */ { lot: 'voth_bldg_bakery', out: ['bread'], rate: 120, cap: 20000 },
                   { lot: 'voth_bldg_weaver', out: ['cloth'], rate: 1, cap: 2000 }, { lot: 'voth_bldg_tannery', out: ['leather'], rate: 0.6, cap: 2000 },
-                  { kind: 'mine', out: ['metal'], rate: 0.05, cap: 2000 }],
-      warehouses: ['warehouse', 'granary'], startDays: 4, startLots: { cloth: 6000, leather: 800, metal: 1000, wood: 300, herbs: 600, luxuries: 3000 },
+                  { kind: 'mine', out: ['metal'], rate: 0.05, cap: 2000 }, { lot: 'voth_bldg_shipwright', out: ['boats'], rate: 0.05, cap: 200 }],
+      warehouses: ['warehouse', 'granary'], startDays: 4, startFood: { milk: 3000, cheese: 1500, pork: 1000, fowl: 1000 }, startLots: { cloth: 6000, leather: 800, metal: 1000, wood: 600, herbs: 600, luxuries: 3000, boats: 40 },
       catGood: { clothes: 'cloth', armour: 'metal', arms: 'metal', tool: 'metal', medicine: 'herbs', luxury: 'luxuries' },
-      itemGood: { shoes: 'leather', boots: 'leather', waterskin: 'leather', net: 'cloth', rug: 'cloth', oar: 'wood', kayak: 'wood', quill: null, lamp: 'metal' },
-      per: { armour: 3, kayak: 4 },
+      itemGood: { shoes: 'leather', boots: 'leather', waterskin: 'leather', net: 'cloth', rug: 'cloth', oar: 'wood', kayak: 'boats', quill: null, lamp: 'metal' },
+      per: { armour: 3 },
       carts: 50, cart: { cap: 5000, load: 20, unload: 20, minLoad: 500, near: 6, minW: 3 },
       every: 60, window: 2, imports: { days: 3, scan: 60 },
-      routes: { sea: { layer: 'water', minutes: 360 }, river: { layer: 'water', minutes: 240 }, road: { layer: 'strider', minutes: 300 } }
+      routes: { sea: { layer: 'water', minutes: 360 }, river: { layer: 'water', minutes: 240 }, road: { layer: 'strider', minutes: 300 } },
+      /* session 2: who carries an import, by its route (46-vc-sim-economy.js VC.simCarriers): the group's kind, its
+         ports, where it unloads, a unit's crew, how many units (by the lot at `cap` a unit), the layer, mode and speed
+         (m/s of motion), a beast a unit, the activity of its stay and its minutes */
+      carriers: {
+        road: { kind: 'caravan', ports: 'strider', at: 'caravanserai', unit: [{ role: 'caravan driver', n: 1 }, { role: 'caravan guard', n: 2 }], size: [3, 5], cap: 4000,
+                layer: 'strider', mode: 'ride', speed: 1.6, beasts: 1, mount: 'beetle', activity: 'LODGE', mins: 600 },
+        river: { kind: 'barge', ports: 'river', at: 'quay', unit: [{ role: 'bargeman', n: 6 }, { role: 'barge guard', n: 2 }], size: [1, 3], cap: 10000,
+                 layer: 'water', mode: 'boat', speed: 2.0, activity: 'UNLOAD', mins: 60 },
+        sea: { kind: 'ship', ports: 'sea', side: 'N', at: 'pier', unit: [{ role: 'sailor', n: 10 }, { role: 'marine', n: 4 }], size: [1, 2], cap: 2000,
+               layer: 'water', mode: 'boat', speed: 3.0, activity: 'UNLOAD', mins: 240 }
+      },
+      exports: { minDays: 6 }
+    },
+    /* the animals (owner, 2026-10-13; 47-vc-sim-animals.js): their activities (the needs' fills: TUNE.sim.needs.fill) and
+       free choices, how far inside the fence their spots stand; the species at each kind of pen and the pen's work
+       place; per species the fauna-kit animal and its variants, how many a pen keeps, its mass and aggression (a bout's
+       odds), its walking speed, its needs' rates (per need, times TUNE.sim.needs.rate) and its meat; the arena's beasts a stable,
+       its species, the bout's spacing on the sand, its minutes, a loser's days to heal, the hours a bout is held */
+    animals: {
+      acts: ['FEED', 'GRAZE', 'WATER', 'BED', 'LOAF', 'FIGHT'], free: ['FEED', 'GRAZE', 'WATER', 'LOAF', 'BED'], inset: 2.5,
+      /* slaughter (owner, 2026-10-13: "a new animal born every time one is slaughtered for meat, and it takes 1 year to grow
+         up"): a species' `meat` share of its herd is raised for `good`, slaughtered once grown in the keepers' hours, its
+         `kg` times `servingsPerKg` (times its condition) into the pen's store, and a newborn takes its place, growing
+         `growDays`; the young yield nothing and are drawn small. Real breeding and maturity times come later */
+      growDays: 365, servingsPerKg: 4, slaughterHours: [7, 17],
+      penSpecies: { beetle: 'beetle', cow: 'cow', pig: 'pig', duck: 'duck' }, placeKind: { beetle: 'ranch', cow: 'dairy', pig: 'sty', duck: 'coop' },
+      species: {
+        beetle: { name: 'giant beetle', fauna: 'giant-beetle', variants: [0, 1], breed: 'ranch', n: [6, 10], mass: 900, aggression: 0.2, speed: 0.8,
+                  rate: { eat: 1.2, drink: 0.8, sleep: 0.8, socialize: 0, relax: 0.6, contemplate: 0, material: 0 } },
+        cow: { name: 'dairy cow', fauna: 'cattle', variants: [0, 1], n: [14, 22], mass: 600, aggression: 0.1, speed: 0.9,
+               rate: { eat: 1.3, drink: 1.2, sleep: 0.8, socialize: 0, relax: 0.6, contemplate: 0, material: 0 } },
+        pig: { name: 'pig', fauna: 'pig', variants: [0, 1], n: [10, 20], mass: 120, aggression: 0.3, speed: 0.9, meat: { good: 'pork', kg: 85, share: 0.8 }, young: 2,   /* young: the piglet variant */
+               rate: { eat: 1.4, drink: 1, sleep: 1, socialize: 0, relax: 0.8, contemplate: 0, material: 0 } },
+        duck: { name: 'duck', fauna: 'duck', variants: [0, 1, 2], n: [16, 30], mass: 2, aggression: 0.1, speed: 0.6, meat: { good: 'fowl', kg: 1.8, share: 0.4 },
+                rate: { eat: 1, drink: 1.4, sleep: 1, socialize: 0, relax: 0.6, contemplate: 0, material: 0 } },
+        tiger: { name: 'arena tiger', fauna: 'arena-tiger', variants: [0], mass: 420, aggression: 0.95, speed: 1.4,
+                 rate: { eat: 1.1, drink: 1, sleep: 1, socialize: 0, relax: 1.2, contemplate: 0, material: 0 } },
+        lizard: { name: 'pit lizard', fauna: 'pit-lizard', variants: [0], mass: 350, aggression: 0.7, speed: 1,
+                  rate: { eat: 0.8, drink: 0.6, sleep: 1, socialize: 0, relax: 0.8, contemplate: 0, material: 0 } },
+        pitbeetle: { name: 'pit beetle', fauna: 'giant-beetle', variants: [2], breed: 'pit', mass: 1370, aggression: 0.6, speed: 0.8,
+                     rate: { eat: 1.2, drink: 0.8, sleep: 0.8, socialize: 0, relax: 0.6, contemplate: 0, material: 0 } }
+      },
+      arena: { perStable: 2, species: ['tiger', 'lizard', 'pitbeetle'], apart: 9, mins: 30, heal: 3, bouts: { hours: [11, 16] } }
     }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
@@ -554,6 +601,10 @@ var TUNE = {
     mush: { n: 12, grid: 30, half: 26, edge: 10, slope: 0.32, relief: 9, apart: 60, trackReach: 700 },   /* mushroom farms in the 'mush farm' polygon */
     watermills: { n: 8, start: 600, every: 320, back: 10, trackReach: 700 },   /* along the river beyond the city */
     ranches: { perFarm: 0.2, near: [40, 80] },                                    /* beetle ranches beside farmsteads */
+    /* the livestock (owner, 2026-10-13: pigs, ducks, cow ranches and coops; 33-vc-country.js VC.livestock): each kind's
+       share of the farmsteads (by a hash of the farm), its pen's size, how far off the farmstead */
+    livestock: { near: [40, 90], kinds: { cow: { perFarm: 0.14, w: 32, d: 24, draw: 'pen' }, pig: { perFarm: 0.12, w: 18, d: 14, draw: 'pen' },
+                                          duck: { perFarm: 0.12, w: 10, d: 8, draw: 'coop', pond: [9, 7] } } },
     roadsFor: ['S12'], roadReach: 2400, fishReach: 420,
     mines: { n: 8, grid: 40, minH: 25, slope: [0.3, 1.3], apart: 230, trackReach: 900, houses: 4 },
     quarries: { n: 4, grid: 30, rim: 60, slope: [0.05, 0.32], apart: 240, trackReach: 900, houses: 4 },
@@ -603,7 +654,7 @@ var TUNE = {
              voth_bldg_tannery: { job: 'tanners', jobs: 8, where: 'tanneries' } },
     jobs: { shop: 4, craft: 5, tavern: 6, warehouse: 10, industrial: 15, power: 130, rich: 2, manor: 8, clanService: 6, garrison: 240, barracks: 90, school: 8, guild: 14, customs: 22,
             healing: 45, funeraryTemple: 18, shrine: 3, lighthouse: 4, pier: 30, riverQuay: 14, fishDock: 10, stall: 2,
-            mill: 3, watermill: 4, ranch: 8, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }
+            mill: 3, watermill: 4, ranch: 8, dairy: 8, sty: 4, coop: 3, mushFarm: 6, perHectare: 1.0, chinampaBed: 0.6, treesPerHand: 40, mine: 40, quarry: 50, granary: 5, embassy: 20, ferry: 3, ferryStop: 2, bug: 3, bugStation: 4 }
   },
   /* the rim cantons' decks (33-vc-country.js VC.cantonDecks): usable square inside the parapets, layout grid, gaps */
   decks: { capturedPad: 1.5, capturedH: 14, port: { cart: 6, deck: 40, quayDepth: 20 }, granaryMills: 3, mill: 13, use: 0.82, grid: 4, gap: 4, obelisk: 9, granaries: 9, yard: 0.3, square: 0.42, embassy: [30, 26], embassySize: { Hykkousoi: [27, 27], Iziz: [37, 35], Republic: [37, 35], Dalab: [31, 29], Yuni: [37, 35], Jimjam: [32, 30] },

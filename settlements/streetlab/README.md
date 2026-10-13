@@ -564,6 +564,32 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   carts, imports" section (per good: the warehouses, the sites, made, used and imported a day, days left);
   `verify.py`'s economy check after two workdays (every producer, the carts, every food made and hauled, none short,
   none under a day, the kitchens' meals, the imports delivered).
+* **The carriers** (phase E session 2; `TUNE.sim.economy.carriers`, `VC.simCarriers`): an import now comes as a group
+  of people. The road's goods come by caravan (a beetle, its driver and two guards a unit, three to five units) in by
+  the strider ports on the highways; it unloads at the caravanserai, lodges there ten hours and leaves the way it
+  came. The sea's goods come by ship (ten sailors, four marines) from the north edge to the harbour pier nearest it.
+  The lot lands in that place's store and the carts take it on. Leaving, a carrier buys the city's surplus: the good
+  with most days left, no more than the last day's surplus. The river's barges wait for a water way: the `water`
+  layer finds none from the river's upstream end to the quays, so river imports still come by timer (the report says
+  so). Drawn near the camera: a beetle under each driver, a hull under each crew, a mast on a ship. The shipwrights
+  now build boats from wood, and a kayak is bought from their stock. `VC.simDays(d0, n)` runs whole days from the
+  console (the owner's fast clock, Q2): a week held, every food's stock rising, three to four days left.
+* **The animals** (owner, 2026-10-13; `47-vc-sim-animals.js`, `TUNE.sim.animals`, the fauna kit's `farm` and `voth`
+  groups): beside the beetle ranches, dairy-cow pastures, pig sties and duck coops (by a pond) stand beside the
+  farmsteads (`VC.livestock`, `TUNE.country.livestock`), each its trade's work place (dairymen, swineherds, duck
+  keepers). Every pen keeps a herd of actors, the fauna kit's animals, on its own needs (hunger, thirst, sleep, ease):
+  in their free hours they feed at the trough, graze, drink, bed down or loaf by what their meters ask. Their
+  condition is their yield: eggs and milk by the animal-hour while their keepers tend them, and the dairymen make
+  cheese of the milk (four to one). Pork and fowl come by slaughter (owner: "a new animal born every time one is
+  slaughtered for meat, and it takes 1 year to grow up"): a share of the pigs and ducks is raised for meat, slaughtered
+  once grown for the fauna kit's meat (kg, four servings a kilo, times its condition), and a newborn takes its place
+  for a year: the young yield nothing and are drawn small (a pig as a piglet). With one birth a slaughter and a year
+  to grow, a herd of N gives at most N/365 a day: meat is rare until breeding comes. Milk, cheese, pork and fowl are foods: the provisioners, the
+  butchers and the markets sell them, and cheese makes a better meal (`quality`). The Arena's stables keep its beasts
+  (the arena tiger, the pit lizard, the pit beetle) on the same needs; at 11:00 and 16:00 a bout: the keepers' forced
+  command (core `SIM.command`) puts two sound beasts on the sand to fight, the stronger by mass, aggression and
+  condition wins, and the loser heals three days. `VC.arenaBout(a, b)` stages one by hand. The nearest 40 animals are
+  drawn by the fauna kit, walking, grazing, resting or idling as they do.
 * **The wake** (`TUNE.sim.run.wake`, core/simulation `SIM.WAKE`): an actor is asked what it wants only at the soonest
   minute it could change (its schedule's next change, an errand's or a dwell's end, a meter's crossing, a role's
   cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to

@@ -17,7 +17,7 @@ VC.simCensusNow = function (cheap) {   /* cheap: asked only of those due (SIM.WA
   for (var i = 0; i < A.length; i++) {
     var a = A[i], k = a.activity || 'none'; out.by[k] = (out.by[k] || 0) + 1;
     if (a.task) { if (t < a.task.arrive) out.moving++; else if (a.task.indoor) out.indoors++; }
-    if (a.present && !a.driven && !(cheap && SIM.WAKE && a.wake != null && minute < a.wake) && SIM.desire(a, minute) !== a.wanted) out.pending++;
+    if (a.present && !a.driven && !a.plan && !(cheap && SIM.WAKE && a.wake != null && minute < a.wake) && SIM.desire(a, minute) !== a.wanted) out.pending++;
     else if (a.wanted === 'SOCIALIZE' && a.activity === 'VISIT') out.visiting++;                                          /* company at home instead: met */
     else if (a.wanted && a.activity && a.activity !== a.wanted) out.unmet[a.wanted] = (out.unmet[a.wanted] || 0) + 1;   /* wanted, not had: the deficit */
     if (!a.task) out.stuck++;
@@ -73,7 +73,21 @@ VC.simBodies = function () {
   var CG = new THREE.BufferGeometry(); CG.setAttribute('position', new THREE.Float32BufferAttribute(cpos, 3)); CG.setAttribute('normal', new THREE.Float32BufferAttribute(cnor, 3)); CG.setAttribute('color', new THREE.Float32BufferAttribute(ccol, 3));
   var MC = new THREE.InstancedMesh(CG, new THREE.MeshLambertMaterial({ vertexColors: true }), Math.max(1, SIM.ECON ? SIM.ECON.carts.length : 1));
   MC.instanceMatrix.setUsage(THREE.DynamicDrawUsage); MC.count = 0; MC.frustumCulled = false; MC.userData.probeSkip = true; scene.add(MC);
-  var B = VC.SIMBODY = { mesh: M, carts: MC, list: [], shown: 0, cartsShown: 0, resolved: 0, at: 0 };
+  /* the import carriers (phase E session 2): a beetle under each caravan's driver, a hull under each barge's or ship's
+     crew (a unit's members stand in two files, 3 m a row: the hull spans them), a mast on a ship */
+  var mk = function (list, n) { var ps = [], ns = [], cs = []; list.forEach(function (p) { var g = p[0].toNonIndexed(), P = g.attributes.position.array, N = g.attributes.normal.array; c.setHex(p[1]).convertSRGBToLinear();
+      for (var i = 0; i < P.length; i++) { ps.push(P[i]); ns.push(N[i]); } for (var k = 0; k < P.length / 3; k++) cs.push(c.r, c.g, c.b); });
+    var g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.Float32BufferAttribute(ps, 3)); g2.setAttribute('normal', new THREE.Float32BufferAttribute(ns, 3)); g2.setAttribute('color', new THREE.Float32BufferAttribute(cs, 3));
+    var m = new THREE.InstancedMesh(g2, new THREE.MeshLambertMaterial({ vertexColors: true }), n); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.count = 0; m.frustumCulled = false; m.userData.probeSkip = true; scene.add(m); return m; };
+  var beetle = [[box(1.7, 1.0, 2.8, 0, 1.1, 0), 0x2b2f2a], [box(1.1, 0.7, 0.9, 0, 1.05, 1.75), 0x22261f], [box(1.5, 0.7, 1.4, 0, 1.95, -0.3), 0x8a6a3e]];
+  [-1, 1].forEach(function (sd) { [-0.9, 0, 0.9].forEach(function (z) { beetle.push([box(0.9, 0.12, 0.14, sd * 1.1, 0.55, z), 0x1d201b]); beetle.push([box(0.12, 0.6, 0.12, sd * 1.5, 0.3, z), 0x1d201b]); }); });
+  var MB = mk(beetle, 40), MH = mk([[box(1, 1, 1, 0, 0, 0), 0x5a3e24], [box(0.9, 0.08, 0.96, 0, 0.5, 0), 0x9c7b52]], 30), MM = mk([[box(0.35, 12, 0.35, 0, 6, 0), 0x4a3522], [box(5, 3.5, 0.08, 0, 7.5, 0.3), 0xe8dcc0]], 30);
+  var B = VC.SIMBODY = { mesh: M, carts: MC, list: [], shown: 0, cartsShown: 0, carriersShown: 0, animalsShown: 0, resolved: 0, at: 0 };
+  /* the animals (47-vc-sim-animals.js): the fauna kit's own, built for the nearest few (each its own build: the kit's
+     parts are its bones), kept while near, each placed at its pose and played by what it does (walking, grazing,
+     resting, fighting, idling) */
+  var AN = { live: {}, list: [] }, FA = typeof KratorFauna !== 'undefined' ? KratorFauna : null;
+  var modeOf = function (a, P) { if (P.moving) return 'walk'; var x = a.activity; return x === 'FEED' || x === 'GRAZE' || x === 'WATER' ? 'graze' : x === 'BED' ? 'rest' : x === 'FIGHT' ? 'walk' : 'idle'; };
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), p3 = new THREE.Vector3(), s3 = new THREE.Vector3(1, 1, 1), cc = new THREE.Color(), cols = {};
   Object.keys(E.colours).forEach(function (k) { cols[k] = new THREE.Color(E.colours[k]).convertSRGBToLinear(); });
   /* where an actor is, cheaply (for picking who is near): at its spot once arrived (null when indoors), on the straight
@@ -87,12 +101,21 @@ VC.simBodies = function () {
     return { x: x0 + (T.spot.x - x0) * f, z: z0 + (T.spot.z - z0) * f };
   };
   (window._frameHooks = window._frameHooks || []).push(function (now) {
-    var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; MC.count = 0; B.cartsShown = 0; return; }
+    var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; MC.count = 0; B.cartsShown = 0; MB.count = MH.count = MM.count = 0;
+      Object.keys(AN.live).forEach(function (id) { if (AN.live[id]) scene.remove(AN.live[id]); }); AN.live = {}; AN.list = []; B.animalsShown = 0; return; }
     var cx = ctl.walk ? camera.position.x : ctl.target.x, cz = ctl.walk ? camera.position.z : ctl.target.z, t = SIM.time();
     if (now - B.at > E.every) {     /* who is near: refreshed a few times a second */
-      B.at = now; var A = SIM.all('actor'), near = [], r2 = E.r * E.r;
-      for (var i = 0; i < A.length; i++) { if (A[i].driven) continue; var w = where(A[i], t); if (!w) continue; var d = (w.x - cx) * (w.x - cx) + (w.z - cz) * (w.z - cz); if (d < r2) near.push([d, A[i]]); }
+      B.at = now; var A = SIM.all('actor'), near = [], nearA = [], r2 = E.r * E.r;
+      for (var i = 0; i < A.length; i++) { if (A[i].driven) continue;
+        if (A[i].animal) { if (!FA) continue; var Pa = SIM.pose(A[i], t, { cheap: true }); if (Pa.hidden) continue; var da = (Pa.x - cx) * (Pa.x - cx) + (Pa.z - cz) * (Pa.z - cz); if (da < r2) nearA.push([da, A[i]]); continue; }
+        var w = where(A[i], t); if (!w) continue; var d = (w.x - cx) * (w.x - cx) + (w.z - cz) * (w.z - cz); if (d < r2) near.push([d, A[i]]); }
       near.sort(function (p, q2) { return p[0] - q2[0]; }); B.list = near.slice(0, E.max).map(function (x) { return x[1]; });
+      nearA.sort(function (p, q2) { return p[0] - q2[0]; }); AN.list = nearA.slice(0, E.animals).map(function (x) { return x[1]; });
+      var keep = {}, mNow = SIM.minute(), AT = TUNE.sim.animals;
+      AN.list.forEach(function (a) { keep[a.id] = 1; var o = a.animal, yv = a.grownAt > mNow && AT.species[o.sp].young != null ? AT.species[o.sp].young : null, tag = (o.gen || 0) + ':' + (yv != null);
+        var had = AN.live[a.id]; if (had && had.userData.tag === tag) return; if (had) scene.remove(had);   /* a newborn, or grown out of its young look: built again */
+        try { var g = FA.build(o.fauna, { variant: yv != null ? yv : o.variant, breed: o.breed || undefined, seed: o.seed }); g.userData.probeSkip = true; g.userData.tag = tag; g.userData.youngLook = yv != null; scene.add(g); AN.live[a.id] = g; } catch (e) { AN.live[a.id] = null; } });
+      Object.keys(AN.live).forEach(function (id) { if (!keep[id]) { if (AN.live[id]) scene.remove(AN.live[id]); delete AN.live[id]; } });   /* gone out of reach: dropped */
     }
     var n = 0;
     for (var j = 0; j < B.list.length; j++) {
@@ -101,12 +124,43 @@ VC.simBodies = function () {
       M.setColorAt(n, cols[P.moving ? 'moving' : a.activity] || cols.other); n++;
     }
     M.count = n; B.shown = n; M.instanceMatrix.needsUpdate = true; if (M.instanceColor) M.instanceColor.needsUpdate = true;
+    var na = 0, ts = now / 1000;
+    AN.list.forEach(function (a) { var g = AN.live[a.id]; if (!g) return; var Pa = SIM.pose(a, t, { cheap: true }); g.visible = !Pa.hidden; if (Pa.hidden) return;
+      var gr = a.grownAt > SIM.minute() && !g.userData.youngLook ? 0.35 + 0.65 * Math.max(0, Math.min(1, (SIM.minute() - a.born) / (a.grownAt - a.born))) : 1; g.scale.setScalar(gr);   /* the young, growing */
+      g.position.set(Pa.x, Pa.y, Pa.z); g.rotation.y = a.activity === 'FIGHT' && !Pa.moving && VC.ARENA ? Math.atan2(SIM.R.place[VC.ARENA.sand].x - Pa.x, SIM.R.place[VC.ARENA.sand].z - Pa.z) : (Pa.h || 0);
+      FA.animate(g, ts + (a.k % 17) * 0.37, modeOf(a, Pa)); na++; });
+    B.animalsShown = na;
     var nc = 0, rc = E.r * E.r;   /* the carts: few, all looked at every frame */
     (SIM.ECON ? SIM.ECON.carts : []).forEach(function (a) { var Pc = SIM.pose(a, t, { cheap: true }); if (Pc.hidden || (Pc.x - cx) * (Pc.x - cx) + (Pc.z - cz) * (Pc.z - cz) > rc) return;
       e.set(0, Pc.h || 0, 0); q.setFromEuler(e); p3.set(Pc.x, Pc.y, Pc.z); m4.compose(p3, q, s3); MC.setMatrixAt(nc++, m4); });
     MC.count = nc; B.cartsShown = nc; MC.instanceMatrix.needsUpdate = true;
+    var nb = 0, nh = 0, nm = 0, sc3 = new THREE.Vector3();
+    SIM.all('group').forEach(function (G) { if (!/^import\./.test(G.id)) return; var mem = G.members.map(function (id) { return SIM.R.actor[id]; }).filter(Boolean); if (!mem.length) return;
+      var P0 = SIM.pose(mem[0], t, { cheap: true }); if ((P0.x - cx) * (P0.x - cx) + (P0.z - cz) * (P0.z - cz) > rc * 4) return;
+      if (G.kind === 'caravan') { mem.forEach(function (a) { if (a.role !== 'caravan driver' || nb >= 40) return; var Pd = SIM.pose(a, t, { cheap: true });
+          e.set(0, Pd.h || 0, 0); q.setFromEuler(e); p3.set(Pd.x + Math.sin(Pd.h || 0) * 1.8, Pd.y, Pd.z + Math.cos(Pd.h || 0) * 1.8); m4.compose(p3, q, s3); MB.setMatrixAt(nb++, m4); }); return; }
+      var k = mem.length / Math.max(1, G.units || 1);
+      for (var u = 0; u < (G.units || 1) && nh < 30; u++) { var A0 = SIM.pose(mem[Math.floor(u * k)], t, { cheap: true }), A1 = SIM.pose(mem[Math.min(mem.length - 1, Math.floor((u + 1) * k) - 1)], t, { cheap: true });
+        var h = A0.h || 0, len = Math.hypot(A1.x - A0.x, A1.z - A0.z) + 5, w = G.kind === 'ship' ? 6 : 4;
+        e.set(0, h, 0); q.setFromEuler(e); p3.set((A0.x + A1.x) / 2, Math.min(A0.y, A1.y) - 0.1, (A0.z + A1.z) / 2); sc3.set(w, 1.2, len); m4.compose(p3, q, sc3); MH.setMatrixAt(nh++, m4);
+        if (G.kind === 'ship' && nm < 30) { m4.compose(p3, q, s3); MM.setMatrixAt(nm++, m4); } }
+    });
+    MB.count = nb; MH.count = nh; MM.count = nm; [MB, MH, MM].forEach(function (m) { m.instanceMatrix.needsUpdate = true; }); B.carriersShown = nb + nh;
     B.resolved = SIM.lazyResolved || 0;
   });
+};
+
+/* the fast clock (the owner's Q2: fast-forward weeks to see whether the economy holds): `n` whole days from day `d0`,
+   each a VC.simDay, and a row a day: the weekday, the step's p50, happiness at 10:00, and per good [in the warehouses,
+   at the sites, made, used, imported, exported, days left]. From the console: VC.simDays(1, 7) */
+VC.simDays = function (d0, n) {
+  var out = [];
+  for (var d = d0; d < d0 + n; d++) {
+    var r = VC.simDay(d, 0, 24, [10]), R = VC.simEconomyReport ? VC.simEconomyReport() : null, E = SIM.ECON, D = (E && E.day[d]) || { made: {}, used: {}, imported: {}, exported: {} }, g = {};
+    if (R) Object.keys(R.goods).forEach(function (k) { var G = R.goods[k]; g[k] = [G.stock, G.atSites, D.made[k] || 0, D.used[k] || 0, D.imported[k] || 0, (D.exported || {})[k] || 0, G.days]; });
+    out.push({ day: d, weekday: r.weekday, p50: r.p50, happy: r.samples[10] && r.samples[10].needs ? r.samples[10].needs.happy : null, goods: g });
+  }
+  return out;
 };
 
 /* a day run headless (verify.py, the report's check): the clock held, every minute of `day` stepped from `h0` to `h1`

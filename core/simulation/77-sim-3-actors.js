@@ -65,7 +65,9 @@
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
     if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
-    var m=minute==null?SIM.minute():minute, s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
+    var m=minute==null?SIM.minute():minute;
+    if(a.cmd){ if(m<a.cmd.until) return a.cmd.act; if(m===SIM.minute()){ a.cmd=null; } }          /* a forced command (SIM.command), until it ends */
+    var s=schedOf(a, m), act=s ? s[hourOf(m)] : 'IDLE';
     if(SIM.ITEMS) act=SIM.itemsDesire(a, m, act);                                /* an errand (77-sim-6-items.js), opt-in */
     return SIM.NEED ? SIM.needsDesire(a, m, act) : act;                         /* the needs' clause (77-sim-6-needs.js), opt-in */
   };
@@ -74,6 +76,7 @@
   /* the place for an activity: pinned, remembered, preferred kinds, anything; then the role's fallback */
   function choose(a, act, hour){
     var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, near=anchor(a), P;
+    if(a.cmd && a.cmd.act===act && a.cmd.place){ P=SIM.R.place[a.cmd.place]; if(P) return P; }   /* commanded there */
     if(SIM.ITEMS && a.errand && a.errand.act===act) return SIM.itemsChoose(a, act, hour);   /* the nearest seller (77-sim-6-items.js) */
     if(pref.pin==='home' && a.home){ P=SIM.R.place[a.home]; if(P && SIM.offers(P,act)) return P; }
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
@@ -150,7 +153,7 @@
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
-    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle;   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : a.cmd && a.cmd.spot && a.cmd.place===P.id ? { x:a.cmd.spot.x, z:a.cmd.spot.z, y:a.cmd.spot.y==null?P.y:a.cmd.spot.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle;   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
     var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
@@ -177,7 +180,7 @@
   function nextFiring(E, minute){ var e=E.every||[6,12]; return minute + Math.round(SIM.rng.range(e[0], e[1])*60); }
   function pickPort(list, not){ var L=(list||[]).filter(function(p){ return p!==not && SIM.R.port[p]; }); return L.length ? L[Math.floor(SIM.rng.next()*L.length)] : null; }
   SIM.fire = function(E, minute, t){
-    var from=pickPort(E.from), to = E.to==='other' || !E.to ? pickPort(E.from, from) || from : pickPort(E.to, from);
+    var from=pickPort(E.from), to = E.to==='same' ? from : E.to==='other' || !E.to ? pickPort(E.from, from) || from : pickPort(E.to, from);   /* 'same': out the way it came */
     if(!from){ SIM.err('event '+E.id+': no port'); return null; }
     if(E.kind==='excursion') return excursion(E, minute, t, from);
     var P0=SIM.R.port[from], units=SIM.rng.int(E.size?E.size[0]:1, E.size?E.size[1]:1), gid=E.id+'#'+(++E.fired), members=[];
@@ -204,9 +207,9 @@
      it, and leaves by its port after the last (Shade's convoy: water, trade, rest, out by the switchback) */
   function itinerary(E, G, members, P0, to, minute, t){
     var at=[P0.x, P0.z], plan=[];
-    E.legs.forEach(function(L){ var P=SIM.placesFor(L.activity, null, null, { near:at, kinds:L.kinds, ignoreSlots:true })[0];
+    E.legs.forEach(function(L){ var P=L.place ? SIM.R.place[L.place] : SIM.placesFor(L.activity, null, null, { near:at, kinds:L.kinds, ignoreSlots:true })[0];   /* a leg may name its place */
       if(!P){ SIM.err('event '+E.id+': no place offers '+L.activity); return; }
-      plan.push({ activity:L.activity, place:P.id, together:true, mins:L.mins||0 }); at=[P.x, P.z]; });
+      plan.push({ activity:L.activity, place:P.id, together:true, mins:L.mins||0, stop:L.stop||null }); at=[P.x, P.z]; });   /* stop: what the economy does there (77-sim-6-economy.js) */
     plan.push({ activity:'DEPART', port:to, together:true });
     G.plan = { legs:true, phase:'arrive' };
     members.forEach(function(id, i){ var a=SIM.R.actor[id]; a.plan=plan.map(function(L){ var o={}; for(var k in L) o[k]=L[k]; return o; }); a.planI=0; a.fi=i; });
@@ -261,8 +264,9 @@
     SIM.all('group').forEach(function(G){ if(G.done || !G.plan) return; var lead=SIM.R.actor[G.leader]; if(!lead) return;
       if(G.phase==='arrive' && t >= G.legArrive && G.plan.legs){ var Lc=lead.plan[lead.planI];      /* an itinerary stop: stay its minutes */
         G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); }); G.phase='dwell'; G.until=minute+(Lc.mins||0);
-        SIM.logEvent('arrived', { group:G.id, place:Lc.place, act:Lc.activity }); }
-      else if(G.phase==='dwell' && minute >= G.until){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI++; }); groupLeg(G, minute, t); }
+        SIM.logEvent('arrived', { group:G.id, place:Lc.place, act:Lc.activity }); if(Lc.stop && SIM.ECON) SIM.economyStop(G, Lc, 'arrive', minute); }
+      else if(G.phase==='dwell' && minute >= G.until){ var Ld=lead.plan[lead.planI]; if(Ld && Ld.stop && SIM.ECON) SIM.economyStop(G, Ld, 'leave', minute);
+        G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI++; }); groupLeg(G, minute, t); }
       else if(G.phase==='arrive' && t >= G.legArrive){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); a.planI=1; a.task=null; a.wanted=null; }); G.phase='stay'; SIM.logEvent('arrived', { group:G.id, place:G.dest }); }
       else if(G.phase==='stay' && minute >= G.plan.stayUntil){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI=2; }); groupLeg(G, minute, t); }
       else if(G.phase==='depart' && t >= G.legArrive){ G.done=true; G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.present=false; SIM.remove('actor', id); });
@@ -288,6 +292,7 @@
       if(SIM.WAKE) a.wake = SIM.wakeOf(a, minute, want);
     }
     if(SIM.ECON) SIM.economyStep(minute, t);                                        /* production, the carts, the imports */
+    for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     return made;
   };
   /* THE WAKE (SIM.WAKE, opt-in): an actor is asked again only at the soonest minute anything it wants could change: the
@@ -295,7 +300,13 @@
      items' hourly looks), a failed task's retry (every 15 minutes), a role's cycle, the needs' and the items'
      clauses (SIM.needsWake, SIM.itemsWake: a dwell ending, a meter crossing, an errand done, a tool worn through); at
      once while its wish and its decision differ (a decision the minute's budget left for the next) */
-  SIM.WAKE = false; SIM.skipped = 0;
+  SIM.WAKE = false; SIM.skipped = 0; SIM.stepHooks = SIM.stepHooks || [];
+  /* A FORCED COMMAND: the actor does `act` at `place` (and at `spot`, when given) from now until `until` (a world
+     minute; `mins` from now), whatever its schedule, needs and errands want; then it is free again. Asked at once (its
+     wake cleared). An arena's handler sending a beast onto the sand, later a sergeant's order */
+  SIM.command = function(a, o){
+    var minute=SIM.minute(); a.cmd={ act:o.act, place:o.place||null, spot:o.spot||null, until:o.until!=null ? o.until : minute+(o.mins||60), by:o.by||null };
+    a.wake=null; a.wanted=null; a.fr=null; SIM.logEvent('command', { actor:a.id, act:o.act, place:o.place||null, until:a.cmd.until, by:o.by||null }); return a.cmd; };
   SIM.wakeOf = function(a, minute, want){
     if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
     /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
@@ -303,6 +314,7 @@
     var sc=SIM.schedOf(a, minute), h=Math.floor((minute%1440)/60), nh=h+1, midnight=minute-minute%1440+1440;
     if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
     var w=Math.min(midnight, minute-minute%60+(nh-h)*60), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    if(a.cmd) w=Math.min(w, a.cmd.until);                                           /* a command's end */
     if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60);
     if(a.task.failed) w=Math.min(w, minute-minute%15+15);
     if(cyc && a.since!=null) w=Math.min(w, a.since+cyc);
