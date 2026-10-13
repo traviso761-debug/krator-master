@@ -504,8 +504,9 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
 1. Finish stage 2: `core/water` phases 2 to 4, and the Throne on `core/host` (section 10 step 1's last piece).
 2. **Merge stages 0 to 2 into `main`** (the owner's go-ahead): `full-refactor` into `main`, its CI and nightly job
    switch on there, and `main`'s CLAUDE.md "refactor paused" section becomes the rules of the merged tree (the known
-   bugs it lists are fixed: the irid kind, lossless normals, the indexed furniture batch). Pull in `Voth-sim` and the
-   fauna branch (`ccr-05259b8d-kuy4pm`) in the same pass if they have been handed over by then; each is merged,
+   bugs it lists are fixed: the irid kind, lossless normals, the indexed furniture batch). Pull in `Voth-sim` in the same
+   pass if it has been handed over by then (it takes the fauna branch, `ccr-05259b8d-kuy4pm`, itself; merge that branch
+   separately only if `Voth-sim` as pushed does not contain it); each is merged,
    rebuilt and proven like the other branches (verify, smoke, baseline).
 3. Stage 3 (section 10, steps 2 to 6): Girder, Iziz and Highlands, fauna mode on the merged fauna kit, the rest,
    then Streetlab and Voth with their branch.
