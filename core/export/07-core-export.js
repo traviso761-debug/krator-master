@@ -2,8 +2,8 @@
 // GODOT-PLAN.md Phase 4 ("one exporter"), ROADMAP.md stage 2d. One plain-data object per build or per tile, which each
 // module fills with its own part: the biome core its items, buckets, materials, textures, terrain and stage
 // (core/biome/42-core-export.js, 43-core-export-host.js), core/tags its registry, core/atmos its atmosphere, the
-// material records their table (09-core-export-adapters.js reads the last three until those modules register
-// themselves). core/export/README.md is the contract; godot/krator/world_import.gd reads it.
+// material records their table, core/water its surfaces (09-core-export-adapters.js reads the last four until those
+// modules register themselves). core/export/README.md is the contract; godot/krator/world_import.gd reads it.
 // [G data]: no THREE, no DOM. It runs in node (core/export/test-export.js).
 //
 //   EXPORT.register(section, fn, {by})  -> unregister(). fn(ctx) returns the section's part (null: nothing). A section
@@ -29,12 +29,12 @@
 //     sections: {name: {status: 'ok' | 'empty' | 'none' | 'stub' | 'error' | 'skipped', by: [contributors], errors?}},
 //     errors: [{section, by, error}],
 //     items: [], buckets: [], materials: [], textures: [],      (lists: concatenated over contributors, unique ids)
-//     registry, terrain, stage, atmos, fixtures, interiors, furniture, sim, city,   (one contributor each, or null)
+//     registry, terrain, stage, atmos, water, fixtures, interiors, furniture, sim, city,   (one contributor each, or null)
 //     stats }
 var EXPORT = (function(root){
 'use strict';
 const FORMAT = 'krator-world', VERSION = 1;
-const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'terrain', 'stage', 'atmos',
+const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'terrain', 'stage', 'atmos', 'water',
                   'fixtures', 'interiors', 'furniture', 'sim', 'city'];
 const LIST = { items: 1, buckets: 1, materials: 1, textures: 1 };
 // sections no module fills yet: their contract is written (README.md, "Stubs") so the first contributor has a shape to meet
@@ -42,12 +42,13 @@ const STUB = { fixtures: 1, interiors: 1, furniture: 1, sim: 1, city: 1 };
 const CONTRACTS = {
  items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex}',
  buckets: 'merged meshes: {id, name, kit, label, material, lod, triangles, geometry (compacted to the tile), records, recordIds, pieces}',
- materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway)',
+ materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway); hook names the Godot library shader(s), joined by + (godot/README.md, "The shader library"); a ground\'s layers (EXPORT.groundLayers: hook world-uv, role ground, layers {terms [{maps [{map, scale, offset}], gain, amount, weight}]}, weights {x0, z0, step, nx, nz, names, values})',
  textures: '{id, from: "png" | "library" | "none", png?, lib?, pack?, family?, slot?, wrap, repeat, offset, flipY, size?}: a library map by reference (the build\'s pack, tex/pack.json), never as pixels',
  registry: 'core/tags: {format: "krator-tags", build, records} cropped to the tile: every record an item or bucket names, every record placed in the box, and their parents',
  terrain: '{format: "krator-terrain", source: "field" | "sampled", field (krator-field, core/terrain), grid {x0, z0, step, nx, nz, heights, water}, probes}',
  stage: 'KSTAGE.capture (core/biome/44-core-stage.js): the page\'s light, fog, tonemapping, sky panorama and ground look',
  atmos: 'ATMOS.export() (core/atmos, krator-atmos): presets, clock, wind, lamps, glows, props; colours sRGB',
+ water: 'WATER.export() (core/water, krator-water): {format, version, period, presets, field: "atmos" | "none", surfaces: [{id, kind, name, bounds, ...}], probes}; an open surface carries level, base, swell (the preset name or list), waves [{A, lambda, k, dir, H, phase, cycles, turns [tx, tz, tc]}], field (the share of the shared wave field, 0 without core/atmos), fieldShare, chop, kChop, tilt, lod, px, damp, amp, bed {x0, z0, cell, nx, nz, level, bytes (Uint8Array RGBA, PRESETS.bed\'s encoding)} or null, look; probes [x, z, t, h, surface id] from WATER\'s own twin',
  fixtures: 'STUB. Doors, windows, lights, signs as core/tags records with a placement each (Yuni\'s KRATOR_EXPORT.fixtures shape): {format: "krator-fixtures", records: [{id, uid, class: "fixture", kind, parent, at, ry, size, tags, host: {wall, side, sill}}]}',
  interiors: 'STUB. The room graph (kits/interiors ROOM()): {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{a, b, kind: "door" | "stair" | "ladder", at}], walls: [{a, b, h, col: true}]}]}',
  furniture: 'STUB. GODOT-PLAN.md Phase 4\'s per-look scheme: {format: "krator-furniture", pieces: [{id: "<piece>/<variant>/<look>", entry {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}], placements: [{record (a core/tags furniture id), piece, at, ry}]}. A placement\'s seed is reduced to one of K looks (about 4) per variant, so placements share a mesh: one MultiMesh per piece and look',
@@ -242,6 +243,14 @@ function check(w, opt){
   if(m[k] == null) continue; J.textureRefs++;
   if(!texs.has(m[k])) bad('material ' + m.id + ' names texture ' + m[k] + ', which the export does not hold');
  }
+ for(const m of w.materials || []) if(m.layers){   // a ground's layers (EXPORT.groundLayers): each map a texture, each weight a channel
+  const names = m.weights && m.weights.names || [];
+  (m.layers.terms || []).forEach((t, i) => { (t.maps || []).forEach(q => { J.textureRefs++;
+    if(!texs.has(q.map)) bad('material ' + m.id + ' layer ' + i + ' names texture ' + q.map + ', which the export does not hold'); });
+   if(t.weight != null && names.indexOf(t.weight) < 0) bad('material ' + m.id + ' layer ' + i + ' is weighted by ' + t.weight + ', which its weights do not hold'); });
+  if(m.weights){ const v = unpack(m.weights.values);
+   if(!v || v.length !== m.weights.nx * m.weights.nz * names.length) bad('material ' + m.id + ': its weights hold ' + (v ? v.length : 0) + ' values for ' + m.weights.nx + ' x ' + m.weights.nz + ' x ' + names.length); }
+ }
  for(const t of w.textures || []){
   if(t.from === 'library' && !(t.lib && t.pack && t.family)) bad('library texture ' + t.id + ' without lib, pack and family');
   if(t.from === 'png' && !t.png) bad('texture ' + t.id + ' says png and holds none');
@@ -286,6 +295,15 @@ function check(w, opt){
  if(w.terrain){ const t = w.terrain;
   if(t.field && t.field.format !== 'krator-field') bad('terrain.field is not a krator-field');
   if(!t.field && !t.grid) bad('terrain with neither a field nor a grid'); }
+ if(w.water){ const sids = ids(w.water.surfaces, 'water surface');
+  if(w.water.format !== 'krator-water') bad('water is not a krator-water section');
+  for(const S of w.water.surfaces || []){
+   if(S.kind === 'open' && (!Array.isArray(S.waves) || S.waves.some(q => !Array.isArray(q.turns) || q.turns.length !== 3))) bad('water ' + S.id + ': an open surface without its waves in turns');
+   if(S.bed){ const b = unpack(S.bed.bytes); if(!b || b.length !== S.bed.nx * S.bed.nz * 4) bad('water ' + S.id + ': its bed holds ' + (b ? b.length : 0) + ' bytes for ' + S.bed.nx + ' x ' + S.bed.nz + ' texels'); }
+   if(S.kind === 'shore' && !sids.has(S.of)) bad('water ' + S.id + ': the shore of ' + S.of + ', which the section does not hold');
+  }
+  for(const p of w.water.probes || []) if(!sids.has(p[4])) bad('a water probe names surface ' + p[4] + ', which the section does not hold');
+ }
  return { ok: !P.length, problems: P, joins: J };
 }
 

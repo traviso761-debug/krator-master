@@ -8,7 +8,7 @@ part to one plain-data object, per build or per tile; the harness writes it head
 | Fragment | Tag | What |
 |---|---|---|
 | `07-core-export.js` | [G data] | `EXPORT`: `register`, `world`, `check`, `glb`, `compact`, `terrain`, `pack`/`unpack`; the section list, the convention, the stubs' contracts. No THREE, no DOM: it runs in node |
-| `09-core-export-adapters.js` | [G data] | the parts of modules that do not register themselves yet: `registry` (core/tags), `atmos` (core/atmos), `materials` (core/materials/record's adapter tables), and `EXPORT.ground(...)` for a build whose ground no module exports |
+| `09-core-export-adapters.js` | [G data] | the parts of modules that do not register themselves yet: `registry` (core/tags), `atmos` (core/atmos), `materials` (core/materials/record's adapter tables), `water` (core/water), `EXPORT.ground(...)` for a build whose ground no module exports, and `EXPORT.groundLayers(...)` for a ground shader's world-space layers |
 | `test-export.js` | | `node core/export/test-export.js`: a biome page built in node, exported; each check with a negative |
 
 A build lists both files (a biome kit: `CORE_EXPORT` in its `build.py`, beside `CORE_TAGS`). The modules that fill it
@@ -28,12 +28,14 @@ EXPORT.check(world, {uid?})          -> {ok, problems, joins}: every reference r
                                         recomputes each instance's uid from its matrix
 EXPORT.glb(world)                    -> {json, glb: Uint8Array, stats}: the meshes as binary glTF, the rest as JSON
 EXPORT.terrain(box, {h, water?, field?, step?, probes?}) -> a terrain section from a build's ground
+EXPORT.groundLayers(spec)            -> a ground's world-space layers as one material record and its maps ("Ground
+                                        layers" below); groundLayers(null) takes them back out
 EXPORT.compact({name: [array, itemSize]}, index) -> the vertices the index uses, renumbered
 EXPORT.pack(typed) / EXPORT.unpack({type, n, b64})
 ```
 
 `ctx` = `{box, opt, build, out, inBox(x, z), memo(key, f)}`. Sections fill in `EXPORT.SECTIONS` order (items, buckets,
-materials, textures, registry, terrain, stage, atmos, fixtures, interiors, furniture, sim, city), so a later one reads
+materials, textures, registry, terrain, stage, atmos, water, fixtures, interiors, furniture, sim, city), so a later one reads
 an earlier one in `ctx.out` (the registry crops itself to the tile's items; the stage samples the ground's look on the
 terrain grid). `memo` lets a module that fills several sections compute once per `world()` call.
 
@@ -49,7 +51,7 @@ and a second contributor to a single section are recorded the same way (the firs
   sections: { <name>: { status, by: [contributors], errors? } },
   errors: [ { section, by, error } ],
   items: [], buckets: [], materials: [], textures: [],               lists: concatenated over contributors, ids unique
-  registry, terrain, stage, atmos, fixtures, interiors, furniture, sim, city,   one contributor each, or null
+  registry, terrain, stage, atmos, water, fixtures, interiors, furniture, sim, city,   one contributor each, or null
   stats: { items, instances, buckets, triangles, materials, textures, records, errors } }
 ```
 
@@ -71,17 +73,80 @@ and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as 
 |---|---|---|
 | `items` | the biome core | `BIO.export`'s item (`biomes/GODOT.md`) plus `id` (`<kit>/<name>`, `@<chunk>` for a LOD chunk, `~<n>` on a repeat): `name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras`, and with core/tags `record` (the item set), `recordClass`, `recordKey`, `records` (a uid per instance, aligned with the matrices), `recordIndex` |
 | `buckets` | the biome core | `BIO.export`'s bucket plus `id`; a tile's `geometry` keeps only the vertices its triangles use (`compacted: {vertices, dropped}`; ROADMAP.md finding 10); `records`, `recordIds`, `pieces` |
-| `materials` | the biome core, the KMAT adapter | one vocabulary: core/materials/record's fields (`family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib`) beside the source's own (a biome material's `kind, key, type, options, sway, hooked, vertexColours, transparent`). The adapter's records are `kmat:<build>:<name>`, maps by library reference |
+| `materials` | the biome core, the KMAT adapter | one vocabulary: core/materials/record's fields (`family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib`) beside the source's own (a biome material's `kind, key, type, options, sway, hooked, vertexColours, transparent`). The adapter's records are `kmat:<build>:<name>`, maps by library reference. `hook` selects the Godot shader library's includes (`godot/README.md`, "The shader library": several joined by `+`; the biome kinds `leaf`, `irid`, `gloss`, `far`, `hang` are aliases of `foliage` and `bark`). A ground's layers are one record with `role: 'ground'`, `hook: 'world-uv'`, `layers` and `weights` ("Ground layers" below) |
 | `textures` | the biome core | `{id, from, wrap, repeat, offset, flipY, size}`; `from: 'png'` with `png` (a data URL: canvases, DataTextures), `'library'` with `lib, pack, family, slot`: a library map **by reference** (the build's `tex/pack.json` names the file; the harness copies the pack beside the case), `'none'` with `error` |
 | `registry` | the core/tags adapter | `KTAGS.page.export()` (`krator-tags`); in a tile, cropped to the records an item or bucket names, the records whose `at` lies in the box (not item sets), and their parents (`cropped: {from, kept, rule}`) |
 | `terrain` | the biome core, or `EXPORT.ground` | `{format: 'krator-terrain', source: 'field' \| 'sampled', box, field, grid, probes}`: `field` the build's KFIELD (`krator-field`, core/terrain) cropped to the box on its own lattice; `grid` the page's `h` and water on a 2 m grid over the box (the stand-in where there is no field; the stage's ground look lies on it); `probes` `h` at 16 x 16 points off the lattice, which a port compares its own sampling against. Without a box: the field whole, no grid |
 | `stage` | the biome core's host (43) | `KSTAGE.capture` over the tile (`biomes/GODOT.md`, "The stage"): renderer, lights, fog, environment, the sky panorama from 40 m over the tile's centre, the ground's look on the terrain grid |
 | `atmos` | the core/atmos adapter | `ATMOS.export({stage: false})` as it is (`krator-atmos`, `core/atmos/GODOT.md`; its colours are sRGB) |
+| `water` | the core/water adapter | `krator-water`: `WATER.export()` and what a port needs to rebuild the twins and the shader to the bit ("Water" below) |
 
 What joins by id (`EXPORT.check`): an item's and a bucket's `material` to `materials`; a material's `map`,
-`normalMap`, `roughnessMap` to `textures`; an item's `record` to an item set in `registry` with the same class and key,
+`normalMap`, `roughnessMap` and each of its layers' maps to `textures`, each layer's weight to its weights' names (and
+the weights' length to their grid); a water surface's bed bytes to its texel count, a shore's `of` and every water
+probe's surface to the water section; an item's `record` to an item set in `registry` with the same class and key,
 `records` and `recordIndex` as long as `count` (and, given `uid`, each uid recomputed from its matrix); a bucket's
 `recordIds` to registry records whose uid is the bucket's; every registry record's parent to the registry.
+
+### Water (core/water; ROADMAP.md stage 2e)
+
+The adapter (`09`) reads `WATER.export()` and the surfaces themselves, so a port rebuilds core/water's twins and its
+shader without reading JavaScript. In a tile it keeps the surfaces whose extent meets the box (an unbounded sea always).
+
+```
+{ format: 'krator-water', version: 1, period (s: the clock's wrap, ATMOS.PRESETS.waves.period, 600 without core/atmos),
+  presets (WATER.PRESETS: sea, swells, open, foam, bed, cdlod), field: 'atmos' | 'none' (whether the page has the shared
+  wave field), clock, note,
+  surfaces: [ { id: 'water:<n>', kind: 'open' | 'shore' | 'flow' | 'fall' | 'still', name, extent [x0, z0, x1, z1] | null,
+     and WATER.export()'s own fields for the kind (flow: pts [x, z, y, slope, width, speed]; fall: lip, dir, speed, drop,
+     plunge; still: level, bounds, poly; shore: of (a surface id), band); an open surface:
+       level (null: the sea's, with its tide), base (the level its bed was baked at), swell (the preset's name or the
+       list as given), waves [{A, lambda, k, dir [dx, dz], H, phase, cycles, turns [tx, tz, tc]}] (turns per metre and
+       cycles per second: the phase is 2 pi (fract(x tx) + fract(z tz) - fract(t tc)) + phase), field (the share of the
+       shared wave field the page draws: 0 without core/atmos), fieldShare (as asked), chop, kChop, tilt, lod, px, damp,
+       amp, bounds, bed {x0, z0, cell, nx, nz, level, bytes (Uint8Array: RGBA per texel, PRESETS.bed's two channels)} or
+       null, look or null } ],
+  probes: [ [x, z, t, h, surface id] ] }   WATER's own heightAt at 6 x 6 points over each open surface's part of the
+                                           tile, at t = 0, 3.7 and 421.3 s
+```
+
+`look` is the material of the `WATER.draw` that draws the surface (`colour, roughness, metal, envMapIntensity,
+transparent`), or what a build that draws its water itself writes on the surface record (`S.look`: sedesert's pond:
+`colour, shallow, deep` as linear hex, `roughness`, `transparent`, and `sky {colour, base, grazing}`, its shader's flat sky
+mixed in by `base + grazing (1 - n.v)^3`). Godot: `godot/krator/water.gd` (`KWater`) is the twin; `water_import.gd` draws
+each open surface on `shaders/water.gdshader` (the library's `lib/water.gdshaderinc`, `WATER.glsl`'s maths with the waves
+as uniforms). Flow, fall, still and shore travel as data and are not drawn: core/water draws none of them yet either.
+
+**The height twin, proved** (`godot/tests/water/water_test.gd`, its golden from `node godot/tools/water_golden.js`: three
+surfaces through this adapter, the Ring Sea's trochoids with half the field and a bed, a pond, a bay with the field's chop):
+at 72 points and five clocks (to 98,765 s) KWater's heights equal `WATER.heightAt` within 1.1e-14 m (5 Newton steps; the
+shader's 3: 1.2e-14 m), the vertex, frame, normal, foam and bed depth within 4e-13, the section's 324 probes within
+1.1e-14 m; tolerance 1e-9 m. One second late, a ripple 1% taller, the field left out or the bed's bytes 3 steps off each
+fail. On a GPU (`godot/tests/shaders/library_gpu_check.gd`, Compatibility on llvmpipe) the include's `wtr_height` is within
+0.5 mm of the twin. In node (`test-export.js`) the twin rebuilt from the record alone meets the page's probes exactly.
+
+### Ground layers (`EXPORT.groundLayers`)
+
+The biome hosts' ground shaders (`biomes/*/src/45-host-stage.js`) multiply world-space maps over the painted ground: a
+fine detail map at two scales, mud cracks weighted by a field. A build describes them once, after its ground material
+(sedesert's):
+
+```js
+EXPORT.groundLayers({id: 'ground:sedesert', build: 'sedesert',
+  terms: [{maps: [{family: 'groundDetail', texture: TEX_DETAIL, scale: .165}, {family: 'groundDetail', texture: TEX_DETAIL, scale: .021, offset: .37}],
+           gain: 1.12, amount: .85},
+          {maps: [{family: 'groundCrack', texture: TEX_CRACK, scale: .14}], weight: 'crack'}],
+  weights: {crack: (x, z) => FC.at(FC.a.crack, x, z)}, step: 2, box: [...the ground], png: t => BIO.texPNG(t)});
+```
+
+It joins `materials` as `{id, family: 'ground', role: 'ground', hook: 'world-uv', layers: {terms: [{maps: [{map (a texture
+id), scale [u, v], offset [u, v]}], gain, amount, weight}]}, weights: {x0, z0, step, nx, nz, names, values (Float32Array,
+the names interleaved)}}`, and its maps join `textures` (a family in the build's pack by library reference, else a PNG).
+Each term multiplies the colour by `mix(1, gain * product(maps at xz * scale + offset), amount * weight)`, in order, the
+maps' bytes as stored (the page samples them in its own uniform, undecoded). The weights are sampled over the tile at
+`step` (without a box, over `spec.box`, at most 512 a side). Godot: `world_import.gd`'s `ground_layers` puts them on the
+terrain's `ground.gdshader` (the library's `lib/world-uv.gdshaderinc`), the weights as an RGBA8 texture sampled between
+grid points as the page interpolates its per-vertex weights.
 
 ### Stubs: the written contracts
 
@@ -175,6 +240,10 @@ parallax seen from another eye); the light is a little flatter and warmer in God
 - The registry, atmos and KMAT adapters live here until their modules can be rebuilt with the Voth branch's agreement.
 - The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
   core/export; the harness injects it for an export.
-- No PNG or EXR height export, no carver floors (core/terrain's own "not yet"); the water surfaces travel only as the
-  grid's `water` and the field's named surfaces.
+- No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's
+  water only where the page names it to core/water (sedesert's pond, and every core/water taker); sedesert's river and
+  cataract, and the other biome hosts' water, are still only the grid's `water` and the field's named surfaces.
+- Only sedesert describes its ground layers; the other biome hosts that draw the same layers (swbay, nwlowlands,
+  eastabyss and the rest of `hostGroundLib`'s users) each need one `EXPORT.groundLayers` call. The strata the hosts paint
+  on rock (`35-core-strata.js`) and the cave's occlusion are not described.
 - Fauna stand still in Godot (`anim`, `anim-phase`: the spike's gap, unchanged).

@@ -178,6 +178,86 @@ ok(r1 && r2 && r3, 'refused: registering an unknown section, asking for one, and
 const w4 = E.world({ box: BOX, sections: ['terrain'] });
 ok(w4.items.length === 0 && w4.sections.items.status === 'skipped' && w4.sections.terrain.status === 'ok', 'sections: only those asked for are filled');
 
+// ---- water (core/water's surfaces, 09's adapter): cropped to the tile, the bed's bytes, the twin's own heights ----
+ok(st('water') === 'empty', 'water: a page without core/water leaves the section empty (its adapter ran and found no WATER)');
+vm.runInContext(read('core/water/20-core-water.js') + '\nthis.WATER=WATER;', A.ctx, { filename: '20-core-water.js' });
+const WT = A.ctx.WATER;
+const POND = WT.open({ name: 'pond', level: -0.5, swell: [[.03, 3.4, 25, 0, .06], [.02, 2.1, -40, 1.3, .05], [.012, 1.3, 70, 2.2, .04]], field: 0,
+  bounds: [-100, -100, 100, 100], bed: A.g, bedCell: 4 });
+POND.look = { colour: '#0d2c30', shallow: '#2a524d', deep: '#0d2c30', roughness: 0.08, transparent: true };
+WT.open({ name: 'far sea', swell: 'ringsea', bounds: [2000, 2000, 3000, 3000] });
+WT.flow({ name: 'river', pts: [[-300, 0, 1], [0, 50, .5], [300, 0, 0]], width: 12, speed: 1 });
+WT.still({ name: 'trough', level: 2, bounds: [10, 10, 12, 12] });
+const ww = E.world({ box: BOX }), WS = ww.water;
+ok(ww.sections.water.status === 'ok' && ww.sections.water.by.join() === 'water' && WS.format === 'krator-water' && WS.period === 600 && WS.field === 'none',
+  'water: the section fills from WATER.export (krator-water, period ' + (WS && WS.period) + ' s, field ' + (WS && WS.field) + ')');
+const wnames = WS.surfaces.map(S => S.name);
+ok(wnames.join() === 'pond,river,trough' && E.world({ sections: ['water'] }).water.surfaces.length === 4,
+  'water: a tile keeps the surfaces that meet its box (' + wnames.join(', ') + '; the far sea only untiled)');
+const wp = WS.surfaces[0];
+ok(wp.waves.length === 3 && wp.waves.every((q, i) => q.turns[0] === POND.waves[i].tx && q.turns[2] === POND.waves[i].tc && q.cycles === POND.waves[i].n) &&
+  wp.lod.join() === POND.lod.join() && wp.damp === POND.dampDepth && wp.base === -0.5 && wp.look.roughness === 0.08,
+  'water: an open surface carries its waves in turns, its fades, damping, base level and look');
+const bedB = un(wp.bed.bytes);
+ok(bedB.length === POND.bed.data.length && bedB.every((v, i) => v === POND.bed.data[i]) && wp.bed.nx === POND.bed.nx,
+  'water: the bed\'s bytes travel as they are (' + wp.bed.nx + ' x ' + wp.bed.nz + ' texels, ' + bedB.length + ' bytes)');
+// the twin rebuilt from the record alone (what godot/krator/water.gd does), against WATER's own heights at the probes
+function twinOf(R, dt) {
+  const fr = x => x - Math.floor(x), ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const B = R.bed, P = WS.presets.bed, bytes = B ? un(B.bytes) : null;
+  const dec = (r, g) => (g > .004 && g < .996) ? P.fine[0] + g * (P.fine[1] - P.fine[0]) : P.deep[0] + r * r * (P.deep[1] - P.deep[0]);
+  const depth = (x, z) => { if (!B) return 1e9; const u = (x - B.x0) / (B.cell * B.nx), v = (z - B.z0) / (B.cell * B.nz); if (u < 0 || v < 0 || u > 1 || v > 1) return P.deep[1];
+    const fx = u * B.nx - .5, fz = v * B.nz - .5, i0 = Math.floor(fx), j0 = Math.floor(fz), ax = fx - i0, az = fz - j0, cl = (q, n) => Math.min(n - 1, Math.max(0, q));
+    const ch = (i, j, k) => bytes[(cl(j, B.nz) * B.nx + cl(i, B.nx)) * 4 + k] / 255, bl = k => (ch(i0, j0, k) * (1 - ax) + ch(i0 + 1, j0, k) * ax) * (1 - az) + (ch(i0, j0 + 1, k) * (1 - ax) + ch(i0 + 1, j0 + 1, k) * ax) * az;
+    return dec(bl(0), bl(1)); };
+  const damp = (x, z) => B ? ss(0, R.damp, depth(x, z)) : 1;
+  const troD = (x0, z0, t) => { let dx = 0, h = 0, dz = 0, a = 1, b = 0, c = 1;
+    for (const q of R.waves) { const th = 2 * Math.PI * (fr(x0 * q.turns[0]) + fr(z0 * q.turns[1]) - fr(t * q.turns[2])) + q.phase, co = Math.cos(th), si = Math.sin(th), k = q.H * q.k * si;
+      h += q.A * si; dx += q.H * q.dir[0] * co; dz += q.H * q.dir[1] * co; a -= k * q.dir[0] * q.dir[0]; b -= k * q.dir[0] * q.dir[1]; c -= k * q.dir[1] * q.dir[1]; }
+    return [dx, h, dz, a, b, c]; };
+  return (x, z, t) => { t += dt || 0; let x0 = x, z0 = z;
+    for (let i = 0; i < 5; i++) { const d = troD(x0, z0, t), m = damp(x0, z0), a = 1 + (d[3] - 1) * m, b = d[4] * m, c = 1 + (d[5] - 1) * m, det = a * c - b * b, rx = x0 + d[0] * m - x, rz = z0 + d[2] * m - z;
+      x0 -= (c * rx - b * rz) / det; z0 -= (a * rz - b * rx) / det; }
+    return R.level + troD(x0, z0, t)[1] * damp(x0, z0); };
+}
+const tw = twinOf(wp), tw1 = twinOf(wp, 1);
+let wmax = 0, wneg = Infinity;
+WS.probes.forEach(q => { wmax = Math.max(wmax, Math.abs(tw(q[0], q[1], q[2]) - q[3])); });
+const wneg1 = Math.max(...WS.probes.map(q => Math.abs(tw1(q[0], q[1], q[2]) - q[3])));
+ok(WS.probes.length === 108 && WS.probes.every(q => q[4] === wp.id) && wmax < 1e-12 && wneg1 > 1e-3 && WS.probes.some(q => Math.abs(q[3] - wp.level) > 5e-3),
+  'water: the twin rebuilt from the record alone meets WATER\'s own heights at ' + WS.probes.length + ' probes (max ' + wmax.toExponential(1) + ' m); negative: one second off differs by ' + wneg1.toFixed(3) + ' m');
+const wc = E.check(ww);
+const wbad = JSON.parse(JSON.stringify(ww)); const tb8 = un(wbad.water.surfaces[0].bed.bytes); wbad.water.surfaces[0].bed.bytes = E.pack(tb8.subarray(0, tb8.length - 4));
+wbad.water.probes[0][4] = 'water:99';
+const wcb = E.check(wbad);
+ok(wc.ok && !wcb.ok && wcb.problems.some(m => /its bed holds/.test(m)) && wcb.problems.some(m => /probe names surface water:99/.test(m)),
+  'water: the joins pass; negative: a short bed and a probe naming no surface are reported');
+// ---- a ground's layers (EXPORT.groundLayers): one record with hook world-uv, its maps as textures, its weights on a grid ----
+const crackTex = new THREE.Texture(), libTex = new THREE.Texture(); crackTex.image = { width: 4, height: 4 }; libTex.image = { src: "data:image/webp;base64,UklGRgAAAABXRUJQ", width: 512, height: 512 };
+E.groundLayers({ id: 'ground:k', build: 'k', terms: [
+  { maps: [{ family: 'bark0', texture: libTex, scale: .165 }, { family: 'bark0', texture: libTex, scale: .021, offset: .37 }], gain: 1.12, amount: .85 },
+  { maps: [{ family: 'crackX', texture: crackTex, scale: .14 }], weight: 'crack' }],
+  weights: { crack: (x, z) => Math.max(0, Math.min(1, (x + z) / 400)) }, step: 4, box: [-1300, -1300, 1300, 1300], png: t => t === crackTex ? { png: 'data:image/png;base64,AAAA', size: [4, 4] } : null });
+const wg = E.world({ box: BOX }), GL = wg.materials.find(m => m.id === 'ground:k');
+const gtx = id => wg.textures.find(t => t.id === id);
+ok(GL && GL.hook === 'world-uv' && GL.role === 'ground' && GL.layers.terms.length === 2 && GL.layers.terms[0].maps[1].offset.join() === '0.37,0.37' &&
+  GL.layers.terms[0].gain === 1.12 && GL.layers.terms[1].weight === 'crack' && wg.sections.materials.by.indexOf('ground-layers') >= 0,
+  'ground layers: one material record (hook world-uv, role ground) with its terms, gains and weights in order');
+ok(gtx(GL.layers.terms[0].maps[0].map).from === 'library' && gtx(GL.layers.terms[0].maps[0].map).family === 'bark0' &&
+  GL.layers.terms[0].maps[0].map === GL.layers.terms[0].maps[1].map && gtx(GL.layers.terms[1].maps[0].map).from === 'png',
+  'ground layers: a map in the build\'s pack goes by library reference, one map shared by two terms is one texture, the rest as a PNG');
+const GV = un(GL.weights.values), gi = 37, gj = 101;
+ok(GL.weights.nx === (BOX[2] - BOX[0]) / 4 + 1 && GV.length === GL.weights.nx * GL.weights.nz &&
+  Math.abs(GV[gj * GL.weights.nx + gi] - Math.max(0, Math.min(1, (BOX[0] + gi * 4 + BOX[1] + gj * 4) / 400))) < 1e-6,
+  'ground layers: the weights sampled on a ' + GL.weights.step + ' m grid over the tile (' + GL.weights.nx + ' x ' + GL.weights.nz + '), each the build\'s own value');
+const gb = JSON.parse(JSON.stringify(wg)), GB = gb.materials.find(m => m.id === 'ground:k');
+GB.layers.terms[1].maps[0].map = 'tex:nowhere'; GB.layers.terms[0].weight = 'moss'; GB.weights.values = E.pack(new Float32Array(3));
+const gcb = E.check(gb);
+ok(E.check(wg).ok && !gcb.ok && gcb.problems.some(m => /tex:nowhere/.test(m)) && gcb.problems.some(m => /weighted by moss/.test(m)) && gcb.problems.some(m => /weights hold 3/.test(m)),
+  'ground layers: the joins pass; negative: a missing map, an unknown weight and short weights are reported');
+E.groundLayers(null);
+ok(!E.world({ box: BOX, sections: ['materials', 'textures'] }).materials.some(m => m.id === 'ground:k'), 'ground layers: groundLayers(null) takes the record back out');
+
 // ---- the glb: the meshes as binary glTF, the rest as JSON naming each node ----
 const G = E.glb(w), u8 = G.glb, dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
 const jl = dv.getUint32(12, true), J = JSON.parse(Buffer.from(u8.subarray(20, 20 + jl)).toString('utf8')), bin0 = 20 + jl + 8;
