@@ -76,4 +76,19 @@ in seconds. `?furniture=0` draws no furniture (the records are still kept), `?ma
 
 `API.md` the frames, the plan and the contract; `KNOWN_ISSUES.md` what is open; `PORT.md` the port tags; `INDEX.md` the
 fragments. The engine is forked from `kits/scyvoi` (geometry merge, library materials, the furniture glue, the dev
-tools); the sky is the standard KratorSky (vendored from Iziz); the sea is core/atmos's wave field.
+tools); the sky is the standard KratorSky (vendored from Iziz); the sea is core/water's open water (below).
+
+## The sea (core/water, 2026-10-13)
+
+The Ring Sea here is a `WATER.open` surface (`core/water/README.md`; `src/82-nr-water.js`, `nrSeaWater` and
+`nrSeaDraw`, called from `90-scene.js`) carrying the shared wave field (core/atmos) as the old sheet did (field 1: its
+swell displaced, its chop and mid waves shading), on the one clock (`atmWaveT`), drawn by `WATER.draw` on the CDLOD
+water mesh. Its bed is baked from `terrainH` (with the hull's ground under the pontoon) over the shore, the hull and the
+basin (`NR_SEA_BED`, 4 m cells): the shallows' colour over the sand, a surf lap under 1.4 m, the swell calmed to nothing
+at the waterline, the water fading out over the sand. The holds stand in the same water (the material is two-sided, as
+the old sheet was). The sky in it is core/atmos's skylight, which this page already gave the scene. Its CPU twin is
+`WATER.heightAt`; nothing rides it yet (the floats are baked into the hull's buckets, and the Ring Sea kit's trochoid
+swell is left out so the sea moves no more than before: at most 0.53 m, 0.41 m at the floats). Before 2026-10-13 the sea
+was a warped 220 x 220 sheet with a per-vertex depth on Voth's water shader. From the four views (the opening, astern
+at the harbour mouth, off the west beach at 5 m, the basin from the inner quay): the same draw calls (53, 53, 48, 202),
+triangles within 3% (the sheet's 97k became 150-210 CDLOD nodes); `verify.py --assert` passes before and after.

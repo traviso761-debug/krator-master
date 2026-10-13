@@ -39,9 +39,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `64-nr-flora.js` | 2 |  |
 | `70-nr-interiors.js` | 37 **big** | the CABINS (63); the SHIP'S ROOMS (89); the DECK BUILDINGS (129); the PUBLIC ROOMS: placed piece by piece, in the  (149); the pass (309) |
 | `81-sky.js` | 10 |  |
-| `82-nr-water.js` | 5 | the sea (25) |
+| `82-nr-water.js` | 4 | the sea (25) |
 | `89-nr-views.js` | 11 | where a point is (the inspector, the HUD) (61); the walk floors: every level under a point (hull (77) |
-| `90-scene.js` | 5 | (re)build the world (26) |
+| `90-scene.js` | 5 | (re)build the world (24) |
 | `91-probe.js` | 2 |  |
 | `91f-furnish.js` | 7 |  |
 | `91n-night.js` | 3 |  |

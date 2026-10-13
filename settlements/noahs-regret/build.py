@@ -12,6 +12,7 @@ The page is one <script> made of, in filename order:
   core/tags              50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish           50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos             89-atmos-*.js (ATMOS: the wave field the sea reads, the sky's light on the library materials)
+  core/water             20-core-water.js, 50-core-water-draw.js (WATER: the sea as an open surface, its CPU twin, the CDLOD mesh)
   26-matlib-pack.js      GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): KratorInteriors, ROOM, furnishRoom and the
@@ -67,7 +68,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'noahs-regret.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water')]
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
             '30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}

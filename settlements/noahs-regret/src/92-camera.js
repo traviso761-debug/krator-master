@@ -106,7 +106,6 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
   if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;}
  applyCam();
  for(const f of FRAME_HOOKS)f(dt,now);
- nrWaterUni.uCam.value.copy(camera.position);
  {const tg=WALK.on?camera.position:ctl.target;sun.target.position.set(tg.x,0,tg.z);sun.position.set(tg.x+LIGHTDIR.x*300,LIGHTDIR.y*300,tg.z+LIGHTDIR.z*300);sun.target.updateMatrixWorld();}
  skyCam.quaternion.copy(camera.quaternion);skyCam.fov=camera.fov;skyCam.updateProjectionMatrix();
  atmosFrame(dt);

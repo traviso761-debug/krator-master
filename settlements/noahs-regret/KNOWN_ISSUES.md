@@ -12,6 +12,10 @@
 - [ ] **No ships in the harbour.** The basin is empty water: the liner mole's two berths, the finger piers and the inner
       quay are ready for them. The Ring Sea kit's vessels (`kits/ringsea`) could lie at the
       inner quay and the floats once that kit has a bundle for other worlds.
+- [ ] **Nothing rides the sea.** The sea is core/water's (2026-10-13) and `WATER.ride` would pose a hull on it, but the
+      floats off the inner quay are baked into the hull's buckets, so they stay put while the field lifts the basin by up
+      to 0.41 m; for that reason the Ring Sea kit's trochoid swell (`swell:'ringsea'`, the geyser's and the kit's sea) is
+      not on this sea yet. Ships in the harbour (above) should be groups that ride it.
 - [ ] **The park trees are placeholders** (two species, tagged as such): no biome kit is named for the Ring Sea's south
       shore. Replace them with that kit's flora, placed by the parks' beds (`NR.PARKS`).
 
