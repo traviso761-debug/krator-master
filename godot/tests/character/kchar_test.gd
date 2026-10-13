@@ -273,6 +273,15 @@ func _init() -> void:
 		grec["mods"] = []
 		g.apply(grec)
 		ok(not g.four_arms and not shown.call("mod_arms"), "giant: no mod, two arms")
+		# a four-armed top's lower sleeves: over flesh arms, not over a cybernetic pair
+		grec["armour"]["torso"] = "giant_free_m_tunic4"
+		grec["mods"] = ["mod_arms_flesh"]
+		g.apply(grec)
+		var over_flesh: bool = shown.call("giant_free_m_tunic4.sleeves2")
+		grec["mods"] = ["mod_arms_loader"]
+		g.apply(grec)
+		ok(over_flesh and shown.call("giant_free_m_tunic4") and not shown.call("giant_free_m_tunic4.sleeves2"),
+			"giant: lower sleeves over flesh arms, left off the loader arms")
 		var p_h = null
 		for pp in j("peoples.json")["peoples"]:
 			if pp["id"] == "hykkousoi":

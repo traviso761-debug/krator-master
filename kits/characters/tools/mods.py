@@ -432,7 +432,7 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
         d1 = (el - sh) / np.linalg.norm(el - sh)
         d2 = (wr - el) / np.linalg.norm(wr - el)
         joint.ball(sh, 0.04 * k, J('Arm'), U('Arm'))
-        trim.ball(sh + d1 * 0.012 * k, 0.046 * k, J('Arm'), U('Arm'), n=14, m=9)
+        trim.ball(sh, 0.047 * k, J('Arm'), U('Arm'), n=14, m=9)     # the dome, round the joint ball (it hides it whole)
         # each joint is a ball a little wider than the ends that meet in it, and each segment runs into it far enough
         # (into() : the rim of an end of radius r stays inside a ball of radius R) that a bend never opens a gap
         into = lambda R, r: math.sqrt(max(R * R - r * r, 0.0)) * 0.85
@@ -677,8 +677,7 @@ def fit_four(item_path, flesh_path, ranges):
 def split_lower(item_path, sleeve_path, ranges):
     """a four-armed top's lower sleeves and armbands (ranges of _VIDX) as a piece of their own: sleeve_path gets the
     GLB with only their triangles, item_path keeps the rest. A cybernetic pair wears the top without them (kit item
-    sleeves2, KCHAR.parts). Both keep every vertex (the morphs and Godot shapes are packed by _VIDX). Returns how many
-    triangles moved"""
+    sleeves2, KCHAR.parts). Each keeps only the vertices its triangles use. Returns how many triangles moved"""
     j, b = glbio.read_glb(open(item_path, 'rb').read())
     keep_j, low_j = copy.deepcopy(j), copy.deepcopy(j)
     moved, blobs_keep, blobs_low = 0, {}, {}
@@ -698,10 +697,32 @@ def split_lower(item_path, sleeve_path, ranges):
                 continue
             moved += int(low.sum())
             for jj, blobs, tris in ((keep_j, blobs_keep, T[~low]), (low_j, blobs_low, T[low])):
+                # each half keeps only the vertices its triangles use (Godot's importer drops the others, and the
+                # morphs and blend shapes are packed per vertex the GLB has)
+                used = np.unique(tris)
+                remap = np.full(len(V), -1, np.int64)
+                remap[used] = np.arange(len(used))
+                q = jj['meshes'][mi]['primitives'][pi]
+                for name, ai in list(q['attributes'].items()):
+                    a = j['accessors'][ai]
+                    v = j['bufferViews'][a['bufferView']]
+                    dt, nc = glbio.CT[a['componentType']], glbio.NC[a['type']]
+                    if v.get('byteStride') not in (None, np.dtype(dt).itemsize * nc):
+                        raise SystemExit('mods.py: strided attribute in %s' % item_path)
+                    off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+                    arr = np.frombuffer(bytes(b), dt, a['count'] * nc, off).reshape(a['count'], nc)[used]
+                    jj['bufferViews'].append({'buffer': 0, 'byteOffset': 0, 'byteLength': 0, 'target': 34962})
+                    blobs[len(jj['bufferViews']) - 1] = np.ascontiguousarray(arr).tobytes()
+                    na = {k: a[k] for k in ('componentType', 'type', 'normalized') if k in a}
+                    na.update({'bufferView': len(jj['bufferViews']) - 1, 'count': int(len(used))})
+                    if 'min' in a:
+                        na['min'], na['max'] = arr.min(0).tolist(), arr.max(0).tolist()
+                    jj['accessors'].append(na)
+                    q['attributes'][name] = len(jj['accessors']) - 1
                 jj['bufferViews'].append({'buffer': 0, 'byteOffset': 0, 'byteLength': 0, 'target': 34963})
-                blobs[len(jj['bufferViews']) - 1] = tris.reshape(-1).astype(np.uint32).tobytes()
+                blobs[len(jj['bufferViews']) - 1] = remap[tris].reshape(-1).astype(np.uint32).tobytes()
                 jj['accessors'].append({'bufferView': len(jj['bufferViews']) - 1, 'componentType': 5125, 'count': int(tris.size), 'type': 'SCALAR'})
-                jj['meshes'][mi]['primitives'][pi]['indices'] = len(jj['accessors']) - 1
+                q['indices'] = len(jj['accessors']) - 1
     if moved:
         _write(item_path, keep_j, b, blobs_keep)
         _write(sleeve_path, low_j, b, blobs_low)
