@@ -14,6 +14,12 @@ core/simulation `77-sim-6-items.js` (opt-in, its tests in `test-sim.js`, SCHEMA.
 `45-vc-sim-items.js` and `TUNE.sim.items`, the report's "Things", verify's items check. The slaves are issued their
 clothes and tools and run no errands, with no material need (the owner's Q5).
 
+The owner, then: "Make a shipwright's dock that constructs ships and also sells oars, kayaks. Nets could come from
+weaver". `voth_bldg_shipwright` (kits/catalog) by the river port and on the nearest natural shore to the harbour (the
+west bay, about 2 km off: the harbour's coast is its quay deck, 4 m above the water); 14 shipwrights each (their ships
+are phase E's production; the job table shows their posts short: 8 for 28); oars and kayaks there, nets at the
+weavers, the fishers' own nets. No item is without a seller now.
+
 **Where we're at** (`verify.py`, two workdays then the rest day's morning): 1,306 places sell (by kit model), 7,079
 households keep a food store, 1,528 eat at a mess. About 6,800 food trips (16 world minutes on average), 1,944 clothes
 bought against 1,600 worn out, tools as above, 87 poultices for 127 hurt, about

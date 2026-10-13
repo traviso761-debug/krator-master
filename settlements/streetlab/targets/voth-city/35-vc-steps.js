@@ -11,7 +11,7 @@ SL.layout = function () {
   for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); } if (k === 5) VC.simTemples(5);   /* the temples after the highways and the wall, still before the streets */   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
-  VC.simSquares(12); VC.simVillageShrines(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow) */
+  VC.simSquares(12); VC.simVillageShrines(13); VC.simShipwrights(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow), the shipwright's docks */
   VC.census();                     /* 36-vc-census.js: people and workplaces */
   VC.lighting();                   /* 37-vc-light.js: power houses' reach, street lamps */
   VC.parkFurniture();              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */

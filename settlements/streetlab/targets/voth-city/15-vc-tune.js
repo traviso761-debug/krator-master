@@ -142,7 +142,7 @@ var TUNE = {
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
-          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']],
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']], voth_bldg_shipwright: [['shop', 'workshop']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -246,6 +246,9 @@ var TUNE = {
       villageShrine: { key: 'voth_bldg_village_shrine', n: 8, retries: 8, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, monastery: 350, small: 3 },
                        homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
                        reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
+      /* the shipwright's docks (VC.simShipwrights): by the sea harbour and the river port */
+      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60,
+                    from: ['poor', 'middle', 'shop', 'craft', 'warehouse', 'tavern'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -387,7 +390,7 @@ var TUNE = {
       work: { drink: 4, eat: 1.5, relax: 1 },
       labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
                 'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, 'industrial workers': 0.7,
-                'smiths and craftsmen': 0.6, tanners: 0.7, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
+                'smiths and craftsmen': 0.6, tanners: 0.7, 'shipwrights and boatbuilders': 0.8, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
       slaveLabour: 1,
       byTrade: { soldiers: { material: 0.5 }, 'Ordinator garrison': { material: 0.5, contemplate: 1.3 }, 'town guard': { material: 0.7 },
                  'monks and lay brothers (chapel, fields, coops)': { contemplate: 2, socialize: 0.6, material: 0.5 }, 'temple priests and servants': { contemplate: 1.5 },
@@ -441,7 +444,7 @@ var TUNE = {
         voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'waterskin', 'lamp'],
         voth_shop_smithy: ['hoe', 'pick', 'maul', 'knife', 'hook', 'spade', 'shears', 'goad', 'hammer', 'scraper', 'cleaver', 'ladle', 'lancet', 'sword', 'spear', 'shield', 'cuirass', 'greaves', 'boots', 'helm'],
         voth_shop_potter: ['pottery', 'lamp'], voth_shop_scribe: ['quill'], voth_shop_enchanter: ['jewellery'],
-        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
+        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle', 'net'], voth_bldg_shipwright: ['oar', 'kayak'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
         voth_bldg_butcher: ['fish', 'eggs']
       },
       market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
@@ -452,7 +455,7 @@ var TUNE = {
                'industrial workers': 'hammer', 'guild masters and journeymen': 'hammer', 'armourers and quartermasters': 'hammer', weavers: 'shuttle', tanners: 'scraper',
                bakers: 'peel', 'cooks and bakers': 'ladle', butchers: 'cleaver', 'innkeepers and servers': 'ladle', 'household service': 'ladle',
                'guild officers and clerks': 'quill', 'customs officers and clerks': 'quill', 'teachers and scholars': 'quill', 'palace household and officials': 'quill',
-               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'rack',
+               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'net', 'shipwrights and boatbuilders': 'hammer',
                soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
       armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
       foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
@@ -560,6 +563,7 @@ var TUNE = {
              voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
              voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
              voth_bldg_village_shrine: { job: 'shrine keepers', jobs: 2, live: 1, where: 'village shrines' },
+             voth_bldg_shipwright: { job: 'shipwrights and boatbuilders', jobs: 14, where: "shipwright's docks" },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },

@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (26 keys / 30 build "looks")
+   Voth — Building Registry (27 keys / 31 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -2153,5 +2153,74 @@ ASSET({
       F.cyl(s * 5, 0.5, 6.5, 0.22, 1.3, 0, 0x3a2f22, 'metal'); F.cyl(s * 5, 1.8, 6.5, 0.5, 0.25, 0, 0x3a2f22, 'metal');
       F.ball(s * 5, 2.15, 6.5, 0.3, glow, 'glow');
     });
+  }
+});
+ASSET({
+  key: 'voth_bldg_shipwright', name: "Shipwright's Dock", culture: 'voth', family: 'industrial', types: ['workshop', 'shop', 'infrastructure'],
+  districts: ['harbour', 'river port'], wealth: [0.2, 0.6], w: 30, d: 40, h: 14, variants: 1,
+  /* the owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars, kayaks". The yard on the
+     shore (its back, -z, to the street), a slipway stepping down into the water (+z) with a hull on the stocks, the
+     sheerlegs over it, a timber shed with a sawpit and a steam box, and the shop at the landward corner: oars and
+     kayaks racked outside it for sale */
+  ix: { block: [8.5, -14.5, 10, 9], y: 0.5, h: 4.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7a62, 0x92826a]), trim = shade(c, -0.22), dark = shade(c, -0.36), timber = 0x5c4630, plank = 0x7a5e3e, pale = 0xa48a62;
+    const roofC = 0x6a4a32, doorC = 0x2a2018, rope = 0x8a7350, iron = 0x3a3630, glow = 0xffcf87;
+    /* the yard: a stone-edged apron on the shore */
+    F.box(0, 0, -9, 30, 0.5, 22, 0, dark, 'stone');
+    F.box(0, 0.5, -19.7, 30, 0.4, 0.6, 0, trim, 'stone');
+    /* the slipway: two timber ways stepping down into the water, the hull's cradle on them */
+    for (let k = 0; k < 9; k++) {
+      const z = 1 + k * 2.2, y = -0.25 * k;
+      [-2.2, 2.2].forEach(function (x) { F.box(x, y - 0.4, z, 0.7, 0.9, 2.3, 0, timber, 'wood'); });
+      F.box(0, y - 0.6, z, 6.4, 0.3, 2.0, 0, shade(timber, -0.15), 'wood');
+    }
+    /* the hull on the stocks: the keel, stem and sternpost, the frames, the lower strakes planked */
+    const hz0 = -4, hz1 = 15, hy = 1.0;
+    F.box(0, hy - 0.4, (hz0 + hz1) / 2, 0.5, 0.5, hz1 - hz0, 0, timber, 'wood');
+    F.box(0, hy, hz1 + 0.3, 0.5, 5.0, 0.6, 0, timber, 'wood');
+    F.box(0, hy, hz0 - 0.2, 0.5, 4.2, 0.6, 0, timber, 'wood');
+    for (let k = 1; k < 9; k++) {
+      const z = hz0 + k * (hz1 - hz0) / 9, beam = 2.6 * Math.sin(Math.PI * k / 9) + 0.6;
+      [-1, 1].forEach(function (s) {
+        F.rod(0, hy, z, s * beam * 0.8, hy + 1.2, z, 0.1, pale, 'wood');
+        F.rod(s * beam * 0.8, hy + 1.2, z, s * beam, hy + 3.6, z, 0.1, pale, 'wood');
+      });
+      if (k > 1 && k < 8) [-1, 1].forEach(function (s) { F.box(s * beam * 0.62, hy + 0.7, z, 0.12, 1.2, (hz1 - hz0) / 9 + 0.1, 0, plank, 'wood'); });
+    }
+    [-1, 1].forEach(function (s) { for (let k = 0; k < 4; k++) F.box(s * 3.4, -0.3, hz0 + 2 + k * 4.5, 0.3, hy + 0.6, 0.3, 0, iron, 'metal'); });   /* the shores propping it */
+    /* the sheerlegs over the slip, a block and tackle */
+    F.rod(-5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood'); F.rod(5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood');
+    F.rod(0, 13.4, 5, 0, 0.5, -6, 0.06, rope, 'rope'); F.rod(0, 13.4, 5, 0, 5.2, 5, 0.04, rope, 'rope');
+    F.box(0, 4.6, 5, 0.5, 0.7, 0.4, 0, iron, 'metal');
+    /* the timber shed: an open front, the sawpit, the steam box, a stack of planks */
+    F.box(-9.5, 0.5, -13, 10, 0.2, 12, 0, shade(dark, 0.08), 'stone');
+    [[-14.3, -18.8], [-4.7, -18.8], [-14.3, -7.2], [-4.7, -7.2]].forEach(function (p) { F.box(p[0], 0.5, p[1], 0.5, 5.4, 0.5, 0, timber, 'wood'); });
+    F.box(-9.5, 0.5, -18.9, 9.6, 4.0, 0.25, 0, plank, 'wood');
+    F.box(-14.4, 0.5, -13, 0.25, 4.0, 11.6, 0, plank, 'wood');
+    F.pyrRoof(-9.5, 5.9, -13, 11, 2.0, 13, 0, roofC, 'roof');
+    F.box(-9.5, 0.3, -11, 1.2, 0.3, 6, 0, doorC, 'wood');                                          /* the sawpit and its log */
+    F.box(-9.5, 0.95, -11, 0.7, 0.7, 5.5, 0, timber, 'wood');
+    F.box(-6.6, 0.7, -16.5, 1.2, 1.2, 4.4, 0, shade(timber, 0.1), 'wood'); F.cyl(-6.6, 1.9, -14.6, 0.25, 1.8, 0, iron, 'metal');
+    F.ball(-6.6, 3.9, -14.6, 0.35, 0xd8d0c4, 'glow');
+    for (let k = 0; k < 5; k++) F.box(-12.4, 0.7 + k * 0.28, -14, 2.6, 0.24, 6.5 - k * 0.4, 0, k % 2 ? plank : pale, 'wood');
+    /* the shop: plastered, a door to the street, a sign, a window to the yard */
+    F.box(8.5, 0.5, -14.5, 10, 4.4, 9, 0, c, 'plaster');
+    F.box(8.5, 4.9, -14.5, 10.4, 0.3, 9.4, 0, trim, 'stone');
+    F.pyrRoof(8.5, 5.2, -14.5, 10.6, 2.4, 9.6, 0, roofC, 'roof');
+    F.box(8.5, 0.5, -19.05, 1.8, 2.8, 0.2, 0, doorC, 'wood'); F.box(8.5, 3.5, -19.1, 2.6, 0.35, 0.25, 0, trim, 'stone');
+    F.box(8.5, 3.9, -19.25, 2.2, 0.8, 0.12, 0, plank, 'wood');
+    F.ball(10.2, 3.2, -19.3, 0.16, glow, 'glow');
+    [5.5, 11.5].forEach(function (x) { F.box(x, 2.0, -9.95, 1.4, 1.4, 0.15, 0, doorC, 'stone'); F.box(x, 2.0, -19.05, 1.2, 1.2, 0.15, 0, doorC, 'stone'); });
+    [-12.5, -16.5].forEach(function (z) { F.box(13.55, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); F.box(3.45, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); });
+    /* for sale: oars racked against the shop, kayaks on trestles */
+    for (let k = 0; k < 8; k++) F.rod(13.9, 0.6, -18 + k * 0.9, 14.4, 4.2, -17.6 + k * 0.9, 0.06, pale, 'wood');
+    [[9, -6.5], [9, -3.5]].forEach(function (p) {
+      [-2.2, 2.2].forEach(function (dx) { F.box(p[0] + dx, 0.5, p[1], 0.3, 0.8, 1.2, 0, timber, 'wood'); });
+      F.box(p[0], 1.3, p[1], 5.4, 0.45, 0.7, 0, 0x6e8a5a, 'wood'); F.box(p[0], 1.75, p[1], 1.0, 0.1, 0.5, 0, doorC, 'wood');
+    });
+    /* bollards and a capstan on the waterfront edge */
+    [-13, 13].forEach(function (x) { F.cyl(x, 0.5, 1.5, 0.35, 1.0, 0, iron, 'metal'); });
+    F.cyl(-8, 0.5, -2, 0.7, 1.1, 0, timber, 'wood'); F.cyl(-8, 1.6, -2, 0.95, 0.18, 0, iron, 'metal');
   }
 });

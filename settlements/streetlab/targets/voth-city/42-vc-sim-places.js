@@ -356,6 +356,66 @@ VC.simVillageShrines = function (step) {
   return out;
 };
 
+/* the shipwright's docks (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars, kayaks"):
+   one by each district of `roles` (the sea harbour, the river port): out from its middle in rings to `reach` m, the first
+   shore where the model's landward part (its back, local z < `landTo`) stands on dry ground no steeper than `slope` m
+   across and its slipway (local z > `waterFrom`) in the water, its last `endLen` m `depth` m deep (the ground as drawn: a
+   harbour's bed shelves gently), turned to the water (the lowest of 16
+   directions `look` m out), clear by `clear` m of the piers, the causeways and the cantons and by `markClear` m of
+   Voth's landmarks, over nothing but house and warehouse lots of `from` (cleared), off the streets and the hard ground
+   (the harbour's quay deck is drawn over it: a `quay` role would allow it), off the roads beyond the city's raster and
+   off the greens and benched squares. Its land height is its back's */
+VC.simShipwrights = function (step) {
+  var S = TUNE.sim.place.shipwright, D = SL.dims(S.key, 0), out = [], R = SL.R; VC.SIMB.shipwrights = out;
+  if (!D) return out;
+  var segs = [];
+  (VOTH.PIERS || []).forEach(function (q) { segs.push([[q.x0, q.z0], [q.x1, q.z1], (q.w || 6) / 2]); });
+  (CANT.causewayList || []).forEach(function (cw) { for (var k = 1; k < cw.pts.length; k++) segs.push([cw.pts[k - 1], cw.pts[k], cw.width / 2]); });
+  CANT.spans.forEach(function (sp) { segs.push([[sp.ax, sp.az], [sp.bx, sp.bz], sp.w / 2]); });
+  var at = function (c, f, x, z) { var u = V.perp(f); return [c[0] + u[0] * x + f[0] * z, c[1] + u[1] * x + f[1] * z]; };
+  var gcen = {}, why = {}, no = function (k) { why[k] = (why[k] || 0) + 1; return null; };
+  var tryAt = function (c) {
+    if (baseH(c[0], c[1]) < S.land) return no('wet middle');
+    var f = null, lo = Infinity;
+    for (var i = 0; i < 16; i++) { var th = i / 16 * 2 * Math.PI, d = [Math.cos(th), Math.sin(th)], q = [c[0] + d[0] * S.look, c[1] + d[1] * S.look], h = baseH(q[0], q[1]); if (h < lo) { lo = h; f = d; } }
+    if (lo > VOTH.SEA - S.depth) return no('no water near');
+    var hw = D.w / 2, hd = D.d / 2, hmin = Infinity, hmax = -Infinity;
+    for (var x = -hw + 1; x <= hw - 1 + 0.01; x += (D.w - 2) / 4) for (var z = -hd + 1; z <= S.landTo; z += (S.landTo + hd - 1) / 3) {
+      var p = at(c, f, x, z), g = baseH(p[0], p[1]); if (g < S.land) return no('yard wet'); hmin = Math.min(hmin, g); hmax = Math.max(hmax, g);
+      if (VC.inCanton(p, S.clear)) return no('canton');
+      var oc = R.at(p[0], p[1]);
+      if (oc === OCC.OUT) { if (VC.roadNear(p, 2)) return no('a road'); }   /* beyond the walled city's raster: the roads */
+      else if (oc === OCC.STREET || oc === OCC.ALLEY || (oc === OCC.HARD && !hardOk)) return no('street or hard ground');
+    }
+    if (hmax - hmin > S.slope) return no('steep');
+    if (marks.some(function (m) { return Math.hypot(m[0] - c[0], m[1] - c[1]) < S.markClear; })) return no('a landmark');
+    for (var x2 = -3; x2 <= 3; x2 += 3) for (var z2 = S.waterFrom; z2 <= hd - 0.5; z2 += 2) { var w = at(c, f, x2, z2), hw2 = baseH(w[0], w[1]); if (hw2 > VOTH.SEA - (z2 >= hd - S.endLen ? S.depth : 0)) return no('slip dry'); }
+    var o = obb(c, V.perp(f), hw, hd), C = obbCorners(o).concat([c]);
+    if (PLAN.greens.some(function (G, gi) { if (!G.poly) return false; var gc = gcen[gi] || (gcen[gi] = polyCentroid(G.poly)); if (Math.abs(gc[0] - c[0]) > 150 || Math.abs(gc[1] - c[1]) > 150) return false;
+      return C.some(function (q) { return inPoly(q, G.poly); }) || G.poly.concat([gc]).some(function (q) { return VC.simInObb(q, o, 1); }); })) return no('a green or square');
+    if (segs.some(function (sg) { return C.some(function (q) { return VC.simSegD(q, sg[0], sg[1]) < sg[2] + S.clear; }) || VC.simSegD(c, sg[0], sg[1]) < sg[2] + Math.max(hw, hd); })) return no('pier or causeway');
+    var g2 = VC.grow(o, 1.5), bad = false;
+    PLAN.lots.forEach(function (L) { if (bad || L.died != null || !L.bo || Math.abs(L.x - c[0]) > 80 || Math.abs(L.z - c[1]) > 80 || SL.pen(g2, L.bo) <= 0.1) return; if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; });
+    if (bad) return no('a lot not to clear'); if (VC.anyHit(o, VC.big || [], 1)) return no('a big plot');
+    return { c: c, f: f, back: hmin };
+  };
+  var hardOk = false, marks = (PLAN.voth || []).map(function (q) { return [q.x, q.z]; }).concat((PLAN.landmarks || []).map(function (q) { return [q.x, q.z]; }));
+  S.roles.forEach(function (role) {
+    hardOk = S.quay.indexOf(role) >= 0;   /* a harbour's shore is its paved quay */
+    var Ds = VC.districts(role); if (!Ds.length) { out.push({ role: role, why: 'no ' + role + ' district' }); return; }
+    var c0 = polyCentroid(Ds[0].poly), got = null;
+    for (var r = 0; r <= S.reach && !got; r += S.ring) { var n = r ? Math.max(8, Math.round(2 * Math.PI * r / S.ring)) : 1;
+      for (var i = 0; i < n && !got; i++) { var th = i / n * 2 * Math.PI; got = tryAt([c0[0] + Math.cos(th) * r, c0[1] + Math.sin(th) * r]); if (got) got.r = r; } }
+    if (!got) { out.push({ role: role, why: 'no shore within ' + S.reach + ' m (' + Object.keys(why).map(function (k) { return k + ' ' + why[k]; }).join(', ') + ')' }); return; }
+    var L = VC.placedLot({ key: S.key, v: 0, x: got.c[0], z: got.c[1], ry: Math.atan2(got.f[0], got.f[1]) }, step);
+    if (!L) { out.push({ role: role, why: 'the model would not place' }); return; }
+    L.placed = false; L.cls = 'craft'; L.role = 'shipwright'; L.y = Math.max(VOTH.SEA + 0.3, got.back);
+    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r });
+  });
+  SL.note(step, 'shipwright’s docks: ' + out.map(function (q) { return q.lot != null ? q.role + ' (' + q.r + ' m from its middle)' : q.why; }).join('; '));
+  return out;
+};
+
 VC.wells = function () {
   var T = TUNE.sim.wells, art = [], H = new Map(), cs = T.gap;
   var near = function (p) { var gx = Math.floor(p[0] / cs), gz = Math.floor(p[1] / cs);

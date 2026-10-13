@@ -536,6 +536,13 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   their clothes and tools and run no errands (the owner's Q5). The material meter rises slowly; when it is high a
   citizen buys the best luxury or household good its wealth reaches. An errand goes when a seller is open and within
   reach. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
+  **The shipwright's docks** (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars,
+  kayaks. Nets could come from weaver"): `voth_bldg_shipwright` (kits/catalog: a yard on the shore, a slipway into the
+  water with a hull on the stocks, sheerlegs, a timber shed, the shop with oars and kayaks racked), placed by
+  `VC.simShipwrights` (`TUNE.sim.place.shipwright`) at the river port and on the nearest natural shore to the harbour
+  (the harbour's own coast is its quay deck, 4 m above the water: no slip runs off it). Its 14 shipwrights work the
+  slip (the ships they build are phase E's production); it sells oars and kayaks, the weavers nets, and the fishers
+  now own their nets (bought from a weaver when worn out).
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

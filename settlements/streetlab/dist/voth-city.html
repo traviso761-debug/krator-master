@@ -1761,7 +1761,7 @@ const KratorLOD = (function () {
 </script>
 <script>/* kits/catalog/krator-master-buildings-voth.js */
 /* ======================================================================
-   Voth — Building Registry (26 keys / 30 build "looks")
+   Voth — Building Registry (27 keys / 31 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -3915,6 +3915,75 @@ ASSET({
       F.cyl(s * 5, 0.5, 6.5, 0.22, 1.3, 0, 0x3a2f22, 'metal'); F.cyl(s * 5, 1.8, 6.5, 0.5, 0.25, 0, 0x3a2f22, 'metal');
       F.ball(s * 5, 2.15, 6.5, 0.3, glow, 'glow');
     });
+  }
+});
+ASSET({
+  key: 'voth_bldg_shipwright', name: "Shipwright's Dock", culture: 'voth', family: 'industrial', types: ['workshop', 'shop', 'infrastructure'],
+  districts: ['harbour', 'river port'], wealth: [0.2, 0.6], w: 30, d: 40, h: 14, variants: 1,
+  /* the owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars, kayaks". The yard on the
+     shore (its back, -z, to the street), a slipway stepping down into the water (+z) with a hull on the stocks, the
+     sheerlegs over it, a timber shed with a sawpit and a steam box, and the shop at the landward corner: oars and
+     kayaks racked outside it for sale */
+  ix: { block: [8.5, -14.5, 10, 9], y: 0.5, h: 4.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7a62, 0x92826a]), trim = shade(c, -0.22), dark = shade(c, -0.36), timber = 0x5c4630, plank = 0x7a5e3e, pale = 0xa48a62;
+    const roofC = 0x6a4a32, doorC = 0x2a2018, rope = 0x8a7350, iron = 0x3a3630, glow = 0xffcf87;
+    /* the yard: a stone-edged apron on the shore */
+    F.box(0, 0, -9, 30, 0.5, 22, 0, dark, 'stone');
+    F.box(0, 0.5, -19.7, 30, 0.4, 0.6, 0, trim, 'stone');
+    /* the slipway: two timber ways stepping down into the water, the hull's cradle on them */
+    for (let k = 0; k < 9; k++) {
+      const z = 1 + k * 2.2, y = -0.25 * k;
+      [-2.2, 2.2].forEach(function (x) { F.box(x, y - 0.4, z, 0.7, 0.9, 2.3, 0, timber, 'wood'); });
+      F.box(0, y - 0.6, z, 6.4, 0.3, 2.0, 0, shade(timber, -0.15), 'wood');
+    }
+    /* the hull on the stocks: the keel, stem and sternpost, the frames, the lower strakes planked */
+    const hz0 = -4, hz1 = 15, hy = 1.0;
+    F.box(0, hy - 0.4, (hz0 + hz1) / 2, 0.5, 0.5, hz1 - hz0, 0, timber, 'wood');
+    F.box(0, hy, hz1 + 0.3, 0.5, 5.0, 0.6, 0, timber, 'wood');
+    F.box(0, hy, hz0 - 0.2, 0.5, 4.2, 0.6, 0, timber, 'wood');
+    for (let k = 1; k < 9; k++) {
+      const z = hz0 + k * (hz1 - hz0) / 9, beam = 2.6 * Math.sin(Math.PI * k / 9) + 0.6;
+      [-1, 1].forEach(function (s) {
+        F.rod(0, hy, z, s * beam * 0.8, hy + 1.2, z, 0.1, pale, 'wood');
+        F.rod(s * beam * 0.8, hy + 1.2, z, s * beam, hy + 3.6, z, 0.1, pale, 'wood');
+      });
+      if (k > 1 && k < 8) [-1, 1].forEach(function (s) { F.box(s * beam * 0.62, hy + 0.7, z, 0.12, 1.2, (hz1 - hz0) / 9 + 0.1, 0, plank, 'wood'); });
+    }
+    [-1, 1].forEach(function (s) { for (let k = 0; k < 4; k++) F.box(s * 3.4, -0.3, hz0 + 2 + k * 4.5, 0.3, hy + 0.6, 0.3, 0, iron, 'metal'); });   /* the shores propping it */
+    /* the sheerlegs over the slip, a block and tackle */
+    F.rod(-5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood'); F.rod(5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood');
+    F.rod(0, 13.4, 5, 0, 0.5, -6, 0.06, rope, 'rope'); F.rod(0, 13.4, 5, 0, 5.2, 5, 0.04, rope, 'rope');
+    F.box(0, 4.6, 5, 0.5, 0.7, 0.4, 0, iron, 'metal');
+    /* the timber shed: an open front, the sawpit, the steam box, a stack of planks */
+    F.box(-9.5, 0.5, -13, 10, 0.2, 12, 0, shade(dark, 0.08), 'stone');
+    [[-14.3, -18.8], [-4.7, -18.8], [-14.3, -7.2], [-4.7, -7.2]].forEach(function (p) { F.box(p[0], 0.5, p[1], 0.5, 5.4, 0.5, 0, timber, 'wood'); });
+    F.box(-9.5, 0.5, -18.9, 9.6, 4.0, 0.25, 0, plank, 'wood');
+    F.box(-14.4, 0.5, -13, 0.25, 4.0, 11.6, 0, plank, 'wood');
+    F.pyrRoof(-9.5, 5.9, -13, 11, 2.0, 13, 0, roofC, 'roof');
+    F.box(-9.5, 0.3, -11, 1.2, 0.3, 6, 0, doorC, 'wood');                                          /* the sawpit and its log */
+    F.box(-9.5, 0.95, -11, 0.7, 0.7, 5.5, 0, timber, 'wood');
+    F.box(-6.6, 0.7, -16.5, 1.2, 1.2, 4.4, 0, shade(timber, 0.1), 'wood'); F.cyl(-6.6, 1.9, -14.6, 0.25, 1.8, 0, iron, 'metal');
+    F.ball(-6.6, 3.9, -14.6, 0.35, 0xd8d0c4, 'glow');
+    for (let k = 0; k < 5; k++) F.box(-12.4, 0.7 + k * 0.28, -14, 2.6, 0.24, 6.5 - k * 0.4, 0, k % 2 ? plank : pale, 'wood');
+    /* the shop: plastered, a door to the street, a sign, a window to the yard */
+    F.box(8.5, 0.5, -14.5, 10, 4.4, 9, 0, c, 'plaster');
+    F.box(8.5, 4.9, -14.5, 10.4, 0.3, 9.4, 0, trim, 'stone');
+    F.pyrRoof(8.5, 5.2, -14.5, 10.6, 2.4, 9.6, 0, roofC, 'roof');
+    F.box(8.5, 0.5, -19.05, 1.8, 2.8, 0.2, 0, doorC, 'wood'); F.box(8.5, 3.5, -19.1, 2.6, 0.35, 0.25, 0, trim, 'stone');
+    F.box(8.5, 3.9, -19.25, 2.2, 0.8, 0.12, 0, plank, 'wood');
+    F.ball(10.2, 3.2, -19.3, 0.16, glow, 'glow');
+    [5.5, 11.5].forEach(function (x) { F.box(x, 2.0, -9.95, 1.4, 1.4, 0.15, 0, doorC, 'stone'); F.box(x, 2.0, -19.05, 1.2, 1.2, 0.15, 0, doorC, 'stone'); });
+    [-12.5, -16.5].forEach(function (z) { F.box(13.55, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); F.box(3.45, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); });
+    /* for sale: oars racked against the shop, kayaks on trestles */
+    for (let k = 0; k < 8; k++) F.rod(13.9, 0.6, -18 + k * 0.9, 14.4, 4.2, -17.6 + k * 0.9, 0.06, pale, 'wood');
+    [[9, -6.5], [9, -3.5]].forEach(function (p) {
+      [-2.2, 2.2].forEach(function (dx) { F.box(p[0] + dx, 0.5, p[1], 0.3, 0.8, 1.2, 0, timber, 'wood'); });
+      F.box(p[0], 1.3, p[1], 5.4, 0.45, 0.7, 0, 0x6e8a5a, 'wood'); F.box(p[0], 1.75, p[1], 1.0, 0.1, 0.5, 0, doorC, 'wood');
+    });
+    /* bollards and a capstan on the waterfront edge */
+    [-13, 13].forEach(function (x) { F.cyl(x, 0.5, 1.5, 0.35, 1.0, 0, iron, 'metal'); });
+    F.cyl(-8, 0.5, -2, 0.7, 1.1, 0, timber, 'wood'); F.cyl(-8, 1.6, -2, 0.95, 0.18, 0, iron, 'metal');
   }
 });
 
@@ -47982,7 +48051,7 @@ var TUNE = {
         },
         chamber: { beds: 4, stores: 2 },
         byKey: {
-          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']],
+          voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']], voth_bldg_shipwright: [['shop', 'workshop']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
           voth_barracks: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
           voth_garrison: [['drillhall', 'mess', 'armoury'], ['dormitory', 'dormitory']],
@@ -48086,6 +48155,9 @@ var TUNE = {
       villageShrine: { key: 'voth_bldg_village_shrine', n: 8, retries: 8, pad: 2, attend: 0.16, walk: 1500, holds: { canton: 250, funerary: 500, shrine: 100, monastery: 350, small: 3 },
                        homes: { poor: 7, middle: 5, rich: 6, shop: 5, craft: 6, farm: 10 }, cell: 100, r: 400,
                        reach: 400, ring: 10, ways: ['avenue', 'main', 'side', 'alley', 'lane'], front: 14, gap: 600, slope: 3.5, from: ['poor', 'middle', 'shop', 'craft', 'rich', 'farm'] },
+      /* the shipwright's docks (VC.simShipwrights): by the sea harbour and the river port */
+      shipwright: { key: 'voth_bldg_shipwright', roles: ['harbor', 'riverport'], quay: [], reach: 3000, ring: 12, look: 30, land: 1.0, depth: 1.0, slope: 3, landTo: -2, waterFrom: 6, endLen: 4, clear: 6, markClear: 60,
+                    from: ['poor', 'middle', 'shop', 'craft', 'warehouse', 'tavern'] },
       berth: { key: 'voth_bldg_coastguard_berth', canton: 'Fortress', off: 30, clear: 0.45, deckY: 1.2, depth: 2 }
     },
     wells: { key: 'voth_well', street: 150, side: 2.6, gap: 90, classes: ['main', 'side'], yard: ['manor', 'clan'] },
@@ -48227,7 +48299,7 @@ var TUNE = {
       work: { drink: 4, eat: 1.5, relax: 1 },
       labour: { 'farmhands and ploughmen': 1, miners: 1, 'quarrymen and masons': 1, 'dockers and stevedores': 1, 'porters and warehousemen': 0.8, fishers: 0.8,
                 'river bargemen and quay hands': 0.8, 'chinampa growers': 0.8, 'mushroom growers': 0.7, orchardmen: 0.7, 'beetle herders': 0.6, 'industrial workers': 0.7,
-                'smiths and craftsmen': 0.6, tanners: 0.7, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
+                'smiths and craftsmen': 0.6, tanners: 0.7, 'shipwrights and boatbuilders': 0.8, soldiers: 0.6, 'gladiators and arena keepers': 1, 'monks and lay brothers (chapel, fields, coops)': 0.5 },
       slaveLabour: 1,
       byTrade: { soldiers: { material: 0.5 }, 'Ordinator garrison': { material: 0.5, contemplate: 1.3 }, 'town guard': { material: 0.7 },
                  'monks and lay brothers (chapel, fields, coops)': { contemplate: 2, socialize: 0.6, material: 0.5 }, 'temple priests and servants': { contemplate: 1.5 },
@@ -48281,7 +48353,7 @@ var TUNE = {
         voth_shop_trader: ['jewellery', 'silks', 'rug', 'lamp'], voth_shop_provisioner: ['corn', 'peppers', 'mushrooms', 'eggs', 'bread', 'waterskin', 'lamp'],
         voth_shop_smithy: ['hoe', 'pick', 'maul', 'knife', 'hook', 'spade', 'shears', 'goad', 'hammer', 'scraper', 'cleaver', 'ladle', 'lancet', 'sword', 'spear', 'shield', 'cuirass', 'greaves', 'boots', 'helm'],
         voth_shop_potter: ['pottery', 'lamp'], voth_shop_scribe: ['quill'], voth_shop_enchanter: ['jewellery'],
-        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
+        voth_bldg_weaver: ['shirt', 'trousers', 'dress', 'hood', 'rug', 'shuttle', 'net'], voth_bldg_shipwright: ['oar', 'kayak'], voth_bldg_tannery: ['shoes', 'waterskin'], voth_bldg_bakery: ['bread', 'peel'],
         voth_bldg_butcher: ['fish', 'eggs']
       },
       market: ['corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread', 'pottery'],
@@ -48292,7 +48364,7 @@ var TUNE = {
                'industrial workers': 'hammer', 'guild masters and journeymen': 'hammer', 'armourers and quartermasters': 'hammer', weavers: 'shuttle', tanners: 'scraper',
                bakers: 'peel', 'cooks and bakers': 'ladle', butchers: 'cleaver', 'innkeepers and servers': 'ladle', 'household service': 'ladle',
                'guild officers and clerks': 'quill', 'customs officers and clerks': 'quill', 'teachers and scholars': 'quill', 'palace household and officials': 'quill',
-               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'rack',
+               'healers and nurses': 'lancet', 'river bargemen and quay hands': 'oar', ferrymen: 'oar', fishers: 'net', 'shipwrights and boatbuilders': 'hammer',
                soldiers: 'rack', 'town guard': 'rack', jailers: 'rack', 'coast guard': 'rack', 'monks and lay brothers (chapel, fields, coops)': 'hoe' },
       armed: ['Ordinator garrison', 'soldiers', 'gladiators and arena keepers', 'coast guard'], richSword: 0.25, hats: 0.35, dress: 0.5,
       foodDays: [0.5, 3], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 1, days: 3, lack: 4,
@@ -48400,6 +48472,7 @@ var TUNE = {
              voth_bldg_temple_ash: { job: 'temple priests and servants', jobs: 16, where: 'temples' }, voth_bldg_temple_tide: { job: 'temple priests and servants', jobs: 16, where: 'temples' },
              voth_bldg_village_chapel: { job: 'shrine keepers', jobs: 1, live: 1, where: 'village chapels' },
              voth_bldg_village_shrine: { job: 'shrine keepers', jobs: 2, live: 1, where: 'village shrines' },
+             voth_bldg_shipwright: { job: 'shipwrights and boatbuilders', jobs: 14, where: "shipwright's docks" },
              voth_bldg_caravanserai: { job: 'innkeepers and grooms', jobs: 14, live: 6, where: 'caravanserai' },
              voth_bldg_coastguard_berth: { job: 'coast guard', jobs: 40, where: 'coast-guard berth' },
              voth_bldg_bakery: { job: 'bakers', jobs: 5, live: 5, where: 'bakeries' },
@@ -54349,7 +54422,7 @@ SL.layout = function () {
   for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); } if (k === 5) VC.simTemples(5);   /* the temples after the highways and the wall, still before the streets */   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
   VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
   VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
-  VC.simSquares(12); VC.simVillageShrines(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow) */
+  VC.simSquares(12); VC.simVillageShrines(13); VC.simShipwrights(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow), the shipwright's docks */
   VC.census();                     /* 36-vc-census.js: people and workplaces */
   VC.lighting();                   /* 37-vc-light.js: power houses' reach, street lamps */
   VC.parkFurniture();              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
@@ -56150,6 +56223,66 @@ VC.simVillageShrines = function (step) {
   VC.SIMB.villageShrines = out; VC.SIMB.worshipShort = [short0, short1];
   SL.note(step, 'village shrines: ' + out.map(function (q) { return q.lot != null ? 'at ' + q.x + ', ' + q.z + ' (' + q.where + ', ' + q.left + ' worshippers without room within ' + S.r + ' m, ' + q.took + ' house lots cleared)' : q.why; }).join('; ') +
     '; the busiest service’s estimate without room: ' + short0 + ' before, ' + short1 + ' after');
+  return out;
+};
+
+/* the shipwright's docks (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars, kayaks"):
+   one by each district of `roles` (the sea harbour, the river port): out from its middle in rings to `reach` m, the first
+   shore where the model's landward part (its back, local z < `landTo`) stands on dry ground no steeper than `slope` m
+   across and its slipway (local z > `waterFrom`) in the water, its last `endLen` m `depth` m deep (the ground as drawn: a
+   harbour's bed shelves gently), turned to the water (the lowest of 16
+   directions `look` m out), clear by `clear` m of the piers, the causeways and the cantons and by `markClear` m of
+   Voth's landmarks, over nothing but house and warehouse lots of `from` (cleared), off the streets and the hard ground
+   (the harbour's quay deck is drawn over it: a `quay` role would allow it), off the roads beyond the city's raster and
+   off the greens and benched squares. Its land height is its back's */
+VC.simShipwrights = function (step) {
+  var S = TUNE.sim.place.shipwright, D = SL.dims(S.key, 0), out = [], R = SL.R; VC.SIMB.shipwrights = out;
+  if (!D) return out;
+  var segs = [];
+  (VOTH.PIERS || []).forEach(function (q) { segs.push([[q.x0, q.z0], [q.x1, q.z1], (q.w || 6) / 2]); });
+  (CANT.causewayList || []).forEach(function (cw) { for (var k = 1; k < cw.pts.length; k++) segs.push([cw.pts[k - 1], cw.pts[k], cw.width / 2]); });
+  CANT.spans.forEach(function (sp) { segs.push([[sp.ax, sp.az], [sp.bx, sp.bz], sp.w / 2]); });
+  var at = function (c, f, x, z) { var u = V.perp(f); return [c[0] + u[0] * x + f[0] * z, c[1] + u[1] * x + f[1] * z]; };
+  var gcen = {}, why = {}, no = function (k) { why[k] = (why[k] || 0) + 1; return null; };
+  var tryAt = function (c) {
+    if (baseH(c[0], c[1]) < S.land) return no('wet middle');
+    var f = null, lo = Infinity;
+    for (var i = 0; i < 16; i++) { var th = i / 16 * 2 * Math.PI, d = [Math.cos(th), Math.sin(th)], q = [c[0] + d[0] * S.look, c[1] + d[1] * S.look], h = baseH(q[0], q[1]); if (h < lo) { lo = h; f = d; } }
+    if (lo > VOTH.SEA - S.depth) return no('no water near');
+    var hw = D.w / 2, hd = D.d / 2, hmin = Infinity, hmax = -Infinity;
+    for (var x = -hw + 1; x <= hw - 1 + 0.01; x += (D.w - 2) / 4) for (var z = -hd + 1; z <= S.landTo; z += (S.landTo + hd - 1) / 3) {
+      var p = at(c, f, x, z), g = baseH(p[0], p[1]); if (g < S.land) return no('yard wet'); hmin = Math.min(hmin, g); hmax = Math.max(hmax, g);
+      if (VC.inCanton(p, S.clear)) return no('canton');
+      var oc = R.at(p[0], p[1]);
+      if (oc === OCC.OUT) { if (VC.roadNear(p, 2)) return no('a road'); }   /* beyond the walled city's raster: the roads */
+      else if (oc === OCC.STREET || oc === OCC.ALLEY || (oc === OCC.HARD && !hardOk)) return no('street or hard ground');
+    }
+    if (hmax - hmin > S.slope) return no('steep');
+    if (marks.some(function (m) { return Math.hypot(m[0] - c[0], m[1] - c[1]) < S.markClear; })) return no('a landmark');
+    for (var x2 = -3; x2 <= 3; x2 += 3) for (var z2 = S.waterFrom; z2 <= hd - 0.5; z2 += 2) { var w = at(c, f, x2, z2), hw2 = baseH(w[0], w[1]); if (hw2 > VOTH.SEA - (z2 >= hd - S.endLen ? S.depth : 0)) return no('slip dry'); }
+    var o = obb(c, V.perp(f), hw, hd), C = obbCorners(o).concat([c]);
+    if (PLAN.greens.some(function (G, gi) { if (!G.poly) return false; var gc = gcen[gi] || (gcen[gi] = polyCentroid(G.poly)); if (Math.abs(gc[0] - c[0]) > 150 || Math.abs(gc[1] - c[1]) > 150) return false;
+      return C.some(function (q) { return inPoly(q, G.poly); }) || G.poly.concat([gc]).some(function (q) { return VC.simInObb(q, o, 1); }); })) return no('a green or square');
+    if (segs.some(function (sg) { return C.some(function (q) { return VC.simSegD(q, sg[0], sg[1]) < sg[2] + S.clear; }) || VC.simSegD(c, sg[0], sg[1]) < sg[2] + Math.max(hw, hd); })) return no('pier or causeway');
+    var g2 = VC.grow(o, 1.5), bad = false;
+    PLAN.lots.forEach(function (L) { if (bad || L.died != null || !L.bo || Math.abs(L.x - c[0]) > 80 || Math.abs(L.z - c[1]) > 80 || SL.pen(g2, L.bo) <= 0.1) return; if (L.role || L.power || L.deck || L.berth || L.placed || S.from.indexOf(L.cls) < 0) bad = true; });
+    if (bad) return no('a lot not to clear'); if (VC.anyHit(o, VC.big || [], 1)) return no('a big plot');
+    return { c: c, f: f, back: hmin };
+  };
+  var hardOk = false, marks = (PLAN.voth || []).map(function (q) { return [q.x, q.z]; }).concat((PLAN.landmarks || []).map(function (q) { return [q.x, q.z]; }));
+  S.roles.forEach(function (role) {
+    hardOk = S.quay.indexOf(role) >= 0;   /* a harbour's shore is its paved quay */
+    var Ds = VC.districts(role); if (!Ds.length) { out.push({ role: role, why: 'no ' + role + ' district' }); return; }
+    var c0 = polyCentroid(Ds[0].poly), got = null;
+    for (var r = 0; r <= S.reach && !got; r += S.ring) { var n = r ? Math.max(8, Math.round(2 * Math.PI * r / S.ring)) : 1;
+      for (var i = 0; i < n && !got; i++) { var th = i / n * 2 * Math.PI; got = tryAt([c0[0] + Math.cos(th) * r, c0[1] + Math.sin(th) * r]); if (got) got.r = r; } }
+    if (!got) { out.push({ role: role, why: 'no shore within ' + S.reach + ' m (' + Object.keys(why).map(function (k) { return k + ' ' + why[k]; }).join(', ') + ')' }); return; }
+    var L = VC.placedLot({ key: S.key, v: 0, x: got.c[0], z: got.c[1], ry: Math.atan2(got.f[0], got.f[1]) }, step);
+    if (!L) { out.push({ role: role, why: 'the model would not place' }); return; }
+    L.placed = false; L.cls = 'craft'; L.role = 'shipwright'; L.y = Math.max(VOTH.SEA + 0.3, got.back);
+    out.push({ role: role, lot: L.id, x: Math.round(L.x), z: Math.round(L.z), r: got.r });
+  });
+  SL.note(step, 'shipwright’s docks: ' + out.map(function (q) { return q.lot != null ? q.role + ' (' + q.r + ' m from its middle)' : q.why; }).join('; '));
   return out;
 };
 
