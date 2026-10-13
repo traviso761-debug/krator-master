@@ -696,3 +696,14 @@ polygon tool's open sea. The river strip (88b) keeps `MAT.pkSea`, the old sheet'
 phase). From the bay at sea and from the overview: the same draw calls (196, 203), triangles +56 k and +29 k of 29.5 M;
 `verify.py --assert` the same 41 PASS before and after (scene triangles 28564843 -> 28564841, the flat sheet's two gone).
 `--vendor-check`: 58 identical (71w added), the same 18 adapted, the same pre-existing biome drift.
+
+## The river on core/water's flow (2026-10-13)
+The terraced river is core/water's **flow** (Phase 3; `core/water/README.md`, "Flow and falls"; `targets/city/88b-city-draw.js`,
+`YS_RIVER`): the strip's centre line, a point every sample at its pool's level (as before), and at each of the 12
+rimstone lips a point 0.6 m upstream at the upper pool's level, so the ribbon drops the terrace's rise over 0.6 m (a
+step the flow shader whitens: its slope is past the rapids' far end); 249 points down 2.5 km, the strip's width as
+before, 0.7 m/s. `WATER.drawFlow` draws it (rows every 8 m, 4 across, no margin: the banks hide its edges) in the sea's
+colour with the sky in it; its ripples are carried down the current (the flow-map trick) where the sea's sheet stood
+still in the bed. `WATER.heightAt` and `WATER.flowAt` read it, core/export carries it. `build.py` takes core/water's five
+files. `verify.py dist/ys.html --assert --views "The river terraces,The river"`: the same 41 PASS before and after;
+148 and 172 draw calls at the two views before and after; scene triangles 28564841 -> 28568225 (the ribbon's rows).

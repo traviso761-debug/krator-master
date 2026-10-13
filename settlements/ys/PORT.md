@@ -138,7 +138,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/88-city-spans.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/88-city-sunk.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the drowned grid's sunk ruins as records on KRAND, after the bridge graph (PLACE.ruins, grid:true); reads the layout, SPANS and terrainH only |
 | `targets/city/88a-city-floors.js` | 6.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/88b-city-draw.js` | 24.2 | [draw] | 5 | 0 | 0 | 0 | 2 | 1 | 2 | 2 | 0 | 0 | 0 | the draw pass: reads PLACE and calls HYK.place, ysPlaceHost, HYK.placeOn; decides nothing |
+| `targets/city/88b-city-draw.js` | 24.8 | [draw] | 6 | 0 | 0 | 0 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | the draw pass: reads PLACE and calls HYK.place, ysPlaceHost, HYK.placeOn; decides nothing |
 | `targets/city/88c-city-foreign.js` | 22.2 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 1 | 1 | 0 | 0 | 0 |  |
 | `targets/city/89-city-biome.js` | 14.0 | [web] | 1 | 0 | 0 | 0 | 2 | 3 | 0 | 1 | 0 | 0 | 0 |  |
 | `targets/city/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
