@@ -27,7 +27,7 @@ The canonical skeleton, the slots and the face landmarks go to data/skeleton.jso
 [G data] the page and the Godot twin read. pieces/anims.glb is the canonical skeleton with the CLIPS (Styv's walk, run and stretch, Phil's idle: rotation
 tracks, plus the hips' translation) and no mesh.
 """
-import io, json, os, sys
+import io, json, math, os, sys
 import numpy as np
 from PIL import Image
 from scipy.sparse import coo_matrix
@@ -696,8 +696,175 @@ def retarget(src, clip, c):
     return times, {n: np.array(v) for n, v in rots.items()}, np.array(hips)
 
 
+# ---- clips made from others, for work the libraries have no clip for (data/clips.json 'derive') ----
+def _qm(q):
+    x, y, z, w = q
+    return np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+                     [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+                     [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
+
+
+def _slerp(a, b, s):
+    if np.dot(a, b) < 0:
+        b = -b
+    d = float(np.clip(np.dot(a, b), -1, 1))
+    if d > 0.9995:
+        q = a + s * (b - a)
+    else:
+        th = np.arccos(d)
+        q = (np.sin((1 - s) * th) * a + np.sin(s * th) * b) / np.sin(th)
+    return q / np.linalg.norm(q)
+
+
+def loop_back(clip, back):
+    """a one-shot made a loop: after its last frame it eases back to its first over `back` seconds"""
+    times, rots, hips = clip
+    n = max(2, int(round(back * FPS)))
+    ss = [0.5 - 0.5 * math.cos(math.pi * k / n) for k in range(1, n + 1)]
+    t2 = np.concatenate([times, times[-1] + np.arange(1, n + 1) / FPS])
+    r2 = {j: np.concatenate([q, [_slerp(q[-1], q[0], s) for s in ss]]) for j, q in rots.items()}
+    h2 = np.concatenate([hips, [hips[-1] + s * (hips[0] - hips[-1]) for s in ss]])
+    return t2, r2, h2
+
+
+def _ease(keys, t):
+    """a point along keys [(time, vector, ease)]: each stretch eased in-out ('io'), in ('in') or out ('out')"""
+    for (t0, a, _), (t1, b, e) in zip(keys, keys[1:]):
+        if t0 <= t <= t1:
+            u = (t - t0) / (t1 - t0)
+            u = u * u if e == 'in' else 1 - (1 - u) ** 2 if e == 'out' else 0.5 - 0.5 * math.cos(math.pi * u)
+            return a + (b - a) * u
+    return keys[-1][1]
+
+
+def grip_frame(c, S):
+    """the grip frame of hand S ('Right', 'Left') at rest, in the skeleton's space (4x4): origin in the closed hand,
+    +Y along the handle out past the index finger, +Z the way the fingers point, +X out of the palm (make_mpfb.hands,
+    tools/make_props.py)"""
+    P = lambda n: c.jpos[c.J[S + n]]
+    hand = P('Hand')
+    knuck = np.mean([P('Hand' + f + '1') for f in ('Index', 'Middle', 'Ring', 'Pinky')], 0)
+    Y = P('HandIndex1') - P('HandPinky1')
+    Y /= np.linalg.norm(Y)
+    Z = knuck - hand
+    Z -= Y * Y.dot(Z)
+    Z /= np.linalg.norm(Z)
+    X = np.cross(Y, Z)
+    if X.dot(P('HandMiddle3') - P('HandMiddle1')) < 0:      # the fingers curl toward the palm: that side is +X
+        Y, X = -Y, -X
+    G = np.eye(4)
+    G[:3, :3] = np.stack([X, Y, Z], 1)
+    G[:3, 3] = 0.45 * hand + 0.55 * knuck + 0.028 * X
+    return G
+
+
+def hammer_loop(c, idle, cycle=1.1):
+    """hammering at an anvil, standing: the idle's first frame, the spine leaning in as the blow lands, the head
+    down, the right hand (the hammer) lifted to the shoulder and brought down onto an anvil at the hips' height in
+    front (just below them), and the left hand resting on the work beside it. Each arm is a two-bone solve (the elbow out and down)"""
+    times0, rots0, hips0 = idle
+    n = len(c.joints)
+    order = sorted(range(n), key=lambda i: depth(c, i))
+    loc0 = [_qm(rots0[c.joints[i]][0]) if c.joints[i] in rots0 else
+            (c.jrot[c.parents[i]].T @ c.jrot[i] if c.parents[i] >= 0 else c.jrot[i]) for i in range(n)]
+    off = [c.jrot[c.parents[i]].T @ (c.jpos[i] - c.jpos[c.parents[i]]) if c.parents[i] >= 0 else None for i in range(n)]
+    J = c.J
+    hy = float(hips0[0][1])                   # the idle's hips, a little below the rest's
+    side = 1.0 if c.jpos[J['RightArm']][0] > c.jpos[J['LeftArm']][0] else -1.0     # +x on the right hand's side?
+    shR, shL = c.jpos[J['RightArm']], c.jpos[J['LeftArm']]
+    anvil = np.array([shR[0] * 0.8 + shL[0] * 0.2, hy - 0.03, 0.34])
+    keys = [(0.0, anvil + [0, 0.06, -0.01], ''), (0.48 * cycle, np.array([shR[0] + side * 0.06, shR[1] + 0.1, 0.12]), 'io'),
+            (0.64 * cycle, anvil, 'in'), (0.74 * cycle, anvil + [0, 0.08, -0.01], 'out'), (cycle, anvil + [0, 0.06, -0.01], 'io')]
+    lean = [(0.0, np.array([0.22]), ''), (0.48 * cycle, np.array([0.12]), 'io'), (0.64 * cycle, np.array([0.32]), 'in'),
+            (cycle, np.array([0.22]), 'io')]
+    left = np.array([anvil[0] - side * 0.22, hy + 0.01, 0.3])
+    # the hammer's pitch: its handle (the grip's +Y) forward and its face (+Z) down as it lands, swung up and back over
+    # the shoulder at the top of the lift
+    pitch = [(0.0, np.array([-0.35]), ''), (0.48 * cycle, np.array([-2.1]), 'io'), (0.64 * cycle, np.array([0.0]), 'in'),
+             (0.74 * cycle, np.array([-0.4]), 'out'), (cycle, np.array([-0.35]), 'io')]
+    grip = c.jrot[J['RightHand']].T @ grip_frame(c, 'Right')[:3, :3]        # the grip's axes in the hand bone
+
+    def Rx(a):
+        return np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+
+    def fk(loc):
+        Rw, P = [None] * n, [None] * n
+        for i in order:
+            p = c.parents[i]
+            Rw[i] = loc[i] if p < 0 else Rw[p] @ loc[i]
+            P[i] = hips0[0] if p < 0 else P[p] + Rw[p] @ off[i]
+        return Rw, P
+
+    def reach(loc, up, fore, hand, T, pole):
+        Rw, P = fk(loc)
+        S, E, W = P[up], P[fore], P[hand]
+        a, b = np.linalg.norm(E - S), np.linalg.norm(W - E)
+        d = T - S
+        dl = min(np.linalg.norm(d), 0.995 * (a + b))
+        u = d / np.linalg.norm(d)
+        T = S + u * dl
+        x = (a * a - b * b + dl * dl) / (2 * dl)
+        h = math.sqrt(max(a * a - x * x, 0))
+        v = pole - u * np.dot(pole, u)
+        v /= np.linalg.norm(v)
+        E2 = S + u * x + v * h
+        Rup = rot_between(E - S, E2 - S) @ Rw[up]
+        loc[up] = Rw[c.parents[up]].T @ Rup
+        Rw, P = fk(loc)
+        Rf = rot_between(P[hand] - P[fore], T - P[fore]) @ Rw[fore]
+        loc[fore] = Rw[c.parents[fore]].T @ Rf
+    times = np.arange(0, cycle + 1e-6, 1.0 / FPS)
+    out = {nm: [] for nm in rots0}
+    for t in times:
+        loc = list(loc0)
+        Rw, _ = fk(loc)
+        sp = J['Spine']
+        loc[sp] = Rw[c.parents[sp]].T @ Rx(float(_ease(lean, t)[0])) @ Rw[sp]
+        Rw, _ = fk(loc)
+        hd = J['Head']
+        loc[hd] = Rw[c.parents[hd]].T @ Rx(0.3) @ Rw[hd]
+        reach(loc, J['RightArm'], J['RightForeArm'], J['RightHand'], _ease(keys, t), np.array([side * 0.7, -1.0, -0.3]))
+        a = float(_ease(pitch, t)[0])
+        Y = np.array([0, -math.sin(a) - 0.25 * math.cos(a), math.cos(a)])
+        Y /= np.linalg.norm(Y)
+        Z = np.array([0, -math.cos(a), -math.sin(a)])
+        Z -= Y * Y.dot(Z)
+        Z /= np.linalg.norm(Z)
+        Rw, _ = fk(loc)
+        hn = J['RightHand']
+        loc[hn] = Rw[c.parents[hn]].T @ np.stack([np.cross(Y, Z), Y, Z], 1) @ grip.T
+        reach(loc, J['LeftArm'], J['LeftForeArm'], J['LeftHand'], left, np.array([-side * 0.7, -1.0, -0.3]))
+        for nm in out:
+            q = np.array(glbio.mat_quat(loc[J[nm]]))
+            if out[nm] and np.dot(out[nm][-1], q) < 0:
+                q = -q
+            out[nm].append(q)
+    return times, {nm: np.array(v) for nm, v in out.items()}, np.repeat(hips0[:1], len(times), 0)
+
+
+def derived_clips(c, got):
+    """data/clips.json entries with 'derive': {'loop_of': key, 'back': s} (a one-shot looped) or {'hammer': true}"""
+    cp = os.path.join(HERE, 'data', 'clips.json')
+    if not os.path.exists(cp):
+        return []
+    out = []
+    for d in json.load(open(cp))['clips']:
+        spec = d.get('derive')
+        if not spec:
+            continue
+        if 'loop_of' in spec and spec['loop_of'] in got:
+            clip = loop_back(got[spec['loop_of']], spec.get('back', 0.5))
+        elif spec.get('hammer') and 'idle' in got:
+            clip = hammer_loop(c, got['idle'], spec.get('cycle', 1.1))
+        else:
+            continue
+        out.append(clip + (d['key'], d['label'], d['group'], d['loop']))
+    return out
+
+
 def write_anims(out, c):
-    """canonical skeleton + every clip, retargeted: rotation tracks, and the hips' translation"""
+    """canonical skeleton + every clip, retargeted: rotation tracks, and the hips' translation; then the clips made
+    from them (derived_clips)"""
     names, parents, jnodes, W = skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in FACE})
     g = glbio.GlbWriter()
     nodes = [{'name': 'Character', 'children': [1 + parents.index(-1)]}] + [dict(n) for n in jnodes]
@@ -705,9 +872,12 @@ def write_anims(out, c):
         if 'children' in n:
             n['children'] = [ch + 1 for ch in n['children']]
     by = {n.get('name', ''): i + 1 for i, n in enumerate(jnodes)}
-    anims, meta = [], []
+    anims, meta, got = [], [], {}
+    made = []
     for src, clip, name, label, group, loop in [x + (True,) for x in CLIPS + idle_clips()] + action_clips():
-        times, rots, hips = retarget(src, clip, c)
+        got[name] = retarget(src, clip, c)
+        made.append(got[name] + (name, label, group, loop))
+    for times, rots, hips, name, label, group, loop in made + derived_clips(c, got):
         speed = None
         if loop and len(times) > 1 and times[-1] > 0:
             # a loop plays in place: the hips' drift over a cycle (root motion: forward, sideways, up a ladder) comes

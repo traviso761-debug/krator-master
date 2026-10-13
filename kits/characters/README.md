@@ -35,7 +35,7 @@ godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 | Step | Where | What |
 |---|---|---|
 | 1. Blender | `tools/mpfb_build.py` | Builds an MPFB human (Mixamo rig, `detailed_helpers` so the rig lands right), loads the brows, lashes, eyes and every library item in `ITEMS` (clothes per slot, hair, beards: MakeHuman fits each to the body and interpolates its weights from it), exports the base and each item as a GLB on the same rig, with a `_VIDX` attribute (each vertex's Blender index) and each item's delete group. Then, per slider end (macros: age, muscle, weight, height, proportions, and bust and firmness on the woman; the three ancestry shares; 35 face targets), it sets the target, lets MPFB refit the rig and every item, and records how far each vertex of every mesh and each joint moved: `morphs.npz`. |
-| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images. Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the vertex offsets as float32, the skin's cover regions, the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
+| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images. Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
 | 3. Record | `src/10-rig.js` | `KCHAR.morphWeights(record)`: one weight per target (a slider at v < 0 weighs its minus end by -v, at v > 0 its plus end by v, times its reach; ancestry weighs each race by its share minus the base's). `KCHAR.morphJoints`: each joint's rest moves by the weighted sum of its deltas. `KCHAR.stranger(seed, kit, people)`: a record drawn from a people's ranges with `KRAND`. |
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
 | 5. Pages | `src/90-editor.js`, `src/92-animlab.js` | The Cosmetic Lab: Gear (clothes, dye), Head (people, skin tone, hair, hair colour, beard, eye colour), Body (ancestry, build), Face (35 sliders), Record (the record as text, roll a stranger, strangers in bulk). The Animation Lab: six figures, the clips, review marks. |
@@ -51,6 +51,12 @@ Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `t
 `donors/anims/UAL*.glb`, an Unreal-style skeleton mapped by `NAME_MAP`). `loop: false` clips play once and go back
 to the last loop. Loops play in place: their drift over a cycle is taken out and kept as `root_speed` (m/s, in
 `skeleton.json`'s clip list) for a game to move the character by; one-shots (rolls, knockdowns) keep their motion.
+Neither library has hoeing, hammering or a pickaxe, so two work clips are made from others (`derive` in
+`data/clips.json`, `make_pieces.derived_clips`): **Dig (hoe, pickaxe)** is the heavy overhead swing to the ground made a
+loop (it eases back to its first frame), and **Hammer at anvil** is procedural, on the standing idle: the spine leans
+into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just below the
+hips in front (a two-bone solve per arm; the hand turns so the handle points forward and the face down as it lands),
+and the left hand rests on the work.
 **Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
 bucket, cup, lantern, torch) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
@@ -118,10 +124,16 @@ two overlap they move as one and cannot cross.
 
 **Clipping** (both runtimes, every frame after the clip): a garment marked `loose` in the kit (the Voth tunics, robes
 and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
-skinning (`pushOut` / `kchar_push.gdshader`), so a knee cannot come through between two chains. The push is a soft
+skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the garment's own look: albedo, alpha
+cutoff, normal map), so a knee cannot come through between two chains. The upper arms and forearms are hard
+capsules in the same pass (only what is inside them moves), so a raised arm lifts a mantle's or a cape's hem. The push is a soft
 shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
 keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
-torso garment's shell is 1.2 cm wider, so a robe's hem lies over the skirt under it. The chains collide the same way.
+torso garment's shell is 1.2 cm wider, so a robe's hem lies over the skirt under it. The chains collide the same way,
+and still do with cloth off (no swing then: each frame starts from the rigid rest). A top that closes round the waist
+(kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
+does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
+to 2.5 cm, so a waistband stays under the top in any pose.
 `bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 

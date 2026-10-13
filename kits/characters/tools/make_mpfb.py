@@ -768,21 +768,9 @@ def hands(c, J):
     +X out of the palm) and, per finger joint, the local rotation that closes the hand round a handle"""
     out = {}
     for side, S in (('R', 'Right'), ('L', 'Left')):
-        P = lambda n: c.jpos[c.J[S + n]]
-        hand = P('Hand')
-        knuck = np.mean([P('Hand' + f + '1') for f in ('Index', 'Middle', 'Ring', 'Pinky')], 0)
-        Y = P('HandIndex1') - P('HandPinky1')
-        Y /= np.linalg.norm(Y)
-        Z = knuck - hand
-        Z -= Y * Y.dot(Z)
-        Z /= np.linalg.norm(Z)
-        X = np.cross(Y, Z)
-        if X.dot(P('HandMiddle3') - P('HandMiddle1')) < 0:      # the fingers curl toward the palm: that side is +X
-            Y, X = -Y, -X
-        o = 0.45 * hand + 0.55 * knuck + 0.028 * X
-        G = np.eye(4)
-        G[:3, :3] = np.stack([X, Y, Z], 1)
-        G[:3, 3] = o
+        hand = c.jpos[c.J[S + 'Hand']]
+        G = mp.grip_frame(c, S)
+        X, Y = G[:3, 0], G[:3, 1]
         H = np.eye(4)
         H[:3, :3] = c.jrot[c.J[S + 'Hand']]
         H[:3, 3] = hand

@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip: the chop loop, the overhead chop and the heavy swing stand in. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip, so two are made from others (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last (dig: the heavy swing), and hammer, a procedural loop on the standing idle (hammer_loop). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
  "groups": [
   {
    "id": "move",
@@ -1270,6 +1270,41 @@
    "label": "Drive a cart",
    "group": "life",
    "loop": true
+  },
+  {
+   "key": "dig",
+   "derive": {
+    "loop_of": "blunt_swing",
+    "back": 0.6
+   },
+   "label": "Dig (hoe, pickaxe)",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "pickaxe",
+     "hoe"
+    ]
+   },
+   "two_hands": [
+    "pickaxe",
+    "hoe"
+   ]
+  },
+  {
+   "key": "hammer_anvil",
+   "derive": {
+    "hammer": true,
+    "cycle": 1.1
+   },
+   "label": "Hammer at anvil",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
   }
  ]
 }

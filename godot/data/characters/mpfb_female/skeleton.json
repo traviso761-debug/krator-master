@@ -1968,6 +1968,20 @@
     0.0,
     0.276
    ]
+  },
+  {
+   "name": "dig",
+   "label": "Dig (hoe, pickaxe)",
+   "group": "work",
+   "seconds": 2.4,
+   "loop": true
+  },
+  {
+   "name": "hammer_anvil",
+   "label": "Hammer at anvil",
+   "group": "work",
+   "seconds": 1.1,
+   "loop": true
   }
  ],
  "hands": {
