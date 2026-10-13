@@ -1,15 +1,16 @@
-// ================================================================= OPEN WORLD — the water: the sea and the lakes of the scale model
-// [G shader] One sheet per terrain chunk that holds water, at the level WORLD.water gives (the Ring Sea, the abyss's
-// salt lakes, the highland lakes), drawn with the chunk and freed with it. A vertex with no water takes the nearest wet
-// vertex's level: under ground it sinks below the shore (hidden by the land); on ground lower than that level the water
-// runs over it, so no sheet stands up as a wall.
+// ================================================================= OPEN WORLD — the water sheet: the named rivers
+// [G shader] One sheet per terrain chunk that holds a named river, at the level WORLD.riverWater gives, drawn with the
+// chunk and freed with it. Since 2026-10-13 the sea and the lakes are core/water's (83w-world-seas.js: one surface per
+// body, clipped to its own cells and, near the camera, to its flood), so this sheet carries the rivers alone until they
+// move too (core/water Phase 3). A vertex with no river water sinks under the ground. The name was WATER, which is now
+// core/water's global: this one is WSHEET.
 // THE SHADER is the shared one every Krator water takes (README.md, core/atmos): the open-water wave field
 // (#include <atmos_waves>, its clock ATMOS.U.waveTime), the swell displacing the sheet where it is deep enough and the
 // mesh fine enough, the chop and the mid waves shading it, faded by distance; a fresnel toward the sky's colour, the sun's
 // glint, the shallows' colour by depth, a lap of foam at the shore. Written as Voth's bay is (settlements/voth/src/
 // 75-terrain.js), with the logarithmic depth this world draws with. A salt lake (the climate's WX, XW, XS) is paler and
 // milky. Not yet: the sky's reflection as an environment map (core/atmos b-skylight takes standard materials only).
-var WATER;LATE.push(()=>{WATER=(function(){'use strict';
+var WSHEET;LATE.push(()=>{WSHEET=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,NW=16;
 ATMOS.init({THREE,scene,camera,hour:()=>11.5,onFrame:fn=>HOST.TICKS.push(fn),ground:(x,z)=>WORLD.H(x,z),seed:4242,
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>HOST.renderer.getPixelRatio()});
@@ -40,7 +41,7 @@ const MAT=new THREE.ShaderMaterial({uniforms:U,transparent:true,side:THREE.Front
   ' gl_FragColor=vec4(col,mix(alpha,1.0,clamp(fog,0.0,1.0)));}'].join('\n')});
 function forChunk(n){const c=n.chunk,s=n.s,ds=s/NW,N1=NW+1;
  const pos=new Float32Array(N1*N1*3),dep=new Float32Array(N1*N1),salt=new Float32Array(N1*N1),lev=new Float32Array(N1*N1),gr=new Float32Array(N1*N1),riv=new Uint8Array(N1*N1);let any=false;
- for(let j=0;j<=NW;j++)for(let i=0;i<=NW;i++){const v=j*N1+i,x=c.x0+i*ds,z=c.z0+j*ds,l=WORLD.lakeWater(x,z),r=WORLD.riverWater(x,z);
+ for(let j=0;j<=NW;j++)for(let i=0;i<=NW;i++){const v=j*N1+i,x=c.x0+i*ds,z=c.z0+j*ds,l=-1e9,r=WORLD.riverWater(x,z);   // the lakes: 83w-world-seas.js
   lev[v]=Math.max(l,r);riv[v]=r>l?1:0;gr[v]=TERRAIN.chunkH(c,x,z);if(lev[v]>-1e8)any=true;}
  if(!any)return;
  // a dry vertex takes the nearest wet one's level where the ground is below it (a lake's plane runs on to its shore)

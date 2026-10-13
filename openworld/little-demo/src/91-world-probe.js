@@ -95,7 +95,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  out.push(Object.assign({name:'negative: a 3 m step put in the land'},continuity(lines(),(x,z)=>WORLD.H(x,z)+(x>xs?3:0))));
  return out;}
 return{ready:()=>START.ready,hostChecks,hostNegatives,
- stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),
+ stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),seas:SEAS.stats(),
   render:{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles},channels:WORLD.channelCount}),
  views:()=>CAM.GO.map((g,i)=>i+': '+g.label),
  // the towns near the camera, loaded (a promise: verify.py awaits it before a screenshot)
@@ -103,9 +103,9 @@ return{ready:()=>START.ready,hostChecks,hostNegatives,
  go:i=>{CAM.GO[i].fn();},
  view:(x,z,agl,yaw,pitch)=>CAM.setView(x,z,agl,yaw,pitch),
  // draw one frame now (a screenshot after settle): the sky, the labels, the map, then the scene
- render:()=>{document.getElementById('load').style.display='none';{const P=HOST.camera.position;HOST.scene.fog.density=1/(90000+Math.max(0,P.y-WORLD.H(P.x,P.z,400))*12);}SKY.follow();WATER.frame();PLACES.update();CAM.drawMap();for(const f of HOST.TICKS)f(.016,1);
+ render:()=>{document.getElementById('load').style.display='none';{const P=HOST.camera.position;HOST.scene.fog.density=1/(90000+Math.max(0,P.y-WORLD.H(P.x,P.z,400))*12);}SKY.follow();WSHEET.frame();PLACES.update();CAM.drawMap();for(const f of HOST.TICKS)f(.016,1);
   HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
  // stream until the view is complete (headless screenshots): every queue drained or ms spent
  settle:(ms)=>{const t0=performance.now();ms=ms||60000;let k=0;
-  while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&k>3)break;}
-  FLORA.draw();return{rounds:k,ms:Math.round(performance.now()-t0),terrainPending:TERRAIN.pending(),nurseryQueued:NURSERY.queued(),floorWaiting:FLOOR.stats.waiting,floraQueue:FLORA.stats.queue};}};})();
+  while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&SEAS.pending()===0&&k>3)break;}
+  FLORA.draw();return{rounds:k,ms:Math.round(performance.now()-t0),terrainPending:TERRAIN.pending(),nurseryQueued:NURSERY.queued(),floorWaiting:FLOOR.stats.waiting,floraQueue:FLORA.stats.queue,seas:SEAS.stats()};}};})();

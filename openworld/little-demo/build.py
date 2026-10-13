@@ -10,7 +10,8 @@ the world's streaming, sky, camera and probe.
                 roads.json and towns.json, written by bake.py (the highways, the towns' placements and ground)
   dist/towns/   each town's tile (bake.py), fetched by the page when the camera comes near
   src/          this world's fragments
-  ../../core/   rand, terrain (relief), biome, space (KSPACE: keep-clear and scatter), atmos (the wave field)
+  ../../core/   rand, terrain (relief), biome, space (KSPACE: keep-clear and scatter), atmos (the wave field, the sky's
+                light), water (the sea and the lakes: core/water)
   ../../biomes/ the kits, read in place: sedesert, eastabyss, hyperjungle, ebadlands
 
   python3 build.py            # dist/little-demo.html
@@ -49,11 +50,14 @@ ORDER = (
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
      ('core/biome', '35-core-anim.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
+     ('core/atmos', '89-atmos-b-skylight.js'),
+     ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
+     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
      ('biomes/sedesert/src', '35-core-strata.js'),
      ('src', '41-world-fields.js'), ('src', '42-world-roads.js'), ('src', '45-world-host.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('biomes/%s/src' % k, f) for k, fs in KITS.items() for f in fs]
-    + [('src', f) for f in ('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '84-world-nursery.js',
+    + [('src', f) for f in ('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
                             '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '90-world-camera.js',
                             '91-world-probe.js', '98-world-start.js', '99-tail.html')]
 )

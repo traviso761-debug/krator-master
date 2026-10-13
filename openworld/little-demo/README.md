@@ -39,10 +39,12 @@ an east-west canyon about 860 m deep (1,130 m at 8 km) cut into the plateau's ed
 | `45-world-host.js` | the renderer, the light, and the biome core's binding (field sources: world, tile grid, nursery) |
 | `47-world-kits.js` | **the kit registry**: which kits grow here, on which overlay, their LOD reach, their floor profiles |
 | kits | `biomes/sedesert`, `biomes/eastabyss`, `biomes/hyperjungle`, read in place, each as one block |
-| `core/atmos` | the shared wave field (`89-atmos-0-core`, `0p-presets`, `a-waves`) the water reads |
+| `core/atmos` | the shared wave field (`89-atmos-0-core`, `0p-presets`, `a-waves`) and the sky's light (`b-skylight`) the water reads |
+| `core/water` | the sea and the lakes as open water on a mask and a shore window (`core/water/README.md`) |
 | `80-world-sky.js` | the standard Krator sky (from sedesert's), riding with the camera, its painted horizon removed |
 | `81-world-terrain.js` | the quadtree terrain: 64 x 64 chunks from 2,000 km down to 128 m (2 m vertices) |
-| `83-world-water.js` | the sea and the lakes as sheets per chunk, drawn with the shared wave field |
+| `83-world-water.js` | the named rivers as a sheet per chunk, drawn with the shared wave field (`WSHEET`) |
+| `83w-world-seas.js` | the sea and the lakes on core/water: one open surface per water body, masked, on a shore window near the camera |
 | `84-world-nursery.js` | each species' variants grown by its kit, harvested into instanceable prototypes |
 | `85-world-flora.js` | placement records per 512 m tile (cell-seeded, from the kits' pass tables), drawn as instances |
 | `86-world-floor.js` | the kits' floor plants and rocks, tiled from 32 m patches onto the near chunks |

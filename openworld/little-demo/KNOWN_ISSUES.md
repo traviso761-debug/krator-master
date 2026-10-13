@@ -42,13 +42,22 @@
       its tundra flora reaches the ice. They belong in `WORLD.at` for every kit (`biomes/ebadlands/KNOWN_ISSUES.md`).
 - [x] **Lakes floating over the abyss.** Fixed in the scale model itself (4.15, `tools/scale-model/edit_heights.py`);
       the extractor keeps the same rule as a guard and now lowers nothing.
-- [x] **The water takes the shared wave field** (`core/atmos`, as Voth's bay). Not yet: the sky's reflection as an
-      environment map (`b-skylight` takes standard materials only).
-- [ ] **The water is not on core/water yet** (2026-10-13; `core/water/README.md`, "Not taken"). The other Phase 1 takers
-      moved their open water onto `WATER.open` and the CDLOD mesh; this world's sea, lakes and rivers share one sheet per
-      chunk with a level per vertex, which one `WATER.open` surface (one level, clipped by a rectangle) cannot draw: a
-      lake would flood every lower hollow in its box. It waits for a wet mask on `WATER.draw` (or a surface per water
-      body) or Phase 2's shore field, and a camera-relative origin for the draw at this scale.
+- [x] **The water takes the shared wave field** (`core/atmos`, as Voth's bay), and since 2026-10-13 the sea and the
+      lakes the sky's reflection (`b-skylight`, on core/water's material).
+- [x] **The sea and the lakes are on core/water** (2026-10-13, Phase 2; `src/83w-world-seas.js`, `core/water/README.md`):
+      one open surface per water body (`WORLD.waterBodies`: a run of wet 4 km cells at one level; 23 bodies), clipped to
+      its mask (its cells and the ring round them, the ring refined by a flood at about 500 m: 1.5 M texels, 0.6 s at
+      start) and, within 4 km of the camera, to a shore window's flood at 32 m (`WATER.shoreJob`, re-baked a slice at a
+      time as the camera moves), so no lower hollow floods: the abyss's floors under the sea's level stay dry. The sky in
+      the water (`b-skylight`); 17 CDLOD levels about a camera-relative origin. The breakers and surf foam are on.
+- [ ] **The ground does not take the wet-sand band**: the terrain is this world's own ShaderMaterial (`WATER.wetChunk`
+      would mix it in). The breakers and the surf foam are drawn on the water only.
+- [ ] **Beyond the shore window the shore is the mask's**: sub-cells of about 500 m, generous (one corner under the level
+      lets the flood in, so the window's finer flood is never cut by it), so a ridge narrower than that between a lake and
+      a lower hollow can leak beyond 4 km of the camera; the plane meets the land per pixel. The lakes now fill the low
+      ground beside them the old sheet's coarse far chunks left dry (Locus's lake from view 4).
+- [ ] **The named rivers are still on the old per-chunk sheet** (`83-world-water.js`, its global renamed `WSHEET`: `WATER`
+      is core/water's), until Phase 3.
 - [ ] **Only named rivers carry water** (the Yuni river, scale model 4.19): the drainage channels are dry beds and
       canyons, even where the climate is wet (the hyperjungle, the abyss); the kits' `flow` field is set, so their
       riparian flora grows on the banks. A river is drawn on the terrain chunks' water grid, so from far off (coarse
