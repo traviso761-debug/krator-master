@@ -15,6 +15,9 @@ const T := 3.7          # one clock for the frame (atm_wave_t is global)
 const R := 4.0          # heights drawn as (h - level) / (2 R) + 0.5, in two bytes
 const N := 32
 const H_TOL := 4e-3     # metres: fp32 on the GPU against doubles
+const H_TOL_SHORE := 1.5e-2   # a shore grid's breakers read the bed's depth and shore distance through 8-bit texture
+                              # filtering (llvmpipe weights the texels in 1/256 steps), and the depth's fine channel hands
+                              # over to the coarse one at 3 m: a few cm of depth there, a few mm to a cm of breaker height
 const F_TOL := 4e-3
 
 var _vps: Array = []
@@ -32,8 +35,24 @@ void fragment() {
 	vec2 p = pts[int(FRAGCOORD.x)];
 	float h = (wtr_height(p) - wtr_level) / %.1f + 0.5;
 	float hi = floor(h * 255.0) / 255.0;
-	COLOR = vec4(hi, (h - hi) * 255.0, wtr_damp(p), 1.0);
+	COLOR = vec4(hi, (h - hi) * 255.0, wtr_damp(p) * 0.5, 1.0);
 }""" % [n, 2.0 * R]
+	return sh
+
+
+# a shore grid's own reads on the GPU: the bed's depth (two bytes over -20..44 m) and the shore distance (one byte over
+# +-band), at the same points
+func _shore_shader(n: int) -> Shader:
+	var sh := Shader.new()
+	sh.code = """shader_type canvas_item;
+#include "res://shaders/lib/water.gdshaderinc"
+uniform vec2 pts[%d];
+void fragment() {
+	vec2 p = pts[int(FRAGCOORD.x)];
+	float d = clamp((wtr_depth(p) + 20.0) / 64.0, 0.0, 1.0);
+	float hi = floor(d * 255.0) / 255.0;
+	COLOR = vec4(hi, (d - hi) * 255.0, clamp(wtr_shore_dist(p) / (2.0 * wtr_shore.x) + 0.5, 0.0, 1.0), 1.0);
+}""" % n
 	return sh
 
 
@@ -97,7 +116,7 @@ func _initialize() -> void:
 	var g: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/water/golden.json"))
 	_atm = load("res://krator/atmos.gd").new()
 	_atm.load_presets({"presets": {"waves": g["waves"]}})
-	var surfaces := KWater.from_section(g["section"], _atm)
+	var surfaces := KWater.from_section(g["section"], _atm, ["open"])
 	var rs := 777
 	var cases := []
 	for w in surfaces:
@@ -124,6 +143,14 @@ func _initialize() -> void:
 		_viewport(N, m)
 		var ref: KWater = surfaces[0] if c[1] else w   # the negative draws the taller sea and compares with the true one
 		_rows.append(["water", {"w": ref, "pts": pts, "negative": c[1]}])
+		if w.shore != null and not c[1]:
+			var sm := ShaderMaterial.new()
+			sm.shader = _shore_shader(N)
+			for k in u:
+				sm.set_shader_parameter(k, u[k])
+			sm.set_shader_parameter("pts", pts)
+			_viewport(N, sm)
+			_rows.append(["shore", {"w": w, "pts": pts}])
 	var lm := ShaderMaterial.new()
 	lm.shader = _lib_shader()
 	_viewport(20, lm)
@@ -153,17 +180,42 @@ func _process(_delta: float) -> bool:
 				var p: Vector2 = D["pts"][i]
 				var c := img.get_pixel(i, 0)
 				var got := (c.r + c.g / 255.0 - 0.5) * 2.0 * R + w.level_at(T)
-				worst = maxf(worst, absf(got - w.height_at(p.x, p.y, T, 3)))
-				dworst = maxf(dworst, absf(c.b - w.damp(p.x, p.y, T)))
-			var fine := worst < H_TOL and dworst < 2.5 / 255.0
+				var e := absf(got - w.height_at(p.x, p.y, T, 3))
+				if e > worst:
+					worst = e
+					D["at"] = [p.x, p.y, w.depth_at(p.x, p.y, T)]
+				dworst = maxf(dworst, absf(2.0 * c.b - w.damp(p.x, p.y, T)))
+			var tol := H_TOL_SHORE if w.shore != null else H_TOL
+			var fine := worst < tol and dworst < 5.0 / 255.0
+			if OS.get_environment("KRATOR_DEBUG") != "":
+				print("  worst at ", D.get("at"))
 			if D["negative"]:
 				print(("ok   " if not fine else "FAIL ") + "negative: the sea drawn with its first wave 5%% taller misses its CPU heights by up to %.4f m" % worst)
 				if fine:
 					bad += 1
 			else:
-				print(("ok   " if fine else "FAIL ") + "%s (%s): wtr_height at %d points on the GPU against KWater within %.4f m (worst %.5f m), wtr_damp within %.4f" % [w.id, w.name, N, H_TOL, worst, dworst])
+				print(("ok   " if fine else "FAIL ") + "%s (%s): wtr_height at %d points on the GPU against KWater within %.4f m (worst %.5f m), wtr_damp within %.4f" % [w.id, w.name, N, tol, worst, dworst])
 				if not fine:
 					bad += 1
+		elif row[0] == "shore":
+			var D: Dictionary = row[1]
+			var w: KWater = D["w"]
+			var dw := 0.0
+			var sw := 0.0
+			for i in N:
+				var p: Vector2 = D["pts"][i]
+				var c := img.get_pixel(i, 0)
+				var dep := (c.r + c.g / 255.0) * 64.0 - 20.0
+				var want_d := clampf(w.depth_at(p.x, p.y, T), -20.0, 44.0)
+				dw = maxf(dw, absf(dep - want_d))
+				var sd := (c.b - 0.5) * 2.0 * float(w.shore["band"])
+				sw = maxf(sw, absf(sd - clampf(w.shore_dist(p.x, p.y), -float(w.shore["band"]), float(w.shore["band"]))))
+				if OS.get_environment("KRATOR_DEBUG") != "":
+					print("  ", p, " depth gpu ", dep, " cpu ", want_d, " dist gpu ", sd, " cpu ", w.shore_dist(p.x, p.y))
+			var good := dw < 0.05 and sw < 2.0 * float(w.shore["band"]) / 255.0 + 0.05
+			print(("ok   " if good else "FAIL ") + "%s (%s): the shore grid on the GPU: the bed's depth within %.3f m, the shore distance within %.3f m (one byte: %.2f m)" % [w.id, w.name, dw, sw, 2.0 * float(w.shore["band"]) / 255.0])
+			if not good:
+				bad += 1
 		else:
 			var want := _lib_values()
 			var worst := 0.0

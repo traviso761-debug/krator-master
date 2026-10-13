@@ -47,6 +47,7 @@ void vertex() {
 
 void fragment() {
 	if (v_p.x < bounds.x || v_p.y < bounds.y || v_p.x > bounds.z || v_p.y > bounds.w) discard;
+	if (!wtr_wet(v_p)) discard;   // a shore grid: the flood never reached here (a lower hollow beside the lake)
 	float mpp = max(length(fwidth(v_p0)), 1e-4);
 	vec4 nj = wtr_tro_nj(v_p0, mpp, atm_wave_t);
 	vec3 n = wtr_normal(nj, v_p, distance(CAMERA_POSITION_WORLD, vec3(v_p.x, wtr_level, v_p.y)), v_m);
@@ -54,6 +55,7 @@ void fragment() {
 	float fk = wtr_foam_t.w * wtr_foam(v_p0, mpp, nj.w)
 		* smoothstep(0.55, 0.85, wtr_noise(v_p0 * foam_noise.x) * 0.55 + wtr_noise(v_p0 * foam_noise.y) * 0.45)
 		* mix(1.0, 0.45, smoothstep(1.0, 6.0, mpp)) * v_m;
+	if (wtr_has_shore) fk = max(fk, wtr_surf_foam(v_p));
 	vec3 c = colour;
 	float a = 1.0;
 	if (wtr_has_bed) {
