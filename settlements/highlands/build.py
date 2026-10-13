@@ -344,6 +344,9 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
 IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+# vendored with a deliberate local edit: drift expected, recorded in KNOWN_ISSUES.md (91-probe.js counts each placed
+# catalog furniture piece, HLF.placed, as a sample of its volume; Iziz places no catalog furniture)
+ADAPTED = {'91-probe.js'}
 
 
 def vendor_manifest():
@@ -364,10 +367,14 @@ def vendor_check():
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
             continue
-        drift = [f for f in files if not os.path.exists(srcpath(f, up))
-                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
-        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
-                                         else 'DRIFT in ' + ', '.join(drift)))
+        diff = [f for f in files if not os.path.exists(srcpath(f, up))
+                or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        adapted = [f for f in diff if f in ADAPTED and os.path.exists(srcpath(f, up))]
+        drift = [f for f in diff if f not in adapted]
+        same = '%d identical' % (len(files) - len(diff)) + (', %d adapted on purpose (%s)' % (len(adapted), ', '.join(adapted))
+                                                            if adapted else '')
+        print('vendor-check %s: %s' % (up_name, ('all ' + same) if not diff else same + ('; DRIFT in ' + ', '.join(drift)
+              + ' - re-vendor or add to ADAPTED and note it in KNOWN_ISSUES.md' if drift else '')))
 
 
 def main():
