@@ -76,3 +76,17 @@ and furniture systems; Reed culture had no interiors set, so one was started.
 
 Result: `rl_tavern` about 55 k triangles alone with its pad (class `small`, 91a-rl-budget.js); `verify.py --assert`
 green; the sets page plans 18 rooms, 7 of 7 residences pass.
+
+## 2026-10-13: the lake on core/water
+The lake is core/water's open water (`core/water/README.md`; `src/90w-rl-lake.js`, after core/atmos loads, which
+`build.py` lists by name with core/water): a `WATER.open` surface at `RL.WATER` with no swell of its own and a share of
+the shared wave field (`field` .12: the field's swell lifts it 7 cm at most, so the baked canoes, rafts and islands keep
+their waterlines; `tilt` 2.5 so its chop still reads), on the one clock (`atmWaveT`, whole cycles per period), drawn by
+`WATER.draw` on the CDLOD water mesh, with the old lake map's eight whole-tile sinusoids as its detail normal map (8 m
+a tile, as before) and the dome and the giant in it through core/atmos's skylight, given to the water only (the kit's
+standard materials are unchanged). `groundM` is now an invisible flat plane for the camera's picks; the small still
+waters inside the islands (`hRLWaterB`) keep `MAT.rlWater`, whose map now scrolls on the same clock. From the opening
+view and at 2 m over the water off the family mudhif: the same draw calls (101, 94, 66), triangles 409k -> 482k, 376k
+-> 460k, 373k -> 462k (the 2-triangle plane became ~160 CDLOD nodes); the sun's glint is broken by the ripple and the
+far water takes the sky's gradient. `verify.py --assert` passes before and after with the same numbers (615178 scene
+triangles, 101 draw calls, 14716 baked instances).

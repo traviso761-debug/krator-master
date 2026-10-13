@@ -29,7 +29,8 @@ Views are generated (`hlAutoViews`): `Opening`, `Overview`, `Reed Lake — overv
 | `81-rl-tavern.js` | Reed's Local (`rl_tavern`, family Hospitality): the sign texture and item `hRLTavSign`, `RLTAV` (the plan's numbers, which `kits/interiors/sets/reedlake.js` reads), `hnRLTavPad`, the builder |
 | `90-rl-scene.js` | showcase: rows by family over water, `hlAutoViews`, the lake |
 | `91a-rl-budget.js` | per-def triangle classes (`rl_village` is `mega`) |
-| `94-rl-anim.js` | the water map scrolls |
+| `90w-rl-lake.js` | the lake: core/water's open water (`RL_LAKE`, `RL_LAKE_DRAW`; `WATER.heightAt` is its height) and core/atmos's skylight on it |
+| `94-rl-anim.js` | the troughs' water map scrolls on core/atmos's clock |
 | `targets/<t>/89z-rows.js` `91z-views.js` | `TITLE`, `HL_BRANCHES`, `HL_EXTRA`, `SITES`, `VIEWS` |
 
 ## Registry

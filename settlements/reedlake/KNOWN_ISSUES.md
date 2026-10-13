@@ -3,7 +3,7 @@
 Open items are `- [ ]` lines; build.py prints them.
 
 - [ ] No reclaimed-metal variants yet (the Highlands round-3 `88-hl-dress.js` pass is not vendored; the lake's only salvage is at the smithy).
-- [ ] Boats and islands do not bob; only the water map moves (`94-rl-anim.js`).
+- [ ] Boats and islands do not bob. Since 2026-10-13 the lake is core/water's (`90w-rl-lake.js`) with a CPU twin (`WATER.heightAt`), but the boats, rafts and islands are baked into the kit's instanced sets, so nothing can ride it; the lake is kept calm instead (`RL_LAKE_FIELD` .12: at most 7 cm from `RL.WATER`, and the canoes' keels sit 9 cm under it). A boat that should ride needs its own group (`WATER.ride`, as the Ring Sea kit's hulls do).
 - [ ] The loose-reed fringes stand across their edges instead of along them: `hnRLEaveFringe` and the island fringe in `hnRLIsland` (75-rl-helpers.js) turn the plane by `yaw = atan2(dx, dz)`, which lays a unit plane's width across the segment (the lattice in 78/79 adds `+ Math.PI/2`). Seen 2026-10-05 on the thatch hut's front eave: the fringe sticks out toward the viewer. `81-rl-tavern.js` lays its own fringe along the landing eaves. Fixing the helper changes every def's look: rebuild and look at every row.
 - [ ] `81-rl-tavern.js` has no row in `PORT.md` yet (the port lint warns): it is `[draw]`, "split: the sign texture (canvas) and the builder" (rerun `tools/audit_port.py`, then set the tag).
 - [ ] `--vendor-check` reports drift in `73-hl-carve.js` and `91-probe.js` from `../highlands/src` (upstream changed 2026-10-01; seen 2026-10-05, not re-vendored).

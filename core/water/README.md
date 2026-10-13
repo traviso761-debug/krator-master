@@ -10,6 +10,10 @@ drawing of **open** water (the CDLOD mesh, the shared wave field, the sky in the
 Sea off the basin's beach). Shore, flow, fall, still and wet are recorded (their data and twins work and are tested) but not
 drawn yet: phases 2 to 4.
 
+**Phase 1's other takers (2026-10-13):** `settlements/reedlake` (the lake: no swell of its own, a calm share of the field
+so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
+`src/90w-rl-lake.js`).
+
 | File | Tag | What |
 |---|---|---|
 | `20-core-water.js` | [G data] | `WATER`: the presets, the six kinds as records, the CPU twins, `heightAt`, `flowAt`, `seaLevel`, `ride`, `export`. No THREE, no DOM |
@@ -185,5 +189,5 @@ hull's own preset view (the triangle over the hull, from the vertex shader's twi
 - Phase 4: still water and `W.wet`.
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5): Noah's Regret, little-demo, Locus, Mungo, Port, Ys, Reed Lake.
+- The other takers of Phase 1 (`WATER.md` section 5) still to come: Noah's Regret, little-demo, Locus, Mungo, Port, Ys. (Taken 2026-10-13: Reed Lake.)
   Voth and Streetlab wait for the Voth branch (ROADMAP.md section 9).

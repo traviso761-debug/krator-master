@@ -44,12 +44,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `80-rl-islands.js` | 9 | the floating village (45) |
 | `81-rl-tavern.js` | 13 | the sign (colour-carrying map: never tint it) (11) |
 | `88y-reedlake-matlib.js` | 2 |  |
-| `90-rl-scene.js` | 7 | scene (Reed Lake showcase) (1); build every site the target lists (62) |
+| `90-rl-scene.js` | 7 | scene (Reed Lake showcase) (1); build every site the target lists (63) |
+| `90w-rl-lake.js` | 3 | the lake (core/water) (1) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91a-rl-budget.js` | <1 | budgets: the composite village and the great mud (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
-| `94-rl-anim.js` | <1 | animation: the lake's ripples drift (the water m (1) |
+| `94-rl-anim.js` | <1 | animation: the troughs' and wallows' water map d (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
