@@ -415,7 +415,7 @@ on `rock.sandstone`, every rust on `metal.rust.fine` (the isotropic rust the pla
 style's planks and skins on the existing wood, white and concrete families. The other city sets the plan lists are in
 use: `plaster` (the vernacular), `roof.tile` (the embassy), `brick` as `brick.red` (the Ancients MAT), `earth.banco` for
 the banco (`earth.adobe` has no Iziz surface of its own), the paving as `concrete.ancient.b`. Every material is a KMAT
-record naming its library hook (`world-uv`, `breakup`, `glass`). Two
+record naming its library hook (`world-uv`, `breakup`, `glass`), and Iziz's export carries them (Phase 4, "Iziz"). Two
 surfaces have no good library texture and stay as they were, with prompts written for the owner
 (`settlements/iziz/KNOWN_ISSUES.md`): a cast statue bronze (`metal.bronze.cast`) and a rust-streaked concrete
 (`concrete.rust.streaked`). `verify --assert` unchanged; screenshots in that file. Not yet: a ground detail layer for
@@ -478,7 +478,8 @@ unknown section name is refused. What is filled and by whom:
 | `terrain` | done | the biome core: the KFIELD cropped on its lattice where the build bakes one, the page's `h` on a grid, and probes off the lattice; `EXPORT.ground({terrainH, ...})` for any other build |
 | `stage` | done | the biome core's host (`43-core-export-host.js`): `KSTAGE.capture` over the tile, on the terrain grid |
 | `atmos` | done | an adapter over `ATMOS.export()` (unchanged) |
-| `fixtures`, `interiors`, `furniture`, `sim` | stub | a written contract each (`EXPORT.CONTRACTS`); `furniture` is the per-look scheme above |
+| `fixtures`, `interiors`, `furniture` | Iziz (M5); a stub elsewhere | Iziz's doors, windows and lamps as children of their buildings, its furniture slots; no interiors (its buildings are shells) |
+| `sim` | stub | a written contract (`EXPORT.CONTRACTS`) |
 | `city` | stub | the Voth branch's (`core/city`); only its registration point is here |
 | `sockets` | not a section yet | — |
 
@@ -488,6 +489,20 @@ error or a failed join). Godot reads it with `godot/krator/world_import.gd`, whi
 (GLTFDocument with `krator/gltf_instancing.gd`, `KratorBiome._material`, `KratorField`, `KratorAtmos.build_from`,
 `stage.gd`) rather than forking them. Not yet: the Iziz and Voth lineages (M5, M6), the converter to `.tscn`, the
 stubs, and the builds that do not list core/export (the Throne, Verge: the harness injects it).
+
+**M5, 2026-10-13: the city lineage** (`core/export/README.md`, "Iziz"). Iziz is the second contributor
+(`settlements/iziz/targets/city/94-city-export.js`), on the `KRATOR_EXPORT` record shape as this phase's "Cities" asks:
+its `REG` as core/tags buildings (a building in a city placement takes its lot's yaw and size), the doors, windows and
+lamps its vernacular draws as fixtures, children of their buildings (`src/69f-iziz-fixtures.js` notes them in the kit's
+own transform), every baked kit item as an item set whose instances recompute their uid from the exported matrix, the
+furniture slots; and the meshes (kit and biome instances with a per-instance `owners` side table, plain meshes by
+material), the materials with their hooks, the library maps by reference, the sampled ground, the stage and the
+atmosphere. `godot/krator/world_import.gd` reads it without an Iziz-only path (a three.js material record on
+`shaders/library.gdshader`; a `Records` node of `Building_<id>` with its fixtures). The proof is a 240 m district inside
+the south gate (`godot/data/world-iziz`, `godot/tests/export/iziz_test.gd`): 9,638 instances, the kit's 2,158 uids
+recomputed in GDScript with 0 mismatches, 139 fixtures each under its building, every material and map resolving with
+its hook, the ground through its samples to 0 m. Not yet: Voth (M6, the Voth branch's), the Ancients kit's openings as
+fixtures, interiors, records on the biome sets in the city.
 
 ### Phase 5: the simulation layer as data
 
@@ -762,7 +777,7 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
-| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets |
+| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets. **Iziz done 2026-10-13** (`core/export/README.md`, "Iziz"): a district inside the south gate (`godot/data/world-iziz`) opens from `core/export` with its buildings, doors, windows and lamps on the record shape, the kit's item sets (2,158 uids recomputed in GDScript, 0 differ), its materials on the library sets with their hooks, the sampled ground and the atmosphere (`tests/export/iziz_test.gd`). Open: interiors (Iziz has none), Girder's furnished rooms from `furniture` (waits on `wip/furniture-indexed`) |
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 

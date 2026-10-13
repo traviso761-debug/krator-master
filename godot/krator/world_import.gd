@@ -108,7 +108,10 @@ static func build(path: String) -> Node3D:
 		node.name = "item_%d" % k
 		items.add_child(node)
 		var n: int = node.multimesh.instance_count
-		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report)
+		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true)
+		node.visible = bool(it.get("visible", true))
+		if it.get("owners") is Array and (it["owners"] as Array).size() == n:   # a city's: per instance the record it stands in
+			node.set_meta("krator_owners", it["owners"])
 		_lod(node, it, report)
 		node.set_meta("krator", {"id": it["id"], "kit": it["kit"], "name": it["name"], "label": it["label"],
 			"material": it["material"], "dynamic": it["dynamic"], "count": n})
@@ -141,7 +144,7 @@ static func build(path: String) -> Node3D:
 		node.owner = null
 		node.name = "bucket_%d" % k
 		buckets.add_child(node)
-		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report)
+		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false)
 		_lod(node, b, report)
 		node.set_meta("krator", {"id": b["id"], "kit": b["kit"], "name": b["name"], "label": b["label"], "material": b["material"]})
 		ids["buckets"] += 1
@@ -218,6 +221,9 @@ static func build(path: String) -> Node3D:
 		report["atmos"] = a.get_meta("report")
 	if d.get("stage") is Dictionary:
 		root.set_meta("stage", d["stage"])
+	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
+	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary:
+		report["records"] = records(root, d, by_id)
 	var meta := {}
 	for k in d:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
@@ -313,19 +319,165 @@ static func ground_layers(g: Node3D, rec: Dictionary, tex: Dictionary, texrec: D
 	return out
 
 
-# a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds)
-static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary) -> Material:
-	if cache.has(id):
+# a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds; a city's three.js
+# material records, kind 'standard' or 'basic', on the library shader: _standard). instanced: the mesh is a MultiMesh
+# (a world-uv record tiles an instance by its scale, a plain mesh keeps its uv)
+static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true) -> Material:
+	var key := "%s|%s" % [id, instanced]
+	if cache.has(key):
 		ids["materials_resolved"] += 1
-		return cache[id]
+		return cache[key]
 	if not mats.has(id):
 		ids["materials_missing"] += 1
 		report["gaps"]["materials"] = "a mesh names material %s, which the world does not hold" % id
 		return null
 	ids["materials_resolved"] += 1
-	var m := KratorBiome._material(mats[id], tex, texrec, true, report)
-	cache[id] = m
+	var rec: Dictionary = mats[id]
+	var m: Material
+	if rec.get("kind") in ["standard", "basic", "shader"]:
+		m = _standard(rec, tex, texrec, instanced, report)
+	else:
+		m = KratorBiome._material(rec, tex, texrec, true, report)
+	cache[key] = m
 	return m
+
+
+# a three.js MeshStandardMaterial or MeshBasicMaterial record (a city's: core/export/README.md, "Iziz") as Godot draws it.
+# Opaque ones on shaders/library.gdshader, its hooks resolved by name (krator/khooks.gd: world-uv, breakup; glass has no
+# include of its own yet and draws as the plain surface), the maps by texture id; a transparent one (glass with an opacity,
+# the moat) as a StandardMaterial3D with alpha blending. Returns the material; its meta "krator" names the record and the
+# hooks it drew.
+static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, instanced: bool, report: Dictionary) -> Material:
+	var hk := KHooks.resolve(rec.get("hook"))
+	var col := KData.colour(rec.get("colour", "#ffffff"), false)   # linear already (convention.colours.materials)
+	var map_id = rec.get("map")
+	var img: Texture2D = tex.get(map_id) if map_id != null else null
+	if rec.get("kind") == "shader":
+		_gap_once(report, "shader materials", "a ShaderMaterial a city's mesh uses (the vendored biome's own) is drawn plain from its colour")
+	if bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) < 0.999:
+		var s := StandardMaterial3D.new()
+		s.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		s.albedo_color = Color(col.r, col.g, col.b, float(rec["opacity"]))
+		s.roughness = float(rec.get("roughness", 1.0))
+		s.metallic = float(rec.get("metal", 0.0))
+		s.cull_mode = BaseMaterial3D.CULL_DISABLED
+		if img:
+			s.albedo_texture = img
+		s.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (alpha)"})
+		return s
+	var sm := ShaderMaterial.new()
+	sm.shader = KratorKmat.LIB
+	sm.set_shader_parameter("colour", Vector3(col.r, col.g, col.b))
+	sm.set_shader_parameter("has_albedo", img != null)
+	if img:
+		sm.set_shader_parameter("albedo_tex", img)
+		sm.set_shader_parameter("flip_v", bool(texrec.get(map_id, {}).get("flipY", true)))
+	elif map_id != null:
+		_gap_once(report, "missing images", "a material names a texture the export holds no image for: drawn from its colour")
+	for slot in [["normalMap", "normal_tex", "has_normal"], ["roughnessMap", "rough_tex", "has_rough"]]:
+		var t = rec.get(slot[0])
+		var ti: Texture2D = tex.get(t) if t != null else null
+		sm.set_shader_parameter(slot[2], ti != null)
+		if ti:
+			sm.set_shader_parameter(slot[1], ti)
+	sm.set_shader_parameter("normal_scale", float(rec.get("normalScale", 1.0)))
+	sm.set_shader_parameter("roughness_k", clampf(float(rec.get("roughness", 1.0)), 0.0, 1.0))
+	sm.set_shader_parameter("metal", clampf(float(rec.get("metal", 0.0)), 0.0, 1.0))
+	sm.set_shader_parameter("specular_k", clampf(float(rec.get("specular", 0.5)), 0.0, 1.0))
+	sm.set_shader_parameter("tint", bool(rec.get("tint", true)))
+	sm.set_shader_parameter("unlit", bool(rec.get("unlit", false)))
+	if rec.get("emissive") != null:
+		var e := KData.colour(rec["emissive"], false) * float(rec.get("emissiveIntensity", 1.0))
+		sm.set_shader_parameter("emission", Vector3(e.r, e.g, e.b))
+	# the map's own repeat and offset (three's uvTransform) where no world-uv replaces it
+	if img and texrec.has(map_id):
+		var r: Array = texrec[map_id].get("repeat", [1, 1])
+		var o: Array = texrec[map_id].get("offset", [0, 0])
+		sm.set_shader_parameter("uv_scale", Vector3(float(r[0]), float(r[1]), 1.0))
+		sm.set_shader_parameter("uv_offset", Vector3(float(o[0]), float(o[1]), 0.0))
+	# hook 'world-uv' (vWorldUV): an instance tiles by the two scale axes its face spans times K, with no per-instance
+	# start; a plain mesh keeps the uv it carries
+	var wuv = rec.get("worldUV")
+	if "world-uv" in hk["ids"] and wuv is Dictionary and instanced:
+		var k := float(wuv.get("K", 1.0))
+		sm.set_shader_parameter("world_uv", true)
+		sm.set_shader_parameter("world_uv_offset", false)
+		sm.set_shader_parameter("tile_m", Vector2(1.0 / k, 1.0 / k))
+	if "breakup" in hk["ids"] and rec.get("breakup") is Dictionary:
+		var b: Dictionary = rec["breakup"]
+		sm.set_shader_parameter("bu_mix", float(b.get("mix", 0.0)))
+		sm.set_shader_parameter("bu_macro", float(b.get("macro", 0.0)))
+		sm.set_shader_parameter("bu_cell", float(b.get("cell", 8.0)))
+	if "glass" in hk["ids"]:
+		_gap_once(report, "hook glass", "records with hook 'glass' draw as the library surface: lib/glass.gdshaderinc's Fresnel is not wired into library.gdshader yet")
+	sm.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "library.gdshader", "world_uv": "world-uv" in hk["ids"] and instanced})
+	return sm
+
+
+static func _gap_once(report: Dictionary, k: String, msg: String) -> void:
+	if not report["gaps"].has(k):
+		report["gaps"][k] = msg
+
+
+# a city's records as nodes, in the KRATOR_EXPORT shape (Yuni's GAME_EXPORT.md; core/export/README.md, "Iziz"): a
+# "Records" node holding Building_<id> (Building.<id> as a valid node name) per building record of the registry (at its base centre, turned by ry; meta
+# krator the record), each building's fixtures as its children (Door_<id>, Window_<id>, Light_<id>: Marker3D, local +z out,
+# meta krator the record and krator_host its host), and Furniture_<record> per furniture placement (meta krator_piece).
+# Returns {buildings, fixtures, fixtures_parented, furniture, furniture_resolved}.
+static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionary:
+	var out := {"buildings": 0, "fixtures": 0, "fixtures_parented": 0, "furniture": 0, "furniture_resolved": 0}
+	var R := Node3D.new()
+	R.name = "Records"
+	root.add_child(R)
+	var bnodes := {}
+	for id in by_id:
+		var r: Dictionary = by_id[id]
+		if r.get("class") != "building" or r.get("set"):
+			continue
+		var n := Node3D.new()
+		n.name = ("Building.%s" % id).validate_node_name()   # Building_bld_00042: Godot keeps no "." in a node name
+		n.transform = _rec_xf(r)
+		n.set_meta("krator", r)
+		R.add_child(n)
+		bnodes[id] = n
+		out["buildings"] += 1
+	var F = d.get("fixtures")
+	if F is Dictionary:
+		for r in F.get("records", []):
+			out["fixtures"] += 1
+			var m := Marker3D.new()
+			m.name = ("%s.%s" % [str(r.get("kind", "fixture")).capitalize(), r["id"]]).validate_node_name()
+			m.set_meta("krator", r)
+			m.set_meta("krator_host", r.get("host"))
+			var p = bnodes.get(r.get("parent"))
+			if p != null:
+				p.add_child(m)
+				m.transform = (p as Node3D).transform.affine_inverse() * _rec_xf(r)
+				out["fixtures_parented"] += 1
+			else:
+				R.add_child(m)
+				m.transform = _rec_xf(r)
+	var U = d.get("furniture")
+	if U is Dictionary:
+		var pieces := {}
+		for p in U.get("pieces", []):
+			pieces[p["id"]] = p
+		for pl in U.get("placements", []):
+			out["furniture"] += 1
+			var m := Marker3D.new()
+			m.name = ("Furniture.%s" % str(pl["record"])).validate_node_name()
+			m.transform = _rec_xf({"at": pl["at"], "ry": pl.get("ry", 0.0)})
+			m.set_meta("krator", by_id.get(pl["record"], {}))
+			m.set_meta("krator_piece", pieces.get(pl["piece"], {}))
+			R.add_child(m)
+			if by_id.has(pl["record"]) and pieces.has(pl["piece"]):
+				out["furniture_resolved"] += 1
+	return out
+
+
+static func _rec_xf(r: Dictionary) -> Transform3D:
+	var at: Array = r.get("at", [0, 0, 0])
+	return Transform3D(Basis(Vector3.UP, float(r.get("ry", 0.0))), Vector3(float(at[0]), float(at[1]), float(at[2])))
 
 
 # a library map by reference: <dir>/tex/pack.json's family names its file for the slot (tools/textures/pack.py's output)

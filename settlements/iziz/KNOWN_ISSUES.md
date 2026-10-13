@@ -326,3 +326,13 @@ maps, base64); it was already over the gallery's 16 MB a file.
       `repeat` never applies to it: an instance tiles at 1/K m whatever materials.json's `scale` says, a plain mesh at its
       own UVs. The `city*` families take scale = 1/K so the two agree; the 2026-10-06 families (stone at 2 m with K 0.25,
       wood at 2 x 1.7 m with K 0.5) do not, and the export records what the page draws (`worldUV: {K}`, repeat 1).
+- [ ] **M5: Iziz exports through core/export** (core/export/README.md, "Iziz"; targets/city/94-city-export.js): a district's
+      kit and biome instances, plain meshes, materials (each with its hook), library maps by reference, ground, stage,
+      atmosphere and records in the `KRATOR_EXPORT` shape: buildings (with their lot's yaw and size), doors, windows and
+      lamps as children of their buildings (src/69f-iziz-fixtures.js notes them as the vernacular helpers draw them), the kit's
+      item sets, the furniture slots. `godot/data/world-iziz` (box -120, 292 to 120, 532) and `godot/tests/export/iziz_test.gd`
+      prove it. Open: the Ancients kit's openings and lamps are not fixtures (the kit draws them merged, through no helper);
+      the hyperjungle's sets in the city carry no records (its BIO.init takes no `tags`: giving it the page's registry would
+      put the flora first and renumber every building id); no building has an interior, so `interiors` is empty; the box
+      holds no REG furniture, so `furniture` reads empty there (it fills where a plaza, statue, fountain or drain stands);
+      records with hook `glass` draw as the plain library surface in Godot (lib/glass is not wired into library.gdshader).

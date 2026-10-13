@@ -33,6 +33,16 @@ uniform float bu_cell = 8.0;
 // starts at a hashed offset. three replaces the map's uv transform there, so uv_scale does not apply.
 uniform bool world_uv = false;
 uniform vec2 tile_m = vec2(2.0);
+uniform bool world_uv_offset = true;      // Girder's hashed start per instance; Iziz's vWorldUV has none (false)
+// a whole three.js material record (core/export's materials from a city: settlements/iziz/targets/city/94-city-export.js),
+// beside the library pack's: its colour (linear) multiplies the map, a material without a map draws its colour alone,
+// flip_v is the texture's flipY (three's v runs up the image), emission adds the emissive colour, unlit draws a
+// MeshBasicMaterial (the colour as emission, no light). The defaults are the pack's surfaces as they were.
+uniform vec3 colour = vec3(1.0);
+uniform bool has_albedo = true;
+uniform bool flip_v = false;
+uniform vec3 emission = vec3(0.0);
+uniform bool unlit = false;
 
 varying vec3 v_wp;
 varying vec2 v_uv;
@@ -41,17 +51,21 @@ void vertex() {
 	v_wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_uv = UV * uv_scale.xy + uv_offset.xy;
 	if (world_uv) {   // MODEL_MATRIX is the instance's (the region node is unscaled), as instanceMatrix is in three
-		v_uv = wuv_box(UV, NORMAL, wuv_instance_scale(MODEL_MATRIX), 1.0 / tile_m) + wuv_box_offset(MODEL_MATRIX[3].xz);
+		v_uv = wuv_box(UV, NORMAL, wuv_instance_scale(MODEL_MATRIX), 1.0 / tile_m) + (world_uv_offset ? wuv_box_offset(MODEL_MATRIX[3].xz) : vec2(0.0));
+	}
+	if (flip_v) {
+		v_uv.y = 1.0 - v_uv.y;
 	}
 }
 
 void fragment() {
 	vec2 uv = v_uv;
 	float m = bu_mask(v_wp, bu_mix, bu_cell);
-	vec4 a = bu_tex(albedo_tex, uv, m);
-	vec3 c = k_tex(a.rgb) * (tint ? COLOR.rgb : vec3(1.0));
+	vec4 a = has_albedo ? bu_tex(albedo_tex, uv, m) : vec4(1.0);
+	vec3 c = (has_albedo ? k_tex(a.rgb) : vec3(1.0)) * colour * (tint ? COLOR.rgb : vec3(1.0));
 	c *= bu_bright(v_wp, bu_macro, bu_cell);
-	ALBEDO = k_albedo(c);
+	ALBEDO = unlit ? vec3(0.0) : k_albedo(c);
+	EMISSION = unlit ? c : emission;
 	if (has_rough) {
 		ROUGHNESS = roughness_k * bu_tex(rough_tex, uv, m).g;
 	} else {

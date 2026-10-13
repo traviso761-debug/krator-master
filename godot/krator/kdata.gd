@@ -155,7 +155,7 @@ static func ground(g: Dictionary, look = null) -> Node3D:
 
 # BIO.export's ground water (waterH on the ground's grid): one flat sheet at the mean level of the wet samples, or null
 static func water_sheet(g: Dictionary) -> MeshInstance3D:
-	if g.has("water"):
+	if g.get("water") != null:   # core/export's terrain writes water: null where the build has none
 		var w := floats(g["water"])
 		var h := floats(g["heights"])
 		var wet := 0

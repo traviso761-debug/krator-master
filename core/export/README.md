@@ -3,7 +3,8 @@
 GODOT-PLAN.md Phase 4 ("one exporter"), ROADMAP.md stage 2d. Every module that places or describes something gives its
 part to one plain-data object, per build or per tile; the harness writes it headless into `godot/data/<case>/`, and
 `godot/krator/world_import.gd` builds the tile from it. Proof milestone M4 (a biome tile opens in Godot from
-`core/export` with its materials, tags and terrain) is met by `biomes/sedesert` (below, "The proof").
+`core/export` with its materials, tags and terrain) is met by `biomes/sedesert` (below, "The proof"); M5 (the first city,
+on the `KRATOR_EXPORT` record shape) by a district of Iziz (below, "Iziz").
 
 | Fragment | Tag | What |
 |---|---|---|
@@ -150,7 +151,8 @@ grid points as the page interpolates its per-vertex weights.
 
 ### Stubs: the written contracts
 
-No module fills these yet. A contributor that does meets this shape (`EXPORT.CONTRACTS`):
+A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtures` and `furniture` and answers
+`interiors` (below, "Iziz"); for every other build they are still stubs:
 
 - **`fixtures`**: doors, windows, lights and signs as core/tags records, each with its placement on its host wall
   (Yuni's `KRATOR_EXPORT.fixtures` shape): `{format: 'krator-fixtures', records: [{id, uid, class: 'fixture', kind,
@@ -236,11 +238,84 @@ are the surface's trochoids (regular bands) where the page shades four sine ripp
 far scenery (the stage's panorama, taken from 40 m over the tile's centre: blurred, and the mesas outside the tile shift by
 parallax seen from another eye); the light is a little flatter and warmer in Godot.
 
+## Iziz (M5, 2026-10-13)
+
+GODOT-PLAN.md Phase 4's "Cities": `KRATOR_EXPORT` (Yuni's) is the city template, so Iziz's records take its shape (a
+building, its doors, windows and lights, its furniture slots, each a core/tags record with a stable id and tags) from
+its `REGISTER`/`REG` and its placement records, and its meshes, materials, ground and stage arrive the way a biome tile's
+do. The contributor is `settlements/iziz/targets/city/94-city-export.js` (by `iziz`; core/export is in the city's
+`TARGET_CORE`); the records are made before the first frame by `src/91t-iziz-tags.js`, the fixtures noted while the city
+builds by `src/69f-iziz-fixtures.js`.
+
+```
+python3 tools/harness.py export settlements/iziz/dist/iziz.html --out godot/data/world-iziz --box=-120,292,120,532
+godot --headless --path godot --script res://tests/export/iziz_test.gd
+```
+
+(`--box=`: a box that starts with a minus sign is read as an option otherwise.)
+
+**The city's record shape** (core/tags records; the registry section crops them to the box and their parents):
+
+| Record | From | Shape |
+|---|---|---|
+| building | `REG` entries of class building (`REGISTER`, `vnReg`, the city's own `REG.push`) | `bld_<n>`; `class building`, `key` the builder (`vern_house_poor_a`, `iziz_gate`, `anc_<type>`), `name`, `at` the base centre, `tags` culture, types, wealth, state, lit; a building standing in a city placement (`OCC.list`, the lots 88 and 90b place) takes the lot's `ry` and `size` [w, d, h], else `r` and `h` |
+| feature, landmark, prop | REG's farms, plazas, statues, fountains, drains | as Iziz's tags fragment always made them |
+| fixture | the vernacular helpers `vnDoor`, `vnWin`, `vnLamp`, `vnLampPost` (69c), noted by 69f in the kit's own transform | a child of its building: `bld_00226.door.0`, `.window.<n>`, `.light.<n>`; `kind` door, window or light; `at` a door's sill and a window's on the outer face, a lamp's bulb; `ry` the outward normal's yaw (local +z out, as Yuni's); `size` [w, 0.2, h]; `tags` door (plank) or light (electric, arc-standard) or style (lit, glass, open, shut), `lit`, the building's culture. The fixtures section adds `host: {wall: null, side: 'outside', sill}` |
+| item set | every baked kit item (`KIT.meshes`, one InstancedMesh each) | `part_<n>`, `class part`, `key 'kit:<item>'`; its instances are rows read from the instance matrices themselves, so `part_00012#37` names one and its uid recomputes from the float32 matrix the export writes |
+| furniture slot | REG's furniture (`cls 'furniture'`) | the `furniture` section: `pieces [{id: '<key>/0/0', entry: {tags, size, role, key}, mesh: null}]`, `placements [{record, piece, at, ry}]`: the piece's geometry is in items and buckets, owned by the same record |
+
+**The meshes.** `items`: each kit item and each of the vendored hyperjungle's instanced sets with an instance in the box
+(origin rule), its unit geometry once, its matrices as the page holds them (float32), its instance colours; a kit item
+names its set (`record`, `records`, `recordIndex`, as the biome core's) and every item carries `owners`: per instance the
+registered volume it stands in (REG's x, z, r, y to y + h with 1 m slack; the smallest of several; REG's buildings, farms
+and furniture, not the biome's flora and life), or null. `buckets`: the plain meshes (walls, lathes, escarpments, the moat; not the
+ground, which is the terrain and the stage's look), one per material, the triangles whose centroid lies in the box, in
+world space, compacted by construction; `recordIds` the volumes the centroids stand in. Not exported: ShaderMaterial
+and additive meshes (the sky, the atmosphere's sprites, the glow layer), core/lod's render copies.
+
+**The materials.** One record per material a mesh uses (a kbake clone is its source's), `kind` standard or basic (unlit),
+with `colour` (linear), `roughness`, `metal`, `specular`, `emissive`, `transparent`, `opacity`, the maps by texture id,
+`kmat` (the KMAT record it is, `kmat:iziz:<MAT key>`, also in the section through the KMAT adapter), `hook`, `worldUV:
+{K}` and `scale`. Hooks: `world-uv` where vWorldUV tiles it (an instance: uv times the two instance-scale axes its face
+spans times K, no per-instance start; a plain mesh keeps its uv: vWorldUV replaces three's uv transform, so a map's
+repeat does not apply there), `breakup` where the library's break-up runs, `glass` for the glass Fresnel. A library map
+is a texture by reference to Iziz's pack (`tex/pack.json`), with its repeat where no world-UV replaces it; a procedural
+canvas map is a PNG.
+
+**The ground** is `EXPORT.terrain` over the box from `terrainH` (a 2 m grid, 256 probes: Iziz bakes no core/terrain
+field) and the stage's look of the painted ground on the same grid (`KSTAGE.capture`).
+
+**Godot.** `world_import.gd` reads it with no Iziz-only path: a material of kind standard or basic is drawn by
+`KratorWorld._standard` on `shaders/library.gdshader` (its colour, unlit and emission uniforms are new; their defaults
+leave the Girder pack's surfaces as they were), its hooks resolved through `krator/khooks.gd`; a transparent one as a
+StandardMaterial3D with alpha. Items carry `krator_owners`; a `Records` node holds `Building_<id>` per building record,
+its fixtures as `Door_<id>` / `Window_<id>` / `Light_<id>` children (Marker3D, local +z out), and `Furniture_<record>`
+per slot. `KData.water_sheet` no longer fails on a terrain without water.
+
+The proof (box -120, 292 to 120, 532: 240 m inside the south gate, from the gatehouse and the outer wall to the
+vernacular streets; Godot 4.7.2 headless, the page on Chromium with SwiftShader):
+
+| | |
+|---|---|
+| the district | 130 items (78 kit items, 52 hyperjungle sets), 9,638 instances (2,158 of them kit instances with an item set), 33 buckets, 60,735 triangles, 220 materials (96 mesh materials, 124 KMAT records), 68 textures (57 library maps by reference, 11 PNGs), 263 registry records of the page's 3,469 (766 REG, 2,528 fixtures, 175 item sets), 139 fixtures (28 doors, 96 windows, 15 lights), 40 buildings |
+| files | `world.json` 8.2 MB, `world.glb` 3.1 MB, `tex/` 11.0 MB (Iziz's pack, the families the district uses) |
+| in the page | `EXPORT.check`: 78 of 78 sets resolve, 2,158 uids recomputed from the matrices, 0 differ; 49 of 49 bucket records resolve; 163 material and 164 texture references resolve; no section errors; TRS error 5.0e-7 |
+| in Godot (`tests/export/iziz_test.gd`) | 9,638 MultiMesh instances; every kit instance's uid recomputed in GDScript from world.glb's TRANSLATION: 2,158 checked, 0 differ (20 cm off: 134 sampled, all change); every drawn instance at its translation (0 m, tolerance 1e-4 m); owners: 9,269 stand in a volume that resolves, 369 in none, 0 bad; 49 bucket records resolve and recompute (20 cm off changes the uid); 60,735 bucket triangles in Godot as on the page; 40 Building nodes at their records (0 m); 139 fixtures, each a child of its building, id and parent resolving (0 m off; a parent the page never made does not resolve); every mesh has its material and every map its image (57 library maps from `tex/` on 98 meshes, 11 PNGs); every hook resolves to library includes (`world-uv+breakup`, `breakup`, `world-uv`, `glass`; an unknown one is reported); 70 of 70 instanced world-UV meshes tile at 1/K m; 50 materials name their KMAT record, all in the export; the ground through its 14,400 inner grid samples to 0 m (tolerance 1e-4 m; half a step off, 280 differ) |
+
+Side by side from one camera (`python3 godot/tools/compare_shots.py world-iziz`: the eye inside the district at (-55, 40,
+375), looking at the gatehouse): the outer wall, the wedge towers, the gatehouse, the tavern, the market stalls, the lamp
+posts, the house roofs and the painted streets stand in the same places with the same colours and the wall's ashlar in
+both. What differs: beyond the box, the page draws the jungle and the city where Godot shows the stage's panorama
+(blurred, and shifted by parallax: it is taken from 40 m over the tile's centre); the page's chimney smoke (core/atmos
+sprites, additive) and its floating labels are not exported; the gate's passage reads lighter in Godot (the page's deep
+shade there is its own darker interior, not matched by Godot's ambient); the light is a little flatter in Godot.
+
 ## Not done
 
-- The `fixtures`, `interiors`, `furniture`, `sim` and `city` sections are contracts only (above).
-- Only the biome kits contribute meshes. Girder's and Iziz's regions still go through `godot/tools/export_spike.py`'s
-  glTF route; M5 (Iziz) is the next contributor: its `REGISTER` and the `KRATOR_EXPORT` record shape.
+- `sim` and `city` are contracts only; `fixtures`, `interiors` and `furniture` are filled by Iziz alone (no interiors:
+  its buildings are shells, so the section reads `empty`); Yuni's `KRATOR_EXPORT.fixtures` does not register yet.
+- The biome kits and Iziz contribute meshes; Girder's region still goes through `godot/tools/export_spike.py`'s glTF
+  route (its merged furniture batches name no record), and Voth (M6) is the Voth branch's.
 - The registry, atmos and KMAT adapters live here until their modules can be rebuilt with the Voth branch's agreement.
 - The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
   core/export; the harness injects it for an export.

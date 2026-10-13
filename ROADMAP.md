@@ -274,9 +274,18 @@ and the cross-build report.
   `godot/krator/world_import.gd` builds the tile from the spike's own importers. The proof is sedesert's tile
   (`godot/data/world-sedesert`, `godot/tests/export/world_test.gd`): 7,280 instances, every uid recomputed in GDScript
   from the glb, 0 mismatches; every material and map resolves (18 library maps by reference); `KField.h` matches the
-  page's `h` at 256 probes to 3e-12 m; a side-by-side screenshot from one camera. Open: M5 (Iziz as the second
-  contributor: its `REGISTER` on the `KRATOR_EXPORT` record shape), the stubs, the adapters moving into their modules,
-  the Throne and Verge listing core/export (the harness injects it).
+  page's `h` at 256 probes to 3e-12 m; a side-by-side screenshot from one camera.
+  *M5 done 2026-10-13* (`core/export/README.md`, "Iziz"): Iziz is the second contributor
+  (`settlements/iziz/targets/city/94-city-export.js`), its records on the `KRATOR_EXPORT` shape: `REG`'s buildings (with
+  their lot's yaw and size), the doors, windows and lamps its vernacular draws as fixtures under their buildings, the
+  kit's item sets, the furniture slots; its kit and biome instances (with a per-instance `owners` side table), plain
+  meshes by material, materials with their library hooks, library maps by reference, the sampled ground, the stage and
+  the atmosphere. `world_import.gd` reads it with no Iziz-only path. The proof is a 240 m district inside the south gate
+  (`godot/data/world-iziz`, `godot/tests/export/iziz_test.gd`): 9,638 instances, the kit's 2,158 uids recomputed in
+  GDScript (0 differ), 49 bucket records, 139 fixtures each under its building, every material and map resolving with its
+  hook, the ground through its samples to 0 m; a side-by-side from one camera. Open: the stubs (`sim`, `city`; Iziz has
+  no interiors), the adapters moving into their modules, the Throne and Verge listing core/export (the harness injects
+  it), the Ancients kit's openings as fixtures, records on the biome sets inside the city.
 - **e. Materials**: Iziz as the second library pilot; the shader library as `.gdshaderinc` files named by the
   hooks (`world-uv`, `cloth-sway`, foliage, bark, breakup, coursing). The three JS vocabularies stay; the export
   carries one.
@@ -298,7 +307,8 @@ and the cross-build report.
   materials join the vernacular, Ancients and embassy ones on the library, as `city*` families bound through an alias
   (`stone.cut.b` on the painting's walls and towers, `rock.rock_face` on its rock, `rock.sandstone` on the escarpments,
   `metal.rust.fine` on every rust, the planks and skins on existing families); every material is a KMAT record naming its
-  hook. `verify --assert` unchanged. Two gaps with prompts for the owner: a cast statue bronze, a rust-streaked
+  hook, and Iziz's export carries them to Godot, where records with `glass` select it on an exported mesh (drawn plain
+  for now). `verify --assert` unchanged. Two gaps with prompts for the owner: a cast statue bronze, a rust-streaked
   concrete. Open: lib/glass in the library shader, a ground detail layer for Iziz's painted streets.
 
 ### Stage 3: the host shell, narrowed (the plan's Phase 1, after stage 0b made it smaller)
@@ -355,7 +365,7 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 5. **The biome reseeding event with `core/terrain`'s field** (`TODO.md` item 5; stage 2a-b).
 6. **`core/tags` on the biome kits and ids on exported nodes** (stage 2c; `core/tags/PROPOSAL.md`).
 7. **`core/export`, M4 then M5** (stage 2d; `TODO.md` item 8's "Iziz's export on the `KRATOR_EXPORT` shape"). *M4 done
-   2026-10-13* (sedesert's tile, stage 2d); M5 next.
+   2026-10-13* (sedesert's tile, stage 2d); *M5 done 2026-10-13* (a district of Iziz, stage 2d).
 8. **The Ancients re-vendor session** (`TODO.md` item 3) and Ys's remaining passes (item 6), as they gate M5. *The re-vendor
    session done 2026-10-13* (the chain's `--vendor-check` shows only recorded ADAPTED drift; `verify --assert` unchanged); Ys's passes next.
 9. **Iziz as the second material pilot; the shader library** (stage 2e; `TODO.md` item 7's open half). *The shader

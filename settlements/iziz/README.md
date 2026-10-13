@@ -19,7 +19,7 @@ python verify.py dist/iziz.html --assert --views "Overview,Palace hill,Arena hil
 * **`KNOWN_ISSUES.md`** — what is broken or unfinished. `build.py` prints the open ones.
 * **`NOTES.md`** — round by round.
 
-## The material library (2026-10-13: the second material pilot)
+## The material library and the export (2026-10-13: the second material pilot, M5)
 
 Iziz is the second pilot of the material library (after Girder): `materials.json` names a library set per material
 family, `python3 ../../tools/textures/pack.py settlements/iziz` packs them into `tex/` (committed, in LFS), and
@@ -28,6 +28,15 @@ Ancients MAT, the Voth embassy (2026-10-06) and now the city's own materials, th
 walls, its rock, the escarpments, the rust). Every material is a KMAT record (`window._materials`) naming its Godot
 shader-library hook (`world-uv`, `breakup`, `glass`; `godot/krator/khooks.gd`). `?mat=proc` shows the look before the
 library. Gaps and choices: `KNOWN_ISSUES.md`, "The second material pilot and M5".
+
+The city exports through `core/export` (M5; `core/export/README.md`, "Iziz"): `targets/city/94-city-export.js` gives a
+box's instances, meshes, materials, ground and records in the `KRATOR_EXPORT` shape (buildings, their doors, windows and
+lamps, the kit's item sets, the furniture slots):
+
+```
+python3 ../../tools/harness.py export dist/iziz.html --out ../../godot/data/world-iziz --box=-120,292,120,532
+godot --headless --path ../../godot --script res://tests/export/iziz_test.gd
+```
 
 Round 4 (Oct 1 2026): the wall moved out (20% more area) and the ring it gained is a farm belt with its own street
 grid; the toppled F breaks in two; a second tripod market; the palace's grand entrance; the issue sweep. See

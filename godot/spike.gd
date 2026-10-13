@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz"]   # keys 1-9; world-iziz by name (tools/shot.sh world-iziz)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -21,6 +21,7 @@ const ABOUT := {
 	"dhelv": "krator-dhelv-place + krator-walk + krator-sim motion: the cave city's sites as stand-ins, its walk floors baked to a navmesh with an agent walking gate to temple, the ramblers posed by KSim (core/simulation's twin)",
 	"sedesert": "krator-biome JSON with a krator-field ground: one sedesert tile round the pond, its ground the page's baked core/terrain field (terrain mesh + HeightMapShape3D)",
 	"world-sedesert": "krator-world (core/export, M4): the same sedesert tile through the one container: world.json (records, materials, library maps by reference, the field, the stage) beside world.glb (EXT_mesh_gpu_instancing)",
+	"world-iziz": "krator-world (core/export, M5): a district of Iziz through the same container: the kit's instances with their item sets and owners, the plain meshes by material, the library and procedural maps, the sampled ground and its painted look, the buildings with their doors, windows and lamps (Records)",
 }
 
 var current := ""
@@ -125,7 +126,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"world-sedesert":   # core/export's krator-world (krator/world_import.gd): the M4 tile
+		"world-sedesert", "world-iziz":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district
 			var wv := KratorWorld.build(dir + "world.json")
 			world.add_child(wv)
 			report = wv.get_meta("report")

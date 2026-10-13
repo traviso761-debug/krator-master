@@ -22,6 +22,7 @@ godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/r
 godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/tags/records_test.gd   # the hyperjungle case's ids: every MultiMesh instance's uid, recomputed
 godot --headless --path godot --script res://tests/export/world_test.gd   # M4: the world-sedesert case (core/export): uids, materials, terrain
+godot --headless --path godot --script res://tests/export/iziz_test.gd    # M5: the world-iziz case: a city's records, fixtures, owners, materials and hooks
 godot --headless --path godot --script res://tests/shaders/library_test.gd   # the shader library: the hook table; world-sedesert's ground layers and pond
 godot --headless --path godot --script res://tests/water/water_test.gd     # KWater (core/water's twin) against WATER's own heights, frames, foam, bed
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/shaders/library_gpu_check.gd   # the includes on a GPU
@@ -55,6 +56,7 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather 
 | 7 | `dhelv` | `krator-dhelv-place`, `krator-walk`, `krator-sim` (its `motion` block), `krator-lights` | the cave city (kits/zeijani): its sites as boxes, its walk floors drawn and baked (Recast) to a NavigationMesh between the outpost's gate and the temple, a NavigationAgent3D walking that way, the 651 ramblers posed each frame by `KSim.pose`, the 48 lamps nearest the temple. Gaps: the cavern's rock (its marching cubes are not ported; the floors stand in), furniture, materials |
 | 8 | `sedesert` | `krator-biome` JSON with a `krator-field` ground | a 300 m tile round the rain-shadow pond: the first export whose ground is the page's baked core/terrain field, imported as a terrain mesh and HeightMapShape3D collision (`--check` casts rays onto it) |
 | 9 | `world-sedesert` | `krator-world` (core/export): `world.json` + `world.glb` + `tex/` | the same tile through the one container (M4, 2026-10-13): the meshes as glb with `EXT_mesh_gpu_instancing`, the records, materials (library maps by reference to the pack in `tex/`), the field, the stage; written by `tools/harness.py export`, read by `krator/world_import.gd`. Since stage 2e the ground's crack and detail layers (a `world-uv` record) and the pond (the `water` section) on the shader library |
+| (by name) | `world-iziz` | `krator-world` (core/export) | M5 (2026-10-13): a 240 m district of Iziz inside the south gate (`tools/shot.sh world-iziz`; keys reach only nine cases): the kit's and the biome's instances, the plain meshes by material, three.js material records drawn on `library.gdshader` with their hooks, Iziz's library pack in `tex/`, the sampled ground with the stage's look, and a `Records` node of `Building_<id>` with its doors, windows and lamps (`core/export/README.md`, "Iziz") |
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
@@ -89,7 +91,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tests/mask/` | copies of `core/mask/kmask.gd` (the mask rasteriser), `kmask_test.gd`, `golden.json`, kept by `tools/sync_core.py` |
 | `tests/terrain/` | copies of `core/terrain/kfield.gd` (`class_name KField`, the field's sampler: the importer uses it from here), `kfield_test.gd`, `golden-field.json`, kept by `tools/sync_core.py`; `field_import_test.gd` (the importer, here only) |
 | `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way; `records_test.gd` (here only): the hyperjungle case imported, every MultiMesh instance carries a uid, each recomputed in GDScript from its exported matrix, every id resolving in `tags.json`, with negatives |
-| `tests/export/` | `world_test.gd` (here only): the M4 proof on the `world-sedesert` case: every instance's uid recomputed from `world.glb`'s TRANSLATION, every instance drawn at its record, bucket records, every material and map resolved, `KField.h` against the page's probes, collision rays; each with a negative |
+| `tests/export/` | `world_test.gd` (here only): the M4 proof on the `world-sedesert` case; `iziz_test.gd`: the M5 proof on `world-iziz` (kit uids from TRANSLATION, owners, bucket records, building and fixture nodes at their records and under their buildings, materials, maps and hooks, world-UV tiling, the sampled ground; each with a negative). `world_test.gd`'s checks: every instance's uid recomputed from `world.glb`'s TRANSLATION, every instance drawn at its record, bucket records, every material and map resolved, `KField.h` against the page's probes, collision rays; each with a negative |
 | `tests/sim/` | a copy of `core/simulation/ksim.gd` (`KSim`: SIM.at and SIM.pose, the wander's 32-bit hash), kept by `tools/sync_core.py`; its test reads a world's export (`tests/dhelv/`) |
 | `tests/dhelv/` | `dhelv_sim_test.gd` (3906 rows of the page's trace, 0 differ; a negative: legs 10% faster) and `dhelv_nav_test.gd` (the path reaches the temple through the stone door on a braid strand, within 0.8 to 1.15 of DHN's length; a negative: the stone door's floors left out) |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos); `waves_gpu_check.gd`, the wave include drawn on a GPU against the CPU twin (needs a renderer: Xvfb + Compatibility) |
@@ -168,7 +170,13 @@ The `krator-world` cases (core/export, `core/export/README.md`) go through the s
 
 ```
 python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
+python3 tools/harness.py export settlements/iziz/dist/iziz.html --out godot/data/world-iziz --box=-120,292,120,532
 ```
+
+`shaders/library.gdshader` also draws a city's three.js material records (`krator/world_import.gd` `_standard`): uniforms
+`colour` (linear, multiplies the map), `has_albedo`, `flip_v` (the texture's flipY), `emission`, `unlit` (a MeshBasicMaterial)
+and `world_uv_offset` (false: vWorldUV has no per-instance start; Girder's applyWorldUV has one). Their defaults leave the
+Girder pack's surfaces as they were.
 
 Verge and Dhelv write their own data through their verify (their pages expose `_api.exportParts()`):
 

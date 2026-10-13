@@ -32,6 +32,9 @@ CASES = {
     # M4: the sedesert tile through core/export (krator/world_import.gd), round the rain-shadow pond, the eye inside the tile
     "world-sedesert": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
                            target=[230, 640], lift=4, eye=[-75, 30, 95]),
+    # M5: a district of Iziz through core/export, inside the south gate (box -120,292,120,532), the eye in the tile looking at the gate
+    "world-iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
+                       target=[0, 470], lift=8, eye=[-55, 22, -95], hour="ATMOS.U.hour.value"),
     "girder": dict(page="settlements/girder/girder.html", ground="_api.terrainH",
                    target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()",
                    set_hour="h => { _api.skySetHour(h); const p = document.getElementById('dnPause'); if (p && !/Resume/.test(p.textContent)) p.click(); }"),

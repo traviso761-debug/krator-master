@@ -67,7 +67,7 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    builds register their furniture (fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in. Next: the biome kits, with the
    reseeding event (`core/tags/PROPOSAL.md`).
 8. **`core/mask` DONE 2026-10-05** (Iziz, Dalab, Erewhon, Roketstad place from it; Voth since 2026-10-08; `core/mask/README.md`). Next: Iziz's export
-   on the `KRATOR_EXPORT` shape (M5).
+   on the `KRATOR_EXPORT` shape (M5). **M5 DONE 2026-10-13** (`core/export/README.md`, "Iziz"; `godot/tests/export/iziz_test.gd`).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
 
 **Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
