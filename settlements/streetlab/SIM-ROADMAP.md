@@ -332,6 +332,18 @@ house. Phase B is done: every kind of work meets the 90% rule.
 5. The economy panel: per good, stock, production, consumption, days left, imports in flight; per site, its store and
    the cart bound for it.
 
+   **Session 1 (2026-10-13): items 1, 2, 3 and 5 done, item 4 as timed deliveries.** `77-sim-6-economy.js` (goods in
+   `TUNE.sim.economy` rather than a `goods.json`; the stores, the recipes, production by worked hour × efficiency, the
+   warehouses as the settlement store, turnover over two days, days left); the crops by field (`producers`, not
+   `TUNE.farms.crops`), the chinampas' corn and peppers; 50 carts on the pedestrian layer (the city has no `road`
+   layer; `minW` keeps them to the streets they fit), each unloading at the emptiest of its six nearest warehouses
+   (the brief's lowest-stock rule over all 487 sent carts across the city: a third of the hauling); the purchases, the
+   household food and the kitchens' meals draw on the warehouses; the report's section. Imports are sent at under
+   three days and delivered after the route's hours to the emptiest warehouse, logged, **not yet carried**: the
+   caravans, barges and ships with their crews, the caravanserai stay and the surplus bought back are session 2's (the
+   map has strider ports only; the sea and river routes need water ports). Also session 2: the warehouse → market
+   porters, the shipwrights' ships as production, and a week's fast run for stability (Q2).
+
 ### 2.7 Phase F: guards, Ordinators, monks, priests, arena, boats (3 sessions)
 
 1. Guards and night watch: orgs, watchhouses as DRAW_TOOLS places, patrol routes as `cycle` over avenue and market

@@ -64,7 +64,7 @@ them by a key. A jump of the clock leaves the meters as they were.
 tool, gear, medicine, household, luxury), a worn kind with a `slot` (torso and legs take a clothing and an armour
 `layer`; feet shoes or boots; head; each hand) and a `life` in worn days, a tool a `workLife` in worked hours, a good
 its `material`. `SIM.shop(place, [items])` says what a place sells; stock is abstract (every purchase succeeds and is
-logged). An actor carries `inv`, `eq` (the worn positions), `wears` and `sets` (or `keep`), a `tool` or `toolRack`; a
+logged) unless the economy is on. An actor carries `inv`, `eq` (the worn positions), `wears` and `sets` (or `keep`), a `tool` or `toolRack`; a
 home its `people`, a food `store` or `mess`. Wear is counted lazily at the first decision of a day; a worn-out item is
 replaced from home, a short set is an errand on time off, a tool worn out at work an errand in work time, a worked day
 may end `hurt` (an errand for a poultice). An errand (`BUY`, its item) goes to the nearest seller within reach in an
@@ -73,6 +73,27 @@ none: the actor's `boost` of EAT); a store running low sends one of its people f
 buys a `treat` by wealth; a meal is eaten out (a seller of the item `meal`) by `eatOut` or for an empty store.
 `SIM.itemsEff(a)` (a missing tool, a hurt) multiplies the needs' efficiency. An actor's `boat.layer` names its boat's
 water layer (a kayak's own, in place of `water`); `SIM.legsBy` counts the legs planned by layer.
+
+**The economy** (opt-in: `SIM.economy(config)`, `77-sim-6-economy.js`). Goods (`goods`, each with an optional
+`import: {route, lot}`) and their `inputs`. `SIM.store(place, {kind, cap})` gives a place a `stock` ({good: n}): a
+`site` or a `warehouse` (the settlement's store is the warehouses'). `SIM.recipe(place, {out, rate, cap})` makes a
+place a producer: every `every` minutes its workers at work (arrived, doing WORK there) times their `SIM.mood`
+efficiency times `rate` units an hour, each unit of the good in `out` with the fewest days left whose inputs are in the
+site's store or the warehouses, up to its `cap`. `SIM.cart(actor)` hands an actor (`driven`) to the economy: the
+stepper and the jump leave it alone; idle, it goes to the site whose stored good has fewest days left, then the most
+stored no other cart is bound for, then the nearest; loads up to `cart.cap`, unloads at the warehouse with least of that
+good. `SIM.supply(good, n, whole)` and `SIM.economyMeal()` draw on the warehouses (the fullest first); with the items
+module on, a purchase draws its kind's `good` (`per` units, all or nothing), a household's food what is there, a meal
+out or at a mess `meal.per` units of food. `SIM.economyDays(good)` is the warehoused stock over the use a day (the last
+`window` days and today); under `imports.days` an imported good is sent for and arrives `routes[route].minutes` later
+at the warehouse with least of it. `SIM.economyReport()` per good (stock, at the sites, made, used, imported a day,
+days left, hauled, short), the carts by phase, the shipments in flight, the sites by what they hold.
+
+**The wake** (opt-in: `SIM.WAKE = true`, `77-sim-3-actors.js`). The stepper skips an actor until `a.wake`, the
+soonest minute anything it wants could change (`SIM.wakeOf`): the next hour its schedule changes (midnight at the
+latest), hourly with an errand waiting or in free time, a failed task's retry, a role's cycle, and the needs' and the
+items' clauses (`SIM.needsWake`: a dwell ending, a meter reaching an interrupt; `SIM.itemsWake`: an errand done, a tool
+worn through). An actor whose wish and decision differ is asked again the next minute. A jump clears every wake.
 
 ## Navigation layers
 

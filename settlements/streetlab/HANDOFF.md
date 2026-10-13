@@ -4,6 +4,32 @@ This note lets a new session take over the Voth city plan work. Read it with `RE
 (fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
+## 2026-10-13: the wake, and phase E session 1 (production, stores, carts, imports)
+
+The owner: "Anything we can do to optimize task finding and per minute load further? Work on phase e."
+- **The wake** (core/simulation `SIM.WAKE`, on by `TUNE.sim.run.wake`): each actor carries the soonest minute its wish
+  could change (`SIM.wakeOf`: its schedule's next change, hourly with an errand or in free time, a failed task's
+  retry, a role's cycle, `SIM.needsWake`, `SIM.itemsWake`) and the stepper skips it until then. A day: 74.4 M of
+  76.9 M questions skipped, 2 stale wishes in 2.5 M checks; `verify.py`'s workdays p50 65 and 64 ms (109 before),
+  p90 about 155-200, the slowest minutes about 3 s (the hour's turn, when thousands decide at once: 6,000 decisions,
+  the minute's budget). The census's pending count stays near 0 (the week check guards a missed wake).
+- **Phase E, session 1:** `77-sim-6-economy.js` and `46-vc-sim-economy.js` (README, "Production, stores, carts,
+  imports"). The stock is real now: purchases, household food and the kitchens' meals draw on the 487 warehouses.
+  Producers by worked hour × efficiency (fields one crop each, chinampas, mushroom farms, fishers' docks, ranches,
+  bakeries from wheat, weavers, tanneries, mines); 50 carts (each to the emptiest of its six nearest warehouses: over
+  all 487 they crossed the city and hauled a third as much); imports sent at under three days and delivered by timer.
+  Calibrated on a three-day run: steady use is about 280k servings a day (140k meals); the first two days run high as
+  households fill their four-day stores. After two workdays no food is short, the kitchens made every meal, wheat and
+  corn need their imports, bread lasts the least. Luxuries run out on the rest day's morning (the treats), so the
+  opening stock and the import lot were raised.
+- **Fixed on the way:** a report's `short` and `outOf` were live references, so verify serialized the rest day's
+  numbers beside day 2's; reports are snapshots now.
+
+**Next** (SIM-ROADMAP 2.6, session 2): carry the imports (caravans, barges, ships and their crews; the map has strider
+ports only, so the sea and river routes need water ports), the warehouse → market porters, the shipwrights' ships as
+production, a week's fast run for stability; then phase F. For the step: the hour's turn (spread the decisions due at
+:00 over the hour's first minutes) and `placesFor`'s cost (0.12 ms a call) are what is left.
+
 ## 2026-10-13: phase D session 2: phase D done (meals out, kayaks, the food buffer, the river yard checked)
 
 The owner: "Make sure the river shipwright doesn't actually block the river. After this, finish phase D. And where did

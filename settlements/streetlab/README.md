@@ -521,8 +521,8 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   efficiency of those at work now), the deficits by district and the free-time places full; the clock bar shows the mean
   happiness; `verify.py` runs a second workday on from the first and checks the meters hold steady.
 * **Things: clothes, tools, food, shopping** (phase D; SIM-ROADMAP.md 2.5): core/simulation's new `77-sim-6-items.js`
-  (opt-in: `SIM.items`), set up by `45-vc-sim-items.js` from `TUNE.sim.items`. Stock is abstract (the owner's Q7): every
-  purchase succeeds and is logged by shop and item, so the report shows which shops are missing or far. A shop sells by
+  (opt-in: `SIM.items`), set up by `45-vc-sim-items.js` from `TUNE.sim.items`. Stock was abstract in phase D (the owner's
+  Q7: every purchase succeeded and was logged by shop and item); phase E's economy (below) draws it from the warehouses. A shop sells by
   its kit model (the alchemist poultices; the clothier, the weaver and the tannery clothes and shoes; the smithy tools,
   arms and armour; the provisioner, the bakery, the butcher and the markets' stalls food; the trader, the enchanter and
   the potter luxuries and household goods). Every citizen wears a set (shirt; trousers or a dress; shoes; a hat or hood
@@ -546,6 +546,28 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   (the harbour's own coast is its quay deck, 4 m above the water: no slip runs off it). Its 14 shipwrights work the
   slip (the ships they build are phase E's production); it sells oars and kayaks, the weavers nets, and the fishers
   now own their nets (bought from a weaver when worn out).
+* **Production, stores, carts, imports** (phase E; SIM-ROADMAP.md 2.6): core/simulation's new `77-sim-6-economy.js`
+  (opt-in: `SIM.economy`), set up by `46-vc-sim-economy.js` from `TUNE.sim.economy`. The stock stops being abstract: a
+  shop sells from the settlement's store (the 487 warehouses and the Granary deck's granaries), so a purchase can fail
+  and a kitchen can run out. Food is counted in servings (a meal is two), the craft goods in lots. The producers make
+  their goods by the worked hour, times their workers' efficiency (the needs' band, a missing tool, a hurt), into
+  their own store: the 454 fields one crop each (wheat, corn or peppers by a hash, wheat three times as often), the
+  chinampas corn and peppers (whichever has fewer days left), the mushroom farms, the fishers' docks, the beetle ranches
+  eggs, the bakeries bread from wheat, the weavers cloth, the tanneries leather, the mines metal. Fifty carts (driven
+  actors the stepper leaves to the economy; drawn near the camera as a cart and its hauler) take the site whose good
+  has fewest days left, then the fullest no other cart is bound for, then the nearest, and unload at the emptiest of
+  the six nearest warehouses. Clothes draw cloth, shoes and waterskins leather, tools, arms and armour metal, oars and
+  kayaks wood, poultices herbs, luxuries the imported luxuries; a household's food, a meal out or at a mess the foods.
+  A good with an import route (wheat, corn, peppers, eggs by river or road; cloth and luxuries by sea; leather, metal,
+  wood, herbs) is sent for when it lasts under three days and arrives hours later (the ships, barges and caravans that
+  carry it are the next session's: only strider ports stand on the map's edge now). The report's "Production, stores,
+  carts, imports" section (per good: the warehouses, the sites, made, used and imported a day, days left);
+  `verify.py`'s economy check after two workdays (every producer, the carts, every food made and hauled, none short,
+  none under a day, the kitchens' meals, the imports delivered).
+* **The wake** (`TUNE.sim.run.wake`, core/simulation `SIM.WAKE`): an actor is asked what it wants only at the soonest
+  minute it could change (its schedule's next change, an errand's or a dwell's end, a meter's crossing, a role's
+  cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to
+  about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks.
 * Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
   stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
   with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).

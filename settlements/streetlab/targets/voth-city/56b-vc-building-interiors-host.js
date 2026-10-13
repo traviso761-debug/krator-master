@@ -401,7 +401,7 @@ VC.peopleReportHTML = function () {
     var IR = VC.simItemsReport ? VC.simItemsReport() : null;
     if (IR) {
       var o2 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; }, SU = IR.setup || {};
-      h += '<h2>Things: clothes, tools, food, shopping</h2><div class="k">core/simulation 77-sim-6-items.js, TUNE.sim.items. Stock is abstract: every purchase succeeds and is logged, so what shows is which shops are missing or far. ' +
+      h += '<h2>Things: clothes, tools, food, shopping</h2><div class="k">core/simulation 77-sim-6-items.js, TUNE.sim.items. With the economy on (below), a purchase draws on the warehouses; without it every purchase succeeds and is logged. ' +
         f(SU.shopPlaces) + ' places sell (' + o2(SU.shops) + '); ' + f(SU.stores) + ' households keep a food store, ' + f(SU.messes) + ' eat at a mess. ' +
         'Owned: ' + f((SU.gear || {}).tools) + ' tools, ' + f((SU.gear || {}).rack) + ' drawn from racks, ' + f((SU.gear || {}).armed) + ' armed, ' + f((SU.gear || {}).waterskin) + ' waterskins, ' + f((SU.gear || {}).kayak) + ' kayaks.</div>';
       h += '<table><tr><th>class</th><th>people</th><th>clothes kept of wanted</th><th>short a set</th><th>missing a worn item</th></tr>';
@@ -419,6 +419,20 @@ VC.peopleReportHTML = function () {
         '. Household stores: ' + f(IR.stores.homes) + ', ' + f(IR.stores.low) + ' below a day (a trip for food on its way), ' + f(IR.emptyStores) + ' empty, ' + IR.stores.meanDays + ' days on average. Slot errors ' + f(IR.slotErrors) + '.</div>';
       var KY = SU.kayaks || {};
       h += '<div>Kayaks: ' + f(KY.places) + ' huts and chinampa work sites on the beds, reached through ' + f(KY.landings) + ' landings by ' + f(KY.people) + ' people (to town by kayak, then on foot); ' + f(IR.kayakNow) + ' afloat now. Meals out (a tavern, a stall, the caravanserai): ' + f(M.bought) + '.</div>';
+    }
+    var ER = VC.simEconomyReport ? VC.simEconomyReport() : null;
+    if (ER) {
+      var o3 = function (o) { return Object.keys(o || {}).sort(function (a, b) { return o[b] - o[a]; }).map(function (k) { return k + ' ' + f(o[k]); }).join(', ') || 'none'; }, ES = ER.setup || {};
+      h += '<h2>Production, stores, carts, imports</h2><div class="k">core/simulation 77-sim-6-economy.js, TUNE.sim.economy (phase E). Producers: ' + o3(ES.producers) + '; ' + f(ES.carts) + ' carts. ' +
+        'Food in servings, the rest in lots. A shop sells from the warehouses: when they are out, a purchase fails. Days left: the warehoused stock over the use a day (the last two days and today so far).</div>';
+      h += '<table><tr><th>good</th><th>in the warehouses</th><th>at the sites</th><th>made a day</th><th>used a day</th><th>imported a day</th><th>days left</th><th>hauled in all</th><th>short in all</th></tr>';
+      Object.keys(ER.goods).forEach(function (g) { var G = ER.goods[g];
+        h += '<tr><td>' + g + '</td><td class="n">' + f(G.stock) + '</td><td class="n">' + f(G.atSites) + '</td><td class="n">' + f(G.madeDay) + '</td><td class="n">' + f(G.usedDay) + '</td><td class="n">' + f(G.importedDay) +
+          '</td><td class="n ' + (G.days < 3 ? 'bad' : '') + '">' + (G.days === Infinity ? '-' : G.days) + '</td><td class="n">' + f(G.hauled) + '</td><td class="n ' + (G.short ? 'bad' : '') + '">' + f(G.short) + '</td></tr>'; });
+      h += '</table>';
+      h += '<div>Carts: ' + o3(ER.carts) + '; ' + f(ER.trips) + ' loads delivered. Imports sent ' + f(ER.sent) + ', in flight: ' + (ER.inflight.map(function (s) { return s.good + ' ' + f(s.n) + ' by ' + s.route; }).join(', ') || 'none') +
+        '. Production held up: ' + o3(ER.blocked) + '. <span class="' + (ER.mealsOut ? 'bad' : '') + '">Meals the kitchens could not make ' + f(ER.mealsOut) + '</span>; out of stock: ' + o3(ER.outOf) + '.</div>';
+      h += '<div>The fullest sites: ' + ER.sites.map(function (x) { return x.kind + ' ' + f(x.held) + (x.carts ? ' (a cart bound)' : ''); }).join(', ') + '.</div>';
     }
     var days = Object.keys(S.days); if (days.length) {
       h += '<table><tr><th>day</th><th>hour</th><th>doing</th><th>wanted, not had</th></tr>';

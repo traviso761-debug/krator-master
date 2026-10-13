@@ -195,6 +195,7 @@ VC.simPeople = function () {
   if (SIM.placesChanged) SIM.placesChanged();   /* the slaves' quarters added SLEEP to their sites: the place grids rebuild */
   VC.PEOPLE = R;
   if (VC.simItems) VC.simItems();   /* 45-vc-sim-items.js: the shops, the households' stores, everyone's things (phase D) */
+  if (VC.simEconomy) VC.simEconomy();   /* 46-vc-sim-economy.js: the producers, the warehouses, the carts, the imports (phase E) */
   return R;
 };
 
@@ -216,7 +217,7 @@ VC.simWalkSample = function (n) {
    go (SIM.decide), then put back as they were (no reservation kept). A worker at 8 should choose its work place; anyone
    at 2 its home. Returns how many chose as their role pins, how many could not be routed, the decisions' cost */
 VC.simDecideSample = function (n, hour) {
-  var A = SIM.all('actor'), k = Math.max(1, Math.floor(A.length / (n || 200))), out = { asked: 0, chose: 0, pinned: 0, wrong: 0, failed: 0, none: 0, wrongList: [], ms: 0 }, t0 = Date.now();
+  var A = SIM.all('actor').filter(function (a) { return !a.driven; }), k = Math.max(1, Math.floor(A.length / (n || 200))), out = { asked: 0, chose: 0, pinned: 0, wrong: 0, failed: 0, none: 0, wrongList: [], ms: 0 }, t0 = Date.now();
   var minute = (SIM.host.day() | 0) * 1440 + hour * 60, t = SIM.time();
   for (var i = 0; i < A.length; i += k) {
     var a = A[i], want = SIM.desire(a, minute), pin = want === 'WORK' ? a.work : want === 'SLEEP' ? a.home : null;

@@ -361,8 +361,9 @@ var TUNE = {
     /* running the simulation in the page (56c-vc-citizens-host.js): the pedestrian layer is lazy (a leg is decided from
        the straight line times `detour`, its path found when it is drawn); at most `stepMax` decisions a simulated minute;
        a frame steps at most `catchUp` minutes behind the clock; a jump of more than `jumpGap` minutes (the hour slider)
-       re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH). The census is sampled at `samples` hours each day (the fast clock's stability check) */
-    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500 },
+       re-places everyone (SIM.jump); nobody looks farther than `reach` m for a place to spend free time (SIM.REACH);
+       `wake`: an actor is asked again only when its wish could change (core/simulation SIM.WAKE). The census is sampled at `samples` hours each day (the fast clock's stability check) */
+    run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true },
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
     embody: { r: 220, max: 1500, every: 400, dist: 600,
@@ -464,6 +465,31 @@ var TUNE = {
       foodDays: [1.5, 4], meal: { mult: 3, single: 1, none: 0.2, mess: 3, rich: 0.3 }, hurt: 0.006, heal: 3, low: 2, days: 4, lack: 4,
       eatOut: { base: 0.04, wealth: 0.2 }, kayakLanding: 'landing',
       treat: { at: 55, items: [[0, 'pottery'], [0.3, 'lamp'], [0.45, 'rug'], [0.7, 'jewellery'], [0.85, 'silks']] }, mins: 15, cool: 180
+    },
+    /* phase E (46-vc-sim-economy.js; core/simulation 77-sim-6-economy.js): the goods (servings for food, lots for the
+       rest) and the imported ones' route and lot; bread's input; the producers by place kind or kit model (`rate` a
+       worker-hour, the store's `cap`; `one`: one of `out` per site by its hash and `weights`); the warehouses' kinds; the opening
+       stock; what the items are made of (`catGood`, `itemGood` over it, null for none; `per` units); the carts (`cap`
+       a load, `load` and `unload` minutes, `minLoad` worth a trip, `near` the warehouses it picks among, `minW` the streets they fit); the imports' scan and
+       threshold; the routes (the layer of their map-edge port, the minutes a shipment takes) */
+    economy: {
+      goods: { wheat: { import: { route: 'river', lot: 20000 } }, corn: { import: { route: 'river', lot: 20000 } }, peppers: { import: { route: 'road', lot: 15000 } },
+               mushrooms: {}, fish: {}, eggs: { import: { route: 'road', lot: 10000 } }, bread: {},
+               cloth: { import: { route: 'sea', lot: 2000 } }, leather: { import: { route: 'road', lot: 300 } }, metal: { import: { route: 'road', lot: 400 } },
+               wood: { import: { route: 'river', lot: 300 } }, herbs: { import: { route: 'road', lot: 300 } }, luxuries: { import: { route: 'sea', lot: 1500 } } },
+      inputs: { bread: { wheat: 1 } },
+      producers: [{ kind: 'field', out: ['wheat', 'corn', 'peppers'], weights: [3, 1, 1], one: true, rate: 36, cap: 20000 }, { kind: 'chinampa', out: ['corn', 'peppers'], rate: 6, cap: 20000 },
+                  { kind: 'mushfarm', out: ['mushrooms'], rate: 65, cap: 20000 }, { kind: 'fishdock', out: ['fish'], rate: 30, cap: 20000 },
+                  { kind: 'ranch', out: ['eggs'], rate: 60, cap: 20000 }, { lot: 'voth_bldg_bakery', out: ['bread'], rate: 120, cap: 20000 },
+                  { lot: 'voth_bldg_weaver', out: ['cloth'], rate: 1, cap: 2000 }, { lot: 'voth_bldg_tannery', out: ['leather'], rate: 0.6, cap: 2000 },
+                  { kind: 'mine', out: ['metal'], rate: 0.05, cap: 2000 }],
+      warehouses: ['warehouse', 'granary'], startDays: 4, startLots: { cloth: 6000, leather: 800, metal: 1000, wood: 300, herbs: 600, luxuries: 3000 },
+      catGood: { clothes: 'cloth', armour: 'metal', arms: 'metal', tool: 'metal', medicine: 'herbs', luxury: 'luxuries' },
+      itemGood: { shoes: 'leather', boots: 'leather', waterskin: 'leather', net: 'cloth', rug: 'cloth', oar: 'wood', kayak: 'wood', quill: null, lamp: 'metal' },
+      per: { armour: 3, kayak: 4 },
+      carts: 50, cart: { cap: 5000, load: 20, unload: 20, minLoad: 500, near: 6, minW: 3 },
+      every: 60, window: 2, imports: { days: 3, scan: 60 },
+      routes: { sea: { layer: 'water', minutes: 360 }, river: { layer: 'water', minutes: 240 }, road: { layer: 'strider', minutes: 300 } }
     }
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */

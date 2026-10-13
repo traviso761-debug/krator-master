@@ -110,6 +110,20 @@
     if(live){ a.fr=pick; a.frFor=act; a.frSince=minute; }
     return pick;
   };
+  /* the soonest minute this clause could answer otherwise (SIM.step's wake): a free choice's dwell running out, a
+     labourer's meter reaching an interrupt's `at` (from the steeper of its slope at work and on the way), an interrupt
+     under way (each minute), a cool-down ending */
+  SIM.needsWake = function(a, minute, act){
+    var N=SIM.NEED; if(!N || !a.nd || a.ndT==null) return Infinity; var w=Infinity;
+    if(a.intr) return minute+1;
+    if(act==='WORK' && N.interrupt.length && labour(a)>0){
+      if(a.intrCool && a.intrCool>minute) w=Math.min(w, a.intrCool);
+      for(var k=0;k<N.interrupt.length;k++){ var J=N.interrupt[k], v=peek(a, J.i, minute), sl=Math.max(slope(a, null, J.i), slope(a, 'WORK', J.i));
+        if(sl>0) w=Math.min(w, minute+Math.max(1, Math.floor((J.at-v)/sl*60))); }
+    }
+    if(a.fr && a.frFor===act) w=Math.min(w, a.frSince+N.dwell+(N.jitter ? a.k%N.jitter : 0));
+    return w;
+  };
   /* SIM.decide: the meters brought to now on the old activity; the new one fills from its arrival */
   SIM.needsDecided = function(a, minute, task){
     var N=SIM.NEED; if(!N) return; SIM.needsOf(a, minute);
@@ -123,7 +137,7 @@
      have it at `high` or more; the meters brought to `minute` first */
   SIM.needsCensus = function(key, opt){
     var N=SIM.NEED; if(!N) return null; opt=opt||{}; var minute=opt.minute==null?SIM.minute():opt.minute, high=opt.high==null?70:opt.high, out={};
-    SIM.all('actor').forEach(function(a){ if(!a.present || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.driven || (opt.filter && !opt.filter(a))) return; SIM.needsOf(a, minute);
       var k=key ? key(a) : 'all'; if(k==null) return; var G=out[k] || (out[k]={ n:0, happy:0, eff:0, bands:{}, mean:N.list.map(function(){ return 0; }), high:N.list.map(function(){ return 0; }), loyal:0, loyalty:{} });
       var M=SIM.mood(a); G.n++; G.happy+=M.happiness; G.eff+=M.eff; G.bands[M.band]=(G.bands[M.band]||0)+1; if(M.loyal!=null){ G.loyal+=M.loyal; if(M.loyalty) G.loyalty[M.loyalty]=(G.loyalty[M.loyalty]||0)+1; }
       for(var i=0;i<a.nd.length;i++){ G.mean[i]+=a.nd[i]; if(a.nd[i]>=high) G.high[i]++; } });

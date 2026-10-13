@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -399,5 +399,68 @@ function world(seed){
   const T2=S.plan(g,S.R.place.hut,'SLEEP',{x:100,y:0,z:60},clock.t);
   ok('home: on foot to the landing, then by kayak to the hut',T2.legs.length>=1&&T2.legs[T2.legs.length-1].layer==='kayak'&&g.inVehicle==='boat',T2.legs[T2.legs.length-1].layer!=='kayak');}
  ok('the slots still hold after it all',S.all('actor').every(x=>S.itemsCheck(x).length===0),false);}
+
+// the economy (77-sim-6-economy.js): production by worked hour and efficiency into the site's store up to its cap, the
+// good most needed made, inputs from the warehouses, carts by the brief's order to the warehouse with least, purchases
+// and meals drawn from the warehouses (a shop can be out), turnover and days left, an import sent and delivered
+{const {S,clock}=world(71);
+ ['WORK','EAT','HAUL'].forEach(a=>S.activity({id:a}));
+ ok('without SIM.economy nothing is stocked',!S.ECON&&S.supply('corn',3)===3,!!S.ECON);
+ S.place({id:'farm',kind:'field',x:150,z:0,activities:{WORK:6},open:[0,24]});
+ S.place({id:'oven',kind:'bakery',x:100,z:60,activities:{WORK:2},open:[0,24]});
+ S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'barn',kind:'warehouse',x:150,z:0,activities:{}});
+ S.place({id:'stall',kind:'shop',x:50,z:0,activities:{BUY:4},open:[0,24]});
+ S.place({id:'mess',kind:'mess',x:0,z:0,activities:{EAT:9}});S.R.place.mess.mess=true;
+ S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+ S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+ S.economy({goods:{wheat:{},corn:{},bread:{},herbs:{import:{route:'river',lot:50}}},inputs:{bread:{wheat:2}},every:60,
+   cart:{cap:30,load:5,unload:5,minLoad:5},imports:{days:3,scan:30},routes:{river:{minutes:90}},window:1,meal:{per:2,foods:['corn','bread']}});
+ S.store('shed',{kind:'warehouse'});S.store('barn',{kind:'warehouse'});
+ S.recipe('farm',{out:['wheat','corn'],rate:2,cap:40});S.recipe('oven',{out:['bread'],rate:1,cap:100});
+ const ws=[0,1,2].map(i=>S.actor({id:'g'+i,role:'grower',home:'homeA',work:'farm'}));
+ // production: three at work, two units an hour each; the good with fewest days left first (both unused: wheat, then by days)
+ clock.d=0;const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}};
+ run(0,3);const F=S.R.place.farm;const made1=(F.stock.wheat||0)+(F.stock.corn||0);
+ ok('three at work make about two units an hour each, into the field\'s store',made1>=8&&made1<=12,made1===0);
+ run(3,10);ok('the store stops at its cap (and says so)',(F.stock.wheat||0)+(F.stock.corn||0)<=40&&S.ECON.blocked['full: field']>0,(F.stock.wheat||0)+(F.stock.corn||0)>40);
+ // a cart: to the field, loads, to the warehouse with least of it
+ const c=S.actor({id:'cart1',role:'carter',home:'homeA'});S.cart(c);S.R.place.barn.stock.wheat=100;
+ run(10,14);
+ ok('a cart hauls from the site to a warehouse (the one with less of it)',S.ECON.trips>=1&&(S.R.place.shed.stock.wheat||0)+(S.R.place.shed.stock.corn||0)>0,S.ECON.trips===0);
+ ok('the stepper leaves the cart to the economy',c.activity==='HAUL'&&c.wanted==null,c.wanted!=null);
+ // consumption: a purchase draws on the warehouses; whole or nothing
+ const b0=S.stockOf('wheat');const got=S.supply('wheat',5);
+ ok('a draw takes from the warehouses (the fullest first)',got===5&&S.stockOf('wheat')===b0-5&&S.ECON.used.wheat>=5,got!==5);
+ ok('a whole draw with too little takes nothing',S.supply('herbs',1,true)===0&&S.ECON.short.herbs===1,S.supply('herbs',1,true)!==0);
+ // inputs: bread from wheat at the oven, from the warehouses
+ S.actor({id:'bk',role:'grower',home:'homeA',work:'oven'});const u0=S.ECON.used.wheat||0;run(14,17);
+ ok('bread is baked from the warehouses\' wheat, two a loaf',(S.R.place.oven.stock.bread||0)>=2&&S.ECON.used.wheat-u0===2*S.R.place.oven.stock.bread,(S.R.place.oven.stock.bread||0)===0);
+ // meals at a mess
+ S.R.place.shed.stock.corn=10;const c0=S.stockOf('corn')+S.stockOf('bread');
+ ok('a meal out takes two units of food from the warehouses',S.economyMeal()&&c0-(S.stockOf('corn')+S.stockOf('bread'))===2,!S.economyMeal());
+ // days left and the import
+ S.R.place.shed.stock.herbs=0;S.R.place.barn.stock.herbs=2;S.supply('herbs',1);
+ ok('days left: the stock over the day\'s use',S.economyDays('herbs')>0&&S.economyDays('herbs')<3,S.economyDays('herbs')===Infinity);
+ run(17,18);ok('under three days: an import is sent by its route',S.ECON.inflight.length===1&&S.ECON.inflight[0].good==='herbs',S.ECON.inflight.length!==1);
+ run(18,20);ok('and delivered to the warehouse with least of it after the route\'s minutes',S.ECON.imported.herbs===50&&S.ECON.inflight.length===0&&S.R.place.shed.stock.herbs===50,S.ECON.imported.herbs!==50);
+ const R=S.economyReport();ok('the report: per good, the carts, the sites',R.goods.herbs.imported===50&&R.goods.wheat.made>0&&R.sites.length===2&&Object.keys(R.carts).length>=1,!R.goods.herbs);
+ // the items module: a purchase of an item made of a good the warehouses lack fails and cools
+ S.items({kinds:{poultice:{cat:'medicine',good:'herbs',per:60},corn:{cat:'food',food:true}},free:['IDLE'],secPerMinute:1,mins:5,cool:60,hurt:0});
+ S.shop('stall',['poultice','corn']);S.role({id:'sick',org:'folk',sched:[[0,'IDLE']]});
+ const p=S.actor({id:'p1',role:'sick',home:'homeA'});p.hurt=0;p.itDay=Math.floor(S.minute()/1440);S.errand(p,'poultice');run(20,22);
+ ok('out of the herbs a poultice takes: the errand fails, nothing bought',S.ITEMS.stats.outOf.poultice===1&&!S.ITEMS.stats.bought.poultice&&p.hurt!=null,S.ITEMS.stats.bought.poultice===1);}
+
+
+// the wake (SIM.WAKE): asked only when its wish could change; no wish left waiting, far fewer questions
+{const run=(wake)=>{const {S,clock}=world(61);S.WAKE=wake;S.skipped=0;
+  for(let i=0;i<60;i++) S.actor({id:'w'+i,role:'farmer',home:i%2?'homeA':'homeB'});
+  let asked=0;const d0=S.desire;S.desire=function(a,m){asked++;return d0.apply(this,arguments);};
+  let stale=0;clock.d=0;for(let m=0;m<24*60;m++){clock.h=m/60;clock.t+=1;S.step();
+    if(m%7===0) S.all('actor').forEach(a=>{ if(a.present && a.task && d0(a,S.minute())!==a.wanted) stale++; });}
+  S.desire=d0;return {asked,stale,skipped:S.skipped,acts:S.all('actor').map(a=>a.activity+'@'+a.place).join(',')};};
+ const A=run(false),B=run(true);
+ ok('with the wake no wish is left waiting',B.stale===0,B.stale>0);
+ ok('the same day, the same places',A.acts===B.acts,A.acts!==B.acts);
+ ok('and far fewer questions (under a fifth)',B.asked<A.asked/5&&B.skipped>0,B.asked>=A.asked);}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

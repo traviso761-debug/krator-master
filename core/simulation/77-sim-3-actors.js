@@ -150,7 +150,7 @@
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
-    var spot=spotOf(a, P), cur=from, inVeh = a.inVehicle;           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle;   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
     var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
@@ -279,18 +279,42 @@
         if(L && L.activity==='DRIVE_BACK' && a.task && t >= a.task.arrive){ a.pos=SIM.pose(a, t); a.plan=null; a.inVehicle=null; a.task=null; a.activity=null; a.wanted=null; }
         if(L && (L.together || L.away)) continue;                                  /* the group (or the trip) moves it */
       }
-      if(!a.present) continue;
+      if(!a.present || a.driven) continue;                                         /* a cart: the economy drives it */
+      if(SIM.WAKE && a.wake!=null && minute<a.wake && a.task){ SIM.skipped++; continue; }   /* nothing it wants can change before then */
       var want=SIM.desire(a, minute), Rr=SIM.R.role[a.role], cyc=Rr.cycle && Rr.cycle[a.activity];
       if(want!==a.wanted || !a.task || (a.task.failed && (minute%15===0))){ SIM.decide(a, minute, t); budget--; made++; }
       else if(cyc && a.since!=null && minute-a.since >= cyc && t >= a.task.arrive && a.activity===want){   /* a role that moves on (the watch, a merchant doing the rounds) */
         var here=a.place; a.mem[want]=null; a.bad=a.bad||{}; var had=a.bad[here]; a.bad[here]=1; SIM.decide(a, minute, t); if(!had) delete a.bad[here]; budget--; made++; }
+      if(SIM.WAKE) a.wake = SIM.wakeOf(a, minute, want);
     }
+    if(SIM.ECON) SIM.economyStep(minute, t);                                        /* production, the carts, the imports */
     return made;
+  };
+  /* THE WAKE (SIM.WAKE, opt-in): an actor is asked again only at the soonest minute anything it wants could change: the
+     next hour its schedule changes (midnight at the latest; every hour with an errand waiting or in free time, for the
+     items' hourly looks), a failed task's retry (every 15 minutes), a role's cycle, the needs' and the items'
+     clauses (SIM.needsWake, SIM.itemsWake: a dwell ending, a meter crossing, an errand done, a tool worn through); at
+     once while its wish and its decision differ (a decision the minute's budget left for the next) */
+  SIM.WAKE = false; SIM.skipped = 0;
+  SIM.wakeOf = function(a, minute, want){
+    if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
+    /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
+       or in free time (the items' hourly looks: a shop open, the household's store) */
+    var sc=SIM.schedOf(a, minute), h=Math.floor((minute%1440)/60), nh=h+1, midnight=minute-minute%1440+1440;
+    if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
+    var w=Math.min(midnight, minute-minute%60+(nh-h)*60), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60);
+    if(a.task.failed) w=Math.min(w, minute-minute%15+15);
+    if(cyc && a.since!=null) w=Math.min(w, a.since+cyc);
+    if(SIM.NEED) w=Math.min(w, SIM.needsWake(a, minute, sc ? sc[h] : a.wanted));
+    if(SIM.ITEMS) w=Math.min(w, SIM.itemsWake(a, minute, a.wanted));
+    return Math.max(minute+1, w);
   };
   /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
-    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
+    if(SIM.ECON) SIM.economyJump(minute);
+    SIM.all('actor').forEach(function(a){ a.wake=null; if(!a.present || a.plan || a.driven) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };
