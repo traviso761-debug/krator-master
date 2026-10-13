@@ -37,6 +37,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import harness as _harness
 from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
+# this verify's own: the console lines that mean a shader or GL call failed (they raise no page error). They were in the
+# old helpers block and went with it on 2026-10-08, which left the console handler raising NameError on every line
+GL_ERR = re.compile(r"THREE\.WebGL(Program|Shader)|shader error|ERROR: 0:|GL_INVALID|INVALID_(OPERATION|VALUE|ENUM|FRAMEBUFFER_OPERATION)|CONTEXT_LOST|too many errors")
+GL_IGNORE = re.compile(r"GPU stall due to ReadPixels|Automatic fallback to software WebGL")
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:

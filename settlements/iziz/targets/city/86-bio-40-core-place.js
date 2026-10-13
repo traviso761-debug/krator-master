@@ -9,7 +9,7 @@
 // 1/27/53/20 % for four species. The value is stretched through the middle of
 // the bell first so the n bands come out roughly even.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
-BIO.standAt=function(x,z,n,scale,seed){scale=scale||.0017;const f=fbm(x*scale+31,z*scale-19,seed||9483,2);
+BIO.standAt=function(x,z,n,scale,seed){scale=scale==null?.0017:scale;const f=fbm(x*scale+31,z*scale-19,seed==null?9483:seed,2);
  const u=smooth(.30,.70,f);return clamp(Math.floor(u*n),0,n-1);};
 BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.floor(rng()*n):BIO.standAt(x,z,n,scale,seed);};
 
@@ -40,20 +40,40 @@ BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||B
   fn(x,BIO.terrainH(x,z),z,d);n++;}
  return n;};
 // POISSON-ish scatter of n points with a minimum spacing, area-uniform in the
-// annulus, biased outward by `pow` (>1 pushes the crowd out)
+// annulus, biased outward by `pow` (>1 pushes the crowd out). With core/space on the page the spacing test reads the
+// accepted points through a KSPACE grid of cell minD (it was a scan of all of them: O(n^2)); the candidates come back
+// in the order they were accepted, so the same points pass and the same draws are made.
 BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[];let tries=0;
+ const S=typeof KSPACE!=='undefined'&&typeof minD==='number'&&minD>0&&isFinite(minD)?KSPACE.create({cell:minD}):null,near=[];
  while(P.length<n&&tries++<n*40){const a=rng()*TAU,u=Math.pow(rng(),opt.pow||1);
   const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u)),x=o[0]+Math.cos(a)*r,z=o[1]+Math.sin(a)*r;
   if(rng()>BIO.mask(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
-  let ok=true;for(const q of P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
-  if(!ok)continue;P.push([x,z]);fn(x,BIO.terrainH(x,z),z,r);}
+  let ok=true;for(const q of S?S.query(x,z,minD,near):P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
+  if(!ok)continue;const p=[x,z];P.push(p);if(S)S.insert(p,x,z,0);fn(x,BIO.terrainH(x,z),z,r);}
  return P;};
-// keep-clear: outside every host obstacle cylinder (plus pad), on the ground
+// keep-clear: outside every host obstacle cylinder (plus pad), on the ground.
+// With core/space on the page the obstacles are read through a KSPACE grid (24 m) kept beside BIO.host.obstacles.
+// Kits push into that array directly (Throne's trees, while a grid is running), so each query first files what was
+// pushed since the last one; a new array (a nursery swaps its own in), a shorter one or a changed last entry is filed
+// afresh. The candidates come back in the array's order and get the same test, so the answer is the scan's. An entry
+// is read when it is filed: change an obstacle's x, z or r in place and the index does not see it (push a new one).
+// An entry whose x, z or r is not a number, or a query whose x, z or pad is not one, goes to the plain scan, which
+// answers as it always did. Up to OBS_SCAN obstacles are scanned (the grid costs more than it saves).
+const OBS_CELL=24,OBS_SCAN=8;let _obs=null;const _near=[];
+function obstacleIndex(){const O=BIO.host.obstacles;
+ if(typeof KSPACE==='undefined'||!O||!(O.length>OBS_SCAN))return null;
+ let I=_obs;if(!I||I.arr!==O||O.length<I.n||(I.n&&O[I.n-1]!==I.last))I=_obs={arr:O,n:0,last:null,S:KSPACE.create({cell:OBS_CELL}),scan:false};
+ for(;I.n<O.length;I.n++){const q=O[I.n];I.last=q;
+  if(q&&typeof q.x==='number'&&typeof q.z==='number'&&typeof q.r==='number')I.S.insert(q,q.x,q.z,q.r);else I.scan=true;}
+ return I.scan?null:I.S;}
+BIO.obstacleIndex=obstacleIndex;
 BIO.clearOf=function(x,z,pad){const O=BIO.host.obstacles;pad=pad||0;
- for(let i=0;i<O.length;i++){const q=O[i];if(Math.hypot(x-q.x,z-q.z)<q.r+pad)return false;}return true;};
+ const S=typeof x==='number'&&typeof z==='number'&&typeof pad==='number'?obstacleIndex():null,L=S?S.query(x,z,pad,_near):O;
+ for(let i=0;i<L.length;i++){const q=L[i];if(Math.hypot(x-q.x,z-q.z)<q.r+pad)return false;}return true;};
 // keep-clear in 3D: a blob of horizontal radius rad, half-height vr at (x,y,z)
 BIO.clearOf3=function(x,y,z,rad,vr){const O=BIO.host.obstacles;
- for(let i=0;i<O.length;i++){const q=O[i];if(q.y0!=null&&(y+vr<q.y0||y-vr>q.y1))continue;
+ const S=typeof x==='number'&&typeof z==='number'&&typeof rad==='number'?obstacleIndex():null,L=S?S.query(x,z,rad,_near):O;
+ for(let i=0;i<L.length;i++){const q=L[i];if(q.y0!=null&&(y+vr<q.y0||y-vr>q.y1))continue;
   if(Math.hypot(x-q.x,z-q.z)<q.r+rad)return false;}return true;};
 
 // ---------------------------------------------------------------- surface sampling

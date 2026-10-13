@@ -15,6 +15,11 @@ saying what fixed it.
 - [ ] (2026-10-05) Headless `verify.py dist/iziz.html` ends in `WebGL: CONTEXT_LOST_WEBGL` and FAILED even on the committed page (checked against
       `git show HEAD:settlements/iziz/dist/iziz.html`): the error panel is clean and the counters print (814 draw calls). It is the software GL on the city, not a regression;
       the Iziz page has no headless pass at the moment.
+      2026-10-13: since 2026-10-08 `verify.py` could not run at all: stage 0b moved its helpers block to `tools/harness.py`
+      and took this verify's own `GL_ERR` / `GL_IGNORE` with it, so the console handler raised NameError, three.js was never
+      served and the load timed out (900 s). Both are back in verify.py. With them, `verify.py dist/iziz.html --assert`
+      PASSES headless (858 calls / 4.96 M tris at the opening view, error panel clean, no CONTEXT_LOST); left open until
+      the other views (`Palace hill`, `Arena hill`) are run headless too.
 - [x] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
       empties it (restore with git). The 58 and 55 copies were patched by hand (they differ from upstream only in the wrapper line). `build.py --help` also runs a full
       build and rewrites the manifests.
@@ -259,6 +264,16 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       54-mat-concrete, Jimjam 6; Xanadu and Reed Lake their 7 Ancients fragments from Highlands). Every copy was the same
       stale snapshot, no local edits. Brings the `tick()` frame hook, `apron(...,mat)`, `MAT.darkSurf` tubes and the
       `bodyGroup` fix (decay 3 stands full height). `--vendor-check`: Iziz 35, Highlands 13, Dalab 13 identical.
+- [x] (2026-10-13) The Ancients re-vendor session (TODO.md item 3). `--vendor-check` before: all 35 Ancients fragments
+      identical (the 2026-10-06 re-vendor holds; `kits/ancients/src` changed since only in files Iziz does not vendor), and
+      BIOME DRIFT in 86-bio-10-core-head, 20-core-kit, 30-core-foliage, 40-core-place. Read: each copy was simply behind
+      `core/biome` (no local edit): the host's `field`/`placeH` (2026-10-08), core/tags records (`tags`, 2026-10-12), the
+      shared iridescent bark (`BIO.iridBarkMat`), `standAt`'s `x == null ? d : x` defaults, and `scatter`/`clearOf`/
+      `clearOf3` reading a `KSPACE` grid when core/space is on the page. All are opt-in or answer the same: Iziz passes no
+      `field`, `placeH` or `tags`, never passes 0 to `standAt`, and does not load core/space. Re-vendored with
+      `build.py --vendor-bio`; only the city page changes. `verify.py dist/iziz.html --assert` before and after: identical
+      (858 calls, 4,957,502 tris, every counter the same but the biome's build time); the opening view looks the same
+      (73 px differ, the LOD streaming count 393 vs 392 at the shot). `--vendor-check`: 35 identical, 11 biome match.
 - [ ] (2026-10-06) The vernacular takes the material library (materials.json; src/88y-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient MAT is bound too (but rust; see below); the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
