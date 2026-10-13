@@ -40,5 +40,6 @@ bodies, not 40 bespoke builds; birds and flyers reuse `faHiBird`; water animals 
 - **Wave 1 (2026-10-13), built:** north-west lowlands, south-west lowlands (Dalab), Xanadu, the Rift, eastern badlands, the Throne and the
   geyser fields (29 animals in `krator-fauna-wild.js`, tagged by their biomes; the pumice petrel also `ringsea`). The Ring Sea has its sea lion
   (`krator-fauna-ringsea.js`). Hyperjungle already had its set.
-- **Next:** northern highlands, southern highlands, eastern highlands, north-west bay, south-west bay (one grazer), eastern abyss, eastern high
+- **Wave 2 (2026-10-13), built:** the northern, southern and eastern highlands, 15 animals in `krator-fauna-wild.js` (ridge ibex, upland elk, grey highland wolf, crag eagle, giant river otter; argali, chamois, mountain lion, mountain condor, giant hellbender; cushion llama, plateau viscacha, thin-air puma, thin-air kite, altiplano lake frog).
+- **Next:** north-west bay, south-west bay (one grazer), eastern abyss, eastern high
   desert (grazer and water), crater drylands (flyer, water), and the Ring Sea's own isle tortoise, shore iguana, tide fox, ring shark and ring whale.
