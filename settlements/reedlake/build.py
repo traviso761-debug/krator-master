@@ -300,6 +300,10 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',
             '91-probe.js', '92-camera.js', '93-labels.js']          # all from ../highlands/src
 IZIZ_VENDORED = []
+# kept behind upstream on purpose: drift expected, recorded in KNOWN_ISSUES.md. 73-hl-carve.js keeps the drawn
+# furniture helpers (hnTotem, hnWoodpile, hnFirepit, hnMenhir): Highlands' copy places them from the master catalog
+# (FURNISH, its 89y-hl-furnish.js), which this build does not load.
+ADAPTED = {'73-hl-carve.js'}
 
 
 def vendor_manifest():
@@ -320,10 +324,14 @@ def vendor_check():
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
             continue
-        drift = [f for f in files if not os.path.exists(srcpath(f, up))
-                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
-        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
-                                         else 'DRIFT in ' + ', '.join(drift)))
+        diff = [f for f in files if not os.path.exists(srcpath(f, up))
+                or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        adapted = [f for f in diff if f in ADAPTED and os.path.exists(srcpath(f, up))]
+        drift = [f for f in diff if f not in adapted]
+        same = '%d identical' % (len(files) - len(diff)) + (', %d adapted on purpose (%s)' % (len(adapted), ', '.join(adapted))
+                                                            if adapted else '')
+        print('vendor-check %s: %s' % (up_name, ('all ' + same) if not diff else same + ('; DRIFT in ' + ', '.join(drift)
+              + ' - re-vendor or add to ADAPTED and note it in KNOWN_ISSUES.md' if drift else '')))
 
 
 def main():

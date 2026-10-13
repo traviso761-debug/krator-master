@@ -6,7 +6,17 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] Boats and islands do not bob. Since 2026-10-13 the lake is core/water's (`90w-rl-lake.js`) with a CPU twin (`WATER.heightAt`), but the boats, rafts and islands are baked into the kit's instanced sets, so nothing can ride it; the lake is kept calm instead (`RL_LAKE_FIELD` .12: at most 7 cm from `RL.WATER`, and the canoes' keels sit 9 cm under it). A boat that should ride needs its own group (`WATER.ride`, as the Ring Sea kit's hulls do).
 - [ ] The loose-reed fringes stand across their edges instead of along them: `hnRLEaveFringe` and the island fringe in `hnRLIsland` (75-rl-helpers.js) turn the plane by `yaw = atan2(dx, dz)`, which lays a unit plane's width across the segment (the lattice in 78/79 adds `+ Math.PI/2`). Seen 2026-10-05 on the thatch hut's front eave: the fringe sticks out toward the viewer. `81-rl-tavern.js` lays its own fringe along the landing eaves. Fixing the helper changes every def's look: rebuild and look at every row.
 - [ ] `81-rl-tavern.js` has no row in `PORT.md` yet (the port lint warns): it is `[draw]`, "split: the sign texture (canvas) and the builder" (rerun `tools/audit_port.py`, then set the tag).
-- [ ] `--vendor-check` reports drift in `73-hl-carve.js` and `91-probe.js` from `../highlands/src` (upstream changed 2026-10-01; seen 2026-10-05, not re-vendored).
+- [x] `--vendor-check` reports drift in `73-hl-carve.js` and `91-probe.js` from `../highlands/src` (upstream changed 2026-10-01; seen 2026-10-05, not re-vendored).
+      — 2026-10-13 (the Ancients re-vendor session): `91-probe.js` re-vendored from Highlands (its one new line counts
+      `HLF.placed` furniture as volume samples; Reed Lake has no `HLF`, so it does nothing here and `verify --assert` is
+      unchanged). `73-hl-carve.js` read hunk by hunk: every difference is Highlands' catalog-furniture conversion
+      (`hnTotem`, `hnWoodpile`, `hnFirepit`, `hnMenhir` call `FURNISH`, plus `hlRngSkip`, `hnFurn` and the Iziz yard
+      pieces), and Reed Lake loads no catalog furniture (no `89y-hl-furnish.js`, no `FURNISH`) while `hnRLHearth` and the
+      tavern call `hnFirepit`. So it is kept behind on purpose and named in `ADAPTED` in build.py (see the open item below).
+- [ ] (ADAPTED, 2026-10-13) `src/73-hl-carve.js` is Highlands' copy from before its catalog-furniture conversion (the drawn
+      totem, woodpile, firepit and menhir). Re-vendor it when Reed Lake places furniture from the catalog (take
+      `89y-hl-furnish.js` and the catalog runtime as Highlands does); until then `--vendor-check` reports it as
+      "adapted on purpose".
 - [ ] The reed beds round a pad are placed by angle from the pad centre, so a boat moored just off the landing can stand in reeds on a very irregular outline.
 - [ ] Row labels overlap in the whole-kit overview (the label atlas is the vendored Highlands one; per-row views are clean). 2026-10-01: the re-vendored `93-labels.js` brings Iziz's declutter (overlapping labels are hidden, landmarks and the nearest first); not yet checked against the whole-kit overview, so left open.
 - [x] Vendored fragments had drifted behind `../highlands/src` (`--vendor-check` listed 30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b-vern-mat 69c-vern-helpers 73-hl-carve 93-labels). — 2026-10-01: all re-vendored verbatim from Highlands, plus `71-hl-mat.js` (its `hWorldUV` fix); `--vendor-check`: all 23 identical. Brings the Iziz thatch dress, frame rails, `KIT.meshes`, the concrete topple fix, the `hnKryltso` run fix and the label declutter.
