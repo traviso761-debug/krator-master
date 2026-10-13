@@ -217,6 +217,13 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
   'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the cave: occlusion, steepened (ambient is all the light there)
+// The layers above, described once for a port (core/export's EXPORT.groundLayers: a material record with hook 'world-uv',
+// its maps by library reference, the crack weight sampled on the tile's grid; Godot multiplies them in ground.gdshader
+// through godot/shaders/lib/world-uv.gdshaderinc). Not described yet: the strata (vRock) and the cave's occlusion.
+if(typeof EXPORT!=='undefined'&&EXPORT.groundLayers)EXPORT.groundLayers({id:'ground:sedesert',build:'sedesert',
+ terms:[{maps:[{family:'groundDetail',texture:TEX_DETAIL,scale:.165},{family:'groundDetail',texture:TEX_DETAIL,scale:.021,offset:.37}],gain:1.12,amount:.85},
+  {maps:[{family:'groundCrack',texture:TEX_CRACK,scale:.14}],gain:1,amount:1,weight:'crack'}],
+ weights:{crack:(x,z)=>FC.at(FC.a.crack,x,z)},step:2,box:[-GRID.S/2,-GRID.S/2,GRID.S/2,GRID.S/2],png:t=>BIO.texPNG?BIO.texPNG(t):null});
 // The grid: 420 cells of 17.8 m, each cell within the lip's window split 12 ways (1.5 m) in x and in z,
 // so the promontory's sheer faces and the cave's recess are resolved (the patch's pad, 3 m, must
 // exceed the cell's diagonal). Outside the window the lattice is the plain 420 x 420 one.
@@ -251,6 +258,20 @@ const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{su
 // its own material, falling from the notch to the Abyss floor, with mist.
 const WHUE=SEDESERT_WATER.hue;
 const WATER_SHALLOW=new THREE.Color().setHSL(WHUE,.55,.46),WATER_MID=new THREE.Color().setHSL(WHUE,.62,.30),WATER_DEEP=new THREE.Color().setHSL(WHUE,.6,.15),WATER_PALE=new THREE.Color().setHSL(WHUE-.03,.35,.62);
+// The pond as core/water data (20-core-water.js; the page still draws it with MAT_WATER below): an open surface at PL with
+// three wind ripples of 20, 12 and 6 m (slopes about the ripple normal's below), calmed to nothing at the shore by its
+// bed. core/export's water section carries it, with WATER's own heights as probes, and a port draws it from the same maths
+// (godot/shaders/lib/water.gdshaderinc). The page draws the pond as a disc of 165 m (below), so outside that disc the bed
+// stands above the level and the port draws the same outline. `look` is how this page draws it, for that port: its
+// colours (linear; the mid-water and deep tints over core/water's shallow-to-deep ramp) and its flat sky, mixed in by the
+// view's grazing as MAT_WATER does (base .10, grazing .62 times (1 - n.v)^3).
+const POND_R=165;
+const POND_WATER=WATER.open({name:'The pond',level:PL,swell:[[.06,20,35,0,.03],[.035,12,-50,1.3,.03],[.015,6,80,2.2,.02]],field:0,
+ bounds:[POND.x-POND_R-10,POND.z-POND_R-10,POND.x+POND_R+10,POND.z+POND_R+10],bedCell:4,
+ bed:(x,z)=>Math.hypot(x-POND.x,z-POND.z)>POND_R?Math.max(terrainH(x,z),PL+.5):terrainH(x,z)});
+POND_WATER.look={colour:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),shallow:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),
+ deep:'#'+WATER_DEEP.clone().convertSRGBToLinear().getHexString(),roughness:.08,transparent:true,
+ sky:{colour:'#'+new THREE.Color(0xdfe6ec).convertSRGBToLinear().getHexString(),base:.10,grazing:.62}};
 const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
  uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xdfe6ec)}}]),
  vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
@@ -278,7 +299,7 @@ function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,waterH(x,z)-h)
  for(let x=X0;x<=X1;x+=12){const zr=zR(x),row=[];for(let k=0;k<=NW;k++){const z=zr+(k/NW-.5)*2*HW;row.push(pos.length/3);push(x,z);}rows.push(row);}
  const idx=[];for(let r=0;r<rows.length-1;r++)for(let k=0;k<NW;k++){const a=rows[r][k],b=rows[r][k+1],cc=rows[r+1][k],dd=rows[r+1][k+1];idx.push(a,dd,cc,a,b,dd);}   // wound to face UP: the single-sided water is seen from above (it faced down, and every camera saw the bed)
  // the pond: a fan
- const pc=pos.length/3;push(POND.x,POND.z);const PN=40,PR=[];for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=165;PR.push(pos.length/3);push(POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
+ const pc=pos.length/3;push(POND.x,POND.z);const PN=40,PR=[];for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=POND_R;PR.push(pos.length/3);push(POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
  for(let k=0;k<PN;k++)idx.push(pc,PR[k+1],PR[k]);
  // the pond's vertices sit at PL, the river's at WL(x): fix the pond ring
  for(let k=pc;k<pos.length/3;k++)pos[k*3+1]=PL;

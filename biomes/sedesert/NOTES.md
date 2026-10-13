@@ -120,6 +120,15 @@ clear of the water and the ground. From the floor at x = -1244 the old page show
 down the river, the new one a clump of spires 26 m off and more beyond it; from the north
 rim across the mid radius (x = -905) the candles run on past it.
 
+## For the port (Oct 2026, ROADMAP.md stage 2e)
+The kit takes core/water's data side (`20-core-water.js`, listed in `build.py`; not its drawing, which needs core/atmos):
+the pond is a `WATER.open` surface at PL (`POND_WATER` in `45-host-stage.js`: three wind ripples, its bed from the
+ground, outside the drawn 165 m disc standing above the level) with a `look` that says how this page draws it. The page
+still draws its own ripple water; the surface is what core/export's `water` section carries to Godot. The ground's
+detail and crack layers are described once by `EXPORT.groundLayers` (a `world-uv` material record with the crack weight
+on the tile's grid). Not described yet: the river and the cataract (core/water's flow and fall are its phase 3), the
+strata on rock, the cave's occlusion.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto
