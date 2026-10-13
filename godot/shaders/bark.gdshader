@@ -17,6 +17,7 @@ uniform sampler2D data_tex : filter_linear_mipmap_anisotropic, repeat_enable;   
 uniform bool has_tex = false;
 uniform vec3 colour = vec3(1.0);
 uniform vec2 uv_repeat = vec2(1.0);         // texture.repeat
+uniform vec2 uv_offset = vec2(0.0);         // texture.offset (a card that shows one cell of a library sheet)
 uniform bool flip_v = true;                // the texture's flipY: a canvas (true) is uploaded flipped, a DataTexture (false) is not
 uniform float alpha_test = 0.0;
 uniform int mode = 0;
@@ -44,7 +45,8 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 uv = vec2(UV.x * uv_repeat.x, flip_v ? 1.0 - UV.y * uv_repeat.y : UV.y * uv_repeat.y);
+	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
+	vec2 uv = vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y);
 	vec4 tx = has_tex ? texture(albedo_tex, uv) : vec4(1.0);
 	vec3 c = k_tex(tx.rgb) * COLOR.rgb * colour;
 	vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);

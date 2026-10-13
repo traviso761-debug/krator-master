@@ -310,6 +310,9 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 		sm.set_shader_parameter("has_tex", true)
 		var r: Array = texrec[map_id]["repeat"]
 		sm.set_shader_parameter("uv_repeat", Vector2(float(r[0]), float(r[1])))
+		if texrec[map_id].get("offset") is Array:   # core/export's records carry three's offset (a library card's one cell)
+			var of: Array = texrec[map_id]["offset"]
+			sm.set_shader_parameter("uv_offset", Vector2(float(of[0]), float(of[1])))
 		if texrec[map_id].has("flipY"):
 			sm.set_shader_parameter("flip_v", bool(texrec[map_id]["flipY"]))
 		else:

@@ -15,12 +15,13 @@ Run on Windows with **Godot 4.7.2-stable** too (2026-10-08: the dhelv case and i
 Godot 4.3 or later (4.5 tested). From the repo root:
 
 ```
-godot --path godot                                # the window: keys 1-5 switch case
+godot --path godot                                # the window: keys 1-9 switch case
 godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/tags/records_test.gd   # the hyperjungle case's ids: every MultiMesh instance's uid, recomputed
+godot --headless --path godot --script res://tests/export/world_test.gd   # M4: the world-sedesert case (core/export): uids, materials, terrain
 godot --headless --path godot --script res://tests/mask/kmask_test.gd   # core/mask's golden grid (exits 0 on pass)
 godot --headless --path godot --script res://tests/terrain/kfield_test.gd        # core/terrain's field: KField against the page's golden samples
 godot --headless --path godot --script res://tests/terrain/field_import_test.gd  # a krator-field to a mesh and HeightMapShape3D collision (rays)
@@ -50,6 +51,7 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather 
 | 6 | `verge` | `krator-sim` + `krator-verge-place` | the twin cities' buildings as stand-ins; the caravans, porters, nomads and patrols on the exported timetable |
 | 7 | `dhelv` | `krator-dhelv-place`, `krator-walk`, `krator-sim` (its `motion` block), `krator-lights` | the cave city (kits/zeijani): its sites as boxes, its walk floors drawn and baked (Recast) to a NavigationMesh between the outpost's gate and the temple, a NavigationAgent3D walking that way, the 651 ramblers posed each frame by `KSim.pose`, the 48 lamps nearest the temple. Gaps: the cavern's rock (its marching cubes are not ported; the floors stand in), furniture, materials |
 | 8 | `sedesert` | `krator-biome` JSON with a `krator-field` ground | a 300 m tile round the rain-shadow pond: the first export whose ground is the page's baked core/terrain field, imported as a terrain mesh and HeightMapShape3D collision (`--check` casts rays onto it) |
+| 9 | `world-sedesert` | `krator-world` (core/export): `world.json` + `world.glb` + `tex/` | the same tile through the one container (M4, 2026-10-13): the meshes as glb with `EXT_mesh_gpu_instancing`, the records, materials (library maps by reference to the pack in `tex/`), the field, the stage; written by `tools/harness.py export`, read by `krator/world_import.gd` |
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
@@ -61,6 +63,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `project.godot`, `main.tscn`, `spike.gd` | the project, its one scene, and the case loader, HUD, `--check` and `--shot` |
 | `krator/kdata.gd` | decoding shared by the importers: typed arrays, matrices, colours, data-URL textures, three geometry to `ArrayMesh` (winding reversed), the heightfield |
 | `krator/biome_import.gd` | `krator-biome` to MultiMesh and ArrayMesh, per `biomes/GODOT.md` |
+| `krator/world_import.gd` | `krator-world` (core/export, `core/export/README.md`) to a tile: the glb through `gltf_instancing.gd`, materials by `KratorBiome._material`, library maps from `tex/`, the terrain by `KratorField`, the atmosphere by `KratorAtmos.build_from`; node metadata as the biome importer's |
 | `krator/field_import.gd` | a `krator-field` (core/terrain's baked heightmap, carried as a biome export's `ground.field`) to a terrain mesh on its own grid and a StaticBody3D with one HeightMapShape3D per grid (insets are holes in the base); `check_collision` casts rays onto it against `KField.h` (`--check` prints it) |
 | `krator/clouddeck.gd` | a krator-atmos `clouddeck` record drawn: the page's grid, following the camera, thinned where the scene's heightfield rises through it (`core/atmos/GODOT.md`, "The cloud deck") |
 | `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, a light's and a halo's hours, the veering wind, the weather state machine and lightning, the wave field's CPU twin (`wave_height`, `wave_slope`, for buoyancy), the global shader parameters (`core/atmos/GODOT.md`) |
@@ -79,6 +82,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tests/mask/` | copies of `core/mask/kmask.gd` (the mask rasteriser), `kmask_test.gd`, `golden.json`, kept by `tools/sync_core.py` |
 | `tests/terrain/` | copies of `core/terrain/kfield.gd` (`class_name KField`, the field's sampler: the importer uses it from here), `kfield_test.gd`, `golden-field.json`, kept by `tools/sync_core.py`; `field_import_test.gd` (the importer, here only) |
 | `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way; `records_test.gd` (here only): the hyperjungle case imported, every MultiMesh instance carries a uid, each recomputed in GDScript from its exported matrix, every id resolving in `tags.json`, with negatives |
+| `tests/export/` | `world_test.gd` (here only): the M4 proof on the `world-sedesert` case: every instance's uid recomputed from `world.glb`'s TRANSLATION, every instance drawn at its record, bucket records, every material and map resolved, `KField.h` against the page's probes, collision rays; each with a negative |
 | `tests/sim/` | a copy of `core/simulation/ksim.gd` (`KSim`: SIM.at and SIM.pose, the wander's 32-bit hash), kept by `tools/sync_core.py`; its test reads a world's export (`tests/dhelv/`) |
 | `tests/dhelv/` | `dhelv_sim_test.gd` (3906 rows of the page's trace, 0 differ; a negative: legs 10% faster) and `dhelv_nav_test.gd` (the path reaches the temple through the stone door on a braid strand, within 0.8 to 1.15 of DHN's length; a negative: the stone door's floors left out) |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos); `waves_gpu_check.gd`, the wave include drawn on a GPU against the CPU twin (needs a renderer: Xvfb + Compatibility) |
@@ -117,6 +121,12 @@ python3 godot/tools/export_spike.py --list
 
 The pages must be built first (`cd biomes/rift && python3 build.py`, and so on). Tiles and regions are set in
 `CASES` at the top of the script.
+
+The `krator-world` cases (core/export, `core/export/README.md`) go through the shared verify harness instead:
+
+```
+python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
+```
 
 Verge and Dhelv write their own data through their verify (their pages expose `_api.exportParts()`):
 

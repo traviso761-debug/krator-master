@@ -29,6 +29,9 @@ CASES = {
                         target=[162, -747], lift=15, eye=[-60, 25, 70]),
     "rift": dict(page="biomes/rift/dist/rift.html", ground="BIO.terrainH",
                  target=[-300, 300], lift=12, eye=[50, 25, 60]),
+    # M4: the sedesert tile through core/export (krator/world_import.gd), round the rain-shadow pond, the eye inside the tile
+    "world-sedesert": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
+                           target=[230, 640], lift=4, eye=[-75, 30, 95]),
     "girder": dict(page="settlements/girder/girder.html", ground="_api.terrainH",
                    target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()",
                    set_hour="h => { _api.skySetHour(h); const p = document.getElementById('dnPause'); if (p && !/Resume/.test(p.textContent)) p.click(); }"),
@@ -129,10 +132,18 @@ def compose(n):
     out.paste(b.resize((w, h)), (w + 8, 34))
     d = ImageDraw.Draw(out)
     d.text((10, 10), "%s: web (three.js r128, the built page)" % n, fill=(235, 235, 235))
-    d.text((w + 18, 10), "%s: Godot 4.5 spike (Compatibility renderer, software GL)" % n, fill=(235, 235, 235))
+    d.text((w + 18, 10), "%s: Godot %s (Compatibility renderer, software GL)" % (n, GODOT_VERSION), fill=(235, 235, 235))
     out.save(os.path.join(OUT, n + (("-h%g" % HOUR) if HOUR is not None else "") + ".png"))
 
 
+def _godot_version():
+    try:
+        return subprocess.run([os.environ.get("GODOT", "godot"), "--version"], capture_output=True, text=True, timeout=60).stdout.strip().split(".stable")[0]
+    except Exception:
+        return "?"
+
+
+GODOT_VERSION = _godot_version()
 HOUR = next((float(a.split("=", 1)[1]) for a in sys.argv[1:] if a.startswith("--hour=")), None)
 
 if __name__ == "__main__":

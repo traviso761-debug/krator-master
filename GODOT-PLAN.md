@@ -431,6 +431,33 @@ directly. The verify harness drives the export headless, so every build's CI run
 Done when: one build per lineage (a biome kit, `iziz`, `voth`) opens in Godot from its export with the
 right materials, tags on every node and the terrain under it.
 
+**Built 2026-10-13 (ROADMAP.md stage 2d; `core/export/README.md`): the container and its first lineage.**
+`core/export/07-core-export.js` ([G data]) is `EXPORT`: `register(section, fn, {by})`, `world({box, sections})` (one
+`krator-world` object: `format`, `version`, `build`, `convention` (units, axes, handedness, the matrix layout, winding,
+uv, colour spaces per table, ids, the box rule), a status per section, the contributors' `errors`, then the sections),
+`check` (every id joins), `glb` (the meshes as one binary glTF with `EXT_mesh_gpu_instancing`, the rest as JSON),
+`compact` (a tile's vertex list, finding 10) and `terrain`. A contributor that throws is reported and skipped; an
+unknown section name is refused. What is filled and by whom:
+
+| Section | Status | Filled by |
+|---|---|---|
+| `items`, `buckets` | done | the biome core (`core/biome/42-core-export.js`): `BIO.export`'s records with ids, a tile's buckets compacted; `BIO.export` is now a thin envelope over the same parts (byte-identical output) |
+| `materials`, `textures` | done | the biome core: one vocabulary (core/materials/record's KMAT fields beside the biome's kind, key, options, sway); library maps **by reference** to the build's pack (`tex/pack.json`), PNGs for canvases and DataTextures; the KMAT adapter tables (Girder's) as `kmat:<build>:<name>` |
+| `registry` | done | core/tags (`KTAGS.page.export()`), cropped to the tile's joins and box (an adapter in `core/export/09-core-export-adapters.js` until core/tags registers itself) |
+| `terrain` | done | the biome core: the KFIELD cropped on its lattice where the build bakes one, the page's `h` on a grid, and probes off the lattice; `EXPORT.ground({terrainH, ...})` for any other build |
+| `stage` | done | the biome core's host (`43-core-export-host.js`): `KSTAGE.capture` over the tile, on the terrain grid |
+| `atmos` | done | an adapter over `ATMOS.export()` (unchanged) |
+| `fixtures`, `interiors`, `furniture`, `sim` | stub | a written contract each (`EXPORT.CONTRACTS`); `furniture` is the per-look scheme above |
+| `city` | stub | the Voth branch's (`core/city`); only its registration point is here |
+| `sockets` | not a section yet | — |
+
+The harness writes it: `python3 tools/harness.py export <page> --out godot/data/<case>/ --box x0,z0,x1,z1` (the shared
+Chromium launcher; `world.json`, `world.glb`, the library pack's files in `tex/`, `meta.json`; exit 1 on a section
+error or a failed join). Godot reads it with `godot/krator/world_import.gd`, which composes the spike's importers
+(GLTFDocument with `krator/gltf_instancing.gd`, `KratorBiome._material`, `KratorField`, `KratorAtmos.build_from`,
+`stage.gd`) rather than forking them. Not yet: the Iziz and Voth lineages (M5, M6), the converter to `.tscn`, the
+stubs, and the builds that do not list core/export (the Throne, Verge: the harness injects it).
+
 ### Phase 5: the simulation layer as data
 
 **This phase is owned by `core/simulation/PLAN.md`** (on `main` since 2026-10-02, with Travis's roadmap in
@@ -703,7 +730,7 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"); the look on a real GPU is next |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
-| M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
+| M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
 | M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets |
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |

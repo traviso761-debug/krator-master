@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 398 (56%) | 77 (11%) | 52 (7%) | 60 (8%) | 126 (18%) |
+| KB | 436 (58%) | 77 (10%) | 52 (7%) | 61 (8%) | 126 (17%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -31,8 +31,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/30-core-foliage.js` | 18.3 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 | foliage card, bark, the iridescent bark (the `irid` kind, BIO.iridBarkMat), wind: the shader library |
 | `biome/35-core-anim.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | fauna paths are data; the body shader is [G shader] |
 | `biome/40-core-place.js` | 10.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | placement: ports to GDScript, tested tile for tile |
-| `biome/42-core-export.js` | 13.9 | [G data] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 4 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |
-| `biome/43-core-export-host.js` | 2.9 | [web] | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1) |
+| `biome/42-core-export.js` | 19.1 | [G data] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 5 | 0 | 0 | 0 | pure data: BIO.exportParts (the lists, the ground) and BIO.export, the krator-biome envelope over them (unchanged output); registers items, buckets, materials, textures and terrain with core/export (2026-10-13) |
+| `biome/43-core-export-host.js` | 3.7 | [web] | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1). Registers core/export's stage section (KSTAGE over the tile) |
 | `biome/44-core-stage.js` | 14.0 | [draw] | 1 | 2 | 0 | 0 | 0 | 2 | 4 | 1 | 2 | 0 | 0 |  |
 | `city/10-city-core.js` | 14.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/20-city-plan.js` | 14.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
@@ -42,6 +42,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/52-city-host-buildings.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | lots as instanced LOD prototypes |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `edits/40-core-edits.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
+| `export/07-core-export.js` | 28.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
+| `export/09-core-export-adapters.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos' and the material records' parts until those modules register themselves; EXPORT.ground for a build without its own terrain part |
 | `furnish/50-core-furnish.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `furnish/52-core-furnish-draw.js` | 2.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `furnish/53-core-furnish-host.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
