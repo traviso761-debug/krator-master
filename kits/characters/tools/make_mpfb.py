@@ -945,6 +945,10 @@ def main():
             entry['arms'] = 4
             print('%-8s %s: %d vertices on the lower arms' % (name, it['id'], mods.fit_four(os.path.join(pieces, it['id'] + '.glb'),
                   os.path.join(pieces, 'mod_arms_flesh.glb'), cl['spec'].get('lower', []))))
+            # the lower sleeves as a piece of their own, which a cybernetic pair leaves off
+            if mods.split_lower(os.path.join(pieces, it['id'] + '.glb'), os.path.join(pieces, it['id'] + '.sleeves2.glb'),
+                                cl['spec'].get('lower', [])):
+                entry['sleeves2'] = 'pieces/%s/%s.sleeves2.glb' % (name, it['id'])
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
         if culture_of(it['id']):
@@ -993,8 +997,10 @@ def main():
                             '_always%d' % always.index(n) if n in always else None)
         open(os.path.join(pieces, 'base.morph.bin'), 'wb').write(pack_morphs(ents, npz))
         for it in man['items'] + mod_items:
-            ents = mesh_entries(os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'])
-            open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(ents, npz))
+            for f in (it['id'], it['id'] + '.sleeves2'):
+                if os.path.exists(os.path.join(pieces, f + '.glb')):
+                    ents = mesh_entries(os.path.join(pieces, f + '.glb'), lambda n: it['id'])
+                    open(os.path.join(pieces, f + '.morph.bin'), 'wb').write(pack_morphs(ents, npz))
         # the Godot twin's blend shapes (godot_shapes): the base's skin split by which items cover each triangle
         # (a region per set of covering items: tri_mask is the region of each triangle, cover the items of each region,
         # by their index in kit.items; there are more items than a 64-bit mask holds)
@@ -1008,8 +1014,10 @@ def main():
             os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
             '_always%d' % always.index(n) if n in always else None, npz, tri_mask.reshape(-1), mat, cover))
         for it in man['items'] + mod_items:
-            open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(
-                os.path.join(pieces, it['id'] + '.glb'), lambda n: it['id'], npz))
+            for f in (it['id'], it['id'] + '.sleeves2'):
+                if os.path.exists(os.path.join(pieces, f + '.glb')):
+                    open(os.path.join(pieces, f + '.gshapes.bin'), 'wb').write(godot_shapes(
+                        os.path.join(pieces, f + '.glb'), lambda n: it['id'], npz))
         morph = True
         print(name, '%.1f MB of morph deltas' % (sum(os.path.getsize(os.path.join(pieces, f)) for f in os.listdir(pieces)
                                           if f.endswith('.morph.bin')) / 1e6))

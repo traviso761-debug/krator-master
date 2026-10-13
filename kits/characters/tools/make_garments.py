@@ -735,7 +735,9 @@ def four_armed(gid, parts, r=0.075):
         sx = 1 if s == 'Left' else -1
         holes.append((low(J(s + 'Arm'), s) + np.array([-sx * 0.035, 0, 0]), r))
     for p in parts:
-        if '_sleeve' not in p.name and '_armband' not in p.name:
+        # only cloth over the ribs is opened: sleeves, bands, straps, belts and jewellery pass by the lower arms (a
+        # strap cut there would leave loose ends standing off the body)
+        if not any(k in p.name for k in ('_sleeve', '_armband', '_strap', '_baldric', '_belt', '_pectoral', '_torc', '_brooch')):
             p.holes = holes
     return parts
 
@@ -1929,7 +1931,7 @@ def _():
                             B('bottom', 0.03, 0.06, 'teeth', 'bronze', 'hide', 0.05)])
     bandp = P('bronze', 0.02, [B('top', 0.0, 0.2, 'knot', 'iron', 'bronze', 0.03)])
     parts = [torso_tube(gid, TOP, CROTCH - 0.04, 0.02, hide, hang_from=WAIST - 0.02, flare=0.1, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-             band(gid + '_baldric', CROTCH + 0.04, SHOULDER + 0.04, 0.06, 0.03, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'bronze'),
+             band(gid + '_baldric', WAIST - 0.01, SHOULDER + 0.04, 0.06, 0.03, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'bronze'),
                   B('bottom', 0.0, 0.01, 'solid', 'bronze')]), high=math.pi / 2, rows=4),
              torso_tube(gid + '_belt', WAIST + 0.035, WAIST - 0.035, 0.034, P('leather', 0.05, [B('top', 0.0, 0.3, 'beads', 'bronze', 'leather', 0.04)]),
                         rows=3, n=40, hull_from=WAIST + 0.1)]
@@ -1994,10 +1996,12 @@ def _():
     pect = P('gold', 0.02, [B('top', 0.0, 0.3, 'rays', 'holyred', 'gold', 0.03), B('bottom', 0.0, 0.015, 'solid', 'holyred')])
     strap = P('holyred', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')])
     bandp = P('gold', 0.02, [B('top', 0.0, 0.2, 'steps', 'holyred', 'gold', 0.03)])
-    # the god's sun on the chest over bare green skin, two straps crossing to the belt, gold on all four arms
+    # the god's sun on the chest over bare green skin, two straps crossing front and back, each from a shoulder down
+    # to the belt on the other side (their low point under the belt, so no loop stands off the hips), gold on all
+    # four arms
     parts = [collar_disc(gid + '_pectoral', 0.15, pect, drop=0.07, scallop=0.0),
-             band(gid + '_strapL', CROTCH + 0.1, SHOULDER + 0.03, 0.05, 0.016, strap, high=math.pi / 2, rows=3),
-             band(gid + '_strapR', CROTCH + 0.1, SHOULDER + 0.03, 0.05, 0.016, strap, high=-math.pi / 2, rows=3),
+             band(gid + '_strapL', WAIST - 0.01, SHOULDER + 0.03, 0.05, 0.016, strap, high=math.pi / 2, rows=3),
+             band(gid + '_strapR', WAIST - 0.01, SHOULDER + 0.03, 0.05, 0.016, strap, high=-math.pi / 2, rows=3),
              torso_tube(gid + '_belt', WAIST + 0.04, WAIST - 0.04, 0.03, P('gold', 0.02, [B('top', 0.0, 0.3, 'steps', 'holyred', 'gold', 0.05)]),
                         rows=3, n=40, hull_from=WAIST + 0.1)]
     return four_armed(gid, parts + armbands(gid, bandp, f=0.3, w=0.08) + armbands2(gid, bandp, f=0.3, w=0.08), r=0.06)

@@ -176,6 +176,11 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   var item = {}; gk.items.forEach(function(it){ item[it.id] = it; });
   ok(['giant_free_m_tunic4', 'giant_free_m_jerkin4', 'giant_free_m_chief4', 'giant_dalab_m_harness4'].every(function(id){ return item[id] && item[id].arms === 4; }) &&
      item.giant_free_m_tunic && !item.giant_free_m_tunic.arms, 'giant: four-armed tops say so');
+  // a four-armed top's lower sleeves: drawn over flesh arms, left off a cybernetic pair
+  var sr = KCHAR.blank(gk); sr.armour.torso = 'giant_free_m_tunic4';
+  var sleeves = function(mod){ sr.mods = [mod]; return KCHAR.parts(sr, gk).some(function(p){ return /\.sleeves2$/.test(p.key); }); };
+  ok(item.giant_free_m_tunic4.sleeves2 && sleeves('mod_arms_flesh') && !sleeves('mod_arms_loader') && !sleeves('mod_arms_surgical'),
+     'giant: lower sleeves over flesh arms, none over cybernetic ones');
   var F = peoples.filter(function(p){ return p.id === 'free_giants'; })[0], seen = {}, fit = true;
   [G, F].forEach(function(P){
     for(var k = 1; k <= 60; k++){

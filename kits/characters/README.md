@@ -179,8 +179,9 @@ the joints until a mod is worn:
   bone, on a mount plate on the ribs, sized to the body's own arm (`ARM_REF`, the man's), so they fit the woman too.
   `mod_arms_cyber` bronze plates with steel joints and five fingers; `mod_arms_loader` heavy steel with hazard-yellow
   bands, hydraulic rams along each segment and three-fingered claws; `mod_arms_surgical` slim white ceramic with teal
-  bands, a cable bundle from the mount into the shoulder and fine fingers. A new design is a `CYBER` entry and a `MODS`
-  row. The Animation Lab's Body mods menu puts any of them on the whole cast.
+  bands, a cable bundle from the mount into the shoulder and fine fingers. Each joint is a ball wider than the plate
+  ends that run into it, so a bend shows ball rather than a gap. A new design is a `CYBER` entry and a `MODS` row.
+  Their textures are prompts in `core/materials/PLAN.md` (Characters: cybernetic arms and the giants' metal). The Animation Lab's Body mods menu puts any of them on the whole cast.
 - `mod_gills`, rib gills: four slits a side over the ribs, a lip of skin over a dark slit, ray-cast onto the body. The
   Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
 
@@ -202,8 +203,10 @@ mod does), so they are always there; the geometry comes with the mod.
 four-armed tops, a two-armed body never (`KCHAR.fits`: the wardrobe hides the rest, a stranger is not drawn in them, a
 torso that stops fitting when a mod goes on comes off). In `make_garments.py`, `four_armed` opens a top where each
 lower arm comes out of the ribs (its holes' vertices dropped, listed in `.cloth.json` `gone` so the cloth chains still
-find theirs), `sleeves2` and `armbands2` fit sleeves and bands to where the lower pair hangs, and `make_mpfb.py`
-(`mods.fit_four`) gives the lower sleeves the flesh arms' weights. The two-armed library and culture tops have no
+find theirs; straps, belts and jewellery are never opened), `sleeves2` and `armbands2` fit sleeves and bands to
+where the lower pair hangs, and `make_mpfb.py` (`mods.fit_four`) gives the lower sleeves the flesh arms' weights,
+then splits them into a piece of their own (`mods.split_lower`, kit item `sleeves2`): `KCHAR.parts` draws it over
+flesh arms and leaves it off a cybernetic pair (a mod with `bare`). The two-armed library and culture tops have no
 four-armed version: only the giants' clothes do, since giants are the four-armed people a city meets.
 
 **Giants** (`tools/giant.py`, `make_mpfb.py giant`): LORE.md's engineered giants, green and about 3.6 m (3.4 to 4.1

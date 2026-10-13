@@ -433,16 +433,21 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
         d2 = (wr - el) / np.linalg.norm(wr - el)
         joint.ball(sh, 0.04 * k, J('Arm'), U('Arm'))
         trim.ball(sh + d1 * 0.012 * k, 0.046 * k, J('Arm'), U('Arm'), n=14, m=9)
+        # each joint is a ball a little wider than the ends that meet in it, and each segment runs into it far enough
+        # (into() : the rim of an end of radius r stays inside a ball of radius R) that a bend never opens a gap
+        into = lambda R, r: math.sqrt(max(R * R - r * r, 0.0)) * 0.85
         # the upper arm: a shell between bands
-        a0, a1 = sh + d1 * 0.04 * k, el - d1 * 0.026 * k
-        plate.prism(a0, a1, 0.036 * k, 0.03 * k, J('Arm'), U('Arm'), n=8)
+        Re = 0.038 * k
+        a0, a1 = sh + d1 * 0.04 * k, el - d1 * into(Re, 0.033 * k)
+        plate.prism(a0, a1 - d1 * 0.012 * k, 0.036 * k, 0.03 * k, J('Arm'), U('Arm'), n=8)
         trim.prism(a1 - d1 * 0.014 * k, a1, 0.033 * k, 0.033 * k, J('Arm'), U('Arm'), n=8)
-        joint.ball(el, 0.028 * k, J('ForeArm'), U('ForeArm'))
+        joint.ball(el, Re, J('ForeArm'), U('ForeArm'), n=10, m=7)
         # the forearm: swelling toward its middle, a band at the wrist
-        b0, b2 = el + d2 * 0.026 * k, wr - d2 * 0.02 * k
+        Rw = 0.03 * k
+        b0, b2 = el + d2 * into(Re, 0.027 * k), wr - d2 * into(Rw, 0.027 * k)
         bm = b0 + (b2 - b0) * 0.4
         plate.prism(b0, bm, 0.027 * k, 0.034 * k, J('ForeArm'), U('ForeArm'), n=8, caps=False)
-        plate.prism(bm, b2, 0.034 * k, 0.024 * k, J('ForeArm'), U('ForeArm'), n=8)
+        plate.prism(bm, b2 - d2 * 0.012 * k, 0.034 * k, 0.024 * k, J('ForeArm'), U('ForeArm'), n=8)
         trim.prism(b2 - d2 * 0.014 * k, b2, 0.027 * k, 0.026 * k, J('ForeArm'), U('ForeArm'), n=8)
         if st.get('pistons'):
             # a ram along the front of each segment: a cylinder and its rod, on the segment's bone
@@ -454,7 +459,7 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
                 trim.prism(qm, q1, 0.0055 * k, 0.0055 * k, bone, v, n=6)
                 joint.ball(q0, 0.012 * k, bone, v, n=6, m=4)
                 joint.ball(q1, 0.009 * k, bone, v, n=6, m=4)
-        joint.ball(wr, 0.02 * k, J('Hand'), U('Hand'))
+        joint.ball(wr, Rw, J('Hand'), U('Hand'), n=10, m=7)
         # the palm: a box from the wrist to the knuckles
         knuck = np.mean([P('Hand%s1' % f) for f in ('Index', 'Middle', 'Ring', 'Pinky')], 0)
         ax = (knuck - wr) * 0.45
@@ -462,6 +467,8 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
         thick = np.cross(ax / np.linalg.norm(ax), across)
         half = max(0.015, np.linalg.norm(P('HandIndex1') - P('HandPinky1')) * 0.42) * k / st['bulk'] ** 0.5
         _box(plate, wr + (knuck - wr) * 0.55, ax, across * half, thick * 0.013 * k, J('Hand'), U('Hand'))
+        # a cuff from the wrist ball into the palm, so the palm's back edge never stands clear of the ball
+        trim.prism(wr, wr + (knuck - wr) * 0.2, Rw * 0.8, half * 0.75, J('Hand'), U('Hand'), n=8)
         for f in st['fingers']:
             js = [S2 + 'Hand%s%d' % (f, q) for q in (1, 2, 3) if S2 + 'Hand%s%d' % (f, q) in body.jidx]
             if not js:
@@ -667,6 +674,40 @@ def fit_four(item_path, flesh_path, ranges):
     return moved
 
 
+def split_lower(item_path, sleeve_path, ranges):
+    """a four-armed top's lower sleeves and armbands (ranges of _VIDX) as a piece of their own: sleeve_path gets the
+    GLB with only their triangles, item_path keeps the rest. A cybernetic pair wears the top without them (kit item
+    sleeves2, KCHAR.parts). Both keep every vertex (the morphs and Godot shapes are packed by _VIDX). Returns how many
+    triangles moved"""
+    j, b = glbio.read_glb(open(item_path, 'rb').read())
+    keep_j, low_j = copy.deepcopy(j), copy.deepcopy(j)
+    moved, blobs_keep, blobs_low = 0, {}, {}
+    for mi, mesh in enumerate(j['meshes']):
+        for pi, p in enumerate(mesh['primitives']):
+            at = p['attributes']
+            vk = next((k for k in at if k.upper() == '_VIDX'), None)
+            if vk is None or 'indices' not in p:
+                continue
+            V = np.rint(glbio.accessor(j, bytes(b), at[vk])[:, 0]).astype(int)
+            want = np.zeros(len(V), bool)
+            for lo, hi in ranges:
+                want |= (V >= lo) & (V < hi)
+            T = glbio.accessor(j, bytes(b), p['indices']).reshape(-1, 3).astype(np.uint32)
+            low = want[T].all(1)
+            if not low.any():
+                continue
+            moved += int(low.sum())
+            for jj, blobs, tris in ((keep_j, blobs_keep, T[~low]), (low_j, blobs_low, T[low])):
+                jj['bufferViews'].append({'buffer': 0, 'byteOffset': 0, 'byteLength': 0, 'target': 34963})
+                blobs[len(jj['bufferViews']) - 1] = tris.reshape(-1).astype(np.uint32).tobytes()
+                jj['accessors'].append({'bufferView': len(jj['bufferViews']) - 1, 'componentType': 5125, 'count': int(tris.size), 'type': 'SCALAR'})
+                jj['meshes'][mi]['primitives'][pi]['indices'] = len(jj['accessors']) - 1
+    if moved:
+        _write(item_path, keep_j, b, blobs_keep)
+        _write(sleeve_path, low_j, b, blobs_low)
+    return moved
+
+
 def make_all(base_path, pieces, body_name):
     """every mod's piece beside the base; their kit entries and tint roles"""
     body = Body(base_path)
@@ -679,5 +720,7 @@ def make_all(base_path, pieces, body_name):
             build(body, os.path.join(pieces, mid + '.glb'))
         entries.append({'id': mid, 'name': label, 'slot': 'mods', 'glb': 'pieces/%s/%s.glb' % (body_name, mid),
                         'grants': grants, 'group': group, 'kind': kind})
+        if kind == 'cybernetic' and grants.get('arms'):
+            entries[-1]['bare'] = True        # a top's lower sleeves are left off it (split_lower, KCHAR.parts)
         roles.update(rl)
     return entries, roles

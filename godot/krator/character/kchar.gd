@@ -87,10 +87,16 @@ static func fits(it: Dictionary, rec: Dictionary, kit: Dictionary) -> bool:
 static func parts(rec: Dictionary, kit: Dictionary) -> Array:
 	var out := [{"key": key(kit["base_glb"]), "mesh": "*", "role": "base", "slot": "base"}]
 	var hat = item(rec, kit, "head")
+	# a four-armed top's lower sleeves are a piece of their own (sleeves2), left off a cybernetic pair (a bare mod)
+	var bare := false
+	for m in mods(rec, kit):
+		bare = bare or m.get("bare", false)
 	for slot in SLOTS:
 		var it = item(rec, kit, slot)
 		if it != null and not (slot == "hair" and hat != null and hat.get("covers_hair", false)):
 			out.append({"key": key(it["glb"]), "mesh": "*", "role": slot if slot == "hair" or slot == "beard" else "armour", "slot": slot})
+		if it != null and it.has("sleeves2") and not bare:
+			out.append({"key": key(it["sleeves2"]), "mesh": "*", "role": "armour", "slot": slot})
 	for m in mods(rec, kit):
 		out.append({"key": key(m["glb"]), "mesh": "*", "role": "mod", "slot": "mods"})
 	return out
