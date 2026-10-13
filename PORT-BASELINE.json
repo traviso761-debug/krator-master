@@ -369,24 +369,24 @@
    "sha256": "b96e3feb93e06d43d714e39c874f215bef106120a9f9bd258189038e4d3386c2"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
-   "bytes": 16205000,
-   "sha256": "b9c664ec00103a6530d8bff03bfcca0d6e2ec8fbbbf17fce6f595abd339155de"
+   "bytes": 19736024,
+   "sha256": "7aa6dad7681eb9fa5932cf176ce1b4ab2f6d5ee1abd700b672d85c15171c9162"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 21028693,
-   "sha256": "69e655ccd754ccddbfd01c6d9cdf7b191dedbbf0e68e23e3b9dc71929a861b75"
+   "bytes": 24623846,
+   "sha256": "62ebfd0829ac702269b325e40bfa9aaa63b6759e9cce89ff243b659335267eff"
   },
   "settlements/iziz/dist/w-a.html": {
-   "bytes": 16201565,
-   "sha256": "d3248a89b24de02506044c100f1cdc460c2243a5eeb727b3377b25884163514e"
+   "bytes": 19732589,
+   "sha256": "85a0fe3114362015a2e97ea49579f054b463938e00bb6258f05feb75290dfc60"
   },
   "settlements/iziz/dist/w-b.html": {
-   "bytes": 16201291,
-   "sha256": "6148ca4923cef9ecd299f360504f916793d658f40ea33819f8bce066bf62fcea"
+   "bytes": 19732315,
+   "sha256": "7fb2825e6cbe248e0baee90074d3cd6fde9956cc34ec8726e9672c2c754af317"
   },
   "settlements/iziz/dist/w-c.html": {
-   "bytes": 16202331,
-   "sha256": "f82a749f0f0b639a3face0abdd228d2ce451f4357739a255316cb3c1cd05076e"
+   "bytes": 19733355,
+   "sha256": "d41189cd4c62027ee26bc9f6e9b832c1282cc338394c885cec4c10da7e06fc91"
   },
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 13383674,
