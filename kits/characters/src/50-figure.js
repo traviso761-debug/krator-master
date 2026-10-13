@@ -44,7 +44,11 @@ function KCharFigure(body, sliders, load){
   this.clips = {};
   this.action = null;
   this.pose = KCHAR.pose(skel, sliders, {});
-  var ready = load(kit.body + '/anims').then(function(g){ g.animations.forEach(function(c){ self.clips[c.name] = c; }); });
+  var ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){ self.clips[c.name] = c; }); });
+  // a giant (kit.scale, tools/giant.py) is the man's body made big: his clips play slower by the square root of the
+  // scale (a pendulum's pace: a stride takes as long as a leg twice as long swings), so he walks like something heavy
+  var SCALE = kit.scale || 1, CADENCE = 1 / Math.sqrt(SCALE);
+  this.scale = SCALE; this.cadence = CADENCE;
 
   function need(k){
     if(!gltfs[k]) gltfs[k] = load(k);
@@ -237,7 +241,10 @@ function KCharFigure(body, sliders, load){
           });
         }); }))
         .then(function(){
-          Object.keys(live).forEach(function(k){ live[k].visible = !!want[k]; });
+          // a giant with two arms (record arms 2: a street patrol) leaves out the lower pair's skin
+          var four = (rec.arms || kit.arms || 2) >= 4;
+          Object.keys(live).forEach(function(k){ live[k].visible = !!want[k] && (four || !kit.arms2 || kit.arms2.indexOf(live[k].userData.srcMaterial) < 0); });
+          self.fourArms = four && !!kit.arms2;
           var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
@@ -262,8 +269,9 @@ function KCharFigure(body, sliders, load){
           }
           self.morphDelta = mj ? mj.d : null;
           bones.forEach(function(b, i){ if(b !== self.hips) b.position.fromArray(p.t[i]); });
-          self.inner.scale.setScalar(p.root);
-          self.inner.position.y = p.ground || 0;
+          self.inner.scale.setScalar(p.root * SCALE);
+          self.inner.position.y = (p.ground || 0) * SCALE;
+          if(p.stature) p.stature *= SCALE;
           var roles = (kit.tint && kit.tint.roles) || {}, gain = (kit.tint && kit.tint.gain) || {};
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
@@ -296,12 +304,14 @@ function KCharFigure(body, sliders, load){
   };
 
   /* ---- holding props (data/props.json, tools/make_props.py) ----
-     hold({ R:'sword', L:'shield' }): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
+     hold({ R:'sword', L:'shield' }) (and a giant's lower hands, R2 and L2): each prop's GLB goes under its hand bone at the grip frame skeleton.json 'hands'
      gives (the props are modelled in it), and that hand's fingers close round it in the prop's grip style (fist,
      trigger, wide): their local rotation becomes the rest one times the curl, every frame after the clip (a clip's own
      finger motion gives way to the grip). With both, the left hand takes hold of the right's prop too (twoHands); a
      prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws it (bowString) */
-  var held = { R:null, L:null, both:false }, holders = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  var held = { R:null, L:null, R2:null, L2:null, both:false }, holders = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  // every hand the skeleton has a grip for: R and L, and a giant's lower pair R2 and L2 (hidden with its arms)
+  var HANDS = ['R', 'L', 'R2', 'L2'].filter(function(sd){ return skel.hands && skel.hands[sd]; });
   function prop(id){ return (id && KCharFigure.props[id]) || {}; }
   function holder(side){
     if(!holders[side]){
@@ -319,7 +329,7 @@ function KCharFigure(body, sliders, load){
   this.hold = function(want){
     if(!skel.hands) return Promise.resolve();
     held.both = !!(want && want.both);
-    return Promise.all(['R', 'L'].map(function(side){
+    return Promise.all(HANDS.map(function(side){
       var id = (want && want[side]) || null;
       if(held[side] === id) return null;
       held[side] = id;
@@ -340,8 +350,9 @@ function KCharFigure(body, sliders, load){
   this.held = held;
   function grip(){
     if(!skel.hands) return;
-    ['R', 'L'].forEach(function(side){
+    HANDS.forEach(function(side){
       var id = held[side] || (side === 'L' && held.both && support() ? held.R : null);
+      if(side.length > 1 && holders[side]) holders[side].visible = !!self.fourArms;
       if(!id) return;
       var h = skel.hands[side], style = held[side] ? prop(id).grip : 'fist';
       var curl = h.curls ? h.curls[style] || h.curls.fist : h.curl;
@@ -383,7 +394,9 @@ function KCharFigure(body, sliders, load){
     tM.multiplyMatrices(hand.matrixWorld, tGL);
     tP.setFromMatrixPosition(tM);
     up.getWorldPosition(tS); fore.getWorldPosition(tE); hand.getWorldPosition(tT);
-    var l1 = tE.distanceTo(tS), l2 = tT.distanceTo(tE), far = l1 + l2 + 0.05;
+    // the distances below are a man's, in metres: u scales them to this figure (a giant's are twice as long)
+    var u = self.group.getWorldScale(cS).x * SCALE;
+    var l1 = tE.distanceTo(tS), l2 = tT.distanceTo(tE), far = l1 + l2 + 0.05 * u;
     for(var k = 0; k < 3; k++) saved[k].copy(bones[arm[k]].quaternion);
     tY.subVectors(tB, tA);
     var L = tY.length(), t = 0;
@@ -395,14 +408,15 @@ function KCharFigure(body, sliders, load){
       var ts = tT.subVectors(tS, tA).dot(tY), off = tT.addScaledVector(tY, -ts).length();
       if(off < far){ var hw = Math.sqrt(far * far - off * off); t = THREE.MathUtils.clamp(t, ts - hw, ts + hw); }
       var o = tT.subVectors(tO, tA).dot(tY);                  // the right hand's place on it
-      if(Math.abs(t - o) < GAP) t = (t >= o ? o + GAP <= L : o - GAP < 0) ? o + GAP : o - GAP;
+      var gap = GAP * u;
+      if(Math.abs(t - o) < gap) t = (t >= o ? o + gap <= L : o - gap < 0) ? o + gap : o - gap;
       t = THREE.MathUtils.clamp(t, 0, L);
     }
     tP.copy(tA).addScaledVector(tY, t);
     // the frame: Y along the handle (the clip's thumb side), Z (the fingers) away from the shoulder, X = Y x Z
     tX.setFromMatrixColumn(tM, 1);
     if(tX.dot(tY) < 0) tY.negate();
-    tZ.subVectors(tP, tS).addScaledVector(tX.setFromMatrixColumn(tM, 2).normalize(), 0.3);
+    tZ.subVectors(tP, tS).addScaledVector(tX.setFromMatrixColumn(tM, 2).normalize(), 0.3 * u);
     tZ.addScaledVector(tY, -tZ.dot(tY));
     if(tZ.lengthSq() < 1e-8) tZ.setFromMatrixColumn(R, 2);
     tZ.normalize();
@@ -414,10 +428,10 @@ function KCharFigure(body, sliders, load){
     qA.setFromRotationMatrix(tM2);
     // too far for the left arm: the right brings the prop toward the left shoulder by the shortfall (up to MOVE),
     // keeping its turn, and both arms reach
-    var dW = tW.distanceTo(tS), lim = l1 + l2 - 0.01, rArm = skel.hands.R.arm;
+    var dW = tW.distanceTo(tS), lim = l1 + l2 - 0.01 * u, rArm = skel.hands.R.arm;
     if(rArm) for(k = 0; k < 3; k++) saved[3 + k].copy(bones[rArm[k]].quaternion);
     if(dW > lim && rArm){
-      tD.subVectors(tS, tW).normalize().multiplyScalar(Math.min(dW - lim, MOVE));
+      tD.subVectors(tS, tW).normalize().multiplyScalar(Math.min(dW - lim, MOVE * u));
       var rh = bones[rArm[2]];
       reachArm(bones[rArm[0]], bones[rArm[1]], rh, rh.getWorldPosition(tR).add(tD), rh.getWorldQuaternion(qR));
       tW.add(tD);
@@ -426,7 +440,7 @@ function KCharFigure(body, sliders, load){
     self.reach = hand.getWorldPosition(tT).distanceTo(tW);   // how far short the hand fell (0: it holds on)
     // a clip that keeps the hands too far apart for both to hold: the arms go back to the clip's pose (eased, so
     // they do not snap) rather than reach out stiff toward the handle
-    var want2 = THREE.MathUtils.clamp((0.16 - self.reach) / 0.1, 0, 1);
+    var want2 = THREE.MathUtils.clamp((0.16 * u - self.reach) / (0.1 * u), 0, 1);
     hold2 = dt === undefined ? want2 : hold2 + THREE.MathUtils.clamp(want2 - hold2, -dt * 4, dt * 4);
     if(hold2 < 1){
       var all = rArm ? arm.concat(rArm) : arm;
@@ -687,8 +701,10 @@ function KCharFigure(body, sliders, load){
      trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a soft
      shell, not a projection: a vertex d from the bone within r + 4 cm lands at r + d * 4 cm / (r + 4 cm), so two
      tiers of one skirt keep their order instead of meeting on one surface */
-  var pushU = { kcA:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) },
-                kcB:{ value:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(){ return new THREE.Vector4(); }) }, kcH:{ value:new THREE.Vector3() },
+  // NCAP capsules: the ten of LEGS, and four more for a giant's lower arms (left at radius 0, so skipped, on other bodies)
+  var NCAP = 14, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
+  var pushU = { kcA:{ value:capV() },
+                kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
                 kcT:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.012, PAD_OVER = 0.02;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
@@ -701,8 +717,8 @@ function KCharFigure(body, sliders, load){
       sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface
-      sh.vertexShader = 'uniform vec4 kcA[10];\nuniform vec4 kcB[10];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < 10; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
+      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.04;\n' +
         '\t\tfloat cr = kcA[ci].w + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
         '\t\tfloat ct = clamp(dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), 0.0, 1.0);\n' +
@@ -721,7 +737,8 @@ function KCharFigure(body, sliders, load){
   }
   var LEGS = [['LeftUpLeg', 'LeftLeg'], ['RightUpLeg', 'RightLeg'], ['LeftLeg', 'LeftFoot'], ['RightLeg', 'RightFoot'],
               ['LeftFoot', 'LeftToeBase'], ['RightFoot', 'RightToeBase'], ['LeftArm', 'LeftForeArm'], ['RightArm', 'RightForeArm'],
-              ['LeftForeArm', 'LeftHand'], ['RightForeArm', 'RightHand']], legInv = new THREE.Matrix4();
+              ['LeftForeArm', 'LeftHand'], ['RightForeArm', 'RightHand'],
+              ['Left2Arm', 'Left2ForeArm'], ['Right2Arm', 'Right2ForeArm'], ['Left2ForeArm', 'Left2Hand'], ['Right2ForeArm', 'Right2Hand']], legInv = new THREE.Matrix4();
   function legCaps(){
     if(!caps.length) return;
     self.inner.updateMatrixWorld(true);
@@ -730,7 +747,7 @@ function KCharFigure(body, sliders, load){
       // a foot has no collider of its own: it takes its shin's radius
       var foot = i === 4 || i === 5, a = byName[lg[0]], b = byName[lg[1]], sh = foot ? byName[LEGS[i - 2][0]] : a;
       var cp = caps.filter(function(c){ return c.a === sh && c.b === (foot ? a : b); })[0];
-      if(!cp || b === undefined) return;
+      if(!cp || b === undefined || (i >= 10 && !self.fourArms)){ pushU.kcA.value[i].w = 0; return; }
       bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
       pushU.kcA.value[i].set(cV.x, cV.y, cV.z, cp.r + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, i >= 6 ? 1 : 0);
     });
@@ -740,7 +757,9 @@ function KCharFigure(body, sliders, load){
   /* bodyFix: clips retargeted from slighter bodies can put a hand in a broad body's hip or a thigh through the
      other: after the clip, an elbow or a hand inside the pelvis, chest or its own side's thigh turns its upper arm or
      forearm out until it clears; two thighs that overlap each turn out by half */
-  var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftUpLeg'], ['RightArm', 'RightForeArm', 'RightHand', 'RightUpLeg']], fV = new THREE.Vector3(), fW = new THREE.Vector3();
+  var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftUpLeg'], ['RightArm', 'RightForeArm', 'RightHand', 'RightUpLeg'],
+              ['Left2Arm', 'Left2ForeArm', 'Left2Hand', 'LeftUpLeg', 'LeftArm'], ['Right2Arm', 'Right2ForeArm', 'Right2Hand', 'RightUpLeg', 'RightArm']].filter(function(a){ return byName[a[0]] !== undefined; }),
+      fV = new THREE.Vector3(), fW = new THREE.Vector3();
   function depth(p, cp, out){
     var a = bones[cp.a].getWorldPosition(fV), b = bones[cp.b].getWorldPosition(fW);
     cV.subVectors(b, a);
@@ -757,7 +776,8 @@ function KCharFigure(body, sliders, load){
     var body = caps.filter(function(c){ return c.a === byName.Hips || c.a === byName.Spine1; });
     ARMS.forEach(function(arm){
       var s0 = bones[byName[arm[0]]], s1 = bones[byName[arm[1]]], s2 = bones[byName[arm[2]]];
-      var thigh = caps.filter(function(c){ return c.a === byName[arm[3]]; });
+      // a giant's lower arm keeps out of the upper arm of its side too (its upper arm and forearm capsules)
+      var thigh = caps.filter(function(c){ return c.a === byName[arm[3]] || (arm[4] && (c.a === byName[arm[4]] || c.a === byName[arm[4].replace('Arm', 'ForeArm')])); });
       [[s0, s1], [s1, s2]].forEach(function(pr){
         var pivot = pr[0].getWorldPosition(new THREE.Vector3()), p = pr[1].getWorldPosition(new THREE.Vector3()), worst = 0, way = new THREE.Vector3();
         body.concat(thigh).forEach(function(cp){ var dd = depth(p, { a:cp.a, b:cp.b, r:cp.r * sc }, out); if(dd > worst){ worst = dd; way.copy(out); } });
@@ -841,7 +861,75 @@ function KCharFigure(body, sliders, load){
     var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
     if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
-  function afterClip(dt){ bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
+  function afterClip(dt){ arms2(dt); bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
+
+  /* arms2: a giant's lower arms (tools/giant.py: Left2Arm..., copies of the upper pair hung lower on the ribs). No clip
+     moves them: each frame they take a pose from the upper pair's. A clip's group picks how:
+       guard  most clips: a resting pose of their own (GUARD: forward a little, elbows bent, the hands before the
+              belly; the pair already hangs steeper than the upper at rest, tools/giant.py HANG) plus half the upper arms' motion over it, so they swing in a walk and shadow a blow
+       copy   climbing, swimming, falling: the upper arms' motion whole, so the body moves as one
+     with no clip (the A pose) they hang as the upper pair does. They follow with a lag (LAG), and bodyFix keeps them out
+     of the body, the thighs and the upper arms */
+  var LOW = [], LAG = 0.09, GUARD = { Arm:{ add:0, flex:6 }, ForeArm:{ flex:72 } }, COPY = { climb:1, swim:1, hurt:1 };
+  // how much of the upper arms' motion the guard takes, by clip group: a blow, a shot or a drink stays with the upper
+  // hands; a walk, a block or a dodge moves all four; the empty lower hands close as far as CLOSE of a fist
+  var SHARE = { idle:0.4, move:0.55, melee:0.3, ranged:0.2, defend:0.6, life:0.25, work:0.35 }, CLOSE = 0.45;
+  var lowW = 0, lowQ = [], qL = new THREE.Quaternion(), qL2 = new THREE.Quaternion(), qI = new THREE.Quaternion();
+  (function(){
+    J.forEach(function(j, i){
+      var m = /^(Left|Right)2(.+)$/.exec(j.name), s = m && byName[m[1] + m[2]];
+      if(s !== undefined && m) LOW.push({ s:s, d:i, part:m[2], sx:m[1] === 'Left' ? 1 : -1 });
+    });
+    if(!LOW.length) return;
+    // each joint's rest orientation in the figure's space, and the guard pose as local turns: a turn given in the body's
+    // terms (draw in about the forward axis, raise forward about the side axis; the elbow about its own hinge) put in
+    // the joint's frame at rest
+    var wq = J.map(function(){ return null; }), wp = J.map(function(){ return null; });
+    J.forEach(function(j, i){
+      var q = new THREE.Quaternion().fromArray(j.r), t = new THREE.Vector3().fromArray(j.t);
+      if(j.parent >= 0){ t.applyQuaternion(wq[j.parent]).add(wp[j.parent]); q.premultiply(wq[j.parent]); }
+      wq[i] = q; wp[i] = t;
+    });
+    var X = new THREE.Vector3(1, 0, 0), Z = new THREE.Vector3(0, 0, 1);
+    LOW.forEach(function(L){
+      var g = GUARD[L.part], R = new THREE.Quaternion();
+      L.rest = new THREE.Quaternion().fromArray(J[L.d].r);
+      if(g){
+        var kid = J.map(function(j, i){ return j.parent === L.d ? i : -1; }).filter(function(i){ return i >= 0; })[0];
+        var dir = kid !== undefined ? wp[kid].clone().sub(wp[L.d]).normalize() : new THREE.Vector3(L.sx, -1, 0).normalize();
+        if(g.add) R.premultiply(new THREE.Quaternion().setFromAxisAngle(Z, -L.sx * g.add * Math.PI / 180));
+        if(g.flex && L.part === 'Arm') R.premultiply(new THREE.Quaternion().setFromAxisAngle(X, -g.flex * Math.PI / 180));
+        if(g.flex && L.part !== 'Arm') R.premultiply(new THREE.Quaternion().setFromAxisAngle(dir.clone().cross(Z).normalize(), g.flex * Math.PI / 180));
+      }
+      L.guard = wq[L.d].clone().invert().multiply(R).multiply(wq[L.d]);
+      L.cur = L.rest.clone();
+    });
+  })();
+  function arms2(dt){
+    if(!LOW.length) return;
+    var clip = self.action && meta[self.action.getClip().name], copy = clip && COPY[clip.group];
+    var wantW = !self.action ? 0 : copy ? 0 : 1, k = !self.action ? 1 : copy ? 1 : (clip && SHARE[clip.group] !== undefined ? SHARE[clip.group] : 0.4);
+    var a = dt === undefined ? 1 : 1 - Math.exp(-dt / LAG), aw = dt === undefined ? 1 : 1 - Math.exp(-dt / 0.3);
+    lowW += (wantW - lowW) * aw;
+    LOW.forEach(function(L){
+      // the upper joint's turn from its rest, a share of it, over the guard turn (as much of it as the mode wants)
+      qL.fromArray(J[L.s].r).invert().multiply(bones[L.s].quaternion);
+      qL2.copy(qI).slerp(qL, k);
+      qL.copy(qI).slerp(L.guard, lowW);
+      qL.multiply(qL2).premultiply(L.rest);
+      L.cur.slerp(qL, a);
+      bones[L.d].quaternion.copy(L.cur);
+    });
+    // the empty lower hands close loosely while they guard (a held prop's grip comes after, in grip())
+    ['L2', 'R2'].forEach(function(sd){
+      var h = skel.hands && skel.hands[sd];
+      if(!h || held[sd] || !lowW) return;
+      (h.curls ? h.curls.fist : h.curl).forEach(function(c){
+        curlQ.set(c[1], c[2], c[3], c[4]); qL.copy(qI).slerp(curlQ, CLOSE * lowW);
+        bones[c[0]].quaternion.multiply(qL);
+      });
+    });
+  }
   function hipsMorph(){
     var d = self.morphDelta && self.morphDelta[byName.Hips];
     if(d){ self.hips.position.x += d[0]; self.hips.position.y += d[1]; self.hips.position.z += d[2]; }
@@ -874,7 +962,7 @@ function KCharFigure(body, sliders, load){
     // the hips start each frame from the base body's rest: a clip with no hips position track (most in-place loops)
     // leaves it there, and the morph and lift below are added once, not once a frame
     self.hips.position.fromArray(J[byName.Hips].t);
-    self.mixer.update(dt);
+    self.mixer.update(dt * CADENCE);
     self.hips.position.y += self.pose.lift;
     hipsMorph();
     afterClip(dt);

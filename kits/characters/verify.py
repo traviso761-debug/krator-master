@@ -96,7 +96,7 @@ CHECKS = r'''async () => {
     for (const c of D.clips.clips.filter(c => c.two_hands)) for (const p of c.two_hands) {
       await fig.hold({ R:p, L:null, both:true }); await fig.play(c.key);
       let miss = 0;
-      for (let k = 0; k < 12; k++){ fig.update(0.1); if (fig.reach > 0.03) miss++; }
+      for (let k = 0; k < 12; k++){ fig.update(0.1); if (fig.reach > 0.03 * (fig.scale || 1)) miss++; }
       if (miss > 3) out.props.push(body + ' ' + c.key + ' ' + p + ': the left hand misses in ' + miss + ' of 12 frames');
     }
     await fig.hold({ R:null, L:'bow' }); await fig.play('bow_scan');
@@ -176,12 +176,14 @@ LAB_CHECKS = r'''async () => {
   const L = window._lab, out = [];
   await L.ready;
   const f = L.figs, h = f.map(x => x.pose.stature || 0);
-  if (f.length !== 6) out.push('lab: ' + f.length + ' figures, want 6');
+  // the six people, and (when the kit has the body) three giants, who play at their own pace (fig.cadence)
+  if (f.length !== 6 && f.length !== 9) out.push('lab: ' + f.length + ' figures, want 6 (9 with the giants)');
   for (const k of [0, 3]) if (!(h[k] < h[k + 1] && h[k + 1] < h[k + 2])) out.push('lab: heights ' + h.slice(k, k + 3).map(x => x.toFixed(2)));
+  if (f.length === 9 && !(h.slice(6).every(x => x > 3.0 && x < 4.4))) out.push('lab: giants ' + h.slice(6).map(x => x.toFixed(2)) + ' m, want 3 to 4.4');
   await L.play('ual_chop');
   f.forEach(x => x.update(0.37));
-  const t = f.map(x => x.action && x.action.getClip().name === 'ual_chop' ? x.action.time : -1);
-  if (t.some(x => Math.abs(x - t[0]) > 1e-6 || x < 0)) out.push('lab: the six are out of step: ' + t);
+  const t = f.map(x => x.action && x.action.getClip().name === 'ual_chop' ? x.action.time / (x.cadence || 1) : -1);
+  if (t.some(x => Math.abs(x - t[0]) > 1e-5 || x < 0)) out.push('lab: the six are out of step: ' + t);
   if (f.some(x => !x.held.R)) out.push('lab: a figure holds nothing in the chop');
   document.querySelector('.verdicts button[data-v="good"]').click();
   if (!(L.reviews().ual_chop && L.reviews().ual_chop.verdict === 'good')) out.push('lab: the mark was not kept');

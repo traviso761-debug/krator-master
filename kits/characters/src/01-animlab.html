@@ -139,6 +139,13 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
       <div class="grp" role="group" aria-label="Holding">
         <label class="sr" for="hold-pick">Holding</label>
         <select id="hold-pick"></select>
+        <label class="sr" for="hold-low">Lower hands</label>
+        <select id="hold-low" hidden title="A giant's lower hands">
+          <option value="">Lower hands empty</option>
+          <option value="L2:shield">Shield, lower left</option>
+          <option value="R2:dagger,L2:shield">Dagger and shield below</option>
+          <option value="R2:torch">Torch, lower right</option>
+        </select>
       </div>
       <div class="grp" role="group" aria-label="Clothes">
         <label class="sr" for="dress">Clothes</label>
@@ -149,6 +156,7 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
         <button id="who-all" data-who="all" aria-pressed="true">All six</button>
         <button id="who-m" data-who="m" aria-pressed="false">Men</button>
         <button id="who-f" data-who="f" aria-pressed="false">Women</button>
+        <button id="who-g" data-who="g" aria-pressed="false">Giants</button>
       </div>
       <div class="grp" role="group" aria-label="View">
         <button data-yaw="0" aria-pressed="true">Front</button>

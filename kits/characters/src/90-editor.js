@@ -11,7 +11,7 @@
   var D = KCHAR_DATA, $ = function(id){ return document.getElementById(id); };
   var SLOT_LABEL = { head:'Headgear', torso:'Torso & arms', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
-  var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman' };
+  var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman', mpfb_giant:'Giant' };
   var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
   var start = {
     male:   { body:'male', head:'base_m', hair:'hair_m_long', beard:null, armour:{ torso:'bronze', legs:'scout', feet:'bone' }, sliders:{}, dye:{} },
@@ -21,7 +21,12 @@
                       sliders:{}, morph:{}, ancestry:null, skin:'#c99a74', hair_color:'#3a2a1e', eye_color:'#5a3a22', people:null, dye:{} };
   start.mpfb_female = { body:'mpfb_female', hair:'braid01', beard:null, armour:{ torso:'toigo_bodice-style_top', legs:'toigo_long_full_skirt', feet:'grinsegold_female_pirate_boots' },
                         sliders:{}, morph:{}, ancestry:null, skin:'#d9b294', hair_color:'#2c2019', eye_color:'#4e6a80', people:null, dye:{} };
+  // a Giant of Dalab (tools/giant.py): the temple guard, four-armed, in the loincloth and sandals
+  start.mpfb_giant = { body:'mpfb_giant', hair:'short04', beard:null, armour:{ torso:null, legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals', head:null },
+                       sliders:{}, morph:{ muscle:0.7, weight:0.25 }, ancestry:null, skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e',
+                       people:'giants', arms:4, dye:{ legs:'#b8443a' } };
   var saved = {};
+  function figScale(){ return fig ? fig.scale || 1 : 1; }
 
   /* ---- pieces ---- */
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
@@ -109,6 +114,7 @@
     rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
     Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
     buildPanel();
+    view(cam.face);                 // a giant's camera stands further back
     var clip = document.querySelector('[data-clip][aria-pressed="true"]');
     $('loading').hidden = false;
     var done = apply().then(function(){
@@ -132,7 +138,7 @@
     if(fig) fig.update(dt);
     if(cam.spin) cam.yaw += dt * 0.5;
     if(cam.face && fig){ fig.headWorld(hv); cam.want.ty = hv.y + 0.06; }
-    else if(fig) cam.want.ty = 0.9 * fig.pose.root;
+    else if(fig) cam.want.ty = 0.9 * fig.pose.root * figScale();
     var k = 1 - Math.pow(0.001, dt);
     cam.dist += (cam.want.dist - cam.dist) * k; cam.ty += (cam.want.ty - cam.ty) * k; cam.pitch += (cam.want.pitch - cam.pitch) * k;
     var cp = Math.cos(cam.pitch);
@@ -155,13 +161,13 @@
     el.addEventListener('pointerup', function(){ drag = null; });
     el.addEventListener('wheel', function(e){
       e.preventDefault();
-      cam.want.dist = Math.max(0.45, Math.min(5, cam.want.dist * Math.exp(e.deltaY * 0.001)));
+      cam.want.dist = Math.max(0.45, Math.min(5 * figScale(), cam.want.dist * Math.exp(e.deltaY * 0.001)));
     }, { passive:false });
   }
 
   function view(face){
     cam.face = face;
-    cam.want.dist = face ? 0.8 : 4.2; cam.want.pitch = face ? 0.02 : 0.1;
+    cam.want.dist = (face ? 0.8 : 4.2) * figScale(); cam.want.pitch = face ? 0.02 : 0.1;
     $('cam-body').setAttribute('aria-pressed', !face); $('cam-face').setAttribute('aria-pressed', face);
   }
 
@@ -304,10 +310,17 @@
     chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-outfit-' + x.id.replace('.', '-') }; }), cur ? cur.id : null, function(id){
       var x = list.filter(function(y){ return y.id === id; })[0];
       ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null; });
+      if(x.set.arms) rec.arms = x.set.arms;
       apply(); buildPanel();
     }, true);
   }
   function buildMpfb(kit, gear, headp){
+    if(kit.arms2){
+      // a giant: the temple guards have four arms, the street patrols two (the same body, the lower pair left out)
+      var arms = rec.arms || kit.arms;
+      var as = section(gear, 'Arms', arms >= 4 ? 'Four' : 'Two');
+      chips(as, [{ id:4, name:'Four', domId:'chip-arms-4' }, { id:2, name:'Two', domId:'chip-arms-2' }], arms, function(id){ rec.arms = id; apply(); buildPanel(); }, true);
+    }
     wardrobeChips(kit, gear);
     outfitChips(kit, gear);
     ['head', 'torso', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });

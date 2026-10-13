@@ -46,9 +46,14 @@
     mpfb_male:   { hair:'short02', beard:null, armour:{ torso:'elvs_crude_t-shirt_male', legs:'cortu_cargo_pants', feet:'toigo_ankle_boots_male' },
                    skin:'#b98a66', hair_color:'#3a2a1e', eye_color:'#5a3a22' },
     mpfb_female: { hair:'braid01', beard:null, armour:{ torso:'joepal_crude_t-shirt_female', legs:'cortu_cargo_pants', feet:'toigo_ankle_boots_female' },
-                   skin:'#c99a74', hair_color:'#2c2019', eye_color:'#4e6a80' }
+                   skin:'#c99a74', hair_color:'#2c2019', eye_color:'#4e6a80' },
+    mpfb_giant:  { hair:'short04', beard:null, armour:{ legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals' },
+                   skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e', dye:{ legs:'#b8443a' } }
   };
   var BUILD = {
+    giant:   { label:'Four arms', morph:{ muscle:0.7, weight:0.25 } },
+    heavy:   { label:'Four arms, heavy', morph:{ height:-0.4, weight:0.8, muscle:1 } },
+    patrol:  { label:'Two arms', morph:{ muscle:0.7, weight:0.25 } },
     short:   { label:'Short, broad', morph:{ height:-0.8, weight:0.6, muscle:0.6 } },
     neutral: { label:'Neutral', morph:{} },
     tall:    { label:'Tall, lanky', morph:{ height:0.75, weight:-0.8, muscle:-0.4 } }
@@ -59,6 +64,10 @@
     ['short', 'neutral', 'tall'].forEach(function(b){
       CAST.push({ id:g[0] + '-' + b, sex:g[0], body:g[1], build:b, label:g[2] + ' · ' + BUILD[b].label.toLowerCase(), short:g[2].charAt(0) + ' ' + b });
     });
+  });
+  // the Giants of Dalab (tools/giant.py), on their own filter: two four-armed temple guards and a two-armed patrol
+  if(D.bodies.mpfb_giant) [['giant', 4], ['heavy', 4], ['patrol', 2]].forEach(function(g){
+    CAST.push({ id:'g-' + g[0], sex:'g', body:'mpfb_giant', build:g[0], arms:g[1], label:'Giant · ' + BUILD[g[0]].label.toLowerCase(), short:'G ' + g[0] });
   });
   // the clothes the six wear: plain (OUTFIT), or a people's outfit for one tier (data/peoples.json outfits)
   var DRESS = [];
@@ -74,9 +83,10 @@
     r.armour = Object.assign({}, r.armour);
     Object.keys(r.armour).forEach(function(s){ if(!kit.items.some(function(it){ return it.id === r.armour[s]; })) r.armour[s] = null; });
     if(!kit.items.some(function(it){ return it.id === r.hair; })) r.hair = null;
-    var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && d.p.outfits[c.body.replace(/^mpfb_/, '')][d.tier];
+    var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && (d.p.outfits[c.body.replace(/^mpfb_/, '')] || {})[d.tier];
     if(set) ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
     r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
+    if(c.arms) r.arms = c.arms;
     r.ancestry = null;
     return r;
   }
@@ -141,12 +151,14 @@
 
   // the row: each body's three side by side, a wider gap between the two bodies
   function lineup(){
-    var shown = figs.filter(function(x){ return who === 'all' || x.c.sex === who; }), xs = [], x = 0;
-    shown.forEach(function(s, i){ if(i){ x += shown[i - 1].c.sex !== s.c.sex ? 1.7 : 1.15; } xs.push(x); });
-    var mid = x / 2;
+    // 'all' is the six people; the giants have their own filter, spaced and framed by their scale
+    var shown = figs.filter(function(x){ return who === 'all' ? x.c.sex !== 'g' : x.c.sex === who; }), xs = [], x = 0;
+    shown.forEach(function(s, i){ if(i){ x += (shown[i - 1].c.sex !== s.c.sex ? 1.7 : 1.15) * s.f.scale; } xs.push(x); });
+    var mid = x / 2, big = shown.reduce(function(m, s){ return Math.max(m, s.f.scale); }, 1);
     figs.forEach(function(s){ s.f.group.visible = false; s.tag.hidden = true; });
     shown.forEach(function(s, i){ s.f.group.visible = true; s.tag.hidden = false; s.f.group.position.x = xs[i] - mid; });
-    cam.want.dist = Math.max(4.2, x * 1.25 + 3.2);
+    cam.want.ty = 0.95 * big;
+    cam.want.dist = Math.max(4.2 * big, x * 1.25 + 3.2 * big);
     if(focus && !shown.some(function(s){ return s.c.id === focus; })) setFocus(null);
     else setFocus(focus);
   }
@@ -154,10 +166,11 @@
     focus = id;
     figs.forEach(function(s){ s.tag.setAttribute('aria-pressed', s.c.id === id); });
     var s = figs.filter(function(x){ return x.c.id === id; })[0];
-    if(s){ cam.want.x = s.f.group.position.x; cam.want.dist = 3.2; }
+    if(s){ cam.want.x = s.f.group.position.x; cam.want.dist = 3.2 * s.f.scale; }
     else {
       var shown = figs.filter(function(x){ return x.f.group.visible; }), w = shown.length ? shown[shown.length - 1].f.group.position.x - shown[0].f.group.position.x : 0;
-      cam.want.x = 0; cam.want.dist = Math.max(4.2, w * 1.25 + 3.2);
+      var big = shown.reduce(function(m, x){ return Math.max(m, x.f.scale); }, 1);
+      cam.want.x = 0; cam.want.dist = Math.max(4.2 * big, w * 1.25 + 3.2 * big);
     }
   }
 
@@ -201,7 +214,7 @@
     el.addEventListener('pointerup', function(){ drag = null; });
     el.addEventListener('wheel', function(e){
       e.preventDefault();
-      cam.want.dist = Math.max(1.2, Math.min(16, cam.want.dist * Math.exp(e.deltaY * 0.001)));
+      cam.want.dist = Math.max(1.2, Math.min(28, cam.want.dist * Math.exp(e.deltaY * 0.001)));
     }, { passive:false });
   }
 
@@ -234,6 +247,8 @@
     pick.value = p || '';
     pick.disabled = !side;
     var want = { R:null, L:null };
+    // a giant's lower hands: what the Lower hands menu gives them, whatever the clip
+    ($('hold-low').value || '').split(',').forEach(function(x){ var kv = x.split(':'); if(kv[1]) want[kv[0]] = kv[1]; });
     if(p !== '' && side){
       if(h.R) want.R = side === 'R' ? p : h.R[0];
       if(h.L) want.L = side === 'L' ? p : h.L[0];
@@ -385,6 +400,8 @@
     var sc = $('scrub');
     sc.addEventListener('input', function(){ scrubbing = true; setPaused(true); setTime(+sc.value / 1000 * duration()); });
     sc.addEventListener('change', function(){ scrubbing = false; });
+    $('hold-low').hidden = !D.bodies.mpfb_giant;
+    $('hold-low').addEventListener('change', function(){ holdFor(current).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); }); });
     $('hold-pick').addEventListener('change', function(){ holdChoice = $('hold-pick').value; holdFor(current).then(function(){ figs.forEach(function(s){ s.f.update(0); }); showCurrent(true); }); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-who]'), function(b){
       b.addEventListener('click', function(){

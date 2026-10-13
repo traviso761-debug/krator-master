@@ -17,7 +17,7 @@ says which build holds what.
 | `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
 | `kits/catalog/` | master catalog: asset engine, 1051 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
-| `kits/characters/` | the Cosmetic Lab (character editor, NPC crowds) and the Animation Lab (every clip on six bodies, with review marks): MakeHuman (MPFB2) bodies with morphing face, build and ancestry, library clothes, hair and beards that follow, skin and hair tint, and peoples (`data/peoples.json`) for drawing a culture's strangers; Godot twin (`godot/krator/character/`, behind). Read `README.md` |
+| `kits/characters/` | the Cosmetic Lab (character editor, NPC crowds) and the Animation Lab (every clip on six bodies, with review marks): MakeHuman (MPFB2) bodies with morphing face, build and ancestry, library clothes, hair and beards that follow, skin and hair tint, and peoples (`data/peoples.json`) for drawing a culture's strangers; the four-armed Giants of Dalab (`tools/giant.py`); Godot twin (`godot/krator/character/`, behind). Read `README.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |

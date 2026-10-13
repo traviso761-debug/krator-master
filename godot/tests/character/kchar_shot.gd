@@ -1,13 +1,16 @@
 # Five strangers from kits/characters' MakeHuman bodies, drawn by Godot and saved as a PNG: one per people, both
 # bodies, holding props in clips (a drawn bow, a two-handed hoe and rifle). On a machine with no display:
 #   xvfb-run -a -s "-screen 0 1400x800x24" godot --path godot --rendering-method gl_compatibility \
-#     --rendering-driver opengl3 --script res://tests/character/kchar_shot.gd -- --out=/abs/path.png [--face]
+#     --rendering-driver opengl3 --script res://tests/character/kchar_shot.gd -- --out=/abs/path.png [--face] [--giant]
+# --giant: three Giants of Dalab instead (kits/characters/tools/giant.py): a temple guard with a spear above and a
+# shield below, walking; one idle; a two-armed street patrol
 extends SceneTree
 
 const DIR := "res://data/characters"
 var frames := 0
 var out := "user://kchar_shot.png"
 var face := false
+var giant := false
 var walkers: Array[KCharFigure] = []
 
 
@@ -17,11 +20,16 @@ func _init() -> void:
 			out = a.substr(6)
 		if a == "--face":
 			face = true
+		if a == "--giant":
+			giant = true
 	var peoples := {}
 	for p in JSON.parse_string(FileAccess.get_file_as_string(DIR + "/peoples.json"))["peoples"]:
 		peoples[p["id"]] = p
 	var cast := [["mpfb_male", "chichani", 3], ["mpfb_female", "izani", 4], ["mpfb_male", "beast_riders", 5],
 		["mpfb_female", "yuni", 6], ["mpfb_male", "hykkousoi", 7]]
+	if giant:
+		_giants(peoples)
+		return
 	for i in cast.size():
 		var fig := KCharFigure.new()
 		fig.load_body(DIR, cast[i][0])
@@ -32,10 +40,32 @@ func _init() -> void:
 		if not face:
 			fig.play(["idle", "bow_scan", "walk", "ual_chop", "walk_shoot"][i])
 			walkers.append(fig)
+	_stage(Vector3(0.3, 1.0, 6.4), Vector3(0, 0.9, 0))
+
+
+func _giants(peoples: Dictionary) -> void:
+	var plan := [[2, {"R": "spear", "L2": "shield"}, "walk"], [11, {"R": "spear"}, "idle"], [5, {}, "walk"]]
+	for i in plan.size():
+		var fig := KCharFigure.new()
+		fig.load_body(DIR, "mpfb_giant")
+		fig.position = Vector3((i - 1) * 2.1, 0, 0)
+		root.add_child(fig)
+		var rec := KChar.stranger(plan[i][0], fig.kit, peoples["giants"])
+		rec["arms"] = 2 if i == 2 else 4
+		fig.apply(rec)
+		fig.hold(plan[i][1])
+		fig.play(plan[i][2])
+		walkers.append(fig)
+	_stage(Vector3(0.6, 2.2, 13.5), Vector3(0, 1.9, 0))
+
+
+func _stage(eye: Vector3, at: Vector3) -> void:
 	var cam := Camera3D.new()
 	cam.fov = 30
 	root.add_child(cam)
-	if face:
+	if giant:
+		cam.look_at_from_position(eye, at)
+	elif face:
 		cam.look_at_from_position(Vector3(0, 1.62, 2.4), Vector3(0, 1.58, 0))
 	else:
 		cam.look_at_from_position(Vector3(0.3, 1.0, 6.4), Vector3(0, 0.9, 0))

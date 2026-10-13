@@ -270,6 +270,7 @@ var KCHAR = (function(){
       if(outfit && slot !== 'hair' && slot !== 'beard'){
         var want = outfit[slot] || null;
         rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot; }) ? want : null;
+        if(outfit.arms) rec.arms = outfit.arms;       // a giant's tier: the temple guards four-armed, the patrols two
         return;
       }
       if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit

@@ -6,18 +6,18 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 19 (12%) | 0 (0%) | 0 (0%) | 83 (55%) | 50 (33%) |
+| KB | 19 (12%) | 0 (0%) | 0 (0%) | 86 (53%) | 56 (35%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 12.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/01-animlab.html` | 13.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/10-rig.js` | 18.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-figure.js` | 49.8 | [draw] | 50 | 0 | 0 | 1 | 0 | 1 | 8 | 0 | 0 | 0 | 0 |  |
-| `src/90-editor.js` | 31.3 | [web] | 13 | 0 | 42 | 28 | 2 | 2 | 0 | 0 | 0 | 0 | 3 |  |
-| `src/92-animlab.js` | 24.9 | [web] | 14 | 0 | 30 | 25 | 2 | 2 | 0 | 0 | 0 | 2 | 2 |  |
+| `src/01-animlab.html` | 13.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/10-rig.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/50-figure.js` | 56.2 | [draw] | 59 | 0 | 0 | 1 | 0 | 1 | 8 | 0 | 0 | 0 | 0 |  |
+| `src/90-editor.js` | 32.4 | [web] | 13 | 0 | 42 | 28 | 2 | 2 | 0 | 0 | 0 | 0 | 3 |  |
+| `src/92-animlab.js` | 26.5 | [web] | 14 | 0 | 30 | 26 | 2 | 2 | 0 | 0 | 0 | 2 | 2 |  |
 
 ## Notes
 

@@ -40,6 +40,9 @@ var _hips := -1
 var _head := -1
 var _clip := ""
 var looping := "idle"                    # the clip a play-once clip returns to
+var size := 1.0                          # kit.scale: a giant's whole figure
+var cadence := 1.0                       # how fast clips play: 1 / sqrt(size)
+var four_arms := false                   # a giant shows its lower pair (record arms 4)
 
 
 func load_body(data_dir: String, body_id: String) -> void:
@@ -63,7 +66,12 @@ func load_body(data_dir: String, body_id: String) -> void:
 	player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	add_child(player)
 	var lib := AnimationLibrary.new()
-	var anims := _scene("%s/pieces/%s/anims.glb" % [dir, body])
+	# a giant (kit.scale, kits/characters/tools/giant.py) plays the man's clips (kit.anims), slower by the square root
+	# of its scale; the whole skeleton is scaled, and everything below works in its (unscaled) space
+	size = float(kit.get("scale", 1.0))
+	cadence = 1.0 / sqrt(size)
+	skeleton.scale = Vector3.ONE * size
+	var anims := _scene("%s/pieces/%s/anims.glb" % [dir, kit.get("anims", body)])
 	var src: AnimationPlayer = anims.find_child("AnimationPlayer", true, false)
 	if src:
 		for lib_name in src.get_animation_library_list():
@@ -73,6 +81,7 @@ func load_body(data_dir: String, body_id: String) -> void:
 	player.add_animation_library("", lib)
 	anims.free()
 	morph = KChar.morph_joints(skel, kit, KChar.morph_weights({}, kit))
+	_low_setup()
 	if FileAccess.file_exists(dir + "/props.json"):
 		for p in JSON.parse_string(FileAccess.get_file_as_string(dir + "/props.json"))["props"]:
 			props[p["id"]] = p
@@ -374,6 +383,7 @@ func apply(rec: Dictionary) -> void:
 			worn[i] = true
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
+	four_arms = kit.has("arms2") and int(rec.get("arms", kit.get("arms", 2))) >= 4
 	skeleton.position.y = 0.0
 	for mi in want:
 		var b: Dictionary = mi.get_meta("built")
@@ -389,6 +399,9 @@ func apply(rec: Dictionary) -> void:
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
+			if not four_arms and kit.get("arms2", []).has(mi.mesh.surface_get_name(s)):
+				mi.set_surface_override_material(s, _gone())       # a two-armed giant: the lower pair's skin is not drawn
+				continue
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -408,7 +421,7 @@ func apply(rec: Dictionary) -> void:
 					if col != null:
 						y += w[shapes[s]] * float(col[k])
 				low = minf(low, y)
-			skeleton.position.y = float(G["y0"][0]) - low
+			skeleton.position.y = (float(G["y0"][0]) - low) * size
 	_cloth_rest(want, w)
 	if _clip == "":
 		rest_pose()
@@ -458,7 +471,7 @@ func rest_pose() -> void:
 # grip frame skeleton.json 'hands' gives (the props are modelled in it); that hand's fingers close round it every
 # frame in the prop's grip style (fist, trigger, wide). both: the left hand takes hold of the right's prop too, at its
 # support (_two_hands). A prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws
-var held := {"R": null, "L": null, "both": false}
+var held := {"R": null, "L": null, "R2": null, "L2": null, "both": false}
 var props := {}                          # data/props.json by id
 var reach := 0.0                         # how far short of its hold the left hand fell (_two_hands)
 var drawn := false                       # the bow string is pulled
@@ -493,7 +506,7 @@ func hold(want: Dictionary) -> void:
 	if not skel.has("hands"):
 		return
 	held["both"] = bool(want.get("both", false))
-	for side in ["R", "L"]:
+	for side in _hands():
 		var id = want.get(side)
 		if held[side] == id:
 			continue
@@ -512,6 +525,7 @@ func hold(want: Dictionary) -> void:
 
 
 func _after_clip(dt: float) -> void:
+	_arms2(dt)
 	_body_fix()
 	_grip()
 	_two_hands(dt)
@@ -524,7 +538,9 @@ func _grip() -> void:
 	if not skel.has("hands"):
 		return
 	var J: Array = skel["joints"]
-	for side in ["R", "L"]:
+	for side in _hands():
+		if side.length() > 1 and _holders.has(side):
+			_holders[side].visible = four_arms
 		var id = held[side]
 		if id == null and side == "L" and _support().size() > 0:
 			id = held["R"]
@@ -878,13 +894,13 @@ func _cloth_step(dt: float) -> void:
 		return
 	var W := []
 	for cp in _caps:
-		W.append({"a": _gp(cp["a"]).origin, "b": _gp(cp["b"]).origin, "r": float(cp["r"]) + C_PAD})
+		W.append({"a": _gp(cp["a"]).origin, "b": _gp(cp["b"]).origin, "r": float(cp["r"]) + C_PAD / size})
 	var ground := 0.008 - skeleton.position.y
 	var wind := Vector3.ZERO
 	for cm in skel.get("clips", []):
 		if cm["name"] == _clip and cm.get("loop", true) and cm.has("root_speed"):
 			wind = -KChar._v(cm["root_speed"])
-	var grav := Vector3(0, -C_GRAV, 0)
+	var grav := Vector3(0, -C_GRAV / size, 0)            # in the skeleton's units: a giant's are twice a metre
 	for c in items:
 		for ch in c["chains"]:
 			_rigid(ch)
@@ -1086,7 +1102,8 @@ func _leg_caps() -> void:
 	var Bv := []
 	var legs := [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"],
 		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"], ["LeftArm", "LeftForeArm"], ["RightArm", "RightForeArm"],
-		["LeftForeArm", "LeftHand"], ["RightForeArm", "RightHand"]]
+		["LeftForeArm", "LeftHand"], ["RightForeArm", "RightHand"],
+		["Left2Arm", "Left2ForeArm"], ["Right2Arm", "Right2ForeArm"], ["Left2ForeArm", "Left2Hand"], ["Right2ForeArm", "Right2Hand"]]
 	for i in legs.size():
 		var a := skeleton.find_bone(legs[i][0])
 		var b := skeleton.find_bone(legs[i][1])
@@ -1098,8 +1115,9 @@ func _leg_caps() -> void:
 		for cp in _caps:
 			if cp["a"] == ca and cp["b"] == cb:
 				r = float(cp["r"]) + 0.01
-		if b < 0:
+		if b < 0 or a < 0 or (i >= 10 and not four_arms):        # no such joints, or a two-armed giant's lower pair
 			r = 0.0
+			a = maxi(a, 0)
 			b = a
 		var pa := _gp(a).origin
 		var pb := _gp(b).origin
@@ -1119,18 +1137,24 @@ func _body_fix() -> void:
 		return
 	var hips_i := skeleton.find_bone("Hips")
 	var sp1 := skeleton.find_bone("Spine1")
-	for arm in [["LeftArm", "LeftForeArm", "LeftHand", "LeftUpLeg"], ["RightArm", "RightForeArm", "RightHand", "RightUpLeg"]]:
+	for arm in [["LeftArm", "LeftForeArm", "LeftHand", "LeftUpLeg", ""], ["RightArm", "RightForeArm", "RightHand", "RightUpLeg", ""],
+			["Left2Arm", "Left2ForeArm", "Left2Hand", "LeftUpLeg", "Left"], ["Right2Arm", "Right2ForeArm", "Right2Hand", "RightUpLeg", "Right"]]:
 		var b0 := skeleton.find_bone(arm[0])
 		var b1 := skeleton.find_bone(arm[1])
 		var b2 := skeleton.find_bone(arm[2])
 		var th := skeleton.find_bone(arm[3])
+		if b0 < 0:
+			continue
+		# a giant's lower arm keeps out of its side's upper arm and forearm too
+		var ua := skeleton.find_bone(arm[4] + "Arm") if arm[4] != "" else -2
+		var uf := skeleton.find_bone(arm[4] + "ForeArm") if arm[4] != "" else -2
 		for pr in [[b0, b1], [b1, b2]]:
 			var pivot := _gp(pr[0]).origin
 			var p := _gp(pr[1]).origin
 			var worst := 0.0
 			var way := Vector3.ZERO
 			for cp in _caps:
-				if cp["a"] != hips_i and cp["a"] != sp1 and cp["a"] != th:
+				if cp["a"] != hips_i and cp["a"] != sp1 and cp["a"] != th and cp["a"] != ua and cp["a"] != uf:
 					continue
 				var a := _gp(cp["a"]).origin
 				var ab := _gp(cp["b"]).origin - a
@@ -1180,6 +1204,107 @@ func _keep_len(ch: Dictionary) -> void:
 			x[k] = x[k - 1] + d * (float(ch["len"][k - 1]) / l)
 
 
+# ---- a giant's lower arms (the twin of arms2() in 50-figure.js) ----
+# No clip moves Left2Arm...: each frame they take a pose from the upper pair's: in most clips a guard pose of their own
+# (GUARD) plus a share of the upper arms' motion (SHARE by clip group), in climbing, swimming and falling the upper
+# arms' motion whole; with no clip they hang as the upper pair does. They follow with a lag; _body_fix keeps them out
+# of the body and the upper arms; the empty hands close loosely while they guard
+const LOW_LAG := 0.09
+const GUARD := {"Arm": {"add": 0.0, "flex": 6.0}, "ForeArm": {"flex": 72.0}}
+const COPY := {"climb": true, "swim": true, "hurt": true}
+const SHARE := {"idle": 0.4, "move": 0.55, "melee": 0.3, "ranged": 0.2, "defend": 0.6, "life": 0.25, "work": 0.35}
+const CLOSE := 0.45
+var _low := []
+var _low_w := 0.0
+static var _gone_mat: ShaderMaterial
+
+
+func _hands() -> Array:
+	var out := []
+	for sd in ["R", "L", "R2", "L2"]:
+		if skel.has("hands") and skel["hands"].has(sd):
+			out.append(sd)
+	return out
+
+
+static func _gone() -> ShaderMaterial:
+	if _gone_mat == null:
+		var sh := Shader.new()
+		sh.code = "shader_type spatial;\nrender_mode unshaded;\nvoid vertex() { POSITION = vec4(2.0, 2.0, 2.0, 1.0); }\nvoid fragment() { discard; }\n"
+		_gone_mat = ShaderMaterial.new()
+		_gone_mat.shader = sh
+	return _gone_mat
+
+
+func _low_setup() -> void:
+	_low = []
+	var J: Array = skel["joints"]
+	var wq := []
+	var wp := []
+	for i in J.size():
+		var q := KChar._q(J[i]["r"])
+		var t := KChar._v(J[i]["t"])
+		var par := int(J[i]["parent"])
+		if par >= 0:
+			t = wp[par] + wq[par] * t
+			q = wq[par] * q
+		wq.append(q)
+		wp.append(t)
+	for i in J.size():
+		var nm: String = J[i]["name"]
+		var side := "Left" if nm.begins_with("Left2") else "Right" if nm.begins_with("Right2") else ""
+		if side == "":
+			continue
+		var part := nm.substr(side.length() + 1)
+		var s := skeleton.find_bone(side + part)
+		if s < 0:
+			continue
+		var sx := 1.0 if side == "Left" else -1.0
+		var R := Quaternion()
+		if GUARD.has(part):
+			var g: Dictionary = GUARD[part]
+			var dir := Vector3(sx, -1, 0).normalized()
+			for k in J.size():
+				if int(J[k]["parent"]) == i:
+					dir = (wp[k] - wp[i]).normalized()
+					break
+			if g.get("add", 0.0) != 0.0:
+				R = Quaternion(Vector3(0, 0, 1), deg_to_rad(-sx * g["add"])) * R
+			if g.has("flex") and part == "Arm":
+				R = Quaternion(Vector3(1, 0, 0), deg_to_rad(-g["flex"])) * R
+			elif g.has("flex"):
+				R = Quaternion(dir.cross(Vector3(0, 0, 1)).normalized(), deg_to_rad(g["flex"])) * R
+		var rest := KChar._q(J[i]["r"])
+		_low.append({"s": s, "d": i, "rest": rest, "rest_s": KChar._q(J[s]["r"]), "guard": wq[i].inverse() * R * wq[i], "cur": rest})
+
+
+func _arms2(dt: float) -> void:
+	if _low.is_empty():
+		return
+	var group := ""
+	for c in skel.get("clips", []):
+		if c["name"] == _clip:
+			group = c.get("group", "")
+	var copy: bool = COPY.has(group)
+	var want := 0.0 if _clip == "" or copy else 1.0
+	var k := 1.0 if _clip == "" or copy else float(SHARE.get(group, 0.4))
+	var a := 1.0 if dt < 0.0 else 1.0 - exp(-dt / LOW_LAG)
+	var aw := 1.0 if dt < 0.0 else 1.0 - exp(-dt / 0.3)
+	_low_w += (want - _low_w) * aw
+	for L in _low:
+		var delta: Quaternion = L["rest_s"].inverse() * skeleton.get_bone_pose_rotation(L["s"])
+		var target: Quaternion = L["rest"] * Quaternion().slerp(L["guard"], _low_w) * Quaternion().slerp(delta, k)
+		L["cur"] = (L["cur"] as Quaternion).slerp(target.normalized(), a)
+		skeleton.set_bone_pose_rotation(L["d"], L["cur"])
+	for sd in ["L2", "R2"]:
+		if not skel.get("hands", {}).has(sd) or held.get(sd) != null or _low_w <= 0.0:
+			continue
+		var h: Dictionary = skel["hands"][sd]
+		for c in (h["curls"]["fist"] if h.has("curls") else h["curl"]):
+			var i: int = int(c[0])
+			skeleton.set_bone_pose_rotation(i, skeleton.get_bone_pose_rotation(i) * Quaternion().slerp(Quaternion(c[1], c[2], c[3], c[4]), CLOSE * _low_w))
+
+
 func play(clip: String) -> void:
 	_clip = clip
 	if clip == "" or not player.has_animation(clip):
@@ -1204,7 +1329,7 @@ func _process(dt: float) -> void:
 	# the hips start from the base body's rest (a clip without a hips position track leaves them there), so the
 	# morph delta below is added once, not once a frame
 	skeleton.set_bone_pose_position(_hips, KChar._v(skel["joints"][_hips]["t"]))
-	player.advance(dt)
+	player.advance(dt * cadence)
 	if not player.is_playing() and _clip != looping:
 		play(looping)
 		return

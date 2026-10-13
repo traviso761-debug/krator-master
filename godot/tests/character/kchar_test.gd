@@ -231,5 +231,51 @@ func _init() -> void:
 		fig._process(0.4)
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 
+	# a Giant of Dalab (kits/characters/tools/giant.py): the man's body made big, a second pair of arms that no clip
+	# moves but the figure drives from the upper pair; two arms leaves them out
+	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
+		var g := KCharFigure.new()
+		g.load_body(DIR, "mpfb_giant")
+		root.add_child(g)
+		ok(g.skeleton.find_bone("Left2Arm") >= 0 and g.skeleton.find_bone("Right2HandIndex3") >= 0 and g.size > 1.5,
+			"giant: the lower pair's joints, scale %.2f" % g.size)
+		ok(g.player.has_animation("walk") and is_equal_approx(g.cadence, 1.0 / sqrt(g.size)), "giant: the man's clips, at %.2f pace" % g.cadence)
+		var grec := KChar.blank(g.kit)
+		grec["armour"]["legs"] = "voth_m_peasant_maxtlatl"
+		g.apply(grec)
+		ok(g.four_arms, "giant: four arms by default")
+		var la := g.skeleton.find_bone("Left2Arm")
+		var lf := g.skeleton.find_bone("Left2ForeArm")
+		g.play("idle")
+		for k in 30:
+			g._process(1.0 / 30.0)
+		var bent := g.skeleton.get_bone_pose_rotation(lf).angle_to(KChar._q(g.skel["joints"][lf]["r"]))
+		ok(bent > 0.6, "giant: in the idle the lower elbows bend into the guard (%.2f rad)" % bent)
+		var a0 := g.skeleton.get_bone_pose_rotation(la)
+		g.play("ladder")
+		for k in 30:
+			g._process(1.0 / 30.0)
+		var up := g.skeleton.find_bone("LeftArm")
+		var d_up := KChar._q(g.skel["joints"][up]["r"]).inverse() * g.skeleton.get_bone_pose_rotation(up)
+		var d_lo := KChar._q(g.skel["joints"][la]["r"]).inverse() * g.skeleton.get_bone_pose_rotation(la)
+		ok(d_up.angle_to(d_lo) < 0.25 and not a0.is_equal_approx(g.skeleton.get_bone_pose_rotation(la)),
+			"giant: on the ladder the lower arms copy the upper (%.2f rad apart)" % d_up.angle_to(d_lo))
+		var mesh: MeshInstance3D = null
+		for mi in g._live.values():
+			if mi.visible and mi.mesh:
+				for s in mi.mesh.get_surface_count():
+					if mi.mesh.surface_get_name(s) == "Human.arms2":
+						mesh = mi
+		ok(mesh != null, "giant: the base has the lower arms' skin")
+		grec["arms"] = 2
+		g.apply(grec)
+		var gone := false
+		if mesh:
+			for s in mesh.mesh.get_surface_count():
+				if mesh.mesh.surface_get_name(s) == "Human.arms2":
+					gone = mesh.get_surface_override_material(s) == KCharFigure._gone()
+		ok(not g.four_arms and gone, "giant: two arms leaves the lower pair out")
+		print("kchar_test: the giant checked (%d bones, %d clips)" % [g.skeleton.get_bone_count(), g.player.get_animation_list().size()])
+
 	print("kchar_test: %s" % ("all passed" if fails == 0 else "%d failed" % fails))
 	quit(1 if fails else 0)

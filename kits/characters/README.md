@@ -1,7 +1,7 @@
 # kits/characters
 
-The character editor and the data a city needs to populate itself: two MakeHuman bodies (a man and a woman) whose
-face, build and ancestry morph, with library clothes, hair and beards that follow the morphs, a skin tone and a hair
+The character editor and the data a city needs to populate itself: two MakeHuman bodies (a man and a woman), and the
+four-armed Giant of Dalab made from the man's (Giants, below), whose face, build and ancestry morph, with library clothes, hair and beards that follow the morphs, a skin tone and a hair
 colour, and **peoples** (`data/peoples.json`) that keep a culture's strangers within its range (Chichani: ashen-brown
 skin and dark hair; Beast Riders: Asiatic or Amerindian, blond to brown hair). One record per citizen; no separate
 model per person. Two pages are built over the same pieces:
@@ -14,7 +14,8 @@ model per person. Two pages are built over the same pieces:
 - **Animation Lab** (`dist/animation-lab.html`): each body three ways (neutral; short and broad; tall and lanky: `CAST`
   and `BUILD` in `src/92-animlab.js`), all six in the same plain clothes, side by side. A clip from the ledger plays on
   all six in step with the props it holds; pause, slow down, scrub, step a frame, swap the prop, show one body or
-  both, orbit or close in on one figure. One-shots repeat. Each clip gets a review mark (good, needs work, broken),
+  both, orbit or close in on one figure; the Giants filter shows three giants instead (two four-armed, one two-armed),
+  with a menu for what the lower hands hold. One-shots repeat. Each clip gets a review mark (good, needs work, broken),
   the bodies it looks wrong on and a note. The published lab keeps them in its shared store (collection `reviews`, one
   document per clip, which Claude reads); run locally it keeps them in the browser.
 
@@ -23,6 +24,7 @@ cd kits/characters
 blender -b --python tools/make_garments.py -- male [--render <dir>] # the Voth clothing, into MPFB's user data
 blender -b --python tools/mpfb_build.py -- male <export dir>      # Blender 4.5 + MPFB2 + the asset packs (below)
 python3 tools/make_mpfb.py male <export dir>                       # -> pieces/mpfb_male/, data/mpfb_male/
+python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/mpfb_giant/, data/mpfb_giant/ (tools/giant.py)
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
@@ -162,6 +164,30 @@ figure, flat calm colour fields with one accent, organic ornament. The tool's sh
 bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_disc`, `crest`, `pendants`,
 `animal_belts`.
 
+**Giants of Dalab** (`tools/giant.py`, `make_mpfb.py giant`): LORE.md's engineered giants, green and about 3.6 m
+(3.4 to 4.1 with the sliders): the priests' temple guards have four arms, the street patrols two. A giant is the man's
+MakeHuman body, built again from his export, with three changes:
+- **A second pair of arms.** In the base GLB, `add_arms` copies each arm's joints (`Left2Shoulder`, `Left2Arm` ...
+  `Left2HandThumb3`, and the right side's) and the skin and nails they carry. The copy hangs 25 cm lower and nearer the
+  axis, from Spine2, and 30 degrees steeper than the upper pair (`HANG`, near its usual pose). Its root is shrink-wrapped
+  onto the torso's skin and takes the torso's weights, fading over 9 cm from its open edge, so the arm grows out of the
+  side of the ribs and the joint bends with them. The copies keep their `_VIDX`, so the man's morph deltas move them as
+  they move his arms (and `morph_kit` gives the new joints their sources' deltas). The lower pair has capsules (cloth,
+  push) and grips (`hands.L2`, `hands.R2`) of its own.
+- **Big and slow.** `kit.scale` (2.0) scales the whole figure, and its clips play at 1 / sqrt(scale) of their speed (a
+  pendulum's pace, `fig.cadence`): a giant walks as something heavy does. A game moving one by a clip's `root_speed`
+  multiplies it by sqrt(scale).
+- **The man's clips** (`kit.anims`: no anims.glb of its own). No clip moves the lower arms: the figure drives them
+  from the upper pair after each clip (`arms2` in `50-figure.js`, `_arms2` in `kchar_figure.gd`). In most clips they
+  keep a guard of their own (forearms forward, hands loosely closed before the belly) and take a share of the upper
+  arms' motion by clip group (`SHARE`: a walk or a block half of it, a blow or a shot little); in climbing, swimming
+  and falling they copy the upper arms whole. They follow with a lag of 0.09 s, and `bodyFix` keeps them out of the
+  body, the thighs and the upper arms. `hold({ R2, L2 })` puts props in the lower hands.
+The record's `arms` (4 or 2) shows or leaves out the lower pair (its skin is materials of its own, `kit.arms2`). The
+giants wear a few of the man's items (the Dalab kilt and sandals, the Voth loincloth, the bead cap, the sun sash; kit
+culture `giants`), and the Giants of Dalab people (`data/peoples.json`) dresses its strangers as patrols (70 %,
+two-armed) or temple guards (30 %, four-armed).
+
 **Cloth** (spring-bone chains): the Voth garments' hanging parts swing. `make_garments.py` picks chains on each
 garment as it builds it (every ~7.5 cm round a skirt or robe hem, ~10 cm across a cape, flap or apron; a bone per
 ~12 cm, shorter near the top), from the row where the cloth starts to hang down to the hem, each chain hanging from
@@ -239,6 +265,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
+| `tools/giant.py` | the Giants of Dalab: the second pair of arms (`make_mpfb.py giant`) | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab and Yuni clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |

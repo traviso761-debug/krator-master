@@ -22,6 +22,7 @@ from scipy.spatial import cKDTree
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decimate
+import giant
 import glbio
 import make_pieces as mp
 
@@ -566,6 +567,10 @@ def colliders(c, J, base_glb, npz):
                 if abs(r1 - r0) > 2e-4:
                     dr[str(ti)] = round(r1 - r0, 4)
         out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr})
+    # a giant's lower arms (giant.py) are copies of the upper: the same capsules on their own joints
+    for k, (a, b2) in enumerate(CAPSULES):
+        if 'Arm' in a and giant.lower(a) in J and giant.lower(b2) in J:
+            out.append(dict(out[k], a=J[giant.lower(a)], b=J[giant.lower(b2)]))
     return out
 
 
@@ -780,13 +785,17 @@ def morph_kit(npz, J):
     bones = [glbio.short(str(b)) for b in npz['bones']]
     D = npz['d_joints']
     joints = {}
+    # a giant's lower-arm joints (giant.py) move as the joints they copy
+    alias = [(J[giant.lower(bn)], k) for k, bn in enumerate(bones) if giant.lower(bn) in J and giant.lower(bn) != bn]
     for t in range(D.shape[0]):
         rows = [[J[bn]] + [round(float(x), 5) for x in D[t, k]] for k, bn in enumerate(bones)
                 if bn in J and np.abs(D[t, k]).max() > 1e-4]
+        rows += [[i] + [round(float(x), 5) for x in D[t, k]] for i, k in alias if np.abs(D[t, k]).max() > 1e-4]
         if rows:
             joints[str(t)] = rows
     race0 = [float(x) for x in npz['race0']]
-    follow = sorted(i for n, i in J.items() if n not in bones)      # joints the rig lacks (face points): ride their parent
+    copied = {i for i, _ in alias}
+    follow = sorted(i for n, i in J.items() if n not in bones and i not in copied)   # joints the rig lacks (face points): ride their parent
     return {'targets': targets, 'morphs': sliders,
             'ancestry': {'african': anc.get('african'), 'asian': anc.get('asian'), 'caucasian': anc.get('caucasian'),
                          'base': race0},
@@ -798,7 +807,9 @@ def hands(c, J):
     space (origin in the closed hand, +Y along the handle out past the index finger, +Z the way the fingers point,
     +X out of the palm) and, per finger joint, the local rotation that closes the hand round a handle"""
     out = {}
-    for side, S in (('R', 'Right'), ('L', 'Left')):
+    for side, S in (('R', 'Right'), ('L', 'Left'), ('R2', 'Right2'), ('L2', 'Left2')):
+        if S + 'Hand' not in c.J:
+            continue
         hand = c.jpos[c.J[S + 'Hand']]
         G = mp.grip_frame(c, S)
         X, Y = G[:3, 0], G[:3, 1]
@@ -871,6 +882,7 @@ def rot_axis(a, t):
 def main():
     body, src = sys.argv[1], sys.argv[2]
     name = 'mpfb_' + body
+    big = body == 'giant'              # giant.py: from the man's export, with a second pair of arms
     pieces = os.path.join(HERE, 'pieces', name)
     data = os.path.join(HERE, 'data', name)
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
@@ -882,12 +894,20 @@ def main():
     roles = turn_glb(os.path.join(src, 'base.glb'), os.path.join(pieces, 'base.glb'),
                      role=lambda m: 'skin' if m.split('.')[-1] in SKIN_PARTS else 'hair' if 'eyebrow' in m else
                      'eye' if EYES in m else None)
+    if big:
+        made = giant.add_arms(os.path.join(pieces, 'base.glb'))
+        for src_mat, mat2 in giant.ARM_MATS.items():
+            if src_mat in roles:
+                roles[mat2] = roles[src_mat]
+        print(name, 'lower arms:', len(made['joints']), 'joints,', made['primitives'])
     c = mp.load(os.path.join(pieces, 'base.glb'))
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     tree = cKDTree(BP)
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
+    if big:
+        man['items'] = [it for it in man['items'] if it['id'] in giant.ITEMS]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     for it in man['items']:
         cl = None
@@ -904,6 +924,8 @@ def main():
             entry['cloth'] = cl['out']
         if culture_of(it['id']):
             entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
+        if big and it['slot'] not in ('hair', 'beard'):
+            entry['culture'] = 'giants'
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
@@ -962,7 +984,11 @@ def main():
         morph = True
         print(name, '%.1f MB of morph deltas' % (sum(os.path.getsize(os.path.join(pieces, f)) for f in os.listdir(pieces)
                                           if f.endswith('.morph.bin')) / 1e6))
-    clips = mp.write_anims(os.path.join(pieces, 'anims.glb'), c)
+    if big:
+        # the man's clips, as they are: the giant is his skeleton plus the lower arms, which no clip moves
+        clips = json.load(open(os.path.join(HERE, 'data', 'mpfb_male', 'skeleton.json')))['clips']
+    else:
+        clips = mp.write_anims(os.path.join(pieces, 'anims.glb'), c)
     names, parents, jnodes, W = mp.skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in mp.FACE})
     if morph:
         morph = morph_kit(npz, {n['name']: i for i, n in enumerate(jnodes)})
@@ -972,10 +998,12 @@ def main():
                'colliders': colliders(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'),
                                       npz if morph else None)},
               open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
-    json.dump({'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
-               'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
-               'tint': {'roles': roles, 'gain': {k: round(1 / srgb_lin(v), 4) for k, v in TINT_MEAN.items()}}},
-              open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
+           'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
+           'tint': {'roles': roles, 'gain': {k: round(1 / srgb_lin(v), 4) for k, v in TINT_MEAN.items()}}}
+    if big:
+        kit.update(giant.kit_extra())
+    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
     print(name, 'height %.2f m' % (c.jpos[c.J['HeadTop_End']][1] if 'HeadTop_End' in c.J else -1), len(items), 'items')
 
 

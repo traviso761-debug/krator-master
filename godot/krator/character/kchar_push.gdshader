@@ -5,7 +5,7 @@
 //   two cloth chains. A soft shell: d from the bone within r + 0.04 lands at r + d * 0.04 / (r + 0.04), so two tiers
 //   of one skirt keep their order; inside a leg a vertex leaves on the side away from the body's axis (kcH), never
 //   behind the knee. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
-//   mantle's hem. kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
+//   mantle's hem (and a giant's lower arms, 10-13). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
 //   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
 shader_type spatial;
@@ -18,8 +18,8 @@ uniform sampler2D ntex : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform float nscale = 0.0;
 uniform float rough = 0.85;
 uniform float metal = 0.0;
-uniform vec4 kcA[10];
-uniform vec4 kcB[10];
+uniform vec4 kcA[14];
+uniform vec4 kcB[14];
 uniform vec3 kcH;
 // 1.2 cm more for a loose top (a robe's hem lies over the skirt it covers), 3.2 cm over trousers
 uniform float kcP = 0.0;
@@ -28,7 +28,7 @@ uniform float kcT = 0.0;
 
 void vertex() {
 	if (kcL > 0.5) {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 14; i++) {
 			if (kcA[i].w <= 0.0) {
 				continue;
 			}

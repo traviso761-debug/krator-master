@@ -130,5 +130,21 @@ peoples.forEach(function(P){
      'crowd: each record redraws from its seed');
 })();
 
+// ---- a Giant of Dalab (tools/giant.py): the lower pair's joints move with the morphs as the upper do, and the giants'
+// strangers come in their two tiers, four-armed temple guards and two-armed patrols ----
+if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function(){
+  var gs = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'mpfb_giant', 'skeleton.json')));
+  var gk = JSON.parse(fs.readFileSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json')));
+  var J = {}; gs.joints.forEach(function(j, i){ J[j.name] = i; });
+  ok(['Left2Shoulder', 'Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Right2HandThumb3'].every(function(n){ return J[n] !== undefined; }) &&
+     gs.joints[J.Left2Arm].parent === J.Left2Shoulder && gs.joints[J.Left2Shoulder].parent === J.Spine2, 'giant: the lower pair hangs from Spine2');
+  ok(gk.scale > 1.5 && gk.arms === 4 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, arms, the man\'s clips, lower grips');
+  var w = KCHAR.morphWeights({ morph:{ height:1, muscle:1 } }, gk), mj = KCHAR.morphJoints(gs, gk, w);
+  ok([0, 1, 2].every(function(a){ return near(mj.d[J.Left2Hand][a], mj.d[J.LeftHand][a], 1e-9); }), 'giant: a lower hand moves with the morphs as the upper does');
+  var G = peoples.filter(function(p){ return p.id === 'giants'; })[0], arms = {};
+  for(var k = 1; k <= 40; k++){ var r = KCHAR.stranger(k, gk, G); arms[r.tier + r.arms] = 1; }
+  ok(arms.temple4 && arms.patrol2 && Object.keys(arms).length === 2, 'giant: temple guards four-armed, patrols two (' + Object.keys(arms) + ')');
+})();
+
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);
