@@ -85,6 +85,19 @@ select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip
 .who button[aria-pressed="true"] { background: var(--bad); color: #fff; border-color: var(--bad); }
 #rv-note { width: 100%; box-sizing: border-box; min-height: 58px; font: 13px/1.4 var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; resize: vertical; }
 #rv-status { font-size: 12px; color: var(--muted); min-height: 1.2em; }
+#pose-box { border-bottom: 1px solid var(--line); }
+#pose-box summary { padding: 10px 16px; cursor: pointer; font: 700 14px/1 var(--display); letter-spacing: .04em; color: var(--muted); }
+#pose-box[open] summary { color: var(--ink); }
+.pose { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 7px; }
+.pose-note { margin: 0; font-size: 12px; color: var(--muted); }
+.pose-body { font-size: 13px; display: flex; gap: 8px; align-items: center; }
+.pose-row { display: grid; grid-template-columns: 124px minmax(0, 1fr) 54px; white-space: nowrap; gap: 8px; align-items: center; font-size: 13px; }
+.pose-row input[type=range] { width: 100%; accent-color: var(--accent); }
+.pose-row input[type=number] { width: 100%; box-sizing: border-box; font: 12px var(--mono); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 5px; padding: 3px 4px; }
+.pose-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.pose-btns button { border: 1px solid var(--line); background: var(--chip); font-size: 12px; padding: 6px 9px; }
+#pose-json { width: 100%; box-sizing: border-box; font: 11px/1.35 var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; resize: vertical; }
+#pose-status { font-size: 12px; color: var(--muted); min-height: 1.2em; }
 
 #ledger-head { padding: 10px 16px 8px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
 .progress { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--none); }
@@ -193,6 +206,18 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
       <textarea id="rv-note" placeholder="What looks off: a hand through the hip, feet sliding, the spear through the head…"></textarea>
       <div id="rv-status" role="status"></div>
     </section>
+    <details id="pose-box">
+      <summary>Posture</summary>
+      <div class="pose">
+        <p class="pose-note">Pitch per joint after every clip, in degrees: negative bends forward. Shoulders: drop lowers them, back draws them back (negative hunches). Live on every figure of the body chosen.</p>
+        <label class="pose-body">Body <select id="pose-body"><option value="mpfb_male">Man and giant</option><option value="mpfb_female">Woman</option></select></label>
+        <div id="pose-rows"></div>
+        <div class="pose-btns"><button id="pose-copy">Copy JSON</button><button id="pose-apply">Apply JSON</button><button id="pose-reset">Reset</button></div>
+        <label class="sr" for="pose-json">Posture JSON</label>
+        <textarea id="pose-json" spellcheck="false" rows="7"></textarea>
+        <div id="pose-status" role="status"></div>
+      </div>
+    </details>
     <div id="ledger-head">
       <div class="progress" aria-hidden="true"><span class="g"></span><span class="f"></span><span class="b"></span></div>
       <div id="tally"></div>

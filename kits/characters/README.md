@@ -339,7 +339,12 @@ the chest pushed forward and the upper body leaning back, so the spine is bent f
 8 and 8 on Spine, Spine1 and Spine2), the man and the giant about 30 (6, 12 and 12: his chest jutted further); the neck
 takes back half of it so the head does not drop and the shoulders are dropped 9 and
 drawn back 10 degrees. The upper arms keep the way the clip points them, so a thrust or a held spear still aims where
-the clip aims it (`fig.posture` holds the numbers). A clip that already stoops (the standing idle) stoops a little more.
+the clip aims it. A clip that already stoops (the standing idle) stoops a little more. The numbers are in
+`data/posture.json` (`bodies`: degrees per joint for `mpfb_male` and `mpfb_female`; the giant takes the man's), which
+both runtimes read; each figure's live copy is `fig.posture`. **The Animation Lab's Posture panel** (under the review
+marks) sets them by hand: a slider per joint for the body chosen, every figure of that body changing at once, in every
+clip. Copy JSON gives the numbers back to paste into `posture.json`'s `bodies`; Apply JSON takes pasted numbers. The
+panel keeps its numbers in the browser until Reset, which goes back to the file.
 **Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,
 so on a still frame (paused, scrubbed, a held pose) the passes after the clip turned last frame's already-turned bone
 again; each bone is put back to the mixer's own output before the mixer runs. The hips' position track is taken out
@@ -378,6 +383,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
 | `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
+| `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |

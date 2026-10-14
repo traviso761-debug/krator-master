@@ -8,10 +8,11 @@
  "data/mpfb_male/kit.json": "418c8fa99030665296647d5aaea46c78b94bef54",
  "data/mpfb_male/skeleton.json": "fbb6554159deacff9889d245d8d33422980bab98",
  "data/peoples.json": "672f182a3391c0e2e0beeff08eada41f1d8381c0",
+ "data/posture.json": "9217c1e191679dd68206a7167fb2f08e4c02f76b",
  "data/props.json": "7325dd1aaea6684898eb2b122bbbb74ebbcd9b83",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "de5eb4cef2b07a603b00048ac98b389f3d435b1a",
- "dist/cosmetic-lab.html": "ac8807fd1f0ed62c730c391109cf44f84ce57fe0",
+ "dist/animation-lab.html": "35b4d5efdb04d339bf6fce4e688f9153a11dd2cd",
+ "dist/cosmetic-lab.html": "17ce180af4cc2e0c5e36221d729d516ad19baec5",
  "pieces/mpfb_female/AfroPonytail.glb": "4651cd4f23689b842b5486aa125918d800be59aa",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "635664da7ec18048859db725bdf567e0bca34aec",
@@ -714,9 +715,9 @@
  "pieces/props/torch.glb": "73a8ca8c85f5239be496cd98715f5ee071603db1",
  "pieces/props/warhammer.glb": "c2fb1f7685aa5b1d21662161218e25c739f0d52e",
  "src/00-head.html": "e05b8873ed43a61f33cf13e47547d788c51ccb99",
- "src/01-animlab.html": "c53d08c9799a62ef5d1e8b323959843ced7d7c71",
+ "src/01-animlab.html": "47609201e63f1bc946f99150c7d2fc0529d2fe12",
  "src/10-rig.js": "52d803d552867c4d42fa07a76eea081f0caba4c0",
- "src/50-figure.js": "7e18e2b7ebace8fb23a39d7f1eaff2e1d575975a",
- "src/90-editor.js": "38d58ca29c0f035680550706e7a29d4e794e010e",
- "src/92-animlab.js": "eb0f7f9f9806ee5c9e3edadaea64555b11990ca0"
+ "src/50-figure.js": "1cdc46cb37131c82000bfeb4a960f16c51240014",
+ "src/90-editor.js": "3e3fcd442cf8bdefdf870cafa1ec07735ded7133",
+ "src/92-animlab.js": "170553ccb1d2db711be8665df57b157d64f5e3bf"
 }

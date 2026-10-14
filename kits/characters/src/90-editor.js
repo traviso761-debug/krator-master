@@ -9,6 +9,7 @@
 */
 (function(){
   var D = KCHAR_DATA, $ = function(id){ return document.getElementById(id); };
+  KCharFigure.posture = (D.posture && D.posture.bodies) || {};     // data/posture.json, before any figure
   var SLOT_LABEL = { head:'Headgear', torso:'Torso & arms', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
   var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman', mpfb_giant:'Giant' };

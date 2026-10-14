@@ -85,6 +85,9 @@ func load_body(data_dir: String, body_id: String) -> void:
 	if FileAccess.file_exists(dir + "/props.json"):
 		for p in JSON.parse_string(FileAccess.get_file_as_string(dir + "/props.json"))["props"]:
 			props[p["id"]] = p
+	if FileAccess.file_exists(dir + "/posture.json"):
+		var pb: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/posture.json"))["bodies"]
+		posture = pb.get(kit.get("body", ""), pb.get("mpfb_male", {}))
 
 
 static func _scene(path: String) -> Node:
@@ -530,44 +533,35 @@ func hold(want: Dictionary) -> void:
 	_after_clip(-1.0)
 
 
-# posture (50-figure.js posture): after each clip the spine is bent forward (degrees per joint, negative forward, the
-# neck taking back "neck" of it) and the shoulders dropped and drawn back, in the skeleton's frame (the figure's)
-const POSTURE := {"spine": {"Spine": -6.0, "Spine1": -8.0, "Spine2": -8.0}, "neck": 0.5, "drop": 9.0, "back": 10.0}
-# the man (and the giant, his skeleton made big) jut the chest further than the woman: his upper back bends more
-const POSTURE_SPINE_MAN := {"Spine": -6.0, "Spine1": -12.0, "Spine2": -12.0}
+# posture (50-figure.js posture): after each clip Spine, Spine1, Spine2, Neck and Head are pitched (degrees in the
+# skeleton's frame, negative forward) and the shoulders dropped and drawn back, by data/posture.json's entry for this
+# body (the man's when it has none). The upper arms keep the way the clip points them
+const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
+var posture := {}
 
 
 func _posture() -> void:
-	if player == null or not player.is_playing():
+	if player == null or not player.is_playing() or posture.is_empty():
 		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
-	# the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
-	# spear aims where the clip aims it
 	var arms := {}
 	for n in ["LeftArm", "RightArm"]:
-		var a := skeleton.find_bone(n)
-		if a >= 0:
-			arms[a] = _gp(a).basis.get_rotation_quaternion()
-	var lean := 0.0
-	var spine: Dictionary = POSTURE["spine"] if kit.get("body", "") == "mpfb_female" else POSTURE_SPINE_MAN
-	for n in spine:
+		var ai := skeleton.find_bone(n)
+		if ai >= 0:
+			arms[ai] = _gp(ai).basis.get_rotation_quaternion()
+	for n in POSTURE_JOINTS:
 		var b := skeleton.find_bone(n)
-		if b < 0:
-			continue
-		var a := deg_to_rad(float(spine[n]))
-		lean += a
-		_turn(b, Quaternion(Vector3(1, 0, 0), -a))
-	var neck := skeleton.find_bone("Neck")
-	if neck >= 0:
-		_turn(neck, Quaternion(Vector3(1, 0, 0), lean * float(POSTURE["neck"])))
+		var a := deg_to_rad(float(posture.get(n, 0.0)))
+		if b >= 0 and a != 0.0:
+			_turn(b, Quaternion(Vector3(1, 0, 0), -a))
 	for sh in [["LeftShoulder", 1.0], ["RightShoulder", -1.0]]:
 		var b := skeleton.find_bone(sh[0])
 		if b < 0:
 			continue
-		_turn(b, Quaternion(Vector3(0, 0, 1), -sh[1] * deg_to_rad(float(POSTURE["drop"]))))
-		_turn(b, Quaternion(Vector3(0, 1, 0), sh[1] * deg_to_rad(float(POSTURE["back"]))))
-	for a in arms:
-		var par := skeleton.get_bone_parent(a)
-		skeleton.set_bone_pose_rotation(a, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[a]).normalized())
+		_turn(b, Quaternion(Vector3(0, 0, 1), -sh[1] * deg_to_rad(float(posture.get("drop", 0.0)))))
+		_turn(b, Quaternion(Vector3(0, 1, 0), sh[1] * deg_to_rad(float(posture.get("back", 0.0)))))
+	for ai in arms:
+		var par := skeleton.get_bone_parent(ai)
+		skeleton.set_bone_pose_rotation(ai, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[ai]).normalized())
 
 
 func _after_clip(dt: float) -> void:

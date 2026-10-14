@@ -877,32 +877,29 @@ function KCharFigure(body, sliders, load){
     var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
     if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
-  /* ---- posture: after each clip the spine is bent forward (POSTURE.spine, degrees per joint, negative forward; the
-     neck takes back POSTURE.neck of it, so the head does not drop) and the shoulders dropped and drawn back
-     (POSTURE.drop, POSTURE.back), in the figure's own frame. The clips, retargeted onto MakeHuman's curved spine,
-     stand with the chest pushed forward and the upper body leaning back ---- */
-  // the man (and the giant, his skeleton made big) jut the chest further than the woman: his upper back bends more
-  var POSTURE = { spine:kit.body === 'mpfb_female' ? { Spine:-6, Spine1:-8, Spine2:-8 } : { Spine:-6, Spine1:-12, Spine2:-12 },
-                  neck:0.5, drop:9, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  /* ---- posture: after each clip the spine, neck and head are pitched (data/posture.json: degrees per joint in the
+     figure's frame, negative forward) and the shoulders dropped and drawn back. The clips, retargeted onto
+     MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
+  // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
+  // copied, so a panel can change one figure's live
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PD = KCharFigure.posture || {};
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0 }, PD[kit.body] || PD.mpfb_male || {});
+  var pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
   function posture(){
     if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is
     self.group.getWorldQuaternion(pG);
     // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
-    // spear aims where the clip aims it (drawn back with the spine, it pointed higher)
+    // spear aims where the clip aims it
     pArms.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pW[i]); });
-    var lean = 0;
-    Object.keys(POSTURE.spine).forEach(function(n){
-      var b = byName[n] !== undefined && bones[byName[n]]; if(!b) return;
-      var a = POSTURE.spine[n] * Math.PI / 180; lean += a;
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -a));
+    PJ.forEach(function(n){
+      var b = byName[n] !== undefined && bones[byName[n]], a = +POSTURE[n] || 0; if(!b || !a) return;
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -a * Math.PI / 180));
     });
-    var neck = byName.Neck !== undefined && bones[byName.Neck];
-    if(neck) turnWorld(neck, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), lean * POSTURE.neck));
     [['LeftShoulder', 1], ['RightShoulder', -1]].forEach(function(sh){
       var b = byName[sh[0]] !== undefined && bones[byName[sh[0]]]; if(!b) return;
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 0, 1).applyQuaternion(pG), -sh[1] * POSTURE.drop * Math.PI / 180));
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 1, 0).applyQuaternion(pG), sh[1] * POSTURE.back * Math.PI / 180));
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 0, 1).applyQuaternion(pG), -sh[1] * (+POSTURE.drop || 0) * Math.PI / 180));
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 1, 0).applyQuaternion(pG), sh[1] * (+POSTURE.back || 0) * Math.PI / 180));
     });
     pArms.forEach(function(k, i){
       if(k < 0) return;
@@ -1049,3 +1046,4 @@ function KCharFigure(body, sliders, load){
   this.dispose = function(){ self.mixer.stopAllAction(); self.group.parent && self.group.parent.remove(self.group); };
 }
 KCharFigure.props = {};      // data/props.json by id (the page fills it)
+KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)

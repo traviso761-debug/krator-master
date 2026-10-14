@@ -99,6 +99,7 @@
   var META = {}, ORDER = [], INFO = {}, PROP = {};
   (D.props || []).forEach(function(p){ PROP[p.id] = p; });
   KCharFigure.props = PROP;
+  KCharFigure.posture = (D.posture && D.posture.bodies) || {};
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   var lead = D.bodies[CAST[0].body].skeleton.clips;
   lead.forEach(function(c){ META[c.name] = c; });
@@ -290,6 +291,76 @@
     });
   }
 
+  /* ---- posture: the Posture panel edits data/posture.json's bodies live (each figure's own copy, fig.posture) and
+     gives them back as JSON to paste into that file. Kept in this browser until Reset ---- */
+  var POSE_KEY = 'kchar.animlab.posture', POSE_ROWS = [['Spine', 'Spine · lumbar', -40, 40], ['Spine1', 'Spine1 · low T', -40, 40],
+    ['Spine2', 'Spine2 · high T', -40, 40], ['Neck', 'Neck', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -20, 30],
+    ['back', 'Shoulder back', -30, 30]];
+  function poseFile(){ return JSON.parse(JSON.stringify((D.posture && D.posture.bodies) || {})); }
+  function wirePose(){
+    var pose = poseFile(), body = $('pose-body'), rows = $('pose-rows'), txt = $('pose-json'), inputs = {};
+    try { var kept = JSON.parse(localStorage.getItem(POSE_KEY) || 'null'); if(kept && typeof kept === 'object') pose = kept; } catch(e){}
+    function status(t){ $('pose-status').textContent = t; }
+    function clean(p){
+      var out = {};
+      ['mpfb_male', 'mpfb_female'].forEach(function(b){
+        var src = (p && p[b]) || {}, o = out[b] = {};
+        POSE_ROWS.forEach(function(r){ var v = +src[r[0]]; o[r[0]] = isFinite(v) ? Math.round(v * 2) / 2 : 0; });
+      });
+      return out;
+    }
+    pose = clean(pose);
+    function save(){ try { localStorage.setItem(POSE_KEY, JSON.stringify(pose)); } catch(e){} }
+    function show(){ txt.value = JSON.stringify(pose, null, 1); }
+    function apply(){
+      figs.forEach(function(s){
+        var key = pose[s.f.kit.body] ? s.f.kit.body : 'mpfb_male';
+        Object.assign(s.f.posture, pose[key]);
+        s.f.update(0);
+      });
+    }
+    function fill(){
+      var p = pose[body.value];
+      POSE_ROWS.forEach(function(r){ inputs[r[0]].range.value = p[r[0]]; inputs[r[0]].num.value = p[r[0]]; });
+    }
+    POSE_ROWS.forEach(function(r){
+      var row = document.createElement('div'), lab = document.createElement('label'), range = document.createElement('input'), num = document.createElement('input');
+      row.className = 'pose-row';
+      range.type = 'range'; range.min = r[2]; range.max = r[3]; range.step = 0.5; range.id = 'pose-' + r[0];
+      num.type = 'number'; num.min = r[2]; num.max = r[3]; num.step = 0.5; num.setAttribute('aria-label', r[1] + ' degrees');
+      lab.textContent = r[1]; lab.htmlFor = range.id;
+      function set(v){
+        v = Math.max(r[2], Math.min(r[3], +v || 0));
+        pose[body.value][r[0]] = v; range.value = v; num.value = v;
+        apply(); show(); save(); status('');
+      }
+      range.addEventListener('input', function(){ set(range.value); });
+      num.addEventListener('change', function(){ set(num.value); });
+      inputs[r[0]] = { range:range, num:num };
+      row.appendChild(lab); row.appendChild(range); row.appendChild(num); rows.appendChild(row);
+    });
+    body.addEventListener('change', fill);
+    $('pose-copy').addEventListener('click', function(){
+      show();
+      var done = function(){ status('Copied: paste it to Claude, or into data/posture.json as "bodies".'); };
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(done, function(){ txt.select(); status('Selected: copy it with Ctrl+C.'); });
+      else { txt.select(); status('Selected: copy it with Ctrl+C.'); }
+    });
+    $('pose-apply').addEventListener('click', function(){
+      try {
+        var p = JSON.parse(txt.value);
+        pose = clean(p && p.bodies ? p.bodies : p);
+        fill(); apply(); show(); save(); status('Applied.');
+      } catch(e){ status('Not valid JSON: ' + e.message); }
+    });
+    $('pose-reset').addEventListener('click', function(){
+      pose = clean(poseFile());
+      try { localStorage.removeItem(POSE_KEY); } catch(e){}
+      fill(); apply(); show(); status('Back to data/posture.json.');
+    });
+    fill(); show(); apply();
+  }
+
   /* ---- reviews ---- */
   var reviews = {}, db = null, local = true, KEY = 'kchar.animlab.reviews';
   try { reviews = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ reviews = {}; }
@@ -408,6 +479,7 @@
       $('cloth').setAttribute('aria-pressed', on);
       figs.forEach(function(x){ x.f.cloth = on; x.f.update(0); });
     });
+    wirePose();
     $('play').addEventListener('click', function(){ setPaused(!paused); });
     $('restart').addEventListener('click', function(){ setTime(0); });
     $('speed').addEventListener('change', function(){ speed = +$('speed').value; });

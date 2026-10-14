@@ -26,7 +26,7 @@
   (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
   two apart; the folding itself is not fixed.
 - **The posture fix is one rule for every clip.** The spine is bent forward and the shoulders dropped and drawn back
-  by fixed angles after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
+  by fixed angles (`data/posture.json`, set by hand in the Animation Lab's Posture panel) after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
   stoops (the standing idle, the combat stance) stoops further. The cause, the retarget straightening MakeHuman's
   spinal curve, is not fixed in the retarget itself.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
