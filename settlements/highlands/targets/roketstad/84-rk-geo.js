@@ -11,7 +11,7 @@
 // smithies. On another rise to the east, the ruined spaceport: a pentagon of five Launch Arcology sites (four launched —
 // the pads stand empty — and one that never went, ruined), the Ancients' Starport in the middle, tanks, fuel centres,
 // helipads, and scrapyards and scrap smithies among them; the Salvagers' Guild by the spaceport. Farms along the N and
-// S highways. Forest (the NW-lowlands biome, humid-subtropical tract) on everything not built or ploughed.
+// S highways. Forest (the North Highlands biome, biomes/nhighlands: its temperate band) on everything not built or ploughed.
 window.CITY=true;
 const RK={
  WORLD:3400,                        // side of the terrain square
@@ -29,7 +29,7 @@ const RK={
  SCRAP:{x:190,z:32,R:17},           // Scraptown's plaza, on the port table's west rim
  INDUSTRY_X:-120,                   // the scrap and industrial district: everything east of this, inside the wall
  QUALITY:1,
- FOREST:2.2,FOREST_LOD:1.7,        // forest stocking (x the biome showcase) and the LOD stretch it is paid for with
+ FOREST:1,                          // tree stocking: x the North Highlands kit's showcase density (its quality)
 };
 const FRAME_HOOKS_PRE=[];
 const SEED_RK=7331;

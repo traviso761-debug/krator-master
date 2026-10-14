@@ -21,3 +21,26 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] **The colour pattern sheets take the material library** (2026-10-06): the glazed tile of the Temple of the Pantheon and the wall towers
       (hTile*), the green harlequin dome and the arcology's labyrinth; 88y keeps each map's own repeat (MATLIB_REPEAT). The world-UV tile twins
       (88-hl-dress.js) still clone the procedural tile. ?mat=proc shows the old look.
+
+## Roketstad's forest: the North Highlands kit (2026-10-14)
+- [x] Roketstad vendored the north-west lowlands biome and an old copy of the biome core (`targets/roketstad/86-bio-10..70`,
+      core version `eastabyss-1`; `--vendor-check` never covered them). It now reads `core/space`, `core/biome` and
+      `biomes/nhighlands` in place (build.py `TARGET_BIO`); only the host binding `86-bio-45-init.js` is local, and
+      `--vendor-check` says what the band reads. The mask is the same function (core/mask grids, no canvas pixels); the
+      climate fields' noise is KRAND's; the host seed is `KRAND.child(SEED_RK,'nhighlands')` (the kit's passes reseed
+      themselves from their own constants, as on its own page). The town is unchanged: the same 2308 town volumes, 852,845
+      kit instances, plots, streets and placements; `verify.py --assert` passes before and after. Counts, before -> after:
+      trees 4325 (1243 hero, 3082 far) -> 7366 (1715 hero, 5651 far; 33 trumpet colonies); biome instances 93.5k -> 311k;
+      biome triangles held 1.87 M -> 4.10 M (scene 17.3 M -> 19.5 M of the 32 M budget); `REG` 3482 -> 3700 (the old
+      kit put 1174 hero trees in it, the new binding 1392); the build 18.9 s -> 22.6 s (biome 6.1 -> 10.6 s), on a busy
+      machine. The numbers per view are in README.md.
+- [ ] **The forest's detail is decided at placement, round the spine** (the kit's rule, biomes/WORLD.md item 8): a tree
+      past ~560 m of the N, S or W gate or the port is only ever an impostor, so the forest off the town's NE and SE
+      flanks is impostors up close. A ring of eight spine points round the wall gave hero trees all along the edge but
+      held ~4.6 M more triangles and drew 40% more at the opening view; the three gates were the trade.
+- [ ] **Draw calls are up** (~400 to ~570 with LOD on, from ~290 to ~400): the kit's near floor is ~30 item types, one
+      call per chunk in range (the kit's own KNOWN_ISSUES, "the near-band floor"). Under the 1200 budget.
+- [ ] **The understorey trumpets are not in `REG`** (they are core/tags records): a colony's small stems are drawn
+      merged, and the probe found no sample inside seven of them, so `registered-volumes-non-empty` failed with them in.
+- [ ] Fallen logs test the mask every ~4 m along their length (the kit's `log()`), so a log could in principle bridge a
+      lane narrower than that; none was seen in the screenshots.
