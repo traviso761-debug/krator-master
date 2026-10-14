@@ -104,6 +104,13 @@ The toy's street method run on the owner's site (`site/voth-site.json`), over Vo
 ground edits, then the country round it and the ferry and elephant bug lines. The step slider shows the city after any
 step (0–14). **lots**, **wealth**, **transit** and the **inspector** are toggles.
 
+Since 2026-10-14 the city is a `core/city` instance (`35-vc-steps.js`: `VC.city = KCITY.create({...})`, its steps as
+data, its hooks and finish): steps 0-5 call core's site layer with Voth's data (`30-vc-site.js`: the role table
+`VC.ROLES`, the zone, the avenues and rings, the highways, the wall's records; `VC.terrGrid` takes the banks and gate
+pads), steps 6-8 and the infill's reach are core's defaults, and the road, field and footprint hashes are core's index
+on core/space (`VC.clashWide` is folded into `SL.clash`). The placement did not move (hash `ff007aab`, `python3
+verify.py dist/voth-city.html --hash`), and the plan's Export button works (it threw).
+
 The sidebar lists the ferry and elephant bug lines: stops (and the map edges a line enters or leaves by), vehicles and
 the time for one round. Click a line to pick it out on the map.
 

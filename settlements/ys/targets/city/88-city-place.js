@@ -58,11 +58,12 @@ function ysPlMole(name,poly,y,soft,o){o=o||{};const m={name,poly,y,soft:soft==nu
 // inside the edge (the box must be wholly on the mole: the ground check refuses a corner in the water or on a terrace)
 function ysPlEdgeRun(m,b,o){const st=ysPlStream('edge:'+(o.tag||''),b);const P=m.poly,c=m.star||[(m.x0+m.x1)/2,(m.z0+m.z1)/2];let n=0;
  for(let i=0;i<P.length;i++){const a=P[i],q=P[(i+1)%P.length];const dx=q[0]-a[0],dz=q[1]-a[1],L=Math.hypot(dx,dz)||1;const tx=dx/L,tz=dz/L;let nx=-tz,nz=tx;if((c[0]-(a[0]+q[0])/2)*nx+(c[1]-(a[1]+q[1])/2)*nz>0){nx=-nx;nz=-nz;}   /* outward */
-  const ry=ysPlFacing(nx,nz);let t=3;while(t<L-3&&n<(o.max||99)){if(st.chance(PL_GARDEN[o.kind]||0)){t+=st.range(8,16);continue;}
-   const key=ysPlPick(st,o.pool),D=HYK.defs[key];if(t+D.w>L-3)break;const s=t+D.w/2;const cx=a[0]+tx*s-nx*(D.d/2+2),cz=a[1]+tz*s-nz*(D.d/2+2);
-   const B=ysPlBox(cx,cz,D.w/2+1,D.d/2+1,ry,key);{const cl=ysPlClash(B);if(cl){ysPlRefuse('occupied by '+ysPlWhat(cl));t+=6;continue;}}
-   const y=ysPlGround(B,o.land?undefined:{min:m.y-.5,slope:1});if(y==null){t+=6;continue;}
-   ysPlBld(key,B,o.land?y:m.y,o.why,b,st);n++;t+=D.w+st.range(...PL_GAP[o.kind]);}}
+  const ry=ysPlFacing(nx,nz);
+  n+=KCITY.prim.frontageRun({t0:3,t1:L-3,max:(o.max||99)-n,skip:()=>st.chance(PL_GARDEN[o.kind]||0)?st.range(8,16):0,attempt:t=>{
+   const key=ysPlPick(st,o.pool),D=HYK.defs[key];if(t+D.w>L-3)return {stop:true};const s=t+D.w/2;const cx=a[0]+tx*s-nx*(D.d/2+2),cz=a[1]+tz*s-nz*(D.d/2+2);
+   const B=ysPlBox(cx,cz,D.w/2+1,D.d/2+1,ry,key);{const cl=ysPlClash(B);if(cl){ysPlRefuse('occupied by '+ysPlWhat(cl));return {adv:6};}}
+   const y=ysPlGround(B,o.land?undefined:{min:m.y-.5,slope:1});if(y==null)return {adv:6};
+   const rec=ysPlBld(key,B,o.land?y:m.y,o.why,b,st);return {rec,adv:D.w+st.range(...PL_GAP[o.kind])};}}).n;}
  return n;}
 function ysPlBlockPoly(b,u0,u1,v0,v1){return [[u0,v0],[u1,v0],[u1,v1],[u0,v1]].map(q=>ysPlAt(b,q[0],q[1]));}
 function ysPlBoxPoly(B){return [[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[B.cx+B.ux[0]*k[0]*B.hw+B.uz[0]*k[1]*B.hd,B.cz+B.ux[1]*k[0]*B.hw+B.uz[1]*k[1]*B.hd]);}
@@ -89,7 +90,7 @@ function ysPlByName(key,x,z,ry,why,b,o){o=o||{};const t=ysPlTry(key,x,z,ry,o);if
 function ysPlSeek(key,cands,ry,why,b,o){let last='no candidate';for(const c of cands){const r=typeof ry==='function'?ry(c):ry;const t=ysPlTry(key,c[0],c[1],r,o);if(typeof t==='string'){last=t;continue;}
   return ysPlBld(key,t.B,t.y,why,b,null,Object.assign({x:c[0],z:c[1]},(o&&o.extra)||{}));}return ysPlRefuse(last);}
 // candidates in a block: a preferred offset first, then a 12 m grid over the built square nearest it
-function ysPlCands(b,u0,v0,h){const out=[ysPlAt(b,u0,v0)];const g=[];for(let u=-h;u<=h;u+=12)for(let v=-h;v<=h;v+=12)g.push([u,v,Math.hypot(u-u0,v-v0)]);g.sort((p,q)=>p[2]-q[2]);for(const q of g)out.push(ysPlAt(b,q[0],q[1]));return out;}
+function ysPlCands(b,u0,v0,h){return KCITY.prim.gridCands(u0,v0,h,12,(u,v)=>ysPlAt(b,u,v));}
 
 // ---------------------------------------------------------------- reserved before anything: streets, canals, highways
 for(const s of LAYOUT.streets)ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:'+s.kind));
@@ -276,14 +277,14 @@ function ysPlSides(b,h){const S=[[PL_U,PL_V],[[-PL_U[0],-PL_U[1]],PL_V],[PL_V,PL
  return S.map(([n,t])=>({n,t,mx:b.x+n[0]*h,mz:b.z+n[1]*h})).sort((p,q)=>Math.hypot(p.mx-CITY.HEAD[0],p.mz-CITY.HEAD[1])-Math.hypot(q.mx-CITY.HEAD[0],q.mz-CITY.HEAD[1]));}
 function ysPlFront(b,o){const st=ysPlStream('front:'+(o.tag||''),b);const pool=o.pool,h=o.h||91,sides=ysPlSides(b,h).filter(S=>!o.only||o.only.some(n=>n[0]*S.n[0]+n[1]*S.n[1]>.9)).slice(0,o.sides||4);let n=0;
  for(const S of sides){let t=-h+4;const ry=o.inward?ysPlFacing(-S.n[0],-S.n[1]):ysPlFacing(S.n[0],S.n[1]);   /* inward: a courtyard ring, backs to the street frontage */
-  while(t<h-4&&n<(o.max||99)){if(st.chance(PL_GARDEN[o.kind]||0)){t+=st.range(12,22);continue;}
-   let key,w,d,fq=null,wish=null;if(o.kind==='foreign'){fq=o.foreign;const f=ysPlForeignPick(st,fq,b.wealth);if(!f)break;w=f.w;d=f.d;wish=f.key;key=null;}else{key=ysPlPick(st,pool);const D=HYK.defs[key];w=D.w;d=D.d;}
-   if(t+w>h-4)break;const s=t+w/2;const cx=b.x+S.n[0]*(h-d/2)+S.t[0]*s,cz=b.z+S.n[1]*(h-d/2)+S.t[1]*s;
-   const B=ysPlBox(cx,cz,w/2+1,d/2+1,ry,key||'slot');{const c=ysPlClash(B);if(c){ysPlRefuse('occupied by '+ysPlWhat(c));t+=6;continue;}}
-   const y=ysPlGround(B,o.ground);if(y==null){t+=6;continue;}
+  n+=KCITY.prim.frontageRun({t0:t,t1:h-4,max:(o.max||99)-n,skip:()=>st.chance(PL_GARDEN[o.kind]||0)?st.range(12,22):0,attempt:t=>{
+   let key,w,d,fq=null,wish=null;if(o.kind==='foreign'){fq=o.foreign;const f=ysPlForeignPick(st,fq,b.wealth);if(!f)return {stop:true};w=f.w;d=f.d;wish=f.key;key=null;}else{key=ysPlPick(st,pool);const D=HYK.defs[key];w=D.w;d=D.d;}
+   if(t+w>h-4)return {stop:true};const s=t+w/2;const cx=b.x+S.n[0]*(h-d/2)+S.t[0]*s,cz=b.z+S.n[1]*(h-d/2)+S.t[1]*s;
+   const B=ysPlBox(cx,cz,w/2+1,d/2+1,ry,key||'slot');{const c=ysPlClash(B);if(c){ysPlRefuse('occupied by '+ysPlWhat(c));return {adv:6};}}
+   const y=ysPlGround(B,o.ground);if(y==null)return {adv:6};
    if(key)ysPlBld(key,B,y,o.why,b,st);else{ysPlTake(B);const slot={kind:'foreign',foreign:fq,swap:PL_SWAP[fq],wish,x:cx,z:cz,ry,w,d,y,block:b.i+','+b.j,box:B};PLACE.slots.push(slot);
     if(o.standIn){const fit=PL_POOL.middle.filter(([k])=>HYK.defs[k].w<=w&&HYK.defs[k].d<=d);if(fit.length){const k2=ysPlPick(st,fit);const r=ysPlBld(k2,ysPlBox(cx,cz,HYK.defs[k2].w/2,HYK.defs[k2].d/2,ry,k2),y,o.why+' stand-in',b,st);r.standIn=true;slot.standIn=r;}}}
-   n++;t+=w+st.range(...PL_GAP[o.kind]);}}
+   return {rec:true,adv:w+st.range(...PL_GAP[o.kind])};}}).n;}
  return n;}
 const PL_SWAP={iziz:['vern_*'],republic:['hl_rep_*'],voth:['voth_embassy','voth_townhouse_*']};
 
@@ -549,9 +550,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // instead (not reserved: the biome may plant it); at one in eight the infill was 280 buildings and 4.4 M triangles, the
  // city 29.1 M of its 30 M.
  {const st=ysPlStream('central infill');const P=YS_CENTRAL,H=CITY.HEAD;const uv=p=>[(p[0]-H[0])*PL_U[0]+(p[1]-H[1])*PL_U[1],(p[0]-H[0])*PL_V[0]+(p[1]-H[1])*PL_V[1]];
-  const us=P.map(uv),u0=Math.min(...us.map(q=>q[0])),u1=Math.max(...us.map(q=>q[0])),v0=Math.min(...us.map(q=>q[1])),v1=Math.max(...us.map(q=>q[1]));
-  const cands=[];for(let u=u0;u<=u1;u+=8)for(let v=v0;v<=v1;v+=8){const x=H[0]+PL_U[0]*u+PL_V[0]*v,z=H[1]+PL_U[1]*u+PL_V[1]*v;if(ysPlInPoly(P,x,z))cands.push([x,z,st.next()]);}
-  cands.sort((p,q)=>p[2]-q[2]);
+  const cands=KCITY.prim.packPolygon(P,{frame:{o:H,u:PL_U,v:PL_V},step:8,st,inside:ysPlInPoly});   /* core/city's lattice: the same points in the same draws' order */
   const DIRS=[PL_U,[-PL_U[0],-PL_U[1]],PL_V,[-PL_V[0],-PL_V[1]]],notStreet=/^(?!street|highway)/;
   const streetAlong=(x,z,n)=>{for(let t=6;t<=60;t+=6)if(ysPlClash(ysPlBox(x+n[0]*t,z+n[1]*t,1.5,1.5,0,'probe'),notStreet))return t;return 1e9;};
   const yards=[];let n=0;
@@ -560,7 +559,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
    const g=ysBlockIJ(x,z),b=ysBlock(Math.round(g[0]),Math.round(g[1]));if(!b||/^(farm|river_mouth|arena)$/.test(b.use))continue;
    if(st.chance(.3)){yards.push(ysPlBox(x,z,8,8,PL_RY,'yard'));continue;}
    const pool=b.use==='industry'?PL_INDUSTRY_SMALL:PL_SMALL[b.wealth]||PL_SMALL.middle;const key=ysPlPick(st,pool),D=HYK.defs[key];
-   let order=DIRS.map(d=>[d,streetAlong(x,z,d)+st.next()]).sort((p,q)=>p[1]-q[1]);
+   let order=KCITY.prim.faceNearestStreet([x,z],DIRS,(p,d)=>streetAlong(p[0],p[1],d),()=>st.next());
    /* no street within 24 m: front the nearest yard within 30 m, so the quarter's middle builds small courts (Oct 12 2026) */
    if(order[0][1]>25){let Y=null,yd=30;for(const Q of yards){const dd=Math.hypot(Q.cx-x,Q.cz-z);if(dd<yd){yd=dd;Y=Q;}}
     if(Y)order=DIRS.map(d=>[d,-(d[0]*(Y.cx-x)+d[1]*(Y.cz-z))]).sort((p,q)=>p[1]-q[1]);}

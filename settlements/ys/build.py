@@ -103,6 +103,10 @@ TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<n
 # placement pass (PLAN.md P3) draws from KRAND streams and cell seeds, never from the lineage's rng() or the
 # sin-based h3/fbm, so the city's layout reproduces in Godot (GODOT.md item 4; GODOT-PLAN.md Phase 2).
 TARGET_CORE = {'city': ['rand']}
+# single core fragments a target takes (not a whole module): the city's placement pass walks its frontages, ranks its
+# candidates and lays its lattice infill with core/city's shared primitives (33-city-strategies.js: KCITY.prim
+# frontageRun, gridCands, packPolygon, faceNearestStreet), the same functions core/city's strategies run on
+TARGET_CORE_FILES = {'city': ['city/33-city-strategies.js']}
 
 
 def srcpath(f, base=None):
@@ -200,6 +204,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js', '88-city-sunk.js',
     '86-city-edits.js', '94-city-editor.js',   # the edits as data, and the live editor (no builder, no reseed)
+    '33-city-strategies.js',   # core/city's shared primitives (data only: the city's placement draws its KRAND streams through them)
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '26-matlib-pack.js', '79z-ys-matlib.js', '86-bio-00-matlib-pack.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
     '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
@@ -309,7 +314,11 @@ def build_one(target, do_checks):
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})
-    tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for rel in TARGET_CORE_FILES.get(target, []):
+        f = rel.split('/')[-1]
+        if f not in src:
+            src[f] = os.path.join(ROOT, 'core', *rel.split('/'))
+    tgt ={f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))

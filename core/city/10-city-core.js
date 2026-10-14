@@ -2,10 +2,19 @@
 /* [G data] Pure functions and plain arrays only: no THREE, no DOM. Every layout pass below reads these.
    Coordinates are metres: x east, z SOUTH (north is -z), y up. A point is [x, z]. */
 
+/* KCITY: the module's namespace (the instance, 40-city-kcity.js; the index, 12; the ground, 15; the site, 25; the
+   strategies, 33). SL, PLAN and TUNE are the bound instance's view (KCITY.bind): the names Voth's fragments read. */
+var KCITY = { version: 1 };
+var TUNE = null;
+
 /* one seeded stream per pass: SL.stream(n) restarts from the pass's own seed, so a change in one pass
-   cannot shift the draws of the next (the same rule as Voth's reseed(N)) */
-var SL = { seed: 7 };
+   cannot shift the draws of the next (the same rule as Voth's reseed(N)). SL.rand 'krand' (a new city's choice,
+   KCITY.create({rand: 'krand'})) draws the same calls from core/rand instead: KRAND.stream seeded by
+   KRAND.hash(KRAND.child(seed, 'core/city'), n), so a stream depends on (world, step, way) and nothing drawn before
+   it. Voth keeps SL's own streams (moving it is a layout change, an owner-reviewed step of its own: PLAN.md). */
+var SL = { seed: 7, rand: null };
 SL.stream = function (n) {
+  if (SL.rand === 'krand') return KCITY.krandStream(SL.seed, n);
   var st = ((SL.seed * 2654435761) ^ (n * 40503)) >>> 0;
   var R = {};
   R.rnd = function () { st = (st + 0x6D2B79F5) >>> 0; var t = st; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -15,6 +24,19 @@ SL.stream = function (n) {
   R.chance = function (p) { return R.rnd() < p; };
   return R;
 };
+/* the same calls on a KRAND stream: rnd, rr, ri, pick and chance read as SL's do, only the generator differs */
+KCITY.wrapStream = function (s) {
+  var R = {};
+  R.rnd = function () { return s.next(); };
+  R.rr = function (a, b) { return a + (b - a) * R.rnd(); };
+  R.ri = function (a, b) { return Math.floor(R.rr(a, b + 1)); };
+  R.pick = function (arr) { return arr[Math.floor(R.rnd() * arr.length) % arr.length]; };
+  R.chance = function (p) { return R.rnd() < p; };
+  return R;
+};
+KCITY.krandStream = function (seed, n) { return KCITY.wrapStream(KRAND.stream(KRAND.hash(KRAND.child(seed, 'core/city'), n))); };
+/* a stream for one cell of a named pass (a block, a lot, a way): KRAND.cell, so the cell reruns alone */
+KCITY.cellStream = function (seed, name, i, j) { return KCITY.wrapStream(KRAND.stream(KRAND.cell(KRAND.child(seed, name), i, j))); };
 
 /* value noise, fbm: hashed lattice, smooth-stepped */
 function slHash(i, j) { var h = Math.imul(i, 374761393) + Math.imul(j, 668265263) + SL.seed * 982451653; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
@@ -63,6 +85,18 @@ function inPoly(p, P) {
     if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c;
   }
   return c;
+}
+/* the distance between a polygon (an OBB's corners) and segment ab: 0 when they touch or one holds the other */
+function polySegDist(C, a, b) {
+  if (inPoly(a, C) || inPoly(b, C)) return 0;
+  var d = Infinity;
+  for (var i = 0; i < C.length; i++) {
+    var p = C[i], q = C[(i + 1) % C.length];
+    var den = (q[0] - p[0]) * (b[1] - a[1]) - (q[1] - p[1]) * (b[0] - a[0]);
+    if (den) { var t = ((a[0] - p[0]) * (b[1] - a[1]) - (a[1] - p[1]) * (b[0] - a[0])) / den, u = ((a[0] - p[0]) * (q[1] - p[1]) - (a[1] - p[1]) * (q[0] - p[0])) / den; if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0; }
+    d = Math.min(d, segDist(p, a, b), segDist(a, p, q), segDist(b, p, q));
+  }
+  return d;
 }
 function polyEdgeDist(p, P) { var d = Infinity; for (var i = 0; i < P.length; i++) d = Math.min(d, segDist(p, P[i], P[(i + 1) % P.length])); return d; }
 function scalePolyTo(P, area) { var c = polyCentroid(P), k = Math.sqrt(area / Math.abs(polyArea(P))); return P.map(function (p) { return [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k]; }); }
@@ -137,9 +171,9 @@ function obbCorners(o) {
 }
 
 /* ============================== THE OCCUPANCY RASTER ==============================
-   One 2 m grid over the walled city: what every cell holds (a code) and who owns it (a lot or a way id).
+   One grid (TUNE.cell: Voth 2.5 m over +-2.48 km) over the build zone: what every cell holds (a code) and who owns it (a lot or a way id).
    Lots, streets, parks and footprints are stamped into it; placement checks and the A* street router read it. */
-var OCC = { FREE: 0, STREET: 1, LOT: 2, HARD: 3, OUT: 4, RESERVE: 5, ALLEY: 6, GREEN: 7 };
+var OCC = { FREE: 0, STREET: 1, LOT: 2, HARD: 3, OUT: 4, RESERVE: 5, ALLEY: 6, GREEN: 7, VERGE: 8 };   /* VERGE: beside a highway: streets cross it, lots do not stand on it */
 function Raster(half, cell) {
   var R = this; R.half = half; R.c = cell; R.n = Math.ceil(2 * half / cell);
   var N = R.n * R.n;

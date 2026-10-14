@@ -27,6 +27,9 @@ SL.addWay = function (cls, pts, step, opt) {
   var hit = {};
   if (cls !== 'alley') for (var i = 1; i < P.length; i++) R.eachNearSeg(P[i - 1], P[i], w / 2 + 0.6, function (k) { if (R.occ[k] === OCC.LOT) hit[R.own[k]] = 1; });
   var knocked = Object.keys(hit).map(Number).map(function (id) { return PLAN.lots[id]; }).filter(function (L) { return L && L.died == null; });
+  /* the exact-streets rule (TUNE.exact, opt-in): every standing building (not a civic one or a landmark: the routes keep
+     off those) whose footprint the carriageway reaches is knocked out too, not only those whose lot cells it crossed */
+  if (TUNE.exact && cls !== 'alley') SL.underWay(P, w).forEach(function (L) { if (knocked.indexOf(L) < 0) knocked.push(L); });
   knocked.forEach(function (L) { SL.killLot(L, step); });
   /* 2. stamp the street, and its distance field for the spacing rule */
   var code = cls === 'alley' ? OCC.ALLEY : OCC.STREET, band = w / 2 + SL.minSpacing + 2;
@@ -43,7 +46,23 @@ SL.addWay = function (cls, pts, step, opt) {
   /* 3. what can be saved of each knocked lot: a smaller lot, else park and plaza */
   knocked.forEach(function (L) { SL.salvage(L, way, step); });
   way.knocked = knocked.length;
+  if (TUNE.exact) SL.roads.addWay(way);
   return way;
+};
+/* the standing buildings (not civic, not landmarks) whose footprints a carriageway of width w along P reaches */
+SL.underWay = function (P, w) {
+  var out = [];
+  for (var i = 1; i < P.length; i++) {
+    var a = P[i - 1], b = P[i], m = V.lerp(a, b, 0.5), q = obb(m, V.norm(V.sub(b, a)), V.dist(a, b) / 2 + w / 2, w / 2);
+    SL.index.all(q).forEach(function (L) { if (!L.civic && L.cls !== 'landmark' && out.indexOf(L) < 0 && polySegDist(obbCorners(L.bo), a, b) < w / 2 - 0.05) out.push(L); });
+  }
+  return out;
+};
+/* the exact-streets rule in tryLot: a building whose footprint reaches any way's carriageway */
+SL.streetHit = function (bo) {
+  var C = obbCorners(bo), r = Math.hypot(bo.hw, bo.hd), H = SL.roads.sp.query(bo.c[0], bo.c[1], r);
+  for (var i = 0; i < H.length; i++) { var s = H[i]; if (s.way.dead) continue; if (polySegDist(C, s.a, s.b) < s.hw - 0.05) return s.way; }
+  return null;
 };
 
 /* ---------------------------------------------------------------- lots */
@@ -64,22 +83,41 @@ SL.tryLot = function (way, side, s, item, step, cls, extra) {
   /* exact: the raster samples cell centres, so on a bend a corner wedge can slip between them */
   var clash = SL.clash(bo);
   if (clash) return { fail: { code: OCC.LOT, own: clash.id } };
+  /* opt-in (15-city-ground.js): the world's ground predicate, then the stance; a world that sets neither is unchanged */
+  if (SL.groundOk && !SL.groundOk(bo, { way: way, side: side, s: s, item: item, cls: cls })) return { fail: { code: -2 } };
+  if (TUNE.exact && SL.streetHit(bo)) return { fail: { code: OCC.STREET } };
+  var st = TUNE.stance ? KCITY.lotStance(TUNE.stance, bo, item, way, side, s) : null;
+  if (TUNE.stance && !st) return { fail: { code: -3 } };
   var L = {
     id: PLAN.lots.length, cls: cls, key: item.key, v: item.v, slot: extra && extra.slot || 0, wealth: extra && extra.wealth != null ? extra.wealth : 0.5,
     x: g.bc[0], z: g.bc[1], y: 0, ry: ryFacing(V.mul(g.n, -1)), w: item.w, d: item.d, h: item.h,
     lot: g.o, way: way.id, side: side, s: s, born: step, died: null, run: extra && extra.run, civic: cls === 'civic'
   };
-  L.y = (extra && extra.padded) ? addPad(bo, 12) : baseY(bo);
+  L.y = st ? st.y : (extra && extra.padded) ? CG.pad(bo, 12) : CG.foot(bo);
+  if (st) L.drop = st.drop;
   L.bo = bo;
   PLAN.lots.push(L);
   R.stampPoly(obbCorners(g.o), cls === 'civic' ? OCC.HARD : OCC.LOT, L.id);
   SL.hashLot(L);
+  SL.register(L);
   return L;
 };
-/* a 40 m spatial hash of standing building footprints, for the exact overlap test */
-SL.HASH = new Map();
+/* standing building footprints, for the exact overlap test: the bound instance's box index (12-city-index.js), on
+   KSPACE. SL.HASH is the same index's old 40 m bucket Map ('x,z' -> lots), kept only for readers that still walk it
+   (Voth's simulation fragments, 42-vc-sim-places.js) */
+SL.index = KCITY.boxIndex({ legacy: true });
+SL.HASH = SL.index.legacy;
 SL.hkey = function (x, z) { return Math.floor(x / 40) + ',' + Math.floor(z / 40); };
-SL.hashLot = function (L) { var k = SL.hkey(L.x, L.z); (SL.HASH.get(k) || SL.HASH.set(k, []).get(k)).push(L); };
+SL.hashLot = function (L) { SL.index.add(L); };
+/* core/tags (opt-in: KCITY.create({tags})): a placed lot becomes a building record before anything draws it; a lot
+   knocked out is removed (its id is never reused). A world that pushes lots itself calls SL.register(L) too */
+SL.tags = null;
+SL.register = function (L) {
+  if (!SL.tags || L.tag) return;
+  var r = SL.tags.add({ 'class': L.civic || L.cls === 'landmark' ? 'landmark' : 'building', key: L.key, at: [L.x, L.y, L.z], ry: L.ry, size: [L.w, L.d, L.h || 0],
+    note: L.cls, src: 'core/city' });
+  if (r) L.tag = r.id;
+};
 SL.pen = function (A, B) {
   var m = Infinity, axes = [A.u, A.v, B.u, B.v];
   for (var i = 0; i < 4; i++) {
@@ -88,17 +126,13 @@ SL.pen = function (A, B) {
   }
   return m;
 };
-SL.clash = function (bo) {
-  var gx = Math.floor(bo.c[0] / 40), gz = Math.floor(bo.c[1] / 40), hit = null;
-  for (var dx = -1; dx <= 1 && !hit; dx++) for (var dz = -1; dz <= 1 && !hit; dz++) {
-    var list = SL.HASH.get((gx + dx) + ',' + (gz + dz)); if (!list) continue;
-    for (var i = 0; i < list.length; i++) { var L = list[i]; if (L.died == null && L.bo && SL.pen(bo, L.bo) > 0.1) { hit = L; break; } }
-  }
-  return hit;
-};
+/* the first standing building whose footprint overlaps bo by more than 0.1 m, of any size (the index files each
+   footprint whole: the old 40 m probe missed big ones, Voth's VC.clashWide is folded in here); skip(L) passes over */
+SL.clash = function (bo, skip) { return SL.index.hit(bo, skip); };
 SL.killLot = function (L, step) {
   L.died = step;
   SL.R.clearOwner(obbCorners(L.lot), L.id, OCC.LOT);
+  if (SL.tags && L.tag) SL.tags.remove(L.tag);
 };
 
 /* rule 8: a lot a street ran through is split by the street. Each remnant takes the largest building of its
@@ -155,24 +189,24 @@ SL.addGreen = function (kind, poly, step, wealth, cls, o) {
       var d = R.sd[R.idx(p[0], p[1])] - TUNE.width.main / 2;
       if (R.at(p[0], p[1]) === OCC.GREEN && d > bd) { bd = d; best = p; }
     }
-    if (best && bd > 2.2) G.art = { key: key, x: best[0], z: best[1], y: terrainH(best[0], best[1]), ry: Math.atan2(o.v[0], o.v[1]) };
+    if (best && bd > 2.2) G.art = { key: key, x: best[0], z: best[1], y: CG.h(best[0], best[1]), ry: Math.atan2(o.v[0], o.v[1]) };
   }
   PLAN.greens.push(G);
   return G;
 };
 
 /* ---------------------------------------------------------------- wealth and the choosers */
-SL.wallR = function (p) {   /* the wall's distance from the centre in p's direction */
+/* the defaults a world replaces with its own (rules.wealth, rules.choosers; Voth's are 32-vc-city.js): wealth falls from
+   the plan's centre (TUNE.centre, else the build zone's middle) to the edge of the zone, with a little noise; the
+   choosers draw by wealth only. The toy's (a triangle of landmarks, a walled radial city) are KCITY.radial.rules */
+SL.wallR = function (p) {   /* how far the city reaches from its centre in p's direction: the toy's wall, else TUNE.reach (800) */
   var t = Math.atan2(p[1], p[0]), k = Math.round(((t + Math.PI) / (2 * Math.PI)) * 720) % 720;
-  return PLAN.wall ? PLAN.wall.rad[k] : 800;
+  return PLAN.wall && PLAN.wall.rad ? PLAN.wall.rad[k] : (TUNE.reach == null ? 800 : TUNE.reach);
 };
+SL.centre = function () { return TUNE.centre || (PLAN.zone ? polyCentroid(PLAN.zone) : [0, 0]); };
 SL.wealth = function (p) {
-  var r = V.len(p), Rw = SL.wallR(p), W;
-  if (inPoly(p, PLAN.triWide)) W = 1;
-  else W = 1 - smooth(PLAN.coreR, Rw * 0.98, r) * 0.95;
-  PLAN.civics.forEach(function (L) { if (L.died == null) { var d = Math.hypot(L.x - p[0], L.z - p[1]); W += 0.3 * Math.exp(-d / 70); } });
-  W += 0.13 * slFbm(p[0] / 110 + 40, p[1] / 110 - 13, 2);
-  return clamp(W, 0, 1);
+  var c = SL.centre(), r = V.dist(p, c);
+  return clamp(0.8 - 0.6 * smooth(0, SL.wallR(V.sub(p, c)), r) + 0.13 * slFbm(p[0] / 110 + 40, p[1] / 110 - 13, 2), 0, 1);
 };
 SL._items = {};
 SL.items = function (cls) {
@@ -191,33 +225,23 @@ SL.cands = function (rs, cls) {
   return out.slice(0, 6);
 };
 SL.choosers = {
-  /* 7: the avenues: predominantly, not uniformly, wealthy near the civic buildings and inside the triangle */
   avenue: function (p, rs) {
     var W = SL.wealth(p);
     if (W > 0.72) return SL.draw(rs, { rich: 0.70, middle: 0.24, manor: W > 0.85 ? 0.06 : 0 });
     if (W > 0.45) return SL.draw(rs, { rich: 0.35, middle: 0.52, shop: 0.13 });
     return SL.draw(rs, { middle: 0.55, poor: 0.28, shop: 0.17 });
   },
-  /* 9: main streets: wealth falls from the centre, shops prefer it, industry keeps to the edges */
   main: function (p, rs) {
-    var W = SL.wealth(p), r = V.len(p), rel = r / SL.wallR(p);
-    var shop = 0.07 + 0.40 * Math.exp(-r / 280), ind = 0.42 * smooth(0.70, 0.95, rel), tav = 0.035;
-    var home = Math.max(0.05, 1 - shop - ind - tav);
-    var rich = smooth(0.55, 0.92, W) * 0.8, poor = smooth(0.52, 0.12, W) * 0.85, mid = Math.max(0.05, 1 - rich - poor);
-    return SL.draw(rs, { shop: shop, industrial: ind, tavern: tav, rich: home * rich, middle: home * mid, poor: home * poor });
+    var W = SL.wealth(p), rich = smooth(0.55, 0.92, W) * 0.8, poor = smooth(0.52, 0.12, W) * 0.85, mid = Math.max(0.05, 1 - rich - poor), home = 0.84;
+    return SL.draw(rs, { shop: 0.12, tavern: 0.04, rich: home * rich, middle: home * mid, poor: home * poor });
   },
-  /* 11: side streets: quieter, fewer shops */
   side: function (p, rs) {
-    var W = SL.wealth(p), r = V.len(p), rel = r / SL.wallR(p);
-    var shop = 0.04 + 0.18 * Math.exp(-r / 280), ind = 0.30 * smooth(0.72, 0.95, rel);
-    var home = Math.max(0.05, 1 - shop - ind);
-    var rich = smooth(0.6, 0.95, W) * 0.7, poor = smooth(0.55, 0.15, W) * 0.9, mid = Math.max(0.05, 1 - rich - poor);
-    return SL.draw(rs, { shop: shop, industrial: ind, rich: home * rich, middle: home * mid, poor: home * poor });
+    var W = SL.wealth(p), rich = smooth(0.6, 0.95, W) * 0.7, poor = smooth(0.55, 0.15, W) * 0.9, mid = Math.max(0.05, 1 - rich - poor), home = 0.92;
+    return SL.draw(rs, { shop: 0.08, rich: home * rich, middle: home * mid, poor: home * poor });
   },
-  /* 12: alleys: back-lane cottages and workshops */
   alley: function (p, rs) {
-    var W = SL.wealth(p), rel = V.len(p) / SL.wallR(p);
-    return SL.draw(rs, { poor: 0.62 - 0.3 * W, middle: 0.18 + 0.3 * W, shop: 0.08, industrial: 0.12 * smooth(0.65, 0.9, rel) });
+    var W = SL.wealth(p);
+    return SL.draw(rs, { poor: 0.62 - 0.3 * W, middle: 0.18 + 0.3 * W, shop: 0.08, industrial: 0.12 });
   }
 };
 
@@ -226,25 +250,27 @@ SL.choosers = {
 SL.lineLots = function (way, side, chooser, step, opt) {
   opt = opt || {};
   var F = way.F, rs = SL.stream(step * 100000 + way.id * 2 + (side > 0 ? 1 : 0)), Lt = TUNE.lot;
-  var run = 'r' + step + '.' + way.id + '.' + side, s = opt.s0 != null ? opt.s0 : 0, s1 = opt.s1 != null ? opt.s1 : F.len, made = [], k0 = null;
+  var run = 'r' + step + '.' + way.id + '.' + side, s0 = opt.s0 != null ? opt.s0 : 0, s1 = opt.s1 != null ? opt.s1 : F.len, made = [], k0 = null;
   function closeKnock(sEnd) { if (k0 != null) { PLAN.knocks.push({ way: way.id, side: side, s0: k0, s1: sEnd, born: step, used: false }); k0 = null; } }
-  while (s < s1 - 4) {
-    var p0 = F.at(s);
+  /* the cursor (KCITY.prim.frontageRun, 33-city-strategies.js) */
+  KCITY.prim.frontageRun({ t0: s0, t1: s1 - 4,
     /* a page may leave frontage open (a sparse suburb): SL.vacant(p, rs) skips ahead */
-    if (SL.vacant && SL.vacant(p0, rs)) { closeKnock(s); s += 12; continue; }
-    var p = p0, cls = chooser(p, rs), cands = SL.cands(rs, cls), W = SL.wealth(p), placed = null, curve = false;
-    for (var i = 0; i < cands.length && !placed; i++) {
-      var it = cands[i].it, wid = it.w + Lt.side;
-      if (s + wid > s1) continue;
-      if (opt.entrance && opt.entrance(rs, it)) { placed = SL.reserveEntrance(way, side, s, step); break; }
-      var r = SL.tryLot(way, side, s + wid / 2, it, step, cands[i].cls, { wealth: W, slot: rs.ri(0, 1), run: run });
-      if (!r.fail) { placed = r; made.push(r); }
-      else if (r.fail.code === OCC.LOT && PLAN.lots[r.fail.own] && PLAN.lots[r.fail.own].run === run) curve = true;
-    }
-    if (placed) { closeKnock(s); s += placed.entranceW || (placed.w + Lt.side); }
-    else { if (curve && k0 == null) k0 = s; if (!curve) closeKnock(s); s += Lt.step; }
-  }
-  closeKnock(s);
+    skip: function (s) { if (SL.vacant && SL.vacant(F.at(s), rs)) { closeKnock(s); return 12; } return 0; },
+    attempt: function (s) {
+      var p = F.at(s), cls = chooser(p, rs), cands = SL.cands(rs, cls), W = SL.wealth(p), placed = null, curve = false;
+      for (var i = 0; i < cands.length && !placed; i++) {
+        var it = cands[i].it, wid = it.w + Lt.side;
+        if (s + wid > s1) continue;
+        if (opt.entrance && opt.entrance(rs, it)) { placed = SL.reserveEntrance(way, side, s, step); break; }
+        var r = SL.tryLot(way, side, s + wid / 2, it, step, cands[i].cls, { wealth: W, slot: rs.ri(0, 1), run: run });
+        if (!r.fail) { placed = r; made.push(r); }
+        else if (r.fail.code === OCC.LOT && PLAN.lots[r.fail.own] && PLAN.lots[r.fail.own].run === run) curve = true;
+      }
+      if (placed) { closeKnock(s); return { adv: placed.entranceW || (placed.w + Lt.side), rec: placed }; }
+      if (curve && k0 == null) k0 = s; if (!curve) closeKnock(s);
+      return { adv: Lt.step };
+    },
+    end: closeKnock });
   return made;
 };
 

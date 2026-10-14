@@ -416,29 +416,15 @@ VC.cantonDecks = function () {
 };
 
 /* ---------------------------------------------------------------- step 13: the country */
-/* Out here there is no street raster: footprints are tested exactly against each other, against the roads (a 40 m
-   bucket hash of road segments) and against the ground. */
-VC.RH = null;
+/* Out here there is no street raster: footprints are tested exactly against each other, against the roads (the
+   instance's road-segment index, core/city/12-city-index.js, on KSPACE) and against the ground. */
 VC.roadHash = function () {
-  VC.RH = new Map();
+  SL.roads.clear();
   PLAN.ways.forEach(function (w) { VC.hashWay(w); });
 };
-VC.hashWay = function (w) {
-  for (var i = 1; i < w.pts.length; i++) {
-    var a = w.pts[i - 1], b = w.pts[i], seg = [a, b, w.w / 2, w];
-    var x0 = Math.floor(Math.min(a[0], b[0]) / 40), x1 = Math.floor(Math.max(a[0], b[0]) / 40), z0 = Math.floor(Math.min(a[1], b[1]) / 40), z1 = Math.floor(Math.max(a[1], b[1]) / 40);
-    for (var x = x0; x <= x1; x++) for (var z = z0; z <= z1; z++) { var k = x + ',' + z; (VC.RH.get(k) || VC.RH.set(k, []).get(k)).push(seg); }
-  }
-};
+VC.hashWay = function (w) { SL.roads.addWay(w); };
 /* the nearest road edge within r of p: {d (from the road's edge), way} or null */
-VC.roadNear = function (p, r, skip) {
-  var best = null, gx = Math.floor(p[0] / 40), gz = Math.floor(p[1] / 40), reach = Math.ceil((r + 8) / 40);
-  for (var x = gx - reach; x <= gx + reach; x++) for (var z = gz - reach; z <= gz + reach; z++) {
-    var L = VC.RH.get(x + ',' + z); if (!L) continue;
-    for (var i = 0; i < L.length; i++) { var s = L[i]; if (s[3].id === skip || s[3].dead) continue; var d = segDist(p, s[0], s[1]) - s[2]; if (d < r && (!best || d < best.d)) best = { d: d, way: s[3] }; }
-  }
-  return best;
-};
+VC.roadNear = function (p, r, skip) { return SL.roads.near(p, r, skip); };
 VC.COUNTRY_ROLES = ['zone', 'wall', 'nochin', 'mines', 'quarry', 'farms', 'mushfarm'];   /* polygons that are not the city's own ground */
 VC.inCity = function (p, pad) {
   if (inPoly(p, PLAN.zone) || polyEdgeDist(p, PLAN.zone) < (pad || 0)) return true;
@@ -455,27 +441,20 @@ VC.countryOk = function (o, opt) {
   }
   if (hi - lo > (opt.relief || TUNE.country.relief) * Math.max(1, Math.max(o.hw, o.hd) / 25)) return false;
   if (VC.stationPts.some(function (s) { return V.dist(s, o.c) < TUNE.country.stationClear + Math.max(o.hw, o.hd); })) return false;
-  if ((Math.max(o.hw, o.hd) > 25 ? VC.clashWide(o) : SL.clash(o)) || VC.fieldHit(o) || VC.anyHit(o, VC.big, 2) || VC.anyHit(o, VC.platforms || [], 6)) return false;
+  /* SL.clash finds a footprint of any size (it once looked one 40 m cell round the centre: VC.clashWide, for the
+     177 m farmsteads, is folded into core/city's index) */
+  if (SL.clash(o) || VC.fieldHit(o) || VC.anyHit(o, VC.big, 2) || VC.anyHit(o, VC.platforms || [], 6)) return false;
   return true;
 };
-/* SL.clash looks one 40 m cell round the centre: enough for a house, not for a 177 m farmstead. This looks under the
-   whole footprint */
-VC.clashWide = function (o) {
-  var C = obbCorners(o), x0 = Math.floor(Math.min.apply(null, C.map(function (p) { return p[0]; })) / 40) - 1, x1 = Math.floor(Math.max.apply(null, C.map(function (p) { return p[0]; })) / 40) + 1;
-  var z0 = Math.floor(Math.min.apply(null, C.map(function (p) { return p[1]; })) / 40) - 1, z1 = Math.floor(Math.max.apply(null, C.map(function (p) { return p[1]; })) / 40) + 1;
-  for (var x = x0; x <= x1; x++) for (var z = z0; z <= z1; z++) { var L = SL.HASH.get(x + ',' + z); if (!L) continue; for (var i = 0; i < L.length; i++) if (L[i].died == null && L[i].bo && SL.pen(o, L[i].bo) > 0.1) return L[i]; }
-  return null;
-};
+/* the fields: the instance's field index (core/city/12-city-index.js), live from step 13 (VC.FH null before: no fields) */
 VC.FH = null;
 VC.fieldHit = function (o) {
   if (!VC.FH) return false;                     /* before the country (step 4's roads): no fields yet */
-  var gx = Math.floor(o.c[0] / 80), gz = Math.floor(o.c[1] / 80);
-  for (var x = gx - 2; x <= gx + 2; x++) for (var z = gz - 2; z <= gz + 2; z++) { var L = VC.FH.get(x + ',' + z); if (!L) continue; for (var i = 0; i < L.length; i++) if (SL.pen(o, L[i].bo) > 0) return true; }
-  return false;
+  return !!VC.FH.hit(o);
 };
 VC.addField = function (o, tone, kind) {
   var F = { bo: o, poly: obbCorners(o), tone: tone, kind: kind || 'field', born: 13 };
-  PLAN.fields.push(F); var k = Math.floor(o.c[0] / 80) + ',' + Math.floor(o.c[1] / 80); (VC.FH.get(k) || VC.FH.set(k, []).get(k)).push(F);
+  PLAN.fields.push(F); VC.FH.add(F);
   return F;
 };
 /* a building out here, facing f (its front), as a lot record like any other */
@@ -927,13 +906,13 @@ VC.fieldsOffWays = function () {
     }
     if (hit) gone++; return !hit;
   });
-  VC.FH = new Map(); PLAN.fields.forEach(function (F) { var k = Math.floor(F.bo.c[0] / 80) + ',' + Math.floor(F.bo.c[1] / 80); (VC.FH.get(k) || VC.FH.set(k, []).get(k)).push(F); });
+  VC.FH = SL.fieldIndex; VC.FH.clear(); PLAN.fields.forEach(function (F) { VC.FH.add(F); });
   return gone;
 };
 
 SL.pass13 = function () {
   var rs = SL.stream(13), K = TUNE.country, n0 = PLAN.lots.length;
-  PLAN.fields = []; VC.FH = new Map(); VC.big = (VC.clans || []).map(function (L) { return L.bo; }); VC.villages = [];
+  PLAN.fields = []; VC.FH = SL.fieldIndex; VC.FH.clear(); VC.big = (VC.clans || []).map(function (L) { return L.bo; }); VC.villages = [];
   VC.roadHash();
   VC.stationPts = SITE.stations().filter(function (s) { return s.kind === 'strider'; }).map(function (s) { return [s.x, s.z]; });
   var log = []; VC.industry = {};

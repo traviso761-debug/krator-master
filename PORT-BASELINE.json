@@ -573,8 +573,8 @@
    "sha256": "68fdebfa49d4d63910538085a754b716a69b8aca6ba51425b0ac39a5531a02ae"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 10700796,
-   "sha256": "775fd35620bbe4bc0c58df00db1325fa0d1a050f085af1673781b1f7cba0eedc"
+   "bytes": 10765614,
+   "sha256": "ca199fc45e8142905352bb1db8e7bd9d6350c27e86362b9d981a8342da472d26"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3607744,
@@ -597,8 +597,8 @@
    "sha256": "62be0fb84004ba279f52fa997f20ed5eb69e59d05f7027836acf4b1db4593a63"
   },
   "settlements/ys/dist/ys.html": {
-   "bytes": 2181165,
-   "sha256": "68110bb2efb0554aaec7641f70ff638b7d00a4bf3d6105e7756e421ab420bad9"
+   "bytes": 2198546,
+   "sha256": "2dfcfeef3c3ea5e16fc56eae727ca8163843bae4f3ae8568f1c89f99eb0aeb00"
   },
   "settlements/yuni/yuni-assets.html": {
    "bytes": 20065878,
