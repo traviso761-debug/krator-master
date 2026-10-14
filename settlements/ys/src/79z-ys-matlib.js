@@ -41,4 +41,9 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
  KMAT.adapter('ys',recs);window._materials=KMAT.table('ys');})();
 // the shared vernacular and Ancients MAT (69b, 22, 54, 69, 69w, 34): the generic in-place bind (core/materials/record/26-matlib-bind.js),
 // for every MAT key materials.json names that the hyk binder above did not take; KMAT.ANCIENT_TILES keeps the procedural feature size
+// pipeRust (2026-10-14: metal.rust.heavy) has no world UVs of its own: the kit's pipe cylinders carry 0..1 UVs that an instance's
+// length would stretch into streaks, so it takes vWorldUV's metres here (2 m a tile), after the underwater tint it already had
+if(YS_MATLIB.on&&KMAT.packed('ys','pipeRust')&&MAT.pipeRust&&!MAT.pipeRust.userData.uvK&&typeof vWorldUV==='function'){
+ const uw=MAT.pipeRust.onBeforeCompile;vWorldUV(MAT.pipeRust,.5);const wuv=MAT.pipeRust.onBeforeCompile;
+ MAT.pipeRust.onBeforeCompile=function(sh,r){if(uw)uw.call(this,sh,r);wuv.call(this,sh,r);};}
 YS_MATLIB.shared=KMAT.bindMat('ys',MAT,{tile:Object.assign({},KMAT.ANCIENT_TILES,{pkCont:3,pkPave:16})});   // the Port kit's UVs: metres per unit (72-port-kit.js)

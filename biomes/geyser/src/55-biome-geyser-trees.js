@@ -58,7 +58,7 @@ const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
 // times; each branch ends in a spiral of long keeled strap leaves, drooping at their tips; orange fruit keys at a few
 function crown(T,st,lv,x,y,z,L,col){const n=lv===2?ri(22,30):10,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k*GOLD,up=k<n*.35,pitch=up?rr(.6,1.1):rr(-.35,.4),l=L*rr(.75,1.1)*(up?.8:1);
-  BIO.put('strap',[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[l,l*rr(.85,1.05),l*rr(.7,.95)],bright(vary(col,.02,.06,.05),1.2),{n:[Math.cos(a)*.4,.9,Math.sin(a)*.4]});st.leaves++;}
+  BIO.put('strap',[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[l,l*rr(.85,1.05),l*rr(.7,.95)],GEYSER.libCol('strap',bright(vary(col,.02,.06,.05),1.2)),{n:[Math.cos(a)*.4,.9,Math.sin(a)*.4]});st.leaves++;}
  if(lv===2)BIO.put('rosette',[x,y+L*.12,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),L*rr(1.5,1.9),bright(vary(col,.02,.06,.05),1.15));}
 B[0]=function(T,st,lv){const S=SP[T.sp],M=means(),hr=rr(1.2,2.4)*(T.H/10),rs=hr*rr(.7,1.1),nr=lv===2?ri(6,10):4,a0=rr(0,TAU),bc=bk(pick(PAL.pandanBark),1,M.bark[0]);
  for(let k=0;k<nr;k++){const a=a0+k*TAU/nr+rr(-.2,.2),r0=T.rb*.6,gx=T.x+Math.cos(a)*rs*rr(.8,1.2),gz=T.z+Math.sin(a)*rs*rr(.8,1.2),gy=BIO.terrainH(gx,gz)-.2,

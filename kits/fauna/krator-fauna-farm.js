@@ -524,7 +524,7 @@ ANIMAL({
   build: function (A) {
     const v = A.variant, K = (v === 2 ? 0.6 : 1) * A.S, wool = v === 1 ? 0x4a4038 : 0xeae4d6, wool2 = v === 1 ? 0x3a322c : 0xdcd4c2, face = v === 1 ? 0x221e1a : 0x2e2a26;
     const coat = (x, y, z) => faFmMix(wool, wool2, faNoise(x * 9, y * 9, z * 9));
-    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_SHEEP, fam: 'coat', headFam: 'sleek', legFam: 'sleek',   /* the fleece thick wool; the bare face and legs short sleek hair */
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_SHEEP, fam: 'fleece', headFam: 'sleek', legFam: 'sleek',   /* the fleece thick wool (wool.fleece); the bare face and legs short sleek hair */
       neckPivot: [0, 0.68, 0.36],
       neck: { pts: [[0, .7, .36], [0, .78, .48], [0, .83, .54]], rad: [[.13, .15], [.09, .1], [.07, .08]] },
       head: { pts: [[0, .86, .52], [0, .82, .6], [0, .74, .69], [0, .7, .72]], rad: [[.065, .075], [.06, .07], [.045, .05], [.035, .035]], col: () => face },
@@ -537,7 +537,7 @@ ANIMAL({
         hoof: 'cloven', hoofR: .026, hoofH: .04, hoofCol: 0x1a1612,
         col: (p, t) => t < 0.28 ? coat(p[0], p[1], p[2]) : face,
         extra: (P, ch, front) => { const q = P(ch[1]), q0 = P(ch[0]);   /* the fleece down over the forearm or the thigh */
-          A.ellip('coat', (q[0] + q0[0]) / 2, (q[1] + q0[1]) / 2, (q[2] + q0[2]) / 2, (front ? .072 : .088) * K, .1 * K, (front ? .08 : .1) * K, null, { seg: 7, colf: (x, y, z) => coat(x, y, z) }); } },
+          A.ellip('fleece', (q[0] + q0[0]) / 2, (q[1] + q0[1]) / 2, (q[2] + q0[2]) / 2, (front ? .072 : .088) * K, .1 * K, (front ? .08 : .1) * K, null, { seg: 7, colf: (x, y, z) => coat(x, y, z) }); } },
       tail: { pts: [[0, .76, -.5], [0, .7, -.56], [0, .58, -.58]], rad: [.05, .045, .035], col: wool },
       extraBody: (P, bc) => {
         /* the fleece: low, close-set locks of wool over back, sides and rump, sunk so only their crowns show (a dense
@@ -546,9 +546,9 @@ ANIMAL({
         for (let i = 0; i < 44; i++) { const t = 0.05 + 0.9 * (i + A.rnd()) / 44, p = c(t), q = r(t), a = A.rr(-1, 1) * 2.1, s = A.rr(0.075, 0.1) * K;
           const nx = Math.sin(a) / q[0], ny = Math.cos(a) / q[1], nl = Math.hypot(nx, ny), dn = s * 0.2;   /* each a flat cushion lying on the barrel, turned to its normal */
           const x = Math.sin(a) * q[0] - nx / nl * dn, y = p[1] + Math.cos(a) * q[1] - ny / nl * dn;
-          A.ellip('coat', x, y, p[2], s * 1.1, s * 0.55, s * 1.25, null, { seg: 6, rz: -Math.atan2(nx, ny), colf: (dx, dy, dz) => coat(x + dx, y + dy, p[2] + dz) }); }
+          A.ellip('fleece', x, y, p[2], s * 1.1, s * 0.55, s * 1.25, null, { seg: 6, rz: -Math.atan2(nx, ny), colf: (dx, dy, dz) => coat(x + dx, y + dy, p[2] + dz) }); }
       },
-      extraHead: (P) => { A.ellip('coat', 0, .875 * K, .5 * K, .075 * K, .055 * K, .08 * K, null, { seg: 8, colf: (x, y, z) => coat(x, y + 0.87, z + 0.5) }); } });
+      extraHead: (P) => { A.ellip('fleece', 0, .875 * K, .5 * K, .075 * K, .055 * K, .08 * K, null, { seg: 8, colf: (x, y, z) => coat(x, y + 0.87, z + 0.5) }); } });
     A.anchor('lead', [0, 0.75 * K, 0.5 * K]);
   }
 });

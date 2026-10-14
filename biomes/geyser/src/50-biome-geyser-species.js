@@ -185,6 +185,11 @@ const M=GEYSER.MAT;
 // cut to its cell); without the pack (an open world) the procedural ones stay. The painters above ran either way, so the
 // random stream, and every plant's place and shape, are the same
 GEYSER.LIB=BIO.libSwap('geyser',M);
+// a full-colour card (streamer, club, strap: the owner's, 2026-10-14) carries its own colour: its instances take a near-white,
+// a sixth of the procedural colour kept for variety (a cool streamer a little greener). The procedural colour is computed
+// as before, in place, so the random stream does not move.
+const LIBWHITE=C(0xf4f2ec);
+GEYSER.libCol=(slot,c)=>GEYSER.LIB[slot]?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):c;
 GEYSER.LIBMEAN={};
 {const P=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('geyser',n):null;
  ['bark0','bark1','bark2','wood','glass','sinter'].forEach(k=>{const L=P(k);if(L&&L.mean>0)GEYSER.LIBMEAN[k]=L.mean;});}

@@ -18,8 +18,9 @@
 // (godot/krator/khooks.gd): 'world-uv' where vWorldUV tiles it in metres, 'breakup' where the library's tiling break-up
 // runs, 'glass' for the glass Fresnel. [G data] in what it decides; the bind itself is core/materials/record's [web].
 const IZIZ_MATALIAS={izWall:'cityWall',izWallDark:'cityWall',izCap:'cityWall',izSand:'cityWall',izRock:'cityRock',izEsc:'cityStrata',
- plank:'wood',rust:'cityRust',scrap:'cityRust',izConcOrange:'concrete'};
-const IZIZ_MATTILE=Object.assign({},KMAT.ANCIENT_TILES,{scrap:8,izEsc:6.3,izConcOrange:KMAT.ANCIENT_TILES.concrete});   // metres per UV unit where no world-UV K says it
+ plank:'wood',rust:'cityRust',scrap:'cityRust',izConcOrange:'concrete',
+ bronze:'cityBronze',bronzeDark:'cityBronze',vpGilt:'cityBrass',vpBrass:'cityBrass',concRust:'cityConcRust'};   // (2026-10-14) the statues, the embassy's metal, the rust-streaked skin
+const IZIZ_MATTILE=Object.assign({},KMAT.ANCIENT_TILES,{scrap:8,izEsc:6.3,izConcOrange:KMAT.ANCIENT_TILES.concrete,concRust:KMAT.ANCIENT_TILES.concrete});   // metres per UV unit where no world-UV K says it
 const IZIZ_MATLIB=KMAT.bindMat('iziz',MAT,{tile:IZIZ_MATTILE,alias:IZIZ_MATALIAS});
 const IZIZ_MATX={};   // the late tables by record name (izizMatlibLate): 'tsand.<hex>_<c|p>', 'rustify.<n>'
 function izizMatHook(m,L){const h=[];if(m.userData.uvK)h.push('world-uv');if(m.userData.lib&&L&&L.breakup)h.push('breakup');

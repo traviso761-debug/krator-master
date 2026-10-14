@@ -43,17 +43,18 @@ ANIMAL({
     herd: 'kept singly or in a band\'s string; wild ones lie up alone in the seeps', fleeDistance: 0, aggression: 0.35, regrows: true,
     schedule: ['REST', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST'] },
   build: function (A) {
-    const v = A.variant, S = A.S, rest = A.pose === 'rest', dy = rest ? -0.42 : 0, skin = faSalSkin(v);
+    const v = A.variant, S = A.S, rest = A.pose === 'rest', dy = rest ? -0.42 : 0, skin = faSalSkin(v),
+      sk = v ? 'salDun' : 'salEmber';   /* the painted skin (FULL colour in the runtime: patterns/scyvoi/salamander-*); the markings stay the vertex colours */
     const span = (t0, t1, curl) => [t => { const tt = t0 + (t1 - t0) * t; return [Math.sin((1 - tt) * 3) * (curl || 0) * Math.pow(1 - tt, 2) * S, (faSalKey(tt, 2) + dy) * S, faSalKey(tt, 1) * S]; },
       t => { const tt = t0 + (t1 - t0) * t; return [faSalKey(tt, 3) * S, faSalKey(tt, 4) * S]; }];
     const at = t => [0, (faSalKey(t, 2) + dy) * S, faSalKey(t, 1) * S];
     /* the trunk */
-    { const [c, r] = span(FA_SAL_TAIL - 0.02, 0.86); A.tube('skin', c, r, 26, 16, null, { colf: (t, a) => skin(FA_SAL_TAIL - 0.02 + (0.88 - FA_SAL_TAIL) * t, a) }); }
+    { const [c, r] = span(FA_SAL_TAIL - 0.02, 0.86); A.tube(sk, c, r, 26, 16, null, { colf: (t, a) => skin(FA_SAL_TAIL - 0.02 + (0.88 - FA_SAL_TAIL) * t, a) }); }
     /* the tail: it sways about its root */
-    A.part('tail', at(FA_SAL_TAIL), () => { const [c, r] = span(0, FA_SAL_TAIL + 0.02, 0.25 + 0.3 * (v % 2)); A.tube('skin', c, r, 14, 14, null, { caps: true, colf: (t, a) => skin(t * (FA_SAL_TAIL + 0.02), a) }); });
+    A.part('tail', at(FA_SAL_TAIL), () => { const [c, r] = span(0, FA_SAL_TAIL + 0.02, 0.25 + 0.3 * (v % 2)); A.tube(sk, c, r, 14, 14, null, { caps: true, colf: (t, a) => skin(t * (FA_SAL_TAIL + 0.02), a) }); });
     /* the head: a broad flat skull, eyes on top, the long mouth line */
     A.part('head', at(0.84), () => {
-      const [c, r] = span(0.84, 1); A.tube('skin', c, r, 10, 16, null, { caps: true, colf: (t, a) => skin(0.84 + 0.16 * t, a) });
+      const [c, r] = span(0.84, 1); A.tube(sk, c, r, 10, 16, null, { caps: true, colf: (t, a) => skin(0.84 + 0.16 * t, a) });
       const hy = (faSalKey(0.95, 2) + dy) * S, hz = 1.98 * S;
       for (const s of [-1, 1]) {
         A.ellip('eye', s * 0.22 * S, hy + 0.11 * S, hz - 0.06 * S, 0.075 * S, 0.075 * S, 0.075 * S, 0x120c08, { seg: 10 });
@@ -70,12 +71,12 @@ ANIMAL({
         const kn = rest ? [s * 0.82 * S, 0.3 * S, (z + (front ? 0.2 : -0.1)) * S] : [s * 0.76 * S, 0.46 * S, (z + (front ? 0.08 : -0.1)) * S];
         const ft = rest ? [s * 0.98 * S, 0.07 * S, (z + (front ? 0.48 : 0.12)) * S] : [s * 0.74 * S, 0.06 * S, (z + (front ? 0.26 : 0.04)) * S];
         const lerp3 = (p, q) => t => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
-        A.tube('skin', lerp3(b, kn), t => [(0.24 - 0.09 * t) * S, (0.26 - 0.1 * t) * S], 4, 10, null, { colf: (t, a) => skin(0.6, a) });
-        A.ellip('skin', kn[0], kn[1], kn[2], 0.155 * S, 0.155 * S, 0.155 * S, skin(0.6, 0), { seg: 10 });
-        A.tube('skin', lerp3(kn, ft), t => [(0.15 - 0.04 * t) * S, (0.16 - 0.06 * t) * S], 4, 8, null, { caps: true, colf: (t, a) => skin(0.6, a) });
-        A.ellip('skin', ft[0], ft[1], ft[2] + 0.06 * S, 0.17 * S, 0.06 * S, 0.2 * S, skin(0.6, 0), { seg: 10 });
+        A.tube(sk, lerp3(b, kn), t => [(0.24 - 0.09 * t) * S, (0.26 - 0.1 * t) * S], 4, 10, null, { colf: (t, a) => skin(0.6, a) });
+        A.ellip(sk, kn[0], kn[1], kn[2], 0.155 * S, 0.155 * S, 0.155 * S, skin(0.6, 0), { seg: 10 });
+        A.tube(sk, lerp3(kn, ft), t => [(0.15 - 0.04 * t) * S, (0.16 - 0.06 * t) * S], 4, 8, null, { caps: true, colf: (t, a) => skin(0.6, a) });
+        A.ellip(sk, ft[0], ft[1], ft[2] + 0.06 * S, 0.17 * S, 0.06 * S, 0.2 * S, skin(0.6, 0), { seg: 10 });
         for (let k = 0; k < 4; k++) { const a = (k - 1.5) * 0.38 + (front ? 0 : 0.1) * s;
-          A.cone('skin', [ft[0], ft[1] - 0.02 * S, ft[2] + 0.08 * S], [ft[0] + Math.sin(a) * 0.24 * S, ft[1] - 0.025 * S, ft[2] + 0.08 * S + Math.cos(a) * 0.24 * S], 0.04 * S, 0.018 * S, skin(0.6, 0), 6); }
+          A.cone(sk, [ft[0], ft[1] - 0.02 * S, ft[2] + 0.08 * S], [ft[0] + Math.sin(a) * 0.24 * S, ft[1] - 0.025 * S, ft[2] + 0.08 * S + Math.cos(a) * 0.24 * S], 0.04 * S, 0.018 * S, skin(0.6, 0), 6); }
       });
     }
     /* for the tack a people fits: the body's profile (t from tail to snout -> centre line and half sizes) and anchors */

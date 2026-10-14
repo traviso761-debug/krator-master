@@ -1722,6 +1722,65 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
 | `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
 
+#### Delivered 2026-10-14 and processed: thirty-five owed prompts (seven batches, pasted as WebP)
+
+Batches `owner-2026-10-14.json` (process.py) and `owner-2026-10-14-cards.json` (cards.py); the prompts are the entries of
+`PROMPTS-NEEDED.md` (now its "Delivered 2026-10-14" section). Every image came as a 1254 px WebP (the caihua 1774 x 887),
+smaller than the template's 2048: the pipeline writes 1024 px sets, so nothing was upscaled. **Hand crops first:** where a
+sheet's own period is shorter than the image (found by shifted self-difference) it was cropped to a whole number of periods
+before processing, and 12 px of its own continuation appended so process.py's period search lands on it exactly (each
+meta's `source.note` gives the crop): the Islander sheets, the harlequins, the sun banner (now exactly periodic: two suns
+by two rows), the applique roof, the lattice (five diamonds) and the fringe. **cards.py `spill: 'unmix'`** (new): each
+pixel blended with the magenta is split back into the subject's colour and an alpha (least squares against the nearest
+solid colour), for the hair-thin clubmoss needles and the translucent streamers, which kept a pink fringe under the
+`all` spill. The fringe and the panic grass are keyed hard (60 -> 120..230); the lattice, steam comb and pandan key clean
+at the usual 60..170.
+
+| Set | Image | Checks | Wired |
+|---|---|---|---|
+| `patterns/highlands/caihua` | 1 (three bands) | one band cut out (y 17..307); mapped once, so not made seamless | Highlands `hCaihua` (the painted beams over each bay) |
+| `patterns/tribal/formline` | 2 | **not periodic** (mirror-symmetric): process.py's crop and fade leave a doubled eye pair at the x seam, a soft band at y | Highlands `formF`, the frieze boards of every branch (0.5 m panel) |
+| `patterns/reedlake/fringe` (redo, cut-out) | 3 | keys clean (no tinted opaque pixel); a thin dark purple-brown edge where the strands' shadows lay | Reed Lake `rlFringe`, replacing the opaque set |
+| `card.steamcomb` | 4 | 3 x 3 cells separate; the water beads let magenta through and key pale mauve-grey (keep 0 hides it) | geyser `comb` |
+| `patterns/reedlake/reed-lattice` (cut-out) | 5 | keys clean, five diamond periods | Reed Lake `rlLattice` |
+| `ground.travertine.white` | 6 | tiles; **turquoise water painted in the pools** (the prompt asked for it) | geyser `ground.tufa`, keep 0.2: the pools read as pale smooth crust and the shader lays the water |
+| `card.streamer` | 7 | cells separate; unmix key | geyser `streamer` (the straight clump, flipped onto the ribbon) |
+| `stone.geyserite` | 8 | tiles | geyser `sinter` (cones, beads) |
+| `card.clubmoss` | 9 | cells separate; unmix key | geyser `club` |
+| `card.strap.pandan` | 10 | cells separate, keys clean | geyser `strap` (one leaf, flipped onto the frond) |
+| `patterns/islander/medallion-moon` | 11 | a single panel, mapped once | Islanders `medMoon` |
+| `patterns/islander/weave` | 12 | exact period 627 px | Islanders `patWeave` |
+| `patterns/islander/kowhaiwhai` | 13 | exact period | Islanders `patBand` |
+| `patterns/islander/gable-east` | 14 | exact period (three diamonds by two rows) | Islanders `patGableE` |
+| `feather.flight` | 15 | tiles | fauna `flight`: every wing part's feather mesh (the runtime maps `feather` on a `wing*` part to it) |
+| `patterns/islander/hinggi` | 16 | x period exact; height left whole | Islanders `patHinggi`: the Kautoa weaver's four rail cloths |
+| `patterns/scyvoi/applique-roof` | 17 | period 642 x 586 | Scyvoi `patRoof`: the three Tibetan tents' roofs |
+| `metal.bronze.cast` | 18 | tiles, isotropic | Iziz `cityBronze` (statues), `cityBrass` (the embassy's gilt and brass) |
+| `concrete.rust.streaked` | 19 | tiles across; streaks run down | Iziz `cityConcRust` (MAT.concRust) |
+| `patterns/islander/storyboard` | 20 | one canoe by one register pair; **one frigate bird is cut at the x seam** | Islanders `patStory` |
+| `skin.smooth` | 21 | tiles | fauna `skin` (was hide.leather033c) |
+| `hide.sleek` | 22 | tiles; came mid-brown, muted 0.8 | fauna `sleek` (was hide.strider) |
+| `metal.rust.heavy` | 23 | tiles | Ys `rust`, `pipeRust` |
+| `patterns/highlands/harlequin-dark` | 24 | exact period (6 x 5 diamonds) | Highlands `hHarlGt` |
+| `patterns/highlands/harlequin-red` | 25 | exact period (8 x 6 diamonds) | Highlands `hHarlR` |
+| `patterns/scyvoi/salamander-dun` | 26 | tiles | fauna `salDun` (FULL colour) |
+| `patterns/iziz/sun-banner` (redo) | 27 | repeats exactly (626 x 564 px periods) | replaces the old sheet; the mechs' sun banners now tile it |
+| `patterns/scyvoi/salamander-ember` | 28 | tiles | fauna `salEmber` (FULL colour) |
+| `card.grass.panic` | 29 | cells separate, bases on the cell edges; the panicles came pinkish (magenta through them) | geyser `grass`, grey under the panic grass palette |
+| `concrete.rust.streaked.sea` | 30 | tiles | Ys `concreteR` |
+| `patterns/islander/gable-west` | 31 | exact period | Islanders `patGableW` |
+| `patterns/common/grime-streaks` | 32 | 20 x 8 cells, dark on white (asked: 16 x 8 on transparent) | **not wired**: the `grime` parameter of the breakup hook is not built |
+| `wool.fleece` | 33 | tiles | fauna `fleece`: the sheep's wool (face and legs stay sleek) |
+| `patterns/islander/gable-west-b` | 34 (extra) | exact period | Islanders `patGableW2` (the rumah gadang) |
+| `patterns/islander/gable-east-b` | 35 (extra) | drifts: no exact period, a soft seam | Islanders `patGableE2` (the great uma) |
+
+New code with them: the fauna runtime's `fleece` and `flight` families and its FULL-colour families (`salEmber`, `salDun`:
+the map is the skin's colour, triplanar, the belly keeping the vertex colour; without the pack the markings stay vertex
+colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`; Scyvoi's `patRoof`; the geyser's
+`GEYSER.libCol` (a full-colour card's instances take a near-white); Highlands' repeats for the new sheets in 88y; Iziz's
+aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
+vendored files.
+
 ## Next steps
 
 0. **Scan libraries:** catalogued (see "Available, not committed"). Nothing is reduced or committed until the demo texture

@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    692,
+    593
+   ],
+   "seam_after": [
+    0.838,
+    0.604
+   ],
+   "seam_before": [
+    3.39,
+    8.804
+   ],
+   "source_size": [
+    704,
+    605
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "islander/storyboard",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   3.2,
+   3.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-storyboard.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 20.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one canoe prow to prow (x 288..980, 692 px, the start column with the best seam) by one pair of registers (593 px) before processing, so the sheet repeats on its own period. the bird-and-fish register has no exact period at 692 px: one bird is cut at the seam.",
+  "original_file": "20.webp",
+  "original_sha1": "9666f21cf4f1053e501d92b1b71baba3ed178f59",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Palauan bai storyboard, a carved and painted gable relief in two registers between black and white toothed bands: in the upper register a red canoe with five black paddlers under a white full moon, in the lower one red and white fish and black frigate birds in flight, outlined black (#1e1a18) on an ochre (#c8922e) ground, the relief shallow and hand-cut. The pattern repeats horizontally. Full colour.",
+  "reuse": "the Palauan-style gable relief and bands (patStory)",
+  "sha1": "b6f1a1ece15689bf7882442f9c55f383dd1f33ae"
+ }
+}

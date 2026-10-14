@@ -304,21 +304,9 @@ maps, base64); it was already over the gallery's 16 MB a file.
       where it read as a board grid, a little greyer and cooler than the procedural tan (first packed at contrast 1.3 and
       the concrete's mean it read near white; now mean 0.62, normal scale 0.6). `?mat=proc`
       shows the old look. Verge leaves the `city*` families out of its copy of the pack (its build.py), so its page is unchanged.
-- [ ] **Two surfaces have no good library texture** (the owner sources them; prompts in core/materials/PLAN.md's template,
-      base text first, then the material line):
-      `metal.bronze.cast` for the heroic statues (izBronze, izBronzeCyl, izBronzeD on MAT.bronze, bronzeDark) and the embassy's
-      vpGilt and vpBrass, which stay plain metal: `metal.bronze` is a riveted, seamed verdigris panel, wrong on a cast figure,
-      and the statues' kit UVs stretch with each instance's scale. Material line: "Cast bronze surface of a large outdoor
-      statue: smooth cast metal with very fine casting porosity and a soft hammer-dressed undulation, a thin warm brown patina
-      with small mottled patches of pale green verdigris gathered in the hollows; no seams, rivets, panels, letters or edges,
-      isotropic with no direction. Keep colours natural but slightly muted and even, so the texture can be tinted to
-      different palettes without looking stained."
-      `concrete.rust.streaked` for MAT.concRust (the rust-streaked skyscraper skin, 112k triangles), which stays procedural:
-      no library concrete carries the streaks. Material line: "Weathered poured concrete stained by rust: smooth grey
-      board-formed concrete with faint horizontal formwork lines and small round tie holes, long vertical rust-brown streaks
-      and drips running down from small rusted bolts near the top edge, water stains and a little grime in the board joints.
-      Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking
-      stained."
+- [x] **Two surfaces had no good library texture.** Fixed 2026-10-14 with the owner's sets: `metal.bronze.cast` on the
+      heroic statues (`cityBronze`: MAT.bronze, bronzeDark) and the embassy's gilt and brass (`cityBrass`: vpGilt, vpBrass),
+      `concrete.rust.streaked` on MAT.concRust (`cityConcRust`), bound through IZIZ_MATALIAS (88y). Verge leaves them out.
 - [ ] The painted ground stays the 4 m painted canvas at eye level: the library has the street sets (`ground.road.ruts`,
       `paving.*`), but Iziz's ground shader has no detail layer to take them (a ground-layer hook weighted by the road mask,
       core/export's `EXPORT.groundLayers`, is the shape). Not a texture gap.

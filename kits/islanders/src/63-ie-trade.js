@@ -208,7 +208,8 @@ defBuilding({key:'ie-weaver',name:'Ikat weaver (Kautoa)',seed:6270,cut:true,w:15
   isNoCut(()=>{ieFurn([['generic_trade_vat',6.2,0,1.1,0,{setting:'outdoor'}],['generic_trade_vat',6.2,0,-.9,.3,{setting:'outdoor'}]]);
    /* the drying rail: two posts, a bamboo rail, the cloths folded over it */
    const rx=8.4;for(const z of [-2.6,2.6])pole('bamboo',[rx,0,z],[rx,2.7,z],.06,P('woodL'),6);pole('bamboo',[rx,2.6,-2.7],[rx,2.6,2.7],.05,P('bamboo'),6);
-   const cloth=[['patGableE',WHITE],['tapa',hc(0x2a3a6a)],['patWeave',WHITE],['tapa',P('red')]];
+   /* four hinggi (ikat) cloths, the owner's sheet (2026-10-14); P('red') is still drawn so the random stream does not move */
+   const cloth=[['patHinggi',WHITE],['patHinggi',WHITE],['patHinggi',WHITE],['patHinggi',(P('red'),WHITE)]];
    cloth.forEach(([mk,c],i)=>{const z=-1.8+i*1.2;for(const s of [-1,1])box(mk,rx+s*.05,.55+(s>0?.2:0),z,.02,2.0-(s>0?.2:0),1.0,c);});});}});
 defBuilding({key:'ie-potter',name:'Potter (Kautoa)',seed:6280,cut:true,w:11,d:7.4,h:7,budget:80000,
  tags:{types:['shop','industry'],wealth:'poor',style:'east',job:'pottery',role:'potter'},

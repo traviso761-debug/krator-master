@@ -4,12 +4,10 @@
 
 ## Textures
 
-- [ ] **The painted motifs are canvas stand-ins** (2026-10-12): the West's gable spirals (`patGableW`), the East's woven
-      diamonds (`patGableE`), the kowhaiwhai band (`patBand`), the storyboard (`patStory`), the East's woven wall (`patWeave`)
-      and the white island moon (`medMoon`) are drawn on canvases in `28-is-paint.js`, not taken from the library. The prompts are
-      in `core/materials/PLAN.md` ("Pattern-sheet prompts by culture", Islanders). When a sheet comes: process it into
-      `core/materials/patterns/islander/<id>`, add its family (the key above) to `materials.json`, repack; the canvas is then
-      never drawn (`KIT_HAS`).
+- [x] **The painted motifs were canvas stand-ins** (2026-10-12). Fixed 2026-10-14: the owner's sheets
+      (`patterns/islander/*`) are the gables (`patGableW`, and `patGableW2` on the rumah gadang), the East's facades (`patGableE`,
+      `patGableE2` on the great uma), the kowhaiwhai band, the storyboard, the woven wall and the moon. `28-is-paint.js` draws its
+      canvas only without the pack (`?mat=proc`). The storyboard's sheet cuts one frigate bird at its repeat.
 - [x] The thatch, timber, bamboo, reed mat, corrugated iron, tin, carved wood, coral stone, sand and the tapa sheet are library
       sets (`materials.json`, 41 families with the furniture detail maps).
 
@@ -39,6 +37,6 @@
 - [ ] The automatic "Palace of Kautoa - eye level" view stands about 74 m out and the rich-houses row in front blocks it
       (the views come from the vendored `90-scene.js`); use `--cam` for the palace's courts. The trade rows hold 13 buildings
       each, so their row views are distant.
-- [ ] The ikat cloths on the Kautoa weaver's rail use the stand-in patterns (`patGableE`, `patWeave`, `tapa`): no hinggi sheet yet.
+- [x] The ikat cloths on the Kautoa weaver's rail used stand-in patterns. Fixed 2026-10-14: the four cloths are the owner's hinggi (`patHinggi`).
 - [x] The cut-away kept the near half of every raised floor only after the agents' fix (2026-10-12): `isCutFloor` now runs
       before the piles and the deck in both `iwHouse` and `ieHouse`.

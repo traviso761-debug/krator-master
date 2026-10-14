@@ -21,6 +21,9 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] **The colour pattern sheets take the material library** (2026-10-06): the glazed tile of the Temple of the Pantheon and the wall towers
       (hTile*), the green harlequin dome and the arcology's labyrinth; 88y keeps each map's own repeat (MATLIB_REPEAT). The world-UV tile twins
       (88-hl-dress.js) still clone the procedural tile. ?mat=proc shows the old look.
+- [ ] **The owner's 2026-10-14 sheets**: the red and dark harlequins (hHarlR, hHarlGt), the painted beams (hCaihua, mapped once per
+      bay) and the frieze boards (formF: `patterns/tribal/formline`, a 0.5 m panel). The formline sheet is not periodic (it is
+      mirror-symmetric): a doubled eye pair shows at its repeat on a long frieze. ?mat=proc shows the old look.
 
 ## Roketstad's forest: the North Highlands kit (2026-10-14)
 - [x] Roketstad vendored the north-west lowlands biome and an old copy of the biome core (`targets/roketstad/86-bio-10..70`,

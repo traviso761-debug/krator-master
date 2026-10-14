@@ -101,7 +101,7 @@ defBuilding({key:'iw-house-gadang',name:'Rumah gadang (West)',seed:5021,cut:true
  tags:{types:['dwelling-multi'],wealth:'rich',style:'west'},
  note:'the great house of a matrilineal clan: a long hall of rooms on piles under a main roof and stepped wings, six gonjong spikes, carved and painted walls, a horned porch over the stair',
  build(o){iwHouse({L:18,D:7.2,floorY:1.9,wallH:2.6,roof:{ridgeH:4.6,sag:1.6,hornRise:4.6,hornOut:2.2,taper:1,over:1.0,th:.36,nu:40},wings:{L:4.2},
-  wallMk:'carvedR',wallCol:P('woodD'),band:'patGableW',bandH:.5,front:iwOpen(18,8),back:iwOpen(18,6,false),stair:'stair',stairW:1.4,porch:{w:3.2,d:2.6},finial:'spike',tier:'rich',beds:2,
+  wallMk:'carvedR',wallCol:P('woodD'),band:'patGableW2',bandH:.5,gableMk:'patGableW2',front:iwOpen(18,8),back:iwOpen(18,6,false),stair:'stair',stairW:1.4,porch:{w:3.2,d:2.6},finial:'spike',tier:'rich',beds:2,
   furn:[['islander_court_throne',0,-1.4,0],['islander_court_tapestry',4,-3.4,0],['islander_court_tapestry',-4,-3.4,0],['islander_court_statue',8,-2.8,0],['islander_court_statue',-8,-2.8,0]]});
   isNoCut(()=>{for(const s of [-1,1])isFlag(s*7,6.2,9,{});});}});
 defBuilding({key:'iw-house-chief',name:"Chief's house (West)",seed:5022,cut:true,w:22,d:18,h:17,budget:220000,

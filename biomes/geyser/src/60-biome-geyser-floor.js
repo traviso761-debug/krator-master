@@ -17,7 +17,7 @@ function grass(x,y,z,lv,heat,k){const h=rr(.25,.55)*(k||1)*(lv===0?1.5:1),red=sm
  around(x,z,lv===2?ri(3,6):lv===1?2:1,.3,1.3,(px,pz)=>{if(!hotOK(px,pz))return;const c=rng()<red?leafCol(PAL.grassRed,1.2,.03,.1,.06):leafCol(PAL.grass,1.25,.04,.12,.06);tuft('grass',px,BIO.terrainH(px,pz),pz,h*rr(.8,1.15),h*1.4,c);});}
 function fern(x,y,z,lv){const L=rr(.5,1.1)*(lv===0?1.4:1);around(x,z,lv===2?ri(1,2):1,.6,1.6,(px,pz)=>{if(!hotOK(px,pz))return;const py=BIO.terrainH(px,pz),c=leafCol(PAL.fern,1.25,.03,.1,.06),n=lv===2?ri(5,8):3,a0=rr(0,TAU);
   for(let k=0;k<n;k++){const a=a0+k*TAU/n+rr(-.25,.25),l=L*rr(.75,1.1);BIO.put('fern',[px,py+.03,pz],qEuler(rr(-.08,.08),-a,rr(.25,.75)),[l,l,l*rr(.8,1.0)],bright(vary(c,.01,.04,.04),1));}});}
-function club(x,y,z,lv){around(x,z,lv===2?ri(4,9):2,.2,1.1,(px,pz)=>{if(!hotOK(px,pz))return;const h=rr(.12,.3);tuft('clubmoss',px,BIO.terrainH(px,pz),pz,h,h*1.3,leafCol(PAL.club,1.25,.03,.1,.06));});}
+function club(x,y,z,lv){around(x,z,lv===2?ri(4,9):2,.2,1.1,(px,pz)=>{if(!hotOK(px,pz))return;const h=rr(.12,.3);tuft('clubmoss',px,BIO.terrainH(px,pz),pz,h,h*1.3,GEYSER.libCol('club',leafCol(PAL.club,1.25,.03,.1,.06)));});}
 function moss(x,y,z,lv){const R=rr(.25,.8);BIO.put('moss',[x,y-.06,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.3,.5),R*rr(.8,1.2)],bright(vary(pick(PAL.moss),.03,.1,.06),1.1));
  if(lv===2)around(x,z,ri(1,3),R,R*2.2,(px,pz)=>{const r=R*rr(.4,.7);BIO.put('moss',[px,BIO.terrainH(px,pz)-.05,pz],qEuler(0,rr(0,TAU),0),[r,r*.4,r],bright(vary(pick(PAL.moss),.03,.1,.06),1.1));});}
 function reed(x,y,z,lv){around(x,z,lv===2?ri(2,4):1,.3,1,(px,pz)=>{const h=rr(1.1,2.2);tuft('reed',px,Math.max(BIO.terrainH(px,pz),BIO.waterH(px,pz)-.3),pz,h,h*.5,leafCol(PAL.reed,1.2,.03,.08,.05));});}
@@ -40,7 +40,7 @@ GEYSER.buildFloor=function(R,q){reseed(600631);q=q==null?1:q;R=R||1300;
    const dense=smooth(60,52,T)*smooth(36,42,T)*q;
    for(let k=0,n=Math.round(w*1.4*dense);k<n;k++){const off=rr(-.85,.85)*w,x=b[0]-uz*off+ux*rr(-1.2,1.2),z=b[1]+ux*off+uz*rr(-1.2,1.2),y=BIO.terrainH(x,z),g=GEYSER.at(x,z);
     if(g.film<.3||g.T>62)continue;const L1=rr(.5,1.3);
-    BIO.put('streamer',[x,y+.03,z],qEuler(0,yaw+rr(-.25,.25),0),[rr(.18,.32),1,L1],T>50?leafCol(PAL.streamer,1.25,.03,.08,.06):rng()<.6?leafCol(PAL.streamer,1.1,.03,.1,.08):leafCol(PAL.streamerGreen,1.2,.03,.1,.06));st.streamers++;}
+    BIO.put('streamer',[x,y+.03,z],qEuler(0,yaw+rr(-.25,.25),0),[rr(.18,.32),1,L1],GEYSER.libCol('streamer',T>50?leafCol(PAL.streamer,1.25,.03,.08,.06):rng()<.6?leafCol(PAL.streamer,1.1,.03,.1,.08):leafCol(PAL.streamerGreen,1.2,.03,.1,.06)));st.streamers++;}
    if(i%3===0&&rng()<.5*dense){const sd=rng()<.5?-1:1,off=sd*w*rr(1.05,1.5),x=b[0]-uz*off,z=b[1]+ux*off;if(GEYSER.at(x,z).T<62&&!blocked(x,z,.3)){const r=rr(.25,.7);
     BIO.put('jelly',[x,BIO.terrainH(x,z)-.05,z],qEuler(0,rr(0,TAU),0),[r,r*rr(.35,.6),r*rr(.8,1.3)],bright(vary(pick(PAL.jelly),.03,.1,.06),1.1));st.jelly++;}}}}
  // THE WATER: kettle lilies on the Stair's cooler pools and the creek's slower reaches

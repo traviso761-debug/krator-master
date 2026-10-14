@@ -30,6 +30,6 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
       warm ones warm). Reed Lake's own reed surfaces too (rlMat, rlMatM, rlThatch, rlIsland, rlLayer, rlBundleX). ?mat=proc shows the old look.
 - [ ] **The Andean patterns take the material library** (2026-10-06): the band, the shield (chakana) and the hanging (chakana-textile-red, a
-      diamond weave where the painter drew multi-colour stripes). The fringe and chakana cut-outs stay procedural. ?mat=proc shows the old look.
+      diamond weave where the painter drew multi-colour stripes). The chakana cut-outs stay procedural; the fringe (`rlFringe`) and the mudhif lattice (`rlLattice`) take the owner's magenta cut-outs since 2026-10-14. ?mat=proc shows the old look.
 - [ ] **Two hanging styles** (2026-10-06): hRLStyle.hanging (74-rl-mat.js) is 'chakana' (the library's red chakana weave, the default here)
       or 'stripe' (the procedural striped awayo, MAT.rlClothS, never bound). Mungo's reed village sets 'stripe'.
