@@ -335,8 +335,9 @@ to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top tha
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
 **Posture** (both runtimes, first after the clip): the clips, retargeted onto MakeHuman's curved spine, stand with
-the chest pushed forward and the upper body leaning back, so the spine is bent forward about 22 degrees (6, 8 and 8 on
-Spine, Spine1 and Spine2; the neck takes back half of it so the head does not drop) and the shoulders are dropped 9 and
+the chest pushed forward and the upper body leaning back, so the spine is bent forward: the woman about 22 degrees (6,
+8 and 8 on Spine, Spine1 and Spine2), the man and the giant about 30 (6, 12 and 12: his chest jutted further); the neck
+takes back half of it so the head does not drop and the shoulders are dropped 9 and
 drawn back 10 degrees. The upper arms keep the way the clip points them, so a thrust or a held spear still aims where
 the clip aims it (`fig.posture` holds the numbers). A clip that already stoops (the standing idle) stoops a little more.
 **Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,

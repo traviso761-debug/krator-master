@@ -533,6 +533,8 @@ func hold(want: Dictionary) -> void:
 # posture (50-figure.js posture): after each clip the spine is bent forward (degrees per joint, negative forward, the
 # neck taking back "neck" of it) and the shoulders dropped and drawn back, in the skeleton's frame (the figure's)
 const POSTURE := {"spine": {"Spine": -6.0, "Spine1": -8.0, "Spine2": -8.0}, "neck": 0.5, "drop": 9.0, "back": 10.0}
+# the man (and the giant, his skeleton made big) jut the chest further than the woman: his upper back bends more
+const POSTURE_SPINE_MAN := {"Spine": -6.0, "Spine1": -12.0, "Spine2": -12.0}
 
 
 func _posture() -> void:
@@ -546,11 +548,12 @@ func _posture() -> void:
 		if a >= 0:
 			arms[a] = _gp(a).basis.get_rotation_quaternion()
 	var lean := 0.0
-	for n in POSTURE["spine"]:
+	var spine: Dictionary = POSTURE["spine"] if kit.get("body", "") == "mpfb_female" else POSTURE_SPINE_MAN
+	for n in spine:
 		var b := skeleton.find_bone(n)
 		if b < 0:
 			continue
-		var a := deg_to_rad(float(POSTURE["spine"][n]))
+		var a := deg_to_rad(float(spine[n]))
 		lean += a
 		_turn(b, Quaternion(Vector3(1, 0, 0), -a))
 	var neck := skeleton.find_bone("Neck")

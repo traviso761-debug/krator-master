@@ -1494,7 +1494,9 @@ function KCharFigure(body, sliders, load){
      neck takes back POSTURE.neck of it, so the head does not drop) and the shoulders dropped and drawn back
      (POSTURE.drop, POSTURE.back), in the figure's own frame. The clips, retargeted onto MakeHuman's curved spine,
      stand with the chest pushed forward and the upper body leaning back ---- */
-  var POSTURE = { spine:{ Spine:-6, Spine1:-8, Spine2:-8 }, neck:0.5, drop:9, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  // the man (and the giant, his skeleton made big) jut the chest further than the woman: his upper back bends more
+  var POSTURE = { spine:kit.body === 'mpfb_female' ? { Spine:-6, Spine1:-8, Spine2:-8 } : { Spine:-6, Spine1:-12, Spine2:-12 },
+                  neck:0.5, drop:9, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
   function posture(){
     if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is
