@@ -1531,7 +1531,7 @@ function KCharFigure(body, sliders, load){
      upper spine is drawn back (POSTURE.spine, degrees per joint; the neck takes back POSTURE.neck of it, so the head
      comes back with the chest and does not jut) and the
      shoulders dropped and drawn back (POSTURE.drop, POSTURE.back), in the figure's own frame ---- */
-  var POSTURE = { spine:{ Spine1:5, Spine2:9 }, neck:0.4, drop:6, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  var POSTURE = { spine:{ Spine1:2, Spine2:3 }, neck:0.4, drop:6, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
   function posture(){
     if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is

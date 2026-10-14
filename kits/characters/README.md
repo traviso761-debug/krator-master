@@ -335,7 +335,8 @@ to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top tha
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
 **Posture** (both runtimes, first after the clip): the clips stand with the shoulders rolled forward and the upper back
-rounded, so the upper spine is drawn back (5 and 9 degrees on Spine1 and Spine2, the neck taking back 0.4 of it so the
+rounded, so the upper spine is drawn back a little (2 and 3 degrees on Spine1 and Spine2: at 5 and 9 the upper back
+bent visibly backward; the neck takes back 0.4 of it so the
 head comes back with the chest) and the shoulders dropped 6 and drawn back 10 degrees; the upper arms keep the way the
 clip points them, so a thrust or a held spear still aims where the clip aims it (`fig.posture` holds the numbers).
 **Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,
