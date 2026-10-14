@@ -109,6 +109,12 @@ Headgear is its own slot (`head`): tradesfolk wear a wrapped head cloth with a h
 item `covers_hair`), the court a gold band with a quetzal-feather fan that sways. Headgear only comes with a people's
 outfit; a random stranger never draws it. Every Voth item carries `culture: 'chichani'` in the kit, so only Chichani
 strangers draw them (`KCHAR.stranger`).
+**Fabrics.** Every part is painted (colours, bands, motifs) and then takes a material-library set's grain, multiplied
+into its colours at a clothing tile size (`FABRIC`, 12 to 30 cm a tile): the set comes from the paint's base colour
+(`FABRIC_OF`: maguey burlap, linen, coarse cotton, the Republic's wool and quilting, velvet, silk, bazin, leather,
+buckskin, fur, felt, nacre, the metals; a plain weave otherwise) or `P(fabric=)`, and boots and sandals take leather.
+The cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets
+(`SHEETS`), recoloured in each garment's own two colours. The sets and their sources: `prompt-clothes.md`.
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its
 elbow, a foot) to the skin and set off it; below a hang line a ring only grows (cloth falls straight from the chest
 or the hips instead of hugging the waist) and spans hollows (its convex hull: between the breasts, round both legs);

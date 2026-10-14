@@ -4,8 +4,12 @@ Every garment `tools/make_garments.py` makes (and every Cosmetic Lab and Animati
 today from flat colours, bands and motifs with a little noise: no weave, nap, sheen or wear. These are the texture
 sets that would give it those, one per kind of cloth, shared by every culture that wears it.
 
-**Not wired in yet.** The garment painter does not read the library: these sets are the material for that step, which
-comes after they arrive. A missing set leaves its garments as they are now.
+**Wired in (2026-10-14).** `tools/make_garments.py` multiplies each part's fabric grain into its painted colours
+(`FABRIC_OF` picks the set by the paint's base colour, `P(fabric=)` names one; boots and sandals take leather), and the
+cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets, recoloured in each
+garment's own two colours. Only the colour image is used so far (no normal or roughness maps on the clothes). A set
+missing from the clone (a Git LFS pointer) leaves that cloth with the old flat weave: `git lfs pull` the sets
+`FABRIC` lists before running the tool.
 
 How to use this file: the first table lists sets the library already has (`core/materials/library/`) and which clothes
 they serve; nothing to make there. The prompts below are the gaps, each a complete prompt ready to paste (the base

@@ -36,7 +36,8 @@
   face the drawing hand rather than the bow hand turning; the drawing hand's pinch is one fixed pose, and the arrow
   only shows while the string is pulled (there is no nocking motion). The supporting hand always closes in a fist.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
-  script (`tools/make_garments.py`): no folds beyond the hang and flare, flat-shaded strips of texture, and the
+  script (`tools/make_garments.py`): no folds beyond the hang and flare, strips of texture with the library's fabric
+  grain multiplied in (colour only: no normal or roughness map, so a weave does not catch the light), and the
   court outfits share one cut per body. Its hanging parts swing on spring-bone chains (README, Cloth), which are not
   cloth: no wrinkles, no self-collision, and layers are kept apart only at the chain points (a cape over a hem over
   a skirt, README). Between chains the cloth is interpolated; the GPU push (README, Clipping) keeps the legs and arms
