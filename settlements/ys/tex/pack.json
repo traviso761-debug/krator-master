@@ -185,26 +185,26 @@
     "normalMap": "concreteR.normal.webp",
     "roughnessMap": "concreteR.rough.webp"
    },
-   "lib": "concrete.ancient",
+   "lib": "concrete.rust.streaked.sea",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    1.95,
-    1.8
+    8.0,
+    8.0
    ],
    "size": 512,
    "source": {
-    "albedo": "fff71497f561d8f7a3804e407e8c8e47f1008423",
-    "normal": "d5730d5c2c700bf1251b34271385cbc3345eaff4",
-    "roughness": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+    "albedo": "35c355ba172fe695dd3e5dd88bab29ea7b4a70cc",
+    "normal": "85ee695d5258363044dddde1c921244f8e6bc232",
+    "roughness": "dd9fb43a794e38a3967c8ddb529bc486000b5880"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.0,
-    "mean": 0.703,
-    "sourceMean": 0.6171
+    "keep": 0.75,
+    "mean": 0.95,
+    "sourceMean": 0.4691
    }
   },
   "corrugate": {
@@ -758,6 +758,40 @@
     "sourceMean": 0.5897
    }
   },
+  "pipeRust": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "pipeRust.albedo.webp",
+    "normalMap": "pipeRust.normal.webp",
+    "roughnessMap": "pipeRust.rough.webp"
+   },
+   "lib": "metal.rust.heavy",
+   "metal": 0.3,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "22b43599b16b537d1028e92688ef82dcdaca11e1",
+    "normal": "46f71dbc6244c1c175338ef51d7d3f68b6c57baa",
+    "roughness": "8fb50d64d5118d0250c406d123bcd1c33fdfb013"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.36,
+    "sourceMean": 0.247
+   }
+  },
   "pkCont": {
    "breakup": {
     "cell": 6,
@@ -926,6 +960,40 @@
     "keep": 0.0,
     "mean": 0.55,
     "sourceMean": 0.4729
+   }
+  },
+  "rust": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "rust.albedo.webp",
+    "normalMap": "rust.normal.webp",
+    "roughnessMap": "rust.rough.webp"
+   },
+   "lib": "metal.rust.heavy",
+   "metal": 0.3,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "22b43599b16b537d1028e92688ef82dcdaca11e1",
+    "normal": "46f71dbc6244c1c175338ef51d7d3f68b6c57baa",
+    "roughness": "8fb50d64d5118d0250c406d123bcd1c33fdfb013"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.42,
+    "sourceMean": 0.247
    }
   },
   "sand": {
