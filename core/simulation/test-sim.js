@@ -397,7 +397,15 @@ function world(seed){
   clock.d=13;clock.h=8;const T1=S.plan(g,S.R.place.market,'SOCIALIZE',{x:0,y:0,z:120},clock.t);
   ok('from the hut: by kayak to the landing, then on foot',T1.legs.length===2&&T1.legs[0].layer==='kayak'&&T1.legs[0].mode==='boat'&&T1.legs[1].layer==='pedestrian'&&!g.inVehicle,T1.legs[0].layer==='pedestrian');
   const T2=S.plan(g,S.R.place.hut,'SLEEP',{x:100,y:0,z:60},clock.t);
-  ok('home: on foot to the landing, then by kayak to the hut',T2.legs.length>=1&&T2.legs[T2.legs.length-1].layer==='kayak'&&g.inVehicle==='boat',T2.legs[T2.legs.length-1].layer!=='kayak');}
+  ok('home: on foot to the landing, then by kayak to the hut',T2.legs.length>=1&&T2.legs[T2.legs.length-1].layer==='kayak'&&g.inVehicle==='boat',T2.legs[T2.legs.length-1].layer!=='kayak');
+  // asked again on the way home while still on foot (an interrupt, a wake, a jump): its plan set inVehicle for the trip's
+  // end, but it is not afloat yet: on foot from where it stands, no kayak leg over the land (SIM.vehicleAt)
+  g.inVehicle=null;const mk=S.R.place.market,T4=S.plan(g,S.R.place.hut,'SLEEP',{x:mk.x-60,y:0,z:mk.z},clock.t);g.task=T4;
+  const tw=clock.t+T4.legs[0].dur*0.5,T5=S.plan(g,mk,'SOCIALIZE',S.pose(g,tw,{cheap:true}),tw);
+  ok('asked again while still walking to the landing: on foot, no kayak leg from the street',T4.legs[0].layer==='pedestrian'&&T4.veh==='boat'&&T5.legs.length>0&&T5.legs.every(L=>L.layer!=='kayak')&&!g.inVehicle,T5.legs.some(L=>L.layer==='kayak'));
+  g.task=T4;const ta=T4.t0+T4.dur+1,T6=S.plan(g,mk,'SOCIALIZE',S.pose(g,ta,{cheap:true}),ta);
+  ok('and once it got there, afloat: by kayak to the landing first',T6.legs[0].layer==='kayak'&&T6.legs[0].mode==='boat',T6.legs[0].layer!=='kayak');
+  g.task=null;g.inVehicle=null;}
  ok('the slots still hold after it all',S.all('actor').every(x=>S.itemsCheck(x).length===0),false);}
 
 // the economy (77-sim-6-economy.js): production by worked hour and efficiency into the site's store up to its cap, the

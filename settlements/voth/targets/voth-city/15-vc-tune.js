@@ -298,6 +298,11 @@ var TUNE = {
     spotStep: 0.45, spotsMax: 48,
     spotTypes: ['counter', 'workstation', 'loom', 'desk', 'stove', 'rack', 'weapon', 'tool', 'stall', 'pen', 'altar', 'shrine', 'tomb', 'table', 'chair', 'bench', 'seating', 'stool', 'bed'],
     outdoorR: { fishdock: 20, quay: 20, pier: 30, mine: 22, quarry: 30, mushfarm: 20, mill: 10, granary: 8, tower: 6, gate: 14, field: 20, ferry: 10, station: 14, chinampa: 25, ranch: 18, dairy: 18, sty: 14, coop: 12 },
+    /* where an open site's workers stand (42-vc-sim-places.js VC.simStandSpots): never on open water. `dry`: ground this
+       far above the lake is land; a spot's wander keeps to its surface within `step` m of its height; at least `min`
+       spots, else the wander halves; a site with nothing standable within its reach stands on the nearest such ground
+       within `search` m, its spots within `near` m of it */
+    stand: { dry: 0.3, step: 0.6, min: 6, spots: 24, search: 400, near: 8 },
     /* phase C: the pedestrian layer (43-vc-sim-nav.js). A street is a node every `step` m; a street's end joins the street
        it meets when it stops within that street's half-width + `snap` m; crossings share a node. A canton terrace is a
        ring of nodes every `ring` m, a top deck a grid every `deck` m; a park walk's loose end joins a street within
@@ -366,7 +371,7 @@ var TUNE = {
     run: { detour: 1.35, stepMax: 6000, catchUp: 4, jumpGap: 90, samples: [3, 10, 15, 20], reach: 1500, wake: true, lag: 10, buckets: [0, 30] },   /* lag: each citizen's day a hashed 0-10 minutes behind the clock (core SIM.LAG): the hour's decisions spread over its first minutes; buckets: the trades dealt into these offsets (VC.simBuckets: half of them a half-hour later) */
     /* the bodies drawn: the nearest `max` within `r` m of the view's centre, picked again every `every` ms, when the
        orbit is closer than `dist` m (or walking); the tunic by activity (`moving` while walking) */
-    embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 60,   /* animals: the fauna kit's animals drawn at once, the nearest */
+    embody: { r: 220, max: 1500, every: 400, dist: 600, animals: 60, seat: 0.6,   /* seat: a paddler sits this far down in its kayak (56c) */   /* animals: the fauna kit's animals drawn at once, the nearest */
               colours: { moving: 0xd8d0c0, WORK: 0xb8873a, SOCIALIZE: 0x3a7ab8, VISIT: 0x6a8ac8, RELAX: 0x5a9a5a, EAT: 0xc0a060, WORSHIP: 0x9a50a0, DRINK: 0x4ab0b0, IDLE: 0x8a8a8a, SLEEP: 0x404060, CONTEMPLATE: 0xb070c0, REST: 0x50607a, other: 0x8a7a6a } },
     /* needs, happiness, efficiency, loyalty (phase C session 3; SIM-ROADMAP.md 1.4, 2.4 items 4 and 5; core/simulation
        77-sim-6-needs.js). A meter per need, 0 met to 100 desperate: it rises `rate` a world hour (times the trade's

@@ -37,6 +37,66 @@ VC.simSegD = function (p, a, b) {
   var vx = b[0] - a[0], vz = b[1] - a[1], L = vx * vx + vz * vz, t = L > 0 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vz) / L)) : 0;
   return Math.hypot(p[0] - a[0] - vx * t, p[1] - a[1] - vz * t);
 };
+/* what a person can stand on at (x, z), and its height; null over open water (owner, 2026-10-14: "people stand around
+   on the water and walk aimlessly"): a chinampa bed (31b-vc-chinampa.js VC.CHIN.beds: its crowned top), a pier's deck
+   (VOTH.PIERS with the `top` its builder records: the harbour's, the fishing docks', the river quays', the ferry
+   piers'), a canton's solid stack, a bridge's deck, else the ground where it stands TUNE.sim.stand.dry above the lake */
+VC.simStandY = function (x, z) {
+  var I = VC.simStandIdx || (VC.simStandIdx = VC.simStandIndex());
+  var cell = I.beds[Math.floor(x / I.c) + ',' + Math.floor(z / I.c)];
+  if (cell) for (var i = 0; i < cell.length; i++) {
+    var b = cell[i], dx = x - b.x, dz = z - b.z, c = Math.cos(b.ry), s = Math.sin(b.ry);
+    if (Math.abs(dx * c - dz * s) <= b.bw / 2 && Math.abs(dx * s + dz * c) <= b.bl / 2) return b.top;
+  }
+  var pc = I.piers[Math.floor(x / I.c) + ',' + Math.floor(z / I.c)];
+  if (pc) for (var j = 0; j < pc.length; j++) { var P = pc[j]; if (VC.simSegD([x, z], [P.x0, P.z0], [P.x1, P.z1]) <= P.half) return P.top; }
+  if (typeof CANT !== 'undefined' && CANT.list && CANT.list.length) { var M = CANT.at(x, z, 0); if (M) { var st = CANT.stackTop(M, x, z); if (st != null) return st; } }
+  var by = VOTH.lifeBridgeY ? VOTH.lifeBridgeY(x, z) : null; if (by != null) return by;
+  var h = baseH(x, z); return h >= VOTH.SEA + TUNE.sim.stand.dry ? h : null;
+};
+VC.simStandIndex = function () {
+  var c = 40, beds = {};
+  ((VC.CHIN && VC.CHIN.beds) || []).forEach(function (b) {
+    var r = Math.hypot(b.bw, b.bl) / 2;
+    for (var i = Math.floor((b.x - r) / c); i <= Math.floor((b.x + r) / c); i++) for (var j = Math.floor((b.z - r) / c); j <= Math.floor((b.z + r) / c); j++) (beds[i + ',' + j] = beds[i + ',' + j] || []).push(b);
+  });
+  var piers = {};
+  (VOTH.PIERS || []).forEach(function (P) {
+    if (P.top == null) return; var h = (P.deck || P.w) / 2, e = { x0: P.x0, z0: P.z0, x1: P.x1, z1: P.z1, half: h, top: P.top };
+    for (var i = Math.floor((Math.min(P.x0, P.x1) - h) / c); i <= Math.floor((Math.max(P.x0, P.x1) + h) / c); i++)
+      for (var j = Math.floor((Math.min(P.z0, P.z1) - h) / c); j <= Math.floor((Math.max(P.z0, P.z1) + h) / c); j++) (piers[i + ',' + j] = piers[i + ',' + j] || []).push(e);
+  });
+  return { c: c, beds: beds, piers: piers };
+};
+/* where the workers of an open site stand: up to `n` spots on a sunflower spiral of radius R round (x, z) (no random
+   draw), each standable with the same surface `W` metres round it on every side, so the wander (core/simulation's
+   T.wander: up to W either way in x and z) stays on it; W is halved until spots are found. A site with no standable
+   ground within R looks further out (to TUNE.sim.stand.search m) and stands on the nearest. -> { spots, wander, moved } */
+VC.simStandSpots = function (x, z, R, W, n) {
+  var S = TUNE.sim.stand, same = function (y, q) { var y2 = VC.simStandY(q[0], q[1]); return y2 != null && Math.abs(y2 - y) <= S.step; };
+  var ring = function (cx, cz, rad, w) {
+    var out = [], N = Math.max(n * 3, 24);
+    for (var i = 0; i < N && out.length < n; i++) {
+      var r = rad * Math.sqrt((i + 0.5) / N), a = i * 2.399963, px = cx + Math.cos(a) * r, pz = cz + Math.sin(a) * r, y = VC.simStandY(px, pz);
+      if (y == null) continue;
+      if (w > 0 && ![[w, 0], [-w, 0], [0, w], [0, -w], [w, w], [-w, -w], [w, -w], [-w, w]].every(function (o) { return same(y, [px + o[0], pz + o[1]]); })) continue;
+      out.push([VC.r2(px), VC.r2(pz), VC.r2(y)]);
+    }
+    return out;
+  };
+  for (var w = W; ; w = w > 1 ? w / 2 : 0) {
+    var sp = ring(x, z, Math.max(R, 1), w);
+    if (sp.length >= Math.min(n, S.min) || (w === 0 && sp.length)) return { spots: sp, wander: VC.r2(w), moved: 0 };
+    if (w === 0) break;
+  }
+  /* nothing to stand on within R: the nearest standable point further out (rings every 4 m) */
+  for (var d = Math.max(R, 4); d <= S.search; d += 4) {
+    var k = Math.max(8, Math.round(2 * Math.PI * d / 4));
+    for (var m = 0; m < k; m++) { var px = x + Math.cos(m * 2 * Math.PI / k) * d, pz = z + Math.sin(m * 2 * Math.PI / k) * d, y = VC.simStandY(px, pz);
+      if (y != null) { var sp2 = ring(px, pz, Math.min(R, S.near), 0); return { spots: sp2.length ? sp2 : [[VC.r2(px), VC.r2(pz), VC.r2(y)]], wander: 0, moved: Math.round(d) }; } }
+  }
+  return { spots: [], wander: 0, moved: -1 };
+};
 /* a lot's plot holding another kit model, its front kept where the old building's was (else centred in the plot) */
 VC.simFit = function (L, key) {
   var D = SL.dims(key, 0); if (!D || !L.lot || L.died != null) return null;
@@ -559,6 +619,7 @@ VC.simPlaces = function () {
   if (typeof SIM === 'undefined' || !SIM.place) return 0;
   VC.simActs();
   var T = TUNE.sim, n = 0, K = TUNE.census, posts = {}, wps = {}, list = VC.SIMB.list = [];
+  VC.simStandIdx = null;   /* the beds and piers as they stand now (VC.simStandY) */
   var hrs = function (kind) { var h = T.hours[kind]; return h ? h.slice() : null; };
   var pullOf = function (kind) { return T.pull[kind] ? Object.assign({}, T.pull[kind]) : null; };
   var reg = function (o) {
@@ -662,8 +723,17 @@ VC.simPlaces = function () {
      place where the plan has one: a field, a pier, a mine; else one place at the work's middle) */
   var BR = TUNE.sim.needs && TUNE.sim.needs.barrel;   /* the country's outdoor work keeps a water barrel (phase C session 3) */
   var outdoor = function (job, recs, perRec, kind) { recs.forEach(function (q, i) { var n = perRec(q, i), acts = {}; if (BR && BR.kinds.indexOf(kind) >= 0 && n > 0) acts.DRINK = Math.max(1, Math.ceil(n / BR.per));
-    reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: Math.max(VOTH.SEA, baseH(q[0], q[1])), activities: acts, open: [6, 19], job: job, posts: n, workplaces: n,
-    r: q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, wander: T.outdoorR[kind] || 12, tags: ['outdoor'] }); }); };
+    /* its workers stand on what is there (VC.simStandSpots): a pier's deck, a chinampa bed, the shore; never the water round it */
+    var R = q[2] != null ? Math.sqrt(q[2] * 1e4) / 2 : T.outdoorR[kind] || 12, st = standOn(q[0], q[1], R, T.outdoorR[kind] || 12, n);
+    reg({ id: 'work.' + kind + '.' + i, kind: kind, name: job, x: q[0], z: q[1], y: st.y, activities: acts, open: [6, 19], job: job, posts: n, workplaces: n,
+    r: R, spots: st.spots, wander: st.wander, tags: ['outdoor'] }); }); };
+  var standOn = function (x, z, R, W, n) {
+    var st = VC.simStandSpots(x, z, R, W, Math.min(T.spotsMax, Math.max(T.stand.spots, Math.ceil(n || 0)))), S = VC.SIMB.stand;
+    S.sites++; if (st.wander < W) S.wanderCut++; if (st.moved > 0) S.moved++; if (!st.spots.length) S.none++;
+    var y0 = VC.simStandY(x, z);
+    return { spots: st.spots.length ? st.spots : undefined, wander: st.wander, y: y0 != null ? y0 : st.spots.length ? st.spots[0][2] : Math.max(VOTH.SEA, baseH(x, z)) };
+  };
+  VC.SIMB.stand = { sites: 0, wanderCut: 0, moved: 0, none: 0 };
   var fields = (PLAN.fields || []).filter(function (F) { return F.kind !== 'garden'; });
   outdoor('farmhands and ploughmen', fields.map(function (F) { return [F.bo.c[0], F.bo.c[1], 4 * F.bo.hw * F.bo.hd / 1e4]; }), function (q) { return q[2] * K.jobs.perHectare; }, 'field');
   var P0 = VOTH.PIERS || [], mid = function (q) { return [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2]; };
@@ -707,7 +777,8 @@ VC.simPlaces = function () {
   ['envoys and embassy staff', 'healers and nurses', 'monks and lay brothers (chapel, fields, coops)', 'chinampa growers', 'orchardmen', 'beetle herders', 'ferrymen',
    'elephant bug handlers and station hands'].forEach(function (job) {
     var want = C[job] ? C[job].n : 0, have = posts[job] || 0, haveW = wps[job] || 0; if (want <= have && want <= haveW) return;
-    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: 0, activities: {}, open: [6, 19], job: job, posts: Math.max(0, want - have), workplaces: Math.max(0, want - haveW), tags: ['outdoor', 'aggregate'] });
+    var sa = standOn(cc[0], cc[1], T.stand.near, 0, want - have);   /* the city's middle may be the bay: they stand on the nearest ground */
+    reg({ id: 'work.' + job.replace(/\W+/g, '-'), kind: 'outdoor', name: job, x: cc[0], z: cc[1], y: sa.y, spots: sa.spots, activities: {}, open: [6, 19], job: job, posts: Math.max(0, want - have), workplaces: Math.max(0, want - haveW), tags: ['outdoor', 'aggregate'] });
   });
   VC.SIMB.places = n; VC.SIMB.posts = posts;
   return n;

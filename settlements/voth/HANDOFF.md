@@ -10,6 +10,40 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-14: interiors that vanished, kayaks, people on the water
+
+The owner: "interiors are not rendering aside from the cantons; nor are kayaks", "people stand around on the water and
+walk aimlessly". All three were on `Voth-sim` already (pre-existing, not the merge). Found with headless probes (a
+non-lite load, renderer.info, an instance-aware frustum test; a lite census of every body the bodies pass would draw).
+
+- **Interiors: frustum culling.** three r128 culls an InstancedMesh by its geometry's bounding sphere at the mesh's
+  origin, never by its instances. A lot building's walls are a unit box at the lot's origin and its furniture the
+  piece's own geometry there, so the interior vanished whenever the lot's middle left the view (a corner view: 252 of
+  253 meshes in view culled); a canton's walls and furniture sit at the world's origin, so a canton far from it (Port)
+  lost all 1,321. Every interior InstancedMesh is now `frustumCulled = false` (56, 56b: one building or canton shows at
+  a time). And walking into a lot building (F) now shows its interior whole, as walking into a canton does
+  (`VC.ixWalkIn`, 56b): before, a lot building's interior showed only in the cutaway.
+- **People on the water: the outdoor work sites.** `outdoor()` (42) put a site at a point (a pier's middle, a stilt
+  hut in the lake, the city's middle in the bay) at `max(SEA, ground)` and spread its workers in a disc round it with a
+  wander as wide: dockers, fishers, ferrymen, bargemen stood on the water round their piers, the chinampa growers round
+  their huts, the aggregate trades in the bay. Now `VC.simStandSpots` gives each site spots on what is there
+  (`VC.simStandY`: a chinampa bed's top, a pier's deck at the `top` its builder now records in `VOTH.PIERS` (31, 33,
+  34; `LIFE_FISHDOCK_H` exported by build.py), a canton's stack, a bridge, dry ground), each with the same surface a
+  wander's reach round it, the wander halved until spots are found (`TUNE.sim.stand`).
+- **Kayaks: three causes.** (1) `SIM.plan` (core/simulation) started from `a.inVehicle` as the last plan left it,
+  which is the state at that trip's end: an actor asked again before it got there (an interrupt, a wake, a jump that
+  leaves it mid-trip) was planned as if afloat and paddled a straight line from the street over the town (up to 1.9
+  km). `SIM.vehicleAt(a, t)` reads the vehicle off the task (a boat leg afloat, a drive leg in the buggy, else on
+  foot; the trip's end state once arrived); tasks carry `vehFrom`, `veh`; test-sim has the case and its negative;
+  Dhelv's export is byte-identical with and without it. (2) A landing was the street node nearest the beds, so every
+  kayak leg crossed the shore: its door is now the water's edge on the way to the beds (`VC.simShore`, 45). (3) No
+  kayak was drawn: a body on a boat leg of its own is now sat in one (56c, `TUNE.sim.embody.seat`).
+
+Numbers (lite census, every posed body; over water = ground under the lake, the body at the water's level, not on a
+bed): 08:00 1,112 of 10,050 before, 0 of 9,639 after; 17:30 368 of 20,118 (67 afloat with no boat) before, 6 of
+19,730 (2 afloat, in kayaks; 4 walking a causeway's edge) after. Kayak legs over land at 17:30: 20 of 1,070 for 160 m
+in all (worst 16 m) after, against 535 of 1,057 for 15,060 m before. Placement hash unchanged (ff007aab).
+
 ## 2026-10-13: the trades in two half-hour buckets
 
 The owner: "Can we stagger the jobs into 2 buckets separated by 1/2 hour to further reduce that load?"

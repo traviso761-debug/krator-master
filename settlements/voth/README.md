@@ -391,7 +391,10 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
   residence rule is furnished again with another seed (three tries).
 * **The cutaway (x)** now opens the building nearest the middle of the view when no canton is nearer: the same planes and
   storey keys, its walls with their doors and windows, stairs and furniture drawn the first time it is opened. The inspector
-  names its pieces.
+  names its pieces. Walking into a building (F) shows its interior whole, as walking into a canton does (`VC.ixWalkIn`).
+  Interior meshes are never frustum-culled (2026-10-14): three r128 culls an InstancedMesh by its geometry's sphere at the
+  group's origin, not by its instances, so a building's interior vanished whenever its middle left the view, and a
+  canton's whenever the world's origin did.
 * **The buildings off the lots** (session 2): Voth's own builders the city calls are logged by `build.py` with their
   arguments (`VOTH.BUILT`: the monastery's dormitories, chapel and assembly hall, the funerary temple, the House of
   Healing); the city's shrine and lighthouse models record their shells (`VC.ixSite`); the chinampas' stilt huts carry
@@ -558,7 +561,10 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
   reach. A household shops when its store falls below two days and buys four (a buffer: a store that runs low after
   the shops shut lasts the night). A meal is eaten out (a tavern, a market's stalls, the caravanserai) by a share that
   grows with wealth, or when the store cannot make one. The chinampa growers' huts and beds are on the `kayak` layer
-  through a landing at the nearest street (`VC.simKayaks`): to town by kayak, then on foot. The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
+  through a landing at the nearest street (`VC.simKayaks`): to town by kayak, then on foot. The landing's door is the
+  water's edge on the way from that street to the beds (`VC.simShore`), so no kayak crosses the shore; a paddler is drawn
+  sat in a kayak (56c). The outdoor work sites' people stand on what is there (`VC.simStandSpots`: a pier's deck at its
+  `top`, a chinampa bed, dry ground), their wander kept to it, never on the water round a pier or a hut (2026-10-14). The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
   **The shipwright's docks** (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars,
   kayaks. Nets could come from weaver"): `voth_bldg_shipwright` (kits/catalog: a yard on the shore, a slipway into the
   water with a hull on the stocks, sheerlegs, a timber shed, the shop with oars and kayaks racked), placed by

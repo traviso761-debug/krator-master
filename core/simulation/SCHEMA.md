@@ -72,7 +72,11 @@ hour of WORK or of the `free` activities; a meal at home takes two foods from th
 none: the actor's `boost` of EAT); a store running low sends one of its people for days of food; a high material meter
 buys a `treat` by wealth; a meal is eaten out (a seller of the item `meal`) by `eatOut` or for an empty store.
 `SIM.itemsEff(a)` (a missing tool, a hurt) multiplies the needs' efficiency. An actor's `boat.layer` names its boat's
-water layer (a kayak's own, in place of `water`); `SIM.legsBy` counts the legs planned by layer.
+water layer (a kayak's own, in place of `water`); `SIM.legsBy` counts the legs planned by layer. A planned task
+carries `vehFrom` and `veh` (the vehicle it set out in and the one it leaves the actor in); a new plan starts from
+`SIM.vehicleAt(a, t)`, the vehicle read off that task at `t` (a boat leg afloat, a drive leg in the buggy, else on
+foot; `veh` once arrived), not from `inVehicle` as the last plan left it, so an actor asked again on its way to a
+landing does not paddle from the street.
 
 **The economy** (opt-in: `SIM.economy(config)`, `77-sim-6-economy.js`). Goods (`goods`, each with an optional
 `import: {route, lot}`) and their `inputs`. `SIM.store(place, {kind, cap})` gives a place a `stock` ({good: n}): a

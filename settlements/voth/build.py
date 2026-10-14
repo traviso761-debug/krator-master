@@ -148,7 +148,7 @@ CITY_SEEDS = ('span reclaimedCauseway rectFrus bedAt shade loc structure watchto
               'harborGate spiritGate riverGate wallGateRuinA wallGateRuinB wallGateRuinC monasteryCompound houseOfHealing '
               'funeraryTemple lifeStandaloneShrine lifeBuildFerryPier lifeCantonEdge striderStationBuild customsHouse shed '
               'benchPlain faceToward plinth footing claim gridHit wallSeg buildFishDockPier monasteryChapel monasteryDorm monasteryAssemblyHall '
-              'monasteryWell monasteryPen monasteryCoop monasteryField LIFE_FISHDOCK_LEN mineEntrance quarryPit MINE_CART_STOPS QUARRY_CART_STOPS granary windmill MILL_CLUSTERS monasteryOpenings monasteryWindow MONASTERY_SITES mushroomFarm watermill beetleRanch').split()
+              'monasteryWell monasteryPen monasteryCoop monasteryField LIFE_FISHDOCK_LEN LIFE_FISHDOCK_H mineEntrance quarryPit MINE_CART_STOPS QUARRY_CART_STOPS granary windmill MILL_CLUSTERS monasteryOpenings monasteryWindow MONASTERY_SITES mushroomFarm watermill beetleRanch').split()
 CITY_SHIM = NL.join([
     'var PRIMS = [];',
     'function __c(c){ return typeof c === "string" ? parseInt(c.replace("#", ""), 16) : c; }   /* Voth palettes mix 0xRRGGBB and "#rrggbb" */',
@@ -203,7 +203,7 @@ def voth_city_fragment():
                      'terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };',
                      'function setGroundEdit(fn) { __groundEdit = fn; }', ''])
     export = set(names) | set(('landDist groundTone CANTONS CIDX ISLES RIVER RIVER_HEAD DISTRICTS WATER SEA HW CITY_EXT CITY_LIM SPANS CAUSEWAYS '
-                               'RBRIDGES CPIERS PIERS RPIERS BARGES DECK CWAY RLAND TONES TONES_POOR BASALTC MARBLEC DOMEC ROOFS GREYC FRUITC FIELDC MONASTERY LIFE_FISHDOCK_W LIFE_FISHDOCK_LEN PRIMS BOX FR8 FR6 FR3 DOME CYL CONE BLOB STK SLEN '
+                               'RBRIDGES CPIERS PIERS RPIERS BARGES DECK CWAY RLAND TONES TONES_POOR BASALTC MARBLEC DOMEC ROOFS GREYC FRUITC FIELDC MONASTERY LIFE_FISHDOCK_W LIFE_FISHDOCK_H LIFE_FISHDOCK_LEN PRIMS BOX FR8 FR6 FR3 DOME CYL CONE BLOB STK SLEN '
                                'shoreIn shoreNorm shoreS shoreAt riverAt riverHalf inRiver reseed rr pick chance mix buildIslets runChinampas '
                                'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY BUILT').split())
     export.discard('terrainH')

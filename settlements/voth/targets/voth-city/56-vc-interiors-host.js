@@ -99,7 +99,7 @@ VC.drawInterior = function (cn) {
   Object.keys(byS).forEach(function (si) {
     var L = byS[si], IM = new THREE.InstancedMesh(geo, mat, L.length);
     L.forEach(function (e, i) { var b = e[0]; m4.makeScale(Math.max(0.01, b[1] - b[0]), Math.max(0.01, b[5] - b[4]), Math.max(0.01, b[3] - b[2])); m4.setPosition(b[0], b[4], b[2]); IM.setMatrixAt(i, m4); IM.setColorAt(i, e[1]); });
-    IM.castShadow = true; IM.receiveShadow = true; IM.userData = { kind: 'interior', canton: cn, storey: +si, probeSkip: true };
+    IM.castShadow = true; IM.receiveShadow = true; IM.frustumCulled = false; IM.userData = { kind: 'interior', canton: cn, storey: +si, probeSkip: true };   /* never culled: three r128 tests an InstancedMesh's geometry (a unit box at the world's origin), not its instances, so a canton far from the origin lost its interior */
     g.add(IM); g.userData.storeys[si] = [IM];
   });
   /* the lamps (owner, 2026-10-09: "add interior lighting to cantons"): a warm fitting under every room's ceiling and
@@ -116,7 +116,7 @@ VC.drawInterior = function (cn) {
   Object.keys(lampBy).forEach(function (si) {
     var Ls = lampBy[si], IM = new THREE.InstancedMesh(lgeo, lmat, Ls.length);
     Ls.forEach(function (l, i) { m4.makeTranslation(l.x, l.y, l.z); IM.setMatrixAt(i, m4); });
-    IM.userData = { kind: 'interior lamps', canton: cn, storey: +si, probeSkip: true };
+    IM.frustumCulled = false; IM.userData = { kind: 'interior lamps', canton: cn, storey: +si, probeSkip: true };
     g.add(IM); (g.userData.storeys[si] = g.userData.storeys[si] || []).push(IM);
   });
   g.userData.lamps = lamps;
@@ -147,7 +147,7 @@ VC.drawInterior = function (cn) {
       Pr.parts.forEach(function (part) {
         var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
         items.forEach(function (p, i) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(i, m4); });
-        IM.castShadow = false; IM.receiveShadow = true; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true, items: items };   /* items[instanceId]: the inspector's piece */
+        IM.castShadow = false; IM.receiveShadow = true; IM.frustumCulled = false; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true, items: items };   /* (the walls' reason, above) */   /* items[instanceId]: the inspector's piece */
         g.add(IM); (g.userData.storeys[si] = g.userData.storeys[si] || []).push(IM);
       });
       nFurn += items.length;
