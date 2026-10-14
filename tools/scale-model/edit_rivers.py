@@ -3,7 +3,10 @@
 "make sure they make sense (nothing flowing uphill) and designate them on the map, with estimated flow/size, so they can
 be placed when the open world is built").
 
-    python3 tools/scale-model/edit_rivers.py <4.20 page.html> <regions.json> <settlements.json> <out page.html>
+    python3 tools/scale-model/edit_rivers.py <4.20 page.html> <regions.json> <settlements.json> <out page.html> [--rain <page>]
+
+--rain takes the rain the routing runs on from an earlier output (the climate recomputed on its heights, step 7): run
+once, then again with --rain <the first run's page>, so the rivers run on the rain of the land they cut.
 
 Reads the page as saved (Artifact read) and the two collections (one JSON list each), writes the new page, and beside it
 <out>.report.json (the audit) and <out>.rivers.png (the network over the relief map). Deterministic. Steps:
@@ -29,6 +32,10 @@ Reads the page as saved (Artifact read) and the two collections (one JSON list e
    drawn course and gains the rest. DATA.basins: the endorheic lakes (level, area, the water they balance). DATA.hydro:
    the method and the thresholds. The page's hover readout gains a 'river' row.
 6. THE PAINT. Rivers drawn on the satellite and relief maps (st, t), wider with flow; dry valleys are not painted.
+7. THE CLIMATE. Wherever the ground or a water surface moved, the temperatures lapse with it (6.5 C per km) and the
+   rain, climate class and zone are recomputed from the unchanged land most like each cell (edit_heights.reclimate, as
+   4.18-4.20 did; the abyss's rebuilt floor takes the page's own rain there, smoothed over the floor); the rain and
+   climate maps are re-lit and repainted.
 """
 import heapq, io, json, math, os, re, sys
 import numpy as np
@@ -36,7 +43,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage as nd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from edit_heights import LO, HI, load, raster, b64, chaikin, meander   # noqa: E402
+from edit_heights import LO, HI, load, raster, b64, chaikin, meander, reclimate, repaint, ramp   # noqa: E402
 from edit_dams import set_data   # noqa: E402
 import hydro   # noqa: E402
 
@@ -588,10 +595,14 @@ def main():
         sys.exit(__doc__)
     page, rpath, spath, out = sys.argv[1:5]
     lines, li, D = load(page)
+    p_drawn = D['p']                                     # the page's own rain (the climate step recomputes from it)
+    if '--rain' in sys.argv:
+        D = dict(D, p=load(sys.argv[sys.argv.index('--rain') + 1])[2]['p'])
     REG = [r for r in json.load(open(rpath, encoding='utf8')) if not TOOL_REGIONS.match(r.get('name', '').strip())]
     SET = json.load(open(spath, encoding='utf8'))
     G = grid_fields(D)
     su, sv, E = G['su'], G['sv'], G['E']
+    whas0, wlev0 = G['whas'].copy(), G['wlev'].copy()
     OW, OH = D['fullW'], D['fullH']
     KM = 2 / su                          # one height cell, km
     KM2 = (2 / su) * (2 / sv)
@@ -951,6 +962,7 @@ def main():
     # the abyss's floor rebuilt with long, snaky lakes (ABYSS_LAKES)
     report['abyss_lakes'] = None
     abyss_beds = np.zeros(E.shape, bool)
+    abyss_zone = np.zeros(E.shape, bool)
     if ABYSS_LAKES:
         A_ = ABYSS_LAKES
         ab = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == A_['region']), None)
@@ -1005,6 +1017,7 @@ def main():
         En, rows, snakes, filled, cut_most, fill_most = snake_lakes(
             En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())])
         abyss_beds = filled | (flag & ~snakes)
+        abyss_zone = zone
         for r_ in rows:
             r_['at_px'] = px(*r_.pop('at_cell'))
             r_['trough_km2'] = round(r_.pop('cells') * KM2)
@@ -1321,17 +1334,48 @@ def main():
         report['new_water'] = {'cells': int(add.sum()), 'km2': round(float(add.sum() * KM2))}
     gF = nd.zoom(graded.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW] > .35
     gF = nd.binary_dilation(gF, iterations=1)
-    dz = nd.zoom(En - E, (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW] * graded.any()
     if graded.any():
         # the raised floors were painted as the deep basin they were: they take the land beside them (nearest pixel
         # outside the valleys and off the water), and the temperatures lapse with the new ground (6.5 C per km)
         wF = nd.zoom(G['whas'].astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5
         _, (iy, ix) = nd.distance_transform_edt(gF | wF, return_indices=True)
-        for k in ['tm', 'th', 'tl', 'tw', 'tc']:
-            a = raster(D, k, 'L').astype(float)
-            ok = (a > 1) & gF
-            a = np.where(ok, np.round(a - 6.5 * np.clip(dz, 0, None) / 1000), a)
-            rep[k] = b64(Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), 'L'), optimize=True)
+    # 7. the climate where the ground or a water surface moved: the temperatures lapse with it, then the rain, class
+    # and zone are recomputed (edit_heights.reclimate), and the rain and climate maps re-lit and repainted
+    surf = lambda Ex, wh, wl: np.where(wh, np.fmax(Ex, wl), Ex)
+    DS = nd.zoom(surf(En, G['whas'], G['wlev']) - surf(E, whas0, wlev0), (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW]
+    for k in ['tm', 'th', 'tl', 'tw', 'tc']:
+        v = raster(D, k, 'L').astype(float) - 90
+        ok = (v > -89) & (np.abs(DS) > 1)
+        v2 = np.where(ok, np.round(v - 6.5 * DS / 1000), v)
+        rep[k] = b64(Image.fromarray(np.clip(v2 + 90, 0, 255).astype(np.uint8), 'L'), optimize=True)
+    DC = dict(D, p=p_drawn, **{k: rep[k] for k in ['tm', 'th', 'tl', 'tw', 'tc']})
+    rain0 = raster(DC, 'p', 'L').astype(float) / 255 * 4000
+    # the abyss's rebuilt floor keeps the page's own rain there, smoothed over the floor: a filled pit is still the
+    # abyss floor, not the land of its new height, and the rain must not hang on where the lakes were laid (water kept
+    # its old rain, recomputed land took its look-alikes', and each pass's lakes moved with it)
+    kz = np.clip(nd.gaussian_filter(nd.zoom(abyss_zone.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW], 2.0) * 2, 0, 1)
+    zr = kz > 0
+    floor_rain = nd.gaussian_filter(rain0 * zr, 8.0) / np.maximum(nd.gaussian_filter(zr.astype(float), 8.0), 1e-6)
+    rain2, cls2, zon2, _, report['climate'] = reclimate(DC, E, En, G['whas'], np.zeros((OH, OW), bool),
+                                                         (floor_rain, kz) if abyss_zone.any() else None)
+    if abyss_zone.any():
+        rain2 = rain2 * (1 - kz) + floor_rain * kz
+    print('climate:', report['climate'])
+    pal = np.array([[int(c['color'][i:i + 2], 16) for i in (1, 3, 5)] for c in D['climate']['classes']], float)
+    c0 = raster(D, 'c', 'L')
+    from edit_heights import relight as relight_
+    lit, _, _ = relight_(D, E, En, keys=('rt', 'ct'))
+    rep['ct'] = repaint(dict(D, ct=lit['ct']), 'ct', pal[c0], pal[cls2], cls2 != c0)
+    rep['rt'] = repaint(dict(D, rt=lit['rt']), 'rt', ramp(rain0), ramp(rain2), np.abs(rain2 - rain0) > 15)
+    rep['p'] = b64(Image.fromarray(np.clip(np.round(rain2 / 4000 * 255), 0, 255).astype(np.uint8), 'L'), optimize=True)
+    rep['c'] = b64(Image.fromarray(cls2, 'L'), optimize=True)
+    rep['z'] = b64(Image.fromarray(zon2, 'L'), optimize=True)
+    if '--rain' in sys.argv:
+        # how far the rain the rivers ran on is from the rain recomputed now (0 when the two passes agree)
+        Pin = raster(D, 'p', 'L').astype(float) / 255 * 4000
+        report['climate']['rain_in_vs_now_mm'] = {'mean_abs': round(float(np.abs(Pin - rain2).mean()), 2),
+                                                  'max_abs': round(float(np.abs(Pin - rain2).max()))}
+        print('rain the rivers ran on vs recomputed now:', report['climate']['rain_in_vs_now_mm'])
     DP = D
     if gorges:
         from edit_heights import relight

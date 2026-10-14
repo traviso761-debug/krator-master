@@ -116,7 +116,8 @@ they are for the open world to carve along `DATA.floods`, not for the model.
 `edit_rivers.py <4.20 page> <regions.json> <settlements.json> <out page>` audits the valleys (nothing may flow uphill)
 and designates every river and dry valley with its flow and size, for the open world to place. It writes
 `<out>.report.json` (the audit) and `<out>.rivers.png` (the network over the relief map) beside the page. Deterministic;
-about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `rivers-4.21.jpg`.
+about five minutes. Run it twice: the second time with `--rain <the first run's page>`, so the rivers run on the
+rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on average). The 4.21 audit is kept as `rivers-4.21.report.json` and `rivers-4.21.jpg`.
 
 - **The water** (`hydro.py`): runoff from rain and the mean temperature by Turc's balance (`L = 300 + 25T + 0.05T^3`
   also taken as open water's evaporation). The airless rim gives nothing; ground whose annual mean is under -10 C
@@ -220,13 +221,20 @@ about five minutes. The 4.21 audit is kept as `rivers-4.21.report.json` and `riv
 - **The lakes compared** (`lake_compare.py <4.21 page> <4.20 page> <out dir>`): the lakes of the model's own that
   the audit flags (no outlet at their level and gaining water, or standing over their own shore) have their water taken
   away and the land routed again; where it settles is each lake's answer (balances, fills and overflows, or drains
-  away). Basin by basin, with the outlets and the settled lakes, 23 are flagged: 7 grow and 16 shrink (6,834 km2
-  flooded, 37,061 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. Its water books are the
-  4.20 page's, as `edit_rivers.py` drew them: on 4.21 the NW outlet joins that lake to the ocean by water, and the books
+  away). Basin by basin, with the outlets and the settled lakes, 25 are flagged: 9 grow and 16 shrink (8,920 km2
+  flooded, 38,344 km2 laid dry); the rift's terminal seas and the eastern basins' lakes balance. Its water books are on 4.21's
+  rain over 4.20's water, as `edit_rivers.py` drew them: on 4.21 the NW outlet joins that lake to the ocean by water, and the books
   read off 4.21 would count it as ocean and import the rain within 300 km of it too (18,600 m3/s, not 6,300). The lake round Locus, left to its water, keeps 1,444 of its
   1,620 km2 (the abyss's rebuilt lakes hold what used to reach it in excess). Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.
+- **The climate** (step 7): wherever 4.21 moved the ground or a water surface (the gorges, the raised and filled beds,
+  the abyss's floor, the dried and settled lakes), the temperatures lapse with it (6.5 C per km) and the rain, climate
+  class and zone are recomputed from the unchanged land most like each cell (`edit_heights.reclimate`, as 4.18-4.20
+  did); the rain and climate maps are re-lit and repainted. The abyss's rebuilt floor takes the page's own rain there,
+  smoothed over the floor (a filled pit is still the floor; left to its look-alikes its rain swung by up to 2,850 mm
+  with where the lakes were laid, and the lakes with it). 45,800 map px recomputed, 12,700 changed class; the joined
+  island lake now stands at -1,810 m over 3,963 km2 on that rain.
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
