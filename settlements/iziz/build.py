@@ -296,7 +296,12 @@ def fauna_pack():
     return '\n'.join(head) + '\n' + ',\n'.join(out) + '\n};\n'
 
 
-def matlib_pack():
+# the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
+# it back in each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def matlib_pack(side=None):
     """GENERATED fragment: materials.json's architecture families (every one but the fauna_* sheets) as data URLs
     (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic."""
     import base64
@@ -313,9 +318,15 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        side['iziz'] = body
+        return _mp.loader('iziz')
     return ('/* ============================== 69d. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('iziz', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('iziz', " + body + ');\n')
 
 
 def build_one(target, do_checks, assert_origin):
@@ -343,7 +354,7 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
-    bodies[MATLIB_PACK] = matlib_pack()
+    bodies[MATLIB_PACK] = matlib_pack(SIDE)
     order = sorted(order + [MATLIB_PACK])
     if target == 'city':   # the vendored hyperjungle biome: its library pack, before the biome code (86-bio-*)
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
@@ -373,6 +384,10 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the pack beside the pages, one file they all share
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, DIST, 'iziz.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:

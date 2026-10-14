@@ -120,7 +120,12 @@ TEX_DIR = os.path.join(HERE, 'tex')
 DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 
 
-def matlib_pack():
+# the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
+# it back in each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def matlib_pack(side=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Yuni's build.py.
     It reads the committed tex/ files only, so the build stays deterministic. With no tex/pack.json, Locus runs on its
     procedural textures."""
@@ -138,9 +143,15 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        side['locus'] = body
+        return _mp.loader('locus')
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('locus', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('locus', " + body + ');\n')
 
 
 def virtual_bodies():
@@ -158,7 +169,7 @@ def virtual_bodies():
         except Exception as e:
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
-    vb['46-matlib-pack.js'] = matlib_pack()
+    vb['46-matlib-pack.js'] = matlib_pack(SIDE)
     # the eastern-abyss biome (read in place, BIO_CANON): its library pack, before the biome code (69a1-...)
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack as _mp
@@ -287,6 +298,10 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
+    if SIDE:   # the pack beside the pages, one file they all share
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, HERE, 'locus.tex.js', prune=False)
     with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):

@@ -103,7 +103,12 @@ CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of
 PALETTE_FILE = '05-palette.js'
 
 
-def matlib_pack():
+# the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
+# it back in each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def matlib_pack(side=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py
     does. It reads the committed tex/ files only, never the library or an image encoder, so the build stays
     deterministic. With no tex/pack.json, Yuni runs on its procedural maps."""
@@ -121,10 +126,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        side['yuni'] = body
+        return _mp.loader('yuni')
     return ('/* ============================== 11a. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('yuni', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('yuni', " + body + ');\n')
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -245,7 +256,7 @@ def main():
     bodies = {}
     for f in order:
         if paths[f] is None:
-            bodies[f] = matlib_pack()
+            bodies[f] = matlib_pack(SIDE)
             continue
         with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
@@ -259,6 +270,10 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
+    if SIDE:   # the pack beside the pages, one file they all share
+        sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
