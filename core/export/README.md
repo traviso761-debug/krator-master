@@ -168,7 +168,7 @@ A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtu
   the indexed furniture batch (`wip/furniture-indexed`).
 - **`sim`**: core/simulation's export (`krator-sim`: places, actors, schedules, routes, the clock). Verge and Dhelv
   write theirs through their verify (`godot/data/verge`, `godot/data/dhelv`) until they register here.
-- **`city`**: **owned by the Voth branch** (`core/city`, `settlements/streetlab`); this branch leaves only the
+- **`city`**: **owned by the Voth branch** (`core/city`, `settlements/voth`); this branch leaves only the
   registration point. Expected: `{format: 'krator-city', plan (streets, blocks, lots as plain records keyed by stable
   ids), edits (krator-edits/1 deltas by id)}`; its buildings and doors join the registry by id. `core/city` registers
   with `EXPORT.register('city', fn, {by: 'city'})` when that branch pauses.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify Streetlab headless: load a built page, wait for it, check it.
+"""Verify Voth headless: load a built page, wait for it, check it.
 
     python3 verify.py dist/voth-city.html --assert [--shot out.png]    # the city plan (core/city on the Voth site)
     python3 verify.py dist/voth-site.html --assert [--shot out.png]    # the site editor

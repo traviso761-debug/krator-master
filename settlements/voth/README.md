@@ -1,4 +1,4 @@
-# Streetlab
+# Voth
 
 The Voth site editor and the Voth city plan: the first world on **`core/city`**, the city builder and its infill
 (`core/city/README.md` has the method, the records, what a world provides, and the plan to port every settlement to it).
@@ -10,16 +10,29 @@ python3 verify.py dist/voth-city.html --assert     # headless: the city plan on 
 python3 serve.py                                   # serve both pages; the editors save through it
 ```
 
-Serve the folder (`.claude/launch.json` has `streetlab` on port 8813) and open `/dist/voth-site.html` or `/dist/voth-city.html`.
+Serve the folder (`python3 serve.py`, port 8813) and open `/dist/voth-site.html` or `/dist/voth-city.html`.
 
-The folder began as a street-placement toy on a featureless plain, the test bed for the method. The toy is retired:
-its machinery is `core/city`, and its own steps 0-5 (a triangle of landmarks, a noisy wall, ring avenues) are in the
-git history.
+This build grew in `settlements/streetlab`, which began as a street-placement toy on a plain, the test bed for the
+method. The toy is retired: its machinery is `core/city`, and its own steps 0-5 (a triangle of landmarks, a noisy wall,
+ring avenues) are in the history. On 2026-10-14 (the owner: "Rename the folder to voth") Streetlab became
+`settlements/voth`, Voth's home, beside the first Voth's source; the first Voth's page is retired ("The source
+library" below).
+
+| Path | What |
+|---|---|
+| `build.py`, `vothlift.py`, `foreign.py`, `ringsea.py` | the build of both pages; what it lifts from `src/` by name; the embassies; the Ring Sea vessels |
+| `targets/voth-site/`, `targets/voth-city/` | the two pages' own fragments |
+| `site/` | the owner's saved site, marks and plan edits (`serve.py` writes them; the build inlines them) |
+| `src/` | **Voth's source library**: the first Voth's fragments, run whole or lifted by name, never copied |
+| `catalog/` | Voth's building catalog (`catalog/README.md`): `core/city` builds every lot with its registries |
+| `three.min.js` | three.js r128, the copy the pages, the catalog page and the gallery take |
+| `verify.py`, `serve.py` | the headless checks; the save server |
+| `HANDOFF.md`, `HANDOFF-REFACTOR.md`, `SIM-ROADMAP.md`, `API.md` | the session handoff, the simulation's merge note and its brief, the contract of `src/` |
 
 ## The Voth site editor (`targets/voth-site`, `dist/voth-site.html`)
 
 The ground of Voth with no roads, for marking out where things go before any street is placed. Run
-`python3 serve.py` (the launch.json `streetlab` entry does) and open `/dist/voth-site.html`.
+`python3 serve.py` and open `/dist/voth-site.html`.
 
 * **The ground is Voth's own.** build.py wraps Voth's data fragments (`05-palette`, `10-core`, `15-shore`, `30a`) in one
   closure, `VOTH`, and lifts the pure pieces it needs from the others by name:
@@ -610,3 +623,30 @@ phase C's citizens will need, placed and declared, and its deficits reported bef
 ## Notes
 
 * **Fountain.** The plaza fountain (`sl_fountain`, `core/city/52-city-host-buildings.js`) is a placeholder piece, not a catalog furniture piece.
+
+## The source library (`src/`) and the first Voth
+
+The first Voth was one page, `voth.html`: the generator in `src/` concatenated inside one `BUILD()` by its own build.py,
+with a life layer (ships, ferries, barges, dhows, citizens, clergy, trade, arena combat, elephant bug convoys), day and
+night, weather, LOD and a minimap. **It was retired on 2026-10-14** (the owner): its page, build, verify, baseline,
+library pack and the docs that describe only that page (its README, INDEX, PORT, KNOWN_ISSUES, PASS5, SUBAGENT and the
+districts and life-layer briefs) are in `archive/voth-first/`. It is not built or checked any more.
+
+Its `src/` stays here, live: `build.py` runs the data fragments whole (`05-palette`, `10-core`, `15-shore`, `30a`) and
+lifts the rest by name (`lift()` and `vothlift.py`: the islets, bridges, harbours, the builders the city places, the
+chinampas, the sky, the elephant bug model, the path visualizer). So a change to a fragment shows in the next build of
+both pages, and `tools/check_port.py` holds its `[G data]` fragments to the port rule (`PORT.md` tags `src/` and
+`targets/` together). `API.md` is its contract: the fields, the shore, the emitters, the palette and the layout
+objects the lifted code reads. What is still worth porting from it (its life layer, collision, props) is ported into the
+targets and `core/`, not added to `src/`.
+
+Things known about the library (from the first Voth's KNOWN_ISSUES, still true of `src/`):
+
+* `catalog/CITY_INVENTORY.md` cites source lines in fragments that were split since (`65-facade.js:2429`,
+  `50-cantons.js:3812`, ...); rerun `catalog/capture/capture.py` (it builds its own instrumented copy from `src/`).
+* The comment at `65d-canton-structures.js:30` says a `45-kit.js` bug makes every cloth instance invisible; that bug was
+  fixed (`applyClothSway`).
+* The first-generation registry and the `voth_*` furniture in `kits/catalog/` were recentred and resized in its verify
+  pass (2026-10) without a sync into `src/`: the catalog pieces are rewrites, not copies (the catalog's strider station
+  is 10 x 16 m, `siltStriderStation()` in `65b` a 16 x 22 m deck), and the city's builders take their sizes as
+  arguments.

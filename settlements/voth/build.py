@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Streetlab: the Voth site editor and the Voth city plan, two self-contained pages.
+"""Build Voth: the Voth site editor and the Voth city plan, two self-contained pages.
 
     python3 build.py            # writes dist/voth-site.html and dist/voth-city.html
 
@@ -8,15 +8,17 @@ on the owner's saved site, with Voth's own builders, the simulation, the swbay b
 three.js r128, the catalog engine (kits/catalog: furniture core, asset engine), the Voth catalog's LOD and building
 registries (settlements/voth/catalog), library texture sets from tex/ (tools/textures/pack.py from materials.json),
 then the target's fragments. Each vendor file is its own <script>, so a syntax error in one names it.
-Deterministic: no dates, no hashes of the clock. (The first page here, a street-placement toy on a plain, was the
-method's test bed; it is retired, and its machinery is core/city.)
+Deterministic: no dates, no hashes of the clock. (This build grew in Streetlab, whose first page, a street-placement
+toy on a plain, was the method's test bed; the toy is retired and its machinery is core/city. Streetlab's folder became
+Voth's on 2026-10-14.) src/ is Voth's source library: the first Voth's fragments (that page is retired, in
+archive/voth-first), which this build runs whole or lifts by name (vothlift.py), never copies.
 """
 import base64, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 DIST = os.path.join(HERE, 'dist')
-VOTH = os.path.join(ROOT, 'settlements', 'voth')
+VOTH = HERE   # Voth's own folder: src/ (the source library), catalog/, three.min.js
 CAT = os.path.join(ROOT, 'kits', 'catalog')
 
 # the kit, in the order the Voth catalog page loads it (settlements/voth/catalog/index.html)
@@ -53,7 +55,7 @@ def tex_fragment(fams=None, maps=None, full=()):
     fams/maps limit it to some families and some maps (the site editor takes the detail albedos only)."""
     pj = os.path.join(HERE, 'tex', 'pack.json')
     if not os.path.isfile(pj):
-        return 'var SL_TEX = {};  /* no tex/pack.json: run tools/textures/pack.py settlements/streetlab */\n'
+        return 'var SL_TEX = {};  /* no tex/pack.json: run tools/textures/pack.py settlements/voth */\n'
     pack = json.loads(read(pj))
     out = {}
     for fam, e in sorted(pack['families'].items()):
@@ -190,7 +192,7 @@ def voth_city_fragment():
     chin = read(os.path.join(VOTH_SRC, '55-chinampa.js'))
     # each stilt hut's size too (its bed slot, bw x bl), for its interior
     hut = 'window._chinampaHuts.push([x,z,ry]);'
-    assert hut in chin, '55-chinampa.js changed: the hut export is no longer where streetlab extends it'
+    assert hut in chin, '55-chinampa.js changed: the hut export is no longer where build.py extends it'
     chin = chin.replace(hut, 'window._chinampaHuts.push([x,z,ry,bw,bl]);')
     body += ('/* ---- settlements/voth/src/55-chinampa.js, whole, run on demand ---- */' + NL + 'function runChinampas(){' + NL + chin + NL +
              '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, hutList: window._chinampaHuts, units: finalUnits };' + NL + '}' + NL)
@@ -220,7 +222,7 @@ def voth_strider_fragment():
     d = m.index('var STRIDER_BOB')
     legs = lift('79c-strider-model.js', 'function striderPlaceLegs(')
     key = 'Math.max(0, Math.sin(ph))*STRIDER_LIFT'
-    assert key in legs, 'striderPlaceLegs changed: the foot lift is no longer where streetlab scales it'
+    assert key in legs, 'striderPlaceLegs changed: the foot lift is no longer where build.py scales it'
     legs = legs.replace(key, key + '*__liftK')
     pre = NL.join([
         'var LIFE_SKIN = 0x8c8394, LIFE_UP = new THREE.Vector3(0, 1, 0);           /* 78a, 78b */',

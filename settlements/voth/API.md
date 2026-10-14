@@ -1,5 +1,10 @@
 # Voth — generator API
 
+*The contract of `src/`, Voth's source library (2026-10-14). The first Voth's page that ran these fragments inside one
+`BUILD()` is retired (`archive/voth-first`); `build.py` and `vothlift.py` now run the data fragments whole and lift the
+rest by name, so the names below are what the lifted code reads. Sections 6 and 8 (the budget and the page's probes)
+describe the retired page.*
+
 Everything in `src/` shares one scope (the fragments are concatenated inside a
 single `BUILD()`), so every name below is a global. That is convenient and
 dangerous in equal measure: a subagent that does not know a function exists

@@ -121,7 +121,7 @@ var KEDITS = (function () {
     });
     return out;
   }
-  /* Streetlab's city edits (settlements/streetlab/site/voth-city-edits.json, 35-vc-steps.js applyEdits/applyDeletes):
+  /* Streetlab's city edits (settlements/voth/site/voth-city-edits.json, 35-vc-steps.js applyEdits/applyDeletes):
      buildings [{key, v, x, z, ry}] -> ADD building; streets [{cls, pts}] -> ADD infrastructure (kind way);
      del [{x, z}] -> REMOVE building at that point (Streetlab matches the lot within 1.5 m); flora [{key|kind, x, z, del?}]
      -> ADD or REMOVE flora. Read-only: Streetlab's own file and code are not changed. */

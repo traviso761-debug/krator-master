@@ -489,7 +489,7 @@ TOOL.inspect = function (e) {
 };
 
 /* ---------------------------------------------------------------- saving: to the repo through serve.py, else a download */
-TOOL.DRAFT = 'streetlab.voth-site.draft';
+TOOL.DRAFT = 'streetlab.voth-site.draft';   /* the key predates the move to settlements/voth: kept, so a saved draft is still offered */
 TOOL.status = function () {
   $('status').textContent = SITE.dirty ? 'unsaved changes' : (SITE.data.saved ? 'saved ' + SITE.data.saved.replace('T', ' ').slice(0, 16) : 'not saved yet');
   $('status').className = SITE.dirty ? 'dirty' : '';
@@ -501,7 +501,7 @@ TOOL.save = function () {
   fetch('/save/voth-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: SITE.json() })
     .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
     .then(function () { SITE.dirty = false; TOOL.status(); TOOL.flash('saved to site/voth-site.json'); try { localStorage.removeItem(TOOL.DRAFT); } catch (e) { } })
-    .catch(function () { SITE.data.saved = prev; TOOL.download(); TOOL.flash('no save server: downloaded instead (put it in settlements/streetlab/site/)'); });
+    .catch(function () { SITE.data.saved = prev; TOOL.download(); TOOL.flash('no save server: downloaded instead (put it in settlements/voth/site/)'); });
 };
 TOOL.download = function () {
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([SITE.json()], { type: 'application/json' })); a.download = 'voth-site.json'; a.click();

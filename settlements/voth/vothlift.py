@@ -12,7 +12,7 @@ life-layer registries). Order follows the source files, so a var initialiser see
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(os.path.dirname(HERE), 'voth', 'src')
+SRC = os.path.join(HERE, 'src')   # Voth's source library
 WHOLE = ['05-palette.js', '10-core.js', '15-shore.js', '30a-layout-districts.js']
 # names the page provides itself: primitive buckets (they push into PRIMS) and small no-op stand-ins
 SHIMS = {

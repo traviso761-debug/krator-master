@@ -1,6 +1,6 @@
 // ================================================================= CORE HOST — the panel: bar, foldable panels, layers, time, inspector, errors
 // [web] core/host/92-host-panel.js (ROADMAP.md section 10). The chrome, generalised from Streetlab's city plan
-// (settlements/streetlab/targets/voth-city/00-head.html, 55-vc-host.js: the bar with layers, legend, export and the clock's
+// (settlements/voth/targets/voth-city/00-head.html, 55-vc-host.js: the bar with layers, legend, export and the clock's
 // controls, stats, foldable panels remembered per browser, the loading note) and from the biome kits' heads (the view
 // select, the hidden preset buttons verify.py clicks, the inspector line, the HUD, the #errs panel).
 //

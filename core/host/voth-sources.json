@@ -1,0 +1,19 @@
+{
+ "commit": "ca33857fd3a5254161357ba5007c89991ddec9f3",
+ "files": {
+  "core/city/50-city-host-streets.js": "12bdc2059f44fcfa0db78f5dd3cbf419fe02628f",
+  "core/city/52-city-host-buildings.js": "d49da758eb478449fbaa0ba5e0d54e20e9192d10",
+  "kits/catalog/krator-asset-engine.js": "666d5790f074437191a41aa0a2446ea00c98ffe5",
+  "settlements/voth/serve.py": "af171a818b9979a684df41b24847cff75f4d435a",
+  "settlements/voth/targets/voth-city/00-head.html": "a398fa320cc6eab5a2a4c7cbee9eb84613cbea23",
+  "settlements/voth/targets/voth-city/55-vc-host.js": "aab21734bed5574e56f99d8fa8ce59cd61adc1d8",
+  "settlements/voth/targets/voth-city/56-vc-interiors-host.js": "b2b396fa8a7e4a006df961dc6659377aa2a0e50e",
+  "settlements/voth/targets/voth-city/57-vc-marks.js": "1fd2ba52c17294d1be3373ec16f9c8cae72906c3",
+  "settlements/voth/targets/voth-city/58-vc-tools.js": "6ad728496e825f1a2debf65b6b38d67427eb3ac4",
+  "settlements/voth/targets/voth-city/59-vc-flora-edit.js": "1d05893c405f5fdbc35841c5caf232bff6fbcc05",
+  "settlements/voth/targets/voth-city/98-start.js": "374052d252caed1b886346d03ef8dc1e04623d99",
+  "settlements/voth/targets/voth-site/50-site-scene.js": "f8850516577d71b5b1db1bd88585cca94c0f5c21",
+  "settlements/voth/targets/voth-site/55-site-tools.js": "3490e193e1bf02494ed2224fe06a5f270c9a49a3"
+ },
+ "what": "the Voth files core/host is copied from, at the blob each was read in (ROADMAP.md section 10); python3 core/host/sources.py says which changed since. Re-keyed 2026-10-14 from settlements/streetlab to settlements/voth (the folder's move); serve.py and voth-site/55-site-tools.js were re-recorded then, their only change being the move's path fixes"
+}

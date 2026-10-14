@@ -218,4 +218,4 @@ regular grid over the tile (`krator/water_import.gd`), not yet the CDLOD selecti
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
 - The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo.)
-  Voth and Streetlab wait for the Voth branch (ROADMAP.md section 9).
+  Voth (`settlements/voth`) waits for the Voth branch (ROADMAP.md section 9).

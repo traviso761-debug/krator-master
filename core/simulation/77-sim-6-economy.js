@@ -1,5 +1,5 @@
 // ================================================================= CORE — simulation 6: production, stores, carts, imports
-// PLAN.md's reserved economy slot; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.6, 2.6: phase E). Opt-in:
+// PLAN.md's reserved economy slot; the Voth brief (settlements/voth/SIM-ROADMAP.md 1.6, 2.6: phase E). Opt-in:
 // nothing here runs until a world calls SIM.economy(config).
 //
 //   SIM.economy({ goods:{id:{import?:{route, lot}, minLoad?, export?}}, inputs:{good:{input: per unit}}, every (minutes between ticks),
