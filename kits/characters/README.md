@@ -227,7 +227,7 @@ the joints until a mod is worn:
   ends that run into it, so a bend shows ball rather than a gap. A new design is a `CYBER` entry and a `MODS` row.
   Their textures are prompts in `core/materials/PLAN.md` (Characters: cybernetic arms and the giants' metal). The Animation Lab's Body mods menu puts any of them on the whole cast.
 - The replacement pairs (`mod_arms_cyber_up`, `mod_arms_loader_up`, `mod_arms_surgical_up`, group `arms_up`): the
-  same three designs in place of the body's own arms, on its own arm joints, with a collar on each shoulder over the
+  same three designs in place of the body's own arms, on its own arm joints, with a dome on each shoulder over the
   edge of the skin they replace. The item's `hide` is that skin (`arm_skin`: every triangle weighted at least half to
   the arm below the shoulder), which `KCHAR.hidden` (and Godot's) leaves out like a worn item's; the fingers are thick
   enough to hold the body's own nails inside. They wear with any lower pair (`Four bronze arms` in the Animation Lab).

@@ -62,8 +62,8 @@
   beyond that.
 - **Replacement arms wear the top's own sleeves.** A library or culture top's sleeves are part of it, so on a body
   with replacement cybernetic arms they are drawn over the machine (the loader's bulk shows through them); only a
-  four-armed top's lower sleeves come off (`bare`). The collar over the shoulder is a ring fitted to the edge of the
-  hidden skin at rest, so a raised arm can open a crack between it and the skin.
+  four-armed top's lower sleeves come off (`bare`). The dome over each shoulder is a ball on the joint, wide enough to
+  cover the edge of the hidden skin: a big round pauldron, which a sleeve or a high collar can cut into.
 - **Four-armed tops exist only for the giants.** A man or a woman with an arm mod has no top that fits (`KCHAR.fits`)
   and goes bare-chested; the library's and the cultures' tops are two-armed. A four-armed top's lower sleeves are
   weighted to the lower arms, but their shape under the body sliders follows the skin MakeHuman fitted them to (the

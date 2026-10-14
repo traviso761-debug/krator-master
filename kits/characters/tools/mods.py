@@ -416,7 +416,7 @@ def arm_skin(body):
 def cyber_arms(body, out, mid='mod_arms_cyber', replace=False):
     """a cybernetic pair (CYBER[mid], or CYBER[mid without _up] for replace): per lower arm a mount plate on the ribs (on
     Spine2), ball joints, plated upper arm and forearm with bands at their ends, a palm and jointed fingers or claws,
-    each part rigid on its bone. replace: the pair in place of the body's own arms, on their joints, a collar on the
+    each part rigid on its bone. replace: the pair in place of the body's own arms, on their joints, a dome on each
     shoulder over the edge of the skin they replace; returns that skin (arm_skin) for the item to hide"""
     st = CYBER[mid[:-3] if replace else mid]
     B = body.prims['Human.body']
@@ -443,14 +443,11 @@ def cyber_arms(body, out, mid='mod_arms_cyber', replace=False):
         out_ax = np.array([sx, 0.0, 0.0])
         d1 = (el - sh) / np.linalg.norm(el - sh)
         if replace:
-            # a collar on the shoulder over the edge of the hidden skin: centred on that edge's points on this side,
-            # along the arm, wide enough to reach them all
+            # a dome over the shoulder joint, just past the edge of the hidden skin on this side: that edge runs
+            # slant from the top of the shoulder down into the armpit, all of it 5 to 9 cm from the joint, so a ball
+            # on the joint covers it in any pose (a ring across the arm stood off it like a hoop)
             ep = EP[EP[:, 0] * sx > 0]
-            c0 = ep.mean(0)
-            rr = np.linalg.norm((ep - c0) - np.outer((ep - c0) @ d1, d1), axis=1).max()
-            sv = vid(c0)
-            plate.prism(c0 - d1 * 0.03, c0 + d1 * 0.012, rr * 0.92, rr * 1.06, J('Shoulder'), sv, n=14)
-            trim.prism(c0 + d1 * 0.012, c0 + d1 * 0.024, rr * 1.06, rr * 0.9, J('Shoulder'), sv, n=14)
+            plate.ball(sh, np.linalg.norm(ep - sh, axis=1).max() * 1.03, J('Shoulder'), vid(sh), n=16, m=11)
         else:
             plate.prism(mount - out_ax * 0.008, mount + out_ax * 0.006, 0.06 * k, 0.052 * k, sp2, vid(mount), n=10)
             trim.prism(mount + out_ax * 0.006, mount + out_ax * 0.016, 0.036 * k, 0.032 * k, sp2, vid(mount), n=10)

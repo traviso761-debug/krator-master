@@ -1291,6 +1291,9 @@ def tower_hat(name, height, profile, paint, f=0.64, ease=0.014, rows=12, n=32):
     profile(s) x the band's (s 0 at the band, 1 at the top), closed flat on top: a mitre, the hyperboloid of Yuni"""
     a, b, up, bk, left = head_frame()
     c = a + (b - a) * f
+    # a short hat still closes 1.5 cm above the crown: the cloth cap's flat top sat inside the head, and the hair
+    # (then the scalp) came through it
+    height = max(height, (first_hit(c, up) or 0.0) + 0.015)
     angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
     base = []
     for an in angles:

@@ -160,13 +160,19 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
      gs.joints[J.Left2Arm].parent === J.Left2Shoulder && gs.joints[J.Left2Shoulder].parent === J.Spine2, 'giant: the lower pair hangs from Spine2');
   ok(gk.scale > 1.5 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, the man\'s clips, lower grips');
   var mods = gk.items.filter(function(it){ return it.slot === 'mods'; }).map(function(it){ return it.id; }).sort();
-  ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_flesh","mod_arms_loader","mod_arms_surgical","mod_gills"]', 'mods: ' + mods);
+  ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_cyber_up","mod_arms_flesh","mod_arms_loader","mod_arms_loader_up","mod_arms_surgical","mod_arms_surgical_up","mod_gills"]', 'mods: ' + mods);
   var rec = KCHAR.blank(gk), shirt = { id:'x', slot:'torso' }, shirt4 = { id:'y', slot:'torso', arms:4 };
   ok(KCHAR.arms(rec, gk) === 2 && KCHAR.fits(shirt, rec, gk) && !KCHAR.fits(shirt4, rec, gk), 'mods: no mod, two arms, two-armed tops');
   rec.mods = ['mod_arms_flesh', 'mod_arms_cyber', 'mod_gills'];
   ok(KCHAR.arms(rec, gk) === 4 && !KCHAR.fits(shirt, rec, gk) && KCHAR.fits(shirt4, rec, gk) &&
      KCHAR.mods(rec, gk).map(function(m){ return m.id; }).join() === 'mod_arms_flesh,mod_gills', 'mods: one pair of arms at a time; four-armed tops');
   ok(KCHAR.parts(rec, gk).filter(function(p){ return p.role === 'mod'; }).length === 2, 'mods: drawn as parts');
+  // a replacement pair hides the arm skin it stands in for, keeps two arms alone, and goes with a lower pair
+  var count = function(h){ var n = 0; for(var i = 0; i < h.base.length; i++) n += h.base[i]; return n; };
+  var bare = KCHAR.blank(gk), up = KCHAR.blank(gk); up.mods = ['mod_arms_cyber_up'];
+  var both = KCHAR.blank(gk); both.mods = ['mod_arms_cyber_up', 'mod_arms_loader'];
+  ok(count(KCHAR.hidden(up, gk)) > count(KCHAR.hidden(bare, gk)) + 2000 && KCHAR.arms(up, gk) === 2 &&
+     KCHAR.arms(both, gk) === 4 && KCHAR.mods(both, gk).length === 2, 'mods: a replacement pair hides the arm skin, and wears with a lower pair');
   var w = KCHAR.morphWeights({ morph:{ height:1, muscle:1 } }, gk), mj = KCHAR.morphJoints(gs, gk, w);
   ok([0, 1, 2].every(function(a){ return near(mj.d[J.Left2Hand][a], mj.d[J.LeftHand][a], 1e-9); }), 'giant: a lower hand moves with the morphs as the upper does');
   var G = peoples.filter(function(p){ return p.id === 'giants'; })[0], arms = {};
