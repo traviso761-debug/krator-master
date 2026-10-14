@@ -583,6 +583,23 @@ street painter and align-to-street (these two need `core/city`); the flora edito
 the minimap; save, undo, draft, import and export of edits. **There is no fauna editor**: fauna placement is new work
 on the same path (`kits/fauna`).
 
+**Added by the owner (2026-10-14): what things hold, and the settlement's stocks.**
+- **The inspector shows contents.** Hovering or picking a container (a chest, a barrel, a granary bin, a cart, a
+  boat's hold), a building (its household's or workshop's stock: food, spares, tools, goods for sale, inputs and
+  outputs) or a citizen (worn and carried items, the tool, its home's store) lists what is in it, by item, with counts
+  and wear. Voth's citizen card (`56d`, 2026-10-14) already shows a citizen's items and its household's food; the host
+  generalises it to any record that holds items.
+- **A stocks view** (a collapsible panel, its own mode): every item in the settlement, the total, and where it is:
+  **at the production site** (made, not yet moved), **in transit** (on a carrier, a cart, a barge, a porter),
+  **in storage** (warehouses, granaries, market stalls, households' stores), with the **daily change** (made minus used,
+  over the last simulated day) and a mark on items running short. Clicking an item lists its holders; the inspector
+  takes it from there.
+- **Contract.** `KHOST.take` gains `contents?` (a record id -> its items) and `stocks?` (by item: the totals by state and
+  the last day's change). `core/simulation` supplies both from its item records (`SIM.contents(id)`, `SIM.stocks()`,
+  a daily snapshot for the change; a carrier's load counts as in transit), so the host reads data, never `VC`. A build
+  without an economy has no stocks view and an inspector without contents. Built with the inspector (step 2), proven on
+  the pages with an economy (Voth, Mungo, Shade, Dhelv); [web] like the rest of the host, the data side [G data].
+
 **Two things change on the way in.**
 - **Edits become an id-keyed operation log**, `core/edits/40-core-edits.js` ([G data], a node test, later a GDScript
   twin): `{format:'krator-edits/1', build, ops:[{op: ADD | MOVE | SET | REMOVE, id, target:{uid, class, key, at},
@@ -592,7 +609,7 @@ on the same path (`kits/fauna`).
   by position and keep undo as closures; a converter reads its file read-only. Ys has a third editor format
   (`settlements/ys/targets/city/94-city-editor.js`); it converts the same way.
 - **The host reads a contract, never a build's globals.** `KHOST.take({scene, ground, registry, exporters, views,
-  sky?, layers?, phases?, stats?, pick?, palette?, edits?, cutaway?, paths?})` returns `{clock, camera}`; host code
+  sky?, layers?, phases?, stats?, pick?, palette?, edits?, cutaway?, paths?, contents?, stocks?})` returns `{clock, camera}`; host code
   never reads `PLAN`, `SL`, `VOTH` or `VC`. A build without a piece of data loses only that feature (no registry: the
   inspector shows coordinates; no palette: no place mode; no `core/city`: no street painter; no `BIO` hooks: no flora
   mode; no server: edits go to a download or the clipboard). Each `verify.py` keeps working: `setView` and the view
