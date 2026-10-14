@@ -463,3 +463,17 @@ target; `xaVs` returns 0 … nv-1). The separate `variants` target and `dist/xan
 * **The dockyard's warehouses** stand on the shore behind the quays, fronts to the water (they had stood in the lake,
   placed off the dock district's centre, which lies offshore); and no landmark without its own height stands under
   the lake (its pad raises a wharf).
+
+## Still water on core/water (2026-10-13)
+The kit page's standing water is core/water's **still** water (Phase 4; `core/water/README.md`, "Still water and wet
+ground"; `targets/xanadu/90-xa-still.js`): every flat `xWaterB` box (rill basins, pools, channels) and `xDiscWater` disc
+(the garden bowls) is a `WATER.still` record at its top over its turned footprint (500 on the page), so `WATER.heightAt`
+and core/export read them, and the two InstancedMeshes draw with `WATER.stillMaterial` (the sky in the water from
+core/atmos's skylight, a capture of the page's dome and giant; a faint ripple on the one clock) in place of the plain
+`MAT.xWater`; the palette's water tint stays on each box. A box taller than it is wide or deep (`xnWaterSheet`'s falling
+sheets) or tilted (the rill ramps, the mill race) is running water: it keeps the material and gets no record. The two
+meshes take a material each: the boxes carry instance colours and the discs none, and three.js r128 keeps one program per
+material whatever the mesh (sharing one threw in the renderer). `build.py` gives the kit target core/atmos (core, presets,
+waves, skylight) and core/water's five files (`TARGET_FILES`); Erewhon is unchanged. `verify.py dist/xanadu.html --assert`:
+the same invariants before and after (5411338 scene triangles, 88 draw calls at the opening; the biome's per-type OVER as
+before); the pool cap from eye level 182 -> 183 draw calls. The pools read as water with the sky in them now.

@@ -4,11 +4,24 @@ Every sea, bay, lake, river, fall, pool and wet street in Krator is meant to com
 water it has and writes no water shader of its own. The plan, the audit of the thirty-nine builds that draw water and what
 was taken from Halcyon are `core/atmos/WATER.md`; this file is the contract.
 
-**Status (2026-10-12): phases 0 and 1 of `WATER.md` section 5.** The data side and its CPU twins for all six kinds, and the
-drawing of **open** water (the CDLOD mesh, the shared wave field, the sky in the water, Jacobian foam). Its first takers are
-`kits/ringsea` (the roadstead; the kit's Gerstner swell, `rsSeaH` and `rsRide` moved in here) and `biomes/geyser` (the Ring
-Sea off the basin's beach). Shore, flow, fall, still and wet are recorded (their data and twins work and are tested) but not
-drawn yet: phases 2 to 4.
+**Status (2026-10-13): phases 0 to 4 of `WATER.md` section 5.** The data side and its CPU twins for all six kinds, and
+their drawing: **open** water (the CDLOD mesh, the shared wave field, the sky in the water, Jacobian foam; 2026-10-12),
+the **shore** (the flood and distance field on the ground, shoaling, breakers, surf foam, the wet-sand twin, masks and
+shore windows for water too big to grid whole; Phase 2), **flow** and **falls** (the ribbon, the advected ripple, rapids
+and bank foam, the arcing curtain, its plunge; Phase 3) and **still** water with the weather's wetness (`W.wet`; Phase 4),
+each with its Godot twin (below). Its first takers are `kits/ringsea` (the roadstead; the kit's Gerstner swell, `rsSeaH`
+and `rsRide` moved in here) and `biomes/geyser` (the Ring Sea off the basin's beach).
+
+**Phases 2 to 4's takers (2026-10-13):** `openworld/little-demo` (the sea and every lake one masked open surface on a
+shore window, the Yuni river a flow; `src/83w-world-seas.js`, `src/83-world-water.js`); `biomes/sedesert` (the river a
+flow from the head of the wadi to the notch, the cataract a fall into the Abyss, the plunge pool still water;
+`src/89w-host-water.js`); `settlements/ys` (the terraced river a flow down its rimstone pools; `targets/city/88b-city-draw.js`);
+`settlements/reedlake` (the troughs, the wallow, the pen's pan and the dye vats still water; `src/90x-rl-still.js`);
+`settlements/xanadu`'s kit page (its pools, rill basins, channels and bowls still water; `targets/xanadu/90-xa-still.js`).
+Not taken, and why: Locus's and Mungo's river, delta, canals and pools are one level sheet shaped by the ground (no line
+to flow along, no rim to hold a pool) and their troughs are merged kit geometry; Erewhon (Xanadu's city) bakes its pools
+per chunk under its own sky; `W.wet` has no taker yet (only Voth's page (`settlements/voth`) runs core/atmos's weather, and it waits for the
+Voth branch).
 
 **Phase 1's other takers (2026-10-13):** `settlements/reedlake` (the lake: no swell of its own, a calm share of the field
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
@@ -22,18 +35,20 @@ old sheet, the two split on the shoreline by one baked mask both shaders sample;
 `src/90w-lake.js`); `settlements/mungo`, which reads Locus's fragment by name (its lake and
 the Reed Lake kit's islands on it; the reed boats ride it).
 
-**Not taken: `openworld/little-demo`** (2026-10-13). Its water is not one surface at a level: the sea, the lakes
-at their own levels from the scale model's 4 km water raster (`WORLD.lakeWater`) and the named rivers, which fall along
-their courses (`WORLD.riverWater`), share one sheet per streamed terrain chunk, each vertex at its own level. `WATER.open`
-is one level clipped only by a rectangle (`bounds`), so a lake drawn this way floods every lower hollow inside its box,
-and a river cannot be one at all. It needs either a surface per water body with a wet mask (a raster `bounds` or a
-`clip` texture: an addition to `WATER.draw`) or Phase 2's shore field on `core/mask`; and at 1:1 over 1,300 km the
-draw's world-space vertex shader wants a camera-relative origin. The ripple sheets stay until then.
+**`openworld/little-demo`** (taken 2026-10-13, phases 2 and 3). Its water was one sheet per streamed terrain chunk,
+each vertex at its own level, which one `WATER.open` (one level, a rectangle) could not draw. Now each water body of the
+scale model (`WORLD.waterBodies`: a run of wet 4 km cells at one level) is one open surface with a **mask** (its cells and
+the ring round them, the ring refined by a flood at about 500 m) and a **shore window** (8 km at 32 m round the camera,
+re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a **camera-relative origin**
+(`WATER.draw(S, {origin})`); the Yuni river is a `WATER.flow` along `WORLD.riverLines`, its ribbon local to its middle.
 
 | File | Tag | What |
 |---|---|---|
 | `20-core-water.js` | [G data] | `WATER`: the presets, the six kinds as records, the CPU twins, `heightAt`, `flowAt`, `seaLevel`, `ride`, `export`. No THREE, no DOM |
+| `21-core-water-shore.js` | [G data] | the shore grid (`WATER.shoreGrid`: the flood, the exact distance transform `WATER.edt`, the bytes), shore windows (`moveShore`, `shoreJob`), the shore's twins (shoaling, breakers, the beach), `WATER.maskLand` |
+| `22-core-water-flow.js` | [G data] | the meshes as arrays (`WATER.ribbon`, `curtain`, `stillMesh`) and the twins of their shading (`flowNormal`, `flowFoam`, `fallStreak`, `fallFoam`, `plungeAt`, `stillNormal`, the value noise), `WATER.fallsOf` |
 | `50-core-water-draw.js` | [draw] + [G shader] | the CDLOD selection (`WATER.cdlod`, data), the GLSL chunk written from a surface (`WATER.glsl`), `WATER.draw` (the open-water mesh and material), `WATER.shaderOn` |
+| `51-core-water-kinds.js` | [draw] + [G shader] | `WATER.drawFlow`, `drawFall`, `drawStill`, `stillMaterial`, `wetGround` and their GLSL (`flowGLSL`, `fallGLSL`, `stillGLSL`, `wetChunk`) |
 | `test-water.js` | | `node core/water/test-water.js`: every check with a negative control; runs the shaders' own GLSL in a small interpreter against the twins |
 
 ## Taking it into a build
@@ -76,11 +91,11 @@ once the camera was far from the origin. The CDLOD selection is the water's own 
 | Kind | Call | Data | Twin | Drawn |
 |---|---|---|---|---|
 | **open** (sea, bay, lake, salt lake) | `WATER.open({name, level, swell, field, chop, tilt, bounds, bed, bedBox, bedCell, damp})` | a level (default `seaLevel(t)`), trochoids (a `PRESETS.swells` name or a list), a share of the shared wave field, an optional bed baked to a depth grid | `S.heightAt`, `S.surfaceAt`, `S.normalAt`, `S.rest`, `S.depthAt`; `WATER.troD`, `troNJ`, `foamAt` | yes: `WATER.draw` |
-| **shore** (the band within ~100 m of land) | `WATER.shore({name, of, band, land})` | the open surface it edges, the band | its open water's height | Phase 2: the distance field on `core/mask`, shoaling, the breaking lip, swash, wet sand |
-| **flow** (river, stream, creek, canal) | `WATER.flow({name, pts or river, width, speed})` | a line `[[x,z,y],...]` or `KRELIEF.river`'s `[{x,z,y,slope}]`, width and speed per point or for all | `S.flowAt` `[vx, vz, speed, slope]`, `S.heightAt` (the line's surface) | Phase 3: one flow shader, advected normals |
-| **fall** (waterfall, cataract, spillway) | `WATER.fall({name, lip, dir, speed, drop, plunge})` | the lip, the direction and speed the water leaves it, the drop | `S.curtainAt(u, f)`: the curtain ARCS (a parabola from the lip speed) | Phase 3 |
-| **still** (pools, fountains, troughs, moats) | `WATER.still({name, level, bounds or poly})` | a level over a box or a polygon | `S.heightAt` = the level | Phase 4 |
-| **wet** (ground after rain) | `WATER.wet()` | the weather's `W.wet` (core/atmos 4-weather) | 0..1 | Phase 4 |
+| **shore** (the band within ~100 m of land) | `WATER.open({..., shore: {seeds, land, band, clip, cell, window}})`; `WATER.shore({name, of, band})` names a band | a shore grid: the flood from the seeds over the ground under the level, the signed distance to the shoreline (bytes beside the bed's depth) | `S.shoreDist`, `S.wetAt`, `S.surfAt`, `S.surfFoamAt`, `S.wetGroundAt`; heights with shoaling and breakers in `S.heightAt` | yes (Phase 2): `WATER.draw` clips to the flood, shoals, surfs; `WATER.wetGround` wets the beach |
+| **flow** (river, stream, creek, canal) | `WATER.flow({name, pts or river, width, speed})` | a line `[[x,z,y],...]` or `KRELIEF.river`'s `[{x,z,y,slope}]`, width and speed per point or for all | `S.flowAt` `[vx, vz, speed, slope]`, `S.heightAt` (the line's surface); `WATER.ribbon`, `flowNormal`, `flowFoam` | yes (Phase 3): `WATER.drawFlow` |
+| **fall** (waterfall, cataract, spillway) | `WATER.fall({name, lip, dir, speed, drop, plunge, spread})`; `WATER.fallsOf(flow)` | the lip, the direction and speed the water leaves it, the drop | `S.curtainAt(u, f)`: the curtain ARCS (a parabola from the lip speed); `WATER.curtain`, `fallStreak`, `plungeAt` | yes (Phase 3): `WATER.drawFall` |
+| **still** (pools, fountains, troughs, moats) | `WATER.still({name, level, bounds or poly, fountain})` | a level over a box or a polygon | `S.heightAt` = the level, `S.normalAt`; `WATER.stillMesh` | yes (Phase 4): `WATER.drawStill`, `WATER.stillMaterial` |
+| **wet** (ground after rain) | `WATER.wet()` | the weather's `W.wet` (core/atmos 4-weather) | 0..1; `WATER.wetGroundRain` | yes (Phase 4): `WATER.wetGround` |
 
 **The queries** cover every surface a build made: `WATER.at(x, z)` is the surface there (a still pool before a flow, a flow
 before a bounded open water, the unbounded sea last), `WATER.heightAt(x, z, t)` its height (`null` where there is no water),
@@ -172,6 +187,82 @@ depth grid, with a bed), plus atmos's `atmWaveT` and `atmWaveAmp`. Functions:
 `WATER.shaderOn(S, shader)` gives another material the surface's uniforms and returns the chunk to inject: the Ring Sea's
 wakes ride the sea with `wtrHeight` in their vertex shader.
 
+## The shore (Phase 2, `21-core-water-shore.js`)
+
+`WATER.open({..., bed, bedBox, shore: {seeds, land, band, clip, cell}})` makes the surface's bed a **shore grid**
+(`WATER.shoreGrid`): the ground sampled at cell centres (`bed` is a function or a KFIELD, `land` a predicate that marks a
+cell dry whatever its height: `WATER.maskLand(KMASK.canvas, toPx)` reads a core/mask raster's own bytes), the cells under
+the level that the water **reaches** (a 4-connected flood from `seeds`: points or a predicate; `null` takes every cell under
+the level), and the **signed distance to the shoreline** in metres (+ on the water, - inland or in a hollow the flood never
+reached), exact (the Felzenszwalb-Huttenlocher squared distance transform, what a jump flood approximates). It is bytes, as
+the bed is: R and G the depth as `bakeBed` writes it, B the distance over `[-band, band]`, A the depth again, linear over
+`PRESETS.shore.mid` (-2..14 m), which a shore grid reads (the fine channel clamps at 3 m, so where one of the four texels a
+sample filters is deeper its value is biased by up to half a metre, and GPU and CPU could pick different channels there).
+On such a surface:
+
+- **It stops where the flood stopped.** `S.wetAt(x, z)` (distance > -clip cells), `S.contains` too; the fragment discards
+  the rest and the CDLOD selection drops nodes over no drawable cell (`S.wetIn`, a summed-area table). A lake in a box no
+  longer floods the lower hollow beside it (`test-water.js`: an 8 m deeper hollow 150 m off stays dry; without seeds it
+  floods, the negative).
+- **It shoals.** The damping becomes `smoothstep(0, damp, depth) * shoalK(depth)`, Green's law `(12 / depth)^(1/4)` under
+  12 m, capped at 1.8: the trochoids and the field grow toward the shore, then calm at the waterline.
+- **It surfs.** A breaker train runs in along the distance (`S.surfAt`): crests parallel to the coast, `round(period / 9 s)`
+  whole cycles per wave period, born over the band's outer 45 %, highest in the breaking depths (shoaled), gone at the
+  waterline, the front steepened by a second harmonic as it breaks (the lip leaning shoreward). They move nothing sideways,
+  so `heightAt`'s Newton inverse is unchanged; their slope (central differences, `S.surfSlope`) joins the shading normal;
+  their foam (`S.surfFoamAt`) is on the crest and its front in the breaking depths.
+- **It wets the beach.** `S.wetGroundAt(x, z, groundY, t)` -> `[wet, film]`: dark where the swash reaches (up to the runup,
+  1.1 m over the level, within 40 m inland), and the swash's film glistening on its way up and back, once per breaker.
+  A ground material takes it with `WATER.wetGround(material, {surface})` (51).
+
+The GLSL (`WATER.shoreGLSL`, added to `WATER.glsl` only for a shore grid: the text for every other surface is
+byte-identical) adds `wtrShoalK`, `wtrShoreDist`, `wtrWet`, `wtrSurf`, `wtrSurfSlope`, `wtrSurfFoam` and `wtrWetGround`.
+
+## Masks and shore windows (water too big to grid whole)
+
+- **A mask** (`WATER.open({mask: {x0, z0, cell, cellZ, nx, nz, data}})`): a coarse raster of the cells the surface may
+  cover (a byte per cell, > 127 = may). The fragment discards outside it (`wtrMaskOk`), the CDLOD selection drops nodes
+  over none of its cells (`S.maskIn`), `S.maskAt` is the twin. A world's water raster gives one per body, so one body never
+  shows in a basin that is not its own.
+- **A shore window** (`shore: {window, cell, seeds, ...}`): a shore grid of `window` m square that follows the camera,
+  open water until its first bake, then re-baked around a point with `WATER.moveShore(S, x, z)` or a slice at a time with
+  `WATER.shoreJob(S, x, z).step(ms)` (the flood, the transform and the bytes in the last step; the same bytes as a grid
+  baked there: the test checks it). Its box is a uniform (`wtrBedBox`), its texture refreshed in place.
+- **`WATER.draw(S, {cdlod: {levels}, origin, hideEmpty})`**: more levels for a far horizon (17: a 524 km root); `origin`
+  (a snap in m) stands the mesh at a point near the camera and draws the vertices relative to it, so the view transform is
+  taken in doubles (a world a million metres across without the jitter of float world-space vertices; the waves still
+  read world coordinates); `hideEmpty` hides the mesh while it selects no node (a world of many bodies issues no empty
+  draw calls; `D.active` switches its selection off).
+
+## Flow and falls (Phase 3, `22-core-water-flow.js`, `51-core-water-kinds.js`)
+
+- **`WATER.ribbon(S, {step, across, margin})`**: a flow line's water as a ribbon, a row of `across`+1 vertices every `step`
+  m and at every vertex of the line (so the surface falls exactly as the line does: the sloping surface, and it never
+  climbs where the line does not), as wide as the channel plus `margin` m a side under the banks, each row turned to the
+  bisector at a bend (and stretched to keep its width). Per vertex: the current, the line's slope, the distance to the bank
+  (negative under it), the distance downstream. Built as arrays: `KWater.ribbon` builds the same vertices in Godot.
+- **`WATER.drawFlow(S, o)`**: the ribbon on one material: ripples **advected** along the current (`WATER.flowNormal`, the
+  shader's `wtrFlowN`: two copies of a fixed ripple pattern, each carried downstream for half a phase and cross-faded, 150
+  phases per wave period, turned with the current), rougher and white on the rapids (the line's slope, 1.2 % to 7 %) and
+  along the banks (`wtrFlowFoam`), paler toward the banks, fading under them. `o.origin` keeps a long river's vertices local.
+- **`WATER.curtain(S, {rows, cols})`**: a fall's curtain at equal times of flight down an arc (20's `curtainAt`: a parabola
+  from the lip speed) that widens by `spread` m a side at the foot; its normals face out and up.
+  **`WATER.drawFall(S, o)`** draws it with streaks that **fall with the water** (`WATER.fallStreak`: a periodic value noise
+  fixed to each parcel from the lip, whole cycles per period), whiter toward the foot (`fallFoam`), thinning at its edges;
+  its plunge pool (`WATER.plunge`: the foot, radius from the drop) as a disc of churn, rings running out broken by a noise
+  that boils (`WATER.plungeAt`); spray from core/atmos's particles where the page has them.
+- **`WATER.fallsOf(F, {steep, minDrop})`**: the slope breaks on a flow line, as `WATER.fall` options.
+
+## Still water and wet ground (Phase 4)
+
+- **`WATER.stillMesh(S)`** (a box's two triangles or a polygon's, ear-clipped, facing up either winding) and
+  **`WATER.drawStill(S, o)`**: flat at the level, the sky in it, a faint ripple and a fountain's rings
+  (`WATER.stillNormal`, `S.normalAt`; `WATER.still({..., fountain: [x, z]})`). **`WATER.stillMaterial(o)`**: the same for
+  many small pools a build's own (instanced) meshes hold: their tops take the ripple, their sides keep their normals.
+- **`WATER.wetGround(material, {surface, rain})`**: a MeshStandard, Phong or Lambert ground darkens and shines where it is
+  wet: the beach a shore surface's swash reaches, and, by the weather's `W.wet` (`WATER.wet()`), every up-facing surface
+  (`WATER.wetGroundRain`). A build with its own ShaderMaterial takes `WATER.wetChunk(surface, uniforms)`.
+
 ## Proof (`node core/water/test-water.js`)
 
 The test loads core/atmos's wave field and both water files, and runs the GLSL that `WATER.glsl` writes (with the
@@ -191,7 +282,19 @@ open surface's GDScript twin, rebuilt from that record alone and equal to `WATER
 (`godot/tests/water/water_test.gd`, golden from `node godot/tools/water_golden.js`); the shader is a library include,
 `godot/shaders/lib/water.gdshaderinc`, the maths of `WATER.glsl` with the waves as uniform arrays rather than generated
 literals (one shader for every surface; within 0.5 mm of the twin on a GPU), drawn by `godot/shaders/water.gdshader` on a
-regular grid over the tile (`krator/water_import.gd`), not yet the CDLOD selection. Below is the rest of the plan.
+regular grid over the tile (`krator/water_import.gd`), not yet the CDLOD selection.
+
+*Phases 2 to 4 in Godot (2026-10-13):* `KWater` is the twin of every new kind from the same record: the shore grid's
+distance, shoaling, breakers, foam and beach, and the grid itself rebuilt from the ground's heights (`KWater.shore_grid`:
+the flood and the distance transform, to every byte); the flow's height, current, ribbon (`KWater.ribbon`, the same
+vertices and triangles) and advected normal; the fall's curtain, streaks and plunge churn; the still pool's normal; the
+rain's wetness. `lib/water.gdshaderinc` takes the shore grid (`wtr_has_shore`: the clip, the shoaling, the breakers; the
+Phase 1 path is unchanged when it is off); `lib/water_kinds.gdshaderinc` with `water_flow`, `water_fall`, `water_plunge`
+and `water_still.gdshader` draw the rest; `water_import.gd` builds their meshes and checks them against the page's
+counts and sums. `tests/water/water_test.gd` checks every kind within 1e-9 (in practice 1e-12) with negatives, and that
+no lower hollow floods; `tests/shaders/library_gpu_check.gd` reads the shore grid, the shoaled heights (within 1.5 cm) and
+lib/water_kinds' functions (within 0.0013) back from the GPU. Not yet in Godot: masks and shore windows (a streamed world:
+little-demo has no export), the ground's wet band (`WATER.wetGround`). Below is the rest of the plan.
 
 - **The data side ports as it is** ([G data]): `WATER` becomes a `Water` autoload in GDScript with the same records and
   twins (64-bit, like `Atmos.wave_height`); `test-water.js` grows a golden of `WATER.export()` plus sampled heights,
@@ -210,12 +313,17 @@ regular grid over the tile (`krator/water_import.gd`), not yet the CDLOD selecti
 - **A compare test** (WATER.md Phase 6): render a fixed seed and time in both engines and read heights back at the same
   points (`godot/tests/atmos/waves_gpu_check.gd` is the pattern).
 
-## Still to do (phases 2 to 6)
+## Still to do
 
-- Phase 2: the shore distance field (jump flood on `core/mask`), shore waves, wet sand; `seaLevel(t)` from `core/clock`.
-- Phase 3: the flow field from `KRELIEF.river`, one flow shader, falls that arc, plunge pools, spray from atmos.
-- Phase 4: still water and `W.wet`.
+- Phase 2: `seaLevel(t)` from `core/clock` (the tide is a record; nothing drives it); the wet band on the grounds of the
+  builds that have a shore (their grounds are their own ShaderMaterials: `WATER.wetChunk`).
+- Phase 3: a flow field across a whole basin (today a flow is its line); spray and mist from core/atmos where a page has
+  no particles; the ripple sim's plunge stamp (Phase 5).
+- Phase 4: a taker for `W.wet` (only Voth's page, `settlements/voth`, runs core/atmos's weather, and it waits for the Voth branch).
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo.)
-  Voth (`settlements/voth`) waits for the Voth branch (ROADMAP.md section 9).
+- Phase 1's takers are all in (2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo, little-demo). Voth
+  (`settlements/voth`) waits for the Voth branch (ROADMAP.md section 9).
+- More takers of phases 2 to 4: the coasts' beaches (geyser's, Port's, Noah's Regret's: a shore grid from their ground)
+  and the wet band on their grounds; the ribbons of girder, mavs-refuge, yuni, shade and verge (flow); the pools of
+  jimjam, iziz, dalab, highlands and Erewhon (still).

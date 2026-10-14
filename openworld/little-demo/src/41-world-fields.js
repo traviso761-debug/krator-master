@@ -10,6 +10,12 @@
 //                              asks for less, so it is cheaper and does not alias
 //   WORLD.water(x,z)           the water surface there (the sea, a lake, a named river), or -1e9 where there is none
 //   WORLD.lakeWater / riverWater  its two parts (the water sheet treats a river's banks apart from a lake's shore)
+//   WORLD.waterBodies()        the scale model's water as bodies (the Ring Sea, each salt lake and highland lake): a
+//                              level, its cells, how salt it is, and a MASK over its cells and the ring round them, in
+//                              metres (core/water draws each body as one surface clipped to it: 83w-world-seas.js)
+//   WORLD.waterBodyAt(x,z)     the body whose cell holds (x,z) (its index), or -1
+//   WORLD.riverLines(step)     each named river as a line in metres, a point every `step` m down its carved bed, at its
+//                              water's height (riverWater), never climbing downstream: core/water's flow lines
 //   WORLD.at(x,z)              the whole sample at a point (one object, reused): height, slope, water, climate, the
 //                              biome blend, and the fields the kits read (wet, flow, upland, canyon, rim, rock, dune,
 //                              salt, cold, slope...). WORLD.FIELDS names them.
@@ -134,16 +140,17 @@ W.saltAt=(x,z)=>{if(!SALTA){SALTA=new Float32Array(CL.length);for(let i=0;i<CL.l
 // The extractor's polylines (4 km steps), smoothed twice (Chaikin), the bed made to fall monotonically to the mouth.
 // A spatial hash of the segments (4 km cells, each segment in every cell its reach can touch) answers "the nearest
 // channel" in a handful of segments.
-const CHC=4096,CHREACH=900;let SEG=null,CHASH=null;
+const CHC=4096,CHREACH=900;let SEG=null,CHASH=null;const RIVSEG=[];
 // A named river (region.json 'rivers': the scale model's DATA.rivers) joins as a channel of its own width, its flow
 // the accumulation that gives that width, flagged (slot 8: its water depth) so W.water gives it a surface.
 function buildChannels(){const L=M.drainage.lines.slice(),S=[];
- for(const r of M.rivers||[]){const a=M.drainage.min_accum*Math.pow(10,(r.width_m-10)/55),line=r.line.map(p=>[p[0],p[1],a,p[2]]);line.riv=r.depth_m;L.push(line);}
+ for(const r of M.rivers||[]){const a=M.drainage.min_accum*Math.pow(10,(r.width_m-10)/55),line=r.line.map(p=>[p[0],p[1],a,p[2]]);line.riv=r.depth_m;line.name=r.name;line.width=r.width_m;L.push(line);}
  for(const line of L){let P=line.map(p=>({x:p[0],z:p[1],a:p[2],e:p[3]}));
   for(let it=0;it<2;it++){if(P.length<3)break;const Q=[P[0]];
    for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],m=(t)=>({x:lerp(a.x,b.x,t),z:lerp(a.z,b.z,t),a:lerp(a.a,b.a,t),e:lerp(a.e,b.e,t)});Q.push(m(.25),m(.75));}
    Q.push(P[P.length-1]);P=Q;}
   let lo=1e9;for(const p of P){lo=Math.min(lo,p.e);p.bed=lo;}
+  if(line.riv)RIVSEG.push({name:line.name,width:line.width,s0:S.length/9,n:P.length-1});
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.push(a.x,a.z,b.x,b.z,a.a,b.a,a.bed,b.bed,line.riv||0);}}
  SEG=new Float64Array(S);CHASH=new Map();const n=SEG.length/9;
  for(let s=0;s<n;s++){const o=s*9,x0=Math.min(SEG[o],SEG[o+2])-CHREACH,x1=Math.max(SEG[o],SEG[o+2])+CHREACH,z0=Math.min(SEG[o+1],SEG[o+3])-CHREACH,z1=Math.max(SEG[o+1],SEG[o+3])+CHREACH;
@@ -182,6 +189,25 @@ function riverWater(x,z){if(!CHASH)return -1e9;
   if(d<hw&&d<bd){bd=d;cxp=px-qx;czp=pz-qz;wd=Math.min(SEG[o+8],.7*(2+s*5));}}
  if(bd<1e9)best=H(x+cxp,z+czp,0,null,true)+wd;   // the land without a road's fill: a road crosses on a causeway
  return best;}
+// The named rivers as lines in metres (core/water's flow lines). The channels are carved in WARPED space (q = p + warp(p),
+// carveAt's noise), so a point down a segment is brought back to the world by the warp's inverse (a fixed point: the
+// warp moves a point by at most 250 m and stretches it by under 0.7, so 24 steps settle it to well under a millimetre);
+// its height is the river's water there (riverWater: 4.6 m over the carved floor). The floor is not monotone: where the
+// land lies under the line's bed the carve follows the land, so it dips and climbs again (by up to 150 m across a
+// depression). A sill up to RIVPOOL m holds a pool behind it (taken from the mouth upward: a point is lifted toward the
+// next one's level by at most that); past it the water follows the floor up and down as the old sheet did, never under
+// the floor and never a slab across a depression (a full fill floated it up to 228 m over the ground)
+const RIVPOOL=2;
+const warpQ=(x,z)=>[x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60];
+W.unwarp=(qx,qz)=>{let x=qx,z=qz;for(let k=0;k<24;k++){const q=warpQ(x,z);x+=qx-q[0];z+=qz-q[1];}return[x,z];};
+W.riverLines=function(step){step=step==null?40:step;const out=[];
+ for(const R of RIVSEG){const pts=[];let carry=0;
+  for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9,ax=SEG[o],az=SEG[o+1],bx=SEG[o+2],bz=SEG[o+3],L=Math.hypot(bx-ax,bz-az);
+   for(let d=carry;d<L;d+=step){const t=d/L,w=W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],y]);}
+   carry=L>carry?carry+Math.ceil((L-carry)/step)*step-L:carry-L;}
+  for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+RIVPOOL);
+  out.push({name:R.name,width:R.width,pts});}
+ return out;};
 // a channel's size from its flow: strength s (0 at the threshold), width and depth (m)
 const chanS=acc=>Math.max(0,Math.log10(acc/M.drainage.min_accum));
 W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.assign({},c):null;};
@@ -319,6 +345,44 @@ W.lakeWater=function(x,z){let u=(cx+x/2000)*su-i0,v=(cy+z/2000)*sv-j0;u=clamp(u,
   for(let b=-1;b<=2;b++)for(let a=-1;a<=2;a++){const o=clamp(j+b,0,ny-1)*nx+clamp(i+a,0,nx-1);if(WHAS[o]&&WLV[o]>best)best=WLV[o];}}
  return best;};
 W.riverWater=riverWater;
+
+// ---------------------------------------------------------------- the water bodies (core/water: one surface each)
+// Each 4-connected run of wet cells at one level (to half a metre) is a body. Cell (i,j)'s centre is the full pixel
+// ((i+i0)/su, (j+j0)/sv), so in metres x = ((i+i0)/su - cx)*2000 (cells of 2000/su by 2000/sv m, about 4 km). Its mask
+// covers its cells and the ring of cells round them (where lakeWater's plane runs on under the shore), refined in the ring
+// by a flood (refineMask: the shore at about 500 m; near the camera core/water's shore grid decides it at 32 m), so a
+// body never shows in a basin that is not its own: the abyss's floors under the sea's level stay dry.
+let BODY=null,BODIES=null;
+// The ring is refined to an eighth of a cell (about 500 m): a sub-cell of the ring is water only when the flood from the
+// body's own cells reaches it across sub-cells with a corner under the level (the ground at 250 m detail), so a hollow
+// under the level beside a lake, beyond the shore window, stays dry too (the window floods at 32 m near the camera; this
+// is generous, a corner low enough lets it in, so the window's flood is never cut by it). The body's cells stay water.
+const MSUB=8;   // at most: a big body's mask stays under 4096 texels a side and 4 M in all
+function refineMask(cells,data,mnx,mnz,mi0,mj0,x0,z0,cw,ch,lv){const F=Math.max(1,Math.min(MSUB,Math.floor(4096/Math.max(mnx,mnz)),Math.floor(Math.sqrt(4e6/(mnx*mnz))))),fnx=mnx*F,fnz=mnz*F,fw=cw/F,fh=ch/F,out=new Uint8Array(fnx*fnz),
+  cor=new Float32Array((fnx+1)*(fnz+1)).fill(NaN),st=new Int32Array(fnx*fnz);let n=0;
+ const cH=(a,b)=>{const o=b*(fnx+1)+a;let h=cor[o];if(h!==h){h=H(x0+a*fw,z0+b*fh,250,null);cor[o]=h;}return h;};
+ const low=(a,b)=>Math.min(cH(a,b),cH(a+1,b),cH(a,b+1),cH(a+1,b+1))<lv;
+ for(const k of cells){const i=k%nx-mi0,j=(k-k%nx)/nx-mj0;for(let b=0;b<F;b++)for(let a=0;a<F;a++){const o=(j*F+b)*fnx+i*F+a;out[o]=255;st[n++]=o;}}
+ while(n){const o=st[--n],a=o%fnx,b=(o-a)/fnx;
+  for(const [p,q] of [[a-1,b],[a+1,b],[a,b-1],[a,b+1]]){if(p<0||q<0||p>=fnx||q>=fnz)continue;const r=q*fnx+p;
+   if(out[r]||!data[((q/F)|0)*mnx+((p/F)|0)]||!low(p,q))continue;out[r]=255;st[n++]=r;}}
+ return{x0,z0,cell:fw,cellZ:fh,nx:fnx,nz:fnz,data:out};}
+const cellX=i=>((i+i0)/su-cx)*2000,cellZ=j=>((j+j0)/sv-cy)*2000;
+W.waterBodyAt=(x,z)=>{if(!BODY)W.waterBodies();const i=Math.round((cx+x/2000)*su-i0),j=Math.round((cy+z/2000)*sv-j0);return i<0||j<0||i>=nx||j>=ny?-1:BODY[j*nx+i];};
+W.waterBodies=function(){if(BODIES)return BODIES;BODY=new Int32Array(nx*ny).fill(-1);BODIES=[];const q=[];
+ for(let s0=0;s0<nx*ny;s0++){if(!WHAS[s0]||BODY[s0]>=0)continue;const id=BODIES.length,lv=WLV[s0],cells=[];BODY[s0]=id;q.length=0;q.push(s0);
+  while(q.length){const k=q.pop(),i=k%nx,j=(k-i)/nx;cells.push(k);
+   for(const n of [i>0?k-1:-1,i<nx-1?k+1:-1,j>0?k-nx:-1,j<ny-1?k+nx:-1])if(n>=0&&WHAS[n]&&BODY[n]<0&&Math.abs(WLV[n]-lv)<.5){BODY[n]=id;q.push(n);}}
+  cells.sort((a,b)=>a-b);let i0b=nx,j0b=ny,i1b=0,j1b=0,salt=0;
+  for(const k of cells){const i=k%nx,j=(k-i)/nx;i0b=Math.min(i0b,i);j0b=Math.min(j0b,j);i1b=Math.max(i1b,i);j1b=Math.max(j1b,j);salt+=W.saltAt(cellX(i),cellZ(j));}
+  // the mask: the body's cells and the ring round them, one cell beyond on every side
+  const mi0=i0b-2,mj0=j0b-2,mnx=i1b-i0b+5,mnz=j1b-j0b+5,data=new Uint8Array(mnx*mnz);
+  for(const k of cells){const i=k%nx,j=(k-i)/nx;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++)data[(j-mj0+b)*mnx+(i-mi0+a)]=255;}
+  const cw=2000/su,ch=2000/sv,x0=cellX(mi0)-cw/2,z0=cellZ(mj0)-ch/2;
+  BODIES.push({id,level:lv,cells:cells.length,salt:salt/cells.length,
+   mask:refineMask(cells,data,mnx,mnz,mi0,mj0,x0,z0,cw,ch,lv),
+   box:[cellX(i0b-1)-cw/2,cellZ(j0b-1)-ch/2,cellX(i1b+1)+cw/2,cellZ(j1b+1)+ch/2]});}
+ return BODIES;};
 W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z));   // a river's water where it is above a lake's (it runs into the lake at its mouth)
 
 // ---------------------------------------------------------------- the whole sample

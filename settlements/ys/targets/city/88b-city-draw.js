@@ -116,6 +116,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
     hykSpanStairStraight(A2,{x:A.x,y:A.y,z:A.z},{w:1.6,rails:'both'});hykSpanStairStraight(B2,{x:B.x,y:B.y,z:B.z},{w:1.6,rails:'both'});S.drawn=true;nb++;}
   }catch(e){reportErr('span '+S.kind+' '+e.stack);}}
   TSTAT.cur=null;window._spans={built:nb,of:SPANS.list.length,refused:SPANS.refused.length,piers:np,shore:SPANS.shore,nodes:SPANS.nodes.length};}
+ var YS_RIVER=null;   // the river's core/water flow (below)
  // the river's water (Travis: the river did not read as running the map): each pool of the terraced bed (84 ysRiverProfile:
  // a flat bed between two rimstone lips) gets a sheet of the sea's water at its lip's height less 10 cm, a ribbon along
  // the centre line 1.8 widths wide (the banks hide its edges); below the sea's level the sea sheet takes over
@@ -131,10 +132,17 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   const mesh=k=>{const g=geo(k),f=.3;return Math.max(ysMeshH(g.x,g.z),ysMeshH(g.x-g.tz*g.w*f,g.z+g.tx*g.w*f),ysMeshH(g.x+g.tz*g.w*f,g.z-g.tx*g.w*f));};   /* sampled inside the bed's flat, not on the banks: at the strip's edge the bank lifted the water to a lid over the valley */
   const floor=k=>{let m=-1e9;for(let j=-1;j<=1;j++){const q2=k+j;if(q2>=0&&q2<N)m=Math.max(m,mesh(q2));}return m+.25;};   /* the drawn mesh, the neighbouring samples only: three either side lifted the water to the ground 30 m upstream */
   const level=k=>Math.max(lvl(k),floor(k));
-  const pair=(k,y)=>{const {x,z,tx,tz,w}=geo(k);pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};
-  for(let k=0;k<N;k++){if(lvl(k)<=-3)continue;   /* the strip starts 3 m under the sea's sheet at the mouth, so it emerges from under it rather than beginning in the open */const y=level(k);if(q>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,Math.max(level(k-1),y));pools++;}pair(k,y);}
-  if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(ysFaceUp(g),MAT.pkSea);m.name='river';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}
-  TSTAT.cur=null;window._river={pools,len:Math.round(pr.len)};}
+  // since 2026-10-13 the strip is core/water's FLOW (Phase 3; core/water/README.md "Flow and falls"): the same line, a point
+  // every sample at its pool's level, and at each lip a point 0.6 m upstream at the upper level, so the ribbon drops the
+  // terrace's rise over 0.6 m (a step the flow shader whitens: its slope is the rapids' far end); the ripples are carried
+  // down the current; WATER.heightAt and WATER.flowAt read it, core/export carries it (YS_RIVER)
+  const fp=[],fw=[];
+  for(let k=0;k<N;k++){if(lvl(k)<=-3)continue;   /* the strip starts 3 m under the sea's sheet at the mouth, so it emerges from under it rather than beginning in the open */const y=level(k),g=geo(k);
+   if(fp.length&&pr.bed[k]!==pr.bed[k-1]){fp.push([g.x-g.tx*.6,g.z-g.tz*.6,Math.max(level(k-1),y)]);fw.push(2*g.w);pools++;}fp.push([g.x,g.z,y]);fw.push(2*g.w);}
+  if(fp.length>1){YS_RIVER=WATER.flow({name:'The river',pts:fp,width:fw,speed:.7});const c=new THREE.Color(PORT_SEA_COL[0]);
+   const D=WATER.drawFlow(YS_RIVER,{scene,shallow:c.clone().lerp(new THREE.Color(0x6aa49a),.45),deep:c,roughness:.14,metalness:.05,envMapIntensity:.45,step:8,across:4,margin:0,renderOrder:1});
+   D.mesh.name='river';const tc=tcur();if(tc){tc.tris+=D.ribbon.idx.length/3;tc.meshes++;}}
+  TSTAT.cur=null;window._river={pools,len:Math.round(pr.len),flow:fp.length};}
  // (the karst's card dressing, Travis's clump and vine cards, was drawn here until the biome was bound: 89-city-biome.js dresses
  // the faces and plants the tops now; the sets stay in the library)
  window._karstCards={clumps:0,vines:0,meshes:0};

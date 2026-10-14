@@ -3,7 +3,7 @@
 
 Usage:
   python verify.py dist/little-demo.html [--views 2,4,8] [--all-views] [--assert]
-                                         [--cam x,z,agl,yaw,pitch] [--out ./shots] [--size 1280x800]
+                                         [--cam x,z,agl,yaw,pitch] [--out ./shots] [--size 1280x800] [--eval '()=>...']
 
   1. Serves the page's folder over HTTP and loads it in headless Chromium (SwiftShader), three.js r128 served
      from the repo instead of the CDN.
@@ -102,6 +102,8 @@ async def run(a):
             out = os.path.join(a.out, label + '.png')
             await pg.screenshot(path=out)
             print('%s: %s  settle %s  draws %d  tris %d' % (label, out, s['ms'], r['calls'], r['triangles']))
+            for e in a.eval or []:
+                print('   eval: %s' % await pg.evaluate(e))
         panel = await pg.evaluate("document.getElementById('errs').textContent")
         if panel and 'error panel' not in fails:
             print('ERROR PANEL (after views):', panel[:2000])
@@ -122,4 +124,5 @@ if __name__ == '__main__':
     ap.add_argument('--cam', action='append')
     ap.add_argument('--out', default='./shots')
     ap.add_argument('--size', default='1280x800')
+    ap.add_argument('--eval', action='append', help='a JS function (source) run after each view; its value printed')
     sys.exit(asyncio.run(run(ap.parse_args())))

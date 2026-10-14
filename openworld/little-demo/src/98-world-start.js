@@ -35,7 +35,7 @@ async function start(){
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;
 // one step of the streaming; big=true while the curtain is down
-function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);}
+function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);}
 START.pump=pump;
 function frame(){requestAnimationFrame(frame);
  const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;START.frames++;
@@ -45,7 +45,7 @@ function frame(){requestAnimationFrame(frame);
   // the haze thins with height above the ground: thick at the ground (the dust), clear from orbit
   {const agl=Math.max(0,P.y-WORLD.H(P.x,P.z,400));scene.fog.density=1/(90000+agl*12);}
   for(const f of HOST.TICKS)f(dt,now/1000);
-  SKY.follow();WATER.frame();PLACES.update();TOWNS_DRAW.update();if(START.frames%8===0)CAM.drawMap();
+  SKY.follow();PLACES.update();TOWNS_DRAW.update();if(START.frames%8===0)CAM.drawMap();
   renderer.render(scene,camera);}
  catch(e){reportErr('frame: '+(e.stack||e));throw e;}
  fpsN++;if(now-fpsT>1000){fps=fpsN*1000/(now-fpsT);fpsN=0;fpsT=now;hud();}

@@ -89,7 +89,6 @@ function buildChunk(n){const t0=performance.now();
  m.userData.inspectLabel='ground';scene.add(m);
  n.chunk={mesh:m,grid,x0,z0,ds,y0,y1,water:null,floor:null,anyWater,wet};n.y0=y0-skD;n.y1=y1;
  ALL.add(n);S.chunks=ALL.size;S.built++;S.ms+=performance.now()-t0;
- if(wet&&typeof WATER!=='undefined')WATER.forChunk(n);
  if(typeof FLOOR!=='undefined')FLOOR.forChunk(n);
  return n.chunk;}
 function freeChunk(n){const c=n.chunk;if(!c)return;scene.remove(c.mesh);c.mesh.geometry.dispose();

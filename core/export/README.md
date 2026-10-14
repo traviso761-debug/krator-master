@@ -99,16 +99,22 @@ shader without reading JavaScript. In a tile it keeps the surfaces whose extent 
   presets (WATER.PRESETS: sea, swells, open, foam, bed, cdlod), field: 'atmos' | 'none' (whether the page has the shared
   wave field), clock, note,
   surfaces: [ { id: 'water:<n>', kind: 'open' | 'shore' | 'flow' | 'fall' | 'still', name, extent [x0, z0, x1, z1] | null,
-     and WATER.export()'s own fields for the kind (flow: pts [x, z, y, slope, width, speed]; fall: lip, dir, speed, drop,
-     plunge; still: level, bounds, poly; shore: of (a surface id), band); an open surface:
+     and WATER.export()'s own fields for the kind (flow: pts [x, z, y, slope, width, speed], ribbon {step, across, margin,
+     count, rows, sum [x, y, z]} (the mesh core/water draws: a port rebuilds it and checks the count and sums); fall: lip,
+     dir, speed, drop, plunge [x, y, z] | null, spread, tFall, lipW, curtain {rows, cols, count, sum}, plungePoint
+     [x, y, z, r]; still: level, bounds, poly, fountain [x, z] | null, mesh {triangles, sum}; shore: of (a surface id),
+     band); an open surface:
        level (null: the sea's, with its tide), base (the level its bed was baked at), swell (the preset's name or the
        list as given), waves [{A, lambda, k, dir [dx, dz], H, phase, cycles, turns [tx, tz, tc]}] (turns per metre and
        cycles per second: the phase is 2 pi (fract(x tx) + fract(z tz) - fract(t tc)) + phase), field (the share of the
        shared wave field the page draws: 0 without core/atmos), fieldShare (as asked), chop, kChop, tilt, lod, px, damp,
-       amp, bounds, bed {x0, z0, cell, nx, nz, level, bytes (Uint8Array: RGBA per texel, PRESETS.bed's two channels)} or
-       null, look or null } ],
-  probes: [ [x, z, t, h, surface id] ] }   WATER's own heightAt at 6 x 6 points over each open surface's part of the
-                                           tile, at t = 0, 3.7 and 421.3 s
+       amp, bounds, bed {x0, z0, cell, nx, nz, level, bytes (Uint8Array: RGBA per texel, PRESETS.bed's two channels;
+       on a shore grid B is the signed shore distance over [-band, band] and A the depth linear over PRESETS.shore.mid)} or
+       null, shore {band, clip (cells), seeded, wetCells, window (m) | null} (Phase 2: the bed is a shore grid), mask {x0,
+       z0, cell, cellZ, nx, nz} (the coarse cells it may cover; the bytes are the page's), look or null } ],
+  probes: [ [x, z, t, h, surface id] ]     WATER's own heightAt at 6 x 6 points over each open surface's part of the
+          [x, z, 0, h, id, vx, vz, speed, slope]   tile, at t = 0, 3.7 and 421.3 s; on a river, 8 points down its line
+                                           with its height and current (WATER.flowAt)
 ```
 
 `look` is the material of the `WATER.draw` that draws the surface (`colour, roughness, metal, envMapIntensity,
@@ -116,7 +122,21 @@ transparent`), or what a build that draws its water itself writes on the surface
 `colour, shallow, deep` as linear hex, `roughness`, `transparent`, `sky {colour, base, grazing}`, its shader's flat sky
 mixed in by `base + grazing (1 - n.v)^3`, and `unlit`: its shader takes no light, so Godot emits the colour). Godot: `godot/krator/water.gd` (`KWater`) is the twin; `water_import.gd` draws
 each open surface on `shaders/water.gdshader` (the library's `lib/water.gdshaderinc`, `WATER.glsl`'s maths with the waves
-as uniforms). Flow, fall, still and shore travel as data and are not drawn: core/water draws none of them yet either.
+as uniforms; with `wtr_has_shore` the shore grid's flood clip, shoaling and breakers), and since core/water's phases 2 to 4
+(2026-10-13) the other kinds too: a flow as its ribbon (`KWater.ribbon`, the same vertices) on `shaders/water_flow.gdshader`,
+a fall as its arcing curtain (`KWater.curtain`) on `water_fall.gdshader` with its plunge disc on `water_plunge.gdshader`, a
+still pool flat at its level on `water_still.gdshader` (all on `lib/water_kinds.gdshaderinc`). A shore band record is drawn
+by its open water.
+
+**Phases 2 to 4, proved** (the same test, golden from the same script, seven surfaces): a tarn on a shore grid with a
+lower hollow beside it, a river with a riffle and a bend, a 60 m fall, an L-shaped pool with a fountain. KWater rebuilds
+the shore grid from the ground's heights to every byte (the flood and the distance transform; without its seed the flood
+takes the hollow too, the negative) and the hollow is not the tarn's; its shoaled heights with the breakers equal
+WATER.heightAt within 3e-14 m, the shore distance, breaker foam and the beach's wetness within 2e-13; the river's ribbon
+(728 vertices) within 5e-13 m and the same triangles, its height, current, advected normal and foam within 8e-13; the
+fall's curtain within 5e-13, its streaks and plunge churn within 7e-14; the pool's normal within 3e-16; each with a
+negative (a second late, the band a metre off, the fountain left out). On a GPU the tarn's shoaled heights are within
+1.5 cm of KWater (the shore distance read through 8-bit filtering: under one byte, 0.31 m) and its depth within 3.5 cm.
 
 **The height twin, proved** (`godot/tests/water/water_test.gd`, its golden from `node godot/tools/water_golden.js`: three
 surfaces through this adapter, the Ring Sea's trochoids with half the field and a bed, a pond, a bay with the field's chop):
@@ -320,8 +340,8 @@ shade there is its own darker interior, not matched by Godot's ambient); the lig
 - The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
   core/export; the harness injects it for an export.
 - No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's
-  water only where the page names it to core/water (sedesert's pond, and every core/water taker); sedesert's river and
-  cataract, and the other biome hosts' water, are still only the grid's `water` and the field's named surfaces.
+  water only where the page names it to core/water (sedesert's pond, river, cataract and plunge pool since 2026-10-13, and
+  every core/water taker); the other biome hosts' water is still only the grid's `water` and the field's named surfaces.
 - Only sedesert describes its ground layers; the other biome hosts that draw the same layers (swbay, nwlowlands,
   eastabyss and the rest of `hostGroundLib`'s users) each need one `EXPORT.groundLayers` call. The strata the hosts paint
   on rock (`35-core-strata.js`) and the cave's occlusion are not described.

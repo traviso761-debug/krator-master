@@ -101,11 +101,11 @@ LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (cor
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
-# (src/90w-rl-lake.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
+# (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
 ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
-CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
+CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 
 
 def srcpath(f, base=None):
@@ -138,6 +138,7 @@ DETERMINISTIC = {
     '90-rl-scene.js', '91-probe.js', '91a-rl-budget.js', '92-camera.js', '93-labels.js', '94-rl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '90w-rl-lake.js',                     # the lake on core/water
+    '90x-rl-still.js',                    # the troughs' and wallow's still water on core/water (Phase 4)
 }
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
