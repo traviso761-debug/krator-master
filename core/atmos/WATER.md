@@ -5,9 +5,15 @@ kinds as data with CPU twins, the node test (`core/water/test-water.js`, which r
 twins), and open water drawn on a CDLOD mesh with the shared wave field, skylight and Jacobian foam with decay. First
 takers: `kits/ringsea` (its Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (its sea); on 2026-10-13
 Reed Lake, Noah's Regret, Port, Ys, Locus and Mungo.
-The rest of Phase 1's row (little-demo: its lakes at many levels and its falling rivers share one sheet per chunk, so it
-waits for a wet mask or the shore field; `core/water/README.md`) and phases 2 to 6 are still to do; Voth waits for the
-Voth branch (`ROADMAP.md` section 9). Written 2026-10-10 as a plan; `TODO.md`, "Water", points here.
+**Phases 2 to 4 done 2026-10-13**, each with its node test (negatives included), its drawing and its Godot twin
+(`KWater`, `lib/water.gdshaderinc` and `lib/water_kinds.gdshaderinc`, the export's water section, the golden test):
+the shore (a flood and an exact distance transform on the ground, so no lower hollow floods; Green's-law shoaling,
+breakers, surf foam, the wet-sand band; masks and shore windows for water too big to grid whole), flow and falls (the
+ribbon down a line, the two-phase advected ripple, rapids and bank foam; the curtain arcing from the lip, its streaks and
+plunge), still water and `W.wet`. Takers: little-demo (the sea and every lake masked on a shore window, the Yuni river a
+flow; Phase 1's last taker too), sedesert (the river, the cataract, the plunge pool), Ys (the terraced river), Reed Lake
+and Xanadu's kit page (their pools and troughs still). Left, and why: `core/water/README.md`. Phases 5 and 6's rest are
+still to do; Voth waits for the Voth branch (`ROADMAP.md` section 9). Written 2026-10-10 as a plan; `TODO.md`, "Water", points here.
 
 Sources: an audit of every water surface in the repo (section 1), and **Halcyon** (github.com/billpwchan/halcyon,
 MIT, three.js r186 on WebGL2, read 2026-10-10): a tropical atoll whose sea is a Tessendorf FFT ocean on a CDLOD mesh,
@@ -145,9 +151,9 @@ flow over a bed. What helps, in order:
 |---|---|---|
 | 0 (done 2026-10-12) | `core/water/README.md`: the kinds, the API (`WATER.open/shore/flow/fall/still`, `heightAt`, `flowAt`, `seaLevel`), a node test for the twins | none |
 | 1 (ringsea, geyser done 2026-10-12; reed lake, noah's regret, port, ys, locus, mungo 2026-10-13) | CDLOD mesh + the shared field + skylight + Jacobian foam; the Ring Sea kit's Gerstner, `rsSeaH` and `rsRide` move into it | voth, noahs-regret, little-demo, locus, mungo, ringsea, geyser, port, ys, reedlake; `port_baseline` |
-| 2 | shore field + shore waves + wet sand; `seaLevel(t)` | the coast builds above plus every biome host with a bay |
-| 3 | the flow field and one flow shader; falls that arc; plunge pools; spray from atmos | girder, mavs-refuge, yuni, shade, verge, every biome host with a ribbon |
-| 4 | still water and `W.wet` | xanadu, jimjam, iziz, dalab, highlands |
+| 2 (done 2026-10-13: little-demo) | shore field + shore waves + wet sand; `seaLevel(t)` (the tide is a record; nothing drives it yet) | the coast builds above plus every biome host with a bay |
+| 3 (done 2026-10-13: sedesert, little-demo, ys) | the flow field and one flow shader; falls that arc; plunge pools; spray from atmos | girder, mavs-refuge, yuni, shade, verge, every biome host with a ribbon |
+| 4 (done 2026-10-13: reed lake, xanadu's kit page, sedesert's pool) | still water and `W.wet` (no taker of `W.wet` yet) | xanadu, jimjam, iziz, dalab, highlands |
 | 5 | FFT backend (opt-in per world); ripple sim | the sea worlds |
 | 6 | Godot: shore and flow fields as textures, `.gdshader` per kind, the twins in GDScript, a compare test against the three.js reference for a fixed seed | `godot/tests/atmos` |
 

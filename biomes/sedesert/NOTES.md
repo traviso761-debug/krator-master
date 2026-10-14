@@ -147,6 +147,11 @@ The river, the cataract and its plunge pool are core/water's (`core/water/README
 - **The plunge pool** (`FALL.pool`): a `WATER.still` polygon at -703 m (the old fan's outline), drawn flat, the sky in it.
 - TEX_FALL and MAT_FALL are still made, unused: TEX_FALL's painter draws from `rng()`, and every placement after it
   reads the same sequence (so not one plant moved).
+- **In Godot** (`godot/data/world-sedesert-falls`, box 2850,-320,3450,280: `godot/tests/water/falls_case_test.gd`,
+  `python3 godot/tools/compare_shots.py world-sedesert-falls`): the notch's water section rebuilt by `KWater`, the
+  ribbon (8057 vertices) and the curtain (405) the page's own meshes, the page's flow probes equal to the twin's; side
+  by side from 250 m over the lip, the river's last reach, the lip and the curtain read the same in both engines (Godot's
+  river darker under its own sky; the page's mist sprites are not exported).
 
 `verify.py --assert`: every check and negative passes as before (544452 instances, 3955 volumes, 12020042 scene
 triangles); the curtain the rock checks read has 405 vertices (was 90). Draw calls: 94 -> 95 at the opening camera (the

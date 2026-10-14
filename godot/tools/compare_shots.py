@@ -32,6 +32,11 @@ CASES = {
     # M4: the sedesert tile through core/export (krator/world_import.gd), round the rain-shadow pond, the eye inside the tile
     "world-sedesert": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
                            target=[230, 640], lift=4, eye=[-75, 30, 95]),
+    # core/water phases 3 and 4: sedesert's notch through core/export (box 2850,-320,3450,280): the river's last reach, the
+    # cataract arcing off the lip into the Abyss, its plunge pool; the eye 250 m over the lip, out over the Abyss inside the tile,
+    # looking down on the notch: the river's last reach coming over the lip and the curtain falling away under it
+    "world-sedesert-falls": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
+                                 target=[3150, -4], lift=0, eye=[200, 250, 100]),
     # M5: a district of Iziz through core/export, inside the south gate (box -120,292,120,532), the eye in the tile looking at the gate
     "world-iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
                        target=[0, 470], lift=8, eye=[-55, 22, -95], hour="ATMOS.U.hour.value"),

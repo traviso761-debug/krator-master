@@ -22,8 +22,9 @@ Read before changing anything here. `build.py` prints the open count.
       22 m wide plus 1.5 m a side under the banks along WL(x); the channel is cut 2.6 m below the floor so its edges hide
       under the banks. A world whose channel is wider must widen it (`width`). Where WL(x) rises downstream over the
       bed's noise the line holds its level (the surface never climbs), so a few metres of ribbon may sit under the cut.
-      The rapids are the flow shader's (white where the line steepens: the mountain gorge is a 20-40 % cascade, white
-      almost throughout), not geometry.
+      The rapids are the flow shader's (white where the line steepens), not geometry: the line falls 25 to 98 % down
+      the mountain gorge (x -3440 to -2540), a cascade, so "The wadi gorge" view reads white almost throughout, even after
+      the rapids' foam was toned down (core/water's PRESETS.flow: foam from 1.5 % to 12 % slope, at most 0.6).
 - [ ] The cataract's plunge pool is core/water's still water (a polygon at -703 m, the old fan's outline) with the
       Abyss floor's rocks standing out of it, and the fall's churn disc where the curtain lands.
 - [ ] THE GROUND IS A BAKED FIELD (2026-10-08, `core/terrain/30-core-field.js`; GODOT-PLAN.md Phase 2 item 2). At

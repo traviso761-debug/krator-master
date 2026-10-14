@@ -4,11 +4,24 @@ Every sea, bay, lake, river, fall, pool and wet street in Krator is meant to com
 water it has and writes no water shader of its own. The plan, the audit of the thirty-nine builds that draw water and what
 was taken from Halcyon are `core/atmos/WATER.md`; this file is the contract.
 
-**Status (2026-10-12): phases 0 and 1 of `WATER.md` section 5.** The data side and its CPU twins for all six kinds, and the
-drawing of **open** water (the CDLOD mesh, the shared wave field, the sky in the water, Jacobian foam). Its first takers are
-`kits/ringsea` (the roadstead; the kit's Gerstner swell, `rsSeaH` and `rsRide` moved in here) and `biomes/geyser` (the Ring
-Sea off the basin's beach). Shore, flow, fall, still and wet are recorded (their data and twins work and are tested) but not
-drawn yet: phases 2 to 4.
+**Status (2026-10-13): phases 0 to 4 of `WATER.md` section 5.** The data side and its CPU twins for all six kinds, and
+their drawing: **open** water (the CDLOD mesh, the shared wave field, the sky in the water, Jacobian foam; 2026-10-12),
+the **shore** (the flood and distance field on the ground, shoaling, breakers, surf foam, the wet-sand twin, masks and
+shore windows for water too big to grid whole; Phase 2), **flow** and **falls** (the ribbon, the advected ripple, rapids
+and bank foam, the arcing curtain, its plunge; Phase 3) and **still** water with the weather's wetness (`W.wet`; Phase 4),
+each with its Godot twin (below). Its first takers are `kits/ringsea` (the roadstead; the kit's Gerstner swell, `rsSeaH`
+and `rsRide` moved in here) and `biomes/geyser` (the Ring Sea off the basin's beach).
+
+**Phases 2 to 4's takers (2026-10-13):** `openworld/little-demo` (the sea and every lake one masked open surface on a
+shore window, the Yuni river a flow; `src/83w-world-seas.js`, `src/83-world-water.js`); `biomes/sedesert` (the river a
+flow from the head of the wadi to the notch, the cataract a fall into the Abyss, the plunge pool still water;
+`src/89w-host-water.js`); `settlements/ys` (the terraced river a flow down its rimstone pools; `targets/city/88b-city-draw.js`);
+`settlements/reedlake` (the troughs, the wallow, the pen's pan and the dye vats still water; `src/90x-rl-still.js`);
+`settlements/xanadu`'s kit page (its pools, rill basins, channels and bowls still water; `targets/xanadu/90-xa-still.js`).
+Not taken, and why: Locus's and Mungo's river, delta, canals and pools are one level sheet shaped by the ground (no line
+to flow along, no rim to hold a pool) and their troughs are merged kit geometry; Erewhon (Xanadu's city) bakes its pools
+per chunk under its own sky; `W.wet` has no taker yet (only Voth's page (`settlements/voth`) runs core/atmos's weather, and it waits for the
+Voth branch).
 
 **Phase 1's other takers (2026-10-13):** `settlements/reedlake` (the lake: no swell of its own, a calm share of the field
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
@@ -22,13 +35,12 @@ old sheet, the two split on the shoreline by one baked mask both shaders sample;
 `src/90w-lake.js`); `settlements/mungo`, which reads Locus's fragment by name (its lake and
 the Reed Lake kit's islands on it; the reed boats ride it).
 
-**Not taken: `openworld/little-demo`** (2026-10-13). Its water is not one surface at a level: the sea, the lakes
-at their own levels from the scale model's 4 km water raster (`WORLD.lakeWater`) and the named rivers, which fall along
-their courses (`WORLD.riverWater`), share one sheet per streamed terrain chunk, each vertex at its own level. `WATER.open`
-is one level clipped only by a rectangle (`bounds`), so a lake drawn this way floods every lower hollow inside its box,
-and a river cannot be one at all. It needs either a surface per water body with a wet mask (a raster `bounds` or a
-`clip` texture: an addition to `WATER.draw`) or Phase 2's shore field on `core/mask`; and at 1:1 over 1,300 km the
-draw's world-space vertex shader wants a camera-relative origin. The ripple sheets stay until then.
+**`openworld/little-demo`** (taken 2026-10-13, phases 2 and 3). Its water was one sheet per streamed terrain chunk,
+each vertex at its own level, which one `WATER.open` (one level, a rectangle) could not draw. Now each water body of the
+scale model (`WORLD.waterBodies`: a run of wet 4 km cells at one level) is one open surface with a **mask** (its cells and
+the ring round them, the ring refined by a flood at about 500 m) and a **shore window** (8 km at 32 m round the camera,
+re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a **camera-relative origin**
+(`WATER.draw(S, {origin})`); the Yuni river is a `WATER.flow` along `WORLD.riverLines`, its ribbon local to its middle.
 
 | File | Tag | What |
 |---|---|---|
@@ -307,8 +319,11 @@ little-demo has no export), the ground's wet band (`WATER.wetGround`). Below is 
   builds that have a shore (their grounds are their own ShaderMaterials: `WATER.wetChunk`).
 - Phase 3: a flow field across a whole basin (today a flow is its line); spray and mist from core/atmos where a page has
   no particles; the ripple sim's plunge stamp (Phase 5).
-- Phase 4: a taker for `W.wet` (only Streetlab runs core/atmos's weather, and it waits for the Voth branch).
+- Phase 4: a taker for `W.wet` (only Voth's page, `settlements/voth`, runs core/atmos's weather, and it waits for the Voth branch).
 - Depth-buffer absorption (WATER.md section 3 item 3): water drawn after the opaque pass reading depth.
 - Phase 5: the FFT backend, the ripple sim (wakes). Phase 6: Godot (above).
-- The other takers of Phase 1 (`WATER.md` section 5) still to come: little-demo. (Taken 2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo.)
-  Voth (`settlements/voth`) waits for the Voth branch (ROADMAP.md section 9).
+- Phase 1's takers are all in (2026-10-13: Reed Lake, Noah's Regret, Port, Ys, Locus, Mungo, little-demo). Voth
+  (`settlements/voth`) waits for the Voth branch (ROADMAP.md section 9).
+- More takers of phases 2 to 4: the coasts' beaches (geyser's, Port's, Noah's Regret's: a shore grid from their ground)
+  and the wet band on their grounds; the ribbons of girder, mavs-refuge, yuni, shade and verge (flow); the pools of
+  jimjam, iziz, dalab, highlands and Erewhon (still).
