@@ -113,6 +113,9 @@ strangers draw them (`KCHAR.stranger`).
 into its colours at a clothing tile size (`FABRIC`, 12 to 30 cm a tile): the set comes from the paint's base colour
 (`FABRIC_OF`: maguey burlap, linen, coarse cotton, the Republic's wool and quilting, velvet, silk, bazin, leather,
 buckskin, fur, felt, nacre, the metals; a plain weave otherwise) or `P(fabric=)`, and boots and sandals take leather.
+Named per garment: plaited straw for the petasos and the Fulani cone, astrakhan for both papakhas, brass braid for the
+Hall's festive epaulettes and the Free Giants' torc, glass beads for the Dalab bead cap and the Beast Riders' bead
+belt (and the `beads` motif), oiled cloth for the Izani rain hood.
 The cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets
 (`SHEETS`), recoloured in each garment's own two colours. The sets and their sources: `prompt-clothes.md`.
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its

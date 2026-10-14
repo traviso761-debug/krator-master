@@ -463,7 +463,7 @@ FRETA = np.array([[c == 'X' for c in r] for r in FRET])
 # so each garment keeps its own two colours and gets the sheet's hand-made detail. (set, motifs across the sheet,
 # stitches dark on light)
 SHEETS = {'cross': ('embroidery.cross', 3, True), 'rose': ('embroidery.saxon', 4, False), 'bogolan': ('pattern.bogolan', 4, False),
-          'feather': ('feather.quetzal', 6, False)}
+          'feather': ('feather.quetzal', 6, False), 'beads': ('beads.glass', 4, False)}
 MASKS = {}
 
 
@@ -1491,7 +1491,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
     GARMENTS['iziz_%s_peasant_wraps' % sex] = ('feet', b, 'Wrapped shoes', _wraps)
 
     def _hood(sex=sex):
-        return [hood('iziz_%s_peasant_hood' % sex, P('moss', 0.12, [B('bottom', 0.0, 0.03, 'solid', 'bark'), B('top', 0.0, 0.02, 'solid', 'bark')]))]
+        return [hood('iziz_%s_peasant_hood' % sex, P('moss', 0.12, [B('bottom', 0.0, 0.03, 'solid', 'bark'), B('top', 0.0, 0.02, 'solid', 'bark')],
+                                                     fabric='cloth.oiled'))]
     GARMENTS['iziz_%s_peasant_hood' % sex] = ('head', b, 'Rain hood', _hood)
 
     # ---- the guilds (salvagers, hunters, the Watch): sand under saddle leather, a belt and pouches, Ancient plate ----
@@ -1594,7 +1595,7 @@ BELTS = {'tiger': lambda: P('saffron', 0.03, [B('top', 0.0, 0.2, 'tiger', 'darkf
          'snake': lambda: P('jungle', 0.03, [B('top', 0.0, 0.2, 'feather', 'mint', 'jungle', 0.03)]),
          'teeth': lambda: P('darkfur', 0.04, [B('top', 0.0, 0.04, 'teeth', 'bone', 'darkfur', 0.03)]),
          'claw': lambda: P('maroon', 0.03, [B('top', 0.0, 0.2, 'claw', 'bone', 'maroon', 0.06)]),
-         'beads': lambda: P('turq', 0.02, [B('top', 0.0, 0.2, 'beads', 'rose', 'turq', 0.03)])}
+         'beads': lambda: P('turq', 0.07, [B('top', 0.0, 0.2, 'beads', 'rose', 'turq', 0.03)], fabric='beads.glass')}
 
 
 def animal_belts(gid, kinds, ease0=0.028, z0=None, trophies=3):
@@ -1770,9 +1771,10 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
     def _hhat(sex=sex):
         gid = 'hykk_%s_peasant_hat' % sex
-        straw = P('sand', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'slateblue')])
+        straw = P('sand', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'slateblue')], fabric='straw.plaited')
         return [head_rings(gid, 0.62, 1.0, 0.03, straw, n=32, rows=5, apex=True),
-                brim(gid + '_brim', 0.64, 0.17, P('sand', 0.06, [B('bottom', 0.0, 0.015, 'solid', 'slateblue'), B('top', 0.0, 0.2, 'rays', 'peach', 'sand', 0.02)]),
+                brim(gid + '_brim', 0.64, 0.17, P('sand', 0.07, [B('bottom', 0.0, 0.015, 'solid', 'slateblue'), B('top', 0.0, 0.2, 'rays', 'peach', 'sand', 0.02)],
+                                                 fabric='straw.plaited'),
                      droop=0.03, rows=5, n=40)]
     GARMENTS['hykk_%s_peasant_hat' % sex] = ('head', b, 'Petasos', _hhat)
 
@@ -1900,7 +1902,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
     def _dcap(sex=sex):
         gid = 'dalab_%s_trade_cap' % sex
-        return [head_rings(gid, 0.6, 1.0, 0.02, P('turq', 0.02, [B('bottom', 0.0, 0.02, 'solid', 'terracotta'), B('top', 0.0, 0.3, 'beads', 'cream', 'turq', 0.025)]),
+        return [head_rings(gid, 0.6, 1.0, 0.02, P('turq', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'terracotta'), B('top', 0.0, 0.3, 'beads', 'cream', 'turq', 0.025)],
+                                                  fabric='beads.glass'),
                            n=32, rows=6, apex=True)]
     GARMENTS['dalab_%s_trade_cap' % sex] = ('head', b, 'Bead cap', _dcap)
 
@@ -1972,7 +1975,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
     def _yhead(sex=sex):
         if sex == 'm':                        # the Fulani cone: a broad straw cone, its crown in leather
-            return [brim('yuni_m_peasant_hat', 0.66, 0.2, P('sand', 0.08, [B('top', 0.0, 0.3, 'rays', 'ochre', 'sand', 0.025), B('bottom', 0.0, 0.015, 'solid', 'mud')]),
+            return [brim('yuni_m_peasant_hat', 0.66, 0.2, P('sand', 0.08, [B('top', 0.0, 0.3, 'rays', 'ochre', 'sand', 0.025), B('bottom', 0.0, 0.015, 'solid', 'mud')],
+                                                         fabric='straw.plaited'),
                          droop=0.09, rows=6, n=40, ease=0.012),
                     head_rings('yuni_m_peasant_hat_crown', 0.66, 1.0, 0.016, P('leather', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')]), n=32, rows=5, apex=True),
                     horn('yuni_m_peasant_hat_tip', [J('Head', 'tail') + np.array([0, 0, 0.0]), J('Head', 'tail') + np.array([0, 0, 0.17])], 0.05, 0.006,
@@ -2171,7 +2175,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
     def _rnhead(sex=sex):                     # the papakha: grey astrakhan, its crown red, crossed in black
         # (a tower hat's strip runs up from the band: its 'bottom' end is the crown)
         gid = 'rep_%s_noble_papakha' % sex
-        return [tower_hat(gid, 0.15 if sex == 'm' else 0.13, lambda t: 1.08 + 0.05 * t, P('repgrey', 0.24, [B('bottom', 0.0, 0.035, 'solid', 'repred')]), rows=10)]
+        return [tower_hat(gid, 0.15 if sex == 'm' else 0.13, lambda t: 1.08 + 0.05 * t, P('repgrey', 0.24, [B('bottom', 0.0, 0.035, 'solid', 'repred')],
+                                                                                          fabric='fur.astrakhan'), rows=10)]
     GARMENTS['rep_%s_noble_papakha' % sex] = ('head', b, 'Papakha', _rnhead)
 
 
@@ -2283,7 +2288,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
                                       B('bottom', 0.025, 0.11, 'triskele', 'repochre', 'repred', 0.11), B('bottom', 0.115, 0.125, 'solid', 'repochre')],
                      [PN(0.42, 0.58, 'frog', 'repochre', 'repred', 0.07)])
             sl = P('repred', 0.03, [B('bottom', 0.0, 0.06, 'triskele', 'repochre', 'repred', 0.06), B('bottom', 0.06, 0.07, 'solid', 'repochre')])
-            ep = P('brass', 0.02, [B('bottom', 0.0, 0.3, 'stripes', 'repochre', 'brass', 0.0)])
+            ep = P('brass', 0.07, [B('bottom', 0.0, 0.3, 'stripes', 'repochre', 'brass', 0.0)], fabric='metal.brass.braid')
             return [torso_tube(gid, TOP, KNEE - 0.06, 0.02, coat, hang_from=WAIST - 0.03, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                     band(gid + '_sash', WAIST - 0.01, SHOULDER + 0.04, 0.065, 0.034, P('repcream', 0.03, [B('top', 0.0, 0.008, 'solid', 'repochre'),
                          B('bottom', 0.0, 0.008, 'solid', 'repochre')]), high=-math.pi / 2, rows=4),
@@ -2318,7 +2323,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         if sex == 'm':                        # the papakha: a tall fur hat, its crown red with an ochre cross
             gid = 'rep_m_fest_noble_papakha'
             # (a tower hat's strip runs up from the band: its 'bottom' end is the crown)
-            return [tower_hat(gid, 0.17, lambda t: 1.08 + 0.06 * t, P('darkfur', 0.24, [B('bottom', 0.0, 0.04, 'cross', 'repochre', 'repred', 0.05)]), rows=10)]
+            return [tower_hat(gid, 0.17, lambda t: 1.08 + 0.06 * t, P('darkfur', 0.24, [B('bottom', 0.0, 0.04, 'cross', 'repochre', 'repred', 0.05)],
+                                                                      fabric='fur.astrakhan'), rows=10)]
         # the kokoshnik: a tall crescent standing over the brow, red and gold, pearls along its edge
         gid = 'rep_f_fest_noble_kokoshnik'
         k = fan(gid + '_crest', 0.07, 0.19, 1.25, P('repred', 0.02, [B('top', 0.0, 0.03, 'beads', 'white', 'repochre', 0.02),
@@ -2390,7 +2396,7 @@ def _chief(gid, arms):
     sl = P('woad', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'gold')], [PN(0.0, 1.0, 'tartan', 'black', 'woad', 0.2)])
     parts = _free_tunic(gid, arms, body, sl)
     sagum = P('madder', 0.07, [B('bottom', 0.0, 0.03, 'solid', 'loden'), B('bottom', 0.035, 0.1, 'tartan', 'loden', 'madder', 0.12)])
-    torc = P('gold', 0.02, [B('top', 0.0, 0.5, 'stripes', 'bronze', 'gold', 0.012)])
+    torc = P('gold', 0.07, [B('top', 0.0, 0.5, 'stripes', 'bronze', 'gold', 0.012)], fabric='metal.brass.braid')
     # the sagum hangs from the shoulders behind (a cloak, not a sleeve: the lower arms come out under it); pinned on the
     # right shoulder by a bronze brooch; the torc round the neck
     d = np.array([-0.5, -1.0, 0.0]) / math.sqrt(1.25)
