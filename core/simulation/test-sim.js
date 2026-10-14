@@ -276,6 +276,7 @@ function world(seed){
    traits:{chatty:{socialize:1.5}},secPerMinute:1,pain:1.5});
  // the lazy meters
  const M=at(10);i1.nd=[50,50,50,50];i1.ndT=M;i1.ndFrom=M+30;i1.activity='SOCIALIZE';
+ const pk=S.needsPeek(i1,M+90);ok('needsPeek reads the meters then and leaves the actor as it was',i1.ndT===M&&i1.nd[2]===50&&near(pk[2],50+3*0.5-27,1e-6)&&near(S.happiness(i1,pk),S.happiness(Object.assign({},i1,{nd:pk})),1e-9),i1.ndT!==M);
  S.needsOf(i1,M+90);
  ok('a meter rises on the way and falls by its activity once there (30 min trip, 60 there)',near(i1.nd[2],50+3*0.5-27,1e-6)&&near(i1.nd[0],50+6*1.5,1e-6),near(i1.nd[2],50+(3-30)*1.5,1e-6));
  // happiness

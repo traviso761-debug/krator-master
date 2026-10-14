@@ -440,6 +440,7 @@ VC.pickLot = function (r) {
     }
     if (t0 < bt) { bt = t0; best = L; }
   });
+  VC.pickLotT = bt;   /* how far along the ray (the citizens' picking, 56d, is hidden behind it) */
   return best;
 };
 /* the furniture under a ray (owner, 2026-10-09: "make it so furniture is also clickable for inspector"): the pieces of a
@@ -677,5 +678,5 @@ VC.start = function () {
   try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */
   VC.ui(); VC.ixUI(); VC.clockUI();
   try { VC.simRun(); VC.simBodies(); } catch (e) { console.error('sim run: ' + (e.stack || e)); VC.SIMRUN.error = String(e.stack || e); }   /* 56c-vc-citizens-host.js */
-  VC.marks(); VC.tools(); VC.cutUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();
+  VC.marks(); VC.tools(); VC.cutUI(); VC.inspectUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();   /* inspectUI: the pause and the citizens' inspector (56d) */
 };

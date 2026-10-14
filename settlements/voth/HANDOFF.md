@@ -10,6 +10,33 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-14: the pause, the citizens' inspector, the cutaway on every building in view
+
+The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway", "Every building's interior"):
+- **Pause (k, the "pause" button by the clock)**: `56d-vc-inspect-host.js`. Every frame hook gets the page's animation
+  time (`VC.animNow`: real time less the time paused, still while paused; hooks pushed later are wrapped as they come),
+  so the clock's dt is 0 (no motion time, no hour, no `SIM.step`: the minute does not move) and every real-time
+  animation (sails, water, mills, beacons, the plants, the animals' gaits, the weather) holds. A hook that must follow
+  the camera reads `performance.now()` itself: 56c's "who is near" refresh (changed to it), 56b's cutaway refresh, the
+  inspector's card. Nothing found that kees moving: PROOF_PAUSE.
+- **The citizens' inspector (i)**: `VC.pickBody` tests only the bodies drawn this frame (`VC.SIMBODY.list`, its animals
+  `VC.SIMBODY.animals`, which 56c now exposes, and the carts) as points against the cursor's ray, behind the ground or a
+  lot's box left out (55's `VC.pickLot` keeps `VC.pickLotT`). `VC.actorHTML` reads: role, class, home; job, workplace,
+  post (`a.slot.k` of the place's WORK slots), shift, rota day off; the activity and place, the leg (`SIM.pose(..,
+  {cheap:true}).leg`), its mode, layer and end, the arrival, the schedule's next change; the meters (core's new
+  `SIM.needsPeek`, read-only, with `SIM.happiness(a, nd)`), band, efficiency, loyalty, what the meters ask for (the
+  free activities scored as `needsDesire` scores them, without `SIM.desire`, whose place lookups cache); errands; worn
+  items and wear, the tool, the home's spares, the household's food store. Animals: species, pet or pen, household,
+  age. `node core/simulation/test-sim.js` has a needsPeek test.
+- **The cutaway cuts every building in view** (`56b` `VC.CUTALL`): a height grid texture (512 texels over 400 m round
+  the view's middle) that every mesh material tests (`VC.cutInject`, an onBeforeCompile chained after a material's own,
+  its program key kept apart), with a depth material for the opaque shadow casters (and its clone, for the canton's
+  clipping planes); at most 36 buildings within 160 m and in the frustum, 3 interiors drawn a refresh, 150 kept.
+  PROOF_CUT.
+
+Proof (non-lite, headless, `tools/harness.py`'s launcher; SwiftShader on a loaded box: a frame took about three minutes
+at street level): PROOF_SHOTS.
+
 ## 2026-10-13: the trades in two half-hour buckets
 
 The owner: "Can we stagger the jobs into 2 buckets separated by 1/2 hour to further reduce that load?"

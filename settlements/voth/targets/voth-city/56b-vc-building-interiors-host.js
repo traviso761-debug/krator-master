@@ -4,8 +4,9 @@
      data side, which reads its shell off them (VC.ixShellFrom). Then VC.ixPlanAll plans and furnishes every type.
    - VC.ixDraw: a unit's interior, drawn the first time it is cut away: its floors, its walls with their door and window
      gaps, its stairs, its furniture (one InstancedMesh per piece and part, per storey), in a group posed as the lot.
-   - The cutaway (x) opens the building nearest the middle of the view when it is nearer than any canton: the same
-     clipping planes, the box the building's footprint; the storey keys and buttons step it.
+   - The cutaway (x) cuts every building in view near the middle of the view (VC.CUTALL: at most 36, within 160 m) at
+     the chosen storey, by a height grid every material tests (VC.cutInject), and the canton the view's middle is on by
+     the clipping planes; the storey keys and buttons step them all.
    - The density overlay (n): residents per hectare on a TUNE.ix.density.cell grid, a diverging ramp round the city's
      mean, the homes short of beds hatched; again for workplaces per hectare; again for off.
    - The report (the "interiors report" button): totals, the shortfall by class and district, the job table, the types. */
@@ -139,21 +140,156 @@ VC.ixShow = function (i, on, upTo) {
   if (on) Object.keys(g.userData.storeys).forEach(function (s) { g.userData.storeys[s].forEach(function (m) { m.visible = upTo == null || +s <= upTo; }); });
 };
 
-/* ---------------------------------------------------------------- the cutaway on any building (56-vc-interiors-host.js) */
-VC.ixUnitBox = function (u) {
-  var ty = VC.IX.types[u.type], P = ty.shell.poly.map(function (p) { return VC.ixWorldXZ(u, p); });
-  return P.reduce(function (b, p) { return [Math.min(b[0], p[0]), Math.max(b[1], p[0]), Math.min(b[2], p[1]), Math.max(b[3], p[1])]; }, [1e9, -1e9, 1e9, -1e9]);
+/* ---------------------------------------------------------------- the cutaway on every building in view (56-vc-interiors-host.js) */
+/* (owner, 2026-10-14: "cutaway cuts every visible building, not only the nearest.") Every lot building with an interior
+   within VC.CUTALL.r of the view's middle and in the camera's view, the nearest VC.CUTALL.max of them, is cut at the
+   chosen storey (its own top storey when it has fewer) and its interior shown up to it; the one the cutaway was opened
+   on (the anchor, C.unit) always. One clipping box cannot hold many buildings, so the cut is a HEIGHT GRID: a
+   VC.CUTALL.grid-square texture over the view's middle (2 (r + 40) metres a side, about 0.8 m a texel), each texel the
+   height above which nothing is drawn there (the building's cut, its footprint and VC.CUTALL.margin rasterised in its
+   own frame; none elsewhere). Every mesh material in the scene takes one texture fetch and a discard (VC.cutPatch: an
+   onBeforeCompile on its own shader, compiled once, the first time the cutaway opens, as the planes are), and the opaque
+   shadow casters a depth material that does the same, so a cut roof casts no shadow into the room. The canton's cut
+   keeps its clipping planes. THE LIMIT: at most `max` (36) buildings, the nearest within `r` (160 m) and in view, and
+   `draw` (3) new interiors drawn a refresh (every `every` ms): an interior is 10 to 40 draw calls at its shown storeys,
+   so 36 of them stay under about 1,500 calls on top of the city's, and a first opening spreads its drawing over a few
+   seconds instead of stalling a frame; the drawn interiors kept hidden for later are capped at `cache` (the farthest
+   dropped). */
+VC.CUTALL = { r: 160, max: 36, draw: 3, every: 300, grid: 512, margin: 0.8, cache: 150 };
+VC.cutGrid = function () {
+  if (VC.IXD.grid) return VC.IXD.grid;
+  var N = VC.CUTALL.grid, data = new Uint8Array(N * N * 4); data.fill(255);
+  var tex = new THREE.DataTexture(data, N, N, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.flipY = false; tex.needsUpdate = true;
+  var G = VC.IXD.grid = { N: N, data: data, tex: tex, S: 2 * (VC.CUTALL.r + 40), ox: 0, oz: 0, sig: '', patched: 0,
+    u: { kcutT: { value: tex }, kcutO: { value: new THREE.Vector3(0, 0, 0) } } };   /* kcutO: the grid's corner x, z and its size (0: off) */
+  var dm = G.depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  dm.onBeforeCompile = function (sh) { VC.cutInject(sh); }; dm.customProgramCacheKey = function () { return 'kcut-depth'; };
+  /* the shadow map clones a caster's depth material when its material clips (the canton's planes): keep the cut on the clone */
+  dm.clone = function () { var c = THREE.MeshDepthMaterial.prototype.clone.call(this); c.onBeforeCompile = this.onBeforeCompile; c.customProgramCacheKey = this.customProgramCacheKey; c.clone = this.clone; return c; };
+  return G;
 };
+/* the test, after three's own clipping: a fragment above its texel's height is not drawn (65535: no cut there) */
+VC.cutInject = function (sh) {
+  var v = sh.vertexShader, f = sh.fragmentShader, G = VC.IXD.grid;
+  if (!G || v.indexOf('#include <common>') < 0 || v.indexOf('#include <project_vertex>') < 0 || f.indexOf('#include <common>') < 0 || f.indexOf('#include <clipping_planes_fragment>') < 0) return;
+  sh.uniforms.kcutT = G.u.kcutT; sh.uniforms.kcutO = G.u.kcutO;
+  sh.vertexShader = v.replace('#include <common>', '#include <common>\nvarying vec3 vKCutW;')
+    .replace('#include <project_vertex>', '#include <project_vertex>\n{ vec4 kcw = vec4( transformed, 1.0 );\n#ifdef USE_INSTANCING\n kcw = instanceMatrix * kcw;\n#endif\n kcw = modelMatrix * kcw; vKCutW = kcw.xyz; }');
+  sh.fragmentShader = f.replace('#include <common>', '#include <common>\nvarying vec3 vKCutW;\nuniform sampler2D kcutT;\nuniform vec3 kcutO;')
+    .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif ( kcutO.z > 0.0 ) { vec2 kuv = ( vKCutW.xz - kcutO.xy ) / kcutO.z;\n if ( kuv.x >= 0.0 && kuv.y >= 0.0 && kuv.x < 1.0 && kuv.y < 1.0 ) { vec4 kc = texture2D( kcutT, kuv );\n  float kcode = floor( kc.r * 255.0 + 0.5 ) * 256.0 + floor( kc.g * 255.0 + 0.5 );\n  if ( kcode < 65534.5 && vKCutW.y > kcode * 0.01 - 100.0 ) discard; } }');
+};
+/* a material takes the test (its own onBeforeCompile first; its program key kept apart from the uncut one's) */
+VC.cutPatch = function (m) {
+  if (!m || m.userData.kcut || m.isShaderMaterial || m.isMeshDepthMaterial) return false;
+  m.userData.kcut = true;
+  var own = Object.prototype.hasOwnProperty.call(m, 'onBeforeCompile'), prev = own ? m.onBeforeCompile : null, key = Object.prototype.hasOwnProperty.call(m, 'customProgramCacheKey') ? m.customProgramCacheKey : null;
+  m.userData.kcutOwn = own;
+  m.onBeforeCompile = function (sh, r) { if (prev) prev.call(this, sh, r); VC.cutInject(sh); };
+  m.customProgramCacheKey = function () { return (key ? key.call(this) : prev ? prev.toString() : '') + '|kcut'; };
+  m.needsUpdate = true; VC.IXD.grid.patched++;
+  return true;
+};
+VC.cutPatchTree = function (root) {
+  var G = VC.cutGrid();
+  root.traverse(function (o) {
+    if (!o.isMesh) return;
+    var ms = Array.isArray(o.material) ? o.material : [o.material];
+    ms.forEach(VC.cutPatch);
+    /* the opaque shadow casters cast through the cut too (a leaf with its alpha, a swaying plant keep their own) */
+    if (o.castShadow && !o.customDepthMaterial && !o.isSkinnedMesh && ms.every(function (m) { return m && !m.transparent && !(m.alphaTest > 0) && !m.alphaMap && !m.morphTargets && !m.userData.kcutOwn && !m.isShaderMaterial; })) o.customDepthMaterial = G.depth;
+  });
+};
+VC.cutAllOn = function () {
+  var G = VC.cutGrid();
+  if (!G.on) {
+    G.on = true; VC.cutPatchTree(scene);
+    var last = 0;
+    (window._frameHooks = window._frameHooks || []).push(function () {   /* on real time: the cut follows the camera while the page is paused too */
+      var n = performance.now(); if (!VC.INTD.cut.on || n - last < VC.CUTALL.every) return; last = n; VC.cutAllTick(false);
+    });
+  }
+};
+/* a unit's reach from its middle (its footprint's farthest corner) */
+VC.cutReach = function (u) { if (u._cr == null) { var ty = VC.IX.types[u.type]; u._cr = ty && ty.shell ? ty.shell.poly.reduce(function (m, p) { return Math.max(m, Math.hypot(p[0], p[1])); }, 0) + 1 : 10; } return u._cr; };
+/* the footprint (+ margin) at height h into the grid, in the unit's own frame; the lower cut wins where two meet */
+VC.cutRaster = function (G, u, h) {
+  var poly = VC.IX.types[u.type].shell.poly, M = VC.CUTALL.margin, c = Math.cos(u.ry), s = Math.sin(u.ry), N = G.N, cell = G.S / N, R = VC.cutReach(u) + M, D = G.data;
+  var code = Math.max(0, Math.min(65534, Math.round((h + 100) * 100))), hi = code >> 8, lo = code & 255;
+  var inside = function (x, z) {
+    var inn = false, near = false;
+    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      var a = poly[i], b = poly[j];
+      if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) inn = !inn;
+      if (!near) { var ex = b[0] - a[0], ez = b[1] - a[1], L = ex * ex + ez * ez, t = L > 0 ? Math.max(0, Math.min(1, ((x - a[0]) * ex + (z - a[1]) * ez) / L)) : 0, qx = a[0] + ex * t - x, qz = a[1] + ez * t - z; near = qx * qx + qz * qz <= M * M; }
+    }
+    return inn || near;
+  };
+  var i0 = Math.max(0, Math.floor((u.x - R - G.ox) / cell)), i1 = Math.min(N - 1, Math.floor((u.x + R - G.ox) / cell)), j0 = Math.max(0, Math.floor((u.z - R - G.oz) / cell)), j1 = Math.min(N - 1, Math.floor((u.z + R - G.oz) / cell));
+  for (var j = j0; j <= j1; j++) for (var i = i0; i <= i1; i++) {
+    var dx = G.ox + (i + 0.5) * cell - u.x, dz = G.oz + (j + 0.5) * cell - u.z;
+    if (!inside(dx * c - dz * s, dx * s + dz * c)) continue;   /* the inverse of VC.ixWorldXZ */
+    var k = (j * N + i) * 4; if (code < D[k] * 256 + D[k + 1]) { D[k] = hi; D[k + 1] = lo; }
+  }
+};
+VC.cutLevels = function (u) { var ty = u && VC.IX.types[u.type]; return ty && ty.B ? ty.B.levels : null; };
+/* the buildings to cut now: the anchor, then the nearest in view; each drawn (a few a refresh), shown to its storey and
+   rasterised; the ones left behind hidden */
+VC.cutAllTick = function (force) {
+  var C = VC.INTD.cut, A = VC.CUTALL, G = VC.cutGrid(); if (!C.on) return;
+  var cx = ctl.walk ? camera.position.x : ctl.target.x, cz = ctl.walk ? camera.position.z : ctl.target.z;
+  var F = VC.IXD.frustum || (VC.IXD.frustum = new THREE.Frustum()), PM = VC.IXD.pm || (VC.IXD.pm = new THREE.Matrix4()), sph = VC.IXD.sph || (VC.IXD.sph = new THREE.Sphere());
+  camera.updateMatrixWorld(); F.setFromProjectionMatrix(PM.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+  var cand = [];
+  VC.IX.units.forEach(function (u) {
+    if (u.i === C.unit || Math.abs(u.x - cx) > A.r || Math.abs(u.z - cz) > A.r || !VC.cutLevels(u)) return;
+    var d = Math.hypot(u.x - cx, u.z - cz); if (d > A.r) return;
+    sph.center.set(u.x, u.y + 4, u.z); sph.radius = VC.cutReach(u) + 4; if (!F.intersectsSphere(sph)) return;
+    cand.push([d, u]);
+  });
+  cand.sort(function (p, q) { return p[0] - q[0] || p[1].i - q[1].i; });
+  var take = (C.unit != null && C.unit >= 0 && VC.cutLevels(VC.IX.units[C.unit]) ? [VC.IX.units[C.unit]] : []).concat(cand.slice(0, A.max).map(function (e) { return e[1]; }));
+  var list = [], drew = 0, want = {};
+  take.forEach(function (u, k) {
+    if (!VC.IXD.groups[u.i]) { if (k > 0 && drew >= A.draw) return; drew++; var g = VC.ixDraw(u.i); if (!g) return; VC.cutPatchTree(g); }
+    want[u.i] = 1; list.push(u);
+  });
+  C.pending = take.length - list.length;
+  (C.units || []).forEach(function (i) { if (!want[i]) VC.ixShow(i, false); });
+  var cell = G.S / G.N, ox = Math.floor((cx - G.S / 2) / cell) * cell, oz = Math.floor((cz - G.S / 2) / cell) * cell;
+  var sig = ox + ',' + oz + ':' + C.storey + ':' + list.map(function (u) { return u.i; }).join(',');
+  list.forEach(function (u) { var Lv = VC.cutLevels(u); VC.ixShow(u.i, true, Math.min(C.storey, Lv.length - 1)); });
+  C.units = list.map(function (u) { return u.i; });
+  if (force || sig !== G.sig) {
+    G.sig = sig; G.ox = ox; G.oz = oz; G.data.fill(255);
+    list.forEach(function (u) { var Lv = VC.cutLevels(u), s = Math.min(C.storey, Lv.length - 1); VC.cutRaster(G, u, u.y + Lv[s].y + Math.min(TUNE.interiors.cutAt, Lv[s].h - 0.3)); });
+    G.tex.needsUpdate = true; G.u.kcutO.value.set(ox, oz, G.S);
+    VC.cutEvict(want, cx, cz);
+    VC.cutBar();
+  }
+};
+/* the drawn interiors kept hidden: at most VC.CUTALL.cache, the farthest dropped (their walls and floors freed; the
+   furniture's geometry is the shared prototypes') */
+VC.cutEvict = function (want, cx, cz) {
+  var ids = Object.keys(VC.IXD.groups); if (ids.length <= VC.CUTALL.cache) return;
+  ids.filter(function (i) { return !want[i] && !VC.IXD.groups[i].visible; }).map(function (i) { var u = VC.IX.units[i]; return [Math.hypot(u.x - cx, u.z - cz), i]; })
+    .sort(function (p, q) { return q[0] - p[0]; }).slice(0, ids.length - VC.CUTALL.cache).forEach(function (e) {
+      var g = VC.IXD.groups[e[1]]; scene.remove(g); delete VC.IXD.groups[e[1]];
+      var seen = new Set(); g.traverse(function (o) { if (o.isMesh && o.userData.kind === 'interior' && o.geometry && !seen.has(o.geometry)) { seen.add(o.geometry); o.geometry.dispose(); } });
+    });
+};
+/* the cutaway on the buildings, opened on unit i (null or -1: on the view's middle alone) */
 VC.cutUnit = function (i, storey) {
-  var C = VC.INTD.cut, u = VC.IX.units[i], ty = u && VC.IX.types[u.type]; if (!ty || !ty.B) return;
+  var C = VC.INTD.cut;
   if (C.canton) { VC.showInterior(C.canton, false); C.canton = null; }
-  if (C.unit != null && C.unit !== i) VC.ixShow(C.unit, false);
-  var Lv = ty.B.levels, s = Math.max(0, Math.min(Lv.length - 1, storey | 0));
-  C.unit = i; C.storey = s; C.on = true;
-  VC.cutPlanes(); VC.ixDraw(i);
-  var b = VC.ixUnitBox(u), m = 0.6, fy = u.y + Lv[s].y;
-  VC.cutBox([b[0] - m, b[1] + m, b[2] - m, b[3] + m, fy + Math.min(TUNE.interiors.cutAt, Lv[s].h - 0.3)]);
-  VC.ixShow(i, true, s);
+  VC.cutAllOn(); VC.cutPlanes(); VC.cutBox(null);   /* the planes are the canton's: open nowhere */
+  var anchor = i != null && i >= 0 && VC.cutLevels(VC.IX.units[i]) ? i : null;
+  if (C.unit != null && C.unit !== anchor && C.unit >= 0) VC.ixShow(C.unit, false);
+  C.unit = anchor; C.on = true;
+  var top = anchor != null ? VC.cutLevels(VC.IX.units[anchor]).length : 1;
+  (C.units || []).forEach(function (k) { var L = VC.cutLevels(VC.IX.units[k]); if (L) top = Math.max(top, L.length); });
+  C.storey = Math.max(0, Math.min(Math.max(top, TUNE.ix.maxStoreys) - 1, storey | 0));
+  VC.cutAllTick(true);
   VC.cutBar();
 };
 VC.ixCutWrap = function () {
@@ -161,29 +297,43 @@ VC.ixCutWrap = function () {
   VC.cutTo = function (cn, storey) {
     var C = VC.INTD.cut;
     if (typeof cn === 'number') return VC.cutUnit(cn, storey);
-    if (cn == null && C.unit != null) return VC.cutUnit(C.unit, storey);
-    if (C.unit != null) { VC.ixShow(C.unit, false); C.unit = null; }
-    return cutTo(cn, storey);
+    if (cn == null && !C.canton) return VC.cutUnit(C.unit, storey);
+    if (C.unit != null && C.unit >= 0) VC.ixShow(C.unit, false);
+    C.unit = null;
+    var r = cutTo(cn, storey);
+    VC.cutAllOn(); VC.cutAllTick(true);   /* the buildings round the canton, at its storey (their own top when lower) */
+    return r;
   };
-  VC.cutOff = function () { var C = VC.INTD.cut; if (C.unit != null) { VC.ixShow(C.unit, false); C.unit = null; } return cutOff(); };
+  VC.cutOff = function () {
+    var C = VC.INTD.cut; (C.units || []).forEach(function (i) { VC.ixShow(i, false); }); if (C.unit != null && C.unit >= 0) VC.ixShow(C.unit, false);
+    C.unit = null; C.units = []; C.pending = 0; if (VC.IXD.grid) { VC.IXD.grid.u.kcutO.value.z = 0; VC.IXD.grid.sig = ''; }
+    return cutOff();
+  };
   VC.cutBar = function () {
-    var C = VC.INTD.cut; if (C.unit == null || !C.on) return cutBar();
+    var C = VC.INTD.cut, n = (C.units || []).length, more = n + ' building' + (n === 1 ? '' : 's') + ' cut' + (C.pending ? ', ' + C.pending + ' more drawing' : '');
+    if (C.canton || !C.on) { cutBar(); if (C.on && C.canton && $('cut-storey')) $('cut-storey').innerHTML += ' <span class="k" style="display:inline">&middot; ' + more + ' round it</span> '; return; }
     var bar = $('cutbar'); if (!bar) return; bar.style.display = 'block';
-    var u = VC.IX.units[C.unit], ty = VC.IX.types[u.type], Lv = ty.B.levels, A = ASSET_BY_KEY[u.key] || {}, n = Lv.length;
-    var rk = ty.B.rooms.filter(function (R) { return R.level === C.storey; }).map(function (R) { return R.kind; }).join(', ');
-    $('cut-storey').innerHTML = ' <b>' + (A.name || u.key) + '</b> (' + u.cls + ', ' + u.district + ') storey <b>' + (C.storey + 1) + '</b> of ' + n + ' <span class="k" style="display:inline">' + rk +
-      (u.residents ? ' &middot; ' + u.residents + ' residents, ' + u.beds + ' beds of ' + u.need + (u.short ? ' <b style="color:#ff9a7a">short</b>' : '') : '') + '</span> ';
-    $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= n - 1;
-    $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= n - 1 ? 0.35 : 1;
+    var top = TUNE.ix.maxStoreys; (C.units || []).forEach(function (k) { top = Math.max(top, VC.cutLevels(VC.IX.units[k]).length); });
+    var u = C.unit != null && C.unit >= 0 ? VC.IX.units[C.unit] : null, line = '';
+    if (u) {
+      var ty = VC.IX.types[u.type], Lv = ty.B.levels, s = Math.min(C.storey, Lv.length - 1), A = ASSET_BY_KEY[u.key] || {};
+      var rk = ty.B.rooms.filter(function (R) { return R.level === s; }).map(function (R) { return R.kind; }).join(', ');
+      line = ' &middot; <b>' + (A.name || u.key) + '</b> (' + u.cls + ', ' + u.district + ', storey ' + (s + 1) + ' of ' + Lv.length + ': ' + rk +
+        (u.residents ? ' &middot; ' + u.residents + ' residents, ' + u.beds + ' beds of ' + u.need + (u.short ? ' <b style="color:#ff9a7a">short</b>' : '') : '') + ')';
+    }
+    $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of up to ' + top + ' <span class="k" style="display:inline">' + more + ' (each at its own top storey when lower)' + line + '</span> ';
+    $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= top - 1;
+    $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= top - 1 ? 0.35 : 1;
     $('cut-canton').value = '';
-    var e = $('cut-status'); if (e) e.textContent = (A.name || u.key) + ', storey ' + (C.storey + 1) + ' of ' + n;
+    var e = $('cut-status'); if (e) e.textContent = n + ' buildings cut, storey ' + (C.storey + 1);
   };
-  /* the building whose footprint holds the view's middle (or the nearest within 12 m) when no canton's is nearer */
+  /* the canton whose apron holds the view's middle; else the building whose footprint holds it (or the nearest within
+     12 m) as the anchor; else -1, the view's middle alone */
   VC.cutPick = function () {
     var t = ctl.target, cn = cutPick(), best = null, bd = 12;
     if (cn) { var M = VC.INT.cantons[cn].M; if (Math.hypot(M.x - t.x, M.z - t.z) < (M.apron ? M.apron.ro : M.r)) return cn; }
-    VC.IX.units.forEach(function (u) { if (Math.abs(u.x - t.x) > 40 || Math.abs(u.z - t.z) > 40) return; var d = Math.hypot(u.x - t.x, u.z - t.z); if (d < bd && VC.IX.types[u.type].B) { bd = d; best = u.i; } });
-    return best != null ? best : cn;
+    VC.IX.units.forEach(function (u) { if (Math.abs(u.x - t.x) > 40 || Math.abs(u.z - t.z) > 40) return; var d = Math.hypot(u.x - t.x, u.z - t.z); if (d < bd && VC.cutLevels(u)) { bd = d; best = u.i; } });
+    return best != null ? best : -1;
   };
   var sel = $('cut-canton');
   if (sel && !sel.querySelector('option[value=""]')) { var o = document.createElement('option'); o.value = ''; o.textContent = 'a building'; o.disabled = true; sel.insertBefore(o, sel.firstChild); }

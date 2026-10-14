@@ -8,6 +8,7 @@
 //               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
 //   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
 //   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
+//   SIM.needsPeek(a, minute) -> the meters then, the actor untouched; SIM.happiness(a, nd?) of those meters
 //
 // A METER per need, 0 (met) to 100 (desperate), rises at `rate` (times the role's multiplier) every world hour, and
 // falls by the actor's activity's `fill` (the culture's own table first). WORK adds `work` times the role's `labour`
@@ -70,9 +71,14 @@
   /* where a meter would be at `minute` if the actor keeps on (no change to the actor) */
   function peek(a, i, minute){ var dt=minute-a.ndT; if(dt<=0) return a.nd[i]; var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
     var v=a.nd[i]+slope(a, null, i)*trip/60+slope(a, a.activity, i)*(dt-trip)/60; return v<0?0:v>100?100:v; }
-  SIM.happiness = function(a){
-    var N=SIM.NEED; if(!N || !a.nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
-    for(var i=0;i<a.nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(a.nd[i]/100, N.pain); w+=wi; }
+  /* the meters at `minute` as they would read if asked now, without advancing the actor (an inspector's read) */
+  SIM.needsPeek = function(a, minute){
+    var N=SIM.NEED; if(!N || !a.nd) return null; minute = minute==null ? SIM.minute() : minute;
+    if(a.ndT==null) return a.nd.slice(); var out=[]; for(var i=0;i<a.nd.length;i++) out.push(peek(a, i, minute)); return out; };
+  /* `nd`: other meters for the same actor (SIM.needsPeek's), else its own */
+  SIM.happiness = function(a, nd){
+    var N=SIM.NEED; nd = nd || a.nd; if(!N || !nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
+    for(var i=0;i<nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(nd[i]/100, N.pain); w+=wi; }
     return w ? 100 - s/w : 100;
   };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }

@@ -104,6 +104,19 @@ The toy's street method run on the owner's site (`site/voth-site.json`), over Vo
 ground edits, then the country round it and the ferry and elephant bug lines. The step slider shows the city after any
 step (0–14). **lots**, **wealth**, **transit** and the **inspector** are toggles.
 
+**The inspector (i)** names what is under the cursor: a lot's building, a piece of furniture, the ground, and (owner,
+2026-10-14) **a citizen, an animal or a cart** among those drawn near the camera. A citizen's card: the id, role, class
+and wealth, the home; the **job** (the kind of work, the workplace, the post held now of how many, the shift and the
+rota day off); **now** (the activity and where, on a trip the leg it is on of how many, its mode and layer, where it
+ends and when it arrives, the schedule's next change, an itinerary's stop); **desires** (each need's meter, happiness,
+efficiency and loyalty, what it wants and whether it has it, what the meters ask for in free time, an errand or an
+interrupt); **things** (what it wears and how worn, its tool, what it keeps at home, a hurt, the household's food store
+and the days it lasts). An animal's: species, pet or livestock, its household or pen, its age, what it is doing, its
+meters. A cart's: its phase, load, site and warehouse. A marker stands over the one described, and the card stays
+current while the cursor rests. Picking tests only the bodies drawn this frame (at most `TUNE.sim.embody.max`) as
+points against the cursor's ray (12 pixels), left out when the ground or another lot's box is nearer; the card only reads
+(the meters through core's `SIM.needsPeek`, nothing that decides is called).
+
 Since 2026-10-14 the city is a `core/city` instance (`35-vc-steps.js`: `VC.city = KCITY.create({...})`, its steps as
 data, its hooks and finish): steps 0-5 call core's site layer with Voth's data (`30-vc-site.js`: the role table
 `VC.ROLES`, the zone, the avenues and rings, the highways, the wall's records; `VC.terrGrid` takes the banks and gate
@@ -219,6 +232,15 @@ core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/a
 * **Motion:** the vehicles run on the clock's motion time (times `TUNE.timeScale`), and SIM reads its hour and day.
 * **Controls:** the panel has the hour, run/hold, 1x/2x/4x/8x (the clock's `scale`: the day and the motion both run
   faster) and an hour slider. The page opens at 10:00 and runs (`TUNE.clock`).
+* **Pause (k, or the "pause" button by the clock; owner, 2026-10-14)** freezes everything where it is: the citizens,
+  animals and pets, the carts, the caravans and barges, the ferries and elephant bugs (all poses of the clock's motion
+  time), the hour (the sky, the sun, the lamps), the simulation (`SIM.step` runs only when the clock's minute moves) and
+  everything the page animates from the frame's time: the sails, the water, the windmills, the lighthouse beams, the
+  plants' sway, the animals' gaits, the rain, ash and smoke. `k` again resumes exactly where it stopped. "hold" is not a
+  pause: it holds the hour while motion goes on. How (`56d-vc-inspect-host.js`): every frame hook is handed the page's
+  animation time (`VC.animNow`: the real time less the time spent paused), which stands still while paused; the
+  bodies drawn near the camera and the cutaway still follow the camera, and the inspector, the hour slider and the
+  panels still work. Headless proof (2026-10-14): two shots 8 s apart while paused are pixel-identical.
 
 **Park and plaza furniture** (`39-vc-furnish.js`, `TUNE.parkFurn`; owner, 2026-10-09):
 * The pieces are Voth's outdoor pieces from the furniture catalog. `build.py` lifts the Voth section of
@@ -356,7 +378,8 @@ The rooms are furnished by `kits/interiors` (`ROOM`, `furnishRoom`) from the cat
 A canton is drawn when it is first shown.
 
 **Cutaway (x):**
-* it shows the canton under the camera (or the one the walker is in) cut at a storey;
+* it shows the canton under the camera (or the one the walker is in) cut at a storey, and every lot building in view
+  round the view's middle (below);
 * PageUp/PageDown or [ and ] step the storey;
 * clipping planes on every material, moved each frame, never recompiled.
 
@@ -389,9 +412,20 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
   bedrooms are `chamber`s: a bed and a chest, then as many more beds (`TUNE.ix.chamber`) and stores as the room holds.
 * **Furnished** by `kits/interiors` (`planBuilding`, `furnishRoom`) from the catalog, as the cantons are; a home that fails the
   residence rule is furnished again with another seed (three tries).
-* **The cutaway (x)** now opens the building nearest the middle of the view when no canton is nearer: the same planes and
-  storey keys, its walls with their doors and windows, stairs and furniture drawn the first time it is opened. The inspector
-  names its pieces.
+* **The cutaway (x)** cuts **every lot building in view** (owner, 2026-10-14), not only the nearest: the buildings with
+  an interior within 160 m of the view's middle and inside the camera's view, the nearest 36, each at the chosen storey
+  (its own top storey when it has fewer), with its interior shown up to it (its walls with their doors and windows,
+  stairs and furniture, drawn the first time it is cut); the building the view's middle is on is always one of them.
+  The storey keys and buttons step them all; the bar says how many are cut. One clipping box cannot hold many
+  buildings, so the cut is a height grid (`56b` `VC.CUTALL`): a 512-texel square texture over the view's middle (400 m,
+  about 0.8 m a texel), each building's footprint (plus 0.8 m) rasterised at its cut height in its own frame, and every
+  mesh material tests its texel and discards what is above (one texture fetch; compiled once, the first time the
+  cutaway opens, as the planes are). The opaque shadow casters take a depth material that does the same, so a cut
+  roof casts no shadow into the room. **The limit and why:** 36 buildings within 160 m: an interior is 10 to 40 draw
+  calls at its shown storeys, so the cut stays under about 1,500 extra calls; 3 new interiors are drawn a refresh (every
+  300 ms), so a first opening spreads over a few seconds instead of stalling a frame; drawn interiors kept for later are
+  capped at 150 (the farthest freed). The canton the view's middle is on keeps its clipping planes. The inspector names
+  the shown pieces.
 * **The buildings off the lots** (session 2): Voth's own builders the city calls are logged by `build.py` with their
   arguments (`VOTH.BUILT`: the monastery's dormitories, chapel and assembly hall, the funerary temple, the House of
   Healing); the city's shrine and lighthouse models record their shells (`VC.ixSite`); the chinampas' stilt huts carry

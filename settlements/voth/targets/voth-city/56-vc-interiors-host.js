@@ -7,7 +7,8 @@
    THE CUTAWAY (owner: "Add cutaway mode to city viewer"): X (or the cutaway button) cuts the canton nearest the view's
    middle open: a section through it at a storey (PageUp/PageDown, or [ and ], step the storey), so its rooms show from
    above. Five clipping planes, intersected, on every material in the scene clip what is above the cut inside the
-   canton's square only; the planes are set once and moved, so nothing recompiles as the storey changes. */
+   canton's square only; the planes are set once and moved, so nothing recompiles as the storey changes. The lot
+   buildings in view round it are cut too, by a height grid (56b-vc-building-interiors-host.js VC.CUTALL). */
 VC.INTD = { built: {}, groups: {}, furnished: {}, cut: { on: false, canton: null, storey: 0 }, planes: null, programs: false };
 
 /* ---------------------------------------------------------------- the room kinds the cantons add to kits/interiors */
@@ -277,7 +278,7 @@ VC.cutPick = function () {
 VC.cutUI = function () {
   var b = $('ly-cut'); if (!b) return;
   VC.intLightPool();
-  b.onclick = function () { if (VC.INTD.cut.on) VC.cutOff(); else { var cn = VC.cutPick(); if (cn) VC.cutTo(cn, 0); } b.classList.toggle('on', VC.INTD.cut.on); };
+  b.onclick = function () { if (VC.INTD.cut.on) VC.cutOff(); else { var cn = VC.cutPick(); if (cn != null) VC.cutTo(cn, 0); } b.classList.toggle('on', VC.INTD.cut.on); };   /* a building's index can be 0 (56b) */
   window.addEventListener('keydown', function (e) {
     if (VC.typing(e) || e.ctrlKey || e.metaKey) return;
     var C = VC.INTD.cut, k = e.key;

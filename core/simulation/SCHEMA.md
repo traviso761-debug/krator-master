@@ -58,7 +58,8 @@ home), the scheduled one favoured by `keep`, held `dwell` minutes. An `interrupt
 takes an actor whose role has labour off WORK when that meter reaches `at`. `SIM.happiness(a)` = 100 less the weighted
 mean of 100 (m/100)^`pain`; `SIM.mood(a)` its band (`bands: [{label, min, eff}]`), the efficiency, and the loyalty that
 drifts toward it over `loyalty.tau` minutes (`loyalty.bands`). `SIM.needsCensus(key, {minute, high, filter})` sums
-them by a key. A jump of the clock leaves the meters as they were.
+them by a key. A jump of the clock leaves the meters as they were. `SIM.needsPeek(a, minute)` reads the meters at a
+minute without advancing the actor (an inspector's read), and `SIM.happiness(a, nd)` scores those meters.
 
 **Items** (opt-in: `SIM.items(config)`, `77-sim-6-items.js`). Item kinds by category (food, clothes, armour, arms,
 tool, gear, medicine, household, luxury), a worn kind with a `slot` (torso and legs take a clothing and an armour

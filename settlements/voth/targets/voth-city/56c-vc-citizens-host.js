@@ -86,7 +86,7 @@ VC.simBodies = function () {
   /* the animals (47-vc-sim-animals.js): the fauna kit's own, built for the nearest few (each its own build: the kit's
      parts are its bones), kept while near, each placed at its pose and played by what it does (walking, grazing,
      resting, fighting, idling) */
-  var AN = { live: {}, list: [] }, FA = typeof KratorFauna !== 'undefined' ? KratorFauna : null;
+  var AN = B.animals = { live: {}, list: [] }, FA = typeof KratorFauna !== 'undefined' ? KratorFauna : null;   /* B.animals: the inspector's (56d) */
   var modeOf = function (a, P) { if (P.moving) return 'walk'; var x = a.activity; return x === 'FEED' || x === 'GRAZE' || x === 'WATER' ? 'graze' : x === 'BED' ? 'rest' : x === 'FIGHT' ? 'walk' : 'idle'; };
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), p3 = new THREE.Vector3(), s3 = new THREE.Vector3(1, 1, 1), cc = new THREE.Color(), cols = {};
   Object.keys(E.colours).forEach(function (k) { cols[k] = new THREE.Color(E.colours[k]).convertSRGBToLinear(); });
@@ -104,8 +104,9 @@ VC.simBodies = function () {
     var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; MC.count = 0; B.cartsShown = 0; MB.count = MH.count = MM.count = 0;
       Object.keys(AN.live).forEach(function (id) { if (AN.live[id]) scene.remove(AN.live[id]); }); AN.live = {}; AN.list = []; B.animalsShown = 0; return; }
     var cx = ctl.walk ? camera.position.x : ctl.target.x, cz = ctl.walk ? camera.position.z : ctl.target.z, t = SIM.time();
-    if (now - B.at > E.every) {     /* who is near: refreshed a few times a second */
-      B.at = now; var A = SIM.all('actor'), near = [], nearA = [], r2 = E.r * E.r;
+    var real = performance.now();   /* `now` is the page's animation time, held while paused (56d); who is near follows the camera even then */
+    if (real - B.at > E.every) {     /* who is near: refreshed a few times a second */
+      B.at = real; var A = SIM.all('actor'), near = [], nearA = [], r2 = E.r * E.r;
       for (var i = 0; i < A.length; i++) { if (A[i].driven) continue;
         if (A[i].animal) { if (!FA) continue; var Pa = SIM.pose(A[i], t, { cheap: true }); if (Pa.hidden) continue; var da = (Pa.x - cx) * (Pa.x - cx) + (Pa.z - cz) * (Pa.z - cz); if (da < r2) nearA.push([da, A[i]]); continue; }
         var w = where(A[i], t); if (!w) continue; var d = (w.x - cx) * (w.x - cx) + (w.z - cz) * (w.z - cz); if (d < r2) near.push([d, A[i]]); }
