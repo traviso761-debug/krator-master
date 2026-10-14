@@ -23,6 +23,8 @@ jobs:
           path: .git/lfs
           key: ${{ steps.tex.outputs.key }}
           restore-keys: lfs-tex-
+      - name: Git LFS's filters (the checkout skipped them; without the clean filter git compares a rebuilt page with its pointer)
+        run: git lfs install --local --skip-smudge
       - name: Pull the packed textures (the builds embed them)
         run: git lfs pull --include='settlements/*/tex/*,kits/*/tex/*,biomes/*/tex/*,openworld/*/tex/*'
       - uses: actions/setup-python@v5
@@ -34,6 +36,9 @@ jobs:
       - name: tools/test_all.py
         run: python3 tools/test_all.py
       - name: The tree is clean after the rebuild
+        # git diff compares content through the LFS filter; git status would flag every page that was checked out as a
+        # pointer and rebuilt (stat-dirty, same content). Untracked files are listed apart.
         run: |
-          git status --porcelain
-          test -z "$(git status --porcelain)" || { echo "::error::a committed page or manifest is not what its sources build: rebuild it and commit"; exit 1; }
+          CHANGED="$(git diff --name-only)"; NEW="$(git ls-files --others --exclude-standard)"
+          [ -n "$CHANGED" ] && printf 'changed:\n%s\n' "$CHANGED"; [ -n "$NEW" ] && printf 'untracked:\n%s\n' "$NEW"
+          test -z "$CHANGED$NEW" || { echo "::error::a committed page or manifest is not what its sources build: rebuild it and commit"; exit 1; }
