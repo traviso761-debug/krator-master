@@ -67,6 +67,11 @@ RIVER_RGB = (63, 111, 134)
 # sea's level and joined to it is raised to `sea` + `lift` + `grade` m per km of its distance up
 # the valley from the shore, so the floors run down to the sea; the painted maps take the colour of the land beside them.
 GRADE = {'Beast Riders': dict(sea=-1500.0, lift=5.0, grade=3.0)}
+# 4.21, the owner: regions brought down to the abyss's level, their edges smoothed into the land round them. The level is
+# the `floor_q` percentile of the region's floor (its ground under -1,400 m); every cell over it goes down to it, keeping
+# `relief` of its height above it, and the land outside eases down to it over `feather` cells (a smoothstep), the band
+# blurred so no step is left. Nothing is raised.
+LOWER = {'Region 65': dict(floor_q=50.0, relief=0.04, feather=4.0, blur=1.2)}
 ARM_R, ARM_MIN = 2, 4
 # the lakes the model draws at 0 m in the north basin and the trough below it (the owner: the dams there held lakes at
 # distinctly different heights; the east dam burst first and broke the west one; today they are not joined, and a river
@@ -308,11 +313,12 @@ def body_at(lab, x, y, su, sv):
     return lab == lab[ys[c], xs[c]]
 
 
-def inpaint(arr, hole):
+def inpaint(arr, hole, src=None):
     """the pixels of `hole` painted from the picture round them: each from the nearest scale of a normalized blur
-    that reaches enough of it (fine at the edges, broad inside), then blended in over a pixel"""
+    that reaches enough of it (fine at the edges, broad inside), then blended in over a pixel; `src`: the pixels it may
+    take colour from (all outside the hole by default)"""
     out = arr.astype(float).copy()
-    valid = (~hole).astype(float)
+    valid = (~hole if src is None else ~hole & src).astype(float)
     done = np.zeros(hole.shape, bool)
     for sg in (1.5, 3.0, 6.0, 12.0, 24.0, 48.0):
         w = nd.gaussian_filter(valid, sg)
@@ -322,7 +328,7 @@ def inpaint(arr, hole):
                 out[..., c][ok] = (nd.gaussian_filter(arr[..., c].astype(float) * valid, sg)[ok] / w[ok])
             done |= ok
     if (hole & ~done).any():
-        _, (iy, ix) = nd.distance_transform_edt(hole, return_indices=True)
+        _, (iy, ix) = nd.distance_transform_edt(valid < 0.5, return_indices=True)
         out[hole & ~done] = arr[iy, ix][hole & ~done]
     soft = np.clip(nd.gaussian_filter(hole.astype(float), 1.0) * 1.5, 0, 1)[..., None]
     return np.clip(arr * (1 - soft) + out * soft, 0, 255).astype(np.uint8)
@@ -703,6 +709,31 @@ def main():
         print("graded %s: %d cells of the sea's arms made land;" % (nm, int(arms.sum())), end=' ')
         print('graded %s: %d cells (%d valleys) raised to run down to the sea at %d m, by up to %d m' % (
             nm, int(up.sum()), nk, g['sea'], float((En - E)[up].max())))
+    # the regions lowered to the abyss's level (LOWER)
+    lowered_m = np.zeros(E.shape, bool)
+    report['lowered'] = []
+    for nm, l_ in LOWER.items():
+        r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm), None)
+        if r_ is None:
+            sys.exit('no region named %r' % nm)
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+        inr = np.array(im).astype(bool)
+        T = float(np.percentile(En[inr & (En < -1400)], l_['floor_q']))
+        t_ = np.clip(1 - nd.distance_transform_edt(~inr) / l_['feather'], 0, 1)
+        w_ = t_ * t_ * (3 - 2 * t_)
+        tgt = T + l_['relief'] * (En - T)
+        E2 = np.where(En > tgt, En * (1 - w_) + tgt * w_, En)
+        band = nd.binary_dilation((w_ > 0) & (w_ < 1), iterations=1) | (inr & ~nd.binary_erosion(inr, iterations=1))
+        E2 = np.where(band, np.minimum(E2, nd.gaussian_filter(E2, l_['blur'])), E2)
+        dn = np.minimum(En, E2)
+        m_ = dn < En - 10.0
+        report['lowered'].append({'region': nm, 'level_m': round(T), 'cells': int(m_.sum()), 'km2': round(float(m_.sum() * KM2)),
+                                  'lowered_most_m': round(float((En - dn)[m_].max())) if m_.any() else 0})
+        print('lowered %s to the abyss level (%d m): %d km2, by up to %d m' % (nm, T, m_.sum() * KM2,
+                                                                              (En - dn)[m_].max() if m_.any() else 0))
+        En = dn
+        lowered_m |= m_
     # the owner's river (the Yuni river, 4.19): its drawn course on the grid, 8-connected, down to the first water; the
     # bed under it falls all the way (cut only), and the routing follows it
     force = []
@@ -1314,6 +1345,7 @@ def main():
         q_ = np.where(np.abs(En - E) > 0.05, enc, (h2[..., 0] << 8) | h2[..., 1])
         h2[..., 0], h2[..., 1] = q_ >> 8, q_ & 255
         h2[..., 2] = np.where(arms | dried, 0, h2[..., 2])
+        h2[..., 2] = np.where(G['whas'] | newlake, 255, h2[..., 2])     # the water flag follows the water (extract_region reads it)
         rep['h'] = b64(Image.fromarray(h2.astype(np.uint8), 'RGB'), optimize=True)
     if newlake.any() or arms.any() or settled.any() or reshaped.any():
         wl = raster(D, 'wl').astype(np.int64)
@@ -1381,21 +1413,44 @@ def main():
         from edit_heights import relight
         imgs, _, _ = relight(D, E, np.where(graded, E, En), keys=('st', 't'))   # the gorges shaded into the maps
         DP = dict(D, **imgs)
-    # the old lakes' beds that are land now (dried, the abyss's filled floor): painted from the land round them,
-    # so no old shoreline shows on the maps
-    old = (dried | abyss_beds) & ~G['whas']
+    # the old lakes' beds that are land now (dried, the abyss's filled floor) and the lowered regions: painted from the
+    # land round them, so no old shoreline or wall shows on the maps
+    old = (dried | abyss_beds | lowered_m) & ~G['whas']
     oF = nd.zoom(old.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW] > .35
-    oF = nd.binary_dilation(oF, iterations=1) & ~(nd.zoom(G['whas'].astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    wetF_ = nd.zoom((G['whas'] | newlake).astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5
+    oF = nd.binary_dilation(oF, iterations=1) & ~wetF_
+    # and any water paint left on dry ground where 4.21 changed the land or its water (the satellite's blue over red)
+    edited = nd.binary_dilation(lowered_m | dried | abyss_beds | (np.abs(En - E) > 1) | (whas0 & ~G['whas']), iterations=3)
+    st0_ = np.array(Image.open(io.BytesIO(__import__('base64').b64decode(D['st']))).convert('RGB')).astype(float)
+    wpaint = (st0_[..., 2] - st0_[..., 0] > 35) & ~nd.binary_dilation(wetF_, iterations=2) & \
+        (nd.zoom(edited.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    oF |= nd.binary_dilation(wpaint, iterations=1) & ~wetF_
+    # the sea's arms made land (GRADE) were painted as sea
+    oF |= nd.binary_dilation(nd.zoom(arms.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5,
+                             iterations=1) & ~wetF_
+    # colour only from dry land that is not painted as water
+    land_src = ~nd.binary_dilation(wetF_, iterations=1) & ~((st0_[..., 2] - st0_[..., 0] > 35) & (st0_[..., 1] > st0_[..., 0] + 20))
+    # the other way: water where the map paints land (lakes settled, grown or laid out anew) takes the colour of the
+    # lake paint round it, so the satellite with the water layer off shows today's shores
+    wpaint_all = (st0_[..., 2] - st0_[..., 0] > 35) & (st0_[..., 1] > st0_[..., 0] + 20)
+    nF = wetF_ & ~wpaint_all & (nd.zoom(((G['whas'] | newlake) & ~whas0).astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    water_src = wetF_ & wpaint_all
+    if not water_src.any():
+        nF[:] = False
+    report['water_painted_px'] = int(nF.sum())
+    report['repainted_px'] = int(oF.sum())
     for key in ('st', 't'):
         src = Image.open(io.BytesIO(__import__('base64').b64decode(DP[key])))
-        if graded.any() or oF.any():
+        if graded.any() or oF.any() or nF.any():
             arr = np.array(src.convert('RGB'))
             if graded.any():
                 land = arr[iy, ix]
                 soft = nd.gaussian_filter(gF.astype(float), 1.0)[..., None]
                 arr = np.clip(arr * (1 - soft) + land * soft, 0, 255).astype(np.uint8)
             if oF.any():
-                arr = inpaint(arr, oF)
+                arr = inpaint(arr, oF, land_src)
+            if nF.any():
+                arr = inpaint(arr, nF, water_src)
             src2 = Image.fromarray(arr)
             src2.quantization = getattr(src, 'quantization', None)
             im = src2.convert('RGBA')

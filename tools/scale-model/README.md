@@ -228,6 +228,11 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   1,620 km2 (the abyss's rebuilt lakes hold what used to reach it in excess). Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.
+- **Region 65 lowered** (`LOWER`; the owner: down to the abyss's level, its edges smoothed). The region's ground goes
+  down to the median of its floor (-2,319 m), keeping 4% of its height over it; the land outside eases down to it over
+  4 cells (a smoothstep) and the band is blurred, so no step is left; nothing is raised. Its east side was the trench's
+  wall (to +433 m): lowered by up to 2,642 m, 6,369 km2 by more than 10 m. It runs before the abyss's lakes are laid out,
+  so its new floor takes part in them, and in the rain, rivers and climate.
 - **The climate** (step 7): wherever 4.21 moved the ground or a water surface (the gorges, the raised and filled beds,
   the abyss's floor, the dried and settled lakes), the temperatures lapse with it (6.5 C per km) and the rain, climate
   class and zone are recomputed from the unchanged land most like each cell (`edit_heights.reclimate`, as 4.18-4.20
@@ -235,6 +240,16 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   smoothed over the floor (a filled pit is still the floor; left to its look-alikes its rain swung by up to 2,850 mm
   with where the lakes were laid, and the lakes with it). 45,800 map px recomputed, 12,700 changed class; the joined
   island lake now stands at -1,810 m over 3,963 km2 on that rain.
+- **The satellite map audited** (`sat_audit.py <4.21 page> <4.20 page> <out dir>`, kept as `satellite-audit-4.21.json`).
+  Fixed from it: the water flag in the heights raster now follows the water (9,500 cells of the settled and new lakes
+  were water only in the water raster; `extract_region.py` reads that flag); water paint on ground made dry where 4.21
+  changed the land (the dried and filled beds, the lowered region, the sea's arms the Beast Riders' grading made land) is
+  repainted from dry, unwatered land round it, 2,400 px new since 4.20 down to 400; and water laid where the map painted
+  land (the settled, grown and new lakes) takes the colour of the lake paint round it (22,500 px), so with the water
+  layer off the satellite shows today's shores. Left as 4.20 had them: ~2,500 px of water paint on dry land outside the
+  edits (most round the Iziz plain's salt depression, and the Ring Sea's eastern shore) and 78 cells the heights flag as
+  water and the water raster does not. The edited areas' edges are no sharper than the map's own (95th percentile colour
+  step 12.7 against 16.0).
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
