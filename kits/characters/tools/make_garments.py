@@ -33,6 +33,46 @@ OUT = LocationService.get_user_data('clothes')
 TEX = 1024
 
 # ---------------------------------------------------------------------------------------------------------------
+# fabrics: each part's cloth takes the grain of a material-library set (core/materials/library/<id>/albedo.jpg, its
+# luminance about its mean multiplied into the painted colours), at a tile size for clothing (metres a tile; the
+# older sets' records are sized for buildings). The set comes from the paint's base colour name (FABRIC_OF) unless the
+# paint names one (P(..., fabric=)); boots and sandals take leather. kits/characters/prompt-clothes.md lists the sets
+LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'core', 'materials', 'library')
+FABRIC = {'cloth.weave.plain': 0.12, 'cloth.weave.twill': 0.15, 'cloth.plain': 0.25, 'cloth.silk': 0.3, 'cloth.felt': 0.3,
+          'cloth.weave.burlap': 0.2, 'cloth.cotton.coarse': 0.2, 'cloth.wool': 0.2, 'cloth.velvet': 0.2, 'cloth.quilted': 0.3,
+          'cloth.bazin': 0.3, 'cloth.oiled': 0.3, 'leather.polished': 0.25, 'leather.buckskin': 0.3, 'fur.short': 0.2,
+          'fur.astrakhan': 0.15, 'straw.plaited': 0.2, 'beads.glass': 0.12, 'shell.nacre': 0.3, 'metal.gold': 0.3,
+          'metal.bronze': 0.3, 'metal.iron': 0.3}
+FABRIC_OF = {'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 'sahel': 'cloth.cotton.coarse',
+             'white': 'cloth.cotton.coarse', 'linen': 'cloth.plain', 'sealinen': 'cloth.plain', 'cream': 'cloth.plain',
+             'leather': 'leather.polished', 'saddle': 'leather.polished', 'hide': 'leather.buckskin', 'buck': 'leather.buckskin',
+             'fur': 'fur.short', 'darkfur': 'fur.short', 'felt': 'cloth.felt', 'velvet': 'cloth.velvet',
+             'purple': 'cloth.silk', 'crimson': 'cloth.silk', 'mongolblue': 'cloth.silk', 'saffron': 'cloth.silk', 'maroon': 'cloth.silk',
+             'yuniyellow': 'cloth.bazin', 'drab': 'cloth.quilted', 'repgrey': 'cloth.wool', 'repgreyd': 'cloth.wool',
+             'repblack': 'cloth.wool', 'repred': 'cloth.wool', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
+             'nacre': 'shell.nacre', 'gold': 'metal.gold', 'bronze': 'metal.bronze', 'copper': 'metal.bronze', 'brass': 'metal.bronze',
+             'iron': 'metal.iron'}
+GRAIN = {}
+
+
+def grain(fid):
+    """a set's grain: its albedo's luminance over its mean (1 is the set's average), or None when the set is missing"""
+    if fid not in GRAIN:
+        path = os.path.join(LIB, fid, 'albedo.jpg')
+        g = None
+        if os.path.exists(path) and os.path.getsize(path) > 1000:           # not a Git LFS pointer
+            im = bpy.data.images.load(path, check_existing=True)
+            w, h = im.size
+            px = np.array(im.pixels[:], np.float32).reshape(h, w, 4)[::-1, :, :3]
+            lum = px @ np.array([0.299, 0.587, 0.114], np.float32)
+            g = (lum / max(float(lum.mean()), 1e-3)).clip(0.4, 1.6)
+            bpy.data.images.remove(im)
+        else:
+            print('make_garments: no library set %s (git lfs pull it): flat weave' % fid)
+        GRAIN[fid] = g
+    return GRAIN[fid]
+
+# ---------------------------------------------------------------------------------------------------------------
 # the palette: Chichani dyes. Undyed maguey and cotton for the poor; ochre, madder, indigo and soot for the trades;
 # Voth's deep purple and ash-white, crimson, gold and quetzal green for the court
 C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42, 0.30, 0.20), 'soot': (0.10, 0.09, 0.09),
@@ -419,8 +459,40 @@ FRET = ["XXXXXXXXXXXX",
 FRETA = np.array([[c == 'X' for c in r] for r in FRET])
 
 
+# motifs drawn from a library pattern sheet, recoloured: the sheet's stitches as a mask (fg where it is 1, bg where 0),
+# so each garment keeps its own two colours and gets the sheet's hand-made detail. (set, motifs across the sheet,
+# stitches dark on light)
+SHEETS = {'cross': ('embroidery.cross', 3, True), 'rose': ('embroidery.saxon', 4, False), 'bogolan': ('pattern.bogolan', 4, False),
+          'feather': ('feather.quetzal', 6, False)}
+MASKS = {}
+
+
+def sheet_mask(style):
+    """a SHEETS style's mask (0 to 1, from the sheet's luminance between its 10th and 90th percentiles), or None"""
+    if style not in MASKS:
+        fid, _, dark = SHEETS[style]
+        path = os.path.join(LIB, fid, 'albedo.jpg')
+        m = None
+        if os.path.exists(path) and os.path.getsize(path) > 1000:
+            im = bpy.data.images.load(path, check_existing=True)
+            w, h = im.size
+            lum = np.array(im.pixels[:], np.float32).reshape(h, w, 4)[::-1, :, :3] @ np.array([0.299, 0.587, 0.114], np.float32)
+            bpy.data.images.remove(im)
+            lo, hi = np.percentile(lum, 10), np.percentile(lum, 90)
+            m = ((lum - lo) / max(hi - lo, 1e-3)).clip(0, 1)
+            if dark:
+                m = 1 - m
+        MASKS[style] = m
+    return MASKS[style]
+
+
 def motif(style, w, h, fg, bg):
     """one cell of a band, w x h pixels, as an RGB array"""
+    m = sheet_mask(style) if style in SHEETS else None
+    if m is not None:
+        sc = m.shape[1] / (w * SHEETS[style][1])           # sheet pixels a cell pixel: the cell is one motif across
+        a = m[np.ix_((np.arange(h) * sc).astype(int) % m.shape[0], (np.arange(w) * sc).astype(int) % m.shape[1])][:, :, None]
+        return np.asarray(bg, float) * (1 - a) + np.asarray(fg, float) * a
     img = np.empty((h, w, 3)); img[:] = bg
     yy, xx = np.mgrid[0:h, 0:w]
     u, v = (xx + 0.5) / w, (yy + 0.5) / h
@@ -550,7 +622,9 @@ def motif(style, w, h, fg, bg):
 def paint_strip(spec, W, H, circ, length):
     img = np.empty((H, W, 3)); img[:] = spec['base']
     g = spec.get('weave', 0.06)
-    if g:
+    fab = spec.get('fabric')
+    gr = grain(fab) if fab in FABRIC else None
+    if g and gr is None:
         n = rng.normal(0, g * 0.5, (H, W, 1))
         thread = (((np.arange(W) % 3) == 0)[None, :, None] * 0.5 + ((np.arange(H) % 3) == 0)[:, None, None] * 0.5) * g
         img = img * (1 + n - thread)
@@ -573,6 +647,15 @@ def paint_strip(spec, W, H, circ, length):
         ch = max(2, H // n_rep)
         cell = motif(style, c1 - c0, ch, np.array(fg), np.array(bg))
         img[:, c0:c1] = np.tile(cell, (H // ch + 1, 1, 1))[:H] * (1 + rng.normal(0, 0.02, (H, c1 - c0, 1)))
+    if gr is not None:
+        # the fabric's grain at its size on the cloth (the strip is circ metres across and length down), its depth
+        # by the paint's weave (0.07 the usual cloth: about full strength)
+        n = gr.shape[0]
+        tile = FABRIC[fab]
+        ix = (np.arange(W) * (circ / W) / tile * n).astype(int) % n
+        iy = (np.arange(H) * (length / H) / tile * n).astype(int) % n
+        k = min(1.0, max(g, 0.02) / 0.07)
+        img = img * (1 + (gr[np.ix_(iy, ix)][:, :, None] - 1) * k)
     return img.clip(0, 1)
 
 
@@ -721,8 +804,19 @@ def build(gid, label, parts, slot='torso'):
 
 # ---------------------------------------------------------------------------------------------------------------
 # the garments. Ease in metres off the skin; bands in metres from an edge
-def P(base, weave=0.07, bands=(), panels=()):
-    return {'base': C[base] if isinstance(base, str) else base, 'weave': weave, 'bands': list(bands), 'panels': list(panels)}
+def P(base, weave=0.07, bands=(), panels=(), fabric=None):
+    """a paint: base colour (a name in C), grain strength, bands, panels, and the fabric (a FABRIC set; by default the
+    base colour's, FABRIC_OF, else a plain weave)"""
+    f = fabric or (FABRIC_OF.get(base, 'cloth.weave.plain') if isinstance(base, str) else 'cloth.weave.plain')
+    return {'base': C[base] if isinstance(base, str) else base, 'weave': weave, 'bands': list(bands), 'panels': list(panels),
+            'fabric': f}
+
+
+def leathery(paint):
+    """a paint as leather, unless its fabric is already a hide, fur, felt or metal (a boot, a sandal)"""
+    if paint.get('fabric', '').startswith(('leather', 'fur', 'cloth.felt', 'metal', 'straw')):
+        return paint
+    return dict(paint, fabric='leather.polished')
 
 
 def PN(u0, u1, style, fg, bg, rep=0.25): return (u0, u1, style, C[fg], C[bg], rep)
@@ -794,6 +888,9 @@ def four_armed(gid, parts, r=0.075):
 
 def sandal(gid, paint_sole, paint_strap, guard=False, laces=0, greave=False, strap_paint2=None):
     parts = []
+    paint_sole, paint_strap = leathery(paint_sole), leathery(paint_strap)
+    if strap_paint2 is not None:
+        strap_paint2 = leathery(strap_paint2)
     for s in (L, R):
         foot, toe = J(s + 'Foot'), J(s + 'ToeBase')
         tip = J(s + 'ToeBase', 'tail')
@@ -907,6 +1004,7 @@ def boots(gid, paint_sole, paint_upper, top=0.45, wraps=0, wrap_paint=None, cuff
     along the foot to the toe, closed there, roomy at the top so trousers tuck into it; wraps: bands of cloth wound up
     the shin over it, standing further off above wrap_over (a fraction up the shin: over the trousers' cuff)"""
     parts = []
+    paint_sole, paint_upper = leathery(paint_sole), leathery(paint_upper)
     for s in (L, R):
         foot, toe, tip, knee = J(s + 'Foot'), J(s + 'ToeBase'), J(s + 'ToeBase', 'tail'), J(s + 'Leg')
         heel = np.array([foot[0], foot[1] + 0.05, 0.0]); front = np.array([tip[0], tip[1] - 0.012, 0.0])
