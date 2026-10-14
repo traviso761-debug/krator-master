@@ -1,0 +1,468 @@
+[
+ {
+  "src": "Crimson Folk Cross-Stitch Tapestry.png",
+  "out": "core/materials/library/embroidery.cross",
+  "record": {
+   "id": "embroidery.cross",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Slavic red cross-stitch embroidery on linen, seen flat: stepped diamonds and crosses built from tiny X stitches, red (#84121a) on cream (#ebe0c7). Repeats horizontally. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "Crushed Velvet.webp",
+  "out": "core/materials/library/cloth.velvet",
+  "record": {
+   "id": "cloth.velvet",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cotton velvet pile seen close: a soft directional sheen, crushed patches where the pile lies the other way. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row; delivered as an image pasted in chat (2026-10-14), untitled.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "mute": 0.9,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "Detailed Gray Leather Texture.png",
+  "out": "core/materials/library/leather.polished",
+  "record": {
+   "id": "leather.polished",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished boot leather seen close: a smooth fine grain under a waxed shine, soft creases where it flexes, a few fine scuffs through the polish. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "dark_gloss": 0.2,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Distressed Gray Leather Texture.png",
+  "out": "core/materials/library/leather.buckskin",
+  "record": {
+   "id": "leather.buckskin",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smoked brain-tanned buckskin: soft suede nap with no shine, uneven smoke tone, faint stretch marks and a few small holes and scars in the hide. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Embroidered Crimson and Gold Floral Tapestry.png",
+  "out": "core/materials/library/embroidery.saxon",
+  "record": {
+   "id": "embroidery.saxon",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Transylvanian Saxon embroidery: six-petal rosettes and leaves in satin stitch, ochre (#c78c2e) and red (#84121a) on black (#121012). Repeats horizontally. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "Grayscale Herringbone Woven Straw Texture.png",
+  "out": "core/materials/library/straw.plaited",
+  "record": {
+   "id": "straw.plaited",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Plaited straw hat braid seen flat: narrow braids of flattened wheat straw in a herringbone plait, sewn edge to edge in parallel rows, a few split straws. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Hand-Painted Mudcloth Geometric Textile Pattern.png",
+  "out": "core/materials/library/pattern.bogolan",
+  "record": {
+   "id": "pattern.bogolan",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Malian bogolan mud cloth: hand-painted geometric motifs (rows of dots, crosses, zigzags and ladders in a grid of bands) in cream (#e8dcc2) on dark brown-black (#2b2118), on coarse hand-spun cotton with the weave showing through, the paint edges slightly uneven. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.5,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "Iridescent Emerald Feather Mosaic.png",
+  "out": "core/materials/library/feather.quetzal",
+  "record": {
+   "id": "feather.quetzal",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Layered quetzal plumage seen flat: long overlapping tail and covert feathers lying in one direction, iridescent emerald green (#1f8a5a) shading to blue-green (#1d6f7a) with golden-green highlights, fine barbs visible on each feather. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "delight": 0.4,
+   "lift": 0.05
+  }
+ },
+ {
+  "src": "Neutral Gray Woven Fabric Texture.png",
+  "out": "core/materials/library/cloth.cotton.coarse",
+  "record": {
+   "id": "cloth.cotton.coarse",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Coarse hand-spun cotton: an irregular open plain weave with uneven, slubby thread and a few thick and thin places. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Pale Silver Damask Jacquard Pattern.png",
+  "out": "core/materials/library/cloth.bazin",
+  "record": {
+   "id": "cloth.bazin",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bazin riche: heavily beaten damask cotton with a woven tone-on-tone pattern of small lozenges and scrolls, a stiff polished surface with a glazed sheen that catches the light in the pattern. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "mute": 0.9,
+   "normal_strength": 0.7,
+   "delight": 0.4,
+   "lift": 0.05
+  }
+ },
+ {
+  "src": "Pearly Gray Beaded Fabric Texture.png",
+  "out": "core/materials/library/beads.glass",
+  "record": {
+   "id": "beads.glass",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Rows of tiny glass seed beads stitched close on cloth, seen flat: round beads about 2 mm, each with a small highlight and a dark hole, slight irregular spacing, in pale grey glass. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.25,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Seamless Antique Gold Braided Trim.png",
+  "out": "core/materials/library/metal.brass.braid",
+  "record": {
+   "id": "metal.brass.braid",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 1.0,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gold-brass braid trim seen flat: tight twisted metallic cord in parallel rows, worn brighter on the ridges. Metal. Repeats horizontally. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "Seamless Gray Wool Felt Texture.png",
+  "out": "core/materials/library/cloth.wool",
+  "record": {
+   "id": "cloth.wool",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fulled wool broadcloth seen close: a soft felted surface where the weave barely shows, fine fuzz, a little pilling. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.05,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Seamless Light Gray Quilted Fabric Texture.png",
+  "out": "core/materials/library/cloth.quilted",
+  "record": {
+   "id": "cloth.quilted",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Quilted padded cotton: puffed rows between straight stitched seams about 3 cm apart, small creases in each row. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Silver Gray Curly Wool Texture.png",
+  "out": "core/materials/library/fur.astrakhan",
+  "record": {
+   "id": "fur.astrakhan",
+   "family": "fur",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Astrakhan (karakul lambskin): tight glossy curls of fleece packed close in small whorls and ridges, dark shadows between the curls. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Silver Gray Swirled Fur Texture.png",
+  "out": "core/materials/library/fur.short",
+  "record": {
+   "id": "fur.short",
+   "family": "fur",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Short dense fur seen from above: the hairs lying one way in soft overlapping tufts, a lighter underfur showing in places. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Wrinkled Worn Canvas Texture.png",
+  "out": "core/materials/library/cloth.oiled",
+  "record": {
+   "id": "cloth.oiled",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Oiled waxed cotton cloth: a dense plain weave sealed with wax, darker waxy patches, fine crinkles and pale scuffed lines where it has been folded. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.25,
+   "dark_gloss": 0.15,
+   "mute": 0.9
+  }
+ }
+]

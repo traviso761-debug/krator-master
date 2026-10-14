@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.33,
+    0.802
+   ],
+   "seam_before": [
+    1.625,
+    3.308
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "beads.glass",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   0.12,
+   0.12
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Pearly Gray Beaded Fabric Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Rows of tiny glass seed beads stitched close on cloth, seen flat: round beads about 2 mm, each with a small highlight and a dark hole, slight irregular spacing, in pale grey glass. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "49bcc8d81dd7cf6cc26b0b89caf3a5bf62e63a5e"
+ }
+}

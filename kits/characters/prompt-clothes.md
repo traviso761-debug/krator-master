@@ -14,6 +14,9 @@ painter multiplies the grain into the garment's own colours, so those want to be
 prompt; name the file after the `id`. They go through the usual processing (`core/materials/PLAN.md`, Processing
 pipeline) into `core/materials/library/<id>/`.
 
+**Delivered 2026-10-14: all 17 are in the library now** (`core/materials/library/<id>/`, processed by
+`tools/textures/batches/chatgpt-2026-10f-clothes.json`; the prompts below are kept as the record of what was asked).
+
 ## Already in the library: use these
 
 | Set | For |
@@ -33,7 +36,7 @@ pipeline) into `core/materials/library/<id>/`.
 | `metal.gold`, `metal.bronze` | crowns, gilded sandals, the Dalab pectoral; the Free Giants' helmet (the finer temple-gold and La Tene rows are in `core/materials/PLAN.md`, "Characters: cybernetic arms and the giants' metal") |
 | `patterns/<culture>` | the culture pattern sheets (Voth banners and inlay, the Republic's folk sheets, and the rest) for borders and panels |
 
-## To make: 17 prompts
+## Made from these 17 prompts (delivered 2026-10-14)
 
 | id | For | Tinted |
 |---|---|---|

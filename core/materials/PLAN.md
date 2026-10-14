@@ -847,6 +847,11 @@ ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.qui
 `cloth.bazin`, `cloth.oiled`, `leather.polished`, `leather.buckskin`, `fur.short`, `fur.astrakhan`, `straw.plaited`,
 `feather.quetzal`, `beads.glass`, `metal.brass.braid`, `embroidery.cross`, `embroidery.saxon`, `pattern.bogolan`.
 (The first version of this list asked again for `cloth.linen`, `cloth.felt` and `cloth.silk`, which the library has.)
+**Delivered 2026-10-14 and processed**, all 17 (`tools/textures/batches/chatgpt-2026-10f-clothes.json`, sources
+`clo1.zip`, `clo3.zip` and a pasted velvet image): scales 0.12 to 0.4 m a tile (about 20 cm of cloth a frame);
+the embroideries, the bogolan, the braid and the bazin damask cropped to their pattern period; the braid metal; the
+quetzal feathers, the embroideries, the bogolan and the braid not tinted, the rest muted for tinting. Not yet read
+by the garment painter (`kits/characters/prompt-clothes.md`).
 
 #### Second survey (2026-10-03): biomes, city streets and parks, furniture
 
