@@ -25,9 +25,9 @@
   rest against the link above (26 of them on the man), and with cloth off the chains still jitter about 0.19 rad a frame
   (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
   two apart; the folding itself is not fixed.
-- **The posture fix is one rule for every clip.** The upper spine is drawn back and the shoulders dropped and back by
-  fixed angles after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
-  stands straight leans back a little, and a crouched one keeps its crouch below the chest.
+- **The posture fix is one rule for every clip.** The shoulders are dropped and drawn back by fixed angles after each
+  clip (README, Posture), the upper arms keeping the clip's direction: a clip whose shoulders already sit low drops
+  them further, and the spine keeps whatever curve the clip gives it.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one

@@ -1490,11 +1490,11 @@ function KCharFigure(body, sliders, load){
     var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
     if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
-  /* ---- posture: the clips stand with the shoulders rolled forward and the upper back rounded; after each clip the
-     upper spine is drawn back (POSTURE.spine, degrees per joint; the neck takes back POSTURE.neck of it, so the head
-     comes back with the chest and does not jut) and the
-     shoulders dropped and drawn back (POSTURE.drop, POSTURE.back), in the figure's own frame ---- */
-  var POSTURE = { spine:{ Spine1:2, Spine2:3 }, neck:0.4, drop:6, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  /* ---- posture: the clips stand with the shoulders rolled forward and raised; after each clip the shoulders are
+     dropped and drawn back (POSTURE.drop, POSTURE.back), in the figure's own frame. POSTURE.spine can draw the upper
+     spine back too (degrees per joint; the neck takes back POSTURE.neck of it): none now, since any of it read as a
+     backward bend once the clip pose was restored each frame ---- */
+  var POSTURE = { spine:{}, neck:0.4, drop:9, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
   function posture(){
     if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is

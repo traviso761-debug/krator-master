@@ -334,11 +334,10 @@ to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top tha
 `bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
-**Posture** (both runtimes, first after the clip): the clips stand with the shoulders rolled forward and the upper back
-rounded, so the upper spine is drawn back a little (2 and 3 degrees on Spine1 and Spine2: at 5 and 9 the upper back
-bent visibly backward; the neck takes back 0.4 of it so the
-head comes back with the chest) and the shoulders dropped 6 and drawn back 10 degrees; the upper arms keep the way the
-clip points them, so a thrust or a held spear still aims where the clip aims it (`fig.posture` holds the numbers).
+**Posture** (both runtimes, first after the clip): the clips stand with the shoulders rolled forward and raised, so
+the shoulders are dropped 9 and drawn back 10 degrees; the upper arms keep the way the clip points them, so a thrust or
+a held spear still aims where the clip aims it (`fig.posture` holds the numbers). It can draw the upper spine back
+too (`spine`), but it does not: any of it, even 2 or 3 degrees, read as a backward bend.
 **Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,
 so on a still frame (paused, scrubbed, a held pose) the passes after the clip turned last frame's already-turned bone
 again; each bone is put back to the mixer's own output before the mixer runs. The hips' position track is taken out

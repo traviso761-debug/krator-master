@@ -530,10 +530,10 @@ func hold(want: Dictionary) -> void:
 	_after_clip(-1.0)
 
 
-# posture (50-figure.js posture): the clips stand with the shoulders rolled forward and the upper back rounded; after
-# each clip the upper spine is drawn back (degrees per joint, the head kept level through the neck) and the shoulders
-# dropped and drawn back, in the skeleton's frame (the figure's)
-const POSTURE := {"spine": {"Spine1": 2.0, "Spine2": 3.0}, "neck": 0.4, "drop": 6.0, "back": 10.0}
+# posture (50-figure.js posture): the clips stand with the shoulders rolled forward and raised; after each clip the
+# shoulders are dropped and drawn back, in the skeleton's frame (the figure's). "spine" can draw the upper spine back
+# too (degrees per joint, the neck taking back "neck" of it): none now
+const POSTURE := {"spine": {}, "neck": 0.4, "drop": 9.0, "back": 10.0}
 
 
 func _posture() -> void:
