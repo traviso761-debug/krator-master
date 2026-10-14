@@ -36,7 +36,8 @@ Streetlab and the city-layout module").
 2. **Substrate.** Streams from `KRAND` (`KRAND.child(seed, step)`, and `KRAND.cell` per block or way, so one block
    can be rerun alone). Footprints, the road-segment and field hashes on `KSPACE` (one spatial index). Raster codes
    an extensible table, with a typed raster beside `core/mask` (owner ids and distance fields do not fit RGBA).
-   Lots registered in `core/tags`. A per-lot ground predicate (slope, water, karst) the world supplies. Fix
+   Lots registered in `core/tags`. A per-lot ground predicate (slope, water, karst) the world supplies, and Erewhon's
+   stance (below). Fix
    `exportPlan` and the wide-footprint clash.
 3. **The site layer (steps 0-5), core, fed by world data:** the site schema (Voth's site model), the role table and
    `roleAt`, the zone raster, drawn avenues with snapping and ring avenues, highways, the wall/gates/towers as records
@@ -48,8 +49,8 @@ Streetlab and the city-layout module").
    - `alleys`: today's steps 10-12 (side streets, alley entrances, alleys, blind alleys);
    - `frontage-courts`: **Ys's infill**: a cursor along each block side, lane quartering, edge runs round a host,
      lattice infill facing a street or a yard; for given polygon blocks; chosen per district or block;
-   - `grown-lanes`: Verge's;
-   - `lattice-slots`: Iziz's Ancient clusters.
+   - (Verge's grown lanes and Iziz's lattice clusters are not ported as strategies: the owner keeps Iziz's in Iziz and
+     moves Verge to `alleys`.)
    Shared primitives under all four: one `frontageRun` (replacing `lineLots`, Ys's two walkers, Verge's frontage,
    Voth's lane houses and Iziz's), `faceNearestStreet`, `huntNear`, `packPolygon`, `clearSpot`.
 6. **Optional add-ons** out of Voth: `country` (lanes, villages, farmsteads, fields, tracks), `waterfront` (harbour and
@@ -61,6 +62,25 @@ Streetlab and the city-layout module").
 9. **Tests:** `core/city/test-city.js` on a small synthetic site (no overlap, nothing on a street, wall or water;
    a placement hash in `golden.json`; negatives), then a `city.gd` twin.
 
+## The owner's calls on each city (2026-10-14)
+
+- **Verge: onto the street and alley infill** (`alleys`, steps 10-12), not its grown lanes: Verge's method leaves many
+  empty, unused streets. The port must carry Verge's **two-level site**: two cities on one page, each its own
+  instance with its own ground, raster and districts, joined where the funicular and the trail meet them (stations
+  and pads stay blocked ground in both). Its record ids (`vb_0000`, doors) are kept for the Godot export and
+  `verge_sim`.
+- **Iziz: keeps its own methods** for the Ancient quarter (the lattice clusters, the hills and ring roads, which turned
+  out better than Verge's); only its **newer, vernacular (settler) parts** move onto the stepwise method (streets,
+  frontage, infill), inside the site Iziz already lays out. Its move to KRAND and core/mask, and the record/draw
+  split, are needed only for the parts that move.
+- **Erewhon's slope placement goes into the module, Erewhon itself is not rebuilt.** Its stance rules
+  (`settlements/xanadu/targets/erewhon/88-*.js`: `stance` (the base at the highest corner, the footing dropping to the
+  lowest, refused past a maximum drop) and `stanceAtDoor` (a street house's floor at the street's level at its door,
+  the back cut into the rising ground behind)) become the module's per-lot ground predicate and stance, for every
+  strategy.
+- **Dalab, Mungo, Locus and Yuni stay as they are.** **Roketstad:** the owner checks it first (it is also being moved
+  onto the North Highlands biome).
+
 ## Order and proof
 
 1. **Instance, substrate, defaults, tests.** Voth's placement unchanged: a placement hash of every lot and way
@@ -69,9 +89,8 @@ Streetlab and the city-layout module").
 2. **The site layer and builder defaults** out of Voth's target into core, Voth's placement hash unchanged.
 3. **Strategies:** `alleys` (today's), then `frontage-courts` from Ys, with Ys moved onto it and its placement hash
    unchanged (its streams are already KRAND and cell-seeded).
-4. **Ports:** Verge (`grown-lanes`; two cities per page; its record ids kept, since the Godot export and
-   `verge_sim` depend on them), then Iziz (`lattice-slots` and the radial streets; off `rng` and canvas masks onto
-   KRAND and core/mask; a record pass split from the draw pass). A port is a new layout: the owner judges it by
+4. **Ports:** Verge onto `alleys` (two levels, two instances; its record ids kept), then Iziz's vernacular parts onto
+   the stepwise method (its Ancient quarter keeps its own; off `rng` and canvas masks only where it moves). A port is a new layout: the owner judges it by
    screenshots, and the baseline moves for it alone.
 5. Add-ons (`country`, `waterfront`) as a third city needs them.
 
