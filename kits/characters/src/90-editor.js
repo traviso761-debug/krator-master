@@ -92,7 +92,7 @@
     scene.add(new THREE.HemisphereLight(0xfff4e0, 0x3a4a3c, 0.55));
     var key = new THREE.DirectionalLight(0xffe2b8, 0.8); key.position.set(1.6, 3.2, 2.4); key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024); key.shadow.camera.left = key.shadow.camera.bottom = -1.2; key.shadow.camera.right = key.shadow.camera.top = 1.2;
-    key.shadow.bias = -0.0005; scene.add(key);
+    key.shadow.bias = -0.0003; key.shadow.normalBias = 0.01; scene.add(key);
     var rim = new THREE.DirectionalLight(0x9fc3ff, 0.4); rim.position.set(-2, 2.5, -2.5); scene.add(rim);
     var floor = new THREE.Mesh(new THREE.CircleGeometry(1.1, 48), new THREE.ShadowMaterial({ opacity:0.28 }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);

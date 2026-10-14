@@ -13,18 +13,22 @@
   exact; in motion a heavily reshaped limb bends about the base's axes.
 - **Clips are retargeted** from Styv, Meshy's library and Quaternius's libraries: big build changes can push a hand
   into a hip in motion, and a clip made for a slight body can clip through a heavy one.
-- **The work clips for digging and hammering are made, not captured.** Neither library has hoeing, hammering at an
-  anvil or a pickaxe (Meshy's checked again). Dig (hoe, pickaxe) is the heavy blunt swing looped, so a hoe is swung
-  overhead like a pick, not chopped short. Hammer at anvil is procedural on the idle's first frame: the legs and hips
-  hold still, the arms move by a two-bone solve (the elbows go where the solve puts them), and the beat is even. A
-  spear thrust, a dagger stab and a crossbow shot still borrow the sword thrust and the long-gun shot. Mixamo has most
-  of these, but its clips can only be fetched by hand with an Adobe account.
+- **The work clips and the thrusts are made, not captured.** Neither library has hoeing, hammering at an anvil, a
+  pickaxe or a straight thrust (Meshy's library checked again 2026-10-14: its one thrust stabs overhand; 'Spear Walk'
+  holds the spear behind the back). Dig, Hammer at anvil, Thrust / stab and Spear thrust are procedural on one frame of
+  the idle or the combat stance: the legs and hips hold still (no lunge, no step into the blow), the arms move by a
+  two-bone solve (the elbows go where the solve puts them), and the beat is even. Dig swings a hoe overhead like a
+  pick, not chopped short. Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
+  spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
+  most of these, but its clips can only be fetched by hand with an Adobe account.
+- **The posture fix is one rule for every clip.** The upper spine is drawn back and the shoulders dropped and back by
+  fixed angles after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
+  stands straight leans back a little, and a crouched one keeps its crouch below the chest.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one
   hand can look cramped, and when the left arm falls short the right hand is pulled in (up to 45 cm), which narrows
-  the clip's swing. The elbow keeps the clip's side, which is not always the natural one. A spear thrust at full
-  extension still leaves the left hand short for a moment (it eases off and back). The bow turns about its handle to
+  the clip's swing. The elbow keeps the clip's side, which is not always the natural one. The bow turns about its handle to
   face the drawing hand rather than the bow hand turning; the drawing hand's pinch is one fixed pose, and the arrow
   only shows while the string is pulled (there is no nocking motion). The supporting hand always closes in a fist.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
@@ -56,6 +60,10 @@
   of its own (it does not block with the shield it holds, take a two-handed grip, or reach for something). The scale
   slows a giant's clips to a giant's pace, but the clips are still a man's: a giant's weight does not show in them
   beyond that.
+- **Replacement arms wear the top's own sleeves.** A library or culture top's sleeves are part of it, so on a body
+  with replacement cybernetic arms they are drawn over the machine (the loader's bulk shows through them); only a
+  four-armed top's lower sleeves come off (`bare`). The collar over the shoulder is a ring fitted to the edge of the
+  hidden skin at rest, so a raised arm can open a crack between it and the skin.
 - **Four-armed tops exist only for the giants.** A man or a woman with an arm mod has no top that fits (`KCHAR.fits`)
   and goes bare-chested; the library's and the cultures' tops are two-armed. A four-armed top's lower sleeves are
   weighted to the lower arms, but their shape under the body sliders follows the skin MakeHuman fitted them to (the

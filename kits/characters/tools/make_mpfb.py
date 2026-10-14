@@ -91,6 +91,11 @@ def neutral(img, role):
     else:
         lum = rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32)
         lum = np.clip(lum / max(np.median(lum[seen]), 0.02) * TINT_MEAN['hair'], 0, 1)
+        if a.shape[2] == 4:
+            # the clear texels take the strands' grey: their colour is black in many assets, and a texture that is
+            # mostly clear (the BHL beards: 5 % strands) averages to near-black in its smaller mips
+            clear = a[..., 3] < 0.12
+            lum[clear] = TINT_MEAN['hair']
         rgb = np.repeat(lum[..., None], 3, 2)
     a[..., :3] = rgb
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
@@ -869,7 +874,10 @@ _FIST = (('Index', (62, 78, 45)), ('Middle', (66, 80, 45)), ('Ring', (70, 80, 45
 COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 'iziz_f_peasant_hood', 'beast_m_trade_hat', 'beast_f_trade_hat',
                'beast_m_noble_horns', 'beast_f_noble_wings', 'hykk_m_trade_helm', 'hykk_f_trade_helm', 'hykk_m_peasant_hat', 'hykk_f_peasant_hat',
                'dalab_m_trade_cap', 'dalab_f_trade_cap', 'dalab_m_noble_mitre', 'dalab_f_noble_mitre', 'yuni_m_peasant_hat', 'yuni_f_peasant_wrap',
-               'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid'}
+               'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid',
+               'rep_m_peasant_cap', 'rep_f_peasant_platok', 'rep_m_trade_ushanka', 'rep_f_trade_ushanka', 'rep_m_noble_papakha',
+               'rep_f_noble_papakha', 'rep_m_fest_peasant_cap', 'rep_f_fest_peasant_platok', 'rep_m_fest_trade_ushanka',
+               'rep_m_fest_noble_papakha'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
 CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'rep_': 'iron_republic', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
            'yuni_': 'yuni'}
@@ -963,6 +971,8 @@ def main():
             entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
         if it['id'] in LOOSE or hangs(it):
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
+            if it['slot'] == 'torso' and all_triangles(os.path.join(pieces, it['id'] + '.glb'))[0][:, 1].min() < c.jpos[c.J['LeftLeg']][1]:
+                entry['long'] = True       # below the knees: trousers under it are drawn in to the legs (KCHAR squeeze)
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn
@@ -972,6 +982,15 @@ def main():
             hit[k[d < 1e-3]] = True
             # MPFB's mask drops a face when any of its vertices is in the group
             tris = np.nonzero(hit[BT].any(1))[0]
+            if it['slot'] == 'torso':
+                # and what the top lies close over besides: a delete group stops short of the shoulders and the chest
+                # in places, and the skin there came through the shirt (a loose one hides nothing below mid-height,
+                # as hangs() below)
+                more = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'))
+                if it['id'] in LOOSE:
+                    top = BP[:, 1].max() - BP[:, 1].min()
+                    more = more[(BP[BT[more], 1] > BP[:, 1].min() + 0.5 * top).all(1)]
+                tris = np.union1d(tris, more)
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):

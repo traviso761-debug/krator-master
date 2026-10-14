@@ -838,30 +838,15 @@ row says metal); the plates repeat about every 0.25 m on an arm, so ask for fine
 | `metal.bronze.lt` | La Tene cast bronze (#a8803a) for the Free Giants' helmet, brooch and armbands: a cast surface with fine casting pits, incised spiral and triskele ornament, green verdigris in the incisions, polished high points. Metal. |
 | `metal.gold.torc` | Twisted gold torc rod seen side-on and unrolled flat: tight helical twist ridges running across the frame, warm gold (#d8b04a) with darker gold in the twist grooves. Metal. Repeats horizontally. |
 
-#### Characters: clothing fabrics (every culture, `kits/characters`, added 2026-10-13)
+#### Characters: clothing fabrics (every culture, `kits/characters`, added 2026-10-13, moved 2026-10-14)
 
-Every garment `kits/characters/tools/make_garments.py` makes is painted from flat colours, bands and motifs with a
-little noise: no weave, nap, sheen or wear. These sets give the painter a grain to multiply into its colours (and a
-normal map for the light), so they are wanted **colour-neutral**: use the base template with "Keep colours natural but
-slightly muted and even, so the texture can be tinted to different palettes without looking stained", and ask for
-a pale near-neutral version of the material. One set serves every culture that wears that cloth. Fine scale: the
-whole frame is about 20 cm of cloth.
-
-| id | Material line |
-|---|---|
-| `cloth.linen` | Hand-woven linen seen close, an even plain weave with slubs and thicker threads, faint crease lines, pale undyed natural grey-beige. Voth and Izani peasants, the Republic's shirts and blouses, the Hykkousoi's sea-linen. |
-| `cloth.wool` | Fulled wool broadcloth, a soft felted surface where the weave barely shows, fine fuzz, a little pilling. Pale grey. Coats, greatcoats, cloaks, the Free Giants' tunics. |
-| `cloth.wool.twill` | Coarse woollen twill with a clear diagonal rib, slightly hairy yarn. Pale grey. Tartan and checked cloth (the Free Giants' braccae), work trousers. |
-| `cloth.felt` | Pressed felt, matted fibres with no weave, a slightly mottled and dimpled surface. Pale grey. Felt boots, felt caps, nomad felt. |
-| `cloth.velvet` | Cotton velvet pile seen close, a soft directional sheen, crushed patches where the pile lies the other way. Neutral grey. The Republic's gowns and Borten, court robes. |
-| `cloth.quilted` | Quilted padded cotton, puffed rows between straight stitched seams about 3 cm apart, small creases in each row. Pale grey. The Republic's padded guild jackets, gambesons. |
-| `cloth.silk` | Woven silk satin, a smooth surface with a fine lengthwise sheen and soft folds of shine. Pale grey. Beast Rider deel, court silks, Yuni gowns. |
-| `cloth.cotton.coarse` | Coarse hand-spun cotton, an irregular open plain weave with uneven thread. Pale beige. Dalab and Yuni commoners, Voth maguey and cotton. |
-| `leather.worn` | Worn leather seen close, fine grain and pores, creases where it bends, edges rubbed lighter, a few scratches. Mid neutral brown-grey. Aprons, belts, jerkins, boots. |
-| `fur.short` | Short dense fur seen from above, the hairs lying one way in soft tufts. Neutral grey-brown. Fur trims, the ushanka and papakha, Beast Rider caps. |
-| `metal.brass.braid` | Gold-brass braid trim seen flat: tight twisted metallic cord in parallel rows. Metal. Officers' frogging and epaulettes. |
-| `embroidery.cross` | Slavic red cross-stitch embroidery on linen, seen flat: stepped diamonds and crosses built from tiny X stitches, red (#84121a) on cream (#ebe0c7). Not tinted. Repeats horizontally. The Republic's collars, cuffs and hems. |
-| `embroidery.saxon` | Transylvanian Saxon painted-style embroidery: six-petal rosettes and leaves in satin stitch, ochre (#c78c2e) and red (#84121a) on black (#121012). Not tinted. Repeats horizontally. The Republic's aprons, skirts, the Borten's band. |
+**Moved to `kits/characters/prompt-clothes.md`**, which lists the library sets the clothes can use as they are
+(`cloth.plain` for linen, `cloth.silk`, the procedural `cloth.felt`, `cloth.weave.twill` and `cloth.knit`,
+`cloth.weave.burlap` for maguey, the `hide.leather` sets, `hide.fur.brown`, `fibre.rope`, `shell.nacre`) and gives
+ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.quilted`, `cloth.cotton.coarse`,
+`cloth.bazin`, `cloth.oiled`, `leather.polished`, `leather.buckskin`, `fur.short`, `fur.astrakhan`, `straw.plaited`,
+`feather.quetzal`, `beads.glass`, `metal.brass.braid`, `embroidery.cross`, `embroidery.saxon`, `pattern.bogolan`.
+(The first version of this list asked again for `cloth.linen`, `cloth.felt` and `cloth.silk`, which the library has.)
 
 #### Second survey (2026-10-03): biomes, city streets and parks, furniture
 

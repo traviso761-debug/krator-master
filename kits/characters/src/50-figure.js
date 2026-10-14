@@ -44,7 +44,11 @@ function KCharFigure(body, sliders, load){
   this.clips = {};
   this.action = null;
   this.pose = KCHAR.pose(skel, sliders, {});
-  var ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){ self.clips[c.name] = c; }); });
+  var ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){
+    // the hips' position track comes out of the clip and update() applies it (hipsTrack)
+    var k = c.tracks.findIndex(function(t){ return t.name === 'Hips.position'; });
+    if(k >= 0){ c.hipsTrack = c.tracks[k]; c.tracks.splice(k, 1); }
+    self.clips[c.name] = c; }); });
   // a giant (kit.scale, tools/giant.py) is the man's body made big: his clips play slower by the square root of the
   // scale (a pendulum's pace: a stride takes as long as a leg twice as long swings), so he walks like something heavy
   var SCALE = kit.scale || 1, CADENCE = 1 / Math.sqrt(SCALE);
@@ -250,6 +254,9 @@ function KCharFigure(body, sliders, load){
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
           // trousers (legs, not loose) under a loose top: the top's push clears them too (PAD_OVER more)
           var legs = rec.armour && rec.armour.legs && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.legs; })[0];
+          // and under a loose top that reaches below the knees (kit item long: a robe, the kimono) they are drawn in to
+          // the legs, so wide ones (harem pants) stay under it
+          pushU.kcS.value = top && top.loose && top.long && legs && !legs.loose ? SQUEEZE : 0;
           Object.keys(want).forEach(function(k){ var u = want[k].userData.pad; if(u && u.base) u.value = u.base + (legs && !legs.loose ? PAD_OVER : 0); });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
@@ -343,6 +350,9 @@ function KCharFigure(body, sliders, load){
         m.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
         g.add(m);
         var p = prop(id);
+        // in a lower hand (the forearm held forward in its guard) a prop with low_turn turns about its handle: the
+        // shield stands up and faces outward instead of lying flat like a tray
+        if(side.length > 1 && p.low_turn) m.rotation.y = (side.charAt(0) === 'L' ? 1 : -1) * p.low_turn * Math.PI / 180;
         if(side === 'L' && p.string) return makeBow(g, p);
       });
     }));
@@ -705,19 +715,21 @@ function KCharFigure(body, sliders, load){
   var NCAP = 14, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.012, PAD_OVER = 0.02;
+                kcT:{ value:0 }, kcS:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.012, PAD_OVER = 0.02, SQUEEZE = 0.006;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
-     toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose */
+     toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose; under a loose top that
+     reaches below the knees (kit item long) trousers below the hips are drawn in to within SQUEEZE of the legs'
+     capsules (kcS: the first six, thighs, shins and feet), so wide ones stay under the robe */
   function pushOut(mat, pad, loose, legs){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
       sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
-      sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck;
+      sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : noTuck;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface
-      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
         '#include <skinning_vertex>\n\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.04;\n' +
         '\t\tfloat cr = kcA[ci].w + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
@@ -727,6 +739,10 @@ function KCharFigure(body, sliders, load){
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
         '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
         '\t\t\ttransformed = cq + normalize(cd) * (cr + cl * csh / cR);\n\t\t}\n\t}\n' +
+        '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
+        '\t\t\tvec3 sa = kcA[ci].xyz, sab = kcB[ci].xyz - sa; float sr = kcA[ci].w + kcS;\n' +
+        '\t\t\tvec3 sq = sa + sab * clamp(dot(transformed - sa, sab) / max(dot(sab, sab), 1e-8), 0.0, 1.0), sd = transformed - sq;\n' +
+        '\t\t\tfloat sl = length(sd);\n\t\t\tif(sl > sr && sl < sr + 0.15) transformed = sq + sd * (sr / sl);\n\t\t}\n\t}\n' +
         '\tif(kcT > 0.0){\n\t\tfloat tf = smoothstep(kcH.y - 0.02, kcH.y + 0.06, transformed.y);\n' +
         '\t\tvec2 td = transformed.xz - kcH.xz; float tl = length(td);\n' +
         '\t\tif(tf > 0.0 && tl > 1e-4) transformed.xz = kcH.xz + td * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');
@@ -861,7 +877,41 @@ function KCharFigure(body, sliders, load){
     var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
     if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
-  function afterClip(dt){ arms2(dt); bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
+  /* ---- posture: the clips stand with the shoulders rolled forward and the upper back rounded; after each clip the
+     upper spine is drawn back (POSTURE.spine, degrees per joint; the neck takes back POSTURE.neck of it, so the head
+     comes back with the chest and does not jut) and the
+     shoulders dropped and drawn back (POSTURE.drop, POSTURE.back), in the figure's own frame ---- */
+  var POSTURE = { spine:{ Spine1:5, Spine2:9 }, neck:0.4, drop:6, back:10 }, pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
+  function posture(){
+    if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is
+    self.group.getWorldQuaternion(pG);
+    // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
+    // spear aims where the clip aims it (drawn back with the spine, it pointed higher)
+    pArms.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pW[i]); });
+    var lean = 0;
+    Object.keys(POSTURE.spine).forEach(function(n){
+      var b = byName[n] !== undefined && bones[byName[n]]; if(!b) return;
+      var a = POSTURE.spine[n] * Math.PI / 180; lean += a;
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -a));
+    });
+    var neck = byName.Neck !== undefined && bones[byName.Neck];
+    if(neck) turnWorld(neck, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), lean * POSTURE.neck));
+    [['LeftShoulder', 1], ['RightShoulder', -1]].forEach(function(sh){
+      var b = byName[sh[0]] !== undefined && bones[byName[sh[0]]]; if(!b) return;
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 0, 1).applyQuaternion(pG), -sh[1] * POSTURE.drop * Math.PI / 180));
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 1, 0).applyQuaternion(pG), sh[1] * POSTURE.back * Math.PI / 180));
+    });
+    pArms.forEach(function(k, i){
+      if(k < 0) return;
+      bones[k].parent.getWorldQuaternion(qB);
+      bones[k].quaternion.copy(qB.invert().multiply(pW[i]));
+      bones[k].updateMatrixWorld(true);
+    });
+  }
+  this.posture = POSTURE;
+
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -951,6 +1001,7 @@ function KCharFigure(body, sliders, load){
       var once = meta[name] && meta[name].loop === false;
       if(!once) self.looping = name;
       var a = self.mixer.clipAction(c);
+      if(acts.indexOf(a) < 0) acts.push(a);
       a.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
       a.clampWhenFinished = once;
       a.reset().fadeIn(self.action ? 0.25 : 0).play();
@@ -958,12 +1009,34 @@ function KCharFigure(body, sliders, load){
     });
   };
 
+  /* the hips' position, from the base body's rest moved by each playing clip's hips track by its weight. The mixer
+     does not apply that track: three writes a property only when its mixed value changes, and the hips start each
+     frame from the rest, so a still or slow track (driving, kneeling to repair) was written on some frames and not on
+     others and the figure shook between the clip and standing */
+  var acts = [], hV = V(), hR = V();
+  function hipsTrack(){
+    var p = self.hips.position;
+    hR.fromArray(J[byName.Hips].t); p.copy(hR);
+    acts.forEach(function(a){
+      var tr = a.getClip().hipsTrack, w = a.isScheduled() ? a.getEffectiveWeight() : 0;
+      if(!tr || !(w > 0)) return;
+      var it = tr._kInterp || (tr._kInterp = tr.createInterpolant());
+      p.addScaledVector(hV.fromArray(it.evaluate(a.time)).sub(hR), w);
+    });
+  }
+
+  /* each bone as the clips left it, before the passes after them (posture, the arms' fixes, grips) turned it: every
+     frame starts from it. The mixer writes a bone only when its value changes, so a still frame (a paused or
+     scrubbed clip, a held pose) kept last frame's turned bone and the passes turned it again, frame after frame */
+  var clipQ = J.map(function(j){ return Q().fromArray(j.r); });
+
   this.update = function(dt){
     if(!self.action) return;
-    // the hips start each frame from the base body's rest: a clip with no hips position track (most in-place loops)
-    // leaves it there, and the morph and lift below are added once, not once a frame
-    self.hips.position.fromArray(J[byName.Hips].t);
+    for(var i = 0; i < bones.length; i++) bones[i].quaternion.copy(clipQ[i]);
+    // the morph and lift below are added to the hips once, not once a frame: hipsTrack starts them from the rest
     self.mixer.update(dt * CADENCE);
+    for(i = 0; i < bones.length; i++) clipQ[i].copy(bones[i].quaternion);
+    hipsTrack();
     self.hips.position.y += self.pose.lift;
     hipsMorph();
     afterClip(dt);

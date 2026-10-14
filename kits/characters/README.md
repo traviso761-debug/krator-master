@@ -46,7 +46,7 @@ commit's) rather than all of them.
 | Step | Where | What |
 |---|---|---|
 | 1. Blender | `tools/mpfb_build.py` | Builds an MPFB human (Mixamo rig, `detailed_helpers` so the rig lands right), loads the brows, lashes, eyes and every library item in `ITEMS` (clothes per slot, hair, beards: MakeHuman fits each to the body and interpolates its weights from it), exports the base and each item as a GLB on the same rig, with a `_VIDX` attribute (each vertex's Blender index) and each item's delete group. Then, per slider end (macros: age, muscle, weight, height, proportions, and bust and firmness on the woman; the three ancestry shares; 35 face targets), it sets the target, lets MPFB refit the rig and every item, and records how far each vertex of every mesh and each joint moved: `morphs.npz`. |
-| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images; the few items far denser than they look (`DECIMATE`: the flats and the pirate boots, twice the body's triangles a pair) keep a tenth of their triangles (`tools/decimate.py`: quadric collapse onto their own vertices, so UVs, weights and the morph deltas still match; borders and seams held). Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
+| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images; the few items far denser than they look (`DECIMATE`: the flats and the pirate boots, twice the body's triangles a pair) keep a tenth of their triangles (`tools/decimate.py`: quadric collapse onto their own vertices, so UVs, weights and the morph deltas still match; borders and seams held). Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`), and a top with one gets those rays' triangles too (its delete group stops short of the shoulders and chest in places, where the skin came through). Hair and beard textures are made neutral with their clear texels filled at the mean grey (left black, they darkened the mips and the thin beards drew darker than the hair). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
 | 3. Record | `src/10-rig.js` | `KCHAR.morphWeights(record)`: one weight per target (a slider at v < 0 weighs its minus end by -v, at v > 0 its plus end by v, times its reach; ancestry weighs each race by its share minus the base's). `KCHAR.morphJoints`: each joint's rest moves by the weighted sum of its deltas. `KCHAR.stranger(seed, kit, people)`: a record drawn from a people's ranges with `KRAND`. |
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
 | 5. Pages | `src/90-editor.js`, `src/92-animlab.js` | The Cosmetic Lab: Gear (clothes, dye), Head (people, skin tone, hair, hair colour, beard, eye colour), Body (ancestry, build), Face (35 sliders), Record (the record as text, roll a stranger, strangers in bulk). The Animation Lab: six figures, the clips, review marks. |
@@ -62,12 +62,18 @@ Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `t
 `donors/anims/UAL*.glb`, an Unreal-style skeleton mapped by `NAME_MAP`). `loop: false` clips play once and go back
 to the last loop. Loops play in place: their drift over a cycle is taken out and kept as `root_speed` (m/s, in
 `skeleton.json`'s clip list) for a game to move the character by; one-shots (rolls, knockdowns) keep their motion.
-Neither library has hoeing, hammering or a pickaxe, so two work clips are made from others (`derive` in
-`data/clips.json`, `make_pieces.derived_clips`): **Dig (hoe, pickaxe)** is the heavy overhead swing to the ground made a
-loop (it eases back to its first frame), and **Hammer at anvil** is procedural, on the standing idle: the spine leans
-into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just below the
-hips in front (a two-bone solve per arm; the hand turns so the handle points forward and the face down as it lands),
-and the left hand rests on the work.
+Neither library has hoeing, hammering, a pickaxe or a straight thrust, so some clips are made (`derive` in
+`data/clips.json`, `make_pieces.derived_clips`, posed with `_Rig`: forward kinematics on the canonical skeleton, a
+two-bone solve per arm, the hand turned to hold its prop a given way). **Hammer at anvil**, on the standing idle: the
+spine leans into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just
+below the hips in front (the handle forward and the face down as it lands), and the left hand rests on the work.
+**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted over the right shoulder with the head
+swung back and brought down in front as the spine bends into it (it was the one-handed heavy swing looped, its left
+arm across the chest). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
+driven straight forward at chest height, the point leading, the right shoulder turned into it (Meshy's 'Thrust Slash'
+stabbed overhand, the point up). **Spear thrust**: the same underhand, the right hand at the hip on the butt end and the
+left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
+source only) with the arms at the spear thrust's guard (it held the spear with the right hand behind the back).
 **Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
 bucket, cup, lantern, torch) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
@@ -76,7 +82,9 @@ hand (skeleton.json `hands`: the grip in the hand bone's space, the arm's three 
 joint, the rotation that closes the hand: `fist` round a handle, `trigger` with the index finger along a gun, `wide`
 round a cup; a prop's `grip` picks one). A clip's `hold` in `data/clips.json` names the props each hand may take,
 default first; `fig.hold({R, L, both})` hangs the GLBs under the hand bones and curls those fingers after every frame
-of the clip; the Animation Lab's Holding picker swaps the right hand's prop among the clip's choices.
+of the clip; the Animation Lab's Holding picker swaps the right hand's prop among the clip's choices. The shield is
+held by its centre grip with the board out past the back of the hand (made the other way, every clip faced its boss
+into the body); in a lower hand a prop with `low_turn` turns about its handle so the shield stands up, board out.
 
 *Two hands.* A clip's `two_hands` names the props the left hand also holds in it (the spear, the rifle and crossbow,
 the hoe, the axe, the war hammer and the mace in the clips made for them, and the two-handed parry). A prop's
@@ -187,7 +195,9 @@ state: a red greatcoat frogged in ochre with a row of triskelions at the hem and
 cream breeches, a black papakha with a red crown; women in a red velvet gown, a lace collar, a fur-edged cape and
 the kokoshnik.
 Motifs added for them: `buttons`, `buttons2`, `quilt`, `triskele`, `frog`, `cross` (Slavic cross-stitch), `rose`
-(a Saxon rosette).
+(a Saxon rosette). The caps, headscarves, ushankas and papakhas cover the hair (`COVERS_HAIR`); the Borten and the
+kokoshnik leave it showing. The textures these clothes (and every culture's) want are in `prompt-clothes.md`: the
+library sets they can use as they are, and prompts for the gaps.
 
 Shapes added for them: `tower_hat` (a hat that rises from a band fitted to the head with any profile: the mitre, the
 hyperboloid), `eye_disc`, `armbands`; motifs `trencadis`, `bogolan`, `eye`.
@@ -201,7 +211,8 @@ bandoliers, the exomis strap, the himation), `horn`, `wing`, `brim`, `collar_dis
 item (kit items in slot `mods`, the Cosmetic Lab's *Body mods* chips, `rec.mods`). Every body's skeleton carries a
 second pair of arms' joints (`Left2Shoulder`, `Left2Arm` ... `Right2HandThumb3`), whether a mod uses them or not. The
 copy hangs lower than the upper pair (out of the lower ribs on any torso: `arms2.drop`, 25 cm on the man and the
-giant, 20 cm on the woman's shorter torso) and nearer the axis, from Spine2, and 30 degrees steeper (`HANG`, near its
+giant, 20 cm on the woman's shorter torso) and nearer the axis, from Spine2 (`arms2.fwd`: 1.5 cm ahead of the upper
+pair on the woman, 1.5 cm behind it on the man's deeper chest), and 30 degrees steeper (`HANG`, near its
 usual pose); the joints get their sources' morph deltas (`morph_kit`), capsules (cloth, push) and grips (`hands.L2`,
 `hands.R2`). So the clips, the grips and the lower-arm controller are the same on every body, and nothing is drawn on
 the joints until a mod is worn:
@@ -215,7 +226,12 @@ the joints until a mod is worn:
   bands, a cable bundle from the mount into the shoulder and fine fingers. Each joint is a ball wider than the plate
   ends that run into it, so a bend shows ball rather than a gap. A new design is a `CYBER` entry and a `MODS` row.
   Their textures are prompts in `core/materials/PLAN.md` (Characters: cybernetic arms and the giants' metal). The Animation Lab's Body mods menu puts any of them on the whole cast.
-- `mod_gills`, rib gills: four slits a side over the ribs, a lip of skin over a dark slit, ray-cast onto the body. The
+- The replacement pairs (`mod_arms_cyber_up`, `mod_arms_loader_up`, `mod_arms_surgical_up`, group `arms_up`): the
+  same three designs in place of the body's own arms, on its own arm joints, with a collar on each shoulder over the
+  edge of the skin they replace. The item's `hide` is that skin (`arm_skin`: every triangle weighted at least half to
+  the arm below the shoulder), which `KCHAR.hidden` (and Godot's) leaves out like a worn item's; the fingers are thick
+  enough to hold the body's own nails inside. They wear with any lower pair (`Four bronze arms` in the Animation Lab).
+- `mod_gills`, rib gills: four slits a side over the ribs (from the lower ribs up toward the armpit), a lip of skin over a dark slit, ray-cast onto the body. The
   Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
 
 A mod's vertices name the MakeHuman vertex whose deltas move them (`_VIDX`), so the sliders reshape them with the body;
@@ -303,9 +319,22 @@ trousers (which stand further out of the capsules than a skirt's chains). The ch
 and still do with cloth off (no swing then: each frame starts from the rigid rest). A top that closes round the waist
 (kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
-to 2.5 cm, so a waistband stays under the top in any pose.
+to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
+`long`: a robe, the kimono) trousers below the hips are drawn in to within 6 mm of the legs' capsules, so wide ones
+(harem pants) stay under it (`kcS`).
 `bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
+
+**Posture** (both runtimes, first after the clip): the clips stand with the shoulders rolled forward and the upper back
+rounded, so the upper spine is drawn back (5 and 9 degrees on Spine1 and Spine2, the neck taking back 0.4 of it so the
+head comes back with the chest) and the shoulders dropped 6 and drawn back 10 degrees; the upper arms keep the way the
+clip points them, so a thrust or a held spear still aims where the clip aims it (`fig.posture` holds the numbers).
+**Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,
+so on a still frame (paused, scrubbed, a held pose) the passes after the clip turned last frame's already-turned bone
+again; each bone is put back to the mixer's own output before the mixer runs. The hips' position track is taken out
+of the clips and applied by `hipsTrack` from the rest by each playing clip's weight: left to the mixer, a still or slow
+one (driving, kneeling to repair, lying dead) was written on some frames and not others and the figure shook between
+the clip and standing. Godot's player writes every track each frame and needs neither.
 
 **Peoples** (`data/peoples.json`): per culture, ancestry ranges, skin colour stops (a stranger falls anywhere along
 them), hair and eye colours, the age at which hair greys, beard odds, slider ranges that override the default spread, and

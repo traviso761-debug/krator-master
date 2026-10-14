@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering or pickaxe clip, so two are made from others (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last (dig: the heavy swing), and hammer, a procedural loop on the standing idle (hammer_loop). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
  "groups": [
   {
    "id": "move",
@@ -159,14 +159,32 @@
   },
   {
    "key": "thrust",
-   "meshy": 240,
+   "derive": {
+    "thrust": "one",
+    "from": "combat_idle"
+   },
    "label": "Thrust / stab",
    "group": "melee",
    "loop": false,
    "hold": {
     "R": [
      "dagger",
-     "sword",
+     "sword"
+    ]
+   }
+  },
+  {
+   "key": "spear_thrust",
+   "derive": {
+    "thrust": "spear",
+    "from": "combat_idle",
+    "cycle": 1.4
+   },
+   "label": "Spear thrust",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
      "spear"
     ]
    },
@@ -271,6 +289,10 @@
   {
    "key": "spear_walk",
    "meshy": 560,
+   "derive": {
+    "carry": "spear",
+    "from": "spear_walk@src"
+   },
    "label": "Spear advance",
    "group": "melee",
    "loop": true,
@@ -1258,7 +1280,7 @@
    "group": "life",
    "loop": true,
    "hold": {
-    "L": [
+    "R": [
      "lantern",
      "torch"
     ]
@@ -1274,8 +1296,8 @@
   {
    "key": "dig",
    "derive": {
-    "loop_of": "blunt_swing",
-    "back": 0.6
+    "dig": true,
+    "cycle": 1.4
    },
    "label": "Dig (hoe, pickaxe)",
    "group": "work",

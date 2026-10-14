@@ -160,7 +160,17 @@ def spear(m):
 
 
 def shield(m):
-    # a round shield on the palm side (+X): the hand holds its centre grip
+    # a round shield, the hand on its centre grip and the board out past the back of the hand (-X): made on the palm
+    # side and turned half round the handle, since a shield held with the board on the palm side faced its boss into
+    # the body in every clip
+    s = Mesh()
+    _shield(s)
+    for mat, tris in s.parts.items():
+        for t in tris:
+            m.tri(mat, *[p * [-1, 1, -1] for p in t])
+
+
+def _shield(m):
     rod(m, 'leather', 'y', (0.01, -0.06, 0), (0.01, 0.06, 0), 0.014)
     c = 0.045
     m.loft('wood', [ring((c, 0, 0), 'x', 0.32, 16), ring((c + 0.02, 0, 0), 'x', 0.32, 16)])
@@ -267,6 +277,9 @@ SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pic
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
 GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
+# degrees a prop turns about its handle in a lower hand (the forearm held forward in its guard): the shield stands up
+# with its board out, not flat like a tray (mirrored on the right)
+LOW_TURN = {'shield': 90}
 
 PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('axe', 'Axe', 'R', axe),
          ('mace', 'Mace', 'R', mace), ('warhammer', 'War hammer', 'R', warhammer), ('spear', 'Spear', 'R', spear),
@@ -316,13 +329,16 @@ def main():
         out.append({'id': pid, 'label': label, 'hand': hand, 'glb': 'pieces/props/%s.glb' % pid, 'grip': GRIP.get(pid, 'fist')})
         if pid in SUPPORT:
             out[-1]['support'] = SUPPORT[pid]
+        if pid in LOW_TURN:
+            out[-1]['low_turn'] = LOW_TURN[pid]
         if pid in STRING:
             out[-1]['string'], out[-1]['arrow'] = STRING[pid], 'arrow'
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
     json.dump({'about': 'Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where '
                'the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). '
                'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '
-               'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). '
+               'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop '
+               'turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. '
                'data/clips.json hold says which clip holds what.',
                'props': out}, open(os.path.join(HERE, 'data', 'props.json'), 'w'), indent=1)
 

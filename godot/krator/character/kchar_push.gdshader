@@ -8,6 +8,8 @@
 //   mantle's hem (and a giant's lower arms, 10-13). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
 //   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
+// - kcS > 0 (trousers under a loose top that reaches below the knees, kit item 'long'): below the hips drawn in to
+//   within kcS of the legs' capsules (the first six: thighs, shins, feet), so wide ones stay under the robe.
 shader_type spatial;
 render_mode cull_disabled;
 
@@ -25,6 +27,7 @@ uniform vec3 kcH;
 uniform float kcP = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;
+uniform float kcS = 0.0;
 
 void vertex() {
 	if (kcL > 0.5) {
@@ -52,6 +55,22 @@ void vertex() {
 					}
 				}
 				VERTEX = q + normalize(d) * (r + l * sh / R);
+			}
+		}
+	}
+	if (kcS > 0.0 && VERTEX.y < kcH.y) {
+		for (int i = 0; i < 6; i++) {
+			if (kcA[i].w <= 0.0) {
+				continue;
+			}
+			vec3 a = kcA[i].xyz;
+			vec3 ab = kcB[i].xyz - a;
+			float r = kcA[i].w + kcS;
+			vec3 q = a + ab * clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+			vec3 d = VERTEX - q;
+			float l = length(d);
+			if (l > r && l < r + 0.15) {
+				VERTEX = q + d * (r / l);
 			}
 		}
 	}

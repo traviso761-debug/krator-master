@@ -30,7 +30,7 @@ from scipy.spatial import cKDTree
 
 import glbio
 
-from arms2 import INSET, FWD, HANG, drop_of, lower, upper  # where the lower pair hangs (shared with make_garments.py)
+from arms2 import INSET, HANG, drop_of, fwd, lower, upper  # where the lower pair hangs (shared with make_garments.py)
 
 BLEND = 0.09           # metres: how far from the flesh copy's open edge it blends into the torso
 TUCK = 0.05            # the point inside the ribs the copy's open root is drawn toward, in from its shoulder joint
@@ -45,7 +45,7 @@ def hang(S, sx, bind, jidx):
     """(pivot, R): the lower arm's turn at rest, about its shoulder joint, down toward the body by HANG"""
     a = -sx * np.radians(HANG)
     R = np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1.0]])
-    return bind[jidx[S + 'Arm']][:3, 3] + np.array([-sx * INSET, -drop_of(bind, jidx), FWD]), R
+    return bind[jidx[S + 'Arm']][:3, 3] + np.array([-sx * INSET, -drop_of(bind, jidx), fwd(drop_of(bind, jidx))]), R
 
 
 def _quat(R):
@@ -94,7 +94,7 @@ def add_joints(path):
     jidx = {n: k for k, n in enumerate(names)}
     new_names, new_bind, new_par, remap = [], [], [], {}
     for sx, S in zip((1, -1), SIDES):
-        off = np.array([-sx * INSET, -drop_of(bind, jidx), FWD])
+        off = np.array([-sx * INSET, -drop_of(bind, jidx), fwd(drop_of(bind, jidx))])
         for n in chain_names(names, S):
             k = jidx[n]
             B = bind[k].copy()
@@ -266,7 +266,7 @@ def flesh_arms(body, out):
             vmap[used] = np.arange(len(used))
             tri = vmap[tri]
             w = w_all[used]
-            off = np.array([-sx * INSET, -drop_of(body.bind, body.jidx), FWD])
+            off = np.array([-sx * INSET, -drop_of(body.bind, body.jidx), fwd(drop_of(body.bind, body.jidx))])
             pv, R = hang(S, sx, body.bind, body.jidx)
             turn = np.clip((w - 0.5) / 0.4, 0, 1)[:, None]
             v = A['POSITION'][used].astype(float) + off
@@ -513,7 +513,7 @@ def gills(body, out):
     B = body.prims['Human.body']
     P, T = B['POSITION'].astype(float), B['T']
     y1, y2 = body.P('Spine1')[1], body.P('Spine2')[1]
-    rows = [y1 + (y2 - y1) * f for f in (-0.7, -0.4, -0.1, 0.2)]
+    rows = [y1 + (y2 - y1) * f for f in (-0.15, 0.15, 0.45, 0.75)]   # over the side of the ribcage, a rib apart
     is_torso = np.zeros(len(P), bool)
     is_torso[body.torso] = True
     skin, slit = {'P': [], 'N': [], 'UV': [], 'J': [], 'W': [], 'VID': [], 'T': []}, None

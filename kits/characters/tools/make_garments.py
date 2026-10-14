@@ -747,19 +747,20 @@ def sleeves(gid, end, ease, paint, ease_end=None, rows=8, n=18):
 # upper one is; a top leaves holes where the lower arms come out of the ribs (four_armed). make_mpfb.py gives the lower
 # sleeves the lower joints' weights (by the garment's arms: 4 in its .cloth.json, FOUR here)
 FOUR = set()
+LOWF = arms2.FWD_MAN if BODY == 'male' else arms2.FWD        # how far forward the lower pair sits (arms2.fwd)
 
 
 def low(p, side):
     """a point on the upper arm of side 'Left' or 'Right' (Blender), where the lower pair has it"""
     sx = 1 if side == 'Left' else -1
-    return arms2.from_gl(arms2.place(arms2.to_gl(p), arms2.to_gl(J(side + 'Arm'))[0], sx))[0]
+    return arms2.from_gl(arms2.place(arms2.to_gl(p), arms2.to_gl(J(side + 'Arm'))[0], sx, f=LOWF))[0]
 
 
 def _low_co():
     out = CO.copy()
     for side, sx in (('Left', 1), ('Right', -1)):
         m = CO[:, 0] * sx > 0
-        out[m] = arms2.from_gl(arms2.place(arms2.to_gl(CO[m]), arms2.to_gl(J(side + 'Arm'))[0], sx))
+        out[m] = arms2.from_gl(arms2.place(arms2.to_gl(CO[m]), arms2.to_gl(J(side + 'Arm'))[0], sx, f=LOWF))
     return out
 BVH_A2 = BVHTree.FromPolygons([Vector(c) for c in _low_co()], [p for p in POLY if all(_LM[i] for i in p)])
 
@@ -994,7 +995,11 @@ def garment(gid, slot, body, label):
 @garment('voth_m_peasant_cloak', 'torso', 'male', 'Field cloak')
 def _():
     p = P('maguey', 0.12, [B('bottom', 0.0, 0.035, 'solid', 'earth'), B('bottom', 0.045, 0.06, 'solid', 'earth')])
-    return [cape('voth_m_peasant_cloak', WAIST - 0.06, p, flare=0.15, span=1.75, ease=0.02)]
+    # the tilma: wrapped right round the body over the shoulders and knotted on the right one (it was a cape over
+    # the back alone, and left the chest bare; an open arc meeting at the front still gaped there)
+    return [torso_tube('voth_m_peasant_cloak', TOP + 0.01, WAIST - 0.06, 0.02, p, n=32, hang_from=SHOULDER - 0.12, flare=0.15,
+                       iters=2, over_arms=True, stiff=0.05, layer=2),
+            blob('voth_m_peasant_cloak_knot', _front(SHOULDER - 0.03, 0.045) + np.array([-0.09, 0, 0]), (0.06, 0.04, 0.05), P('maguey', 0.12))]
 
 
 @garment('voth_m_peasant_maxtlatl', 'legs', 'male', 'Loincloth')
@@ -1006,7 +1011,9 @@ def _():
 @garment('voth_f_peasant_huipil', 'torso', 'female', 'Plain huipil')
 def _():
     p = P('cotton', 0.09, [B('top', 0.0, 0.025, 'solid', 'madder'), B('bottom', 0.0, 0.03, 'zigzag', 'madder', None, 0.05)])
-    return [torso_tube('voth_f_peasant_huipil', TOP, HIPS[2] - 0.10, 0.012, p, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.10, hull_from=CHEST + 0.02)] + \
+    # it follows the body under the bust and hangs from the waist: spanning the hollows from the bust down, it fell
+    # straight from the breasts to the hem and stood out from the belly
+    return [torso_tube('voth_f_peasant_huipil', TOP, HIPS[2] - 0.10, 0.012, p, hang_from=WAIST, hang_side=WAIST - 0.02, flare=0.05, hull_from=CHEST - 0.07)] + \
         sleeves('voth_f_peasant_huipil', 0.35, 0.02, P('cotton', 0.09, [B('bottom', 0, 0.02, 'solid', 'madder')]), ease_end=0.03, rows=4)
 
 

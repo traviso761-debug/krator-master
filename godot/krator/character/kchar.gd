@@ -122,6 +122,12 @@ static func hidden(rec: Dictionary, kit: Dictionary) -> PackedByteArray:
 		var b := unbits(it["hide"], n)
 		for i in n:
 			o[i] |= b[i]
+	# a mod that replaces part of the body (cybernetic arms in place of the arms) hides the skin it replaces
+	for it in mods(rec, kit):
+		if it.has("hide"):
+			var b := unbits(it["hide"], n)
+			for i in n:
+				o[i] |= b[i]
 	return o
 
 

@@ -113,7 +113,7 @@
   function groupOf(n){ return GROUPS.filter(function(g){ return g.clips.indexOf(n) >= 0; })[0]; }
 
   /* ---- stage ---- */
-  var renderer, scene, camera, clock = new THREE.Clock(), figs = [], current = 'idle', paused = false, speed = 1;
+  var renderer, scene, camera, clock = new THREE.Clock(), figs = [], current = 'idle', paused = false, speed = 1, keyLight = null;
   var cam = { yaw:0, pitch:0.12, dist:9, x:0, ty:0.95, want:{ yaw:0, pitch:0.12, dist:9, x:0, ty:0.95 } }, focus = null, who = 'all';
   function boot(){
     var stage = $('stage');
@@ -125,10 +125,12 @@
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(30, 1, 0.05, 80);
     scene.add(new THREE.HemisphereLight(0xfff4e0, 0x3a4a3c, 0.55));
-    var key = new THREE.DirectionalLight(0xffe2b8, 0.8); key.position.set(2.5, 5, 4); key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
+    // the key light's shadow: a 4096 map fitted to the figures shown (lineup), so a shadow pixel is a few millimetres
+    // and the head's shadow on the back has a clean edge; normalBias keeps the skin from shadowing itself in speckles
+    var key = keyLight = new THREE.DirectionalLight(0xffe2b8, 0.8); key.position.set(2.5, 5, 4); key.castShadow = true;
+    key.shadow.mapSize.set(4096, 4096);
     key.shadow.camera.left = key.shadow.camera.bottom = -6; key.shadow.camera.right = key.shadow.camera.top = 6;
-    key.shadow.bias = -0.0005; scene.add(key);
+    key.shadow.bias = -0.0003; key.shadow.normalBias = 0.012; scene.add(key);
     var rim = new THREE.DirectionalLight(0x9fc3ff, 0.4); rim.position.set(-3, 3, -4); scene.add(rim);
     var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 6), new THREE.ShadowMaterial({ opacity:0.26 }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
@@ -163,6 +165,14 @@
     shown.forEach(function(s, i){ s.f.group.visible = true; s.tag.hidden = false; s.f.group.position.x = xs[i] - mid; });
     cam.want.ty = 0.95 * big;
     cam.want.dist = Math.max(4.2 * big, x * 1.25 + 3.2 * big);
+    if(keyLight){
+      // the shadow box, in the light's frame (it looks down from (2.5, 5, 4)): the row and a figure's reach either
+      // side; up and down, the tallest figure plus the drift of the row's ends (about 0.45 of their distance from the
+      // middle, the light being off to one side)
+      var sc = keyLight.shadow.camera, half = x / 2 + 1.4 * big;
+      sc.left = -half; sc.right = half; sc.bottom = -(0.45 * half + 0.4 * big); sc.top = 1.4 * big + 0.45 * half + 0.3;
+      sc.updateProjectionMatrix();
+    }
     if(focus && !shown.some(function(s){ return s.c.id === focus; })) setFocus(null);
     else setFocus(focus);
   }

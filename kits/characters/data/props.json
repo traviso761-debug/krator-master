@@ -1,5 +1,5 @@
 {
- "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). data/clips.json hold says which clip holds what.",
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. data/clips.json hold says which clip holds what.",
  "props": [
   {
    "id": "sword",
@@ -88,7 +88,8 @@
    "label": "Shield",
    "hand": "L",
    "glb": "pieces/props/shield.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "low_turn": 90
   },
   {
    "id": "bow",

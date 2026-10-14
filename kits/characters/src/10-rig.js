@@ -179,6 +179,12 @@ var KCHAR = (function(){
         var b = unbits(it.hide, kit.base_tris);
         for(var i=0;i<b.length;i++) o[i] |= b[i];
       });
+      // a mod that replaces part of the body (cybernetic arms in place of the arms) hides the skin it replaces
+      modsOf(rec, kit).forEach(function(it){
+        if(!it.hide) return;
+        var b = unbits(it.hide, kit.base_tris);
+        for(var i=0;i<b.length;i++) o[i] |= b[i];
+      });
       return { base:o };
     }
     kit.regions.forEach(function(r){ out[r] = new Uint8Array(kit.base_tris[r]); });

@@ -381,6 +381,10 @@ func apply(rec: Dictionary) -> void:
 		var it = KChar.item(rec, kit, items[i]["slot"])
 		if it != null and it["id"] == items[i]["id"]:
 			worn[i] = true
+	for m in KChar.mods(rec, kit):            # a mod that replaces part of the body covers its skin too
+		var mi := items.find(m)
+		if mi >= 0:
+			worn[mi] = true
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (kits/characters/tools/mods.py)
@@ -515,13 +519,57 @@ func hold(want: Dictionary) -> void:
 		if side == "L":
 			_bow = {}
 		if id != null:
-			holder.add_child(_scene("%s/pieces/props/%s.glb" % [dir, id]))
+			var m := _scene("%s/pieces/props/%s.glb" % [dir, id])
+			holder.add_child(m)
+			# in a lower hand a prop with low_turn turns about its handle (the shield stands up and faces out)
+			var turn := float(props.get(id, {}).get("low_turn", 0))
+			if side.length() > 1 and turn != 0.0 and m is Node3D:
+				(m as Node3D).rotation.y = (1.0 if side[0] == "L" else -1.0) * deg_to_rad(turn)
 			if side == "L" and props.get(id, {}).has("string"):
 				_make_bow(holder, props[id])
 	_after_clip(-1.0)
 
 
+# posture (50-figure.js posture): the clips stand with the shoulders rolled forward and the upper back rounded; after
+# each clip the upper spine is drawn back (degrees per joint, the head kept level through the neck) and the shoulders
+# dropped and drawn back, in the skeleton's frame (the figure's)
+const POSTURE := {"spine": {"Spine1": 5.0, "Spine2": 9.0}, "neck": 0.4, "drop": 6.0, "back": 10.0}
+
+
+func _posture() -> void:
+	if player == null or not player.is_playing():
+		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
+	# the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
+	# spear aims where the clip aims it
+	var arms := {}
+	for n in ["LeftArm", "RightArm"]:
+		var a := skeleton.find_bone(n)
+		if a >= 0:
+			arms[a] = _gp(a).basis.get_rotation_quaternion()
+	var lean := 0.0
+	for n in POSTURE["spine"]:
+		var b := skeleton.find_bone(n)
+		if b < 0:
+			continue
+		var a := deg_to_rad(float(POSTURE["spine"][n]))
+		lean += a
+		_turn(b, Quaternion(Vector3(1, 0, 0), -a))
+	var neck := skeleton.find_bone("Neck")
+	if neck >= 0:
+		_turn(neck, Quaternion(Vector3(1, 0, 0), lean * float(POSTURE["neck"])))
+	for sh in [["LeftShoulder", 1.0], ["RightShoulder", -1.0]]:
+		var b := skeleton.find_bone(sh[0])
+		if b < 0:
+			continue
+		_turn(b, Quaternion(Vector3(0, 0, 1), -sh[1] * deg_to_rad(float(POSTURE["drop"]))))
+		_turn(b, Quaternion(Vector3(0, 1, 0), sh[1] * deg_to_rad(float(POSTURE["back"]))))
+	for a in arms:
+		var par := skeleton.get_bone_parent(a)
+		skeleton.set_bone_pose_rotation(a, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[a]).normalized())
+
+
 func _after_clip(dt: float) -> void:
+	_posture()
 	_arms2(dt)
 	_body_fix()
 	_grip()
@@ -1046,6 +1094,7 @@ func _is_loose(part: Dictionary) -> bool:
 
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
 const TUCK := 0.025
+const SQUEEZE := 0.006
 func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
 	var pm := ShaderMaterial.new()
 	pm.shader = PUSH_SHADER
@@ -1074,6 +1123,10 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 		pad = 0.012 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
+	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
+	var squeeze: bool = part["slot"] == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
+		and legs != null and not legs.get("loose", false)
+	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else 0.0)
 	_push_mats.append(pm)
 	return pm
 
