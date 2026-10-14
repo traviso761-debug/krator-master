@@ -265,7 +265,7 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "2484c61e85bc"
+  "cdac98b40c8b"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
@@ -361,7 +361,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "6584579e59a4"
+  "97e46dfadc2e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
