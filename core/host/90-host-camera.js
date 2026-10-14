@@ -1,7 +1,7 @@
 // ================================================================= CORE HOST — camera: orbit, pan, fly, walk, the pin, the depth range
 // [web] core/host/90-host-camera.js (ROADMAP.md section 10; GODOT-PLAN.md Phase 1). One camera for every build that takes
 // core/host, generalised from Streetlab's (kits/catalog/krator-asset-engine.js 85-207: orbit, right-drag pan, WASD with
-// Shift and Ctrl, F to walk; settlements/streetlab/targets/voth-city/58-vc-tools.js: the pin, G and F, the walker's
+// Shift and Ctrl, F to walk; settlements/voth/targets/voth-city/58-vc-tools.js: the pin, G and F, the walker's
 // ledge guard; core/city/50-city-host-streets.js 13-19: the depth range) and from the biome kits' 90-host-camera.js (the
 // spherical orbit every kit's setView and preset views are written in, kept to the bit so their pictures do not move).
 // It reads nothing of a build's but what KHOST.take hands it (91-host-loop.js makes it with the take's options).

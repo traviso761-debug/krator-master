@@ -1,5 +1,7 @@
 # Voth-sim into full-refactor: the handoff (2026-10-13)
 
+*2026-10-14: merged (`fbdb7d6c`), then Streetlab moved to `settlements/voth`; the live paths below are the new ones.*
+
 The `Voth-sim` branch (head `0df22599`, 61 commits since its base with `full-refactor`, `da9e1f06`, 2026-10-12) is
 the Voth citizen simulation of `SIM-ROADMAP.md`, phases A to E, plus the animals and the pets the owner asked for on
 the way. `full-refactor`'s `ROADMAP.md` stage 5 already says the simulation starts from this branch "merged as that
@@ -23,7 +25,7 @@ and the SIM example rebuilt and verified on every change):
 | `test-sim.js` | 157 checks, each with its negative (`node core/simulation/test-sim.js`) |
 | `SCHEMA.md`, `PLAN.md` | the needs, items, economy, carriers, animals, commands, hooks, wake and lag |
 
-**`settlements/streetlab`** (Voth's city plan, the canonical Voth): `targets/voth-city/41`-`47` (interiors for every
+**`settlements/voth`** (Streetlab then: Voth's city plan, the canonical Voth): `targets/voth-city/41`-`47` (interiors for every
 lot building, places and posts, the pedestrian layer, 53,387 citizens and slaves with homes, jobs, rotas, needs and
 things, the economy, the animals and pets), the host fragments `56b` (the report's sections) and `56c` (the run, the
 bodies, carts, carriers and animals drawn near the camera, `VC.simDay`, `VC.simDays`), `15-vc-tune.js`
@@ -73,7 +75,7 @@ git diff --name-only --diff-filter=U | grep -E '/dist/|build-manifest.json|INDEX
 # rebuild everything both branches touched, in this order:
 (cd kits/catalog && python3 build.py) ; (cd kits/fauna && python3 build.py)
 for k in scyvoi desert-nomads ash-nomads interiors ancients-interiors; do (cd kits/$k && python3 build.py); done
-for s in streetlab shade mungo; do (cd settlements/$s && python3 build.py); done
+for s in voth shade mungo; do (cd settlements/$s && python3 build.py); done
 (cd core/simulation/example && python3 build.py)
 python3 tools/audit_port.py ; python3 tools/make_index.py
 python3 tools/test_all.py                       # the refactor's push checks: node tests (test-sim.js is picked up), rebuilds, baseline
@@ -81,8 +83,8 @@ python3 tools/test_all.py                       # the refactor's push checks: no
 
 The built pages are LFS objects on `full-refactor` (`.gitattributes`): the merging checkout needs `git lfs`. Rewrite
 the baseline rows only for the pages rebuilt above, then verify the ones `Voth-sim` changed:
-`settlements/streetlab/verify.py dist/voth-city.html --assert` (40 minutes; run it alone), Shade, Mungo, the SIM
-example (`check.py`), `kits/fauna/verify.py`. `settlements/streetlab/verify.py` still has its own harness helpers
+`settlements/voth/verify.py dist/voth-city.html --assert` (40 minutes; run it alone), Shade, Mungo, the SIM
+example (`check.py`), `kits/fauna/verify.py`. `settlements/voth/verify.py` still has its own harness helpers
 (the refactor did not touch it); moving it onto `tools/harness.py` is a separate step.
 
 ## 4. Where it lands in the refactor's plan

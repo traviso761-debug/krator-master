@@ -224,7 +224,7 @@ SL.interiorAlleys = function (lab) {
 
 /* ---------------------------------------------------------------- the runner */
 /* steps 0-5 are the world's own (its site: ground, landmarks, wall, districts, avenues, highways); a world with other
-   steps sets SL.STEPS and SL.layout itself (settlements/streetlab/targets/voth-city/35-vc-steps.js) */
+   steps sets SL.STEPS and SL.layout itself (settlements/voth/targets/voth-city/35-vc-steps.js) */
 SL.STEPS = ['the ground and the raster', 'landmarks', 'the wall', 'districts', 'avenues and gates', 'highways', 'civic buildings',
   'avenue lots', 'main streets', 'main-street lots', 'side streets', 'side-street lots, alley entrances', 'alleys and alley lots'];
 SL.layout = function () {

@@ -346,3 +346,10 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   on the def makes the kput filter at the end of `88-hl-dress.js` swap every slate-scale or shingle roof piece that
   building lays for a twin of the same geometry in that tile (world-unit UVs, 3.2 m per repeat, instance colour
   dropped). The Hall carries `roofTile:'hTileW'`; the Fortress stays slate; the wall towers stay slate.
+
+## 2026-10-14 — Roketstad on the North Highlands biome
+- The forest is `biomes/nhighlands` (its temperate band) on `core/biome` and `core/space`, read in place (build.py
+  `TARGET_BIO`); the vendored north-west lowlands copies are gone. The host binding (`targets/roketstad/86-bio-45-init.js`)
+  keeps the old mask, binds cold/rock/wet/mist fields on KRAND noise, puts the LOD spine at the N, S and W gates and the
+  port, and registers the hero trees in `REG` and every flora item in `KTAGS.page`. `90b` ticks the kit's runtime LOD every
+  frame; the Forest button still hides the lot. README.md has the numbers, KNOWN_ISSUES.md what is open.

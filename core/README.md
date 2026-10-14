@@ -131,7 +131,7 @@ obstacles or fewer are scanned), and `BIO.scatter` tests its spacing through a g
 with the square of the count. The candidates come back in insertion order and take the same test, so the answers are
 the scans' exactly (`test-place.js`, and every kit's baked geometry hashed the same before and after). An obstacle
 changed in place after it was pushed is not seen: push a new one. A page without `core/space` (the settlements that
-read this folder: Yuni, Locus, Mungo, Verge, Dhelv, Streetlab) runs the scans as before.
+read this folder: Yuni, Locus, Mungo, Verge, Dhelv, Voth) runs the scans as before.
 
 **Records (core/tags, 2026-10-12).** With `BIO.init({tags: '<build>'})` (and core/rand and core/tags in the build:
 `CORE_TAGS` in each kit's `build.py`) every item a kit puts is one core/tags item set, its instances read from the
@@ -243,7 +243,7 @@ The atmosphere and street-dressing module: evening lights and a glow layer, part
 sewer grates, lamps and fountains, InstancedMesh culling, the open-water wave field (`#include <atmos_waves>`) and the
 sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behind a five-item host binding, so any
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
-reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves), `settlements/girder` (the sky's light) and
+reads it through `TARGET_CORE`), the first Voth (the bay's waves; retired 2026-10-14, its build in `archive/voth-first`), `settlements/girder` (the sky's light) and
 `settlements/locus` with `settlements/mungo` (the lake's waves, shading only); they add `core/atmos` to their `build.py` core
 loop and bind it in `src/90-atmos-host.js`. `kits/ringsea` and `biomes/geyser` take its core, presets, wave field and
 skylight for their sea through `core/water`.
@@ -293,7 +293,7 @@ each lists the three fragments the way it lists `lod/`. `furnish/README.md` has 
 The city builder and its infill: avenues and lots, main streets, side streets, alleys, and the infill of every block,
 as plain records (ways, lots, greens) with the step that made each, on one occupancy raster. A world brings its site
 (steps 0-5: ground, landmarks, wall, districts, avenues, highways), its kit and its tuning; the module does steps 6-12.
-Voth's city plan (`settlements/streetlab`) is the first world on it. **Every settlement should eventually be ported to
+Voth's city plan (`settlements/voth`) is the first world on it. **Every settlement should eventually be ported to
 it**: `city/README.md` has the method, the contract, the porting steps and the module's debts to the refactor.
 
 | File | What |
@@ -336,8 +336,8 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 | `minimap/88a-core-minimap-host.js` | the browser panel ([web], moves to `core/host/` in Phase 1): `KMAP.mount(M, op)`, also attached as `M.mount(op)`. Base painted once and repainted when `M.rev()` moves, overlay a few times a second, hover names, click goes there, M toggles. A build takes both files |
 | `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
 
-**Used by** `settlements/voth` (the minimap: its `build.py` reads `core/minimap/` like `core/lod/`, and
-`src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons), `settlements/locus` and `settlements/mungo`
+**Used by** the first Voth (retired 2026-10-14; the minimap: its `build.py`, now `archive/voth-first/build.py`, read `core/minimap/` like `core/lod/`, and
+`settlements/voth/src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons), `settlements/locus` and `settlements/mungo`
 (`88b-locus-minimap.js`: the ground, the streets by class, `PLACED`; Mungo adds its reed islands in `MINIMAP_EXTRA`) and `settlements/mungo` (`sched/`:
 its `CORE_MODULES`; the simulation's group formations follow `KSCHED.formation`'s offsets) and `settlements/shade`
 (`sched/` and `clock/` in its `CORE_MODULES`, with the simulation) and `settlements/yuni` (`minimap/` and `sched/`, its
@@ -380,8 +380,8 @@ panel's rate row) and `simulation/example/`.
 The host shell (ROADMAP.md section 10; GODOT-PLAN.md Phase 1), all `[web]`: `90-host-camera.js` (orbit, pan, fly, walk,
 the pin, the depth range), `91-host-loop.js` (`KHOST.take`, the frame loop, which owns the world clock `KCLOCK` and isolates
 each subscriber's errors, the `TICKS` shim, `window._ready`), `92-host-panel.js` (the bar, foldable panels, layers, time
-controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.js` (`window._api`). Streetlab's viewer,
-copied and generalised (Streetlab's own files are the Voth branch's; `sources.py` says when they change). A build lists
+controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.js` (`window._api`). Voth's city-plan viewer,
+copied and generalised (Voth's own files are the Voth branch's; `sources.py` says when they change). A build lists
 them with `host.py` (`CORE_HOST = khost.SHELL`, which adds `clock/20-core-clock.js`), hands its page to `KHOST.take`, and
 keeps no camera, loop, panel or probe of its own; `94-host-polytool.js` (the inspect, polygon and path tools) is opt-in.
 Read `host/README.md`. **Used by** every biome kit in `biomes/`, the Throne's eleven pages included.

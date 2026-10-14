@@ -1,5 +1,5 @@
 // ================================================================= CORE — simulation 6: needs, happiness, efficiency, loyalty
-// PLAN.md 8.2 and 8.3; the Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.4, 2.4 items 4 and 5). Opt-in: nothing
+// PLAN.md 8.2 and 8.3; the Voth brief (settlements/voth/SIM-ROADMAP.md 1.4, 2.4 items 4 and 5). Opt-in: nothing
 // here runs until a world calls SIM.needs(config); a world without it decides exactly as before.
 //
 //   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},

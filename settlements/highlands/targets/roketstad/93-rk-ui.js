@@ -9,7 +9,7 @@ function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createEle
  for(let i=0;i<CS*CS;i++){const q=rgb[kData[i*4]]||[0,0,0];d[i*4]=q[0];d[i*4+1]=q[1];d[i*4+2]=q[2];d[i*4+3]=255;}
  g.putImageData(img,0,0);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;PATHS.tex=t;return t;}
 uiButton('Paths',false,()=>{PATHS.on=!PATHS.on;groundM.material.map=PATHS.on?pathsTexture():window._terrainTex;groundM.material.needsUpdate=true;return PATHS.on;});
-uiButton('Forest',true,()=>{if(!BIO.baked||!BIO.baked.length)return false;const v=!BIO.baked[0].visible;for(const m of BIO.baked)m.visible=v;return v;});
+uiButton('Forest',true,()=>{if(!BIO.baked||!BIO.baked.length)return false;RK_FOREST.on=!RK_FOREST.on;for(const m of BIO.baked)m.visible=RK_FOREST.on;return RK_FOREST.on;});   // on again: the LOD tick (90b) re-hides the far chunks next frame
 {const wrap=document.createElement('span');wrap.style.cssText='display:inline-flex;align-items:center;gap:4px;margin-left:6px;font:12px system-ui;color:#ffe2b0';
  const lab=document.createElement('span');lab.textContent='hour '+CITYSKY.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=CITYSKY.hour;sl.style.width='120px';
  sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ui.appendChild(wrap);}

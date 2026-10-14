@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve Streetlab and let the Voth site editor save into the repo.
+"""Serve Voth's pages and let the Voth site editor and the city plan save into the repo.
 
     python3 serve.py [port]          # default 8813; open /dist/voth-site.html
 

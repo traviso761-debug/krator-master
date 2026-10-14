@@ -140,7 +140,7 @@ a check instead of a memory.
 
 Found stale in this pass alone: `README.md:77-79` (names the wrong builds for the encoding gap);
 `GODOT-PLAN.md` §1 (`core/simulation`: "documents only", while it has nine fragments, a node test and two
-adopters); `godot/tests/rand/krand.gd:5` ("Not yet run inside Godot"; it passes); `settlements/voth/KNOWN_ISSUES.md:35`
+adopters); `godot/tests/rand/krand.gd:5` ("Not yet run inside Godot"; it passes); `archive/voth-first/KNOWN_ISSUES.md:35`
 (lists "no LOD" while `:63-66` records core/lod in, and cites `45-kit.js:473` for a line now at `:484`);
 `biomes/throne/verify.py:2`. Each is small. Together they are why two external evaluations reported three
 fixed bugs as open. The fix is not more documents but fewer hand-kept facts: counts that a script can write
@@ -340,10 +340,10 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 
 ### Stage 5: the simulation (Phase 5; `core/simulation/PLAN.md` owns it)
 
-- **Done on `Voth-sim` and merged (2026-10-14, `fbdb7d6c`; `settlements/streetlab/HANDOFF-REFACTOR.md`):** Voth's
+- **Done on `Voth-sim` and merged (2026-10-14, `fbdb7d6c`; `settlements/voth/HANDOFF-REFACTOR.md`):** Voth's
   citizens on `core/simulation` (places, the pedestrian layer, 53k actors with homes, jobs and rotas; needs, items,
   economy, carriers, animals and pets; the wake, the lag and the half-hour buckets). The owner forks back off it to
-  keep tuning the economy; that work stays the Voth branch's (streetlab, voth, core/simulation, core/city). Next: the
+  keep tuning the economy; that work stays the Voth branch's (settlements/voth, core/simulation, core/city). Next: the
   handoff's known defects (river barges by timer, happiness drifting down over a week, the arena's beast paths and
   double drawing, verify's windows, the scarcity decision), Phase E's remainder (porters, barges, fodder, breeding,
   beef), Phase F (guards and the night watch, Ordinators and priests, arena bouts, dhows, taxis, the pleasure barge),
@@ -414,7 +414,7 @@ The ordered list for `TODO.md`, with the stages above folded into the existing i
 **What landed.** `core/city` is the city builder worked out in Streetlab: a city as plain records (ways, lots,
 greens, each with the step that made it) on one occupancy raster, steps 6 to 12 (civic, avenue lots, main streets,
 side streets, alleys, the infill of every block), and a reference drawing. A world brings its site (steps 0 to 5),
-its kit and its tuning. `settlements/streetlab` is now Voth's site editor and Voth's city plan on it, published in
+its kit and its tuning. Streetlab (`settlements/voth` since 2026-10-14) is now Voth's site editor and Voth's city plan on it, published in
 the gallery as "Voth - new" beside "Voth - old". The same commit added transport routes to `core/simulation`
 (`77-sim-5r-routes.js`: `SIM.transportQueue`, `SIM.vehiclePose`, pure functions of motion time), seven Voth and
 Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant bug" in prose.
@@ -497,11 +497,11 @@ baseline, and `core/materials/PROMPTS-ready.md`, where the Zeijani prompts stay 
   compilation, not a playtest". A verify step that walks the camera along a route by scripted keys and asserts the
   end position and a clean console. **Stage 0j**, on `tools/harness.py`.
 
-**Owned by another branch: the Voth citizen simulation** (`settlements/streetlab/SIM-ROADMAP.md`, the owner's brief
+**Owned by another branch: the Voth citizen simulation** (`settlements/voth/SIM-ROADMAP.md`, the owner's brief
 and its phases A to G; the branch is the owner's Voth and simulation session). It is this plan's stage 5 done on the
 Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-items.js`, `-economy.js`,
 `77-sim-7-lod.js`) and an interior in every Voth building. So the refactor:
-- **stays out of** `settlements/streetlab`, `settlements/voth`, `core/simulation` and `core/city`. Where the plan
+- **stays out of** `settlements/voth` (Streetlab's folder until 2026-10-14), `core/simulation` and `core/city`. Where the plan
   needs a change there (`core/city` onto `KRAND`, `core/mask` and `core/tags`; Voth's water; Verge onto the core
   `SIM`), it is written as a note for that branch or waits until the branch pauses;
 - **keeps the furniture batch's API exactly as it is.** Every new Voth interior furnishes through it, so the indexed
@@ -524,8 +524,26 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
    separately only if `Voth-sim` as pushed does not contain it); each is merged,
    rebuilt and proven like the other branches (verify, smoke, baseline).
 3. Stage 3 (section 10, steps 2 to 6): Girder, Iziz and Highlands, fauna mode on the merged fauna kit, the rest,
-   then Streetlab and Voth with their branch.
+   then Voth (`settlements/voth`, Streetlab's folder until 2026-10-14) with its branch.
 4. Stage 5 starts from Voth's sim, not Verge's (above).
+
+### Voth, Streetlab and the city-layout module (owner, 2026-10-14)
+
+- **The first Voth is retired.** `settlements/voth/voth.html` is off the gallery and the nightly list and is no longer
+  kept up to date; it stays only as a source to port from. `settlements/voth/catalog/` stays live (core/city builds
+  Voth's lots with it). The gallery's "Voth" is the city plan on `core/city`, under the old slug.
+- **One city-layout module.** `core/city` becomes the layout module every city takes (Verge and Iziz first, then new
+  builds): the general layout the new Voth grew in Streetlab (now `settlements/voth`) moves into it, parameterised; Ys's block
+  infill joins it as an alternative strategy a build can choose; a city's site, districts and kit stay per world.
+  A read-only survey comes first (what in Streetlab is general layout vs Voth content vs simulation vs host).
+- **Then Streetlab is retired.** Voth's city target (`targets/voth-city`, its site data, its simulation fragments)
+  moves to `settlements/voth`, which is Voth's home again; the first Voth's source moves to `archive/`; Streetlab's
+  remaining experiment pages are retired or become the module's example. The owner's economy fork merges
+  `full-refactor` just after the move (git carries its edits across the rename); the move is announced first.
+  **Moved (2026-10-14):** `settlements/streetlab` is now `settlements/voth` (its build, targets, site, simulation, docs and
+  pages, page names unchanged); the first Voth's page, build, verify, baseline, library pack and page-only docs are in
+  `archive/voth-first`. Its `src/` stays in `settlements/voth` as Voth's source library (the build runs or lifts its
+  fragments by name), with `catalog/` and `three.min.js`.
 
 ### The order before that (2026-10-12)
 
@@ -583,7 +601,7 @@ and sheet, 97 minimap (moved from `core/minimap/88a`), 98 edit modes (emit opera
 | 3 | Iziz (the Ancients lineage, full registry), then Highlands (the same camera) | 2 |
 | 4 | fauna mode and ground brushes on `KFIELD`. **Owner, 2026-10-13:** the fauna kit was fleshed out on its own branch (`ccr-05259b8d-kuy4pm`: the six-limbed beasts, the centaur, arboreal and climbing gaits, the Rift and lowland gliders, the plumelands' ash runner and racer), so fauna mode is built on that kit once it is merged: it places and edits animals from `kits/fauna`'s registry and life data (biome, diet, activity, traits, gait), as ADD/MOVE/REMOVE ops in `core/edits`, not a copy of Streetlab's flora mode | 1 |
 | 5 | every other settlement and kit sheet: Dalab, Xanadu, Reed Lake, Screamers, Jimjam, Mav's Refuge, Yuni, Locus, Mungo, Shade, Verge, Noah's Regret, Ys, Dhelv, the kits | about half a session each |
-| 6 | Streetlab and Voth onto it, with the Voth branch, when it pauses | with that branch |
+| 6 | Voth (`settlements/voth`) onto it, with the Voth branch, when it pauses | with that branch |
 
 Each step is proven by screenshots with the chrome hidden matching the old ones, `verify.py --assert` unchanged, the
 scripted walk, and a baseline that moves only for the adopted pages.

@@ -334,16 +334,27 @@ for(const o of OCC.list)footprint(obbCorners(o,.6));
 for(const o of PORTX.pads)cdisc(mg,o.x,o.z,PAD_R,'#000');
 cityBakeMasks();
 cityTerrainMesh();
-(function forest(){BIO.setScene(scene);const q=RK.QUALITY;const t0=performance.now();let T={};
+const RK_FOREST={on:true};
+(function forest(){BIO.setScene(scene);const q=RK.QUALITY;const t0=performance.now();let T={},F={};
+ // the flora is registered in the page's core/tags registry, with the furniture (89y made it; 89z named it roketstad)
+ if(typeof KTAGS!=='undefined'&&KTAGS.page)BIO.host.tags=KTAGS.page;
+ // the North Highlands kit, its temperate band (86-bio-45-init.js: the fields). The trees stand back from the roads,
+ // fields and the wall (bioTreeMaskFn); the floor takes the plain mask. RK.FOREST stocks the trees above the kit's
+ // showcase density (its quality), the floor at the kit's own. The kit's runtime LOD is ticked below.
+ const box=[-RK.WORLD/2,-RK.WORLD/2,RK.WORLD/2,RK.WORLD/2];
  BIO.host.mask=bioTreeMaskFn;
- // a denser forest than the biome's showcase stocking, paid for with detail: the tree passes see every distance stretched
- // (hero detail inside ~650 m of the town or the port instead of 1100), and stock at RK.FOREST x the showcase density
- const lodD0=BIO.lodD;BIO.lodD=(x,z)=>lodD0(x,z)*RK.FOREST_LOD;
- try{T=NWLOW.buildTrees?(BIO.cur='nwlow/trees',NWLOW.buildTrees(2450,q*RK.FOREST,{})):{};}catch(e){reportErr('forest trees: '+e.stack);}
- BIO.lodD=lodD0;
- BIO.host.mask=bioMaskFn;let F={};try{if(NWLOW.buildFloor){BIO.cur='nwlow/floor';F=NWLOW.buildFloor(2450,q);}}catch(e){reportErr('forest floor: '+e.stack);}
- BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,heroes:T.heroes,far:T.far,calls:b&&b.calls,inst:b&&b.inst,ms:Math.round(performance.now()-t0)};
- BIO._tickWind&&BIO._tickWind();})();
+ try{if(NHL.buildTrees){BIO.cur='nhighlands/trees';T=NHL.buildTrees(2450,q*RK.FOREST,box);}}catch(e){reportErr('forest trees: '+e.stack);}
+ BIO.host.mask=bioMaskFn;
+ try{if(NHL.buildFloor){BIO.cur='nhighlands/floor';F=NHL.buildFloor(2450,q,box);}}catch(e){reportErr('forest floor: '+e.stack);}
+ BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;const b=BIO.bake();
+ let under=0;if(F.under)for(const k in F.under)under+=F.under[k];
+ window._biome={kit:'nhighlands',trees:T.trees,heroes:T.heroes,far:T.far,colonies:T.colonies,under,calls:b&&b.calls,inst:b&&b.inst,
+  flora:(()=>{const R=BIO.host.tags;if(!R||typeof R!=='object')return null;const L=R.query({'class':'flora'});return{records:L.length,sets:L.filter(r=>r.set).length};})(),ms:Math.round(performance.now()-t0)};
+ window._biomeSpecies=T.bySpecies;
+ BIO._tickWind&&BIO._tickWind();
+ // the kit's runtime LOD: a chunk of hero trees or floor is drawn only while the camera is within its range (NHL.LOD),
+ // the far impostors past it. The Forest button (93-rk-ui.js) hides the lot
+ FRAME_HOOKS.push(()=>{if(!RK_FOREST.on)return;camera.updateMatrixWorld();BIO.lodTick(camera);});})();
 // ---------------------------------------------------------------- 9. bakes
 kbake(scene);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-BUILD_T0);window._occ=OCC.list.length;

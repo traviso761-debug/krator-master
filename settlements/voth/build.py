@@ -1,260 +1,418 @@
 #!/usr/bin/env python3
-"""Concatenate src/* into a single self-contained world file (Voth).
+"""Build Voth: the Voth site editor and the Voth city plan, two self-contained pages.
 
-Also enforces the rules that make subagent work safe:
+    python3 build.py            # writes dist/voth-site.html and dist/voth-city.html
 
-  1. RESEED DISCIPLINE. Every generative fragment must open with reseed(N),
-     and no seed is used in two different fragments. The PRNG is one global
-     stream; without a reseed at each fragment head, a subagent that adds two
-     rnd() calls in 55-chinampa.js silently moves every tree, hut and
-     farmstead generated after it. With it, each fragment is its own stream
-     and an edit cannot escape the file it was made in.
-
-  2. NO LOCAL PALETTES. Colour arrays belong in 05-palette.js; everything
-     else reads PAL.
-
-  3. MANIFEST. Writes build-manifest.json: a sha1 per fragment, so the
-     planner can see which fragments a subagent actually touched and confirm
-     it stayed inside its contract.
-
-  Files sharing a numeric prefix (78a-, 78b-, ...) are one fragment split
-  into readable parts; the rules apply to the joined unit.
-
-Usage:  python3 build.py [--no-checks]
+The city plan runs core/city (the city builder and its infill: the plan records, the occupancy raster, steps 6-12)
+on the owner's saved site, with Voth's own builders, the simulation, the swbay biome and the catalog. A page is:
+three.js r128, the catalog engine (kits/catalog: furniture core, asset engine), the Voth catalog's LOD and building
+registries (settlements/voth/catalog), library texture sets from tex/ (tools/textures/pack.py from materials.json),
+then the target's fragments. Each vendor file is its own <script>, so a syntax error in one names it.
+Deterministic: no dates, no hashes of the clock. (This build grew in Streetlab, whose first page, a street-placement
+toy on a plain, was the method's test bed; the toy is retired and its machinery is core/city. Streetlab's folder became
+Voth's on 2026-10-14.) src/ is Voth's source library: the first Voth's fragments (that page is retired, in
+archive/voth-first), which this build runs whole or lifts by name (vothlift.py), never copies.
 """
-import hashlib, json, os, re, subprocess, sys
-try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
-    sys.stdout.reconfigure(encoding='utf-8')
-except Exception:
-    pass
-
-# Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
-# tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
-import os as _os, subprocess as _sp, sys as _sys
-_cp = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), 'tools', 'check_port.py')
-if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
-        _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
-    _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
-
-
-def find_node():
-    """node for the syntax check: $NODE, then PATH, then the usual install places
-    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
-    there is none: the build then says plainly that the syntax was NOT checked.
-    Every build.py carries this same function; a fix belongs in all of them."""
-    import glob as _g, shutil as _sh
-    env = os.environ.get('NODE')
-    if env:
-        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
-        if hit:
-            return hit
-        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
-    hit = _sh.which('node')
-    if hit:
-        return hit
-    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
-    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
-                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
-                os.path.expanduser('~/.volta/bin/node')):
-        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
-        if hits:
-            return hits[0]
-    return None
-
+import base64, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, 'src')
-LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
-MINIMAP_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'minimap')   # shared minimap (core/minimap/88-core-minimap.js)
-ATMOS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos')   # shared atmosphere: the bay's wave field (core/atmos/README.md)
-RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
-TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the registry PLACED is read into (src/97t-voth-tags.js; core/tags/README.md)
-MASK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mask')   # KMASK: the placement mask as data (core/mask/README.md; src/40-ground.js)
-CORE_FRAGS = set()   # core/rand, core/tags and core/mask fragments: each a unit of its own, never grouped with a src/ prefix (50a-cantons.js keeps its reseed check)
-OUT = os.path.join(HERE, 'voth.html')
-MANIFEST = os.path.join(HERE, 'build-manifest.json')
+ROOT = os.path.dirname(os.path.dirname(HERE))
+DIST = os.path.join(HERE, 'dist')
+VOTH = HERE   # Voth's own folder: src/ (the source library), catalog/, three.min.js
+CAT = os.path.join(ROOT, 'kits', 'catalog')
 
-# fragments that legitimately contain no top-level generation
-DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '15-shore.js',
-                 '40-ground.js', '75-terrain.js', '80-camera.js', '85-probe.js',
-                 '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-voth-minimap.js', '99-tail.html',
-                 '90-atmos-host.js', '98-start.js'}
-DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '97t-voth-tags.js'}   # core/rand, core/tags, the adapter (no rnd())
-DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no rnd())
-DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
-PALETTE_FILE = '05-palette.js'
-# the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js) and the library pack
-# (materials.json -> tools/textures/pack.py -> tex/ -> the generated 46-matlib-pack.js, never written to src/)
-RECORD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'materials', 'record')
-RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
-TEX_DIR = os.path.join(HERE, 'tex')
-PACK_FRAGMENT = '46-matlib-pack.js'
-DETERMINISTIC |= set(RECORD_FILES) | {PACK_FRAGMENT}
-CORE_FRAGS |= set(RECORD_FILES) | {PACK_FRAGMENT}
+# the kit, in the order the Voth catalog page loads it (settlements/voth/catalog/index.html)
+VENDOR = [
+    os.path.join(VOTH, 'three.min.js'),
+    os.path.join(CAT, 'krator-furniture-core.js'),
+    os.path.join(CAT, 'krator-asset-engine.js'),
+    os.path.join(VOTH, 'catalog', 'lod.js'),
+    os.path.join(CAT, 'krator-master-buildings-voth.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-city-captured.data.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-city-captured.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-housing.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-manors.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-shops.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-taverns.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-warehouses.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-civic.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-military.js'),
+]
+# the city page's interiors (40-vc-interiors.js) furnish from the catalog's parametric kit and these culture sets:
+# Voth's common, court, trade and training pieces and its interiors' own (krator-master-furniture-voth.js), then the
+# chain kits/interiors falls back along (Iziz, generic) and the generic goods (containers, food, supplies)
+CITY_VENDOR = VENDOR + [os.path.join(CAT, f) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
+                                                     'krator-master-furniture-generic-goods.js', 'krator-master-furniture-iziz.js', 'krator-master-furniture-voth.js')]
 
 
-def matlib_pack():
-    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py.
-    It reads the committed tex/ files only, so the build stays deterministic. With no tex/pack.json, Voth runs on its
-    procedural textures."""
-    import base64
-    pj = os.path.join(TEX_DIR, 'pack.json')
+def read(p):
+    with open(p, encoding='utf-8') as f:
+        return f.read()
+
+
+def tex_fragment(fams=None, maps=None, full=()):
+    """The packed library textures as data URLs: SL_TEX[family] = {map, normalMap, roughnessMap, scale}.
+    fams/maps limit it to some families and some maps (the site editor takes the detail albedos only)."""
+    pj = os.path.join(HERE, 'tex', 'pack.json')
     if not os.path.isfile(pj):
-        return "/* no tex/pack.json: Voth runs on its procedural textures */\nKMAT.pack('voth', {});\n"
-    pack = json.load(open(pj, encoding='utf-8'))
-    out = []
-    for fam in sorted(pack['families']):
-        e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
-             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
-             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
-        for k, name in sorted(e['files'].items()):
-            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
-        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
-    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
-            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('voth', {\n" + ',\n'.join(out) + '\n});\n')
-
-RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
-RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
-RE_COLOUR_ARRAY = re.compile(r'^\s*var\s+\w+\s*=\s*\[\s*0x[0-9a-fA-F]{6}\s*,', re.M)
-
-
-def strip_head_comments(text):
-    i = 0
-    while True:
-        while i < len(text) and text[i] in ' \t\r\n':
-            i += 1
-        if text.startswith('/*', i):
-            k = text.find('*/', i)
-            if k == -1:
-                break
-            i = k + 2
+        return 'var SL_TEX = {};  /* no tex/pack.json: run tools/textures/pack.py settlements/voth */\n'
+    pack = json.loads(read(pj))
+    out = {}
+    for fam, e in sorted(pack['families'].items()):
+        if fams and fam not in fams:
             continue
-        if text.startswith('//', i):
-            i = text.find('\n', i) + 1
-            continue
-        break
-    return text[i:]
+        rec = {'scale': e.get('scale', [1, 1]), 'lib': e.get('lib')}
+        for k, fn in sorted(e['files'].items()):
+            if maps and k not in maps and fam not in full:
+                continue
+            with open(os.path.join(HERE, 'tex', fn), 'rb') as f:
+                rec[k] = 'data:image/webp;base64,' + base64.b64encode(f.read()).decode('ascii')
+        out[fam] = rec
+    return '/* GENERATED by build.py from tex/ (materials.json via tools/textures/pack.py) */\nvar SL_TEX = ' + json.dumps(out, sort_keys=True) + ';\n'
 
 
-PARTS = {}   # unit name -> [(offset of the part in the unit body, part file)]
+# the Voth site editor (targets/voth-site): Voth's own ground and canton layout, run as they are inside one
+# closure (they are [G data] in settlements/voth/PORT.md), plus the captured canton models
+VOTH_SRC = os.path.join(VOTH, 'src')
+VOTH_DATA = ['10-core.js', '15-shore.js', '30a-layout-districts.js']
+SITE_VENDOR = VENDOR[:4] + [
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-city-captured.data.js'),
+    os.path.join(VOTH, 'catalog', 'registry', 'voth-city-captured.js'),
+]
+SITE_JSON = os.path.join(HERE, 'site', 'voth-site.json')
+# core/simulation (the ferry and elephant bug lines are its transport routes): the record core, places, ports, nav, motion, routes, export
+SIM_JS = ['../../core/simulation/' + f for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js',
+          '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-8-export.js')]
+# the Voth city page: core/city (the city builder: 10 core, 20 plan, 31-32 steps 6-12, 50-52 drawing) under its own
+# tuning and steps 0-5, the site model and ground (targets/voth-site), core/simulation
+CITY = '../../core/city/'
+CITY_JS = [CITY + '10-city-core.js', 'targets/voth-city/15-vc-tune.js', CITY + '20-city-plan.js', CITY + '31-city-steps-b.js', CITY + '32-city-steps-c.js',
+           'targets/voth-site/10-site-model.js', 'targets/voth-site/20-site-cantons.js', 'targets/voth-city/30-vc-site.js', 'targets/voth-city/31-vc-voth.js', 'targets/voth-city/31b-vc-chinampa.js',
+           'targets/voth-city/32-vc-city.js', 'targets/voth-city/33-vc-country.js'] + SIM_JS + ['targets/voth-city/34-vc-transit.js',
+           'targets/voth-city/35-vc-steps.js', 'targets/voth-city/36-vc-census.js', 'targets/voth-city/37-vc-light.js', 'targets/voth-city/38-vc-flora.js', 'targets/voth-city/39-vc-furnish.js', 'targets/voth-city/40-vc-interiors.js', 'targets/voth-city/41-vc-building-interiors.js', 'targets/voth-city/42-vc-sim-places.js', 'targets/voth-city/43-vc-sim-nav.js', 'targets/voth-city/44-vc-sim-people.js', 'targets/voth-city/45-vc-sim-items.js', 'targets/voth-city/46-vc-sim-economy.js', 'targets/voth-city/47-vc-sim-animals.js', 'targets/voth-site/50-site-scene.js', CITY + '50-city-host-streets.js',
+           CITY + '52-city-host-buildings.js', 'targets/voth-city/55-vc-host.js', 'targets/voth-city/56-vc-interiors-host.js', 'targets/voth-city/56b-vc-building-interiors-host.js', 'targets/voth-city/56c-vc-citizens-host.js', 'targets/voth-city/57-vc-marks.js', 'targets/voth-city/58-vc-tools.js', 'targets/voth-city/59-vc-flora-edit.js', 'targets/voth-city/98-start.js']
+NL = '\n'
 
 
-def where(unit, body, pos):
-    """'file:line' of offset pos in a unit body, naming the part file it falls in."""
-    start, f = [p for p in PARTS.get(unit, [(0, unit)]) if p[0] <= pos][-1]
-    return '%s:%d' % (f, body[start:pos].count('\n') + 1)
+def lift(fname, start, end=NL + '}' + NL):
+    """one piece of a Voth fragment, by its own opening text: a function, or a block up to its closing line"""
+    text = read(os.path.join(VOTH_SRC, fname))
+    i = text.index(start)
+    j = text.index(end, i) + len(end)
+    return '/* ---- settlements/voth/src/%s: %s ---- */%s%s%s' % (fname, start.strip()[:60], NL, text[i:j], NL)
 
 
-def units(order, bodies):
-    """Files that share a numeric prefix (78a-life-core.js, 78b-life-nav.js, ...) are
-    one fragment split for reading: one PRNG stream opened by the first file's
-    reseed(N), and one unit for every rule below. Returns the unit names (each
-    unit's first file) and the unit bodies."""
-    groups = {}
-    for f in order:
-        groups.setdefault(f if f in CORE_FRAGS else re.match(r'\d+', f).group(0), []).append(f)
-    PARTS.clear()
-    for g in groups.values():
-        start = 0
-        for x in g:
-            PARTS.setdefault(g[0], []).append((start, x))
-            start += len(bodies[x])
-    return ([g[0] for g in groups.values()],
-            {g[0]: ''.join(bodies[x] for x in g) for g in groups.values()})
+# Voth's bridges and causeways are drawn by span() and reclaimedCauseway() (50f), which push primitives into
+# the city's buckets; here BOX/FR8/FR3/CYL collect them into VOTH.PRIMS for the editor to draw
+PRIM_SHIM = NL.join([
+    'var PRIMS = [];',
+    'function BOX(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["box",x,y,z,w,h,d,ry||0,c,f]); }',
+    'function FR8(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["fr8",x,y,z,w,h,d,ry||0,c,f]); }',
+    'function FR3(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["fr3",x,y,z,w,h,d,ry||0,c,f]); }',
+    'function CYL(x,y,z,r,h,ry,c,f){ PRIMS.push(["cyl",x,y,z,r,h,r,ry||0,c,f]); }',
+    'function reserve(){}', ''])
 
 
-def check(order, bodies):
-    errs, seeds = [], {}
-    for f in order:
-        if not f.endswith('.js'):
-            continue
-        body = bodies[f]
+def voth_fragment():
+    """VOTH: the ground, water, river, islets, cantons, bridges and causeways of Voth, from its own src/ (never a
+    copy). The data fragments run whole; the rest is lifted out by name: the islets and river bridges that
+    30c-roads.js adds (the islets change terrainH), groundTone (40-ground.js), the span constants and bedAt (50a),
+    shade, loc and rectFrus (45-kit.js), span() and reclaimedCauseway() (50f)."""
+    body = read(os.path.join(VOTH_SRC, '05-palette.js')) + NL
+    body += ''.join('/* ---- settlements/voth/src/%s ---- */%s%s%s' % (f, NL, read(os.path.join(VOTH_SRC, f)), NL) for f in VOTH_DATA)
+    body += lift('30c-roads.js', '/* --- islets: clear of the monumental pair', NL + '})();' + NL)
+    body += lift('30c-roads.js', '/* --- the two river bridges', NL + '})();' + NL)
+    body += lift('40-ground.js', 'function groundTone(x,z){')
+    body += lift('50a-cantons.js', 'var DECK = ', '*/' + NL + NL)        # DECK, CWAY, RLAND
+    body += lift('50a-cantons.js', 'function bedAt(x,z){', NL)
+    body += lift('45-kit.js', 'function shade(hex, f){') + lift('45-kit.js', 'function loc(x,z,lx,lz,ry){') + lift('45-kit.js', 'function rectFrus(tx,tz){')
+    body += PRIM_SHIM + lift('50f-spans-build.js', 'var BRIDGE_SUPPORTS = [];', NL)
+    # span() asks 47-texture.js's vothPatCol for a family's colour: white only when Voth's own library pack is on the
+    # page, which the site editor never has, so here a colour is always itself
+    body += 'function vothPatCol(fam, c){ return c; }   /* the site editor has no Voth library pack (47-texture.js) */' + NL
+    body += lift('50f-spans-build.js', 'function span(ax,az,ay, bx,bz,by, w, col, arch, parapet){')
+    body += lift('50f-spans-build.js', 'function reclaimedCauseway(ax,az, bx,bz, w, tone){')
+    names = ('terrainH landDist groundTone CANTONS CIDX ISLES RIVER DISTRICTS WATER SEA HW CITY_EXT CITY_LIM '
+             'SPANS CAUSEWAYS RBRIDGES CPIERS DECK CWAY RLAND TONES PRIMS BOX FR8 FR3 span reclaimedCauseway shade shoreIn shoreNorm rectFrus reseed rr').split()
+    return ('var VOTH = (function(){' + NL +
+            '  var window = {};   /* Voth publishes its own probes on window: keep them in here */' + NL + body + NL +
+            '  return { ' + ', '.join('%s: %s' % (n, n) for n in names) + ' };' + NL + '})();' + NL)
 
-        if f not in DETERMINISTIC and not RE_HEAD_SEED.match(strip_head_comments(body)):
-            errs.append('%s: generative fragment does not open with reseed(N). Add one, '
-                        'or list the file in DETERMINISTIC in build.py.' % f)
 
-        for m in RE_ANY_SEED.finditer(body):
-            seeds.setdefault(m.group(1), set()).add(f)
+# the Voth city page (targets/voth-city): the same ground, plus every Voth builder the city plan places, lifted by
+# name with its helpers (vothlift.py). Blocks of top-level code (the islet build, the whole chinampa fragment) are
+# wrapped as functions so the page runs them once the edited ground is in place.
+CITY_SEEDS = ('span reclaimedCauseway rectFrus bedAt shade loc structure watchtower facadeFindGateSite wallSegRender '
+              'harborGate spiritGate riverGate wallGateRuinA wallGateRuinB wallGateRuinC monasteryCompound houseOfHealing '
+              'funeraryTemple lifeStandaloneShrine lifeBuildFerryPier lifeCantonEdge striderStationBuild customsHouse shed '
+              'benchPlain faceToward plinth footing claim gridHit wallSeg buildFishDockPier monasteryChapel monasteryDorm monasteryAssemblyHall '
+              'monasteryWell monasteryPen monasteryCoop monasteryField LIFE_FISHDOCK_LEN mineEntrance quarryPit MINE_CART_STOPS QUARRY_CART_STOPS granary windmill MILL_CLUSTERS monasteryOpenings monasteryWindow MONASTERY_SITES mushroomFarm watermill beetleRanch').split()
+CITY_SHIM = NL.join([
+    'var PRIMS = [];',
+    'function __c(c){ return typeof c === "string" ? parseInt(c.replace("#", ""), 16) : c; }   /* Voth palettes mix 0xRRGGBB and "#rrggbb" */',
+    'function BOX(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["box",x,y,z,w,h,d,ry||0,__c(c),f]); }',
+    'function FR8(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["fr8",x,y,z,w,h,d,ry||0,__c(c),f]); }',
+    'function FR6(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["fr6",x,y,z,w,h,d,ry||0,__c(c),f]); }',
+    'function FR3(x,y,z,w,h,d,ry,c,f){ PRIMS.push(["fr3",x,y,z,w,h,d,ry||0,__c(c),f]); }',
+    'function DOME(x,y,z,r,h,ry,c,f){ PRIMS.push(["dome",x,y,z,r,h,r,ry||0,__c(c),f||"dome"]); }',
+    'function BLOB(x,y,z,r,h,ry,c,f){ PRIMS.push(["blob",x,y,z,r,h,r,ry||0,__c(c),f||"leaf"]); }',
+    'function STK(x,y,z,r,h,ry,c,f){ PRIMS.push(["stk",x,y,z,r,h,r,ry||0,__c(c),f||"trunk"]); }',
+    'function CYL(x,y,z,r,h,ry,c,f){ PRIMS.push(["cyl",x,y,z,r,h,r,ry||0,__c(c),f]); }',
+    'function CONE(x,y,z,r,h,ry,c,f){ PRIMS.push(["cone",x,y,z,r,h,r,ry||0,__c(c),f||"roof"]); }',
+    'function reserve(){}', ''])
 
-        if f != PALETTE_FILE:
-            for m in RE_COLOUR_ARRAY.finditer(body):
-                errs.append('%s: colour array outside the palette. Move it to '
-                            '05-palette.js and read it from PAL.'
-                            % where(f, body, m.start() + len(m.group(0)) - len(m.group(0).lstrip())))
 
-    for key, files in sorted(seeds.items()):
-        if len(files) > 1:
-            errs.append('seed %s used in more than one fragment: %s'
-                        % (key, ', '.join(sorted(files))))
-    return errs
+def voth_city_fragment():
+    import vothlift
+    whole = ['05-palette.js'] + VOTH_DATA
+    body = ''.join('/* ---- settlements/voth/src/%s ---- */%s%s%s' % (f, NL, read(os.path.join(VOTH_SRC, f)), NL) for f in whole)
+    body += lift('30c-roads.js', '/* --- islets: clear of the monumental pair', NL + '})();' + NL)
+    body += lift('30c-roads.js', '/* --- the two river bridges', NL + '})();' + NL)
+    body += lift('30c-roads.js', '/* --- harbours ---', NL + '})();' + NL)          # PIERS, SHIPS, RPIERS, BARGES
+    body += lift('40-ground.js', 'function groundTone(x,z){')
+    body += lift('50a-cantons.js', 'var DECK = ', '*/' + NL + NL)
+    body += CITY_SHIM
+    # the sun by the hour, Voth's own (21-sky.js): its parameters, declination and the horizontal-coordinate sun
+    # direction; the city's day and night (55-vc-host.js VC.dayNight) reads it with Voth's sky colours (PAL.sky)
+    body += (lift('21-sky.js', 'var SKY_D = ', NL) + lift('21-sky.js', 'var SKY = {', NL + '};' + NL) + lift('21-sky.js', 'function altAzToVec(') +
+             lift('21-sky.js', 'function skyDeclination(') + lift('21-sky.js', 'function skySunDir(') + lift('21-sky.js', 'var _skyTmpA = ', NL) +
+             lift('21-sky.js', 'function skySunAltAz(') +
+             lift('78a-life-core.js', 'function lifeBridgeY('))   # the deck under a walker on a river bridge or a canton span
+    code, names = vothlift.lift(CITY_SEEDS)
+    body += code
+    # the builder log (41-vc-building-interiors.js reads it): each call of these Voth builders, its arguments and the
+    # primitives it pushed, so a building the city places through Voth's own code gets an interior without a copy of
+    # its geometry. The names are rebound inside this closure, so Voth's callers (monasteryCompound) log too.
+    body += 'var BUILT = [];' + NL + ''.join(
+        '%s = (function (f) { return function () { var i0 = PRIMS.length, r = f.apply(this, arguments); '
+        'BUILT.push({ fn: "%s", a: Array.prototype.slice.call(arguments, 0, 8), p: PRIMS.slice(i0) }); return r; }; })(%s);%s' % (n, n, n, NL)
+        for n in ('monasteryDorm', 'monasteryChapel', 'monasteryAssemblyHall', 'funeraryTemple', 'houseOfHealing'))
+    isl = lift('60-land.js', '/* ============================== 20. ISLETS', NL + '});' + NL)
+    body += 'function buildIslets(){' + NL + isl + '}' + NL
+    chin = read(os.path.join(VOTH_SRC, '55-chinampa.js'))
+    # each stilt hut's size too (its bed slot, bw x bl), for its interior
+    hut = 'window._chinampaHuts.push([x,z,ry]);'
+    assert hut in chin, '55-chinampa.js changed: the hut export is no longer where build.py extends it'
+    chin = chin.replace(hut, 'window._chinampaHuts.push([x,z,ry,bw,bl]);')
+    body += ('/* ---- settlements/voth/src/55-chinampa.js, whole, run on demand ---- */' + NL + 'function runChinampas(){' + NL + chin + NL +
+             '  return { chinHit: chinHit, count: CHINN, huts: CHINHUTS, hutList: window._chinampaHuts, units: finalUnits };' + NL + '}' + NL)
+    # the edited ground: every Voth builder reads terrainH by name, so it reads the site's edits too
+    body += NL.join(['var __rawTerrainH = terrainH, __groundEdit = null;',
+                     'terrainH = function (x, z) { var h = __rawTerrainH(x, z); return __groundEdit ? h + __groundEdit(x, z) : h; };',
+                     'function setGroundEdit(fn) { __groundEdit = fn; }', ''])
+    export = set(names) | set(('landDist groundTone CANTONS CIDX ISLES RIVER RIVER_HEAD DISTRICTS WATER SEA HW CITY_EXT CITY_LIM SPANS CAUSEWAYS '
+                               'RBRIDGES CPIERS PIERS RPIERS BARGES DECK CWAY RLAND TONES TONES_POOR BASALTC MARBLEC DOMEC ROOFS GREYC FRUITC FIELDC MONASTERY LIFE_FISHDOCK_W LIFE_FISHDOCK_LEN PRIMS BOX FR8 FR6 FR3 DOME CYL CONE BLOB STK SLEN '
+                               'shoreIn shoreNorm shoreS shoreAt riverAt riverHalf inRiver reseed rr pick chance mix buildIslets runChinampas '
+                               'setGroundEdit PLACED SKY skySunDir skySunAltAz altAzToVec PAL lifeBridgeY BUILT').split())
+    export.discard('terrainH')
+    pairs = ['terrainH: __rawTerrainH', 'terrainHe: function (x, z) { return terrainH(x, z); }'] + ['%s: %s' % (n, n) for n in sorted(export)]
+    return ('var VOTH = (function(){' + NL + '  var window = {};' + NL + body + NL +
+            '  return { ' + ', '.join(pairs) + ' };' + NL + '})();' + NL)
+
+
+def voth_strider_fragment():
+    """VSTRIDER: Voth's own elephant bug (79c-strider-model.js), never a copy: the merged body (its parts, as Voth
+    builds them, with lifeMergeGeoms from 78b), the gait constants, and striderBar/striderPlaceLegs for its six
+    two-bar legs. Three.js code, so it is its own script for the host; the leg bars go into whatever instanced mesh
+    the host hands in. `lift` scales a foot's lift (0: all six feet planted, for an elephant bug standing at a station)."""
+    m = read(os.path.join(VOTH_SRC, '79c-strider-model.js'))
+    a = m.index('var STRIDER_HIP_Y')
+    b = m.index('var striderBodyGeo = lifeMergeGeoms(striderParts);') + len('var striderBodyGeo = lifeMergeGeoms(striderParts);')
+    c = m.index('var STRIDER_STRIDE = 7.5')
+    d = m.index('var STRIDER_BOB')
+    legs = lift('79c-strider-model.js', 'function striderPlaceLegs(')
+    key = 'Math.max(0, Math.sin(ph))*STRIDER_LIFT'
+    assert key in legs, 'striderPlaceLegs changed: the foot lift is no longer where build.py scales it'
+    legs = legs.replace(key, key + '*__liftK')
+    pre = NL.join([
+        'var LIFE_SKIN = 0x8c8394, LIFE_UP = new THREE.Vector3(0, 1, 0);           /* 78a, 78b */',
+        'var STRIDER_FOOT_DROP = 4.0, STRIDER_FOOT_RISE = 3.0;                       /* 79a */',
+        'var striderLegMesh = null, __liftK = 1;',
+        'var striderLegP = new THREE.Vector3(), striderLegDir = new THREE.Vector3(), striderLegQ = new THREE.Quaternion(), striderLegS = new THREE.Vector3(), striderLegM = new THREE.Matrix4();',
+        'function lifeGroundY(x, z) { return Math.max(VOTH.SEA, terrainH(x, z)); }', ''])
+    body = (pre + lift('78b-life-nav.js', 'function lifeMergeGeoms(geoms){') +
+            '/* ---- settlements/voth/src/79c-strider-model.js: the body ---- */' + NL + m[a:b] + NL +
+            '/* ---- settlements/voth/src/79c-strider-model.js: the gait ---- */' + NL + m[c:d] + NL +
+            lift('79c-strider-model.js', 'function striderBar(idx') + legs)
+    return ('var VSTRIDER = (function(){' + NL + body + NL +
+            '  return { bodyGeo: striderBodyGeo, BARS: STRIDER_BARS_PER_BODY, STRIDE: STRIDER_STRIDE, FOOT_X: STRIDER_FOOT_X, WADE: 5.0,' + NL +
+            '    legs: function (mesh, i, x, y, z, yaw, gait, lift) { striderLegMesh = mesh; __liftK = lift; striderPlaceLegs(i, x, y, z, yaw, gait); } };' + NL +
+            '})();' + NL)
+
+
+def voth_sky_fragment():
+    """VSKY: the standard Krator sky, Voth's own (never a copy): the baked volcano dome and the sun and moon discs
+    (20-stage.js section 5), then the gas giant, its rings, the stars, the sun disc, the pressure and eclipse model and
+    the background-scene render (21-sky.js up to its panel), with Voth's core helpers (10-core.js section 1) as a
+    private stream so the bakes never touch the page's. It is not yet in core/atmos: GODOT-PLAN.md moves 21-sky.js
+    there as a sky preset (the refactor). VSKY.make(scene, camera, renderer, PAL) returns the sky; the page's clock
+    sets its hour (55-vc-host.js VC.dayNight)."""
+    core = read(os.path.join(VOTH_SRC, '10-core.js'))
+    stage = read(os.path.join(VOTH_SRC, '20-stage.js'))
+    sky = read(os.path.join(VOTH_SRC, '21-sky.js'))
+    c0 = core[:core.index('/* ============================== 2. WORLD CONSTANTS')]
+    s0 = stage[stage.index('var SUNDIR = '):stage.index('var sun = new THREE.DirectionalLight')]
+    s1 = stage[stage.index('/* ============================== 5. SKY'):stage.index('/* ============================== 6. ERUPTION CYCLE')]
+    k0 = sky[sky.index('var SKY_D = '):sky.index('/* ---------------------------------------------------------------- panel */')]
+    for need in ('function updateSky(', 'function skyRender(', 'var SKY_DOME_U', 'var volcTex', 'var skyMesh'):
+        assert need in s1 + k0, 'voth_sky_fragment: %s moved in 20-stage.js / 21-sky.js' % need
+    tail = NL.join([
+        '  /* the page owns the clock: day and hour in, Voth\'s sky state out */',
+        '  function setTime(day, hour, doy) { SKY_DAY0 = doy == null ? 80 : doy; SKY_T = (day || 0) * 86400 + hour * 3600; }',
+        '  function volcano(st) { if (volcTex[st] && skyMesh.material.map !== volcTex[st]) { skyMesh.material.map = volcTex[st]; skyMesh.material.needsUpdate = true; } }',
+        '  return { scene: skyScene, cam: skyCam, SKY: SKY, STATE: SKY_STATE, DOME: SKY_DOME_U, setTime: setTime, update: updateSky, render: skyRender,',
+        '    fogBase: skyFogBase, volcano: volcano, giantDir: GIANT_DIR, sunSprite: sunSprite };', ''])
+    return ('/* GENERATED by build.py: Voth\'s sky (settlements/voth/src 10-core.js section 1, 20-stage.js section 5, 21-sky.js) */' + NL +
+            'var VSKY = { make: function (scene, camera, renderer, PAL) {' + NL +
+            '/* ---- settlements/voth/src/10-core.js: 1. CORE (a private stream for the bakes) ---- */' + NL + c0 + NL +
+            '/* ---- settlements/voth/src/20-stage.js: the sun and moon directions ---- */' + NL + s0 + NL +
+            '/* ---- settlements/voth/src/20-stage.js: 5. SKY ---- */' + NL + s1 + NL +
+            '/* ---- settlements/voth/src/21-sky.js ---- */' + NL + k0 + NL + tail + '} };' + NL)
+
+
+def interiors_fragment():
+    """kits/interiors for the cantons' rooms: its engine-neutral core (ROOM, furnishRoom, the programs) as
+    kit_bundle.bundle([]) gives it (no sets), and its catalog adapter (adapters/catalog-adapter.js: list, dims, anchorY over
+    the page's FURNS), read from the kit's folder"""
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import kit_bundle
+    return kit_bundle.bundle([]) + kit_bundle.safe(read(os.path.join(ROOT, 'kits', 'interiors', 'adapters', 'catalog-adapter.js'))) + NL
+
+
+def fauna_fragment():
+    """kits/fauna's Voth group (the arena tiger, the pit lizard, the giant and staghorn beetles) for the Arena's stables
+    and its bouts, and its farm group (the cattle, the pig, the duck) for the ranches' herds (47-vc-sim-animals.js), as
+    fauna_bundle.bundle gives it, without the packed detail maps (the animals keep their own colours); and its pets group
+    with their baked models only (the dog and the cat are models: about 1.9 MB), for the city's pets"""
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
+    import fauna_bundle
+    return fauna_bundle.bundle(['voth', 'farm', 'pets'], tex=False, mdl=['pets']) + NL
+
+
+def voth_pathviz_fragment():
+    """Voth's path visualizer (87-pathviz.js, its 'Paths' devtool), lifted live: the register / build / show machinery,
+    the auto-discovery, the mesh and its button (#pathvizToggle, #pathvizSel in the head), with its two colour lists
+    from 05-palette.js. Voth's own populations (PATHVIZ_BUILTIN, the elephant bug routes) are left out: the city page
+    registers its own (targets/voth-city/58-vc-tools.js)."""
+    import re
+    t = read(os.path.join(VOTH_SRC, '87-pathviz.js'))
+    a = t.index('function pathvizRegister(spec){'); b = t.index('/* ---- the populations that predate')
+    c = t.index('var PATHVIZ_AUTO_N'); d = t.index(NL + '}' + NL, t.index('function pathvizAutoDiscover(')) + 3
+    e = t.index('var PATHVIZ_GEO')
+    pal = read(os.path.join(VOTH_SRC, '05-palette.js'))
+    cols = ''.join(m.group(0) + NL for m in re.finditer(r'^var PATHVIZ_(STRIDER|AUTO)_COLS\s*=.*;$', pal, re.M))
+    assert cols.count('var PATHVIZ_') == 2, 'the pathviz colour lists moved in 05-palette.js'
+    return ('/* ---- settlements/voth/src/87-pathviz.js and 05-palette.js (lifted by build.py) ---- */' + NL + cols +
+            t[a:b] + NL + t[c:d] + NL + t[e:] + NL)
+
+
+# the south-west bay biome (biomes/swbay, on the shared core/biome): flora in the city's parks and the savannah of its
+# environs. Read from their own folders, nothing copied, in one closure that exports BIO and SWBAY. The core binds
+# THREE before the kit's fragment 50 loads (it builds textures and materials at load, BIOME-API.md); the city binds its
+# facts later (37-vc-light's neighbour 38-vc-flora.js, the host's VC.drawFlora). SWBAY_TEMPLE_H, the canopy ceiling,
+# is kept low: small hypertrees in the parks (owner, 2026-10-09).
+BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js']
+BIO_KIT = ['50-biome-swbay-species.js', '55-biome-swbay-trees.js', '60-biome-swbay-floor.js', '65-biome-swbay-dress.js',
+           '70-biome-swbay.js', '75-biome-swbay-fauna.js']
+SWBAY_TEMPLE_H = 40
+
+
+# the world clock, the evening's lights, the weather and the sky's light from core (core/clock KCLOCK, core/atmos ATMOS:
+# its binding, presets, the glow layer, particles, weather with its ash modes, the export and its Weather select, the
+# skylight), read from their folders: the day and night of 55-vc-host.js (VC.dayNight) run on them
+CORE_TIME = ['core/clock/20-core-clock.js'] + ['core/atmos/89-atmos-%s.js' % f for f in ('0-core', '0p-presets', '2-lights', '3-particles', '4-weather', '8-export', '9-host', 'b-skylight')]
+
+
+# where things stand and what they are, from core (core/rand KRAND, core/tags KTAGS, core/walk KWALK), read from their
+# folders: the cantons' bridges, causeways and stairs (targets/voth-site/20-site-cantons.js) are seeded by KRAND,
+# registered in KTAGS and walked through KWALK
+CORE_PLACE = ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
+
+
+def core_place_fragment():
+    return ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(ROOT, *f.split('/'))), NL) for f in CORE_PLACE)
+
+
+def core_time_fragment():
+    return ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(ROOT, *f.split('/'))), NL) for f in CORE_TIME)
+
+
+def voth_furniture_fragment():
+    """the Voth section of the furniture catalog (kits/catalog/krator-master-furniture.js): benches, statues, the wayside
+    shrine, the obelisk, the brazier for the parks and plazas (39-vc-furnish.js). Lifted by its section header, so the
+    other cultures' pieces stay out of the page."""
+    t = read(os.path.join(CAT, 'krator-master-furniture.js'))
+    a = t.index('/* ================= Voth (')
+    b = t.index('/* ================= ', a + 10)
+    return '/* ---- kits/catalog/krator-master-furniture.js: its Voth section (lifted by build.py) ---- */' + NL + t[a:b] + NL
+
+
+def biome_fragment():
+    core = os.path.join(ROOT, 'core', 'biome')
+    kit = os.path.join(ROOT, 'biomes', 'swbay', 'src')
+    part = lambda d, f: '/* ---- %s/%s ---- */%s%s%s' % (os.path.relpath(d, ROOT).replace(os.sep, '/'), f, NL, read(os.path.join(d, f)), NL)
+    boot = NL.join([
+        '/* ---- the bootstrap (build.py): THREE before fragment 50; the wind tick goes to the frame hooks ---- */',
+        'BIO.init({ THREE: THREE, scene: null, terrainH: function () { return 0; }, mask: function () { return 0; }, obstacles: [],',
+        '  ticks: function (fn) { var last = null; (window._frameHooks = window._frameHooks || []).push(function (now) { var t = now / 1000, dt = last == null ? 0.016 : Math.min(0.1, t - last); last = t; fn(dt, t); }); },',
+        '  seed: 11, origin: [[0, 0]], center: [0, 0], fields: {} });', ''])
+    return ('/* GENERATED by build.py: core/biome and biomes/swbay, in one closure */' + NL +
+            '(function () {' + NL + 'var SWBAY_TEMPLE_H = %d, SWBAY_BAY = { hue: 0.5 };' % SWBAY_TEMPLE_H + NL +
+            ''.join(part(core, f) for f in BIO_CORE) + boot + ''.join(part(kit, f) for f in BIO_KIT) +
+            'window.BIO = BIO; window.SWBAY = SWBAY;' + NL + '})();' + NL)
+
+
+def edits_fragment():
+    """the owner's edits on the city plan (site/voth-city-edits.json, written by the page's editor through serve.py):
+    placed kit buildings, painted streets, deletions. Inlined as EDITS_INIT; under serve.py the page reads the file
+    fresh before it lays out, so a saved edit shows on the next reload without a rebuild."""
+    p = os.path.join(HERE, 'site', 'voth-city-edits.json')
+    data = read(p) if os.path.isfile(p) else '{"buildings": [], "streets": [], "del": []}'
+    json.loads(data)
+    return '/* GENERATED by build.py from site/voth-city-edits.json */' + NL + 'var EDITS_INIT = ' + data.strip() + ';' + NL
+
+
+def site_fragment():
+    data = read(SITE_JSON) if os.path.isfile(SITE_JSON) else '{"site": "voth", "districts": [], "markers": []}'
+    json.loads(data)
+    return '/* GENERATED by build.py from site/voth-site.json (the editor saves there) */' + NL + 'var SITE_INIT = ' + data.strip() + ';' + NL
+
+
+def page(name, frag_dir, vendor, extra, strict, js_list=None):
+    """frag_dir's .html shell around the vendor scripts, the extras and the .js fragments: frag_dir's own, or an
+    explicit list of paths (relative to this folder) when a page shares fragments with another"""
+    frags = sorted(f for f in os.listdir(frag_dir) if f[:1].isdigit())
+    head = [f for f in frags if f.endswith('.html') and f < '50']
+    tail = [f for f in frags if f.endswith('.html') and f >= '50']
+    rel = os.path.relpath(frag_dir, HERE).replace(os.sep, '/')
+    js = js_list or [rel + '/' + f for f in frags if f.endswith('.js')]
+    parts = [read(os.path.join(frag_dir, f)) for f in head]
+    for p in vendor:
+        parts.append('<script>/* %s */%s%s%s</script>%s' % (os.path.relpath(p, ROOT).replace(os.sep, '/'), NL, read(p), NL, NL))
+    for x in extra:
+        parts.append('<script>' + NL + x + '</script>' + NL)
+    body = ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, f)), NL) for f in js)
+    parts.append('<script>' + NL + ('"use strict";' + NL if strict else '') + body + '</script>' + NL)
+    parts += [read(os.path.join(frag_dir, f)) for f in tail]
+    os.makedirs(DIST, exist_ok=True)
+    out = os.path.join(DIST, name)
+    with open(out, 'w', encoding='utf-8', newline=NL) as f:
+        f.write(''.join(parts))
+    print('wrote %s (%d KB, %d fragments)' % (os.path.relpath(out, HERE), os.path.getsize(out) // 1024, len(frags)))
 
 
 def main():
-    do_checks = '--no-checks' not in sys.argv
-    paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, MINIMAP_DIR, ATMOS_DIR, RAND_DIR, TAGS_DIR, MASK_DIR):       # a src/ copy with the same name overrides
-        for f in os.listdir(d):
-            if f[0].isdigit() and f not in paths and (d not in (RAND_DIR, TAGS_DIR, MASK_DIR) or f.endswith('.js')):
-                paths[f] = os.path.join(d, f)
-                if d in (RAND_DIR, TAGS_DIR, MASK_DIR):
-                    CORE_FRAGS.add(f)
-    for f in RECORD_FILES:
-        paths.setdefault(f, os.path.join(RECORD_DIR, f))
-    paths[PACK_FRAGMENT] = None              # generated: matlib_pack()
-    order = sorted(paths)
-    bodies = {}
-    for f in order:
-        if paths[f] is None:
-            bodies[f] = matlib_pack()
-            continue
-        with open(paths[f], encoding='utf-8') as fh:
-            bodies[f] = fh.read()
-
-    if do_checks:
-        errs = check(*units(order, bodies))
-        if errs:
-            print('BUILD RULES FAILED:')
-            for e in errs:
-                print('  -', e)
-            sys.exit(1)
-
-    html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w', encoding='utf-8') as fh:
-        fh.write(html)
-    with open(MANIFEST, 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
-                  fh, indent=1, sort_keys=True)
-
-    body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
-    body = body.rsplit('}', 1)[0]
-    chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w', encoding='utf-8') as fh:
-        fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
-    try:
-        r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)
-    except FileNotFoundError:
-        print('NOTE: node not found, skipping the syntax check. Install Node to catch '
-              'syntax errors here instead of in the browser.')
-        r = None
-    if r is not None and r.returncode:
-        print(r.stdout + r.stderr)
-        sys.exit(1)
-    print('built %s  (%d files, %.0f KB)  %s%s'
-          % (os.path.basename(OUT), len(order), os.path.getsize(OUT) / 1024,
-             'syntax OK' if r is not None else 'syntax NOT CHECKED (no node)',
-             '' if do_checks else '  [checks skipped]'))
-
-    ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
-    if os.path.exists(ki):
-        with open(ki, encoding='utf-8') as fh:
-            open_items = [l.rstrip() for l in fh if l.startswith('- [ ]')]
-        if open_items:
-            print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(open_items))
-            for l in open_items:
-                print('  ' + l[6:])
+    port = os.path.join(ROOT, 'tools', 'check_port.py')
+    if os.path.isfile(port) and '--no-checks' not in sys.argv:
+        if subprocess.call([sys.executable, port, '--quiet', HERE]) != 0:
+            sys.exit('build.py: the port lint failed (tools/check_port.py)')
+    page('voth-site.html', os.path.join(HERE, 'targets', 'voth-site'), SITE_VENDOR, [voth_fragment(), core_place_fragment(), site_fragment(), tex_fragment(('stone', 'ground', 'rock', 'sand'), ('map',))], True)
+    city = os.path.join(HERE, 'targets', 'voth-city')
+    if os.path.isdir(city):
+        import foreign, ringsea
+        page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(), fauna_fragment(),
+             tex_fragment(('stone', 'ground', 'rock', 'sand', 'grass', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'), ('map',),
+                          ('road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'))], True, CITY_JS)
 
 
 if __name__ == '__main__':

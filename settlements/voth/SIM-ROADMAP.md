@@ -4,7 +4,7 @@ The owner's brief of 2026-10-12 (part 1, kept here as a structured spec so later
 roadmap it needs (part 2). It is a Voth-city instance of `core/simulation/PLAN.md` (the standardization plan, whose
 "Phase 2: translate Voth" and "Phase 5: resources and supply" this is) and of `core/simulation/ROADMAP.md` (the owner's
 earlier world-layer roadmap). Nothing here replaces those: new mechanics go into `core/simulation` as modules every
-world can use, and the Voth city (`settlements/streetlab`, page `dist/voth-city.html`) is the first consumer.
+world can use, and the Voth city (`settlements/voth`, Streetlab's folder until 2026-10-14; page `dist/voth-city.html`) is the first consumer.
 
 **The owner answered the phase-A questions on 2026-10-12 (part 3, "Answers"). Phase A is done but for the Palace and
 Temple (branch `Voth-sim`, sessions 1 and 2, 2026-10-12): every building's interior, the residence rule's report, the
@@ -177,7 +177,7 @@ Numbers in `HANDOFF.md`.**
    placed, what fell short, and where. Deficits are the product; "it should be easy to tell what a citizen wants and
    where deficits lie" is the acceptance test of every phase.
 4. Each phase is one to three sessions; a session ends with the page rebuilt, `verify.py --assert` passing, the port
-   baseline refreshed for the two streetlab pages, and `HANDOFF.md` updated.
+   baseline refreshed for the two Voth pages (`settlements/voth/dist/`), and `HANDOFF.md` updated.
 5. No build hashes change for a step that only re-expresses data (PLAN.md Phase 2 acceptance).
 
 ### 2.2 Phase A: interiors for every building, the density overlay (2 sessions)

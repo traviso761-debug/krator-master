@@ -1533,7 +1533,7 @@ ASSET({
 /* ======================================================================
    The citizen simulation's buildings (owner, 2026-10-12, SIM-ROADMAP.md Q4): the watchhouse, the caravanserai, the
    coast-guard berth and the trades the production chains need (weaver, tannery, brewery, butcher, bakery). Each
-   carries `ix`: the shell its interior is planned in (settlements/streetlab 41-vc-building-interiors.js), the main
+   carries `ix`: the shell its interior is planned in (settlements/voth 41-vc-building-interiors.js), the main
    block { block: [x, z, w, d] } in the building's frame, its floor `y`, its height `h` and its `storeys`, so the
    planner never has to guess it from the model. The street door is mid-front (+z) on every one.
    ====================================================================== */

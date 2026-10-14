@@ -48,8 +48,9 @@ on purpose and checked.
 - A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
   not a new bespoke pass. Do not write another spatial hash or occupancy grid: `core/city`'s, little-demo's flora
   buckets and the biome core's planned index are to become one shared module (the refactor's roadmap, section 8).
-- **Voth is Streetlab's city plan** (`settlements/streetlab`, on `core/city`; owner, 2026-10-09). The old page
-  (`settlements/voth`) stays up only as the source things are ported from: port from it, do not add features to it.
+- **Voth is the city plan on `core/city`** (`settlements/voth`; owner, 2026-10-09; built in `settlements/streetlab` until
+  2026-10-14). The first Voth's page is retired (`archive/voth-first`); its `src/` stays in `settlements/voth` as Voth's
+  source library, which the build runs or lifts by name: port from it, do not add features to it.
 - `core/city` will become the NPC-placement and quest-building tool and, later, the player's settlement builder, so
   it will run in Godot: keep its data side free of three.js and the DOM, its records keyed by stable ids, its edits
   kept as deltas by id, and its rules (overlap, frontage, slope) as plain functions on records.
@@ -83,7 +84,7 @@ not tune a material against the current normals.
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
-| `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/streetlab`) is on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
+| `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/voth`) is on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
@@ -161,8 +162,8 @@ A fix to one settlement or biome republishes only that build's files. A wider ch
   and rebuild every build that lists them.
 - `core/furnish/` is one shared copy too: after changing it, run `node core/furnish/test-furnish.js`, rebuild the five
   builds that take it, and `python3 core/furnish/fingerprint.py` (every page must read `same`).
-- `core/city/` is one shared copy too: a build lists its fragments by path (`settlements/streetlab/build.py` `CITY_JS`).
-  After changing it, rebuild and verify every build that takes it (today only Streetlab: `verify.py dist/voth-city.html --assert`).
+- `core/city/` is one shared copy too: a build lists its fragments by path (`settlements/voth/build.py` `CITY_JS`).
+  After changing it, rebuild and verify every build that takes it (today only Voth: `verify.py dist/voth-city.html --assert`).
 - `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
   Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and

@@ -37,7 +37,7 @@ ATMOS's hooks), sets `RS_U.uTime.value=t` (the sails' flutter), poses each hull 
 - **Riding**: `rsRide(G, D, x, z, yaw, t, seaH?, heel?)` = `WATER.ride(G, D, x, z, yaw, t, heel, seaH)`: heave is the mean of
   five samples (amidships, bow and stern at +-0.36 L, both beams at +-0.28 B), pitch and roll are their slopes; `heel`
   (rad, + = starboard down) is added to the roll. A host world with its own sea passes its own `seaH(x,z,t)`. Both names
-  reach `WATER` only when called, so a page that takes the vessels alone (Streetlab's `ringsea.py`) loads without it.
+  reach `WATER` only when called, so a page that takes the vessels alone (Voth's `ringsea.py`, `settlements/voth`) loads without it.
 - **Wind**: sails flutter in the vertex shader (`rsSailWind`), the flutter vector in the sail's colour; it is zero on every
   edge and corner, so sheets, yards and battens stay attached. Pennants (`rsPennant`) flutter by their distance from the root.
 - **Trim**: `rsRig(B, mast, {gain})` ... `rsRigEnd(B)` around a sail's rig (`mast` = `[x,z]`, or `[[base],[head]]` for a

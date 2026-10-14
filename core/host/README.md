@@ -2,9 +2,9 @@
 
 One interface for every page (ROADMAP.md section 10; GODOT-PLAN.md Phase 1, "one host shell"): the camera, the frame loop
 and its world clock, the panel and the probe, written once and taken by every build instead of each build's own copy.
-Streetlab's Voth city plan is the template: its viewer is **copied and generalised** here (its own files are not edited;
-the Voth and simulation branch owns them, and Streetlab switches to `core/host` when that branch pauses).
-`streetlab-sources.json` records the blob of every Streetlab file this was copied from, and `python3 core/host/sources.py`
+Voth's city plan (`settlements/voth`, built in Streetlab until 2026-10-14) is the template: its viewer is **copied and
+generalised** here (its own files are not edited; the Voth and simulation branch owns them, and Voth switches to
+`core/host` when that branch pauses). `voth-sources.json` records the blob of every Voth file this was copied from, and `python3 core/host/sources.py`
 says which have changed since (port those changes by hand, then `--write`).
 
 Every file here is `[web]`: the host owns the DOM, the input, the frame loop and the drawing call, and is not ported to
@@ -13,9 +13,9 @@ Godot (the clock it owns is `core/clock`, which is). A build's other fragments r
 
 | File | What | From |
 |---|---|---|
-| `90-host-camera.js` | `KHOST.camera`: orbit (drag), pan (right-drag), fly (W A S D, Q / E, Shift, Ctrl), zoom (wheel), walk (F) with the feet on the ground or on a `KWALK` floor and a ledge guard, the pin (double-click; G flies to it, F walks from it, Esc lifts it), click to inspect, the depth range (opt-in), `setView` | `kits/catalog/krator-asset-engine.js` 85-207, `streetlab/targets/voth-city/58-vc-tools.js` (the pin, the walker), `core/city/50-city-host-streets.js` 13-19 (the depth range), the biome kits' `90-host-camera.js` (the spherical orbit their presets are written in) |
-| `91-host-loop.js` | `KHOST.take`, the frame loop, the world clock (`KCLOCK`), `KHOST.on` subscribers with per-subscriber error isolation, the `TICKS` / hour-ticks / `_frameHooks` shims, `window._ready` | the biome kits' loops; `streetlab/.../55-vc-host.js` `VC.dayNight` (the clock) and `98-start.js` (the loading flow) |
-| `92-host-panel.js` | the bar (`#bar`: title, hint, `#ui` with the view select and the hidden preset buttons, layers, time controls, export, legend), `#stats`, the inspector `#insp`, the error panel `#errs`, the loading note, foldable panels remembered per browser, `?chrome=0` | `streetlab/.../00-head.html` and `55-vc-host.js` (`VC.ui`, `VC.panels`, `VC.clockUI`), the biome kits' heads |
+| `90-host-camera.js` | `KHOST.camera`: orbit (drag), pan (right-drag), fly (W A S D, Q / E, Shift, Ctrl), zoom (wheel), walk (F) with the feet on the ground or on a `KWALK` floor and a ledge guard, the pin (double-click; G flies to it, F walks from it, Esc lifts it), click to inspect, the depth range (opt-in), `setView` | `kits/catalog/krator-asset-engine.js` 85-207, `settlements/voth/targets/voth-city/58-vc-tools.js` (the pin, the walker), `core/city/50-city-host-streets.js` 13-19 (the depth range), the biome kits' `90-host-camera.js` (the spherical orbit their presets are written in) |
+| `91-host-loop.js` | `KHOST.take`, the frame loop, the world clock (`KCLOCK`), `KHOST.on` subscribers with per-subscriber error isolation, the `TICKS` / hour-ticks / `_frameHooks` shims, `window._ready` | the biome kits' loops; `settlements/voth/.../55-vc-host.js` `VC.dayNight` (the clock) and `98-start.js` (the loading flow) |
+| `92-host-panel.js` | the bar (`#bar`: title, hint, `#ui` with the view select and the hidden preset buttons, layers, time controls, export, legend), `#stats`, the inspector `#insp`, the error panel `#errs`, the loading note, foldable panels remembered per browser, `?chrome=0` | `settlements/voth/.../00-head.html` and `55-vc-host.js` (`VC.ui`, `VC.panels`, `VC.clockUI`), the biome kits' heads |
 | `94-host-polytool.js` | opt-in (`khost.SHELL+['94-host-polytool.js']`): the authoring tools, Inspect, Polygon and Path, as buttons in the inspector panel; clicks reach it through `KHOST.clickHooks`; the sky (`sky.objects()`) is never a corner; `window.POLYTOOL` | seven biome kits' identical `src/93-host-polytool.js` (from `settlements/screamers/src/93-polytool.js`); the seed of 94 marks |
 | `95-host-probe.js` | `window._api` for `verify.py --assert`: `BUDGET`, `REG`, `regOccupancy`, `nanSweep`, `typeStats`, `setView`, `views`, `go`, plus the build's own fields | the biome kits' `91-host-probe.js` |
 | `host.py` | the file list (`SHELL`) and `resolve(PATH)` for a `build.py` | |
@@ -39,7 +39,7 @@ const H = KHOST.take({
   sky: {follow(camera) {}, hour(h) {}, objects() {}},  // kept on the eye each frame; hour(h) only if the sky has hours;
                                                        // objects(): what it is made of (a 'sky' layer, never a polygon corner)
   ticks: TICKS,                                        // [fn(dt, seconds)]: the biome kits' list, read live each frame
-  hourTicks, frameHooks,                               // [fn(dt, hour)] (the life builds), [fn(nowMs)] (Streetlab's _frameHooks)
+  hourTicks, frameHooks,                               // [fn(dt, hour)] (the life builds), [fn(nowMs)] (Voth's _frameHooks)
   draw: (scene, camera, dt) => {},                     // the build's own draw in place of renderer.render (a post pass)
   click: (x, y) => false,                              // the build takes a click first (true: taken; a click-to-light)
   clock: {hour: 12, running: false, scale: 1, speeds: [0, 1, 2, 4, 8]},
@@ -81,9 +81,9 @@ pins motion time (repeatable shots).
 **The camera.** The orbit is the biome kits' spherical one (`theta` from +z about +y, `phi` from +y, `radius`), kept to the
 bit, so every preset view is the same picture. The eye is kept `clear` metres (1.8) above `floor(x,z)` (default `ground`;
 a kit with water passes the higher of the two), or a build's own `clampCam(position, target)`. Walking (F) stands the eye `eye`
-(1.7 m) over the ground, or over the highest `KWALK` floor a step can reach with Streetlab's ledge guard when `walk` is a
+(1.7 m) over the ground, or over the highest `KWALK` floor a step can reach with Voth's ledge guard when `walk` is a
 `KWALK` registry. `depth: true` (or `{k, min, max}`) makes the near plane follow the camera's height above the ground,
-as Streetlab's does; it is off by default, because a page whose pictures are proven keeps its near plane.
+as Voth's does; it is off by default, because a page whose pictures are proven keeps its near plane.
 
 **The keys** (one keymap): W A S D move, Q / E down and up (Space up), Shift faster, Ctrl or Alt slower, F walk (from the pin
 when there is one), G fly to the pin, Esc lift the pin. Mouse: drag orbit (walking: look), right-drag pan, wheel zoom
@@ -105,12 +105,12 @@ shows an error. `KHOST.chrome(on)` does the same from a script.
   own); `window._registered`; `#errs`; the global `renderer` the build already declares (`STATS_JS` reads it).
 - No new `window._*` counters: `verify.py` prints every `window._*` value, so the host adds none.
 
-## Streetlab onto core/host (for the Voth branch, when it pauses)
+## Voth onto core/host (for the Voth branch, when it pauses)
 
-What Streetlab's city plan (`settlements/streetlab/targets/voth-city/`) calls today, and what it calls on the shell. Read-only
-here: nothing in Streetlab was edited (the files and their blobs are in `streetlab-sources.json`).
+What Voth's city plan (`settlements/voth/targets/voth-city/`) calls today, and what it calls on the shell. Read-only
+here: nothing in Voth's targets was edited (the files and their blobs are in `voth-sources.json`).
 
-| Streetlab today | core/host |
+| Voth today | core/host |
 |---|---|
 | the engine's `ctl` (`az`, `el`, `dist`, `target`, `walk`), `updateCamera()`, `window._setWalk` | `KHOST.cam.ctl` (`theta` = `az`, `phi` = pi/2 - `el`, `radius` = `dist`), `KHOST.cam.apply()` each frame, `KHOST.cam.walk(on)` |
 | `HOST.setupStage`'s depth-range frame hook (`core/city/50-city-host-streets.js` 13-19) | `KHOST.take({depth: true})` |

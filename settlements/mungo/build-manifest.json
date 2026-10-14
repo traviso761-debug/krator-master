@@ -365,15 +365,15 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "b520e0c4e9d0"
+  "b154cb08d075"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "7bf53b3f43bc"
+  "2c63970fb9d3"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
-  "5c243c49932f"
+  "3a4916d37814"
  ],
  "77-sim-6-population.js": [
   "core/simulation",

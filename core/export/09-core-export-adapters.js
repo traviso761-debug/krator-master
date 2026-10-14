@@ -2,7 +2,7 @@
 // [G data]: no THREE, no DOM. Load after 07-core-export.js. Each adapter reads a module's own export at export time and
 // gives it to the container (core/export/README.md, "Who fills what"). They live here, not in their modules, because
 // those modules (core/tags, core/atmos, core/materials/record) are also built into the Voth branch's pages
-// (settlements/voth, settlements/streetlab), which this branch does not rebuild: when a module is next touched with that
+// (settlements/voth), which this branch does not rebuild: when a module is next touched with that
 // branch's agreement, its adapter moves into it as an EXPORT.register call and leaves this file.
 //
 //   registry   KTAGS.page.export() (core/tags), cropped to a tile: the records an item or bucket names, the records

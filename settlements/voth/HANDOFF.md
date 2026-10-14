@@ -1,7 +1,10 @@
-# Streetlab: handoff (2026-10-09; the citizen simulation from 2026-10-12)
+# Voth: handoff (2026-10-09, as Streetlab; the citizen simulation from 2026-10-12)
+
+*2026-10-14: this folder was `settlements/streetlab` until today; the paths below are the new ones. The first Voth's
+page and its own docs are in `archive/voth-first`; its `src/` stays here as Voth's source library.*
 
 This note lets a new session take over the Voth city plan work. Read it with `README.md` (the design and every tool), `INDEX.md`
-(fragments and sizes), `PORT.md` (port tags) and `KNOWN_ISSUES.md`. The memory file `project-streetlab.md` holds the
+(fragments and sizes) and `PORT.md` (port tags). The memory file `project-streetlab.md` holds the
 owner's rules in short form.
 
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
@@ -426,7 +429,7 @@ brewery, butcher, bakery); overrides for the fallback shells; the Palace and Tem
 
 ## State
 
-**Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (`src/`, `dist/streetlab.html`) was
+**Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (Streetlab's own `src/` then, `dist/streetlab.html`) was
 retired: the owner called it redundant. Its street machinery became **`core/city`**, the city builder and its infill
 (`core/city/README.md`), and the city plan takes it from there.
 
@@ -435,7 +438,7 @@ retired: the owner called it redundant. Its street machinery became **`core/city
 | `dist/voth-site.html` | `targets/voth-site/` | `python3 verify.py dist/voth-site.html --assert` | OK |
 | `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`) | `python3 verify.py dist/voth-city.html --assert` | OK |
 
-Build: `cd settlements/streetlab && python3 build.py`. Serve: `python3 serve.py`, or the launch.json `streetlab` preview (port 8813). The page is
+Build: `cd settlements/voth && python3 build.py`. Serve: `python3 serve.py` (port 8813). The page is
 `/dist/voth-city.html`. It takes about 15 s to lay out and draw.
 
 ### Saved owner data (`site/`, inlined by build.py, read fresh under serve.py)
@@ -542,7 +545,7 @@ walks, the vessels and the flora editor's mapping.
 - **Refreshing the indexes:** `tools/audit_port.py` and `tools/make_index.py` rewrite every build's files.
   1. Back up every INDEX/PORT file first.
   2. Run the tools.
-  3. Restore all but streetlab's.
+  3. Restore all but Voth's (`settlements/voth`).
 
   `tar` fails here on the `C:` path; use `cp`.
 - After a change to the street method: rebuild, run all three verifies, take one screenshot per meaningful change.
