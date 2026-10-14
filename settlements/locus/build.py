@@ -94,7 +94,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')} | {'90-atmos-host.js', '20-core-clock.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js'}   # core/atmos: IIFE-scoped, its own PRNG; core/clock
-DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and the lake's binding (no rnd())
+DETERMINISTIC |= {f for f in os.listdir(WATER_DIR) if f.endswith('.js') and not f.startswith('test')} | {'90w-lake.js'}   # core/water (every fragment: no rnd()) and the lake's binding
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it

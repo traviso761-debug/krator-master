@@ -41,15 +41,23 @@
  ],
  "20-core-water.js": [
   "core/water",
-  "00212c5c6a4f"
+  "e0cca349eeb2"
  ],
  "20-stage.js": [
   "mungo (overrides locus)",
   "8f0b0c3dc8bf"
  ],
+ "21-core-water-shore.js": [
+  "core/water",
+  "8448b3d3ac84"
+ ],
  "21-sky.js": [
   "locus",
   "fe5deb4a5fc2"
+ ],
+ "22-core-water-flow.js": [
+  "core/water",
+  "1f53c733e2d2"
  ],
  "23-mat-record.js": [
   "virtual",
@@ -105,11 +113,15 @@
  ],
  "50-core-water-draw.js": [
   "core/water",
-  "8c050cfae567"
+  "935eaeecabcb"
  ],
  "50-structure.js": [
   "locus",
   "c5bf052f0346"
+ ],
+ "51-core-water-kinds.js": [
+  "core/water",
+  "8bdb6550ca70"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
