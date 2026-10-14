@@ -29,69 +29,70 @@ const KIT = { hall: [24, 18, 12], manor: [20, 22, 10], house_r: [12, 14, 9], hou
   house_p: [6, 7, 5], house_p2: [5, 8, 5], shop: [8, 9, 6], tavern: [10, 12, 7], ware: [14, 18, 8] };
 const dims = (key, v) => KIT[key] ? { key, v: v || 0, w: KIT[key][0], d: KIT[key][1], h: KIT[key][2] } : null;
 const tune = () => ({
-  cell: 2.5, rasterHalf: 260, maxSlope: 0.35,
+  cell: 2.5, rasterHalf: 260, maxSlope: 0.35, exact: true,   /* the exact-streets rule (opt-in): no building reaches a street's carriageway */
   width: { avenue: 12, main: 8, side: 5.5, alley: 3, highway: 10, lane: 4.5 },
   lot: { side: 1.6, setback: 1.4, rear: 3, inset: 1.0, step: 3 },
   classes: { manor: [['manor', 0]], rich: [['house_r', 0], ['house_r2', 0]], middle: [['house_m', 0], ['house_m2', 0]], poor: [['house_p', 0], ['house_p2', 0]],
     shop: [['shop', 0]], tavern: [['tavern', 0]], industrial: [['ware', 0]] },
   fallback: { manor: 'rich', rich: 'middle', middle: 'poor', shop: 'poor', tavern: 'shop', industrial: 'poor', poor: null },
-  civic: [{ key: 'hall', v: 0, near: 'market' }, { key: 'hall', v: 0, near: 'gate' }], civicSpacing: 120,
+  civic: [{ key: 'hall', v: 0, near: 'market' }, { key: 'hall', v: 0, near: 'gate' }, { key: 'hall', v: 0, near: 'garrison' }], civicSpacing: 120,
   voidMax: 40, voidIters: 12, voidBatch: 8, sideSpacing: 48, sideMax: 200, alleyFrac: 0.25, blindMax: 90, interiorDepth: 9, interiorRounds: 3,
+  avenueSnap: 90, ringGap: 8, verge: 7, wall: { towerGap: 110, clear: 28, gateFind: 170, thick: 7, gateTower: 14, gatePass: 4 },
   plazaArt: { rich: ['statue'], middle: ['fountain'], poor: ['fountain'], commerce: ['fountain'] }, mapHalf: 260
 });
 const ZONE = [[-240, -240], [240, -240], [240, 240], [-160, 240], [-240, 160]];
 const WALL = [[226, -240], [228, -80], [224, 60], [228, 240]];
 const PARK = [[-150, -150], [-90, -160], [-80, -100], [-140, -90]], MARKET = [[60, 60], [110, 60], [110, 100], [60, 100]];
+// the site as a site editor saves it: districts (named and typed), markers, drawn avenues
+const SITE = { districts: [{ name: 'Build zone', poly: ZONE }, { name: 'Park 1', type: 'park', poly: PARK }, { name: 'Market', type: 'market', poly: MARKET }],
+  markers: [{ id: 'E', x: 232, z: 4 }, { id: 'I', x: -170, z: 70 }],
+  avenues: [{ name: 'east-west', pts: [[-238, 6], [-60, 0], [80, -8], [150, 0]] }, { name: 'north-south', pts: [[4, -238], [0, -40], [-6, 120], [0, 238]] },
+    { name: 'spur', pts: [[-200, 120], [-120, 110], [-70, 96]] }] };
+const ROLES = KCITY.site.roles({ types: ['park', 'market', 'plaza'], names: [[/build ?zone/, 'zone'], [/^wall$/, 'wall']], other: 'misc' });
+// the world's steps 0-5 on core/city's site layer (25-city-site.js)
 function worldSteps() {
   const S = [];
-  S.push({ name: 'the ground and the raster', run() {
-    const R = SL.R = new Raster(TUNE.rasterHalf, TUNE.cell), ms2 = TUNE.maxSlope ** 2; R.occ.fill(OCC.OUT);
-    R.eachInPoly(ZONE, (k, i, j) => { const x = R.cx(i), z = R.cx(j), h = CG.base(x, z); if (h <= 0.6) return;
-      const gx = (CG.base(x + 5, z) - CG.base(x - 5, z)) / 10, gz = (CG.base(x, z + 5) - CG.base(x, z - 5)) / 10; if (gx * gx + gz * gz > ms2) return; R.occ[k] = OCC.FREE; });
-    const mid = SL.items('middle').map(it => it.d + TUNE.lot.setback + TUNE.lot.rear);
-    SL.minSpacing = Math.min.apply(null, mid) + TUNE.width.main / 2 + TUNE.width.side / 2;
-    PLAN.zone = ZONE; SL.note(0, 'synthetic site'); } });
-  S.push({ name: 'landmarks', run() { const o = obb([-20, -170], [1, 0], 14, 10);
-    const L = { id: PLAN.lots.length, cls: 'landmark', role: 'temple', key: 'hall', v: 0, slot: 0, wealth: 1, x: -20, z: -170, y: CG.pad(o), ry: 0, w: 28, d: 20, h: 12, lot: o, bo: o, way: -1, side: 0, s: 0, born: 1, died: null, civic: true };
-    PLAN.lots.push(L); SL.hashLot(L); SL.register(L); PLAN.landmarks.push(L); SL.R.stampPoly(obbCorners(obb(o.c, o.u, o.hw + 3, o.hd + 3)), OCC.HARD, L.id); } });
-  S.push({ name: 'the wall', run() { const R = SL.R;
-    for (let i = 1; i < WALL.length; i++) R.eachNearSeg(WALL[i - 1], WALL[i], 7, k => { R.occ[k] = OCC.OUT; R.own[k] = -1; });
-    PLAN.wallRec = { line: WALL, nodes: [{ kind: 'gate', name: 'East Gate', x: 225, z: 0, health: 2 }], segs: [{ ax: 226, az: -240, bx: 228, bz: 240, health: 2 }] };
-    PLAN.gates = [{ p: [225, 0], dir: 'E' }]; } });
-  S.push({ name: 'districts', run() { SL.R.stampPoly(PARK, OCC.GREEN, -1); SL.R.stampPoly(MARKET, OCC.HARD, -1);
-    PLAN.districts.push({ kind: 'park', poly: PARK, born: 3, art: [] }, { kind: 'market', poly: MARKET, born: 3, art: [] }); } });
-  S.push({ name: 'avenues and gates', run() {
-    SL.addWay('avenue', [[-238, 6], [-60, 0], [80, -8], [238, 0]], 4, { tag: 'east-west' });
-    SL.addWay('avenue', [[4, -238], [0, -40], [-6, 120], [0, 238]], 4, { tag: 'north-south' });
-    SL.addWay('avenue', offsetConvex(PARK, 14, 6), 4, { closed: true, tag: 'ring park' }); } });
-  S.push({ name: 'highways', run() { SL.note(5, 'no highways'); } });
+  S.push({ name: 'the site and its ground', run() {
+    const R = SL.R = new Raster(TUNE.rasterHalf, TUNE.cell); R.occ.fill(OCC.OUT);
+    PLAN.site = SITE.districts.map((d, i) => ({ id: i, name: d.name, type: d.type, role: ROLES(d), poly: d.poly }));
+    PLAN.zone = ZONE;
+    const land = KCITY.site.zoneRaster(R, ZONE, { dry: 0.6, maxSlope: TUNE.maxSlope });
+    SL.minSpacing = KCITY.site.minSpacing();
+    SL.note(0, 'synthetic site, ' + land + ' cells of dry land'); } });
+  S.push({ name: 'landmarks', run() {
+    const fixed = (role, c, hw, hd) => { const o = obb(c, [1, 0], hw, hd);
+      const L = { id: PLAN.lots.length, cls: 'landmark', role, key: 'hall', v: 0, slot: 0, wealth: 1, x: c[0], z: c[1], y: CG.pad(o), ry: 0, w: 2 * hw, d: 2 * hd, h: 12, lot: o, bo: o, way: -1, side: 0, s: 0, born: 1, died: null, civic: true };
+      PLAN.lots.push(L); SL.hashLot(L); SL.register(L); PLAN.landmarks.push(L); SL.R.stampPoly(obbCorners(obb(o.c, o.u, o.hw + 3, o.hd + 3)), OCC.HARD, L.id); };
+    fixed('temple', [-20, -170], 14, 10); const I = SITE.markers[1]; fixed('garrison', [I.x, I.z], 12, 9); } });
+  S.push({ name: 'districts', run() { PLAN.site.forEach(d => {
+    if (d.role === 'park') SL.R.stampPoly(d.poly, OCC.GREEN, -1); else if (d.role === 'market') SL.R.stampPoly(d.poly, OCC.HARD, -1);
+    if (d.role !== 'zone') PLAN.districts.push({ kind: d.role, name: d.name, poly: d.poly, born: 2, art: [] }); }); } });
+  S.push({ name: 'avenues', run() {
+    const av = KCITY.site.avenues(SITE.avenues, 3, { snap: TUNE.avenueSnap });
+    const rings = KCITY.site.ring(offsetConvex(PARK, TUNE.ringGap + TUNE.width.avenue / 2, 6), 3, 'ring Park 1');
+    SL.note(3, av.made + ' avenues, ' + av.joins + ' joins, ' + rings + ' ring runs'); } });
+  S.push({ name: 'highways', run() {
+    const G = KCITY.site.highwayGrid({ c: 20, half: 700, h: ground }), zc = polyCentroid(ZONE), dir = [1, 0];
+    const st = KCITY.site.farthest([].concat.apply([], SITE.avenues.map(a => a.pts)), zc, dir);
+    const r = KCITY.site.highway(G, { from: st, centre: zc, dir, reach: 440 });
+    let n = 0; if (r.pts) { const w = KCITY.site.layHighway(r.pts, 4, 'east', { verge: TUNE.verge }); SL.R.occ.forEach(c => { if (c === OCC.VERGE) n++; }); }
+    PLAN.vergeCells = n; SL.note(4, r.pts ? 'the east highway, ' + n + ' verge cells' : 'no highway'); } });
+  S.push({ name: 'the wall and its gates', run() {
+    const T = TUNE.wall, ways = PLAN.ways.filter(w => w.cls === 'avenue' || w.cls === 'highway'), E = SITE.markers[0];
+    const W = PLAN.wallRec = KCITY.site.wall(WALL, ways, { towerGap: T.towerGap, clear: T.clear, gateFind: T.gateFind, named: [{ x: E.x, z: E.z, marker: 'E', name: 'East Gate' }] });
+    W.nodes.forEach(n => { n.gx = n.x; n.gz = n.z; if (n.kind === 'gate' && n.way) n.towerOff = ((TUNE.width[n.way.cls] || 10) + T.gatePass) / 2 + T.gateTower / 2; });
+    W.segs = KCITY.site.wallSegs(W.nodes);
+    KCITY.site.stampWall(W, { thick: T.thick, step: 5, gateTower: T.gateTower });
+    PLAN.gates = W.gates.map(g => ({ p: [g.x, g.z], dir: g.name }));
+    SL.note(5, W.gates.length + ' gates, ' + W.nodes.filter(n => n.kind === 'tower').length + ' towers, ' + W.segs.length + ' runs'); } });
   return S;
 }
-// the builder (6-12) on the test world: civic by a `near` rule, avenue lots, main streets across the voids, then 9-12
-function builderSteps() {
-  return [
-    { name: 'civic buildings', run() { const it = SL.dims('hall', 0), gate = PLAN.gates[0].p, mk = polyCentroid(MARKET);
-      TUNE.civic.forEach(C => { const target = C.near === 'gate' ? gate : mk, cands = [];
-        PLAN.ways.forEach(w => { if (w.cls !== 'avenue') return; for (let s = 12; s < w.F.len - 12; s += 8) [-1, 1].forEach(side => cands.push({ w, s, side, sc: V.dist(w.F.at(s), target) })); });
-        cands.sort((a, b) => a.sc - b.sc);
-        for (const c of cands.slice(0, 300)) { if (PLAN.civics.some(L => Math.hypot(L.x - c.w.F.at(c.s)[0], L.z - c.w.F.at(c.s)[1]) < TUNE.civicSpacing)) continue;
-          const L = SL.tryLot(c.w, c.side, c.s, it, 6, 'civic', { wealth: 1, padded: true }); if (!L.fail) { L.role = C.key; PLAN.civics.push(L); break; } } }); } },
-    { name: 'avenue lots', run() { SL.pass7(); } },
-    { name: 'main streets', run() {   /* routed between the avenues across each quarter, then across what voids are left */
-      const opt = { lotK: 9, spK: 16, wobK: 0.9, cross: 3, hw: 1.25 }, ew = PLAN.ways[0], ns = PLAN.ways[1];
-      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(q => { const a = ew.F.at(ew.F.nearest([q[0] * 120, 0]).s), b = ns.F.at(ns.F.nearest([0, q[1] * 120]).s);
-        const pts = SL.route(a, b, ew.id, ns.id, Object.assign({ ring: (x, z) => 120 }, opt, { margin: 160 })); if (pts) SL.addWay('main', pts, 8, { tag: 'quarter ' + q }); });
-      SL.infillMains(8, opt, { voidMax: TUNE.voidMax, iters: TUNE.voidIters }); } },
-    { name: 'main-street lots', run() { SL.pass9(); } },
-    { name: 'side streets', run() { SL.pass10(); } },
-    { name: 'side-street lots, alley entrances', run() { SL.pass11(); } },
-    { name: 'alleys and alley lots', run() { SL.pass12(); } }
-  ];
-}
+// the builder (6-12): core/city's defaults
+const builderSteps = () => KCITY.defaultSteps().slice(6);
 const wealthRule = p => clamp(0.75 - Math.hypot(p[0] + 120, p[1] + 120) / 500 + 0.1 * slFbm(p[0] / 90, p[1] / 90, 2), 0, 1);
 function city(o) {
   o = o || {};
-  return KCITY.create(Object.assign({ tune: tune(), seed: 11, ground: { h: ground }, kit: { dims }, rules: { wealth: wealthRule },
+  return KCITY.create(Object.assign({ tune: tune(), seed: 11, ground: { h: ground }, kit: { dims }, rules: { wealth: wealthRule }, site: SITE,
     steps: worldSteps().concat(builderSteps()) }, o));
 }
 
@@ -109,13 +110,13 @@ function obbSegDist(o, a, b) { const C = obbCorners(o); let d = Infinity;
     const den = (q[0] - p[0]) * (b[1] - a[1]) - (q[1] - p[1]) * (b[0] - a[0]);
     if (den) { const t = ((a[0] - p[0]) * (b[1] - a[1]) - (a[1] - p[1]) * (b[0] - a[0])) / den, u = ((a[0] - p[0]) * (q[1] - p[1]) - (a[1] - p[1]) * (q[0] - p[0])) / den; if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0; } }
   return d; }
-// on a street: a footprint reaching into a street's carriageway past the lot inset (TUNE.lot.inset, 1 m: the raster's
-// tolerance, a lot's corner may touch the kerb by that much), or an alley's centreline running through a footprint
-// (the method routes alleys on the raster's cells round the lots: a 3 m alley may brush a wall, never cross a house)
+// on a street: a footprint reaching into a street's carriageway (the exact-streets rule, TUNE.exact: 5 cm), or an
+// alley's centreline running through a footprint (alleys are routed on the raster's cells round the lots after them:
+// a 3 m alley may brush a wall, never cross a house)
 function onStreets(P, brush) { let n = 0; standing(P).forEach(L => { if (L.cls === 'landmark') return;
-  if (P.ways.some(w => { const tol = w.cls === 'alley' ? w.w / 2 : 1.0; let d = Infinity; for (let i = 1; i < w.pts.length; i++) d = Math.min(d, obbSegDist(L.bo, w.pts[i - 1], w.pts[i]));
+  if (P.ways.some(w => { const tol = w.cls === 'alley' ? w.w / 2 : 0.05; let d = Infinity; for (let i = 1; i < w.pts.length; i++) d = Math.min(d, obbSegDist(L.bo, w.pts[i - 1], w.pts[i]));
     if (brush && d < w.w / 2 - 0.05) brush.n++; return d < w.w / 2 - tol; })) n++; }); return n; }
-const onWall = P => standing(P).filter(L => WALL.some((p, i) => i && obbSegDist(L.bo, WALL[i - 1], p) < 3.5)).length;
+const onWall = P => standing(P).filter(L => (P.wallRec ? P.wallRec.segs : []).some(sg => obbSegDist(L.bo, [sg.ax, sg.az], [sg.bx, sg.bz]) < 3.5)).length;
 const inWater = P => standing(P).filter(L => obbCorners(L.bo).concat([L.bo.c]).some(p => ground(p[0], p[1]) < 0)).length;
 
 // ---------------------------------------------------------------- 1. a city on the synthetic site
@@ -124,7 +125,9 @@ const S1 = standing(P), H1 = placeHash(P);
 ok('the city builds: lots on every street class, side streets and alleys', S1.length > 150 && ['avenue', 'main', 'side', 'alley'].every(c => P.ways.some(w => w.cls === c)) && P.civics.length >= 1,
   standing({ lots: [] }).length === 0, S1.length + ' standing lots, ' + P.ways.length + ' ways, ' + P.civics.length + ' civic');
 ok('no two standing footprints overlap (exact SAT, 0.1 m)', overlaps(P, 0.1) === 0, true, overlaps(P, 0.1) + ' pairs');
-{ const brush = { n: 0 }, on = onStreets(P, brush); ok('nothing stands on a street', on === 0, true, on + ' on a carriageway; ' + brush.n + ' brush a kerb within the tolerance'); }
+{ const brush = { n: 0 }, on = onStreets(P, brush), loose = city(); loose.tune.exact = false; const PL = loose.run(), onL = onStreets(PL);
+  ok('nothing stands on a street (the exact-streets rule; without it the raster lets buildings reach the carriageway)', on === 0, onL > 0,
+    on + ' on a carriageway, ' + brush.n + ' brushed by an alley; without the rule ' + onL); }
 ok('nothing stands on the wall or in water', onWall(P) === 0 && inWater(P) === 0, true, onWall(P) + ' on the wall, ' + inWater(P) + ' in water');
 // negatives of the three: a builder with the overlap test switched off overlaps; a lot pushed onto a street is seen
 { const B = city(), clash = SL.clash; B.bind(); SL.clash = () => null; const Q = B.run(); B.bind(); SL.clash = clash; KCITY.bind(A);
@@ -150,7 +153,7 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
 // ---------------------------------------------------------------- 3. the export
 { A.bind(); let e = null, j = null; try { e = A.export(); j = JSON.parse(JSON.stringify(e)); } catch (err) { e = String(err); }
   const plainWall = (() => { try { const save = PLAN.wallRec; PLAN.wallRec = null; const r = KCITY.exportPlan().wall; PLAN.wallRec = save; return r; } catch (err) { return 'threw'; } })();
-  ok('the export: plain JSON with the wall\'s records, every lot and way; a plan with no wall exports null, not a throw', j && j.wall && j.wall.line.length === WALL.length && j.lots.length === P.lots.length && j.ways.length === P.ways.length,
+  ok('the export: plain JSON with the wall\'s records, every lot and way; a plan with no wall exports null, not a throw', j && j.wall && j.wall.line.length >= WALL.length && j.wall.nodes.length > 2 && j.wall.segs.length > 1 && j.lots.length === P.lots.length && j.ways.length === P.ways.length,
     plainWall === null, j ? j.lots.length + ' lots, ' + j.ways.length + ' ways, wall ' + j.wall.line.length + ' points' : String(e)); }
 
 // ---------------------------------------------------------------- 4. the index: exact for any footprint size, two orders
@@ -185,6 +188,28 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
   ok('core/tags: every lot the builder places is registered before it is drawn; a knocked-out lot is removed',
     st.length === standing(PT).length && live.length === st.length && PT.lots.filter(L => L.died != null && L.tag).every(L => reg.get(L.tag).removed),
     placeHash(PT) === H1 && !A.tags, live.length + ' live records for ' + standing(PT).length + ' standing lots'); }
+
+// ---------------------------------------------------------------- 7. the site layer (25-city-site.js)
+{ A.bind(); const W = PLAN.wallRec, hw = PLAN.ways.filter(w => w.cls === 'highway'), gates = W.gates.filter(g => g.way);
+  const verge = PLAN.vergeCells;
+  const along = standing(PLAN).filter(L => hw.some(w => w.F.nearest([L.x, L.z]).d < w.w / 2 + TUNE.verge)).length;
+  const named = W.gates.filter(g => g.named && g.crossed).length, square = gates.every(g => g.square);
+  ok('the site layer: roles from the table, a highway with its verge (no lot along it), the wall\'s records (a named gate on its crossing, gates square to their ways, towers, runs)',
+    PLAN.site.map(d => d.role).join() === 'zone,park,market' && hw.length === 1 && verge > 20 && along === 0 && named === 1 && square && W.nodes.some(n => n.kind === 'tower') && W.segs.length > 2,
+    ROLES({ name: 'North Wall' }) === 'misc' && KCITY.site.roleAt([0, 0], PLAN.site, { skip: ['zone'], fallback: () => 'res' }) === 'res',
+    hw.length + ' highway, ' + verge + ' verge cells, ' + W.gates.length + ' gates (' + named + ' named), ' + W.nodes.filter(n => n.kind === 'tower').length + ' towers, ' + W.segs.length + ' runs'); }
+{ // the ground-delta interface on a 4 m grid: a bank under a line drawn into the water, a pad on a slope
+  const N = 101, cell = 4, ext = 200, base = (x, z) => 0.05 * z - 1, D = new Float32Array(N * N);
+  const at = (i, j, k) => base(-ext + i * cell, -ext + j * cell) + D[k];
+  const hh = (x, z) => { const i = Math.round((x + ext) / cell), j = Math.round((z + ext) / cell); return at(i, j, j * N + i); };
+  const G = { N, cell, ext, h: hh, at, add: (k, dv) => { D[k] += dv; } };
+  const run = KCITY.ground.bank(G, [[-100, 0], [100, 0]], { top: 1.3, deepest: -5, core: 10, feather: 10, slope: 0.45 });
+  const onBank = hh(0, 0), offBank = hh(0, 60);
+  D.fill(0); const pad = KCITY.ground.levelPad(G, { x: 0, z: 100, ry: 0, hw: 12, hd: 12, y: 4, spread: 0.5, slope: 0.6 });
+  const corners = [[-8, 92], [8, 92], [-8, 108], [8, 108]].map(p => hh(p[0], p[1])), flat = KCITY.ground.levelPad(G, { x: 0, z: 100, ry: 0, hw: 12, hd: 12, y: 4, spread: 0.5, slope: 0.6 });
+  ok('the ground deltas: an avenue in the water banked to its top, a gate\'s pad levelled (cut and fill), a level footprint left alone',
+    run > 150 && Math.abs(onBank - 1.3) < 1e-6 && Math.abs(offBank - (0.05 * 60 - 1)) < 1e-6 && pad && corners.every(y => Math.abs(y - 4) < 1e-6), flat === null,
+    run + ' m banked; pad cut ' + (pad && pad.cut.toFixed(2)) + ', fill ' + (pad && pad.fill.toFixed(2))); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

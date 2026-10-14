@@ -688,7 +688,7 @@ var TUNE = {
   plazaArt: { rich: ['voth_city_statue', 'voth_city_obelisk'], middle: ['fountain'], poor: ['voth_city_monastery_well', 'fountain'], commerce: ['fountain', 'voth_city_statue'] }
 };
 
-OCC.VERGE = 8;                          /* a highway's verge: streets cross it, lots do not stand on it */
+/* OCC.VERGE (8: a highway's verge, no lot on it) is core/city's (10-city-core.js) */
 
 /* kit footprints (core/city: SL.KIT, SL.dims) */
 SL.KIT = {};

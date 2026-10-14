@@ -5,7 +5,7 @@
    knocked out, then every sideSpacing along each main street; each runs across the block to the next street
    it meets, ending in that street's knocked-out frontage when there is one near. Lots are dear to cross. */
 SL.pass10 = function () {
-  var rs = SL.stream(10), R = SL.R, seeds = [], made = 0, opt = { lotK: 13, spK: 12, wobK: 0.5, cross: 6, hw: 1.15, margin: 40, rdp: 2 };
+  var rs = SL.stream(10), R = SL.R, seeds = [], made = 0, opt = { lotK: 13, spK: 12, wobK: 0.5, cross: 6, hw: 1.15, margin: 40, rdp: 2, cls: 'side' };
   PLAN.knocks.forEach(function (K) { var w = PLAN.ways[K.way]; if (w.cls === 'main' || w.cls === 'avenue') seeds.push({ way: w, side: K.side, s: (K.s0 + K.s1) / 2, knock: K, pri: rs.rnd() }); });
   PLAN.ways.forEach(function (w) {
     if (w.cls !== 'main') return;
@@ -168,6 +168,12 @@ SL.pass12 = function () {
 /* interior infill: open ground still deeper than interiorDepth from anything built is reached by a blind alley
    from the nearest street or alley (a breadth-first walk over open ground, a clear cell each side), and the
    new alley takes lots. Rounds of well-separated picks, the depth field recomputed between rounds. */
+/* the default reach of the last infill (grown in Voth): only open ground a street can reach within blindMax (85 % of
+   it, by the street distance transform, recomputed when the ways change) */
+SL.interiorOk = function (k) {
+  if (!SL._sdt || SL._sdtN !== PLAN.ways.length) { SL._sdt = new Float32Array(SL.R.n * SL.R.n); SL._sdo = new Int32Array(SL.R.n * SL.R.n); SL.streetDT(SL._sdt, SL._sdo); SL._sdtN = PLAN.ways.length; }
+  return SL._sdt[k] < TUNE.blindMax * 0.85;
+};
 SL.interiorAlleys = function (lab) {
   var R = SL.R, n = R.n, N = n * n, D = new Float32Array(N), skip = new Uint8Array(N), made = 0;
   var open = function (c) { return c === OCC.FREE || c === OCC.RESERVE; };

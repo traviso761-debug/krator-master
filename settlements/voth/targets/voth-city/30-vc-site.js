@@ -5,43 +5,19 @@
    roles: build zone, wall, harbor, industry, warehouse, river port, monastery. */
 var VC = { prims: {}, gates: [], wall: null };
 
-VC.role = function (d) {
-  if (d.type === 'park' || d.type === 'market' || d.type === 'plaza' || d.type === 'funerary') return d.type;
-  var n = (d.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
-  if (/build ?zone/.test(n)) return 'zone';
-  if (n === 'wall') return 'wall';
-  if (/harbou?r/.test(n)) return 'harbor';
-  if (/industr/.test(n)) return 'industry';
-  if (/warehouse/.test(n)) return 'warehouse';
-  if (/river ?port/.test(n)) return 'riverport';
-  if (/monaster|abbey/.test(n)) return 'monastery';
-  if (/clan/.test(n)) return 'clan';
-  if (/chinampa.*(exclu|no)/.test(n)) return 'nochin';
-  if (/^mines?\b/.test(n)) return 'mines';
-  if (/quarr/.test(n)) return 'quarry';
-  if (/mush/.test(n)) return 'mushfarm';
-  if (/farm/.test(n)) return 'farms';
-  return 'misc';
-};
+/* the role table (core/city 25-city-site.js KCITY.site.roles): a district's type, else its name */
+VC.ROLES = { types: ['park', 'market', 'plaza', 'funerary'], other: 'misc', names: [
+  [/build ?zone/, 'zone'], [/^wall$/, 'wall'], [/harbou?r/, 'harbor'], [/industr/, 'industry'], [/warehouse/, 'warehouse'], [/river ?port/, 'riverport'],
+  [/monaster|abbey/, 'monastery'], [/clan/, 'clan'], [/chinampa.*(exclu|no)/, 'nochin'], [/^mines?\b/, 'mines'], [/quarr/, 'quarry'], [/mush/, 'mushfarm'], [/farm/, 'farms']] };
+VC.role = KCITY.site.roles(VC.ROLES);
 VC.marker = function (re) { return SITE.data.markers.filter(function (m) { return re.test(m.id); })[0] || null; };
 VC.districts = function (role) { return PLAN.site.filter(function (d) { return d.role === role; }); };
-VC.roleAt = function (p) {
-  var best = null, ba = Infinity;
-  PLAN.site.forEach(function (d) {
-    if (d.role === 'zone' || d.role === 'wall' || d.role === 'misc' || d.role === 'nochin' || d.role === 'mines' || d.role === 'quarry' || d.role === 'farms' || d.role === 'mushfarm') return;
-    if (inPoly(p, d.poly)) { var a = Math.abs(polyArea(d.poly)); if (a < ba) { ba = a; best = d.role; } }
-  });
-  return best || (VC.outside(p) ? 'suburb' : 'res');
-};
+/* the smallest district holding p, of the roles that are ground a lot belongs to; outside every one 'res' (or 'suburb'
+   beyond the wall) */
+VC.ROLE_AT = { skip: ['zone', 'wall', 'misc', 'nochin', 'mines', 'quarry', 'farms', 'mushfarm'], fallback: function (p) { return VC.outside(p) ? 'suburb' : 'res'; } };
+VC.roleAt = function (p) { return KCITY.site.roleAt(p, PLAN.site, VC.ROLE_AT); };
 /* the user's avenues (and the rings), nearest point */
-VC.nearestWayPt = function (p, cls, skipId) {
-  var best = null, bd = Infinity;
-  PLAN.ways.forEach(function (w) {
-    if (cls && cls.indexOf(w.cls) < 0) return; if (w.id === skipId) return;
-    var q = w.F.nearest(p); if (q.d < bd) { bd = q.d; best = { way: w, s: q.s, p: w.F.at(q.s), d: q.d }; }
-  });
-  return best;
-};
+VC.nearestWayPt = KCITY.site.nearestWay;
 /* Voth's faceToward: the heading Voth's own builders take to face a point */
 VC.face = function (x, z, tx, tz) { return Math.atan2(-(tz - z), tx - x); };
 
@@ -67,15 +43,8 @@ SL.pass0 = function () {
   var R = SL.R, land = 0;
   R.occ.fill(OCC.OUT);
   /* dry ground in the zone, unless too steep to build on (over TUNE.maxSlope: hillsides stay open) */
-  var ms2 = TUNE.maxSlope * TUNE.maxSlope;
-  R.eachInPoly(PLAN.zone, function (k, i, jj) {
-    var x = R.cx(i), z = R.cx(jj), h = baseH(x, z); if (h <= 0.6) return;
-    var gx = (baseH(x + 5, z) - baseH(x - 5, z)) / 10, gz = (baseH(x, z + 5) - baseH(x, z - 5)) / 10;
-    if (gx * gx + gz * gz > ms2) return;
-    R.occ[k] = OCC.FREE; land++;
-  });
-  var mid = SL.items('middle').map(function (it) { return it.d + TUNE.lot.setback + TUNE.lot.rear; });
-  SL.minSpacing = Math.min.apply(null, mid) + TUNE.width.main / 2 + TUNE.width.side / 2;
+  land = KCITY.site.zoneRaster(R, PLAN.zone, { dry: 0.6, maxSlope: TUNE.maxSlope, probe: 5 });
+  SL.minSpacing = KCITY.site.minSpacing();
   PLAN.zoneLand = land * R.c * R.c;
   SL.note(0, 'site: ' + PLAN.site.length + ' districts, ' + SITE.data.markers.length + ' markers, ' + SITE.data.avenues.length + ' avenues, ' +
     SITE.data.terrain.length + ' ground strokes' + (emb ? ', ' + emb + ' m of avenue edge banked up out of the water' : '') + '; build zone ' + (Math.abs(polyArea(PLAN.zone)) / 1e6).toFixed(2) + ' km2, ' + (PLAN.zoneLand / 1e6).toFixed(2) + ' km2 of it dry land');
@@ -86,20 +55,14 @@ SL.pass0 = function () {
    (a bridge or a causeway's line) is left alone. Edits TERR's delta grid, so the ground, the street passes and
    Voth's own builders all see the same bank. */
 VC.embank = function () {
-  var E = TUNE.embank, N = TERR.N, cs = TERR.cell, run = 0;
-  SITE.data.avenues.forEach(function (a) {
-    resample(a.pts, 3, false).forEach(function (p) {
-      var h = TERR.h(p[0], p[1]); if (h >= E.top || h < E.deepest) return;
-      run += 3;
-      var R = E.core + E.feather, i0 = Math.floor((p[0] - R + TERR.ext) / cs), i1 = Math.ceil((p[0] + R + TERR.ext) / cs), j0 = Math.floor((p[1] - R + TERR.ext) / cs), j1 = Math.ceil((p[1] + R + TERR.ext) / cs);
-      for (var j = Math.max(0, j0); j <= Math.min(N - 1, j1); j++) for (var i = Math.max(0, i0); i <= Math.min(N - 1, i1); i++) {
-        var x = -TERR.ext + i * cs, z = -TERR.ext + j * cs, d = Math.hypot(x - p[0], z - p[1]); if (d > R) continue;
-        var want = E.top - Math.max(0, d - E.core) * E.slope, k = j * N + i, now = TERR.baseAt(i, j) + TERR.D[k];
-        if (want > now) TERR.D[k] += want - now;
-      }
-    });
-  });
+  var G = VC.terrGrid(), run = 0;
+  SITE.data.avenues.forEach(function (a) { run += KCITY.ground.bank(G, a.pts, TUNE.embank); });
   return run;
+};
+/* TERR's delta grid as core/city's ground-delta interface (25-city-site.js) */
+VC.terrGrid = function () {
+  return { N: TERR.N, cell: TERR.cell, ext: TERR.ext, h: function (x, z) { return TERR.h(x, z); },
+    at: function (i, j, k) { return TERR.baseAt(i, j) + TERR.D[k]; }, add: function (k, dv) { TERR.D[k] += dv; } };
 };
 
 /* a gate on a slope gets a level pad: the ground under its footprint (the model's own half-sizes, local x along the
@@ -111,26 +74,15 @@ VC.embank = function () {
 VC.GATE_SIZE = { RiverGate: [3.9, 16.8], HarborGate: [4.2, 18.1], SpiritGate: [3.6, 15.8] };
 VC.levelGate = function (n) {
   var T = TUNE.wall, sz = VC.GATE_SIZE[n.name] || [T.gateTower * 0.56, (n.towerOff || 15) + T.gateTower * 0.56];
-  var hw = sz[0] + T.padMargin, hd = sz[1] + T.padMargin, cs = Math.cos(n.ry), sn = Math.sin(n.ry);
-  var y = Math.max(0.6, TERR.h(n.gx, n.gz)), lo = Infinity, hi = -Infinity;
-  [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, -1], [0, 1]].forEach(function (s) {
-    var h = TERR.h(n.gx + s[0] * hw * cs + s[1] * hd * sn, n.gz - s[0] * hw * sn + s[1] * hd * cs); lo = Math.min(lo, h); hi = Math.max(hi, h);
-  });
-  if (hi - lo < T.padSpread) return null;
-  var N = TERR.N, c = TERR.cell, E = TERR.ext, R = Math.hypot(hw, hd) + (hi - lo) / T.padSlope + c;
-  var i0 = Math.max(0, Math.floor((n.gx - R + E) / c)), i1 = Math.min(N - 1, Math.ceil((n.gx + R + E) / c));
-  var j0 = Math.max(0, Math.floor((n.gz - R + E) / c)), j1 = Math.min(N - 1, Math.ceil((n.gz + R + E) / c));
-  for (var j = j0; j <= j1; j++) for (var i = i0; i <= i1; i++) {
-    var dx = -E + i * c - n.gx, dz = -E + j * c - n.gz, lx = dx * cs - dz * sn, lz = dx * sn + dz * cs;
-    var d = Math.hypot(Math.max(0, Math.abs(lx) - hw), Math.max(0, Math.abs(lz) - hd)), k = j * N + i;
-    var now = TERR.baseAt(i, j) + TERR.D[k], want = clamp(now, y - d * T.padSlope, y + d * T.padSlope);
-    TERR.D[k] += want - now;
-  }
-  var G = SL.ground, gi0 = Math.max(0, Math.floor((n.gx - R + G.half) / G.c)), gi1 = Math.min(G.n - 1, Math.ceil((n.gx + R + G.half) / G.c));
+  var pad = KCITY.ground.levelPad(VC.terrGrid(), { x: n.gx, z: n.gz, ry: n.ry, hw: sz[0] + T.padMargin, hd: sz[1] + T.padMargin,
+    y: Math.max(0.6, TERR.h(n.gx, n.gz)), spread: T.padSpread, slope: T.padSlope });
+  if (!pad) return null;
+  /* the street passes' sampled ground (SL.ground) over the box the pad touched */
+  var R = pad.R, G = SL.ground, gi0 = Math.max(0, Math.floor((n.gx - R + G.half) / G.c)), gi1 = Math.min(G.n - 1, Math.ceil((n.gx + R + G.half) / G.c));
   var gj0 = Math.max(0, Math.floor((n.gz - R + G.half) / G.c)), gj1 = Math.min(G.n - 1, Math.ceil((n.gz + R + G.half) / G.c));
   for (var gj = gj0; gj <= gj1; gj++) for (var gi = gi0; gi <= gi1; gi++) G.h[gj * G.n + gi] = TERR.h(-G.half + gi * G.c, -G.half + gj * G.c);
-  n.pad = { y: y, cut: hi - y, fill: y - lo };
-  return y;
+  n.pad = { y: pad.y, cut: pad.cut, fill: pad.fill };
+  return pad.y;
 };
 
 /* the wall line: the western edge of the 'wall' polygon, from its northernmost corner to its southernmost */
@@ -257,65 +209,26 @@ SL.pass2 = function () {
 
 /* a way laid over something placed before it (a highway, a causeway) takes it down: every standing building whose
    footprint its carriageway (plus `pad`) overlaps is knocked out at `step` */
-VC.clearUnder = function (pts, width, step, pad) {
-  var n = 0;
-  for (var i = 1; i < pts.length; i++) {
-    var a = pts[i - 1], b = pts[i], L = V.dist(a, b); if (L < 0.5) continue;
-    var o = obb(V.lerp(a, b, 0.5), V.norm(V.sub(b, a)), L / 2, width / 2 + (pad || 0));
-    PLAN.lots.forEach(function (Lt) { if (Lt.died == null && Lt.bo && !Lt.deck && Math.abs(Lt.x - o.c[0]) < L / 2 + 80 && Math.abs(Lt.z - o.c[1]) < L / 2 + 80 && SL.pen(o, Lt.bo) > 0.2) { SL.killLot(Lt, step); n++; } });
-  }
-  return n;
-};
+VC.clearUnder = function (pts, width, step, pad) { return KCITY.site.clearUnder(pts, width, step, pad, VC.keepDeck); };
+VC.keepDeck = function (L) { return L.deck; };   /* a canton deck's buildings stand over the water: no way clears them */
 
 /* ---------------------------------------------------------------- step 3: avenues */
 /* a ring round a district, kept only where it is dry and not already on an avenue */
-VC.addRing = function (ring, step, tag) {
-  var R = SL.R, P = resample(ring, 2, true), W = TUNE.width.avenue;
-  var cov = P.map(function (p) { var k = R.idx(p[0], p[1]); return k < 0 || R.sd[k] < W * 0.8 || baseH(p[0], p[1]) < 0.8; });
-  if (cov.every(function (c) { return !c; })) { SL.addWay('avenue', P, step, { closed: true, tag: tag }); return 1; }
-  if (cov.every(Boolean)) return 0;
-  var n = P.length, s0 = cov.indexOf(true), made = 0;
-  for (var k = 1; k <= n; k++) {
-    var i = (s0 + k) % n;
-    if (cov[i]) continue;
-    var run = [];
-    var prev = P[(i - 1 + n) % n]; if (baseH(prev[0], prev[1]) >= 0.8) { var sn = VC.nearestWayPt(prev, ['avenue']); if (sn && sn.d < W * 1.5) run.push(sn.p); }
-    while (!cov[i]) { run.push(P[i]); k++; i = (s0 + k) % n; }
-    if (baseH(P[i][0], P[i][1]) >= 0.8) { var sn2 = VC.nearestWayPt(P[i], ['avenue']); if (sn2 && sn2.d < W * 1.5) run.push(sn2.p); }
-    if (run.length > 4) { SL.addWay('avenue', run, step, { tag: tag }); made++; }
-  }
-  return made;
-};
+VC.addRing = function (ring, step, tag) { return KCITY.site.ring(ring, step, tag, { dry: 0.8 }); };
 SL.pass3 = function () {
-  var W = TUNE.width.avenue, made = 0, joins = 0, rings = 0;
-  var own = [];
-  SITE.data.avenues.forEach(function (a) {
-    var P = a.pts.filter(function (p, i) { return !i || V.dist(p, a.pts[i - 1]) > 1; });
-    if (P.length < 2) return;
-    own.push(SL.addWay('avenue', P, 3, { tag: a.name })); made++;
-  });
-  /* join each avenue's loose ends: to another avenue close by, else to a causeway's landing close by */
+  var W = TUNE.width.avenue, rings = 0;
+  /* the drawn avenues, each loose end joined to another avenue close by, else to a causeway's landing close by */
   var lands = SITE.causeways().map(function (c) {
     var a = c.pts[0], b = c.pts[c.pts.length - 1];
     return baseH(a[0], a[1]) > baseH(b[0], b[1]) ? a : b;
   });
-  own.forEach(function (w) {
-    [w.pts[0], w.pts[w.pts.length - 1]].forEach(function (e) {
-      var q = VC.nearestWayPt(e, ['avenue'], w.id);
-      if (q && q.d < W * 0.8) return;                                   /* already meets one */
-      if (q && q.d < TUNE.avenueSnap) { SL.addWay('avenue', [e, q.p], 3, { tag: 'join ' + w.tag }); joins++; return; }
-      var bl = null, bd = TUNE.causewaySnap;
-      lands.forEach(function (l) { var d = V.dist(e, l); if (d < bd) { bd = d; bl = l; } });
-      if (bl && bd > W) { SL.addWay('avenue', [e, bl], 3, { tag: 'to causeway ' + w.tag }); joins++; }
-    });
-  });
+  var av = KCITY.site.avenues(SITE.data.avenues, 3, { snap: TUNE.avenueSnap, landings: lands, landingSnap: TUNE.causewaySnap }), made = av.made, joins = av.joins;
   /* the causeways (the site's, drawn or Voth's): their whole length is theirs, no building on a causeway's deck or its
      landing (owner, 2026-10-09: "a building clipping a causeway") */
   var cw = 0;
   SITE.causeways().forEach(function (c) {
-    var P = c.pts, wd = (c.width || 46) / 2 + 4;
-    for (var i = 1; i < P.length; i++) SL.R.eachNearSeg(P[i - 1], P[i], wd, function (k) { if (SL.R.occ[k] === OCC.FREE || SL.R.occ[k] === OCC.GREEN) { SL.R.occ[k] = OCC.HARD; SL.R.own[k] = -1; } });
-    cw += VC.clearUnder(P, c.width || 46, 3, 3);
+    KCITY.site.blockCorridor(c.pts, (c.width || 46) / 2 + 4);
+    cw += VC.clearUnder(c.pts, c.width || 46, 3, 3);
   });
   /* Voth's river bridges: the abutment is no ground for a building, and each end runs on to the nearest avenue
      (owner: "make sure they connect to avenues with an additional short avenue connector") */
@@ -385,51 +298,23 @@ VC.placeHealing = function () {
    highway keeps near the river, the bay highway near the shore. Each starts at the avenue point furthest out in its
    direction and ends at the reach. */
 SL.pass4 = function () {
-  var c = 20, half = TUNE.highwayReach + 400, n = Math.round(2 * half / c), G = { n: n, c: c }, H = new Float32Array(n * n);
-  for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) { var x = -half + (i + 0.5) * c, z = -half + (j + 0.5) * c; H[j * n + i] = Math.abs(x) < TUNE.rasterHalf && Math.abs(z) < TUNE.rasterHalf ? baseH(x, z) : VOTH.terrainHe(x, z); }
-  var zc = polyCentroid(PLAN.zone), made = 0, avPts = [];
+  var c = 20, half = TUNE.highwayReach + 400, made = 0, avPts = [];
+  var G = KCITY.site.highwayGrid({ c: c, half: half, h: function (x, z) { return Math.abs(x) < TUNE.rasterHalf && Math.abs(z) < TUNE.rasterHalf ? baseH(x, z) : VOTH.terrainHe(x, z); } });
+  var zc = polyCentroid(PLAN.zone);
   SITE.data.avenues.forEach(function (a) { avPts = avPts.concat(a.pts); });
   TUNE.highways.forEach(function (hw) {
     var t = hw.deg * Math.PI / 180, dir = [Math.cos(t), -Math.sin(t)];
-    var st = avPts.reduce(function (m, p) { return V.dot(V.sub(p, zc), dir) > V.dot(V.sub(m, zc), dir) ? p : m; }, avPts[0]);
-    var extra = null;
-    if (hw.river) { extra = new Float32Array(n * n); for (var k = 0; k < n * n; k++) { var px = -half + (k % n + 0.5) * c, pz = -half + (((k / n) | 0) + 0.5) * c; var dr = Infinity; for (var rv = 1; rv < VOTH.RIVER.length; rv++) dr = Math.min(dr, segDist([px, pz], VOTH.RIVER[rv - 1], VOTH.RIVER[rv])); extra[k] = 0.006 * Math.max(0, dr - 150); } }
-    if (hw.shore) { extra = new Float32Array(n * n); for (var k2 = 0; k2 < n * n; k2++) { var qx = -half + (k2 % n + 0.5) * c, qz = -half + (((k2 / n) | 0) + 0.5) * c; extra[k2] = 0.005 * Math.max(0, VOTH.landDist(qx, qz) - 160); } }
-    var cost = function (k, i, j) {
-      var h = H[k]; if (h < 0.8) return Infinity;
-      /* nothing already standing is run over: landmarks, the markets, monastery and cemetery, the parks */
-      var px = -half + (i + 0.5) * c, pz = -half + (j + 0.5) * c, rk = SL.R.idx(px, pz);
-      /* a station the highway comes by stands beside it, not on it */
-      if (via && Math.hypot(px - via.x, pz - via.z) < TUNE.viaNear[0] - 4) return Infinity;
-      if (rk >= 0 && (SL.R.occ[rk] === OCC.HARD || SL.R.occ[rk] === OCC.GREEN) && Math.hypot(-half + (i + 0.5) * c - st[0], -half + (j + 0.5) * c - st[1]) > 60) return Infinity;
-      var gx = (H[j * n + Math.min(n - 1, i + 1)] - H[j * n + Math.max(0, i - 1)]) / (2 * c), gz = (H[Math.min(n - 1, j + 1) * n + i] - H[Math.max(0, j - 1) * n + i]) / (2 * c);
-      return 1 + 70 * (gx * gx + gz * gz) + (extra ? extra[k] : 0);
-    };
-    var goals = new Set(), reach = TUNE.highwayReach;
-    for (var j2 = 0; j2 < n; j2++) for (var i2 = 0; i2 < n; i2++) {
-      var gp = [-half + (i2 + 0.5) * c, -half + (j2 + 0.5) * c], rel = V.sub(gp, zc), L = V.len(rel);
-      if (L > reach && L < reach + 3 * c && V.dot(rel, dir) / L > Math.cos(Math.PI / 7)) goals.add(j2 * n + i2);
-    }
-    var si = Math.floor((st[0] + half) / c), sj = Math.floor((st[1] + half) / c), from = sj * n + si, path = [], via = null;
+    var st = KCITY.site.farthest(avPts, zc, dir);
+    /* the river highway keeps near the river, the bay highway near the shore */
+    var pull = hw.river ? KCITY.site.pullField(G, KCITY.site.lineDist(VOTH.RIVER), 0.006, 150) : hw.shore ? KCITY.site.pullField(G, function (x, z) { return VOTH.landDist(x, z); }, 0.005, 160) : null;
     /* a highway that must come by an elephant bug station (owner: "make sure the highway comes by S11 and S10") runs to
        the ring of ground just beside it first, so the station stands at the roadside, not on the road */
-    via = hw.via ? SITE.station(hw.via) : null;
-    if (via) {
-      var ring = new Set();
-      for (var j4 = 0; j4 < n; j4++) for (var i4 = 0; i4 < n; i4++) { var dv = Math.hypot(-half + (i4 + 0.5) * c - via.x, -half + (j4 + 0.5) * c - via.z); if (dv > TUNE.viaNear[0] && dv < TUNE.viaNear[1] && H[j4 * n + i4] >= 0.8) ring.add(j4 * n + i4); }
-      var p1 = ASTAR(G, from, ring, cost, null, 1.0, function (i3, j3) { return Math.max(0, Math.hypot(-half + (i3 + 0.5) * c - via.x, -half + (j3 + 0.5) * c - via.z) - TUNE.viaNear[1]) / c; });
-      if (!p1) { SL.note(4, 'the ' + hw.name + ' highway cannot reach ' + hw.via); }
-      else { path = p1.slice(0, -1); from = p1[p1.length - 1]; }
-    }
-    var p2 = ASTAR(G, from, goals, cost, null, 1.0, function (i3, j3) { return Math.max(0, reach - V.dot(V.sub([-half + (i3 + 0.5) * c, -half + (j3 + 0.5) * c], zc), dir)) / c; });
-    if (!p2) { SL.note(4, 'no route for the ' + hw.name + ' highway'); return; }
-    path = path.concat(p2);
-    var pts = [st].concat(path.slice(1).map(function (k) { return [-half + (k % n + 0.5) * c, -half + (((k / n) | 0) + 0.5) * c]; }));
-    pts = chaikin(rdp(pts, 6), 3);
-    var hwy = SL.addWay('highway', pts, 4, { tag: hw.name, stamp: true }); made++;
-    VC.clearUnder(hwy.pts, hwy.w, 4, 2);
+    var via = hw.via ? SITE.station(hw.via) : null;
+    var r = KCITY.site.highway(G, { from: st, centre: zc, dir: dir, reach: TUNE.highwayReach, pull: pull, via: via, viaNear: TUNE.viaNear });
+    if (r.viaFailed) SL.note(4, 'the ' + hw.name + ' highway cannot reach ' + hw.via);
+    if (!r.pts) { SL.note(4, 'no route for the ' + hw.name + ' highway'); return; }
     /* a verge either side: no building along a highway (owner, 2026-10-09); streets may still cross it */
-    for (var vi = 1; vi < hwy.pts.length; vi++) SL.R.eachNearSeg(hwy.pts[vi - 1], hwy.pts[vi], hwy.w / 2 + TUNE.verge, function (k) { if (SL.R.occ[k] === OCC.FREE) SL.R.occ[k] = OCC.VERGE; });
+    var hwy = KCITY.site.layHighway(r.pts, 4, hw.name, { pad: 2, skip: VC.keepDeck, verge: TUNE.verge }); made++;
     if (via) { var nv = hwy.F.nearest([via.x, via.z]); hwy.via = { id: hw.via, d: Math.round(nv.d) }; }
   });
   /* a station off every highway gets its own road to the city here (S12), so it stands off it like the rest */
@@ -448,94 +333,20 @@ SL.pass4 = function () {
 SL.pass5 = function () {
   if (!VC.wallChain) { SL.note(5, 'no wall polygon'); return; }
   var T = TUNE.wall, ways = PLAN.ways.filter(function (w) { return w.cls === 'avenue' || w.cls === 'highway'; });
-  /* the line, every towerGap, with an outward (east) normal per vertex */
-  var C = resample(VC.wallChain, T.towerGap, false);
-  var nrm = function (i) { var a = C[Math.max(0, i - 1)], b = C[Math.min(C.length - 1, i + 1)], t = V.norm(V.sub(b, a)); return [t[1], -t[0]]; };   /* running south, east is (t.z, -t.x) */
-  /* crossings of the original line by avenues and highways */
-  var cross = function (L) {
-    var out = [];
-    for (var i = 1; i < L.length; i++) ways.forEach(function (w) {
-      for (var k = 1; k < w.pts.length; k++) {
-        var p = L[i - 1], q = L[i], r = w.pts[k - 1], s = w.pts[k], d1 = V.sub(q, p), d2 = V.sub(s, r), den = d1[0] * d2[1] - d1[1] * d2[0];
-        if (Math.abs(den) < 1e-9) continue;
-        var t = ((r[0] - p[0]) * d2[1] - (r[1] - p[1]) * d2[0]) / den, u = ((r[0] - p[0]) * d1[1] - (r[1] - p[1]) * d1[0]) / den;
-        /* a way running along the wall (crossing it at under 30 degrees) is no crossing: the wall moves off it */
-        var sin = Math.abs(den) / (V.len(d1) * V.len(d2));
-        if (t >= 0 && t <= 1 && u >= 0 && u <= 1 && sin > 0.5) out.push({ seg: i - 1, t: t, p: V.add(p, V.mul(d1, t)), way: w });
-      }
-    });
-    return out;
-  };
-  var X0 = cross(C);
-  /* clearance: a vertex an avenue runs beside (not across) moves out until the avenue is T.clear away */
-  for (var it = 0; it < 4; it++) for (var i = 0; i < C.length; i++) {
-    var p = C[i], d = Infinity, from = null;
-    if (X0.some(function (x) { return V.dist(x.p, p) < 70; })) continue;
-    ways.forEach(function (w) { var nq = w.F.nearest(p); if (nq.d < d) { d = nq.d; from = w.F.at(nq.s); } });
-    /* away from the avenue it is too close to (on whichever side the wall already lies) */
-    if (d < T.clear) C[i] = V.add(p, V.mul(d > 0.5 ? V.norm(V.sub(p, from)) : nrm(i), T.clear - d + 3));
-  }
-  /* ...and a run between two vertices that bows toward an avenue gets a vertex (a tower) there, pushed out */
-  for (var round = 0; round < 8; round++) {
-    var added = false;
-    for (var i2 = 1; i2 < C.length; i2++) {
-      var A = C[i2 - 1], Bv = C[i2], worst = null, wd = T.clear, wfrom = null;
-      for (var tt = 0.1; tt < 0.95; tt += 0.1) {
-        var q = V.lerp(A, Bv, tt); if (X0.some(function (x) { return V.dist(x.p, q) < 70; })) continue;
-        ways.forEach(function (w) { var nq2 = w.F.nearest(q); if (nq2.d < wd) { wd = nq2.d; worst = q; wfrom = w.F.at(nq2.s); } });
-      }
-      if (worst) { var td = V.norm(V.sub(Bv, A)), away = wd > 0.5 ? V.norm(V.sub(worst, wfrom)) : [td[1], -td[0]]; C.splice(i2, 0, V.add(worst, V.mul(away, T.clear - wd + 3))); added = true; i2++; }
-    }
-    if (!added) break;
-  }
-  VC.wallLine = C;
-  var X = cross(C), arc = plFrame(C), sOf = function (p) { return arc.nearest(p).s; };
-  /* gates: the named three first, at the crossing nearest each marker (or the wall point nearest it) */
-  var gates = [];
+  /* the records (core/city KCITY.site.wall): the line every towerGap, pushed clear of the avenues beside it (outward:
+     east); gates where avenues and highways cross it, the named three (harbour, spirit, river) at the crossing nearest
+     the owner's markers F, G, H; towers at the vertices; every node whole (owner, 2026-10-09: "make the wall un-ruined") */
+  var named = [];
   [['F', 'HarborGate'], ['G', 'SpiritGate'], ['H', 'RiverGate']].forEach(function (g) {
-    var m = VC.marker(new RegExp('^' + g[0] + '$', 'i')); if (!m) return;
-    var best = null, bd = T.gateFind;
-    X.forEach(function (x) { var dd = Math.hypot(x.p[0] - m.x, x.p[1] - m.z); if (dd < bd) { bd = dd; best = x.p; } });
-    var at = best || arc.at(sOf([m.x, m.z]));
-    var bx = best ? X.filter(function (x) { return x.p === best; })[0] : null;
-    gates.push({ kind: 'gate', name: g[1], marker: g[0], x: at[0], z: at[1], s: sOf(at), health: 2, named: true, crossed: !!best, way: bx ? bx.way : null });
+    var m = VC.marker(new RegExp('^' + g[0] + '$', 'i')); if (m) named.push({ x: m.x, z: m.z, marker: g[0], name: g[1] });
   });
-  X.forEach(function (x) {
-    var s = sOf(x.p);
-    if (gates.some(function (g) { return Math.abs(g.s - s) < (g.named ? 70 : 40); })) return;
-    gates.push({ kind: 'gate', name: 'Gate', x: x.p[0], z: x.p[1], s: s, named: false, way: x.way });
-  });
-  /* towers at the vertices, clear of the gates */
-  var nodes = gates.slice();
-  C.forEach(function (p) { var s = sOf(p); if (!gates.some(function (g) { return Math.abs(g.s - s) < 30; })) nodes.push({ kind: 'tower', x: p[0], z: p[1], s: s }); });
-  nodes.sort(function (a, b) { return a.s - b.s; });
-  /* the wall stands whole (owner, 2026-10-09: "make the wall un-ruined"): every tower, gate and run intact */
-  nodes.forEach(function (nd) { nd.health = 2; });
-  nodes.forEach(function (nd, i) { var a = nodes[Math.max(0, i - 1)], b = nodes[Math.min(nodes.length - 1, i + 1)]; nd.ry = Math.atan2(b.x - a.x, b.z - a.z); });
-  /* a gate is square to the way through it, not to the wall: its passage (the model's local x) runs along the way,
-     so its towers stand either side of the road instead of on it */
-  nodes.forEach(function (nd) {
-    if (nd.kind !== 'gate' || !nd.way) return;
-    var t = nd.way.F.tan(nd.way.F.nearest([nd.x, nd.z]).s, 8), ry = Math.atan2(-t[1], t[0]);
-    if (Math.cos(ry - nd.ry) < 0) ry += Math.PI;     /* keep the wall's own sense, so a model's front faces out as before */
-    nd.ry = ry; nd.square = true;
-  });
-  VC.wall = PLAN.wallRec = { line: C, nodes: nodes, gates: gates };   /* PLAN.wallRec: the records core/city exports (KCITY.exportWall) */
+  var W = KCITY.site.wall(VC.wallChain, ways, { towerGap: T.towerGap, clear: T.clear, gateFind: T.gateFind, named: named, side: 1, health: 2 });
+  var C = VC.wallLine = W.line, gates = W.gates, nodes = W.nodes;
+  VC.wall = PLAN.wallRec = W;   /* PLAN.wallRec: the records core/city exports (KCITY.exportWall) */
   VC.buildWall();                 /* 31-vc-voth.js: sites, towers, gates and segments, as Voth builds them */
   /* the raster: the wall is no ground for lots or streets, except through its gates; anything placed before it on its
      line (a quay warehouse) comes down */
-  var R = SL.R;
-  VC.wall.segs.forEach(function (sg) { VC.clearUnder([[sg.ax, sg.az], [sg.bx, sg.bz]], T.thick, 5, 3); });
-  VC.wall.segs.forEach(function (sg) {
-    R.eachNearSeg([sg.ax, sg.az], [sg.bx, sg.bz], T.thick / 2 + 5, function (k) { if (R.occ[k] === OCC.FREE) { R.occ[k] = OCC.OUT; R.own[k] = -1; } });
-  });
-  VC.wall.nodes.forEach(function (nd) { if (nd.kind === 'tower' && !nd.skip && nd.health > 0) R.eachNearSeg([nd.gx, nd.gz], [nd.gx, nd.gz], 12, function (k) { if (R.occ[k] === OCC.FREE) R.occ[k] = OCC.OUT; }); });
-  /* a gate's towers are no ground for a street either: only its passage is open */
-  VC.wall.nodes.forEach(function (nd) {
-    if (nd.kind !== 'gate' || nd.deleted) return;
-    var lz = [Math.sin(nd.ry), Math.cos(nd.ry)], off = nd.named ? 20 : nd.towerOff;
-    [-1, 1].forEach(function (sd) { var tp = [nd.gx + lz[0] * off * sd, nd.gz + lz[1] * off * sd]; R.eachNearSeg(tp, tp, nd.named ? 9 : TUNE.wall.gateTower / 2 + 1, function (k) { if (R.occ[k] === OCC.FREE || R.occ[k] === OCC.LOT) R.occ[k] = OCC.OUT; }); });
-  });
+  KCITY.site.stampWall(VC.wall, { thick: T.thick, step: 5, gateTower: T.gateTower, skip: VC.keepDeck });
   var live = nodes.filter(function (n) { return !n.skip && !n.deleted; });
   SL.note(5, 'wall ' + Math.round(plLen(C)) + ' m on the west edge of the wall polygon; gates: ' + gates.map(function (g) { return g.name === 'Gate' ? 'gate' : g.name + (g.crossed ? '' : ' (no way crosses there)'); }).join(', ') +
     '; ' + live.filter(function (n) { return n.kind === 'tower'; }).length + ' towers, ' + VC.wall.segs.length + ' standing segments' +

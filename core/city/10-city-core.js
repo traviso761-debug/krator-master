@@ -86,6 +86,18 @@ function inPoly(p, P) {
   }
   return c;
 }
+/* the distance between a polygon (an OBB's corners) and segment ab: 0 when they touch or one holds the other */
+function polySegDist(C, a, b) {
+  if (inPoly(a, C) || inPoly(b, C)) return 0;
+  var d = Infinity;
+  for (var i = 0; i < C.length; i++) {
+    var p = C[i], q = C[(i + 1) % C.length];
+    var den = (q[0] - p[0]) * (b[1] - a[1]) - (q[1] - p[1]) * (b[0] - a[0]);
+    if (den) { var t = ((a[0] - p[0]) * (b[1] - a[1]) - (a[1] - p[1]) * (b[0] - a[0])) / den, u = ((a[0] - p[0]) * (q[1] - p[1]) - (a[1] - p[1]) * (q[0] - p[0])) / den; if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0; }
+    d = Math.min(d, segDist(p, a, b), segDist(a, p, q), segDist(b, p, q));
+  }
+  return d;
+}
 function polyEdgeDist(p, P) { var d = Infinity; for (var i = 0; i < P.length; i++) d = Math.min(d, segDist(p, P[i], P[(i + 1) % P.length])); return d; }
 function scalePolyTo(P, area) { var c = polyCentroid(P), k = Math.sqrt(area / Math.abs(polyArea(P))); return P.map(function (p) { return [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k]; }); }
 function hull(pts) {
@@ -161,7 +173,7 @@ function obbCorners(o) {
 /* ============================== THE OCCUPANCY RASTER ==============================
    One 2 m grid over the walled city: what every cell holds (a code) and who owns it (a lot or a way id).
    Lots, streets, parks and footprints are stamped into it; placement checks and the A* street router read it. */
-var OCC = { FREE: 0, STREET: 1, LOT: 2, HARD: 3, OUT: 4, RESERVE: 5, ALLEY: 6, GREEN: 7 };
+var OCC = { FREE: 0, STREET: 1, LOT: 2, HARD: 3, OUT: 4, RESERVE: 5, ALLEY: 6, GREEN: 7, VERGE: 8 };   /* VERGE: beside a highway: streets cross it, lots do not stand on it */
 function Raster(half, cell) {
   var R = this; R.half = half; R.c = cell; R.n = Math.ceil(2 * half / cell);
   var N = R.n * R.n;

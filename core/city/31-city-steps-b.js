@@ -1,38 +1,55 @@
 /* ============================== 5. STEPS 6-9: CIVIC, AVENUE LOTS, MAIN STREETS, MAIN-STREET LOTS ============================== */
-/* [G data] */
+/* [G data] The builder's defaults, grown in Voth (its pass6, pass7 and pass8 are these): a world gives its rules and data. */
 
-/* step 6: civic buildings on the avenues, each where its `near` rule wants it, kept apart from one another */
+/* step 6: civic buildings on the avenues, each where its `near` rule wants it, kept civicSpacing apart. Candidates every
+   civicStep (8 m) along both sides of every avenue; each civic piece (TUNE.civic: {key, v, near}) scores them with the
+   scorer its `near` names (the world's table rules.near, over KCITY.NEAR; any other name is a district role) plus a
+   jitter (civicJitter, 40) and takes the best of the first civicTries (600) that fits. */
+KCITY.NEAR = {
+  /* the residential ground (SL.roleAt's fallback role), its wealthiest first */
+  res: function (c) { return c.role === 'res' ? (1 - c.W) * 300 : 1e4; },
+  /* by the garrison landmark (PLAN.landmarks, role 'garrison') */
+  garrison: function (c) { var I = KCITY.landmark('garrison'); return I ? Math.hypot(c.p[0] - I.x, c.p[1] - I.z) : 1e4; },
+  /* civicGateDist (120 m) from a gate of the wall's records (PLAN.wallRec), not beyond the wall (TUNE.civicOutside roles) */
+  gate: function (c) {
+    var W = PLAN.wallRec, gd = TUNE.civicGateDist == null ? 120 : TUNE.civicGateDist, out = TUNE.civicOutside || ['suburb'];
+    return W ? Math.min.apply(null, W.gates.map(function (g) { return Math.abs(Math.hypot(c.p[0] - g.x, c.p[1] - g.z) - gd); })) + (out.indexOf(c.role) >= 0 ? 1e4 : 0) : 1e4;
+  },
+  /* a district role: inside one 0, else 400 plus the distance to the nearest */
+  role: function (c, near) { return c.role === near ? 0 : 400 + KCITY.site.districts(near).reduce(function (m, d) { return Math.min(m, polyEdgeDist(c.p, d.poly)); }, 1e4); }
+};
+KCITY.landmark = function (role) { for (var i = 0; i < PLAN.landmarks.length; i++) if (PLAN.landmarks[i] && PLAN.landmarks[i].role === role) return PLAN.landmarks[i]; return null; };
 SL.pass6 = function () {
-  var rs = SL.stream(6), cands = [], gar = PLAN.landmarks[2];
+  var rs = SL.stream(6), cands = [], T = TUNE, step = T.civicStep == null ? 8 : T.civicStep, jit = T.civicJitter == null ? 40 : T.civicJitter, tries = T.civicTries == null ? 600 : T.civicTries;
+  var near = function (C, c) { var f = (SL.near && SL.near[C.near]) || KCITY.NEAR[C.near]; return f ? f(c, C.near) : KCITY.NEAR.role(c, C.near); };
   PLAN.ways.forEach(function (w) {
     if (w.cls !== 'avenue') return;
-    for (var s = 12; s < w.F.len - 12; s += 6) [-1, 1].forEach(function (side) { cands.push({ w: w, s: s, side: side, p: w.F.at(s) }); });
+    for (var s = 12; s < w.F.len - 12; s += step) [-1, 1].forEach(function (side) { cands.push({ w: w, s: s, side: side, p: w.F.at(s) }); });
   });
+  cands.forEach(function (c) { c.role = SL.roleAt(c.p); c.W = SL.wealth(c.p); });
   TUNE.civic.forEach(function (C) {
-    var it = SL.dims(C.key, C.v); if (!it) { SL.note(6, 'no kit piece ' + C.key); return; }
+    var it = SL.dims(C.key, C.v); if (!it) return;
     cands.forEach(function (c) {
-      var r = V.len(c.p), sc;
-      if (C.near === 'core') sc = Math.abs(r - (PLAN.coreR + 70));
-      else if (C.near === 'mid') sc = Math.abs(r - 360);
-      else if (C.near === 'garrison') sc = V.dist(c.p, [gar.x, gar.z]);
-      else sc = Math.abs(Math.min.apply(null, PLAN.gates.map(function (g) { return V.dist(c.p, g.p); })) - 80);
+      var sc = near(C, c);
       PLAN.civics.forEach(function (L) { if (Math.hypot(L.x - c.p[0], L.z - c.p[1]) < TUNE.civicSpacing) sc += 1e4; });
-      c.sc = sc + rs.rr(0, 30);
+      c.sc = sc + rs.rr(0, jit);
     });
     var order = cands.slice().sort(function (a, b) { return a.sc - b.sc; });
-    for (var i = 0; i < Math.min(500, order.length); i++) {
+    for (var i = 0; i < Math.min(tries, order.length); i++) {
       var c = order[i], L = SL.tryLot(c.w, c.side, c.s, it, 6, 'civic', { wealth: 1, padded: true });
       if (!L.fail) { L.role = C.key; PLAN.civics.push(L); break; }
     }
   });
-  SL.note(6, PLAN.civics.length + ' of ' + TUNE.civic.length + ' civic buildings placed on the avenues');
+  SL.note(6, PLAN.civics.length + ' of ' + TUNE.civic.length + ' civic buildings on the avenues');
 };
 
-/* step 7: lots along the avenues, front doors to the avenue, graded by wealth */
+/* step 7: lots along the avenues, front doors to the avenue, graded by wealth. A way flagged noFrontage (or a layby:
+   Voth's station laybys) takes none, and the highways none (owner, 2026-10-09: "don't automatically put buildings along
+   the highways like that"): the blocks behind them are reached from the streets the later steps lay */
 SL.pass7 = function () {
   var n0 = PLAN.lots.length;
-  PLAN.ways.forEach(function (w) { if (w.cls === 'avenue') [-1, 1].forEach(function (side) { SL.lineLots(w, side, SL.choosers.avenue, 7); }); });
-  SL.note(7, (PLAN.lots.length - n0) + ' avenue lots');
+  PLAN.ways.forEach(function (w) { if (w.cls === 'avenue' && !w.layby && !w.noFrontage) [-1, 1].forEach(function (side) { SL.lineLots(w, side, SL.choosers.avenue, 7); }); });
+  SL.note(7, (PLAN.lots.length - n0) + ' lots on the avenues (none on the highways)');
 };
 
 /* ---------------------------------------------------------------- the street router
@@ -48,7 +65,17 @@ SL.fields = function () {
     slope[k] = gx * gx + gz * gz;
     wob[k] = 0.5 + 0.5 * slFbm(x / 70 + 91, z / 70 - 37, 2);
   }
-  return (SL.F = { slope: slope, wob: wob });
+  /* the exact-streets rule (TUNE.exact): how far each cell lies from ground no street may take (HARD: a civic building,
+     a landmark), so a street's carriageway, not only its centreline, keeps off it */
+  var hd = null;
+  if (TUNE.exact) {
+    hd = new Float32Array(n * n);
+    for (var q = 0; q < n * n; q++) hd[q] = R.occ[q] === OCC.HARD ? 0 : 1e9;
+    var rl = function (k2, m, w) { if (hd[m] + w < hd[k2]) hd[k2] = hd[m] + w; }, d1 = c, d2 = c * Math.SQRT2;
+    for (var j1 = 1; j1 < n - 1; j1++) for (var i1 = 1; i1 < n - 1; i1++) { var a = j1 * n + i1; rl(a, a - 1, d1); rl(a, a - n, d1); rl(a, a - n - 1, d2); rl(a, a - n + 1, d2); }
+    for (var j3 = n - 2; j3 > 0; j3--) for (var i3 = n - 2; i3 > 0; i3--) { var b = j3 * n + i3; rl(b, b + 1, d1); rl(b, b + n, d1); rl(b, b + n + 1, d2); rl(b, b + n - 1, d2); }
+  }
+  return (SL.F = { slope: slope, wob: wob, hard: hd });
 };
 /* the price of a cell for a street of class cls between ways `from` and `to` */
 SL.streetCost = function (from, to, opt) {
@@ -56,6 +83,7 @@ SL.streetCost = function (from, to, opt) {
   return function (k) {
     var c = R.occ[k], base = 1 + 60 * F.slope[k] + wobK * F.wob[k];
     if (c === OCC.OUT || c === OCC.HARD || c === OCC.GREEN) return Infinity;
+    if (F.hard && F.hard[k] < (TUNE.width[opt.cls || 'main'] || 8) / 2 + R.c) return Infinity;   /* exact streets: the carriageway keeps off HARD ground */
     if (c === OCC.STREET || c === OCC.ALLEY) { var o = R.own[k]; if (o === from || o === to) return 1; base += opt.cross; }
     else if (c === OCC.LOT) { var L = PLAN.lots[R.own[k]]; base += lotK * (0.45 + (L ? L.lot.hw * L.lot.hd * 4 : 300) / 420); }
     else if (c === OCC.RESERVE) base += 2;
@@ -101,64 +129,73 @@ SL.smallLotAt = function (way, side, s, win) {
 SL.sAtRadius = function (way, r) { var F = way.F, best = 0, bd = Infinity; for (var s = 0; s <= F.len; s += 2) { var d = Math.abs(V.len(F.at(s)) - r); if (d < bd) { bd = d; best = s; } } return best; };
 SL.sideToward = function (way, s, dir) { return V.dot(V.perp(way.F.tan(s, 4)), dir) > 0 ? 1 : -1; };
 
-/* step 8: main streets grow out of the avenues. Between each pair of neighbouring cardinal avenues, rings of
-   main streets connect avenue to avenue, one every mainSpacing out from the core; a spoke runs from the core
-   avenues out through each sector's middle to its outermost ring. Routes avoid parks, landmarks and civic
-   buildings outright, lots by price (smaller lots cheaper), and keep the minimum spacing from other streets. */
+/* step 8: main streets across the open ground (grown in Voth). The open ground is ranked on a coarse grid (mainCoarse:
+   4 raster cells; its distance from any street, a chamfer transform), and each round (voidIters) crosses up to
+   voidBatch well-separated voids deeper than voidMax: from the nearest street toward the void and on to a street
+   beyond it (the ray turned by mainTurns when straight on finds none); failing that, where the void backs onto the edge
+   of the build zone, a dead-end street runs into it. A route that would mostly run on streets already there is no new
+   street (it went round the void). The toy's rings and spokes for a walled radial city: KCITY.radial (34-city-radial.js). */
 SL.pass8 = function () {
-  var rs = SL.stream(8), rad = PLAN.radials.slice().sort(function (a, b) { return a.ang - b.ang; }), made = 0, failed = 0;
-  var opt = { lotK: 9, spK: 16, wobK: 0.9, cross: 3, hw: 1.25 };
-  PLAN.sectors = [];
-  var ends = {};
-  for (var q = 0; q < rad.length; q++) {
-    var A = rad[q], B = rad[(q + 1) % rad.length], wa = PLAN.ways[A.way], wb = PLAN.ways[B.way];
-    var dA = [Math.cos(A.ang), Math.sin(A.ang)], dB = [Math.cos(B.ang), Math.sin(B.ang)];
-    var sec = { a: A.dir, b: B.dir, arcs: [], bis: V.norm(V.add(dA, dB)) };
-    PLAN.sectors.push(sec);
-    /* ring i of nr sits at fraction f between the core and the outer ring, measured along each bearing, so the
-       rings follow the wall's own shape and the outermost runs outerRing inside it */
-    var r0 = Math.max(V.len(wa.pts[0]), V.len(wb.pts[0])) + TUNE.mainSpacing * 0.7;
-    var meanW = 0; for (var a = 0; a < 16; a++) meanW += SL.wallR(V.add(V.mul(dA, 1 - a / 15), V.mul(dB, a / 15))) / 16;
-    var nr = Math.max(1, Math.round((meanW - TUNE.outerRing - r0) / TUNE.mainSpacing) + 1);
-    for (var ri = 0; ri < nr; ri++) {
-      var f = nr === 1 ? 1 : ri / (nr - 1);
-      var ring = (function (f, jit) { return function (x, z) { return r0 + jit + f * (SL.wallR([x, z]) - TUNE.outerRing - r0 - jit); }; })(f, ri === nr - 1 ? 0 : rs.rr(-1, 1) * TUNE.mainJitter);
-      var pa = wa.F.at(SL.sAtRadius(wa, ring(dA[0] * 300, dA[1] * 300))), pb = wb.F.at(SL.sAtRadius(wb, ring(dB[0] * 300, dB[1] * 300)));
-      var sa = SL.sAtRadius(wa, ring(pa[0], pa[1])), sb = SL.sAtRadius(wb, ring(pb[0], pb[1]));
-      var sideA = SL.sideToward(wa, sa, dB), sideB = SL.sideToward(wb, sb, dA), kk = nr - 1 - ri;
-      /* ring kk (counted from the wall) crosses each cardinal avenue at one point: where the neighbouring
-         sector's ring kk already meets it, else at the smallest lot near its radius */
-      var EA = ends[A.dir] || (ends[A.dir] = {}), EB = ends[B.dir] || (ends[B.dir] = {});
-      sa = EA[kk] != null ? EA[kk] : SL.smallLotAt(wa, sideA, sa, 22);
-      sb = EB[kk] != null ? EB[kk] : SL.smallLotAt(wb, sideB, sb, 22);
-      var pts = SL.route(wa.F.at(sa), wb.F.at(sb), wa.id, wb.id, Object.assign({ ring: ring }, opt));
-      EA[kk] = sa; EB[kk] = sb;
-      if (!pts) { failed++; continue; }
-      var w = SL.addWay('main', pts, 8, { tag: 'ring ' + A.dir + B.dir + ' #' + (ri + 1) + '/' + nr });
-      sec.arcs.push(w.id); made++;
+  var R = SL.R, T = TUNE, f = T.mainCoarse == null ? 4 : T.mainCoarse, cn = Math.floor(R.n / f), CN = cn * cn, cc = R.c * f;
+  var cls = new Uint8Array(CN), D = new Float32Array(CN), O = new Int32Array(CN), skip = new Uint8Array(CN);
+  var opt = T.mainRoute || { lotK: 9, spK: 16, wobK: 0.9, cross: 3, hw: 1.25, margin: 200 }, fills = 0, dead = 0, rounds = 0;
+  var turns = T.mainTurns || [0, 0.45, -0.45, 0.9, -0.9], ray = T.mainRay == null ? 640 : T.mainRay;
+  var cx = function (ci) { return -TUNE.rasterHalf + (ci + 0.5) * cc; };
+  var rayHit = function (c, d, from) {
+    for (var t = 2; t < ray; t += 2) {
+      var q = V.add(c, V.mul(d, t)), k = R.idx(q[0], q[1]), o = k < 0 ? OCC.OUT : R.occ[k];
+      if (o === OCC.OUT || o === OCC.HARD || o === OCC.GREEN) return { free: t };
+      if (o === OCC.STREET && R.own[k] !== from) return { w: PLAN.ways[R.own[k]], q: q };
     }
-    /* spokes: from the core avenues out along the sector's middle to the outermost ring */
-    if (!sec.arcs.length) continue;
-    var outer = PLAN.ways[sec.arcs[sec.arcs.length - 1]];
-    for (var sp = 0; sp < TUNE.spokesPerSector; sp++) {
-      var dir = V.rot(sec.bis, (sp - (TUNE.spokesPerSector - 1) / 2) * 0.35 + rs.rr(-0.12, 0.12));
-      var src = null, best = -Infinity;
-      PLAN.ways.forEach(function (w) {
-        if (w.cls !== 'avenue' || /^cardinal/.test(w.tag)) return;
-        w.pts.forEach(function (p, i) { var v = V.dot(p, dir) - 0.6 * Math.abs(V.dot(p, V.perp(dir))); if (v > best) { best = v; src = { w: w, s: w.F.cum[i] }; } });
-      });
-      var tq = null, tb = -Infinity;
-      outer.pts.forEach(function (p, i) { var v = V.dot(V.norm(p), dir); if (v > tb) { tb = v; tq = outer.F.cum[i]; } });
-      if (!src || tq == null) continue;
-      var side = SL.sideToward(src.w, src.s, dir);
-      var ss = SL.smallLotAt(src.w, side, src.s, 20);
-      var pts2 = SL.route(src.w.F.at(ss), outer.F.at(tq), src.w.id, outer.id, opt);
-      if (!pts2) { failed++; continue; }
-      SL.addWay('main', pts2, 8, { tag: 'spoke ' + A.dir + B.dir }); made++;
+    return { free: ray };
+  };
+  var mostlyOld = function (pf) {
+    var n = 0, on = 0, L = plLen(pf), F = plFrame(pf);
+    for (var s = 15; s < L - 15; s += 4) { var p = F.at(s), k = R.idx(p[0], p[1]); n++; if (k >= 0 && R.occ[k] === OCC.STREET) on++; }
+    return n > 0 && on / n > 0.35;
+  };
+  for (; rounds < T.voidIters; rounds++) {
+    /* the coarse grid: a street where any of its cells is one, open where its middle is */
+    for (var cj = 0; cj < cn; cj++) for (var ci = 0; ci < cn; ci++) {
+      var kc = cj * cn + ci, st = -1;
+      for (var b = 0; b < f && st < 0; b++) for (var a = 0; a < f; a++) { var k = (cj * f + b) * R.n + ci * f + a; if (R.occ[k] === OCC.STREET) { st = R.own[k]; break; } }
+      var mid = (cj * f + 2) * R.n + ci * f + 2;
+      cls[kc] = st >= 0 ? 1 : R.occ[mid] === OCC.FREE ? 0 : 2;
+      D[kc] = st >= 0 ? 0 : 1e9; O[kc] = st;
     }
+    var relax = function (k, m, w) { if (D[m] + w < D[k]) { D[k] = D[m] + w; O[k] = O[m]; } }, w1 = cc, w2 = cc * Math.SQRT2;
+    for (var j = 0; j < cn; j++) for (var i = 0; i < cn; i++) { var q1 = j * cn + i; if (i) relax(q1, q1 - 1, w1); if (j) { relax(q1, q1 - cn, w1); if (i) relax(q1, q1 - cn - 1, w2); if (i < cn - 1) relax(q1, q1 - cn + 1, w2); } }
+    for (var j2 = cn - 1; j2 >= 0; j2--) for (var i2 = cn - 1; i2 >= 0; i2--) { var q2 = j2 * cn + i2; if (i2 < cn - 1) relax(q2, q2 + 1, w1); if (j2 < cn - 1) { relax(q2, q2 + cn, w1); if (i2 < cn - 1) relax(q2, q2 + cn + 1, w2); if (i2) relax(q2, q2 + cn - 1, w2); } }
+    var cand = [];
+    for (var k3 = 0; k3 < CN; k3++) if (cls[k3] === 0 && !skip[k3] && D[k3] > T.voidMax && O[k3] >= 0) cand.push(k3);
+    if (!cand.length) break;
+    cand.sort(function (p, q) { return D[q] - D[p]; });
+    var picks = [];
+    for (var c3 = 0; c3 < cand.length && picks.length < T.voidBatch; c3++) {
+      var kk = cand[c3], x = cx(kk % cn), z = cx((kk / cn) | 0);
+      if (picks.every(function (q) { return Math.hypot(q[0] - x, q[1] - z) > 3 * T.voidMax; })) picks.push([x, z, kk]);
+    }
+    var got = 0;
+    picks.forEach(function (P) {
+      var c = [P[0], P[1]], WA = PLAN.ways[O[P[2]]]; if (!WA) return;
+      var na = WA.F.nearest(c), a = WA.F.at(na.s), d0 = V.norm(V.sub(c, a)), hit = null, d = d0;
+      turns.some(function (rot) { d = V.rot(d0, rot); var h = rayHit(c, d, WA.id); if (h.w) { hit = h; return true; } return false; });
+      var sA = SL.smallLotAt(WA, SL.sideToward(WA, na.s, d0), na.s, 20), pf = null;
+      if (hit) {
+        var nb = hit.w.F.nearest(hit.q), sB = SL.smallLotAt(hit.w, SL.sideToward(hit.w, nb.s, V.mul(d, -1)), nb.s, 20);
+        pf = SL.route(WA.F.at(sA), hit.w.F.at(sB), WA.id, hit.w.id, opt);
+        if (pf && mostlyOld(pf)) pf = null;
+        if (pf) { SL.addWay('main', pf, 8, { tag: 'main' }); fills++; got++; }
+      }
+      if (!pf) {
+        var fr = rayHit(c, d0, WA.id).free || 0, end = V.add(c, V.mul(d0, Math.max(0, Math.min(fr - 16, 360))));
+        if (V.dist(a, end) > 70) { pf = SL.route(WA.F.at(sA), end, WA.id, -1, opt); if (pf && mostlyOld(pf)) pf = null; if (pf) { SL.addWay('main', pf, 8, { tag: 'main (dead end)' }); dead++; got++; } }
+      }
+      if (!pf) for (var b2 = -2; b2 <= 2; b2++) for (var a2 = -2; a2 <= 2; a2++) { var ks = P[2] + b2 * cn + a2; if (ks >= 0 && ks < CN) skip[ks] = 1; }
+    });
+    if (!got && !picks.length) break;
   }
-  var fills = SL.infillMains(8, opt, { voidMax: TUNE.voidMax, iters: TUNE.voidIters });
-  SL.note(8, made + ' ring and spoke main streets (' + failed + ' routes failed), ' + fills + ' infill main streets across open ground');
+  SL.note(8, fills + ' main streets across the open ground and ' + dead + ' dead-end ones into it, in ' + rounds + ' rounds');
 };
 
 /* infill: where open ground still lies further than o.voidMax from any street, a main street crosses the void from

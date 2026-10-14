@@ -14,7 +14,7 @@ VC.city = KCITY.create({
   tune: TUNE, seed: SL.seed,
   ground: { base: baseH, h: terrainH, pad: addPad, foot: baseY },
   kit: { dims: SL.dims },
-  rules: { wealth: SL.wealth, choosers: SL.choosers, vacant: SL.vacant, interiorOk: SL.interiorOk },
+  rules: { wealth: SL.wealth, choosers: SL.choosers, vacant: SL.vacant, roleAt: VC.roleAt },   /* steps 6-8's near scorers and the infill's reach: core's defaults */
   index: { order: 'buckets', fieldWindow: true, roadWindow: true },
   /* each step names its pass, read when it runs: a fragment loaded after this one wraps a pass (37-vc-light.js puts the
      power houses in at step 9) */

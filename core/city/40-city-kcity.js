@@ -12,7 +12,8 @@
    ground  {h, base, pad, foot, grid}: 15-city-ground.js (a world may give only h)
    kit     {dims(key, v) -> {key, v, w, d, h}}: the kit's footprints
    rules   the world's rules, each optional: wealth(p), choosers {avenue, main, side, alley}, vacant(p, rs),
-           interiorOk(k), groundOk(bo, lot) (and near: civic `near` scorers, 31-city-steps-b.js)
+           interiorOk(k), groundOk(bo, lot), roleAt(p) (a point's district role), near {name: scorer(c, name)} (the
+           civic `near` scorers over KCITY.NEAR, 31-city-steps-b.js)
    seed    the city's seed (SL.seed: SL's streams and value noise). rand 'krand' draws every stream from core/rand
            (SL.stream); a new city takes it, Voth keeps SL's own (moving it changes its layout: PLAN.md)
    steps   [{name, run(C, k), after: [fn(C, k)]}]: the steps in order, as data (KCITY.STEPS names the default 13)
@@ -26,8 +27,10 @@
    Voth's fragments, written against the globals, run unchanged on its instance (35-vc-steps.js). The data side is
    engine-neutral: a GDScript twin keeps the same records in the instance itself. */
 
-KCITY.RULES = ['wealth', 'choosers', 'vacant', 'interiorOk', 'groundOk', 'near'];
-KCITY.defaults = { dims: SL.dims, wealth: SL.wealth, choosers: SL.choosers, vacant: SL.vacant || null, interiorOk: SL.interiorOk || null, groundOk: null, near: null };
+KCITY.RULES = ['wealth', 'choosers', 'vacant', 'interiorOk', 'groundOk', 'near', 'roleAt'];
+KCITY.defaults = { dims: SL.dims, wealth: SL.wealth, choosers: SL.choosers, vacant: SL.vacant || null, interiorOk: SL.interiorOk || null, groundOk: null, near: null,
+  /* a point's district role: the smallest site district holding it (PLAN.site), else 'res' */
+  roleAt: function (p) { return KCITY.site.roleAt(p, PLAN.site || [], { skip: ['zone', 'wall', 'misc'], fallback: function () { return 'res'; } }); } };
 KCITY.cur = null;
 KCITY.STEPS = SL.STEPS;
 /* what a run leaves on SL, saved into the instance when another is bound */
@@ -68,7 +71,7 @@ KCITY.create = function (o) {
   C.run = function () {
     KCITY.bind(C);
     if (typeof C.tags === 'string') C.tags = SL.tags = KTAGS.create({ build: C.tags });
-    C.plan = SL.newPlan(); SL.F = null; SL._items = {}; if (SL.pads) SL.pads.length = 0;
+    C.plan = SL.newPlan(); SL.F = null; SL._items = {}; SL._sdt = null; if (SL.pads) SL.pads.length = 0;
     C.index.lots.clear(); C.index.roads.clear(); C.index.fields.clear();
     PLAN.stats.ms = [];
     C.steps.forEach(function (st, k) {

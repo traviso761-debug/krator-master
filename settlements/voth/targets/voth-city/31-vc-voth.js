@@ -607,16 +607,8 @@ VC.buildWall = function () {
       else if (n.name === 'RiverGate') B.riverGate(n.gx, fg.lo, n.gz, n.ry, gcol, {});
       else VC.wallGate(n, fg.lo, gcol);
     });
-    W.segs = [];
-    for (var i = 1; i < live.length; i++) {
-      var A = live[i - 1], C = live[i], health = Math.floor((A.health + C.health) / 2);
-      if (health <= 0) continue;
-      var dx = C.gx - A.gx, dz = C.gz - A.gz, L = Math.hypot(dx, dz); if (L < 2) continue;
-      var ux = dx / L, uz = dz / L, iA = A.kind === 'gate' ? 18 : 6, iC = C.kind === 'gate' ? 18 : 6;
-      var ax = A.gx + ux * Math.min(iA, L * 0.4), az = A.gz + uz * Math.min(iA, L * 0.4), bx = C.gx - ux * Math.min(iC, L * 0.4), bz = C.gz - uz * Math.min(iC, L * 0.4);
-      if (Math.hypot(bx - ax, bz - az) < 4) continue;
-      B.wallSegRender(ax, az, bx, bz, health, B.pick(B.BASALTC));
-      W.segs.push({ ax: ax, az: az, bx: bx, bz: bz, health: health });
-    }
+    /* the standing runs between the live nodes are records (core/city KCITY.site.wallSegs); each is drawn in order */
+    W.segs = KCITY.site.wallSegs(live, { gateInset: 18, towerInset: 6 });
+    W.segs.forEach(function (sg) { B.wallSegRender(sg.ax, sg.az, sg.bx, sg.bz, sg.health, B.pick(B.BASALTC)); });
   });
 };
