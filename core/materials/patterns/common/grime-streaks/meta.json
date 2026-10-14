@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.0,
+    0.057
+   ],
+   "seam_before": [
+    0.017,
+    0.267
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "mask",
+  "id": "common/grime-streaks",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "32.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 32.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "a mask atlas: 20 columns by 8 rows of drip streaks, dark on WHITE (the prompt asked 16 x 8 on transparent): white is no grime. Not seamless; a cell is picked by hash.",
+  "original_file": "32.webp",
+  "original_sha1": "2d8f11c9163818247cbfcfdb2d1dc3f2fdd7af93",
+  "prompt": "A sheet of 128 separate grime streak masks in a grid of 16 columns by 8 rows, square, 2048x2048, each cell twice as tall as it is wide, on a solid flat pure white background. Front-on, flat, even, shadowless lighting; no text, no border, no grid lines. Each cell holds one vertical stain as on a wall below a window sill or a cornice: it starts at the top edge of its cell as a soft band and runs down, fading out before the bottom edge, nothing crossing into the next cell. Vary them: soot, damp, rust run-off, narrow drips, wide washes, single, forked and several parallel runs, some short, some long. Greyscale only, from pale grey to near-black where the stain is strongest, no colour at all.",
+  "reuse": "window, sill and cornice run-off (the breakup hook's grime parameter, not built yet)",
+  "sha1": "2d8f11c9163818247cbfcfdb2d1dc3f2fdd7af93"
+ }
+}

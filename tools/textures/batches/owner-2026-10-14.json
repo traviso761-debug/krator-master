@@ -1,0 +1,926 @@
+[
+ {
+  "src": "highlands-caihua.png",
+  "out": "core/materials/patterns/highlands/caihua",
+  "record": {
+   "id": "highlands/caihua",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 1.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "1.webp",
+    "original_sha1": "99d7ba678224f784eff5bd44b6008ddaafca7ff9",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Chinese painted beam (caihua), a long horizontal band about eight times wider than tall: ground blue (#3a6aa8) with green (#3f7a4a) stripes along the top and bottom edges. At each end a teal (#2e9488) block holding a large whorl-flower of concentric rings in white (#efe7d6), teal, blue and ochre (#d19a3a), with black (#201a18) petal scrolls and a smaller whorl either side. In the middle a long white-edged panel with pointed ends, red (#b3322a) inside, filled with six ochre cloud scrolls; ochre dots at the joints and a thin black outline. The pattern repeats horizontally. Full colour, painted.",
+    "note": "one band (y 17..307 of 887: the middle of one green stripe to the next) of the three the sheet holds, full width: mapped ONCE over a bay (plane UVs 0..1), whorl blocks at both ends and the red panel in the middle, so it is not made seamless.",
+    "reuse": "any painted beam band (Chinese caihua); Highlands hCaihua"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "seam_axes": "none",
+   "rough": 0.7
+  }
+ },
+ {
+  "src": "2.webp",
+  "out": "core/materials/patterns/tribal/formline",
+  "record": {
+   "id": "tribal/formline",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 2.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "2.webp",
+    "original_sha1": "26d40e2ccfd4dfb5914fe5f3772318bc1589a8cf",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Northwest-coast formline painting on cedar: bold swelling black (#171311) formlines with ovoids and U-shapes, the inner shapes in red (#b3322a) and teal (#2e9488), on a cedar-wood ground (#b27a4c, shading to #8a5634), hand-painted and slightly worn, the wood grain faintly showing. Abstract: no readable figures. The pattern repeats horizontally. Full colour.",
+    "note": "the design is mirror-symmetric, not periodic: process.py crops it to its best self-match (1247 x 1228) and the 1.5 % cross-fade leaves a doubled eye pair at the x seam and a soft band at the y seam.",
+    "reuse": "Highlands Tribal frieze boards (formF); NW-coast painted panels, chests, screens, the catalog Painted culture"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.75
+  }
+ },
+ {
+  "src": "islander-weave.png",
+  "out": "core/materials/patterns/islander/weave",
+  "record": {
+   "id": "islander/weave",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 12.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "12.webp",
+    "original_sha1": "68338f26851073e6ce7e0c52be24403cbf6b0c1f",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on panel of a woven split-bamboo wall: flat strips about four centimetres wide in a twill, pale natural bamboo (#d8c294) and smoked dark strips (#6a5236) stepping into a pattern of nested diamonds, the strips' edges catching a little light. The pattern repeats in both directions. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to two periods each way (627 px) before processing, so the sheet repeats on its own period.",
+    "reuse": "the East's woven walls (patWeave); any two-tone bamboo twill"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.7,
+   "rough": 0.85
+  }
+ },
+ {
+  "src": "islander-kowhaiwhai.png",
+  "out": "core/materials/patterns/islander/kowhaiwhai",
+  "record": {
+   "id": "islander/kowhaiwhai",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    0.72,
+    0.72
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 13.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "13.webp",
+    "original_sha1": "4eb6ce2ccf1afcd5646808ca018b52c6387e1d03",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Maori kowhaiwhai rafter painting: flowing white (#efe6d2) koru scrolls outlined in black (#1e1a18) on red earth (#9a2a1e), each scroll's stem curling into the next in a continuous running pattern, painted on smooth wood. The pattern repeats horizontally. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period each way (627 x 643 px: two scroll bands) before processing, so the sheet repeats on its own period.",
+    "reuse": "rafter and beam bands (patBand); painted koru scrolls"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.7
+  }
+ },
+ {
+  "src": "islander-gable-east.png",
+  "out": "core/materials/patterns/islander/gable-east",
+  "record": {
+   "id": "islander/gable-east",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 14.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "14.webp",
+    "original_sha1": "211a436c6a0bef4def12c9c393cac0c3fbcdb27d",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a woven split-bamboo house facade as on an Ede or Sumba house: a cream (#e6d8b8) woven field in horizontal bands, alternating rows of large nested diamonds in black (#1e1a18) and ochre (#c8922e) with a small dark red (#6e1a12) heart, and rows of triple zigzag lines, thin black bands between the rows, visible weave in every strip. The pattern repeats horizontally. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to three diamond periods across (310 px) and two down (469 px), 930 x 938 before processing, so the sheet repeats on its own period.",
+    "reuse": "the East's woven facades (patGableE); Sumba and Ede woven panels"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.7,
+   "rough": 0.85
+  }
+ },
+ {
+  "src": "35.webp",
+  "out": "core/materials/patterns/islander/gable-east-b",
+  "record": {
+   "id": "islander/gable-east-b",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 35.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "35.webp",
+    "original_sha1": "48b1ef78b5dbff4e2b7f498795ac92a0ff6d7c0f",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a woven split-bamboo house facade as on an Ede or Sumba house: a cream (#e6d8b8) woven field in horizontal bands, alternating rows of large nested diamonds in black (#1e1a18) and ochre (#c8922e) with a small dark red (#6e1a12) heart, and rows of triple zigzag lines, thin black bands between the rows, visible weave in every strip. The pattern repeats horizontally. Full colour.",
+    "note": "a second take on gable-east: its diamonds drift (no exact period across), so it keeps process.py's own crop and a soft seam; gable-east (14.webp) tiles exactly and is the main one.",
+    "reuse": "a variant of the East's woven facades (patGableE2)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.7,
+   "rough": 0.85
+  }
+ },
+ {
+  "src": "islander-hinggi.png",
+  "out": "core/materials/patterns/islander/hinggi",
+  "record": {
+   "id": "islander/hinggi",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 16.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "16.webp",
+    "original_sha1": "76ee3ec8fba350f250de7f47e75d4d39078a3f14",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Sumba hinggi, a hand-woven warp-ikat cloth: the motifs were dyed into the threads before weaving, so every edge is soft and feathered along the vertical threads. Horizontal registers mirrored about the middle of the cloth: wide bands of stylised horses with riders, deer, roosters and crayfish in cream (#e6d8b8) and ochre (#c8922e) on a deep indigo ground (#23304a), separated by narrow bands of small hooked diamonds and stripes in morinda red (#9a2a1e) and dark red (#6e1a12), with thin black (#1e1a18) lines between the bands. Visible plain weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to its period across (1246 px); the height is left whole (seam_axes x: a cloth shows one sheet top to bottom) before processing, so the sheet repeats on its own period.",
+    "reuse": "the Kautoa weaver's ikat cloths (patHinggi); any ikat or hinggi cloth"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "seam_axes": "x",
+   "rough": 0.9
+  }
+ },
+ {
+  "src": "islander-storyboard.png",
+  "out": "core/materials/patterns/islander/storyboard",
+  "record": {
+   "id": "islander/storyboard",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 20.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "20.webp",
+    "original_sha1": "9666f21cf4f1053e501d92b1b71baba3ed178f59",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Palauan bai storyboard, a carved and painted gable relief in two registers between black and white toothed bands: in the upper register a red canoe with five black paddlers under a white full moon, in the lower one red and white fish and black frigate birds in flight, outlined black (#1e1a18) on an ochre (#c8922e) ground, the relief shallow and hand-cut. The pattern repeats horizontally. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one canoe prow to prow (x 288..980, 692 px, the start column with the best seam) by one pair of registers (593 px) before processing, so the sheet repeats on its own period. the bird-and-fish register has no exact period at 692 px: one bird is cut at the seam.",
+    "reuse": "the Palauan-style gable relief and bands (patStory)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "islander-gable-west.png",
+  "out": "core/materials/patterns/islander/gable-west",
+  "record": {
+   "id": "islander/gable-west",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 31.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "31.webp",
+    "original_sha1": "532424e1f463a64a86900102a044db53378e4113",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a painted and lightly carved Batak gable board (gorga): on a red earth (#9a2a1e) ground, pairs of large interlocking spirals drawn as bold black (#1e1a18) lines edged in white (#efe6d2), a white lozenge between each pair with a black diamond at its heart, and toothed borders of black triangles between thin white and black bands. Hand-painted on adzed wood, slightly worn and uneven. The pattern repeats horizontally and vertically. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period across (626 px) and two spiral rows down (650 px) before processing, so the sheet repeats on its own period.",
+    "reuse": "the West's (Batak) gable boards (patGableW)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "islander-gable-west-b.png",
+  "out": "core/materials/patterns/islander/gable-west-b",
+  "record": {
+   "id": "islander/gable-west-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 34.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "34.webp",
+    "original_sha1": "27aaca799d70ea1677ab40d4cff42a47d59c2153",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a painted and lightly carved Batak gable board (gorga): on a red earth (#9a2a1e) ground, pairs of large interlocking spirals drawn as bold black (#1e1a18) lines edged in white (#efe6d2), a white lozenge between each pair with a black diamond at its heart, and toothed borders of black triangles between thin white and black bands. Hand-painted on adzed wood, slightly worn and uneven. The pattern repeats horizontally and vertically. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period each way (626 x 783 px; square-mapped, so its spirals are 20 % squatter than drawn) before processing, so the sheet repeats on its own period.",
+    "reuse": "a second Batak board, tighter spirals (patGableW2)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "11.webp",
+  "out": "core/materials/patterns/islander/medallion-moon",
+  "record": {
+   "id": "islander/medallion-moon",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 11.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "11.webp",
+    "original_sha1": "d92dad17016393dfd1caa060c6d2c54ce4d0ffb6",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of one round painted emblem, centred, clear margin: the white island moon, a pale full moon (#f6f0e2) with soft grey seas, on a sea-teal (#2a7a7a) disc ringed with white shell discs, inside a black (#1e1a18) ring and an ochre (#c8922e) rim, painted on wood with a little wear. A single motif, not a repeat. Full colour.",
+    "note": "a single centred panel, mapped once: not made seamless.",
+    "reuse": "the white island moon discs (medMoon); any moon medallion"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "seam_axes": "none",
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "scyvoi-applique-roof.png",
+  "out": "core/materials/patterns/scyvoi/applique-roof",
+  "record": {
+   "id": "scyvoi/applique-roof",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 17.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "17.webp",
+    "original_sha1": "766db3e2c5b2c0c9623816b03a6596db5ebe071f",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Tibetan appliqué tent roof: plain heavy white-cream cotton (#f2ece0) sewn with a few large endless knots cut from indigo cloth (#23345a, a little lighter #2a3c66 where the cloth is worn), each knot about a fifth of the frame across with a thin cream couched outline and visible running stitches, the knots spaced widely in a half-drop grid with plenty of plain white cloth between them; faint fold creases and a little smoke grey along the seams. The pattern repeats in both directions. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period each way of the staggered knots (642 x 586 px; square-mapped, 9 % narrower than drawn) before processing, so the sheet repeats on its own period.",
+    "reuse": "the Scyvoi Tibetan tents' roofs (patRoof); white felt or cotton sewn with blue knots"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.08,
+   "normal_strength": 0.55,
+   "rough": 0.92
+  }
+ },
+ {
+  "src": "highlands-harlequin-dark.png",
+  "out": "core/materials/patterns/highlands/harlequin-dark",
+  "record": {
+   "id": "highlands/harlequin-dark",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 24.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "24.webp",
+    "original_sha1": "3ee758af2bcd76d472e9422994726ad331c4d39c",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of glazed harlequin roof tile: a field of diamond lozenges, each a mid green (#5f9a50) diamond with its points touching the cell edges, set in a dark bottle-green (#1f5a40) ground, with a thin gold (#c89a30) seam line just inside each diamond's edge and a small soft pale glint on the upper half of each. The pattern repeats in both directions. Full colour, glossy glazed look.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to 6 x 5 diamond periods (1138 x 1240 px) before processing, so the sheet repeats on its own period.",
+    "reuse": "Highlands hHarlGt (tents, bulb domes); any glazed diamond roof tile"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough_var": 0.2,
+   "normal_strength": 0.6,
+   "rough": 0.3
+  }
+ },
+ {
+  "src": "highlands-harlequin-red.png",
+  "out": "core/materials/patterns/highlands/harlequin-red",
+  "record": {
+   "id": "highlands/harlequin-red",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 25.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "25.webp",
+    "original_sha1": "95ed37041fa654ce2d7c0b246fd3988f75016039",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of glazed harlequin roof tile: a field of diamond lozenges, each a cream (#d8cfbe) diamond with its points touching the cell edges, set in a deep red (#9a2420) ground, with a thin gold (#c89a30) seam line just inside each diamond's edge and a small soft pale glint on the upper half of each. The pattern repeats in both directions. Full colour, glossy glazed look.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to 8 x 6 diamond periods (1155 x 1111 px) before processing, so the sheet repeats on its own period.",
+    "reuse": "Highlands hHarlR (tents); any glazed diamond roof tile"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough_var": 0.2,
+   "normal_strength": 0.6,
+   "rough": 0.3
+  }
+ },
+ {
+  "src": "iziz-sun-banner.png",
+  "out": "core/materials/patterns/iziz/sun-banner",
+  "record": {
+   "id": "iziz/sun-banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    1.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 27.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "27.webp",
+    "original_sha1": "36fd2a71987fb9de6cbdd3f4bce4f945ac8813cc",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of hand-woven Iziz banner cloth with a visible plain weave, slightly faded and uneven dye: cream (#f1dba6) sixteen-rayed suns in a half-drop grid on Iziz orange (#e07a2a), each sun outlined in deep red (#9c2d2d), with teal (#2f8f8a) stripes running along the top and bottom of each row of suns. Exactly two suns across and two rows down, so the sheet repeats exactly in both directions. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to two periods each way (1252 x 1128 px: 626 x 564) before processing, so the sheet repeats on its own period. the periodic redo: it replaces the first, non-periodic sheet.",
+    "reuse": "Iziz banners, the mechs' banners"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "rough": 0.9
+  }
+ },
+ {
+  "src": "26.webp",
+  "out": "core/materials/patterns/scyvoi/salamander-dun",
+  "record": {
+   "id": "scyvoi/salamander-dun",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 26.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "26.webp",
+    "original_sha1": "c5568aa6f67dd10d4305f73afed92a1f3424b6b3",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The back skin of a giant fire salamander seen from above: smooth, moist, slightly glossy skin with fine pores and soft wrinkles, no scales and no hair, dun red-brown (#5a2414) crossed by regular narrow bands of saffron (#d8a028) and gold (#e8c040) running across the body, the bands slightly broken and uneven at their ends. The bands run left to right across the image. The pattern repeats in both directions. Full colour.",
+    "reuse": "the dun salamanders' skin (fauna salDun)"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "delight": 0.3
+  }
+ },
+ {
+  "src": "28.webp",
+  "out": "core/materials/patterns/scyvoi/salamander-ember",
+  "record": {
+   "id": "scyvoi/salamander-ember",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 28.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "28.webp",
+    "original_sha1": "abfb22ff21a39805ab92ec922ce3059a5571247d",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The back skin of a giant fire salamander seen from above: smooth, moist, slightly glossy skin with fine pores and soft wrinkles, no scales and no hair, fire-black (#161414) with irregular rounded blotches of ember orange (#f07418) and amber (#f4a020) of different sizes, some merging into short broken stripes running along the body, the blotches' edges soft. The pattern repeats in both directions. Full colour.",
+    "reuse": "the fire-black salamanders' skin (fauna salEmber)"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "delight": 0.3
+  }
+ },
+ {
+  "src": "32.webp",
+  "out": "core/materials/patterns/common/grime-streaks",
+  "record": {
+   "id": "common/grime-streaks",
+   "family": "mask",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 32.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "32.webp",
+    "original_sha1": "2d8f11c9163818247cbfcfdb2d1dc3f2fdd7af93",
+    "prompt": "A sheet of 128 separate grime streak masks in a grid of 16 columns by 8 rows, square, 2048x2048, each cell twice as tall as it is wide, on a solid flat pure white background. Front-on, flat, even, shadowless lighting; no text, no border, no grid lines. Each cell holds one vertical stain as on a wall below a window sill or a cornice: it starts at the top edge of its cell as a soft band and runs down, fading out before the bottom edge, nothing crossing into the next cell. Vary them: soot, damp, rust run-off, narrow drips, wide washes, single, forked and several parallel runs, some short, some long. Greyscale only, from pale grey to near-black where the stain is strongest, no colour at all.",
+    "note": "a mask atlas: 20 columns by 8 rows of drip streaks, dark on WHITE (the prompt asked 16 x 8 on transparent): white is no grime. Not seamless; a cell is picked by hash.",
+    "reuse": "window, sill and cornice run-off (the breakup hook's grime parameter, not built yet)"
+   }
+  },
+  "options": {
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "6.webp",
+  "out": "core/materials/library/ground.travertine.white",
+  "record": {
+   "id": "ground.travertine.white",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 6.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "6.webp",
+    "original_sha1": "2e62ab4a54fac33918cd8d685fa8e8de2b359d04",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Travertine terraces seen from directly above, like Pamukkale: bright white calcite (#f2f0ea) laid down by flowing spring water in scalloped rimstone dams, each dam a smooth rounded lip a hand wide curving in lobes, its outer face draped with fine vertical drip ridges and small stalactite fringes; between the dams shallow pools of pale milky turquoise water (#9ad8d8) over a smooth white floor; faint cream (#e8dcc0) and pale orange-brown (#c8905a) stains where the water slows. Full colour.",
+    "note": "full colour, with the prompt's turquoise pools painted in: a build that draws its own water should take it at a low tint keep (the geyser basin keeps 0.2, so the pools read as smooth pale crust).",
+    "reuse": "the geyser basin's Stair (ground.tufa); any travertine spring"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7
+  }
+ },
+ {
+  "src": "8.webp",
+  "out": "core/materials/library/stone.geyserite",
+  "record": {
+   "id": "stone.geyserite",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 8.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "8.webp",
+    "original_sha1": "321b9e249fe1bd87d20bf758ea550279a3e1cde1",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Geyserite (siliceous sinter) on a geyser's cone seen close up: grey-white silica built up in knobbly beaded crusts like cauliflower and popcorn, rounded beads from a few millimetres to a few centimetres clustered in ridges, a faint pearly sheen on the beads, small dark pits between them, faint buff and salmon stains in streaks. Near-colourless: keep the stains faint so the image reads as grey-white. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "geyser cones and beads; spring rims, a silica-crusted snag; the Throne's geyser isle"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.88,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "15.webp",
+  "out": "core/materials/library/feather.flight",
+  "record": {
+   "id": "feather.flight",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 15.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "15.webp",
+    "original_sha1": "83cce570029cd8e5dea79142ea3984fc11b54b72",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Folded bird flight feathers seen from above, as on a closed wing: long primary and secondary feathers about 25 cm long lying parallel and overlapping like roof shingles, each with a visible pale central shaft, smooth vanes and a slightly ragged tip, narrow dark gaps between them. Light neutral grey so it can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "every bird's wings (fauna flight); fletching, feather fans, wings on banners and crests"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "18.webp",
+  "out": "core/materials/library/metal.bronze.cast",
+  "record": {
+   "id": "metal.bronze.cast",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0.8,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 18.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "18.webp",
+    "original_sha1": "f3a886d9093947f2b0519e30f54e9b7f5bd99193",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cast bronze surface of a large outdoor statue: smooth cast metal with very fine casting porosity and a soft hammer-dressed undulation, a thin warm brown patina with small mottled patches of pale green verdigris gathered in the hollows; no seams, rivets, panels, letters or edges, isotropic with no direction. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "cast figures (Iziz's heroic statues), bells, cast fittings; Ys' Citadel spires"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.45,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "19.webp",
+  "out": "core/materials/library/concrete.rust.streaked",
+  "record": {
+   "id": "concrete.rust.streaked",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 19.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "19.webp",
+    "original_sha1": "03c8c202a323703bcace1e3e4a1af102c7c7eb85",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Weathered poured concrete stained by rust: smooth grey board-formed concrete with faint horizontal formwork lines and small round tie holes, long vertical rust-brown streaks and drips running down from small rusted bolts near the top edge, water stains and a little grime in the board joints. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "Iziz MAT.concRust (the rust-streaked skyscraper skin); any board-formed concrete with bolt run-off"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "21.webp",
+  "out": "core/materials/library/skin.smooth",
+  "record": {
+   "id": "skin.smooth",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 21.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "21.webp",
+    "original_sha1": "59c2731f7b3889d7c554440997eb0370dbc00a69",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smooth moist animal skin as on a salamander, a frog or a whale: fine pores, soft wrinkles and creases in loose bands, a few tiny raised bumps, slightly glossy, no scales and no hair. Neutral mid grey so it can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "fauna skin: salamanders, bay swimmer, sky ray, pig, lizards' bellies; eels, frogs, oiled leather"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55,
+   "mute": 0.7
+  }
+ },
+ {
+  "src": "22.webp",
+  "out": "core/materials/library/hide.sleek",
+  "record": {
+   "id": "hide.sleek",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 22.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "22.webp",
+    "original_sha1": "50c1715423824ec66bf1d3afc243a6de8d25f0c7",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Short sleek animal coat seen close up, as on a horse or a deer: very short dense glossy hairs all lying in one direction, faint swirls where the hair changes direction, a soft sheen along the hair, no spots, stripes or markings. Light neutral warm grey-tan so it can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "note": "delivered mid-brown, not near-colourless: muted 0.8 (process.py --mute) so a coat's vertex colour carries the hue.",
+    "reuse": "fauna sleek: horse, deer, cattle, buffalo, dromedary, coyote, tiger; hair-on hide on saddle skirts, drums, quivers"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.8
+  }
+ },
+ {
+  "src": "23.webp",
+  "out": "core/materials/library/metal.rust.heavy",
+  "record": {
+   "id": "metal.rust.heavy",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0.3,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 23.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "23.webp",
+    "original_sha1": "1aad83f61cbd04298b2a94dc4d33ab4b914b54e1",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavily corroded steel plate, decades in salt water and spray: flaking layers of orange, red-brown and near-black rust, blistered and scaled, pits and holes eaten through in places showing dark shadow beneath, lines of rusted rivets along a plate seam, a few barnacle clusters and white salt crust at the edges. Keep the rust muted and even in brightness so it reads at a distance as a dark red-brown surface rather than a bright orange one.",
+    "reuse": "Ys' drowned Ancients (struts, pipes, iron); any sea-rusted iron with barnacles"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "30.webp",
+  "out": "core/materials/library/concrete.rust.streaked.sea",
+  "record": {
+   "id": "concrete.rust.streaked.sea",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    8,
+    8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 30.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "30.webp",
+    "original_sha1": "c8f5ea07c4157ebc5ac17b2fb688f7d3e4fc02c4",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Board-formed grey concrete of a tall ruined tower, seen face-on, weathered for centuries beside the sea: long rust streaks running straight down the face from rows of corroded fixings and rebar ends, orange-brown bleeding into dark brown, between them pale salt bloom and grey-green algae staining, small spalls where the concrete has broken off round rusting bars, hairline cracks, the board marks still faintly visible. The streaks run strictly vertical (down the image) so the tile can run up a wall. Keep the base concrete a muted mid grey and the rust a muted orange-brown, with no single streak so distinct that it would repeat visibly on a 300 m tower.",
+    "reuse": "Ys' ruined concrete (MAT.concreteR, MAT.rust); any sea-washed concrete with rust and moss"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9
+  }
+ },
+ {
+  "src": "33.webp",
+  "out": "core/materials/library/wool.fleece",
+  "record": {
+   "id": "wool.fleece",
+   "family": "hair",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 33.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "33.webp",
+    "original_sha1": "f1fe5f225906f80b664beb7c1d2033ce2673184a",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Sheep's fleece on the living animal seen close up: dense crimped wool staples about 5 cm long packed side by side, each a twisted lock with a slightly darker weathered tip, small dark gaps between the locks, a few bits of dry grass caught in it. Off-white, evenly muted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "reuse": "sheep, yak undercoat, goat kids; fleece rugs, felt, saddle pads"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.95,
+   "mute": 0.6
+  }
+ }
+]

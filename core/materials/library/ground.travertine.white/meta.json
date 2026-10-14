@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.305,
+    0.89
+   ],
+   "seam_before": [
+    2.002,
+    1.935
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.travertine.white",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "6.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 6.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "full colour, with the prompt's turquoise pools painted in: a build that draws its own water should take it at a low tint keep (the geyser basin keeps 0.2, so the pools read as smooth pale crust).",
+  "original_file": "6.webp",
+  "original_sha1": "2e62ab4a54fac33918cd8d685fa8e8de2b359d04",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Travertine terraces seen from directly above, like Pamukkale: bright white calcite (#f2f0ea) laid down by flowing spring water in scalloped rimstone dams, each dam a smooth rounded lip a hand wide curving in lobes, its outer face draped with fine vertical drip ridges and small stalactite fringes; between the dams shallow pools of pale milky turquoise water (#9ad8d8) over a smooth white floor; faint cream (#e8dcc0) and pale orange-brown (#c8905a) stains where the water slows. Full colour.",
+  "reuse": "the geyser basin's Stair (ground.tufa); any travertine spring",
+  "sha1": "2e62ab4a54fac33918cd8d685fa8e8de2b359d04"
+ }
+}
