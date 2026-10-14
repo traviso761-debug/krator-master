@@ -33,6 +33,14 @@ node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after 
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
 
+**Publishing the labs.** Each page fetches `pieces/<body>/<piece>.txt` beside it: the GLB, and on a second line the
+piece's morph deltas. A piece published before the two lines were one file still has its deltas in a
+`<piece>.morph.txt` of its own, and the pages fall back to it. Never remove a `.morph.txt` from a published lab
+without sending its piece's `.txt` again in the same publish: the piece would lose its morphs, and every body but
+the neutral one would show it at the neutral size (hair off the head, shirts off the torso, holes at the joints).
+A version holds at most 511 files, so send the changed pieces (compare `build-manifest.json` with the last published
+commit's) rather than all of them.
+
 ## How it works
 
 | Step | Where | What |
