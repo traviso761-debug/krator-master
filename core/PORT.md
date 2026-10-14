@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 517 (62%) | 77 (9%) | 52 (6%) | 61 (7%) | 126 (15%) |
+| KB | 595 (65%) | 77 (8%) | 52 (6%) | 61 (7%) | 126 (14%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -34,10 +34,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/42-core-export.js` | 19.1 | [G data] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 5 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |
 | `biome/43-core-export-host.js` | 3.7 | [web] | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1) |
 | `biome/44-core-stage.js` | 14.0 | [draw] | 1 | 2 | 0 | 0 | 0 | 2 | 4 | 1 | 2 | 0 | 0 |  |
-| `city/10-city-core.js` | 14.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `city/20-city-plan.js` | 14.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
-| `city/31-city-steps-b.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
-| `city/32-city-steps-c.js` | 15.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
+| `city/10-city-core.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the KCITY namespace, streams (SL or KRAND), geometry, the raster, A*: no three.js, no DOM |
+| `city/12-city-index.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | footprints, road segments and fields on KSPACE: plain records |
+| `city/15-city-ground.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the ground through the instance, the ground predicate, Erewhon's stance: plain functions on records |
+| `city/20-city-plan.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
+| `city/25-city-site.js` | 23.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the site layer (roles, zone, avenues, highways, the wall as records, ground deltas): records only, its drawing stays the world's |
+| `city/31-city-steps-b.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
+| `city/32-city-steps-c.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
+| `city/33-city-strategies.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the strategies (alleys, frontage-courts) and their shared primitives: records only; Ys takes it alone |
+| `city/34-city-radial.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the optional radial strategy (the toy's rings and spokes): the layout, no three.js |
+| `city/40-city-kcity.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the instance (KCITY.create), steps as data, the export: no three.js, no DOM |
 | `city/50-city-host-streets.js` | 15.5 | [draw] | 32 | 5 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | streets, overlay, labels, step visibility |
 | `city/52-city-host-buildings.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | lots as instanced LOD prototypes |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |

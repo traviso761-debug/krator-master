@@ -94,5 +94,33 @@ Streetlab and the city-layout module").
    screenshots, and the baseline moves for it alone.
 5. Add-ons (`country`, `waterfront`) as a third city needs them.
 
+## Done (2026-10-14: steps 1 to 3)
+
+1. **Instance, substrate, defaults, tests.** `KCITY.create({tune, site, ground, kit, rules, seed, steps, finish, rand,
+   tags, index})` -> `{plan, raster, index, steps, run(), export(), bind()}` (`40-city-kcity.js`); `SL`, `PLAN`, `TUNE`
+   are the bound instance's view, so Voth runs unchanged; steps are data (`[{name, run, after}]`, Voth's
+   `35-vc-steps.js`). The footprint, road and field hashes are one index on `KSPACE` (`12-city-index.js`): exact for
+   any footprint size (the wide-footprint clash fixed, `VC.clashWide` folded in), insertion order, or the old probe's
+   order for Voth. The export reads the wall's records (it threw on Voth). The per-lot ground predicate and Erewhon's
+   stance (`15-city-ground.js`, opt-in); lots in core/tags (opt-in); KRAND streams as an option (`rand: 'krand'`).
+   **Voth's switch to KRAND is not done: it changes the layout, a separate step the owner reviews.** `test-city.js` and
+   `golden.json`.
+2. **The site layer and builder defaults** (`25-city-site.js`): roles and `roleAt`, the zone raster, drawn and ring
+   avenues, corridors, highways, the wall as records, banks and level pads as ground deltas; Voth's `pass6` (with
+   `KCITY.NEAR`), `pass7`, `pass8` and `interiorOk` are the defaults; the toy's rings and spokes are
+   `34-city-radial.js`. An opt-in exact-streets rule (`TUNE.exact`).
+3. **Strategies** (`33-city-strategies.js`): `alleys` (steps 10-12) and `frontage-courts` (Ys's method on polygon
+   blocks, every block from its own KRAND cell stream), the shared primitives (`frontageRun`, `faceNearestStreet`,
+   `huntNear`, `gridCands`, `packPolygon`, `clearSpot`); `SL.lineLots` and Voth's house of healing run on them. Ys's
+   placement pass takes the primitives (its frontage walker, edge runs, block candidates, central lattice and facing)
+   with its placement unchanged; its blocks, boxes, clash rule and kit audit stay its own.
+
+The proof: Voth's placement hash (every lot's key, x, z, ry, w, d and every way's points; `verify.py --hash`) is
+`ff007aab` before and after each step, and so is a hash of its log, greens, fields and knocks; its `verify.py
+--assert` reports the same, line for line but the timings, except that the export now works (it threw before). Both
+runs fail the same two pre-existing checks, the embassies (Hykkousoi, Iziz, Jimjam, Republic not drawn) and two
+cantons not walkable (Arena, Fortress): not this work's. Ys's placement hash (78ecfa06, refusals 45c38520) and its
+`verify.py --assert` counters are the same before and after. Next: step 4 with the owner.
+
 The data side stays engine-neutral (`[G data]`): `core/city` becomes the NPC and quest tool and later the player's
 settlement builder, in Godot too (CLAUDE.md).

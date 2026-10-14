@@ -290,20 +290,31 @@ each lists the three fragments the way it lists `lod/`. `furnish/README.md` has 
 
 ## `city/`
 
-The city builder and its infill: avenues and lots, main streets, side streets, alleys, and the infill of every block,
-as plain records (ways, lots, greens) with the step that made each, on one occupancy raster. A world brings its site
-(steps 0-5: ground, landmarks, wall, districts, avenues, highways), its kit and its tuning; the module does steps 6-12.
-Voth's city plan (`settlements/voth`) is the first world on it. **Every settlement should eventually be ported to
-it**: `city/README.md` has the method, the contract, the porting steps and the module's debts to the refactor.
+The city-layout module (`city/PLAN.md`): a city is an instance, `KCITY.create({tune, site, ground, kit, rules, seed})`
+-> `{plan, raster, index, steps, run(), export()}`, laying out avenues and lots, main streets, side streets, alleys
+and the infill of every block as plain records (ways, lots, greens, the wall) with the step that made each, on one
+occupancy raster and one footprint index (on `space/`). The world gives its data (the site, its ground, its kit, its
+rules); the module has the site layer (steps 0-5: roles, the zone raster, avenues, highways, the wall as records,
+ground deltas), the builder's defaults (6-12), and street and infill strategies behind one interface (`alleys`;
+`frontage-courts`, Ys's). Voth's city plan (`settlements/voth`) is the first world on it; Ys's placement pass takes its
+shared primitives. **Every settlement should eventually be ported to it**: `city/README.md` has the API, the method,
+the porting steps and the module's debts.
 
 | File | What |
 |---|---|
-| `10-city-core.js` | [G data] stream PRNG, value noise, geometry, the occupancy raster, A* |
-| `20-city-plan.js` | [G data] the plan's records: ways (a street knocks out and salvages lots), lots along streets, parks and plazas |
-| `31-city-steps-b.js` | [G data] steps 6-9: civic, avenue lots, main streets, main-street lots |
-| `32-city-steps-c.js` | [G data] steps 10-12: side streets, lots and alley entrances, alleys and the infill; a default runner |
+| `10-city-core.js` | [G data] the `KCITY` namespace, stream PRNG (`SL.stream`, or KRAND), value noise, geometry, the occupancy raster, A* |
+| `12-city-index.js` | [G data] footprints, road segments and fields on `KSPACE` (`KCITY.boxIndex`, `KCITY.segIndex`): exact for any size |
+| `15-city-ground.js` | [G data] the ground through the instance, a per-lot ground predicate, Erewhon's stance (`KCITY.stance`, `stanceAtDoor`) |
+| `20-city-plan.js` | [G data] the plan's records: ways, lots along streets (`SL.tryLot`, `SL.lineLots`), parks and plazas, core/tags |
+| `25-city-site.js` | [G data] the site layer (`KCITY.site`, `KCITY.ground`): roles, the zone, avenues, highways, the wall, pads and banks |
+| `31-city-steps-b.js` | [G data] steps 6-9: civic by `near` scorers, avenue lots, main streets across the voids, main-street lots |
+| `32-city-steps-c.js` | [G data] steps 10-12 (the `alleys` strategy): side streets, lots and alley entrances, alleys and the infill |
+| `33-city-strategies.js` | [G data] the strategies (`alleys`, `frontage-courts`) and their shared primitives (`KCITY.prim`) |
+| `34-city-radial.js` | [G data] the optional radial strategy (the retired toy's rings and spokes) |
+| `40-city-kcity.js` | [G data] the instance: `KCITY.create`, steps as data, `run`, `bind`, the export |
 | `50-city-host-streets.js` | [web] streets, the ground overlay, labels, the step slider |
 | `52-city-host-buildings.js` | [web] lots' kit pieces as instanced LOD prototypes; furniture pieces |
+| `test-city.js`, `golden.json` | `node core/city/test-city.js` (`--write` after a meant change): a synthetic site, each check with a negative |
 
 ## `space/`
 
@@ -316,11 +327,13 @@ square cells, `KSPACE` ([G data]: no THREE, no DOM).
 | `test-space.js` | `node core/space/test-space.js`: query equals a linear scan on random sets (three cell sizes, odd pads and radii), with items inserted between queries, under a disc test, with wide items and far coordinates; each check with a negative |
 
 **Used by** `core/biome` (`BIO.clearOf`, `clearOf3`, `BIO.scatter`: every biome kit lists it in `CORE_SPACE`, and
-openworld/little-demo in its `ORDER`). The biome core falls back to its scans on a page that does not load it.
+openworld/little-demo in its `ORDER`) and `core/city` (its footprint, road-segment and field index,
+`city/12-city-index.js`; Voth's placement hash unchanged by the move, 2026-10-14). The biome core falls back to its
+scans on a page that does not load it.
 
-**To move onto it:** openworld/little-demo's flora buckets (`src/85-world-flora.js`, 24 m buckets of its records) and
-`core/city`'s 40 m hash of building footprints (by the branch that owns `core/city`), each proven by its placement hash
-before and after; `core/walk` keeps its own 16 m hash for now. Its GDScript twin comes with the biome placement port.
+**To move onto it:** openworld/little-demo's flora buckets (`src/85-world-flora.js`, 24 m buckets of its records),
+proven by its placement hash before and after; `core/walk` keeps its own 16 m hash for now. Its GDScript twin comes
+with the biome placement port.
 
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 

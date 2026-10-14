@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1038 (38%) | 0 (0%) | 106 (4%) | 364 (13%) | 1210 (45%) |
+| KB | 1017 (38%) | 0 (0%) | 106 (4%) | 364 (13%) | 1210 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -80,13 +80,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/voth-city/00-head.html` | 10.5 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/voth-city/15-vc-tune.js` | 77.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/voth-city/30-vc-site.js` | 37.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | the site read into the plan: ground, landmarks, districts, avenues, highways, wall |
-| `targets/voth-city/31-vc-voth.js` | 46.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 108 | 0 | 0 | 0 | 0 | 0 | where Voth's own builders run; they push primitives (VOTH.PRIMS), no three.js |
+| `targets/voth-city/30-vc-site.js` | 26.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the site read into the plan: ground, landmarks, districts, avenues, highways, wall |
+| `targets/voth-city/31-vc-voth.js` | 45.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 108 | 0 | 0 | 0 | 0 | 0 | where Voth's own builders run; they push primitives (VOTH.PRIMS), no three.js |
 | `targets/voth-city/31b-vc-chinampa.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | the chinampa beds as primitive records (VOTH.PRIMS shim) and flora and hut records; KRAND per bed, no three.js |
-| `targets/voth-city/32-vc-city.js` | 11.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | wealth, lot mixes, street passes: layout data |
-| `targets/voth-city/33-vc-country.js` | 72.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 | monastery, clan compounds, canton decks, the country: lots, fields and Voth primitives (VOTH.PRIMS), no three.js |
+| `targets/voth-city/32-vc-city.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | wealth, lot mixes, choosers (steps 6-8 are core/city's defaults): layout data |
+| `targets/voth-city/33-vc-country.js` | 70.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 | monastery, clan compounds, canton decks, the country: lots, fields and Voth primitives (VOTH.PRIMS), no three.js |
 | `targets/voth-city/34-vc-transit.js` | 27.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | elephant bug stations and lay-bys, ferry piers, the ferry and elephant bug lines as core/simulation records (places, ports, transport routes, nav grids), no three.js |
-| `targets/voth-city/35-vc-steps.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the step list and the runner; applies the owner's edits (site/voth-city-edits.json) |
+| `targets/voth-city/35-vc-steps.js` | 6.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the step list as a core/city instance (KCITY.create); applies the owner's edits (site/voth-city-edits.json) |
 | `targets/voth-city/36-vc-census.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the census: residents and workplaces from the plan, no three.js |
 | `targets/voth-city/37-vc-light.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 | power houses, who has electric light, street-lamp sockets laid with each street and drawn from Voth's primitives, no three.js |
 | `targets/voth-city/38-vc-flora.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the swbay biome's mask (its own grid, no canvas), climate fields and LOD spine on the city; the host builds it |
