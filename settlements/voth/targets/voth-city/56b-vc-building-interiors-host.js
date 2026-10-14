@@ -282,6 +282,11 @@ VC.cutEvict = function (want, cx, cz) {
       var seen = new Set(); g.traverse(function (o) { if (o.isMesh && o.userData.kind === 'interior' && o.geometry && !seen.has(o.geometry)) { seen.add(o.geometry); o.geometry.dispose(); } });
     });
 };
+/* a unit's footprint box in the world: [x0, x1, z0, z1] (the walk-in's test) */
+VC.ixUnitBox = function (u) {
+  var ty = VC.IX.types[u.type], P = ty.shell.poly.map(function (p) { return VC.ixWorldXZ(u, p); });
+  return P.reduce(function (b, p) { return [Math.min(b[0], p[0]), Math.max(b[1], p[0]), Math.min(b[2], p[1]), Math.max(b[3], p[1])]; }, [1e9, -1e9, 1e9, -1e9]);
+};
 /* a building's interior hidden by the cut: the one walked into stays shown, whole */
 VC.ixHide = function (i) { VC.ixShow(i, i === VC.IXD.walkIn, null); };
 /* the cutaway on the buildings, opened on unit i (null or -1: on the view's middle alone) */
