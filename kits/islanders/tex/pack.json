@@ -815,6 +815,36 @@
     "sourceMean": 0.5773
    }
   },
+  "medMoon": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "medMoon.albedo.webp",
+    "normalMap": "medMoon.normal.webp",
+    "roughnessMap": "medMoon.rough.webp"
+   },
+   "lib": "patterns/islander/medallion-moon",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2d570e1069e69dc394cdc8a815b8f6531886efda",
+    "normal": "3888b99c83f8ec7d141feff8d20a169d5e907bdb",
+    "roughness": "3322496a34c441fe933a566e0d66af5a13ec1a5e"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.39400350319955857,
+    "sourceMean": 0.394
+   }
+  },
   "palm": {
    "breakup": null,
    "card": false,
@@ -843,6 +873,246 @@
     "keep": 0.75,
     "mean": 0.78,
     "sourceMean": 0.4458
+   }
+  },
+  "patBand": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patBand.albedo.webp",
+    "normalMap": "patBand.normal.webp",
+    "roughnessMap": "patBand.rough.webp"
+   },
+   "lib": "patterns/islander/kowhaiwhai",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    0.72,
+    0.72
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "469ed27ea4b553c7f8a6fc613eee699dae045da9",
+    "normal": "4a8c51e8ee4579ce0dcd43c187a88796a2dd4642",
+    "roughness": "4566a515a41dca42f90fa627942db033b72fac62"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.45902466785804896,
+    "sourceMean": 0.459
+   }
+  },
+  "patGableE": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patGableE.albedo.webp",
+    "normalMap": "patGableE.normal.webp",
+    "roughnessMap": "patGableE.rough.webp"
+   },
+   "lib": "patterns/islander/gable-east",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d522e476031ac6159cdc322456a6214301292346",
+    "normal": "74c8162e7b044bb1bfd022cf212ed9b9ab9fbd25",
+    "roughness": "bf46b31cb2b192971059314652adab3e53576e2a"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46308969268200445,
+    "sourceMean": 0.4631
+   }
+  },
+  "patGableE2": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patGableE2.albedo.webp",
+    "normalMap": "patGableE2.normal.webp",
+    "roughnessMap": "patGableE2.rough.webp"
+   },
+   "lib": "patterns/islander/gable-east-b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e2e876beef466b21a4955f8ae0b9dc3694dc4d2a",
+    "normal": "9a0e07bf5f7127c3adbd36a2943ff78987da4b7d",
+    "roughness": "5d8c8a679eaa674fd9eb3d4cfbb6624d8accc3aa"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4618663208127489,
+    "sourceMean": 0.4619
+   }
+  },
+  "patGableW": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patGableW.albedo.webp",
+    "normalMap": "patGableW.normal.webp",
+    "roughnessMap": "patGableW.rough.webp"
+   },
+   "lib": "patterns/islander/gable-west",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5353c17d629a71b55080c8c6ef6f42ac41ab9418",
+    "normal": "963e4fc6418d463ce5c62705803019e9aef11dd6",
+    "roughness": "6614614fe337540f5080f684504b7ca916240c33"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.33125412635354434,
+    "sourceMean": 0.3313
+   }
+  },
+  "patGableW2": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patGableW2.albedo.webp",
+    "normalMap": "patGableW2.normal.webp",
+    "roughnessMap": "patGableW2.rough.webp"
+   },
+   "lib": "patterns/islander/gable-west-b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2207912138297b674ebdc88e1e2912dca56dfec0",
+    "normal": "42a815a411ad6cb3f2de39b54e5a8993e5dd5b43",
+    "roughness": "1bfaef6830f4ee381b62960a761db80a77e5da9f"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3133364571156221,
+    "sourceMean": 0.3133
+   }
+  },
+  "patHinggi": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patHinggi.albedo.webp",
+    "normalMap": "patHinggi.normal.webp",
+    "roughnessMap": "patHinggi.rough.webp"
+   },
+   "lib": "patterns/islander/hinggi",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c6be0a2567b65e3ea30b5412dac066896fddb4d9",
+    "normal": "c96f6a11194dacd2fd602b5519d8ed7397772092",
+    "roughness": "eea0a0141049d3a2d142507ebe546d4f337dfa5b"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.27698071613386566,
+    "sourceMean": 0.277
+   }
+  },
+  "patStory": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patStory.albedo.webp",
+    "normalMap": "patStory.normal.webp",
+    "roughnessMap": "patStory.rough.webp"
+   },
+   "lib": "patterns/islander/storyboard",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.1,
+    1.1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9a27898c91ed39ed8d68917ce76e137cc4b98c61",
+    "normal": "52c1fec3b6bf8044d8b16ca43704c0bd01073cfa",
+    "roughness": "8ff757226f7e1aba551550ee09e90c97cb56f6e1"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3812928743070715,
+    "sourceMean": 0.3813
+   }
+  },
+  "patWeave": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patWeave.albedo.webp",
+    "normalMap": "patWeave.normal.webp",
+    "roughnessMap": "patWeave.rough.webp"
+   },
+   "lib": "patterns/islander/weave",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "23d345d5d8a47213f92e569c2e8becbb1ca4a390",
+    "normal": "ff1c3c1c5ff1007b98bed1f981a3a3b78869bc60",
+    "roughness": "699c57f6e614471d0e7dcf73a6a5f5dd2e1565f8"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5014160103532379,
+    "sourceMean": 0.5014
    }
   },
   "planks": {

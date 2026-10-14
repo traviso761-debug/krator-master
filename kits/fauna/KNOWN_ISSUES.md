@@ -16,11 +16,12 @@
       until 2026-10-06 (fixed in the core; some species files close their ends themselves).
 - [ ] Hens and ducks walk as bipeds and never flap; a frilled lizard's open frill is a variant, not an animation; no couched
       (kneeling) dromedary pose; a grounded giant bat walks as a biped (its planted wrists do not step).
-- [ ] Every bird's plumage is the `feather` family with no map yet: smooth white hens and ducks read as plastic until the
-      `feather.plumage` and `feather.flight` sets arrive (`core/materials/PLAN.md`, "The Fauna kit", lists every set still wanted).
+- [x] Every bird's plumage was the `feather` family with no map. Fixed 2026-10-14: bodies take `feather.plumage` (`feather`), wings
+      `feather.flight` (`flight`: the runtime gives a wing part's feathers that family). A Meshy-model variant keeps its baked maps.
 - [ ] The goat's long hair is strips and a skirt, not cards with alpha: up close the locks read as ribbons.
-- [ ] The salamander's markings are vertex colours on 16-sided rings: the blotches are blocky at close range. A painted skin
-      sheet (`patterns/scyvoi/salamander-ember`, `-dun`) would be finer.
+- [x] The salamander's markings were vertex colours on 16-sided rings, blocky at close range. Fixed 2026-10-14: the owner's painted
+      skins are FULL-colour families (`salEmber`, `salDun`, by variant), mapped triplanar in each part's frame; the belly keeps its
+      vertex colour. Without the pack (or `?mat=proc`) the vertex-colour markings show as before.
 - [ ] Yields, masses and life figures: the goat's and the farm animals' are plausible real-animal figures; those of the invented
       species are the porting agents' judgement (the sources carry none). The owner may want to set them. The hyperjungle sky
       ray is drawn at the biome's rendered size (span about 19 m), about twice LORE.md's "6-12 m soarers".

@@ -1,6 +1,6 @@
 {
  "build": "islanders",
- "note": "The Islanders kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js SV_LIB): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the thatch, wood and stone sets are low (the palette in 26k-kit.js colours them per subculture), the corrugated iron, the reed thatch, the reddish carving and the tapa sheet high (their own colours, the vertex colour near white). The painted gables, the kowhaiwhai band, the woven East facade and the moon medallion are NOT library sets yet: 28-is-paint.js draws them on canvases as stand-ins until the owner's sheets come (KNOWN_ISSUES.md; core/materials/PLAN.md has the prompts). Run python3 tools/textures/pack.py kits/islanders after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space.",
+ "note": "The Islanders kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js SV_LIB): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the thatch, wood and stone sets are low (the palette in 26k-kit.js colours them per subculture), the corrugated iron, the reed thatch, the reddish carving and the tapa sheet high (their own colours, the vertex colour near white). The painted sheets are the owner's (2026-10-14), full colour: the West's Batak gables (patGableW, gable-west; patGableW2, gable-west-b, the tighter spirals, on the rumah gadang), the East's woven facades (patGableE, gable-east; patGableE2, gable-east-b, on the great uma), the kowhaiwhai rafter band (patBand, 0.72 m a sheet: one scroll band in 0.36 m), the storyboard (patStory), the East's twill walls (patWeave), the ikat cloths on the weaver's rail (patHinggi, 2 m: one cloth's height) and the white island moon (medMoon, mapped once); 28-is-paint.js draws its canvas stand-in only without the pack (?mat=proc). Run python3 tools/textures/pack.py kits/islanders after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space.",
  "size": 512,
  "families": {
   "thatch": {
@@ -575,6 +575,123 @@
    },
    "roughLift": 0.3,
    "specular": 0.3
+  },
+  "patGableW": {
+   "lib": "patterns/islander/gable-west",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "patGableW2": {
+   "lib": "patterns/islander/gable-west-b",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "patGableE": {
+   "lib": "patterns/islander/gable-east",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patGableE2": {
+   "lib": "patterns/islander/gable-east-b",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patBand": {
+   "lib": "patterns/islander/kowhaiwhai",
+   "scale": [
+    0.72,
+    0.72
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "patStory": {
+   "lib": "patterns/islander/storyboard",
+   "scale": [
+    1.1,
+    1.1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "patWeave": {
+   "lib": "patterns/islander/weave",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patHinggi": {
+   "lib": "patterns/islander/hinggi",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "medMoon": {
+   "lib": "patterns/islander/medallion-moon",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
   }
  }
 }

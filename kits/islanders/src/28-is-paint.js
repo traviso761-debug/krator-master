@@ -1,7 +1,7 @@
 // ================================================================= PAINTED SHEETS: the Islanders' motifs, drawn on canvases (STAND-INS)
 // The gable paintings, the carved-and-painted band, the storyboard panels, the East's woven facade and the white island moon
-// are not in the material library yet. Until the owner's sheets come (core/materials/PLAN.md, "Prompts for generated
-// sources": the Islander rows), each is drawn here on a 512 px canvas, deterministically, in the culture's colours, and used
+// are the owner's sheets in the material library (2026-10-14: patterns/islander/*, packed by materials.json). Without the
+// pack (?mat=proc) each is drawn here on a 512 px canvas, deterministically, in the culture's colours, and used
 // as the map of its MAT key. When a sheet of that name is packed (materials.json, tools/textures/pack.py), the library set
 // wins and the canvas is never drawn (KIT_HAS). The motifs (the owner's "motifs" references): Batak gorga spirals and
 // lozenges on red (patGableW), Ede and Sumba woven chevrons and nested diamonds (patGableE, patWeave), a Maori kowhaiwhai
@@ -61,7 +61,8 @@ function ispMoon(g,W,H){const c=W/2;g.fillStyle=ISP_C.black;g.fillRect(0,0,W,H);
  g.fillStyle='#f6f0e2';g.beginPath();g.arc(c,c,c*.5,0,TAU);g.fill();g.fillStyle='rgba(120,130,140,.28)';
  for(const [x,y,r] of [[-.16,-.12,.16],[.14,.02,.12],[-.04,.2,.1],[.2,-.2,.06]]){g.beginPath();g.arc(c+x*W,c+y*W,r*W*.5,0,TAU);g.fill();}}
 /* the materials: a canvas stand-in for every painted key the pack lacks */
-const ISP_SHEETS={patGableW:[ispGableW,2.4],patGableE:[ispGableE,2.2],patBand:[ispBand,1.2],patStory:[ispStory,3.2],patWeave:[ispWeave,2.4],medMoon:[ispMoon,1]};
+const ISP_SHEETS={patGableW:[ispGableW,2.4],patGableE:[ispGableE,2.2],patBand:[ispBand,1.2],patStory:[ispStory,3.2],patWeave:[ispWeave,2.4],medMoon:[ispMoon,1],
+ patGableW2:[ispGableW,2.4],patGableE2:[ispGableE,2.2],patHinggi:[ispGableE,2]};   /* the variants and the hinggi draw as their kin */
 const ISP_STANDIN=[];
 for(const k in ISP_SHEETS){if(KIT_HAS(k))continue;   /* ?mat=proc still shows the motifs: they are the culture, not a surface detail */
  const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,metalness:0,map:ispCanvas(ISP_SHEETS[k][0]),side:THREE.DoubleSide});

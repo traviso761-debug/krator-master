@@ -51,10 +51,15 @@
      A.sheet(fam, f(u,v)->[x,y,z], nu, nv, col, o)   a free surface (a coat's skirt), o.colf(u,v)
      A.anchor(name, [x,y,z])                 a point a host fits tack to (saddle, bridle ...), in the animal frame
      A.profile(fn)                           a body profile function a host reads (the salamander's, for its saddles)
-   Families (materials): coat (short fur), hair (long hair, double-sided), skin, horn, hoof, eye, mouth, plain.
+   Families (materials): coat (short fur), hair (long hair, double-sided), skin, horn, hoof, eye, mouth, plain, and the rest of
+   FAUNA_FAMILIES below.
    ====================================================================== */
 const TAU = Math.PI * 2;
-const FAUNA_FAMILIES = ['coat', 'hair', 'skin', 'horn', 'hoof', 'eye', 'mouth', 'plain', 'chitin', 'membrane', 'glow', 'scale', 'sleek', 'feather', 'shag'];
+/* fleece: a sheep's wool; flight: a bird's wing feathers (the runtime gives a wing part's feather this family, so no builder
+   names it); salEmber, salDun: the salamander's painted skins, FULL COLOUR (the runtime's FULL: the map is the colour, the
+   vertex colours stay the markings where no map is packed) */
+const FAUNA_FAMILIES = ['coat', 'hair', 'skin', 'horn', 'hoof', 'eye', 'mouth', 'plain', 'chitin', 'membrane', 'glow', 'scale', 'sleek', 'feather', 'shag',
+  'fleece', 'flight', 'salEmber', 'salDun'];
 /* the vocabularies a tag is checked against (verify.py --assert) */
 const FAUNA_VOCAB = {
   aridity: ['arid', 'semiarid', 'subhumid', 'humid'],

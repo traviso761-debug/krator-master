@@ -10,6 +10,6 @@
   "cloth": {"lib": "cloth.canvas", "mapOnly": true, "scale": [0.6, 0.6], "tint": {"keep": 0.0, "mean": 0.7}},
   "hair": {"lib": "hair.crest", "mapOnly": true, "scale": [0.6, 0.6], "tint": {"keep": 0.0, "mean": 0.65, "contrast": 1.2}},
   "banner": {"lib": "patterns/iziz/banner", "mapOnly": true, "scale": [2.7, 2.7], "tint": {"keep": 1.0, "mean": null}},
-  "sunbanner": {"lib": "patterns/iziz/sun-banner", "mapOnly": true, "size": 1024, "scale": [2.0, 1.46], "tint": {"keep": 1.0, "mean": null}}
+  "sunbanner": {"lib": "patterns/iziz/sun-banner", "mapOnly": true, "size": 1024, "scale": [2.0, 1.8], "tint": {"keep": 1.0, "mean": null}}
  }
 }

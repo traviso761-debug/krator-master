@@ -53,7 +53,7 @@ defBuilding({key:'tent-applique',name:'Appliqué tent',seed:4404,cut:true,w:13,d
 defBuilding({key:'tent-tibet-hall',name:'Appliqué hall',seed:4403,cut:true,w:16,d:12.5,h:6.6,budget:140000,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'tibetan'},
  note:'a long white hall tent: its hipped roof sewn all over with the blue appliqué, its cream walls banded with the polychrome rosettes and the flame zellige, a fringe in five colours, prayer flags from both masts; a family of riders within',
- build(o){const w=11,d=7;const H=tkPeaked({w,d,eaveH:2.2,peaks:[[-2.6,-.2,5.4],[2.6,-.2,5.4]],cover:'patApp',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-1.6,x1:1.6,h:2.8},lining:'patBloom',floor:'patKilim'});
+ build(o){const w=11,d=7;const H=tkPeaked({w,d,eaveH:2.2,peaks:[[-2.6,-.2,5.4],[2.6,-.2,5.4]],cover:'patRoof',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-1.6,x1:1.6,h:2.8},lining:'patBloom',floor:'patKilim'});
   tsWallBand(w,d,H,'patPoly',.25,.85);tsWallBand(w,d,H,'patFlame',1.35,1.7);
   {const pts=[];for(const [x,z] of [[-w/2,d/2],[-w/2,-d/2],[w/2,-d/2],[w/2,d/2]])pts.push([x*1.01,H(x,z)+.01,z*1.01]);pts.push(pts[0]);tsFringe(pts,.32,[P('madder'),P('teal'),P('indigo'),P('saffron')]);}
   for(const x of [-2.6,2.6]){sph('brass',x,5.55,-.2,.12,0xc8963a);tsFlags([x,5.5,-.2],[x*2.4,.2,-d/2-2.6],11,.5);}
@@ -69,7 +69,7 @@ defBuilding({key:'tent-tibet-hall',name:'Appliqué hall',seed:4403,cut:true,w:16
 defBuilding({key:'tent-tibet-great',name:'Festival tent',seed:4405,cut:true,w:17,d:13,h:7.6,budget:140000,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'tibetan'},
  note:'a great white tent of three hipped peaks, the middle raised high over the door: the blue knotwork appliqué on the roof, cream walls banded with appliqué panels and the flame zellige, a red, green and gold fringe, prayer flags; a war band\'s feasting tent',
- build(o){const w=12,d=8;const H=tkPeaked({w,d,eaveH:2.3,peaks:[[-3.6,-.2,4.9],[0,-.2,6.6],[3.6,-.2,4.9]],cover:'patApp',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-2.0,x1:2.0,h:3.0},lining:'patBloom',floor:'rug',floorCol:P('crimson')});
+ build(o){const w=12,d=8;const H=tkPeaked({w,d,eaveH:2.3,peaks:[[-3.6,-.2,4.9],[0,-.2,6.6],[3.6,-.2,4.9]],cover:'patRoof',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-2.0,x1:2.0,h:3.0},lining:'patBloom',floor:'rug',floorCol:P('crimson')});
   tsWallBand(w,d,H,'patApp2',.25,1.05);tsWallBand(w,d,H,'patFlame',1.45,1.8);
   {const pts=[];for(const [x,z] of [[-w/2,d/2],[-w/2,-d/2],[w/2,-d/2],[w/2,d/2]])pts.push([x*1.01,H(x,z)+.01,z*1.01]);pts.push(pts[0]);tsFringe(pts,.36,[P('madder'),P('teal'),P('saffron')]);}
   for(const x of [-3.6,0,3.6])sph('brass',x,(x?4.9:6.6)+.15,-.2,.13,0xc8963a);

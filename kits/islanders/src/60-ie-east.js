@@ -104,7 +104,7 @@ defBuilding({key:'ie-house-great',name:'Great uma (Kautoa)',seed:6022,cut:true,w
  tags:{types:['dwelling-multi','religious'],wealth:'rich',style:'east',role:'ancestral house'},
  note:'the ancestral house of a noble clan: the tallest tower in the village, verandas all round on carved posts, a great tomb with stone figures, the ancestors\' shrine in the roof',
  build(o){const r=ieHouse({w:10.4,d:10,floorY:2.0,wallH:2.6,ver:1.8,verFront:2.4,roof:{over:1.1,skirtH:2.1,skirtS:.46,towerH:15,towerS:.38,topSx:.19,topSz:.05,th:.38},
-  wallMk:'planks',wallCol:P('woodL'),facade:'patGableE',stair:'stair',stairW:2.0,finial:'figure',hornPosts:true,tier:'rich',beds:2,
+  wallMk:'planks',wallCol:P('woodL'),facade:'patGableE2',stair:'stair',stairW:2.0,finial:'figure',hornPosts:true,tier:'rich',beds:2,
   furn:[['islander_court_throne',0,-2.6,0],['islander_court_tapestry',-3,-4.6,0],['islander_court_statue',4.2,-4,0],['islander_court_statue',-4.2,-4,0],['islander_common_kava_bowl',0,1.8,0]],
   tombs:[[0,9.4,0,1.4,true]]});
   isNoCut(()=>{for(const s of [-1,1])isFlag(s*8.2,9.6,10,{ry:s>0?0:PI});});}});

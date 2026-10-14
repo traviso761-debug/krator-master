@@ -11,7 +11,10 @@
 // about 10 scales across and 20 rows where the painter drew 8 and 12, and 4 diamonds a side where it drew 1). The
 // world-UV tile twins of 88-hl-dress.js clone the procedural TEX[key] and stay procedural.
 const MATLIB_ALIAS={hMazeBand:'hMaze'};
-const MATLIB_REPEAT={hTileD:[.8,.6],hTileS:[.8,.6],hTileT:[.8,.6],hTileW:[.8,.6],hHarlG:[.25,.25],hMazeBand:[1,1]};
+// The red and dark harlequins (2026-10-14) hold 8 x 6 and 6 x 5 diamond periods where the painter drew one; the frieze
+// (formF, world UVs at K .5 / Kv 2, a 2 m x 0.5 m tile) takes one 0.5 m formline panel each way: 4 across that tile, 1 up.
+const MATLIB_REPEAT={hTileD:[.8,.6],hTileS:[.8,.6],hTileT:[.8,.6],hTileW:[.8,.6],hHarlG:[.25,.25],hMazeBand:[1,1],
+ hHarlR:[1/8,1/6],hHarlGt:[1/6,1/5],formF:[4,1]};
 const MATLIB_OLDREP={};for(const k in MATLIB_REPEAT)if(MAT[k]&&MAT[k].map)MATLIB_OLDREP[k]=MAT[k].map.repeat.clone();
 const MATLIB_BOUND=KMAT.bindMat('highlands',MAT,{tile:KMAT.ANCIENT_TILES,alias:MATLIB_ALIAS});
 for(const k in MATLIB_REPEAT){if(!MATLIB_BOUND[k]||!MATLIB_OLDREP[k])continue;const m=MAT[k],o=MATLIB_OLDREP[k],f=MATLIB_REPEAT[k];

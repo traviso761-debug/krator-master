@@ -54,7 +54,7 @@ function tsFringe(pts,drop,cols){for(let i=0;i<pts.length-1;i++)tkValance([pts[i
 defBuilding({key:'tent-tibet-small',name:'White appliqué tent',seed:4204,cut:true,w:7.8,d:7.8,h:3.8,budget:60000,
  tags:{types:['dwelling-single'],wealth:'middle',style:'tibetan'},
  note:'a small square tent of white cotton under a low hipped roof sewn with the blue appliqué, a dark hem, a fringe in five colours, prayer flags to its stakes',
- build(o){const w=4.6,d=4.6;const H=tkPeaked({w,d,eaveH:1.55,peaks:[[0,0,3.2]],cover:'patApp',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-.8,x1:.8,h:2.0},floor:'patKilim',guys:2});
+ build(o){const w=4.6,d=4.6;const H=tkPeaked({w,d,eaveH:1.55,peaks:[[0,0,3.2]],cover:'patRoof',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-.8,x1:.8,h:2.0},floor:'patKilim',guys:2});
   // the dark blue hem round the walls and the fringe under the eave, in turns of red, green, blue and saffron
   for(const [a,b] of [[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]]){const L=Math.hypot(b[0]-a[0],b[1]-a[1]);
    psurf('felt',(u,v)=>{const x=lerp(a[0],b[0],u),z=lerp(a[1],b[1],u),o2=.13;return [x+Math.sign(x)*(Math.abs(x)>=w/2-.01?o2:0),.02+v*.32,z+Math.sign(z)*(Math.abs(z)>=d/2-.01?o2:0)];},Math.round(L*2),1,P('indigo'));}

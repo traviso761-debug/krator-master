@@ -298,10 +298,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       pad and runner. The P3 host list follows this (PLAN.md P3). *Superseded Oct 5 2026 by Travis's density batch, which
       brought B, C, E, K, F and the arcology types in as hosts (NOTES.md "Eight more Ancients as hosts"); ticked Oct 12.*
 
-- [ ] (Oct 5 2026) Rust: the Ancients in the water are rust-stained by tint only (`MAT.concreteR`); the vendored
-      Arcades' sandstone and Bell Hall's travertine keep their colours (vendored byte for byte). A library set of
-      board-formed concrete with rust streaks and a salt line (`concrete.rust.streaked`) and a heavy rust
-      (`metal.rust.heavy`) would make them read as the ocean's; Travis offered one.
+- [x] (Oct 5 2026) Rust: the Ancients in the water were rust-stained by tint only (`MAT.concreteR`). Fixed 2026-10-14: the
+      ruined concrete takes `concrete.rust.streaked.sea` and the rust (`MAT.rust`, `MAT.pipeRust`) `metal.rust.heavy`
+      (materials.json; 79z gives pipeRust world UVs). The vendored Arcades' sandstone and Bell Hall's travertine keep theirs.
 - [ ] (Oct 5 2026) The harbour piers face straight out from their mole's edge; none is angled for the tide, and the
       shore run's piers keep their old spacing. The round warehouse's cart doors face wherever the mole's frame
       points, not the quay.
