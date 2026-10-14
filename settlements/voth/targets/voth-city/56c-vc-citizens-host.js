@@ -8,7 +8,8 @@
      (VC.SIMRUN.days: the fast clock's stability check), each step's cost is kept.
    - THE BODIES (VC.simBodies): the citizens within TUNE.sim.embody.r of the view's centre (the orbit target, or the
      walker), the nearest TUNE.sim.embody.max of them, as instanced figures posed by SIM.pose; hidden indoors; the
-     tunic by what they are doing (TUNE.sim.embody.colours). Drawn only when the view is close (TUNE.sim.embody.dist).
+     tunic by what they are doing (TUNE.sim.embody.colours); one on a boat leg of its own (a chinampa grower's kayak) sat in a
+     kayak. Drawn only when the view is close (TUNE.sim.embody.dist).
    - The clock bar's line: at work, asleep, out and about, walking, the mean happiness (77-sim-6-needs.js), the step's cost. */
 VC.SIMRUN = { steps: 0, ms: [], days: {}, jumps: 0, jumpMs: 0, last: null };
 
@@ -82,7 +83,13 @@ VC.simBodies = function () {
   var beetle = [[box(1.7, 1.0, 2.8, 0, 1.1, 0), 0x2b2f2a], [box(1.1, 0.7, 0.9, 0, 1.05, 1.75), 0x22261f], [box(1.5, 0.7, 1.4, 0, 1.95, -0.3), 0x8a6a3e]];
   [-1, 1].forEach(function (sd) { [-0.9, 0, 0.9].forEach(function (z) { beetle.push([box(0.9, 0.12, 0.14, sd * 1.1, 0.55, z), 0x1d201b]); beetle.push([box(0.12, 0.6, 0.12, sd * 1.5, 0.3, z), 0x1d201b]); }); });
   var MB = mk(beetle, 40), MH = mk([[box(1, 1, 1, 0, 0, 0), 0x5a3e24], [box(0.9, 0.08, 0.96, 0, 0.5, 0), 0x9c7b52]], 30), MM = mk([[box(0.35, 12, 0.35, 0, 6, 0), 0x4a3522], [box(5, 3.5, 0.08, 0, 7.5, 0.3), 0xe8dcc0]], 30);
-  var B = VC.SIMBODY = { mesh: M, carts: MC, list: [], shown: 0, cartsShown: 0, carriersShown: 0, animalsShown: 0, resolved: 0, at: 0 };
+  /* a kayak under everyone on a boat leg of their own (owner, 2026-10-14: "kayaks do not draw"; the chinampa growers'
+     kayak layer, 45-vc-sim-items.js), its waterline at the leg's height, the paddler sat in it (TUNE.sim.embody.seat):
+     a hull tapered at both ends, a deck stripe, the paddle across */
+  var MK = mk([[box(0.66, 0.34, 2.6, 0, 0.05, 0), 0x6b4a2c], [box(0.46, 0.3, 0.9, 0, 0.04, 1.7), 0x6b4a2c], [box(0.46, 0.3, 0.9, 0, 0.04, -1.7), 0x6b4a2c],
+    [box(0.22, 0.24, 0.5, 0, 0.03, 2.3), 0x5a3e24], [box(0.22, 0.24, 0.5, 0, 0.03, -2.3), 0x5a3e24], [box(0.5, 0.04, 3.2, 0, 0.23, 0), 0x9c7b52],
+    [box(2.3, 0.04, 0.09, 0, 0.75, 0.25), 0xc9b48a], [box(0.12, 0.03, 0.34, -1.15, 0.75, 0.25), 0x8a6a3e], [box(0.12, 0.03, 0.34, 1.15, 0.75, 0.25), 0x8a6a3e]], E.max);
+  var B = VC.SIMBODY = { mesh: M, carts: MC, kayaks: MK, list: [], shown: 0, cartsShown: 0, carriersShown: 0, animalsShown: 0, kayaksShown: 0, resolved: 0, at: 0 };
   /* the animals (47-vc-sim-animals.js): the fauna kit's own, built for the nearest few (each its own build: the kit's
      parts are its bones), kept while near, each placed at its pose and played by what it does (walking, grazing,
      resting, fighting, idling) */
@@ -101,7 +108,7 @@ VC.simBodies = function () {
     return { x: x0 + (T.spot.x - x0) * f, z: z0 + (T.spot.z - z0) * f };
   };
   (window._frameHooks = window._frameHooks || []).push(function (now) {
-    var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; MC.count = 0; B.cartsShown = 0; MB.count = MH.count = MM.count = 0;
+    var close = ctl.walk || ctl.dist < E.dist; if (!close) { M.count = 0; B.shown = 0; MC.count = 0; B.cartsShown = 0; MB.count = MH.count = MM.count = MK.count = 0; B.kayaksShown = 0;
       Object.keys(AN.live).forEach(function (id) { if (AN.live[id]) scene.remove(AN.live[id]); }); AN.live = {}; AN.list = []; B.animalsShown = 0; return; }
     var cx = ctl.walk ? camera.position.x : ctl.target.x, cz = ctl.walk ? camera.position.z : ctl.target.z, t = SIM.time();
     var real = performance.now();   /* `now` is the page's animation time, held while paused (56d); who is near follows the camera even then */
@@ -118,13 +125,16 @@ VC.simBodies = function () {
         try { var g = FA.build(o.fauna, { variant: yv != null ? yv : o.variant, breed: o.breed || undefined, seed: o.seed }); g.userData.probeSkip = true; g.userData.tag = tag; g.userData.youngLook = yv != null; scene.add(g); AN.live[a.id] = g; } catch (e) { AN.live[a.id] = null; } });
       Object.keys(AN.live).forEach(function (id) { if (!keep[id]) { if (AN.live[id]) scene.remove(AN.live[id]); delete AN.live[id]; } });   /* gone out of reach: dropped */
     }
-    var n = 0;
+    var n = 0, nk = 0;
     for (var j = 0; j < B.list.length; j++) {
       var a = B.list[j], P = SIM.pose(a, t); if (P.hidden) continue;
-      e.set(0, P.h || 0, 0); q.setFromEuler(e); p3.set(P.x, P.y, P.z); m4.compose(p3, q, s3); M.setMatrixAt(n, m4);
+      var afloat = P.leg >= 0 && P.mode === 'boat' && !a.group;   /* in its own boat (an import's crew stand in the hull drawn below) */
+      e.set(0, P.h || 0, 0); q.setFromEuler(e); p3.set(P.x, afloat ? P.y - E.seat : P.y, P.z); m4.compose(p3, q, s3); M.setMatrixAt(n, m4);
       M.setColorAt(n, cols[P.moving ? 'moving' : a.activity] || cols.other); n++;
+      if (afloat) { p3.y = P.y; m4.compose(p3, q, s3); MK.setMatrixAt(nk++, m4); }
     }
     M.count = n; B.shown = n; M.instanceMatrix.needsUpdate = true; if (M.instanceColor) M.instanceColor.needsUpdate = true;
+    MK.count = nk; B.kayaksShown = nk; MK.instanceMatrix.needsUpdate = true;
     var na = 0, ts = now / 1000;
     AN.list.forEach(function (a) { var g = AN.live[a.id]; if (!g) return; var Pa = SIM.pose(a, t, { cheap: true }); g.visible = !Pa.hidden; if (Pa.hidden) return;
       var gr = a.grownAt > SIM.minute() && !g.userData.youngLook ? 0.35 + 0.65 * Math.max(0, Math.min(1, (SIM.minute() - a.born) / (a.grownAt - a.born))) : 1; g.scale.setScalar(gr);   /* the young, growing */

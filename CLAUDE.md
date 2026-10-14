@@ -127,6 +127,9 @@ owner's `krator-before-cleanup.bundle` and in the other branches on the remote, 
 (`core/materials/PLAN.md`, "Prompts for generated sources" has the template and per-culture rows). Do not paper over a missing texture with a
 procedural stand-in without saying so.
 
+**`core/materials/PROMPTS-NEEDED.md` is the one list of what is owed:** every texture still to source or generate, with its
+paste-ready prompt; add a new gap there, and delete its entry when the set is delivered.
+
 ## Edit requests from the browser
 
 The owner can Alt+click a spot in any world served by `python3 tools/edits/serve.py` and leave a note.

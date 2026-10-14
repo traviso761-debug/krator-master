@@ -61,7 +61,7 @@ VC.ferryPiers = function () {
     if (rec.canton) { var cc0 = C[(rec.to || '').split(' ')[0]] || null, inset = TUNE.cantonPierInset;
       if (cc0) { var dEdge = V.dist(rec.root, [cc0.x, cc0.z]); inset = Math.max(inset, dEdge - cc0.r * 0.86); }
       rec.root = V.sub(rec.root, V.mul(rec.dir, inset)); rec.len += inset; }
-    if (!rec.cpier) B.PIERS.push({ x0: rec.root[0], z0: rec.root[1], x1: rec.tip[0], z1: rec.tip[1], w: 5.5 + 2 * TUNE.ferryBerth, ferry: s.id });
+    if (!rec.cpier) B.PIERS.push({ x0: rec.root[0], z0: rec.root[1], x1: rec.tip[0], z1: rec.tip[1], w: 5.5 + 2 * TUNE.ferryBerth, ferry: s.id, deck: 5.5, top: B.SEA + 2.1 });   /* the deck (lifeBuildFerryPier: 5.5 m at SEA + 2.1), its berths either side */
     out[s.id] = rec;
   });
   VC.FP = out;

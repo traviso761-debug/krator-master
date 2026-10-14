@@ -10,6 +10,40 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-14: interiors that vanished, kayaks, people on the water
+
+The owner: "interiors are not rendering aside from the cantons; nor are kayaks", "people stand around on the water and
+walk aimlessly". All three were on `Voth-sim` already (pre-existing, not the merge). Found with headless probes (a
+non-lite load, renderer.info, an instance-aware frustum test; a lite census of every body the bodies pass would draw).
+
+- **Interiors: frustum culling.** three r128 culls an InstancedMesh by its geometry's bounding sphere at the mesh's
+  origin, never by its instances. A lot building's walls are a unit box at the lot's origin and its furniture the
+  piece's own geometry there, so the interior vanished whenever the lot's middle left the view (a corner view: 252 of
+  253 meshes in view culled); a canton's walls and furniture sit at the world's origin, so a canton far from it (Port)
+  lost all 1,321. Every interior InstancedMesh is now `frustumCulled = false` (56, 56b: one building or canton shows at
+  a time). And walking into a lot building (F) now shows its interior whole, as walking into a canton does
+  (`VC.ixWalkIn`, 56b): before, a lot building's interior showed only in the cutaway.
+- **People on the water: the outdoor work sites.** `outdoor()` (42) put a site at a point (a pier's middle, a stilt
+  hut in the lake, the city's middle in the bay) at `max(SEA, ground)` and spread its workers in a disc round it with a
+  wander as wide: dockers, fishers, ferrymen, bargemen stood on the water round their piers, the chinampa growers round
+  their huts, the aggregate trades in the bay. Now `VC.simStandSpots` gives each site spots on what is there
+  (`VC.simStandY`: a chinampa bed's top, a pier's deck at the `top` its builder now records in `VOTH.PIERS` (31, 33,
+  34; `LIFE_FISHDOCK_H` exported by build.py), a canton's stack, a bridge, dry ground), each with the same surface a
+  wander's reach round it, the wander halved until spots are found (`TUNE.sim.stand`).
+- **Kayaks: three causes.** (1) `SIM.plan` (core/simulation) started from `a.inVehicle` as the last plan left it,
+  which is the state at that trip's end: an actor asked again before it got there (an interrupt, a wake, a jump that
+  leaves it mid-trip) was planned as if afloat and paddled a straight line from the street over the town (up to 1.9
+  km). `SIM.vehicleAt(a, t)` reads the vehicle off the task (a boat leg afloat, a drive leg in the buggy, else on
+  foot; the trip's end state once arrived); tasks carry `vehFrom`, `veh`; test-sim has the case and its negative;
+  Dhelv's export is byte-identical with and without it. (2) A landing was the street node nearest the beds, so every
+  kayak leg crossed the shore: its door is now the water's edge on the way to the beds (`VC.simShore`, 45). (3) No
+  kayak was drawn: a body on a boat leg of its own is now sat in one (56c, `TUNE.sim.embody.seat`).
+
+Numbers (lite census, every posed body; over water = ground under the lake, the body at the water's level, not on a
+bed): 08:00 1,112 of 10,050 before, 0 of 9,639 after; 17:30 368 of 20,118 (67 afloat with no boat) before, 6 of
+19,730 (2 afloat, in kayaks; 4 walking a causeway's edge) after. Kayak legs over land at 17:30: 20 of 1,070 for 160 m
+in all (worst 16 m) after, against 535 of 1,057 for 15,060 m before. Placement hash unchanged (ff007aab).
+
 ## 2026-10-14: the pause, the citizens' inspector, the cutaway on every building in view
 
 The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway", "Every building's interior"):
@@ -18,7 +52,7 @@ The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway"
   so the clock's dt is 0 (no motion time, no hour, no `SIM.step`: the minute does not move) and every real-time
   animation (sails, water, mills, beacons, the plants, the animals' gaits, the weather) holds. A hook that must follow
   the camera reads `performance.now()` itself: 56c's "who is near" refresh (changed to it), 56b's cutaway refresh, the
-  inspector's card. Nothing found that kees moving: PROOF_PAUSE.
+  inspector's card. Proof: paused at 10:00 day 1, two frames five minutes apart are pixel-identical (sim minute 600, 0 steps, 173 bodies shown in both); unpaused, the motion time moves on.
 - **The citizens' inspector (i)**: `VC.pickBody` tests only the bodies drawn this frame (`VC.SIMBODY.list`, its animals
   `VC.SIMBODY.animals`, which 56c now exposes, and the carts) as points against the cursor's ray, behind the ground or a
   lot's box left out (55's `VC.pickLot` keeps `VC.pickLotT`). `VC.actorHTML` reads: role, class, home; job, workplace,
@@ -32,10 +66,10 @@ The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway"
   the view's middle) that every mesh material tests (`VC.cutInject`, an onBeforeCompile chained after a material's own,
   its program key kept apart), with a depth material for the opaque shadow casters (and its clone, for the canton's
   clipping planes); at most 36 buildings within 160 m and in the frustum, 3 interiors drawn a refresh, 150 kept.
-  PROOF_CUT.
+  Proof: below.
 
 Proof (non-lite, headless, `tools/harness.py`'s launcher; SwiftShader on a loaded box: a frame took about three minutes
-at street level): PROOF_SHOTS.
+at street level): the inspector's card on a citizen (job, post, shift, the leg it is on, the meters and what they ask for, worn items, the household's food), on a penned animal and a pet; the pause as above; the cutaway: CUT_PROOF.
 
 ## 2026-10-13: the trades in two half-hour buckets
 

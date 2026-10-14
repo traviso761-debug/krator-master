@@ -307,6 +307,9 @@ a culture would use it.
 
 ## Prompts for generated sources
 
+**What is still owed is listed in one place, `core/materials/PROMPTS-NEEDED.md`** (every undelivered texture with its
+paste-ready prompt, 2026-10-14); the tables below are the template, the history and the rows already delivered.
+
 Base template, at the start of every request:
 
 ```

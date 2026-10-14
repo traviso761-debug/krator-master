@@ -454,7 +454,7 @@ VC.buildHarbor = function (d) {
       if (Lp < Sh.len + 15) continue;
       acc = 0;
       var tipP = V.add(root, V.mul(out, Lp));
-      B.PIERS.push({ s: C[j].s, x0: root[0], z0: root[1], x1: tipP[0], z1: tipP[1], w: w, ship: true });
+      B.PIERS.push({ s: C[j].s, x0: root[0], z0: root[1], x1: tipP[0], z1: tipP[1], w: w, ship: true, top: 4.2 });   /* top: its deck's (the boxes below), where its workers stand (42-vc-sim-places.js) */
       var ry2 = Math.atan2(out[0], out[1]), n = Math.round(Lp / 16);
       for (var k2 = 0; k2 < n; k2++) {
         var c = V.add(root, V.mul(out, (k2 + 0.5) * Lp / n));
@@ -480,7 +480,7 @@ VC.buildHarbor = function (d) {
       for (var ft = 8; ft <= fMax; ft += 4) { var fp = V.add(fr, V.mul(fo, ft)); if (baseH(fp[0], fp[1]) > -0.3 || VC.inCanton(fp, 12)) break; fl = ft; }
       if (fl < 22 || fishHit(fr, fo, fl)) continue;
       var fd = B.buildFishDockPier(fr[0], fr[1], fo[0], fo[1], fl); if (!fd) continue;
-      B.PIERS.push({ s: C[f].s, x0: fr[0], z0: fr[1], x1: fd.tipX, z1: fd.tipZ, w: B.LIFE_FISHDOCK_W, fish: true });
+      B.PIERS.push({ s: C[f].s, x0: fr[0], z0: fr[1], x1: fd.tipX, z1: fd.tipZ, w: B.LIFE_FISHDOCK_W, fish: true, top: B.SEA + B.LIFE_FISHDOCK_H * 1.7 });   /* Voth's deck: from SEA + 0.7 H, H thick */
       accF = 0; fish++;
       var side = [fo[1], -fo[0]], fry = Math.atan2(fo[0], fo[1]);
       [-1, 1].forEach(function (sd) {
@@ -538,7 +538,7 @@ VC.buildRiverPort = function (d) {
           B.BOX(c[0], 2.6, c[1], w, 1.5, L / n * 1.08, rp, 0x85735a, 'wood');
           [-1, 1].forEach(function (sd) { var o = V.add(c, V.mul([out[1], -out[0]], sd * (w * 0.5 - 1))), bd = Math.min(-1, baseH(o[0], o[1])); B.CYL(o[0], bd, o[1], 0.9, 2.6 - bd, 0, 0x6b5942, 'wood'); });
         }
-        B.PIERS.push({ x0: root[0], z0: root[1], x1: root[0] + out[0] * L, z1: root[1] + out[1] * L, w: w, river: true });
+        B.PIERS.push({ x0: root[0], z0: root[1], x1: root[0] + out[0] * L, z1: root[1] + out[1] * L, w: w, river: true, top: 4.1 });   /* its deck's top (the boxes above) */
         if (docks % 2 === 0) {
           /* a barge moored across the pier head, parallel to the current (Voth's BARGES). The pier is square to the
              current, so a barge alongside it would lie across it (owner, 2026-10-09: the barge clipped the piers): it

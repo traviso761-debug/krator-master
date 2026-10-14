@@ -6,7 +6,9 @@
      gaps, its stairs, its furniture (one InstancedMesh per piece and part, per storey), in a group posed as the lot.
    - The cutaway (x) cuts every building in view near the middle of the view (VC.CUTALL: at most 36, within 160 m) at
      the chosen storey, by a height grid every material tests (VC.cutInject), and the canton the view's middle is on by
-     the clipping planes; the storey keys and buttons step them all.
+     the clipping planes; the storey keys and buttons step them all. Walking into a building (VC.ixWalkIn) shows its
+     interior whole, as walking into a canton does, and the cutaway leaves it so. Its meshes are never frustum-culled:
+     three r128 tests an InstancedMesh's geometry at the lot's origin, not its instances.
    - The density overlay (n): residents per hectare on a TUNE.ix.density.cell grid, a diverging ramp round the city's
      mean, the homes short of beds hatched; again for workplaces per hectare; again for off.
    - The report (the "interiors report" button): totals, the shortfall by class and district, the job table, the types. */
@@ -105,6 +107,7 @@ VC.ixDraw = function (i) {
       q.setFromAxisAngle(Y, Math.atan2(-b.uz, b.ux)); pos.set(b.ax + b.ux * m, b.y0, b.az + b.uz * m); sc.set(len, b.y1 - b.y0, b.t);
       m4.compose(pos, q, sc); IM.setMatrixAt(j, m4); IM.setColorAt(j, e[1]);
     });
+    IM.frustumCulled = false;   /* three r128 culls an InstancedMesh by its geometry's sphere (a unit box at the lot's origin), not its instances: the walls vanished whenever the lot's middle left the view */
     IM.userData = { kind: 'interior', unit: i, storey: +lv, probeSkip: true }; g.add(IM); (g.userData.storeys[lv] = g.userData.storeys[lv] || []).push(IM);
   });
   /* floors: each storey's outline as a thin slab (the stair's well left open) */
@@ -124,6 +127,7 @@ VC.ixDraw = function (i) {
     Pr.parts.forEach(function (part) {
       var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
       items.forEach(function (p, j) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(j, m4); });
+      IM.frustumCulled = false;   /* its geometry is the piece's at the lot's origin, not where its instances stand (above) */
       IM.userData = { kind: 'furniture', unit: i, storey: items[0].level, probeSkip: true, items: items };
       g.add(IM); (g.userData.storeys[items[0].level] = g.userData.storeys[items[0].level] || []).push(IM);
     });
@@ -255,7 +259,7 @@ VC.cutAllTick = function (force) {
     want[u.i] = 1; list.push(u);
   });
   C.pending = take.length - list.length;
-  (C.units || []).forEach(function (i) { if (!want[i]) VC.ixShow(i, false); });
+  (C.units || []).forEach(function (i) { if (!want[i]) VC.ixHide(i); });
   var cell = G.S / G.N, ox = Math.floor((cx - G.S / 2) / cell) * cell, oz = Math.floor((cz - G.S / 2) / cell) * cell;
   var sig = ox + ',' + oz + ':' + C.storey + ':' + list.map(function (u) { return u.i; }).join(',');
   list.forEach(function (u) { var Lv = VC.cutLevels(u); VC.ixShow(u.i, true, Math.min(C.storey, Lv.length - 1)); });
@@ -278,13 +282,15 @@ VC.cutEvict = function (want, cx, cz) {
       var seen = new Set(); g.traverse(function (o) { if (o.isMesh && o.userData.kind === 'interior' && o.geometry && !seen.has(o.geometry)) { seen.add(o.geometry); o.geometry.dispose(); } });
     });
 };
+/* a building's interior hidden by the cut: the one walked into stays shown, whole */
+VC.ixHide = function (i) { VC.ixShow(i, i === VC.IXD.walkIn, null); };
 /* the cutaway on the buildings, opened on unit i (null or -1: on the view's middle alone) */
 VC.cutUnit = function (i, storey) {
   var C = VC.INTD.cut;
   if (C.canton) { VC.showInterior(C.canton, false); C.canton = null; }
   VC.cutAllOn(); VC.cutPlanes(); VC.cutBox(null);   /* the planes are the canton's: open nowhere */
   var anchor = i != null && i >= 0 && VC.cutLevels(VC.IX.units[i]) ? i : null;
-  if (C.unit != null && C.unit !== anchor && C.unit >= 0) VC.ixShow(C.unit, false);
+  if (C.unit != null && C.unit !== anchor && C.unit >= 0) VC.ixHide(C.unit);
   C.unit = anchor; C.on = true;
   var top = anchor != null ? VC.cutLevels(VC.IX.units[anchor]).length : 1;
   (C.units || []).forEach(function (k) { var L = VC.cutLevels(VC.IX.units[k]); if (L) top = Math.max(top, L.length); });
@@ -298,14 +304,14 @@ VC.ixCutWrap = function () {
     var C = VC.INTD.cut;
     if (typeof cn === 'number') return VC.cutUnit(cn, storey);
     if (cn == null && !C.canton) return VC.cutUnit(C.unit, storey);
-    if (C.unit != null && C.unit >= 0) VC.ixShow(C.unit, false);
+    if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
     C.unit = null;
     var r = cutTo(cn, storey);
     VC.cutAllOn(); VC.cutAllTick(true);   /* the buildings round the canton, at its storey (their own top when lower) */
     return r;
   };
   VC.cutOff = function () {
-    var C = VC.INTD.cut; (C.units || []).forEach(function (i) { VC.ixShow(i, false); }); if (C.unit != null && C.unit >= 0) VC.ixShow(C.unit, false);
+    var C = VC.INTD.cut; (C.units || []).forEach(function (i) { VC.ixHide(i); }); if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
     C.unit = null; C.units = []; C.pending = 0; if (VC.IXD.grid) { VC.IXD.grid.u.kcutO.value.z = 0; VC.IXD.grid.sig = ''; }
     return cutOff();
   };
@@ -337,6 +343,36 @@ VC.ixCutWrap = function () {
   };
   var sel = $('cut-canton');
   if (sel && !sel.querySelector('option[value=""]')) { var o = document.createElement('option'); o.value = ''; o.textContent = 'a building'; o.disabled = true; sel.insertBefore(o, sel.firstChild); }
+};
+/* walking into a lot building shows its interior, every storey, and walking out hides it (owner, 2026-10-14: "interiors
+   are not rendering aside from the cantons"): as the cantons' own (56-vc-interiors-host.js cutUI's frame hook). The
+   walker's feet (VC.walkAt) inside a unit's footprint and between its lowest floor and its top storey's ceiling; the
+   units found through a 40 m grid of their boxes. The cutaway on the same building keeps its storey */
+VC.ixWalkIn = function () {
+  var C0 = 40, grid = {}, polys = {}, tick = 0;
+  VC.IX.units.forEach(function (u) {
+    var ty = VC.IX.types[u.type]; if (!ty || !ty.B || !ty.B.levels || !ty.B.levels.length) return;
+    var b = VC.ixUnitBox(u);
+    for (var i = Math.floor(b[0] / C0); i <= Math.floor(b[1] / C0); i++) for (var j = Math.floor(b[2] / C0); j <= Math.floor(b[3] / C0); j++) (grid[i + ',' + j] = grid[i + ',' + j] || []).push(u.i);
+  });
+  var inside = function (A) {
+    var L = grid[Math.floor(A[0] / C0) + ',' + Math.floor(A[1] / C0)]; if (!L) return null;
+    for (var k = 0; k < L.length; k++) {
+      var u = VC.IX.units[L[k]], ty = VC.IX.types[u.type], Lv = ty.B.levels, top = Lv[Lv.length - 1];
+      if (A[2] < u.y + Lv[0].y - 1.5 || A[2] > u.y + top.y + top.h + 0.3) continue;   /* the walker stands on the ground: a floor on a footing stands above it */
+      var P = polys[u.i] || (polys[u.i] = ty.shell.poly.map(function (p) { return VC.ixWorldXZ(u, p); }));
+      if (inPoly([A[0], A[1]], P)) return u.i;
+    }
+    return null;
+  };
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    if (tick++ % 3) return;
+    var A = ctl.walk && VC.walkAt, at = A ? inside(A) : null, was = VC.IXD.walkIn, C = VC.INTD.cut;
+    if (at === was) return;
+    if (was != null && was !== C.unit && !(C.on && (C.units || []).indexOf(was) >= 0)) VC.ixShow(was, false);   /* a building the cut shows keeps its cut */
+    VC.IXD.walkIn = at;
+    if (at != null && at !== C.unit) VC.ixShow(at, true, null);
+  });
 };
 /* the inspector: a shown building's furniture too (55-vc-host.js VC.pickFurn) */
 VC.ixPickWrap = function () {
@@ -620,7 +656,7 @@ VC.peopleReportHTML = function () {
   return h;
 };
 VC.ixUI = function () {
-  VC.ixCutWrap(); VC.ixPickWrap();
+  VC.ixCutWrap(); VC.ixPickWrap(); VC.ixWalkIn();
   var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
   var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
   var r = $('ly-ixrep'), P = $('ix');

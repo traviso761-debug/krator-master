@@ -151,11 +151,23 @@
     L.route=r; L.speed = L.dur>0 ? r.len/L.dur : L.speed; SIM.lazyResolved=(SIM.lazyResolved||0)+1;
     return r;
   };
+  /* the vehicle an actor is in at t, read off its task: a leg's own mode on the way (a boat leg afloat, a drive leg in the
+     buggy, any other on foot), the trip's end state once arrived. Not a.inVehicle as its last plan left it: a plan sets
+     that for the trip's end, so an actor asked again before it got there (an interrupt, a wake, a jump that leaves it
+     mid-trip) was planned as if already afloat, and paddled a straight line from the street over the town to the water
+     (Voth's chinampa growers, 2026-10-14). A task not made by SIM.plan (a group's leg, a drive) keeps a.inVehicle */
+  SIM.vehicleAt = function(a, t){
+    var T=a.task; if(!T || T.veh===undefined) return a.inVehicle;
+    if(t >= T.arrive) return T.veh;
+    var dt=t-T.t0; if(dt < 0) return T.vehFrom;
+    for(var i=0;i<T.legs.length;i++){ var L=T.legs[i]; if(dt < L.dur) return L.mode==='boat' ? 'boat' : L.mode==='drive' ? 'buggy' : null; dt-=L.dur; }
+    return T.veh;
+  };
   /* the legs to a place: walk (or ride / drive) on the actor's layer; a place on another layer is reached through a
      boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
   SIM.plan = function(a, P, act, from, t){
     var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
-    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : a.cmd && a.cmd.spot && a.cmd.place===P.id ? { x:a.cmd.spot.x, z:a.cmd.spot.z, y:a.cmd.spot.y==null?P.y:a.cmd.spot.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle;   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var spot=a.cart ? { x:P.door.x, z:P.door.z, y:P.door.y } : a.cmd && a.cmd.spot && a.cmd.place===P.id ? { x:a.cmd.spot.x, z:a.cmd.spot.z, y:a.cmd.spot.y==null?P.y:a.cmd.spot.y } : spotOf(a, P), cur=from, inVeh = a.inVehicle = SIM.vehicleAt(a, t);   /* a cart (77-sim-6-economy.js) stops at the door */           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
     var bl = (a.boat && a.boat.layer) || 'water';                     /* the boat's water layer (a kayak's own: the city's chinampas) */
     var via = pref.via || P.via;
     if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
@@ -172,7 +184,8 @@
     else {
       var lay = inVeh ? (inVeh==='boat'?bl:'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
       var l5=leg(lay, cur, spot, inVeh?SIM.SPEED[inVeh==='boat'?'boat':'drive']:a.speed, inVeh?(inVeh==='boat'?'boat':'drive'):mode, a.minW||0); if(l5) legs.push(l5); }
-    var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3 };
+    var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3,
+            vehFrom:inVeh, veh:a.inVehicle };   /* the vehicle it set out in, and the one the trip leaves it in (SIM.vehicleAt) */
     legs.forEach(function(L){ T.dur+=L.dur; SIM.legsBy[L.layer]=(SIM.legsBy[L.layer]||0)+1; }); T.arrive=t+T.dur;   /* legs planned, by layer (an audit) */
     if(T.failed) SIM.logEvent('nopath', { actor:a.id, place:P.id });
     return T;

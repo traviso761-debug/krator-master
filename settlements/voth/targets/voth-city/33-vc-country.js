@@ -592,7 +592,7 @@ VC.fishDocks = function (g, rs, n, id) {
       for (var s = 4; s <= B.LIFE_FISHDOCK_LEN; s += 4) { var q = V.add(p, V.mul(dir, s)); if (baseH(q[0], q[1]) > -0.3 || VC.inCanton(q, 10) || (VC.chin && VC.chin.chinHit(q[0], q[1], 6))) break; L = s; }
       if (L < 20) return;
       var root = V.sub(p, V.mul(dir, 4)), fd = B.buildFishDockPier(root[0], root[1], dir[0], dir[1], L + 4); if (!fd) return;
-      B.PIERS.push({ x0: root[0], z0: root[1], x1: fd.tipX, z1: fd.tipZ, w: B.LIFE_FISHDOCK_W, fish: true, village: id });
+      B.PIERS.push({ x0: root[0], z0: root[1], x1: fd.tipX, z1: fd.tipZ, w: B.LIFE_FISHDOCK_W, fish: true, village: id, top: B.SEA + B.LIFE_FISHDOCK_H * 1.7 });   /* Voth's deck: from SEA + 0.7 H, H thick */
       roots.push(p); out.docks++;
       var side = [dir[1], -dir[0]], fry = Math.atan2(dir[0], dir[1]);
       [-1, 1].forEach(function (sd) {

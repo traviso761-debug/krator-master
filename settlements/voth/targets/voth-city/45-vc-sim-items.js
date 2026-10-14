@@ -76,11 +76,17 @@ VC.simItems = function () {
    boat {dock, layer}, a place's via 'boat'): to town by kayak to the landing, then on foot; home the other way */
 VC.simKayaks = function () {
   if (!SIM.nav.layers.kayak) SIM.nav.layer('kayak', { route: function (ax, az, bx, bz) { return { pts: [[ax, 0, az], [bx, 0, bz]] }; } });
-  var far = TUNE.sim.nav.far, landing = {}, onBeds = {}, n = 0, P0 = VC.PED;
+  var far = TUNE.sim.nav.far, landing = {}, onBeds = {}, n = 0, P0 = VC.PED, shore = [];
   SIM.all('place').forEach(function (P) {
     if ((P.kind !== 'chinampa hut' && P.kind !== 'chinampa') || P.navNode == null || !(P.navOff > far)) return;
     var nd = P0.nodes[P.navNode], id = 'landing.' + P.navNode;
-    if (!landing[id]) { SIM.place({ id: id, kind: 'landing', name: 'Kayak landing', x: nd.x, z: nd.z, y: nd.y || 0, activities: {}, layer: 'pedestrian', tags: ['chinampa'] }); landing[id] = SIM.R.place[id]; landing[id].navNode = P.navNode; landing[id].navOff = 0; }
+    if (!landing[id]) {
+      /* the landing's door is the water's edge (owner, 2026-10-14: kayaks over the land): from the street's node toward the
+         beds, the last dry ground; the walk ends there and the kayak starts there, so no kayak leg crosses the shore */
+      var sh = VC.simShore(nd, P);
+      SIM.place({ id: id, kind: 'landing', name: 'Kayak landing', x: nd.x, z: nd.z, y: nd.y || 0, door: { x: sh.x, z: sh.z, y: sh.y }, activities: {}, layer: 'pedestrian', tags: ['chinampa'] });
+      landing[id] = SIM.R.place[id]; landing[id].navNode = P.navNode; landing[id].navOff = VC.r2(Math.hypot(sh.x - nd.x, sh.z - nd.z)); shore.push(landing[id].navOff);
+    }
     P.layer = 'kayak'; P.via = 'boat'; P.landing = id; onBeds[P.id] = 1; n++;
   });
   var people = 0;
@@ -89,7 +95,20 @@ VC.simKayaks = function () {
     a.boat = { dock: (H || W).landing, layer: 'kayak' }; if (H) a.inVehicle = 'boat';   /* at home on the beds: afloat */
     if (!SIM.owns(a, 'kayak')) SIM.give(a, 'kayak', 1); people++;
   });
-  return { places: n, landings: Object.keys(landing).length, people: people };
+  shore.sort(function (a, b) { return a - b; });
+  return { places: n, landings: Object.keys(landing).length, people: people, shoreWalk: shore.length ? { p50: shore[shore.length >> 1], max: shore[shore.length - 1] } : null };
+};
+/* the water's edge on the way from a street's node `nd` to a place on the water `P`: stepping 2 m toward it, the last
+   point on dry ground (42-vc-sim-places.js VC.simStandY: not a bed, not a pier) before the water; the node itself when
+   it already stands at the water */
+VC.simShore = function (nd, P) {
+  var dx = P.x - nd.x, dz = P.z - nd.z, L = Math.hypot(dx, dz) || 1, last = { x: nd.x, z: nd.z, y: nd.y || 0 }, dry = VOTH.SEA + TUNE.sim.stand.dry;
+  for (var t = 2; t < L; t += 2) {
+    var x = nd.x + dx * t / L, z = nd.z + dz * t / L, h = baseH(x, z);
+    if (h < dry) break;
+    last = { x: VC.r2(x), z: VC.r2(z), y: VC.r2(h) };
+  }
+  return last;
 };
 
 VC.simItemsReport = function () {
