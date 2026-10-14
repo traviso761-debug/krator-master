@@ -44,7 +44,7 @@ SL.fields = function () {
   for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) {
     var k = j * n + i; if (R.occ[k] === OCC.OUT) continue;
     var x = R.cx(i), z = R.cx(j);
-    var gx = (baseH(x + c, z) - baseH(x - c, z)) / (2 * c), gz = (baseH(x, z + c) - baseH(x, z - c)) / (2 * c);
+    var gx = (CG.base(x + c, z) - CG.base(x - c, z)) / (2 * c), gz = (CG.base(x, z + c) - CG.base(x, z - c)) / (2 * c);
     slope[k] = gx * gx + gz * gz;
     wob[k] = 0.5 + 0.5 * slFbm(x / 70 + 91, z / 70 - 37, 2);
   }

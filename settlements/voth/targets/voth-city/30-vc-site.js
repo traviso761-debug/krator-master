@@ -520,7 +520,7 @@ SL.pass5 = function () {
     if (Math.cos(ry - nd.ry) < 0) ry += Math.PI;     /* keep the wall's own sense, so a model's front faces out as before */
     nd.ry = ry; nd.square = true;
   });
-  VC.wall = { line: C, nodes: nodes, gates: gates };
+  VC.wall = PLAN.wallRec = { line: C, nodes: nodes, gates: gates };   /* PLAN.wallRec: the records core/city exports (KCITY.exportWall) */
   VC.buildWall();                 /* 31-vc-voth.js: sites, towers, gates and segments, as Voth builds them */
   /* the raster: the wall is no ground for lots or streets, except through its gates; anything placed before it on its
      line (a quay warehouse) comes down */

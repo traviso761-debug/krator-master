@@ -223,23 +223,16 @@ SL.interiorAlleys = function (lab) {
 };
 
 /* ---------------------------------------------------------------- the runner */
-/* steps 0-5 are the world's own (its site: ground, landmarks, wall, districts, avenues, highways); a world with other
-   steps sets SL.STEPS and SL.layout itself (settlements/voth/targets/voth-city/35-vc-steps.js) */
+/* the default 13 steps' names (KCITY.STEPS): steps 0-5 are the world's own (its site: ground, landmarks, wall, districts,
+   avenues, highways), 6-12 the builder's. A world makes an instance with its own steps (KCITY.create({steps}),
+   40-city-kcity.js; Voth's are settlements/voth/targets/voth-city/35-vc-steps.js); SL.layout runs the bound one */
 SL.STEPS = ['the ground and the raster', 'landmarks', 'the wall', 'districts', 'avenues and gates', 'highways', 'civic buildings',
   'avenue lots', 'main streets', 'main-street lots', 'side streets', 'side-street lots, alley entrances', 'alleys and alley lots'];
-SL.layout = function () {
-  SL.newPlan(); SL.F = null; SL._items = {}; SL.pads.length = 0; SL.HASH = new Map();
-  var mid = SL.items('middle').map(function (it) { return it.d + TUNE.lot.setback + TUNE.lot.rear; });
-  SL.minSpacing = Math.min.apply(null, mid) + TUNE.width.main / 2 + TUNE.width.side / 2;
-  PLAN.stats.ms = [];
-  for (var k = 0; k <= 12; k++) { var t = Date.now(); SL['pass' + k](); PLAN.stats.ms[k] = Date.now() - t; }
-  SL.count();
-  return PLAN;
-};
-/* what stood after step `st`: counts by class, street lengths by class */
+SL.layout = function () { return (KCITY.cur || KCITY.create({ tune: TUNE })).run(); };
+/* what stood after each step: counts by class, street lengths by class */
 SL.count = function () {
-  var S = PLAN.stats; S.byStep = [];
-  for (var st = 0; st <= 12; st++) {
+  var S = PLAN.stats, last = SL.LAST != null ? SL.LAST : (KCITY.cur ? KCITY.cur.steps.length - 1 : 12); S.byStep = [];
+  for (var st = 0; st <= last; st++) {
     var o = { lots: {}, ways: {}, greens: {} };
     PLAN.lots.forEach(function (L) { if (L.born <= st && (L.died == null || L.died > st)) o.lots[L.cls] = (o.lots[L.cls] || 0) + 1; });
     PLAN.ways.forEach(function (w) { if (w.born <= st) { var e = o.ways[w.cls] || (o.ways[w.cls] = { n: 0, m: 0 }); e.n++; e.m += w.F.len; } });
@@ -250,12 +243,4 @@ SL.count = function () {
   S.replaced = PLAN.lots.filter(function (L) { return L.replaces != null; }).length;
   S.minSpacing = SL.minSpacing;
 };
-/* the plan as JSON: every record without its frames (the export a Godot importer or another world reads) */
-SL.exportPlan = function () {
-  return JSON.stringify({
-    tune: TUNE, wall: { poly: PLAN.wall.poly }, gates: PLAN.gates, tri: PLAN.tri, districts: PLAN.districts,
-    ways: PLAN.ways.map(function (w) { return { id: w.id, cls: w.cls, w: w.w, born: w.born, tag: w.tag, pts: w.pts.map(function (p) { return [+p[0].toFixed(2), +p[1].toFixed(2)]; }) }; }),
-    lots: PLAN.lots.map(function (L) { return { id: L.id, cls: L.cls, key: L.key, v: L.v, slot: L.slot, x: +L.x.toFixed(2), z: +L.z.toFixed(2), y: +L.y.toFixed(2), ry: +L.ry.toFixed(4), way: L.way, side: L.side, born: L.born, died: L.died, wealth: +L.wealth.toFixed(2), lot: { c: L.lot.c, u: L.lot.u, hw: L.lot.hw, hd: L.lot.hd } }; }),
-    greens: PLAN.greens, entrances: PLAN.entrances, knocks: PLAN.knocks, stats: PLAN.stats, log: PLAN.log
-  });
-};
+/* the export (SL.exportPlan, KCITY.exportPlan) is in 40-city-kcity.js */

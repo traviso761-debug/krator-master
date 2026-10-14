@@ -3,6 +3,10 @@
 
     python3 verify.py dist/voth-city.html --assert [--shot out.png]    # the city plan (core/city on the Voth site)
     python3 verify.py dist/voth-site.html --assert [--shot out.png]    # the site editor
+    python3 verify.py dist/voth-city.html --hash                       # only the placement hash, right after the layout
+
+The placement hash (PLACE_HASH: every lot's key, x, z, ry, w, d and every way's points, at full precision) is the proof
+that a change moved nothing: the --hash run stops after SL.layout() (about 10 minutes), the full run prints it too.
 
 The city plan loads with ?lite=1 (buildings built, not drawn: software GL cannot draw ten million triangles quickly).
 --assert fails on a page error, a kit piece that did not build, overlapping buildings (exact footprints, 0.3 m),
@@ -11,6 +15,47 @@ buildings in water, on the wall or on a highway, and each rule of the owner's th
 import argparse, functools, http.server, json, os, socketserver, sys, threading
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+def launch(p):
+    """chromium for playwright: its own build, else a pinned one under /opt/pw-browsers (a cloud container ships one
+    that need not match the pip playwright's pin), else $KRATOR_CHROME"""
+    args = ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist']
+    if os.environ.get('KRATOR_CHROME'):
+        return p.chromium.launch(executable_path=os.environ['KRATOR_CHROME'], args=args)
+    try:
+        return p.chromium.launch(args=args)
+    except Exception as e:
+        if "Executable doesn't exist" not in str(e):
+            raise
+        import glob
+        for c in sorted(glob.glob('/opt/pw-browsers/chromium-*/chrome-linux/chrome'), reverse=True):
+            return p.chromium.launch(executable_path=c, args=args)
+        raise
+
+
+# the placement hash: FNV-1a over every lot's (key, x, z, ry, w, d) and every way's points, as JSON at full precision
+PLACE_HASH = r"""() => { const P = PLAN, f = (h, s) => { for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h; };
+  return { hash: f(f(2166136261, JSON.stringify(P.lots.map(L => [L.key, L.x, L.z, L.ry, L.w, L.d]))), JSON.stringify(P.ways.map(w => w.pts))).toString(16),
+    lots: P.lots.length, ways: P.ways.length, index: P.stats.index || null }; }"""
+
+
+def plan_hash(a, port, rel, sync_playwright):
+    with sync_playwright() as p:
+        b = launch(p)
+        page = b.new_page(viewport={'width': 800, 'height': 600})
+        errs = []
+        page.on('pageerror', lambda e: errs.append(str(e)))
+        # stop right after the layout: the drawing (VC.start) is not run
+        page.add_init_script("""(() => { const iv = setInterval(() => { if (window.SL && SL.layout && window.VC && VC.start) { clearInterval(iv);
+          const lay = SL.layout; SL.layout = function () { const r = lay.apply(this, arguments); window.__laid = true; return r; }; VC.start = function () {}; } }, 1); })();""")
+        page.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel))
+        page.wait_for_function('window.__laid === true || (window._vc && window._vc.error)', timeout=1800000, polling=500)
+        r = page.evaluate(PLACE_HASH)
+        b.close()
+    print('placement hash %s (%d lots, %d ways); index %s%s' % (r['hash'], r['lots'], r['ways'], json.dumps(r['index']), ('; ERRORS ' + '; '.join(errs)) if errs else ''))
+    if errs:
+        sys.exit(1)
+
 
 def serve():
     class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -26,6 +71,7 @@ def main():
     ap.add_argument('page', nargs='?', default='dist/voth-city.html')
     ap.add_argument('--assert', dest='check', action='store_true')
     ap.add_argument('--shot')
+    ap.add_argument('--hash', action='store_true', help='print the placement hash after the layout and stop')
     a = ap.parse_args()
     from playwright.sync_api import sync_playwright
     port, errors = serve(), []
@@ -33,7 +79,7 @@ def main():
     if 'voth-site' in rel:
         return verify_site(a, port, rel, sync_playwright)
     if 'voth-city' in rel:
-        return verify_city(a, port, rel, sync_playwright)
+        return (plan_hash if a.hash else verify_city)(a, port, rel, sync_playwright)
     sys.exit('verify.py: no check for ' + rel + ' (dist/voth-city.html or dist/voth-site.html)')
 
 
@@ -68,6 +114,9 @@ SITE_CHECK = r"""() => {
 CITY_CHECK = r"""() => {
   const P = _vc.plan, R = SL.R, out = { err: _vc.error || null, log: P.log, ms: P.stats.ms, failed: Object.keys(_vc.failed || {}) };
   const alive = P.lots.filter(L => L.died == null);
+  { const f = (h, s) => { for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h; };   /* PLACE_HASH's */
+    out.place = f(f(2166136261, JSON.stringify(P.lots.map(L => [L.key, L.x, L.z, L.ry, L.w, L.d]))), JSON.stringify(P.ways.map(w => w.pts))).toString(16); }
+  try { out.exportLen = SL.exportPlan().length; } catch (e) { out.exportLen = 'threw: ' + e.message; }
   out.lots = alive.length; out.ways = {}; P.ways.forEach(w => out.ways[w.cls] = (out.ways[w.cls] || 0) + 1);
   out.named = (_vc.wall ? _vc.wall.gates.filter(g => g.named).map(g => g.name + (g.crossed ? '' : '?')) : []);
   /* buildings: none overlapping, none in the water, none on the wall */
@@ -467,7 +516,7 @@ def animals_bad(sc):
 def verify_city(a, port, rel, sync_playwright):
     errors = []
     with sync_playwright() as p:
-        b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
+        b = launch(p)
         page = b.new_page(viewport={'width': 1000, 'height': 760})
         page.on('pageerror', lambda e: errors.append('PAGEERROR ' + str(e)))
         page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
@@ -481,6 +530,7 @@ def verify_city(a, port, rel, sync_playwright):
         b.close()
     print('\n'.join(r['log']))
     print('pass ms', r['ms'])
+    print('placement hash', r['place'], '; export', r['exportLen'], 'characters')
     print('standing lots', r['lots'], '; ways', json.dumps(r['ways']), '; named gates', r['named'])
     print('overlapping building pairs %d, buildings in water %d, on the wall %d; wall to nearest avenue %s m' % (r['overlapPairs'], r['wet'], r['onWall'], r['wallClear']))
     print('transit', json.dumps(r['transit']), '; SIM', json.dumps(r['sim']))
@@ -608,6 +658,7 @@ def verify_city(a, port, rel, sync_playwright):
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')
+        if not isinstance(r['exportLen'], int): bad.append('the plan export (SL.exportPlan) ' + str(r['exportLen']))
         if r['wallClear'] < 15: bad.append('wall too close to an avenue')
         for k in ('avenue', 'main', 'side', 'alley', 'lane'):
             if not r['ways'].get(k): bad.append('no ' + k)
@@ -652,7 +703,7 @@ def verify_city(a, port, rel, sync_playwright):
 def verify_site(a, port, rel, sync_playwright):
     errors = []
     with sync_playwright() as p:
-        b = p.chromium.launch(args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
+        b = launch(p)
         page = b.new_page(viewport={'width': 1000, 'height': 760})
         page.on('pageerror', lambda e: errors.append('PAGEERROR ' + str(e)))
         page.on('console', lambda m: m.type == 'error' and errors.append(m.text))

@@ -6,20 +6,33 @@ SL.STEPS = ['the site and its ground', 'landmarks', 'districts, monastery, china
   'suburbs, farmland, villages, orchards', 'ferry and elephant bug lines'];
 SL.LAST = 14;
 SL.TRANSIT = 14;
-SL.layout = function () {
-  SL.newPlan(); SL.F = null; SL._items = {}; SL.HASH = new Map(); PLAN.stats.ms = [];
-  for (var k = 0; k <= SL.LAST; k++) { var t = Date.now(); SL['pass' + k](); if (k === 3) { VC.applyEdits(3); VC.simCaravanserai(3); } if (k === 5) VC.simTemples(5);   /* the temples after the highways and the wall, still before the streets */   /* the caravanserai by the River Gate, before the streets (42-vc-sim-places.js) */ PLAN.stats.ms[k] = Date.now() - t; }
-  VC.applyDeletes();               /* the owner's deletions, once everything they could name exists */
-  VC.simBuildings();               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
-  VC.simSquares(12); VC.simVillageShrines(13); VC.simShipwrights(13);   /* 42-vc-sim-places.js: benched squares by the cantons, the village shrines (phase C's overflow), the shipwright's docks */
-  VC.census();                     /* 36-vc-census.js: people and workplaces */
-  VC.lighting();                   /* 37-vc-light.js: power houses' reach, street lamps */
-  VC.parkFurniture();              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
-  VC.wells(); VC.parkShrines();                      /* 42-vc-sim-places.js: the wells (plazas, market squares, streets, yards) */
-  VC.flora();                      /* 38-vc-flora.js: where the swbay biome may root, and its climate */
-  SL.count();
-  return PLAN;
-};
+/* Voth's city is a core/city instance (KCITY.create, core/city/40-city-kcity.js): its steps as data, a step's hooks
+   after it, then the finish. The owner's edits and the caravanserai by the River Gate come after the avenues; the
+   temples after the highways and the wall, still before the streets (42-vc-sim-places.js). The index keeps the old
+   40 m probe's order ('buckets': the curve test reads the same lots) and the fields their old 160 m reach. */
+VC.city = KCITY.create({
+  tune: TUNE, seed: SL.seed,
+  ground: { base: baseH, h: terrainH, pad: addPad, foot: baseY },
+  kit: { dims: SL.dims },
+  rules: { wealth: SL.wealth, choosers: SL.choosers, vacant: SL.vacant, interiorOk: SL.interiorOk },
+  index: { order: 'buckets', fieldWindow: true, roadWindow: true },
+  /* each step names its pass, read when it runs: a fragment loaded after this one wraps a pass (37-vc-light.js puts the
+     power houses in at step 9) */
+  steps: SL.STEPS.map(function (name, k) { return { name: name, run: function () { SL['pass' + k](); } }; }),
+  finish: [
+    function () { VC.applyDeletes(); },               /* the owner's deletions, once everything they could name exists */
+    function () { VC.simBuildings(); },               /* 42-vc-sim-places.js: the citizens' buildings (trades, watchhouses, caravanserai, berth) */
+    function () { VC.simSquares(12); VC.simVillageShrines(13); VC.simShipwrights(13); },   /* 42: benched squares by the cantons, the village shrines (phase C's overflow), the shipwright's docks */
+    function () { VC.census(); },                     /* 36-vc-census.js: people and workplaces */
+    function () { VC.lighting(); },                   /* 37-vc-light.js: power houses' reach, street lamps */
+    function () { VC.parkFurniture(); },              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
+    function () { VC.wells(); VC.parkShrines(); },    /* 42-vc-sim-places.js: the wells (plazas, market squares, streets, yards) */
+    function () { VC.flora(); }                       /* 38-vc-flora.js: where the swbay biome may root, and its climate */
+  ]
+});
+VC.city.steps[3].after = [function () { VC.applyEdits(3); }, function () { VC.simCaravanserai(3); }];
+VC.city.steps[5].after = [function () { VC.simTemples(5); }];
+SL.layout = function () { return VC.city.run(); };
 SL.count = function () {
   var S = PLAN.stats; S.byStep = [];
   for (var st = 0; st <= SL.LAST; st++) {

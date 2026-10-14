@@ -64,22 +64,40 @@ SL.tryLot = function (way, side, s, item, step, cls, extra) {
   /* exact: the raster samples cell centres, so on a bend a corner wedge can slip between them */
   var clash = SL.clash(bo);
   if (clash) return { fail: { code: OCC.LOT, own: clash.id } };
+  /* opt-in (15-city-ground.js): the world's ground predicate, then the stance; a world that sets neither is unchanged */
+  if (SL.groundOk && !SL.groundOk(bo, { way: way, side: side, s: s, item: item, cls: cls })) return { fail: { code: -2 } };
+  var st = TUNE.stance ? KCITY.lotStance(TUNE.stance, bo, item, way, side, s) : null;
+  if (TUNE.stance && !st) return { fail: { code: -3 } };
   var L = {
     id: PLAN.lots.length, cls: cls, key: item.key, v: item.v, slot: extra && extra.slot || 0, wealth: extra && extra.wealth != null ? extra.wealth : 0.5,
     x: g.bc[0], z: g.bc[1], y: 0, ry: ryFacing(V.mul(g.n, -1)), w: item.w, d: item.d, h: item.h,
     lot: g.o, way: way.id, side: side, s: s, born: step, died: null, run: extra && extra.run, civic: cls === 'civic'
   };
-  L.y = (extra && extra.padded) ? addPad(bo, 12) : baseY(bo);
+  L.y = st ? st.y : (extra && extra.padded) ? CG.pad(bo, 12) : CG.foot(bo);
+  if (st) L.drop = st.drop;
   L.bo = bo;
   PLAN.lots.push(L);
   R.stampPoly(obbCorners(g.o), cls === 'civic' ? OCC.HARD : OCC.LOT, L.id);
   SL.hashLot(L);
+  SL.register(L);
   return L;
 };
-/* a 40 m spatial hash of standing building footprints, for the exact overlap test */
-SL.HASH = new Map();
+/* standing building footprints, for the exact overlap test: the bound instance's box index (12-city-index.js), on
+   KSPACE. SL.HASH is the same index's old 40 m bucket Map ('x,z' -> lots), kept only for readers that still walk it
+   (Voth's simulation fragments, 42-vc-sim-places.js) */
+SL.index = KCITY.boxIndex({ legacy: true });
+SL.HASH = SL.index.legacy;
 SL.hkey = function (x, z) { return Math.floor(x / 40) + ',' + Math.floor(z / 40); };
-SL.hashLot = function (L) { var k = SL.hkey(L.x, L.z); (SL.HASH.get(k) || SL.HASH.set(k, []).get(k)).push(L); };
+SL.hashLot = function (L) { SL.index.add(L); };
+/* core/tags (opt-in: KCITY.create({tags})): a placed lot becomes a building record before anything draws it; a lot
+   knocked out is removed (its id is never reused). A world that pushes lots itself calls SL.register(L) too */
+SL.tags = null;
+SL.register = function (L) {
+  if (!SL.tags || L.tag) return;
+  var r = SL.tags.add({ 'class': L.civic || L.cls === 'landmark' ? 'landmark' : 'building', key: L.key, at: [L.x, L.y, L.z], ry: L.ry, size: [L.w, L.d, L.h || 0],
+    note: L.cls, src: 'core/city' });
+  if (r) L.tag = r.id;
+};
 SL.pen = function (A, B) {
   var m = Infinity, axes = [A.u, A.v, B.u, B.v];
   for (var i = 0; i < 4; i++) {
@@ -88,17 +106,13 @@ SL.pen = function (A, B) {
   }
   return m;
 };
-SL.clash = function (bo) {
-  var gx = Math.floor(bo.c[0] / 40), gz = Math.floor(bo.c[1] / 40), hit = null;
-  for (var dx = -1; dx <= 1 && !hit; dx++) for (var dz = -1; dz <= 1 && !hit; dz++) {
-    var list = SL.HASH.get((gx + dx) + ',' + (gz + dz)); if (!list) continue;
-    for (var i = 0; i < list.length; i++) { var L = list[i]; if (L.died == null && L.bo && SL.pen(bo, L.bo) > 0.1) { hit = L; break; } }
-  }
-  return hit;
-};
+/* the first standing building whose footprint overlaps bo by more than 0.1 m, of any size (the index files each
+   footprint whole: the old 40 m probe missed big ones, Voth's VC.clashWide is folded in here); skip(L) passes over */
+SL.clash = function (bo, skip) { return SL.index.hit(bo, skip); };
 SL.killLot = function (L, step) {
   L.died = step;
   SL.R.clearOwner(obbCorners(L.lot), L.id, OCC.LOT);
+  if (SL.tags && L.tag) SL.tags.remove(L.tag);
 };
 
 /* rule 8: a lot a street ran through is split by the street. Each remnant takes the largest building of its
@@ -155,7 +169,7 @@ SL.addGreen = function (kind, poly, step, wealth, cls, o) {
       var d = R.sd[R.idx(p[0], p[1])] - TUNE.width.main / 2;
       if (R.at(p[0], p[1]) === OCC.GREEN && d > bd) { bd = d; best = p; }
     }
-    if (best && bd > 2.2) G.art = { key: key, x: best[0], z: best[1], y: terrainH(best[0], best[1]), ry: Math.atan2(o.v[0], o.v[1]) };
+    if (best && bd > 2.2) G.art = { key: key, x: best[0], z: best[1], y: CG.h(best[0], best[1]), ry: Math.atan2(o.v[0], o.v[1]) };
   }
   PLAN.greens.push(G);
   return G;
