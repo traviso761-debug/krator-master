@@ -61,9 +61,13 @@ KCITY.boxIndex = function (opt) {
 /* road segments: each way's segments, filed under the square of their bounding box grown by the half width */
 KCITY.segIndex = function (opt) {
   opt = opt || {};
-  var B = opt.bucket || 40, sp = KSPACE.create({ cell: opt.cell || B }), seq = 0, tmp = [];
+  var B = opt.bucket || 40, sp = KSPACE.create({ cell: opt.cell || B }), seq = 0, tmp = [], filed = new Set();
   var I = { order: opt.order || 'insertion', stats: { wide: 0, queries: 0 }, sp: sp };
+  /* a way is filed once: the exact-streets rule files each way as it is laid, and a world may file it again (Voth's
+     VC.hashWay); a second filing would only add ties the first copy wins */
   I.addWay = function (w) {
+    if (filed.has(w)) return;
+    filed.add(w);
     for (var i = 1; i < w.pts.length; i++) {
       var a = w.pts[i - 1], b = w.pts[i], hw = w.w / 2;
       var x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), z0 = Math.min(a[1], b[1]), z1 = Math.max(a[1], b[1]);
@@ -71,7 +75,7 @@ KCITY.segIndex = function (opt) {
       sp.insert(e, (x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2 + hw);
     }
   };
-  I.clear = function () { sp.clear(); seq = 0; I.stats = { wide: 0, queries: 0 }; };
+  I.clear = function () { sp.clear(); seq = 0; filed.clear(); I.stats = { wide: 0, queries: 0 }; };
   /* the nearest way within r of p, measured from the road's edge: {d, way} or null. A way with .dead, or the id skip,
      is passed over. Ties (two ways' edges equally near) go to the first in the index's order */
   I.near = function (p, r, skip) {

@@ -122,5 +122,12 @@ runs fail the same two pre-existing checks, the embassies (Hykkousoi, Iziz, Jimj
 cantons not walkable (Arena, Fortress): not this work's. Ys's placement hash (78ecfa06, refusals 45c38520) and its
 `verify.py --assert` counters are the same before and after. Next: step 4 with the owner.
 
+**The exact-streets rule on Voth** (owner, 2026-10-14). It threw at first: under the rule a street knocks out every
+building it reaches, and `SL.salvage` re-placed each along `PLAN.ways[L.way]`, undefined for a building laid along no
+way (Voth's country houses, deck and placed buildings: `way: -1`). Salvage now re-places only frontage lots (a way and
+a side) and knocks the rest out; `test-city.js` checks it, with its negative. On Voth's data the rule also met a
+mushroom farm's track one point long (`VC.track`) and a watchhouse the simulation fitted into a plot on a bend
+(`VC.simFit`); both fixed. Voth's hash is `48efdcaa` with the rule (`ff007aab` without it, unchanged).
+
 The data side stays engine-neutral (`[G data]`): `core/city` becomes the NPC and quest tool and later the player's
 settlement builder, in Godot too (CLAUDE.md).

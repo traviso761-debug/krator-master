@@ -136,6 +136,38 @@ ok('nothing stands on the wall or in water', onWall(P) === 0 && inWater(P) === 0
   ok('...and their negatives fail: no overlap test overlaps, a lot on a street and one in the pond are caught', overlaps(Q, 0.1) > 0 && onStreets(fake) === 1 && inWater(wet) === 1, true,
     overlaps(Q, 0.1) + ' overlapping pairs with SL.clash off'); }
 
+// ---------------------------------------------------------------- 1b. the exact-streets rule and lots laid along no way
+// A world places some buildings itself (Voth's country houses, deck and placed buildings: way -1; a court's house names the
+// street it faces, side 0). They are not on the raster, so only the rule's exact test (SL.underWay) sees a street laid
+// through them later. Under the rule each is knocked out and left open (salvage has no frontage to re-place it along: it
+// threw on Voth, 2026-10-14), while a frontage lot the same street cuts is still salvaged. Without the rule the street runs
+// over them and they stand on its carriageway.
+function wayless(exact) {
+  const C = city(); C.tune.exact = exact; const Pw = C.run();
+  const front = L => !L.civic && L.cls !== 'landmark' && L.side === 1 && Pw.ways[L.way] && Pw.ways[L.way].cls === 'side';
+  const along = id => standing(Pw).filter(L => front(L) && L.way === id).sort((p, q) => p.s - q.s);
+  const side = Pw.ways.find(w => w.cls === 'side' && along(w.id).length >= 2), on = along(side.id).slice(0, 2);
+  const mine = on.map((L, k) => { SL.killLot(L, 12);   // the world's own records where two frontage houses stood, not on the raster
+    const R = Object.assign({}, L, { id: Pw.lots.length, way: k ? side.id : -1, side: 0, s: 0, born: 12, died: null, lot: obb(L.bo.c, L.bo.u, L.bo.hw + 8, L.bo.hd), tag: null });
+    Pw.lots.push(R); SL.hashLot(R); return R; });
+  // a street across each, off its middle, so a remnant of its plot (the house and a yard either side) is left that salvage
+  // would try to re-place along the lot's way
+  const before = Pw.lots.length, ws = [];
+  let threw = null;
+  try { mine.forEach(L => { const c = V.add([L.x, L.z], V.mul(L.bo.u, 0.6 * L.bo.hw)); ws.push(SL.addWay('side', [V.sub(c, V.mul(L.bo.v, 30)), V.add(c, V.mul(L.bo.v, 30))], 13)); }); }
+  catch (e) { threw = e.message; }
+  const made = Pw.lots.slice(before);
+  return { mine, threw, salvagedMine: made.filter(L => mine.some(M => M.id === L.replaces)).length, salvaged: made.filter(L => L.replaces != null).length,
+    on: onStreets({ lots: mine, ways: ws }), stats: Pw.stats.exact };
+}
+{ const X = wayless(true), O = wayless(false);
+  ok('the exact-streets rule knocks out a lot laid along no way that a later street reaches (way -1, or side 0), and salvages none of it',
+    !X.threw && X.mine.every(L => L.died === 13) && X.salvagedMine === 0 && X.on === 0 && X.stats && X.stats.unsalvaged >= 2,
+    !O.threw && O.mine.every(L => L.died == null) && O.on === 2,
+    X.threw ? 'threw: ' + X.threw : 'knocked ' + X.mine.filter(L => L.died === 13).length + ' of 2, ' + X.salvaged + ' other lots salvaged; ' + JSON.stringify(X.stats) +
+    '; without the rule ' + O.on + ' stand on the street'); }
+A.bind();
+
 // ---------------------------------------------------------------- 2. the golden hash, the KRAND city, two cities on a page
 const K = city({ rand: 'krand', seed: 2026 }), PK = K.run(), HK = placeHash(PK);
 const gold = { note: 'core/city: test-city.js writes these (--write); a change that moves a lot or a way changes them', sl: H1, krand: HK, lots: S1.length, krandLots: standing(PK).length };

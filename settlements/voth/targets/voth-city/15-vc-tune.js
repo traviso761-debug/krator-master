@@ -5,6 +5,7 @@ var TUNE = {
   cell: 2.5, rasterHalf: 2480,          /* the raster covers the build zone: +-2.48 km at 2.5 m */
   groundCell: 10,                       /* the edited ground, sampled once for the street passes */
   maxSlope: 0.4,                        /* steeper ground (about 22 degrees) is left open: no lots, no streets */
+  exact: true,                          /* the exact-streets rule (core/city, owner 2026-10-14): no building reaches a street's carriageway */
   width: { avenue: 12, main: 8, side: 5.5, alley: 3, highway: 10, lane: 4.5 },
   lot: { side: 1.6, setback: 1.4, rear: 3, inset: 1.0, step: 3 },
   ringGap: 8,                           /* park / market edge to its encircling avenue's kerb */

@@ -124,7 +124,17 @@ caravanserai after step 3, its temples after step 5, and runs steps 13-14, the c
 * `TUNE.exact`: the exact-streets rule. No building's footprint reaches a street's carriageway: `tryLot` tests the ways
   exactly, a street laid after a lot knocks out every building it reaches (not only those whose lot cells it crossed),
   and routes keep their carriageway off HARD ground. Without it the raster's cell sampling lets a corner reach a street
-  by up to a metre or two on a bend (Voth's layout is that one; moving it is a layout change).
+  by up to a metre or two on a bend (moving it is a layout change).
+  What a street does to a building it reaches (`SL.addWay`, then `SL.salvage`): a frontage lot (laid along a way by
+  `tryLot`: a way of the plan and a side, +1 or -1) is split by the street and its remnants re-placed along its own way
+  (or turned to park and plaza) as before. A building a world or another pass placed itself (`way: -1`: a landmark's,
+  a country house, a deck's, an owner-placed or simulation building; or `side: 0`: a court's house, which only names
+  the street it faces) has no frontage to re-place along: it is knocked out and its ground left open. The raster only
+  ever knocked lots it had stamped, so this case arises only under the rule (it threw on Voth before, 2026-10-14). Civic
+  buildings and landmarks are never knocked: the routes keep off them. The road index files each way once, however
+  often a world files it again. The counts are `PLAN.stats.exact`: `reached` (buildings a later street reached that
+  the raster missed), `salvaged`, `unsalvaged`, `refused` (`tryLot` refusals). Voth runs with it on (owner, 2026-10-14);
+  its `verify.py --assert` fails if any standing building but a civic one or a landmark reaches a carriageway.
 * `tags`: core/tags registration.
 
 ## The strategies
@@ -167,15 +177,18 @@ Voth's house of healing), `gridCands`, `packPolygon`, `clearSpot`.
 `node core/city/test-city.js` (picked up by `tools/test_all.py`): a 520 m synthetic site (a pond, a steep knoll, a
 wall, a park and a market, drawn avenues, a highway), the world's steps on the site layer and the builder's defaults;
 then no two footprints overlap, nothing on a street (the exact-streets rule; without it 25 buildings reach one),
-the wall or in water; golden hashes for SL and KRAND streams and for frontage-courts; reruns and a second KRAND seed;
+the wall or in water; a building laid along no way (way -1, or side 0) that a later street reaches knocked out under the
+rule and not salvaged (without the rule it stands on the street); golden hashes for SL and KRAND streams and for frontage-courts; reruns and a second KRAND seed;
 two cities on a page; the export; the index (a wide footprint the old probe missed, both orders, the road index);
 Erewhon's stance; the ground predicate; core/tags; the site layer's records; the ground deltas; frontage-courts
 (fronted blocks, lanes, a host ring, infill facing a street or yard, no overlap, one block left out moving nothing in
 the others); the primitives. Every check has a negative that must fail.
 
 **Voth** is the module's proof on a real site: `settlements/voth/verify.py --hash` prints its placement hash (every
-lot's key, x, z, ry, w, d and every way's points), `--assert` the whole check (about 40 minutes). Steps 1 and 2 of
-`PLAN.md` left it at `ff007aab`, the hash before.
+lot's key, x, z, ry, w, d and every way's points; it fails if the layout threw), `--assert` the whole check (about 40
+minutes). Steps 1 and 2 of `PLAN.md` left it at `ff007aab`, the hash before; it still is with `TUNE.exact` off. With the
+exact-streets rule on (2026-10-14) it is `48efdcaa`: 10,758 lots (7,749 standing) and 2,561 ways, against 11,006
+(7,997) and 2,521.
 
 ## Porting a settlement
 
@@ -192,7 +205,7 @@ lot's key, x, z, ry, w, d and every way's points), `--assert` the whole check (a
 
 | Settlement | Status |
 |---|---|
-| Voth | on it: an instance (`35-vc-steps.js`), its site on the site layer, steps 6-12 the defaults; its placement unchanged by the move (2026-10-14) |
+| Voth | on it: an instance (`35-vc-steps.js`), its site on the site layer, steps 6-12 the defaults; its placement unchanged by the move (2026-10-14); the exact-streets rule on (a new layout, `48efdcaa`) |
 | Ys | its placement pass takes the shared primitives (`33-city-strategies.js` through `TARGET_CORE_FILES`): the frontage walker's and edge run's cursor, the block candidates, the lattice and the facing; its placement identical. Its blocks, boxes, clash rule and kit audit stay its own; `frontage-courts` is the general version |
 | Verge, Iziz | next (`PLAN.md` step 4, with the owner): Verge onto `alleys` on its two levels, Iziz's vernacular parts |
 | Dalab, Girder, Highlands, Jimjam, Locus, Mav's Refuge, Mungo, Noah's Regret, the Port, Reedlake, Screamers, Shade, Xanadu, Yuni | not yet: each lays out its own streets and lots in its own `src/` (Dalab, Mungo, Locus and Yuni stay as they are) |

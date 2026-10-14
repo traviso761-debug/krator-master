@@ -29,7 +29,7 @@ SL.addWay = function (cls, pts, step, opt) {
   var knocked = Object.keys(hit).map(Number).map(function (id) { return PLAN.lots[id]; }).filter(function (L) { return L && L.died == null; });
   /* the exact-streets rule (TUNE.exact, opt-in): every standing building (not a civic one or a landmark: the routes keep
      off those) whose footprint the carriageway reaches is knocked out too, not only those whose lot cells it crossed */
-  if (TUNE.exact && cls !== 'alley') SL.underWay(P, w).forEach(function (L) { if (knocked.indexOf(L) < 0) knocked.push(L); });
+  if (TUNE.exact && cls !== 'alley') SL.underWay(P, w).forEach(function (L) { if (knocked.indexOf(L) < 0) { knocked.push(L); SL.exactStat('reached'); } });
   knocked.forEach(function (L) { SL.killLot(L, step); });
   /* 2. stamp the street, and its distance field for the spacing rule */
   var code = cls === 'alley' ? OCC.ALLEY : OCC.STREET, band = w / 2 + SL.minSpacing + 2;
@@ -58,6 +58,11 @@ SL.underWay = function (P, w) {
   }
   return out;
 };
+/* the exact-streets rule's counts (PLAN.stats.exact, only when TUNE.exact): reached (standing buildings a street laid after
+   them reached and the raster's cells missed), salvaged (knocked lots re-placed along their way), unsalvaged (knocked lots
+   with no frontage to re-place along: knocked out, their ground left open), refused (lots tryLot refused because the
+   footprint reached a carriageway) */
+SL.exactStat = function (k) { var E = PLAN.stats.exact || (PLAN.stats.exact = { reached: 0, salvaged: 0, unsalvaged: 0, refused: 0 }); E[k]++; };
 /* the exact-streets rule in tryLot: a building whose footprint reaches any way's carriageway */
 SL.streetHit = function (bo) {
   var C = obbCorners(bo), r = Math.hypot(bo.hw, bo.hd), H = SL.roads.sp.query(bo.c[0], bo.c[1], r);
@@ -85,7 +90,7 @@ SL.tryLot = function (way, side, s, item, step, cls, extra) {
   if (clash) return { fail: { code: OCC.LOT, own: clash.id } };
   /* opt-in (15-city-ground.js): the world's ground predicate, then the stance; a world that sets neither is unchanged */
   if (SL.groundOk && !SL.groundOk(bo, { way: way, side: side, s: s, item: item, cls: cls })) return { fail: { code: -2 } };
-  if (TUNE.exact && SL.streetHit(bo)) return { fail: { code: OCC.STREET } };
+  if (TUNE.exact && SL.streetHit(bo)) { SL.exactStat('refused'); return { fail: { code: OCC.STREET } }; }
   var st = TUNE.stance ? KCITY.lotStance(TUNE.stance, bo, item, way, side, s) : null;
   if (TUNE.stance && !st) return { fail: { code: -3 } };
   var L = {
@@ -137,8 +142,14 @@ SL.killLot = function (L, step) {
 
 /* rule 8: a lot a street ran through is split by the street. Each remnant takes the largest building of its
    class (or the class below) that fits; a remnant that takes none becomes green: the larger remnant a park,
-   the smaller a plaza with a fountain or a piece of public art. */
+   the smaller a plaza with a fountain or a piece of public art.
+   Only a frontage lot (laid along a way by tryLot: a way of the plan and a side, +1 or -1) has a frontage to re-place
+   along. A lot a world or another pass placed itself (way -1: a landmark, a country house, a deck's or a placed
+   building; or side 0: a court's house, which only names the street it faces) is knocked out and its ground left open.
+   The raster knocks only lots it stamped, so this arises under the exact-streets rule (SL.underWay reaches any footprint). */
 SL.salvage = function (L, way, step) {
+  var parent = PLAN.ways[L.way];
+  if (!parent || !parent.F || (L.side !== 1 && L.side !== -1)) { if (TUNE.exact) SL.exactStat('unsalvaged'); return; }
   var o = L.lot, R = SL.R, P = way.pts, a = Infinity, b = -Infinity, hw = way.w / 2 + 0.4;
   for (var i = 0; i < P.length; i++) {
     var dx = P[i][0] - o.c[0], dz = P[i][1] - o.c[1], u = dx * o.u[0] + dz * o.u[1], v = dx * o.v[0] + dz * o.v[1];
@@ -147,7 +158,7 @@ SL.salvage = function (L, way, step) {
   if (!(a < b)) { a = b = 0; }
   var pieces = [[-o.hw, Math.max(-o.hw, a)], [Math.min(o.hw, b), o.hw]].map(function (r) { return { u0: r[0], u1: r[1], wid: r[1] - r[0] }; })
     .filter(function (p) { return p.wid > 2.5; });
-  var parent = PLAN.ways[L.way], unfit = [];
+  var unfit = [];
   pieces.forEach(function (p) {
     var placed = null, cls = L.cls === 'civic' ? 'rich' : L.cls;
     for (var guard = 0; cls && !placed && guard < 4; guard++) {
@@ -158,7 +169,7 @@ SL.salvage = function (L, way, step) {
         /* hug the remnant's outer edge, so the new lot keeps clear of the street */
         sc = (p.u0 < 0) ? L.s + p.u0 + (it.w + TUNE.lot.side) / 2 : L.s + p.u1 - (it.w + TUNE.lot.side) / 2;
         var r = SL.tryLot(parent, L.side, sc, it, step, cls, { wealth: L.wealth, slot: L.slot });
-        if (!r.fail) { placed = r; r.replaces = L.id; }
+        if (!r.fail) { placed = r; r.replaces = L.id; if (TUNE.exact) SL.exactStat('salvaged'); }
       }
       cls = TUNE.fallback[cls];
     }

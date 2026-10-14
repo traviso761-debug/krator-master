@@ -36,7 +36,7 @@ def launch(p):
 # the placement hash: FNV-1a over every lot's (key, x, z, ry, w, d) and every way's points, as JSON at full precision
 PLACE_HASH = r"""() => { const P = PLAN, f = (h, s) => { for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h; };
   return { hash: f(f(2166136261, JSON.stringify(P.lots.map(L => [L.key, L.x, L.z, L.ry, L.w, L.d]))), JSON.stringify(P.ways.map(w => w.pts))).toString(16),
-    lots: P.lots.length, ways: P.ways.length, index: P.stats.index || null }; }"""
+    lots: P.lots.length, ways: P.ways.length, standing: P.lots.filter(L => L.died == null).length, index: P.stats.index || null, exact: P.stats.exact || null }; }"""
 
 
 def plan_hash(a, port, rel, sync_playwright):
@@ -50,9 +50,13 @@ def plan_hash(a, port, rel, sync_playwright):
           const lay = SL.layout; SL.layout = function () { const r = lay.apply(this, arguments); window.__laid = true; return r; }; VC.start = function () {}; } }, 1); })();""")
         page.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel))
         page.wait_for_function('window.__laid === true || (window._vc && window._vc.error)', timeout=1800000, polling=500)
+        failed = page.evaluate('() => window._vc && window._vc.error || null')   # the page catches a layout error (98-start.js): not a pageerror
+        if failed:
+            errs.append('layout failed: ' + failed)
         r = page.evaluate(PLACE_HASH)
         b.close()
-    print('placement hash %s (%d lots, %d ways); index %s%s' % (r['hash'], r['lots'], r['ways'], json.dumps(r['index']), ('; ERRORS ' + '; '.join(errs)) if errs else ''))
+    print('placement hash %s (%d lots, %d standing, %d ways); index %s%s%s' % (r['hash'], r['lots'], r['standing'], r['ways'], json.dumps(r['index']),
+          '; exact-streets rule %s' % json.dumps(r['exact']) if r['exact'] else '', ('; ERRORS ' + '; '.join(errs)) if errs else ''))
     if errs:
         sys.exit(1)
 
@@ -117,6 +121,7 @@ CITY_CHECK = r"""() => {
   { const f = (h, s) => { for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h; };   /* PLACE_HASH's */
     out.place = f(f(2166136261, JSON.stringify(P.lots.map(L => [L.key, L.x, L.z, L.ry, L.w, L.d]))), JSON.stringify(P.ways.map(w => w.pts))).toString(16); }
   try { out.exportLen = SL.exportPlan().length; } catch (e) { out.exportLen = 'threw: ' + e.message; }
+  out.exactStats = P.stats.exact || null;
   out.lots = alive.length; out.ways = {}; P.ways.forEach(w => out.ways[w.cls] = (out.ways[w.cls] || 0) + 1);
   out.named = (_vc.wall ? _vc.wall.gates.filter(g => g.named).map(g => g.name + (g.crossed ? '' : '?')) : []);
   /* buildings: none overlapping, none in the water, none on the wall */
@@ -131,6 +136,22 @@ CITY_CHECK = r"""() => {
     if (_vc.wall && _vc.wall.segs.some(s => segDist(A.c, [s.ax, s.az], [s.bx, s.bz]) < Math.min(A.hw, A.hd))) onWall++;
   });
   out.overlapPairs = pairs; out.wet = wet; out.onWall = onWall;
+  /* the exact-streets rule (core/city TUNE.exact): no standing building (a civic one or a landmark is counted apart: the
+     rule leaves those to the routes) reaches a street's carriageway by more than 5 cm; an alley through a building too */
+  { const S = KSPACE.create({ cell: 40 }), eg = [];
+    P.ways.forEach(w => { if (w.dead) return; for (let i = 1; i < w.pts.length; i++) { const a = w.pts[i - 1], b = w.pts[i];
+      S.insert({ a, b, w }, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, Math.hypot(b[0] - a[0], b[1] - a[1]) / 2 + w.w / 2); } });
+    const cw = { buildings: 0, civic: 0, alleyThrough: 0, byWay: {}, byLot: {}, exact: !!TUNE.exact, examples: eg };
+    alive.forEach(L => { if (!L.bo) return; const C = obbCorners(L.bo); let st = null, al = false;
+      S.query(L.bo.c[0], L.bo.c[1], Math.hypot(L.bo.hw, L.bo.hd)).forEach(e => { const d = polySegDist(C, e.a, e.b);
+        if (e.w.cls === 'alley') { if (d === 0) al = true; } else if (d < e.w.w / 2 - 0.05 && (!st || d < st.d)) st = { d, w: e.w }; });
+      if (al) cw.alleyThrough++;
+      if (!st) return;
+      if (L.civic || L.cls === 'landmark') { cw.civic++; return; }
+      cw.buildings++; cw.byWay[st.w.cls] = (cw.byWay[st.w.cls] || 0) + 1;
+      const kind = L.deck ? 'deck' : L.berth ? 'berth' : L.placed ? 'placed' : L.country ? 'country' : L.side ? 'frontage' : 'other'; cw.byLot[kind] = (cw.byLot[kind] || 0) + 1;
+      if (eg.length < 8) eg.push([L.id, L.key, L.cls, kind, 'born ' + L.born, st.w.cls + ' ' + st.w.id + ' born ' + st.w.born, +(st.w.w / 2 - st.d).toFixed(2) + ' m in']); });
+    out.carriageway = cw; }
   /* the wall keeps clear of the avenues, except where one passes through a gate */
   let clear = Infinity;
   if (_vc.wall) _vc.wall.segs.forEach(s => { for (let t = 0.1; t < 0.95; t += 0.1) { const p = [s.ax + (s.bx - s.ax) * t, s.az + (s.bz - s.az) * t];
@@ -521,7 +542,7 @@ def verify_city(a, port, rel, sync_playwright):
         page.on('pageerror', lambda e: errors.append('PAGEERROR ' + str(e)))
         page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
         page.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel))
-        page.wait_for_function('window._vc && window._vc.ready', timeout=900000)
+        page.wait_for_function('window._vc && window._vc.ready', timeout=3600000)   # a loaded machine: the layout alone has taken 15 minutes
         r = page.evaluate(CITY_CHECK)
         if a.shot:
             page.evaluate("() => { document.getElementById('v-map').onclick(); HOST.layers.lots = true; HOST.applyStep(); }")
@@ -533,6 +554,10 @@ def verify_city(a, port, rel, sync_playwright):
     print('placement hash', r['place'], '; export', r['exportLen'], 'characters')
     print('standing lots', r['lots'], '; ways', json.dumps(r['ways']), '; named gates', r['named'])
     print('overlapping building pairs %d, buildings in water %d, on the wall %d; wall to nearest avenue %s m' % (r['overlapPairs'], r['wet'], r['onWall'], r['wallClear']))
+    cw = r['carriageway']
+    print('exact-streets rule %s: buildings reaching a carriageway %d %s %s, civic or landmark %d, alleys through a building %d%s' % ('on' if cw['exact'] else 'off', cw['buildings'],
+          json.dumps(cw['byWay']), json.dumps(cw['byLot']), cw['civic'], cw['alleyThrough'], ('; e.g. ' + json.dumps(cw['examples'])) if cw['examples'] else ''))
+    if r.get('exactStats'): print('  the rule\'s counts %s' % json.dumps(r['exactStats']))
     print('transit', json.dumps(r['transit']), '; SIM', json.dumps(r['sim']))
     print('highways by', r['highwayVia'], '; lots on highways', r['lotsOnHighways'], ', buildings on them', r['buildingsOnHighways'], '; wall', json.dumps(r['wall']))
     print('clan compounds', r['clans'], '; chinampa pieces in the exclusion', r['chinInExclusion'], '; monastery', json.dumps(r['monastery']), ', pieces in parks', r['monasteryInParks'])
@@ -658,6 +683,7 @@ def verify_city(a, port, rel, sync_playwright):
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')
+        if cw['exact'] and cw['buildings']: bad.append('buildings reaching a carriageway under the exact-streets rule (%d)' % cw['buildings'])
         if not isinstance(r['exportLen'], int): bad.append('the plan export (SL.exportPlan) ' + str(r['exportLen']))
         if r['wallClear'] < 15: bad.append('wall too close to an avenue')
         for k in ('avenue', 'main', 'side', 'alley', 'lane'):

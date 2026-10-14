@@ -43,7 +43,9 @@ VC.simFit = function (L, key) {
   var f = [Math.sin(L.ry), Math.cos(L.ry)], tries = [V.add([L.x, L.z], V.mul(f, (L.d - D.d) / 2)), L.lot.c];
   for (var i = 0; i < tries.length; i++) {
     var bo = obb(tries[i], V.perp(f), D.w / 2, D.d / 2);
-    if (obbCorners(bo).every(function (p) { return VC.simInObb(p, L.lot, 0.3); }) && !VC.simHitOther(bo, L)) return { D: D, bo: bo };
+    /* under the exact-streets rule (TUNE.exact) a bigger building in the plot must keep off every carriageway too: on a
+       bend the plot itself reaches into the street */
+    if (obbCorners(bo).every(function (p) { return VC.simInObb(p, L.lot, 0.3); }) && !VC.simHitOther(bo, L) && !(TUNE.exact && SL.streetHit(bo))) return { D: D, bo: bo };
   }
   return null;
 };

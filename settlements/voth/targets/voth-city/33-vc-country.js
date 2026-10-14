@@ -636,7 +636,8 @@ VC.routeToRoad = function (p, reach, opt) {
   return chaikin(rdp(pts, 5), 2);
 };
 VC.track = function (p, reach, tag, cls) {
-  var pts = VC.routeToRoad(p, reach); if (!pts || pts.length < 2) return null;
+  /* a start already on a road gives a route under a metre long, which a way resamples to one point (no frame): no track */
+  var pts = VC.routeToRoad(p, reach); if (!pts || pts.length < 2 || resample(pts, 2).length < 2) return null;
   var w = SL.addWay(cls || 'lane', pts, 13, { tag: tag, stamp: true }); VC.hashWay(w); return w;
 };
 
