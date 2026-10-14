@@ -34,7 +34,7 @@ Reads the page as saved (Artifact read) and the two collections (one JSON list e
 6. THE PAINT. Rivers drawn on the satellite and relief maps (st, t), wider with flow; dry valleys are not painted.
 7. THE CLIMATE. Wherever the ground or a water surface moved, the temperatures lapse with it (6.5 C per km) and the
    rain, climate class and zone are recomputed from the unchanged land most like each cell (edit_heights.reclimate, as
-   4.18-4.20 did; the abyss's rebuilt floor takes the page's own rain there, smoothed over the floor); the rain and
+   4.18-4.20 did; the abyss's rebuilt floor takes 4.20's own lake effect over today's lakes, lake_rain); the rain and
    climate maps are re-lit and repainted.
 """
 import heapq, io, json, math, os, re, sys
@@ -332,6 +332,31 @@ def inpaint(arr, hole, src=None):
         out[hole & ~done] = arr[iy, ix][hole & ~done]
     soft = np.clip(nd.gaussian_filter(hole.astype(float), 1.0) * 1.5, 0, 1)[..., None]
     return np.clip(arr * (1 - soft) + out * soft, 0, 255).astype(np.uint8)
+
+
+def lake_rain(rain0, wet0, wet, zr, sig=6.0, bg_sig=15.0):
+    """the abyss floor's rain from 4.20's own lake effect (its floor is wet beside its lakes, ~1,500 mm within 4 km, and
+    dry far from them, ~200-450 mm): a dry background (4.20's rain on floor land far from its water, spread over the
+    floor) times the ratio 4.20's floor land shows at each share of water round it (a gaussian of `sig` px), made
+    monotone; applied to today's water `wet` over the floor `zr` (full-res masks). Returns (rain, the table)"""
+    fr0 = nd.gaussian_filter(wet0.astype(float), sig)
+    fr = nd.gaussian_filter(wet.astype(float), sig)
+    land0 = zr & ~wet0
+    far0 = land0 & (fr0 < 0.03)
+    num = nd.gaussian_filter(np.where(far0, rain0, 0.0), bg_sig)
+    den = nd.gaussian_filter(far0.astype(float), bg_sig)
+    bg = np.where(den > 1e-3, num / np.maximum(den, 1e-6), np.median(rain0[far0]))
+    edges = np.array([0, .02, .05, .1, .15, .2, .3, .4, .55, .7, 1.01])
+    cent, med = [], []
+    q = rain0 / np.maximum(bg, 50)
+    for a, b in zip(edges[:-1], edges[1:]):
+        m = land0 & (fr0 >= a) & (fr0 < b)
+        if m.sum() > 30:
+            cent.append(float(np.median(fr0[m])))
+            med.append(float(np.median(q[m])))
+    med = np.maximum.accumulate(np.array(med))
+    med = med / med[0]
+    return bg * np.interp(fr, cent, med), [[round(c, 3), round(float(m), 2)] for c, m in zip(cent, med)]
 
 
 def biggest(m):
@@ -1382,16 +1407,18 @@ def main():
         rep[k] = b64(Image.fromarray(np.clip(v2 + 90, 0, 255).astype(np.uint8), 'L'), optimize=True)
     DC = dict(D, p=p_drawn, **{k: rep[k] for k in ['tm', 'th', 'tl', 'tw', 'tc']})
     rain0 = raster(DC, 'p', 'L').astype(float) / 255 * 4000
-    # the abyss's rebuilt floor keeps the page's own rain there, smoothed over the floor: a filled pit is still the
-    # abyss floor, not the land of its new height, and the rain must not hang on where the lakes were laid (water kept
-    # its old rain, recomputed land took its look-alikes', and each pass's lakes moved with it)
+    # the abyss's rebuilt floor takes its rain from 4.20's own lake effect over today's lakes (lake_rain): a filled pit
+    # is still the abyss floor, not the land of its new height (its look-alikes elsewhere swung the rain with where the
+    # lakes were laid), and the floor beside the new lakes is as wet as 4.20's was beside its own (the owner: desert
+    # spits between the lakes)
     kz = np.clip(nd.gaussian_filter(nd.zoom(abyss_zone.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW], 2.0) * 2, 0, 1)
     zr = kz > 0
-    floor_rain = nd.gaussian_filter(rain0 * zr, 8.0) / np.maximum(nd.gaussian_filter(zr.astype(float), 8.0), 1e-6)
-    rain2, cls2, zon2, _, report['climate'] = reclimate(DC, E, En, G['whas'], np.zeros((OH, OW), bool),
+    upF = lambda a: nd.zoom(a.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5
+    floor_rain, report['abyss_lake_rain'] = lake_rain(rain0, upF(whas0), upF(G['whas'] | newlake), zr)
+    rain2, cls2, zon2, _, report['climate'] = reclimate(DC, E, En, G['whas'], np.zeros((OH, OW), bool), None,
                                                          (floor_rain, kz) if abyss_zone.any() else None)
     if abyss_zone.any():
-        rain2 = rain2 * (1 - kz) + floor_rain * kz
+        rain2 = rain2 * (1 - kz) + floor_rain * kz          # on the water too (reclimate leaves water's rain)
     print('climate:', report['climate'])
     pal = np.array([[int(c['color'][i:i + 2], 16) for i in (1, 3, 5)] for c in D['climate']['classes']], float)
     c0 = raster(D, 'c', 'L')
