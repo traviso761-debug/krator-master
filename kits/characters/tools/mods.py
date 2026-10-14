@@ -19,6 +19,7 @@ copies, for the gills the nearest skin, for a cybernetic part the skin at the jo
 move them with the body (make_mpfb.py packs their deltas from the base's). A mod's kit entry says what it grants
 (grants.arms 4, grants.gills) and its group (one pair of arms at a time). Torso clothing has an arm count (kit item
 arms, 2 by default): a body with four arms wears only four-armed tops (KCHAR.fits)."""
+import base64
 import copy
 import io
 import json
@@ -403,17 +404,35 @@ CYBER = {
 ARM_REF = 0.262        # the man's upper arm (Left2Arm to Left2ForeArm): a design's sizes are for it, scaled to the body's
 
 
-def cyber_arms(body, out, mid='mod_arms_cyber'):
-    """a cybernetic pair (CYBER[mid]): per lower arm a mount plate on the ribs (on Spine2), ball joints, plated upper
-    arm and forearm with bands at their ends, a palm and jointed fingers or claws, each part rigid on its bone"""
-    st = CYBER[mid]
+def arm_skin(body):
+    """the base skin's triangles that are arm (each vertex weighted at least half to an arm's bones below the
+    shoulder): what a replacement pair hides"""
+    B = body.prims['Human.body']
+    arm = [body.jidx[n] for S in SIDES for n in chain_names(body.names, S) if not n.startswith(S + 'Shoulder')]
+    sel = np.where(np.isin(B['J'], arm), B['W'], 0).sum(1) >= 0.5
+    return np.nonzero(sel[B['T']].all(1))[0]
+
+
+def cyber_arms(body, out, mid='mod_arms_cyber', replace=False):
+    """a cybernetic pair (CYBER[mid], or CYBER[mid without _up] for replace): per lower arm a mount plate on the ribs (on
+    Spine2), ball joints, plated upper arm and forearm with bands at their ends, a palm and jointed fingers or claws,
+    each part rigid on its bone. replace: the pair in place of the body's own arms, on their joints, a collar on the
+    shoulder over the edge of the skin they replace; returns that skin (arm_skin) for the item to hide"""
+    st = CYBER[mid[:-3] if replace else mid]
     B = body.prims['Human.body']
     plate, trim, joint = _Mesh(), _Mesh(), _Mesh()
     vid = lambda p: int(B['VID'][body.skin_at(np.asarray([p]))[0]])
     allv = cKDTree(B['POSITION'].astype(float))
     vid_any = lambda p: int(B['VID'][allv.query(p)[1]])       # the skin at the upper joint this part copies
+    hide = arm_skin(body) if replace else None
+    if replace:
+        # the edge of the hidden skin, per side: the vertices its triangles share with the shown ones
+        shown = np.ones(len(B['T']), bool)
+        shown[hide] = False
+        edge = np.intersect1d(np.unique(B['T'][hide]), np.unique(B['T'][shown]))
+        EP = B['POSITION'][edge].astype(float)
     for sx, S in zip((1, -1), SIDES):
-        S2 = S + '2'
+        S2 = S + ('' if replace else '2')
         J = lambda n: body.jidx[S2 + n]
         P = lambda n: body.P(S2 + n)
         U = lambda n: vid_any(body.P(S + n))
@@ -422,14 +441,24 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
         k = st['bulk'] * np.linalg.norm(el - sh) / ARM_REF
         mount = sh + np.array([-sx * 0.03, 0.0, 0.0])
         out_ax = np.array([sx, 0.0, 0.0])
-        plate.prism(mount - out_ax * 0.008, mount + out_ax * 0.006, 0.06 * k, 0.052 * k, sp2, vid(mount), n=10)
-        trim.prism(mount + out_ax * 0.006, mount + out_ax * 0.016, 0.036 * k, 0.032 * k, sp2, vid(mount), n=10)
-        if st.get('cables'):
+        d1 = (el - sh) / np.linalg.norm(el - sh)
+        if replace:
+            # a collar on the shoulder over the edge of the hidden skin: centred on that edge's points on this side,
+            # along the arm, wide enough to reach them all
+            ep = EP[EP[:, 0] * sx > 0]
+            c0 = ep.mean(0)
+            rr = np.linalg.norm((ep - c0) - np.outer((ep - c0) @ d1, d1), axis=1).max()
+            sv = vid(c0)
+            plate.prism(c0 - d1 * 0.03, c0 + d1 * 0.012, rr * 0.92, rr * 1.06, J('Shoulder'), sv, n=14)
+            trim.prism(c0 + d1 * 0.012, c0 + d1 * 0.024, rr * 1.06, rr * 0.9, J('Shoulder'), sv, n=14)
+        else:
+            plate.prism(mount - out_ax * 0.008, mount + out_ax * 0.006, 0.06 * k, 0.052 * k, sp2, vid(mount), n=10)
+            trim.prism(mount + out_ax * 0.006, mount + out_ax * 0.016, 0.036 * k, 0.032 * k, sp2, vid(mount), n=10)
+        if st.get('cables') and not replace:
             for q in range(3):
                 a = 2 * math.pi * q / 3
                 o = np.array([0, math.cos(a), math.sin(a)]) * 0.022 * k
                 joint.prism(mount + o + out_ax * 0.01, sh + o * 0.4, 0.0055 * k, 0.0055 * k, sp2, vid(mount), n=5)
-        d1 = (el - sh) / np.linalg.norm(el - sh)
         d2 = (wr - el) / np.linalg.norm(wr - el)
         joint.ball(sh, 0.04 * k, J('Arm'), U('Arm'))
         trim.ball(sh, 0.047 * k, J('Arm'), U('Arm'), n=14, m=9)     # the dome, round the joint ball (it hides it whole)
@@ -476,6 +505,8 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
             pts = [body.P(n) for n in js]
             pts.append(pts[-1] + (pts[-1] - pts[-2]) * 0.9 if len(pts) > 1 else pts[-1] + (pts[-1] - wr) * 0.4)
             r = st['finger_r'] * (1.25 if f == 'Thumb' else 1.0) * k / st['bulk']
+            if replace:
+                r = max(r, 0.0095 * k / st['bulk'])     # the body's own nails (drawn always) stay inside the finger
             for q, n in enumerate(js):
                 v = vid_any(body.P(upper(n)))
                 joint.ball(pts[q], r * 1.08, body.jidx[n], v, n=6, m=4)
@@ -485,6 +516,7 @@ def cyber_arms(body, out, mid='mod_arms_cyber'):
     mats = [(m, st[key]) for m, key in ((plate, 'plate'), (trim, 'trim'), (joint, 'joint'))]
     write_piece(body, out, mid, [m.prim({'name': 'Mod.%s_%s' % (mid[4:], key), 'metallic': c[1], 'rough': c[2]}, flat(c[0]))
                                  for (m, c), key in zip(mats, ('plate', 'trim', 'joint'))])
+    return hide
 
 
 def _ray_hits(o, d, P, T):
@@ -597,6 +629,9 @@ MODS = [
     ('mod_arms_cyber', 'Cybernetic arms, bronze', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
     ('mod_arms_loader', 'Loader arms (hydraulic, claws)', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
     ('mod_arms_surgical', 'Surgical arms (slim, cabled)', {'arms': 4}, 'arms', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_cyber_up', 'Replacement arms, bronze', {}, 'arms_up', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_loader_up', 'Replacement loader arms', {}, 'arms_up', 'cybernetic', cyber_arms, {}),
+    ('mod_arms_surgical_up', 'Replacement surgical arms', {}, 'arms_up', 'cybernetic', cyber_arms, {}),
     ('mod_gills', 'Rib gills', {'gills': True}, 'gills', 'genetic', gills, {'Mod.gills': 'skin'}),
 ]
 
@@ -735,12 +770,20 @@ def make_all(base_path, pieces, body_name):
     entries, roles = [], {}
     import os
     for mid, label, grants, group, kind, build, rl in MODS:
+        hide = None
         if build is cyber_arms:
-            build(body, os.path.join(pieces, mid + '.glb'), mid)
+            hide = build(body, os.path.join(pieces, mid + '.glb'), mid, replace=group == 'arms_up')
         else:
             build(body, os.path.join(pieces, mid + '.glb'))
         entries.append({'id': mid, 'name': label, 'slot': 'mods', 'glb': 'pieces/%s/%s.glb' % (body_name, mid),
                         'grants': grants, 'group': group, 'kind': kind})
+        if hide is not None:
+            # the skin it replaces (KCHAR.hidden): a bitset over the base skin's triangles, as an item's hide
+            n = len(body.prims['Human.body']['T'])
+            a = np.zeros((n + 7) // 8 * 8, np.uint8)
+            a[hide] = 1
+            entries[-1]['hide'] = base64.b64encode(np.packbits(a, bitorder='little').tobytes()).decode()
+            entries[-1]['hides'] = int(len(hide))
         if kind == 'cybernetic' and grants.get('arms'):
             entries[-1]['bare'] = True        # a top's lower sleeves are left off it (split_lower, KCHAR.parts)
         roles.update(rl)
