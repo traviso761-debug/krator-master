@@ -4,6 +4,28 @@ The shareable gallery of every built world: https://claude.ai/artifact/UhTfQ2kio
 
 It is shared as anyone-with-the-link.
 
+## Three artifacts (2026-10-14)
+
+With every page's textures the gallery is about 540 MB, and one artifact version holds 256 MiB (and no text file over
+16 MiB: build.py writes no file over 15 MB, `tools/textures/matlib_pack.py` PART_LIMIT). It is published in three parts:
+
+- **Krator Worlds** (the URL above): the settlements and kits that fit with Voth;
+- **Krator Worlds II**: https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z (the rest of the settlements and kits);
+- **Krator Biomes and Objects**: https://claude.ai/artifact/CaKSU16sowMsexa3djES5g (owner: the biomes and objects on their own).
+
+Each index links to the other two. After `build_gallery.py`:
+
+```
+python3 gallery/split_site.py --alone "biome,objects=Krator Biomes and Objects" \
+  --link "Krator Worlds=https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9" \
+  --link "Krator Worlds II=https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z" \
+  --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
+```
+
+writes `gallery/site-1/` to `site-3/` (in that order), each an `index.html` and its `worlds/`: publish each to its URL in
+calls under 64 MB, passing `null` for the files a part no longer holds (a version counts the files it keeps). Pages that
+load the same pack (by content) go to the same part and share one copy. The parts are not committed.
+
 ## Update it
 
 ```
