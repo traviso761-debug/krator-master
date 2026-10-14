@@ -12,7 +12,7 @@
 //    of the camera and the vertex shader draws relative to it: no float jitter a million metres out, as the terrain's
 //    chunks have their own origins).
 // The sky in the water is core/atmos's skylight (a capture of this world's dome and giant, given to the water only).
-// The named rivers stay on the per-chunk sheet (83-world-water.js) until Phase 3. SEAS.update(ms) runs the window jobs
+// The named rivers are core/water's flow (83-world-water.js, which binds core/atmos first). SEAS.update(ms) runs the window jobs
 // (START.pump drives it; settle waits for it: SEAS.pending()).
 var SEAS;LATE.push(()=>{SEAS=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,WIN=8192,CELL=32,NEAR=12000;

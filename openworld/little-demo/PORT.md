@@ -19,7 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47-world-kits.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/80-world-sky.js` | 9.1 | [G native] | 15 | 1 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/81-world-terrain.js` | 11.4 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/83-world-water.js` | 6.2 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 |  |
+| `src/83-world-water.js` | 2.5 | [draw] | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos bound; the named rivers as WATER.flow (core/water, data) along WORLD.riverLines, drawn by WATER.drawFlow |
 | `src/83w-world-seas.js` | 3.7 | [draw] | 2 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | the sea and the lakes on core/water: one open surface per WORLD.waterBodies body (data), the shore windows timed by the frame |
 | `src/84-world-nursery.js` | 12.8 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/85-world-flora.js` | 12.8 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |

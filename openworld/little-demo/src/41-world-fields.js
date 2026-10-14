@@ -192,14 +192,20 @@ function riverWater(x,z){if(!CHASH)return -1e9;
 // The named rivers as lines in metres (core/water's flow lines). The channels are carved in WARPED space (q = p + warp(p),
 // carveAt's noise), so a point down a segment is brought back to the world by the warp's inverse (a fixed point: the
 // warp moves a point by at most 250 m and stretches it by under 0.7, so 24 steps settle it to well under a millimetre);
-// its height is the river's water there, held from climbing downstream
+// its height is the river's water there (riverWater: 4.6 m over the carved floor). The floor is not monotone: where the
+// land lies under the line's bed the carve follows the land, so it dips and climbs again (by up to 150 m across a
+// depression). A sill up to RIVPOOL m holds a pool behind it (taken from the mouth upward: a point is lifted toward the
+// next one's level by at most that); past it the water follows the floor up and down as the old sheet did, never under
+// the floor and never a slab across a depression (a full fill floated it up to 228 m over the ground)
+const RIVPOOL=2;
 const warpQ=(x,z)=>[x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60];
 W.unwarp=(qx,qz)=>{let x=qx,z=qz;for(let k=0;k<24;k++){const q=warpQ(x,z);x+=qx-q[0];z+=qz-q[1];}return[x,z];};
 W.riverLines=function(step){step=step==null?40:step;const out=[];
  for(const R of RIVSEG){const pts=[];let carry=0;
   for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9,ax=SEG[o],az=SEG[o+1],bx=SEG[o+2],bz=SEG[o+3],L=Math.hypot(bx-ax,bz-az);
-   for(let d=carry;d<L;d+=step){const t=d/L,w=W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],pts.length?Math.min(y,pts[pts.length-1][2]):y]);}
+   for(let d=carry;d<L;d+=step){const t=d/L,w=W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],y]);}
    carry=L>carry?carry+Math.ceil((L-carry)/step)*step-L:carry-L;}
+  for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+RIVPOOL);
   out.push({name:R.name,width:R.width,pts});}
  return out;};
 // a channel's size from its flow: strength s (0 at the threshold), width and depth (m)
