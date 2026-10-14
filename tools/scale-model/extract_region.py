@@ -273,7 +273,9 @@ def main():
         if D.get('rivers'):
             im = Image.new('L', (elev.shape[1], elev.shape[0]), 0)
             for Rv in D['rivers']:
-                ImageDraw.Draw(im).line([(a * su - i0, b * sv - j0) for a, b in Rv['px']], fill=1, width=1)
+                drawn = Rv.get('drawn_px') or ('q_m3s' not in Rv and Rv['px'])   # the owner's courses, not the routed ones
+                if drawn:
+                    ImageDraw.Draw(im).line([(a * su - i0, b * sv - j0) for a, b in drawn], fill=1, width=1)
             dr = ndimage.distance_transform_edt(~np.array(im).astype(bool))
             sw = sw * np.clip((dr - 3) / 3, 0, 1)
         sw = ndimage.gaussian_filter(sw, 1.2)
@@ -326,20 +328,37 @@ def main():
         if len(pts) >= 2:
             lines.append(pts)
 
-    # ---- the rivers the scale model names (DATA.rivers, 4.19): their drawn course, every 4th point, with the carved
-    # height under each (bilinear on the height grid), inside the frame. The world carves them as channels and gives
-    # them water; the drainage lines above follow the same carved cells and are kept as they are.
+    # ---- the rivers the scale model designates (DATA.rivers: 4.19 the Yuni river, 4.21 every river and dry valley with
+    # its flow and size): the course (a drawn one every 4th point, a routed one, one vertex per height cell, every point)
+    # with the carved height under each (bilinear on the height grid) and its mean discharge, inside the frame. Perennial
+    # rivers go to 'rivers' (the world carves them at their own width and gives them water), dry valleys to 'valleys'
+    # (a bed to carve, no water). A river keeps the width and depth the model gives it (RIVER_W, RIVER_D before 4.21).
     def bil(A, u, v):
         i, j = int(u), int(v)
         fu, fv = u - i, v - j
         return (A[j, i] * (1 - fu) + A[j, i + 1] * fu) * (1 - fv) + (A[j + 1, i] * (1 - fu) + A[j + 1, i + 1] * fu) * fv
-    rivers = []
+    rivers, valleys = [], []
     for Rv in D.get('rivers', []):
-        P = Rv['px'][::4] + ([Rv['px'][-1]] if (len(Rv['px']) - 1) % 4 else [])
-        line = [[round((a - cx) * 2000.0, 1), round((b - cy) * 2000.0, 1), round(float(bil(elev, a * su - i0, b * sv - j0)), 1)]
-                for a, b in P if 0 <= a * su - i0 < nx - 1 and 0 <= b * sv - j0 < ny - 1]
-        if len(line) >= 2:
-            rivers.append({'name': Rv['name'], 'to': Rv.get('to'), 'width_m': RIVER_W, 'depth_m': RIVER_D, 'line': line})
+        drawn = Rv.get('drawn_px') or ('q_m3s' not in Rv and Rv['px'])
+        src = drawn or Rv['px']
+        step = 4 if drawn else 1
+        idx = list(range(0, len(src), step)) + ([len(src) - 1] if (len(src) - 1) % step else [])
+        qs = Rv.get('q_m3s')
+        line = []
+        for n in idx:
+            a, b = src[n]
+            if not (0 <= a * su - i0 < nx - 1 and 0 <= b * sv - j0 < ny - 1):
+                continue
+            v = [round((a - cx) * 2000.0, 1), round((b - cy) * 2000.0, 1), round(float(bil(elev, a * su - i0, b * sv - j0)), 1)]
+            if qs:
+                v.append(qs[min(len(qs) - 1, round(n / max(1, len(src) - 1) * (len(qs) - 1)))])
+            line.append(v)
+        if len(line) < 2:
+            continue
+        rec = {'name': Rv['name'], 'id': Rv.get('id'), 'to': Rv.get('to'), 'line': line,
+               'width_m': Rv.get('width_m', RIVER_W), 'depth_m': Rv.get('depth_m', RIVER_D),
+               'q_mouth_m3s': Rv.get('q_mouth_m3s'), 'order': Rv.get('order'), 'catchment_km2': Rv.get('catchment_km2')}
+        (valleys if Rv.get('kind') == 'wadi' else rivers).append(rec)
 
     # ---- settlements inside the polygon
     def inside_px(px, py):
@@ -403,7 +422,7 @@ def main():
         'pressure': {'atm0': 1.6, 'scale_m': 8000},
         'classes': classes, 'biomes': biomes, 'biome_fill_px': filled,
         'drainage': {'min_accum': CHANNEL_MIN, 'lines': lines},
-        'rivers': rivers,
+        'rivers': rivers, 'valleys': valleys,
         'water': {'spilled_cells': spilled, 'note': 'lake levels above their lowest shore cell were lowered to it'},
         'settlements': sett, 'canyon_candidates': cand,
         'volcano': D.get('volc'), 'vents': [v for v in D.get('vents', []) if x0 <= v['px'][0] <= x1 and y0 <= v['px'][1] <= y1],
@@ -412,7 +431,8 @@ def main():
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells; %d channels, %d vertices; %d water cells lowered to their spill height' % (nx, ny, len(lines), sum(len(l) for l in lines), spilled))
     for r in rivers:
-        print('  river %s: %d points, %.0f m to %.0f m' % (r['name'], len(r['line']), r['line'][0][2], r['line'][-1][2]))
+        print('  river %s: %d points, %.0f m to %.0f m, %s m wide' % (r['name'], len(r['line']), r['line'][0][2], r['line'][-1][2], r['width_m']))
+    print('  %d dry valleys' % len(valleys))
     for b in biomes:
         print('  biome %2d %-16s kit %-12s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)
