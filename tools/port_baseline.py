@@ -9,7 +9,7 @@ can prove it changed nothing.
 Rebuild first (`cd <build> && python3 build.py`; every build is deterministic). A page whose
 hash differs after a refactor needs a screenshot diff before the baseline is rewritten.
 The file records every `dist/*.html` of every build, the page a build without a dist/ writes beside
-its build.py (the Voth lineage: voth.html, yuni*.html, locus*.html, girder.html, mavs-refuge.html),
+its build.py (the Voth lineage: yuni*.html, locus*.html, girder.html, mavs-refuge.html),
 plus `core/sockets/example/*.html`.
 
 --write keeps the entry of a page that is not built in this checkout (a gitignored dist/, such as

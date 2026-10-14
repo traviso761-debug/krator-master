@@ -137,7 +137,7 @@ function rsFigure(B,pos,yaw,cloth,sit,skin){const q=qEuler(0,yaw||0,0),s=skin||0
 // (this kit's rsRide, moved) poses a hull on it. The two names stay for the vessels and for a world that imports them:
 //   rsSeaH(x,z,t)                         = WATER.heightAt(x,z,t)
 //   rsRide(G,D,x,z,yaw,t,seaH?,heel?)     = WATER.ride(G,D,x,z,yaw,t,heel,seaH): a world with its own sea passes seaH
-// Both reach WATER only when called, so a page that takes the vessels without core/water (Streetlab's ringsea.py) still loads.
+// Both reach WATER only when called, so a page that takes the vessels without core/water (Voth's ringsea.py) still loads.
 // RS_U.uTime is the clock the sails' and the flags' flutter reads (seconds); the host sets it each frame.
 const RS_U={uTime:{value:0}};
 function rsSeaH(x,z,t){return WATER.heightAt(x,z,t);}

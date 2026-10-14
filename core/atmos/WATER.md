@@ -25,7 +25,7 @@ the clock is a `uT`/`uTime` uniform advanced by `dt` that **never wraps**; refle
 
 | Build | Where | Kinds | Notes |
 |---|---|---|---|
-| `settlements/voth` | `src/75-terrain.js:92-186` | bay, chinampa canals (gaps in the sheet) | warped 250² plane, swell displaces, `aDepth` tint, foam lap on `atmWaveT`. Ships sit at fixed heights |
+| `settlements/voth` (the first Voth, retired) | `src/75-terrain.js:92-186` | bay, chinampa canals (gaps in the sheet) | warped 250² plane, swell displaces, `aDepth` tint, foam lap on `atmWaveT`. Ships sit at fixed heights |
 | `settlements/noahs-regret` | `src/82-nr-water.js` | Ring Sea, flooded holds | Voth's shader; scene has `skylight`, the water does not take it |
 | `openworld/little-demo` | `src/83-world-water.js` | sea, lakes, salt lakes, named rivers | one 16² sheet per chunk, log depth, `aSalt`; "skylight not yet" |
 | `settlements/locus`, `settlements/mungo` | `src/75-terrain.js:106-154` | salt lake, river, delta, pools | not displaced; own 4-sine ripple on unwrapped `uTime` blended with `atmWaveNormal` by `aOpen` |
@@ -40,7 +40,7 @@ the clock is a `uT`/`uTime` uniform advanced by `dt` that **never wraps**; refle
 | `settlements/shade`, `verge` | `45-host-stage.js`, `47-verge-water.js` | streams, gorge basins, cataracts, falls, plunge pools, salt lakes | Sedesert's 4-sine ripple; fall = 2 scrolling texture samples; mist and spray sprites |
 | `settlements/port`, `ys` | `src/71-port-terrain.js:117-141` | sea, harbour, terraced river | MeshStandard, normal map baked from 22 sines, **static**; underwater fade in every MAT; moiré (Ys KI:55) |
 | `settlements/reedlake` | `src/74-rl-mat.js`, `94-rl-anim.js` | lake | scrolled sinusoid canvas texture; boats do not bob (KI:6) |
-| `settlements/xanadu`, `jimjam`, `highlands`, `dalab`, `iziz`, `screamers`, `streetlab`, `kits/ancients`, `kits/post-apoc` | various | rills, fountains, pools, troughs, moats, reservoirs, harbour plates, Lambert seas | static MeshStandard/Lambert/Basic boxes, discs, plates |
+| `settlements/xanadu`, `jimjam`, `highlands`, `dalab`, `iziz`, `screamers`, `voth` (the city plan), `kits/ancients`, `kits/post-apoc` | various | rills, fountains, pools, troughs, moats, reservoirs, harbour plates, Lambert seas | static MeshStandard/Lambert/Basic boxes, discs, plates |
 | biome hosts (16: swbay, nwbay, nwlowlands, swlowlands, eastabyss, rift, sedesert, ebadlands, shighlands, ehighlands, crater-drylands, throne, nhighlands, xanadu, geyser, hyperjungle) | `45-host-stage.js` / `84-host-ground.js` | bays, lakes, tarns, bog pools, river and stream ribbons, cascades, falls, mist | vertex-coloured ShaderMaterial with a 3- or 4-sine normal ripple on `uT`, not displaced; foam cards; `nhighlands` and `xanadu` have a `waterMat(flow)` whose ripple runs downstream. Kits draw no water; they read `BIO.waterH` |
 | `core/atmos` | `1-street.js`, `6-sewer.js`, `3-particles.js`, `4-weather.js` | fountain jet, outfall trickle, moat mist, `W.wet` | `W.wet` is computed and read by nothing |
 | `godot/` | `shaders/atmos_waves.gdshaderinc`, `krator/atmos.gd:183` | one flat PlaneMesh per tile | the chunk and the CPU twin are ported and tested; no water shader uses them; ShaderMaterial water imports magenta |

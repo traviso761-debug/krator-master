@@ -2597,32 +2597,6 @@
   "seconds": 382,
   "tris": 3254283
  },
- "settlements/streetlab/dist/voth-city.html": {
-  "calls": 1047,
-  "errors": 0,
-  "furnTris": 615178,
-  "instSets": 3147,
-  "instances": 656899,
-  "materials": 239,
-  "meshes": 3591,
-  "ready": true,
-  "sceneTris": 40951856,
-  "seconds": 597,
-  "tris": 34876944
- },
- "settlements/streetlab/dist/voth-site.html": {
-  "calls": 132,
-  "errors": 0,
-  "furnTris": 762494,
-  "instSets": 6,
-  "instances": 8308,
-  "materials": 8,
-  "meshes": 52,
-  "ready": true,
-  "sceneTris": 1142258,
-  "seconds": 271,
-  "tris": 600236
- },
  "settlements/verge/dist/verge.html": {
   "calls": 1012,
   "errors": 0,
@@ -2636,27 +2610,31 @@
   "seconds": 333,
   "tris": 18224080
  },
- "settlements/voth/voth.html": {
-  "calls": 77,
+ "settlements/voth/dist/voth-city.html": {
+  "calls": 1047,
   "errors": 0,
-  "furnTris": 0,
-  "instSets": 67,
-  "instances": 127423,
-  "lastFrame": true,
-  "lodOff": {
-   "calls": 69,
-   "tris": 4220134
-  },
-  "lodOn": {
-   "calls": 71,
-   "tris": 2910544
-  },
-  "materials": 69,
-  "meshes": 69,
+  "furnTris": 615178,
+  "instSets": 3147,
+  "instances": 656899,
+  "materials": 239,
+  "meshes": 3591,
   "ready": true,
-  "sceneTris": 4220134,
-  "seconds": 66,
-  "tris": 2920934
+  "sceneTris": 40951856,
+  "seconds": 597,
+  "tris": 34876944
+ },
+ "settlements/voth/dist/voth-site.html": {
+  "calls": 132,
+  "errors": 0,
+  "furnTris": 762494,
+  "instSets": 6,
+  "instances": 8308,
+  "materials": 8,
+  "meshes": 52,
+  "ready": true,
+  "sceneTris": 1142258,
+  "seconds": 271,
+  "tris": 600236
  },
  "settlements/xanadu/dist/erewhon.html": {
   "calls": 1029,

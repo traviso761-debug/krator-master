@@ -86,7 +86,7 @@ FURN({
 FK.set({ culture: 'voth', tier: 'common', roles: 'training', prefix: 'voth_training_', S: VOTH_COMMON, names: {
   training_dummy: 'Cane-wrapped practice post', archery_butt: 'Reed-bundle archery butt' } });
 
-/* trades and households (2026-10-09, for the Voth city plan's canton interiors: settlements/streetlab,
+/* trades and households (2026-10-09, for the Voth city plan's canton interiors: settlements/voth,
    targets/voth-city/40-vc-interiors.js): the FK.ROLES.trade pieces in Voth's common style sheet, keyed voth_trade_<role> */
 FK.set({ culture: 'voth', tier: 'common', roles: 'trade', prefix: 'voth_trade_', S: VOTH_COMMON, names: {
   forge: 'Ash-brick forge', anvil: 'Anvil on a walnut block', trough: 'Quench trough', stall: 'Beetle stall', hayrack: 'Fodder rack',

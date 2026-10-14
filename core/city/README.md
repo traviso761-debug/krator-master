@@ -2,7 +2,7 @@
 
 One engine-neutral way to lay out a city: avenues and lots, main streets, side streets, alleys, and the infill that
 fills every block. It was worked out step by step on a test bed (Streetlab's street toy, now retired) and runs the Voth
-city plan (`settlements/streetlab/targets/voth-city`, `dist/voth-city.html`), with about 8,000 buildings on 5 km² and no
+city plan (`settlements/voth/targets/voth-city`, `dist/voth-city.html`), with about 8,000 buildings on 5 km² and no
 overlap.
 
 **Every settlement should eventually be ported to it.** Today each world lays out its own streets and lots in its
@@ -44,7 +44,7 @@ knock {way, side, s0, s1, born, used}: frontage lost to street curvature, kept f
 * the highways.
 
 A world defines `SL.pass0` .. `SL.pass5`.
-* **Voth's** (`settlements/streetlab/targets/voth-city/30-vc-site.js`) reads the owner's saved site, made in the site editor.
+* **Voth's** (`settlements/voth/targets/voth-city/30-vc-site.js`) reads the owner's saved site, made in the site editor.
 * **The retired toy's** (in the git history) put a palace, temple and garrison on a triangle, a noisy wall, a park and a
   market, ring avenues joined by their shortest links, and A* highways to the map's edges.
 
@@ -98,12 +98,12 @@ Fragment order: `10-city-core.js`, then the world's tuning, then `20`, `31`, `32
 1. Its site becomes steps 0-5: the ground, the landmarks, the districts, the wall, the avenues and highways it already has. Draw them as polygons and polylines (the Voth site editor, `targets/voth-site`, saves exactly that).
 2. Its kit becomes `SL.KIT` / `SL.dims` and `TUNE.classes`, its look `TUNE` and the choosers.
 3. Its builders draw the plan's records, so a builder no longer decides where things go (CLAUDE.md: "a builder draws a record").
-4. Verify as Streetlab does: exact footprint overlap, nothing on a street, in water or on the wall, and each world rule the owner has set.
+4. Verify as Voth does: exact footprint overlap, nothing on a street, in water or on the wall, and each world rule the owner has set.
 5. Check the port against the old page with `tools/port_baseline.py` and the build's own verify. A ported city is a new layout, not a hash-identical one; say so in the build's README.
 
 | Settlement | Status |
 |---|---|
-| Voth | the city plan (`settlements/streetlab`, `dist/voth-city.html`) is on it; Voth's own page (`settlements/voth`) is not |
+| Voth | the city plan (`settlements/voth`, `dist/voth-city.html`) is on it; the first Voth's page (retired 2026-10-14, `archive/voth-first`) was not |
 | Dalab, Girder, Highlands, Iziz, Jimjam, Locus, Mav's Refuge, Mungo, Noah's Regret, the Port, Reedlake, Screamers, Shade, Verge, Xanadu, Ys, Yuni | not yet: each lays out its own streets and lots in its own `src/` |
 
 ## Debts to the refactor (CLAUDE.md, "Working rules while the refactor is paused")
@@ -112,4 +112,4 @@ Fragment order: `10-city-core.js`, then the world's tuning, then `20`, `31`, `32
 * **Noise and raster:** `slFbm` is its own value noise, and the raster is its own grid. Both belong on the refactor's `core/mask` / noise once those are merged.
 * **Tags:** placed lots are not registered in `core/tags` yet. They should be, before they are drawn.
 * **Global names:** `SL`, `PLAN` and `HOST` are the test bed's. A world that takes two cities in one page cannot; none does yet.
-* **No test of its own:** Streetlab's `verify.py --assert` on `dist/voth-city.html` is the check. A `test-city.js` on a small site is the next thing to write.
+* **No test of its own:** Voth's `verify.py --assert` on `dist/voth-city.html` is the check. A `test-city.js` on a small site is the next thing to write.

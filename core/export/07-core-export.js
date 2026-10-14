@@ -53,7 +53,7 @@ const CONTRACTS = {
  interiors: 'STUB. The room graph (kits/interiors ROOM()): {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{a, b, kind: "door" | "stair" | "ladder", at}], walls: [{a, b, h, col: true}]}]}',
  furniture: 'STUB. GODOT-PLAN.md Phase 4\'s per-look scheme: {format: "krator-furniture", pieces: [{id: "<piece>/<variant>/<look>", entry {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}], placements: [{record (a core/tags furniture id), piece, at, ry}]}. A placement\'s seed is reduced to one of K looks (about 4) per variant, so placements share a mesh: one MultiMesh per piece and look',
  sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
- city: 'STUB, owned by the Voth branch (core/city, settlements/streetlab): core/city registers here when that branch pauses. Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
+ city: 'STUB, owned by the Voth branch (core/city, settlements/voth): core/city registers here when that branch pauses. Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
 };
 const CONVENTION = {
  units: 'm', up: '+Y', x: 'east', z: 'south', handed: 'right (as glTF and Godot)',

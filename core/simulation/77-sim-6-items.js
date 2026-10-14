@@ -1,5 +1,5 @@
 // ================================================================= CORE — simulation 6: items, inventory, equipment, shopping
-// The Voth brief (settlements/streetlab/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
+// The Voth brief (settlements/voth/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
 // SIM.items(config); a world without it decides exactly as before.
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,

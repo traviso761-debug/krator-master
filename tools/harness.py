@@ -11,7 +11,7 @@ here and reaches every build that imports it.
 It also runs on its own, as a smoke test (load each page, wait for `window._ready`, report the error panel, page
 errors, draw calls and triangles; exit 1 if any page is dirty or never gets ready):
 
-    python3 tools/harness.py smoke settlements/streetlab/dist/voth-city.html biomes/rift/dist/rift.html ...
+    python3 tools/harness.py smoke settlements/voth/dist/voth-city.html biomes/rift/dist/rift.html ...
 
 and as a scripted walk (stage 0j): hold real keys along a route and check the walker moved, stayed up and the
 console stayed clean:
@@ -33,7 +33,7 @@ LOAD_MS = 900000
 # KRATOR_CHROME names a Chromium to launch. The other names are the ones single copies of this harness used before
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
-# ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Streetlab's city plan and site
+# ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
 # editor as `_vc.ready` and `_site.ready`), or the error panel has filled
 READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"

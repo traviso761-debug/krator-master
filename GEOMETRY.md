@@ -146,10 +146,9 @@
 | `settlements/screamers/dist/furniture.html` | 17 | 13 k | 17 / 13 k | 17 / 13 k | 26 k |  | 18 | 13 | 251 | 18 |
 | `settlements/screamers/dist/screamers.html` | 128 | 3.28 M | 149 / 3.58 M | 126 / 3.06 M | 3.60 M | 99 k | 151 | 70 | 258 k | 145 |
 | `settlements/shade/dist/shade.html` | 48 | 3.25 M |  |  | 3.47 M |  | 82 | 32 | 109 k | 70 |
-| `settlements/streetlab/dist/voth-city.html` | 1047 | 34.88 M |  |  | 40.95 M | 615 k | 3591 | 3147 | 657 k | 239 |
-| `settlements/streetlab/dist/voth-site.html` | 132 | 600 k |  |  | 1.14 M | 762 k | 52 | 6 | 8308 | 8 |
 | `settlements/verge/dist/verge.html` | 1012 | 18.22 M |  |  | 9.88 M | 439 k | 778 | 260 | 331 k | 352 |
-| `settlements/voth/voth.html` | 77* | 2.92 M | 69 / 4.22 M | 71 / 2.91 M | 4.22 M |  | 69 | 67 | 127 k | 69 |
+| `settlements/voth/dist/voth-city.html` | 1047 | 34.88 M |  |  | 40.95 M | 615 k | 3591 | 3147 | 657 k | 239 |
+| `settlements/voth/dist/voth-site.html` | 132 | 600 k |  |  | 1.14 M | 762 k | 52 | 6 | 8308 | 8 |
 | `settlements/xanadu/dist/erewhon.html` | 1029 | 9.53 M | 1255 / 20.95 M | 1031 / 9.36 M | 21.99 M |  | 1639 | 1579 | 1.02 M | 1435 |
 | `settlements/xanadu/dist/xanadu.html` | 88 | 888 k | 174 / 5.41 M | 88 / 888 k | 5.42 M |  | 199 | 168 | 259 k | 196 |
 | `settlements/ys/dist/kit.html` | 99 | 4.26 M |  |  | 4.26 M |  | 108 | 35 | 16 k | 58 |

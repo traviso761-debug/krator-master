@@ -4,7 +4,7 @@ instances, materials and furniture at its opening view, with core/lod off and on
 Each build used to record these by hand in its README; this collects them so a regression shows across builds.
 
     python3 tools/geometry_report.py                    # every page in PORT-BASELINE.json (slow under software GL)
-    python3 tools/geometry_report.py settlements/voth/voth.html biomes/rift/dist/rift.html    # some pages
+    python3 tools/geometry_report.py settlements/voth/dist/voth-city.html biomes/rift/dist/rift.html    # some pages
     python3 tools/geometry_report.py --critical         # the nightly set (tools/test_all.py NIGHTLY_VERIFY)
 
 Writes GEOMETRY.md (the table) and geometry.json (the numbers, for diffs) at the repo root; with page arguments it

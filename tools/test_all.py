@@ -25,7 +25,7 @@ NIGHTLY_VERIFY = [
     ('biomes/sedesert', 'dist/sedesert.html', ['--assert']),
     ('settlements/iziz', 'dist/iziz.html', ['--assert']),
     ('settlements/girder', 'girder.html', ['--assert']),
-    # settlements/voth (the first Voth) is retired (owner, 2026-10-14); Voth is settlements/streetlab's voth-city, whose
+    # the first Voth (voth.html) is retired (owner, 2026-10-14; archive/voth-first); Voth is settlements/voth's voth-city, whose
     # verify --assert runs simulated days (about 40 min alone) and so waits for a short mode before it joins the nightly list
     ('settlements/verge', 'dist/verge.html', ['--assert']),
 ]

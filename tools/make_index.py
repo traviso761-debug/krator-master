@@ -14,7 +14,7 @@ BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
     'biomes/throne': "The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life.",
-    'settlements/voth': 'Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.',
+    'settlements/voth': "Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay: the city plan on core/city with its citizen simulation (dist/voth-city.html) and the site editor (dist/voth-site.html). src/ is Voth's source library, the first Voth's fragments (its page is retired: archive/voth-first), which build.py runs whole or lifts by name; catalog/ is Voth's building catalog.",
     'settlements/yuni': 'Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).',
     'settlements/dalab': 'Dalab: the mound settlement of the southwestern lowlands, and its building set.',
     'settlements/highlands': 'Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.',
