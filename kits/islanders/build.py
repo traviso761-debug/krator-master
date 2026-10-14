@@ -79,6 +79,11 @@ BUNDLE_GLOBALS = ('KratorFurniture', 'KratorFauna')
 FAUNA_GROUPS = ['farm']   # kits/fauna: the pigs, hens, ducks and water buffalo of the farms
 
 
+# the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
+# gallery takes no file over 16 MB)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
 def matlib_pack():
     """The library textures materials.json names, as data URLs (KMAT.pack). It reads the committed tex/ files
     only, never the library or an image encoder, so the build stays deterministic."""
@@ -95,10 +100,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if SIDE is not None:   # the pack beside the page (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        SIDE[KIT_ID] = body
+        return _mp.loader(KIT_ID)
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('" + KIT_ID + "', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('" + KIT_ID + "', " + body + ');\n')
 
 
 def virtual_bodies():
@@ -161,6 +172,10 @@ def main():
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the pack beside the page, under the gallery's 16 MB a file
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), 'islanders.tex.js', prune=False)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
     json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]

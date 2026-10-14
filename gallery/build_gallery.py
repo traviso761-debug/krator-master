@@ -69,8 +69,6 @@ ENTRIES = [
      'The half-drowned capital of the Hykkousoi on the ruins of an Ancient city: grown shell houses on reclaimed and drowned skyscrapers, a bridge network over the bay, the Pharos, the Citadel on its karst stack, a river in travertine pools and the north-west bay jungle on the stacks.', 'new'),
     ('world', 'noahs-regret', 'settlements/noahs-regret/dist/noahs-regret.html', "Noah's Regret",
      "An Ancient floating harbour city that once sailed the Ring Sea, aground on the south shore: Bloody Ruephus's pirate base. A rounded catamaran of two hulls joined at the bow, the harbour open astern between them with the liner mole and finger piers, terraced sterns, holds half full of the sea, four decks of cabins with scalloped balconies, the grand atrium, the dining room, twin engine rooms, two crew messes, the greenhouse and fifteen ship's rooms; over the forward third of the harbour a plaza with a fountain, terraces and a grand stair up to the bridge house, the bridge on top. Every room furnished; pick a level to cut the decks open.", 'new'),
-    ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
-     'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
     ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
      "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),

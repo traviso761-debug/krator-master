@@ -102,10 +102,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if SIDE is not None:   # the pack beside the page (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        SIDE['zeijani'] = body
+        return _mp.loader('zeijani')
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('zeijani', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('zeijani', " + body + ');\n')
 
 
 def virtual_bodies():
