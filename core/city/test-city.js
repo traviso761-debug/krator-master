@@ -210,7 +210,47 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
     run > 150 && Math.abs(onBank - 1.3) < 1e-6 && Math.abs(offBank - (0.05 * 60 - 1)) < 1e-6 && pad && corners.every(y => Math.abs(y - 4) < 1e-6), flat === null,
     run + ' m banked; pad cut ' + (pad && pad.cut.toFixed(2)) + ', fill ' + (pad && pad.fill.toFixed(2))); }
 
-// ---------------------------------------------------------------- 8. the strategies' shared primitives (33-city-strategies.js)
+// ---------------------------------------------------------------- 8. the strategies (33-city-strategies.js): frontage-courts on polygon blocks
+const GRID = [-225, -75, 75, 225];
+function courtsCity(o) {
+  o = o || {};
+  const blocks = [];
+  for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++) { const x0 = GRID[i] + 5, x1 = GRID[i + 1] - 5, z0 = GRID[j] + 5, z1 = GRID[j + 1] - 5;
+    blocks.push({ id: 'b' + i + j, i, j, poly: [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], kind: ['poor', 'middle', 'rich'][(i + j) % 3], lanes: true }); }
+  const use = o.only ? blocks.filter(b => o.only.indexOf(b.id) >= 0) : blocks;
+  const steps = [
+    { name: 'the ground', run() { const R = SL.R = new Raster(TUNE.rasterHalf, TUNE.cell); R.occ.fill(OCC.OUT); KCITY.site.zoneRaster(R, ZONE, { dry: 0.6 }); SL.minSpacing = KCITY.site.minSpacing(); } },
+    { name: 'the host', run() { const b = blocks[4], o2 = obb([0, 0], [1, 0], 20, 15);   /* the middle block's host: a hall the world stands there */
+      const L = { id: PLAN.lots.length, cls: 'landmark', role: 'hall', key: 'hall', v: 0, slot: 0, wealth: 1, x: 0, z: 0, y: 3, ry: 0, w: 40, d: 30, h: 12, lot: o2, bo: o2, way: -1, side: 0, s: 0, born: 1, died: null, civic: true };
+      PLAN.lots.push(L); SL.hashLot(L); SL.R.stampPoly(obbCorners(o2), OCC.HARD, L.id); b.host = { c: [0, 0], u: [1, 0], hw: 20, hd: 15 }; } },
+    { name: 'the streets', run() { GRID.forEach(g => { SL.addWay('main', [[g, -238], [g, 238]], 3, { tag: 'x' + g }); SL.addWay('main', [[-238, g], [238, g]], 3, { tag: 'z' + g }); }); } },
+    { name: 'frontage and courts', run(C) { PLAN.courts = KCITY.strategies['frontage-courts'].run(use, Object.assign({ step: 6, focus: [0, 0],
+      pools: { poor: [['house_p', 3], ['house_p2', 3], ['shop', 0.5]], middle: [['house_m', 3], ['house_m2', 2], ['shop', 0.6], ['tavern', 0.3]], rich: [['house_r', 2], ['house_r2', 2], ['manor', 0.5]] },
+      small: { poor: [['house_p', 1], ['house_p2', 1]], middle: [['house_m', 1], ['house_p', 1]], rich: [['house_m2', 1], ['house_r2', 1]] },
+      gaps: { poor: [2, 5], middle: [3, 7], rich: [6, 13] } }, o.ctx || {})); } }];
+  return KCITY.create({ tune: Object.assign(tune(), { exact: true }), seed: 5, ground: { h: ground }, kit: { dims }, rules: { wealth: wealthRule }, steps });
+}
+{ const Q = courtsCity(), PQ = Q.run(), lots = PQ.courts.lots, H = placeHash(PQ), by = {};
+  lots.forEach(L => { by[L.why] = (by[L.why] || 0) + 1; });
+  // facing: a frontage house's front looks onto its street (a STREET cell within 12 m), an infill house onto a street within
+  // reach, a court house onto a yard; a ring house faces away from its host
+  const look = (L, reach, test) => { const f = [Math.sin(L.ry), Math.cos(L.ry)]; for (let t = L.d / 2; t <= L.d / 2 + reach; t += 1) { const q = V.add([L.x, L.z], V.mul(f, t)); if (test(q)) return true; } return false; };
+  const street = q => SL.R.at(q[0], q[1]) === OCC.STREET;
+  Q.bind(); const yards = [].concat.apply([], PQ.courts.yards || []);
+  const blocks = {}; lots.forEach(L => { (blocks[L.court] = blocks[L.court] || []); });
+  const facing = lots.filter(L => L.why === 'frontage' || L.why === 'lane frontage' ? look(L, 12, street) : L.why === 'infill' ? look(L, 27, street) : true).length;
+  ok('frontage-courts: every block fronted on its streets, lanes quartering the blocks with no host, a ring round the host, a lattice infill facing a street or a yard',
+    by.frontage > 100 && by['lane frontage'] > 50 && by['host ring'] > 3 && (by.infill || 0) + (by.court || 0) > 10 && PQ.ways.filter(w => w.cls === 'lane').length === 16 && facing === lots.length,
+    PQ.ways.filter(w => w.cls === 'lane').length > 0, JSON.stringify(by) + ', ' + facing + ' of ' + lots.length + ' face their street or yard');
+  const brush = { n: 0 }, on = onStreets(PQ, brush);
+  ok('frontage-courts: no overlap, nothing on a street or a lane, nothing in water', overlaps(PQ, 0.1) === 0 && on === 0 && inWater(PQ) === 0, true, overlaps(PQ, 0.1) + ' pairs, ' + on + ' on a street');
+  gold.courts = H;
+  // one block's edit moves nothing in another: the blocks without the corner block b00 place what they placed with it
+  const R2 = courtsCity({ only: ['b10', 'b20', 'b01', 'b11', 'b21', 'b02', 'b12', 'b22'] }), P2 = R2.run(), key = L => [L.court, L.key, L.x, L.z, L.ry].join();
+  const S1k = lots.filter(L => L.court !== 'b00').map(key).join('|'), S2k = P2.courts.lots.map(key).join('|');
+  const R3 = courtsCity({ ctx: { shared: true } }), P3 = R3.run(), R4 = courtsCity({ only: ['b10', 'b20', 'b01', 'b11', 'b21', 'b02', 'b12', 'b22'], ctx: { shared: true } }), P4 = R4.run();
+  ok('frontage-courts: each block from its own KRAND cell stream (one block left out moves nothing in the others; one shared stream would)',
+    S1k === S2k, P3.courts.lots.filter(L => L.court !== 'b00').map(key).join('|') !== P4.courts.lots.map(key).join('|'), lots.length + ' lots'); }
 { // the shared primitives
   const runs = []; KCITY.prim.frontageRun({ t0: 0, t1: 50, skip: t => (t === 8 ? 5 : 0), attempt: t => { runs.push(t); return t > 30 ? { stop: true } : { adv: 8, rec: {} }; } });
   const ring = []; KCITY.prim.huntNear([0, 0], { step: 8, reach: 16, minN: 8, arc: 10 }, (q, r) => { ring.push(r); return null; });
@@ -220,5 +260,6 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
     runs.join() !== '0,8,16,24,32', runs.join()); }
 
 if (WRITE) fs.writeFileSync(GOLD, JSON.stringify(gold, null, 1) + '\n');
+ok('the frontage-courts placement hash is golden.json\'s', G.courts === gold.courts, gold.courts !== H1, gold.courts + (G.courts === gold.courts ? '' : '; golden ' + G.courts));
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

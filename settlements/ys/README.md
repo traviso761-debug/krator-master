@@ -9,6 +9,13 @@ river, the north-west bay biome on the land and the karst, the building editor (
 (the record and the gallery) and Travis's follow-ups (the central infill, every Trays a podded stump, the drowned grid's
 ruins: Oct 12 2026) are in `NOTES.md`'s last rounds.**
 
+The placement pass walks its frontages, ranks its block candidates and lays its central lattice with **core/city's
+shared primitives** (`core/city/33-city-strategies.js`, `KCITY.prim`: `frontageRun` under `ysPlFront` and
+`ysPlEdgeRun`, `gridCands` under `ysPlCands`, `packPolygon` and `faceNearestStreet` in the central infill; the city
+target takes the one fragment, `build.py` `TARGET_CORE_FILES`). Its placement did not move (2026-10-14: every
+record's hash and the refusals' the same before and after). Ys's method is core/city's `frontage-courts` strategy
+for other cities; Ys keeps its own blocks, boxes, clash rule and kit audit.
+
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)
 python3 build.py --vendor-check                     # vendored fragments still identical upstream? (adapted ones listed)
