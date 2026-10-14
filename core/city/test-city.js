@@ -140,7 +140,6 @@ ok('nothing stands on the wall or in water', onWall(P) === 0 && inWater(P) === 0
 const K = city({ rand: 'krand', seed: 2026 }), PK = K.run(), HK = placeHash(PK);
 const gold = { note: 'core/city: test-city.js writes these (--write); a change that moves a lot or a way changes them', sl: H1, krand: HK, lots: S1.length, krandLots: standing(PK).length };
 const GOLD = path.join(__dirname, 'golden.json');
-if (WRITE) fs.writeFileSync(GOLD, JSON.stringify(gold, null, 1) + '\n');
 const G = fs.existsSync(GOLD) ? JSON.parse(fs.readFileSync(GOLD, 'utf8')) : {};
 ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl === H1 && G.krand === HK, HK !== H1, 'sl ' + H1 + ', krand ' + HK + (G.sl === H1 && G.krand === HK ? '' : '; golden ' + G.sl + ', ' + G.krand));
 { const H2 = placeHash(city().run()), HK2 = placeHash(city({ rand: 'krand', seed: 2026 }).run()), HK3 = placeHash(city({ rand: 'krand', seed: 2027 }).run());
@@ -211,5 +210,15 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
     run > 150 && Math.abs(onBank - 1.3) < 1e-6 && Math.abs(offBank - (0.05 * 60 - 1)) < 1e-6 && pad && corners.every(y => Math.abs(y - 4) < 1e-6), flat === null,
     run + ' m banked; pad cut ' + (pad && pad.cut.toFixed(2)) + ', fill ' + (pad && pad.fill.toFixed(2))); }
 
+// ---------------------------------------------------------------- 8. the strategies' shared primitives (33-city-strategies.js)
+{ // the shared primitives
+  const runs = []; KCITY.prim.frontageRun({ t0: 0, t1: 50, skip: t => (t === 8 ? 5 : 0), attempt: t => { runs.push(t); return t > 30 ? { stop: true } : { adv: 8, rec: {} }; } });
+  const ring = []; KCITY.prim.huntNear([0, 0], { step: 8, reach: 16, minN: 8, arc: 10 }, (q, r) => { ring.push(r); return null; });
+  const grid = KCITY.prim.gridCands(12, 0, 24, 12, (u, v) => [u, v]), face = KCITY.prim.faceNearestStreet([0, 0], [[1, 0], [0, 1]], (p, d) => d[0] ? 30 : 10);
+  ok('the primitives: the cursor (skip, place, stop), rings out, a grid nearest first, directions by street distance',
+    runs.join() === '0,13,21,29,37' && ring.length === 1 + 8 + 10 && grid[0].join() === '12,0' && grid[1].join() === '12,0' && face[0][0][1] === 1,
+    runs.join() !== '0,8,16,24,32', runs.join()); }
+
+if (WRITE) fs.writeFileSync(GOLD, JSON.stringify(gold, null, 1) + '\n');
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

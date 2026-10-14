@@ -250,25 +250,27 @@ SL.choosers = {
 SL.lineLots = function (way, side, chooser, step, opt) {
   opt = opt || {};
   var F = way.F, rs = SL.stream(step * 100000 + way.id * 2 + (side > 0 ? 1 : 0)), Lt = TUNE.lot;
-  var run = 'r' + step + '.' + way.id + '.' + side, s = opt.s0 != null ? opt.s0 : 0, s1 = opt.s1 != null ? opt.s1 : F.len, made = [], k0 = null;
+  var run = 'r' + step + '.' + way.id + '.' + side, s0 = opt.s0 != null ? opt.s0 : 0, s1 = opt.s1 != null ? opt.s1 : F.len, made = [], k0 = null;
   function closeKnock(sEnd) { if (k0 != null) { PLAN.knocks.push({ way: way.id, side: side, s0: k0, s1: sEnd, born: step, used: false }); k0 = null; } }
-  while (s < s1 - 4) {
-    var p0 = F.at(s);
+  /* the cursor (KCITY.prim.frontageRun, 33-city-strategies.js) */
+  KCITY.prim.frontageRun({ t0: s0, t1: s1 - 4,
     /* a page may leave frontage open (a sparse suburb): SL.vacant(p, rs) skips ahead */
-    if (SL.vacant && SL.vacant(p0, rs)) { closeKnock(s); s += 12; continue; }
-    var p = p0, cls = chooser(p, rs), cands = SL.cands(rs, cls), W = SL.wealth(p), placed = null, curve = false;
-    for (var i = 0; i < cands.length && !placed; i++) {
-      var it = cands[i].it, wid = it.w + Lt.side;
-      if (s + wid > s1) continue;
-      if (opt.entrance && opt.entrance(rs, it)) { placed = SL.reserveEntrance(way, side, s, step); break; }
-      var r = SL.tryLot(way, side, s + wid / 2, it, step, cands[i].cls, { wealth: W, slot: rs.ri(0, 1), run: run });
-      if (!r.fail) { placed = r; made.push(r); }
-      else if (r.fail.code === OCC.LOT && PLAN.lots[r.fail.own] && PLAN.lots[r.fail.own].run === run) curve = true;
-    }
-    if (placed) { closeKnock(s); s += placed.entranceW || (placed.w + Lt.side); }
-    else { if (curve && k0 == null) k0 = s; if (!curve) closeKnock(s); s += Lt.step; }
-  }
-  closeKnock(s);
+    skip: function (s) { if (SL.vacant && SL.vacant(F.at(s), rs)) { closeKnock(s); return 12; } return 0; },
+    attempt: function (s) {
+      var p = F.at(s), cls = chooser(p, rs), cands = SL.cands(rs, cls), W = SL.wealth(p), placed = null, curve = false;
+      for (var i = 0; i < cands.length && !placed; i++) {
+        var it = cands[i].it, wid = it.w + Lt.side;
+        if (s + wid > s1) continue;
+        if (opt.entrance && opt.entrance(rs, it)) { placed = SL.reserveEntrance(way, side, s, step); break; }
+        var r = SL.tryLot(way, side, s + wid / 2, it, step, cands[i].cls, { wealth: W, slot: rs.ri(0, 1), run: run });
+        if (!r.fail) { placed = r; made.push(r); }
+        else if (r.fail.code === OCC.LOT && PLAN.lots[r.fail.own] && PLAN.lots[r.fail.own].run === run) curve = true;
+      }
+      if (placed) { closeKnock(s); return { adv: placed.entranceW || (placed.w + Lt.side), rec: placed }; }
+      if (curve && k0 == null) k0 = s; if (!curve) closeKnock(s);
+      return { adv: Lt.step };
+    },
+    end: closeKnock });
   return made;
 };
 

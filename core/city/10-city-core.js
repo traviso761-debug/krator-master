@@ -171,7 +171,7 @@ function obbCorners(o) {
 }
 
 /* ============================== THE OCCUPANCY RASTER ==============================
-   One 2 m grid over the walled city: what every cell holds (a code) and who owns it (a lot or a way id).
+   One grid (TUNE.cell: Voth 2.5 m over +-2.48 km) over the build zone: what every cell holds (a code) and who owns it (a lot or a way id).
    Lots, streets, parks and footprints are stamped into it; placement checks and the A* street router read it. */
 var OCC = { FREE: 0, STREET: 1, LOT: 2, HARD: 3, OUT: 4, RESERVE: 5, ALLEY: 6, GREEN: 7, VERGE: 8 };   /* VERGE: beside a highway: streets cross it, lots do not stand on it */
 function Raster(half, cell) {

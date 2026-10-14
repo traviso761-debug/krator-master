@@ -273,15 +273,13 @@ VC.placeHealing = function () {
     }
     return hi - lo <= K.relief;
   };
-  for (var r = 0; r <= K.reach && !best; r += 8) {
-    var n = r ? Math.max(8, Math.round(2 * Math.PI * r / 10)) : 1;
-    for (var i = 0; i < n && !best; i++) {
-      var th = i / n * 2 * Math.PI, c = [H.x + Math.cos(th) * r, H.z + Math.sin(th) * r], q = VC.nearestWayPt(c, ['avenue']);
-      if (!q || q.d > K.half + K.front + q.way.w / 2) continue;
-      var f = V.norm(V.sub(q.p, c)), ry = Math.atan2(f[0], f[1]) - Math.PI / 2;   /* the builder's local +x (a gate) toward the avenue */
-      if (footOk(c, ry)) best = { c: c, ry: ry, q: q, f: f };
-    }
-  }
+  /* out from the marker in rings (core/city KCITY.prim.huntNear): the first spot that fronts an avenue and takes the footprint */
+  best = KCITY.prim.huntNear([H.x, H.z], { step: 8, reach: K.reach, minN: 8, arc: 10 }, function (c) {
+    var q = VC.nearestWayPt(c, ['avenue']);
+    if (!q || q.d > K.half + K.front + q.way.w / 2) return null;
+    var f = V.norm(V.sub(q.p, c)), ry = Math.atan2(f[0], f[1]) - Math.PI / 2;   /* the builder's local +x (a gate) toward the avenue */
+    return footOk(c, ry) ? { c: c, ry: ry, q: q, f: f } : null;
+  });
   if (!best) return 'the house of healing: no free ground within ' + K.reach + ' m of its marker';
   var c = best.c;
   PLAN.voth.push({ role: 'healing', id: 'HOH', x: c[0], z: c[1], ry: best.ry, moved: +V.dist(c, [H.x, H.z]).toFixed(0) });

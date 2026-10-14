@@ -229,10 +229,10 @@ SL.interiorAlleys = function (lab) {
 };
 
 /* ---------------------------------------------------------------- the runner */
-/* the default 13 steps' names (KCITY.STEPS): steps 0-5 are the world's own (its site: ground, landmarks, wall, districts,
-   avenues, highways), 6-12 the builder's. A world makes an instance with its own steps (KCITY.create({steps}),
+/* the default 13 steps' names (KCITY.STEPS): steps 0-5 are the world's own (its site: ground, landmarks, districts,
+   avenues, highways, the wall: the site layer's order, 25-city-site.js), 6-12 the builder's. A world makes an instance with its own steps (KCITY.create({steps}),
    40-city-kcity.js; Voth's are settlements/voth/targets/voth-city/35-vc-steps.js); SL.layout runs the bound one */
-SL.STEPS = ['the ground and the raster', 'landmarks', 'the wall', 'districts', 'avenues and gates', 'highways', 'civic buildings',
+SL.STEPS = ['the site and its ground', 'landmarks', 'districts', 'avenues', 'highways', 'the wall and its gates', 'civic buildings',
   'avenue lots', 'main streets', 'main-street lots', 'side streets', 'side-street lots, alley entrances', 'alleys and alley lots'];
 SL.layout = function () { return (KCITY.cur || KCITY.create({ tune: TUNE })).run(); };
 /* what stood after each step: counts by class, street lengths by class */
