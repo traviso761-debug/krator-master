@@ -8,21 +8,22 @@ Read `README.md` first: it holds the design rules for every build (tagging,
 modularity, the inspector and polygon tools, the standard skybox). `INDEX.md`
 says which build holds what.
 
-## Working rules while the refactor is paused (2026-10-09)
+## Working rules (the roadmap's stages 0 to 2, merged into `main` 2026-10-14)
 
-Three evaluations of the repo produced a roadmap; its work is on the branch `full-refactor` (`ROADMAP.md` there,
-and the owner's "Krator Roadmap" doc). It is paused, not abandoned: it will be merged into `main` later. Until
-then, every session on `main` follows these rules, so the merge stays cheap and the bugs it found are not repeated.
+Three evaluations of the repo produced a roadmap (`ROADMAP.md`, and the owner's "Krator Roadmap" doc). Its stages 0
+to 2 ran on the branch `full-refactor` and are merged; stage 3 (one interface for every settlement, `ROADMAP.md`
+section 10) and the city-layout module (`core/city/PLAN.md`) are next. Every session follows these rules.
 
-**Do not collide with the refactor.**
-- Do not add repo-wide tooling (a test runner, CI workflows, a shared verify harness, LFS rules) or edit
-  `.gitattributes`: `full-refactor` has `tools/test_all.py`, `tools/harness.py`, `tools/check_encoding.py`,
-  `.github/workflows/` and LFS rules for built pages. Ask the owner if you need one of them now.
-- Do not rewrite a verify.py's "Harness helpers" block; `full-refactor` replaced it with an import.
-- Leave these to the refactor unless the owner asks: `kits/catalog/krator-furniture-runtime.js`'s `Batch.absorb`
-  (keeping indices; branch `wip/furniture-indexed`), `core/biome/40-core-place.js`'s `clearOf`/`scatter`/`standAt`
-  (a spatial index; branch `wip/biome-spatial-index`), `core/terrain/` (the terrain field `KFIELD`; branch
-  `refactor/terrain-field`), and Voth's placement mask (on `core/mask` in `full-refactor`).
+**Check before you push.** `python3 tools/test_all.py` runs the port lint, the insulation check, the encoding lint,
+every node test under `core/`, a rebuild of every build and the hash baseline (`--no-build` skips the rebuilds;
+`--nightly` adds `verify.py --assert` on the critical builds and the Godot tests). CI runs it on every push
+(`.github/workflows/`); the nightly job runs on `main`. A `verify.py` takes the shared harness (`tools/harness.py`:
+the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
+bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
+
+**Who works where.** The owner's Voth economy work forks from here and owns `core/simulation/` and Voth's
+simulation fragments (`settlements/voth/targets/voth-city/34`, `41`-`47`, the host's `56b`/`56c`). The city-layout
+module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`). Keep out of the other's files, or ask.
 
 **Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
 their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
@@ -46,8 +47,8 @@ on purpose and checked.
 - Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
   `core/` module, or ask before writing a new one. `GODOT-PLAN.md` section 6 has the full list.
 - A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
-  not a new bespoke pass. Do not write another spatial hash or occupancy grid: `core/city`'s, little-demo's flora
-  buckets and the biome core's planned index are to become one shared module (the refactor's roadmap, section 8).
+  not a new bespoke pass. Do not write another spatial hash or occupancy grid: use `core/space` (`KSPACE`), which the biome core
+  already takes and `core/city` is moving onto (`core/city/PLAN.md`).
 - **Voth is the city plan on `core/city`** (`settlements/voth`; owner, 2026-10-09; built in `settlements/streetlab` until
   2026-10-14). The first Voth's page is retired (`archive/voth-first`); its `src/` stays in `settlements/voth` as Voth's
   source library, which the build runs or lifts by name: port from it, do not add features to it.
@@ -55,10 +56,10 @@ on purpose and checked.
   it will run in Godot: keep its data side free of three.js and the DOM, its records keyed by stable ids, its edits
   kept as deltas by id, and its rules (overlap, frontage, slope) as plain functions on records.
 
-**Known bugs not to build on.** The catalog furniture batch unrolls indexed geometry (1.5 to 6
-times the vertices); do not write new code that depends on that triangle soup. Packed normal maps from
-`tools/textures/pack.py` are lossy (4:2:0, about 11 degrees of error); `full-refactor` packs them lossless, so do
-not tune a material against the current normals.
+**Fixed on the way (do not reintroduce).** `BIO.iridBarkMat` is one core material kind (`core/biome/30-core-foliage.js`).
+The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:true})`, `KFURN.useBatch(...,
+{indexed:true})`; every furnished build does): do not write new code that depends on triangle soup. Normal maps from
+`tools/textures/pack.py` are lossless. Placement on `core/mask`, never `getImageData`, in every build ported so far.
 
 **Godot is 4.7.2** (the owner's version). Every Godot test passes on it; the Dhelv navigation test (branch
 `claude/zeijani`) fails on 4.5. Run `godot --headless --path godot --import` once in a fresh checkout before a

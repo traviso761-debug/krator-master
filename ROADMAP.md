@@ -250,6 +250,11 @@ change; a whole run takes most of a day under SwiftShader on a loaded box, so ru
 
 ### Stage 2: the substrate (the plan's Phase 2 and 4, in the plan's order)
 
+**Done 2026-10-14:** the terrain field, the irid kind, `core/tags` on the biome kits with ids on exports, `core/export`
+(M4 sedesert, M5 Iziz), the shader library, Iziz as the second material pilot, the Ancients re-vendor, and `core/water`
+phases 0 to 4 (open water, shores, flow and falls, still water; `W.wet` waits for a taker). Merged into `main` with
+stages 0 and 1.
+
 - **a. `core/terrain`'s field**: Float32 heightmap at a fixed step, water levels, carve patches, land cover;
   `terrainH(x,z)` as bilinear sampling; export as 16-bit PNG or EXR plus the carver's floors and blockers;
   Godot reads it into a `HeightMapShape3D` and a terrain mesh. First consumer: one biome kit (the plan says
