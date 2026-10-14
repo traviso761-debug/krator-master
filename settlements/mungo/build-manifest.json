@@ -265,7 +265,7 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "cdac98b40c8b"
+  "2484c61e85bc"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
@@ -385,7 +385,7 @@
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
-  "3a4916d37814"
+  "83b0411da60a"
  ],
  "77-sim-6-population.js": [
   "core/simulation",
