@@ -69,7 +69,7 @@ The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway"
   Proof: below.
 
 Proof (non-lite, headless, `tools/harness.py`'s launcher; SwiftShader on a loaded box: a frame took about three minutes
-at street level): the inspector's card on a citizen (job, post, shift, the leg it is on, the meters and what they ask for, worn items, the household's food), on a penned animal and a pet; the pause as above; the cutaway: CUT_PROOF.
+at street level): the inspector's card on a citizen (job, post, shift, the leg it is on, the meters and what they ask for, worn items, the household's food), on a penned animal and a pet; the pause as above; the cutaway on a poor house in the city's south-east (a merged page, after the walk-in fix): 37 buildings cut, none left drawing after a few refreshes, 662 materials patched, no page error; 19 cut at a closer view. **Draw calls are far over the estimate above:** 7,266 with 37 cut at storey 1 and 10,750 at storey 2 (about 1,370 without the cut), not about 1,500 extra. Lower `VC.CUTALL.max` or merge an interior's meshes per storey if it is slow on the owner's GPU.
 
 ## 2026-10-13: the trades in two half-hour buckets
 
