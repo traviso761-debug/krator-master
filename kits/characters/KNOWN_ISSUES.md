@@ -21,6 +21,10 @@
   pick, not chopped short. Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
   spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
   most of these, but its clips can only be fetched by hand with an Adobe account.
+- **The Godot twin's robe chains fold.** In a walk some of the court robe's chain bones turn 1.6 to 2.5 rad from their
+  rest against the link above (26 of them on the man), and with cloth off the chains still jitter about 0.19 rad a frame
+  (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
+  two apart; the folding itself is not fixed.
 - **The posture fix is one rule for every clip.** The upper spine is drawn back and the shoulders dropped and back by
   fixed angles after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
   stands straight leans back a little, and a crouched one keeps its crouch below the chest.

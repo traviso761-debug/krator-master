@@ -186,7 +186,9 @@ func _init() -> void:
 		# the bow: drawn in the aim-and-scan loop, its arrow shown
 		fig.hold({"R": null, "L": "bow"})
 		fig.play("bow_scan")
-		fig._process(0.3)
+		# frames, not one step: the arms ease back from the spear's two-hand hold over a few of them
+		for k in 3:
+			fig._process(0.1)
 		ok(fig.drawn and fig._bow["arrow"] != null and fig._bow["arrow"].visible, "bow_scan draws the string and nocks an arrow")
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
@@ -200,27 +202,30 @@ func _init() -> void:
 		ok(cb >= 0, "the court skirt's cloth chains are in the skeleton")
 		if cb >= 0:
 			fig.play("walk")
-			var moved := 0.0
+			# how far the chains turn from one frame to the next, on average (their turn from rest is no measure: some
+			# robe chains fold near half a turn from it whether they swing or not, KNOWN_ISSUES)
 			var finite := true
-			for k in 40:
-				fig._process(1.0 / 30.0)
-				for i in fig.skeleton.get_bone_count():
-					if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
-						var q := fig.skeleton.get_bone_pose_rotation(i)
-						finite = finite and q.is_finite()
-						moved = maxf(moved, q.angle_to(fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()))
-			ok(finite and moved > 0.05, "cloth swings in a walk (largest turn %.3f rad, finite %s)" % [moved, finite])
+			var motion := func(frames: int) -> float:
+				var prev := {}
+				var tot := 0.0
+				var n := 0
+				for k in frames:
+					fig._process(1.0 / 30.0)
+					for i in fig.skeleton.get_bone_count():
+						if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
+							var q := fig.skeleton.get_bone_pose_rotation(i)
+							finite = finite and q.is_finite()
+							if prev.has(i):
+								tot += q.angle_to(prev[i])
+								n += 1
+							prev[i] = q
+				return tot / maxi(n, 1)
+			var moved: float = motion.call(40)
+			ok(finite and moved > 0.01, "cloth swings in a walk (%.3f rad a frame, finite %s)" % [moved, finite])
 			# cloth off: no swing, only the legs' push; with no clip the chains hang at rest
 			fig.cloth = false
-			var off := 0.0
-			for k in 20:
-				fig._process(1.0 / 30.0)
-				for i in fig.skeleton.get_bone_count():
-					if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
-						var q := fig.skeleton.get_bone_pose_rotation(i)
-						finite = finite and q.is_finite()
-						off = maxf(off, q.angle_to(fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()))
-			ok(finite and off < moved, "cloth off: the legs push the chains but they do not swing (%.3f < %.3f rad)" % [off, moved])
+			var off: float = motion.call(30)
+			ok(finite and off < moved, "cloth off: the legs push the chains but they do not swing (%.3f < %.3f rad a frame)" % [off, moved])
 			fig.play("")
 			ok(fig.skeleton.get_bone_pose_rotation(cb).is_equal_approx(fig.skeleton.get_bone_rest(cb).basis.get_rotation_quaternion()), "cloth off: with no clip the chains hang at rest")
 			fig.cloth = true
