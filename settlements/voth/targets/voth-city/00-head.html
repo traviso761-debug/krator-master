@@ -84,19 +84,17 @@
   #tip table.ct{border-collapse:collapse;margin:2px 0;font-size:11.5px} #tip table.ct td{padding:0 8px 0 0;vertical-align:top}
   @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
 </style>
+<script>window.KRATOR_HOST = true;   /* core/host takes the camera and the loop (targets/voth-city/97-vc-host-take.js) */</script>
 </head>
 <body>
 <div id="app"></div>
 <div id="bar" class="pnl" data-title="Voth &middot; city plan">
-  <h1>Voth &middot; city plan</h1>
-  <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it. K pauses everything; I inspects (a citizen under the cursor too); X cuts the buildings in view open; O lists the stocks (what the settlement holds and where).</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
   <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button><button id="ly-stocks" title="every good and item in the settlement: where it is (at the site, in transit, in storage, owned), the last day's change, what runs short (o)">stocks (o)</button> <span id="cut-status" class="k"></span><br>
-  <span id="clk">10:00</span> <button id="clk-pause" title="freeze everything where it is: people, animals, carts, boats, the clock and the sky (k)">pause (k)</button><button id="clk-run" title="hold or run the hour (motion goes on)">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
+  <button id="clk-pause" title="freeze everything where it is: people, animals, carts, boats, the clock and the sky (k)">pause (k)</button><span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
-  <div id="legend" class="lg"></div>
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
 <div id="stocks" class="pnl" data-title="Stocks"><b>Stocks</b> <span id="stk-when" class="k"></span> <button id="stk-close" style="float:right" title="close (o)">&#10005;</button><button id="stk-refresh" style="float:right" title="read the stocks now (the panel reads itself every few seconds while the clock runs; paused, only here)">refresh</button>

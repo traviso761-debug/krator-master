@@ -24,7 +24,8 @@ what is still open. `PORT.md` says how each fragment reaches Godot.
 
 ## What Verge owns, and what it reads from home
 
-Verge's `src/` holds only its host: the layout, the stage, the placement, the life layer, the camera and the probe.
+Verge's `src/` holds only its host: the layout, the stage, the placement, the life layer, the probe and the take (the camera,
+the loop, the panel and the inspector are `core/host`'s).
 Every kit, biome and core module is **read from its own folder at build time**, never copied. A building added for Verge
 went into its culture's kit and interior set, so it is there for every other build:
 
@@ -36,7 +37,7 @@ went into its culture's kit and interior set, so it is there for every other bui
 | `kits/interiors/sets` | the interiors of every building | `iziz.js` (all 36 vernacular keys), `yuni.js` (the Yuni assets Verge places), additions to `abyss.js` |
 | `kits/catalog` | the furniture, through `core/furnish` | none |
 | `biomes/sedesert`, `biomes/eastabyss` | the flora and fauna: the plateau and canyon, the abyss floor | deer and coyotes (sedesert), flamingos and frilled lizards (eastabyss) |
-| `core/` | rand, walk, sched, clock, mask, tags, furnish, biome | none |
+| `core/` | rand, walk, sched, clock, mask, tags, furnish, biome, host (minimap) | none |
 | `settlements/locus/src/21-sky.js`, `82-daynight.js` | the lighting system (vendored copies `81`, `82`) | none |
 
 ## Build and verify

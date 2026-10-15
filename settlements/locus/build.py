@@ -67,6 +67,9 @@ ATMOS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos'
 CLOCK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'clock')   # KCLOCK: the world clock (core/clock)
 MINIMAP_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'minimap')   # KMAP: the plan panel (core/minimap)
 WATER_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'water')   # WATER: the open lake (core/water/README.md; 90w-lake.js)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
+import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
 # The eastern-abyss biome: core/biome and the canonical kit biomes/eastabyss, read in place under Locus's slot names (the
 # names keep their order: after the kit builders, before 69b's host binding and 69z's planting). Mungo reads this map too.
 _ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -111,7 +114,8 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 ROOT = os.path.dirname(os.path.dirname(HERE))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
+VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
@@ -174,6 +178,7 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack as _mp
     vb['69a0-bio-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
+    vb[khost.EDITS_JS] = khost.edits_js(HERE, 'locus')   # the world page's edits (a kit sheet ignores them: 66-locus-furnish.js)
     return vb
 
 
@@ -281,6 +286,7 @@ def main():
                 paths[f] = os.path.join(d, f)
     for f, p in BIO_CANON.items():                               # the biome, in place (a src/ copy would override)
         paths.setdefault(f, p)
+    khost.resolve(paths, CORE_HOST)        # core/host (core/clock and core/minimap are already in from their folders)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

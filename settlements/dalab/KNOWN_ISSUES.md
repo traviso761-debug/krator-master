@@ -4,11 +4,23 @@ Open items are `- [ ]`; `build.py` prints them. Close one by ticking it and
 saying what fixed it.
 
 ## Building kit (round 1)
-- [ ] (2026-10-15) Vendor drift, deliberate until this build moves onto core/host (ROADMAP.md section 10, step 5): `src/92-camera.js` and `src/00-head.html`
-      upstream (settlements/iziz/src) is now core/host's camera layer (Iziz and Highlands moved in step 3: the camera, loop, panel, inspector and
-      marks are core/host's, the take in their `99-start.js`). This build keeps the old self-contained camera; re-vendoring it
-      alone would leave the page with no camera. Move the build onto core/host (core/host/README.md, "The whole interface") and
-      re-vendor then.
+- [x] (2026-10-15) Dalab on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk (F,
+      9 m/s as before), the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records), marks (P,
+      they replace the polygon tool) and the minimap (M) are core/host's, as on Iziz (host.FULL without core/space and core/edits).
+      `src/92-camera.js` and `src/00-head.html` are re-vendored from Iziz (only ui, uiButton, setView, Labels stay); `src/99-start.js`
+      is the take (FRAME_HOOKS as before, f(dt, ms), in a tick subscriber; a preset's seventh element, the hour, set by onView);
+      `src/91t-dalab-tags.js` reads REG into KTAGS.page (98 records on the set, 3,377 on the city; 0 unknown). Proof: verify.py
+      --assert passes the same six invariants on both pages (the city's draw calls at its camera 178 before, 182 after: the LOD
+      queue, below). The scene census at four views: the set matches the old page exactly (two old runs match each other too);
+      the city's old page differs from itself at three of four views (the biome's LOD meshes, 3 to 5 names), the new page by 2 to
+      14 names, all core/lod's time-budgeted proxy queue; with `LOD.flush()` before each count, two old runs and the new page
+      match exactly at all four views. Hostcheck: the inspector names "The God — the Ancient lab" and "Round earth hut (peasant)"
+      from their records, minimap and marks work, the error panel is clean.
+- [ ] (2026-10-15) 'dalab' is not a core/tags culture: `91t-dalab-tags.js` gives Dalab's records culture null and style 'dalab', the castes
+      (peasant, noble, priest) as wealth (poor, rich, rich) with the caste as the role, an embassy's guest as its role ('embassy:voth'),
+      the lab's `ancient` as state reclaimed. When core/tags takes the culture (with its test and golden), map it there and drop this.
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
+      to core/host, as it was never run by the old camera either.
 - [x] The mound is a real mesh, one draw call each. **Round 3:** every mound and
       ring bank goes into `DMOUND_GEOS` in world space and `94-dalab-light.js`
       merges them into ONE mesh (`window._mounds` counts them).

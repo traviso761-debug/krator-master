@@ -55,8 +55,10 @@ Everything is **data first** (repo `README.md`, "Furniture that is not always dr
 Pick a **level** (or press **C** to cycle): the hull is cut away above a height in its own frame, so a deck lies open as
 a plan; walls and slabs show their cut in a dark section colour. Levels: the holds, D1 .. D4, the dining room's double
 height, the top deck's buildings storey by storey. **F** walks at eye height on the deck under you (**Q / E** down and up
-a level, WASD, drag to look). **T** the inspector (what, where: deck, cabin, zone), **P** the polygon tool, **N** night
-(the lanterns lit).
+a level, WASD, drag to look). **I** (or **T**) the inspector's hover tip, a click its card (what, where: deck, cabin, zone),
+**N** night (the lanterns lit). The camera, the walk, the inspector, the marks (**P**, in place of the polygon tool), the
+minimap (**M**) and the cutaway (**X**: a deck building or the bridge house storey by storey, **] [** a storey) are
+core/host's (since 2026-10-15; `src/99-start.js` is the take).
 
 ## Build and verify
 

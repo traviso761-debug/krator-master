@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 72 (32%) | 0 (0%) | 0 (0%) | 145 (65%) | 6 (3%) |
+| KB | 72 (31%) | 0 (0%) | 0 (0%) | 152 (66%) | 6 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 3.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-dhelv-layout.js` | 34.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/45-dhelv-bio.js` | 9.5 | [web] | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/48-dhelv-flows.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the vents and THRONE.flowHistory over the layout's land: data |
@@ -24,10 +24,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-dhelv-hills.js` | 8.8 | [web] | 9 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | the hills' drawing, walk floors and flora pass (a port plants its own); the hills and their pads are the layout's (41, data) |
 | `src/90-dhelv-scene.js` | 58.6 | [web] | 56 | 0 | 1 | 0 | 10 | 21 | 3 | 5 | 0 | 0 | 0 |  |
 | `src/91-dhelv-probe.js` | 18.4 | [web] | 3 | 0 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/92-dhelv-camera.js` | 2.6 | [web] | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world built, VIEWS, and the camera's names on core/host (the kit's 92-camera.js is left out) |
 | `src/92-dhelv-export.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the export to godot/data/dhelv (window._api): reads the data, holds none |
 | `src/93-dhelv-map.js` | 5.6 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/95-dhelv-life.js` | 8.7 | [web] | 12 | 0 | 2 | 2 | 1 | 3 | 0 | 2 | 2 | 0 | 0 | split: data inside host code |
+| `src/99-start.js` | 6.6 | [web] | 0 | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host), the frame after the camera, the inspector's words |
 
 ## Notes
 

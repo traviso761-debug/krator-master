@@ -56,6 +56,15 @@ RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # not 24-tex-def.js: its TEX clashes with core/materials 20-textures.js (as in Ys)
 TEX_DIR = os.path.join(HERE, 'tex')        # tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'        # GENERATED from tex/ (never written to src/)
+# core/rand and core/tags: the registry core/host's inspector and minimap read (src/91t-jj-tags.js fills KTAGS.page from REG)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[:1].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock, core/space and core/minimap, as Iziz takes them. Not core/edits: no editor world.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+SHARED_CORE = set(TAGS_FILES) | set(CORE_HOST)   # shared modules: each its own scope (IIFEs), left out of the name rules
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
     '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js',
@@ -77,6 +86,10 @@ def source_paths():
             files[f] = os.path.join(LOD_DIR, f)
     for f in RECORD_FILES:
         files[f] = os.path.join(RECORD_DIR, f)
+    for f, p in TAGS_FILES.items():
+        if f not in files:
+            files[f] = p
+    khost.resolve(files, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     files[PACK_FRAGMENT] = None             # generated: matlib_pack()
     target_files = {f: os.path.join(TARGET, f) for f in os.listdir(TARGET) if f[:1].isdigit()}
     overlap = set(files) & set(target_files)
@@ -114,6 +127,8 @@ def validate(bodies):
     errors = []
     owners = {}
     for filename, body in bodies.items():
+        if filename in SHARED_CORE:
+            continue
         if filename.endswith('.js'):
             for match in BUILDER.finditer(body):
                 if 'reseed(' not in match.group(2):

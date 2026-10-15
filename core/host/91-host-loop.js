@@ -14,7 +14,9 @@
 //     o.sky {follow(camera), hour?(h)} the sky kept on the eye each frame; hour(h) puts the sky at a world hour
 //     o.ticks  [fn(dt, seconds)]      the biome kits' TICKS: the array is read live, every frame, bodies unchanged
 //     o.hourTicks [fn(dt, hour)]      the life builds' convention; o.frameHooks [fn(nowMs)]: Streetlab's _frameHooks
-//     o.clock {hour, running, scale, speeds}   the clock's start (hour 12, held, as the preview pages open)
+//     o.clock {hour, running, scale, speeds, obj?, onSet?(h)}   the clock's start (hour 12, held, as the preview pages open);
+//                                   obj: a KCLOCK the page already made, adopted; onSet: called when the hour slider moves;
+//                                   maxStep: the longest step the clock takes in a frame (default 0.1 s; the camera keeps 0.1)
 //     o.draw(scene, camera, dt)       the build's own draw in place of renderer.render (a post pass: a heat shimmer)
 //     o.layers, o.stats, o.inspect, o.exporters, o.controls, o.keys, o.title, o.hint, o.build   the panel (92)
 //     o.budget, o.types, o.regHas, o.checks, o.api   the probe (95-host-probe.js)
@@ -53,7 +55,8 @@ K.take=function(o){
  const renderer=o.renderer||(()=>{const r=new THREE.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.5));r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);return r;})();
  const camera=o.camera||new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,12000);
  const CO=o.clock||{},hq=param('hour');
- const clock=KCLOCK.make({hour:hq!=null&&isFinite(+hq)?+hq:(CO.hour==null?12:CO.hour),running:param('time')==='run'||!!CO.running,scale:CO.scale==null?1:CO.scale});
+ // o.clock.obj: a page's own KCLOCK (Voth's VC.clock, which its simulation reads) is adopted as the host's: the loop steps it
+ const clock=CO.obj||KCLOCK.make({hour:hq!=null&&isFinite(+hq)?+hq:(CO.hour==null?12:CO.hour),running:param('time')==='run'||!!CO.running,scale:CO.scale==null?1:CO.scale});
  const tq=param('t');if(tq!=null&&isFinite(+tq))clock.fixed=+tq;
  const H=K.host={o,scene,renderer,camera,clock,views:o.views||{},registry:o.registry||[]};
  // ---------------------------------------------------------------- the camera (90) and the panel (92)
@@ -70,8 +73,8 @@ K.take=function(o){
  const ticks=o.ticks||null,hourTicks=o.hourTicks||null,hooks=o.frameHooks||null,sky=o.sky||null,draw=o.draw||null;
  let last=performance.now(),drawErr=false;
  function frame(){
-  const now=performance.now(),real=Math.min(.1,Math.max(0,(now-last)/1000));last=now;
-  clock.step(real);const dt=clock.dt;
+  const now=performance.now(),raw=Math.max(0,(now-last)/1000),real=Math.min(.1,raw);last=now;
+  clock.step(CO.maxStep==null?real:Math.min(CO.maxStep,raw));const dt=clock.dt;   // maxStep: a page whose clock ran on real time between frames (Voth) keeps it
   C.move(real);
   if(ticks)for(let i=0;i<ticks.length;i++)call(ticks[i],'tick',dt,clock.t);
   if(hourTicks)for(let i=0;i<hourTicks.length;i++)call(hourTicks[i],'tick',dt,clock.hour);

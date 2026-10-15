@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 23 (4%) | 19 (3%) | 27 (5%) | 44 (8%) | 468 (81%) |
+| KB | 26 (5%) | 19 (3%) | 27 (5%) | 34 (6%) | 468 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 2.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 2.9 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.3 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 4 | 3 | 0 | 0 | 0 |  |
@@ -81,10 +81,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-lab.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 16.6 | [web] | 27 | 2 | 1 | 0 | 0 | 6 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 4.5 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 5.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
-| `src/93-polytool.js` | 6.9 | [web] | 10 | 0 | 12 | 6 | 0 | 3 | 0 | 1 | 1 | 0 | 0 |  |
+| `src/92-camera.js` | 1.5 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | what stays of the camera on core/host: ui, setView, the title, LOD's options (2026-10-15) |
 | `src/94-life.js` | 10.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 4 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/95-pathviz.js` | 4.4 | [web] | 10 | 0 | 4 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/95-pathviz.js` | 4.0 | [web] | 10 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the path tracker; its Routes and Tracks are core/host layers (window._tracker, 2026-10-15) |
+| `src/96t-screamers-tags.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md): class and tags from the name and builder type (2026-10-15) |
+| `src/99-start.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, TICKS, the sky, layers (rings, routes, tracks), inspector words, minimap: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/furniture/89z-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/furniture/91z-views.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

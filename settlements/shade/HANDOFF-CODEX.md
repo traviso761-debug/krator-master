@@ -56,7 +56,7 @@ Then ONE placement fragment, `src/87b-host-buildings.js` (runs before `88-host-b
 
 ## Add checks for your work (with negatives)
 
-`91-host-probe.js` shows the pattern: each check is a function of its input, and
+`91-shade-probe.js` (was `91-host-probe.js`) shows the pattern: each check is a function of its input, and
 `shadeNegatives()` feeds it a broken one that MUST fail. Add at least:
 - every building's footprint lies inside its place's polygon;
 - no two buildings' footprints overlap;

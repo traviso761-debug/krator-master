@@ -157,7 +157,7 @@ var LIFE = null;
   PATHVIZ.push({ key:'life_buggies', label:'Life: the buggies', color:0xff40c0, paths:function(){ return routesOf(function(a){ return !!a.vehicle && a.inVehicle==='buggy'; }); } });
 
   /* ---------------------------------------------------------------- the census panel (the Life button) */
-  (function(){ var host=document.getElementById('polyBox'), panel=document.getElementById('simPanel');
+  (function(){ var host=document.getElementById('pathvizSel'), panel=document.getElementById('simPanel');   /* under the paths select (the polygon tool's box is core/host's marks now) */
     if(!panel){ panel=document.createElement('div'); panel.id='simPanel'; if(host && host.parentNode) host.parentNode.insertBefore(panel, host.nextSibling); }
     var b=document.createElement('button'); b.id='lifeToggle'; b.textContent='Life: census'; b.style.width='100%'; b.style.boxSizing='border-box'; b.style.marginBottom='4px';
     var anchor=document.getElementById('pathvizSel'); if(anchor && anchor.parentNode) anchor.parentNode.insertBefore(b, anchor.nextSibling);

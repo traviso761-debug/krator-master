@@ -541,6 +541,13 @@ brewery, butcher, bakery); overrides for the fallback shells; the Palace and Tem
 
 ## State
 
+**2026-10-15, stage 3 step 6a: Voth on core/host's shell** (camera, loop, clock, panel, probe; `targets/voth-city/
+97-vc-host-take.js`). What changed and its proof: `core/host/README.md`, "Voth onto core/host". For the page: the title
+bar is the host's (`#bar`, the view select, the time controls drive `VC.clock`); the keys are the host's (F walk, G pin);
+`#clk-pause` and `#wx` are kept. The verify's simulation statistics read slightly differently because they depend on load
+timing (the same on the old page); the placement hash is a1a7f008 as before. 6b (inspector, stocks, marks, editor, flora
+edit, cutaway onto the host) is next.
+
 **Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (Streetlab's own `src/` then, `dist/streetlab.html`) was
 retired: the owner called it redundant. Its street machinery became **`core/city`**, the city builder and its infill
 (`core/city/README.md`), and the city plan takes it from there.

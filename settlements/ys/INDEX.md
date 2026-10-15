@@ -13,11 +13,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
@@ -126,9 +132,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8al-alt-11-hospital.js` | 5 |  |
 | `90-ys-scene.js` | 8 | the sky and the clock (16); core/atmos for the sea (core/water, 71w-port-sea (34); the port: stamps, terrain, sea, builders, bake (44) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
-| `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
+| `91t-ys-tags.js` | 3 | CORE TAGS: YS'S REG (1) |
+| `92-camera.js` | 7 | what stays of the camera on core/host: the prese (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `93-ys-ui.js` | 4 |  |
+| `99-start.js` | 3 | 99. the take: Ys on core/host (every target: the (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/

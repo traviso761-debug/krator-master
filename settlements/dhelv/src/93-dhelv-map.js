@@ -2,7 +2,7 @@
 // hall's square, the wells, every way coloured by kind, the sites' footprints; the ways within 6 m of the camera's height bright,
 // the rest faded (the levels: the braid crosses under the ledge's tunnels); the camera (its view as a cone) and the marker.
 // It shows the city or the outpost, whichever the camera is in; a click on it brings the orbit there (on the floor below the
-// nearest way's height). M hides it.
+// nearest way's height). K hides it (M is core/host's minimap since 2026-10-15).
 const DHMAP={on:true,W:260,H:230,mode:null,base:{},t:0,extra:[],
  views:{city:{x0:-720,x1:780,z0:-470,z1:680},outpost:{x0:-1010,x1:-560,z0:-230,z1:230}},
  COL:{tube:'#8a6a48',braid:'#7a4c96',ramp:'#3f9f98',stair:'#d4aa5a',ledge:'#c24a3a',square:'#b8ab90',street:'#9e8a70',door:'#ffffff',secret:'#4a8fd0'}};
@@ -42,4 +42,4 @@ FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DHMAP.t>100){DHMAP.t=t;dhMa
 DHMAP.cv.addEventListener('click',e=>{const r=DHMAP.cv.getBoundingClientRect(),F=dhMapFrame(DHMAP.views[DHMAP.mode||'city']),x=F.x(e.clientX-r.left),z=F.z(e.clientY-r.top);
  let best=null,bd=40;for(const n of DH.NODES){const dd=Math.hypot(n.x-x,n.z-z);if(dd<bd){bd=dd;best=n;}}
  const y=best?best.y:terrainH(x,z);if(WALK.on)toggleWalk();ctl.target.set(x,y+1.5,z);ctl.radius=Math.min(ctl.radius,60);DH_STREAM.tick=0;});
-addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;if(e.key.toLowerCase()==='m'){DHMAP.on=!DHMAP.on;DHMAP.cv.style.display=DHMAP.on?'block':'none';}});
+addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;if(e.key.toLowerCase()==='k'){DHMAP.on=!DHMAP.on;DHMAP.cv.style.display=DHMAP.on?'block':'none';}});

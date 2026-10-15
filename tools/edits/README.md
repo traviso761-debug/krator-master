@@ -44,4 +44,5 @@ A page on `core/host` (`core/host/README.md`) saves through the same server: POS
 page, data}` writes `data` to `<build>/edits.json` (a `core/edits` log, the editor's Save, B) or `<build>/marks.json` (the
 marks, P), the build being the folder with `build.py` that holds the page. A body that is not a `krator-edits` or
 `krator-marks` object, or a page outside a build, is refused (400). `core/host/host.py` inlines `edits.json` at the next
-build (`KHOST_EDITS`); the marks are read by the page as it loads. Opened without the server, both stay in the browser.
+build (`KHOST_EDITS`); the marks are read by the page as it loads (GET `/__file?kind=marks&page=...`: the file, or 204 when none
+was saved, so no page logs a 404). Opened without the server, both stay in the browser.
