@@ -1,7 +1,7 @@
 {
  "00-head.html": [
   "mungo (overrides locus)",
-  "df3b1ef160d4"
+  "2bd8262162e3"
  ],
  "01-reedkit.html": [
   "virtual",
@@ -38,6 +38,10 @@
  "20-core-sched.js": [
   "core/sched",
   "932d088efbab"
+ ],
+ "20-core-space.js": [
+  "core/space",
+  "30e465e74c51"
  ],
  "20-core-water.js": [
   "core/water",
@@ -83,13 +87,21 @@
   "mungo (overrides locus)",
   "bb63f1e7d2d9"
  ],
+ "39-host-edits.js": [
+  "virtual",
+  "9fdd35e3ad16"
+ ],
+ "40-core-edits.js": [
+  "core/edits",
+  "2b9d1a27c779"
+ ],
  "40-ground.js": [
   "mungo (overrides locus)",
   "cab2dcdcb811"
  ],
  "45-kit.js": [
   "locus",
-  "77eb0628731c"
+  "82f0c9eb275e"
  ],
  "46-matlib-pack.js": [
   "virtual",
@@ -133,7 +145,7 @@
  ],
  "53-assets.js": [
   "locus",
-  "23ae272a1b3f"
+  "394b56e86e01"
  ],
  "53-core-furnish-host.js": [
   "core/furnish",
@@ -273,7 +285,7 @@
  ],
  "66-locus-furnish.js": [
   "locus",
-  "606019ae7028"
+  "d57d9ebc21e1"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -413,7 +425,7 @@
  ],
  "80-camera.js": [
   "mungo (overrides locus)",
-  "2ed36c756b2e"
+  "01cebbe24228"
  ],
  "81-glow.js": [
   "locus",
@@ -425,7 +437,7 @@
  ],
  "84-mungo-life.js": [
   "mungo",
-  "c4c1845b8df6"
+  "b6f08b00bdc4"
  ],
  "85-probe.js": [
   "mungo (overrides locus)",
@@ -433,7 +445,7 @@
  ],
  "86-inspect.js": [
   "locus",
-  "691cd805f759"
+  "82e0982cbab4"
  ],
  "87-pathviz.js": [
   "locus",
@@ -519,17 +531,61 @@
   "locus",
   "5a5166f0db52"
  ],
+ "90-host-camera.js": [
+  "core/host",
+  "26986a9079a2"
+ ],
  "90w-lake.js": [
   "locus",
   "c915b3d2fe2f"
+ ],
+ "91-host-loop.js": [
+  "core/host",
+  "4bcbbce1af7a"
+ ],
+ "92-host-panel.js": [
+  "core/host",
+  "659771868002"
+ ],
+ "93-host-inspect.js": [
+  "core/host",
+  "ad376f74792b"
+ ],
+ "93-host-stocks.js": [
+  "core/host",
+  "fc92c7abf275"
+ ],
+ "94-host-marks.js": [
+  "core/host",
+  "5347334d0741"
+ ],
+ "95-host-probe.js": [
+  "core/host",
+  "94fec2e5025a"
+ ],
+ "96-host-pictures.js": [
+  "core/host",
+  "1c6b36cc7ca2"
+ ],
+ "97-host-minimap.js": [
+  "core/host",
+  "bb80eeaa8a43"
  ],
  "97-lod-auto.js": [
   "core/lod",
   "88ec9e581127"
  ],
+ "98-host-edit.js": [
+  "core/host",
+  "b0ec7f749a05"
+ ],
  "98-start.js": [
   "locus",
-  "05665ea7386d"
+  "11cf93c447eb"
+ ],
+ "99-host-cutaway.js": [
+  "core/host",
+  "79b67cff9e25"
  ],
  "99-tail.html": [
   "locus",

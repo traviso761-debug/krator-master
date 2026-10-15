@@ -2,6 +2,21 @@
 
 Open items are `- [ ]` lines; `build.py` prints them.
 
+## core/host (2026-10-15)
+
+- [x] (2026-10-15) Mungo on core/host (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`), with Locus's fragments it
+      reads (45-kit, 53-assets, 66-locus-furnish, 86-inspect, 98-start: settlements/locus/KNOWN_ISSUES.md): `build.py` takes
+      `khost.FULL` (origin core/host, core/edits, core/space); `src/80-camera.js` keeps a ctl shim, setView, VIEWS, the world
+      clock MCLOCK and the page's frame (`camFrame`, `camDraw`); the census panel (84-mungo-life.js) sits under the paths select.
+      Every REGISTER()ed site is a core/tags record (3,478, 0 unknown). The inspector, marks, pictures (629 catalog pieces), the
+      editor (pieces placed live; the page's own moved or removed on reload) and the cutaway (every building) are new. Proof:
+      `verify.py --assert` every invariant PASS as before (22), all 146 counters identical to the old page's, draw calls the same
+      (435); the scene census (LOD flushed) at four views matches the old page within its own run-to-run noise (`biome:bark4`
+      moves between runs of either page); the inspector, cutaway, editor (place, undo, deferred remove) checked headless.
+- [ ] (2026-10-15) Keys: as Locus's (F the host's walk, G the pin, I the hover tip, P marks, B edits, X cuts; M the page's own
+      minimap, 88b + 88c). Mungo has an economy (core/simulation SIM) but hands the host no `holds` yet: no stocks panel (O) and
+      no contents in the inspector until `KHOST.simHolds(SIM, {idOf, containerOf})` is wired (Voth's 56e is the standard).
+
 ## The world
 
 - [ ] The canonical eastern-abyss biome (`core/biome` + `biomes/eastabyss`, since 2026-10-05) has six species the old port lacked (seal-tree, cordaite, seed fern, araucaria, beard oak, water palm): about +3 M triangles headless (Locus 6.2 M -> 9.0 M, Mungo 6.0 M -> 7.8 M), and the triangle budget (`05-palette.js`, shared) went from 7 M to 10 M. The town trees are grown after the biome's passes (`EASTABYSS.make` / `grow`, 69z), so they no longer take a keep-clear entry the passes would avoid; the town is masked out of the passes anyway. If the frame rate on a weak GPU suffers, thin the new species in the kit or pass a lower `quality` in 69z.

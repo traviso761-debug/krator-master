@@ -2,11 +2,18 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
-- [ ] (2026-10-15) Vendor drift, deliberate until this build moves onto core/host (ROADMAP.md section 10, step 5): `src/92-camera.js`
-      upstream (settlements/highlands/src) is now core/host's camera layer (Iziz and Highlands moved in step 3: the camera, loop, panel, inspector and
-      marks are core/host's, the take in their `99-start.js`). This build keeps the old self-contained camera; re-vendoring it
-      alone would leave the page with no camera. Move the build onto core/host (core/host/README.md, "The whole interface") and
-      re-vendor then.
+- [x] (2026-10-15) Reed Lake on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk (F),
+      the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records), marks (P, they replace the
+      polygon tool) and the minimap (M) are core/host's on the kit page and the village, as on Highlands (host.FULL without
+      core/space and core/edits). `src/92-camera.js` is re-vendored from Highlands (only ui, uiButton, setView, Labels stay;
+      `--vendor-check`: 22 identical, 73-hl-carve.js adapted as before), `src/00-head.html` loses #cap, #insp, #poly and #hud,
+      `src/99-start.js` is the take (FRAME_HOOKS as before, f(dt, ms), in a tick subscriber), `src/91t-reedlake-tags.js` reads REG
+      into KTAGS.page (51 records on the kit page, 19 on the village; 0 unknown: 'reed-lake' is the vocabulary's 'reedlake').
+      Proof: verify.py --assert passes the same six invariants with the same numbers on both pages; the scene census at four views
+      of each matches the old pages exactly (two old runs match each other exactly too). Hostcheck: the inspector names "Great
+      mudhif" from its record on both pages, minimap and marks work, the error panel is clean.
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
+      to core/host, as it was never run by the old camera either.
 - [ ] No reclaimed-metal variants yet (the Highlands round-3 `88-hl-dress.js` pass is not vendored; the lake's only salvage is at the smithy).
 - [ ] Boats and islands do not bob. Since 2026-10-13 the lake is core/water's (`90w-rl-lake.js`) with a CPU twin (`WATER.heightAt`), but the boats, rafts and islands are baked into the kit's instanced sets, so nothing can ride it; the lake is kept calm instead (`RL_LAKE_FIELD` .12: at most 7 cm from `RL.WATER`, and the canoes' keels sit 9 cm under it). A boat that should ride needs its own group (`WATER.ride`, as the Ring Sea kit's hulls do).
 - [ ] The loose-reed fringes stand across their edges instead of along them: `hnRLEaveFringe` and the island fringe in `hnRLIsland` (75-rl-helpers.js) turn the plane by `yaw = atan2(dx, dz)`, which lays a unit plane's width across the segment (the lattice in 78/79 adds `+ Math.PI/2`). Seen 2026-10-05 on the thatch hut's front eave: the fringe sticks out toward the viewer. `81-rl-tavern.js` lays its own fringe along the landing eaves. Fixing the helper changes every def's look: rebuild and look at every row.

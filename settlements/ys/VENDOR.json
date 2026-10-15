@@ -387,7 +387,7 @@
  "92-camera.js": {
   "adapted": true,
   "from": "settlements/iziz/src",
-  "sha1": "76c9112c7e72"
+  "sha1": "adc505981d87"
  },
  "93-labels.js": {
   "adapted": false,

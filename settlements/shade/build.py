@@ -13,7 +13,14 @@
   83-host-world-json    generated: settlements/shade/world/*.json inlined as SHADE_WORLD_JSON for SIM.load
   84-host-life          HOST: the life layer declared into SIM (places, ports, the walkable grid as its
                         'pedestrian' layer, the population) and Shade's own audits
-  86..91                HOST: overlays, build order, camera and dev tools, probe
+  86..88                HOST: overlays, the preset views, build order
+  89t-shade-tags        HOST: the page's core/tags registry (KTAGS.page): buildings, places, trees, water, carve patches
+  08-core-rand, 50..53-core-tags   read from core/rand and core/tags (CORE_MODULES)
+  90..99-host-*, 20-core-space, 88-core-minimap   read from core/host (CORE_HOST: the whole interface less core/edits;
+                        core/host/README.md): the camera, the loop, the panel, the inspector, marks, pictures, minimap,
+                        cutaway, the probe
+  91-shade-probe        HOST: Shade's own probe fields and checks (window._api, handed to the host's probe)
+  99-shade-take         HOST: the take (KHOST.take: views, ground, layers, inspector words, the probe's fields)
   99-tail.html          closes <script>
 
   python3 build.py                 build, syntax-check, write VENDOR.json
@@ -40,7 +47,11 @@ UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'
 OUT = 'shade.html'
 CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain (opt-in by name; a local copy wins)
 CORE_T = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'terrain'))
-CORE_MODULES = ['clock', 'sched', 'simulation']   # core/<module>/[0-9]*.js, every fragment (a local copy wins)
+CORE_MODULES = ['clock', 'sched', 'simulation', 'rand', 'tags']   # core/<module>/[0-9]*.js, every fragment (a local copy wins)
+# core/host (core/host/README.md; ROADMAP.md section 10, stage 3 step 5): the whole interface less core/edits (no editor world yet)
+sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'host')))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
 MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
 VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
@@ -91,6 +102,7 @@ def main():
         d = os.path.normpath(os.path.join(HERE, '..', '..', 'core', mod))
         for f in sorted(os.listdir(d)):
             if f[0].isdigit() and f.endswith('.js') and f not in path: path[f] = os.path.join(d, f)
+    khost.resolve(path, CORE_HOST)   # a src/ copy with a shell file's name would win (none: 90-host-camera.js went, 2026-10-15)
     path[WORLD_FRAG] = None
     # the material library: core/materials/record (KMAT and the loader) and the GENERATED pack (tools/textures/matlib_pack.py
     # from tex/, written by tools/textures/pack.py from materials.json); src/78b-host-matlib.js binds it onto NOMAD.MAT

@@ -133,6 +133,12 @@ them here. `skySetHour(CLOCK.hour)` each frame keeps one clock.
 Each view is `[cx, cy, cz, tx, ty, tz]`, derived from the layout. 'A caravan on the trail' and 'A caravanserai yard'
 are getters: they find their subject in the sim when picked. `?view=<name>` opens on a view.
 
+## 99-start.js: the take (core/host)
+
+The camera, the loop, the panel, the inspector, marks and the minimap are core/host's (`core/host/README.md`). `setView(...)`
+stays a global (verify.py calls it), `PRE_RENDER` too (passes drawn before the city). `CLOCK` is the host's clock: its fields
+read and write it, `CLOCK.set` / `CLOCK.run` call it; nothing else steps it. TICKS run after the camera is placed, each isolated.
+
 ## 91-verge-probe.js: `window._api`
 
 - `checks()`: `[{name, ok, detail}]`. Each check is fed a broken input as its negative control, and a check whose

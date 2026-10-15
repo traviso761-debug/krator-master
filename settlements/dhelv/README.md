@@ -37,7 +37,7 @@ stone door and the braid (1031 m against DHN's 1044 m). See `godot/README.md`.
 | `src/72-dhelv-nav.js` | the nav graph (`DHN`) and its checks: data |
 | `src/74-dhelv-sim.js` | the ramblers' world declared into core/simulation (`DHS`) and their checks: data |
 | `src/95-dhelv-life.js` | the ramblers drawn: the clock, the bodies, the dots on the minimap, following a walker, the nav overlay (V) |
-| `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; M hides it |
+| `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; K hides it (M is core/host's minimap) |
 | `src/94-dhelv-light.js` | the cave's light: underground the sun and the sky's reflections go out; daylight comes down the openings (the sky's light straight down, the sun's beam with shadows, a shaft with motes, a bounce), the lamps nearest the eye light the dark, the tunnels' glow fungus; `[` `]` move the hour |
 | `build.py`, `verify.py` | the page: core, the kit's `src/` less its sheet's host, and `src/` here; the headless check |
 
@@ -132,11 +132,10 @@ cut-away's boxes, `dhCutBoxes`). The orbit camera has no floor inside a void
 
 ## Getting about
 
-- **Double-click** drops a marker (a red pin) where you click; **G** brings the camera to it; **Walk (F)** starts on it (or on
-  the nearest floor to the view's centre, never the surface over an underground view). **Run (R)** walks 2.5 times as fast
-  (Shift too, while held).
+- The camera, the walk and the pin are core/host's (`core/host/README.md`): **double-click** drops a pin where you click; **G**
+  brings the camera to it; **F** walks from it (or from the view's centre) on the page's floors; Shift walks faster.
 - **The minimap** (bottom right) shows the city or the outpost, whichever you are in; the ways within 6 m of your height are
-  drawn bright. Click it to fly there; **M** hides it.
+  drawn bright. Click it to fly there; **K** hides it (**M** opens the host's minimap, drawn from the records).
 
 ## The wells' floors
 

@@ -11,11 +11,19 @@ Built output (never open it; edit `src/` and rebuild): `dist/noahs-regret.html`
 Build: `cd settlements/noahs-regret && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 2 |  |
 | `10-core.js` | 3 | error panel (5); rng + noise (14) |
 | `12-nr-world.js` | 5 | THE GROUND (world y): the shore, the dune, the s (35) |
 | `14-nr-plan.js` | 25 |  |
@@ -40,11 +48,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `70-nr-interiors.js` | 37 **big** | the CABINS (63); the SHIP'S ROOMS (89); the DECK BUILDINGS (129); the PUBLIC ROOMS: placed piece by piece, in the  (149); the pass (309) |
 | `81-sky.js` | 10 |  |
 | `82-nr-water.js` | 4 | the sea (25) |
-| `89-nr-views.js` | 11 | where a point is (the inspector, the HUD) (61); the walk floors: every level under a point (hull (77) |
+| `89-nr-views.js` | 11 | where a point is (the inspector, the stats panel (61); the walk floors: every level under a point (hull (76) |
 | `90-scene.js` | 5 | (re)build the world (24) |
 | `91-probe.js` | 2 |  |
 | `91f-furnish.js` | 7 |  |
 | `91n-night.js` | 3 |  |
-| `92-camera.js` | 14 |  |
+| `92-camera.js` | 7 |  |
 | `93-anim.js` | 3 |  |
+| `99-start.js` | 3 |  |
 | `99-tail.html` | <1 |  |

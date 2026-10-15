@@ -13,11 +13,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 
+From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.py`: the whole interface less `core/edits`): `90-host-camera.js` to `99-host-cutaway.js`, with `core/clock`, `core/space` and `core/minimap`'s files. From `core/rand/` and `core/tags/`: `08-core-rand.js`, `50`, `52`, `53-core-tags*.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 4 |  |
+| `00-head.html` | 1 |  |
 | `10-core-head.js` | 8 | PRNG (14); noise (24); host binding (41); accounting (107) |
 | `20-core-kit.js` | 17 | merged buckets (58); indexed buckets (152); bake (175); dynamic instances (198) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
@@ -43,6 +45,7 @@ From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 | `86-host-overlay.js` | 3 |  |
 | `87-host-views.js` | 3 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 10 | the panel (12); picking (27); the polygon tool (65); input (71) |
-| `91-host-probe.js` | 28 | the Shade checks (35) |
+| `89t-shade-tags.js` | 3 |  |
+| `91-shade-probe.js` | 28 | the Shade checks (37) |
+| `99-shade-take.js` | 4 | the inspector's words where no record holds the point (7); the page, handed to the host (19) |
 | `99-tail.html` | <1 |  |

@@ -6,6 +6,7 @@ the probe and the export. Everything else is READ FROM ITS HOME, never copied, s
 the kit and every build that reads it:
 
   core/rand, core/walk, core/sched, core/clock, core/mask, core/tags, core/furnish, core/biome   the shared modules
+  core/host (CORE_HOST: the camera, loop, panel, inspector, marks, minimap, probe; src/99-start.js is the take)
   biomes/sedesert/src (50..75), biomes/eastabyss/src (50..75)    the two biome kits, each kept contiguous and in its
                                                                  own order (a kit's BIO.kit ... BIO.kitEnd must not
                                                                  interleave with the other's)
@@ -78,6 +79,14 @@ CORE = {
     '50-core-furnish.js': 'core/furnish/50-core-furnish.js', '52-core-furnish-draw.js': 'core/furnish/52-core-furnish-draw.js',
     '53-core-furnish-host.js': 'core/furnish/53-core-furnish-host.js',
 }
+# core/host (core/host/README.md; ROADMAP.md section 10, stage 3 step 5): the whole interface less core/space (core/biome's
+# 40-core-place.js takes its grid when it is on the page, which would move the scatter) and core/edits (no editor world yet).
+# src/99-start.js is the take; a src/ file with a host file's name would win (none)
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+for _f in CORE_HOST:
+    CORE.setdefault(_f, os.path.relpath(khost.path(_f), ROOT).replace(os.sep, '/'))
 # the two biome kits: slot prefix, kit folder, the kit's fragments in its own order (a missing one is skipped)
 KITS = [('54', 'sedesert', ['50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
                             '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js']),

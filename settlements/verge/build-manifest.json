@@ -1,7 +1,7 @@
 {
  "00-head.html": [
   "settlements/verge/src/00-head.html",
-  "4f75b07214f6"
+  "76ea193f28c8"
  ],
  "08-core-rand.js": [
   "core/rand/08-core-rand.js",
@@ -181,7 +181,7 @@
  ],
  "65-ykit-bundle.js": [
   "GENERATED: settlements/locus/src/05-palette.js, settlements/locus/src/10-core.js, settlements/locus/src/45-kit.js, settlements/locus/src/47-texture.js, settlements/locus/src/50-structure.js, settlements/locus/src/53-assets.js, settlements/locus/src/56-mid.js, settlements/locus/src/57-poor.js, settlements/locus/src/58-rich.js, settlements/locus/src/59-civic.js, settlements/locus/src/64-locus-chapterhouse.js, settlements/locus/src/64-locus-core.js, settlements/locus/src/64-locus-dwellings.js, settlements/locus/src/64-locus-farm.js, settlements/locus/src/64-locus-infra.js, settlements/locus/src/64-locus-petroleum.js, settlements/locus/src/64-locus-plants.js, settlements/locus/src/64-locus-power.js, settlements/locus/src/65-abyss-00-core.js, settlements/locus/src/65-abyss-20-plants.js, settlements/locus/src/65-abyss-30-housing.js, settlements/locus/src/65-abyss-40-shops.js, settlements/locus/src/65-abyss-50-civic.js, settlements/locus/src/65-abyss-60-temple.js, settlements/locus/src/65-abyss-70-palace.js, settlements/locus/src/65-abyss-75-verge.js, settlements/locus/src/65-abyss-80-military.js, settlements/locus/src/65-abyss-90-farm.js, settlements/locus/src/72-lights.js, settlements/locus/src/81-glow.js",
-  "8af6983a6432"
+  "d54cf3147c0c"
  ],
  "70-verge-place.js": [
   "settlements/verge/src/70-verge-place.js",
@@ -223,17 +223,69 @@
   "settlements/verge/src/87-verge-views.js",
   "cfbde86b37d3"
  ],
+ "88-core-minimap.js": [
+  "core/minimap/88-core-minimap.js",
+  "ca9a91a25500"
+ ],
  "88-verge-build.js": [
   "settlements/verge/src/88-verge-build.js",
   "52a3b7eadd26"
  ],
- "90-verge-camera.js": [
-  "settlements/verge/src/90-verge-camera.js",
-  "8acec8f79ada"
+ "88a-core-minimap-host.js": [
+  "core/minimap/88a-core-minimap-host.js",
+  "1e442710c44f"
+ ],
+ "90-host-camera.js": [
+  "core/host/90-host-camera.js",
+  "26986a9079a2"
+ ],
+ "91-host-loop.js": [
+  "core/host/91-host-loop.js",
+  "4bcbbce1af7a"
  ],
  "91-verge-probe.js": [
   "settlements/verge/src/91-verge-probe.js",
   "49cb9f0b9f64"
+ ],
+ "92-host-panel.js": [
+  "core/host/92-host-panel.js",
+  "659771868002"
+ ],
+ "93-host-inspect.js": [
+  "core/host/93-host-inspect.js",
+  "ad376f74792b"
+ ],
+ "93-host-stocks.js": [
+  "core/host/93-host-stocks.js",
+  "fc92c7abf275"
+ ],
+ "94-host-marks.js": [
+  "core/host/94-host-marks.js",
+  "5347334d0741"
+ ],
+ "95-host-probe.js": [
+  "core/host/95-host-probe.js",
+  "94fec2e5025a"
+ ],
+ "96-host-pictures.js": [
+  "core/host/96-host-pictures.js",
+  "1c6b36cc7ca2"
+ ],
+ "97-host-minimap.js": [
+  "core/host/97-host-minimap.js",
+  "bb80eeaa8a43"
+ ],
+ "98-host-edit.js": [
+  "core/host/98-host-edit.js",
+  "b0ec7f749a05"
+ ],
+ "99-host-cutaway.js": [
+  "core/host/99-host-cutaway.js",
+  "79b67cff9e25"
+ ],
+ "99-start.js": [
+  "settlements/verge/src/99-start.js",
+  "66a5bbe54f86"
  ],
  "99-tail.html": [
   "settlements/verge/src/99-tail.html",
