@@ -1591,11 +1591,22 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
 <section aria-labelledby="republic-cl-h">
   <h2 id="republic-cl-h">The clans</h2>
-  <p>The highlanders who never served the Legion kept older speech. The <b>Free Clans</b> to the north-east speak Hajlandsk without the Izani layer: Norse and Slavic sounds, but none of the officers' words. Higher still, the <b>Painted Men</b> keep the oldest highland English in the crater, with only the first changes. Their speech is plain enough that a Republican hears it as rustic rather than foreign. Neither people writes much: the clans carve crests and use Izani letters only to trade, and the Painted Men paint.</p>
+  <p>The highlanders who never served the Legion kept older speech. The <b>Free Clans</b> to the north-east speak Hajlandsk without the Izani layer: Norse and Slavic sounds, but none of the officers' words. Higher still, on the Inner Wall above Korona, the <b>Painted Men</b> keep the oldest highland words in the crater, but not the oldest sound: their neighbours' Hum has worn their words short and set them singing (below). Neither people writes much: the clans carve crests and use Izani letters only to trade, and the Painted Men paint.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Painted Men</th><th>Free Clans</th><th>Republic</th></tr></thead>
     <tbody id="republic-clans"></tbody>
   </table></div>
+</section>
+
+<section aria-labelledby="republic-pm-h">
+  <h2 id="republic-pm-h">The Painted Men's two melodies</h2>
+  <p>The Painted Men hang their cliff villages on the Inner Wall above Korona, and they have traded and married with the tepui tribes for as long as either remembers. The Hum got into their ears. They kept their consonants, so their speech is not tonal, but it went halfway. Like the Hum, they wear every word down to its stressed syllable: <i>soldier</i> is <i>sòl</i>, <i>iron</i> is <i>àirn</i>. And the lost syllables did not vanish. Each left its melody behind, the way Swedish and Norwegian got their two word accents.</p>
+  <p>A word that was always one syllable falls once, like an English word said firmly: <i>win</i>. A word that lost a syllable keeps two pitches, falling and rising again on the one syllable that is left: <i>wìn</i>, winter. Written, the second melody is a grave accent. To a Republican the Painted Men sound rustic, clipped and sing-song, as if every sentence were half a song. They also took one word from the Hum whole, the question word <i>há</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>One melody</th><th>Two melodies</th><th>From</th></tr></thead>
+    <tbody><tr><td class="m">win</td><td class="m">win</td><td class="m iz">wìn</td><td>winter</td></tr><tr><td class="m">sun</td><td class="m">sun</td><td class="m iz">sùn</td><td>sunny: fair weather</td></tr><tr><td class="m">king</td><td class="m">king</td><td class="m iz">kìng</td><td>kingdom</td></tr><tr><td class="m">hand</td><td class="m">hand</td><td class="m iz">hànd</td><td>handle</td></tr><tr><td class="m">raven</td><td class="m">—</td><td class="m iz">ràv</td><td>raven, their sign; one syllable, sung</td></tr><tr><td class="m">war</td><td class="m">war</td><td class="m iz">wòr</td><td>warrior</td></tr><tr><td class="m">you come?</td><td class="m">Yu kom, há?</td><td class="m iz"></td><td>the question word from the Hum</td></tr></tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">They whistle across the cliffs as Korona does, but only in the Hum: a pitch accent carries too little to whistle.</p>
 </section>
 
 <section aria-labelledby="republic-nm-h">
@@ -3014,7 +3025,7 @@ const CANT=[
 document.getElementById("republic-cant").innerHTML=CANT.map(c=>`<tr><td class="m">${c[0]}</td><td class="g"></td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join("");
 document.querySelectorAll("#republic-cant td.g").forEach((td,i)=>hr(CANT[i][0],td));
 
-const CL=[["the house","the house","huset","huset"],["war","war","vor","vor; guar for the state's wars"],["home","hom","hjem","hjem"],["thing (assembly)","thing","ting","Tinget, the Hall's assembly"],["king","king","kung","kung; kiñ, tyrant"],["soldier","soljer","knekt","knekt; lejonar"],["iron","ajrn","jern","jern"],["fire","fair","fajr","fajr"]];
+const CL=[["the house","the haus","huset","huset"],["war","war","vor","vor; guar for the state's wars"],["home","hom","hjem","hjem"],["thing (assembly)","thing","ting","Tinget, the Hall's assembly"],["king","king","kung","kung; kiñ, tyrant"],["soldier","sòl","knekt","knekt; lejonar"],["iron","àirn","jern","jern"],["fire","fair","fajr","fajr"]];
 document.getElementById("republic-clans").innerHTML=CL.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td></tr>`).join("");
 
 const NM=[
