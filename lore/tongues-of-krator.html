@@ -959,7 +959,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="samples" id="hykkousik-samples"></div>
   <div class="out" id="hykkousik-out" aria-live="polite"></div>
   <div class="tokens" id="hykkousik-tok"></div>
-  <p class="note">Letters for one sound: <span class="mono">th ph kh ps</span>. <span class="mono">ē ō</span> are long vowels. <span class="mono">ou</span> is written o + y, as in Greek. An initial <span class="mono">h</span> is not a letter but a gold breathing mark before the vowel. A full stop is the wave-sun. Latin <span class="mono">c</span> is read as k. <span class="mono">f q w</span> and a lone <span class="mono">u</span> have no letter.</p>
+  <p class="note">Letters for one sound: <span class="mono">th ph kh ps</span>. <span class="mono">ē ō</span> are long vowels. <span class="mono">ou</span> is written o + y, as in Greek. An initial <span class="mono">h</span> is not a letter but a gold breathing mark before the vowel. A full stop is wind over a wave, the Hykkousoi sign. Latin <span class="mono">c</span> is read as k. <span class="mono">f q w</span> and a lone <span class="mono">u</span> have no letter.</p>
 </section>
 
 <section aria-labelledby="hykkousik-chart-h">
@@ -2187,7 +2187,7 @@ const VB="-4 4 68 82";
 const sv=(inner,label,w)=>`<svg viewBox="${VB}" role="img" aria-label="${label}"${w?` style="width:${w}px"`:""}>${inner}</svg>`;
 const glyph=g=>sv(`<path class="st" d="${g[4]}"/>`,g[0]);
 const BREATH=`<svg viewBox="-4 4 34 82" role="img" aria-label="h, rough breathing" style="width:18px"><path class="br" d="M20 12 Q10 13 11 21 Q12 28 21 27"/></svg>`;
-const WAVESUN=`<svg viewBox="-4 4 52 82" role="img" aria-label="full stop" style="width:26px"><path class="wave" d="M8 62 Q14 54 20 62 Q26 70 32 62 Q38 54 44 62 M14 54 Q14 40 26 40 Q38 40 38 54 M26 32 L26 36 M14 38 L16 41 M38 38 L36 41"/></svg>`;
+const WINDWAVE=`<svg viewBox="-4 4 52 82" role="img" aria-label="full stop" style="width:26px"><path class="wave" d="M6 34 L28 34 Q34 34 34 29 Q34 25 30 26 M12 42 L24 42 Q29 42 29 38 M4 62 Q18 61 24 51 Q29 43 36 45 Q42 48 39 54 Q36 58 32 55 M39 52 Q42 59 46 62"/></svg>`;
 const KEYS=H.map(g=>g[0]).sort((a,b)=>b.length-a.length);
 function tok(s){
   s=s.toLowerCase().normalize("NFC").replace(/ê/g,"ē").replace(/ô/g,"ō").replace(/ch/g,"kh").replace(/c/g,"k").replace(/ou/g,"oy");
@@ -2206,8 +2206,8 @@ function tok(s){
 }
 function render(text,el,tokEl){
   const w=tok(text);
-  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.g?glyph(HB[t.g]):t.h?BREATH:t.p?WAVESUN:`<span class="unk" title="No Hykkousik letter">${t.u}</span>`).join("")}</span>`).join("");
-  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.h?"ʽ":t.p?"☼":`[${t.u}]`)).join("·")).join("  ");
+  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.g?glyph(HB[t.g]):t.h?BREATH:t.p?WINDWAVE:`<span class="unk" title="No Hykkousik letter">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.h?"ʽ":t.p?"≋":`[${t.u}]`)).join("·")).join("  ");
 }
 
 const src=document.getElementById("hykkousik-src"),out=document.getElementById("hykkousik-out"),tk=document.getElementById("hykkousik-tok");
