@@ -9,7 +9,7 @@
 //
 // The store: every change is kept in this browser (localStorage 'khost-marks:<build>') and, when the page is served by
 // tools/edits/serve.py, written to <build>/marks.json (POST /__save, kind 'marks'), where Claude can read it. On load the
-// file wins over the browser (fetched from o.marksUrl, default 'marks.json' beside the page). "copy JSON" for the rest.
+// file wins over the browser (served pages only: GET /__file; or o.marksUrl). "copy JSON" for the rest.
 //
 //   KHOST.marks.list, .tool(on), .add(kind), .finish(), .measure(m)       o.marks: false turns the tool off for a build
 (function(root){
@@ -36,9 +36,12 @@ K.onTake(function marksTake(H){
   if(location.protocol.indexOf('http')!==0){M.saved='browser';status();return;}
   fetch('/__save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'marks',page:location.pathname,data:JSON.parse(body)})})
    .then(r=>{M.saved=r.ok?'file':'browser';status();}).catch(()=>{M.saved='browser';status();});}
+ // the file only through tools/edits/serve.py (it injects /__edits.js), whose /__file route answers 204 when nothing was saved:
+ // any other server would answer 404, which a verify.py reads as a failed load
+ const served=!!doc.querySelector('script[src="/__edits.js"]');
  function load(done){const browser=()=>{try{const t=localStorage.getItem(KEY);if(t)M.list=JSON.parse(t).marks||[];}catch(e){}done();};
-  if(location.protocol.indexOf('http')!==0)return browser();
-  fetch(o.marksUrl||'marks.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(j=>{M.list=j.marks||[];M.saved='file';done();}).catch(browser);}
+  if(location.protocol.indexOf('http')!==0||!(served||o.marksUrl))return browser();
+  fetch(o.marksUrl||('/__file?kind=marks&page='+encodeURIComponent(location.pathname)),{cache:'no-store'}).then(r=>{if(r.status!==200)throw new Error(r.status);return r.json();}).then(j=>{M.list=j.marks||[];M.saved='file';done();}).catch(browser);}
  // ---------------------------------------------------------------- drawing: on the surface each point was put on
  const lift=.4;
  function yAt(a,b,t){const x=a[0]+(b[0]-a[0])*t,z=a[2]+(b[2]-a[2])*t,ya=a[1],yb=b[1];

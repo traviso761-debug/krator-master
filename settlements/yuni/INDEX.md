@@ -12,6 +12,14 @@ Build: `cd settlements/yuni && python3 build.py`. Fragments are concatenated in 
 Files that share a numeric prefix (`78a-`, `78b-`) are one fragment split into parts: one `reseed(N)` stream, one unit for the build rules.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+## Top-level sources
+
+Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.
+
+| File | KB | Sections (line) |
+|---|---|---|
+| `yuni.tex.yuni.js` | 12087 **big** |  |
+
 ## src/
 
 | Fragment | KB | Sections (line) |

@@ -13,11 +13,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 2 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
@@ -56,13 +62,15 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `85-tri-village.js` | 26 | the arched vault (longhouse roofs) (7); HALLS (34); SACRED (152); FARMS AND CRAFTS (163) |
 | `85b-tri-salvage.js` | 11 | 1. the tank roundhouse (7); 2. the container longhouse (29); 3. the hull meeting house (50); 4. the silo drum-house (68); 5. the scrap forge and trading shelter (87) |
 | `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
-| `88y-highlands-matlib.js` | 2 |  |
+| `88y-highlands-matlib.js` | 3 |  |
 | `89y-hl-furnish.js` | 4 | furniture: PLACED from the catalog, not drawn (1) |
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91h-hl-tags.js` | 3 | CORE TAGS: HIGHLANDS' REG (1) |
+| `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `94-hl-anim.js` | 2 | animation: orreries turn, clocks keep time (roun (1) |
+| `99-start.js` | 2 | 99. the take: Highlands on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
