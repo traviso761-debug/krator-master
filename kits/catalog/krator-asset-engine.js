@@ -96,6 +96,7 @@ function _headingVecs() {
   return { fwd, right };
 }
 function updateCamera() {
+  if (window.KRATOR_HOST && window.KHOST && KHOST.cam) { KHOST.cam.apply(); return; }   /* on core/host: its camera places it */
   if (ctl.walk) {
     const el = Math.max(-1.35, Math.min(1.35, ctl.el));
     camera.position.copy(ctl.target);
@@ -111,6 +112,11 @@ function updateCamera() {
   }
 }
 updateCamera();
+/* A page on core/host (window.KRATOR_HOST, set before this script: Voth's city plan, ROADMAP.md section 10 step 6) keeps the
+   scene, the camera, the renderer and ctl from here, and leaves the controls and the frame loop to the host: none of the
+   listeners below are added and animate() does not start; window._setWalk walks through the host's camera. */
+if (window.KRATOR_HOST) window._setWalk = function (on) { if (window.KHOST && KHOST.cam) KHOST.cam.walk(!!on); };
+if (!window.KRATOR_HOST) {
 renderer.domElement.addEventListener('mousedown', (e) => {
   if (e.button === 2) ctl.panning = true; else ctl.dragging = true;
   ctl.lastX = e.clientX; ctl.lastY = e.clientY;
@@ -159,7 +165,8 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => { ctl.keys[e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase()] = false; });
 window.addEventListener('blur', () => { ctl.keys = Object.create(null); });
 
-window._setWalk = function (on) {
+}   /* end of the controls a core/host page leaves to the host */
+if (!window.KRATOR_HOST) window._setWalk = function (on) {
   if (on === ctl.walk) return;
   const { fwd } = _headingVecs();
   if (on) {
@@ -246,4 +253,4 @@ function animate(now) {
   if (window._frameHooks) for (const fh of window._frameHooks) fh(now || performance.now());
   renderer.render(scene, camera);
 }
-animate();
+if (!window.KRATOR_HOST) animate();

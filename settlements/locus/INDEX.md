@@ -6,10 +6,20 @@ Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet an
 
 Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus.html`
+Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
 
 Build: `cd settlements/locus && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## Top-level sources
 
@@ -23,17 +33,17 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 6 |  |
+| `00-head.html` | 5 |  |
 | `05-palette.js` | 13 | 0. PALETTE (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (228) |
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
-| `45-kit.js` | 27 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 29 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 17 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
-| `53-assets.js` | 17 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
+| `53-assets.js` | 18 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
 | `56-mid.js` | 63 **big** | 16b. ASSETS: middle-class houses + trade (1) |
 | `57-poor.js` | 26 | 16c. ASSETS: POOR QUARTERS — mud and thatch (1) |
@@ -63,7 +73,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `65-abyss-75-verge.js` | 22 | 16X-V. ABYSS — Lower Verge: the mayor's compound (1) |
 | `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
-| `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `66-locus-furnish.js` | 11 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |
@@ -74,17 +84,17 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
-| `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (164) |
+| `80-camera.js` | 10 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (101) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
-| `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
+| `86-inspect.js` | 4 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |
 | `88b-locus-minimap.js` | 3 | MINIMAP (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
 | `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
-| `98-start.js` | <1 | 99. START (1) |
+| `98-start.js` | 7 | 99. START: ON core/host (1) |
 | `99-tail.html` | <1 |  |

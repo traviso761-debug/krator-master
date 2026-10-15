@@ -9,6 +9,7 @@ var vcGo = function () {
       try {
         if (/[?&]lite=1/.test(location.search)) HOST.layers.buildings = false;
         VC.start();
+        VC.hostTake();   /* core/host's shell (97-vc-host-take.js) */
         note.style.display = 'none';
         window._vc = { ready: true, plan: PLAN, log: PLAN.log, stats: PLAN.stats, failed: HOST.failed, wall: VC.wall, transit: PLAN.transit,
           setStep: function (k) { $('step').value = k; $('step').oninput(); } };

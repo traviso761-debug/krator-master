@@ -122,6 +122,9 @@ drift, swbay's and nwbay's birds) stands at another phase at a given moment than
 anything that eases) runs at the speed buttons' rate (pause, 1x to 8x); the world hour is held at `clock.hour` (12) unless
 `?time=run` or the run button (shown when the sky takes an hour). Query: `?hour=7.5` (or `#hour=`), `?time=run`, `?t=12`
 pins motion time (repeatable shots).
+`clock.obj` adopts a clock the build already made (a `KCLOCK`: Voth's `VC.clock`) instead of making one; `clock.maxStep`
+caps the clock's step a frame (default 0.1 s, the camera's cap; `Infinity` steps it by the real frame); `clock.onSet(h)`
+is called when the hour slider moves it (the slider shows when `onSet` is given, or the sky takes an hour).
 
 **The camera.** The orbit is the biome kits' spherical one (`theta` from +z about +y, `phi` from +y, `radius`), kept to the
 bit, so every preset view is the same picture. The eye is kept `clear` metres (1.8) above `floor(x,z)` (default `ground`;
@@ -151,6 +154,17 @@ shows an error. `KHOST.chrome(on)` does the same from a script.
 - No new `window._*` counters: `verify.py` prints every `window._*` value, so the host adds none.
 
 ## Voth onto core/host (for the Voth branch, when it pauses)
+
+**Step 6a (2026-10-15): the shell.** Voth takes 90 camera, 91 loop, 92 panel and 95 probe (`build.py` `CITY_JS`;
+`targets/voth-city/97-vc-host-take.js`, `VC.hostTake`). The catalog engine stands down when `window.KRATOR_HOST` is set
+(`kits/catalog/krator-asset-engine.js`: no input listeners or loop of its own, `updateCamera` is `KHOST.cam.apply()`,
+`_setWalk` is `KHOST.cam.walk`); the engine's `ctl` reads and writes the host's (`az` = `theta`, `el` = pi/2 - `phi`,
+`dist` = `radius`). The loop adopts `VC.clock` (`clock.obj`, `maxStep: Infinity`, the slider's `onSet` is `SIM.jump` and
+`VC.applyHour`). Proof: the placement hash a1a7f008 and every layout check as before (the two failures predate it,
+HANDOFF.md); the simulation's state hashes the same at load and after its first minute. The verify's simulated-day
+statistics differ by under 0.01%: they depend on how long the page ran live before the check (the old page alone, run
+at once or after 8 s: 11,359 or 8,127 decisions in the day), so a page whose load takes a different time reads
+differently. **6b** (the rows below from the inspector on: 93, 94, 96, 98, 99, the stocks) is next.
 
 What Voth's city plan (`settlements/voth/targets/voth-city/`) calls today, and what it calls on the shell. Read-only
 here: nothing in Voth's targets was edited (the files and their blobs are in `voth-sources.json`).

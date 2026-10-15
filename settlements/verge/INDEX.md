@@ -11,7 +11,11 @@ Built output (never open it; edit `src/` and rebuild): `dist/verge.html`
 Build: `cd settlements/verge && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.py`: the whole interface less `core/space` and `core/edits`): `90-host-camera.js` to `99-host-cutaway.js`, with `core/minimap`'s files.
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
 
 ## src/
 
@@ -34,5 +38,5 @@ From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.
 | `87-verge-views.js` | 4 |  |
 | `88-verge-build.js` | 1 |  |
 | `91-verge-probe.js` | 11 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (76) |
-| `99-start.js` | 8 | the inspector's words where no record holds the point (23); the ticks, after the camera (38); the sky and the light, on the one clock, after the camera (43); the page, handed to the host (53) |
+| `99-start.js` | 8 | the inspector's words where no record holds the  (23); the ticks, after the camera (as 90-verge-camera. (38); the sky and the light, on the one clock, after t (43); the page, handed to the host (53) |
 | `99-tail.html` | <1 |  |

@@ -541,11 +541,11 @@
  ],
  "91-host-loop.js": [
   "core/host",
-  "4bcbbce1af7a"
+  "aace8fb4d8c7"
  ],
  "92-host-panel.js": [
   "core/host",
-  "659771868002"
+  "a4f990ec0c38"
  ],
  "93-host-inspect.js": [
   "core/host",
