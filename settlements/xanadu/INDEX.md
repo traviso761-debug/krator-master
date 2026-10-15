@@ -66,8 +66,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `88y-xanadu-matlib.js` | 1 |  |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-xanadu-tags.js` | 3 | REG into core/tags (KTAGS.page), Xanadu's spellings onto the vocabulary |
+| `92-camera.js` | 1 | what stays of the camera on core/host: ui, uiButton, setView, Labels |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
+| `99-start.js` | 2 | the take: Xanadu and Erewhon on core/host (KHOST.take) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
