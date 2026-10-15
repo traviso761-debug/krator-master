@@ -467,6 +467,30 @@ section.tongue .word{flex-wrap:wrap;max-width:100%}
 :is(#jimjam,[data-tongue="jimjam"]) .grid7 b{font-family:var(--display);font-size:1.05rem;color:var(--brick)}
 :is(#jimjam,[data-tongue="jimjam"]) .grid7 span{font-size:.85rem;color:var(--muted)}
 :is(#jimjam,[data-tongue="jimjam"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .jg{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+:is(#jimjam,[data-tongue="jimjam"]) .jg.mk{stroke:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .jf{fill:none;stroke:var(--line);stroke-width:1.6}
+:is(#jimjam,[data-tongue="jimjam"]) .jw{fill:none;stroke:var(--yellow);stroke-width:2.4}
+:is(#jimjam,[data-tongue="jimjam"]) .jline{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .jword{display:flex;gap:2px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .line{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .jline svg{width:52px;height:52px}
+:is(#jimjam,[data-tongue="jimjam"]) .hero.jline svg{width:64px;height:64px}
+:is(#jimjam,[data-tongue="jimjam"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#jimjam,[data-tongue="jimjam"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#jimjam,[data-tongue="jimjam"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) #jimjam-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#jimjam,[data-tongue="jimjam"]) #jimjam-src:focus,:is(#jimjam,[data-tongue="jimjam"]) button:focus-visible{outline:2px solid var(--brick);outline-offset:2px}
+:is(#jimjam,[data-tongue="jimjam"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#jimjam,[data-tongue="jimjam"]) button:hover{border-color:var(--brick);color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#jimjam,[data-tongue="jimjam"]) .unk{display:inline-grid;place-items:center;width:24px;height:30px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .lts{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+:is(#jimjam,[data-tongue="jimjam"]) .lt{border:1px solid var(--line);border-radius:4px;padding:8px 4px 6px;display:grid;justify-items:center;gap:1px;cursor:pointer;background:var(--marble);color:inherit;font:inherit}
+:is(#jimjam,[data-tongue="jimjam"]) .lt:hover{border-color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .lt svg{width:44px;height:44px}
+:is(#jimjam,[data-tongue="jimjam"]) .lt .r{font:500 .92rem var(--mono);color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .lt .n{font-size:.74rem;color:var(--muted);text-align:center;line-height:1.25}
 :root :is(#republic,[data-tongue="republic"]){
   --bg:#ebe7e2; --panel:#e0dad2; --ink:#232426; --muted:#686a6e; --accent:#a3241c; --line:#cbc4ba; --steel:#4b5a66;
   --display:"Alumni Sans", "Arial Narrow", sans-serif;
@@ -1921,6 +1945,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="day" aria-label="A day-name">
     <div class="wheels" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="t">Van Sanḍē · Ḍabal Ḍārkku</div>
+    <div class="jline hero" id="jimjam-hero" aria-label="Van Sanḍē in Jimjam blocks"></div>
     <div class="g">ONE SUNDAY · THE DOUBLE DARK · BOTH MOONS NEW, THE FIRST DAY OF THE COUNT</div>
   </div>
   <p><b>Jamṭōkku</b>, “Jam talk”, is English as the brick-makers of the north-western lake have worn it: Dravidian in its sounds and Maya in its habits. The split that South Indian English makes, retroflex <i>ṭ ḍ</i> for English <i>t d</i> and dental <i>t d</i> for <i>th</i>, became two sets of sounds. The <i>t</i> that English swallows became a glottal stop. Every word ends open, in a vowel or a soft consonant, and the verb comes first.</p>
@@ -1977,7 +2002,25 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 <section aria-labelledby="jimjam-ltr-h">
   <h2 id="jimjam-ltr-h">Letters</h2>
   <p>Jimjam made its own letters. Dalab is close on the map, but the Ancients' Valley lies between them, a ruinscape of mutants, killer machines and ground where the old weapons bent the laws of physics, and nothing passes through it. The day-keepers needed to write the count, so they invented a script, borrowing shapes from the Latin letters still legible on the broken dam arcologies upstream; the flood left none at home. They write with a stylus on palm leaf. A straight stroke along the grain splits a leaf, so every letter grew round, as the scripts of South India did. The letters of each syllable are stacked into one square block, the way the day-glyphs are drawn, so a line of Jamṭōkku reads as a row of little seals.</p>
-  <p class="note">The letters are not drawn on this page yet.</p>
+</section>
+
+<section class="scribe" aria-labelledby="jimjam-scribe-h">
+  <h2 id="jimjam-scribe-h">Scribe</h2>
+  <label for="jimjam-src">Romanized Jamṭōkku</label>
+  <div class="row">
+    <input id="jimjam-src" type="text" value="Bī gūḍḍu ḍē." autocomplete="off" spellcheck="false">
+    <span class="row" id="jimjam-keys"></span>
+  </div>
+  <div class="samples row" id="jimjam-samples"></div>
+  <div class="jline" id="jimjam-out" aria-live="polite"></div>
+  <div class="tokens" id="jimjam-tok"></div>
+  <p class="note">One block is one syllable. Its first consonant sits on top; the vowel and any closing consonant sit below. A word with no consonant before its vowel puts the vowel on top, and <i>ai</i> and <i>au</i> share one block. A tail on a vowel makes it long. The apostrophe is the catch, a letter of its own. A sentence ends with the three wheels.</p>
+</section>
+
+<section aria-labelledby="jimjam-ab-h">
+  <h2 id="jimjam-ab-h">The letters</h2>
+  <p>Twenty-two consonants and five vowels, each a rounded Latin letter. One mark is systematic: <b style="color:var(--brick)">the curl</b>, a hook at the head of a letter, which the day-keepers put on every sound made with the tongue curled back or hushed. It turns <i>t d l n s</i> into <i>ṭ ḍ ḷ ṅ sh</i>. Click a letter to add it to the scribe.</p>
+  <div class="lts" id="jimjam-lts"></div>
 </section>
 
 <section aria-labelledby="jimjam-nm-h">
@@ -3332,6 +3375,128 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
 
 })();
 
+/* Jimjam */
+(()=>{
+/* Rounded letters on a 40 x 40 cell, one stroke path each; [key, name, path, curl?] */
+const CURL="M11 7 Q5 1 3 7 Q2 12 8 11";
+const LJ=[
+ ["a","a","M29 13 Q9 6 8 22 Q8 35 20 34 Q30 32 30 18 Q30 30 34 35"],
+ ["e","e","M10 22 Q32 22 30 14 Q24 6 14 10 Q6 16 8 26 Q12 36 30 32"],
+ ["i","i","M20 15 Q16 27 20 34 Q24 38 30 32 M18 7 Q20 4 22 7 Q20 10 18 7"],
+ ["o","o","M20 8 Q6 8 7 22 Q8 35 20 35 Q32 35 33 22 Q33 9 21 9 Q27 13 24 19"],
+ ["u","u","M8 10 Q8 34 20 34 Q32 34 32 10 Q32 26 36 34"],
+ ["p","p","M12 10 Q11 26 12 38 M12 13 Q30 5 30 18 Q30 30 12 24"],
+ ["b","b","M11 4 Q10 20 11 33 Q26 40 30 26 Q32 14 12 18"],
+ ["t","t (dental)","M8 15 Q20 11 32 15 M20 7 Q16 26 20 33 Q26 38 32 30"],
+ ["ṭ","ṭ","M8 15 Q20 11 32 15 M20 7 Q16 26 20 33 Q26 38 32 30",1],
+ ["d","d (dental)","M29 4 Q30 20 29 34 Q14 40 10 26 Q8 14 28 18"],
+ ["ḍ","ḍ","M29 4 Q30 20 29 34 Q14 40 10 26 Q8 14 28 18",1],
+ ["k","k","M11 4 Q10 22 11 36 M30 12 Q16 20 12 24 Q24 26 32 36"],
+ ["g","g","M30 12 Q10 6 9 18 Q9 28 28 24 Q30 34 24 38 Q14 40 10 34"],
+ ["ch","ch","M32 12 Q20 4 10 14 Q4 26 14 34 Q24 38 32 30 M22 16 Q27 21 22 26"],
+ ["j","j","M24 13 Q24 30 22 36 Q16 42 8 34 M22 5 Q24 2 26 5 Q24 8 22 5"],
+ ["s","s","M30 10 Q18 4 12 12 Q8 20 20 22 Q32 24 28 32 Q22 40 8 32"],
+ ["sh","sh","M30 10 Q18 4 12 12 Q8 20 20 22 Q32 24 28 32 Q22 40 8 32",1],
+ ["h","h","M11 4 Q10 22 11 36 M11 22 Q20 12 28 18 Q32 24 30 36"],
+ ["f","f","M29 8 Q18 3 18 14 Q18 28 16 38 M9 20 Q18 18 29 22"],
+ ["v","v","M8 12 Q14 34 20 36 Q26 34 32 12 Q34 8 30 8"],
+ ["m","m","M6 34 Q6 14 14 14 Q20 14 20 26 Q20 14 28 14 Q34 14 34 34"],
+ ["n","n","M10 34 Q10 14 20 14 Q30 14 30 34"],
+ ["ṅ","ṅ","M10 34 Q10 14 20 14 Q30 14 30 34",1],
+ ["l","l","M18 4 Q16 24 18 32 Q22 38 30 34"],
+ ["ḷ","ḷ","M18 4 Q16 24 18 32 Q22 38 30 34",1],
+ ["r","r","M11 34 Q10 19 13 16 Q21 10 31 16"],
+ ["y","y","M8 12 Q14 30 20 28 Q30 26 32 12 M20 28 Q20 38 12 38"],
+ ["'","the catch","M17 10 Q27 14 22 22 Q17 28 22 33"],
+];
+const LBJ=Object.fromEntries(LJ.map(l=>[l[0],l]));
+const VOW="aeiou";
+const LONG="M33 32 Q40 24 36 14";
+/* the head loop: a stylus starts every letter with a small ring, as South Indian hands do */
+function head(d){const m=d.match(/^M(-?[\d.]+) (-?[\d.]+)/);return m?`<circle class="jg" cx="${m[1]}" cy="${m[2]}" r="2.6"/>`:""}
+function gl(k,x,y,sc,long){
+  const l=LBJ[k];if(!l)return "";
+  return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${sc.toFixed(3)})">${k==="'"?"":head(l[2])}<path class="jg" d="${l[2]}"/>${l[3]?`<path class="jg mk" d="${CURL}"/>`:""}${long?`<path class="jg mk" d="${LONG}"/>`:""}</g>`;
+}
+/* lay out a row of n glyphs inside a box */
+function row(items,x0,y0,w,h){
+  const n=items.length;if(!n)return "";
+  const cw=w/n,sc=Math.min(cw*.86,h)/40;
+  return items.map((it,i)=>gl(it.k,x0+i*cw+(cw-40*sc)/2,y0+(h-40*sc)/2,sc,it.long)).join("");
+}
+function block(syl){
+  const nuc=syl.v2?[syl.v,syl.v2]:[syl.v];
+  const top=syl.on.length?syl.on:nuc,bot=syl.on.length?[...nuc,...syl.co]:syl.co;
+  let inner=`<rect class="jf" x="2" y="2" width="60" height="60" rx="13"/>`;
+  if(bot.length){inner+=row(top,6,5,52,30)+row(bot,6,34,52,25)}
+  else inner+=row(top,8,8,48,48);
+  return `<svg viewBox="0 0 64 64" role="img" aria-label="${syl.txt}">${inner}</svg>`;
+}
+const STOP=`<svg viewBox="0 0 64 64" style="width:30px" role="img" aria-label="full stop"><circle class="jw" cx="20" cy="42" r="7"/><circle class="jw" cx="44" cy="42" r="7"/><circle class="jw" cx="32" cy="22" r="7"/></svg>`;
+const CK=LJ.map(l=>l[0]).filter(k=>!VOW.includes(k)).sort((a,b)=>b.length-a.length);
+function jparse(text){
+  let s=text.normalize("NFC").toLowerCase().replace(/[’‘ʻ]/g,"'").replace(/ng/g,"ṅ").replace(/w/g,"v").replace(/z/g,"s").replace(/x/g,"ks").replace(/q/g,"k").replace(/c(?!h)/g,"k");
+  const LV={"ā":"a","ē":"e","ī":"i","ō":"o","ū":"u"};
+  const words=[];let cur=[];
+  const end=()=>{if(cur.length)words.push(cur);cur=[]};
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){end();i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});end();i++;continue}
+    if(c==="-"){i++;continue}
+    if(LV[c]){cur.push({v:LV[c],long:1,t:c});i++;continue}
+    if(c==="a"&&(s[i+1]==="i"||s[i+1]==="u")){cur.push({v:"a",v2:s[i+1],t:"a"+s[i+1]});i+=2;continue}
+    if(VOW.includes(c)){cur.push({v:c,t:c});i++;continue}
+    const k=CK.find(k=>s.startsWith(k,i));
+    if(k){cur.push({c:k,t:k});i+=k.length;continue}
+    cur.push({u:c});i++;
+  }
+  end();
+  /* syllables: before the first vowel, onset; between vowels, the last consonant opens the next syllable */
+  return words.map(w=>{
+    const out=[];let pend=[],syl=null;
+    const flushSyl=()=>{if(syl){out.push(syl);syl=null}};
+    for(let i=0;i<w.length;i++){
+      const t=w[i];
+      if(t.v){
+        if(syl){const keep=pend.slice(0,-1),open=pend.slice(-1);syl.co.push(...keep.map(x=>({k:x.c})));syl.txt+=keep.map(x=>x.t).join("");flushSyl();pend=open}
+        syl={on:pend.map(x=>({k:x.c})),v:{k:t.v,long:t.long},v2:t.v2?{k:t.v2}:null,co:[],txt:pend.map(x=>x.t).join("")+t.t};pend=[];
+      }else if(t.c){pend.push(t)}
+      else{if(syl){syl.co.push(...pend.map(x=>({k:x.c})));syl.txt+=pend.map(x=>x.t).join("");pend=[];flushSyl()}
+        else if(pend.length){out.push({cons:pend.map(x=>({k:x.c})),txt:pend.map(x=>x.t).join("")});pend=[]}
+        out.push(t.p?{p:1}:{u:t.u})}
+    }
+    if(syl){syl.co.push(...pend.map(x=>({k:x.c})));syl.txt+=pend.map(x=>x.t).join("");pend=[];flushSyl()}
+    if(pend.length)out.push({cons:pend.map(x=>({k:x.c})),txt:pend.map(x=>x.t).join("")});
+    return out;
+  });
+}
+function bare(cons){return `<svg viewBox="0 0 64 64" role="img" aria-label="consonants"><rect class="jf" x="2" y="2" width="60" height="60" rx="13"/>${row(cons,6,12,52,40)}</svg>`}
+function jrender(text,el,tokEl){
+  const ws=jparse(text);
+  el.innerHTML=ws.map(w=>`<span class="jword">${w.map(x=>x.p?STOP:x.u?`<span class="unk">${x.u}</span>`:x.cons?bare(x.cons):block(x)).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=ws.map(w=>w.map(x=>x.p?"⦂":x.u?`[${x.u}]`:x.txt).join(" · ")).join("   ");
+}
+const src=document.getElementById("jimjam-src"),out=document.getElementById("jimjam-out"),tk=document.getElementById("jimjam-tok");
+const go=()=>jrender(src.value,out,tk);
+src.addEventListener("input",go);
+const kd=document.getElementById("jimjam-keys");
+kd.innerHTML=["ā","ē","ī","ō","ū","ṭ","ḍ","ṅ","ḷ"].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+const SAMPLES=["Bī gūḍḍu ḍē.","Van Sanḍē","Jamṭōkku","Kaunṭavan","Ḍabal Ḍārkku","Kamsu nevar bakku ḍē.","va'ar"];
+const sm=document.getElementById("jimjam-samples");
+sm.innerHTML=SAMPLES.map(t=>`<button type="button" data-s="${t}">${t}</button>`).join("");
+sm.addEventListener("click",e=>{const t=e.target.dataset.s;if(t){src.value=t;go()}});
+go();
+jrender("Van Sanḍē",document.getElementById("jimjam-hero"));
+const lts=document.getElementById("jimjam-lts");
+lts.innerHTML=LJ.map(l=>`<button type="button" class="lt" data-k="${l[0]}" aria-label="${l[1]}"><svg viewBox="0 0 40 40" role="img" aria-label="${l[1]}">${gl(l[0],0,0,1)}</svg><span class="r">${l[0]}</span><span class="n">${l[1]===l[0]?(l[3]?"curl":(VOW.includes(l[0])?"vowel":"")):l[1]}</span></button>`).join("")
+ +`<button type="button" class="lt" data-k="ā" aria-label="long a"><svg viewBox="0 0 40 40" role="img" aria-label="long a">${gl("a",0,0,1,1)}</svg><span class="r">ā</span><span class="n">the tail: long</span></button>`;
+lts.addEventListener("click",e=>{const b=e.target.closest(".lt");if(!b)return;src.value+=b.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.jimjam=(t,el)=>jrender(t,el);
+})();
+
 /* overview and tabs */
 (()=>{
   const CARDS=[
@@ -3368,7 +3533,7 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
 
   /* phrasebook: [key, tongue, renderer, wrapper class] */
-  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["jimjam","Jamṭōkku","none",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""]];
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""]];
   const PH=[
    {en:"Greetings.",nt:"The formal greeting. Each people greets by what it values: the Sun, the day, the claw, light in the dark, a calm sea. Jamṭōkku puts the verb first.",r:{
     vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"],islander:["Sī kāma.","sea · calm: a calm sea to you"],islanderw:["Hī kāma.","sea · calm: a calm sea to you"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"]}},
