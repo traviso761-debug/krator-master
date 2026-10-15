@@ -36,6 +36,30 @@ static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:
 			continue
 		swap[imported[i]] = _material(fams[fam], imported[i], tex_dir, cache, gmats[i].get("doubleSided", false))
 		out["families"][fam] = out["families"].get(fam, 0) + 1
+	# the catalog furniture's render families (extras {family}): vertex-coloured meshes with no UVs, whose map is a
+	# DETAIL map the page projects triplanar from the mesh's own position (girder/src/48-detail.js), scaled by
+	# 1/tile and brightened by 1/mean^2.2 so the vertex colours keep their brightness; those colours are sRGB values
+	# the page linearises in its vertex shader (core/furnish srgbHook). StandardMaterial3D has all three built in
+	for i in min(gmats.size(), imported.size()):
+		var ex: Dictionary = gmats[i].get("extras", {})
+		if not ex.has("family") or not (imported[i] is BaseMaterial3D):
+			continue
+		var bm := imported[i] as BaseMaterial3D
+		bm.vertex_color_use_as_albedo = true
+		bm.vertex_color_is_srgb = true
+		var F = fams.get("f_" + str(ex["family"]))
+		if F == null or bm.albedo_texture == null:
+			out["unmatched"]["f_" + str(ex["family"])] = true
+			continue
+		var tile: float = F.get("scale", [1.0])[0]
+		var mean: float = F.get("tint", {}).get("mean", 0.5)
+		bm.uv1_triplanar = true
+		bm.uv1_triplanar_sharpness = 4.0
+		bm.uv1_scale = Vector3.ONE / max(tile, 0.01)
+		# albedo_color is sRGB: 1/mean decodes to about 1/mean^2.2 in linear, the page's gain
+		var g: float = 1.0 / max(mean, 0.05)
+		bm.albedo_color = Color(g, g, g, bm.albedo_color.a)
+		out["detail"] = out.get("detail", 0) + 1
 	var stack: Array[Node] = [scene]
 	while stack.size() > 0:
 		var n: Node = stack.pop_back()

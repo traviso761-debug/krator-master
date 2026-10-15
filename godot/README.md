@@ -28,7 +28,9 @@ Or open `godot/project.godot` in the editor (Import, then F5). The editor skips 
 spike loads its exports at runtime, and the editor's glTF import of a 20 MB region with LOD generation took over
 twenty minutes. To try the editor's import route, copy a `.glb` out of `data/` (`CHECKLIST.md` item 3).
 
-In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
+In the window: left or right mouse drag to look, middle drag to orbit the point ahead, arrow keys to turn and tilt,
+WASD to move, Q/E down and up, Shift for x5, wheel to zoom (dolly), Ctrl+wheel for speed, `+` `-` to narrow or widen the lens
+(Backspace resets it). `[` `]` step the
 hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
 
 ## The five cases

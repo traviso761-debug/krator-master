@@ -104,6 +104,8 @@ static func build(path: String) -> Node3D:
 		report["materials_library"] = k
 		if k.get("replaced", 0) > 0:
 			report["gaps"]["library materials"] = "%d library surfaces rebuilt from the pack (%s) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost" % [k["replaced"], ", ".join(PackedStringArray(k["families"].keys()))]
+		if k.get("detail", 0) > 0:
+			report["gaps"]["detail maps"] = "%d catalog furniture materials (no UVs) take their detail map by StandardMaterial3D's triplanar projection, with sRGB vertex colours (girder/src/48-detail.js); the page's night glow on them stays lost" % k["detail"]
 
 	# the exporter's own record of what it could not carry (region.dropped.json beside the .glb)
 	var dropped_path := path.get_basename() + ".dropped.json"
