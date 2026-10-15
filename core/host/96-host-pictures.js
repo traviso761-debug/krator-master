@@ -4,7 +4,8 @@
 // generalised: the build hands the list and how to build one item; the host owns the panel and the pictures.
 //
 //   o.palette = {items: [{key, name, family, cls?, tags?, variants?}], build(key, variant) -> Object3D}
-//   KHOST.pictures.open(filter?) / close() / toggle(); .pick = fn(item) (98 edit sets it); .families
+//   KHOST.pictures.open(family?, cls?) / close() / toggle(); cls: 'flora', 'life' or 'other' (98's plant, fauna and place)
+//   .pick = fn(item) (98 edit sets it); .families
 //   A picture is drawn once, off screen (a 128-pixel target, its own lights, the camera fitted to the item's bounding
 //   sphere), only while the menu is open, two a frame, and kept. The sheet (?pictures=sheet) shows every picture at once.
 (function(root){
@@ -22,7 +23,8 @@ K.onTake(function picturesTake(H){
  const fam=doc.createElement('select');bar.appendChild(fam);['','…'].slice(0,1).concat(PI.families).forEach(f=>{const op=doc.createElement('option');op.value=f;op.textContent=f||'every family';fam.appendChild(op);});
  const grid=doc.createElement('div');grid.id='khost-pics-grid';grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:6px';P.appendChild(grid);
  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
- function shown(){const f=PI.filter.toLowerCase();return PAL.items.filter(i=>(!PI.family||(i.family||'other')===PI.family)&&(!f||(i.name+' '+i.key+' '+(i.family||'')).toLowerCase().indexOf(f)>=0));}
+ const clsOf=i=>i.cls==='flora'||i.cls==='life'?i.cls:'other';   // the editor's modes: plant (flora), fauna (life), place (the rest)
+ function shown(){const f=PI.filter.toLowerCase();return PAL.items.filter(i=>(!PI.cls||clsOf(i)===PI.cls)&&(!PI.family||(i.family||'other')===PI.family)&&(!f||(i.name+' '+i.key+' '+(i.family||'')).toLowerCase().indexOf(f)>=0));}
  function paint(){const S=shown();
   grid.innerHTML=S.map(i=>'<div class="khost-pic" data-k="'+esc(i.key)+'" title="'+esc(i.key)+'" style="cursor:pointer;border:1px solid rgba(216,200,154,.25);border-radius:3px;padding:3px;background:rgba(10,10,12,.5)'+(PI.sel===i.key?';border-color:#9fe8ff':'')+'">'+
    (PI.done[i.key]?'<img src="'+PI.done[i.key]+'" style="width:100%;display:block">':'<div class="ph" style="width:100%;aspect-ratio:1;background:#2a2c30"></div>')+
@@ -30,7 +32,7 @@ K.onTake(function picturesTake(H){
   PI.queue=S.filter(i=>!PI.done[i.key]).map(i=>i.key);
   [].forEach.call(grid.querySelectorAll('.khost-pic'),d=>{d.onclick=()=>{const it=PAL.items.find(i=>i.key===d.dataset.k);PI.sel=it.key;paint();if(PI.pick)PI.pick(it);};});}
  find.oninput=()=>{PI.filter=find.value;paint();};fam.onchange=()=>{PI.family=fam.value;paint();};
- PI.open=function(family){if(family!=null){PI.family=family;fam.value=family;}P.style.display='block';paint();};
+ PI.open=function(family,cls){if(family!=null){PI.family=family;fam.value=family;}PI.cls=cls||null;P.style.display='block';paint();};
  PI.close=function(){P.style.display='none';};
  PI.isOpen=()=>P.style.display!=='none';
  PI.toggle=()=>PI.isOpen()?PI.close():PI.open();

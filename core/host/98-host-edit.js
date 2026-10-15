@@ -15,9 +15,13 @@
 //     template(item, at, ry)     the ADD record for a picture-menu item (default: {class: item.cls || 'furniture', key, at, ry})
 //     canEdit(rec) -> bool       which records may be moved or removed (default every one)
 //   }
-//   o.palette (96 pictures): what place and plant offer (plant: the items whose cls is 'flora')
+//     brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}}
+//                                ground brushes (step 4): each stroke a core/edits ADD of {class: 'feature', kind: 'ground',
+//                                key: mode, at, r, strength}; the world adapter writes the ground (core/terrain's KFIELD.stroke)
+//   o.palette (96 pictures): what place, plant (cls 'flora') and fauna (cls 'life': an animal, kits/fauna) offer
 // No o.edits: no editor. Keys while the editor is on: B on and off, Delete remove the selection, M then a click move it,
-// Q / E turn it 15 degrees (they win over the camera's then), Ctrl+Z undo, Esc stop placing.
+// Q / E turn it 15 degrees (they win over the camera's then), Ctrl+Z undo, Esc stop placing. In ground mode a click is a stroke
+// and a held drag paints strokes (the camera's drag is held off; right-drag still pans, the wheel still zooms); [ ] the radius.
 //
 // The store: each change is a draft in this browser (localStorage 'khost-edits:<build>'); Save writes <build>/edits.json
 // through tools/edits/serve.py (POST /__save, kind 'edits'); host.py inlines that file (and a newer draft) as KHOST_EDITS when
@@ -71,8 +75,8 @@ K.onTake(function editTake(H){
  const P=K.panel('edit','Editor',null,'left:auto;right:14px;top:auto;bottom:14px;width:320px;display:none');
  const el=(t,a,p)=>{const n=doc.createElement(t);if(a)for(const k in a){if(k==='text')n.textContent=a[k];else n[k]=a[k];}(p||P).appendChild(n);return n;};
  const modes=el('div',{className:'row'}),MB={};
- const hasFlora=!!(o.palette&&o.palette.items.some(i=>i.cls==='flora')),hasPlace=!!(o.palette&&o.palette.items.some(i=>i.cls!=='flora'));
- [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
+ const PAL=o.palette&&o.palette.items||[],hasFlora=PAL.some(i=>i.cls==='flora'),hasFauna=PAL.some(i=>i.cls==='life'),hasPlace=PAL.some(i=>i.cls!=='flora'&&i.cls!=='life'),BR=E0.brushes||null;
+ [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant'],hasFauna&&['fauna','fauna'],BR&&['ground','ground']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
  const acts=el('div',{className:'row'});
  const bRm=el('button',{text:'remove (Del)'},acts),bMv=el('button',{text:'move (M)'},acts),bL=el('button',{text:'⟲ Q'},acts),bR=el('button',{text:'E ⟳'},acts);
  bRm.onclick=()=>ED.remove();bMv.onclick=()=>{ED.moving=!!K.selected;paint();};bL.onclick=()=>ED.turn(Math.PI/12);bR.onclick=()=>ED.turn(-Math.PI/12);
@@ -89,11 +93,34 @@ K.onTake(function editTake(H){
   '  ·  '+log.ops.length+' op'+(log.ops.length===1?'':'s')+(base?' ('+base+' made with the page)':'');}
  function paint(){for(const k in MB)MB[k].classList.toggle('on',ED.mode===k);
   const r=K.selected;bMv.classList.toggle('on',ED.moving);
-  info.textContent=ED.mode==='select'?(r?(r.name||r.key||r.kind||r['class'])+' · '+r.id+(canEdit(r)?'':' (not editable)')+(ED.moving?'\nclick where it goes':''):'click something to select it'):
+  info.textContent=ED.mode==='ground'?BS.mode+' · radius '+BS.r+' m · strength '+BS.str[BS.mode]+(BS.mode==='raise'||BS.mode==='lower'?' m':'')+' — click or drag on the ground; [ ] the radius':
+   ED.mode==='select'?(r?(r.name||r.key||r.kind||r['class'])+' · '+r.id+(canEdit(r)?'':' (not editable)')+(ED.moving?'\nclick where it goes':''):'click something to select it'):
    (ED.item?ED.item.name+' — click a surface to put it down; Q / E turn ('+Math.round(ED.ry*180/Math.PI)+'°)':'pick a picture');
   status();}
- ED.setMode=function(m){ED.mode=m;ED.moving=false;if(m==='select'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open(m==='plant'?(K.pictures.families.indexOf('flora')>=0?'flora':''):'');}paint();};
- if(K.pictures)K.pictures.pick=it=>{ED.item=it;if(ED.mode==='select')ED.setMode(it.cls==='flora'?'plant':'place');paint();};
+ ED.setMode=function(m){ED.mode=m;ED.moving=false;brushRow.style.display=m==='ground'?'block':'none';if(m!=='ground')ring.visible=false;
+  if(m==='select'||m==='ground'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open('',m==='plant'?'flora':m==='fauna'?'life':'other');}
+  if(ED.item&&(m==='plant'&&ED.item.cls!=='flora'||m==='fauna'&&ED.item.cls!=='life'||m==='place'&&(ED.item.cls==='flora'||ED.item.cls==='life')))ED.item=null;paint();};
+ if(K.pictures)K.pictures.pick=it=>{ED.item=it;if(ED.mode==='select'||ED.mode==='ground')ED.setMode(it.cls==='flora'?'plant':it.cls==='life'?'fauna':'place');paint();};
+ // ---------------------------------------------------------------- ground brushes (step 4): a stroke is an ADD of a ground record
+ const brushRow=el('div',{className:'row'});brushRow.style.display='none';
+ const BS={mode:BR?BR.modes[0]:'raise',r:BR&&BR.r?BR.r[2]:12,str:Object.assign({raise:1,lower:1,flatten:.5,smooth:.6},BR&&BR.strength||{})};
+ const bSel=el('select',null,brushRow);(BR?BR.modes:[]).forEach(mo=>{const op=doc.createElement('option');op.value=op.textContent=mo;bSel.appendChild(op);});bSel.onchange=()=>{BS.mode=bSel.value;bStr.value=BS.str[BS.mode];paint();};
+ const bRad=el('input',{type:'range',min:BR&&BR.r?BR.r[0]:2,max:BR&&BR.r?BR.r[1]:80,step:1,value:BS.r,title:'radius'},brushRow);bRad.oninput=()=>{BS.r=+bRad.value;paint();};
+ const bStr=el('input',{type:'range',min:.05,max:3,step:.05,value:BS.str[BS.mode],title:'strength (m for raise and lower, 0 to 1 for flatten and smooth)'},brushRow);bStr.oninput=()=>{BS.str[BS.mode]=+bStr.value;paint();};
+ ED.brush=BS;
+ ED.stroke=function(at){if(!BR)return null;const st=BS.mode==='flatten'||BS.mode==='smooth'?Math.min(1,BS.str[BS.mode]):BS.str[BS.mode];
+  return record(KEDITS.add(log,{'class':'feature',kind:'ground',key:BS.mode,name:'ground: '+BS.mode,at,r:BS.r,strength:+st.toFixed(3)},{cause:'owner'}));};
+ const ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:48},(_,i)=>new THREE.Vector3(Math.cos(i/48*Math.PI*2),0,Math.sin(i/48*Math.PI*2)))),new THREE.LineBasicMaterial({color:0xffe14a,depthTest:false,transparent:true}));
+ ring.visible=false;ring.renderOrder=48;ring.frustumCulled=false;ring.userData.khost='edit';ring.userData.probeSkip=true;H.scene.add(ring);
+ const gh=(x,z)=>{const g=o.ground;return typeof g==='function'?g(x,z):(g&&g.h?g.h(x,z):0);};
+ let painting=null;const cvs=H.renderer.domElement;
+ cvs.addEventListener('pointerdown',e=>{if(!ED.on||ED.mode!=='ground'||e.button!==0||e.altKey)return;e.stopImmediatePropagation();e.preventDefault();
+  const at=C.pick(e.clientX,e.clientY);if(!at)return;painting={x:at[0],z:at[2],t:performance.now()};ED.stroke(at);try{cvs.setPointerCapture(e.pointerId);}catch(err){}},{capture:true});
+ cvs.addEventListener('pointermove',e=>{if(!ED.on||ED.mode!=='ground')return;const at=C.pick(e.clientX,e.clientY);if(!at){ring.visible=false;return;}
+  ring.visible=true;ring.position.set(at[0],0,at[2]);ring.scale.set(BS.r,1,BS.r);const p=ring.geometry.attributes.position;   // the ring sits on the ground
+  for(let i=0;i<p.count;i++){const a=i/p.count*Math.PI*2;p.setY(i,gh(at[0]+Math.cos(a)*BS.r,at[2]+Math.sin(a)*BS.r)+.4);}p.needsUpdate=true;
+  if(painting&&e.buttons&1){const now=performance.now(),d=Math.hypot(at[0]-painting.x,at[2]-painting.z);if(now-painting.t>90&&d>BS.r*.25){painting={x:at[0],z:at[2],t:now};ED.stroke(at);}}},{capture:true});
+ cvs.addEventListener('pointerup',()=>{painting=null;},{capture:true});
  ED.tool=function(on){ED.on=on==null?!ED.on:!!on;P.style.display=ED.on?'block':'none';tb.classList.toggle('on',ED.on);
   if(!ED.on){ED.setMode('select');}else if(K.marks&&K.marks.on)K.marks.tool(false);paint();};
  const ui=K.ui,tb=doc.createElement('button');tb.textContent='edit (B)';tb.id='khost-edit-btn';tb.onclick=()=>ED.tool();if(ui)ui.appendChild(tb);
@@ -114,6 +141,7 @@ K.onTake(function editTake(H){
   if(k==='q'||k==='e'){if(placing){ED.ry+=(k==='q'?1:-1)*Math.PI/12;paint();}else if(K.selected||ED.last)ED.turn((k==='q'?1:-1)*Math.PI/12);else return;e.stopImmediatePropagation();e.preventDefault();return;}
   if((k==='delete'||k==='backspace')&&K.selected){ED.remove();e.preventDefault();e.stopImmediatePropagation();return;}
   if(k==='m'&&K.selected){ED.moving=true;paint();return;}
+  if(ED.mode==='ground'&&(k==='['||k===']')){BS.r=Math.max(+bRad.min,Math.min(+bRad.max,BS.r+(k===']'?2:-2)));bRad.value=BS.r;paint();e.stopImmediatePropagation();return;}
   if(k==='escape'){if(placing){ED.item=null;ED.setMode('select');}ED.moving=false;paint();}},true);
  // the ops the page was made with that only take effect when it is made: marked, so the owner sees them
  if(E0.deferred)log.ops.slice(0,base).forEach(op=>{if(E0.deferred(op))markOf(op,op.op==='REMOVE'?0xff4040:0xffb030).visible=false;});
