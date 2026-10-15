@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -521,6 +521,55 @@ function world(seed){
  S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
  ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
 
+
+// what things hold and the settlement's stocks (77-sim-7-stocks.js): SIM.contents(id) by record, SIM.stocks() by item
+// (production, transit, storage, owned; the daily snapshot's change and flows; the low and out marks), SIM.holders
+{const {S,clock}=world(83);
+ ['WORK','EAT','HAUL'].forEach(a=>S.activity({id:a}));
+ ok('without the economy or the items there are no stocks',S.stocks()===null,S.stocks()!==null);
+ S.place({id:'farm',kind:'field',x:150,z:0,activities:{WORK:4},open:[0,24],r:10});
+ S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});
+ S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+ S.items({kinds:{corn:{cat:'food',food:true},shirt:{cat:'clothes',slot:'torso',life:10},hoe:{cat:'tool',workLife:100}},free:['IDLE'],secPerMinute:1,hurt:0});
+ S.economy({goods:{corn:{},wheat:{},salt:{}},every:60,window:1,imports:{days:3,scan:60},cart:{cap:30,load:5,unload:5,minLoad:500}});
+ S.store('shed',{kind:'warehouse'});S.store('serai',{kind:'site'});S.recipe('farm',{out:['corn'],rate:2,cap:400});
+ S.R.place.shed.stock={corn:40,wheat:25};S.R.place.serai.stock={salt:12};
+ const H=S.R.place.homeA;H.people=2;H.store={corn:6};
+ const f=S.R.actor.f1;S.equip(f,'shirt',0.4);S.give(f,'shirt',2);f.tool={k:'hoe',w:0.25};
+ S.actor({id:'g1',role:'grower',home:'homeB',work:'farm'});const c=S.actor({id:'cart1',role:'carter',home:'homeA'});S.cart(c);
+ const run=(m0,m1)=>{for(let m=m0;m<m1;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}};
+ run(20*60,20*60+1);const T0=S.stocks();
+ ok('before a midnight there is no whole day yet, only today',T0.day===null&&T0.today&&T0.today.from===1200,T0.day!==null);
+ run(20*60+1,24*60+1);const T1=S.stocks();
+ const Fc=S.contents('farm');
+ ok('a producer\'s contents: its stock, made here (production), what it makes',Fc.type==='place'&&Fc.items.length===1&&Fc.items[0].item==='corn'&&Fc.items[0].n===S.R.place.farm.stock.corn&&Fc.items[0].state==='production'&&Fc.makes.join()==='corn',Fc.items.length===0);
+ ok('an id no record has: null',S.contents('nope')===null&&S.contents(null)===null,S.contents('farm')===null);
+ const Wc=S.contents('shed'),Lc=S.contents('serai');
+ ok('a warehouse holds in storage; a carrier\'s landing site (a store with no recipe) in transit',Wc.items.every(e=>e.state==='storage')&&Wc.store.kind==='warehouse'&&Lc.items[0].item==='salt'&&Lc.items[0].state==='transit',Lc.items[0].state!=='transit');
+ const Ac=S.contents('f1'),worn=Ac.items.filter(e=>e.as==='worn')[0],tool=Ac.items.filter(e=>e.as==='tool')[0],home=Ac.items.filter(e=>e.as==='kept at home')[0];
+ ok('a citizen\'s contents: worn (its wear of its life), its tool, what it keeps at home, its household\'s food',worn&&worn.item==='shirt'&&worn.life===10&&worn.wear>=0.4&&tool.item==='hoe'&&home.n===2&&Ac.household.id==='homeA'&&Ac.household.items[0].item==='corn',!worn);
+ // stocks: every holder once; the states sum to the total
+ c.cart.load={good:'corn',n:7};const St=S.stocks(),R=St.by.corn;
+ const all=S.R.place.farm.stock.corn+S.R.place.shed.stock.corn+H.store.corn+7;
+ ok('the stocks: a good\'s total is every holder\'s, split by state (a cart\'s load in transit)',R.total===all&&R.production===S.R.place.farm.stock.corn&&R.transit===7&&R.storage===S.R.place.shed.stock.corn+H.store.corn&&R.production+R.transit+R.storage+R.owned===R.total,R.transit!==7);
+ c.cart.load=null;
+ ok('possessions are owned: one worn and two at home',St.by.shirt.owned===3&&St.by.shirt.production===0&&St.by.hoe.owned===1,St.by.shirt.owned!==3);
+ ok('the salt landed counts in transit, the warehoused wheat in storage',St.by.salt.transit===12&&St.by.wheat.storage===25,St.by.salt.storage>0);
+ // the day: the snapshots at the first step (20:00) and at midnight
+ ok('the last day: from the first snapshot to midnight (partial), its change the totals\' difference',T1.day&&T1.day.from===1200&&T1.day.to===1440&&T1.day.partial&&T1.by.corn.day.change===T1.by.corn.total-T0.by.corn.total&&T1.by.corn.day.change!==0&&T1.by.corn.day.made===S.ECON.made.corn,!T1.day);
+ ok('its flows are the counters\' difference (corn made at the farm over the evening)',T1.by.corn.day.made>0&&T1.by.corn.day.imported===0,T1.by.corn.day.made===0);
+ // the marks: a good used with little stock is low; one unused has no days and is not low
+ S.supply('corn',35);run(24*60+1,24*60+90);const M=S.stocks();
+ ok('low: under the import threshold\'s days of cover; an unused good is not',M.by.corn.low===true&&M.by.corn.days<3&&M.by.wheat.low===false&&M.by.wheat.days===null,M.by.wheat.low);
+ S.supply('wheat',100);const M2=S.stocks();
+ ok('out: a draw that went unmet today',M2.by.wheat.out===true&&M2.by.wheat.today.unmet>0&&M.by.corn.out===false,M2.by.wheat.out===false);
+ // holders, a place at a point, where a record is
+ const Ho=S.holders('corn',5);
+ ok('the holders of an item, most first',Ho.count>=2&&Ho.list[0].n>=Ho.list[Ho.list.length-1].n&&Ho.list.some(h=>h.id==='homeA'&&h.state==='storage'),Ho.count===0);
+ ok('nobody holds what nobody has',S.holders('nothing').count===0&&S.holders('shirt').list[0].id==='f1',S.holders('nothing').count!==0);
+ ok('the place that holds something at a point, none where none does',S.placeAt(150,2)==='farm'&&S.placeAt(400,400)===null,S.placeAt(400,400)!==null);
+ const wp=S.whereIs('shed'),wa=S.whereIs('f1');
+ ok('where a place and an actor are',wp.x===0&&wp.z===0&&wa&&isFinite(wa.x),!wa);}
 
 // the wake (SIM.WAKE): asked only when its wish could change; no wish left waiting, far fewer questions
 {const run=(wake)=>{const {S,clock}=world(61);S.WAKE=wake;S.skipped=0;

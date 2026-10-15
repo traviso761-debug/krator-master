@@ -391,7 +391,7 @@ VC.ixPickWrap = function () {
         var hit = rc.intersectObject(m, false)[0]; if (!hit || (best && hit.distance >= best.d)) return;
         var p = m.userData.items[hit.instanceId]; if (!p) return;
         var u = VC.IX.units[i], A = ASSET_BY_KEY[u.key] || {};
-        best = { d: hit.distance, key: p.key, v: p.v || 0, where: (A.name || u.key) + ', ' + p.kind + ', storey ' + (p.level + 1) };
+        best = { d: hit.distance, key: p.key, v: p.v || 0, where: (A.name || u.key) + ', ' + p.kind + ', storey ' + (p.level + 1), place: 'ix.' + i };   /* its building's simulation place (56e) */
       });
     });
     return best;

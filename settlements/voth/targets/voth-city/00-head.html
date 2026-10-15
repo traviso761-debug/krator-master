@@ -69,6 +69,19 @@
   #ix h2{font-size:12.5px;color:#e0c98a;margin:10px 0 2px;font-weight:normal;letter-spacing:.04em;text-transform:uppercase}
   #ixlegend{left:14px;bottom:14px;display:none;width:min(300px,calc(100vw - 28px))}
   #ixlegend .ramp{height:10px;border-radius:3px;margin:4px 0 2px}
+  #stocks{right:14px;top:14px;width:min(700px,calc(100vw - 28px));max-height:calc(100vh - 40px);overflow:auto;display:none;z-index:32}
+  #stocks table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11.5px}
+  #stocks th{text-align:right;color:#e0c98a;font-weight:normal;padding:3px 4px;border-bottom:1px solid rgba(255,255,255,0.15);white-space:nowrap;vertical-align:bottom}
+  #stocks th.s{cursor:pointer;text-decoration:underline dotted}
+  #stocks th:first-child,#stocks td:first-child{text-align:left}
+  #stocks td{text-align:right;padding:2px 4px;border-bottom:1px solid rgba(255,255,255,0.06);font-variant-numeric:tabular-nums;white-space:nowrap}
+  #stocks tr.it,#stocks tr.hd{cursor:pointer} #stocks tr.it:hover td,#stocks tr.hd:hover td{background:rgba(255,255,255,0.06)}
+  #stocks tr.sel td{background:rgba(201,162,39,0.16)}
+  #stocks tr.cat td{color:#e0c98a;text-align:left;padding-top:8px;letter-spacing:.05em;text-transform:uppercase;font-size:10.5px}
+  #stocks td.det{text-align:left;white-space:normal;background:rgba(0,0,0,0.22);padding:6px 8px;line-height:1.5}
+  #stocks td.det table{margin-top:2px}
+  .low{color:#e8c25a} .out{color:#ff9a7a} .up{color:#9fd49a} .dn{color:#ff9a7a}
+  #tip table.ct{border-collapse:collapse;margin:2px 0;font-size:11.5px} #tip table.ct td{padding:0 8px 0 0;vertical-align:top}
   @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
 </style>
 </head>
@@ -76,16 +89,20 @@
 <div id="app"></div>
 <div id="bar" class="pnl" data-title="Voth &middot; city plan">
   <h1>Voth &middot; city plan</h1>
-  <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it. K pauses everything; I inspects (a citizen under the cursor too); X cuts the buildings in view open.</div>
+  <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it. K pauses everything; I inspects (a citizen under the cursor too); X cuts the buildings in view open; O lists the stocks (what the settlement holds and where).</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button><button id="ly-stocks" title="every good and item in the settlement: where it is (at the site, in transit, in storage, owned), the last day's change, what runs short (o)">stocks (o)</button> <span id="cut-status" class="k"></span><br>
   <span id="clk">10:00</span> <button id="clk-pause" title="freeze everything where it is: people, animals, carts, boats, the clock and the sky (k)">pause (k)</button><button id="clk-run" title="hold or run the hour (motion goes on)">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
   <div id="legend" class="lg"></div>
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
+<div id="stocks" class="pnl" data-title="Stocks"><b>Stocks</b> <span id="stk-when" class="k"></span> <button id="stk-close" style="float:right" title="close (o)">&#10005;</button><button id="stk-refresh" style="float:right" title="read the stocks now (the panel reads itself every few seconds while the clock runs; paused, only here)">refresh</button>
+  <br><button data-f="all">all</button><button data-f="goods">goods</button><button data-f="owned">the citizens' things</button>
+  <div class="k" style="margin-top:4px">At the site: made, not yet hauled (a producer's own store). In transit: a cart's or a carrier's load (a caravan, a barge, a ship, on the map), and a lot landed at the caravanserai, a quay or a pier for the carts. In storage: the warehouses and granaries, and the households' food stores. Owned: what the citizens wear, keep at home and work with. Shops and stalls keep no shelf: they sell from the warehouses. The change is the total at one midnight against the one before (the simulation's daily snapshot); used up = drawn from the stores, less what went into households' stores, plus what was eaten from them (an item: worn out and broken). <span class="low">Low</span>: fewer days of cover (the warehoused stock over its use a day) than the economy's import threshold. <span class="out">Out</span>: a draw or a purchase went unmet. Click an item for its flows and holders.</div>
+  <div id="stk-body"></div></div>
 <div id="tip" class="pnl"></div>
 <div id="ix" class="pnl" data-title="Interiors report"><b>Interiors report</b> <span class="k">(every lot building: 41-vc-building-interiors.js)</span> <button id="ix-close" style="float:right">&#10005;</button><div id="ix-body"></div></div>
 <div id="ixlegend" class="pnl"></div>

@@ -117,6 +117,20 @@ current while the cursor rests. Picking tests only the bodies drawn this frame (
 points against the cursor's ray (12 pixels), left out when the ground or another lot's box is nearer; the card only reads
 (the meters through core's `SIM.needsPeek`, nothing that decides is called).
 
+**What things hold (owner, 2026-10-14; `56e-vc-stocks-host.js`).** The inspector lists what a building, a container
+and a citizen hold, read from core/simulation (`SIM.contents`, `77-sim-7-stocks.js`), never from the page's records:
+* **a building** (its lot's simulation places): a producer's store (made here, not yet hauled), what it makes and from
+  what (bread from wheat, boats from wood, cheese from milk), its fill against its cap and the carts bound for it; a
+  warehouse's or a granary's store; a household's food by kind, its people and the days it lasts; what a shop sells
+  (no shelf of its own: it sells from the settlement's warehouses); a mess;
+* **a container** (a chest, a barrel, a rack, a shelf, a counter, a market stall: the catalog's storage types and the
+  like by name): the simulation keeps stock by place, not by piece, so the card says which place the piece is part of
+  and lists that place's store;
+* **an outdoor site** (the ground of a field, a fishers' dock, a mine, a quay or pier where a carrier unloads, the
+  Granary deck's granaries): the nearest place that holds something there (`SIM.placeAt`);
+* **a citizen** (the card's "things"): what it wears with its wear of its life in days, its tool with its wear of its
+  worked hours, what it keeps at home, a cart's load (in transit), its household's food, its carrier's load.
+
 Since 2026-10-14 the city is a `core/city` instance (`35-vc-steps.js`: `VC.city = KCITY.create({...})`, its steps as
 data, its hooks and finish): steps 0-5 call core's site layer with Voth's data (`30-vc-site.js`: the role table
 `VC.ROLES`, the zone, the avenues and rings, the highways, the wall's records; `VC.terrGrid` takes the banks and gate
@@ -232,6 +246,21 @@ core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/a
 * **Motion:** the vehicles run on the clock's motion time (times `TUNE.timeScale`), and SIM reads its hour and day.
 * **Controls:** the panel has the hour, run/hold, 1x/2x/4x/8x (the clock's `scale`: the day and the motion both run
   faster) and an hour slider. The page opens at 10:00 and runs (`TUNE.clock`).
+* **Stocks (o, or "stocks (o)" on the bar; owner, 2026-10-14; `56e-vc-stocks-host.js`):** a panel listing every good
+  and item in the settlement (food; materials and goods; the citizens' things), its total and where it is: **at the
+  site** (made, not yet hauled: a producer's own store), **in transit** (a cart's load; a caravan's, barge's or ship's
+  load while it is on the map, coming in or going out; a lot landed at the caravanserai, a quay or a pier for the
+  carts), **in storage** (the warehouses and granaries; the households' food stores) and **owned** (what the citizens
+  wear, keep at home and work with); an import sent for by timer shows as "+n" beside the total (ordered, not yet
+  landed, not counted). **Change / day** is the total at one midnight against the one before (core's daily snapshot;
+  before the first whole day, the change since the first snapshot, marked "today"); **days** is days of cover (the
+  warehoused stock over its use a day). **Low** (amber): fewer days of cover than the economy's import threshold
+  (`TUNE.sim.economy.imports.days`, 3); **out** (red): a draw or a purchase went unmet in the last day or today;
+  "n want": citizens short of a kept set or with a broken tool now. Click a column (item, total, change) to sort; click
+  an item for its flows over the last day and today (made, imported, exported, drawn from the stores, of it into
+  households' stores, eaten at home, used up; an item's bought, issued, worn out, broken) and the twelve holding most;
+  click a holder to fly there and open it in the inspector. The panel reads itself when opened and every 4 s while the
+  simulated minute moves (never per frame); paused, only by "refresh". It keeps nothing beyond the page.
 * **Pause (k, or the "pause" button by the clock; owner, 2026-10-14)** freezes everything where it is: the citizens,
   animals and pets, the carts, the caravans and barges, the ferries and elephant bugs (all poses of the clock's motion
   time), the hour (the sky, the sun, the lamps), the simulation (`SIM.step` runs only when the clock's minute moves) and

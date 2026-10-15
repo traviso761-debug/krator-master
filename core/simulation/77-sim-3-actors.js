@@ -307,6 +307,7 @@
       if(SIM.WAKE) a.wake = SIM.wakeOf(a, minute, want);
     }
     if(SIM.ECON) SIM.economyStep(minute, t);                                        /* production, the carts, the imports */
+    if(SIM.stocksStep) SIM.stocksStep(minute);                                      /* the stocks' daily snapshot (77-sim-7-stocks.js) */
     for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     return made;
   };
@@ -349,6 +350,7 @@
   SIM.jump = function(){
     var minute=SIM.minute(), t=SIM.time();
     if(SIM.ECON) SIM.economyJump(minute);
+    if(SIM.stocksJump) SIM.stocksJump(minute);
     SIM.all('actor').forEach(function(a){ a.wake=null; if(!a.present || a.plan || a.driven) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
