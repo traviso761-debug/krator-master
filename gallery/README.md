@@ -272,3 +272,10 @@ Pending (2026-10-14, the owner): the first Voth (`voth.html`, now `archive/voth-
 city plan on `core/city` (`settlements/voth/dist/voth-city.html`) is now simply "Voth", under the old slug
 (`worlds/voth.html`, so links keep working). `ENTRIES` says so; it goes out with the next gallery rebuild: the index
 (the live one's Voth card retitled and re-described, no second Voth card) and the one page, in one call.
+
+Rebuilt 2026-10-15 from `main` at 058a5740 (the Roketstad, Verge, Godot viewer and hung-cloths merges, 26 builds rebuilt):
+all three parts republished with every page that differed from the live copy. Krator Worlds version 78 (three calls; Fauna,
+Highlands and Roketstad moved out to II, Girder, Girder · Hero, Scyvoi and Screamer furniture moved in), Krator Worlds II
+version 9 (three calls), Krator Biomes and Objects version 5 (two calls). This also shipped the pending Voth item above:
+`worlds/voth.html` is the `core/city` plan, its card retitled "Voth". Krator Worlds II is private (owner only) while the
+other two are anyone-with-the-link: share it from its page's Share menu for its link to open for others.
