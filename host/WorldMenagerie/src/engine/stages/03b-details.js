@@ -90,7 +90,8 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
   // woodland: Forest Park and the other wooded slopes carry their own trees, and parks get a scattering
   // a city may space them its own way (C.treeCells: {kind: metres, 0 for none}) and leave small areas bare
   // (C.treeMinArea: {kind: square metres}: Edinburgh maps every back green as a garden)
-  let forest=0;const DENSE={wood:11,reserve:13},OPEN=Object.assign({park:26,cemetery:30,garden:22,zoo:26,golf:34},C.treeCells||{}),MINA=C.treeMinArea||{};
+  // (C.treeDense: {kind: metres, 0 for none}: Yachats grows its own forest round the camera, src/yachats/coast.js)
+  let forest=0;const DENSE=Object.assign({wood:11,reserve:13},C.treeDense||{}),OPEN=Object.assign({park:26,cemetery:30,garden:22,zoo:26,golf:34},C.treeCells||{}),MINA=C.treeMinArea||{};
   for(const a of AREAS){const cell=(DENSE[a.kind]||OPEN[a.kind])*WORLD;if(!cell)continue;const dense=!!DENSE[a.kind];
     if(MINA[a.kind]&&(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0)<MINA[a.kind]*WORLD*WORLD)continue;
     for(let z=a.bb.z0;z<a.bb.z1;z+=cell)for(let x=a.bb.x0;x<a.bb.x1;x+=cell){

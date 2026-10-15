@@ -181,6 +181,9 @@ ROAD_W = {k: v for k, v in CITY.get("roadWidths", {}).items() if k != "_"}   # a
 COURTYARDS = float(CITY.get("courtyards", 0))   # keep a building's inner rings (its courtyards) of at least this many m²; 0 drops them
 # ruins take their own default: anything tagged as ruins or an archaeological site, and - since excavations are
 # often mapped as plain buildings - anything untagged inside a "ruinZones" box ([lat S, lon W, lat N, lon E])
+# skipAreas: a regular expression of land-cover names to leave out (Yachats' marine reserves are sea, and its national
+# forest is the page's own forest, src/yachats/coast.js)
+SKIP_AREAS = re.compile(CITY["skipAreas"]) if CITY.get("skipAreas") else None
 RUIN_BOXES = [(*xz(b[0], b[1]), *xz(b[2], b[3])) for b in CITY.get("ruinZones", [])]
 def in_ruins(c):
     return any(min(x0, x1) <= c[0] <= max(x0, x1) and min(z0, z1) <= c[1] <= max(z0, z1) for x0, z0, x1, z1 in RUIN_BOXES)
@@ -255,6 +258,8 @@ def terrain_grid():
     # metres on flat ground, and every street laid over them dips), a grey opening takes out what is raised and
     # narrower than `open`, a closing fills pits narrower than `close`, and a box blur over `blur` smooths the rest
     water = sorted(hs)[len(hs) // 20]   # the 5th percentile: river or lake level (taken before any filtering)
+    if cfg.get("datum") is not None:   # an open-ocean map (Yachats): the 5th percentile is the sea bed, so the datum is sea level
+        water = float(cfg["datum"])
     flt = cfg.get("filter")
     if flt:
         import numpy as np
@@ -314,7 +319,8 @@ def main():
     polys = {"water": [], "marina": [], "beach": [], "pier": []}
     if CITY.get("seaLevelWater"):
         m = 400
-        polys["water"].append({"o": [(BX0 - m, BZ0 - m), (BX1 + m, BZ0 - m), (BX1 + m, BZ1 + m), (BX0 - m, BZ1 + m)],
+        # flat decimetres like every other polygon (it was written as metre pairs, which the page cannot read)
+        polys["water"].append({"o": flat([(BX0 - m, BZ0 - m), (BX1 + m, BZ0 - m), (BX1 + m, BZ1 + m), (BX0 - m, BZ1 + m)]),
                                "i": [], "n": "Sea level"})
     for e in water:
         t = e.get("tags", {})
@@ -366,7 +372,7 @@ def main():
                     sxx = sum((u - cx) ** 2 for u, _ in g); szz = sum((v - cz) ** 2 for _, v in g); sxz = sum((u - cx) * (v - cz) for u, v in g)
                     rec["ang"] = round(0.5 * math.atan2(2 * sxz, sxx - szz), 3)
                 pois.append(rec)
-        if not kind:
+        if not kind or (SKIP_AREAS and SKIP_AREAS.search(name)):
             continue
         for o, holes in polys_of(e):
             if not any(in_bounds(pt) for pt in o) or abs(area(o)) < 60:

@@ -46,6 +46,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/rome` | `/rome.html`, `/roma` | `rome.html` | Rome: the historic centre, hills and all, its great buildings modelled |
 | `/tokyo` | `/tokyo.html`, `/東京` | `tokyo.html` | Tokyo: Shinjuku to Ginza from OpenStreetMap, Shibuya Crossing, Meiji Jingū, the Palace, Tokyo Station and Tokyo Tower modelled; a map of the city as it grows |
 | `/fortworth` | `/fortworth.html`, `/fort-worth`, `/cowtown`, `/stockyards` | `fortworth.html` | Fort Worth: downtown, the Stockyards and the Cultural District from OpenStreetMap |
+| `/yachats` | `/yachats.html`, `/capeperpetua`, `/cape-perpetua`, `/thorswell` | `yachats.html` | Yachats, Oregon: the village, the river mouth and Cape Perpetua from OpenStreetMap |
 | `/antigua` | `/antigua.html`, `/antiguaguatemala`, `/fuego`, `/volcanes` | `antigua.html` | Antigua Guatemala: the colonial town from OpenStreetMap on its real ground, under Agua, Acatenango and Fuego |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
@@ -2068,6 +2069,33 @@ Lake Hotel, the arch, Washburn, West Thumb, Tower Fall, the caldera from above a
 Regenerate with `python3 tools/make-yellowstone.py` (add `--fetch` to download the elevation tiles and the OSM
 extracts into `data/osm/raw/yellowstone/`, which is not committed). Map data © OpenStreetMap contributors, ODbL.
 
+### `/yachats`: Yachats, Oregon
+
+A real place, on the shared engine: **5.9 by 8.2 km** of the central Oregon coast, from Smelt Sands and the north
+end of the village south past Cape Perpetua to Neptune Beach, with three kilometres of the Pacific to the west.
+
+- **Its data:** the Geofabrik Oregon extract through `tools/pbf-to-overpass.py` (Overpass was not needed), then
+  `tools/fetch-terrain.py` and `tools/build-osm-city.py`, then `tools/make-yachats.py` for the land file
+  (`yachats-land.json`: the coastline, the basalt shelves, the cliffs), which the engine does not read and the
+  page does. 1,818 buildings, every one kept in the village and on the cape; the 101, the streets, and the named
+  trails (the 804, the Trail of Restless Waters, Captain Cook, Saint Perpetua, Amanda's, the Giant Spruce).
+- **The ground** is AWS Terrain Tiles on a 10 m grid, 591 by 824, the whole box flooded at sea level
+  (`seaLevelWater`). The open sea would have made the builder's usual datum (the 5th percentile of the heights)
+  the sea bed, so the city file sets `terrain.datum: 0` and sea level is zero: the West Shelter is at 228 m.
+- **What the map does not carry** (`src/yachats/`): the CCC's stone West Shelter on the top of the cape, the
+  visitor center, the Little Log Church, the Cleft of the Rock Light, the Yachats River bridge, and the basalt
+  round Thor's Well, the Spouting Horn and Devil's Churn (`landmarks.js`). `coast.js`: the ground recoloured
+  (forest floor, the black basalt where the map has shelves and where the ground falls to the sea, the strand);
+  slabs of basalt on the shelves; the surf along OpenStreetMap's coastline; the sea in the blowholes (Thor's Well
+  fills and drains, the Horn jets, the Churn throws spray); the sea past the map's west edge; and the forest,
+  grown in 500 m tiles round the camera, nearest first: Sitka spruce in the fog belt, hemlock and fir up the cape,
+  red alder by the creeks, shore pine blown flat over the bluffs, and only a few big trees in the village.
+- **What happens** (`events.js`): gray whales going by offshore and blowing; a winter storm with a king tide, when
+  the swell doubles and the blowholes go off (`ctx.yaSurge`); the marine layer rolling in.
+- **First pass.** Open: the far horizon ring shows as a pale shape past the sky dome from high up (an engine
+  matter, on every map); the shore's sand and rock are painted per terrain vertex, so at 10 m they are blotchy
+  close to; the blowholes' spray is square points.
+
 ### `/backrooms`: the Backrooms
 
 Fan work. The Backrooms began as one anonymous photograph of an empty yellow office and a caption under it,
@@ -2281,6 +2309,7 @@ src/
   dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
   fleshpit/ main.js landmarks.js surface.js organism.js springs.js lungs.js tunnels.js section.js anatomy.js promenade.js visitors.js fauna.js incident.js signs.js camera.js   the park: the surface and its lots, the shaft, the springs, the lungs, the tunnels, the section, the heart and vessels, the people, its animals, the night, its lettering, and its own camera
   yellowstone/ main.js landmarks.js nature.js   Yellowstone: the geysers, pools, falls, lodges, herds and caldera; the land cover, forest, rivers and steam
+  yachats/  main.js landmarks.js coast.js events.js   Yachats: the shelter, the church, the light, the bridge, the blowholes' rock; the forest, the surf, the basalt and the blowholes' sea; whales, a storm, the marine layer
   backrooms/ main.js level.js textures.js sound.js   the Backrooms: its own renderer, the generator and baked light, the canvases, the hum
   blame/    main.js city.js detail.js builders.js figures.js mats.js sphere.js   the City: its own renderer, camera, section and tour; the 25 km block; the Megastructure's structure and the layers' furniture; the Builders and the lifts; Killy and Cibo; the patterns and the poché; the whole of it round the Sun
   infinitycastle/ main.js mats.js kit.js castle.js places.js biwa.js   the Infinity Castle: its own renderer, camera and fall; the canvases and the facade shader; the kit and its clusters; the shaft, its walls and the void; the places; the biwa
@@ -2426,6 +2455,8 @@ them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
 | `data/cities/beachcity-osm.json`, `beachcity-plan.json` | `tools/make-beachcity.py` |
 | `data/cities/hyrule-osm.json`, `hyrule-plan.json` | `tools/make-hyrule.py` |
 | `data/cities/yellowstone.json`, `yellowstone-land.json` | `tools/make-yellowstone.py` (the config too: edit the script) |
+| `data/cities/yachats-osm.json` | `tools/build-osm-city.py yachats`, from the Oregon extract (`tools/pbf-to-overpass.py`) |
+| `data/cities/yachats-land.json` | `tools/make-yachats.py` |
 | `src/engine/build.js`, `src/iziz/build.js`, `src/voth/build.js` | `tools/build-page.py` (`./sitectl build`) from each `stages/` |
 | `krator.html` | `tools/build-krator.py` |
 
