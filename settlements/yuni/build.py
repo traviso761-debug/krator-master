@@ -73,6 +73,9 @@ TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags') 
 # Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
 CORE_MODULES = ['clock', 'sched', 'minimap', os.path.join('materials', 'record')]
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
+import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                       # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
 # The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
@@ -248,6 +251,12 @@ def main():
                 CORE_FRAGS.add(f)
     paths[PACK_FRAGMENT] = None            # generated below, not read from disk
     CORE_FRAGS.add(PACK_FRAGMENT)
+    khost.resolve(paths, CORE_HOST)        # core/host and the modules it reads (core/clock, core/minimap are in already)
+    for f in CORE_HOST:
+        if paths[f] == khost.path(f):
+            CORE_FRAGS.add(f)
+    paths[khost.EDITS_JS] = None           # generated: edits.json as KHOST_EDITS (core/host/host.py)
+    CORE_FRAGS.add(khost.EDITS_JS)
     for f, p in BIO_CANON.items():         # the biome core and the eastern badlands kit, in place (a src/ copy overrides)
         if f not in paths:
             paths[f] = p
@@ -256,7 +265,7 @@ def main():
     bodies = {}
     for f in order:
         if paths[f] is None:
-            bodies[f] = matlib_pack(SIDE)
+            bodies[f] = matlib_pack(SIDE) if f == PACK_FRAGMENT else khost.edits_js(HERE, 'yuni')
             continue
         with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()

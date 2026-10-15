@@ -216,13 +216,30 @@ function buildAsset(key, x,z,ry, opt){
 
 /* build one furniture piece or one plant anywhere in the world, through the same frame.
    `reg` is FURN_BY_KEY or PLANT_BY_KEY; both catalogues and any interior pass use these. */
+/* the owner's edits (KHOST_EDITS: 39-host-edits.js, written by core/host/host.py from edits.json or this browser's draft;
+   the world page only): a piece the log moves or removes is not built (it is merged into the kit's buckets, which cannot
+   give it back), its record stays for the log to find; 98-start.js applies the log: a moved piece is built on its own
+   where it went, an added one likewise. A target is its core/tags uid, else its key within 1.5 m (core/edits/README.md). */
+var YEDIT = { log: (!SHEET && typeof KHOST_EDITS !== 'undefined' && KHOST_EDITS && KHOST_EDITS.ops) ? KHOST_EDITS : null, vetoed: [] };
+YEDIT.hits = YEDIT.log ? YEDIT.log.ops.filter(function(op){ return (op.op==='REMOVE' || op.op==='MOVE') && op.target && (op.target['class']==='furniture' || op.target['class']==='flora'); }) : [];
+function yuniVetoed(cls, key, at){
+  if(!YEDIT.hits.length || (typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK)) return false;
+  var uid = KTAGS.uid(cls, key, at.map(function(v){ return Math.round(v*1e4)/1e4; }));
+  for(var i=0;i<YEDIT.hits.length;i++){ var t=YEDIT.hits[i].target;
+    if(t.uid != null){ if(t.uid === uid) return true; }
+    else if(t.at && t.key === key && Math.hypot(t.at[0]-at[0], t.at[2]-at[2]) < 1.5 && Math.abs((t.at[1]||0)-at[1]) < 1.5) return true; }
+  return false;
+}
 function buildFrom(reg, what, key, x,z,ry, opt){
   var A=reg[key]; if(!A){ ERR('no such '+what+': '+key); return null; }
   opt=opt||{}; var F=assetFrame(x,z,ry,opt); F.asset=A;
-  try{ A.build(F); }catch(e){ ERR(what+' '+key+': '+(e&&e.stack||e)); }
+  var vetoed = yuniVetoed(what==='plant' ? 'flora' : 'furniture', key, [x, F.y-0.2, z]);
+  if(vetoed) YEDIT.vetoed.push(key);
+  else try{ A.build(F); }catch(e){ ERR(what+' '+key+': '+(e&&e.stack||e)); }
   var nm = A.name + (A.variantNames ? ' — '+A.variantNames[F.variant%A.variantNames.length] : (A.variants>1 ? ' · variant '+'ABCDEFGH'[F.variant%8] : ''));
   var tag = A.culture ? (A.culture+' · '+A.room) : (A.climate+' · '+A.aridity);
-  REGISTER({ name:nm, kind:what, label:tag+' · '+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-0.2, z:z, r:Math.hypot(A.w,A.d)/2+0.4, h:(A.h||2)+0.6 });
+  REGISTER({ name:nm, kind:what, label:tag+' · '+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-0.2, z:z, r:Math.hypot(A.w,A.d)/2+0.4, h:(A.h||2)+0.6,
+    key:A.key, culture:A.culture||null, box:[A.w, A.d, ry||0], ah:(A.h||2)+0.2 });   /* key .. ah: its core/tags record, a turned box (45-kit.js regRecord) */
   return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d };
 }
 function buildFurn(key,x,z,ry,opt){ return buildFrom(FURN_BY_KEY,'furniture',key,x,z,ry,opt); }

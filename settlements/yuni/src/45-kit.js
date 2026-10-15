@@ -493,4 +493,26 @@ function emitMerged(opt){
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
    a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
 var SITES = [];
-function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o); return o; }
+/* Each site is also a core/tags record (core/tags/README.md; as Girder's 45-kit.js), its id kept on the site as `rid`:
+   the host's inspector and editor read the records. The buildings and their doors, windows and lights are 51-fixtures.js's
+   records already (FIX_TAGS), so an asset or a fixture site is not registered again; a piece (furniture, plant) built by
+   53-assets.js buildFrom is a turned box (box: [w, d, ry]). A culture core/tags knows is kept as its tag. A site inside an
+   interior being built (INTERIOR_SINK) is the interior's, not the page's. */
+var REG_CLASS = { furniture:'furniture', plant:'flora', bridge:'infrastructure', canal:'infrastructure', gate:'infrastructure', wall:'infrastructure',
+  tower:'infrastructure', lamp:'fixture', vault:'landmark', landform:'feature', park:'feature', plot:'feature', underground:'feature' };
+var REG_Q = [];   /* sites registered before core/tags' vocabulary has loaded */
+function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o);
+  if(o.kind==='asset' || o.kind==='fixture') return o;
+  if(typeof KTAGS === 'undefined' || !KTAGS.VOCAB || !KTAGS.page){ REG_Q.push(o); return o; }
+  regFlush(); regRecord(o); return o; }
+function regFlush(){ var q = REG_Q; REG_Q = []; q.forEach(regRecord); }   /* 98-start.js calls it before the take */
+function regRecord(o){
+  var T = KTAGS.page, V = KTAGS.VOCAB;
+  var rec = { 'class':REG_CLASS[o.kind] || 'feature', kind:o.kind||null, key:o.key||null, name:o.name, at:[o.x, o.y||0, o.z], note:o.label||null, frag:'45-kit.js REGISTER' };
+  if(o.culture && (V.cultures.indexOf(o.culture) >= 0 || V.cultureAlias[o.culture])) rec.tags = { culture:o.culture };
+  if(o.box){ rec.ry = o.box[2]||0; rec.size = [o.box[0], o.box[1], o.ah||o.h||2]; }
+  else if(o.seg){ var dx=o.seg[2]-o.seg[0], dz=o.seg[3]-o.seg[1]; rec.at=[(o.seg[0]+o.seg[2])/2, o.y||0, (o.seg[1]+o.seg[3])/2]; rec.ry=Math.atan2(dx,dz); rec.size=[o.seg[4]||2, Math.hypot(dx,dz), o.h||2]; }
+  else if(o.hx) rec.size = [o.hx*2, o.hz*2, o.h||2];
+  else if(!o.ring && o.r != null){ rec.r = o.r; rec.h = o.h; }
+  o.rid = T.add(rec).id;
+}
