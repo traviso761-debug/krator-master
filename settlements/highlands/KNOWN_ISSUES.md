@@ -56,3 +56,16 @@ Open items are `- [ ]` lines; build.py prints them.
       merged, and the probe found no sample inside seven of them, so `registered-volumes-non-empty` failed with them in.
 - [ ] Fallen logs test the mask every ~4 m along their length (the kit's `log()`), so a log could in principle bridge a
       lane narrower than that; none was seen in the screenshots.
+
+## Roketstad's determinism (2026-10-15)
+- [x] **The same page placed different towns from load to load** (6066 furniture records once, 5994 the next; Republic houses
+      switching between a def and its `_reclaimed` twin). Cause: two shuffles in `targets/roketstad/90b-rk-build.js` were
+      `.sort(()=>rng()-.5)` (the row fallback in `frontageAlong` and the back-row candidates in `backRows`). A random comparator
+      is inconsistent, and V8 does not order an array the same way twice under one: traced in the browser, the same array
+      with the same `rng` state came out of the sort in a different order (or after a different number of comparator calls)
+      on another load, shifting the stream and every `kitKey()` reclaimed pick after it. Fixed with `rkShuffle` (a seeded
+      Fisher-Yates on `rng`); five loads in a row now give the same 1797 buildings and 5738 furniture records, and the
+      furniture fingerprint was rewritten. The shuffle draws differently, so the town's layout shifted once (same rules).
+      Never shuffle with a random comparator in any build.
+- [ ] `src/34-kitdefs.js` (vendored) paints `TEX.leafCard` with `Math.random`: the leaf card's pixels differ per load. It is
+      a texture, not placement, so the layout and the fingerprint are unaffected; fix it upstream and re-vendor.
