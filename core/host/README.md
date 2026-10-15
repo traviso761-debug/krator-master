@@ -197,4 +197,13 @@ with a weather select put it in `KHOST.ui` after the take. **Girder** (2026-10-1
 interior pieces core/tags records, with the inspector, marks, pictures (its catalog pieces; planters are flora), minimap,
 editor (pieces drawn on their own; the page's own pieces moved or removed on reload) and cutaway (the four towers' thirty
 storeys, the houses, the hall); `verify.py --assert` holds, the scene census at four views matches the old page's within
-its own run-to-run noise (`settlements/girder/KNOWN_ISSUES.md`). Next (step 3): Iziz, then Highlands.
+its own run-to-run noise (`settlements/girder/KNOWN_ISSUES.md`).
+
+**Iziz and Highlands** (2026-10-15, step 3) take `FULL` without `core/space` (the hyperjungle's scatter takes its grid when the
+module is on the page) and without `core/edits` (no editor world yet): their camera was already the host's convention (theta
+from +z), so `src/92-camera.js` keeps only `ui`, `uiButton`, `setView` and the Labels button, and `src/99-start.js` is the take
+(`FRAME_HOOKS` as before, `f(dt, ms)`, in a tick subscriber; the showcase sky after the camera). Iziz's records are its full
+registry (`91t-iziz-tags.js`); Highlands adds its sites to the furniture's registry (`91h-hl-tags.js`). The vernacular sheet,
+the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. The
+builds that vendor that camera (Dalab, Xanadu, Reed Lake) keep the old one until step 5 (their `KNOWN_ISSUES.md`). Next: step
+4 (fauna mode), step 5 (the rest), step 6 (Voth).

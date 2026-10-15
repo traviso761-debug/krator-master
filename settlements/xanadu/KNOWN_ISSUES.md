@@ -2,6 +2,11 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-10-15) Vendor drift, deliberate until this build moves onto core/host (ROADMAP.md section 10, step 5): `src/92-camera.js`
+      upstream (settlements/highlands/src) is now core/host's camera layer (Iziz and Highlands moved in step 3: the camera, loop, panel, inspector and
+      marks are core/host's, the take in their `99-start.js`). This build keeps the old self-contained camera; re-vendoring it
+      alone would leave the page with no camera. Move the build onto core/host (core/host/README.md, "The whole interface") and
+      re-vendor then.
 - [x] Vendored fragments are copied from `../highlands/src`, which itself carries the Iziz/Ancients drift noted in the Highlands KNOWN_ISSUES; re-vendor all three kits together. — 2026-10-01: re-vendored together. Highlands took `69b 69c 91-probe 93-labels` from Iziz (its showcase budget moved to `targets/highlands/91z-views.js`); Xanadu took `30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b 69c 91-probe 93-labels` from Highlands. `build.py --vendor-check` now compares `81-sky.js` with `../iziz/src` (Highlands has no src copy of it) and reports all 19 identical.
 - [x] `vnStairs` (vendored) centres its run at `run/2` while treads span `steps*.32`; the kit uses its own solid `xnFlight` everywhere instead. — 2026-10-01: not a fault. As Highlands found (its round 10), `vnStairs` is self-consistent: `run` IS `steps*.32` and the treads sit at `run/2-run*t`, so the flight is centred on its z and spans exactly `run`. The Highlands bug was `hnKryltso` sizing its run from `rise`; Xanadu's one caller (`74-xa-dwell.js`) is unaffected.
 - [x] (2026-10-13) `--vendor-check` reported `91-probe.js` drifted from `../highlands/src`. — The Ancients re-vendor

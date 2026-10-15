@@ -2,6 +2,11 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-10-15) Vendor drift, deliberate until this build moves onto core/host (ROADMAP.md section 10, step 5): `src/92-camera.js`
+      upstream (settlements/highlands/src) is now core/host's camera layer (Iziz and Highlands moved in step 3: the camera, loop, panel, inspector and
+      marks are core/host's, the take in their `99-start.js`). This build keeps the old self-contained camera; re-vendoring it
+      alone would leave the page with no camera. Move the build onto core/host (core/host/README.md, "The whole interface") and
+      re-vendor then.
 - [ ] No reclaimed-metal variants yet (the Highlands round-3 `88-hl-dress.js` pass is not vendored; the lake's only salvage is at the smithy).
 - [ ] Boats and islands do not bob. Since 2026-10-13 the lake is core/water's (`90w-rl-lake.js`) with a CPU twin (`WATER.heightAt`), but the boats, rafts and islands are baked into the kit's instanced sets, so nothing can ride it; the lake is kept calm instead (`RL_LAKE_FIELD` .12: at most 7 cm from `RL.WATER`, and the canoes' keels sit 9 cm under it). A boat that should ride needs its own group (`WATER.ride`, as the Ring Sea kit's hulls do).
 - [ ] The loose-reed fringes stand across their edges instead of along them: `hnRLEaveFringe` and the island fringe in `hnRLIsland` (75-rl-helpers.js) turn the plane by `yaw = atan2(dx, dz)`, which lays a unit plane's width across the segment (the lattice in 78/79 adds `+ Math.PI/2`). Seen 2026-10-05 on the thatch hut's front eave: the fringe sticks out toward the viewer. `81-rl-tavern.js` lays its own fringe along the landing eaves. Fixing the helper changes every def's look: rebuild and look at every row.

@@ -4,6 +4,11 @@ Open items are `- [ ]`; `build.py` prints them. Close one by ticking it and
 saying what fixed it.
 
 ## Building kit (round 1)
+- [ ] (2026-10-15) Vendor drift, deliberate until this build moves onto core/host (ROADMAP.md section 10, step 5): `src/92-camera.js` and `src/00-head.html`
+      upstream (settlements/iziz/src) is now core/host's camera layer (Iziz and Highlands moved in step 3: the camera, loop, panel, inspector and
+      marks are core/host's, the take in their `99-start.js`). This build keeps the old self-contained camera; re-vendoring it
+      alone would leave the page with no camera. Move the build onto core/host (core/host/README.md, "The whole interface") and
+      re-vendor then.
 - [x] The mound is a real mesh, one draw call each. **Round 3:** every mound and
       ring bank goes into `DMOUND_GEOS` in world space and `94-dalab-light.js`
       merges them into ONE mesh (`window._mounds` counts them).

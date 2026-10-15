@@ -10,8 +10,8 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 60 | 730 | 151 | 40 | 10 | 38 | 492 | 9 |  | yes | yes |
 | [`settlements/dhelv`](settlements/dhelv/PORT.md) | 16 | 223 | 72 | 0 | 0 | 145 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 36 | 612 | 127 | 7 | 89 | 46 | 343 | 14 | atmos | yes | yes |
-| [`settlements/highlands`](settlements/highlands/PORT.md) | 66 | 940 | 193 | 6 | 13 | 79 | 649 | 5 |  | yes | yes |
-| [`settlements/iziz`](settlements/iziz/PORT.md) | 86 | 926 | 212 | 24 | 52 | 67 | 570 | 6 | fixtures, atmos | yes | yes |
+| [`settlements/highlands`](settlements/highlands/PORT.md) | 68 | 934 | 196 | 6 | 13 | 70 | 649 | 6 |  | yes | yes |
+| [`settlements/iziz`](settlements/iziz/PORT.md) | 87 | 917 | 212 | 24 | 52 | 58 | 570 | 7 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 429 | 7 | 23 | 10 | 34 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 956 | 94 | 5 | 16 | 162 | 679 | 11 | atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 705 | 56 | 0 | 15 | 321 | 313 | 4 |  | yes | yes |
@@ -57,7 +57,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 266 | 45 | 22 | 15 | 35 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 18 | 163 | 53 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1978 | 26380 | 4768 (18%) | 598 (2%) | 1068 (4%) | 3430 (13%) | 16515 (63%) | 260 | | | |
+| **all** | 1981 | 26365 | 4771 (18%) | 598 (2%) | 1068 (4%) | 3413 (13%) | 16515 (63%) | 262 | | | |
 
 ## Host-shell copies
 
@@ -65,15 +65,15 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `camera` | 24 | 17 | 281 |
+| `camera` | 24 | 18 | 264 |
 | `probe` | 22 | 16 | 86 |
 | `sky` | 21 | 5 | 426 |
 | `host-stage` | 17 | 17 | 343 |
 | `host-sky` | 17 | 15 | 242 |
 | `host-build` | 17 | 17 | 20 |
 | `stats` | 11 | 1 | 13 |
+| `start` | 9 | 8 | 16 |
 | `host-tower` | 9 | 9 | 47 |
-| `start` | 7 | 6 | 13 |
 | `pathviz` | 6 | 5 | 40 |
 | `daynight` | 5 | 4 | 72 |
 | `inspect` | 5 | 5 | 31 |
