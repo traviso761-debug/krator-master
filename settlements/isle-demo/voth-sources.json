@@ -1,11 +1,11 @@
 {
  "note": "the Voth files build.py reads in place; the shim (src/10, 56, 98) fits these",
  "files": {
-  "settlements/voth/tex/pack.json": "a3d1cf80505a5bc94bcacceb58eba278b0f07e10",
-  "settlements/voth/targets/voth-site/00-head.html": "7623d81cbcbbc727824cf71ce6fbfdd01d46920d",
-  "settlements/voth/targets/voth-site/99-tail.html": "c4710e3be6c9f1205a484105bf6b91572fdb049c",
-  "settlements/voth/targets/voth-site/10-site-model.js": "f091a1e44dd3819973186f6fa13c9cae0753563a",
-  "settlements/voth/targets/voth-site/50-site-scene.js": "b683216b5c4dd5a2c43bfb9160ed0751dd87c0f7",
-  "settlements/voth/targets/voth-site/55-site-tools.js": "a9138f1d5ceb0a8ee92c60d0e3eb29ee06f7397a"
+  "settlements/voth/tex/pack.json": "74a3a424c6bc5708350388172181cf3bce196af1",
+  "settlements/voth/targets/voth-site/00-head.html": "ac5687ba82d99e9a411f856eb4d39d35e46e611a",
+  "settlements/voth/targets/voth-site/99-tail.html": "7bdb1e034041cbf3313dc597518e44660d3c2392",
+  "settlements/voth/targets/voth-site/10-site-model.js": "7d9ea43efa4539e99e940384c68a94b2575bb20a",
+  "settlements/voth/targets/voth-site/50-site-scene.js": "a293ab60554fa3921f3f1dcd496860433a952434",
+  "settlements/voth/targets/voth-site/55-site-tools.js": "bd16be41c243cb4bd74228d85195ed261b448acb"
  }
 }

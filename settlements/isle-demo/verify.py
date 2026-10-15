@@ -49,7 +49,7 @@ CHECKS = r"""(neg)=>{const R=[],F=ISLE.F,S=WORLD_DATA.meta.settlements.find(s=>s
 
 def hashes_ok():
     rec = json.load(open(os.path.join(HERE, 'voth-sources.json'), encoding='utf-8'))['files']
-    bad = [k for k, h in rec.items() if hashlib.sha1(open(os.path.join(ROOT, k), 'rb').read()).hexdigest() != h]
+    bad = [k for k, h in rec.items() if hashlib.sha1(open(os.path.join(ROOT, k), 'rb').read().replace(b'\r\n', b'\n')).hexdigest() != h]
     return not bad, ('%d files as recorded' % len(rec)) if not bad else 'changed: ' + ', '.join(bad)
 
 

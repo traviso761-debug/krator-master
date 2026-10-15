@@ -65,8 +65,13 @@ def rel(p):
     return os.path.relpath(p, ROOT).replace(os.sep, '/')
 
 
+def sha(p):
+    """a file's hash with its line ends as LF (a checkout's CRLF must not read as a change)"""
+    return hashlib.sha1(open(p, 'rb').read().replace(b'\r\n', b'\n')).hexdigest()
+
+
 def sources(accept):
-    now = {rel(p): hashlib.sha1(open(p, 'rb').read()).hexdigest() for p in VOTH_READ}
+    now = {rel(p): sha(p) for p in VOTH_READ}
     old = json.load(open(REC, encoding='utf-8'))['files'] if os.path.isfile(REC) else None
     if accept or old is None:
         with open(REC, 'w', encoding='utf-8', newline=NL) as f:
