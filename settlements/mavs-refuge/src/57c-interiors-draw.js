@@ -358,7 +358,7 @@ function mixView(kind, n){
   if(u.kind==='workhome')      /* from the trade floor, looking at the family's door in the back wall */
     setView(d[0]-ex/L*4.5, u.shell.y+2.2, d[1]-ez/L*4.5, d[0]+ex/L*1.5, u.shell.y+1.1, d[1]+ez/L*1.5);
   else setView(d[0]+ex/L*0.45, eyeY, d[1]+ez/L*0.45, (far[0]+u.cx)/2, u.shell.y+0.5, (far[1]+u.cz)/2);
-  mixBuildNow();
+  if(!camViewCapture) mixBuildNow();   /* not while 98-start.js only reads the view (80-camera.js camViewOf): it builds them once the host has set the camera */
   return u.id;
 }
 /* a unit's plan as plain data (for a plan sheet or an export): rooms, walls, doors, stairs, pieces (after the edits), windows */

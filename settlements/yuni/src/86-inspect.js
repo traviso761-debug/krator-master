@@ -1,14 +1,14 @@
-/* ============================== 27. DEV INSPECTOR ==============================
-   Toggle on, hover anything: the tooltip names the most specific thing known
-   about what is under the cursor. Read-only. Sources, most specific first:
+/* ============================== 27. INSPECTOR WORDS (core/host's inspector) ==============================
+   The inspector is core/host's (93-host-inspect.js: I for the hover tip, a click for the card); this fragment gives it
+   the page's words (as Girder's 86-inspect.js). Sources, most specific first:
      1. mesh.userData.inspectFn(instanceId) / inspectLabel  (creatures, people, foliage)
-     2. SITES — every REGISTER()ed volume; the SMALLEST one containing the hit wins,
-        and the platform + level it belongs to are appended
-     3. the material family of the kit / merged mesh that was hit               */
+     2. SITES, every REGISTER()ed volume, each also a core/tags record (45-kit.js): the SMALLEST one holding the hit
+        wins (its rings, boxes and spans are SITES' own shapes), worded from its record (KTAGS.label); a catalog piece's
+        record when it is smaller still (core/host picks it)
+     3. the material family of the kit / merged mesh that was hit                                                  */
 var INSPECT_FAM = { adobe:'Mud plaster (banco)', plaster:'Lime wash', mosaic:'Trencadis mosaic', paintbw:'Painted wall (black/white/red)', paintcol:'Painted relief (polychrome)',
   relief:'Low-relief plaster', metal:'Ancient white metal', rust:'Ancient steel (rusted)', concrete:'Ancient concrete', glass:'Ancient blue glass', rock:'Rock', column:'Columnar rock',
   timber:'Timber', plank:'Planking', thatch:'Thatch', tile:'Terracotta tile', cloth:'Cloth', leafy:'Foliage', bark:'Tree trunk', dark:'Opening', glowmat:'Light' };
-var inspectOn = false, inspectTip = document.getElementById('inspectTip'), inspectLast = 0;
 function inspectSite(p){
   var best=null, bv=1e18, lvl=null, lv=1e18;
   for(var i=0;i<SITES.length;i++){
@@ -25,31 +25,21 @@ function inspectSite(p){
   }
   return { best:best, lvl:lvl };
 }
-function inspectDescribe(hit){
+function inspectDescribe(hit, rec){
   var o=hit.object, ud=o.userData||{}, own=null;
   if(ud.inspectFn){ try{ own = ud.inspectFn(hit.instanceId); }catch(e){} }
   if(!own && ud.inspectLabel) own = ud.inspectLabel;
-  var st = inspectSite(hit.point), lines=[];
-  if(own) lines.push('<b>'+own+'</b>');
-  if(st.best){ var S=st.best; if(!own || (S.kind!=='tree' && S!==st.lvl)) lines.push((own?'':'<b>')+(S.label && S.label!==S.name ? S.name+' — '+S.label : S.name)+(own?'':'</b>')); }
+  var st = inspectSite(hit.point), lines=[], T=KTAGS.page, srec=st.best&&st.best.rid&&T?T.get(st.best.rid):null;
+  /* a catalog piece (or anything registered) smaller than the site: core/host found it; it is the most specific thing */
+  var piece = rec && rec['class']!=='building' && rec['class']!=='infrastructure' && (!srec || rec.id!==srec.id) && (!st.best || st.best.kind==='tree' || rec['class']==='furniture') ? rec : null;
+  if(own) lines.push(own);
+  if(piece) lines.push(KTAGS.label(piece));
+  if(st.best){ var S=st.best; if(!own || (S.kind!=='tree' && S!==st.lvl)) lines.push(srec && !piece ? KTAGS.label(srec) : (S.label && S.label!==S.name ? S.name+' — '+S.label : S.name)); }
   if(st.lvl && st.lvl!==st.best) lines.push(st.lvl.name+' — '+st.lvl.label);
-  if(!lines.length || (!own && !st.best)) lines.push('<b>'+(INSPECT_FAM[ud.fam]||ud.fam||'Object')+'</b>');
-  else if(ud.fam && !own) lines.push('<span style="opacity:.6">'+(INSPECT_FAM[ud.fam]||ud.fam)+'</span>');
-  lines.push('<span style="opacity:.6">'+hit.point.x.toFixed(1)+', '+hit.point.z.toFixed(1)+'  y '+hit.point.y.toFixed(1)+'</span>');
-  return lines.join('<br>');
+  if(!lines.length) lines.push(INSPECT_FAM[ud.fam]||ud.fam||'Object');
+  else if(ud.fam && !own && !piece) lines.push(INSPECT_FAM[ud.fam]||ud.fam);
+  lines.push(hit.point.x.toFixed(1)+', '+hit.point.z.toFixed(1)+'  y '+hit.point.y.toFixed(1));
+  return lines.join('\n');
 }
-document.getElementById('inspectToggle').onclick = function(){
-  inspectOn = !inspectOn; this.textContent = 'Inspector: '+(inspectOn?'On':'Off'); this.classList.toggle('on',inspectOn);
-  if(!inspectOn) inspectTip.style.display='none';
-};
-camEl.addEventListener('pointermove', function(e){
-  if(!inspectOn || Object.keys(ptrs).length) return;
-  var now = performance.now(); if(now - inspectLast < 70) return; inspectLast = now;
-  var hit = pickWorld(e);
-  if(!hit){ inspectTip.style.display='none'; return; }
-  inspectTip.innerHTML = inspectDescribe(hit); inspectTip.style.whiteSpace='normal';
-  inspectTip.style.display='block';
-  inspectTip.style.left = Math.min(innerWidth-260, e.clientX+16)+'px'; inspectTip.style.top = Math.min(innerHeight-90, e.clientY+14)+'px';
-});
 window._inspect = { sites:SITES.length, at:function(x,y,z){ var s=inspectSite({x:x,y:y,z:z}); return [s.best&&s.best.name+'|'+s.best.label, s.lvl&&s.lvl.name+'|'+s.lvl.label]; },
-  px:function(cx,cy){ var h=pickWorld({clientX:cx,clientY:cy}); return h ? inspectDescribe(h).replace(/<[^>]+>/g,' | ') : null; } };
+  px:function(cx,cy){ var h=pickWorld({clientX:cx,clientY:cy}); return h ? inspectDescribe(h, window.KHOST&&KHOST.recordAt?KHOST.recordAt(h.point.x,h.point.y,h.point.z):null).replace(/\n/g,' | ') : null; } };
