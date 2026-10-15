@@ -60,9 +60,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `88y-dalab-matlib.js` | 2 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-dalab-tags.js` | 3 | REG into core/tags (KTAGS.page), Dalab's spellings onto the vocabulary |
+| `92-camera.js` | 1 | what stays of the camera on core/host: ui, uiButton, setView, Labels |
 | `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
 | `94-dalab-light.js` | 5 | the biome (gardens), the mounds, the windmills (38) |
+| `99-start.js` | 2 | the take: Dalab on core/host (KHOST.take) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
