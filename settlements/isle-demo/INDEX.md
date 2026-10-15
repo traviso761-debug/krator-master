@@ -15,6 +15,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `10-isle-frame.js` | 7 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
+| `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

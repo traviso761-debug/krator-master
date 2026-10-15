@@ -5,12 +5,13 @@
 
 For each town (Kautoa, Walapo) the page is loaded headless and checked:
   - it loads clean: no page error, the probe (window._site) ready without an error
-  - the frame: the town's origin is its settlement point in the open world, and its centre stands on land
+  - the frame: the town's origin is its settlement point in the open world (moved by ISLE.SHIFT where the owner had it
+    moved), its centre stands on land, the settlement point and a shore lie in the planning square
   - the ground is the open world's: the planner's height + the frame's sea level equals WORLD.H at the same world point
     (24 samples over the planning square), and the frame's sea is the water's level the world draws there
   - the editor works on it: a district, a marker and an avenue added, undone, redone; the town's save payload
     carries the frame and the drawing
-  - negative controls: a frame moved by 50 m must fail the ground check; a payload without its frame must fail
+  - negative controls: a shore pushed 4 km off must fail the frame check; a frame moved by 50 m must fail the ground check; a payload without its frame must fail
 Then, without a browser:
   - serve.py's merge puts one town's site into a copy of the file and leaves the other town's entry as it was; it
     refuses a site without a frame and a town that is not on the map
@@ -27,8 +28,10 @@ except Exception:
     pass
 
 CHECKS = r"""(neg)=>{const R=[],F=ISLE.F,S=WORLD_DATA.meta.settlements.find(s=>s.name===F.town);
- {const ok=Math.abs(F.x-S.x)<1e-6&&Math.abs(F.z-S.z)<1e-6,h=VOTH.terrainH(0,0);
-  R.push({name:'the frame: the settlement point, on land',ok:ok&&h>0,detail:'origin '+F.x+', '+F.z+' (settlement '+S.x+', '+S.z+'), centre '+h.toFixed(1)+' m above the sea'});}
+ {const d=ISLE.SHIFT[F.town]||[0,0],ex=S.x+d[0],ez=S.z+d[1],ok=Math.abs(F.x-ex)<1e-6&&Math.abs(F.z-ez)<1e-6,h=VOTH.terrainH(0,0),sh=VOTH.landDist(0,0)+(neg==='shore'?4000:0);
+  const pin=Math.abs(S.x-F.x)<3900&&Math.abs(S.z-F.z)<3900;
+  R.push({name:'the frame: on land, the settlement point and a shore in the square',ok:ok&&h>0&&pin&&sh>0&&sh<3900,
+   detail:'origin '+F.x+', '+F.z+' (settlement '+S.x+', '+S.z+(d[0]||d[1]?', moved '+d:'')+'), centre '+h.toFixed(1)+' m above the sea, the shore '+Math.round(sh)+' m away'+(pin?'':'; the settlement point is OUTSIDE the square')});}
  {const dx=neg==='frame'?50:0;let worst=0,at=null;
   for(let i=0;i<24;i++){const a=i*2.399963,r=3800*Math.sqrt((i+.5)/24),lx=Math.cos(a)*r,lz=Math.sin(a)*r;
    const d=Math.abs(TERR.h(lx,lz)+F.sea-WORLD.H(F.x+lx+dx,F.z+lz));if(d>worst){worst=d;at=[Math.round(lx),Math.round(lz)];}}
@@ -105,7 +108,7 @@ async def run(a):
                     for r in await pg.evaluate(CHECKS, None):
                         print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                         if not r['ok']: fails.append(town + ': ' + r['name'])
-                    for neg, nm in (('frame', "the ground is the open world's"), ('payload', 'the editor draws on it and saves the town with its frame')):
+                    for neg, nm in (('shore', 'the frame: on land, the settlement point and a shore in the square'), ('frame', "the ground is the open world's"), ('payload', 'the editor draws on it and saves the town with its frame')):
                         r = [x for x in await pg.evaluate(CHECKS, neg) if x['name'] == nm][0]
                         print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
                         if r['ok']: fails.append(town + ': negative ' + neg)

@@ -20,12 +20,16 @@ ISLE.seaNear = function (x, z) {
   }
   return WORLD.H(x, z) - 2;
 };
+/* a frame's origin moved off the settlement point (metres): Walapo's point (one 2 km pixel of the scale model) lies
+   5.2 km inland, so its square held no sea; the owner (2026-10-15) had it moved toward its coast, north-north-west,
+   until the shore is 1.6 km from the origin (as Kautoa's is 1.8 km). The point itself stays inside the square */
+ISLE.SHIFT = { Walapo: [-1400, -3400] };
 /* a town's frame: the saved one when the site file has it (so a drawing never moves), else made from the world */
 ISLE.frame = function (name, saved) {
   var s = ISLE.settlement(name);
   if (!s) throw new Error('no settlement named ' + name + ' in the region');
-  var ok = saved && isFinite(saved.x) && isFinite(saved.z) && isFinite(saved.sea);
-  ISLE.F = ok ? { town: name, x: +saved.x, z: +saved.z, sea: +saved.sea } : { town: name, x: s.x, z: s.z, sea: +ISLE.seaNear(s.x, s.z).toFixed(2) };
+  var ok = saved && isFinite(saved.x) && isFinite(saved.z) && isFinite(saved.sea), d = ISLE.SHIFT[name] || [0, 0], x = s.x + d[0], z = s.z + d[1];
+  ISLE.F = ok ? { town: name, x: +saved.x, z: +saved.z, sea: +saved.sea } : { town: name, x: x, z: z, sea: +ISLE.seaNear(x, z).toFixed(2) };
   ISLE.LD = null;
   return ISLE.F;
 };

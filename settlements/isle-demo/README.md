@@ -28,7 +28,7 @@ the world draws it.
 
 **One town at a time, each in its own frame** (`src/10-isle-frame.js`):
 - metres, x east, z south;
-- the origin at the town's settlement point in the open world;
+- the origin at the town's settlement point in the open world (Walapo's moved 3.7 km toward its coast: `ISLE.SHIFT`);
 - heights above the Ring Sea (0 m here, -1500.09 m in the world);
 - the planning square is 7.8 km across.
 

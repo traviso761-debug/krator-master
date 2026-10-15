@@ -70,8 +70,8 @@ the latest Voth viewer as the base.
   - `verify.py --assert` passes for both towns.
   - The open world's climate classes now blend between pixel centres with meandering edges, not 2 km steps; its
     checks pass again.
-  - Open: Walapo's settlement point is 5.2 km inland, outside its planning square (`KNOWN_ISSUES.md`): the owner's
-    call before P5.
+  - Walapo's frame moved toward its coast (the owner): its settlement point is 5.2 km inland, so the origin sits 3.7 km
+    north-north-west of it, 1.6 km from a bay; the point stays inside the square.
 - **Next: P5,** the owner lays out the two towns in the planner.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
