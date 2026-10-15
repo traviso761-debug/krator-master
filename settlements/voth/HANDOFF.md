@@ -10,6 +10,57 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-15: what things hold, and the stocks panel (o)
+
+The owner: "implement the full interface in Voth so I can do economy tweaks" (ROADMAP.md section 10, "what things hold,
+and the settlement's stocks"). In `README.md`: the inspector ("What things hold") and "Controls" ("Stocks").
+- **The data side, core/simulation's new `77-sim-7-stocks.js`** ([G data], read only; `SCHEMA.md` "What things hold,
+  and the stocks"): `SIM.contents(id)` (a place's store, what it makes from what, its household's food, what it sells; an
+  actor's worn items and wear, tool, things at home, a cart's load, its household's food, its carrier's load; a
+  carrier's lot and cargo), `SIM.stocks()` (by item: production, transit, storage, owned, ordered; days of cover; the
+  last day's and today's change and flows; the low, out and wanting marks), `SIM.holders`, `SIM.placeAt`,
+  `SIM.whereIs`, and a daily snapshot (`SIM.stocksStep` from `SIM.step`, `SIM.stocksJump` from `SIM.jump`). Small hooks
+  elsewhere in core: `SIM.economyUse` (the economy's use a day, exported), the items' `stats.eaten` (meals at home, by
+  food) and `stats.brokenBy` (tools broken, by kind). Nothing decides differently. The flows balance: imported counts
+  as a carrier's lot enters the map (it is in transit from then), exported as its cargo leaves it, so
+  change = made + imported - exported - used up (test-sim has it for a caravan in and a cargo out, with the contents,
+  stocks, holders and marks cases and their negatives).
+- **The host, `56e-vc-stocks-host.js`** ([web]): the stocks panel (o, "stocks (o)" on the bar) and the contents under a
+  building, a container and an outdoor site in the inspector; 56d's citizen card now reads its things from
+  `SIM.contents`. 55's `VC.describe` records what it described (`VC.DESC`), and the furniture picks carry their place
+  (`room.<id>`, `open.<district>`, `ix.<unit>`: 55 and 56b). The panel reads on open and every 4 s while the minute
+  moves; paused, only on "refresh". A full read of 56,950 actors and 13,254 places took 108-142 ms headless.
+- **What the simulation cannot say (so the panel does not):** stock is kept by place, not by piece, so a chest or a
+  stall shows its place's store; a shop or stall has no shelf (it sells from the warehouses); the river's and the timer's
+  imports are "ordered" until they land (no carrier on the map); a household's food bought is a move, not a use (the
+  panel shows both: drawn from the stores, of it into households' stores, eaten at home, used up).
+
+Proof (headless, `tools/harness.py`'s launcher, `?lite=1`, SwiftShader; `VC.simDay` runs days 2 and 3 headless, as
+`verify.py` does; no page error). The panel at 23:59 day 2 (no whole day yet: the change since 00:00 day 2) and at 23:59
+day 3 (the last day, 00:00 day 2 to 00:00 day 3, not partial, no jump):
+
+| item | total day 2 / day 3 | at the site | in transit | in storage | change (day 2) | made | imported | used up | days day 3 |
+|---|---|---|---|---|---|---|---|---|---|
+| wheat | 158,207 / 171,182 | 75,597 | 0 | 95,585 | +15,842 | 65,442 | 20,000 | 69,600 | 4.1 |
+| corn | 283,568 / 318,105 | 145,053 | 11,608 | 161,444 | +59,722 | 97,613 | 0 | 37,891 | 1.2 low |
+| bread | 243,411 / 202,636 | 600 | 0 | 202,036 | +19,771 | 69,600 | 0 | 49,829 | 0.7 low |
+| fish | 193,798 / 170,124 | 31,780 | 1,650 | 136,694 | -30,223 | 32,125 | 0 | 62,348 | 2.0 low |
+| eggs | 260,074 / 259,977 | 21,054 | 42,160 | 196,763 | +37,587 | 59,608 | 20,000 | 42,021 | 1.3 low |
+| cloth | 6,176 / 5,363 | 426 | 0 | 4,937 | +176 | 328 | 0 | 152 | 36.2 |
+| shirt (owned) | 145,851 / 145,844 | | | | -41 (83 bought, 126 worn out) | | | | 12 citizens want one |
+
+(the state columns are day 3's). Households with a food store: 7,079; low 687 at the end of day 2, 101 at the end of day 3,
+5 empty. Every row balances (eggs: 59,608 + 20,000 - 42,021 = +37,587). For the owner's tuning: bread is made only on
+workdays (240 on day 3 by 23:59) and is used at about 57,400 a day, so its cover falls to 0.7 days, and it has no import
+route; nothing went unmet in the two days.
+The inspector: the Bakery (`ix.4017`, hovered with the buildings drawn): "makes bread (from 1 wheat); its store (made,
+not yet hauled): 360 of 20,000; bread 360; its residents eat at a mess; sells bread, peel (no shelf of its own: it sells
+from the settlement's warehouses)". A market stall (`voth_market_stall`, Market 2): "a container: the simulation keeps
+stock by place, not by piece; this one is part of Market 2" and what Market 2 sells. A citizen (`c1000`, opened by
+clicking a holder of shirts in the panel: the camera flew there, the card opened): wears a shirt 69% worn of 400 days,
+trousers 77% of 450, shoes 19% of 380; at home shirt x5, shoes x5, trousers x5; household food bread 205, cheese 1, corn
+76, eggs 76, milk 2, mushrooms 77, peppers 77 (40 people, 3.2 days).
+
 ## 2026-10-14: interiors that vanished, kayaks, people on the water
 
 The owner: "interiors are not rendering aside from the cantons; nor are kayaks", "people stand around on the water and

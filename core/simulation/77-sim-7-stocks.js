@@ -29,7 +29,9 @@
 // THE DAY. At the first step of each world day the totals and the economy's and the items' running counters are
 // snapshot; `day` is the last two snapshots' difference (from one midnight to the next; `partial` when the first began
 // mid-day, `jumped` when the clock jumped in between), `today` the current state's against the last snapshot. A good's
-// flows: made, imported (on landing), exported (on loading), used (drawn from the warehouses or a site's own store:
+// flows: made, imported (when it enters the map: a carrier's lot from its arrival on the map, as the total counts it in
+// transit; a timer's on landing), exported (when it leaves the map: a carrier's cargo counts in transit until its group
+// is gone), used (drawn from the warehouses or a site's own store:
 // purchases, meals out, inputs, and a household's food bought, which is a move, not a use), stocked (food bought into
 // the households' stores), eaten (meals at home from those stores), consumed = used - stocked + eaten. An item's:
 // bought, issued (a slave's keeper), worn out, broken (a tool), consumed = worn + broken.
@@ -129,8 +131,14 @@
     Object.keys(T).forEach(add);   /* anything held that neither names */
     return ids;
   }
+  /* the running counters; imported and exported as the total sees them: a carrier's lot on the map counts as come in,
+     a carrier's cargo on the map as not yet gone (the economy counts them on landing and on loading), so that over any
+     span change = made + imported - exported - consumed */
   function counters(){ var E=SIM.ECON, I=SIM.ITEMS, c={};
-    Object.keys(CUM).forEach(function(k){ var src=CUM[k]==='E' ? (E && E[k]) : (I && I.stats[k]); c[k]=Object.assign({}, src || {}); }); return c; }
+    Object.keys(CUM).forEach(function(k){ var src=CUM[k]==='E' ? (E && E[k]) : (I && I.stats[k]); c[k]=Object.assign({}, src || {}); });
+    if(E){ E.inflight.forEach(function(s){ if(!s.done && s.group && SIM.R.group[s.group]) c.imported[s.good]=(c.imported[s.good] || 0)+s.n; });
+      SIM.all('group').forEach(function(G){ if(G.cargo && G.cargo.n>0) c.exported[G.cargo.good]=(c.exported[G.cargo.good] || 0)-G.cargo.n; }); }
+    return c; }
   function snap(minute, S){ var t=tally(null), tot={}; Object.keys(t.T).forEach(function(k){ tot[k]=totalOf(t.T[k]); }); return { minute:minute, tot:tot, cum:counters(), skipped:S.skipped }; }
   function state(){ var S=SIM.STOCKS; if(!S || S.econ!==SIM.ECON || S.items!==SIM.ITEMS) S=SIM.STOCKS={ econ:SIM.ECON, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
 

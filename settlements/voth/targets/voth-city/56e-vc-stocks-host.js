@@ -20,7 +20,7 @@ VC.STK = { on: false, sort: 'total', dir: -1, show: 'all', open: null, minute: n
 VC.CONTAINER = { storage: 1, rack: 1, vessel: 1, stack: 1, shelf: 1, counter: 1, stall: 1, supply: 1, food: 1, drink: 1 };
 VC.isContainer = function (key) {
   var F = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[key]) || {};
-  return !!VC.CONTAINER[F.type] || /chest|barrel|crate|bin|sack|jar|amphora|cask|trunk|basket|cabinet|wardrobe|granary|silo|coffer|urn|keg|hold/.test(key);
+  return !!VC.CONTAINER[F.type] || /chest|barrel|crate|bin|sack|jar|amphora|cask|trunk|basket|cabinet|wardrobe|granary|silo|coffer|keg/.test(key) && F.type !== 'shrine';
 };
 VC.fmt = function (v) {
   if (v == null || !isFinite(v)) return '-';
@@ -53,7 +53,7 @@ VC.contentsHTML = function (id, title) {
     if (C.household) { var hf = C.items.filter(function (e) { return e.as === 'household food'; });
       h += (C.store ? '<br>' : '') + 'household food: ' + (hf.length ? hf.map(function (e) { return VC.itemName(e.item) + ' ' + VC.fmt(e.n); }).join(', ') : '<span class="out">none</span>') +
         ' <span class="k">(' + C.household.people + ' people, ' + VC.fmt(C.household.days) + ' days' + (C.household.days != null && C.household.days < C.household.low ? ': low, someone goes to buy' : '') + ')</span>'; }
-    if (C.mess) h += '<br>its people eat at their mess <span class="k">(fed from the warehouses)</span>';
+    if (C.mess) h += '<br>its residents eat at a mess <span class="k">(no food store of their own: fed from the warehouses)</span>';
     if (C.sells) h += '<br>sells ' + C.sells.map(VC.itemName).join(', ') + ' <span class="k">(' + (C.shelf === 'warehouses' ? 'no shelf of its own: it sells from the settlement\'s warehouses' : 'abstract stock') + ')</span>';
     if (!C.items.length && !C.store && !C.household && !C.mess && !C.sells) h += '<span class="k">holds nothing the simulation counts</span>';
   } else if (C.type === 'group') {

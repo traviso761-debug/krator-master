@@ -473,12 +473,16 @@ function world(seed){
  run(0,1);S.supply('salt',1);S.supply('corn',10);run(1,3);
  const G=S.all('group')[0];
  ok('salt under three days: a caravan is sent for it by its port, three units for a lot of 70 at 30 a unit',G&&G.kind==='caravan'&&G.members.length===9&&S.LOG.some(e=>e.kind==='import'&&e.by===G.id),!G);
+ {const St=S.stocks().by.salt,f=St.today;
+  ok('the stocks: the caravan\'s lot on the map counts in transit and as imported, and the day balances (change = made + imported - exported - used up)',St.transit===70&&f.imported===70&&f.change===f.made+f.imported-f.exported-f.consumed,St.transit!==70);}
  run(3,5);
+ {const f=S.stocks().by.salt.today;ok('landed, it is still imported once (not twice)',f.imported===70&&f.change===f.made+f.imported-f.exported-f.consumed,f.imported!==70);}
  ok('on arrival it unloads into the caravanserai\'s store (the carts take it on), not by a timer; landed, it counts: no second caravan',S.R.place.serai.stock.salt===70&&S.ECON.imported.salt===70&&S.ECON.inflight.length===0&&S.ECON.sent===1&&S.ECON.landed.carrier===1&&!S.ECON.landed.timer,S.R.place.serai.stock.salt!==70);
  run(5,9);
  ok('leaving, it buys the good the city has most days of (made, over the floor), no more than the day\'s surplus, and keeps the floor',G.cargo&&G.cargo.good==='corn'&&G.cargo.n>0&&G.cargo.n<=2*S.ECON.day[0].made.corn&&S.stockOf('corn')>=2*10*0.9,!G.cargo);
  run(9,14);
  ok('and goes out the way it came: the group is gone',!S.R.group[G.id]&&S.LOG.some(e=>e.kind==='left'&&e.group===G.id),!!S.R.group[G.id]);
+ {const f=S.stocks().by.corn.today;ok('the stocks: the cargo counts as exported once its group has left the map, and the day still balances',f.exported===G.cargo.n&&f.change===f.made+f.imported-f.exported-f.consumed,f.exported!==G.cargo.n);}
  const R=S.economyReport();ok('the report counts the export',R.goods.corn.exported===G.cargo.n,R.goods.corn.exported!==G.cargo.n);}
 
 // animals (the needs' role `free`, a herd recipe, SIM.command): a cow at its pen feeds, drinks and rests by its meters,

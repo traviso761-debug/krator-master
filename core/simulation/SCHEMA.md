@@ -117,8 +117,9 @@ owned, ordered, use, days, low, out, wanting, day, today}}, day: {from, to, part
 empty}, rule: {lowDays}}`: every good of the economy and every item kind (not `meal`). **The daily snapshot**:
 `SIM.stocksStep` (the stepper's, after the economy) keeps the totals and the economy's and the items' running counters
 at the first step of each world day; `day` is the last two snapshots' difference, `today` now against the last
-(`SIM.stocksJump`: a jump of more than a minute marks the span `jumped`). A good's flows: `made`, `imported` (on
-landing), `exported` (on loading), `used` (drawn from the warehouses or a site's own store), `stocked` (food bought into
+(`SIM.stocksJump`: a jump of more than a minute marks the span `jumped`). A good's flows: `made`, `imported` (as it
+enters the map: a carrier's lot from its arrival, a timer's on landing), `exported` (as it leaves the map: a carrier's
+cargo when its group is gone), so that `change` = made + imported - exported - consumed, `used` (drawn from the warehouses or a site's own store), `stocked` (food bought into
 households' stores: a move), `eaten` (meals at home, the items' new `stats.eaten`), `consumed` = used - stocked + eaten,
 `unmet` (the economy's `short` and the items' `outOf`), `change`; an item's: `bought`, `issued`, `worn`, `broken` (the
 items' new `stats.brokenBy`), `consumed`, `unmet`, `change`. **The marks**: `low`, days of cover (`SIM.economyUse`: the
