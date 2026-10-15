@@ -23,6 +23,9 @@
 const SIM=(function(){
 const {clamp,mix,smooth}=VG;
 const RS=name=>KRAND.stream(KRAND.child(VG.SEED,'sim:'+name));
+// a seeded shuffle (Fisher-Yates on a stream), in place. Never `.sort(()=>R.next()-.5)`: a random comparator is
+// inconsistent, and V8 then orders the same array under the same draws differently from load to load
+function shuffle(a,R){for(let i=a.length-1;i>0;i--){const j=R.int(0,i);const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 const T=10800;                                   // one cycle of the timetable: three real hours
 const V={camel:1.55,walk:1.3,ride:2.6,porter:1.45,patrol:1.2};
 // ---------------------------------------------------------------- factions and organisations
@@ -263,7 +266,7 @@ function through(dir,k){const west=r(PBY.port_west.node,TH_U,{minW:4}),down=r(TH
  caravanMembers(G,R0.int(3,5),1,R0);
  for(const c of ['upper','lower'])if(TOLL[c]){const q=sNear(P,TOLL[c].x,TOLL[c].z);G.stops.push({s:q.s,kind:'toll',place:c+'_toll',dwell:R0.range(50,110)});}
  // one or two rest stops, the caravan's choice
- const picks=RESTS.slice().sort(()=>R0.next()-.5).slice(0,R0.int(1,2));
+ const picks=shuffle(RESTS.slice(),R0).slice(0,R0.int(1,2));
  for(const RP of picks){const q=sNear(P,RP.gate[0],RP.gate[1]);G.stops.push({s:q.s,kind:'rest',place:RP.id,dwell:R0.range(420,900),disperse:true});}
  timetable(G,V.camel);G.phase=R0.next()*T;return G;}
 // TURNAROUND caravans: in at their level's end, unload at a caravanserai, back the way they came

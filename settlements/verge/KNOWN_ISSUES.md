@@ -55,6 +55,15 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 - **The pink lake hides the flamingos.** Against the eastabyss kit's default pink lake (hue 0) they are hard to see.
   Verge's salt lakes are turquoise (`EASTABYSS_LAKE.hue` 0.52), so this does not apply here.
 
+## Determinism (2026-10-15)
+
+- [x] **The sim's rest-stop picks were shuffled with a random comparator.** `src/74-verge-sim.js` chose a through
+      caravan's one or two rest stops with `RESTS.slice().sort(()=>R0.next()-.5)`. A random comparator is inconsistent,
+      and V8 can order the same array under the same draws differently between loads (Roketstad's town changed from load
+      to load for this: `settlements/highlands/KNOWN_ISSUES.md`). Replaced with `shuffle(a, R)`, a seeded Fisher-Yates on
+      the stream. Four loads in a row give the same groups, stops, dwells and phases. The shuffle draws differently, so the
+      timetable moved once (same rules). Never shuffle with a random comparator.
+
 ## Cost
 
 - **About 10 M triangles with everything on.** The biomes take about 4 M of it; the ground takes 2.3 M (with the 2 m
