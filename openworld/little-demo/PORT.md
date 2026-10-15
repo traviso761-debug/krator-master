@@ -22,12 +22,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/81-world-terrain.js` | 11.3 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/83-world-water.js` | 2.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos bound; the named rivers as WATER.flow (core/water, data) along WORLD.riverLines, drawn by WATER.drawFlow |
 | `src/83w-world-seas.js` | 3.9 | [draw] | 2 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 | 0 | the sea and the lakes on core/water: one open surface per WORLD.waterBodies body (data), the shore windows timed by the frame |
-| `src/84-world-nursery.js` | 12.9 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
+| `src/84-world-nursery.js` | 13.0 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/85-world-flora.js` | 13.0 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/86-world-floor.js` | 6.0 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87-world-places.js` | 2.7 | [web] | 6 | 0 | 5 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-world-towns.js` | 9.0 | [web] | 20 | 0 | 0 | 0 | 2 | 2 | 0 | 3 | 0 | 0 | 2 |  |
-| `src/90-world-camera.js` | 12.5 | [web] | 3 | 3 | 6 | 14 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
+| `src/90-world-camera.js` | 12.6 | [web] | 3 | 3 | 6 | 14 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91-world-probe.js` | 12.1 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/98-world-start.js` | 5.8 | [web] | 0 | 1 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 1 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |

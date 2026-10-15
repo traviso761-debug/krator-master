@@ -126,4 +126,5 @@ function update(budgetMs){if(!QUEUE.size)return 0;const t0=performance.now();let
  const L=[...QUEUE.values()].sort((a,b)=>a.pri-b.pri);
  for(const q of L){QUEUE.delete(q.key);PROTO.set(q.key,q.spec.patch?growPatch(q.spec):growTree(q.spec));n++;if(performance.now()-t0>budgetMs)break;}
  return n;}
-return{get,update,FLOORS,KIDX,stats:ST,queued:()=>QUEUE.size,protos:PROTO,worldMat};})();
+/* harvest(kit, ox, oz, anchor): what a kit drew, as parts relative to (ox, oz) (a world's set pieces use it: openworld/isle-demo's geyser sites) */
+return{get,update,FLOORS,KIDX,stats:ST,queued:()=>QUEUE.size,protos:PROTO,worldMat,harvest};})();

@@ -14,7 +14,8 @@
 //   bench           rock awash at the shore on steep ground (-0.4..0.6 m, slope over .3)
 //   pan             a salt pan's crust: the world's own salt field
 //   garden          a town's fields: 0 until the towns are laid out (P5)
-//   floor           the geyser kit's thermal ground: within ~1.5 km of one of the scale model's vents (region.json vents)
+//   floor           the geyser kit's thermal ground: the geyser site round each of the scale model's vents (region.json
+//                   vents; 89-world-geysers.js lays it): 1 within 420 m, 0 by 700 m
 // The scale model's heights are a 4 km grid, so these coast bands are as wide as its shore's slope makes them; a reef
 // ring, a lagoon and a mangrove bay drawn as terrain are the flora step's (PLAN.md, P3b).
 (function(){
@@ -28,7 +29,7 @@ const COAST=['beach','dune','mangal','lagoon','reef','bench','pan','garden','flo
 W.FIELDS.push(...KF,...COAST);
 W.ISLE_FIELDS=KF.concat(COAST);
 // the vents in world metres, for the thermal ground
-const o=M.frame.origin_px,VENTS=(M.vents||[]).map(v=>[(v.px[0]-o[0])*2000,(v.px[1]-o[1])*2000]);
+const o=M.frame.origin_px,VENTS=(M.vents||[]).filter(v=>v.kind==='geyser').map(v=>[(v.px[0]-o[0])*2000,(v.px[1]-o[1])*2000]);
 // the class weights: the climate code at five warped points round (x, z), counted
 const IDX={};CLASSES.forEach((c,i)=>IDX[c]=i);
 const OFF=[[0,0],[700,0],[-700,0],[0,700],[0,-700]],CW=new Float32Array(CLASSES.length);
@@ -48,7 +49,7 @@ function add(A){const x=A.x,z=A.z,d=A.depth,above=-d,slope=A.slope,land=d<0?1:0;
  A.bench=hasW?(1-smooth(.4,.7,Math.abs(d)))*smooth(.28,.38,slope):0;
  A.pan=A.salt||0;
  A.garden=0;
- let fl=0;for(const [vx,vz] of VENTS){const r=Math.hypot(x-vx,z-vz);if(r<2000)fl=Math.max(fl,1-smooth(900,1600,r));}A.floor=fl;
+ let fl=0;for(const [vx,vz] of VENTS){const r=Math.hypot(x-vx,z-vz);if(r<900)fl=Math.max(fl,1-smooth(420,700,r));}A.floor=fl;
  A.dry=dry;
  return A;}
 const at0=W.at,from0=W.fieldsFrom;

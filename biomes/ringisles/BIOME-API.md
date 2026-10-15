@@ -61,6 +61,11 @@ A lender's entry grows through `RINGISLES.borrowGrow` at scale 1. Each pass's `o
 XA forest's extra height and the pass's own `k`. The world's registry (`openworld/isle-demo/src/47-world-kits.js`) lists
 the five entries.
 
+The water's plants are two more species at the end of the `ringisles` entry: `seagrass` (depth window -3.6 to -0.35 m)
+and `coralhead` (-6 to -0.2 m). Their passes carry `inWater`, so the world places them only where the water is that
+deep. They have no far level. They grow through `RINGISLES.waterPlant(kind, lv, dense)` (60), the floor's own seagrass
+and coral builders at the origin.
+
 ## 3. The crops (`RINGISLES.GARDEN`, the owner's list of 2026-10-15)
 
 Tree crops: `crop-coconut` (the Throne's coconut), `crop-mango`, `crop-banana`, `crop-coffee`, `crop-clove` (Af/Am: the

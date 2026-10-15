@@ -5,15 +5,18 @@
       for little-demo).
 - [ ] **The floor is sparse** next to the kit's own page: the world tiles 32 m patches of `buildFloor`, fewer plants
       a patch than the showcase lays. Tune the patch density or the kit's floor weights.
-- [ ] **No shallow-water flora.** The world's mask (`45-world-host.js`) admits only land, so the isles kit's lagoon and
-      reef passes cannot place yet.
+- [x] **Shallow-water flora** (2026-10-15): seagrass and coral heads, placed by `inWater` passes in their depth windows.
+- [ ] **Flora tiles are slow with the water passes**: a 512 m tile takes up to about 16 s to fill near the coast, and
+      the frame rate drops while the tiles fill. The seagrass pass (cell 4 m) is the heaviest.
 - [x] **The coast as terrain** (2026-10-15, `WORLD.landHook`): lagoon, reef crest with passes, fore reef, mangrove
       flats. little-demo's height function gained the opt-in hook (null there).
 - [ ] **The lagoon and the reef do not show through the water** near the camera: core/water has no depth absorption
       yet (ROADMAP section 9). They show in the surf on the crest and from above, where the ground's sea colour
       reads them.
-- [ ] **No geyser fields.** The vents are in "Go to" and carry the `floor` field, but nothing draws a geyser there yet
-      (the geyser kit's `GEYSER.cluster`, P3b).
+- [x] **The geyser fields** (2026-10-15, `89-world-geysers.js`): laid at start, built per site when the camera comes
+      near. Only the 14 vents of kind `geyser` count; the two without a kind are skipped.
+- [ ] **The geyser sites' ground is a little yellow** next to the geyser kit's own page: the savanna's ground shows
+      through where the sinter paint fades. The sinter's tone was turned down once (it read too bright).
 - [x] **The sea at every height** (owner, 2026-10-15): the ground under the sea is coloured by its depth, so beyond
       the water window round the camera the sea still reads as sea. A lighter band shows where the window ends,
       seen from 260 km up.

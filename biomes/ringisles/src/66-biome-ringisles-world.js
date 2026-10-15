@@ -22,7 +22,18 @@ RINGISLES.world=function(){if(RINGISLES._world)return RINGISLES._world;
  // this kit's own species
  const ownSP=RINGISLES.SPECIES.map(S=>Object.assign({},S));
  const ownP=[];RINGISLES.PASSES.forEach(P=>{const S=RINGISLES.byKey[P.key];if(!S)return;if(P.depth)ownSP[S.i].depth=P.depth;ownP.push(passOf(P,S.i,null));});
- out.ringisles={name:'ringisles',SPECIES:ownSP,PASSES:ownP,zones:Z,make:RINGISLES.make,grow:RINGISLES.grow,buildFloor:RINGISLES.buildFloor};
+ // the water's plants as two more species, standing in the shallows (a pass's depth window: the world's flora places
+ // them only where the water is that deep; [-max, -min] as the world reads it): seagrass meadows in the lagoon, coral
+ // heads in the lagoon and crowded on the reef; no far level (they are not drawn beyond the mid reach)
+ const N0=ownSP.length,WATER=[{key:'seagrass',kind:'seagrass',name:'Seagrass',H:[.35,.6],rb:[.5,.7],depth:[-3.6,-.35],far:false,tags:{zone:'lagoon',origin:'earth'}},
+  {key:'coralhead',kind:'coral',name:'Coral head',H:[.5,1.4],rb:[.7,1.1],depth:[-6,-.2],far:false,tags:{zone:'reef',origin:'earth'}}];
+ WATER.forEach(S=>ownSP.push(S));
+ ownP.push({sp:N0,cell:4,accept:(Zs)=>Zs.lagoon*.8,opt:{patch:.6,patchScale:.012,pad:.6,inWater:true}},
+  {sp:N0+1,cell:7,accept:(Zs)=>Zs.lagoon*.12+Zs.reef*.8,opt:{patch:.5,patchScale:.02,pad:.8,inWater:true}});
+ const make0=RINGISLES.make,grow0=RINGISLES.grow;
+ out.ringisles={name:'ringisles',SPECIES:ownSP,PASSES:ownP,zones:Z,buildFloor:RINGISLES.buildFloor,
+  make:(sp,x,y,z)=>{if(sp<N0)return make0(sp,x,y,z);const S=ownSP[sp];return{sp,x:x||0,z:z||0,y0:y||0,H:S.H[1],rb:S.rb[1],crownR:S.rb[1]};},
+  grow:(T,lv)=>{if(T.sp<N0)return grow0(T,lv);if(lv===0)return null;RINGISLES.waterPlant(ownSP[T.sp].kind,lv,ownSP[T.sp].kind==='coral');return {};}};
  // the borrowed species, one entry per lending kit
  const byKit={};RINGISLES.BORROW.forEach(Bo=>{(byKit[Bo.kit]=byKit[Bo.kit]||[]).push(Bo);});
  for(const kit in byKit){const api=RINGISLES.kitOf(byKit[kit][0]);if(!api)continue;

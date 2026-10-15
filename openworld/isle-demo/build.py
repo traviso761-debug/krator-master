@@ -51,6 +51,25 @@ KIT_FRAGS = (
 # each kit's last listed fragment must close its registry (BIO.kitEnd), or every later kit's items land in its registry
 KIT_LAST = {'throne': '70-biome-throne.js', 'swbay': '75-biome-swbay-fauna.js', 'eastabyss': '75-biome-eastabyss-fauna.js',
             'sedesert': '75-biome-sedesert-fauna.js', 'geyser': '70-biome-geyser.js', 'ringisles': '70-biome-ringisles.js'}
+# THE LIBRARY'S MAPS (core/materials/record, tools/textures/matlib_pack.py): one pack per kit on the page, as
+# biomes/ringisles/build.py makes them (the same trims: the Throne's isle and savanna species only, no lender's towers,
+# jetties or ground layers: the world paints its own ground), written as sidecars beside the page
+# (dist/isle-demo.tex.<kit>.js). Without them a kit's library-coloured bark and leaf cards draw white.
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+import matlib_pack as _mp
+PACK_KITS = ['ringisles', 'throne', 'swbay', 'eastabyss', 'sedesert', 'geyser']
+SIDE = None if '--inline-packs' in sys.argv else {}
+def _fams(kit):
+    pj = os.path.join(ROOT, 'biomes', kit, 'tex', 'pack.json')
+    return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
+THRONE_KEEP = {'bark.armored', 'bark.palm', 'bark.mangrove', 'bark.twisted', 'bark.coir', 'card.frond.coconut', 'card.fractal',
+               'card.treefern', 'card.aloeflower', 'card.ferngreen', 'card.bromeliad', 'card.mossclump', 'leaf.fern', 'cap.disc', 'cap.tier'}
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+PACK_EXCL = {'ringisles': [f for f in _fams('ringisles') if f.startswith('ground')], 'throne': [f for f in _fams('throne') if f not in THRONE_KEEP],
+             'swbay': [f for f in _fams('swbay') if _DROP(f)], 'eastabyss': [f for f in _fams('eastabyss') if _DROP(f)],
+             'sedesert': [f for f in _fams('sedesert') if _DROP(f)], 'geyser': [f for f in _fams('geyser') if _DROP(f)]}
+def pack_fragment(kit):
+    return _mp.fragment(os.path.join(ROOT, 'biomes', kit), kit, exclude=PACK_EXCL[kit], side=SIDE)
 LDF = lambda *fs: [('ld', f) for f in fs]
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
@@ -61,14 +80,17 @@ ORDER = (
      ('core/atmos', '89-atmos-b-skylight.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
      ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
+     ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '25-matlib-host.js'),
      ('biomes/sedesert/src', '35-core-strata.js')]
     + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-isles.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
+    + [('pack', k) for k in PACK_KITS]
     + KIT_FRAGS
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '90-world-camera.js',
-          '91-world-probe.js', '98-world-start.js', '99-tail.html')
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
+    + [('src', '89-world-geysers.js')]
+    + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
 # the page's own words in little-demo's head (its title and caption), replaced: each must be found exactly once
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator Isle Demo</title>'),
@@ -106,6 +128,10 @@ def main():
         if where == 'gen':
             out.append(data_fragment())
             continue
+        if where == 'pack':
+            out.append('\n// ==================== the library pack: %s\n' % f)
+            out.append(pack_fragment(f))
+            continue
         path = os.path.join(LD, 'src', f) if where == 'ld' else os.path.join(ROOT if where != 'src' else HERE, where, f)
         s = open(path, encoding='utf8').read()
         if where == 'ld' and f == '00-head.html':
@@ -129,6 +155,8 @@ def main():
             sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does' % (k, last))
     html = ''.join(out)
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the packs beside the page (dist/isle-demo.tex.<kit>.js), loaded by <script src> ahead of its code
+        html = _mp.write_sidecar(SIDE, html, DIST, 'isle-demo.tex.js')
     dst = os.path.join(DIST, OUT)
     open(dst, 'w', encoding='utf8').write(html)
     node = find_node()

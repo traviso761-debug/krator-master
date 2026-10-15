@@ -84,17 +84,26 @@ RINGISLES._h={treeGrow,dirOf,tip,along,clumpAt,frondAt,limb,barkCol,leafCol,frui
 
 // ---------------------------------------------------------------- the builders: (T, st, lv) with lv 2 near, 1 mid
 const B=[];RINGISLES._B=B;RINGISLES._h.regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
-// 0 the SCRUB THORN: three to six thin dark stems from the ground in a vase, forking, under a flat layered top of fine
-// bipinnate sprays (two or three tiers, the topmost widest); a few white thorns' worth of pale twigs in the near ones
-B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),tips=[];let top=T.y0;
- for(let s=0,n=lv===2?ri(3,6):3;s<n;s++){const a=s/n*TAU+rr(-.4,.4),P=treeGrow({x:T.x+rr(-.15,.15),y:T.y0-.15,z:T.z+rr(-.15,.15)},dirOf(a,rr(1.0,1.3)),H*rr(.75,.95),T.rb,T.rb*.35,lv===2?4:2,-.05,.08);
-  limb('bark0',S,0,P,lv,st,lv===2?5:3);const e=tip(P);tips.push(e);top=Math.max(top,e.y);
-  if(lv===2)for(let k=0;k<2;k++){const b=along(P,rr(.55,.8)),L=treeGrow(b,dirOf(a+rr(-1,1),rr(.3,.7)),R*rr(.4,.6),b.r*.7,.02,2,0,.1);limb('bark0',S,0,L,lv,st,3);tips.push(tip(L));}}
- const tiers=lv===2?ri(2,3):1;
- for(let t=0;t<tiers;t++){const y=top-t*H*.18,r=R*(1-t*.25);
-  for(let k=0,n=lv===2?ri(9,14):5;k<n;k++){const a=rr(0,TAU),d=r*Math.sqrt(rng())*.85,p=pick(tips);
-   clumpAt('thornspray',T.x+Math.cos(a)*d*.8+(p.x-T.x)*.2,y+rr(-.15,.25),T.z+Math.sin(a)*d*.8+(p.z-T.z)*.2,r*rr(.5,.7)*(lv===2?1:1.5),.32,hc,T.x,y,T.z,r,H*.2);st.clumps++;}}
- regTree(T,S,R+.5,top-T.y0+.6);};
+// 0 the SCRUB THORN: three to six thin dark stems from one root, splayed out in a vase and kinked, each forking near its
+// top into near-level branches that run out to the rim; a flat, wide, layered umbrella of fine sprays over them (the top
+// plate widest and densest, one or two thinner plates under it), a little domed at the middle; the near ones a few pale
+// thorn twigs; each tree its own share of dry yellow-olive sprays (the dry season browning the crown unevenly)
+B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),dc=C(pick(PAL.thornDry)),dry=rr(.05,.4),tips=[];let top=T.y0;
+ const n=lv===2?ri(3,6):3,a0=rr(0,TAU);
+ for(let s=0;s<n;s++){const a=a0+s/n*TAU+rr(-.35,.35),P=treeGrow({x:T.x+rr(-.12,.12),y:T.y0-.15,z:T.z+rr(-.12,.12)},dirOf(a,rr(.85,1.12)),H*rr(.55,.7),T.rb,T.rb*.55,lv===2?4:2,.04,.12);
+  limb('bark0',S,0,P,lv,st,lv===2?5:3);const e=tip(P);
+  /* the fork: two or three near-level branches out to the rim, and a twig fork off each near */
+  for(let k=0,m=lv===2?ri(2,3):2;k<m;k++){const ba=a+(k-(m-1)/2)*rr(.6,.9),Lb=R*rr(.5,.8),Q=treeGrow(e,dirOf(ba,rr(.18,.45)),Lb,e.r*.8,.015,lv===2?3:2,-.06,.1);
+   limb('bark0',S,0,Q,lv,st,3);tips.push(tip(Q));top=Math.max(top,tip(Q).y);
+   if(lv===2){const c=along(Q,rr(.4,.6)),W=treeGrow(c,dirOf(ba+rr(-1.1,1.1),rr(.1,.4)),R*rr(.25,.4),c.r*.7,.01,2,-.03,.1);limb('bark0',S,0,W,lv,st,3);tips.push(tip(W));}}}
+ /* a few pale thorn twigs, short and stiff, under the near ones' crown */
+ if(lv===2)for(let k=0;k<6;k++){const p=pick(tips),q=treeGrow({x:p.x,y:p.y-.05,z:p.z},dirOf(rr(0,TAU),rr(-.5,.3)),rr(.25,.45),.012,.004,1,0,0);q.forEach(v=>v.col=C(0xc8c0a8));limb('bark0',S,0,q,lv,st,3);}
+ const tiers=lv===2?ri(2,3):1,rim=Math.max(R,...tips.map(p=>Math.hypot(p.x-T.x,p.z-T.z)*1.05));
+ for(let t=0;t<tiers;t++){const y=top+.1-t*H*.13,r=rim*(t===0?1:t===1?.72:.5);
+  for(let k=0,m=lv===2?(t===0?ri(24,32):ri(8,12)):9;k<m;k++){const p=pick(tips),u=Math.sqrt(rng()),a=rr(0,TAU),d=r*u*.9;
+   const x=mix(T.x+Math.cos(a)*d,p.x,.4),z=mix(T.z+Math.sin(a)*d,p.z,.4),col=vary(rng()<dry?dc:hc,.02,.08,.06);
+   clumpAt('thornspray',x,y+.22*(1-u)+rr(-.08,.12),z,r*rr(.32,.45)*(lv===2?1:1.6),.22,col,T.x,y,T.z,r,H*.15);st.clumps++;}}
+ regTree(T,S,rim+.4,top-T.y0+.6);};
 // 1 the CORKWOOD: a short swollen green-bronze trunk shedding papery flakes, three to five stubby twisted limbs up and out,
 // a thin crown of small trifoliate leaves (bare-ish in the dry season)
 B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));

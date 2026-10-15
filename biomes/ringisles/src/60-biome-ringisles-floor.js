@@ -98,6 +98,9 @@ function plantStrand(x,y,z,Z,lv,st){const t=rng(),d=Z.dune;
 // ---------------------------------------------------------------- the pass
 RINGISLES.FLOOR_ZONES=['forest','savanna','steppe','salt','strand'];
 const PLANTERS=[plantForest,plantSavanna,plantSteppe,plantSalt,plantStrand];
+// one water plant at the origin, for an open world's nursery (66-biome-ringisles-world.js): 'seagrass' a meadow tuft
+// cluster, 'coral' a coral head (dense: the reef's, crowded); lv the level. Draws from the stream the caller seeded
+RINGISLES.waterPlant=function(kind,lv,dense){means();if(kind==='seagrass')seagrass(0,0,0,lv);else coral(0,0,0,lv,!!dense);};
 RINGISLES.floorWeights=Z=>[Z.forest*1.2,Z.sav*1.45,Z.step*1.2,(Z.pan+Z.panEdge)*1.2,(Z.strand+Z.dune)*1.3];
 RINGISLES.buildFloor=function(R,q){reseed(600071);q=q==null?1:q;R=R||2000;means();
  const st={ferns:0,gingers:0,aroids:0,grass:0,black:0,flush:0,green:0,cured:0,thornbush:0,mounds:0,stones:0,bunch:0,saltbush:0,samphire:0,crust:0,

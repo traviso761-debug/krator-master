@@ -52,13 +52,18 @@ the latest Voth viewer as the base.
 - **The demo area grew** (owner, 2026-10-15): two polygons drawn in the world, the west isles and the north-east isles,
   are part of it (`openworld/isle-demo/source/added-areas.json`, cut as a union by the extractor's `--add`). It is now about
   31,800 km2, 11,800 km2 of land, with 16 geyser vents. The assay in section 1 is the original polygon's.
-- **P3b in progress** (2026-10-15):
-  - **Done:** the isles' flora in the world (`RINGISLES.world()`), the sea readable at every height (the owner), the
-    ground coloured by climate class, and the coast as terrain (lagoon, reef crest, mangrove flats).
-  - **Still to do:** the geyser fields at the vents, and the water's flora (seagrass, corals).
-- **Earlier note, P3b:** the isles kit's flora in the world (growable prototypes, a pass table, shallow-water placement), the
-  coast drawn as terrain (reef, lagoons, mangrove bays), and the geyser fields at the vents.
-- **Not committed.**
+- **P3b is done** (2026-10-15):
+  - the isles' flora in the world (`RINGISLES.world()`), with the kits' texture packs;
+  - the sea readable at every height (the owner);
+  - the ground coloured by climate class;
+  - the coast as terrain (lagoon, reef crest, mangrove flats);
+  - seagrass and corals in the water;
+  - the geyser fields at the 14 geyser vents;
+  - a quality pass on the scrub thorn (the owner): splayed stems forking level under a flat, layered umbrella, with
+    some dry browning.
+  - Its checks pass in the browser pane (`openworld/isle-demo/README.md`).
+  - Open: a sparse floor, slow coastal tiles (`openworld/isle-demo/KNOWN_ISSUES.md`).
+- **Next: P4,** the site planner for the two towns.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
 
