@@ -341,12 +341,12 @@
    "sha256": "0e6ebd8266dac0cdefd1a94efa8a74dbb83be3a05428248754020a2243e9bcf1"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 1304707,
-   "sha256": "d648cee0bdac604fdd18a714f060adc71b4cb5d51a01cee60a7be7ca6a7727fd"
+   "bytes": 1305402,
+   "sha256": "6261c1dc242e2314cf5003722041246ebafdaae83afd3a0ba77b786cca3a5ede"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 1304965,
-   "sha256": "9ac71afce3d7a65c2d0dbdcbfc54bb506d55cd59446ef4087f59cf61eeb9ddc7"
+   "bytes": 1305660,
+   "sha256": "e43a673b509aefeca4534756ff62fe0a9185af85b03a7b1b88cb255a96dc0833"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5078484,
@@ -383,6 +383,10 @@
   "settlements/highlands/dist/roketstad.html": {
    "bytes": 7169080,
    "sha256": "db48b3a20c09d47c6e29db50c8134f340e9ec53c70dfc53bfe931bceed430057"
+  },
+  "settlements/isle-demo/dist/isle-site.html": {
+   "bytes": 1240957,
+   "sha256": "d83c2e8430548b0685f4dd00d0d5fe0c40b4183508c37fd031ff37c603c24814"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
    "bytes": 715824,

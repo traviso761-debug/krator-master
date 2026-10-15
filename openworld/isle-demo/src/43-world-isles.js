@@ -30,12 +30,18 @@ W.FIELDS.push(...KF,...COAST);
 W.ISLE_FIELDS=KF.concat(COAST);
 // the vents in world metres, for the thermal ground
 const o=M.frame.origin_px,VENTS=(M.vents||[]).filter(v=>v.kind==='geyser').map(v=>[(v.px[0]-o[0])*2000,(v.px[1]-o[1])*2000]);
-// the class weights: the climate code at five warped points round (x, z), counted
+// the class weights at (x, z): the climate classes of the four scale-model pixels round a warped point, blended by
+// where the point lies between their centres (the region's origin is a pixel's centre, so the centres are every 2 km).
+// The blend is sharpened (a class owns the middle of its pixel, the change takes the middle 1.1 km between centres),
+// and the point is warped broadly (the pixels' layout moves as a whole) and finely (their edges meander), so a class
+// boundary bends instead of stepping along the pixel grid
 const IDX={};CLASSES.forEach((c,i)=>IDX[c]=i);
-const OFF=[[0,0],[700,0],[-700,0],[0,700],[0,-700]],CW=new Float32Array(CLASSES.length);
-function classWeights(x,z){CW.fill(0);let n=0;
- for(const [ox,oz] of OFF){const wx=x+ox+(NA.fbm(x/5000,z/5000,2)-.5)*1600,wz=z+oz+(NB.fbm(x/5000+31,z/5000-7,2)-.5)*1600;
-  const c=W.climate(wx,wz);if(!c)continue;const k=IDX[c.code];if(k!=null){CW[k]++;n++;}}
+const NF=KN(4405),CW=new Float32Array(CLASSES.length);
+function classWeights(x,z){CW.fill(0);
+ const wx=x+(NA.fbm(x/5000,z/5000,2)-.5)*1600+(NF.fbm(x/1300,z/1300,2)-.5)*2400,wz=z+(NB.fbm(x/5000+31,z/5000-7,2)-.5)*1600+(NF.fbm(x/1300+57,z/1300-23,2)-.5)*2400;
+ const u=wx/2000,v=wz/2000,i=Math.floor(u),j=Math.floor(v),fu=smooth(.22,.78,u-i),fv=smooth(.22,.78,v-j);let n=0;
+ const put=(pi,pj,w)=>{if(w<=0)return;const c=W.climate(pi*2000,pj*2000);if(!c)return;const k=IDX[c.code];if(k!=null){CW[k]+=w;n+=w;}};
+ put(i,j,(1-fu)*(1-fv));put(i+1,j,fu*(1-fv));put(i,j+1,(1-fu)*fv);put(i+1,j+1,fu*fv);
  if(n)for(let k=0;k<CW.length;k++)CW[k]/=n;return CW;}
 function add(A){const x=A.x,z=A.z,d=A.depth,above=-d,slope=A.slope,land=d<0?1:0;
  const C=classWeights(x,z);for(let k=0;k<KF.length;k++)A[KF[k]]=land?C[k]:0;

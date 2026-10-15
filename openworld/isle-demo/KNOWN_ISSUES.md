@@ -1,5 +1,10 @@
 # openworld/isle-demo: known issues
 
+- [x] **The climate classes stepped along the 2 km pixel grid** (2026-10-15, seen from above in the site planner): the
+      class weights (43-world-isles.js `classWeights`) now blend the four pixels round a warped point between their
+      centres, so a boundary bends. The ground's colour and the flora's class weights both follow; the checks pass again
+      (184,431 records at Kautoa).
+
 - [x] **The flora** (P3b, 2026-10-15): the isles kit in the world through `RINGISLES.world()`, one entry per registry.
       little-demo's flora tiles now carry every `WORLD.FIELDS` field, and a kit without a floor lays none (both no-ops
       for little-demo).

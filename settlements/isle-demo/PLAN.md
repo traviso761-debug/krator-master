@@ -63,7 +63,16 @@ the latest Voth viewer as the base.
     some dry browning.
   - Its checks pass in the browser pane (`openworld/isle-demo/README.md`).
   - Open: a sparse floor, slow coastal tiles (`openworld/isle-demo/KNOWN_ISSUES.md`).
-- **Next: P4,** the site planner for the two towns.
+- **P4 is done** (2026-10-15): the site planner, `dist/isle-site.html` (this folder's `README.md`).
+  - It is Voth's site editor read in place, on the open world's ground (the world's height fragments, to the cm).
+  - Each town is planned in its own frame and saved to `site/isle-site.json` through `serve.py`. The file holds both
+    towns' frames, with nothing drawn yet.
+  - `verify.py --assert` passes for both towns.
+  - The open world's climate classes now blend between pixel centres with meandering edges, not 2 km steps; its
+    checks pass again.
+  - Open: Walapo's settlement point is 5.2 km inland, outside its planning square (`KNOWN_ISSUES.md`): the owner's
+    call before P5.
+- **Next: P5,** the owner lays out the two towns in the planner.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
 

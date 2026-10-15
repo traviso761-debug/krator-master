@@ -1,0 +1,44 @@
+{
+ "site": "isle-demo",
+ "version": 1,
+ "towns": {
+  "Kautoa": {
+   "town": "Kautoa",
+   "frame": {
+    "town": "Kautoa",
+    "x": 36000,
+    "z": -58000,
+    "sea": -1500.09
+   },
+   "site": "isle-demo",
+   "version": 2,
+   "saved": "2026-10-15T18:59:21.674Z",
+   "districts": [],
+   "markers": [],
+   "avenues": [],
+   "causeways": [],
+   "terrain": [],
+   "stations": [],
+   "routes": []
+  },
+  "Walapo": {
+   "town": "Walapo",
+   "frame": {
+    "town": "Walapo",
+    "x": -8000,
+    "z": 56000,
+    "sea": -1500.09
+   },
+   "site": "isle-demo",
+   "version": 2,
+   "saved": "2026-10-15T18:59:16.650Z",
+   "districts": [],
+   "markers": [],
+   "avenues": [],
+   "causeways": [],
+   "terrain": [],
+   "stations": [],
+   "routes": []
+  }
+ }
+}
