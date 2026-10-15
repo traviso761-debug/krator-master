@@ -327,7 +327,9 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-9 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "
+1-9 case (%s)   drag look   MMB orbit   arrows turn   WASD QE move   Shift fast   wheel zoom   Ctrl+wheel speed   +/- lens
+[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
