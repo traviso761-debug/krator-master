@@ -94,6 +94,17 @@ LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 # global TEX, and this lineage's TEX is the canvas-texture table (core/materials/20-textures.js).
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/96t-screamers-tags.js), for a
+# target without the Post-Apoc bundle: the village's bundle brings its own copy and sets window.KTAGS itself (70e)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks (they replace
+# the old 93-polytool.js), pictures, minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space:
+# the vendored hyperjungle's scatter takes another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13).
+# Not core/edits: no editor world yet.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 TEX_DIR = os.path.join(HERE, 'tex')                 # the library pack: tools/textures/pack.py writes it from materials.json
 MATLIB_PACK = '72b-matlib-pack.js'                  # GENERATED (matlib_pack()), never written to src/; 72c-matlib.js applies it
 # GENERATED, never written to src/ (virtual_bodies()): the catalog's furniture and the interiors core with the Post-Apoc
@@ -170,13 +181,16 @@ DETERMINISTIC = {
     '71b-flora.js',
     '23-mat-record.js', '25-matlib-host.js', MATLIB_PACK, '72c-matlib.js',   # the material library (no rng())
     '71a-apoc-homes.js',   # the salvage homes: sited on a fixed ring, built by KratorPostApoc on its own stream (no rng())
-    '91-probe.js', '92-camera.js', '70c-furniture.js', '72a-wind.js', '93-polytool.js', '95-pathviz.js', '99-tail.html',
+    '91-probe.js', '92-camera.js', '70c-furniture.js', '72a-wind.js', '95-pathviz.js', '99-tail.html',
+    '99-start.js', '96t-screamers-tags.js',   # the take (core/host); REG into core/tags (reads only)
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES)   # core/host, core/rand, core/tags: no rng()
+
 SEED_COLLISION_EXCEPTIONS = {
     ('48-library.js', '76-campus.js'),   # both claim 9800/9801 - see KNOWN_ISSUES.md
     ('60-gate.js', '87-mega.js'),        # 9995+d vs 9996+d overlap  - see KNOWN_ISSUES.md
@@ -224,7 +238,7 @@ def check(order, bodies):
         # local helper; the biome tree's own build.py greps them for THIS kit's
         # names instead. Do not edit a biome fragment here -- edit it in the
         # biome tree and copy it back, or the two drift.
-        if '-biome-' in f or f in VIRTUAL:
+        if '-biome-' in f or f in VIRTUAL or f in CORE_HOST:   # core/host: each file one IIFE (KHOST)
             continue
         body = bodies[f]
 
@@ -261,7 +275,7 @@ def check(order, bodies):
     # 2. shared-scope collisions
     decl = {}
     for f in order:
-        if not f.endswith('.js') or '-biome-' in f or f in VIRTUAL:      # biome fragments and bundles: closures, see above
+        if not f.endswith('.js') or '-biome-' in f or f in VIRTUAL or f in CORE_HOST:      # biome fragments, bundles, core/host: closures, see above
             continue
         for rx in (RE_DECL, RE_DECL_MULTI):
             for m in rx.finditer(bodies[f]):
@@ -285,6 +299,9 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
+    if target != 'screamers':   # the village's Post-Apoc bundle brings core/rand and core/tags (above)
+        src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:

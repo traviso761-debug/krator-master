@@ -86,10 +86,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89-lab.js` | 6 |  |
 | `90-scene.js` | 17 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
-| `92-camera.js` | 5 | camera control (1) |
-| `93-polytool.js` | 7 |  |
+| `92-camera.js` | 1 | what stays of the camera on core/host: ui, setView, the title, LOD's options (1) |
 | `94-life.js` | 11 |  |
 | `95-pathviz.js` | 4 |  |
+| `96t-screamers-tags.js` | 3 | REG into core/tags (KTAGS.page): class and tags from the name and builder type |
+| `99-start.js` | 2 | the take: the Screamers on core/host (KHOST.take) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
