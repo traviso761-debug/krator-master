@@ -13,11 +13,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
+From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.py`: the whole interface less `core/space` and `core/edits`): `90-host-camera.js` to `99-host-cutaway.js`, with `core/minimap`'s files. The kit's `92-camera.js` is left out (`KIT_SKIP`)
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `41-dhelv-layout.js` | 34 **big** |  |
 | `45-dhelv-bio.js` | 10 |  |
 | `48-dhelv-flows.js` | 3 |  |
@@ -29,7 +31,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89-dhelv-hills.js` | 9 |  |
 | `90-dhelv-scene.js` | 59 **big** | the ground: the layout's (the flows, the kipuka' (24); the sites: the layout's, each the kit's def (158); the ways: the layout's public ways carved in the (180); the rock, meshed near the camera only (PLAN.md 7 (265); what is seen (PLAN.md P5: the switch that draws  (282); (re)build the world (381); views (436); the rolling stone door (the owner: it rolls back (466) |
 | `91-dhelv-probe.js` | 18 |  |
+| `92-dhelv-camera.js` | 3 |  |
 | `92-dhelv-export.js` | 5 |  |
 | `93-dhelv-map.js` | 6 |  |
 | `94-dhelv-light.js` | 8 |  |
 | `95-dhelv-life.js` | 9 |  |
+| `99-start.js` | 7 | the inspector's words (the kit's 92-camera.js inspectAt) (8); the frame, after the camera (the kit's loop's order) (23); the page's own buttons (32); the page, handed to the host (37) |

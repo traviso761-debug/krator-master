@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 108 (38%) | 12 (4%) | 6 (2%) | 111 (39%) | 49 (17%) |
+| KB | 108 (39%) | 12 (4%) | 6 (2%) | 104 (37%) | 49 (17%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 3.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-verge-layout.js` | 25.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the terrain, river, falls, trail and ramps as functions; no THREE (tests/test-layout.js runs it in node). The geom hits are names, not calls |
 | `src/45-verge-stage.js` | 9.7 | [web] | 9 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-verge-ground.js` | 10.8 | [web] | 9 | 2 | 0 | 0 | 2 | 1 | 5 | 0 | 0 | 0 | 0 |  |
@@ -28,8 +28,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/82-verge-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | vendored from settlements/locus/src/82-daynight.js (unchanged): lights and fog from the sky state |
 | `src/87-verge-views.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the preset cameras, derived from the layout; two find their subject in the sim when picked |
 | `src/88-verge-build.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/90-verge-camera.js` | 13.5 | [web] | 9 | 0 | 14 | 12 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91-verge-probe.js` | 10.7 | [web] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | window._api: the checks (each with a negative control) and the Godot export |
+| `src/99-start.js` | 8.1 | [web] | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host; replaced 90-verge-camera.js); CLOCK reads the host's clock |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
