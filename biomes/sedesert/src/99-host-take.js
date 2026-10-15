@@ -153,6 +153,39 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the tunas never drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,Object.assign(itemCounts(),{fruit:0})));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+// ---------------------------------------------------------------- the editor's world (core/host 98; ROADMAP.md section 10, step 4)
+// Fauna mode: kits/fauna's desert animals (39-host-fauna.js), this biome's own first, each put down drawn on its own
+// (KratorFauna.build) and registered as a core/tags life record; they idle and graze by KratorFauna.animate on the host's
+// motion time. Ground brushes: each stroke writes the terrain field (core/terrain/31-core-field-brush.js) and the ground's
+// lattice is lifted where it reached; an undo, a move or a removal replays the strokes left from the field as baked. What
+// stands on the ground (the biome's plants and rocks, the river, the cataract) is not re-seated by a stroke (KNOWN_ISSUES.md).
+const SD_SNAP=KFIELD.snapshot(TFIELD),SD_STROKES=[],SD_LIVE={};
+function sdGround(box){const g=GROUND.geometry,P=g.attributes.position,n=P.count,pad=box?GRID.cs:0;let moved=0;
+ for(let k=0;k<n;k++){const x=P.getX(k),z=P.getZ(k);if(box&&(x<box[0]-pad||x>box[2]+pad||z<box[1]-pad||z>box[3]+pad))continue;const y=terrainH(x,z);if(y!==P.getY(k)){P.setY(k,y);moved++;}}
+ if(moved){P.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere();}
+ for(const id in SD_LIVE){const L=SD_LIVE[id],r=KTAGS.page.get(id);if(!r)continue;if(!box||(r.at[0]>=box[0]-pad&&r.at[0]<=box[2]+pad&&r.at[2]>=box[1]-pad&&r.at[2]<=box[3]+pad)){r.at[1]=terrainH(r.at[0],r.at[2]);L.g.position.y=r.at[1];}}
+ return moved;}
+function sdReplay(){KFIELD.replay(TFIELD,SD_SNAP,SD_STROKES.map(r=>r.stroke));sdGround(null);}
+const SD_FAUNA=KratorFauna.list().map(a=>{const E=KratorFauna.entry(a.key),here=(E.tags.biomes||[]).indexOf('sedesert')>=0;
+ return {key:a.key,name:a.name,family:here?'this biome':'the desert',cls:'life',tags:{diet:E.tags.diet||null,biome:here?'sedesert':null}};})
+ .sort((p,q)=>p.family===q.family?(p.name<q.name?-1:1):(p.family==='this biome'?-1:1));
+const SD_WORLD={
+ find:(t,tol)=>KEDITS.match(t,KTAGS.page.records.filter(r=>!r.removed&&!r.set),tol),
+ add(rec){
+  if(rec.kind==='ground'){const r=KTAGS.page.add({'class':'feature',kind:'ground',key:rec.key,name:rec.name||'ground: '+rec.key,at:rec.at,r:rec.r,h:.5,note:'strength '+rec.strength,frag:'99-host-take.js (edit)'});
+   r.stroke=KFIELD.strokeOf(rec);SD_STROKES.push(r);const box=KFIELD.stroke(TFIELD,r.stroke);if(box)sdGround(box);return r;}
+  if(rec['class']==='life'){const E=KratorFauna.entry(rec.key);if(!E)return null;const y=terrainH(rec.at[0],rec.at[2]);
+   const g=KratorFauna.build(rec.key,{variant:0,seed:1+(Math.abs(Math.round(rec.at[0]*7+rec.at[2]*13))%997)});g.position.set(rec.at[0],y,rec.at[2]);g.rotation.y=rec.ry||0;
+   g.traverse(q=>{q.castShadow=true;});g.userData.inspectLabel=E.name;scene.add(g);
+   const r=KTAGS.page.add({'class':'life',kind:rec.key,key:rec.key,name:E.name,at:[rec.at[0],y,rec.at[2]],ry:rec.ry||0,size:[E.w||1,E.d||1,E.h||1],
+    tags:{diet:E.tags.diet||null,biome:(E.tags.biomes||[]).indexOf('sedesert')>=0?'sedesert':null},frag:'99-host-take.js (edit)'});
+   SD_LIVE[r.id]={g,phase:(r.at[0]*.37+r.at[2]*.11)%6.283};return r;}
+  return null;},
+ move(h,at,ry){if(h.kind==='ground'&&h.stroke){h.at=at.slice();h.stroke.x=at[0];h.stroke.z=at[2];sdReplay();return;}
+  const L=SD_LIVE[h.id];if(!L)return;const y=terrainH(at[0],at[2]);h.at=[at[0],y,at[2]];L.g.position.set(at[0],y,at[2]);if(ry!=null){h.ry=ry;L.g.rotation.y=ry;}},
+ set(h,path,value){h[path]=value;},
+ remove(h){const i=SD_STROKES.indexOf(h);if(i>=0){SD_STROKES.splice(i,1);KTAGS.page.remove(h.id);sdReplay();return;}
+  const L=SD_LIVE[h.id];if(L){scene.remove(L.g);delete SD_LIVE[h.id];}KTAGS.page.remove(h.id);}};
 KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  hint:"The eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
@@ -163,7 +196,16 @@ KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing]}},
  exporters:{biome:()=>BIO.export()},
+ palette:{items:SD_FAUNA,build:key=>KratorFauna.build(key,{variant:0,seed:1})},
+ edits:{world:SD_WORLD,log:typeof KHOST_EDITS!=='undefined'?KHOST_EDITS:null,brushes:{modes:['raise','lower','flatten','smooth'],r:[3,120,18]},
+  template:(it,at,ry)=>({'class':'life',kind:it.key,key:it.key,name:it.name,at,ry}),
+  canEdit:r=>!!SD_LIVE[r.id]||SD_STROKES.indexOf(r)>=0},
+ minimap:{title:'The eastern high desert'},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// the animals put down: idle and graze in turn, each on its own phase, on the host's motion time (the pause stops them)
+KHOST.on(function sdFauna(dt,clock){for(const id in SD_LIVE){const L=SD_LIVE[id],t=clock.t+L.phase,mode=Math.floor(t/9)%3===2?'graze':'idle';KratorFauna.animate(L.g,t,mode,{phase:L.phase});}});
+// the edits the page was made with (edits.json or this browser's draft): applied once, now that the world is made
+if(typeof KHOST_EDITS!=='undefined'&&KHOST_EDITS&&KHOST_EDITS.ops)window._edits=KEDITS.apply(KHOST_EDITS,SD_WORLD,{});

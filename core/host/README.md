@@ -76,7 +76,8 @@ KHOST.take({ ...,
   inspect: (hit, hits, rec) => 'words',    // rec: the smallest record holding the hit (93), or null; null words: the label
   holds: KHOST.simHolds(SIM, {idOf(rec, hit), containerOf(rec), card(id), placeName(id), paused()}),   // 93-host-stocks.js
   palette: {items: [{key, name, family, cls?, tags?}], build(key) -> Object3D},                       // 96 pictures
-  edits: {world: {find, add, move, set, remove}, log: KHOST_EDITS, deferred(op), template(item, at, ry), canEdit(rec)},  // 98
+  edits: {world: {find, add, move, set, remove}, log: KHOST_EDITS, deferred(op), template(item, at, ry), canEdit(rec),
+          brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}}},  // 98
   cutaway: {units: [{id, name, x, z, ry?, w, d | r, levels: [{y, h, name?}]}], cutAt: 1.4, show?(unit, i)},          // 99
   minimap: true | {frame, size, relief, palette, title, draw(M)},                                                    // 97
   marks: false,                                                            // 94 is on unless a build turns it off
@@ -101,7 +102,7 @@ world is made (a piece merged into a batch), and the editor marks it; the build 
 furnished). Save writes `<build>/edits.json` (POST `/__save` on `tools/edits/serve.py`); the next build inlines it
 (`host.edits_js`, the fragment `39-host-edits.js`); a browser draft newer than the file wins until it is saved.
 
-**The keys** of the whole interface: I hover tip, P marks, B editor (Delete, M, Q / E, Ctrl+Z, Esc), X cutaway (] [), M
+**The keys** of the whole interface: I hover tip, P marks, B editor (Delete, M, Q / E, Ctrl+Z, Esc; in ground mode ] [ the radius), X cutaway (] [), M
 minimap, O stocks; with the camera's W A S D, Q / E, F, G, Esc. A build's own `keys` win for their key.
 
 **The loop, per frame:** real seconds since the last frame (capped at 0.1) step the clock; the camera's keys move it; then
@@ -205,5 +206,16 @@ from +z), so `src/92-camera.js` keeps only `ui`, `uiButton`, `setView` and the L
 (`FRAME_HOOKS` as before, `f(dt, ms)`, in a tick subscriber; the showcase sky after the camera). Iziz's records are its full
 registry (`91t-iziz-tags.js`); Highlands adds its sites to the furniture's registry (`91h-hl-tags.js`). The vernacular sheet,
 the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. The
-builds that vendor that camera (Dalab, Xanadu, Reed Lake) keep the old one until step 5 (their `KNOWN_ISSUES.md`). Next: step
-4 (fauna mode), step 5 (the rest), step 6 (Voth).
+builds that vendor that camera (Dalab, Xanadu, Reed Lake) keep the old one until step 5 (their `KNOWN_ISSUES.md`).
+
+**Fauna mode and the ground brushes** (2026-10-15, step 4), first on **Sedesert** (the one build with a `KFIELD`): 98 gains a
+*fauna* mode (palette items with `cls: 'life'`: Sedesert offers `kits/fauna`'s desert group, its own animals first; each put
+down is drawn by `KratorFauna.build`, registered as a core/tags `life` record and animated by `KratorFauna.animate` on the
+host's motion time) and a *ground* mode (`o.edits.brushes`): raise, lower, flatten, smooth, a radius and a strength, a ring
+on the ground under the pointer; a click is a stroke and a held drag paints strokes (the camera's drag is held off). A stroke
+is a `core/edits` ADD of `{class: 'feature', kind: 'ground', key: mode, at, r, strength}`; the build's world adapter applies it
+with `core/terrain/31-core-field-brush.js` (`KFIELD.stroke`, [G data], `node core/terrain/test-brush.js`) and lifts its drawn
+ground; undo, a move or a removal of a stroke replays the strokes left from a snapshot of the field as baked (strokes do not
+commute). Proof on Sedesert: the scene census unchanged at four views; a deer placed, animated, re-seated by a stroke; a drag
+of twelve moves nine strokes and no orbit; every stroke undone, the field equals the baked heights bit for bit. Next: step 5
+(the rest), step 6 (Voth).

@@ -4,6 +4,15 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] (2026-10-15) The whole core/host interface (ROADMAP.md section 10, step 4; core/host/README.md): the inspector, marks, minimap, and
+      the editor's fauna mode (kits/fauna's desert group, 39-host-fauna.js: this biome's own animals first, put down, moved,
+      turned, removed, idling and grazing) and ground brushes (raise, lower, flatten, smooth on TFIELD: core/terrain's
+      KFIELD.stroke; undo replays from the baked field). Save writes edits.json (tools/edits/serve.py), the next build inlines it.
+      The scene census at four views is unchanged.
+- [ ] (2026-10-15) A ground stroke writes the field and the ground's lattice only: the biome's plants, rocks and dress, the
+      river, the pond, the cataract and the carved cap stay where the page put them (an animal put down in the editor is
+      re-seated). Re-seating the biome's instances needs their records' positions re-read from the field (BIO keeps them in
+      its baked matrices). The field cache (FC) and the painter read the closure, so the ground's paint does not follow a stroke.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/sedesert.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
