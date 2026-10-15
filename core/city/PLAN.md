@@ -122,5 +122,20 @@ runs fail the same two pre-existing checks, the embassies (Hykkousoi, Iziz, Jimj
 cantons not walkable (Arena, Fortress): not this work's. Ys's placement hash (78ecfa06, refusals 45c38520) and its
 `verify.py --assert` counters are the same before and after. Next: step 4 with the owner.
 
+## Done (2026-10-15: step 4, Verge)
+
+4. **Verge onto `alleys`**, two instances (one a level), each run in its own frame (the raster is centred on the
+   origin) and its records shifted back, as Verge's own (`vb_` ids, doors, core/tags). Its site is its own placement
+   raster (blocked ground off the zone, the plazas and the landmarks already hunted HARD and in the exact footprint
+   index), the highway through the town as an avenue, a ring round the market, and **avenues routed over the ground**
+   (`KCITY.site.routeAvenues`, the owner's ask: merged where two would run close, kept off the slopes and from climbing
+   above both their ends, a river bridged where allowed) from the market and the trailhead to each landmark's door;
+   steps 7-12 the defaults. Lower Verge's edge is ragged (a ring round the trailhead, a corridor along the highway, a
+   disc round each landmark). `KCITY` is built into the page as one closure (`settlements/verge/build.py`). The proof:
+   `test-city.js` (round a hill, two merged, a river bridged, each with its negative; the golden hashes unchanged);
+   Verge's `verify.py --assert` (no overlap, every building on its ground and with its interior, the timetable full,
+   and two new checks, `avenues-keep-to-the-floor` and `avenues-merge`); Voth's page the same but the new function's 88
+   lines (its placement cannot move: nothing of it calls the function). A new layout: the owner judges it by screenshots.
+
 The data side stays engine-neutral (`[G data]`): `core/city` becomes the NPC and quest tool and later the player's
 settlement builder, in Godot too (CLAUDE.md).

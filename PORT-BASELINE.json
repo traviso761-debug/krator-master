@@ -569,12 +569,12 @@
    "sha256": "daa0ef315909ea792f97cb28db962674f68760dc3cbb289b5d84218db3faadae"
   },
   "settlements/verge/dist/verge.html": {
-   "bytes": 2939604,
-   "sha256": "a722b5ccd3dd278580082622eb1946e1aa278d03160ee025904287f74a3808bf"
+   "bytes": 3083509,
+   "sha256": "6bbb45d15835851b20b4439e32d46eb86a93307bfd0c829ea21a3d177f12495b"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 11931005,
-   "sha256": "30ff5ec1e48932cc9089904c9c0d6566a0ae78c485f19f85ebd664000f7464b7"
+   "bytes": 11937457,
+   "sha256": "5b930c842631179efb6a1f37ef1382cab64202856c66c26fecbe5f5b366c8d1b"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3607744,

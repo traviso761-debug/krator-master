@@ -16,7 +16,10 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
   modelled. There are no carved overhangs on the spur (core/terrain carve patches would add them).
 - **Each Lower Verge run can miss a landmark.** One or two of its nine warehouses can find no spot near the trailhead
   (`window._place.failed`). The porters need only one warehouse on each level, so the timetable stays full.
-- **Doors without a link.** About 10 to 20 doors find no street within reach (`window._sim.unlinkedDoors`). Citizens
+- **Upper Verge does not cross its river.** Its avenues may bridge the river (`routeAvenues`' `cross`), but none of its
+  landmarks lies north of it, so no route does and the north bank of the canyon floor stays empty. Lower Verge's one
+  bridge opens its north bank. A landmark or an avenue target across the river would open Upper Verge's.
+- **Doors without a link.** Two doors (10 to 20 before the move onto core/city) find no street within reach (`window._sim.unlinkedDoors`). Citizens
   whose home is behind such a door start from the nearest node.
 
 ## Interiors and furniture
@@ -66,8 +69,10 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 
 ## Cost
 
-- **About 10 M triangles with everything on.** The biomes take about 4 M of it; the ground takes 2.3 M (with the 2 m
-  switchback tiles), and the rest is the cities and the life layer. `?flora=0` drops it to 5 to 6 M.
+- **About 12 M triangles with everything on** (since the move onto core/city, 2026-10-15: 2,661 buildings, from 1,572).
+  The biomes take about 4 M of it; the ground takes 2.3 M (with the 2 m switchback tiles), and the rest is the cities and
+  the life layer. `?flora=0` drops it to 7 to 8 M. Lower Verge's edge (`zoneR`, `corridor`, `landR` in `lower()`) is the
+  knob if it is too heavy.
 - **Headless loads are slow.** Under SwiftShader a full load takes 2 to 4 minutes; with `flora=0&interiors=0`, about
   40 s.
 
