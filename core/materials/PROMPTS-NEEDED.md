@@ -4,7 +4,9 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt** (`glass.bottle.wall`, probably needed: check first). The other 33 were delivered on 2026-10-14
+**Count: 20 prompts**: seven for the Resources kit's nodes and 10 for the Ring Sea isles biome (section 1, added
+2026-10-15), and three to check first (section 3: `glass.bottle.wall`, and `rock.gossan` and `rock.pegmatite`, where a
+library set may do). The other 33 were delivered on 2026-10-14
 (two more images came with them: second takes of the Batak and Kautoa boards) and moved to "Delivered 2026-10-14" below.
 A short list at the end names gaps that have no prompt yet.
 
@@ -116,6 +118,154 @@ Full colour. Palette `ISP_C`: red earth #9a2a1e, dark red #6e1a12, black #1e1a18
 `settlements/iziz/KNOWN_ISSUES.md`, "Two surfaces have no good library texture" (the second material pilot, 2026-10-13).
 Both near-colourless, tinted.
 
+### The Resources kit (`kits/resources`)
+
+`kits/resources/KNOWN_ISSUES.md`: "The veins, crusts, seams, pools and grains are vertex colours on simple shapes: the
+library has no ore or mineral sets". The nodes are boxes and ellipsoids, so a set is laid on the face that shows the
+mineral (a seam band, a crust patch, a pool rim): each lands as a family in `kits/resources/materials.json`, and
+`44r-res-nodes.js` draws that face with its key in place of `plain` (a small code change per kind, after delivery). Full
+colour: the colour is the point. Sulfur needs no image: `ground.sulphur` is in the library (wired 2026-10-15).
+
+#### `rock.coal`
+- Kind: tileable material, full colour; 1.5 m tile. The coal node's seams (`kits/resources`, `node-coal-*`).
+- Reuse: coal heaps and bunkers, forge and smithy fuel, a coal barge's hold, a mine's spoil; any coal face.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A face of bituminous coal seen straight on: jet-black coal (#16161a) in thin bright and dull bands, the bright bands with a glassy vitreous lustre and the dull ones matt, broken by two sets of fine straight cleat fractures at right angles into blocky cubes, a few thin grey shale partings (#4a4846), a faint brassy pyrite fleck here and there, black coal dust in the cracks. Full colour (do not mute).
+```
+
+#### `ground.tar.seep`
+- Kind: tileable material, full colour; 3 m tile. The oil node's stain and pool rims (`node-oil-*`).
+- Reuse: tar pits, a boatyard's pitch ground, an oil works' yard, a derrick's spill; any bitumen-soaked ground.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Ground soaked by a natural oil seep, seen from above: glossy black bitumen (#0e0c0a) pooled in hollows and crusted matt dark brown-black (#2a2420) where it has dried, the crust split into irregular plates by fine cracks, small rainbow oil-sheen films on the wet patches, a few half-sunk pebbles and dead grass stalks stuck in the tar, sandy soil (#8a7a5a) showing through at the thinnest edges. Full colour (do not mute).
+```
+
+#### `ground.efflorescence`
+- Kind: tileable material, full colour; 2 m tile. The saltpeter node's faces and the crust before it (`node-saltpeter-*`).
+- Reuse: saltpeter caves and nitre beds, damp cellar and banco walls, the salt-bloomed foot of any earthen wall.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Saltpeter efflorescence on dark earth, seen straight on: crumbly dark brown soil (#4e3c2a) and soft earthen rock, patched with white fluffy mineral bloom (#f2efe6) in feathery needle-like tufts and powdery crusts, thickest along cracks and ledges and thinning to a frosting at its edges, a few damp darker patches where the bloom has dissolved. Full colour (do not mute).
+```
+
+#### `rock.malachite`
+- Kind: tileable material, full colour; 1.5 m tile. The copper node's veins (`node-copper-*`).
+- Reuse: copper mine faces and ore heaps; verdigris-stained rock below old bronze or copper.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Copper-stained rock seen close up: dark grey host rock (#4e4c48) streaked and crusted with bright green malachite (#3e8a5a) in banded botryoidal crusts and smears, patches of deep blue azurite (#2e5a9a), thin turquoise-green films spreading from fractures, a few rusty brown spots. Full colour (do not mute).
+```
+
+#### `rock.quartz.vein`
+- Kind: tileable material, full colour; 1.5 m tile. The gold node's reef (`node-gold-*`).
+- Reuse: any quartz reef or vein in an outcrop; gold diggings and a gold mine's face.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A gold-bearing quartz reef seen straight on: a broad band of milky white quartz (#ece8de) with glassy translucent patches and a few rusty iron-stained cavities (#a4602a), cutting dark grey slate host rock (#4a4844) along its edges, small irregular flecks and thin wires of bright native gold (#e0b030) and a few brassy pyrite cubes in the quartz. Full colour (do not mute).
+```
+
+#### `rock.cassiterite`
+- Kind: tileable material, full colour; 1.5 m tile. The tin node's stringers (`node-tin-*`).
+- Reuse: tin mine faces and ore heaps; greisen and tin-bearing granite outcrops.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Tin ore seen close up: pale grey granite (#a8a49a) cut by white quartz stringers (#e4e0d6) a finger wide, the quartz studded with dark brown-black cassiterite crystals (#2a201c) with a resinous adamantine lustre, some blocky and twinned, a few grains of silvery muscovite mica. Full colour (do not mute).
+```
+
+#### `rock.galena`
+- Kind: tileable material, full colour; 1.5 m tile. The silver node's veins (`node-silver-*`).
+- Reuse: silver and lead mine faces and ore heaps; any galena vein.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Silver-bearing galena vein seen close up: bright lead-grey metallic galena (#b8bcc4) in cubic crystals and cleavage steps with a mirror lustre, set in white quartz and calcite (#eeeae0), patches of black silver sulphide tarnish (#1a1a1e), dark grey host rock (#4a4844) at the vein's edges. Full colour (do not mute).
+```
+
+### The Ring Sea isles biome (`biomes/ringisles`)
+
+`biomes/ringisles/KNOWN_ISSUES.md`, "Stand-ins": the lagoon floor, the reef, the coral and seven leaf cards are procedural or near library sets. Each lands as a family in `biomes/ringisles/materials.json` (a card through `BIO.libSwap`). The banana, rice, cane and greens leaves have no prompt yet (see "Gaps with no prompt yet").
+
+#### `ground.lagoon.seagrass`
+- Kind: seamless ground tile, natural colour (the ground keeps its own colour). Used by: the lagoon's floor
+  (`ground.wetsand` in materials.json, under 0.4-3.5 m of water). Reuse: any warm shallow sea floor.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The floor of a shallow tropical lagoon seen from directly above with the water removed: fine pale coral sand (#e8dcc0, #d8ccb0) in soft ripples, with patches of seagrass meadow (turtle grass) covering about a third of it, the flat ribbon blades lying combed in one direction by the current, dark green (#3e6a32) to olive (#6a7a3a) with some tips bleached pale; small scattered coral fragments, a few shells and a little dark detritus between the blades. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `ground.reef.flat`
+- Kind: seamless ground tile, natural colour. Used by: the reef flat and the tide-pool bench (`ground.reef`). Reuse: any
+  raised limestone shore, a coral quarry's floor.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A reef flat at low tide seen from directly above: a pavement of dead coral limestone, pale grey-cream (#c8c0a8) and weathered, pitted with small holes and the cut outlines of old coral heads, crusts of pink coralline algae (#c88a8a) in patches, dark grey-green algal turf (#5a6448) in the hollows, scattered broken coral rubble and a few small shallow pools showing pale sand. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `organic.coral.brain`
+- Kind: seamless tile for a solid surface (the coral heads: brain and table corals), tinted by the instance colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The surface of a living brain coral close up: long winding meandering valleys and ridges like a labyrinth, each ridge rounded and finely ribbed across by tiny septa, the valleys a little darker, the whole a soft cream-tan (#c8b48a) with paler ridge tops. Near-colourless: pale grey only, so it can be tinted.
+```
+
+#### `card.seagrass`
+- Kind: cut-out card sheet, 3 x 3 on magenta; base at the bottom of each cell. Used by: the seagrass meadows in the
+  lagoon (`seagrass`, standing). Reuse: eelgrass, any submerged meadow; waterweed in a lake.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of seagrass (turtle grass) seen from the side as if lifted out of the water, a dozen long flat ribbon blades rising from a short rhizome at the bottom of the cell and curving gently to one side, the blades a hand wide at most, green (#4a7a3a) to olive (#6a7a40), a few tips browned and a few with fine white epiphyte specks; vary the height and the lean of the nine clumps. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.creeper.beach`
+- Kind: cut-out card sheet, 3 x 3 on magenta, seen from above. Used by: the beach morning glory (`creeper`, a mat lying
+  on the sand; its flowers are separate). Reuse: any creeper over sand or rock.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Seen from directly above, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a patch of beach morning glory (Ipomoea pes-caprae) lying flat as it grows over sand: long green runners branching across the cell, thick glossy two-lobed leaves like a goat's footprint, bright green (#4e8a30) with a paler midrib, some leaves folded, no flowers. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.naupaka`
+- Kind: cut-out card sheet, 3 x 3 on magenta. Used by: naupaka, the beach shrub (`naupaka` clumps). Reuse: any fleshy
+  coastal shrub.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a leafy shoot tip of beach naupaka (Scaevola taccada), a rosette of thick fleshy spoon-shaped leaves, glossy bright yellow-green (#6aa04a) with pale midribs, crowded at the end of a short pale stem, a few small white half-flowers (petals all on one side) and white berries among them; vary the size and the angle of the nine shoots. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.seagrape`
+- Kind: cut-out card sheet, 3 x 3 on magenta. Used by: the sea grape's crown (`grapeleaf` clumps). Reuse: any big
+  round-leaved shrub (a tropical almond's leaf mass, a mallow).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a leafy spray of sea grape (Coccoloba uvifera), five to eight big round leathery leaves the size of a plate on a short woody twig, each leaf flat and stiff, olive green (#4e7a34) with prominent red veins (#b8402a), one or two leaves turning red; vary the nine sprays. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.breadfruit`
+- Kind: cut-out card sheet, 3 x 3 on magenta. Used by: the breadfruit's crown (`breadleaf` clumps). Reuse: any big
+  lobed tropical leaf (a fig, a monstera clump seen whole).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a cluster of breadfruit leaves at a branch tip, three or four huge leaves deeply cut into seven to eleven pointed lobes, glossy dark green (#3e6a2a) with pale yellow-green veins, one round green breadfruit (#9ab43e) with a pebbled skin among them in some of the nine. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.tamarisk`
+- Kind: cut-out card sheet, 3 x 3 on magenta. Used by: the salt cedar's foliage (`tamfoliage`; `card.heath` stands in).
+  Its pink flower plumes stay procedural (pink cannot be keyed off magenta). Reuse: she-oak (casuarina) needles at a
+  distance, any feathery shrub.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a drooping spray of salt cedar (tamarisk) foliage, many fine thread-like branchlets clothed in tiny scale leaves, soft and feathery, grey-green (#7a8a74) to blue-green, hanging from a thin red-brown twig at the top of the cell, no flowers. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.croptree.glossy`
+- Kind: cut-out card sheet, 3 x 3 on magenta. Used by: the crop trees' crowns (`glossy` clumps: mango, coffee, clove),
+  tinted per species. Reuse: any glossy evergreen (citrus, bay, a mangrove's leaf mass).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a leafy shoot tip of a glossy tropical evergreen like mango or coffee, eight to fourteen long lance-shaped leathery leaves in opposite pairs and whorls along a short green twig, dark glossy green (#2e5226) with paler midribs and a slight wavy edge, a few young leaves at the tip lighter green; vary the nine shoots. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
 ## 2. Still owed (no open known issue; the build draws its own today)
 
 ### Highlands (`settlements/highlands`)
@@ -153,6 +303,24 @@ Each has a reason it may not be owed. Settle the reason, then generate or drop t
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A bottle wall seen straight on: the round bases of glass bottles packed in a hexagonal grid and set in grey-brown lime mortar (#8e8674), each base a thick glass disc with a bright centre and a dark rim, in green (#3f9a52), pale green (#8fe0a0), amber (#c98a2a), blue (#2f62b8) and clear (#d5ecea), mixed at random, a little dust and mortar smear on the glass. Full colour.
+```
+
+#### `rock.gossan`
+- Kind: tileable material, full colour; 2 m tile. The iron node's crust (`node-iron-*`).
+- Reuse: iron mine faces and ore heaps, ironstone outcrops, rust-red weathered ground over iron ore.
+- **Check:** `rock.basalt.oxidised` (dark basalt with a rusty weathering) may do as it is; try it on the iron nodes first.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gossan, the rusty iron cap over an ore body, seen close up: spongy cellular iron oxide in rust-red (#8a3e1e), orange-brown (#a4521e) and ochre-yellow (#c08a30) crusts, full of small boxwork cavities where minerals weathered out, black glossy patches of iron oxide (#2a2624), crumbly at the edges. Full colour (do not mute).
+```
+
+#### `rock.pegmatite`
+- Kind: tileable material, full colour; 1.5 m tile. The rare-earth node's grains (`node-rare-earth-*`).
+- Reuse: pegmatite dykes in any granite country; a rare-earth mine's face.
+- **Check:** `rock.granite.tor` with the node's own vertex-coloured grains may do; try it first.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Rare-earth pegmatite seen close up: very coarse-grained granite rock with big interlocking crystals of grey glassy quartz (#a8a49c) and pink feldspar (#c87890), violet lepidolite mica flakes (#8a5aa8), scattered small red-brown monazite grains (#a85a3a) and black tourmaline needles (#1e1c1c). Full colour (do not mute).
 ```
 
 ## Delivered 2026-10-14
@@ -498,6 +666,7 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 
 Owed, but a prompt needs work first; listed so they are not lost.
 
+- **The Ring Sea isles' crop leaves** (`biomes/ringisles`): the banana's (`card.paddle` has banana leaves, but diagonal in their cells), rice and cane blades as standing clumps, and greens. Each needs a card framed upright in its cell.
 - **Catalog hangings for Eastern Abyss, Lizardmen and Screamer** (`PLAN.md`, catalog audit, "No pattern sheet at all"):
   the kit's canvas painters work; each culture needs a style read of its culture file before a prompt is written.
 - **The shared `detail.*` sets** (plaster grain, stone grain, metal brush) for the `detail` record field (`PLAN.md`, "From

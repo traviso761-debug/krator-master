@@ -40,6 +40,10 @@
    "bytes": 5749877,
    "sha256": "c3dc99460eb7c113961dee8d607c7601504f78f578989da07e6ad212e9e829e4"
   },
+  "biomes/ringisles/dist/ringisles.html": {
+   "bytes": 2044455,
+   "sha256": "2731d077aea2ae978ab91e9c539cee7443e7fba9a58f0a29fbda08753ffc4cce"
+  },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4284792,
    "sha256": "9cd72b482fb40f26543a8e0dff6e79fb8a03448ec120ac8336b6c1c840658478"
@@ -305,8 +309,8 @@
    "sha256": "17696bb38182de72fc6ce6a2ef0803bfe7c25c2474240f97e3d86e63bb1cc20e"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1433856,
-   "sha256": "4a20f1b34f2cc122661cb10b7ab826cc44c2aebad5e14c522a0e4ea5b4eb83df"
+   "bytes": 1515787,
+   "sha256": "036dbe8e54c4315f925291a9b8f9ca4c8b774827449a1c9554be978fd834f9ae"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1635659,
@@ -320,6 +324,10 @@
    "bytes": 4932542,
    "sha256": "2ed30f9f68430d67b8ab96fd46c9be024f4be385786a65d49e36423f8f7ca72b"
   },
+  "kits/resources/dist/resources.html": {
+   "bytes": 520006,
+   "sha256": "d36a8c93ea72936920f1795027b3198ff31d69d39e222348da4e9b11fd5a0512"
+  },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4638344,
    "sha256": "56fa3d6440a5962d95017afd7acd3cc3953cd2bad7835310f55afbefbd524384"
@@ -332,13 +340,21 @@
    "bytes": 1290126,
    "sha256": "0e6ebd8266dac0cdefd1a94efa8a74dbb83be3a05428248754020a2243e9bcf1"
   },
+  "openworld/isle-demo/dist/isle-demo.artifact.html": {
+   "bytes": 454009,
+   "sha256": "e4034e792865452227c5a988d291906d722b2c56331284ba203b641f0fdc2ed7"
+  },
+  "openworld/isle-demo/dist/isle-demo.html": {
+   "bytes": 454267,
+   "sha256": "ff57ee57f863db5045620068e8150cce0326b787932bffa4f9855997d319ec17"
+  },
   "openworld/little-demo/dist/little-demo.artifact.html": {
-   "bytes": 5076364,
-   "sha256": "c6908e678fc5b7cdd1a5cfd96690a6269d90891fbdab06b931290d6ef2461cf0"
+   "bytes": 5077616,
+   "sha256": "a472cd3248c632aab57b32faf586d31a3420eb82b697ccced1708bdd2960727b"
   },
   "openworld/little-demo/dist/little-demo.html": {
-   "bytes": 5076622,
-   "sha256": "64bbebe087a01dae217bd0922584ed4759dabed435d309f49c4bb74e7fbc54e9"
+   "bytes": 5077874,
+   "sha256": "513943d25cccc8c37f92420a5c38f0a19cf953ef86e42102da950b596a0ab25b"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 5954917,

@@ -37,6 +37,7 @@ an east-west canyon about 860 m deep (1,130 m at 8 km) cut into the plateau's ed
 |---|---|
 | `41-world-fields.js` | **[G data]** the land, the water, the climate and the biome blend as plain maths of (x,z) |
 | `45-world-host.js` | the renderer, the light, and the biome core's binding (field sources: world, tile grid, nursery) |
+| `46-world-config.js` | **[G data]** this region's own settings the world reads: the settlements with builds (87), the "Go to" order and the region's views (90). A world that reads these fragments in place (`openworld/isle-demo`) gives its own |
 | `47-world-kits.js` | **the kit registry**: which kits grow here, on which overlay, their LOD reach, their floor profiles |
 | kits | `biomes/sedesert`, `biomes/eastabyss`, `biomes/hyperjungle`, read in place, each as one block |
 | `core/atmos` | the shared wave field (`89-atmos-0-core`, `0p-presets`, `a-waves`) and the sky's light (`b-skylight`) the water reads |

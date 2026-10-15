@@ -33,13 +33,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 167 | 30 | 6 | 10 | 33 | 88 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 234 | 121 | 0 | 10 | 66 | 37 | 1 |  |  | yes |
-| [`kits/islanders`](kits/islanders/PORT.md) | 33 | 346 | 19 | 6 | 10 | 33 | 278 | 3 | atmos | yes | yes |
+| [`kits/islanders`](kits/islanders/PORT.md) | 37 | 409 | 26 | 6 | 10 | 33 | 334 | 3 | atmos | yes | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 48 | 280 | 1 | 6 | 0 | 48 | 225 | 1 | atmos | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 26 | 192 | 6 | 6 | 10 | 33 | 137 | 2 | atmos | yes | yes |
 | [`kits/zeijani`](kits/zeijani/PORT.md) | 30 | 270 | 5 | 33 | 10 | 75 | 148 | 3 | atmos | yes | yes |
+| [`kits/resources`](kits/resources/PORT.md) | 6 | 23 | 7 | 0 | 0 | 3 | 13 | 0 | atmos |  | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 13 | 184 | 27 | 17 | 13 | 43 | 84 | 3 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 13 | 199 | 1 | 0 | 14 | 28 | 156 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 14 | 209 | 28 | 0 | 14 | 58 | 109 | 2 | biome | yes | yes |
@@ -56,7 +57,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 12 | 201 | 1 | 0 | 13 | 32 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 266 | 45 | 22 | 15 | 35 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
-| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 18 | 163 | 53 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
+| [`biomes/ringisles`](biomes/ringisles/PORT.md) | 17 | 178 | 56 | 14 | 14 | 39 | 55 | 2 | biome, atmos | yes | yes |
+| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 164 | 55 | 0 | 9 | 94 | 6 | 2 |  | yes | yes |
+| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
 | **all** | 1971 | 26302 | 4767 (18%) | 598 (2%) | 1068 (4%) | 3357 (13%) | 16511 (63%) | 261 | | | |
 
 ## Host-shell copies
