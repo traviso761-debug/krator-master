@@ -13,7 +13,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
-From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.py`: the whole interface less `core/space` and `core/edits`): `90-host-camera.js` to `99-host-cutaway.js`, with `core/minimap`'s files. The kit's `92-camera.js` is left out (`KIT_SKIP`)
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
 
 ## src/
 
@@ -36,4 +40,4 @@ From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.
 | `93-dhelv-map.js` | 6 |  |
 | `94-dhelv-light.js` | 8 |  |
 | `95-dhelv-life.js` | 9 |  |
-| `99-start.js` | 7 | the inspector's words (the kit's 92-camera.js inspectAt) (8); the frame, after the camera (the kit's loop's order) (23); the page's own buttons (32); the page, handed to the host (37) |
+| `99-start.js` | 6 | the inspector's words (the kit's 92-camera.js in (8); the frame, after the camera (the kit's loop's or (23); the page's own buttons (32); the page, handed to the host (37) |

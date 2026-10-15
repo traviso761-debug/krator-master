@@ -13,7 +13,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 
-From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.py`: the whole interface less `core/edits`): `90-host-camera.js` to `99-host-cutaway.js`, with `core/clock`, `core/space` and `core/minimap`'s files. From `core/rand/` and `core/tags/`: `08-core-rand.js`, `50`, `52`, `53-core-tags*.js`
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
@@ -47,5 +53,5 @@ From `core/host/` (the host shell, `core/host/README.md`; `CORE_HOST` in `build.
 | `88-host-build.js` | <1 |  |
 | `89t-shade-tags.js` | 3 |  |
 | `91-shade-probe.js` | 28 | the Shade checks (37) |
-| `99-shade-take.js` | 4 | the inspector's words where no record holds the point (7); the page, handed to the host (19) |
+| `99-shade-take.js` | 4 | the inspector's words where no record holds the  (7); the page, handed to the host (19) |
 | `99-tail.html` | <1 |  |
