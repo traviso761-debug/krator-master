@@ -26,6 +26,12 @@ writes `gallery/site-1/` to `site-3/` (in that order), each an `index.html` and 
 calls under 64 MB, passing `null` for the files a part no longer holds (a version counts the files it keeps). Pages that
 load the same pack (by content) go to the same part and share one copy. The parts are not committed.
 
+## Tongues of Krator link (2026-10-15)
+
+`index.template.html` links the Tongues of Krator artifact (https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt, the
+page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
+75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
+
 ## Update it
 
 ```
