@@ -62,7 +62,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 - **The Rift.** South of the main crater: a volcanic rift valley, almost as deep as the central crater, forming a long east-west trough of salt lakes (yellow, pink, blue-green), jungle and mesa ridges. As one must climb the Outer wall to get here, it is quite isolated compared to the rest of Krator, but traders covet the riches of the sultans of Xanadu, so they attempt the trek regardless. It is also known for its hostile Lizardmen and strange wildlife deep in its depths.
 - **The scablands (candidate).** In the northern semiarid country a closed basin once held a lake three times the size of Lake Bonneville. When it broke its rim it tore south in one flood, leaving dry falls, coulees and bare scoured rock (`biomes/WORLD.md`). The basin is dry today; when and why the lake filled, and what broke it, is open (§12).
 - **Tuff country (candidate).** The Catch, a dry walled basin SE of the Godthrone and downwind of it, could hold ash plains worn into hoodoos with carved underground cities, if the Godthrone ever erupted explosively. That is a lore decision (`biomes/WORLD.md`).
-- **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls.
+- **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]
 
 ### 3.2 Regions [biomes/WORLD.md]
 
@@ -78,7 +78,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | East Rift Highlands / Vale of Xanadu | the Rift | the Sultanate of Xanadu (Erewhon) |
 | Northwestern lowlands | SW lowlands, N highlands, Korona | Jimjam (by the lake north of The Cut) |
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
-| *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians |
+| *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians; Korona's tepui tribes, human and therian (§6.18) |
 
 The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from −2,600 to +17,100 m, plus climate rasters. Its database holds 35 named cultural and political region polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of Xanadu**.
 
@@ -432,6 +432,14 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Shining Kingdom**: Northwestern lowlands, populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
 - **The Zeijani and the ash nomads: language.** Brother tongues, cousins of Chichani: on the Throne, before records, the Chichani took to the sea, the Zeijani hid and the ash nomads wandered. Akkadian and Cappadocian in sound (emphatic ṣ ṭ q, θ > š, ð > z, case endings in vowel harmony); the nomads dropped the final *-m* (*ṣunum* / *sunu*). *Zeijanī* = the hidden ones; *Zey'danin* = *Ze-Ṭānin*, the town within (a Zeijani word); *Dhelv* = Vothic for *Delbum* (delve); the nomads are *Andarū*, wanderers. Latin letters chiselled into tuff until every stroke became a wedge. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
+### 6.18 Korona: the tepui tribes and the Hum
+
+- **The land.** Korona, in the NE under the giant (§3.1): a kaleidoscope of microclimates, tepuis standing alone above their gorges, and carnivorous plants on every ledge. [the owner, Oct 2026]
+- **The peoples.** Many isolated tribes of humans and **therian mutants**, each on its own tepui or in its own hollow, apart for centuries. Their names are not yet on record. [the owner, Oct 2026]
+- **The Hum** (*Hām*, from English *hum*), the trade tongue between them: nobody's mother tongue, everybody's second. The peoples share no throat (a beaked people cannot shape a human's lips, a muzzled one cannot make a beak's clack), but every throat can make pitch, so the meaning rides on the tune. English worn to single syllables that grew **six tones**, the way Middle Chinese and Vietnamese got theirs: the lost voice of a first consonant left a high or low register, a lost final stop a rising contour, a lost final *s* a falling one (*pā pá pâ pa pǎ pà* = pa, pat, pass, bar, bat, bats). Ten consonants left (*p t k m n s h l w y*). The plural, the possessive and *he eats* are a falling tone (*ká* cat, *kâ* cats); a question ends in *há*, from *huh*. It can be spoken, hummed, croaked, piped, or **whistled** across the chasms between tepuis, which keeps the tune and drops the consonants. Korona is *Lo*; a tepui is *té* (from *table*); a flytrap *pāi-tá* (fly-trap, also heard as fire-trap). Saying: *Sōn ko, pí no ko*, "the song crosses where feet cannot". [the owner, Oct 2026]
+- **Home tongues.** Every tribe keeps its own speech, and many have sounds only their own people can make: a beaked people's bill-clack, a throat-sac people's two pitches sung at once. Home speech is for kin; the Hum is for everyone. [the owner, Oct 2026]
+- **Contour carvings.** The Hum is carved on the tepui walls, not written in letters: one groove per syllable, above a guide line for the high register and below it for the low, level, rising or falling; dots give the vowel's colour, a hook a closing *m* or *n*, a notch ends a sentence. Consonants are never carved, so a carving records what a whistle carries, and any people who whistle the Hum can read it. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.
@@ -440,7 +448,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Hykkousoi:** famed for rib-gills; water breathers
 - **Giants**: engineered at Dalab, some four-armed.
 - **Lizardmen.**
-- **Mutants, aka ghouls (Korona, Valley of the Ancients)**
+- **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18).
 
 ## 8. Ecology highlights (detail in each `biomes/*/NOTES.md` and `biomes/FRUIT.md`)
 
@@ -539,7 +547,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - Does Tzintzun actually have godlike powers or does he have some secret to make people think he does?
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- What is Korona? Who lives in the NW bay, the badlands and the southern highlands?
+- Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?
