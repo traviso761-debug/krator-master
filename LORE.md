@@ -201,7 +201,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - Hook (ancient port city; recently recaptured from Voth)
   - Verge Upper City
 - **The city of Dilihan (NW crater, “The Cut” region) was settled by Izani colonists and is a loyalist stronghold landlocked and cut off from the main empire. The northern lowlands also had many loyalists.**
-- **Language and script.** Izani: English gone Romance with a Star Wars edge (h lost, w > gu, -ng > ñ, prothetic *is-*, final vowels, *-ar*, plurals in *-z*, x = sh). *Izani* = Iziz + *-ian* > *-ani*; *Duxun* = duke's son. 27 straight-cut capitals, the parent of the Vothic letters and used unchanged by the Republic. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language and script.** Izani: English gone Romance with a Star Wars edge (h lost, w > gu, -ng > ñ, prothetic *is-*, final vowels, *-ar*, plurals in *-z*, x = sh) and a Georgian bite learned from the subject jungle tribes before the Mutiny: ejectives where English glottalises (after s, and stops left unvoiced before the final *-a*: *ist'ar*, *port'a*, *mek'a*; unwritten, so no spelling changed) and q = q'. Since the civil war the court drops an unstressed first vowel (*rrpublik'a*, *kmandar*) and marks a finished act with *da-* from *down* (*dafal*). *Izani* = Iziz + *-ian* > *-ani*; *Duxun* = duke's son. 27 straight-cut capitals, the parent of the Vothic letters and used unchanged by the Republic. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 
@@ -224,7 +224,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
-- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland English. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland English. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
 
@@ -270,7 +270,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Sign: the **claw** (three talon slashes), green. Skull poles; "simple but not primitive".
 - Barracks are named by **Wing**. Nature shrines: First Bough, Rain Mother, Winged Ones, Deep Root, Green Silence.
 - Ships: a double-hulled voyaging canoe with a flyer's perch; a rookery raft.
-- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks); since Mav, the dialects are levelling into a Council speech on the Quetzal dialect. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks), and gave Izani its ejectives, which the loans keep (*port'a*, *mek'a*); since Mav, the dialects are levelling into a Council speech on the Quetzal dialect. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.7 The Screamers (north of the central crater; the Hexahedron)
 
