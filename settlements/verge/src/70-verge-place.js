@@ -6,8 +6,9 @@
 // that order, each tested against what is already there. Nothing is a coordinate typed by hand except the anchors a
 // landmark is hunted near (one legal freedom: it slides and turns until it fits, and a miss is counted, not hidden).
 //
-// The two cities' streets are UNPLANNED: lanes branch off the highway at irregular spacing and meander until they
-// meet the canyon wall, the river, a building or another street; alleys branch off the lanes the same way.
+// The two cities' streets and lots are core/city's (the street and alley infill Voth is laid out with), one instance a
+// level (cityPlan below): avenues routed over the ground to the landmarks (merged where they run close, kept off the
+// slopes), main streets across what is left open, side streets, alleys, and the lots along all of them.
 // Districts are rings of distance from each trailhead (the brief): warehouses close, then shops and workshops, then
 // houses, inns and caravanserais further out. The upper city is packed tighter (smaller gaps and setbacks).
 //
@@ -103,76 +104,98 @@ function addStreet(city,pts,w,cls,o){o=o||{};const id='vs_'+String(OUT.streets.l
  const ys=pts.map(p=>terrainH(p[0],p[1]));const S0={id,city:city.C.id,cls,w,pts:pts.map((p,i)=>[+p[0].toFixed(2),+p[1].toFixed(2),+ys[i].toFixed(2)]),bridge:!!o.bridge};
  let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);S0.len=L;
  city.stroke(pts,w,CODE.street);city.streets.push(S0);OUT.streets.push(S0);return S0;}
-// a meandering lane from (x,z) heading ang: it stops at blocked ground, a building or the edge, and joins a street it meets
-function growLane(city,x,z,ang,maxLen,w,o){o=o||{};const pts=[[x,z]],st=5,turn=o.turn||.3;let len=0,join=false,a=ang,cross=null;
- while(len<maxLen){a+=(S.next()-.5)*turn;const nx=x+Math.cos(a)*st,nz=z+Math.sin(a)*st;
-  // look ahead a little further than one step, and to both sides
-  // (sampled every 1.5 m over the whole step, so a lane never jumps a narrow alley and crosses it unjoined)
-  const ahead=[];for(let t=1.5;t<=st+w/2+1;t+=1.5)for(const k of [0,-1,1])ahead.push(city.code(x+Math.cos(a)*t-Math.sin(a)*k*w/2,z+Math.sin(a)*t+Math.cos(a)*k*w/2));
-  if(ahead.some(c=>c===CODE.building||c===CODE.yard)){why('lane:building');break;}
-  if(ahead.some(c=>c===CODE.blocked)){
-   // a river: a bridge, if this lane may cross and the far bank is buildable within reach
-   if(o.bridge&&!cross){let k=1,okFar=false;for(;k<=14;k++){const fx=nx+Math.cos(a)*st*k,fz=nz+Math.sin(a)*st*k;if(waterH(fx,fz)<-1e8&&city.code(fx,fz)===CODE.free){okFar=true;break;}}
-    if(okFar&&waterH(nx+Math.cos(a)*st*2,nz+Math.sin(a)*st*2)>-1e8){const bx=nx+Math.cos(a)*st*k,bz=nz+Math.sin(a)*st*k;cross={a:[x,z],b:[bx,bz]};pts.push([bx,bz]);x=bx;z=bz;len+=st*k;continue;}}
-   why('lane:ground');break;}
-  if(len>10&&ahead.some(c=>c===CODE.street||c===CODE.plaza)){pts.push([nx,nz]);join=true;break;}
-  // too close alongside another street: stop (a lane must leave room for a plot on each side)
-  let near=false;for(const sgn of [-1,1])for(const dd of [o.gap||9]){const c=city.code(nx-Math.sin(a)*sgn*dd,nz+Math.cos(a)*sgn*dd);if(c===CODE.street&&len>14)near=true;}
-  if(near){why('lane:parallel');break;}
-  x=nx;z=nz;pts.push([x,z]);len+=st;}
- if(len<(o.min||18)){why('lane:short');return null;}
- const S0=addStreet(city,pts,w,o.cls||'lane');S0.join=join;
- if(cross){const B={id:'vbr_'+OUT.bridges.length,city:city.C.id,street:S0.id,a:cross.a,b:cross.b,w:w+1,y:Math.max(terrainH(cross.a[0],cross.a[1]),terrainH(cross.b[0],cross.b[1]))};OUT.bridges.push(B);S0.bridge=true;}
- return S0;}
-// points along a polyline every `step` metres: [x, z, tangent angle]
-function along(pts,step,off){const out=[];let acc=-(off||0);for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1e-6)continue;
-  const ang=Math.atan2(b[1]-a[1],b[0]-a[0]);let t=-acc;while(t<=L){out.push([a[0]+(b[0]-a[0])*t/L,a[1]+(b[1]-a[1])*t/L,ang]);t+=step;}acc=L-(t-step);}return out;}
 // ---------------------------------------------------------------- districts and what grows in them
-const POOLS={
- upper:{warehouse:[['vern_warehouse',7],['vern_workshop_a',1.5],['vern_shops',1],['vern_silos',.6],['vern_smithy',.8]],
-  trade:[['vern_shops',5],['vern_workshop_a',2],['vern_workshop_b',2],['vern_smithy',1.6],['vern_tavern',1.6],['vern_house_mid_a',2.4],['vern_house_mid_b',2],['vern_warehouse',.8]],
-  dwelling:[['vern_house_poor_a',3],['vern_house_poor_b',3],['vern_house_poor_c',3],['vern_house_mid_a',3],['vern_house_mid_b',2.2],['vern_house_mid_c',2],['vern_house_rich_a',.45],['vern_house_rich_b',.45],['vern_tavern',1.3],['vern_shops',.9]]},
- lower:{warehouse:[['abyss_warehouse',5],['locus_warehouse',4],['abyss_granary',1],['abyss_shop_salvage',1]],
-  trade:[['abyss_shop_weapons',1],['abyss_shop_armor',1],['abyss_shop_general',2],['abyss_shop_food',2],['abyss_shop_alchemy',1],['abyss_shop_salvage',1],['abyss_shop_salt',1],['abyss_shop_sailmaker',1],
-   ['trade_shop_house',2],['abyss_tavern',1.4],['trade_tavern',1],['stilt_mid',1],['mid_djenne_house',1.4],['trade_market_hall',.4]],
-  dwelling:[['abyss_house_poor',3],['abyss_house_mid',3],['abyss_house_rich',.6],['stilt_poor',2],['stilt_mid',1.5],['poor_mud_house',2],['mid_courtyard_house',1],['mid_bluewash_townhouse',1],
-   ['mid_round_tower_house',.8],['mid_djenne_house',1],['tent_pavilion',.8],['abyss_inn',1],['rich_merchant_palace',.3]]}};
-// what stands in the back row: small houses, sheds and workshops
-const BACK={upper:[['vern_house_poor_a',3],['vern_house_poor_b',3],['vern_house_poor_c',3],['vern_house_mid_a',1.5],['vern_workshop_a',1.2]],
- lower:[['abyss_house_poor',3],['stilt_poor',2],['poor_mud_house',3],['abyss_house_mid',1.5],['tent_pavilion',.6]]};
+// The kit pieces of each lot class core/city draws (its TUNE.classes), per city. The class comes from the district
+// (rings of distance from the trailhead): warehouses close, then shops and workshops, then houses by wealth.
+const CLASSES={
+ upper:{poor:['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c'],middle:['vern_house_mid_a','vern_house_mid_b','vern_house_mid_c'],
+  rich:['vern_house_rich_a','vern_house_rich_b'],manor:['vern_house_rich_a','vern_house_rich_b'],shop:['vern_shops','vern_workshop_a','vern_workshop_b','vern_smithy'],
+  tavern:['vern_tavern'],industrial:['vern_warehouse','vern_silos','vern_workshop_a']},
+ lower:{poor:['abyss_house_poor','stilt_poor','poor_mud_house','tent_pavilion'],middle:['abyss_house_mid','stilt_mid','mid_courtyard_house','mid_bluewash_townhouse','mid_round_tower_house','mid_djenne_house'],
+  rich:['abyss_house_rich','abyss_inn'],manor:['rich_merchant_palace'],shop:['abyss_shop_weapons','abyss_shop_armor','abyss_shop_general','abyss_shop_food','abyss_shop_alchemy','abyss_shop_salvage','abyss_shop_salt','abyss_shop_sailmaker','trade_shop_house'],
+  tavern:['abyss_tavern','trade_tavern'],industrial:['abyss_warehouse','locus_warehouse','abyss_granary']}};
+// a district's draw of lot classes ('dwelling' takes core/city's own choosers, by wealth)
+const DRAWS={warehouse:{industrial:.55,shop:.25,poor:.2},trade:{shop:.42,tavern:.1,middle:.3,poor:.13,rich:.05}};
 function districtOf(city,x,z){const h=city.C.head,r=Math.hypot(x-h[0],z-h[1]);for(const g of city.C.rings)if(r>=g[0]&&r<g[1])return g[2];return'dwelling';}
-function pickKey(pool){let sum=0;for(const p of pool)sum+=p[1];let u=S.next()*sum;for(const p of pool){u-=p[1];if(u<=0)return p[0];}return pool[pool.length-1][0];}
-// fill both sides of a street with plots facing it
-function frontage(city,S0,o){o=o||{};const dense=city.C.id==='upper';let placed=0;
- for(const side of [-1,1]){let s=S.range(0,5);const P=S0.pts;
-  // a cumulative length table along the street
-  const cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
-  const at=t=>{let i=1;while(i<P.length-1&&cum[i]<t)i++;const a=P[i-1],b=P[i],u=clamp((t-cum[i-1])/Math.max(1e-6,cum[i]-cum[i-1]),0,1);return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,Math.atan2(b[1]-a[1],b[0]-a[0])];};
-  while(s<S0.len-4){const p=at(s),nx=-Math.sin(p[2])*side,nz=Math.cos(p[2])*side;let done=false;
-   const dist=districtOf(city,p[0],p[1]),pool=(o.pool||POOLS[city.C.id][dist]);
-   for(let tr=0;tr<4&&!done;tr++){const K=cat(pickKey(pool));if(!K)continue;
-    const set=dense?S.range(.6,2.2):S.range(1.2,4.5),cx=p[0]+nx*(S0.w/2+set+K.d/2),cz=p[1]+nz*(S0.w/2+set+K.d/2);
-    const ry=Math.atan2(-nx,-nz)+S.range(-.1,.1)*(dense?1:1.6);
-    const f=fits(city,cx,cz,K.w,K.d,ry,{m:.4,tol:dense?2.2:1.8});
-    if(f.ok){record(city,K,cx,cz,ry,f.y,{district:dist,yard:dense?S.range(.3,1.2):S.range(.8,2.6)});s+=K.w+(dense?S.range(.4,2):S.range(1.5,6));placed++;done=true;
-     // the back row: a smaller house behind it, reached down a passage beside the front one (o.back: the chance of one)
-     const back=o.back!=null?o.back:dense?.8:.25;if(S.next()<back){const K2=cat(pickKey(o.backPool||BACK[city.C.id]));if(K2){
-      const off=S0.w/2+set+K.d+S.range(1.2,3)+K2.d/2,bx=p[0]+nx*off+(S.next()-.5)*2,bz=p[1]+nz*off,bry=ry+S.range(-.2,.2)+(S.next()<.25?Math.PI/2:0);
-      const f2=fits(city,bx,bz,K2.w,K2.d,bry,{m:.4,tol:2.2});if(f2.ok){record(city,K2,bx,bz,bry,f2.y,{district:dist,yard:S.range(.3,.9)});placed++;}else why('back:'+f2.why);}}}
-    else why('plot:'+f.why);}
-   if(!done)s+=3;}}
- return placed;}
-// ---------------------------------------------------------------- the back lots
-// Chaotic, not planned: small houses and sheds squeezed into the free ground behind the frontages, each facing the
-// nearest street it can see within reach (30 m; Upper Verge 40), so it still has a way in, at any angle.
-function infill(city,tries,keys,reach){let placed=0;const B=city.C.box;reach=reach||30;
- for(let k=0;k<tries;k++){const x=S.range(B[0],B[1]),z=S.range(B[2],B[3]);if(city.code(x,z)!==CODE.free)continue;
-  // the nearest street, by casting eight rays
-  let best=null;for(let a=0;a<8;a++){const ang=a/8*Math.PI*2;for(let d=4;d<=reach;d+=2){const c=city.code(x+Math.cos(ang)*d,z+Math.sin(ang)*d);if(c===CODE.street||c===CODE.plaza){if(!best||d<best.d)best={d,ang};break;}if(c===CODE.blocked)break;}}
-  if(!best)continue;const K=cat(keys[S.int(0,keys.length-1)]);if(!K)continue;
-  const ry=Math.atan2(Math.cos(best.ang),Math.sin(best.ang))+S.range(-.25,.25),f=fits(city,x,z,K.w,K.d,ry,{m:.5,tol:2});
-  if(f.ok){record(city,K,x,z,ry,f.y,{district:districtOf(city,x,z),yard:S.range(.3,1)});placed++;}else why('infill:'+f.why);}
- return placed;}
+// ---------------------------------------------------------------- the streets and lots: core/city, one instance a level
+// Each city is a core/city instance (KCITY, core/city/README.md). Its site, as steps 0-5: the ground no building may use
+// (this raster's blocked cells) is off the zone, the plazas and the landmarks already hunted are HARD; the highway through
+// the town is an avenue; a ring avenue round the market; then avenues ROUTED over the ground (KCITY.site.routeAvenues)
+// from the market and the trailhead to each landmark's door, nearest first: they keep to the floor (no climbing above
+// both ends), merge where two would run within 30 m (so the town grows trunks, not parallel streets), and bridge the
+// river where they must. Steps 7-12 are the module's defaults: avenue lots, main streets across the voids, side streets,
+// alleys and the infill of the blocks. core/city's raster is centred on its origin, so a level runs in its own frame
+// (the box's middle) and its records come back shifted, as this pass's own (vb_ ids, doors, core/tags).
+const KL=KCITY.lib;
+function cityPlan(city,o){
+ const C=city.C,B=C.box,ox=(B[0]+B[1])/2,oz=(B[2]+B[3])/2,half=Math.ceil(Math.max(B[1]-B[0],B[3]-B[2])/2+40);
+ const toL=p=>[p[0]-ox,p[1]-oz],toW=p=>[p[0]+ox,p[1]+oz],hL=(x,z)=>terrainH(x+ox,z+oz);
+ const avW=o.hwyW,tune={cell:2.5,rasterHalf:half,maxSlope:.22,exact:true,
+  width:{avenue:avW,main:o.mainW,side:o.sideW,alley:3.2,highway:avW,lane:4.5},lot:o.lot,
+  classes:{},fallback:{manor:'rich',rich:'middle',middle:'poor',shop:'poor',tavern:'shop',industrial:'poor',poor:null},
+  civic:[],civicSpacing:200,voidMax:o.voidMax,voidIters:30,voidBatch:10,sideSpacing:o.sideSpacing,sideMax:200,alleyFrac:.25,blindMax:80,
+  interiorDepth:9,interiorRounds:4,plazaArt:{rich:['none'],middle:['none'],poor:['none'],commerce:['none']},mapHalf:half,avenueSnap:60,ringGap:6,verge:0};
+ for(const k in CLASSES[C.id])tune.classes[k]=CLASSES[C.id][k].map(key=>[key,0]);
+ const dims=(key,v)=>{const K=cat(key);return K?{key,v:v||0,w:K.w,d:K.d,h:K.h}:null;};
+ const MK=toL(o.market),mr=o.marketR+tune.ringGap+avW/2;
+ const wealth=p=>clamp(.72-Math.hypot(p[0]-MK[0],p[1]-MK[1])/(o.reach||900)+.14*(KRAND.vnoise(p[0]/90,0,p[1]/90,VG.SEED)-.5),0,1);
+ const draw=(rs,W)=>{let t=0,k;for(k in W)t+=W[k];let x=rs.rnd()*t;for(k in W){x-=W[k];if(x<=0)return k;}return k;};
+ const chooser=cls=>(p,rs)=>{const D=DRAWS[districtOf(city,p[0]+ox,p[1]+oz)];return D?draw(rs,D):KCITY.defaults.choosers[cls](p,rs);};
+ const log={};
+ const world=[
+  {name:'the site and its ground',run(){const SL=KL.SL,OCC=KL.OCC,R=SL.R=new KL.Raster(half,tune.cell);
+   // o.zoneR: the town's edge, for a city on open ground: ragged, round the trailhead (o.zoneR), along the highway
+   // (o.corridor either side) and round each landmark (o.landR), so it thins out where it ends rather than filling its box
+   const HD=toL(o.head),HW=o.highway.filter(p=>p[0]>B[0]-20&&p[0]<B[1]+20).map(toL),LM=o.targets.filter(Boolean).map(R0=>toL([R0.x,R0.z]));
+   const edge=(x,z)=>{if(o.zoneR==null)return true;let d=Math.hypot(x-HD[0],z-HD[1])/o.zoneR;
+    for(let k=1;k<HW.length;k++)d=Math.min(d,KL.segDist([x,z],HW[k-1],HW[k])/o.corridor);
+    for(const q of LM)d=Math.min(d,Math.hypot(x-q[0],z-q[1])/o.landR);
+    return d<.7+.6*KRAND.vnoise(x/210+3,0,z/210+3,VG.SEED);};
+   for(let j=0;j<R.n;j++)for(let i=0;i<R.n;i++){const x=R.cx(i),z=R.cx(j),c=city.code(x+ox,z+oz);
+    R.occ[j*R.n+i]=c===CODE.blocked?OCC.OUT:(c===CODE.building||c===CODE.yard||c===CODE.plaza)?OCC.HARD:edge(x,z)?OCC.FREE:OCC.OUT;}
+   const P=KL.plan();P.zone=[toL([B[0],B[2]]),toL([B[1],B[2]]),toL([B[1],B[3]]),toL([B[0],B[3]])];P.site=[];
+   SL.minSpacing=KCITY.site.minSpacing();}},
+  // what this pass placed already (the landmarks, the gate, the market's stalls) joins the exact footprint index, so no lot
+  // corner slips between the raster's samples into one
+  {name:'landmarks',run(){const SL=KL.SL,P=KL.plan();for(const R of city.buildings){const c=toL([R.x,R.z]),bo=KL.obb(c,[Math.cos(R.ry),-Math.sin(R.ry)],R.w/2,R.d/2);
+   const L={id:P.lots.length,cls:'landmark',key:R.key,v:R.v,slot:0,wealth:1,x:c[0],z:c[1],y:R.y,ry:R.ry,w:R.w,d:R.d,h:R.h,lot:bo,bo,way:-1,side:0,s:0,born:1,died:null,civic:true};
+   P.lots.push(L);P.landmarks.push(L);SL.hashLot(L);}}},
+  {name:'districts',run(){}},
+  {name:'avenues',run(){const SL=KL.SL,R=SL.R;
+   // the highway through the town, then the ring round the market (where all its ground is in the zone)
+   const hw=o.highway.filter(p=>p[0]>B[0]-20&&p[0]<B[1]+20).map(toL);if(hw.length>1)SL.addWay('avenue',hw,3,{tag:'highway'});
+   const ring=[];for(let k=0;k<36;k++){const a=k/36*Math.PI*2;ring.push([MK[0]+Math.cos(a)*mr,MK[1]+Math.sin(a)*mr]);}
+   if(ring.every(p=>R.at(p[0],p[1])!==KL.OCC.OUT)){SL.addWay('avenue',ring,3,{closed:true,tag:'ring market'});log.ring=1;}
+   // to every landmark's door, nearest the market first, from the market's ring or the trailhead, whichever is nearer
+   const HD=toL(o.head),hr=o.headR+avW/2+2;
+   const targets=o.targets.filter(Boolean).map(R0=>({name:R0.landmark||R0.key,to:toL(R0.door)}))
+    .sort((a,b)=>Math.hypot(a.to[0]-MK[0],a.to[1]-MK[1])-Math.hypot(b.to[0]-MK[0],b.to[1]-MK[1]));
+   const rim=(c,r,t)=>{const a=Math.atan2(t[1]-c[1],t[0]-c[0]);return[c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r];};
+   const specs=targets.map(T=>{const dm=Math.hypot(T.to[0]-MK[0],T.to[1]-MK[1])-mr,dh=Math.hypot(T.to[0]-HD[0],T.to[1]-HD[1])-hr;
+    return{name:'to the '+T.name,from:dm<=dh?rim(MK,mr,T.to):rim(HD,hr,T.to),to:T.to};});
+   const r=KCITY.site.routeAvenues(specs,3,{h:hL,maxSlope:.2,merge:30,minRun:40,maxSpan:90,reach:24,
+    cross:(x,z)=>{for(const d of [[0,0],[10,0],[-10,0],[0,10],[0,-10]])if(waterH(x+ox+d[0],z+oz+d[1])>-1e8)return true;return false;}});
+   Object.assign(log,{avenues:r.made,merged:Math.round(r.merged),bridges:r.bridges.length,failed:r.failed});}},
+  {name:'highways',run(){}},
+  {name:'the wall and its gates',run(){}},
+  {name:'civic buildings',run(){}}];
+ const K=KCITY.create({tune,seed:KRAND.child(VG.SEED,'city:'+C.id)>>>0,rand:'krand',index:{order:'insertion'},ground:{h:hL},kit:{dims},
+  rules:{wealth,choosers:{avenue:chooser('avenue'),main:chooser('main'),side:chooser('side'),alley:chooser('alley')},groundOk:KCITY.reliefOk({dry:-1e9,maxRelief:o.tol})},
+  steps:world.concat(KCITY.defaultSteps().slice(7))});
+ const P=K.run();city.kcity=K;
+ // the plan's records, back in the world's frame: its streets (the highway is already one), its plazas' paint, its lots
+ const wp=pts=>pts.map(toW);
+ for(const w of P.ways){if(w.tag==='highway')continue;const S0=addStreet(city,wp(w.pts),w.w,w.cls,{bridge:!!w.bridge});S0.core=w.id;
+  if(w.bridge){const a=toW(w.pts[0]),b=toW(w.pts[w.pts.length-1]);
+   OUT.bridges.push({id:'vbr_'+OUT.bridges.length,city:C.id,street:S0.id,a,b,w:w.w+1,y:Math.max(terrainH(a[0],a[1]),terrainH(b[0],b[1]))});}}
+ for(const G of P.greens)if(G.kind==='plaza')city.poly(wp(G.poly),CODE.plaza);
+ let n=0;for(const L of P.lots){if(L.died!=null||!L.bo||L.cls==='landmark')continue;const Kc=cat(L.key);if(!Kc)continue;const c=toW([L.x,L.z]);
+  city.poly(wp(KL.obbCorners(L.lot)),CODE.yard);
+  const v=Kc.variants>1?(KRAND.hash(VG.SEED,7,L.id)>>>0)%Kc.variants:0;
+  const R=record(city,Kc,c[0],c[1],L.ry,L.y,{v,district:districtOf(city,c[0],c[1]),yard:0});R.lot=L.cls;n++;}
+ OUT.cityPlan=OUT.cityPlan||{};OUT.cityPlan[C.id]=Object.assign(log,{ways:P.ways.length,lots:n,greens:P.greens.length,
+  byCls:P.ways.reduce((a,w)=>(a[w.cls]=(a[w.cls]||0)+1,a),{})});
+ return n;}
 // ---------------------------------------------------------------- the trailheads: a plaza, the toll gate and palisade
 function trailGate(city,s,kGate,kPal,kToll,nPal){
  // the gate stands where the ground under its span is least below the trail (its ends may sink into a bank, never hang): searched 12 m either way of s
@@ -222,22 +245,9 @@ function upper(){const C=VG.CITY.upper,city=City(C);OUT.cities.upper=city;
   L.ware.push(hunt(city,k%4===3?'vern_workshop_a':'vern_warehouse',x,z,[Math.atan2(head[0]-x,head[1]-z),Math.atan2(head[0]-x,head[1]-z)+Math.PI/2],{landmark:'warehouse',radius:70,tol:3}));}
  // the market's canopies on the plaza
  const mk=[];for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.4,x=MK[0]+Math.cos(a)*22,z=MK[1]+Math.sin(a)*22;mk.push(hunt(city,'vern_market',x,z,[a+Math.PI/2,a],{landmark:'market canopy',radius:14,allow:[CODE.plaza],m:.5}));}
- // the lanes: branching off the highway, then alleys off the lanes
- const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(42,72))===0)){if(p[0]>head[0]-30)continue;
-  for(const side of [-1,1]){if(S.next()<.1)continue;const a=p[2]+side*(Math.PI/2+S.range(-.6,.6));
-   const L0=growLane(city,p[0]+Math.cos(a)*7,p[1]+Math.sin(a)*7,a,S.range(80,240),S.range(4.5,6.5),{bridge:side<0&&S.next()<.5,turn:.35,gap:16});if(L0)lanes.push(L0);}}
- // the market's streets and the trailhead's
- for(let k=0;k<5;k++){const a=k/5*Math.PI*2+.2;const L0=growLane(city,MK[0]+Math.cos(a)*46,MK[1]+Math.sin(a)*46,a,S.range(60,160),5,{turn:.4});if(L0)lanes.push(L0);}
- // lanes off the lanes, then alleys off everything
- // (each street must leave a two-deep block of plots each side: gap 16 m for lanes, 12 m for alleys)
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(80,120),30)){const side=S.next()<.5?-1:1;if(S.next()<.6)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
-   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(50,150),S.range(4,5.5),{turn:.4,gap:16});if(L1)lanes.push(L1);}}
- const alleys=[];for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(55,90),15)){if(S.next()<.75)continue;const side=S.next()<.5?-1:1;
-   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));const A=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(25,70),S.range(3,4.2),{cls:'alley',turn:.45,gap:12,min:14});if(A)alleys.push(A);}}
- // the plots: the highway's frontage, the lanes', the alleys'; then the back lots
- let n=0;for(const S0 of city.streets)n+=frontage(city,S0);
- infill(city,5000,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a','vern_workshop_a','vern_shops'],40);
+ // the streets and lots: core/city (cityPlan above), the avenues routed to the landmarks
+ cityPlan(city,{market:MK,marketR:44,head,headR:22,highway:hw,hwyW:10,mainW:7,sideW:5,lot:{side:.8,setback:.9,rear:1.5,inset:.6,step:2},
+  voidMax:32,sideSpacing:40,tol:2.2,reach:900,targets:[L.palace,L.barracks,L.muster,L.cara1,L.cara2,L.school,L.hospital,L.guard]});
  // the city spills down the top of the trail: houses on little pads beside the first legs
  spill(city,[60,520],8,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a'],'up');
  city.landmarks=Object.assign(L,{gate});return city;}
@@ -264,20 +274,8 @@ function lower(){const C=VG.CITY.lower,city=City(C);OUT.cities.lower=city;
  const mk=[];for(let k=0;k<7;k++){const a=k/7*Math.PI*2+.2,r=k%2?34:20,x=MK[0]+Math.cos(a)*r,z=MK[1]+Math.sin(a)*r;
   mk.push(hunt(city,k%2?'prop_market_tent':'prop_market_stall',x,z,[a+Math.PI/2,a],{landmark:'market stall',radius:12,allow:[CODE.plaza],m:.4}));}
  mk.push(hunt(city,'trade_market_hall',MK[0],MK[1]-70,[0,Math.PI],{landmark:'market hall',radius:50}));
- const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(50,90))===0)){if(p[0]<head[0]+30)continue;
-  for(const side of [-1,1]){if(S.next()<.15)continue;const a=p[2]+side*(Math.PI/2+S.range(-.7,.7));
-   const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(150,380),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.22,gap:14});if(L0)lanes.push(L0);}}
- for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.5;const L0=growLane(city,MK[0]+Math.cos(a)*60,MK[1]+Math.sin(a)*60,a,S.range(80,220),5.5,{turn:.35,gap:11});if(L0)lanes.push(L0);}
- // toward the pool: a lane west along the river's south bank, under the spur's north flank
- {const L0=growLane(city,head[0]-30,head[1]-60,Math.PI*1.05,380,6,{turn:.18,gap:10,min:40});if(L0)lanes.push(L0);}
- // lanes off the lanes, as in Upper Verge but looser
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(70,110),30)){const side=S.next()<.5?-1:1;if(S.next()<.45)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
-   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,200),S.range(4.5,6),{turn:.35,gap:16});if(L1)lanes.push(L1);}}
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(50,85),14)){for(const side of [-1,1]){if(S.next()<.75)continue;
-   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(30,120),S.range(3.5,4.5),{cls:'alley',turn:.4,gap:9,min:14});}}}
- for(const S0 of city.streets)frontage(city,S0,{back:.5});
- infill(city,1500,['abyss_house_poor','stilt_poor','poor_mud_house','abyss_house_mid','tent_pavilion']);
+ cityPlan(city,{market:MK,marketR:58,head,headR:26,highway:hw,hwyW:12,mainW:8,sideW:5.5,lot:{side:1.6,setback:1.6,rear:3,inset:1,step:3},
+  voidMax:44,sideSpacing:48,tol:1.8,reach:1300,zoneR:520,corridor:190,landR:150,targets:[L.chapter,L.temple,L.library,L.mayor,L.school,L.cara1,L.cara2,L.guard]});
  spill(city,[VG.TRAIL.len-700,VG.TRAIL.len-60],10,['stilt_poor','abyss_house_poor','poor_mud_house','abyss_house_mid'],'down');
  city.landmarks=Object.assign(L,{gate});return city;}
 // ---------------------------------------------------------------- spill: houses beside the trail's first (or last) legs

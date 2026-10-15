@@ -23,6 +23,10 @@
   "core/sched/20-core-sched.js",
   "932d088efbab"
  ],
+ "20-core-space.js": [
+  "core/space/20-core-space.js",
+  "30e465e74c51"
+ ],
  "20-core-walk.js": [
   "core/walk/20-core-walk.js",
   "a62f43ac5e15"
@@ -183,9 +187,13 @@
   "GENERATED: settlements/locus/src/05-palette.js, settlements/locus/src/10-core.js, settlements/locus/src/45-kit.js, settlements/locus/src/47-texture.js, settlements/locus/src/50-structure.js, settlements/locus/src/53-assets.js, settlements/locus/src/56-mid.js, settlements/locus/src/57-poor.js, settlements/locus/src/58-rich.js, settlements/locus/src/59-civic.js, settlements/locus/src/64-locus-chapterhouse.js, settlements/locus/src/64-locus-core.js, settlements/locus/src/64-locus-dwellings.js, settlements/locus/src/64-locus-farm.js, settlements/locus/src/64-locus-infra.js, settlements/locus/src/64-locus-petroleum.js, settlements/locus/src/64-locus-plants.js, settlements/locus/src/64-locus-power.js, settlements/locus/src/65-abyss-00-core.js, settlements/locus/src/65-abyss-20-plants.js, settlements/locus/src/65-abyss-30-housing.js, settlements/locus/src/65-abyss-40-shops.js, settlements/locus/src/65-abyss-50-civic.js, settlements/locus/src/65-abyss-60-temple.js, settlements/locus/src/65-abyss-70-palace.js, settlements/locus/src/65-abyss-75-verge.js, settlements/locus/src/65-abyss-80-military.js, settlements/locus/src/65-abyss-90-farm.js, settlements/locus/src/72-lights.js, settlements/locus/src/81-glow.js",
   "8af6983a6432"
  ],
+ "69-kcity-bundle.js": [
+  "GENERATED: core/city/10-city-core.js, core/city/12-city-index.js, core/city/15-city-ground.js, core/city/20-city-plan.js, core/city/25-city-site.js, core/city/31-city-steps-b.js, core/city/32-city-steps-c.js, core/city/33-city-strategies.js, core/city/40-city-kcity.js",
+  "e77cf3da826c"
+ ],
  "70-verge-place.js": [
   "settlements/verge/src/70-verge-place.js",
-  "aad9e2c50fde"
+  "b8ad776d0783"
  ],
  "71-verge-furnish.js": [
   "settlements/verge/src/71-verge-furnish.js",
@@ -197,7 +205,7 @@
  ],
  "74-verge-sim.js": [
   "settlements/verge/src/74-verge-sim.js",
-  "3b96d5c6fe97"
+  "ccc6009f0af6"
  ],
  "77-verge-rigs.js": [
   "settlements/verge/src/77-verge-rigs.js",
@@ -233,7 +241,7 @@
  ],
  "91-verge-probe.js": [
   "settlements/verge/src/91-verge-probe.js",
-  "49cb9f0b9f64"
+  "34798eac0f19"
  ],
  "99-tail.html": [
   "settlements/verge/src/99-tail.html",

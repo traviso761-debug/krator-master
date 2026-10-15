@@ -72,6 +72,7 @@ CORE = {
     '44-core-stage.js': 'core/biome/44-core-stage.js',
     '20-core-clock.js': 'core/clock/20-core-clock.js', '20-core-sched.js': 'core/sched/20-core-sched.js',
     '20-core-walk.js': 'core/walk/20-core-walk.js', '25-core-mask.js': 'core/mask/25-core-mask.js',
+    '20-core-space.js': 'core/space/20-core-space.js',
     '35-core-strata.js': 'biomes/sedesert/src/35-core-strata.js',
     '50-core-tags.js': 'core/tags/50-core-tags.js', '52-core-tags-vocab.js': 'core/tags/52-core-tags-vocab.js',
     '53-core-tags-host.js': 'core/tags/53-core-tags-host.js',
@@ -172,6 +173,22 @@ def ykit_bundle():
         [os.path.relpath(f, ROOT).replace(os.sep, "/") for f in fs] + ['settlements/locus/src/81-glow.js']
 
 
+# core/city (the city-layout module), its data fragments in one closure: its globals (SL, PLAN, TUNE, V, obb, clamp...)
+# stay inside it, and Verge reads KCITY and KCITY.lib (70-verge-place.js runs one instance per level)
+CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+
+
+def kcity_bundle():
+    d = os.path.join(ROOT, 'core', 'city')
+    body = ''.join('\n/* ---- core/city/%s ---- */\n' % f + rd(os.path.join(d, f)) for f in CITY_JS)
+    return ('/* KCITY: core/city in one closure (settlements/verge/build.py). GENERATED: edit core/city. */\n'
+            'var KCITY = (function(){\n' + body +
+            '\nKCITY.lib = { SL: SL, OCC: OCC, Raster: Raster, V: V, obb: obb, obbCorners: obbCorners, inPoly: inPoly, offsetConvex: offsetConvex,\n'
+            '  resample: resample, plLen: plLen, segDist: segDist, ryFacing: ryFacing, plan: function () { return PLAN; } };\n'
+            'return KCITY;\n})();\n'), ['core/city/' + f for f in CITY_JS]
+
+
 def catalog_bundle():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
@@ -224,6 +241,8 @@ def main():
                                        'GENERATED: biomes/sedesert/tex (maps in verge.tex.js)')
     frags['55z-bio-matlib-pack.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss', side=SIDE),
                                        'GENERATED: biomes/eastabyss/tex (maps in verge.tex.js)')
+    kc, kcf = kcity_bundle()
+    frags['69-kcity-bundle.js'] = (kc, 'GENERATED: ' + ', '.join(kcf))
     izv, izf = izv_bundle()
     frags['64-izv-bundle.js'] = (izv, 'GENERATED: ' + ', '.join(izf))
     yk, ykf = ykit_bundle()
