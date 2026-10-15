@@ -32,10 +32,10 @@ A lost high civilisation, **the Ancients**, built everything that matters and th
 |---|---|
 | Body | A tidally locked moon of a gas giant (Neptune-to-Saturn class). [settlements/voth/src/21-sky.js; dalab/src/81-sky.js] |
 | The giant | Fixed in the sky at altitude ~25°, azimuth ~66° (NE), "over **Korona**". About 30° across ("sixty full moons wide"), banded, stormy and greenish. Its rings sit almost edge-on, seen as a hairline. At night its glow ("giantshine") lights clouds and snow. [dalab/src/81-sky.js:3; biomes/eastabyss/src/82-host-sky.js; biomes/nhighlands/src/82-host-sky.js] |
-| Moons | Two small moons, well away from the giant. The Republic's orrery shows sun, giant, Krator and two moons. [settlements/highlands/NOTES.md:83-92] |
+| Moons | Two small moons, well away from the giant: Krator's sister moons round it. The Republic's orrery shows sun, giant, Krator and two moons. [settlements/highlands/NOTES.md:83-92] Jimjam calls them **the Week** (*Vīkku*: phases every 7 days, an orbit of 6.87 days at ~700,000 km) and **the Thirteen** (*Tarṭīn*: phases every 13 days, an orbit of 12.55 days at ~1,050,000 km). Both are new together every 91 days, when both their shadows cross the giant's face: the Double Dark (§6.14). [the owner, Oct 2026] |
 | Sun | Sets WNW in every kit (canon placement). Eclipses come in seasons round each equinox. |
 | Day | 24 h: one orbit of the giant. |
-| Year and tilt | Tilt ~23°, so seasons are Earth-like. The year is 365 days in the sky docs and `YEAR=360` in the shared sky code (see §12). The southern summer solstice falls on day 350. [jimjam/DESIGN.md:81-91] |
+| Year and tilt | Tilt ~23°, so seasons are Earth-like. The year is **365 days** (the owner, Oct 2026); `YEAR=360` in the shared sky code is a simplification (§12). The southern summer solstice falls on day 350. [jimjam/DESIGN.md:81-91] |
 | Latitude | "Climate, day length and seasons all depend on latitude, not longitude." The reference site (Voth, Jimjam) is at 40° S, in the westerlies, so the sun crosses through the north. |
 | Gravity | 7.4 m/s² (about 0.75 g). |
 | Air | Dense, varying with altitude: ~0.8 atm on the high plateau, ~1.3 at Yuni, ~1.6 on the Voth lowland, ~1.9 on the hypertropic lee shore, ~2.0 on the Ring Sea, thicker still in the Abyss. Krator's climate classes add **X, abyssal** (above 1.9 atm) and **H, hyperalpine** (below 0.6 atm) to Köppen. [mavs-refuge/src/21-sky.js; biomes/WORLD.md] |
@@ -76,9 +76,9 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | Southwestern lowlands | NW lowlands, S highlands | Dalab |
 | Crater drylands (two regions: N and W of the Throne; S of it) | SW bay, the savannah south of the hyperjungle | the Scyvoi |
 | East Rift Highlands / Vale of Xanadu | the Rift | the Sultanate of Xanadu (Erewhon) |
-| Northwestern lowlands | SW lowlands, N highlands, Korona | ??? only a sketch at this point |
+| Northwestern lowlands | SW lowlands, N highlands, Korona | Jimjam (by the lake north of The Cut) |
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
-| *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | Jimjam, ????, ghouls, bandits, ruffians |
+| *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians |
 
 The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from −2,600 to +17,100 m, plus climate rasters. Its database holds 35 named cultural and political region polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of Xanadu**.
 
@@ -383,10 +383,22 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 ### 6.14 Jimjam
 
-- An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys.
-- Ruled by **the Raja**.
-- At its heart, a **solstice sun temple** whose arch frames the summer-solstice sunset. Emblem: a gold sun on red banners.
-- Not snowy. Biome and location not yet given. [ed: I keep flip flopping on where to put them but they are not in the central crater or Rift]
+- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. [the owner, Oct 2026]
+- **The flood made the land.** The Ancients' west dam burst into the long-lake trough and the NW lowlands (§3.1, `biomes/WORLD.md`). The flood scoured every Ancient ruin away and laid down the silt Jimjam is built from. Jimjam is the one people on Krator that does not live in the Ancients' ruins, and its city has no scrap architecture. The broken dam arcologies upstream are its salvage frontier. [the owner, Oct 2026]
+- **Brick.** An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys. The lake beds give both bricks: the iron-rich flood silt fires red and the lake's marl fires yellow. In the dense lowland air a kiln burns hot on little fuel, so over-fired near-black brick is common. White marble is a rich man's trim and is carried in; Korona, where volcanic heat would have cooked limestone, is the likely source.
+- Ruled by **the Raja**. A Raja must be crowned on a day of concordance; one crowned on a bad day is a story waiting to happen.
+- **The calendar.** Jimjam counts days for the whole crater. Four counts run at once:
+  - the **Week** moon's phases name the day (seven names, which are the Ancients' weekday names: *Sanḍē, Manḍē, Ṭyūsḍē, Vensḍē, Tarsḍē, Firaiḍē, Sa'arḍē*);
+  - the **Thirteen** moon's phases number it, one to thirteen;
+  - every day of the **Count** (*Kaunṭu*), 7 × 13 = 91 days, has its own name, such as *Fōr Vensḍē*;
+  - the **year** is four seasons of 91 days plus **the Day Outside** (*Ḍē Auṭsaiḍu*), which belongs to no count: no work, no contracts, no oaths.
+
+  *Van Sanḍē*, when both moons are new, is **the Double Dark** (*Ḍabal Ḍārkku*), and both their shadows cross the giant's face. It comes once every 91 days and falls one day later in the year each year. The day-names and the year come back into step after 91 × 365 days: **the Round** (*Raunḍu*) of **91 years**. Few people see a Round end, and someone who claims to have seen two is a living wonder or a liar. The **Long Count** (*Lōṅ Kaunṭu*) is the days since **the Flood** (*Falaḍu*). It is the only running count since the Ancients fell, and the Order of Historians would give anything for its tables. Whether it is true is open. [the owner, Oct 2026]
+- **The day-keepers** (*kaunṭavan*, "count-men") read a person's birth-day for what they are fit for. Caravans wait for a good day to set out and courts won't sit on a bad one. Jimjam sells **almanacs** along the caravan routes, and contracts across the crater are dated by its reckoning.
+- **The temple arch** frames the summer-solstice sunset. It is the calendar's anchor and an observatory, not a sun god's house. Once a Round the Double Dark falls on that sunset: the **Great Round** (*Gerēṭṭu Raunḍu*). Every kiln and hearth in the city goes out and is relit from the temple: **the New Fire** (*Nyū Faiyar*). The arch was aimed for 40° S; the site is north of that reference, so it is re-aimed once the lake's latitude is fixed (§12).
+- **Emblem:** three interlocking wheels (the sun's, the Week's and the Thirteen's) in gold on red banners.
+- **Name.** *Jimjam* is an echo word: *jam* with its *i*-echo before it, as in *ping-pong*, meaning "the Jam and all round it". The Jam is the old city, built on the bank of wreckage the Flood left. [proposed, Oct 2026]
+- **Language and script.** **Jamṭōkku** ("Jam talk"): English gone Dravidian and Maya. English *t d* are retroflex *ṭ ḍ* and *th* is dental *t d*, the split South Indian English makes. A glottal stop replaces the *t* English swallows (*va'ar* water, *Sa'arḍē*). A cluster at the start of a word splits with an echo of the next vowel (*birikku* brick, *Firaiḍē*). A final consonant takes *-u* and a final stop doubles (*vīkku* week, *ēṭṭu* eight). Dark *l* is *ḷ* (*kiḷnu* kiln), *w* is *v*, *-man* is *-van*. The verb comes first, the only verb-first tongue in the crater. Things are counted with measure words (*ṭū-pīsu birikku* two bricks, *tirī-heḍḍu bī'al* three beetles). Echo words put an *i*-copy before a word for "X and all that" (*ṭikku-ṭōkku* chatter). Dalab's letters, learned by caravan clerks, written with a stylus on palm leaf, where a straight stroke splits the leaf, so every letter is rounded, and stacked in square blocks, one per syllable. `lore/tongues-of-krator.html` [the owner asked for a Mayan and Dravidian tongue, Oct 2026]
 
 ### 6.15 The Monks of History (or Order of Historians)
 
@@ -485,7 +497,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 | Hykkousoi | wave-sun | gold, pale linen, slate blue |
 | Ring Sea Islanders | white moon | bark, sand, sea teal |
 | Dalab | eye in the sun | terracotta, cream, turquoise; The God's cold teal light |
-| Jimjam | gold sun | red banners |
+| Jimjam | three interlocking wheels (the sun's, the Week's, the Thirteen's) | red banners, gold |
 | Screamers | skull | painted dots |
 | Eastern Nomads | horns | |
 | East Abyss | star | red lacquer, teal and gold for the sacred |
@@ -505,6 +517,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Geomancers:** Locus and Yuni.
 - **The Izani Empire and the Iron Republic:** connected by the Mutiny of the 3rd Legion at Roketstad.
 - **Dalab and the NW Giant tribes:** the giants came from Dalab.
+- **Jimjam and Dilihan:** neighbours across The Cut; the loyalist city leans on Jimjam's trade. Jimjam's almanacs travel every caravan route, and contracts are dated by its reckoning.
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
 
@@ -512,8 +525,8 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 
 **Contradictions in the repo**
 
-1. **Year length.** The sky docs say 365 days; the shared sky code uses `YEAR=360`. The solstice is day 350.
-1. **Jimjam's latitude.** Specified as 30° (N?), sunset ~297°. As built: 40° S, ~242°.
+1. **Year length.** Resolved (the owner, Oct 2026): 365 days. The shared sky code still uses `YEAR=360` as a simplification; the solstice is day 350.
+1. **Jimjam's latitude.** Specified as 30° (N?), sunset ~297°. As built: 40° S, ~242°. Jimjam now stands by the lake north of The Cut, north of the 40° S reference; the scale model labels latitudes only roughly (~40° S overall, the Rift 48–57° S), so the kit's arch is re-aimed once the site's latitude is fixed.
 1. **Yuni's valley mouth.** Faces NE in one comment, NW in the code.
 1. **When the Ancients fell.** "A thousand years" at Yuni and Iziz, "millennia" elsewhere.
 1. **Hypertree heights.** 290–480 m at Mav's, 150–270 m at Girder, and the Krator mahogany (245–305 m) called "the tallest in the belt".
@@ -528,5 +541,5 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - What is Korona? Who lives in the NW bay, the badlands and the southern highlands?
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
-- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's sun, and the Beast Riders' nature shrines.
-- Is there a calendar, a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?
+- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
+- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

@@ -424,6 +424,46 @@ section.tongue{min-height:100%}
 :is(#dalab,[data-tongue="dalab"]) .pr.lost .god{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red)}
 @media (max-width:560px){:is(#dalab,[data-tongue="dalab"]) .pr{grid-template-columns:1fr;gap:4px}}
 :is(#dalab,[data-tongue="dalab"]) .note{font-size:.93rem;color:var(--muted)}
+:root :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#f3ebdd; --panel:#eadfcb; --ink:#2b1a14; --muted:#74625a; --brick:#a3341f; --yellow:#c99a2e; --line:#d8c8ae; --marble:#fbf8f2;
+  --display:"Alegreya SC", Georgia, serif;
+  --body:"Alegreya", Georgia, serif;
+  --mono:"JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#1d1412; --panel:#291c18; --ink:#f1e6d8; --muted:#b3a197; --brick:#e0674c; --yellow:#e6bd5a; --line:#40302a; --marble:#2f2420; color-scheme:dark}}
+:root[data-theme="dark"] :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#1d1412; --panel:#291c18; --ink:#f1e6d8; --muted:#b3a197; --brick:#e0674c; --yellow:#e6bd5a; --line:#40302a; --marble:#2f2420; color-scheme:dark}
+:is(#jimjam,[data-tongue="jimjam"]){background:var(--bg);color:var(--ink);font:18px/1.55 var(--body)}
+:is(#jimjam,[data-tongue="jimjam"]) .wrap{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#jimjam,[data-tongue="jimjam"]) h1,:is(#jimjam,[data-tongue="jimjam"]) h2,:is(#jimjam,[data-tongue="jimjam"]) h3{font-family:var(--display);font-weight:700;letter-spacing:.03em;margin:0;text-wrap:balance}
+:is(#jimjam,[data-tongue="jimjam"]) h1{font-size:clamp(2.4rem,6vw,3.7rem);line-height:1.05;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) h2{font-size:1.65rem;margin-bottom:12px}
+:is(#jimjam,[data-tongue="jimjam"]) h3{font-size:1.15rem;margin-bottom:6px;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) p{margin:0 0 12px;max-width:66ch}
+:is(#jimjam,[data-tongue="jimjam"]) .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) header{display:grid;gap:14px}
+:is(#jimjam,[data-tongue="jimjam"]) .day{display:grid;gap:4px;max-width:640px;background:var(--panel);border:1px solid var(--line);border-top:6px solid var(--brick);padding:16px 20px}
+:is(#jimjam,[data-tongue="jimjam"]) .day .t{font-family:var(--display);font-size:1.7rem;line-height:1.15}
+:is(#jimjam,[data-tongue="jimjam"]) .day .g{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.04em}
+:is(#jimjam,[data-tongue="jimjam"]) .wheels{display:flex;gap:6px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .wheels i{display:block;width:22px;height:22px;border-radius:50%;border:3px solid var(--yellow);margin-right:-12px}
+:is(#jimjam,[data-tongue="jimjam"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+:is(#jimjam,[data-tongue="jimjam"]) .cols > div{border:1px solid var(--line);border-radius:3px;padding:14px 16px;background:var(--marble);min-width:0}
+:is(#jimjam,[data-tongue="jimjam"]) .ex{display:grid;gap:2px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+:is(#jimjam,[data-tongue="jimjam"]) .ex .t{font-style:italic}
+:is(#jimjam,[data-tongue="jimjam"]) .ex .g{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .tbl{overflow-x:auto}
+:is(#jimjam,[data-tongue="jimjam"]) table{border-collapse:collapse;width:100%;min-width:540px;font-size:.96rem}
+:is(#jimjam,[data-tongue="jimjam"]) th,:is(#jimjam,[data-tongue="jimjam"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+:is(#jimjam,[data-tongue="jimjam"]) th{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) td.m{font-family:var(--mono);font-size:.82rem}
+:is(#jimjam,[data-tongue="jimjam"]) td.j{font-style:italic;color:var(--brick);white-space:nowrap}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 div{border:1px solid var(--line);border-radius:3px;padding:8px 10px;display:grid;gap:2px;background:var(--marble)}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 b{font-family:var(--display);font-size:1.05rem;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 span{font-size:.85rem;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .note{font-size:.93rem;color:var(--muted)}
 :root :is(#republic,[data-tongue="republic"]){
   --bg:#ebe7e2; --panel:#e0dad2; --ink:#232426; --muted:#686a6e; --accent:#a3241c; --line:#cbc4ba; --steel:#4b5a66;
   --display:"Alumni Sans", "Arial Narrow", sans-serif;
@@ -735,7 +775,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
     <h2>Where the letters came from</h2>
     <p>Five separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, and to Voth transformed.</p>
     <div class="tree">
-      <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
+      <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form), and Jimjam (Dalab's letters rounded on palm leaf and stacked in square blocks, one per syllable).</span></div>
       <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters.</span></div>
       <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
       <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
@@ -745,10 +785,10 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   </div>
 
   <div>
-    <h2>One word, fifteen roads</h2>
+    <h2>One word, sixteen roads</h2>
     <p>In order of how far each tongue drifted from English.</p>
     <div class="tbl"><table>
-      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Boruntun</th><th>Izani</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Xanadui</th></tr></thead>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Boruntun</th><th>Izani</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Xanadui</th></tr></thead>
       <tbody id="fam"></tbody>
     </table></div>
   <div>
@@ -1707,6 +1747,84 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
     </tbody>
   </table></div>
   <p class="note" style="margin-top:10px">The proverb: <i>Fayır firs, sıkayt aftır.</i> “Fire first, the scythe after.” Nothing is reaped that was not burned.</p>
+</section>
+</div>
+
+</section>
+<section id="jimjam" class="tongue" data-label="Jimjam" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Jimjam · the brick city on the lake north of The Cut</div>
+  <h1>Jamṭōkku</h1>
+  <div class="day" aria-label="A day-name">
+    <div class="wheels" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="t">Van Sanḍē · Ḍabal Ḍārkku</div>
+    <div class="g">ONE SUNDAY · THE DOUBLE DARK · BOTH MOONS NEW, THE FIRST DAY OF THE COUNT</div>
+  </div>
+  <p><b>Jamṭōkku</b>, “Jam talk”, is English as the brick-makers of the north-western lake have worn it: Dravidian in its sounds and Maya in its habits. The split that South Indian English makes, retroflex <i>ṭ ḍ</i> for English <i>t d</i> and dental <i>t d</i> for <i>th</i>, became two sets of sounds. The <i>t</i> that English swallows became a glottal stop. Every word ends open, in a vowel or a soft consonant, and the verb comes first.</p>
+  <p>Jimjam counts days for the whole crater, and its tongue is full of the count. A day is never just a day: it has a name from one moon and a number from the other, and the day-keepers read it like a horoscope.</p>
+</header>
+
+<section aria-labelledby="jimjam-snd-h">
+  <h2 id="jimjam-snd-h">From English</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Jamṭōkku</th><th>Examples</th></tr></thead>
+    <tbody><tr><td class="m">t, d</td><td class="m">ṭ, ḍ (retroflex)</td><td>ten → <i>ṭen</i>, day → <i>ḍē</i>, Tuesday → <i>Ṭyūsḍē</i></td></tr><tr><td class="m">th (θ / ð)</td><td class="m">t, d (dental)</td><td>three → <i>tirī</i>, the → <i>da</i>, Thursday → <i>Tarsḍē</i>; so tree <i>ṭirī</i> and three <i>tirī</i> differ</td></tr><tr><td class="m">t between vowels, before an unstressed one</td><td class="m">' (glottal stop)</td><td>water → <i>va'ar</i>, little → <i>li'il</i>, beetle → <i>bī'al</i>, Saturday → <i>Sa'arḍē</i></td></tr><tr><td class="m">a cluster at the start</td><td class="m">split by an echo of the next vowel</td><td>brick → <i>birikku</i>, Friday → <i>Firaiḍē</i>, flood → <i>falaḍu</i>, three → <i>tirī</i></td></tr><tr><td class="m">a final consonant (but n, m, l, r)</td><td class="m">+ u; a stop doubles</td><td>brick → <i>birikku</i>, week → <i>vīkku</i>, eight → <i>ēṭṭu</i>, much → <i>macchu</i>, five → <i>faivu</i></td></tr><tr><td class="m">l before a consonant or at the end</td><td class="m">ḷ</td><td>kiln → <i>kiḷnu</i>, gold → <i>goḷḍu</i></td></tr><tr><td class="m">w</td><td class="m">v</td><td>week → <i>vīkku</i>, war → <i>vār</i>, Wednesday → <i>Vensḍē</i></td></tr><tr><td class="m">uh (ʌ)</td><td class="m">a</td><td>Sunday → <i>Sanḍē</i>, Monday → <i>Manḍē</i>, flood → <i>falaḍu</i></td></tr><tr><td class="m">long vowels</td><td class="m">ā ē ī ō ū</td><td>moon → <i>mūn</i>, talk → <i>ṭōkku</i>, year → <i>yēr</i></td></tr><tr><td class="m">-man</td><td class="m">-van</td><td>count-man → <i>kaunṭavan</i>, a day-keeper; kiln-man → <i>kiḷnavan</i></td></tr></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="jimjam-gr-h">
+  <h2 id="jimjam-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>The verb first</h3>
+      <p>Verb, then object, then subject: the only verb-first tongue in the crater. The day-keepers say it began with the almanac's formula, which names what is to be done before who is to do it.</p>
+      <div class="ex"><span class="t">Bilḍu ṭempal da Raja.</span><span class="g">build · temple · the · Raja: the Raja builds the temple</span></div>
+    </div>
+    <div>
+      <h3>Measure words</h3>
+      <p>Nothing is counted bare. A number takes the English measure word for its kind: <i>pīsu</i> (piece) for things, <i>heḍḍu</i> (head) for beasts, <i>van</i> (man) for people.</p>
+      <div class="ex"><span class="t">ṭū-pīsu birikku · tirī-heḍḍu bī'al · fōr-van kaunṭavan</span><span class="g">two bricks · three beetles · four day-keepers</span></div>
+    </div>
+    <div>
+      <h3>Echo words</h3>
+      <p>A word with an <i>i</i>-copy before it means the thing and everything that goes with it, as English made <i>zigzag</i> and <i>ping-pong</i>. The city's own name is one.</p>
+      <div class="ex"><span class="t">ṭikku-ṭōkku · mirkeṭṭu-mārkeṭṭu · Jim-Jam</span><span class="g">chatter · all the bazaar's business · the Jam and all round it</span></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="jimjam-cal-h">
+  <h2 id="jimjam-cal-h">The days</h2>
+  <p>Krator's two sister moons do the counting. The near one, <i>Vīkku</i>, the Week, goes through its phases in seven days. The far one, <i>Tarṭīn</i>, the Thirteen, takes thirteen. Seven and thirteen share no factor, so the pair runs through 91 days before it repeats, and 4 × 91 is 364: the Count fits the year four times with one day left over.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Count</th><th>Kept by</th><th>Length</th><th></th></tr></thead>
+    <tbody><tr><td class="j"><i>Vīkku</i>, the Week</td><td>the near moon's phases</td><td class="m">7 days</td><td>names the day: the seven are the Ancients' weekday names, kept by a moon that keeps their week</td></tr><tr><td class="j"><i>Tarṭīn</i>, the Thirteen</td><td>the far moon's phases</td><td class="m">13 days</td><td>numbers the day, one to thirteen</td></tr><tr><td class="j"><i>Kaunṭu</i>, the Count</td><td>both: every pair once</td><td class="m">91 days</td><td>each day has its own name, such as <i>Fōr Vensḍē</i></td></tr><tr><td class="j"><i>Yēr</i>, the year</td><td>the sun, at the temple arch</td><td class="m">365 days</td><td>four seasons of 91 days, and the Day Outside</td></tr><tr><td class="j"><i>Raunḍu</i>, the Round</td><td>the Count and the year back in step</td><td class="m">91 years</td><td>91 and 365 share no factor</td></tr><tr><td class="j"><i>Lōṅ Kaunṭu</i>, the Long Count</td><td>days since the Flood</td><td class="m">open</td><td>the only running count since the Ancients fell</td></tr></tbody>
+  </table></div>
+  <h3 style="margin-top:22px">The Week's seven names</h3>
+  <div class="grid7"><div><b>Sanḍē</b><span>Sunday · new: the Week dark</span></div><div><b>Manḍē</b><span>Monday</span></div><div><b>Ṭyūsḍē</b><span>Tuesday</span></div><div><b>Vensḍē</b><span>Wednesday · full</span></div><div><b>Tarsḍē</b><span>Thursday</span></div><div><b>Firaiḍē</b><span>Friday</span></div><div><b>Sa'arḍē</b><span>Saturday</span></div></div>
+  <h3 style="margin-top:22px">The Thirteen's numbers</h3>
+  <div class="grid7"><div><b>1</b><span>van</span></div><div><b>2</b><span>ṭū</span></div><div><b>3</b><span>tirī</span></div><div><b>4</b><span>fōr</span></div><div><b>5</b><span>faivu</span></div><div><b>6</b><span>siksu</span></div><div><b>7</b><span>sevan</span></div><div><b>8</b><span>ēṭṭu</span></div><div><b>9</b><span>nain</span></div><div><b>10</b><span>ṭen</span></div><div><b>11</b><span>ilevan</span></div><div><b>12</b><span>ṭuvelvu</span></div><div><b>13</b><span>tarṭīn</span></div></div>
+  <h3 style="margin-top:22px">Days that matter more</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Jamṭōkku</th><th>English</th><th>When</th></tr></thead>
+    <tbody><tr><td class="j">Ḍabal Ḍārkku</td><td>the Double Dark</td><td><i>Van Sanḍē</i>: both moons new, and both their shadows on the giant's face. Once every 91 days; it falls a day later in the year each year.</td></tr><tr><td class="j">Ḍē Auṭsaiḍu</td><td>the Day Outside</td><td>between one year and the next, in no count: no work, no contracts, no oaths.</td></tr><tr><td class="j">Gerēṭṭu Raunḍu</td><td>the Great Round</td><td>the Double Dark on the summer solstice, the sun setting in the arch: once in 91 years, the end of a Round.</td></tr><tr><td class="j">Nyū Faiyar</td><td>the New Fire</td><td>at the Great Round every kiln and hearth goes out and is relit from the temple.</td></tr></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="jimjam-ltr-h">
+  <h2 id="jimjam-ltr-h">Letters</h2>
+  <p>Jimjam's caravan clerks learned Dalab's Latin letters, then wrote them with a stylus on palm leaf. A straight stroke along the grain splits a leaf, so every letter grew round, as the scripts of South India did. Clerks then stacked the letters of each syllable into one square block, the way the day-glyphs are drawn, so a line of Jamṭōkku reads as a row of little seals.</p>
+  <p class="note">The letters are not drawn on this page yet.</p>
+</section>
+
+<section aria-labelledby="jimjam-nm-h">
+  <h2 id="jimjam-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Origin</th></tr></thead>
+    <tbody><tr><td class="j">Jimjam</td><td>an echo word: <i>jam</i> with its <i>i</i>-echo before it, “the Jam and all round it”. The Jam is the old city, built on the bank of wreckage the Flood left.</td></tr><tr><td class="j">Jamṭōkku</td><td>Jam talk: the tongue.</td></tr><tr><td class="j">the Raja</td><td>the oldest title, older than the tongue: English <i>rajah</i>, kept unchanged.</td></tr><tr><td class="j">Falaḍu</td><td>the Flood: the day the Ancients' dams burst and the waters came. Year one of the Long Count.</td></tr><tr><td class="j">kaunṭavan</td><td>count-man: a day-keeper, who reads a birth-day for what a person is fit for.</td></tr><tr><td class="j">Vīkku, Tarṭīn</td><td>the Week and the Thirteen: the two moons, named for what they count.</td></tr></tbody>
+  </table></div>
 </section>
 </div>
 
@@ -2992,11 +3110,12 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
    ["riders","Tł'aai","the Beast Rider tribes","Mongol and Apache sounds with a Star Wars edge: ejectives, tł, nasal vowels. Izani letters taken for trade, with four marks added.","Tł'aai"],
    ["desert","Dasrī & Tabist","the desert nomads and the abyssal people","Cousins as close as Spanish and Italian: one gone Arabic, one Berber, both full of Yuni words. A caravan hand and painted salt marks, both from Yuni's letters.","Dasrī"],
    ["scyvoi","Boruntun","the Scyvoi of the crater drylands","Turkish with a Jurchen edge: vowel harmony, endings stacked on endings, f for p and h for k. No letters: clan brands on hide and granite.","Borunsa"],
+   ["jimjam","Jamṭōkku","Jimjam, the brick city","Dravidian sounds and Maya habits: retroflex t and d, glottal stops, the verb first. Seven day-names and thirteen numbers from two moons.","Jimjam"],
    ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
   ];
   const cards=document.getElementById("cards");
   cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
-  const FAM=[["sun","sun","sun","san","sun","sun","są","san","son","san","tzun","sunu","ṣunum","ṣan","aṣan","sã"],["star","star","star","sta","tar","stjar","istar","sıtar","istar","astar","tzhar","stāru","ṣṭārum","istār","tastart","sitār"],["ship","ship","ship","shippo","ship","šip","ship","şip","xipa","sip","sip","šippu","šippum","šib","ašif","śip"],["war","war","war","wo","wa","vor","baar","vor","guar","ouar","vorh","māru","wārum","wār","awar","wār"],["gold","gold","gold","gol'","gol","golt","gol","golt","golda","gould","gol","guldu","guldum","jūld","aguld","ghol"],["fire","fire","fire","foya","faya","fajr","paar","fayır","fira","phyr","vairh","pēru","pērum","fāyar","afayar","phāyar"],["thing","thing","thing (dental th)","ting","ting","ting","łį","sin","tiñ","thing","thing","šingi","šingim","thinj","atin","thĩ"],["the lab","the lab","the lab","da labbo","Dalab","labet","","lap","de laba","","","ze-labbu","ze-labbum","al-Labbū","alabbu",""]];
+  const FAM=[["sun","sun","sun","san","sun","sun","są","san","son","san","san","tzun","sunu","ṣunum","ṣan","aṣan","sã"],["star","star","star","sta","tar","stjar","istar","sıtar","istar","saṭār","astar","tzhar","stāru","ṣṭārum","istār","tastart","sitār"],["ship","ship","ship","shippo","ship","šip","ship","şip","xipa","shippu","sip","sip","šippu","šippum","šib","ašif","śip"],["war","war","war","wo","wa","vor","baar","vor","guar","vār","ouar","vorh","māru","wārum","wār","awar","wār"],["gold","gold","gold","gol'","gol","golt","gol","golt","golda","goḷḍu","gould","gol","guldu","guldum","jūld","aguld","ghol"],["fire","fire","fire","foya","faya","fajr","paar","fayır","fira","faiyar","phyr","vairh","pēru","pērum","fāyar","afayar","phāyar"],["thing","thing","thing (dental th)","ting","ting","ting","łį","sin","tiñ","tiṅ","thing","thing","šingi","šingim","thinj","atin","thĩ"],["the lab","the lab","the lab","da labbo","Dalab","labet","","lap","de laba","da labbu","","","ze-labbu","ze-labbum","al-Labbū","alabbu",""]];
   document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
 
   const secs=[...document.querySelectorAll("section.tongue")];
@@ -3013,17 +3132,17 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
 
   /* phrasebook: [key, tongue, renderer, wrapper class] */
-  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""]];
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["jimjam","Jamṭōkku","none",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""]];
   const PH=[
-   {en:"Greetings.",nt:"Each people greets by what it values: the Sun, the day, the claw, light in the dark.",r:{
-    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"]}},
-   {en:"Thank you.",nt:"",r:{vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],scyvoi:["Sankyu.","thank-you"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"]}},
-   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],scyvoi:["Markıt verde?","market · where-AT"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"]}},
-   {en:"I am a stranger here.",nt:"In Hykkousik, I is y, from the same change that made isles into Ys.",r:{vothic:["Ai chhensharh hirh.","I · stranger · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"]}},
-   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],scyvoi:["Vatır, filis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"]}},
-   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hau makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],scyvoi:["Hav maç?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"]}},
-   {en:"Go away!",nt:"",r:{vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],scyvoi:["Getavt!","get out"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"]}},
-   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Dagod no ear yu.","the-God · not · hear · you"],republic:["Serviz gir sidizan.","service · gives · citizen"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"]}},
+   {en:"Greetings.",nt:"Each people greets by what it values: the Sun, the day, the claw, light in the dark. Jamṭōkku puts the verb first.",r:{
+    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],republic:["Gut dej.","good day"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"]}},
+   {en:"Thank you.",nt:"",r:{vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],jimjam:["Teṅkyū.","thank-you"],republic:["Tak.","thanks"],scyvoi:["Sankyu.","thank-you"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"]}},
+   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],republic:["Ver er marktet?","where · is · market-the"],scyvoi:["Markıt verde?","market · where-AT"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"]}},
+   {en:"I am a stranger here.",nt:"In Hykkousik, I is y, from the same change that made isles into Ys.",r:{vothic:["Ai chhensharh hirh.","I · stranger · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],republic:["Aj er strenžr her.","I · am · stranger · here"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"]}},
+   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],republic:["Vatr, plis.","water, please"],scyvoi:["Vatır, filis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"]}},
+   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hau makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],jimjam:["Hau macchu?","how much"],republic:["Hau mač?","how much"],scyvoi:["Hav maç?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"]}},
+   {en:"Go away!",nt:"",r:{vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],jimjam:["Gō avē!","go away"],republic:["Go vej!","go away"],scyvoi:["Getavt!","get out"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"]}},
+   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Dagod no ear yu.","the-God · not · hear · you"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],republic:["Serviz gir sidizan.","service · gives · citizen"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"]}},
   ];
   const toAshTxt=t=>t.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
   const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -3039,7 +3158,7 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
       const src=k==="ash"?p.r.zeijani:p.r[k];
       const said=k==="ash"?toAshTxt(src[0]):src[0];
       const tongue=k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k;
-      const chip=rd==="none"?`<span class="chip none">${k==="scyvoi"?"never written: brands only":"seldom written"}</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
+      const chip=rd==="none"?`<span class="chip none">${k==="scyvoi"?"never written: brands only":k==="jimjam"?"palm-leaf blocks: not drawn yet":"seldom written"}</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
       const gloss=k==="ash"?src[1].replace(/-SUBJ/g,"-SUBJ, no -m"):src[1];
       return `<tr><td class="lg"><button type="button" data-go="${tongue}">${esc(name)}</button></td><td class="rm">${esc(said)}</td><td class="gl">${esc(gloss)}</td><td>${chip}</td></tr>`;
     }).join("");
