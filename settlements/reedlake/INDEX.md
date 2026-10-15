@@ -48,9 +48,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90w-rl-lake.js` | 3 | the lake (core/water) (1) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91a-rl-budget.js` | <1 | budgets: the composite village and the great mud (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-reedlake-tags.js` | 2 | REG into core/tags (KTAGS.page), Reed Lake's spellings onto the vocabulary |
+| `92-camera.js` | 1 | what stays of the camera on core/host: ui, uiButton, setView, Labels |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `94-rl-anim.js` | <1 | animation: the troughs' and wallows' water map d (1) |
+| `99-start.js` | 2 | the take: Reed Lake on core/host (KHOST.take) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
