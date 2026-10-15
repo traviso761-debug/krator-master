@@ -24,7 +24,8 @@ front view and an eye-level view in the view menu, every row has an aerial, and 
 * `AGENT-BRIEF.md`: the brief the building agents worked from (helper conventions, materials, verification).
 * `KNOWN_ISSUES.md`: what is weak or unfinished. `NOTES.md`: round by round.
 
-Dev tools (project rule): inspector (hover: name · class · tags), polygon tool, walk mode (F), labels.
+Dev tools (project rule): core/host's (since 2026-10-15): inspector (I hover, a click: the core/tags record), marks (P),
+minimap (M), walk mode (F), the pin (double-click); and the page's labels.
 
 ## Textures (the material library)
 

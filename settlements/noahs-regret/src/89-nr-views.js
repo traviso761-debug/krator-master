@@ -58,7 +58,7 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
 
  V['Night: the pirate port']=nrV([330,170,-380],[-10,10,30],{night:true});
  return V;}
-// ---------------------------------------------------------------- where a point is (the inspector, the HUD)
+// ---------------------------------------------------------------- where a point is (the inspector, the stats panel)
 function nrDeckOf(y){const L=NR.L;if(y<L.D[0])return y<L.MEZZ?'the holds':'the hold mezzanine';if(y>=L.TOP-.05)return 'the top deck';for(let d=3;d>=0;d--)if(y>=L.D[d]-.05)return 'D'+(d+1);return '?';}
 function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
  /* the fore first: the bridge, the bridge house, the terraces, the plaza */
@@ -72,7 +72,6 @@ function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
  if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?(Math.abs(q.t)<NR.FORE.t?'the forecastle':'the outer promenade'):'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
   else if(a>=NR.W.COR)what='the corridor';else{const C=NR.CORES.find(c=>Math.abs(q.t-c.t)<4);what=C?'stair core '+C.id:'the service core';}}
  return deck+(what?' · '+what:'')+'  (t '+q.t.toFixed(0)+', s '+q.s.toFixed(1)+')';}
-function nrHudWhere(){const p=WALK.on?camera.position:ctl.target;return nrWhere(p);}
 function nrInsideHull(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);return q.inRing&&Math.abs(q.s)<NR.W.PONT+1&&h[1]>-1&&h[1]<NR.L.TOP+2;}
 // ---------------------------------------------------------------- the walk floors: every level under a point (hull y), as world y
 function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR.W,F=[];
