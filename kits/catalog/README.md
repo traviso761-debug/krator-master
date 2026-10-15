@@ -135,7 +135,9 @@ FURN({
 - **Frame.** The origin is the footprint centre at the bottom of the piece, +z is
   the front. Every piece is authored in this floor frame. `anchor` says where it
   mounts: `floor` stands on the floor; `wall` stands at floor level with its back
-  (local z = -d/2) flush to a wall; `ceiling` hangs, top at the ceiling
+  (local z = -d/2) flush to a wall, except the hung roles (`FURN_WALL_HUNG`: art at eye height; friezes,
+  pennants, scrolls, banners, tapestries and wall rugs with their top near the wall's top), which `furnAnchorY`
+  lifts; `ceiling` hangs, top at the ceiling
   (`furnAnchorY` lifts it to `ceilingY - h`); `surface` stands on a table or shelf
   top (`surfaceY`). A piece authored off-centre calls `F.shift(-cx, -cz)` first.
 - **Rooms** use the `kits/interiors/SPEC.md` room kinds (`hall bedroom kitchen

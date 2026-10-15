@@ -368,8 +368,11 @@ function FURN(o) {
 /* the y at which to build a furniture piece so it sits on its anchor:
    at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
 /* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
-   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
-const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+   friezes and pennant strings near the top of the wall, and the cloths hung from a rod or hook (scrolls, banners,
+   tapestries, wall rugs: the kit draws them from y 0, rod at the top) with their top there too, so in a room taller
+   than the cloth they leave the floor; a low room keeps them down to the floor. Everything else on a wall stands on
+   the floor (the painted hanging stands on its own poles). */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top' };
 function furnWallHung(A) {
   if (!A || A.anchor !== 'wall') return null;
   if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
