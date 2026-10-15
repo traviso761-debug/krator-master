@@ -1,108 +1,108 @@
 {
  "pages": {
   "biomes/crater-drylands/dist/crater-drylands.html": {
-   "bytes": 3612037,
-   "sha256": "09ce2b185da637d092471196a21ca4aa6dca107ccac642f0a7f5ebc7dc3d8787"
+   "bytes": 3612555,
+   "sha256": "2fcf58a3019f294e16c7757983389a91f6dc128404615a4d73d7c865a8251311"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 6089250,
-   "sha256": "666fc89023b8a7aa2103d221657388a1b286fb9a8361bedc02ea9f839c1054dd"
+   "bytes": 6089768,
+   "sha256": "9a6e8d123b740edbc213feada3499a3ec30140232da145e9a1392a96aa2dcfea"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
-   "bytes": 4262087,
-   "sha256": "40966499a20801034c72798644010dd4b39a83c467c856d5c804dd721180cbd6"
+   "bytes": 4262605,
+   "sha256": "30057cebf96e86a479546cc3b3cadacd034a010f67d46c5c373b203207bdd5c6"
   },
   "biomes/ehighlands/dist/ehighlands.html": {
-   "bytes": 1717218,
-   "sha256": "b9783baeed6ab5b28bf3ef191a1a7e08cbb561d51077d239e9cd796348622852"
+   "bytes": 1717736,
+   "sha256": "88fb4dfddbb13b55b5835b6b7db6457e7e36062b32295ba927cf511e88525b09"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 611899,
-   "sha256": "e8fad7d87527d1000d94a7de6f99e890fe1220d9c4dffac89212b98ea8570395"
+   "bytes": 612417,
+   "sha256": "28158a3bfd59d453435f5a8c1e281d3f858fbab93632df9b3be495816855763a"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 3827026,
-   "sha256": "3e6fea1874d7c79bccbe365e10f44fa94853a556bc94ddc63062a83312cf46de"
+   "bytes": 3827544,
+   "sha256": "5538021d87314bd64685ca82a8123b5f7e97a5cf074e7b176d256b5e4f607c13"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 5583680,
-   "sha256": "200c24ab473e3adac852099da2299eb3bc2d16301ee2c080df77e788172c7426"
+   "bytes": 5584198,
+   "sha256": "e9151bcb8d9d7c7d7da819c70e22d31833e8e122aee80c117ead07b4a2b05c1c"
   },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 6537198,
-   "sha256": "292caed0760803c43332eed9f98e3951d8ff0c7ff5e911bfa0fce02c77056839"
+   "bytes": 6537716,
+   "sha256": "7c789c836c30b784384ef253281e57cae6bf2f3c5c892e7c490e55ccb2106713"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 5735975,
-   "sha256": "090c58862715d5193e39af2e6ac738695536498f02d16cb19a8c5d8fbf0ef5ad"
+   "bytes": 5736493,
+   "sha256": "dbe9a5d1cd7aa6afa7854aa237654974adb3e76709f7206934f80ee57a98d230"
   },
   "biomes/rift/dist/rift.html": {
-   "bytes": 5749877,
-   "sha256": "c3dc99460eb7c113961dee8d607c7601504f78f578989da07e6ad212e9e829e4"
+   "bytes": 5750395,
+   "sha256": "497b0d27795227d176a44558fd50fa4387958e40e0bb82481c11ceefb2ce328e"
   },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 4284792,
-   "sha256": "9cd72b482fb40f26543a8e0dff6e79fb8a03448ec120ac8336b6c1c840658478"
+   "bytes": 4285310,
+   "sha256": "2f851ed95761fb7139900487d47c542afba0901a7fb94bc0922a5845f687e0fd"
   },
   "biomes/shighlands/dist/shighlands.html": {
-   "bytes": 1668688,
-   "sha256": "d75ebf7734f8477ca4297e3d039d4da75c598e4772450826268a2ed66233ba52"
+   "bytes": 1669206,
+   "sha256": "8acbb2ccbcdcbdc2d32cb594c829cc6b4376e7847824f8a625c5ed84ff353b23"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 5409058,
-   "sha256": "bb61310df41e195e9603fc438427b4a4c5fe19e6527c71e936b1548f7ea4f375"
+   "bytes": 5409576,
+   "sha256": "a643cd11358c01f12edcbd36efd4f847272f12113f7661a2f3712ff6586222c9"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 5679470,
-   "sha256": "86f71e5e22a4a8ff294590266570ac8de486ab8ad25d316e1e599e2313cfc28a"
+   "bytes": 5679988,
+   "sha256": "90cdfd4aef12fc1b442506ca52e0921330bddcfe9acb7eb8a58660d83d01a28c"
   },
   "biomes/throne/dist/throne-ash.html": {
-   "bytes": 498072,
-   "sha256": "cc4e9aa6cf8ef20ce0092c0b41968306c00bcffcf12215633d294911dbb70ba3"
+   "bytes": 498590,
+   "sha256": "0c8002d224975ebe41ca0c3a7d52ceacf6575f21a3a47df72a3846679508137a"
   },
   "biomes/throne/dist/throne-caldera.html": {
-   "bytes": 519106,
-   "sha256": "4476817676576253473f66914c27e438ffb8f93d76d5a535bceec8f5faee3fd6"
+   "bytes": 519624,
+   "sha256": "1a2cc00830889d50f590073ebb1dd4a0d5ba794fc31dca82fcf28eca8cd0fc59"
   },
   "biomes/throne/dist/throne-cloud.html": {
-   "bytes": 512812,
-   "sha256": "6724e80bbd18cdb1c58bc64ca189f069d26a4462ad45de4028335087e2a36772"
+   "bytes": 513330,
+   "sha256": "87617b44d569ef25cc986a33907e520c2bb58a67f8280042e60ba43f28401929"
   },
   "biomes/throne/dist/throne-frontier.html": {
-   "bytes": 620126,
-   "sha256": "7166130c5d0cdb18c884e629f70d38821299c6d48132c0a445831264bf452687"
+   "bytes": 620644,
+   "sha256": "319fd21dddbb870681928a29304d61804ab16360357af8e57f7b5e960c8f4e62"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 522949,
-   "sha256": "6bb13bd06f4bdaf16dd40b11cdb143d03ea3ed6f19c0906aea6ff55041072eec"
+   "bytes": 523467,
+   "sha256": "00b4a02837598ff70f0a007d410ced956f3bbc9dd1c1df268a4fd4af7f7090f1"
   },
   "biomes/throne/dist/throne-isle.html": {
-   "bytes": 527036,
-   "sha256": "e09d5d28d7a209b7e1eaa7c34a26862e79878b922cb1a8b696dfdc110064d68f"
+   "bytes": 527554,
+   "sha256": "91486754a63991a09e9bfeca32c531b14062e9fe6d3aa86f48dc1fab82196b5b"
   },
   "biomes/throne/dist/throne-kipuka.html": {
-   "bytes": 584835,
-   "sha256": "85578b65ebf851ae6e50dfa599fd3ec6049f86967fbcd2d80728defcffdd3075"
+   "bytes": 585353,
+   "sha256": "6db3f095b9eea645f9cc3e6d4bce05591dba76c042943cabd1ed2a323caca297"
   },
   "biomes/throne/dist/throne-savanna.html": {
-   "bytes": 450271,
-   "sha256": "a1b3e28a4c70cdf604e4308ede7447db9b65fe1da5ff26be5c49528b981261cd"
+   "bytes": 450789,
+   "sha256": "20e09850927f57d82457b6b0b8ccd39a1223aac125b39649b79e5e561a31f0dd"
   },
   "biomes/throne/dist/throne-tube.html": {
-   "bytes": 472290,
-   "sha256": "791880cf6e1528e92b2d005fdf9a743c854f78d9ca5195813c90fbc0b503c97b"
+   "bytes": 472808,
+   "sha256": "d6b54918a335b47b27be7256d74207390662e4a5ecf0ff9d5d1bf43b4f92644b"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 526601,
-   "sha256": "46062d467ddaf762588e9dad86499b1c606bd5a99e2a8d994be00643a87b7f22"
+   "bytes": 527119,
+   "sha256": "9261be357aa298a4bb198dfb2139feafbd60353ff727e4fd795cd266ee0344cf"
   },
   "biomes/throne/dist/throne.html": {
-   "bytes": 469491,
-   "sha256": "c15ab8fbc8c8cb7c137f44c7dc6444c34db8016e9ada14254b466cdb1b06811c"
+   "bytes": 470009,
+   "sha256": "3dab3b8e97c93497836609a2083a96451e5565daebff98fbdb600e8bbe9e1c65"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 5223903,
-   "sha256": "103be4aa782540582779de1669f818022359ed637d002eaee19a5e7d76d46371"
+   "bytes": 5224421,
+   "sha256": "550e3889027d3a18ab25104dd22c610087cdfd1b7d70047eeba44c76c0407be5"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 179086,
@@ -353,12 +353,12 @@
    "sha256": "7c1d40626586e4a74f5f65daaf0520abcaed710b8003f351362f93381afcdb1b"
   },
   "settlements/girder/girder-hero.html": {
-   "bytes": 9532996,
-   "sha256": "69474709210212c457a177d456e70bfdabd798937fbc4935273bcdab26c23b18"
+   "bytes": 9682683,
+   "sha256": "d5e2e1bcd25dfb8eba8450a3ad8327fe6113e49b809723e80b08cabe98791d8d"
   },
   "settlements/girder/girder.html": {
-   "bytes": 1474803,
-   "sha256": "7815e5fbb925a2c8845a6e3fa4db878140db7c88d7ab6bd9f0f78ae66fcd62e8"
+   "bytes": 1624490,
+   "sha256": "60ff397d3205b428bd1287d010f5d42a6ad15946024f49df8a42bc389c1ee508"
   },
   "settlements/highlands/dist/highlands.html": {
    "bytes": 1652948,

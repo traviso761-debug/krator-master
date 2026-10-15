@@ -37,6 +37,9 @@ const name=fn=>fn.khostName||fn.name||'anonymous';
 // run one subscriber: a throw is reported once, with its stack, and the subscriber is skipped from then on
 function call(fn,label,a,b){if(DEAD.has(fn))return;try{fn(a,b);}catch(e){DEAD.add(fn);K.err(label+' '+name(fn)+' threw and is skipped from now on: '+((e&&e.stack)||e));}}
 K.dead=()=>DEAD.size;
+// a module that needs the take (93 inspect, 94 marks, 96 pictures, 97 minimap, 98 edit, 99 cutaway): fn(H) once the panel and
+// the probe have it, or at once when it loads after the take
+const TAKERS=[];K.onTake=function(fn){if(K.taken&&K.host)fn(K.host);else TAKERS.push(fn);return fn;};
 
 function param(k){const m=new RegExp('[?&#]'+k+'=([^&#]*)').exec(location.search+location.hash);return m?decodeURIComponent(m[1]):null;}
 K.param=param;
@@ -60,6 +63,7 @@ K.take=function(o){
  K.go=function(v){if(!(v in H.views))return false;if(o.onView)o.onView(v);let at=H.views[v];if(typeof at==='function')at=at();if(!at)return false;C.setView(at[0],at[1],at[2],at[3],at[4],at[5]);if(K.viewShown)K.viewShown(v);return true;};
  if(K.panelTake)K.panelTake(H);
  if(K.probeTake)K.probeTake(H);
+ for(const f of TAKERS){try{f(H);}catch(e){K.err('take '+(f.name||'module')+': '+((e&&e.stack)||e));}}
  // ---------------------------------------------------------------- the first view
  const first=o.start||Object.keys(H.views)[0];if(first)K.go(first);
  // ---------------------------------------------------------------- the frame

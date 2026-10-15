@@ -8,7 +8,7 @@
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#1a1720;
     font:12px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#e8e2d6}
   canvas{display:block}
-  #ui{position:fixed;left:10px;top:10px;z-index:10;max-width:250px;max-height:96vh;overflow-y:auto}
+  #ui{max-width:290px}   /* inside core/host's bar (92-host-panel.js adopts it) */
   #ui h1{font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 8px;
     font-weight:600;color:#d8c89a;text-shadow:0 1px 3px #000}
   #ui button{display:inline-block;margin:0 4px 4px 0;padding:5px 9px;cursor:pointer;
@@ -52,32 +52,18 @@
 <body>
 <div id="load">Raising the ruin…</div>
 <div id="ui">
-  <h1>Girder</h1>
-  <div id="views"></div>
-  <button id="walkToggle">Walk: Off (G)</button>
-  <div id="hint">Drag&nbsp;= orbit · Wheel&nbsp;= zoom · WASD/QE&nbsp;= pan · Shift&nbsp;= fast · G&nbsp;= walk<br>Click anything to print its coordinates (x, z and height).</div>
+  <button id="walkToggle">Walk: Off (F)</button>
+  <div id="hint">Girder on core/host: I hovers the inspector, a click inspects, P marks, B edits, X cuts a tower open (] [ storeys), M the map, F walks.</div>
   <div id="dnControls">
     <div id="dnLabel"><span>Time of day</span><span id="dnHourOut">10:00</span></div>
     <input type="range" id="dnSlider" min="0" max="24" step="0.1" value="10">
     <button id="dnPause">Pause</button>
   </div>
-  <button id="inspectToggle">Inspector: Off</button>
   <button id="pathvizToggle">Paths: Off</button>
   <select id="pathvizSel"></select>
-  <div>
-    <button id="polyToggle">Mark polygon</button>
-    <button id="polyUndo">Undo point</button>
-    <button id="polyClear">Clear</button>
-  </div>
-  <div id="polyBox">
-    <div id="hint">Click any surface to drop a corner, in order. The box below is a ready-to-paste [[x,y,z],...] array; click it to select all.</div>
-    <textarea id="polyOut" readonly onclick="this.select()"></textarea>
-  </div>
 </div>
-<div id="hud"></div>
-<div id="walkHint">WALKING · W/S forward/back · A/D strafe · drag or click-to-lock to look · Shift run · Space jump · G back to the fly camera</div>
+<div id="walkHint">WALKING · W/S forward/back · A/D strafe · drag or click-to-lock to look · Shift run · Space jump · F back to the fly camera</div>
 <div id="walkCross"></div>
-<div id="inspectTip"></div>
 <div id="errs"></div>
 <script>
 (function(){

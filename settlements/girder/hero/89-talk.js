@@ -57,7 +57,7 @@ var talkCam = new THREE.PerspectiveCamera(28, 1, 0.05, 60);
   document.body.appendChild(me); document.body.appendChild(tag); document.body.appendChild(box);
   var hint = document.getElementById('hint');
   if(hint) hint.innerHTML = 'Right click&nbsp;= walk · Double right click&nbsp;= run · Right click someone with a speech bubble&nbsp;= talk · ' +
-    'Left drag&nbsp;= orbit · Wheel&nbsp;= zoom · H&nbsp;= free / follow camera · G&nbsp;= walk';
+    'Left drag&nbsp;= orbit · Wheel&nbsp;= zoom · H&nbsp;= free / follow camera · F&nbsp;= walk';
 })();
 var heroTag = document.getElementById('heroTag'), talkTag = document.getElementById('talkTag'), talkBox = document.getElementById('talkBox');
 var talkWho = document.getElementById('talkWho'), talkSay = document.getElementById('talkSay'),

@@ -37,3 +37,11 @@ in the capture phase, so the build's inspector and polygon tool never see an Alt
 
 Without the server (a `file://` page, the gallery) a queued note is copied to the clipboard as a JSON block
 to paste into chat.
+
+## The host's save route
+
+A page on `core/host` (`core/host/README.md`) saves through the same server: POST `/__save` with `{kind: 'edits' | 'marks',
+page, data}` writes `data` to `<build>/edits.json` (a `core/edits` log, the editor's Save, B) or `<build>/marks.json` (the
+marks, P), the build being the folder with `build.py` that holds the page. A body that is not a `krator-edits` or
+`krator-marks` object, or a page outside a build, is refused (400). `core/host/host.py` inlines `edits.json` at the next
+build (`KHOST_EDITS`); the marks are read by the page as it loads. Opened without the server, both stay in the browser.

@@ -83,7 +83,7 @@ K.foldLoad=function(key){foldKey='khost-panels:'+key;let s={};try{s=JSON.parse(l
 
 const bar=K.panel('bar','Krator');
 const h1=el('h1',{text:doc.title||'Krator'},bar),hint=el('div',{cls:'k'},bar);
-const ui=K.ui=el('div',{id:'ui'},bar);
+const ui=K.ui=$('ui')||el('div',{id:'ui'},bar);if(ui.parentNode!==bar){bar.appendChild(ui);ui.classList.add('khost-adopted');}   // a page's own #ui joins the bar
 const rowLayers=el('div',{cls:'row',id:'khost-layers'},bar),rowTime=el('div',{cls:'row',id:'khost-time'},bar),rowExport=el('div',{cls:'row',id:'khost-export'},bar);
 const legend=el('div',{id:'legend',cls:'k'},bar);
 [rowLayers,rowTime,rowExport,legend].forEach(r=>r.style.display='none');
