@@ -25,9 +25,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   it, the trays stop at the cut (the last is the roof), no saucer stands or falls; `ysWallHole` cuts the way-in pods'
   holes through the drums; with `YS_CUT` set the ground disc, apron, rubble, moss, trees and figures are left out (under
   the sea). The kit's own paths are untouched.
-- `92-camera.js` (from `settlements/iziz/src`): the Ys standard pack: a seventh preset element is the hour,
-  `n` toggles noon/night, the camera and walker stay above the sea, the inspector names ground and sea, and
-  the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
+- `92-camera.js` (from `settlements/iziz/src`): since 2026-10-15 both are on core/host (Iziz's keeps ui, uiButton, setView
+  and Labels); Ys's keeps, beyond that, a preset's seventh (the hour), eighth (the compass) and ninth (Inside) elements,
+  the inspector's words (ground and sea named), Inside, the Compass, regAt and the ray and canvas the city's editor uses,
+  and the walker's floor on the sea (YS_WALK). `n` noon/night is a take key (99-start.js). Back-port the compass to the
+  standard pack once Ys is on `main`.
 
 - The Highlands kit (`70-hl-tex`, `71-hl-mat`, `71b-hl-motif`, `72-hl-helpers`, `73-hl-carve`, `74-rep-dwell`, from
   `settlements/highlands/src`, Oct 5 2026) is byte-identical on disk but RENAMED AT BUILD TIME (`VENDOR_SUBST` in
@@ -37,6 +39,22 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   re-vendor is a plain copy; a new name clash shows up as the build's duplicate-name error.
 
 ## Open
+- [x] (2026-10-15) Ys on core/host (ROADMAP.md section 10, step 5; core/host/README.md), all three pages (the city, the kit
+      sheet, the mock): host.FULL without core/space (the vendored biome core's scatter takes its grid when the module is
+      on the page) and without core/edits (the city's editor is its own). The camera, the controls, the walk (F; on the
+      sea the feet on the surface), the frame loop, the panel, the probe's frame, the inspector (I hover, a click: the
+      words 92-camera.js gives, the ground and the open sea named), marks (P, they replace the polygon tool), the minimap
+      (M) and the cutaway (X: every building with rooms, its storeys the rooms' floors; 1256 units in the city, 83 on the
+      kit sheet) are core/host's; `src/99-start.js` is the take, FRAME_HOOKS before the camera as before. REG is read into
+      core/tags by `src/91t-ys-tags.js` (city 2435 records, kit 98, mock 5; 0 unknowns, no building without a culture or
+      types). The city's editor takes a click while it is open (o.click) and lets go of the camera's Q / E (its keydown
+      now registers in KHOST.onTake). The compass rose moved left of the stats panel. Proof: verify.py --assert unchanged
+      on the three pages (every invariant as before; triangles and draw calls equal to the baseline: city 29,488,786 / 186,
+      kit 4,260,836 / 99, mock 561,096 / 58); a scene census at four views of each matches the old pages exactly (each old
+      page matches itself run to run too); hostcheck, the cutaway, the sea walk, the sea's name and the editor's click and
+      keys exercised headless on the city.
+- [ ] (2026-10-15) The city editor's live buildings are not core/tags records (91t-ys-tags.js reads REG once, before the
+      take): the host's inspector and minimap do not see a building placed live, and a deleted one keeps its record.
 - [x] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
       blocks, the strip and the shore still has gaps where nothing stands (the lanes' quarters that refused a villa, the
       edges of the land blocks toward the water). A pass with the small pool, as the strip's ring houses are placed.
