@@ -30,11 +30,27 @@ if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
         subprocess.call([sys.executable, _cp, '--quiet', HERE]) != 0:
     sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 
-# the biome kits this region grows, each a block of its own fragments in order. A kit's 41-*-globals (hyperjungle's
-# top-level helper names) goes before every kit: it declares names at the top level, the others keep theirs local.
-# the biome kits this region grows (47-world-kits.js), each a block of its own fragments in order. None yet: the Ring Sea
-# isles kit (biomes/ringisles) joins with the flora step (PLAN.md, P3b), with the kits it borrows from before it.
-KITS = {}
+# the biome kits this region grows (47-world-kits.js), as biomes/ringisles/build.py loads them: the geyser kit's layout,
+# then each lending kit as one block (their fragments in order: BIO.kit .. BIO.kitEnd), then the Ring Sea isles kit
+# itself (it grows the lenders' trees in their own registries; 66-biome-ringisles-world.js presents it to the world).
+KIT_FRAGS = (
+    [('biomes/geyser/src', '46-biome-geyser-layout.js')]
+    + [('biomes/throne/src', f) for f in ('46-biome-throne-flows.js', '50-biome-throne-species.js', '55-biome-throne-trees.js',
+                                          '60-biome-throne-floor.js', '70-biome-throne.js')]
+    + [('biomes/swbay/src', f) for f in ('50-biome-swbay-species.js', '55-biome-swbay-trees.js', '60-biome-swbay-floor.js',
+                                         '65-biome-swbay-dress.js', '70-biome-swbay.js', '75-biome-swbay-fauna.js')]
+    + [('biomes/eastabyss/src', f) for f in ('50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
+                                             '65-biome-eastabyss-dress.js', '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js')]
+    + [('biomes/sedesert/src', f) for f in ('50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
+                                            '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js')]
+    + [('biomes/geyser/src', f) for f in ('50-biome-geyser-species.js', '55-biome-geyser-trees.js', '57-biome-geyser-sinter.js',
+                                          '60-biome-geyser-floor.js', '65-biome-geyser-show.js', '70-biome-geyser.js')]
+    + [('biomes/ringisles/src', f) for f in ('50-biome-ringisles-species.js', '52-biome-ringisles-look.js', '55-biome-ringisles-trees.js',
+                                             '56-biome-ringisles-crops.js', '60-biome-ringisles-floor.js', '62-biome-ringisles-gardens.js',
+                                             '66-biome-ringisles-world.js', '70-biome-ringisles.js')])
+# each kit's last listed fragment must close its registry (BIO.kitEnd), or every later kit's items land in its registry
+KIT_LAST = {'throne': '70-biome-throne.js', 'swbay': '75-biome-swbay-fauna.js', 'eastabyss': '75-biome-eastabyss-fauna.js',
+            'sedesert': '75-biome-sedesert-fauna.js', 'geyser': '70-biome-geyser.js', 'ringisles': '70-biome-ringisles.js'}
 LDF = lambda *fs: [('ld', f) for f in fs]
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
@@ -49,7 +65,7 @@ ORDER = (
     + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-isles.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
-    + [('biomes/%s/src' % k, f) for k, fs in KITS.items() for f in fs]
+    + KIT_FRAGS
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '90-world-camera.js',
           '91-world-probe.js', '98-world-start.js', '99-tail.html')
@@ -107,10 +123,10 @@ def main():
         sys.exit('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  ' + '\n  '.join(bad))
     # a kit's registry closes with BIO.kitEnd in its LAST fragment: if a kit moves it to a new fragment (eastabyss's
     # fauna, Oct 2026) and the list here misses that fragment, every later kit's items land in its registry
-    for k, fs in KITS.items():
-        last = open(os.path.join(ROOT, 'biomes', k, 'src', fs[-1]), encoding='utf8').read()
-        if not re.search(r'^[^/\n]*BIO\.kitEnd\(', last, re.M):
-            sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does' % (k, fs[-1]))
+    for k, last in KIT_LAST.items():
+        body = open(os.path.join(ROOT, 'biomes', k, 'src', last), encoding='utf8').read()
+        if not re.search(r'^[^/\n]*BIO\.kitEnd\(', body, re.M):
+            sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does' % (k, last))
     html = ''.join(out)
     os.makedirs(DIST, exist_ok=True)
     dst = os.path.join(DIST, OUT)

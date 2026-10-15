@@ -23,9 +23,9 @@ only what is the region's own:
 
 | Fragment | What |
 |---|---|
-| `43-world-isles.js` | **[G data]** the fields the Ring Sea isles kit reads that the world does not make. **The climate classes as weights:** `koppen:XA` to `koppen:XS`, five map pixels round a warped point. **The coast:** `beach`, `dune`, `mangal`, `lagoon`, `reef`, `bench` and `pan`, from the height over the water, the depth and the slope. **The rest:** `garden`, 0 until the towns are laid out, and `floor`, the thermal ground round each vent. It wraps `WORLD.at` and `WORLD.fieldsFrom`, so every sample carries them. |
+| `43-world-isles.js` | **[G data]** the fields the Ring Sea isles kit reads that the world does not make, the ground's colour and the coast as terrain. **The climate classes as weights:** `koppen:XA` to `koppen:XS`, five map pixels round a warped point. **The coast:** `beach`, `dune`, `mangal`, `lagoon`, `reef`, `bench` and `pan`, from the height over the water, the depth and the slope. **The rest:** `garden`, 0 until the towns are laid out, and `floor`, the thermal ground round each vent. It wraps `WORLD.at` and `WORLD.fieldsFrom`, so every sample carries them. **The ground's colour** (`WORLD.ground`, wrapped): on land by climate class (forest loam, savanna, steppe, salt, beach sand, mangrove mud); under the sea by depth (turquoise to blue), so the sea reads as sea at any height. **The coast** (`WORLD.landHook`): a lagoon, a reef crest with passes and a fore reef reshaped from the shelf's depth, and mangrove flats on the wet classes' low shores. `WORLD.kitW` is 1 for every kit entry. |
 | `46-world-config.js` | **[G data]** the region's settings the world reads: the towns built here, the "Go to" order, the archipelago's views and one per geyser vent. little-demo has its own (`46-world-config.js`). |
-| `47-world-kits.js` | **[G data]** the kit registry: empty until the flora step |
+| `47-world-kits.js` | **[G data]** the kit registry. One kit grows here, the Ring Sea isles (`biomes/ringisles`), but it grows its borrowed trees in their lenders' registries, so it has one entry per registry (`RINGISLES.world()`): ringisles, throne, swbay, eastabyss, sedesert. Only the isles kit lays a floor (`RINGISLES.WORLD_FLOOR`). The nursery's field profile defaults the isle fields to 0. |
 
 Its data comes from `tools/scale-model/extract_region.py`. The scale model's two collections were read on 2026-10-15
 and saved in `source/` (64 regions, 97 settlements). To refresh:
@@ -47,12 +47,13 @@ python3 tools/scale-model/extract_region.py <page.html> openworld/isle-demo/sour
   in the climate the assay found, and the thermal ground at every vent. Each check has a negative control.
 - **Not applicable yet:** the world's flora, river and highway checks. The region has no kit, river or highway yet.
 
-**Next, P3b:**
-- **The flora.** The Ring Sea isles kit joins the world, with the kits it borrows from.
-  - Every species it places, the borrowed ones too, has to become a growable prototype with a pass table.
-  - The world's mask has to admit shallow water for the lagoon's and the reef's passes.
-- **The coast as terrain.** A fringing reef, lagoons and mangrove bays have to be drawn into the shore: the scale
-  model's 4 km grid only gives the shore's slope.
+**P3b, done so far (2026-10-15):**
+- **The isles' flora grows in the world:** about 245,000 records near Kautoa, with the borrowed trees grown in their own registries. The world's own checks pass: order-free seeding, nothing rooted in water, spacing across tiles.
+- **The sea at every height:** the ground under the sea is coloured by its depth.
+- **The ground by climate class**, and **the coast as terrain:** a lagoon, a reef crest and mangrove flats, with a fourth isle check and its negative.
+
+**Still to do in P3b:**
+- **The water's flora:** seagrass and corals in the lagoon and on the reef. The world's floor sets no plant in water, and its mask admits only land.
 - **The geyser fields.** The geyser kit builds one at each vent, through `GEYSER.cluster`.
 
 See `KNOWN_ISSUES.md`.

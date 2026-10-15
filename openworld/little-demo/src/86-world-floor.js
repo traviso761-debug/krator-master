@@ -21,7 +21,7 @@ function build(n){const t0=performance.now(),c=n.chunk,N=Math.round(n.s/PATCH),G
  const P=camera.position;
  for(let pj=0;pj<N;pj++)for(let pi=0;pi<N;pi++){const cx=c.x0+(pi+.5)*PATCH,cz=c.z0+(pj+.5)*PATCH,gx=Math.floor(cx/PATCH),gz=Math.floor(cz/PATCH),h=H(FSEED,gx,gz);
   if(!WORLD.inside(cx,cz)||WORLD.townW(cx,cz)>0||WORLD.roadD(cx,cz)<24)continue;   // no ground cover in a town or over a road
-  const w=WORLD_KITS.map((_,q)=>WORLD.kitW(q,cx,cz)),tot=w.reduce((a,b)=>a+b,0);if(tot<.05)continue;
+  const w=WORLD_KITS.map((K,q)=>K.floor?WORLD.kitW(q,cx,cz):0),tot=w.reduce((a,b)=>a+b,0);if(tot<.05)continue;   /* a kit with no floor lays none */
   let r=U(H(h,1))*tot,k=0;for(;k<w.length-1;k++){if(r<w[k])break;r-=w[k];}
   const kit=WORLD_KITS[k].name,pw=profiles(k,cx,cz);let pt=0;for(const p in pw)pt+=pw[p];if(pt<=.02)continue;
   let rp=U(H(h,2))*pt,prof=null;for(const p in pw){prof=p;if(rp<pw[p])break;rp-=pw[p];}

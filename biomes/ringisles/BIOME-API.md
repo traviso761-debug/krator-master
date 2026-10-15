@@ -43,6 +43,24 @@ RINGISLES.canopyH(x, z), RINGISLES.nearestTree(key, x, z, minH)
 RINGISLES.SPECIES, BORROW, PLANTS, GARDEN, PASSES, allSpecies()   // data; allSpecies() the borrowed ones with their tags
 ```
 
+## 2b. In an open world (`66-biome-ringisles-world.js`)
+
+An open world (openworld/little-demo's machinery; `openworld/isle-demo`) never runs `build`. Its nursery grows each
+species' variants with a kit's `make(sp, x, y, z)` / `grow(T, lv)` and harvests what the kit's REGISTRY drew; its tiles
+place records from a pass table (species index, cell, `accept(zones)`) and the kit's `zones()`. This kit grows its
+borrowed trees in their lenders' registries, so `RINGISLES.world()` presents it as one entry per registry:
+
+```js
+RINGISLES.world() -> {ringisles, throne, swbay, eastabyss, sedesert}   // each {SPECIES, PASSES, zones, make, grow}
+RINGISLES.make(sp, x, y, z) -> T;  RINGISLES.grow(T, lv) -> stats     // this kit's own species (55)
+RINGISLES.WORLD_FLOOR = {profiles, pick(x, z)}                          // the floor: a field profile per zone
+RINGISLES.ISLE_FIELDS                                                    // every field the zones read (a nursery's defaults)
+```
+
+A lender's entry grows through `RINGISLES.borrowGrow` at scale 1. Each pass's `opt.size` gives the borrow's scale, the
+XA forest's extra height and the pass's own `k`. The world's registry (`openworld/isle-demo/src/47-world-kits.js`) lists
+the five entries.
+
 ## 3. The crops (`RINGISLES.GARDEN`, the owner's list of 2026-10-15)
 
 Tree crops: `crop-coconut` (the Throne's coconut), `crop-mango`, `crop-banana`, `crop-coffee`, `crop-clove` (Af/Am: the

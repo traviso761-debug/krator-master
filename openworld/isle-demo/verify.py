@@ -10,7 +10,9 @@ highway, no town tile). The isle's own checks:
     (the towns are on land), 0 at sea (a point well out in the Ring Sea);
   - the towns stand on land, the climate the assay found (Kautoa Af, Walapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
-Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km.
+  - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest.
+Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
+coast hook switched off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
 the sky's capture (ATMOS.skylight: "null ... reading 'trim'"), the page stops at start: little-demo's own page does the
 same there (KNOWN_ISSUES.md); run it in the browser pane, or where little-demo's verify passes.
@@ -41,6 +43,12 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
   R.push({name:'the towns on land, in their climate',ok:!bad.length,detail:bad.length?bad.join('; '):'Kautoa on Af ground, Walapo on XA, both above the sea'});}
  {const bad=[];WORLD.VENTS.forEach(([x,z],i)=>{const A=WORLD.at(neg==='vent'?x+5000:x,z);if(A.floor<.99)bad.push('vent '+(i+1)+' floor '+A.floor.toFixed(2));});
   R.push({name:'every vent has its thermal ground',ok:!bad.length&&WORLD.VENTS.length>0,detail:bad.length?bad.join('; '):WORLD.VENTS.length+' vents, the floor field 1 at each'});}
+ {const keep=WORLD.landHook;if(neg==='coast')WORLD.landHook=null;let rays=0,reefs=0;
+  try{for(const n of ['Kautoa','Walapo'])for(let a=0;a<24;a++){const s=town(n),dx=Math.cos(a/24*Math.PI*2),dz=Math.sin(a/24*Math.PI*2);let sea=false,lag=false,crest=false;
+    for(let r=0;r<16000&&!crest;r+=100){const d=WORLD.lakeWater(s.x+dx*r,s.z+dz*r)-WORLD.H(s.x+dx*r,s.z+dz*r);
+     if(!sea){if(d>0)sea=true;else continue;}if(d>1.5&&d<3.2)lag=true;else if(lag&&d>0&&d<.8)crest=true;else if(d>40)break;}
+    rays++;if(crest)reefs++;}}finally{WORLD.landHook=keep;}
+  R.push({name:'the coast: a lagoon behind a reef crest',ok:reefs>=4,detail:reefs+' of '+rays+' rays from the towns cross a lagoon (1.5-3.2 m) then a crest (under 0.8 m)'});}
  return R;}"""
 
 
@@ -81,7 +89,7 @@ async def run(a):
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                     if not r['ok']: fails.append(r['name'])
                 print('--- negative controls (each must fail) ---')
-                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground')):
+                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest')):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

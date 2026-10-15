@@ -32,7 +32,10 @@ const KITS=WORLD_KITS.map(k=>{const api=WORLD_KITS.api(k),SP=api.SPECIES;
 const NK=KITS.length,REACH=KITS.map(K=>K.lod.far[2]);
 
 // ---------------------------------------------------------------- a tile's field grid
-function fieldGrid(x0,z0){const n=FG*FG,F={};const names=['h','water','slope','wet','flow','upland','abyssUp','canyon','rim','rock','dune','salt','cold','oasis','abyss','mist'];
+/* the fields a tile carries: the height, the water, the abyss kit's own upland and every field the world makes (WORLD.FIELDS:
+   a world that adds fields, openworld/isle-demo's isle fields, has them reach its kits) */
+const GRID_FIELDS=['h','water','abyssUp'].concat(WORLD.FIELDS.filter(f=>f!=='abyssUp'));
+function fieldGrid(x0,z0){const n=FG*FG,F={};const names=GRID_FIELDS;
  names.forEach(k=>F[k]=new Float32Array(n));F.w=KITS.map(()=>new Float32Array(n));F.inside=new Uint8Array(n);
  for(let j=0;j<FG;j++)for(let i=0;i<FG;i++){const x=x0+i*FS,z=z0+j*FS,k=j*FG+i,A=WORLD.at(x,z);
   for(const nm of names)F[nm][k]=A[nm];F.inside[k]=A.inside?1:0;for(let q=0;q<NK;q++)F.w[q][k]=WORLD.kitW(q,x,z);}

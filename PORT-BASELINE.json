@@ -41,8 +41,8 @@
    "sha256": "c3dc99460eb7c113961dee8d607c7601504f78f578989da07e6ad212e9e829e4"
   },
   "biomes/ringisles/dist/ringisles.html": {
-   "bytes": 2044455,
-   "sha256": "2731d077aea2ae978ab91e9c539cee7443e7fba9a58f0a29fbda08753ffc4cce"
+   "bytes": 2049834,
+   "sha256": "bc3f178d9044bdbfa7f486a1c0dc4ba3a17bc03d822ae799986779cfc8f77c6d"
   },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4284792,
@@ -341,20 +341,20 @@
    "sha256": "0e6ebd8266dac0cdefd1a94efa8a74dbb83be3a05428248754020a2243e9bcf1"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 454009,
-   "sha256": "e4034e792865452227c5a988d291906d722b2c56331284ba203b641f0fdc2ed7"
+   "bytes": 1280345,
+   "sha256": "ee15426a191ce98fa995071ea56755cae1d60270ed91d266688b1a639d777151"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 454267,
-   "sha256": "ff57ee57f863db5045620068e8150cce0326b787932bffa4f9855997d319ec17"
+   "bytes": 1280603,
+   "sha256": "e817d746c89312ea81f9da141d29e6bb848718b0fc127af1e92f3b8c249d235a"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
-   "bytes": 5077616,
-   "sha256": "a472cd3248c632aab57b32faf586d31a3420eb82b697ccced1708bdd2960727b"
+   "bytes": 5078245,
+   "sha256": "5ae8f91dc6fdc91e5c0dcd5f7d5d34d9ea1dd79ada29898216fe54a434413073"
   },
   "openworld/little-demo/dist/little-demo.html": {
-   "bytes": 5077874,
-   "sha256": "513943d25cccc8c37f92420a5c38f0a19cf953ef86e42102da950b596a0ab25b"
+   "bytes": 5078503,
+   "sha256": "6ed0ec88733ff88b045d4a7a12e2d6b5ce23b525c64ce1257567bf0d058b9ddd"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 5954917,

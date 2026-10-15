@@ -57,9 +57,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 12 | 201 | 1 | 0 | 13 | 32 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 266 | 45 | 22 | 15 | 35 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
-| [`biomes/ringisles`](biomes/ringisles/PORT.md) | 17 | 178 | 56 | 14 | 14 | 39 | 55 | 2 | biome, atmos | yes | yes |
-| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 164 | 55 | 0 | 9 | 94 | 6 | 2 |  | yes | yes |
-| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
+| [`biomes/ringisles`](biomes/ringisles/PORT.md) | 18 | 183 | 61 | 14 | 14 | 39 | 56 | 2 | biome, atmos | yes | yes |
+| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 165 | 55 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
+| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 3 | 12 | 12 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
 | **all** | 1971 | 26302 | 4767 (18%) | 598 (2%) | 1068 (4%) | 3357 (13%) | 16511 (63%) | 261 | | | |
 
 ## Host-shell copies

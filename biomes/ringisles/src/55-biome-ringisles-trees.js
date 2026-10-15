@@ -193,6 +193,13 @@ function borrowGrow(Bo,x,y,z,lv,k,extra){const api=RINGISLES.kitOf(Bo);if(!api)r
  const T=api.make(Bo._sp,x,y,z);T.H*=k;T.rb*=k;T.crownR*=Math.sqrt(k);if(extra)Object.assign(T,extra);T.borrow=Bo.key;
  const r=api.grow(T,lv);if(r===null&&lv===0)return null;return T;}
 RINGISLES.borrowGrow=borrowGrow;
+// ---------------------------------------------------------------- one of this kit's own trees at a point, the shape every kit's make/grow has
+// RINGISLES.make(sp, x, y, z) -> T, RINGISLES.grow(T, lv) -> stats. An open world's nursery grows each species' variants
+// with them (openworld/little-demo/src/84-world-nursery.js; 66-biome-ringisles-world.js); the showcase's pass does not.
+RINGISLES.make=function(sp,x,y,z){const S=SP[sp];means();
+ return{x,z,y0:y-.3,sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),lv:2,leanA:null};};
+RINGISLES.grow=function(T,lv){const st=newStats();T.lv=lv;BIO.owner=[T.x,T.z];
+ try{if(lv===0)buildFar(T,0,st);else B[T.sp](T,st,lv);}finally{BIO.owner=null;}return st;};
 
 // ---------------------------------------------------------------- the pass
 RINGISLES.buildTrees=function(R,q){SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('ringisles: no builder for species '+i+' '+S.key);});reseed(550071);q=q==null?1:q;R=R||2000;means();

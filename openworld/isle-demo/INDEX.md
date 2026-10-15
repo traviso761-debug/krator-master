@@ -15,6 +15,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `43-world-isles.js` | 4 |  |
+| `43-world-isles.js` | 9 | the ground's colour (WORLD.ground, wrapped) (57); the coast as terrain (WORLD.landHook) (79) |
 | `46-world-config.js` | 1 |  |
-| `47-world-kits.js` | <1 |  |
+| `47-world-kits.js` | 2 |  |

@@ -26,10 +26,11 @@ From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 | `47-host-land.js` | 7 | the fields (cached below; these are the definiti (20); the host binding (59) |
 | `50-biome-ringisles-species.js` | 20 | palettes (sRGB hex; bark a stop dark) (24); the kit's own tree species (57); borrowed: other kits' trees, grown in place (87); harvest (biomes/FRUIT.md) (109); the small plants (the floor), tagged (125); the gardens (keyed as kits/islanders' placed flo (154) |
 | `52-biome-ringisles-look.js` | 26 | leaf textures (11); bark textures (grey, mean ~.6) (93); local geometries (107); materials (142); instanced items (196) |
-| `55-biome-ringisles-trees.js` | 27 | the classes at a point (11); the burn mosaic (the savanna and the steppe) (22); zones (34); colour (the maths is the core's, BIO.col) (55); polyline and foliage helpers (65); the builders: (T, st, lv) with lv 2 near, 1 mid (85); impostors (the far canopy) (160); keep-clear between trees (175); borrowed trees: grown by their own kits, in plac (182); the pass (197) |
+| `55-biome-ringisles-trees.js` | 27 | the classes at a point (11); the burn mosaic (the savanna and the steppe) (22); zones (34); colour (the maths is the core's, BIO.col) (55); polyline and foliage helpers (65); the builders: (T, st, lv) with lv 2 near, 1 mid (85); impostors (the far canopy) (160); keep-clear between trees (175); borrowed trees: grown by their own kits, in plac (182); one of this kit's own trees at a point, the shap (196) |
 | `56-biome-ringisles-crops.js` | 4 |  |
 | `60-biome-ringisles-floor.js` | 15 | small plants (25); the zone planters (73); the pass (98); the forest's dressing (after the trees): lianas  (129) |
 | `62-biome-ringisles-gardens.js` | 8 |  |
+| `66-biome-ringisles-world.js` | 4 |  |
 | `70-biome-ringisles.js` | 3 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
 | `84-host-ground.js` | 14 | the paint (per vertex) (19); the layers (the library, or procedural without i (47); the meshes (103); the small waters: the tide pools and the brine p (141) |

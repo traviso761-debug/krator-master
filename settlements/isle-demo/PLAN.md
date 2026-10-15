@@ -52,7 +52,11 @@ the latest Voth viewer as the base.
 - **The demo area grew** (owner, 2026-10-15): two polygons drawn in the world, the west isles and the north-east isles,
   are part of it (`openworld/isle-demo/source/added-areas.json`, cut as a union by the extractor's `--add`). It is now about
   31,800 km2, 11,800 km2 of land, with 16 geyser vents. The assay in section 1 is the original polygon's.
-- **Next, P3b:** the isles kit's flora in the world (growable prototypes, a pass table, shallow-water placement), the
+- **P3b in progress** (2026-10-15):
+  - **Done:** the isles' flora in the world (`RINGISLES.world()`), the sea readable at every height (the owner), the
+    ground coloured by climate class, and the coast as terrain (lagoon, reef crest, mangrove flats).
+  - **Still to do:** the geyser fields at the vents, and the water's flora (seagrass, corals).
+- **Earlier note, P3b:** the isles kit's flora in the world (growable prototypes, a pass table, shallow-water placement), the
   coast drawn as terrain (reef, lagoons, mangrove bays), and the geyser fields at the vents.
 - **Not committed.**
 
