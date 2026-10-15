@@ -42,7 +42,7 @@
  "terrain": {
   "zoom": 15,
   "step": 10,
-  "datum": 0,
+  "datum": 0, "coast": {"shore": 0.5, "slope": 0.04, "_": "the coastline decides what is sea: the tiles smear the land out over the water (tools/build-osm-city.py coast_cut)"},
   "_": "the terrace, the river's valley and Cape Perpetua's headland; the open sea is the datum (tools/build-osm-city.py)"
  },
  "seaLevelWater": true,

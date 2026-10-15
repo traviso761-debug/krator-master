@@ -81,7 +81,7 @@ def main():
             rock.append(flat(simplify(pts, 0.8)))
         elif t.get("natural") == "cliff":
             cliffs.append(flat(simplify(pts, 1.0)))
-    out = {"_": "tools/make-yachats.py: the coastline (land on the left), the basalt shelves and the cliffs, in decimetres",
+    out = {"_": "tools/make-yachats.py: the coastline (land on the left looking north-up: with z south, the sea is on the left), the basalt shelves and the cliffs, in decimetres",
            "coast": lines, "rock": rock, "cliffs": cliffs}
     dest = os.path.join(ROOT, "data", "cities", "yachats-land.json")
     with open(dest, "w", encoding="utf-8", newline="\n") as f:

@@ -210,6 +210,55 @@ def height_of(t, c=None):
 
 
 # ---------- elevation ----------
+def coast_cut(hs, nx, nz, step, water, floor, cc):
+    """terrain.coast: the coastline decides what is sea. The elevation tiles smear the land a few hundred metres out
+    over the water (Yachats: half the ground 150 m seaward of the shore read a metre above sea level), and a map flooded
+    at sea level draws that as land. Every cell on the sea side of OSM's natural=coastline is cut to at most
+    -(shore + slope * metres from the coast) under the water, down to the floor; the land side is left alone.
+    The side is the nearest segment's: OSM keeps the land on the left going along a coastline, which with z south
+    (as here) is the right, so the sea is where the cross product is positive. At a shared vertex the segment the
+    cell is most squarely beside decides (the larger perpendicular), which holds at both convex and concave corners."""
+    import numpy as np
+    pad = 3000
+    segs = []
+    for e in load("water"):
+        if e["type"] != "way" or e.get("tags", {}).get("natural") != "coastline":
+            continue
+        pts = way_pts(e)
+        for a, b in zip(pts, pts[1:]):
+            if min(a[0], b[0]) < BX1 + pad and max(a[0], b[0]) > BX0 - pad and min(a[1], b[1]) < BZ1 + pad and max(a[1], b[1]) > BZ0 - pad:
+                segs.append((a[0], a[1], b[0], b[1]))
+    if not segs:
+        print("terrain.coast: no coastline in the box, nothing cut")
+        return hs
+    S = np.array(segs, dtype=np.float64)
+    ax, az, bx, bz = S[:, 0], S[:, 1], S[:, 2], S[:, 3]
+    dx, dz = bx - ax, bz - az
+    ll = np.maximum(dx * dx + dz * dz, 1e-9)
+    shore, slope = float(cc.get("shore", 0.5)), float(cc.get("slope", 0.04))
+    H = np.array(hs, dtype=np.float64).reshape(nz, nx)
+    xs = BX0 + np.arange(nx) * step
+    cut = 0
+    for j in range(nz):
+        px, pz = xs[:, None], BZ0 + j * step
+        t = np.clip(((px - ax) * dx + (pz - az) * dz) / ll, 0, 1)
+        qx, qz = ax + t * dx - px, az + t * dz - pz
+        d = np.sqrt(qx * qx + qz * qz)
+        cr = dx * (pz - az) - dz * (px - ax)
+        perp = np.abs(cr) / np.sqrt(ll)
+        k = np.argmin(d - 1e-6 * perp, axis=1)
+        r = np.arange(nx)
+        sea = cr[r, k] > 0
+        dd = d[r, k]
+        lim = np.maximum(water - shore - slope * dd, water + floor)
+        row = H[j]
+        m = sea & (row > lim)
+        cut += int(m.sum())
+        row[m] = lim[m]
+    print(f"terrain.coast: {cut} cells on the sea side of the coastline cut under the water ({len(segs)} coastline segments)")
+    return [float(v) for v in H.ravel()]
+
+
 def terrain_grid():
     """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
     cfg = CITY.get("terrain")
@@ -273,6 +322,8 @@ def terrain_grid():
     # A tidal city's tiles carry the harbour's bathymetry, which is metres of depth nobody will ever see through
     # the water plane, and the odd bad sample a long way below that. The bed is clamped just under the surface.
     floor = -6.0 if CITY.get("seaLevelWater") else -400.0
+    if cfg.get("coast"):
+        hs = coast_cut(hs, nx, nz, step, water, floor, cfg["coast"])
     res = {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
             "h": [int(round(max(h - water, floor) * 10)) for h in hs],
             "_": "heights in decimetres above the water level (datum, metres above sea level)"}

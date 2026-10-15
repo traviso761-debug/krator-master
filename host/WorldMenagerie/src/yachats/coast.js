@@ -76,7 +76,7 @@ export function coast(api){
       for(let i=0;i+1<pts.length;i++){const [ax,az]=pts[i],[bx,bz]=pts[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L/12));for(let k=0;k<n;k++)res.push([ax+(bx-ax)*k/n,az+(bz-az)*k/n]);}
       let open=false,s=0;
       for(let i=0;i<res.length;i++){const [x,z]=res[i],a=res[Math.max(0,i-1)],b=res[Math.min(res.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;
-        const sx=dz/l,sz=-dx/l,wid=onRock(x,z)?40:90;   // OSM coastlines run with the land on the left: the sea is to the right
+        const sx=-dz/l,sz=dx/l,wid=onRock(x,z)?40:90;   // OSM coastlines run with the land on the left looking north-up; z runs south here, so the sea is (-dz, dx)
         if(!api.inMap(x,z,0)){open=false;continue;}
         if(i)s+=Math.hypot(x-res[i-1][0],z-res[i-1][1]);
         pos.push(x-sx*6,0.8,z-sz*6,x+sx*wid,0.8,z+sz*wid);uv.push(s,0,s,1);
