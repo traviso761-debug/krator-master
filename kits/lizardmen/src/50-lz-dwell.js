@@ -7,9 +7,9 @@
 // Frame: origin on the ground at the plot centre, +z the front.
 /* a cell of the warren: an earth dome drawn pointed (a lathe), r at the foot, buttressed by o.n horns leaning onto it */
 function ldCell(x,z,r,o){o=o||{};const h=r*1.35,n=o.n||5,col=o.col||P('earth');
- W(x,0,z,o.ry||0,()=>{lathe('earth',0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],14,col,{});
-  for(let i=0;i<n;i++){const a=i*TAU/n+(o.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:'horn',nt:8,ns:6});}
-  if(o.door){const dh=o.door,dw=dh*.62;poly('plain',[[-dw/2,0,r*1.07],[dw/2,0,r*1.07],[0,dh,r*1.05]],P('black'),true);lzPortal(0,0,r*1.02,0,dh,{mk:'lacq'});door(0,0,r,0,dw);lzThreshold(0,r+.1,0,dw);}});}
+ W(x,0,z,o.ry||0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:'earth',col,seg:14,door:o.door});
+  for(let i=0;i<n;i++){const a=i*TAU/n+(o.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:'horn',nt:8,ns:6});}
+  if(o.door){const dh=o.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'lacq'});lzThreshold(0,r+.1,0,dw);}});}
 defBuilding({key:'lz-warren',name:"Tenders' cell-warren",seed:7001,caste:1,cut:true,w:17,d:15,h:7.6,budget:90000,
  tags:{types:['dwelling-multi'],wealth:'middle',role:'dwelling'},
  note:'the Tenders (caste 1, 1.22 m): seven earth cells in a whorl, each 1.25 x the last and turned 105 degrees from it, buttressed by horns leaning onto the domes; a 1.4 m slit door a human must stoop through; the largest cell opens',
@@ -58,27 +58,22 @@ defBuilding({key:'lz-lodge',name:"Warriors' lodge",seed:7004,caste:4,cut:true,w:
  build(o){const L=15,Wd=9.5,h=8.6;lzCutFloor(0);
   /* the vault runs along local x; the frame is turned so the +x gable is the front */
   W(0,0,0,-PI/2,()=>{box('stoneP',0,0,0,L+1.4,.2,Wd+1.4,P('basaltD'));
-   const eY=1.2,rY=h*.86,gx=L/2+.4;
-   /* the end walls: battered basalt gables under the vault's curve, their faces at x = +-gx */
-   for(const s of [-1,1]){const pts=[];for(let k=0;k<=10;k++){const v=k/10;pts.push([s*gx,eY+(rY-eY)*v,(Wd/2*.92)*(1-v)]);}
-    for(let k=10;k>=0;k--){const v=k/10;pts.push([s*gx,eY+(rY-eY)*v,-(Wd/2*.92)*(1-v)]);}
-    lzNoCut(()=>{poly('cyclo',pts,P('basalt'),true);prism('cyclo',[[s*(L/2-.2),Wd/2*.92],[s*gx,Wd/2*.92],[s*gx,-Wd/2*.92],[s*(L/2-.2),-Wd/2*.92]],.2,eY,P('basalt'));});}
-   /* the front gable's two doors: dark triangles on the stone, nested frames on the Bulwarks' and a plain frame on the warriors' */
-   for(const [dz,c] of [[2.6,4],[-2.2,6]]){const dh=lzDoorH(c),dw=dh*.62;poly('plain',[[gx+.01,.2,dz+dw/2],[gx+.01,.2,dz-dw/2],[gx+.01,.2+dh,dz]],P('black'),true);
-    lzNoCut(()=>lzPortal(gx+.02,.2,dz,PI/2,dh,{mk:c===6?'bronze':'lacq'}));door(gx,.2,dz,PI/2,dw);W(gx+.3,0,dz,PI/2,()=>box('stoneP',0,0,.1,dw+.4,.18,.5,P('basaltD')));}
-   lzNoCut(()=>{for(const [ez,ey] of [[.3,h*.6],[3.9,h*.3],[-3.6,h*.33]])lzEye(gx+.02,ey,ez,PI/2,.45,{mk:'bronze'});});
-   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:eY,y0:.2});
+   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:1.3,y0:.2,doors:[{z:2.6,c:4},{z:-2.2,c:6}],eyes:[[.3,h*.6],[3.9,h*.3],[-3.6,h*.33]]});
    lzFurnRoom(Wd-1,L-1.2,.2,'common',{beds:3,ceil:h*.6,extra:[['generic_trade_armour_stand',-1,-L/2+1.2,0],['generic_trade_armour_stand',1.2,-L/2+1.2,0],['generic_trade_weapon_rack',-3.6,0,PI/2],['lizardmen_training_training_dummy',2.5,3,0]]});});}});
 /* ---------------------------------------------------------------- the Interpreters' house: the twisted tower */
-defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:true,w:9,d:9,h:17,budget:90000,
+defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:true,w:11,d:11,h:21,budget:100000,
  tags:{types:['dwelling-single','civic'],wealth:'rich',role:'dwelling'},
- note:'the Interpreters (caste 5, 3.03 m): a narrow stone tower of nine courses, each turned four degrees past the one below, spiral-eye oculi in verdigris bronze climbing it, a crown of seven horns; a 3.5 m door with nested frames; the seers live above a bare court floor',
- build(o){const h=14.5,n=9,w0=5.6,w1=3.8;lzCutFloor(0);
-  box('stoneP',0,0,0,8.2,.25,8.2,P('basaltD'));
-  lzTwist(0,0,h,n,w0,w1,.07,{mk:'cyclo',col:P('basalt'),each:(i,y,w,ry)=>{if(i===3||i===5||i===7){const k=i===5?-1:1;W(0,y+h/n*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze'}));}
-   if(i===1)W(0,y+.2,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,h/n*.7,{cell:.4,mk:'bronze',back:false}));});}});
-  /* the crown: seven horns leaning out from the top course */
-  for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.6,.14,{curl:.5,lean:.35,mk:'ivory'});}
-  const dh=lzDoorH(5),dw=dh*.62;poly('plain',[[-dw/2,.25,w0/2+.03],[dw/2,.25,w0/2+.03],[0,.25+dh,w0/2+.03]],P('black'),true);
-  lzNoCut(()=>lzPortal(0,.25,w0/2+.02,0,dh,{mk:'bronze',eye:true}));door(0,.25,w0/2,0,dw);lzThreshold(0,w0/2+.3,0,dw);
-  lzFurnRoom(w0-1.1,w0-1.1,.25,'court',{beds:1,ceil:5.5,extra:[['lizardmen_court_desk',1.2,-.4,-PI/2],['lizardmen_court_scroll',-1.4,-1.2,PI/2],['lizardmen_court_statue',1.6,1.2,-PI/2]]});}});
+ note:'the Interpreters (caste 5, 3.03 m): a stone tower of nine courses, each turned four degrees past the one below, spiral-eye oculi in verdigris bronze climbing it, a crown of seven horns; a 3.5 m door with nested frames into a hall six metres high under the solid courses, where the seers keep little',
+ build(o){const h=18,n=9,w0=7.4,w1=4.6,ch=h/n,hollow=3;lzCutFloor(0);
+  box('stoneP',0,0,0,10,.25,10,P('basaltD'));
+  const dh=lzDoorH(5),dw=dh*.62;
+  /* the lower courses are hollow shells (the hall); the upper ones solid */
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.07;W(0,.25+i*ch,0,ry,()=>lzBatterRoom(w,w,0,ch+.02,'cyclo',P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]}));}
+  const ceilY=.25+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box('cyclo',0,ceilY-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.07);
+  lzTwist(0,0,h,n,w0,w1,.07,{mk:'cyclo',col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===3||i===5||i===7){const k=i===5?-1:1;W(0,y+ch*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze'}));}
+   if(i===1)W(0,y+.3,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,ch*.6,{cell:.4,mk:'bronze',back:false}));});}});
+  for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h+.25,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.8,.15,{curl:.5,lean:.35,mk:'ivory'});}
+  lzNoCut(()=>lzPortal(0,.25,w0/2+.04,0,dh,{mk:'bronze',eye:true}));lzThreshold(0,w0/2+.3,0,dw);
+  /* the seers keep little: one great basking dais, the desk, a scroll, the guardian, a lamp, a carpet */
+  FURNISH('lizardmen_court_bed',-1.6,.25,-1.8,0);FURNISH('lizardmen_court_desk',1.9,.25,-1.6,-PI/2);FURNISH('lizardmen_court_scroll',-2.6,.25,.6,PI/2);
+  FURNISH('lizardmen_court_statue',2.4,.25,1.6,-PI/2);FURNISH('lizardmen_court_candelabra',-.9,.25,2.2,0);FURNISH('lizardmen_court_carpet',.3,.25,.2,0);FURNISH_HANG('lizardmen_court_hanging',0,ceilY-.35,0,0);}});

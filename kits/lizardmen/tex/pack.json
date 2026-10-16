@@ -1186,7 +1186,7 @@
    "lib": "stone.basalt.polished",
    "metal": 0,
    "normalScale": 1.0,
-   "roughLift": 0.1,
+   "roughLift": 0.55,
    "scale": [
     1.8,
     1.8
@@ -1197,7 +1197,7 @@
     "normal": "d960c552b888ffa3b2a9326fde4ba79c9941640e",
     "roughness": "3585574eb3a8734bd91adb5ecd05a576e6f7ab1a"
    },
-   "specular": 0.4,
+   "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.2,

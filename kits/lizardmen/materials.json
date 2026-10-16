@@ -1,6 +1,6 @@
 {
  "build": "lizardmen",
- "note": "The Lizardmen kit's adapter onto the material library (core/materials/PLAN.md, DESIGN.md section 2.3). The families are the kit's material keys (src/26k-kit.js SV_LIB): the geometry engine writes UVs in world metres divided by the family's scale, so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the bone, reed, hide and stone sets keep a little (the palette in 26k-kit.js colours them), the verdigris bronze, the iridescent chitin (the high castes' lacquer sheen) and the jade keep most of their own. No pattern sheets yet: the leiwen, the glyphs and the spiral eyes are geometry (40-lz-kit.js); sheets for them are a texture request (core/materials/PLAN.md). Run python3 tools/textures/pack.py kits/lizardmen after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (91f-furnish.js projects each triplanar).",
+ "note": "The Lizardmen kit's adapter onto the material library (core/materials/PLAN.md, DESIGN.md section 2.3). The families are the kit's material keys (src/26k-kit.js SV_LIB): the geometry engine writes UVs in world metres divided by the family's scale, so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the bone, reed, hide and stone sets keep a little (the palette in 26k-kit.js colours them), the verdigris bronze, the iridescent chitin (the high castes' lacquer sheen) and the jade keep most of their own. No pattern sheets yet: the leiwen, the glyphs and the spiral eyes are geometry (40-lz-kit.js); the three sheets (leiwenS, glyphS, eyeS) are requested in core/materials/PLAN.md (Lizardmen) and marked optional, so pack.py skips them and the kit keeps drawing its geometry until the owner delivers them. Run python3 tools/textures/pack.py kits/lizardmen after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (91f-furnish.js projects each triplanar).",
  "size": 512,
  "families": {
   "reed": {"lib": "reed.bundle", "scale": [1.2, 1.2], "tint": {"keep": 0.35, "mean": 0.74}, "roughLift": 0.4, "specular": 0.12},
@@ -18,7 +18,7 @@
   "bronze": {"lib": "metal.bronze.verdigris", "scale": [1.0, 1.0], "tint": {"keep": 0.8, "mean": 0.62}, "roughLift": 0.1, "specular": 0.5, "metal": 0.5},
   "bronzeC": {"lib": "metal.bronze.cast", "scale": [1.2, 1.2], "tint": {"keep": 0.6, "mean": 0.62}, "roughLift": 0.1, "specular": 0.5, "metal": 0.6},
   "basalt": {"lib": "rock.basalt.flowbanded", "scale": [2.4, 2.4], "tint": {"keep": 0.2, "mean": 0.7}, "roughLift": 0.4, "specular": 0.15},
-  "stoneP": {"lib": "stone.basalt.polished", "scale": [1.8, 1.8], "tint": {"keep": 0.2, "mean": 0.62}, "roughLift": 0.1, "specular": 0.4},
+  "stoneP": {"lib": "stone.basalt.polished", "scale": [1.8, 1.8], "tint": {"keep": 0.2, "mean": 0.62}, "roughLift": 0.55, "specular": 0.2},
   "cyclo": {"lib": "rock.large_sandstone_blocks", "scale": [3.2, 3.2], "tint": {"keep": 0.15, "mean": 0.7, "contrast": 1.1}, "roughLift": 0.4, "specular": 0.12},
   "brick": {"lib": "brick.ochre", "scale": [1.4, 1.4], "tint": {"keep": 0.45, "mean": 0.72}, "roughLift": 0.4, "specular": 0.12},
   "earth": {"lib": "earth.banco.eroded", "scale": [2.2, 2.2], "tint": {"keep": 0.3, "mean": 0.72}, "roughLift": 0.4, "specular": 0.1},
@@ -30,6 +30,9 @@
   "rope": {"lib": "fibre.rope", "scale": [0.3, 0.3], "tint": {"keep": 0.4, "mean": 0.72}, "roughLift": 0.3, "specular": 0.15},
   "wood": {"lib": "wood.gnarled", "scale": [1.4, 1.4], "tint": {"keep": 0.3, "mean": 0.7}, "roughLift": 0.3, "specular": 0.2},
   "jade": {"lib": "stone.amazonite", "scale": [0.6, 0.6], "tint": {"keep": 0.8, "mean": 0.62}, "roughLift": 0.0, "specular": 0.6},
+  "leiwenS": {"lib": "patterns/lizardmen/leiwen", "optional": true, "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": 0.5}, "roughLift": 0.1, "specular": 0.5},
+  "glyphS": {"lib": "patterns/lizardmen/glyph-band", "optional": true, "scale": [1.6, 0.4], "tint": {"keep": 1.0, "mean": 0.5}, "roughLift": 0.2, "specular": 0.4},
+  "eyeS": {"lib": "patterns/lizardmen/spiral-eye", "optional": true, "scale": [0.6, 0.6], "tint": {"keep": 1.0, "mean": 0.5}, "roughLift": 0.1, "specular": 0.5},
   "ground": {"lib": "ground.leafy_grass", "scale": [4.0, 4.0], "tint": {"keep": 0.4, "mean": 0.58, "contrast": 1.05}, "roughLift": 0.4, "specular": 0.1, "breakup": {"mix": 0.5, "macro": 0.1, "cell": 14}},
   "f_cloth": {"lib": "cloth.weave.twill", "scale": [0.22, 0.22], "size": 256, "tint": {"keep": 0.0, "mean": 0.62}, "roughLift": 0.3, "specular": 0.3},
   "f_wood": {"lib": "wood.carved", "scale": [0.7, 0.7], "size": 256, "tint": {"keep": 0.15, "mean": 0.55}, "roughLift": 0.3, "specular": 0.3},

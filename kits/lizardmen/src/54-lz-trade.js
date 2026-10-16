@@ -65,7 +65,8 @@ defBuilding({key:'lz-granary',name:'Granary',seed:7204,caste:3,cut:true,w:14,d:1
   lzBatterRoom(L-.6,Wd-.6,py+.18,2.2,'reed',P('reed'),{lean:{front:.06,back:-.05,left:.1,right:-.03},front:[{s:(L-.6)/2+2.2,w:dw,h:dh,door:true},lzVent(3,1.2,1.3)],back:[lzVent(3,2,1.3),lzVent(3,L-2.6,1.3)]});
   lzRibRoof(L-.6,Wd-.6,py+2.25,py+6.6,9,{mk:'thatch',col:P('reedL'),over:.6,ribR:.13,past:.26,bend:.95,ext:.5,endMk:'reed',endCol:P('reedD')});
   /* the stair: logs notched, up the front at the stair bay */
-  lzNoCut(()=>{W(L/2-.2,0,Wd/2+.7,0,()=>{for(let i=0;i<8;i++)box('wood',0,i*py/8,1.2-i*.17,1.2,.12,.3,P('reedD'));for(const s of [-1,1])beam('wood',[s*.55,0,1.5],[s*.55,py+.1,0],.1,P('reedD'),true,6);});});
+  /* the stair: nine log treads from the ground up to the podium's front edge, on two notched stringers */
+  lzNoCut(()=>{W(L/2-.2,0,Wd/2+.3,0,()=>{const run=2.2;for(let i=0;i<9;i++){const t=(i+1)/9;box('wood',0,t*py-.12,run*(1-t)+.12,1.2,.12,.34,P('reedD'));}for(const s of [-1,1])beam('wood',[s*.62,0,run+.3],[s*.62,py+.05,-.1],.1,P('reedD'),true,6);});});
   lzThreshold(2.2,Wd/2-.3,0,dw);
   for(const [x,z] of [[-3.2,-1.6],[-1.8,-1.9],[-.2,-1.7],[1.4,-1.9],[2.8,-1.6],[-2.8,.4],[-1.0,.6],[.8,.4]])FURNISH(pick(['generic_basket','generic_floor_basket','generic_sack','generic_storage_jar']),x,py+.18,z,rr(0,TAU));
   FURNISH('generic_veg_basket',-3.8,py+.18,1.8,0);FURNISH('lizardmen_common_board',3.4,py+.18,-2.2,0);FURNISH_HANG('lizardmen_common_hanging',0,py+5,0,0);}});
@@ -82,7 +83,7 @@ defBuilding({key:'lz-windmill',name:'Panemone windmill',seed:7205,caste:2,cut:fa
  note:'a Persian panemone: seven reed-mat sails on an upright shaft, turning inside a slot between two curved basalt walls that catch the wind on one side only; the shaft runs down through a skeletal tower of bone to the millstones in a brick base',
  build(o){const R=4.2,H=9.5;
   /* the base and the two curved walls of the slot (open to the north-east and the south-west) */
-  box('brick',0,0,0,6.2,1.6,6.2,P('brick'),PI/4);
+  W(0,0,0,PI/4,()=>lzBatterRoom(6.2,6.2,0,1.6,'brick',P('brick'),{lean:{front:0,back:0,left:0,right:0},front:[lzDoor(2,3.1)]}));box('brick',0,1.6,0,6.4,.2,6.4,P('brick'),PI/4);
   for(const [a0,a1] of [[.35,2.2],[PI+.35,PI+2.2]])sector('cyclo',0,0,R+.5,R+1.1,a0,a1,0,H*.72,P('basalt'),14);
   /* the skeletal tower: seven bone legs leaning in to a collar, the shaft inside */
   for(let i=0;i<7;i++){const a=i*TAU/7;beam('bones',[Math.cos(a)*2.6,1.6,Math.sin(a)*2.6],[Math.cos(a)*.6,H+1.2,Math.sin(a)*.6],.11,P('boneO'),true,7);
@@ -93,7 +94,7 @@ defBuilding({key:'lz-windmill',name:'Panemone windmill',seed:7205,caste:2,cut:fa
     psurf('mat',(u,v)=>[.4+(R*.75-.4)*u,H*.32+(H*.63)*v,.02*Math.sin(u*PI)],4,4,P('reedL'),{});psurf('mat',(u,v)=>[.4+(R*.75-.4)*u,H*.32+(H*.63)*v,-.02*Math.sin(u*PI)],4,4,P('reedL'),{flip:true});});}
    cyl('bronzeC',0,H*.28,0,.5,.3,P('bronze'),12);});
   /* the mill door and the grain outside */
-  const dh=lzDoorH(2),dw=dh*.62;W(0,0,0,PI/4,()=>{poly('plain',[[-dw/2,0,3.11],[dw/2,0,3.11],[0,dh,3.11]],P('black'),true);lzPortal(0,0,3.14,0,dh,{mk:'lacq'});door(0,0,3.1,0,dw);});
+  const dh=lzDoorH(2);W(0,0,0,PI/4,()=>lzPortal(0,0,3.14,0,dh,{mk:'lacq'}));
   FURNISH('generic_sack',3.4,0,3.0,.3,{setting:'outdoor'});FURNISH('generic_sack',2.8,0,3.8,1.1,{setting:'outdoor'});FURNISH('job_sheaf_rack',-4.6,0,-3.2,PI/4,{setting:'outdoor'});}});
 /* ---------------------------------------------------------------- the farm: placeholder crops, a frilled-lizard pen, a drystone wall */
 defBuilding({key:'lz-farm',name:'Farm',seed:7206,caste:3,cut:false,w:26,d:20,h:4,budget:90000,
