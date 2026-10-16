@@ -1,7 +1,8 @@
 # The Lizardmen kit: design
 
-*Status: design agreed with the owner, 2026-10-15. Nothing is built yet. Visual references are still to come; where they
-contradict this file, they win, and this file is updated.*
+*Status: design agreed with the owner, 2026-10-15. The owner's visual references arrived 2026-10-16 (section 9): where they
+contradicted this file they won, and the file was updated (the changes are marked "refs 2026-10-16"). The kit sheet is being
+built (`build.py`, `verify.py --assert`; `README.md` says what is in it).*
 
 The Lizardmen kit will be a city kit (catalog culture `lizardman`) for the Lizardmen of the Rift floor: five dwellings,
 the nest hall, the trades, farms, the military buildings, the shrines and monuments, the reliquary and its antechamber.
@@ -104,14 +105,19 @@ kit's one shape, used at every scale:
 
 ### 2.3 Ribbing and materials
 
-- **Ribs are an exoskeleton**, outside the skin, bundled reed or bent cane. They cross at the ridge and run on past it,
-  so a roof reads as a ribcage left open. Arches are pointed, never round (round reed arches read as Marsh Arab
-  mudhifs).
+- **Ribs, horns and tusks are an exoskeleton**, outside the skin: bone, bundled reed or bent cane. They cross at the ridge
+  and run on past it, so a roof reads as a ribcage left open and a small hut as a carapace with a row of spikes (refs
+  2026-10-16: the owner's hut sketches are exactly this, three to seven points over a low shell). The great halls are
+  vaulted by pairs of tusks that curl up from the ground and cross over the ridge (the tusk-hall references). Arches are
+  pointed, never round (round reed arches read as Marsh Arab mudhifs). The spikes are precise and paired, never the
+  ramshackle spikes of an orc camp: the "avoid" list stands.
 - **Bone** on the important buildings: hexapod ribs and vertebrae, and human and Lizardman bone from the bone hall's
   stock (section 5), lashed precisely.
 - **Plant:** reed bundles, split cane, woven mats and screens, fibre-tempered mud, and **lacquer**. Black and oxblood
   lacquer goes on bone and reed. High-caste lacquer has an iridescent sheen, to match the Rift's iridescent bark
   (`BIO.iridBarkMat`).
+- **Hide** (refs 2026-10-16: hides stretched over bone frames, hide tents, shaggy shingle skins): the roofs of the
+  dwellings and the barracks are hide over the ribs, from the bone hall's stock (section 5), so some of it is human.
 - **Stone**, by tier:
   - baked brick for the middle tier (Mohenjo-daro plinths and drains);
   - dressed polygonal masonry for the large buildings: stones with too many sides, fitted perfectly;
@@ -119,6 +125,13 @@ kit's one shape, used at every scale:
 - **Bronze only, no iron or steel:** verdigris fittings, ding-like ritual vessels, jewellery, armour.
 - **Palette:** bone white, reed ochre, black lacquer; verdigris and turquoise lead; oxblood is the only warm colour;
   grey-green basalt for the stone.
+
+### 2.3a The two spirals (refs 2026-10-16)
+
+The references carry both spirals, and the kit uses both with a rule: the **leiwen** (squared) is the BUILT ornament,
+on walls, blocks (the Ennis House textile-block reference), bronzes and the script; the **round whorl** (the Jomon pot,
+the Scottish carved stone balls, the fingerprint spheres) is the CARVED and GROWN ornament, on relics, vessels, bone,
+the standing stones and the spiral eye. A building is squared; what it holds is round.
 
 ### 2.4 Writing
 
@@ -276,8 +289,43 @@ tables. What there is:
 
 ## 8. Open
 
-- **Visual references:** from the owner, next. They decide how abstract the ornament is, from clean Shang-bronze
-  graphic pattern to something busier and more organic.
+- **Visual references:** delivered 2026-10-16 (section 9). The ornament is clean Shang-bronze on the built things and
+  organic whorl on the carved things (2.3a).
+- **The tent family** (section 9): hide tents over bone for the camp of the mustering ground; not in the kit yet.
+- **Texture sheets:** a leiwen block sheet, a glyph band and the spiral eye as pattern sheets would replace the geometry
+  of `40-lz-kit.js` at a distance; the prompts go in `core/materials/PLAN.md` when the owner wants them.
 - **The caste roles** in section 3 are proposed, not confirmed.
 - **Lizardman figures** to size doors and furniture against (fauna or a figure kit).
 - **The new crops,** in the biome or fruit work.
+
+## 9. The references (2026-10-16)
+
+The owner's four folders, and what each decided. "Not limited by these."
+
+**Buildings (`refs`).**
+- Skeleton halls in a desert camp, a bone-dome village: whole buildings as ribcages and skulls. The long house and the
+  barracks (ribs outside hide), the warriors' lodge (a tusk vault).
+- The pointed clay house with tusk-like buttresses: the Tenders' warren (earth cells buttressed by horns).
+- The sketch sheets of low spiked huts ("build refs", "smallhouse", "smallhouse2"): the carapace hut with its row of
+  rib-spikes. The Makers' quarters, the medicine hut, the lookout's hut.
+- The hide tents over bone and the pole-and-shield tents, the great sail tents: the mustering ground's camp (not built:
+  a tent family for the settlement).
+- Morrowind's Ashlander yurts and the tower on tall thin legs: the lookout (seven bone legs, 11 m).
+- The shaggy horned shingle house: hide and shingle skins, horns at the ridge ends.
+- The organic shell and fan buildings (Gaudi-like): the nest hall's grown chambers.
+- The skeletal windmill tower with sail arms: the panemone on a bone tower.
+- The crab-shell spires (Pinterest): the Interpreters' twisted tower's silhouette.
+
+**Reliquary (`reliquary2`).** Every one is tall, symmetrical and pointed: a central pointed mass over a pointed-arch
+portal, lower wings, candle-like spires, bronze or gold lines converging on the apex, a stepped platform with ONE axial
+stair (the Moebius pyramid, the white bone cathedral, the gold deco reliquary, the ziggurat). So the reliquary takes a
+platform and a stair after all (the ban on Warhammer's stepped temple pyramids stands for the village: this is the older
+order's one exception), nested bronze portals seven deep, and the verdigris lines.
+
+**Relics (`relics2`).** Whorl-carved spheres (the Scottish carved stone balls, the fingerprint spheres), Roman
+dodecahedra in bronze, a sliced gyroid sphere, a black spiked vessel with spiral eyes. These are the antechamber's relics
+(section 4), replacing the armillary rings as the lead piece; the rings stay.
+
+**Motifs and furniture (`motif3`).** Shang bronze *ding* and *gui* (the vessels of the furniture), the leiwen and taotie
+bronze, the Ennis House textile blocks (the leiwen as a wall unit), the Jomon flame pot (the round whorl), a verdigris
+pillar with spirals (the obelisks' bronze bands).
