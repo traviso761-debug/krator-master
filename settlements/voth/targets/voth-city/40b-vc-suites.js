@@ -87,7 +87,14 @@ VC.SUITES = {
     keepAbove: []
   }
 };
-VC.suiteOf = function (M) { return VC.SUITES[M.n] || null; };
+VC.suiteOf = function (M) {
+  var sp = VC.SUITES[M.n] || null, C = sp && VC.bpConf && VC.bpConf(M);
+  if (!C || !C.suiteRooms) return sp;
+  /* under the owner's blueprint (40d-vc-blueprint.js): the big rooms it keeps, the links among them, the halls bare */
+  var keepR = C.suiteRooms, out = Object.assign({}, sp, { rooms: sp.rooms.filter(function (r) { return keepR.indexOf(r.id) >= 0; }), noHallRooms: true });
+  out.links = sp.links.filter(function (L) { return keepR.indexOf(L[0]) >= 0 && keepR.indexOf(L[1]) >= 0; });
+  return out;
+};
 
 /* the suite's storey: the big rooms, the halls and their rooms, the passages, the exits (all in P's records). Called by
    VC.intPlanTiered for each storey of the suite's tier in place of the generic arms. */
@@ -162,7 +169,7 @@ VC.suiteStorey = function (P, M, sp, S, s, si, allSt) {
       /* the door in the big room's wall where the passage meets it */
       var dp = pt(um, vEdge); SU.doors.push({ x: dp[0], z: dp[1], w: w, storey: si });
     });
-    [-1, 1].forEach(function (sd) {
+    if (!sp.noHallRooms) [-1, 1].forEach(function (sd) {
       var lat0 = 0, a0 = H.u[0] + 2, idx = 0, end = H.u[1] - 2, vIn = sd > 0 ? hv[1] : hv[0];
       while (a0 + T.room.w[0] <= end) {
         var w = T.room.w[0] + (T.room.w[1] - T.room.w[0]) * VC.intU(cn, 300 + si * 8 + hi * 2 + (sd > 0), idx, 1);

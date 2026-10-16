@@ -139,34 +139,60 @@ var TUNE = {
                /* a room over `bigRoom` m2 is planned on the coarser `cellBig` grid. The dressing (56 VC.intDress; owner, 2026-10-15:
                   "waaaaaaay more furniture and decorative clutter ... make it ornate"): by the room's class (`by`, else `byDefault`),
                   the catalog roles hung on the walls every `wallEvery` m, stood along them `alongGap` m apart, put in the corners and
-                  laid out in the middle (`centre`, at most `centreMax` of each pattern); the court tier from `court` wealth; `doorClear` m
+                  laid out in the middle (`centre`, at most `centreMax` of each pattern a `centreArea` m2); the court tier from `court` wealth; `doorClear` m
                   kept free inside each door; a room the census sleeps people in gets beds (up to `bedsMax`) with a divider screen each; a
                   room of the kinds `homes` names a food and an item container */
                bigRoom: 400, cellBig: 0.4,
+               /* the owner's floor-by-floor blueprint (40c-vc-palace-plan.js, 40d-vc-blueprint.js; settlements/voth/palace/): the
+                  sheet each storey takes (the dungeon's; per tier, by storey, the last repeated where a tier has more storeys than
+                  sheets), the suite's big rooms it keeps (the rest of the state floor is the sheets'), the zones it cuts into
+                  a corridor and rooms (the tier 0 sheets' bulk, over `area` m2, but for the kinds `keep` names); `blueprintKinds`: what a
+                  sheet's kind is in the city (`kinds`; the others are the city's own already), the open floors (`open`), the voids
+                  a room below stands up through (`voids`; `galleries`: a railed ring of floor round one), what is not laid (`skip`: the roof gardens, the summit's pavilions);
+                  `blueprintDoor`: a door's width [plain, between two rich rooms]; `blueprintWealth`: the furnishing's wealth by a
+                  room's decor level (0 bare to 4 sumptuous), and the level from which the placer furnishes it (`blueprintPlacer`; below it, the dressing alone) */
+               blueprint: { Palace: { dungeon: 'F-1', tiers: { 0: ['F0', 'F1', 'F1', 'F1', 'F2', 'F2', 'F2'], 1: ['F3', 'F4', 'F5'], 2: ['F6', 'F7', 'F7'] },
+                                      suiteRooms: ['foyer', 'banquet', 'throne', 'judgment'],
+                                      zones: { sheets: ['F-1', 'F0', 'F1', 'F2'], area: 600, corridor: 3, room: 18, deep: 15,
+                                               keep: ['court', 'drill', 'boathouse', 'weighing', 'chapel', 'servants_hall', 'petitions', 'divan', 'mess', 'kitchen', 'bakehouse', 'brewhouse', 'laundry', 'cistern', 'pit'] } } },
+               blueprintKinds: { open: ['hall', 'passage', 'gallery', 'entrance', 'dome_gallery', 'skylit_gallery'], voids: ['void'], galleries: ['gallery_void'],
+                                 skip: ['garden', 'lantern', 'beacon', 'altar', 'pavilion_summit'],
+                                 kinds: { guard: 'guardroom', guest_bed: 'guest', guest_ante: 'reception', guest_hall: 'reception', archive: 'library', ministry: 'office',
+                                          lodging: 'chamber', kin_chamber: 'chamber', bedchamber: 'chamber', privy_kitchen: 'kitchen', larder: 'store', scullery: 'kitchen',
+                                          buttery: 'store', servery: 'kitchen', treasury: 'store', treasury_vault: 'store', wardrobe: 'store', trophy: 'reception', cistern: 'store',
+                                          interrogation: 'cell', pit: 'cell', boathouse: 'warehouse', weighing: 'warehouse', servants_hall: 'mess', chapel: 'shrine',
+                                          vestibule: 'antechamber', hammam: 'bath', pavilion: 'reception', drill: 'training', bakehouse: 'bakery', brewhouse: 'workshop',
+                                          butchery: 'kitchen', laundry: 'workshop', petitions: 'reception', divan: 'reception', council: 'reception', cabinet: 'study',
+                                          oratory: 'shrine', keeper: 'office', ancestors_hall: 'shrine', kin_hall: 'reception', feast_private: 'mess', music: 'reception',
+                                          infirmary: 'dormitory', garden: 'court' } },
+               blueprintDoor: [1.4, 2.4], blueprintWealth: [0.2, 0.4, 0.6, 0.85, 1.0], blueprintPlacer: 2,
                dress: { court: 0.7, max: 600, wallEvery: 2.4, alongGap: 0.7, doorClear: 2.2, centreMargin: 2.8, groupEvery: 7, rugEvery: 6,
                         rowEvery: 1.5, rowAisle: 3, rowFocusGap: 7, deskEvery: 3.5, workEvery: 4, stackEvery: 2.6, byDefault: 'home',
-                        centreMax: { groups: 6, rug: 6, desks: 6, work: 6, stacks: 40 }, bedsMax: 4, homes: ['living', 'cottage', 'bedroom', 'chamber', 'apartment', 'guest'],
+                        centreMax: { groups: 6, rug: 6, desks: 6, work: 6, stacks: 40 }, centreArea: 300, bedsMax: 4, homes: ['living', 'cottage', 'bedroom', 'chamber', 'apartment', 'guest'],
                         by: { banquet: 'feast', throne: 'throne', foyer: 'state', atrium: 'state', reception: 'state', guildhall: 'state', hall: 'state', antechamber: 'state',
                               sanctuary: 'rows', judgment: 'rows', shrine: 'rows', temple: 'rows', chapel: 'rows',
                               chamber: 'sleep', apartment: 'sleep', guest: 'sleep', bedroom: 'sleep', dormitory: 'sleep',
-                              highpriest: 'state', scriptorium: 'study', study: 'study', office: 'study', library: 'study', school: 'study',
+                              highpriest: 'state', scriptorium: 'study', study: 'study', office: 'study', library: 'library', school: 'study',
                               greatkitchen: 'kitchen', kitchen: 'kitchen', bakery: 'kitchen', mess: 'mess', tavern: 'mess',
                               store: 'store', warehouse: 'store', granary: 'store', vestry: 'store', armoury: 'store',
                               workshop: 'work', smithy: 'work', barracks: 'work', training: 'work', traininghall: 'work', drillhall: 'work', guardroom: 'work', markethall: 'work', shop: 'work',
-                              cell: 'cell', catacomb: 'skip', tomb: 'skip', stable: 'skip' },
+                              cell: 'cell', catacomb: 'skip', tomb: 'skip', stable: 'skip', court: 'court', bath: 'bath' },
                         kinds: {
                           '*':     { wall: ['art', 'banner', 'scroll', 'wall_rug'], along: ['bench', 'chest', 'planter', 'lamp', 'cabinet', 'chair'], corner: ['planter', 'lamp'], centre: 'groups', groupSeat: ['chair', 'divan'], surface: ['jug', 'bowl', 'candle'] },
                           state:   { wall: ['tapestry', 'painted_hanging', 'wall_rug', 'frieze', 'art', 'banner'], along: ['divan', 'statue', 'throne', 'cabinet', 'planter', 'divan', 'fire', 'lamp'], corner: ['statue', 'planter', 'fire'], groupSeat: ['divan', 'throne'], surface: ['candelabra', 'jug', 'bowl'] },
                           throne:  { wall: ['tapestry', 'painted_hanging', 'wall_rug', 'frieze', 'banner'], along: ['divan', 'statue', 'throne', 'planter', 'divan', 'fire'], corner: ['statue', 'fire'], centre: 'none' },
                           feast:   { wall: ['tapestry', 'painted_hanging', 'frieze', 'banner', 'wall_rug'], along: ['cabinet', 'statue', 'planter', 'fire', 'divan'], corner: ['statue', 'fire'], centre: 'none' },
                           rows:    { wall: ['tapestry', 'painted_hanging', 'banner', 'frieze', 'scroll'], along: ['statue', 'fire', 'planter', 'lamp'], corner: ['statue', 'fire'], centre: 'rows' },
-                          sleep:   { first: ['bed'], wall: ['art', 'wall_rug', 'painted_hanging', 'scroll'], along: ['chest', 'cabinet', 'divan', 'screen', 'lamp', 'planter', 'low_table'], corner: ['lamp', 'planter'], centre: 'rug' },
+                          sleep:   { wall: ['art', 'wall_rug', 'painted_hanging', 'scroll'], along: ['chest', 'cabinet', 'divan', 'screen', 'lamp', 'planter', 'low_table'], corner: ['lamp', 'planter'], centre: 'rug' },
                           study:   { wall: ['art', 'scroll', 'painted_hanging', 'board'], along: ['bookcase', 'bookcase', 'cabinet', 'lamp', 'planter'], corner: ['lamp', 'planter'], centre: 'desks', surface: ['books', 'candle', 'candelabra'] },
+                          library: { wall: ['scroll', 'painted_hanging', 'art'], along: ['bookcase', 'bookcase', 'cabinet', 'bookcase', 'lamp'], corner: ['lamp', 'planter'], centre: 'stacks', centreRole: 'bookcase', centreEvery: 4, surface: ['books', 'candle'] },
                           kitchen: { wall: ['wall_shelves', 'art'], along: ['hearth', 'counter', 'store', 'wall_shelves', 'bread_oven', 'store', 'workbench'], corner: ['store'], centre: 'work', surface: ['bowl', 'jug', 'bowl'] },
                           mess:    { wall: ['banner', 'art', 'scroll'], along: ['bench', 'store', 'bench', 'counter'], corner: ['store', 'lamp'], centre: 'work', surface: ['bowl', 'jug'] },
                           store:   { wall: ['wall_shelves'], along: ['store', 'chest', 'store', 'rack', 'wall_shelves'], corner: ['store'], centre: 'stacks', surface: [] },
                           work:    { wall: ['art', 'banner', 'rack', 'wall_shelves'], along: ['store', 'chest', 'bench', 'wall_shelves', 'rack', 'lamp'], corner: ['store', 'lamp'], centre: 'none' },
                           cell:    { wall: [], along: ['store'], corner: [], centre: 'none', max: 2, surface: [] },
+                          court:   { wall: [], along: ['planter', 'bench', 'planter', 'statue'], corner: ['planter'], centre: 'none', surface: [] },
+                          bath:    { wall: ['painted_hanging', 'art'], along: ['planter', 'lamp', 'chest', 'bench'], corner: ['planter', 'lamp'], centre: 'rug', surface: [] },
                           skip:    { skip: true } } },
                /* the banquet hall's feast (56 VC.suiteFeast): the table and chair (first found), the rows' offsets across the hall, a chair
                   every `chairEvery` m, the gaps at the ends (the far one holds the high table, `highSpan` m across), what stands on the tables */

@@ -217,7 +217,7 @@ VC.pedNav = function () {
     }
     /* the doors of the rooms and of the suites' great rooms */
     P.rooms.filter(function (r) { return r.door; }).map(function (r) { return { x: r.door.x, z: r.door.z, w: r.door.w, y: r.y }; })
-      .concat((P.suiteDoors || []).map(function (d) { var S = P.storeys[d.storey]; return { x: d.x, z: d.z, w: d.w, y: S ? S.y : 0 }; }))
+      .concat((P.suiteDoors || []).concat(P.bpDoors || []).map(function (d) { var S = P.storeys[d.storey]; return { x: d.x, z: d.z, w: d.w, y: S ? S.y : 0 }; }))
       .forEach(function (D) { var fs = floorsAt(D.x, D.z, D.y, 0.4, 0.6); if (!fs.length) { IN.loose++; return; } D.fs = fs; links.push(D); fs.forEach(function (fi) { unite(fs[0], fi); }); });
     /* the flights: a foot and a head, each on its floors or (the top flight's head) the deck */
     var flights = (P.flights || []).map(function (f) {

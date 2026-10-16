@@ -10,6 +10,19 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-15 (late): the Palace wired from its blueprint (branch `claude/voth-interiors`)
+
+The owner's blueprint (`palace/`, landed on main from another session) is wired: `palace/export_plan.py` makes
+`targets/voth-city/40c-vc-palace-plan.js`; `40d-vc-blueprint.js` lays each storey's sheet (`README.md`, "The Palace from its
+blueprint", says how). The real stack: tiers of half-width 169, 134, 107, 85, 67 m with 7 (+ the dungeon), 3, 3, 2, 2 storeys of
+6.2, 8.8, 6.8, 8.1, 6.2 m; the sheets were drawn for 200, 140, 95, 70. Not scaled (the stairs must line up), clipped.
+**Open:** F8 (the summit's Dawn Pavilion, altar, high garden) is not laid, and tiers 3 and 4 are still the generic planner's;
+the blueprint's 24 `NEW` pieces (another session's, `kits/catalog`) are not used yet: when they land, map them in
+`TUNE.interiors.dress.kinds` and the programmes; the Palace has 2,102 rooms and 115,000 pieces and took 16 s to furnish headless before the bare and plain
+rooms skipped the placer (not timed alone since): a per-storey lazy furnishing would cut the first view's hitch. `verify.py`'s phase C message now names the failing sub-check; its tool check fails only when a tool broke and was not
+replaced (whether one breaks in two days is the hash's). The same session also gave every sleeping room a bed and divider screen, every home a
+food and an item store, the terrace stairs landings, and the canton interiors their place on the pedestrian layer.
+
 ## 2026-10-15: the interiors from the owner's references (branch `claude/voth-interiors`, worktree `../krator-voth-interiors`)
 
 The owner's four zips of reference pictures (palace, temple, wealthy, misc) and the brief: textureless canton interiors, the

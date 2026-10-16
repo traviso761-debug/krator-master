@@ -47,7 +47,11 @@ VC.intPrograms = function () {
   P.atrium = { require: [{ need: 'benches', types: ['bench', 'seating'], n: 6 }, { need: 'plants', types: ['planter'], n: 4 }], optional: [{ types: ['statue'], max: 2 }, ART, LAMPS], extra: 12 };
   P.greatkitchen = { require: [{ need: 'hearths', types: ['stove'], n: 4 }, { need: 'tables', types: ['table', 'workstation', 'counter'], n: 3 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOODR, n: 4 }],
                      optional: [{ types: ['storage', 'stack'], max: 8 }, { types: ['shelf'], max: 4 }, { types: ['rack'], max: 3 }, { types: ['vessel'], anchor: 'surface', max: 8 }, { types: ['stove'], max: 2 }], extra: 4 };
+  /* the blueprint's courts and baths (40d-vc-blueprint.js) */
+  P.court = { require: [{ need: 'plants', types: ['planter'], n: 2 }], optional: [{ types: ['bench', 'seating'], max: 4 }, { types: ['statue'], max: 1 }, { types: ['planter'], max: 6 }], extra: 20 };
+  P.bath = { require: [], optional: [{ types: ['storage'], max: 2 }, { types: ['planter'], max: 2 }, { types: ['lamp', 'brazier'], max: 3 }, { types: ['bench', 'seating'], max: 2 }], extra: 12 };
   var A = IX.KIND_ALIAS;
+  A.court = ['yard', 'garden', 'court', 'hall']; A.bath = ['bedroom', 'hall', 'shrine'];
   A.foyer = ['hall', 'court', 'antechamber']; A.banquet = ['hall', 'tavern', 'court']; A.throne = ['court', 'hall', 'antechamber']; A.judgment = ['court', 'hall', 'study', 'school'];
   A.apartment = ['bedroom', 'hall', 'court', 'study']; A.guest = ['bedroom', 'hall']; A.scriptorium = ['study', 'library', 'school']; A.highpriest = ['study', 'court', 'hall', 'shrine', 'library'];
   A.vestry = ['store', 'shrine', 'study']; A.sanctuary = ['shrine', 'hall', 'temple']; A.atrium = ['court', 'hall', 'shrine', 'yard']; A.greatkitchen = ['kitchen', 'store', 'bakery'];
@@ -83,6 +87,13 @@ VC.intFurnish = function (cn) {
     var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + q, r.x1 - q), CANT.cl(r.door.z, r.z0 + q, r.z1 - q)], w: r.door.w, to: 'hall' }] : [];
     /* a suite's room: its doors are the suite's doors on its walls; its fixtures the suite's decor in it */
     var fixtures = [], specId = r.great && SU ? String(r.id).slice(cn.length + 1) : null;
+    /* a blueprint room (40d-vc-blueprint.js): its doors are the blueprint's on its walls, its wealth its decor level */
+    if (r.bp) (P.bpDoors || []).forEach(function (d) {
+      if (d.storey !== r.storey || (r.door && Math.abs(d.x - r.door.x) < 0.05 && Math.abs(d.z - r.door.z) < 0.05)) return;
+      var onX = (Math.abs(d.x - r.x0) < 0.8 || Math.abs(d.x - r.x1) < 0.8) && d.z > r.z0 - 0.5 && d.z < r.z1 + 0.5, onZ = (Math.abs(d.z - r.z0) < 0.8 || Math.abs(d.z - r.z1) < 0.8) && d.x > r.x0 - 0.5 && d.x < r.x1 + 0.5;
+      if (onX || onZ) doors.push({ at: [CANT.cl(d.x, r.x0 + q, r.x1 - q), CANT.cl(d.z, r.z0 + q, r.z1 - q)], w: d.w, to: 'hall' });
+    });
+    var rw = r.decor != null ? T.blueprintWealth[r.decor] : wealth;
     if (specId != null) {
       (SU.doors || []).forEach(function (d) {
         if (d.storey !== r.storey) return;
@@ -109,14 +120,14 @@ VC.intFurnish = function (cn) {
       var placed = [];
       if (r.kind === 'banquet') { var Fe = VC.suiteFeast(P, r, cat); Fe.forEach(function (p) { p.room = r.id; placed.push(p); }); out.feast += Fe.length; }
       /* 2. the programme (not in a suite's state room: the placer's search takes seconds there and the dressing lays it out) */
-      var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: wealth, id: r.id, seed: seed, fixtures: fixtures.concat(placed.map(pieceFx)) });
-      if (!r.great) {
+      var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: rw, id: r.id, seed: seed, fixtures: fixtures.concat(placed.map(pieceFx)) });
+      if (!r.great && !(r.bp && r.decor < T.blueprintPlacer)) {   /* a blueprint's bare and plain rooms: the dressing alone (the placer's search is the cost) */
         var plan = furnishRoom(R, cat, { seed: 0, cell: cell, backtrack: 6, passes: 2 });
         plan.placements.forEach(function (p) { p.room = r.id; placed.push(p); });
         out.missing += (plan.report && plan.report.missing ? plan.report.missing.length : 0);
       }
       /* 3. the dressing */
-      VC.intDress(R, r, placed, fixtures, cat, cn, wealth, seed + 17).forEach(function (p) { p.room = r.id; placed.push(p); out.dressed++; });
+      VC.intDress(R, r, placed, fixtures, cat, cn, rw, seed + 17).forEach(function (p) { p.room = r.id; placed.push(p); out.dressed++; });
       placed.forEach(function (p) { out.placements.push(p); });
       out.rooms++;
     } catch (e) { out.errors = (out.errors || 0) + 1; if (!out.firstError) out.firstError = r.id + ': ' + e.message; }
@@ -139,7 +150,7 @@ VC.intDress = function (R, r, placed, fixtures, cat, cn, wealth, seed) {
      standing out from the wall beside it (a room divider) */
   var cen = TUNE.census && TUNE.census.rooms && TUNE.census.rooms[r.kind], sleep = cen ? cen[1] || 0 : 0;
   var isBed = function (p) { var F = typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]; return (p.type || (F && F.type)) === 'bed'; };
-  var bedsWant = sleep > 0 ? Math.max(0, Math.min(sleep, D.bedsMax || 4) - placed.filter(isBed).length) : 0;
+  var bedsWant = sleep > 0 ? Math.max(0, Math.min(r.decor >= 3 ? 1 : sleep, D.bedsMax || 4) - placed.filter(isBed).length) : 0;   /* a rich room: the one bed */
   if (!K || (K.skip && !bedsWant)) return out;
   var s0 = seed >>> 0, rnd = function () { s0 = (s0 + 0x6D2B79F5) >>> 0; var t = s0; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   var tiers = wealth >= D.court ? ['court', 'common'] : ['common', 'court'];
@@ -265,7 +276,8 @@ VC.intDress = function (R, r, placed, fixtures, cat, cn, wealth, seed) {
        1,500 m2 room is not a classroom of a hundred desks) */
     var grid = function (step, f) {
       var nx = Math.max(1, Math.floor((cx1 - cx0) / step)), nz = Math.max(1, Math.floor((cz1 - cz0) / step));
-      var sx = (cx1 - cx0) / nx, sz = (cz1 - cz0) / nz, mx = (cx0 + cx1) / 2, mz = (cz0 + cz1) / 2, pts = [], cap = (D.centreMax || {})[C] || 1e9, n = 0;
+      var sx = (cx1 - cx0) / nx, sz = (cz1 - cz0) / nz, mx = (cx0 + cx1) / 2, mz = (cz0 + cz1) / 2, pts = [], n = 0;
+      var cap = Math.ceil(((D.centreMax || {})[C] || 1e9) * Math.max(1, (x1 - x0) * (z1 - z0) / (D.centreArea || 300)));   /* more in a bigger room */
       for (var i = 0; i < nx; i++) for (var j = 0; j < nz; j++) pts.push([cx0 + (i + 0.5) * sx, cz0 + (j + 0.5) * sz, i, j]);
       pts.sort(function (a, b) { return Math.hypot(a[0] - mx, a[1] - mz) - Math.hypot(b[0] - mx, b[1] - mz) || a[2] - b[2] || a[3] - b[3]; });
       for (var k = 0; k < pts.length && n < cap; k++) if (f(pts[k][0], pts[k][1], pts[k][2], pts[k][3])) n++;
@@ -301,7 +313,7 @@ VC.intDress = function (R, r, placed, fixtures, cat, cn, wealth, seed) {
         }
       }
     } else if (C === 'desks' || C === 'work' || C === 'stacks') {
-      var role2 = C === 'desks' ? 'desk' : C === 'work' ? 'table' : 'store', step = C === 'desks' ? D.deskEvery : C === 'work' ? D.workEvery : D.stackEvery;
+      var role2 = C === 'desks' ? 'desk' : C === 'work' ? 'table' : 'store', step = K.centreEvery || (C === 'desks' ? D.deskEvery : C === 'work' ? D.workEvery : D.stackEvery);
       var k3 = key(K.centreRole || role2); if (k3) grid(step, function (x, z, i, j) {
         var p = put(k3, 0, x, z, ryL, 'floor'); if (!p) return false;
         if (C !== 'stacks') tables.push(p);

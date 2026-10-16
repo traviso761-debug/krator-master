@@ -489,6 +489,23 @@ bridge's face:
   records and galleries are the same records the generic cantons use, so the walker, the cutaway, the furnishing and the
   census need nothing new; the new room kinds (foyer, banquet, throne, apartment, guest, judgment, scriptorium, sanctuary,
   atrium, highpriest, vestry) are in `TUNE.census.rooms`.
+* **The Palace from its blueprint** (`palace/BLUEPRINT.md`, the sheets F-1 to F8; `palace/export_plan.py` writes
+  `targets/voth-city/40c-vc-palace-plan.js` from `palace/blueprint.py`; `40d-vc-blueprint.js` lays it out;
+  `TUNE.interiors.blueprint`, `blueprintKinds`). Each storey takes a sheet: the dungeon F-1; tier 0's seven storeys F0, F1 three
+  times, F2 three times; the state floor F3 to F5; tier 2 F6, F7, F7 (tiers 3 and 4 keep the generic planner; F8, the summit's
+  pavilion and garden, is not laid yet). The storeys keep the stack's own heights (6.2 m on tier 0, 8.8 m on the state floor,
+  6.8 m on tier 2): the sheets give only the plan, clipped to each tier's wall (tier 0 is 169 m in half-width, the sheets
+  assumed 200: its outermost band is cut off; the stairs keep their places so they line up tier to tier). The suite keeps its
+  four big rooms (foyer, banquet hall, throne room, Hall of Judgment) with their galleries, decor and exits; everything else on
+  the state floor is the sheets'. A hall, a passage, a gallery is an open floor; a `gallery_void` a railed ring of floor round
+  the tall room under it; a room with voids over it stands that tall (the light courts, the Library of the Sun); a tier 0 zone
+  (the sheets' bulk, over 600 m2) is cut into a corridor and rooms 18 m long. The doors are found from the core outward: each
+  room takes its first door from the hall or room it touches that is reached first (the second-rank rooms behind the first);
+  a room nothing reaches is dropped. Every stair shaft the next storey's sheet also has gets two flights and a landing (the
+  Servants' Way dock to tier 2, the Kitchen, Chancery, Gaol, Inner, Secret and Astronomers' stairs). A spine hall runs from the
+  core to the canton door's passage on the ground storey, so the dock walks in. Rooms keep their sheet name and kind
+  (`name`, `bpKind`; the city's kind by `blueprintKinds.kinds`); a room's decor level is its furnishing's wealth, and the bare
+  and plain ones are dressed without the placer (`blueprintPlacer`). The log line: rooms, zones, doors, shafts, flights.
 * **The kitchens** (owner: "it's also not clear where the kitchens are"): the Palace's great kitchen opens off the banquet
   hall's north wall and onto the north hall, the ruler's own kitchen beside the chambers; the Temple's priests' kitchen and
   their refectory off its north hall, the sanctuary reached through the refectory (`greatkitchen`, `mess` in the census). The

@@ -92,7 +92,8 @@ VC.intPlanAll = function () {
     });
   });
   var n = 0, r = 0; for (var k in VC.INT.cantons) { n++; r += VC.INT.cantons[k].rooms.length; }
-  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out; ' + framed + ' stone courses through the storeys framed';
+  var bpTxt = Object.keys(VC.INT.cantons).filter(function (k) { return VC.INT.cantons[k].bpLog; }).map(function (k) { return '; the ' + k + ' from its blueprint: ' + VC.INT.cantons[k].bpLog.summary; }).join('');
+  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out; ' + framed + ' stone courses through the storeys framed' + bpTxt;
 };
 
 /* ---------------------------------------------------------------- a tiered canton */
@@ -147,10 +148,13 @@ VC.intPlanTiered = function (M) {
     P.storeys.push(S);
     var suiteStorey = sp && t.k === sp.tier && !s.dungeon;
     if (suiteStorey) VC.suiteStorey(P, M, sp, S, s, si, allSt);
+    /* the owner's blueprint (40d-vc-blueprint.js): its sheet in place of the generic arms (beside the suite's big rooms) */
+    var bpC = VC.bpConf && VC.bpConf(M), bpHere = bpC && VC.bpSheet(bpC, t, s);
+    if (bpHere) VC.bpStorey(P, M, S, s, si, allSt, bpC);
     /* what the suite keeps clear on this tier (the throne room's dome): halls stop short of it, rooms keep off it */
     var keepOut = (P.suite && P.suite.keep || []).filter(function (k) { return k.tier === t.k; });
     /* the arms: both axes; the axis arms reach the wall on the lowest storey of each tier, the others stop short */
-    if (!suiteStorey) [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
+    if (!suiteStorey && !bpHere) [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
       var d = a[0], reach = ground || a[1] ? t.R - 1 : Math.min(t.R - 1, T.arm);
       /* the arm's length from the core's middle: the axis arm runs from the core, the opposite one from the far side */
       var c0 = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1], start = T.core - 1.5, end = reach - c0;   /* it starts inside the core: no wall between */
@@ -233,6 +237,8 @@ VC.intPlanTiered = function (M) {
       P.rooms = P.rooms.filter(function (r) { return r.storey !== g0i || !VC.intOverlap(r, pas, 0.2); });
     }
   });
+  /* the blueprint's spine, doors and stairs, once the tunnels stand */
+  if (P.bpLog) VC.bpFinish(P, M, allSt);
   /* the top: the core's last flights rise through the top deck into a stair house */
   P.house = VC.intStairHouse(P);
   if (P.house.keep) {
@@ -370,14 +376,34 @@ VC.intWalls = function (P) {
       /* two open spaces that share a wall line (the suites' big rooms) build it once */
       var key = (alongX ? 'x' : 'z') + L.toFixed(2) + '|' + s[0].toFixed(2) + '|' + s[1].toFixed(2) + '|' + y.toFixed(2);
       if (seenWall[key]) return; seenWall[key] = 1;
+      /* the blueprint's rooms and halls share walls of every length: a run already standing at this height is not built
+         again over the stretch it covers */
+      if (P.bp) {
+        var lk = (alongX ? 'x' : 'z') + L.toFixed(2), runs = seenRun[lk] = seenRun[lk] || [], pcs = [[s[0], s[1]]];
+        runs.forEach(function (q) { if (q[2] > y + 0.05 || q[3] < y + hh - 0.05) return; pcs = [].concat.apply([], pcs.map(function (p) { return q[0] >= p[1] || q[1] <= p[0] ? [p] : [[p[0], q[0]], [q[1], p[1]]].filter(function (x) { return x[1] - x[0] > 0.05; }); })); });
+        pcs.forEach(function (p) { runs.push([p[0], p[1], y, y + hh]); B.push(alongX ? { x0: p[0], x1: p[1], z0: L - t / 2, z1: L + t / 2, y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag } : { x0: L - t / 2, x1: L + t / 2, z0: p[0], z1: p[1], y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag }); });
+        return;
+      }
       B.push(alongX ? { x0: s[0], x1: s[1], z0: L - t / 2, z1: L + t / 2, y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag } : { x0: L - t / 2, x1: L + t / 2, z0: s[0], z1: s[1], y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag }); });
   };
-  var seenWall = {};
-  var roomDoors = P.rooms.filter(function (r) { return r.door; }).map(function (r) { return Object.assign({ storey: r.storey }, r.door); }).concat(P.suiteDoors || []);
+  var seenWall = {}, seenRun = {};
+  var roomDoors = P.rooms.filter(function (r) { return r.door; }).map(function (r) { return Object.assign({ storey: r.storey }, r.door); }).concat(P.suiteDoors || [], P.bpDoors || []);
   /* a room: three walls (its hall side is the hall's); a great hall (open) has its hall record's walls and floor */
   P.rooms.forEach(function (r) {
     if (r.open) return;
     var e = [[r.x0, r.z0, r.x1, r.z0], [r.x0, r.z1, r.x1, r.z1], [r.x0, r.z0, r.x0, r.z1], [r.x1, r.z0, r.x1, r.z1]];
+    if (r.bp) {
+      /* a blueprint room: all four walls, cut at its doors (to halls, rooms, the suite's rooms), as tall as it stands */
+      /* a room standing through storeys (under a void, a gallery) has its walls storey by storey, each cut at that storey's
+         doors (the rooms round a gallery open onto it) */
+      for (var ks = r.storey; ks <= (r.tallTo != null ? r.tallTo : r.storey); ks++) {
+        var Sk = P.storeys[ks], Sn = P.storeys[ks + 1], yk = ks === r.storey ? r.y : Sk.y, hk = r.tallTo == null ? r.h : ks < r.tallTo && Sn ? Sn.y - yk : Sk.y + Sk.h - yk;
+        var dsr = roomDoors.filter(function (d) { return d.storey === ks; });
+        e.forEach(function (q) { line(q[0], q[1], q[2], q[3], ks, yk, hk, r, dsr, 'room'); });
+      }
+      F.push({ x0: r.x0, x1: r.x1, z0: r.z0, z1: r.z1, y: r.y, kind: 'room', storey: r.storey, room: r.id, h: r.tallTo != null ? r.h : undefined });
+      return;
+    }
     e.forEach(function (q) { var alongX = q[1] === q[3], L = alongX ? q[1] : q[0]; if ((alongX ? Math.abs(r.door.z - L) : Math.abs(r.door.x - L)) < 0.05) return; line(q[0], q[1], q[2], q[3], r.storey, r.y, r.h, r, [], 'room'); });
     F.push({ x0: r.x0, x1: r.x1, z0: r.z0, z1: r.z1, y: r.y, kind: 'room', storey: r.storey, room: r.id });
   });

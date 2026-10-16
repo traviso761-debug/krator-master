@@ -441,7 +441,9 @@ def items_bad(sc):
     b = it['bought']
     if not any(b.get(f) for f in ('corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread')): return 'no food bought'
     if not any(b.get(c) for c in ('shirt', 'trousers', 'dress', 'shoes')): return 'no clothes bought'
-    if not it['tools']['replacedAtWork']: return 'no tool replaced during work time'
+    # a tool that wore out at work is replaced during work time (whether one wears out in two days is the hash's: about one
+    # in two hundred tool holders; the replacing itself is core/simulation/test-sim.js's)
+    if it['tools']['broken'] and not it['tools']['replacedAtWork']: return 'no tool replaced during work time'
     if not it['hurt']['poultices']: return 'no poultice bought'
     m = it['meals']; tot = m['meal'] + m['single'] + m['none'] + m['bought'] + m['mess']
     if not tot or (m['meal'] + m['bought'] + m['mess']) < 0.7 * tot: return 'full meals %s of %s' % (m['meal'] + m['bought'] + m['mess'], tot)
@@ -664,7 +666,8 @@ def verify_city(a, port, rel, sync_playwright):
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
                 or not sc.get('workday') or week_bad(sc) or needs_bad(sc) or items_bad(sc) or econ_bad(sc) or animals_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
-                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
+                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs']))
+                + ' [week %s, needs %s, items %s, economy %s, animals %s, check %s, out of work over 10%%: %s]' % (bool(sc.get('workday') and week_bad(sc)), sc.get('workday') and needs_bad(sc), sc.get('workday') and items_bad(sc), sc.get('workday') and econ_bad(sc), sc.get('workday') and animals_bad(sc), bool(sc['check']), bool(pc) and pc['unemployed'] > 0.1 * pc['workers']))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')
