@@ -70,10 +70,13 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
     const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage(p,q,dh,dh*.62,LK_ST,P('basalt')));}
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,.2,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
-  for(let i=1;i<A.length;i++){const p=A[i];FURNISH('lizardmen_court_bed',p[0]*.98,.2,p[1]*.98,Math.atan2(-p[0],-p[1]));}
-  for(let i=0;i<7;i++){const an=i*TAU/7,r=i?1.9:0;FURNISH('lizardmen_court_egg_cradle',Math.cos(an)*r,.2,Math.sin(an)*r,-an);}
-  FURNISH('lizardmen_court_hearth',0,.2,-3.0,0);FURNISH_HANG('lizardmen_court_hanging',0,4.4,0,0);
-  for(let i=1;i<B.length;i++){const p=B[i];FURNISH('lizardmen_court_carpet',p[0]*.95,.2,p[1]*.95,0);}}});
+  const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1;return [p[0]-s*dz/L*p[2]*.55,p[1]+s*dx/L*p[2]*.55];};
+  for(let i=1;i<A.length;i++){const p=A[i],q=A[i-1],b=side(p,q,1);FURNISH('lizardmen_court_bed',b[0],.2,b[1],Math.atan2(p[0]-b[0],p[1]-b[1]));}
+  for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1);FURNISH('lizardmen_court_carpet',b[0],.2,b[1],0);}
+  {const dA=face([0,0],A[A.length-1]),dB=face([0,0],B[B.length-1]);
+   for(let i=0;i<9;i++){const an=i*TAU/9+.2,ry=Math.atan2(Math.sin(an),Math.cos(an));if([dA,dB].some(d=>Math.abs(((ry-d)%TAU+TAU+PI)%TAU-PI)<.55))continue;
+    const sx=Math.sin(ry),sz=Math.cos(ry);FURNISH('lizardmen_court_bed',sx*3.1,.2,sz*3.1,ry+PI);FURNISH('lizardmen_court_egg_cradle',sx*1.8,.2,sz*1.8,ry+PI);}
+   FURNISH('lizardmen_court_hearth',0,.2,0,0);FURNISH_HANG('lizardmen_court_hanging',0,4.4,0,0);}}});
 /* ---------------------------------------------------------------- the Interpreters' college: three twisted towers */
 defBuilding({key:'lk-college',name:"Interpreters' college",seed:7705,caste:5,cut:true,w:24,d:16,h:26,budget:150000,
  tags:{types:['civic','religious'],wealth:'rich',role:'hall'},

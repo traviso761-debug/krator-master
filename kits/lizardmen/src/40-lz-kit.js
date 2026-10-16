@@ -91,20 +91,26 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
    strips join the two shells along the slanted edges. o.mk, o.col */
 function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth'),seg=o.seg||16,r0=prof[0][0],top=prof[prof.length-1][1];
  const R=y=>{for(let i=1;i<prof.length;i++)if(y<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
- const inn=p=>[p[0]*.88,p[1]*.97];
  const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.7),dw=dh*.62;return {dh,dw,ry:d.ry||0,aw:Math.asin(Math.min(.9,dw/2/r0)),ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
- W(x,0,z,o.ry||0,()=>{if(!doors.length){lathe(mk,0,0,prof,seg,col,{});lathe(mk,0,0,prof.map(inn),seg,col,{inward:true});return;}
-  /* the shell splits at ys, just over the tallest door: below it, arcs between the doors' wedges; above it, whole rings */
-  const ys=Math.min(top*.8,Math.max(...doors.map(d=>d.dh))*1.12);
-  const lo=prof.filter(p=>p[1]<ys).concat([[R(ys),ys]]),hi=[[R(ys),ys]].concat(prof.filter(p=>p[1]>ys));
-  lathe(mk,0,0,hi,seg,col,{});lathe(mk,0,0,hi.map(inn),seg,col,{inward:true});
-  for(let i=0;i<doors.length;i++){const a=doors[i],b=doors[(i+1)%doors.length];let a0=a.ac+a.aw,a1=b.ac-b.aw+(i===doors.length-1?TAU:0);if(a1<=a0)continue;
-   const n=Math.max(3,Math.round(seg*(a1-a0)/TAU));lathe(mk,0,0,lo,n,col,{a0,a1});lathe(mk,0,0,lo.map(inn),n,col,{a0,a1,inward:true});}
-  /* each door: the patch from the triangle's slanted top up to ys (outer and inner), and the reveals */
-  for(const d of doors)W(0,0,0,d.ry,()=>{const aw=d.aw,dh=d.dh;
-   for(const [sc,ysc,fl] of [[1,1,false],[.88,.97,true]]){psurf(mk,(u,v)=>{const a=PI/2-aw+2*aw*u,yb=dh*(1-Math.abs(2*u-1)),y=lerp(yb,ys,v),rr0=R(y)*sc;return [Math.cos(a)*rr0,y*ysc,Math.sin(a)*rr0];},8,6,col,{flip:fl});}
-   for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+kk*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:kk>0});
-   door(0,0,r0*.94,0,d.dw);});});}
+ /* ONE surface function for every panel, outer (sc 1) and inner (sc .88, .97 of the height): the panels share edges and shading
+    exactly, so neither a seam nor a slice shows. A panel is an angular sector from a bottom edge yb(a) up to the top. */
+ const S=(sc,ysc)=>(a,y)=>{const r=R(y)*sc;return [Math.cos(a)*r,y*ysc,Math.sin(a)*r];};
+ const nv=Math.max(6,prof.length*2);
+ const panel=(a0,a1,yb,sc,ysc,inward)=>{const f=(u,v)=>{const a=a0+(a1-a0)*u,b=yb(a),y=lerp(b,top,v);return S(sc,ysc)(a,y);};
+  const n=Math.max(2,Math.round(seg*Math.abs(a1-a0)/TAU)*2);
+  /* facing: the raw normal at the middle against the outward direction */
+  const pm=f(.5,.5),pa=f(.52,.5),pb=f(.5,.52),du=[pa[0]-pm[0],pa[1]-pm[1],pa[2]-pm[2]],dv=[pb[0]-pm[0],pb[1]-pm[1],pb[2]-pm[2]];
+  const nx=du[1]*dv[2]-du[2]*dv[1],nz=du[0]*dv[1]-du[1]*dv[0];const out=pm[0]*nx+pm[2]*nz;
+  psurf(mk,f,n,nv,col,{flip:inward?out>0:out<0});};
+ W(x,0,z,o.ry||0,()=>{if(!doors.length){for(const [sc,ysc,inw] of [[1,1,false],[.88,.97,true]])panel(0,TAU,()=>0,sc,ysc,inw);return;}
+  for(const [sc,ysc,inw] of [[1,1,false],[.88,.97,true]]){
+   /* between the doors: full-height sectors from the floor */
+   for(let i=0;i<doors.length;i++){const a=doors[i],b=doors[(i+1)%doors.length];const a0=a.ac+a.aw,a1=b.ac-b.aw+(i===doors.length-1?TAU:0);if(a1>a0+1e-4)panel(a0,a1,()=>0,sc,ysc,inw);}
+   /* over each door: the sector above its triangle */
+   for(const d of doors)panel(d.ac-d.aw,d.ac+d.aw,a=>d.dh*(1-Math.abs(a-d.ac)/d.aw),sc,ysc,inw);}
+  /* the reveals along each door's slanted edges, between the two shells */
+  for(const d of doors){for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=d.ac+kk*d.aw*(1-u),y=d.dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y*lerp(.97,1,v),Math.sin(a)*rr0];},4,2,col,{flip:kk<0});
+   W(0,0,0,d.ry,()=>door(0,0,r0*.94,0,d.dw));}});}
 /* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
 function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot radius: a TRIANGULAR tunnel the section of the doors (dw at the
  floor, dh at the apex), from between one dome's two shells to between the other's, so its slopes meet the doors' slanted edges */
