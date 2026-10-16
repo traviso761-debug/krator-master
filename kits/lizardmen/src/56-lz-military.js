@@ -21,22 +21,24 @@ defBuilding({key:'lz-barracks',name:'Barracks',seed:7401,caste:'all',cut:true,w:
   const dh=lzDoorH(6),dw=dh*.62;
   lzBatterRoom(L,Wd,.2,wh,'cyclo',P('basalt'),{lean:{front:.09,back:-.05,left:.04,right:-.08},front:[{s:L/2,w:dw,h:dh,door:true},lzVent(4,2,wh*.6),lzVent(4,L-2,wh*.6)],back:[lzVent(4,L*.25,wh*.6),lzVent(4,L*.5,wh*.6),lzVent(4,L*.75,wh*.6)]});
   lzNoCut(()=>{lzPortal(0,.2,Wd/2+.06,0,dh,{mk:'bronze'});for(const s of [-1,1])lzEye(s*5.2,.2+wh*.7,Wd/2-.09*wh*.7+.04,0,.36,{mk:'bronze'});});lzThreshold(0,Wd/2+.2,0,dw);
-  lzRibRoof(L,Wd,wh+.25,wh+rh,11,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD')});
+  lzRibRoof(L,Wd,wh+.25,wh+rh,11,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD'),leanEnds:{left:.04,right:-.08},y0:.2});
   /* the six suits, the biggest nearest the door */
   for(let c=6;c>=1;c--)lmArmour(-L/2+1.2+(6-c)*2.3,-Wd/2+1.1,0,LZ_CASTE[c].h);
   lmRack(5.6,-Wd/2+1.2,0,9);lmRack(-L/2+1.2,1.4,PI/2,7);
-  lzFurnRoom(L-1.2,Wd-1,.2,'common',{beds:3,noHearth:false,ceil:wh+rh*.5,extra:[['lizardmen_common_rack',L/2-.9,1.4,-PI/2],['lizardmen_common_rack',L/2-.9,-1.2,-PI/2],['generic_trade_bunk',-2,2.4,0],['generic_trade_locker',2.4,2.6,0]]});}});
+  lzFurnRoom(L-1.2,Wd-1,.2,'common',{beds:0,noHearth:false,ceil:wh+rh*.5,extra:[['lizardmen_common_rack',L/2-.9,1.4,-PI/2],['lizardmen_common_rack',L/2-.9,-1.2,-PI/2],['generic_trade_bunk',-5.6,3.2,PI],['generic_trade_bunk',5.4,3.2,PI],['generic_trade_locker',-3.2,3.3,PI]]});}});
 /* ---------------------------------------------------------------- the mustering ground */
-defBuilding({key:'lz-muster',name:'Mustering ground',seed:7402,caste:'all',cut:false,w:24,d:24,h:3.2,budget:60000,
+defBuilding({key:'lz-muster',name:'Mustering ground',seed:7402,caste:'all',cut:false,w:24,d:38,h:9.8,budget:170000,
  tags:{types:['military','civic'],wealth:'middle',role:'ground'},
- note:'a square of packed earth whose ranks are marked by basalt posts on a squared-spiral grid winding in to one tall post with a spiral eye; no banners, drums, horns, gongs or fires anywhere',
- build(o){box('earthR',0,0,0,23,.1,23,P('earthP'));
-  let px=-10,pz=10,dir=0,len=20;let k=0;
+ note:'a square of packed earth whose ranks are marked by basalt posts on a squared-spiral grid winding in to one tall post with a spiral eye; behind it the camp, a hide tent and a pole-and-shield tent (57-lc-camp.js); no banners, drums, horns, gongs or fires anywhere',
+ build(o){box('earthR',0,0,-2,23,.1,34,P('earthP'));
+  /* the camp at the back of the ground: two of the tents, pitched a little askew */
+  place('lc-hide',-6,-13,.15,{y:0});place('lc-shield',5.5,-12.5,-.2,{y:0});
+  W(0,0,4,0,()=>{let px=-10,pz=10,dir=0,len=20;let k=0;
   for(let n=0;n<11&&len>1.2;n++){const dx=[1,0,-1,0][dir],dz=[0,-1,0,1][dir],steps=Math.max(1,Math.floor(len/2.2));
    for(let i=0;i<steps;i++){const t=(i+.5)/steps,x=px+dx*len*t,z=pz+dz*len*t;k++;box('basalt',x,.1,z,.28,.8+.02*(k%5),.28,P(k%4?'basalt':'basaltD'),n*.2);}
    px+=dx*len;pz+=dz*len;dir=(dir+1)%4;if(n%2)len-=2.6;else len-=2.2;}
-  lzTwist(0,0,3.0,5,.6,.3,.1,{mk:'basalt'});lzEye(0,3.3,0,0,.3,{mk:'bronze'});
-  door(0,0,11.5,0,3);}});
+  lzTwist(0,0,3.0,5,.6,.3,.1,{mk:'basalt'});lzEye(0,3.3,0,0,.3,{mk:'bronze'});});
+  door(0,0,15.5,0,3);}});
 /* ---------------------------------------------------------------- the lookout: a hut on seven tall bone legs */
 defBuilding({key:'lz-lookout',name:'Lookout',seed:7403,caste:4,cut:true,w:9,d:9,h:16,budget:70000,
  tags:{types:['military'],wealth:'middle',role:'watch'},
@@ -50,5 +52,5 @@ defBuilding({key:'lz-lookout',name:'Lookout',seed:7403,caste:4,cut:true,w:9,d:9,
   box('cane',0,H+.2,0,3.6,.14,3.6,P('cane'));
   const dh=lzDoorH(4),dw=dh*.62;
   lzBatterRoom(3.2,3.2,H+.34,1.9,'cane',P('cane'),{lean:{front:.05,back:-.06,left:.08,right:-.04},front:[{s:1.6,w:Math.min(dw,1.5),h:Math.min(dh,2.1),door:true}],left:[lzVent(4,1.6,.9)],right:[lzVent(4,1.6,.9)],back:[lzVent(4,1.6,.9)]});
-  lzRibRoof(3.2,3.2,H+2.2,H+4.6,5,{mk:'hide',col:P('hide'),over:.5,ribR:.1,past:.5,bend:1,ext:.3,endMk:'mat'});
+  lzRibRoof(3.2,3.2,H+2.2,H+4.6,5,{mk:'hide',col:P('hide'),over:.5,ribR:.1,past:.5,bend:1,ext:.3,endMk:'mat',leanEnds:{left:.08,right:-.04},y0:H+.34});
   FURNISH('lizardmen_common_stool',-.6,H+.34,-.2,0);FURNISH('lizardmen_common_rack',.9,H+.34,-.9,0);FURNISH('generic_water',-.9,H+.34,.8,0);FURNISH('lizardmen_common_rug',0,H+.34,.1,0);}});

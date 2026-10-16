@@ -19,15 +19,16 @@ on the ground at its centre, **+z its front**.
 | `55-lz-special.js` | ls | `lsModel` (the village model, recursive); the seer's hall, the medicine hut, the warehouse |
 | `56-lz-military.js` | lm | `lmArmour(x, z, ry, h)` (an empty suit h tall), `lmRack`; the barracks, the mustering ground, the lookout |
 | `56-sa-beasts.js` | sa | the fauna kit's frilled lizard and burden beast as `life` defs (`saHerd`), `saFlush` |
+| `57-lc-camp.js` | lc | `lcSkin(R, h, dh, dw, o)` (a hide cone with a caste-sized triangular door cut in it: declares the door, lays the threshold; `bulge` < 0 sags the skin inward between the frame), `lcSkinR`, `lcStake`, `lcRibs(n, R, h, o)` (odd ribs outside the skin, crossing above the apex), `lcShield`; the four tents (`lc-hide lc-shield lc-seer lc-sail`); `lz-muster` places two of them with `place()` |
 | `58-lz-monument.js` | lo | the stelae, the obelisk, the circle, the ley line shrine, the bells |
-| `60-lz-reliquary.js` | lr | `lrRings lrSphere lrDodec lrVessel` (the relics); the reliquary and its antechamber |
+| `60-lz-reliquary.js` | lr | `lrRings lrSphere lrDodec lrVessel` (the relics); the reliquary and its antechamber; `lrDustBox(x, y, z, w, h, d)` records a box of air whose motes fall upward (`LR_DUST`, a `THREE.Points` layer moved by a frame hook, after 93-anim's smoke); `MAT.lrShim` the shimmer (additive, its alpha breathing with `ANIMU.uTime`: the seven nested triangles converging on the inner door) |
 | `89-rows.js` | | `FAMILIES` (the sheet's rows) |
 
 ## Rules for a new fragment
 
 - A building fragment (`4x`-`7x`) starts `// prefix: xx` and every top-level name starts with it. Every `defBuilding` has a
   unique numeric `seed:` (dwellings 7001-7099, the nest hall 7101, trades 7201-7299, specialists 7301-7399, military
-  7401-7499, monuments 7501-7599, the reliquary and beasts 7601-7699).
+  7401-7419, the camp's tents 7421-7449, monuments 7501-7599, the reliquary and beasts 7601-7699).
 - Every building def declares `caste:` (1-6, or `'all'` for a shared building with nested portals): `verify.py` asserts it.
   Its doors are `lzDoor(caste, s)` openings in an `lzWall`, or an `lzPortal` of `lzDoorH(6)` on a shared building.
 - Openings are triangles. No windows at a human's eye height: vents sit high (`lzVent`).

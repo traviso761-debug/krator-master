@@ -19,16 +19,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `27-mat.js` | 6 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 6 |  |
-| `40-lz-kit.js` | 20 |  |
+| `40-lz-kit.js` | 24 |  |
 | `42-lz-dress.js` | 3 |  |
-| `50-lz-dwell.js` | 10 |  |
+| `50-lz-dwell.js` | 9 |  |
 | `52-lz-nest.js` | 4 |  |
-| `54-lz-trade.js` | 14 |  |
-| `55-lz-special.js` | 6 |  |
-| `56-lz-military.js` | 6 |  |
+| `54-lz-trade.js` | 15 |  |
+| `55-lz-special.js` | 7 |  |
+| `56-lz-military.js` | 7 |  |
 | `56-sa-beasts.js` | 3 |  |
+| `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
-| `60-lz-reliquary.js` | 7 |  |
+| `60-lz-reliquary.js` | 11 |  |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | <1 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |

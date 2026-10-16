@@ -435,6 +435,23 @@ canvas with no code change (`KIT_HAS`). West = the rumah houses of the western R
 | `patterns/islander/weave` | `patWeave` | Flat, front-on panel of a woven split-bamboo wall: flat strips about four centimetres wide in a twill, pale natural bamboo (#d8c294) and smoked dark strips (#6a5236) stepping into a pattern of nested diamonds, the strips' edges catching a little light. The pattern repeats in both directions. Full colour. |
 | `patterns/islander/medallion-moon` | `medMoon` | Flat, front-on decorative panel of one round painted emblem, centred, clear margin: the white island moon, a pale full moon (#f6f0e2) with soft grey seas, on a sea-teal (#2a7a7a) disc ringed with white shell discs, inside a black (#1e1a18) ring and an ochre (#c8922e) rim, painted on wood with a little wear. A single motif, not a repeat. Full colour. |
 
+#### Lizardmen (`kits/lizardmen`, 2026-10-16)
+
+Palette (`kits/lizardmen/src/26k-kit.js`, `SVPAL`): verdigris #4a8a7a, black lacquer #1a1612, oxblood #5a1a16, bone #e4dcc6.
+The look is Shang bronze, not reptile portraiture (`DESIGN.md` 2.1, 2.3a): the **leiwen** (a squared spiral) is the built
+ornament, the **round whorl** the carved one, and every leiwen band carries exactly one deliberate break. Today the kit draws
+all three as geometry (`40-lz-kit.js`: `lzLeiwen`, `lzGlyphSpiral`, `lzEye`), heavy and aliased at a distance; the three
+sheets replace that at a distance and are `optional: true` families in `kits/lizardmen/materials.json` (`leiwenS`,
+`glyphS`, `eyeS`), so `pack.py` skips them and the kit keeps its geometry until they arrive. No procedural stand-in is drawn
+for them on purpose. Glyph rule (`DESIGN.md` 2.4): the strokes are small squared spirals and angular bars, Indus-seal and
+oracle-bone in feel, never a human face and never a readable letter. Paste-ready copies are in `PROMPTS-ready.md`.
+
+| id | family | Material line |
+|---|---|---|
+| `patterns/lizardmen/leiwen` | `leiwenS` | Flat, front-on decorative panel of a cast bronze leiwen (thunder-pattern) block as on a Shang ding: a square grid of four-by-four cells, each cell filled by one squared spiral of raised ridges winding in to its centre in seven right-angled turns, the spirals in the left half winding clockwise and in the right half anticlockwise, mirrored. Ridges in verdigris (#4a8a7a) with the worn tops a paler green-grey (#8ab0a4), the grooves between them black lacquer (#1a1612). One cell, and only one, is missing a single stroke of its spiral: a deliberate break in an otherwise perfect pattern. Hard, precise, machine-exact edges; nothing is organic. The pattern repeats in both directions. Full colour. |
+| `patterns/lizardmen/glyph-band` | `glyphS` | Flat, front-on decorative panel of an inscription band four times as wide as tall, carved in low relief into dark grey-green basalt (#5e6a5e) and inlaid with verdigris bronze (#4a8a7a): a single row of about twenty glyphs of an unknown angular script, each glyph built from short straight strokes and small squared spirals and hooks, between a thin oxblood (#5a1a16) line along the top edge and another along the bottom. The glyphs resemble Indus seal signs and oracle-bone script in feel but match no real writing; none depicts a face, an animal outline or a letter. Five of the signs recur: a zigzag, two parallel bars, a cross, a hook ending in a squared spiral, and a bar broken in the middle. The pattern repeats horizontally. Full colour. |
+| `patterns/lizardmen/spiral-eye` | `eyeS` | Flat, front-on decorative panel of one round spiral eye, centred, clear margin: a cast bronze disc in verdigris (#4a8a7a) with a raised rim, its face a single raised spiral ridge winding in two and a half turns from the rim to a round pupil of black lacquer (#1a1612), the ridge's worn crest a paler green-grey (#8ab0a4), fine casting grain in the grooves, a few flecks of bone-white (#e4dcc6) patina near the rim. The square corners outside the disc are flat solid black (#1a1612), so the eye can be keyed out. A single motif, not a repeat. Full colour. |
+
 #### Dalab
 
 Palette (`69d-dalab-mat.js`): cream wash #e6d8b8, red ochre #a8382a, turquoise #2f9a8a, gold #d8a838, black #2a2420,
@@ -1105,8 +1122,9 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 **Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces; `roof.thatch.reed`, delivered 2026-10-06, may
 serve the reed family until then), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
 
-**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
-Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
+**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss,
+Nomad, Screamer. Each needs a style read of its culture file before a prompt is written. (Lizardmen: prompted 2026-10-16, see
+"Lizardmen" under "Pattern-sheet prompts by culture".)
 
 **Family splits, done 2026-10-06, as texture families** (`kits/catalog/krator-furniture-core.js`, `FAMILY_SPLITS`, `furnFamily()`):
 a part keeps its render family (its look, the batch's grouping, the declared `materials` and every check stay as they were) and gains

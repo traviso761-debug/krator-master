@@ -26,10 +26,11 @@ The page is a kit sheet: rows of every asset on flat placeholder ground, the sta
 | Dwellings, by caste | `lz-warren` (the Tenders' cell-warren: seven earth cells in a whorl, horn-buttressed), `lz-makers` (the spiked carapace hut), `lz-longhouse` (the Drovers' rib house, eleven bays), `lz-lodge` (the warriors' tusk vault, two doors), `lz-tower` (the Interpreters' twisted tower, spiral eyes, a horn crown) | 1, 2, 3, 4+6, 5 |
 | The nest hall | `lz-nest`: a Fermat spiral of grown chambers, hosts on basking slabs along the in-arm, seven clutch cradles at the centre, the out-arm | all |
 | Trades and food | `lz-hall-bronze`, `lz-hall-reed`, `lz-hall-bone` (the butchery: carcasses on hooks sorted by part, hides on frames, bone bins), `lz-granary` (a brick podium with air channels), `lz-windmill` (a panemone, turning), `lz-farm` (placeholder crops, a frilled-lizard pen, the burden beast at the plough) | all, all, all, 3, 2, 3 |
-| Military | `lz-barracks` (six empty suits in six sizes, racks of ge and ji), `lz-muster` (posts on a squared-spiral grid, no signal gear), `lz-lookout` (a hut on seven tall bone legs) | all, all, 4 |
+| Military | `lz-barracks` (six empty suits in six sizes, racks of ge and ji), `lz-muster` (posts on a squared-spiral grid, no signal gear; the camp behind it, a hide tent and a pole-and-shield tent), `lz-lookout` (a hut on seven tall bone legs) | all, all, 4 |
+| The camp | `lc-hide` (a hide skin over seven bone ribs that cross above the apex), `lc-shield` (the pole-and-shield tent: one great bone pole, eleven posts, thirteen lacquered shields round the skirt), `lc-seer` (a tall narrow cone of black hide under five twisting ribs, a spiral eye over the door), `lc-sail` (the great sail tent: three bone masts, two hide sails, a hide gable with the nested portals) | 4, 6, 5, all |
 | Specialists and stores | `lz-seer` (the model of the village, seer's hall included, lit spiral eyes), `lz-medicine`, `lz-warehouse` (the plunder, sorted along a spiral) | 5, 1, all |
 | Monuments | `lz-stela-pair` (mirrored chirality), `lz-stela-turned` (turned, wrapped, facing a wall), `lz-obelisk` (thirteen twisted courses), `lz-circle` (a phyllotaxis spiral of 21 stones), `lz-ley` (the one straight thing), `lz-bells` (seven bells, no clappers) | all |
-| The reliquary | `lz-reliquary`: the older order's scale on a three-stepped platform, nested bronze portals seven deep, the great stela, the repaired breach, the wings' candle-spires; inside, the antechamber with the relics, the footprints and the shut inner door | all |
+| The reliquary | `lz-reliquary`: the older order's scale on a three-stepped platform, nested bronze portals seven deep, the great stela, the repaired breach, the wings' candle-spires; inside, the antechamber with the relics, the footprints and the shut inner door, dust that falls upward and a faint shimmer of nested triangles growing toward the door (the cut-away shows it; `?t=` pins the clock) | all |
 | Beasts | `frilled` (the frilled lizard), `burden` (the burden beast), from `kits/fauna` | |
 
 Every def declares the **caste** its doors are sized for (`caste: 1..6 | 'all'`; `verify.py` asserts it): a caste's own
@@ -44,10 +45,14 @@ Forked from `kits/islanders` (2026-10-16): the engine fragments (`10 27 30 36 81
 unchanged (`build.py --vendor-check`). The kit's identity and palette are `src/26k-kit.js` (with `LZ_CASTE`); the toolkit
 `40-lz-kit.js` (the pointed arch, horns and ribs, the rib roof and the tusk vault, walls that lean, triangular openings and
 nested portals, the leiwen, the spiral eye, glyph spirals, stelae, twisted courses, menhirs, the bell rack); the rooms
-`42-lz-dress.js`; then one fragment per row (`50 52 54 55 56 58 60`) and the beasts (`56-sa-beasts.js`). See `API.md`.
+`42-lz-dress.js`; then one fragment per row (`50 52 54 55 56 57 58 60`: the camp's tents are `57-lc-camp.js`, pitched on the
+mustering ground too) and the beasts (`56-sa-beasts.js`). The antechamber's dust is a particle layer and its shimmer a
+material hook, both in `60-lz-reliquary.js`, driven by the kit's clock. See `API.md`.
 
 **Textures.** The library's reed bundle and layers, reed mat, cane, black and crimson lacquer, iridescent chitin, bone,
 ivory, horn, skull and ossuary, verdigris and cast bronze, flow-banded and polished basalt, large blocks for the cyclopean
 masonry, ochre brick, eroded banco and rammed earth, two leathers, scale, cedar shingle, rope, gnarled wood and amazonite
 for the jade (`materials.json`, 42 families with the furniture detail maps). The leiwen, the glyphs and the spiral eyes are
-geometry: pattern sheets for them are a texture request (`DESIGN.md` section 8).
+geometry: the three pattern sheets that would replace them at a distance (a leiwen block, a glyph band, the spiral eye) are
+prompted in `core/materials/PLAN.md` under "Lizardmen" (paste-ready in `PROMPTS-ready.md`) and declared `optional: true`
+in `materials.json` (`leiwenS`, `glyphS`, `eyeS`), so `pack.py` skips them and nothing stands in until the owner delivers them.

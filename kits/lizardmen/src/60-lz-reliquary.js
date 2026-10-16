@@ -58,6 +58,32 @@ defBuilding({key:'lz-reliquary',name:'The reliquary',seed:7601,caste:'all',cut:t
   for(let i=0;i<13;i++){const z=bd/2-2-i*.72,x=(i%2?-.3:.3)+Math.sin(i*.7)*.4;box('earth',x,PY+.06,z,.14,.012,.32,P('earth'),.1*(i%2?1:-1));}
   /* the inner door: shut. Nested frames in black lacquer on the back wall, the opening solid */
   W(0,PY,-bd/2+.06*0+.2,0,()=>{const H=lzDoorH(6)*1.3,dw=H*.62;poly('stoneP',[[-dw/2,0,0],[dw/2,0,0],[0,H,0]],P('basaltD'),true);lzPortal(0,0,.1,0,H,{mk:'lacq',step:.08});});
-  /* the dust: motes hang in the still air (a shader lifts them in a later pass: KNOWN_ISSUES.md) */
-  for(let i=0;i<40;i++)sph('plain',rr(-6,6),PY+rr(.5,9),rr(-8,8),.03,P('earthP'),1,4);
+  /* the dust falls upward, slowly, in still air: a particle layer over the antechamber's floor (lrDustBox, below) */
+  lrDustBox(-6.5,PY+.2,-9,13,10.5,18);
+  /* the distortion: a faint recursive shimmer growing toward the inner door, seven translucent nested triangles that
+     converge on it (lrShim, below: additive, breathing with the clock) */
+  {const H=lzDoorH(6)*1.3;for(let k=0;k<7;k++){const t=k/6,z=lerp(5.5,-bd/2+1.5,t),Hs=lerp(9.5,H*1.04,t),ws=Hs*.62*lerp(1.5,1,t);
+   poly('lrShim',[[-ws/2,PY+.04,z],[ws/2,PY+.04,z],[0,PY+.04+Hs,z]],P('glowC').multiplyScalar(lerp(.4,1,t)),false);}}
   lzThreshold(0,bd/2+.5,0,4);}});
+/* ---------------------------------------------------------------- the antechamber's air (browser side: the only motion in the reliquary)
+   The dust: a THREE.Points layer (after 93-anim.js's smoke) over each box a builder records with lrDustBox; every mote climbs
+   its box's height in about a minute and starts again at the floor, drifting a hand's width sideways. The shimmer: a translucent
+   additive material whose alpha breathes with ANIMU.uTime along the depth of the room (the screens drawn above). ?t= pins both. */
+const LR_DUST={boxes:[],world:null,built:null,pts:null,N:110};
+function lrDustBox(x,y,z,w,h,d){if(GTARGET!==GB)return;if(LR_DUST.world!==WORLD){LR_DUST.boxes=[];LR_DUST.world=WORLD;}
+ const p=new THREE.Vector3(x+w/2,y,z+d/2).applyMatrix4(CM);LR_DUST.boxes.push({x:p.x-w/2,y:p.y,z:p.z-d/2,w,h,d});}
+const LR_DUSTTEX=(()=>{const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d');const gr=g.createRadialGradient(16,16,0,16,16,16);
+ gr.addColorStop(0,'rgba(236,228,206,.9)');gr.addColorStop(.5,'rgba(236,228,206,.35)');gr.addColorStop(1,'rgba(236,228,206,0)');g.fillStyle=gr;g.fillRect(0,0,32,32);return new THREE.CanvasTexture(c);})();
+const LR_DUSTMAT=new THREE.PointsMaterial({size:.16,map:LR_DUSTTEX,transparent:true,depthWrite:false,opacity:.8,sizeAttenuation:true,color:0xd8ccb0});
+FRAME_HOOKS.push(dt=>{const D=LR_DUST;if(!D.boxes.length||!D.world)return;
+ if(D.built!==D.world){if(D.pts){if(D.pts.parent)D.pts.parent.remove(D.pts);D.pts.geometry.dispose();}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(D.boxes.length*D.N*3),3));
+  D.pts=new THREE.Points(g,LR_DUSTMAT);D.pts.frustumCulled=false;D.pts.userData.probeSkip=true;D.pts.raycast=()=>{};D.world.add(D.pts);D.built=D.world;}
+ const a=D.pts.geometry.attributes.position.array,t=ANIMU.uTime.value;let k=0;
+ for(let i=0;i<D.boxes.length;i++){const b=D.boxes[i];for(let j=0;j<D.N;j++){const h1=h3(i,j,2),h2=h3(i,j,3),ph=(t*(.014+.008*h3(i,j,5))+h3(i,j,4))%1;
+  a[k++]=b.x+b.w*h1+.12*Math.sin(t*.31+j*1.3);a[k++]=b.y+b.h*ph;a[k++]=b.z+b.d*h2+.12*Math.cos(t*.27+j*2.1);}}
+ D.pts.geometry.attributes.position.needsUpdate=true;});
+MAT.lrShim=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.05,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});MAT.lrShim.toneMapped=false;TILE.lrShim=1;
+matHook(MAT.lrShim,'lrshim',sh=>{sh.uniforms.uTime=ANIMU.uTime;
+ sh.vertexShader='varying vec3 vShW;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvShW=(modelMatrix*vec4(transformed,1.)).xyz;');
+ sh.fragmentShader='uniform float uTime;varying vec3 vShW;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n{float w=.55+.45*sin(uTime*.7-vShW.z*2.1+vShW.y*.6);float r=.6+.4*sin(uTime*.23+vShW.x*1.3+vShW.y*2.7);diffuseColor.a*=w*r;}');});

@@ -5,12 +5,16 @@
 ## Look
 
 - [ ] **The ornament is geometry.** The leiwen panels, the glyph spirals and the spiral eyes are boxes and tubes
-      (`40-lz-kit.js`): fine up close, heavy and aliased at a distance. Pattern sheets for them (a leiwen block, a glyph band,
-      the eye) would replace them (`DESIGN.md` section 8); the prompts are not written yet.
-- [ ] **No tent family.** The owner's hide-tent and sail-tent references (`DESIGN.md` section 9) are not built: the mustering
-      ground stands empty of its camp.
-- [ ] **The antechamber's dust does not fall upward** and there is no recursive shimmer toward the inner door
-      (`DESIGN.md` section 4): the motes are static spheres; the shader is a later pass.
+      (`40-lz-kit.js`): fine up close, heavy and aliased at a distance. The three pattern sheets that replace them at a
+      distance are prompted (`core/materials/PLAN.md`, "Lizardmen"; `PROMPTS-ready.md`) and wait on the owner: `materials.json`
+      carries them as `optional` families (`leiwenS`, `glyphS`, `eyeS`), nothing stands in. When they arrive: pack, then map
+      `lzLeiwen`, `lzGlyphSpiral` and `lzEye` onto quads of those keys beyond a distance (or always, and keep the geometry
+      for the cut-away).
+- [x] **The tent family** (2026-10-16, second pass): `57-lc-camp.js`, four tents in a row of their own, two pitched behind the
+      mustering ground's spiral grid. Open: the tents are not yet told apart by wear or by caste colour beyond the skin.
+- [x] **The antechamber's dust falls upward** (a particle layer over the floor) **and a faint recursive shimmer** (seven
+      translucent nested triangles converging on the inner door, breathing with the clock) **grows toward the inner door**
+      (2026-10-16). Both are browser-side in `60-lz-reliquary.js`; the Godot port redoes them as a GPU particle and a shader.
 - [ ] **The squared-spiral passage into the reliquary is not modelled:** the portal opens straight into the antechamber.
 - [ ] **Two-way weathering** (half-built, half-ruined) is not a parameter yet; the only weathering is the repaired breach's
       cleaner stones.
