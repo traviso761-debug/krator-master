@@ -91,15 +91,18 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
    strips join the two shells along the slanted edges. o.mk, o.col */
 function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth'),seg=o.seg||16,r0=prof[0][0],top=prof[prof.length-1][1];
  const R=y=>{for(let i=1;i<prof.length;i++)if(y<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
- const inner=prof.map(p=>[p[0]*.88,p[1]*.97]);
- const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.8),dw=dh*.62;return {dh,dw,ry:d.ry||0,aw:Math.asin(Math.min(.9,dw/2/r0)),ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
- W(x,0,z,o.ry||0,()=>{if(!doors.length){lathe(mk,0,0,prof,seg,col,{});lathe(mk,0,0,inner,seg,col,{inward:true});return;}
-  /* the arcs between the wedges */
+ const inn=p=>[p[0]*.88,p[1]*.97];
+ const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.7),dw=dh*.62;return {dh,dw,ry:d.ry||0,aw:Math.asin(Math.min(.9,dw/2/r0)),ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
+ W(x,0,z,o.ry||0,()=>{if(!doors.length){lathe(mk,0,0,prof,seg,col,{});lathe(mk,0,0,prof.map(inn),seg,col,{inward:true});return;}
+  /* the shell splits at ys, just over the tallest door: below it, arcs between the doors' wedges; above it, whole rings */
+  const ys=Math.min(top*.8,Math.max(...doors.map(d=>d.dh))*1.12);
+  const lo=prof.filter(p=>p[1]<ys).concat([[R(ys),ys]]),hi=[[R(ys),ys]].concat(prof.filter(p=>p[1]>ys));
+  lathe(mk,0,0,hi,seg,col,{});lathe(mk,0,0,hi.map(inn),seg,col,{inward:true});
   for(let i=0;i<doors.length;i++){const a=doors[i],b=doors[(i+1)%doors.length];let a0=a.ac+a.aw,a1=b.ac-b.aw+(i===doors.length-1?TAU:0);if(a1<=a0)continue;
-   const n=Math.max(3,Math.round(seg*(a1-a0)/TAU));lathe(mk,0,0,prof,n,col,{a0,a1});lathe(mk,0,0,inner,n,col,{a0,a1,inward:true});}
-  /* each door: the patch over it (outer and inner) and the reveals, in a frame turned to face it */
+   const n=Math.max(3,Math.round(seg*(a1-a0)/TAU));lathe(mk,0,0,lo,n,col,{a0,a1});lathe(mk,0,0,lo.map(inn),n,col,{a0,a1,inward:true});}
+  /* each door: the patch from the triangle's slanted top up to ys (outer and inner), and the reveals */
   for(const d of doors)W(0,0,0,d.ry,()=>{const aw=d.aw,dh=d.dh;
-   for(const [sc,fl] of [[1,false],[.88,true]]){psurf(mk,(u,v)=>{const a=PI/2-aw+2*aw*u,yb=dh*(1-Math.abs(2*u-1)),y=lerp(yb,top*(sc<1?.97:1),v),rr0=R(y/(sc<1?.97:1))*sc;return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},8,8,col,{flip:fl});}
+   for(const [sc,ysc,fl] of [[1,1,false],[.88,.97,true]]){psurf(mk,(u,v)=>{const a=PI/2-aw+2*aw*u,yb=dh*(1-Math.abs(2*u-1)),y=lerp(yb,ys,v),rr0=R(y)*sc;return [Math.cos(a)*rr0,y*ysc,Math.sin(a)*rr0];},8,6,col,{flip:fl});}
    for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+kk*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:kk>0});
    door(0,0,r0*.94,0,d.dw);});});}
 /* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
@@ -233,7 +236,7 @@ function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{const lean=.35;
  for(const s of [-1,1])for(const k of [-1,1])ring('rope',s*(L/2-lean),h+.1+k*.06,0,.2,.03,P('reedD'),0,0,PI/2,10);
  for(const bx of lzSpan(-L/2+lean+.5,L/2-lean-.5,n)){const bh=.42+.1*Math.abs(bx)/L;beam('rope',[bx,h+.05,0],[bx,h-.2,0],.02,P('reedD'),true,5);
   lathe('bronzeC',bx,0,[[.02,h-.2],[.14,h-.26],[.19,h-.2-bh*.75],[.21,h-.2-bh],[.0,h-.2-bh]],12,P('bronze'),{});
-  W(bx,h-.2-bh*.55,.215,0,()=>lzLeiwen(.3,.22,{cell:.11,mk:'bronze',back:false,t:.012,proud:.012,sheet:false}));}});}
+  ring('bronzeC',bx,h-.2-bh*.5,0,.2,.018,P('verd'),0,0,0,16);ring('bronzeC',bx,h-.2-bh*.82,0,.215,.015,P('verd'),0,0,0,16);}});}   /* two cast bands round each bell */
 /* the raised threshold and the stone footing every door has */
 function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
 /* a pool of dust: the ground round a monument, trodden */
