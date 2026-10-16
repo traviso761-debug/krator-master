@@ -34,7 +34,9 @@ function lzArchRib(x,z0,z1,h,o){o=o||{};const r=o.r||.12,mk=o.mk||'bones',col=o.
 /* a ribbed roof over a room L (x) by Wd (z): n ribs (odd) as crossed pointed arches outside a skin of mk hung a little below
    them from eaveY up to ridgeY; the skin is a shell (two sheets). o.over the eave's overhang; o.ends closes the gables
    (triangles in o.endMk); o.past how far the ribs run on past the ridge */
-function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5:o.over,mk=o.mk||'hide',col=o.col||P(mk==='hide'?'hide':mk==='hideP'?'hideP':mk==='reed'||mk==='thatch'?'reed':'reedL'),hz=Wd/2+ov,ex=o.ext===undefined?.4:o.ext;
+/* roofs and gables take the solid key of a cloth set: single-sided, so the sun casts no acne on them */
+const LZ_SOLID={mat:'matW',hide:'hideW',hideP:'hidePW'};function lzSolid(k){return LZ_SOLID[k]||k;}
+function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5:o.over,mk=lzSolid(o.mk||'hide'),col=o.col||P(mk==='hide'?'hide':mk==='hideP'?'hideP':mk==='reed'||mk==='thatch'?'reed':'reedL'),hz=Wd/2+ov,ex=o.ext===undefined?.4:o.ext;
  const bend=o.bend===undefined?.95:o.bend;
  /* the skin: a pointed vault, its section the rib's curve (a little inside the ribs) */
  const drop=o.drop===undefined?.4:o.drop;eaveY-=drop;const AR=lzArch(hz*.96,ridgeY-.3-eaveY);const sec=(s,v)=>{const p=AR.at(s,v);return [0,eaveY+p[1],p[2]];};
@@ -48,7 +50,7 @@ function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5
     height, lzBatterRoom's convention; o.y0 the wall base): a vertical gable parts from a leaning wall near the top */
  const LE=o.leanEnds||{},wy0=o.y0||0,gxAt=(s,y)=>s*(L/2+.03-((s<0?LE.left:LE.right)||0)*(y-wy0));
  if(o.ends!==false)for(const s of [-1,1]){const pts=[];for(let k=0;k<=12;k++){const p=sec(1,k/12);pts.push([gxAt(s,p[1]),p[1],p[2]]);}for(let k=12;k>=0;k--){const p=sec(-1,k/12);pts.push([gxAt(s,p[1]),p[1],p[2]]);}
-  poly(o.endMk||'mat',pts,o.endCol||P('reedL'),true);}
+  poly(lzSolid(o.endMk||'mat'),pts,o.endCol||P('reedL'),true);}
  const xs=lzSpan(-L/2,L/2,n);for(const x of xs)W(0,eaveY,0,0,()=>lzArchRib(x,-hz*1.06,hz*1.06,ridgeY-eaveY+.08,{r:o.ribR||.16,mk:o.ribMk||'bones',past:o.past===undefined?.2:o.past,col:o.ribCol}));
  /* a ridge pole along the crossing, lashed */
  beam(o.ribMk||'bones',[-L/2-ex,ridgeY+.02,0],[L/2+ex,ridgeY+.02,0],.09,o.ribCol||P('boneO'),true,7);
@@ -59,7 +61,7 @@ function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5
    gable's doors [{z, c}] (caste-sized triangles, real openings); o.eyes [[z, y]] spiral eyes on that gable; o.y0 the floor */
 function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o.r||.3,y0=o.y0||0;
  for(const x of xs)for(const s of [-1,1])lzHorn(x,y0,s*hz,s>0?PI:0,h*1.15,r,{curl:.78,lean:.12,mk:o.mk||'ivory',nt:12,ns:9});
- const eY=o.eaveY||1.2,rY=h*.86,mk=o.skinMk||'hide',col=o.skinCol||P('hide'),hz2=hz*.98;
+ const eY=o.eaveY||1.2,rY=h*.86,mk=lzSolid(o.skinMk||'hide'),col=o.skinCol||P('hide'),hz2=hz*.98;
  const sag=v=>.35*Math.sin(PI*v)*(1-v)*.6,topY=v=>eY+(rY-eY)*v-sag(v);
  for(const s of [-1,1]){const f=(u,v)=>[-L/2+L*u,topY(v),s*hz2*(1-v)];
   const inner=(u,v)=>{const p=f(u,v),a=f(u,Math.min(1,v+.02)),b=f(u,Math.max(0,v-.02));let ny=a[2]-b[2],nz=-(a[1]-b[1]);const m=Math.hypot(ny,nz)||1;ny/=m;nz/=m;if(ny+s*nz<0){ny=-ny;nz=-nz;}return [p[0],p[1]-ny*.07,p[2]-nz*.07];};
