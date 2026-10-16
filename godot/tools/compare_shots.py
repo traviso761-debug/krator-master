@@ -26,7 +26,7 @@ W, H = 1600, 900
 # target: world [x, z] (y = the ground there + lift); eye: offset from the target's ground point
 CASES = {
     "hyperjungle": dict(page="biomes/hyperjungle/dist/hyperjungle.html", ground="BIO.terrainH",
-                        target=[162, -747], lift=15, eye=[-60, 25, 70]),
+                        target=[-570, -266], lift=15, eye=[-60, 25, 70]),
     "rift": dict(page="biomes/rift/dist/rift.html", ground="BIO.terrainH",
                  target=[-300, 300], lift=12, eye=[50, 25, 60]),
     # M4: the sedesert tile through core/export (krator/world_import.gd), round the rain-shadow pond, the eye inside the tile

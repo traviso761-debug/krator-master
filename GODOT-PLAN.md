@@ -663,6 +663,52 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
     region's edge, not the terrain's (Iziz: 80 m, was 530 m); the wave field is ported (`core/atmos/GODOT.md`). Iziz's
     pack waits on Iziz adopting the material library, which the Ancients re-vendor session gates (TODO.md, Port: next).
 
+**The spike on a real GPU (2026-10-16, Travis's machine, Godot 4.7.2, Forward+; `godot/CHECKLIST.md`).** The headless
+pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases, no script errors).
+
+15. **hyperjungle.** Leaf cards cut out (1a), the right way up (1b), sway and lean together (1c), prism gum iridescent
+    (1d); 30 to 60 fps with the whole tile in view (1f). Found and fixed the same day:
+    - ~~the tile came in drowned~~: the page hands the biome no `waterH`, so the export wrote the core's default sea
+      (y = 0) over a floor at -20 to -27 m, and the importer laid one sheet across the tile at the wet cells' mean.
+      The page now hands in its brook (`45-host-stage.js`), and `kdata.gd` builds a quad per wet cell at its own level.
+      Other kits whose floor dips below 0 without a `waterH` would export the same sea: check before their tiles.
+    - ~~pale species grow brown limbs~~ (on the page too): the "pale" limb map was painted in ironbark's browns, so the
+      limb tint (bole colour / map mean) clipped at white and ghostwood and baobab limbs rendered as raw brown streaks
+      under pale boles. Now each hero's limbs wear its own bole's bark (`limb0`..`limb5`, the bole tint), at the
+      bole's tile (the library's bark where the page has its pack), and each young tree's trunk wears its species' bark too
+      (`saptrunk0`..`saptrunk5`): on the shared limb map a young ghostwood grew a red-brown trunk.
+    - the slice held one prism gum hero and a ghostwood sapling: the tile is now [-750, -450, -390, -90] (a ghostwood
+      and a gate baobab hero, saplings of all six species).
+    - ~~the young ghostwood's leaves read dark and its twigs stuck straight out~~ (1a): the dark look was the water
+      sheet; the twigs were two importer faults. The browser's PNG encoder stores a cut-out's clear texels black (the
+      page fills them grey, `BIO.alphaTex`), so Godot's mipmaps outlined every leaf and stroke in black: `kdata.gd`
+      refills them with the solid texels' mean. And scissored cards had no antialiasing: `foliage.gdshader` now uses
+      alpha to coverage under the project's MSAA, so the thin twig strokes thin out as on the page. Godot's leaves
+      are still a little flatter (less of the page's darker inner shading).
+16. **rift.** No holes at range (2a), but the whole tile changed LOD at once: it lies inside one 1.2 km LOD chunk, and
+    three switches per chunk too. Done in the importer on branch `claude/biome-lod-cells` (`74b4287b`, not yet merged; `biome_import.gd`, 2026-10-16): each LOD-chunked item's
+    instances are split into 150 m cells by position, and each bucket's connected pieces by centroid, one node per
+    cell at its centre, ranges widened by the cell's half-diagonal (106 m, was the chunk's 849 m). The rift tile is
+    now 175 item nodes and 47 bucket nodes over 12 cells (51 items, 9 buckets before), the same 48,432 instances
+    and 186,920 triangles; shots flying out from 1,100 to 1,340 m show the far cells go to impostors first and the
+    near ones follow. To recheck on the real GPU. The irid frill trees' frills
+    work; the irid bark is not clearly right (2b, to compare against the page side by side). The far impostors keep
+    their colours (2c) but are often massed wrongly: to look at (pack `c2-rule`, `bark.gdshader` mode 3).
+17. **girder.** Library textures look right (3a); stalls and furniture keep their colours (3b). The friend's Voth route
+    (3d): he had Claude do it and does not remember how, so section 1's field report stays unknown. The editor import
+    route (3c) is next.
+18. **iziz.** Lamps, halos, braziers and smoke at 19:30 (4a: the slice has no wall, so no searchlights); lights and
+    sky follow the hour across dusk and dawn (4b); rain looks right (4d); halos and night look fine (4e, 4f), though
+    the region is sparse: the 160 m box round (0, 0) brings in almost no buildings, so a wider or moved box (with a
+    wall section) is wanted before judging halos against buildings. Fixed the same day: ~~no fog banks (4c)~~, the
+    spike never switched the environment's volumetric fog on, which FogVolumes need (`spike.gd` now does when a case
+    has any; to recheck); ~~Shift+W~~ for the weather also moved the camera: now `F3`.
+19. **yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
+    as open-topped boxes), but it cannot be judged by eye: there are no meshes, and a running game has no inspector
+    for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
+    cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
+    pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
+
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
 bake and fauna animation are what is left; `core/tags/PROPOSAL.md` drafts the first.)
@@ -804,7 +850,7 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | Milestone | Proves |
 |---|---|
 | M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0). **Done** |
-| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"); the look on a real GPU is next |
+| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"). **2026-10-16:** the GPU run (Forward+) is underway: hyperjungle, rift and girder checked (findings 15 to 17) |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
