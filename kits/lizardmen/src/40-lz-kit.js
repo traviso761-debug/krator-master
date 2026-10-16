@@ -41,7 +41,9 @@ function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5
  /* the inner sheet lies a thickness INSIDE the outer along its normal (an offset straight down pokes through on the steep sides) */
  for(const s of [-1,1]){const f=(u,v)=>{const p=sec(s,v);return [-L/2-ex+(L+2*ex)*u,p[1],p[2]];};
   const inner=(u,v)=>{const p=f(u,v),a=sec(s,Math.min(1,v+.02)),b=sec(s,Math.max(0,v-.02));let ny=a[2]-b[2],nz=-(a[1]-b[1]);const n=Math.hypot(ny,nz)||1;ny/=n;nz/=n;if(ny+s*nz<0){ny=-ny;nz=-nz;}return [p[0],p[1]-ny*.09,p[2]-nz*.09];};
-  psurf(mk,f,o.nu||8,o.nv||7,col,{flip:s<0});psurf(mk,inner,o.nu||8,o.nv||7,o.underCol||col,{flip:s>0});}
+  /* continuous UVs (x along, the arc up): the per-column arc-length UVs alias into stripes at a distance */
+  const La=Math.hypot(hz,ridgeY-eaveY)*1.15,uvf=(u,v)=>[(L+2*ex)*u,v*La];
+  psurf(mk,f,o.nu||8,o.nv||7,col,{flip:s<0,uvf});psurf(mk,inner,o.nu||8,o.nv||7,o.underCol||col,{flip:s>0,uvf});}
  if(o.ends!==false)for(const s of [-1,1]){const pts=[];for(let k=0;k<=12;k++){const p=sec(1,k/12);pts.push([s*(L/2+ex),p[1],p[2]]);}for(let k=12;k>=0;k--){const p=sec(-1,k/12);pts.push([s*(L/2+ex),p[1],p[2]]);}
   poly(o.endMk||'mat',pts,o.endCol||P('reedL'),true);}
  const xs=lzSpan(-L/2,L/2,n);for(const x of xs)W(0,eaveY,0,0,()=>lzArchRib(x,-hz*1.06,hz*1.06,ridgeY-eaveY+.08,{r:o.ribR||.16,mk:o.ribMk||'bones',past:o.past===undefined?.2:o.past,col:o.ribCol}));
