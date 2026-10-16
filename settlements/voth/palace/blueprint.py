@@ -782,6 +782,7 @@ def program(kind, a, w, d, D):
       'altar': [('voth_court_sun_altar', 1), ('voth_court_fire', 2), ('voth_court_statue', 2), ('voth_court_carpet', 1)],
       'lantern': [('voth_court_candelabra', 4)], 'beacon': [('voth_street_brazier', 1), ('voth_common_store', 2), ('voth_common_rack', 1)],
     }
+    if kind in EXTRA_PROGRAMS: return [(k, n) for k, n in EXTRA_PROGRAMS[kind](a, w, d, D) if n > 0]
     return [(k, n) for k, n in P.get(kind, []) if n > 0]
 
 def manifest_for(room):
@@ -795,15 +796,20 @@ def manifest_for(room):
     # merge duplicates; a tier 0 zone is drawn as one room where the planner will cut rooms round corridors and
     # courts, so a quarter of its floor is furnished (the census sets the real numbers: 150 household, the garrison)
     agg = {}
-    for k, n in items: agg[k] = agg.get(k, 0) + n
+    for k, n in items:
+        k = KEYMAP.get(k, k)                  # another culture's blueprint maps the Voth keys onto its own sets
+        if k: agg[k] = agg.get(k, 0) + n
     if room.get('zone'):
         agg = dict((k, max(1, round(n * 0.25))) for k, n in agg.items())
     return agg, a
 
+KEYMAP = {}
+EXTRA_PROGRAMS = {}   # another culture's room kinds: kind -> function(a, w, d, D) -> [(key, n)]
+
 # ------------------------------------------------------------------------------------------------ drawing
 DECOR_FILL = {0: (226, 226, 222), 1: (236, 232, 218), 2: (224, 236, 214), 3: (212, 226, 176), 4: (238, 220, 150)}
 DECOR_NAME = {0: 'bare', 1: 'plain', 2: 'fine', 3: 'rich', 4: 'sumptuous'}
-KIND_FILL = {'court': (214, 236, 250), 'void': (246, 246, 246), 'gallery_void': (250, 244, 226), 'stair': (150, 150, 150),
+KIND_FILL = {'court': (214, 236, 250), 'void': (246, 246, 246), 'gallery_void': (250, 244, 226), 'stair': (150, 150, 150), 'ramp': (170, 160, 150), 'pool': (170, 214, 240),
              'garden': (214, 236, 206), 'passage': (240, 240, 236), 'hall': (240, 240, 236), 'cistern': (200, 222, 240), 'pit': (60, 60, 60)}
 
 def wrap(dr, text, f, maxw):
@@ -818,6 +824,9 @@ def wrap(dr, text, f, maxw):
 def draw_floor(F):
     Rr = F['R']; ring = F.get('ring')
     ext = 150 if ring else Rr + 16
+    cu = cv = 0.0
+    if F.get('rect') and not F.get('circle'):
+        q = F['rect']; cu = (q[0] + q[1]) / 2.0; cv = (q[2] + q[3]) / 2.0; ext = max(q[1] - q[0], q[3] - q[2]) / 2.0 + 8
     s = 1700.0 / (2 * ext)
     PW = int(2 * ext * s); margin = 30; legendW = 1240
     f_t = font(40, True); f_s = font(22); f_l = font(21); f_lb = font(21, True); f_r = font(17, True); f_rn = font(15)
@@ -844,16 +853,26 @@ def draw_floor(F):
     dr.text((margin, 18), F['title'], font=f_t, fill=(20, 20, 20))
     for i, ln in enumerate(sub_lines): dr.text((margin, 64 + 30 * i), ln, font=f_s, fill=(70, 70, 70))
     ox, oy = margin, header + margin
-    def X(u): return ox + (u + ext) * s
-    def Y(v): return oy + (ext - v) * s
+    def X(u): return ox + (u - cu + ext) * s
+    def Y(v): return oy + (ext - (v - cv)) * s
     # the tier outlines (the stack is eight-sided: corners cut)
     def octo(Rq, cut):
         return [(X(-Rq + cut), Y(Rq)), (X(Rq - cut), Y(Rq)), (X(Rq), Y(Rq - cut)), (X(Rq), Y(-Rq + cut)), (X(Rq - cut), Y(-Rq)), (X(-Rq + cut), Y(-Rq)), (X(-Rq), Y(-Rq + cut)), (X(-Rq), Y(Rq - cut))]
     if ring:
         dr.polygon(octo(140, 32), fill=(214, 236, 206), outline=(120, 140, 110))
-    dr.polygon(octo(Rr, Rr * 0.22), fill=(250, 250, 248), outline=(30, 30, 30))
+    if F.get('circle'):
+        dr.ellipse([X(-Rr), Y(Rr), X(Rr), Y(-Rr)], fill=(250, 250, 248), outline=(30, 30, 30), width=3)
+    elif F.get('poly'):
+        dr.polygon([(X(u), Y(v)) for u, v in F['poly']], fill=(250, 250, 248), outline=(30, 30, 30), width=4)
+    elif F.get('rect'):
+        q = F['rect']; dr.rectangle([X(q[0]), Y(q[3]), X(q[1]), Y(q[2])], fill=(250, 250, 248), outline=(30, 30, 30), width=3)
+    else:
+        dr.polygon(octo(Rr, Rr * 0.22), fill=(250, 250, 248), outline=(30, 30, 30))
+    for q in F.get('outlines', []):
+        dr.rectangle([X(q[0]), Y(q[3]), X(q[1]), Y(q[2])], outline=(110, 110, 110), width=2)
+        if len(q) > 4: dr.text((X(q[0]) + 4, Y(q[3]) + 2), q[4], font=f_rn, fill=(110, 110, 110))
     # the north arrow / axis note
-    dr.text((X(-ext) + 6, Y(ext) + 6), 'u (main axis) ->   entrance face at the left; v up = the north service hall\'s side', font=f_rn, fill=(90, 90, 90))
+    dr.text((X(-ext) + 6, Y(ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
     for r in F['rooms']:
         if r['kind'] == 'garden' and r['u1'] - r['u0'] > 2 * Rr * 0.9: continue
         x0, x1, y0, y1 = X(r['u0']), X(r['u1']), Y(r['v1']), Y(r['v0'])
@@ -863,6 +882,8 @@ def draw_floor(F):
             for k in range(int(x0), int(x1), 14): dr.line([(k, y1), (min(k + (y1 - y0), x1), max(y0, y1 - (x1 - k)))], fill=(200, 200, 200), width=1)
         if r['kind'] == 'stair':
             dr.line([(x0, y0), (x1, y1)], fill=(255, 255, 255), width=2); dr.line([(x0, y1), (x1, y0)], fill=(255, 255, 255), width=2)
+        if r['kind'] == 'ramp':
+            dr.ellipse([x0 + 4, y0 + 4, x1 - 4, y1 - 4], outline=(255, 255, 255), width=3)
         w, h = x1 - x0, y1 - y0
         lbl = str(r['n'])
         tw = dr.textlength(lbl, font=f_r)
@@ -949,21 +970,22 @@ def draw_section():
     return img
 
 # ------------------------------------------------------------------------------------------------ main
-def main():
-    os.makedirs(OUT, exist_ok=True)
+def main(floors=None, out=None, here=None, title=None, intro=None, section=None, zone_R=None):
+    floors = floors or FLOORS; out = out or OUT; here = here or HERE; zone_R = zone_R or R0
+    os.makedirs(out, exist_ok=True)
     totals = {}; lines = []
-    lines.append('# The Palace canton: furniture manifest\n')
-    lines.append('Generated by `blueprint.py` from the same room data as the floor sheets. Keys are catalog pieces (`kits/catalog`): `voth_court_*` and `voth_common_*` from the Voth sets, `generic_*` and `generic_trade_*` from the poor set, the bespoke Voth pieces, and the Voth city set\'s own (`VC`). A key marked **NEW** is not in the catalog yet; the list of them is at the end. Counts are a brief for the furnisher, not a placement: `furnishRoom` keeps what fits.\n')
+    lines.append(title or '# The Palace canton: furniture manifest\n')
+    lines.append(intro or 'Generated by `blueprint.py` from the same room data as the floor sheets. Keys are catalog pieces (`kits/catalog`): `voth_court_*` and `voth_common_*` from the Voth sets, `generic_*` and `generic_trade_*` from the poor set, the bespoke Voth pieces, and the Voth city set\'s own (`VC`). A key marked **NEW** is not in the catalog yet; the list of them is at the end. Counts are a brief for the furnisher, not a placement: `furnishRoom` keeps what fits.\n')
     lines.append('Decor: 0 bare (stores, cells), 1 plain (service), 2 fine (offices, the lesser guests), 3 rich (state guests, kin, officials\' residences), 4 sumptuous (the state rooms, the ruler\'s own).\n')
-    for F in FLOORS:
+    for F in floors:
         print('drawing', F['id'])
-        img = draw_floor(F); img.save(os.path.join(OUT, F['id'] + '.png'))
+        img = draw_floor(F); img.save(os.path.join(out, F['id'] + '.png'))
         lines.append('\n## %s\n' % F['title'])
         lines.append(F['sub'] + '\n')
         lines.append('| # | Room | Kind | Decor | m2 | Pieces |')
         lines.append('|---|---|---|---|---|---|')
         for r in F['rooms']:
-            if F['R'] == R0 and (r['u1'] - r['u0']) * (r['v1'] - r['v0']) > 600: r['zone'] = True
+            if F['R'] == zone_R and (r['u1'] - r['u0']) * (r['v1'] - r['v0']) > 600: r['zone'] = True
             agg, a = manifest_for(r)
             if not agg and r['kind'] in ('void', 'gallery_void', 'passage', 'cistern'): continue
             parts = []
@@ -971,7 +993,7 @@ def main():
                 parts.append('%s x%d%s' % (k, agg[k], ' **NEW**' if k in NEW else (' (VC)' if k in CITY else '')))
                 totals[k] = totals.get(k, 0) + agg[k]
             lines.append('| %d | %s | %s | %s | %d | %s |' % (r['n'], r['name'], r['kind'].replace('_', ' '), DECOR_NAME[r['decor']], a, ', '.join(parts)))
-    sec = draw_section(); sec.save(os.path.join(OUT, 'section.png'))
+    sec = (section or draw_section)(); sec.save(os.path.join(out, 'section.png'))
     lines.append('\n## Totals by piece\n')
     lines.append('| Key | Count | Note |'); lines.append('|---|---|---|')
     for k in sorted(totals, key=lambda q: -totals[q]):
@@ -979,9 +1001,9 @@ def main():
     lines.append('\n## Pieces the catalog lacks (NEW)\n')
     for k in sorted(NEW):
         lines.append('- `%s`: %s (x%d)' % (k, NEW[k], totals.get(k, 0)))
-    lines.append('\nVoth city set pieces (VC.intPrograms, not in `kits/catalog`): ' + ', '.join('`%s` (%s)' % (k, v) for k, v in CITY.items()) + '.\n')
-    with open(os.path.join(HERE, 'FURNITURE.md'), 'w', encoding='utf-8') as fh: fh.write('\n'.join(lines))
-    print('wrote', len(FLOORS), 'sheets, section, FURNITURE.md; pieces total', sum(totals.values()))
+    if CITY: lines.append('\nVoth city set pieces (VC.intPrograms, not in `kits/catalog`): ' + ', '.join('`%s` (%s)' % (k, v) for k, v in CITY.items()) + '.\n')
+    with open(os.path.join(here, 'FURNITURE.md'), 'w', encoding='utf-8') as fh: fh.write('\n'.join(lines))
+    print('wrote', len(floors), 'sheets, section, FURNITURE.md; pieces total', sum(totals.values()))
 
 if __name__ == '__main__':
     main()

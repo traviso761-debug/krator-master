@@ -5,6 +5,12 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
+- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
+      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
+      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
+      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
+      not before (owner, 2026-10-15).
 - [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
       the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
       91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only
