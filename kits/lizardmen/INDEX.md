@@ -15,14 +15,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
-| `26k-kit.js` | 5 |  |
+| `26k-kit.js` | 6 |  |
 | `27-mat.js` | 6 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 6 |  |
-| `40-lz-kit.js` | 24 |  |
+| `40-lz-kit.js` | 30 |  |
 | `42-lz-dress.js` | 3 |  |
-| `50-lz-dwell.js` | 9 |  |
-| `52-lz-nest.js` | 4 |  |
+| `50-lz-dwell.js` | 10 |  |
+| `52-lz-nest.js` | 5 |  |
 | `54-lz-trade.js` | 15 |  |
 | `55-lz-special.js` | 7 |  |
 | `56-lz-military.js` | 7 |  |
@@ -30,8 +30,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
 | `60-lz-reliquary.js` | 11 |  |
+| `62-lk-capital.js` | 18 |  |
 | `81-sky.js` | 10 |  |
-| `89-rows.js` | <1 |  |
+| `89-rows.js` | 1 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `91-probe.js` | 2 |  |
 | `91f-furnish.js` | 6 |  |

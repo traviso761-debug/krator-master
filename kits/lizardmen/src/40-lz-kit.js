@@ -262,4 +262,4 @@ function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{const lean=.35;
 /* the raised threshold and the stone footing every door has */
 function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
 /* a pool of dust: the ground round a monument, trodden */
-function lzDust(x,z,R){cyl('earthR',x,.005,z,R,.02,P('earthP'),16);}
+function lzDust(x,z,R){cyl('earthR',x,-.04,z,R,.12,P('earthP'),24);}   /* 8 cm proud of the ground: a thinner disc fights it at a distance */

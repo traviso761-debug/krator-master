@@ -281,8 +281,8 @@
    "sha256": "c6040b25d411ed40d980e9420c09b96d8ce91fb4384f8e2c6acd28e9fdd99fb5"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1666052,
-   "sha256": "3087594029aaef80d984c90d9542912d7067d06085a2dddfe3aa0cf915130487"
+   "bytes": 1666071,
+   "sha256": "6126439b215eadb98f708f2a15d614d1863933221b1a24ed3a75a1af53670cc1"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14352192,
@@ -307,6 +307,10 @@
   "kits/islanders/dist/islanders.html": {
    "bytes": 1434642,
    "sha256": "9abfd175d211039e7faec4fcf1bc34edaf28397a95225730ad9126642f6efd71"
+  },
+  "kits/lizardmen/dist/lizardmen.html": {
+   "bytes": 1496862,
+   "sha256": "025165df872eabc4eb5e68458d8fcfb7ccae0995a8f910f495ba6f732e0dbda5"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1637190,
