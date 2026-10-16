@@ -45,7 +45,7 @@ defBuilding({key:'lk-warren',name:'Stone cell-warren',seed:7703,caste:1,cut:true
   lzCutFloor(0);lzNoCut(()=>box(LK_PL,0,0,shz-2,23,.2,20,P('basaltD')));
   const cell=(x,z,r,o2)=>{const h=r*1.35;W(x,.2,z,0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:LK_ST,col:P('basalt'),seg:14,door:o2.door});
    const n=o2.n||5;for(let i=0;i<n;i++){const a=i*TAU/n+(o2.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o2.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:LK_PL,col:P('basaltD'),nt:8,ns:6});}
-   lzEye(0,h*1.0,r*.62,0,r*.16,{mk:'bronze'});
+   lzDomeEye([[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],h*.75,r*.16,{mk:'bronze'});
    if(o2.door){const dh=o2.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'bronze'});lzThreshold(0,r+.1,0,dw);}});};
   for(let i=0;i<cells.length;i++){const c=cells[i],x=c[0]-cx,z=c[1]-cz+shz,last=i===cells.length-1;
    cell(x,z,c[2],last?{n:7,a0:.3,door:lzDoorH(1)}:{n:i%2?5:7,a0:i*.7});
@@ -62,7 +62,7 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
   const A=arm(1),B=arm(-1);
   const dome=(x,z,r,o2)=>{const h=r*1.1;W(x,.2,z,0,()=>{lzDome(0,0,[[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],{mk:LK_ST,col:P('basalt'),seg:16,doors:o2.doors});
    const n=o2.n||5;for(let i=0;i<n;i++){const an=i*TAU/n+(o2.a0||0),bx=Math.cos(an)*r,bz=Math.sin(an)*r;if((o2.doors||[]).some(dd=>Math.abs((((an-(PI/2-dd.ry))%TAU)+TAU+PI)%TAU-PI)<.7))continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.1,r*.14,{curl:.45,lean:-.35,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}
-   lzEye(0,h*.95,r*.35,0,o2.big?r*.22:r*.13,{mk:'bronze',glow:!!o2.big});});};
+   lzDomeEye([[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],h*.72,o2.big?r*.2:r*.14,{mk:'bronze',glow:!!o2.big});});};
   const dhP=lzDoorH(6);const face=(p,q)=>Math.atan2(q[0]-p[0],q[1]-p[1]);
   dome(0,0,6.8,{n:9,big:true,doors:[{dh:dhP,ry:face([0,0],A[A.length-1])},{dh:dhP,ry:face([0,0],B[B.length-1])}]});
   for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i],mouth=i===0,next=i<pts.length-1?pts[i+1]:[0,0];
@@ -70,9 +70,10 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
     const q=i<pts.length-1?pts[i+1]:[0,0,6.8];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage(p,q,dh,dh*.62,LK_ST,P('basalt')));}
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,.2,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
-  const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1;return [p[0]-s*dz/L*p[2]*.55,p[1]+s*dx/L*p[2]*.55];};
-  for(let i=1;i<A.length;i++){const p=A[i],q=A[i-1],b=side(p,q,1);FURNISH('lizardmen_court_bed',b[0],.2,b[1],Math.atan2(p[0]-b[0],p[1]-b[1]));}
-  for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1);FURNISH('lizardmen_court_carpet',b[0],.2,b[1],0);}
+  /* a piece against a chamber's rim, sideways to the passages: its centre inside the inner shell (0.88 r) by half its own size */
+  const side=(p,q,s,half)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1,off=Math.max(0,p[2]*.88-(half||.8)-.15);return [p[0]-s*dz/L*off,p[1]+s*dx/L*off];};
+  for(let i=1;i<A.length;i++){const p=A[i],q=A[i-1],b=side(p,q,1,lzDim('lizardmen_court_bed').d/2);FURNISH('lizardmen_court_bed',b[0],.2,b[1],Math.atan2(p[0]-b[0],p[1]-b[1]));}
+  for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1,Math.max(lzDim('lizardmen_court_carpet').w,lzDim('lizardmen_court_carpet').d)/2);FURNISH('lizardmen_court_carpet',b[0],.2,b[1],0);}
   {const dA=face([0,0],A[A.length-1]),dB=face([0,0],B[B.length-1]);
    for(let i=0;i<9;i++){const an=i*TAU/9+.2,ry=Math.atan2(Math.sin(an),Math.cos(an));if([dA,dB].some(d=>Math.abs(((ry-d)%TAU+TAU+PI)%TAU-PI)<.55))continue;
     const sx=Math.sin(ry),sz=Math.cos(ry);FURNISH('lizardmen_court_bed',sx*4.8,.2,sz*4.8,ry+PI);FURNISH('lizardmen_court_egg_cradle',sx*3.2,.2,sz*3.2,ry+PI);}

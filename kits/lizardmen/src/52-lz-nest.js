@@ -11,7 +11,7 @@ function lnDome(x,z,r,o){o=o||{};const h=r*1.1,col=o.col||P('spore');
  W(x,0,z,0,()=>{lzDome(0,0,[[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],{mk:'earth',col,seg:16,doors:o.doors});
   const n=o.n||5;for(let i=0;i<n;i++){const a=i*TAU/n+(o.a0||0),bx=Math.cos(a)*r*1.0,bz=Math.sin(a)*r*1.0;
    if((o.doors||[]).some(d=>Math.abs((((a-(PI/2-d.ry))%TAU)+TAU+PI)%TAU-PI)<.7))continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.1,r*.14,{curl:.45,lean:-.35,mk:'bones',nt:7,ns:6});}
-  if(o.eye)lzEye(0,h*.95,r*.3,0,r*.14,{mk:'ivory'});});}
+  if(o.eye)lzDomeEye([[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],h*.72,r*.16,{mk:'ivory'});});}
 /* the way one chamber faces another: the yaw of the direction from p to q */
 function lnFace(p,q){return Math.atan2(q[0]-p[0],q[1]-p[1]);}
 defBuilding({key:'lz-nest',name:'Nest hall and hospice',seed:7101,caste:'all',cut:true,w:48,d:44,h:11,budget:160000,
@@ -35,12 +35,13 @@ defBuilding({key:'lz-nest',name:'Nest hall and hospice',seed:7101,caste:'all',cu
    lzNoCut(()=>{W(mx,0,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
   /* inside. An arm chamber's piece stands against its rim, sideways to the passages (perpendicular to the way to the next
      chamber); the centre is ringed by basking slabs facing in, a clutch cradle at the foot of each, the hearth in the middle */
-  const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1;return [p[0]-s*dz/L*p[2]*.55,p[1]+s*dx/L*p[2]*.55];};
-  for(let i=1;i<A.length;i++){const p=A[i],q=A[i-1],b=side(p,q,1);FURNISH('lizardmen_common_bed',b[0],.1,b[1],Math.atan2(p[0]-b[0],p[1]-b[1]),{v:1});}
-  for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1);FURNISH('lizardmen_common_rug',b[0],.1,b[1],0);}
+  /* a piece against a chamber's rim, sideways to the passages: its centre inside the inner shell (0.88 r) by half its own size */
+  const side=(p,q,s,half)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1,off=Math.max(0,p[2]*.88-(half||.8)-.15);return [p[0]-s*dz/L*off,p[1]+s*dx/L*off];};
+  for(let i=1;i<A.length;i++){const p=A[i],q=A[i-1],b=side(p,q,1,lzDim('lizardmen_common_bed').d/2);FURNISH('lizardmen_common_bed',b[0],.1,b[1],Math.atan2(p[0]-b[0],p[1]-b[1]),{v:1});}
+  for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1,Math.max(lzDim('lizardmen_common_rug').w,lzDim('lizardmen_common_rug').d)/2);FURNISH('lizardmen_common_rug',b[0],.1,b[1],0);}
   {const dA=Math.atan2(A[A.length-1][0],A[A.length-1][1]),dB=Math.atan2(B[B.length-1][0],B[B.length-1][1]);
    for(let i=0;i<9;i++){const an=i*TAU/9+.2,ry=Math.atan2(Math.sin(an),Math.cos(an));if([dA,dB].some(d=>Math.abs(((ry-d)%TAU+TAU+PI)%TAU-PI)<.55))continue;
     const sx=Math.sin(ry),sz=Math.cos(ry);FURNISH('lizardmen_common_bed',sx*4.9,.1,sz*4.9,ry+PI,{v:1});FURNISH('lizardmen_court_egg_cradle',sx*3.3,.1,sz*3.3,ry+PI);}
    FURNISH('lizardmen_court_hearth',0,.1,0,0);FURNISH_HANG('lizardmen_court_hanging',0,6,0,0);}
-  {const m=A[0],q=A[1],b=side(m,q,-1);FURNISH('lizardmen_common_desk',b[0],.1,b[1],Math.atan2(m[0]-b[0],m[1]-b[1]));}
+  {const m=A[0],q=A[1],b=side(m,q,-1,lzDim('lizardmen_common_desk').d/2);FURNISH('lizardmen_common_desk',b[0],.1,b[1],Math.atan2(m[0]-b[0],m[1]-b[1]));}
   lzDust(A[0][0]*1.2,A[0][1]*1.2,2.5);}});

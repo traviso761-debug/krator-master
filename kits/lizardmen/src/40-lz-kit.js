@@ -91,26 +91,31 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
    strips join the two shells along the slanted edges. o.mk, o.col */
 function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth'),seg=o.seg||16,r0=prof[0][0],top=prof[prof.length-1][1];
  const R=y=>{for(let i=1;i<prof.length;i++)if(y<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
- const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.7),dw=dh*.62;return {dh,dw,ry:d.ry||0,aw:Math.asin(Math.min(.9,dw/2/r0)),ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
- /* ONE surface function for every panel, outer (sc 1) and inner (sc .88, .97 of the height): the panels share edges and shading
-    exactly, so neither a seam nor a slice shows. A panel is an angular sector from a bottom edge yb(a) up to the top. */
+ /* a door is a STRAIGHT-EDGED triangle in metres (dw at the floor, the apex at dh), whatever the shell's bulge: its half-angle at
+    height y is asin(w(y) / 2 / R(y)); the sector it needs is the widest of those (near the floor) */
+ const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.7),dw=dh*.62,ha=y=>Math.asin(Math.min(.95,dw/2*(1-y/dh)/Math.max(.05,R(y))));
+  let aw=0;for(let y=0;y<dh;y+=dh/12)aw=Math.max(aw,ha(y));
+  /* the edge's height at a half-angle da (bisection on y: the edge is where ha(y) = da) */
+  const yAt=da=>{if(da>=aw)return 0;let lo=0,hi=dh;for(let n=0;n<18;n++){const m=(lo+hi)/2;if(ha(m)>da)lo=m;else hi=m;}return (lo+hi)/2;};
+  return {dh,dw,ha,aw,yAt,ry:d.ry||0,ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
  const S=(sc,ysc)=>(a,y)=>{const r=R(y)*sc;return [Math.cos(a)*r,y*ysc,Math.sin(a)*r];};
  const nv=Math.max(6,prof.length*2);
  const panel=(a0,a1,yb,sc,ysc,inward)=>{const f=(u,v)=>{const a=a0+(a1-a0)*u,b=yb(a),y=lerp(b,top,v);return S(sc,ysc)(a,y);};
   const n=Math.max(2,Math.round(seg*Math.abs(a1-a0)/TAU)*2);
-  /* facing: the raw normal at the middle against the outward direction */
   const pm=f(.5,.5),pa=f(.52,.5),pb=f(.5,.52),du=[pa[0]-pm[0],pa[1]-pm[1],pa[2]-pm[2]],dv=[pb[0]-pm[0],pb[1]-pm[1],pb[2]-pm[2]];
   const nx=du[1]*dv[2]-du[2]*dv[1],nz=du[0]*dv[1]-du[1]*dv[0];const out=pm[0]*nx+pm[2]*nz;
   psurf(mk,f,n,nv,col,{flip:inward?out>0:out<0});};
  W(x,0,z,o.ry||0,()=>{if(!doors.length){for(const [sc,ysc,inw] of [[1,1,false],[.88,.97,true]])panel(0,TAU,()=>0,sc,ysc,inw);return;}
   for(const [sc,ysc,inw] of [[1,1,false],[.88,.97,true]]){
-   /* between the doors: full-height sectors from the floor */
    for(let i=0;i<doors.length;i++){const a=doors[i],b=doors[(i+1)%doors.length];const a0=a.ac+a.aw,a1=b.ac-b.aw+(i===doors.length-1?TAU:0);if(a1>a0+1e-4)panel(a0,a1,()=>0,sc,ysc,inw);}
-   /* over each door: the sector above its triangle */
-   for(const d of doors)panel(d.ac-d.aw,d.ac+d.aw,a=>d.dh*(1-Math.abs(a-d.ac)/d.aw),sc,ysc,inw);}
-  /* the reveals along each door's slanted edges, between the two shells */
-  for(const d of doors){for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=d.ac+kk*d.aw*(1-u),y=d.dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y*lerp(.97,1,v),Math.sin(a)*rr0];},4,2,col,{flip:kk<0});
+   for(const d of doors)panel(d.ac-d.aw,d.ac+d.aw,a=>d.yAt(Math.abs(a-d.ac)),sc,ysc,inw);}
+  /* the reveals along each door's straight slanted edges, between the two shells */
+  for(const d of doors){for(const kk of [-1,1])psurf(mk,(u,v)=>{const y=d.dh*u,a=d.ac+kk*d.ha(y),rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y*lerp(.97,1,v),Math.sin(a)*rr0];},6,2,col,{flip:kk<0});
    W(0,0,0,d.ry,()=>door(0,0,r0*.94,0,d.dw));}});}
+/* an eye on a dome's slope: at height y on the +z face of a dome of profile prof, the disc laid on the surface (tilted to its slope) */
+function lzDomeEye(prof,y,R,o){const Rf=yy=>{for(let i=1;i<prof.length;i++)if(yy<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(yy-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
+ const r=Rf(y),dr=Rf(y+.05)-Rf(y-.05),slope=Math.atan2(-dr,.1);   /* the surface leans back by `slope` above the vertical */
+ WX(0,y,r+.01,0,-slope,0,()=>lzEye(0,0,0,0,R,o));}
 /* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
 function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot radius: a TRIANGULAR tunnel the section of the doors (dw at the
  floor, dh at the apex), from between one dome's two shells to between the other's, so its slopes meet the doors' slanted edges */
@@ -191,7 +196,7 @@ function lzLeiwen(w,h,o){o=o||{};
    mark: the more important the building, the more eyes. o.mk bronze | ivory | basalt; o.glow a lit pupil (the seer's hall) */
 function lzEye(x,y,z,ry,R,o){o=o||{};const mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):P('basaltC')),th=R*.14;
  if(LZ_SHEET('eyeS')&&mk==='bronze'&&!o.glow){/* the owner's eye on a cast disc, both faces */
-  W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('bronzeC',0,-th,0,R,th,P('bronze'),24));for(const f of [1,-1])WX(0,0,f>0?.005:-th-.005,0,f>0?PI/2:-PI/2,0,()=>medallion('eyeS',0,0,0,R*2,{round:true}));});return;}
+  W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('bronzeC',0,-th,0,R,th,P('bronze'),24));for(const f of [1,-1])WX(0,0,f>0?.005:-th-.005,0,f>0?PI/2:-PI/2,0,()=>medallion('eyeS',0,0,0,R*2*.93,{round:true}));});return;}   /* the sheet a little inside the cast disc: its magenta key never reaches the rim */
  W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>cyl(mk==='bronze'?'bronzeC':mk,0,-th,0,R,th,mk==='bronze'?P('bronze'):col,18));   /* the disc, from z = -th to 0 */
   /* the whorl and the pupil on BOTH faces, so the eye reads from behind too (the back winds the other way) */
   for(const f of [1,-1]){const zf=f>0?0:-th;tube(mk,t=>{const a=t*TAU*2.3*f,r=R*.14+R*.78*(1-t);return [Math.cos(a)*r,Math.sin(a)*r,zf+f*(.02+.01*t)];},t=>[R*.07,R*.07],22,5,col,{caps:true});
