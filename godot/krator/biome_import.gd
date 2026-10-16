@@ -9,6 +9,7 @@ const FOLIAGE := preload("res://shaders/foliage.gdshader")
 const BARK := preload("res://shaders/bark.gdshader")
 const ANIM := preload("res://shaders/anim.gdshader")
 const ANIM_ADD := preload("res://shaders/anim_add.gdshader")
+const ANIM_PHASE := preload("res://shaders/anim_phase.gdshader")
 const CHUNK := 1200.0   # BIO.LOD.chunk (three's LOD box; only named in the report now)
 const CELL := 150.0     # the importer's LOD cell: finer than a 300 m tile, so a tile changes detail progressively
 
@@ -58,12 +59,19 @@ static func build(path: String) -> Node3D:
 	items.name = "Items"
 	root.add_child(items)
 	var instances := 0
+	var moving := 0   # instances a KMotion player moves
 	for it in d["items"]:
 		var m: Dictionary = mats[it["material"]]
 		var mat := _material(m, tex, texrec, true, report)
 		var mesh := KData.array_mesh(it["geometry"], mat, Vector3.ZERO)
 		var n: int = int(it["count"])
 		var groups := _item_cells(it, n)
+		# a moving item's baked motion (biomes/GODOT.md, "Motion"): each cell's MultiMesh gets a KMotion player
+		var track := KMotion.from_record(it.get("motion"))
+		if it.get("motion") is Dictionary and (it["motion"] as Dictionary).has("error"):
+			_gap(report, "motion " + str(it["name"]), "%s: the page's tick is not a function of the clock (%s), so no track was baked: it stands at its export pose" % [it["name"], it["motion"]["error"]])
+		elif it["dynamic"] and track.is_empty():
+			_gap(report, "motion", "moving items without a baked track (an export from before 2026-10-16, or motion:false): they stand at their export pose")
 		# core/tags (biomes/GODOT.md, "Records"): the item set's id, and the side table by instance index: each instance's
 		# uid (KTAGS.uid of its class, key and position) and its index in the set (its id is "<record>#<index>"). A cell
 		# keeps the slice for its own instances, in its own instance order
@@ -93,6 +101,9 @@ static func build(path: String) -> Node3D:
 			mmi.multimesh = mm
 			mmi.position = origin
 			_apply_lod(mmi, it, report)
+			if not track.is_empty():
+				KMotion.attach(mmi, track, sel, origin)
+				moving += sel.size()
 			mmi.set_meta("krator", {"kit": it["kit"], "name": it["name"], "label": it["label"], "material": m.get("key"),
 				"kind": m["kind"], "dynamic": it["dynamic"], "count": sel.size(), "cell": key})
 			if recs.size() > 0:
@@ -107,7 +118,7 @@ static func build(path: String) -> Node3D:
 				if by_id.has(it["record"]):
 					mmi.set_meta("krator_set", by_id[it["record"]])
 			items.add_child(mmi)
-		if it["dynamic"] and str((m["options"] if m["options"] != null else {}).get("mode", "orbit")) == "walk":
+		if it["dynamic"] and track.is_empty() and str((m["options"] if m["options"] != null else {}).get("mode", "orbit")) == "walk":
 			_gap(report, "fauna walk", "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping")
 		instances += n
 
@@ -142,7 +153,7 @@ static func build(path: String) -> Node3D:
 		buckets.add_child(bn)
 		tris += int(b["triangles"])
 
-	report["counts"] = {"items": d["items"].size(), "item_nodes": items.get_child_count(), "instances": instances,
+	report["counts"] = {"items": d["items"].size(), "item_nodes": items.get_child_count(), "instances": instances, "moving": moving,
 		"buckets": d["buckets"].size(), "bucket_nodes": buckets.get_child_count(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	report["ids"] = ids
@@ -328,7 +339,8 @@ static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictiona
 
 # MultiMesh.buffer: per instance 12 floats (the 3x4 transform, row by row), 4 colour, 4 custom.
 # COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b) (biomes/GODOT.md); an animated body
-# (aP0, aP1: kind 'anim') packs COLOR = (r, g, b, aP0.w), INSTANCE_CUSTOM = aP1 (shaders/anim_body.gdshaderinc)
+# (aP0, aP1: kind 'anim') packs COLOR = (r, g, b, aP0.w), INSTANCE_CUSTOM = aP1 (shaders/anim_body.gdshaderinc); an
+# anim-phase body (aPh) INSTANCE_CUSTOM.x = aPh (shaders/anim_phase.gdshader)
 static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vector3, m: Dictionary, report: Dictionary) -> PackedFloat32Array:
 	var M := KData.floats(it["matrices"])
 	var C := KData.floats(it["colours"]) if it["colours"] != null else PackedFloat32Array()
@@ -337,8 +349,9 @@ static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vect
 	var C2 := KData.floats(ex["aC2"]["data"]) if ex.has("aC2") else PackedFloat32Array()
 	var P0 := KData.floats(ex["aP0"]["data"]) if ex.has("aP0") else PackedFloat32Array()
 	var P1 := KData.floats(ex["aP1"]["data"]) if ex.has("aP1") else PackedFloat32Array()
+	var PH := KData.floats(ex["aPh"]["data"]) if ex.has("aPh") else PackedFloat32Array()
 	for k in ex:
-		if not (k in ["aN", "aC2", "aP0", "aP1"]):
+		if not (k in ["aN", "aC2", "aP0", "aP1", "aPh"]):
 			_gap(report, "extras." + k, "per-instance attribute %s has no slot in the MultiMesh packing" % k)
 	var buf := PackedFloat32Array()
 	buf.resize(sel.size() * 20)
@@ -363,6 +376,8 @@ static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vect
 		if P1.size() > 0:   # an animated body: its path's radius and aP1
 			buf[b + 15] = P0[i * 4 + 3] if P0.size() > 0 else 0.0
 			buf[b + 16] = P1[i * 4]; buf[b + 17] = P1[i * 4 + 1]; buf[b + 18] = P1[i * 4 + 2]; buf[b + 19] = P1[i * 4 + 3]
+		if PH.size() > 0:   # an anim-phase body's beat (shaders/anim_phase.gdshader): INSTANCE_CUSTOM.x
+			buf[b + 16] = PH[i]
 	return buf
 
 
@@ -417,8 +432,9 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 	else:
 		sm.shader = BARK
 		match kind:
-			"anim-phase":
-				_gap(report, kind, "material kind 'anim-phase' (swbay's and nwbay's fauna: a per-instance phase, aPh) drawn with the bark shader, unanimated; no export carries those bodies today (their host moves them)")
+			"anim-phase":   # swbay's and nwbay's animMat: the beat on the instance's phase (aPh); the path is the baked motion
+				sm.shader = ANIM_PHASE
+				sm.set_shader_parameter("mode", {"bird": 0, "swim": 1}.get(str(o.get("mode", "bird")), 2))
 			"irid":   # BIO.iridBarkMat: the bark's colour swings between two tints with the view angle
 				var a: Array = o.get("a", [0.78, 1.18, 0.92])
 				var b: Array = o.get("b", [1.45, 0.82, 0.74])

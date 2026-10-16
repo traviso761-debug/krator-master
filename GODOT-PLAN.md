@@ -607,7 +607,8 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
    `biomes/GODOT.md`); `irid`, `gloss`, `far` (both packings) and `hang` (the sway and the night glow) have Godot
-   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds. *The `anim` kind done 2026-10-16* (finding 20).
+   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds. *The `anim` kind done 2026-10-16* (finding 20); *`anim-phase` and the CPU-moved fauna
+   the same day* (finding 20: baked motion).
 7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
    *Done 2026-10-05:* the export adds `sway` as data.
 8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
@@ -718,6 +719,25 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     sedesert's deer, swifts and striders, Shade), which export a snapshot; walkers of the `anim` kind (their host moves
     them); swbay's and nwbay's flocks (`anim-phase`), which no export carries. Those want their motion baked to data
     (keyframed paths, as Stage 5 plans for the sim's tasks) or their ticks ported to GDScript.
+    *Baked, the same day* (`biomes/GODOT.md`, "Motion"): one mechanism, no kit's tick ported. The export pins the BIO
+    clock on a grid (10 Hz by default), calls every tick the kits registered, and keeps each moving instance's matrix
+    (and any per-instance attribute that moves) as a track on its item (`motion`; world.glb: the node's
+    `extras.krator_motion`, arrays as accessors). An instance whose kit declares its period (sedesert's walkers: deer
+    and coyotes) keeps one period and replays exactly at every clock; the rest keep a 120 s loop cross-faded (a
+    smoothstep) over 2 s, exact between clock 0 and 118 s. `krator/kmotion.gd` replays it into each MultiMesh's
+    buffer from `Atmos.t`, attached by both importers; `shaders/anim_phase.gdshader` draws swbay's and nwbay's beat
+    (their flocks moved onto `BIO.dynamic`). Proof: `tests/motion/motion_test.gd` against the page's own ticks at nine
+    pinned clocks (`tools/motion_golden.py`: sedesert's buck with antlers and legs and four swifts, four of swbay's
+    soarers; on the grid to float32, between frames within 1.6 cm, the buck at 1000 s within 2 mm; five negatives),
+    `core/biome/test-motion.js` (the bake, the purity check, the page restored), and sedesert's buck and herd on the
+    same pixels in the page (`?t=`) and the spike (`--clock=`) at 100 s and 103 s. The core now takes core/host's
+    motion time as its clock (`KHOST.host.clock.t`), so a page pinned with `?t=` pins the deer and the foliage too
+    (before, `BIO.WIND.t` kept counting from load while the ticks read the pinned clock). Open: a tick that integrates
+    or draws (swbay's wandering herd, hyperjungle's `anim` walkers) is refused (`motion.error: 'state'`) and stands:
+    its kit must pose it from the clock (sedesert's `walkAt` is the pattern). eastabyss, Shade (vendored copies) and
+    nwbay are not re-exported yet. A loop's fade glides fast fliers across the gap between the loop's end and its
+    start; a per-instance loop length chosen where the path nearly closes would shrink it. The player runs on the CPU
+    (fine for a tile's hundreds; a world's thousands want it in the vertex shader).
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the

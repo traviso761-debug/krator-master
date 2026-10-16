@@ -138,7 +138,7 @@ normal is `StandardMaterial3D`'s `detail_*` fields fed from a record's `detail`,
 
 What it proves: `tests/shaders/library_test.gd` (the table, the resolution, the sedesert case's ground and pond),
 `tests/water/water_test.gd` (KWater equals WATER to 1e-14 m), `tests/shaders/library_gpu_check.gd` (every include
-compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4), `tests/anim/anim_test.gd`
+compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4), `tests/motion/motion_test.gd` (the baked motion of CPU-moved fauna against the page's ticks: `tools/motion_golden.py`; `krator/kmotion.gd`), `tests/anim/anim_test.gd`
 (`krator/kanim.gd`, the anim twin, against `BIO.animHook`'s own GLSL run on a GPU: `tools/anim_golden.py`; the importer's packing). Not yet: a record field
 that selects `cloth-sway`, `flag`, `glass` or `coursing` on an exported mesh (no export carries those materials yet: Girder
 and Iziz still go through the glTF route), fauna a kit moves on the CPU (`BIO.dynamic`; swbay's and nwbay's flocks), a texture array for bark variants,

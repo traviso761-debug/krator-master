@@ -46,6 +46,7 @@ BIO.init=function(h){
  if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');
  // scene may arrive later (a world that creates its scene after its kit loads
  // calls BIO.setScene before build); it is only needed at bake
+ BIO._ticks=[];BIO._pinT=null;
  BIO.host={
   THREE:h.THREE,scene:h.scene||null,
   terrainH:h.terrainH||((x,z)=>0),
@@ -61,7 +62,9 @@ BIO.init=function(h){
   // footprints or its own rule passes its own.
   mask:h.mask||(h.waterH?((x,z)=>{const d=BIO.placeH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}):((x,z)=>1)),
   obstacles:h.obstacles||[],
-  ticks:h.ticks||(fn=>{}),
+  // ticks(fn): the host calls fn(dt, t) every frame. The core keeps its own list of what the kits register too
+  // (BIO._ticks), so the export can drive their motion at pinned clocks (BIO.motionBake, 42-core-export.js)
+  ticks:(fn=>{BIO._ticks.push(fn);if(h.ticks)h.ticks(fn);}),
   seed:h.seed==null?1:h.seed,
   // origin: [x,z] or a LIST of [x,z] -- the LOD curve is measured from the
   // nearest one, so a long showcase (a lake shore, a river) can keep detail
@@ -123,7 +126,7 @@ BIO.nameAt=function(x,y,z){let best=null;for(const t in BIO.names){const L=BIO.n
 // the detail radii (sedesert-1, where it was BIO.LOD(); BIO.LOD is the runtime LOD's settings)
 BIO.radii=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};
 BIO.window=function(n){return (BIO.host&&BIO.host.windows[n])||null;};
-BIO.eye=function(){return BIO.host&&BIO.host.eye?BIO.host.eye():null;};
+BIO.eye=function(){return BIO._pinT==null&&BIO.host&&BIO.host.eye?BIO.host.eye():null;};   // none while the export pins the clock: every animal moves
 // the bounding box of the LOD spine, padded: every point within `pad` of an origin lies inside it
 BIO.originBox=function(pad){const O=BIO.host?BIO.host.origin:[[0,0]];let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const o of O){x0=Math.min(x0,o[0]);z0=Math.min(z0,o[1]);x1=Math.max(x1,o[0]);z1=Math.max(z1,o[1]);}return[x0-pad,z0-pad,x1+pad,z1+pad];};
 // distance from the LOD origin, for the detail curve

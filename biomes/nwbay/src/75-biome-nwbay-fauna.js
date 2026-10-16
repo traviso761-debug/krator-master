@@ -70,8 +70,9 @@ NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
  const spineOK=(x,z,d)=>BIO.lodD(x,z)<d;
  // ---- flocks: one InstancedMesh per species; each flock a loop over its ground with the birds trailing the leader
  function flockMesh(si,flocks,perFlock){const S=NWBAY.FAUNA.species[si],geo=birdGeo(S),n=flocks.length*perFlock;
-  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=S.flap*rr(.85,1.15);geo.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
-  const im=new T3.InstancedMesh(geo,animMat('bird'),n);im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=S.name+'s';im.name='biome:fauna:'+S.key;
+  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=S.flap*rr(.85,1.15);
+  // on BIO.dynamic (2026-10-16): registered as a set of records, exported, and its motion baked for a port (biomes/GODOT.md, "Motion")
+  const im=BIO.dynamic('fauna:'+S.key,geo,animMat('bird'),n,{label:S.name+'s'});im.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
   const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),F=new T3.Vector3(),UP=new T3.Vector3(0,1,0),Mlook=new T3.Matrix4();
   const birds=[];flocks.forEach((fl,fi)=>{for(let k=0;k<perFlock;k++)birds.push({fl:fl,lag:k*rr(.9,1.6),side:rr(-1,1)*fl.r*.35,dy:rr(-1,1)*fl.r*.12,sc:S.span*rr(.85,1.15)});});
   const at=(fl,t)=>{const a=fl.a0+fl.w*t;return[fl.x+Math.cos(a)*fl.r+Math.sin(a*2.3)*fl.r*.15,fl.y+Math.sin(a*1.7+fl.a0)*fl.dy,fl.z+Math.sin(a)*fl.r*fl.e];};
@@ -80,7 +81,7 @@ NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
     P.set(p[0]+nx,p[1]+b.dy,p[2]+nz);F.set(p2[0]-p[0],p2[1]-p[1],p2[2]-p[2]).normalize();
     Mlook.lookAt(F,new T3.Vector3(0,0,0),UP);Q.setFromRotationMatrix(Mlook);Q.multiply(new T3.Quaternion().setFromAxisAngle(UP,Math.PI));   // the model's nose is -z
     Sc.set(b.sc,b.sc,b.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
-  upd(0);scene.add(im);BIO.host.ticks((dt,t)=>upd(t));BIO.tally(geo.attributes.position.count/3*n,n,1);st.flocks+=flocks.length;st.birds+=n;return im;}
+  upd(0);BIO.host.ticks((dt,t)=>upd(t));st.flocks+=flocks.length;st.birds+=n;return im;}
  // the soarers: loops over the bay and the shore, high, slow; the loops stay clear of the
  // canopy under them, of the karst (terrainH is the stack top there) and of anything the host registered
  const soar=[];BIO.grid(300,0,R,(x,z)=>{const Z=zones(x,z);const water=smooth(.5,-1.5,Z.h);return (water*.9+Z.shore*.5)*(spineOK(x,z,1400)?1:0)*q;},(x,y,z)=>{
