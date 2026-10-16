@@ -69,11 +69,13 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
    the distance along the bottom edge from B0; every opening is a TRIANGLE (apex up). Two sheets: the face and, LZ_T behind
    it, the inside (o.inner false: none). A door() is declared per door, facing out. o.mk, o.col */
 function lzWall(B0,B1,T0,T1,y0,h,mk,col,opens,o){o=o||{};const L=Math.hypot(B1[0]-B0[0],B1[1]-B0[1]);if(L<.05)return;
- const nx=(B1[1]-B0[1])/L,nz=-(B1[0]-B0[0])/L;   /* the outward normal (x,z) */
+ const nx=-(B1[1]-B0[1])/L,nz=(B1[0]-B0[0])/L;   /* the outward normal (x,z): the front wall runs west to east and faces +z */
  const at=(u,v,off)=>{const bx=lerp(B0[0],B1[0],u),bz=lerp(B0[1],B1[1],u),tx=lerp(T0[0],T1[0],u),tz=lerp(T0[1],T1[1],u);return [lerp(bx,tx,v)+nx*off,y0+h*v,lerp(bz,tz,v)+nz*off];};
  const sheet=(u0,u1,ybot)=>{if(u1-u0<1e-3)return;const f=off=>(u,v)=>{const uu=u0+(u1-u0)*u,yb=ybot?ybot(uu):0,vv=yb/h+(1-yb/h)*v;return at(uu,vv,off);};
   const nv=ybot?3:2,nu=ybot?6:Math.max(1,Math.round((u1-u0)*L/2));psurf(mk,f(0),nu,nv,col,{});if(o.inner!==false)psurf(mk,f(-LZ_T),nu,nv,o.innerCol||col,{flip:true});};
- const ops=(opens||[]).slice().sort((a,b)=>a.s-b.s);let u=0;
+ const ops=(opens||[]).filter(q=>q.door).sort((a,b)=>a.s-b.s);let u=0;
+ /* a vent (an opening with a sill y) is not cut: it is a dark triangle set a little proud of the face, high under the eave */
+ for(const q of (opens||[]).filter(q=>!q.door)){const uc=q.s/L,yv=(q.y||h*.6)/h;const p0=at(uc-q.w/2/L,yv,.03),p1=at(uc+q.w/2/L,yv,.03),p2=at(uc,Math.min(1,yv+q.h/h),.03);poly('plain',[p0,p1,p2],P('black'),false);}
  for(const q of ops){const ua=(q.s-q.w/2)/L,ub=(q.s+q.w/2)/L,uc=q.s/L;sheet(u,ua);
   /* over the triangle: the bottom edge rises to the apex and falls again */
   sheet(ua,ub,uu=>q.h*(1-Math.abs(uu-uc)/(ub-uc)));
