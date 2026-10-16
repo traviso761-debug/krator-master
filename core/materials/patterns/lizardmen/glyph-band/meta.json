@@ -1,0 +1,52 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1983,
+    591
+   ],
+   "seam_after": [
+    0.716,
+    0.49
+   ],
+   "seam_before": [
+    2.152,
+    1.909
+   ],
+   "source_size": [
+    2000,
+    667
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.75,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "id": "patterns/lizardmen/glyph-band"
+ },
+ "source": {
+  "file": "9.webp",
+  "sha1": "24cc359d3c7c9eef1639259891745685b8e31781"
+ }
+}

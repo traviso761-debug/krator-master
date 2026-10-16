@@ -116,6 +116,8 @@ five of `PROMPTS-NEEDED.md` section 0's redos (batch `redos-2026-10-15.json`): i
 
 Delivered 2026-10-15 (in `../krator-isle`, `biomes/geyser`): `ground.travertine.white`, `stone.geyserite`, `card.streamer`, `card.clubmoss`, `card.steamcomb`, `card.strap.pandan`: the geyser basin is complete.
 
+Delivered 2026-10-16 (pasted): the Lizardmen ornament, `patterns/lizardmen/leiwen` (and `leiwen-b`, a busier taotie take), `patterns/lizardmen/glyph-band` (and `glyph-band-b`), `patterns/lizardmen/spiral-eye` (on magenta), and `library/rock.basalt.polygonal` (the capital's cyclopean masonry). All wired in `kits/lizardmen` (`materials.json`: `leiwenS`, `leiwenS2`, `glyphS`, `glyphS2`, `eyeS`, `cyclo`). Nothing of the Lizardmen is owed.
+
 Delivered 2026-10-07 (`Downloads/zeijani.zip`; batches `zeijani-2026-10.json`, `zeijani-cards-2026-10.json`): `rock.tuff`, `stone.tuff.polished`,
 `stone.basalt.polished`, `rock.basalt.flowbanded`, `rock.basalt.oxidised`, `bone.ossuary`, `patterns/zeijani/labyrinth-relief`,
 `patterns/zeijani/frieze-spirits`, `patterns/zeijani/kiva-mural`, `patterns/zeijani/textile`, `patterns/zeijani/glazed-frieze`,
