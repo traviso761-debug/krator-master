@@ -9,7 +9,7 @@ const FAMILIES=[
  {name:'The camp',keys:['lc-hide','lc-shield','lc-seer','lc-sail']},
  {name:'Specialists and stores',keys:['lz-seer','lz-medicine','lz-warehouse']},
  {name:'Monuments',keys:['lz-stela-pair','lz-stela-turned','lz-obelisk','lz-circle','lz-ley','lz-bells']},
- {name:'The capital, in stone',keys:['lk-gate','lk-greathall','lk-longhouse','lk-warren','lk-nest','lk-college']},
+ {name:'The capital, in stone',keys:['lk-gate','lk-wall','lk-watchtower','lk-greathall','lk-longhouse','lk-warren','lk-nest','lk-college']},
  {name:'The reliquary',keys:['lz-reliquary']},
  {name:'Beasts',keys:['frilled','burden']}
 ];

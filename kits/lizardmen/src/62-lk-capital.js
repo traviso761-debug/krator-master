@@ -83,14 +83,53 @@ defBuilding({key:'lk-college',name:"Interpreters' college",seed:7705,caste:5,cut
    lzTwist(0,0,h,n,w0,w1,.07,{mk:LK_ST,col:P('basalt'),each:(i,y,w,ry)=>{if(i%2===1){const k=(i>>1)%2?-1:1;W(0,y+h/n*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.17,{mk:'bronze'}));}}});
    for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.4,.13,{curl:.5,lean:.35,mk:LK_PL,col:P('basaltD')});}});}
   lzFurnRoom(13,6.2,.4,'court',{beds:0,noHearth:true,ceil:5,extra:[['lizardmen_court_desk',-4,-1.5,0],['lizardmen_court_desk',4,-1.5,0],['lizardmen_court_scroll',-6,.5,PI/2],['lizardmen_court_scroll',6,.5,-PI/2],['lizardmen_court_divan',0,-2,0],['lizardmen_court_candelabra',-2,1.6,0],['lizardmen_court_candelabra',2,1.6,0]]});}});
-/* ---------------------------------------------------------------- the capital's gate */
-defBuilding({key:'lk-gate',name:"Capital gate",seed:7706,caste:'all',cut:false,w:18,d:8,h:13,budget:80000,
+/* ---------------------------------------------------------------- the capital's gate, its walls and its watchtowers */
+/* a run of the capital's wall along x: cyclopean masonry leaning in on the outer face (+z) and out on the inner, a walk
+   behind a parapet of thirteen stone horns (odd), a bronze line along the walk's edge. L long, H to the walk */
+function lkWallRun(L, H, o){o=o||{};const t=o.t||3.2;
+ const T=lzBatterRoom(L,t,0,H,LK_ST,P('basalt'),{lean:{front:.09,back:-.05,left:0,right:0},inner:false});
+ lzSlab(T.T,H,.4,'basalt',P('basaltD'),.05);
+ /* the parapet on the outer edge: a low leaning wall, and the horns on it */
+ const zf=T.zf+.05;lzWall([-L/2,zf],[L/2,zf],[-L/2,zf-.12],[L/2,zf-.12],H+.4,1.3,LK_ST,P('basalt'),[],{});
+ for(const x of lzSpan(-L/2+.8,L/2-.8,o.n||13))lzHorn(x,H+1.7,zf-.3,0,1.6,.14,{curl:.55,lean:.25,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});
+ box('bronzeC',0,H+.42,T.zb+.3,L-.4,.05,.06,P('verd'));
+ if(o.leiwen)W(0,H*.55,zf+.1*(H*.55)*0+ (T.zf-(T.zf-(-t/2))*0)+.0,0,()=>{});
+ return T;}
+defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w:22,d:12,h:17,budget:110000,
  tags:{types:['military','infrastructure'],wealth:'rich',role:'gate'},
- note:'two battered pylons of polygonal basalt flank a nested bronze portal seven deep under a lintel of polished basalt; a great spiral eye above the way, two stone horns crossing over it, leiwen bands and the glyph spiral of the Coil on the pylons',
- build(o){const H=lzDoorH(6)*1.3,dw=H*.62;lzNoCut(()=>lkPlinth(17,7,.3,{}));
-  for(const s of [-1,1])W(s*5.6,.3,0,0,()=>{const T=lzBatterRoom(5,5.5,0,10,LK_ST,P('basalt'),{lean:{front:.1,back:.1,left:.1,right:.1},inner:false});lzSlab(T.T,10,.5,'basalt',P('basaltD'),.2);
-   W(0,.6,5.5/2-.1*.6+.04,0,()=>lzGlyphSpiral(3.4,7.5,{mk:'bronze',mirror:s<0,turns:3}));W(0,8.4,5.5/2-.1*8.4+.05,0,()=>lzLeiwen(3.2,1.0,{cell:.3,mk:'bronze',back:'lacq'}));
-   lzHorn(0,10.5,0,s>0?-PI/2:PI/2,4.2,.3,{curl:.75,lean:.2,mk:LK_PL,col:P('basaltD')});});
-  box(LK_PL,0,.3+H+.4,0,6.6,1.2,4,P('basaltD'));W(0,.3+H+.5,2.02,0,()=>lzLeiwen(6,1.0,{cell:.3,mk:'bronze',back:'lacq'}));
-  lzEye(0,.3+H+2.6,1.4,0,1.0,{mk:'bronze'});
-  lzPortal(0,.3,2.0,0,H,{mk:'bronze',step:.5});lzPortal(0,.3,-2.0,PI,H,{mk:'bronze',step:.5});door(0,.3,0,0,dw);lzThreshold(0,2.4,0,dw);}});
+ note:'a gatehouse of polygonal basalt between two battered pylons: one triangular passage sized for the Bulwarks (6 m high, 3.7 m wide) through a solid block, nested bronze frames seven deep at both mouths, a great spiral eye over the way, two stone horns crossing above; glyph spirals and leiwen bands on the pylons; the wall runs meet its pylons',
+ build(o){const H=6.0,dw=3.7,PB=.3;lzNoCut(()=>lkPlinth(21,11,PB,{}));
+  /* the pylons */
+  for(const s of [-1,1])W(s*7.4,PB,0,0,()=>{const T=lzBatterRoom(6.2,8,0,13,LK_ST,P('basalt'),{lean:{front:.1,back:.1,left:.08,right:.08},inner:false});lzSlab(T.T,13,.5,'basalt',P('basaltD'),.2);
+   W(0,.6,4-.1*.6+.04,0,()=>lzGlyphSpiral(4.2,9.5,{mk:'bronze',mirror:s<0,turns:3}));W(0,11,4-.1*11+.05,0,()=>lzLeiwen(3.6,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
+   lzHorn(0,13.5,0,s>0?-PI/2:PI/2,5.2,.32,{curl:.75,lean:.2,mk:LK_PL,col:P('basaltD')});lzEye(s*(3.1-.08*7),7,0,s>0?PI/2:-PI/2,.5,{mk:'bronze'});});
+  /* the gatehouse block: a solid battered mass between the pylons with the passage cut through it, front and back */
+  const T=lzBatterRoom(8.6,8,PB,H+3.4,LK_ST,P('basalt'),{lean:{front:.06,back:.06,left:0,right:0},front:[{s:4.3,w:dw,h:H,door:true}],back:[{s:4.3,w:dw,h:H,door:true}]});
+  lzSlab(T.T,PB+H+3.4,.5,'basalt',P('basaltD'),.15);
+  /* the passage's side walls and ceiling: a tunnel the width of the door, so the block reads solid */
+  for(const s of [-1,1])lzWall(s>0?[dw/2+.05,4]:[-dw/2-.05,-4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,4]:[-dw/2-.05,-4],PB,H*.52,LK_PL,P('basaltD'),[],{inner:false});
+  /* the two mouths: nested bronze frames, the eye above the front one, the leiwen lintel band */
+  for(const s of [-1,1]){const zf=s*(4-.06*0)+s*.1;lzPortal(0,PB,s*4.12,s>0?0:PI,H,{mk:'bronze',step:.5});lzThreshold(0,s*4.6,s>0?0:PI,dw);}
+  W(0,PB+H+1.2,4-.06*(H+1.2)+.06,0,()=>lzLeiwen(7.4,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
+  lzEye(0,PB+H+2.4,4-.06*(H+2.4)+.1,0,.95,{mk:'bronze'});lzEye(0,PB+H+2.4,-(4-.06*(H+2.4)+.1),PI,.7,{mk:'bronze'});
+  door(0,PB,4,0,dw);}});
+defBuilding({key:'lk-wall',name:'Capital wall',seed:7707,caste:'all',cut:false,w:22,d:6,h:11.5,budget:70000,
+ tags:{types:['military','infrastructure'],wealth:'rich',role:'wall'},
+ note:'a 20 m run of the capital\'s wall: cyclopean basalt 8 m to the walk, leaning in on the outer face and out on the inner, a parapet of thirteen stone horns, a bronze line along the walk; runs join end to end and meet the gate\'s pylons and the watchtowers',
+ build(o){lzNoCut(()=>box(LK_PL,0,0,0,21,.3,5,P('basaltD')));W(0,.3,0,0,()=>lkWallRun(20,8,{n:13}));
+  /* a stair up to the walk on the inner side */
+  W(6,0,-2.4,PI,()=>{for(let i=0;i<22;i++){const t=(i+1)/22;box(LK_PL,0,0,-(t*6-.14),1.4,.3+t*8,.3,P('basaltD'));}});
+  door(0,.3,2.8,0,2);}});
+defBuilding({key:'lk-watchtower',name:'Stone watchtower',seed:7708,caste:4,cut:true,w:12,d:12,h:24,budget:110000,
+ tags:{types:['military'],wealth:'rich',role:'watch'},
+ note:'a twisted tower of eleven courses, 18 m, hollow below for the guard room (the warriors\' door), a walk on top behind a parapet of eleven stone horns, a great bronze eye facing each way; wall runs meet its sides',
+ build(o){const h=18,n=11,w0=7.2,w1=5.2,ch=h/n,hollow=2;lzCutFloor(0);lzNoCut(()=>lkPlinth(10.5,10.5,.3,{}));
+  const dh=lzDoorH(4),dw=dh*.62;
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.06;W(0,.3+i*ch,0,ry,()=>lzBatterRoom(w,w,0,ch+.02,LK_ST,P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]}));}
+  const cy=.3+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box(LK_ST,0,cy-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.06);
+  lzTwist(0,0,h,n,w0,w1,.06,{mk:LK_ST,col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===n-2)W(0,y+ch*.5,0,ry,()=>{for(const q of [0,PI/2,PI,-PI/2])W(0,0,0,q,()=>lzEye(0,0,w/2+.03,0,w*.2,{mk:'bronze'}));});}});
+  /* the walk: a slab, a parapet with eleven horns */
+  W(0,.3+h,0,(n-1)*.06,()=>{box('basalt',0,0,0,w1+.6,.4,w1+.6,P('basaltD'));for(let k=0;k<4;k++)W(0,.4,0,k*PI/2,()=>{lzWall([-w1/2-.3,w1/2+.3],[w1/2+.3,w1/2+.3],[-w1/2-.3,w1/2+.2],[w1/2+.3,w1/2+.2],0,1.2,LK_ST,P('basalt'),[],{});});
+   for(let i=0;i<11;i++){const a=i*TAU/11;const r=w1/2+.25;lzHorn(Math.cos(a)*r,1.6,Math.sin(a)*r,Math.atan2(Math.cos(a),Math.sin(a)),1.6,.13,{curl:.5,lean:.3,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}});
+  lzNoCut(()=>lzPortal(0,.3,w0/2+.04,0,dh,{mk:'bronze'}));lzThreshold(0,w0/2+.3,0,dw);
+  FURNISH('lizardmen_common_rack',2.2,.3,-1.8,-PI/2);FURNISH('lizardmen_common_bed',-2,.3,-1.6,0);FURNISH('generic_trade_locker',-2.4,.3,1.4,PI/2);FURNISH('lizardmen_common_stool',.6,.3,.8,0);FURNISH('generic_water',1.8,.3,1.4,0);}});
