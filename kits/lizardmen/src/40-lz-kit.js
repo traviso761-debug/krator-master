@@ -225,12 +225,15 @@ function lzMenhir(x,z,h,w,o){o=o||{};W(x,0,z,o.ry||0,()=>{WX(0,0,0,0,0,o.lean||r
   lzWall([w/2,-w*.2],[-w/2,-w*.2],[w*.3,-w*.12],[-w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:false});lzWall([w/2,w*.2],[w/2,-w*.2],[w*.3,w*.12],[w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:false});
   lzWall([-w/2,-w*.2],[-w/2,w*.2],[-w*.3,-w*.12],[-w*.3,w*.12],0,h,'basalt',P('basalt'),[],{inner:false});box('basalt',0,h-.02,0,w*.6,.1,w*.24,P('basalt'));
   if(o.eye)lzEye(0,h*.6,w*.2+.01,0,w*.22,{mk:'basalt'});});});}
-/* a bell rack: a lashed bone frame with n bronze bells (after the bianzhong) and no clappers: silence made visible */
-function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{for(const s of [-1,1]){lzHorn(s*L/2,0,0,s>0?PI/2:-PI/2,h*1.1,.13,{curl:.3,mk:'bones'});}
- beam('bones',[-L/2,h,0],[L/2,h,0],.08,P('boneO'),true,7);
- for(const bx of lzSpan(-L/2+.4,L/2-.4,n)){const bh=.42+.1*Math.abs(bx)/L;beam('rope',[bx,h,0],[bx,h-.2,0],.02,P('reedD'),true,5);
+/* a bell rack: two bone posts leaning in (L apart at the foot), a bone beam seated across their tops and lashed, n bronze
+   bells (after the bianzhong) hung from it by cords, with no clappers: silence made visible */
+function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{const lean=.35;
+ for(const s of [-1,1]){beam('bones',[s*L/2,0,0],[s*(L/2-lean),h,0],.16,P('boneO'),true,8);sph('bones',s*(L/2-lean),h,0,.19,P('boneO'),1,8);}
+ beam('bones',[-L/2+lean-.3,h+.1,0],[L/2-lean+.3,h+.1,0],.12,P('boneO'),true,8);
+ for(const s of [-1,1])for(const k of [-1,1])ring('rope',s*(L/2-lean),h+.1+k*.06,0,.2,.03,P('reedD'),0,0,PI/2,10);
+ for(const bx of lzSpan(-L/2+lean+.5,L/2-lean-.5,n)){const bh=.42+.1*Math.abs(bx)/L;beam('rope',[bx,h+.05,0],[bx,h-.2,0],.02,P('reedD'),true,5);
   lathe('bronzeC',bx,0,[[.02,h-.2],[.14,h-.26],[.19,h-.2-bh*.75],[.21,h-.2-bh],[.0,h-.2-bh]],12,P('bronze'),{});
-  W(bx,h-.2-bh*.55,.215,0,()=>lzLeiwen(.3,.22,{cell:.11,mk:'bronze',back:false,t:.012,proud:.012}));}});}
+  W(bx,h-.2-bh*.55,.215,0,()=>lzLeiwen(.3,.22,{cell:.11,mk:'bronze',back:false,t:.012,proud:.012,sheet:false}));}});}
 /* the raised threshold and the stone footing every door has */
 function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
 /* a pool of dust: the ground round a monument, trodden */
