@@ -197,7 +197,7 @@ The browser-native code becomes one module, `core/host/`, that a build takes the
 
 | Fragment | Replaces | Notes |
 |---|---|---|
-| `90-host-camera.js` | 16 `camera.js` copies | fly and walk modes, pointer lock, key guards (the TODO's input guards land here once) |
+| `90-host-camera.js` | 16 `camera.js` copies | fly and walk modes, pointer lock, key guards (the TODO's input guards land here once); the pin's pick is the ground unless the build hands `take({pick})` (Voth: the interior under the cutaway, 2026-10-16) |
 | `91-host-loop.js` | the render loops | one frame loop with per-subsystem error isolation (TODO), `_ready`, N-frames-since-ready for verify |
 | `92-host-panel.js` | error panel, stats, loader | |
 | `93-host-inspect.js` | 5 `inspect.js`, `92-hover.js` | reads the tag registry (Phase 2) and nothing else |
@@ -694,6 +694,23 @@ these must be re-packed (`python3 tools/textures/pack.py <build>`), rebuilt and 
 | `patterns/common/grime-streaks` (2026-10-15) | not wired anywhere yet (the break-up hook's `grime`) | 20 x 8 cells, dark on white |
 
 `core/materials/PROMPTS-NEEDED.md` section 0 has the same list. Strike a row when its build is re-packed.
+
+### Before an export: what Voth's in-page pin and inspector read that the export must carry
+
+On 2026-10-16 the city page's pin and inspector were made to work inside the cantons (`settlements/voth/targets/voth-city/
+58-vc-tools.js` `VC.pickInterior`, `97-vc-host-take.js`, core/host's `take({pick})`). The picking itself is [web] and is
+not ported (Phase 6: Godot raycasts against colliders natively, and its cutaway is [G native]). What it reads is [G data],
+and Voth's export case (none yet; Phase 7) must carry it, or Godot's walker and inspector will not have it:
+- **The rooms as tagged records.** The page's inspector names a canton room from `VC.INT.cantons[cn]` directly (its
+  `name`, `bpKind`, `kind`, `decor`, `storey`, rect, `y`, `h`, `tallTo`; the census row of its kind), not from the tag
+  registry Phase 1's `93-host-inspect.js` and Godot's inspector read. Register each room, hall and exit as a `core/tags`
+  record (class `room`, the blueprint's sheet name as its name) so the export and the record-driven inspector name them.
+- **The interior's floors, flights, walls and exits** (`P.floors`, `P.flights`, `P.boxes`, `P.tunnels`, `P.suite.exits`):
+  KWALK's floors and solids today; Godot's walk collision and nav (Phase 5) take them as data, so a pin dropped in the
+  throne room stands on its floor there too. The exits' tunnels run out to the tiers' real faces (`40e-vc-palace-doors.js`
+  `VC.faceOut`), which the export must keep: the stack records alone put them 20 to 60 m inside the stone.
+- **Godot's cutaway must cut the pick too.** The three.js raycast ignores clipping planes, so the page filters hits above
+  the cut by hand; a Godot cutaway done with a shader clip has the same trap (hide the storeys above as nodes instead).
 
 ## 5. Disposition by module
 
