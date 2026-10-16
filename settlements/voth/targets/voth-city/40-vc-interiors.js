@@ -44,6 +44,7 @@ VC.intPlanAll = function () {
     CANT.holes[cn] = [[c.x - w[0], c.x + w[0], c.z - w[1], c.z + w[1], P.M.top.y]];
   });
   VC.intEntrances();
+  if (VC.bpSummit) VC.bpSummit();   /* the Palace's summit from its sheet (40d-vc-blueprint.js), round the stair house */
   /* what the hollowing lays open (owner, 2026-10-09: "what are these stones clipping inside the arena", "the strange pile
      of stones is still present"): a captured piece inside the interior's reach (its footprint within the first tier's R)
      whose top lies more than 0.3 m under the canton's walking surface there (CANT.surface) was buried in its stone (Voth's
@@ -525,6 +526,8 @@ VC.intWalk = function (W) {
         W.block([w[0], w[1], w[2], w[3], H.y + 0.05, H.y + H.h], tag);
       });
     }
+    /* what the summit's sheet stands on the deck (40d VC.bpSummit): columns, the beacon, the kiosks, the pool, the railing */
+    (P.summit ? P.summit.blocks : []).forEach(function (b) { W.block(b, tag); });
   });
   return n;
 };

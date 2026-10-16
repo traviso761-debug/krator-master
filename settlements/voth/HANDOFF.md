@@ -10,6 +10,31 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-16: the Palace's top tiers and summit, and lazy furnishing (branch `claude/voth-interiors`)
+
+The blueprint wiring is finished (`README.md`, "The Palace from its blueprint" and "The summit from sheet F8"):
+- **Tiers 3 and 4** (85 and 67 m, two storeys each; the sheets stop at tier 2) take F7 again, clipped
+  (`TUNE.interiors.blueprint.Palace.tiers`). On a repeated sheet a void with nothing standing up into it from below is laid
+  as floor: a gallery's void an open floor, a garden court's or the dome's a two-storey light court (the dome's shaft stays
+  open only on tier 2, where the suite keeps it over the throne room); a stair shaft the tier's wall cuts is an open
+  landing. Storeys 14 to 17 hold 26, 21, 12 and 9 rooms; the Palace 2,046 rooms (2,042 from the sheets).
+- **The summit (F8)** is laid by `VC.bpSummit` as prims round the captured crown on the deck (a drum 100 m wide, a podium
+  turned 45 degrees, the gilt dome, four obelisks), which F8 did not know: it drew a 70 m deck with a lantern. Every row
+  stands where the sheet drew it if clear, else at the nearest clear spot (the crown tested by each piece's own turned
+  footprint). All ten rows are laid; the Pool of the Sky, the altar and the instruments moved out from under the dome.
+  The walker is blocked by their footprints (`P.summit.blocks`); they are not on the pedestrian layer.
+- **Lazy furnishing** (`56-vc-interiors-host.js` `VC.intFurnish(cn, si)`, `VC.intFurnishStep`, `VC.intDrawStorey`,
+  `VC.intWant`, `TUNE.interiors.lazyMs`): the cutaway furnishes the cut storey and what stands up into it at once, the
+  storeys under it a few ms a frame; the walker its storey, then the ones above and below. Placements are identical to the
+  whole-canton pass (120,555 pieces checked in a headless run, the storeys furnished in reverse in 5 ms steps). The
+  Palace's first cut: 1.0 s (was about 7.5 s of furnishing alone), the next storey 0.4 s.
+
+**Open:** the stairs' heads on the summit (the Stair of the Sun ends on tier 3, the Astronomers' Stair under the deck; the
+core's stair house is the way up, and it rises inside the crown's drum); the summit's pieces are not on the pedestrian
+layer (`43-vc-sim-nav.js`); on tier 4 the clipped F7 leaves the outer band empty (the tier's wall stands at 67 m, the
+sheet's rooms reach 93); the two Inner Guard rooms on storeys 15 and 17 are unreached and dropped. The blueprint's `NEW`
+pieces are still unmapped.
+
 ## 2026-10-15 (late): the Palace wired from its blueprint (branch `claude/voth-interiors`)
 
 The owner's blueprint (`palace/`, landed on main from another session) is wired: `palace/export_plan.py` makes

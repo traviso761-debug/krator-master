@@ -134,8 +134,8 @@ var TUNE = {
                  Ancestry: { catacomb: 1 }
                },
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
-               /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
-               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5, Palace: 0.95, Temple: 0.8 }, cutAt: 2.6, lift: 0.05,
+               /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor, the lazy furnishing's budget a frame (`lazyMs`: 56 VC.intWant) */
+               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5, Palace: 0.95, Temple: 0.8 }, cutAt: 2.6, lift: 0.05, lazyMs: 12,
                /* a room over `bigRoom` m2 is planned on the coarser `cellBig` grid. The dressing (56 VC.intDress; owner, 2026-10-15:
                   "waaaaaaay more furniture and decorative clutter ... make it ornate"): by the room's class (`by`, else `byDefault`),
                   the catalog roles hung on the walls every `wallEvery` m, stood along them `alongGap` m apart, put in the corners and
@@ -145,13 +145,14 @@ var TUNE = {
                bigRoom: 400, cellBig: 0.4,
                /* the owner's floor-by-floor blueprint (40c-vc-palace-plan.js, 40d-vc-blueprint.js; settlements/voth/palace/): the
                   sheet each storey takes (the dungeon's; per tier, by storey, the last repeated where a tier has more storeys than
-                  sheets), the suite's big rooms it keeps (the rest of the state floor is the sheets'), the zones it cuts into
+                  sheets; tiers 3 and 4, which the sheets did not draw, F7 again, 40d VC.bpStorey laying its voids with nothing under them
+                  as floor and the stair shafts the wall cuts as landings), the summit's deck programme (`summit`: 40d VC.bpSummit), the suite's big rooms it keeps (the rest of the state floor is the sheets'), the zones it cuts into
                   a corridor and rooms (the tier 0 sheets' bulk, over `area` m2, but for the kinds `keep` names); `blueprintKinds`: what a
                   sheet's kind is in the city (`kinds`; the others are the city's own already), the open floors (`open`), the voids
                   a room below stands up through (`voids`; `galleries`: a railed ring of floor round one), what is not laid (`skip`: the roof gardens, the summit's pavilions);
                   `blueprintDoor`: a door's width [plain, between two rich rooms]; `blueprintWealth`: the furnishing's wealth by a
                   room's decor level (0 bare to 4 sumptuous), and the level from which the placer furnishes it (`blueprintPlacer`; below it, the dressing alone) */
-               blueprint: { Palace: { dungeon: 'F-1', tiers: { 0: ['F0', 'F1', 'F1', 'F1', 'F2', 'F2', 'F2'], 1: ['F3', 'F4', 'F5'], 2: ['F6', 'F7', 'F7'] },
+               blueprint: { Palace: { dungeon: 'F-1', tiers: { 0: ['F0', 'F1', 'F1', 'F1', 'F2', 'F2', 'F2'], 1: ['F3', 'F4', 'F5'], 2: ['F6', 'F7', 'F7'], 3: ['F7'], 4: ['F7'] }, summit: 'F8',
                                       suiteRooms: ['foyer', 'banquet', 'throne', 'judgment'],
                                       zones: { sheets: ['F-1', 'F0', 'F1', 'F2'], area: 600, corridor: 3, room: 18, deep: 15,
                                                keep: ['court', 'drill', 'boathouse', 'weighing', 'chapel', 'servants_hall', 'petitions', 'divan', 'mess', 'kitchen', 'bakehouse', 'brewhouse', 'laundry', 'cistern', 'pit'] } } },
@@ -165,6 +166,15 @@ var TUNE = {
                                           butchery: 'kitchen', laundry: 'workshop', petitions: 'reception', divan: 'reception', council: 'reception', cabinet: 'study',
                                           oratory: 'shrine', keeper: 'office', ancestors_hall: 'shrine', kin_hall: 'reception', feast_private: 'mess', music: 'reception',
                                           infirmary: 'dormitory', garden: 'court' } },
+               /* the summit's deck programme (40d VC.bpSummit, sheet F8): a row's clearance from what stands there (`clear` m), the
+                  lattice it slides on (`grid` m) and the sizes it may shrink to (`shrink`), the railing's line in from the deck's
+                  edge (`edge`) and its gap on each axis (`railGap`); a garden over `deckGarden` of the sheet's square is the High
+                  Garden; the pavilions' plinth, columns and entablature, the gnomon, quadrant wall, beacon and kiosk heights, the
+                  grove's lattice and its tubs and cypresses, the beds and the railing; the colours */
+               summit: { clear: 1.5, grid: 3, shrink: [1, 0.75, 0.55], edge: 3, railGap: 8, deckGarden: 0.5, plinth: 0.6, colR: 0.45, colH: 5.6, colEvery: 4.5, entab: 0.9,
+                         gnomon: 12, quadrant: 5, beacon: 9, kiosk: 3.6, grove: 8, tub: 1.6, cypress: 6.5, bed: 2.6, bedLen: 6, railH: 1.1, postEvery: 3,
+                         colours: { gilt: 0xd0a53c, porphyry: 0x5e2430, water: 0x2f5568, iron: 0x2a2622, fire: 0xff9a3c, leaf: 0x3d5a2a, cypress: 0x2c4424,
+                                    soil: 0x5a4632, cloth: 0x5a2a5e, timber: 0x3a2a1e, roof: 0x7a3a2a, door: 0x1c1814 } },
                blueprintDoor: [1.4, 2.4], blueprintWealth: [0.2, 0.4, 0.6, 0.85, 1.0], blueprintPlacer: 2,
                dress: { court: 0.7, max: 600, wallEvery: 2.4, alongGap: 0.7, doorClear: 2.2, centreMargin: 2.8, groupEvery: 7, rugEvery: 6,
                         rowEvery: 1.5, rowAisle: 3, rowFocusGap: 7, deskEvery: 3.5, workEvery: 4, stackEvery: 2.6, byDefault: 'home',

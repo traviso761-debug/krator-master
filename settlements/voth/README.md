@@ -492,8 +492,11 @@ bridge's face:
 * **The Palace from its blueprint** (`palace/BLUEPRINT.md`, the sheets F-1 to F8; `palace/export_plan.py` writes
   `targets/voth-city/40c-vc-palace-plan.js` from `palace/blueprint.py`; `40d-vc-blueprint.js` lays it out;
   `TUNE.interiors.blueprint`, `blueprintKinds`). Each storey takes a sheet: the dungeon F-1; tier 0's seven storeys F0, F1 three
-  times, F2 three times; the state floor F3 to F5; tier 2 F6, F7, F7 (tiers 3 and 4 keep the generic planner; F8, the summit's
-  pavilion and garden, is not laid yet). The storeys keep the stack's own heights (6.2 m on tier 0, 8.8 m on the state floor,
+  times, F2 three times; the state floor F3 to F5; tier 2 F6, F7, F7; tiers 3 and 4, which the sheets did not draw (85 and
+  67 m in half-width, two storeys each), F7 again, clipped. On a sheet repeated so, a void with nothing standing up into it
+  from below in that tier is laid as floor: a gallery's void an open floor, a garden court's or the dome's a light court two
+  storeys tall (the dome's shaft stays open only on tier 2, where the suite keeps it clear over the throne room); a stair
+  shaft the tier's wall cuts is laid as an open landing (its flights could not line up; the galleries round it join there). Tier 4 keeps only what fits inside 67 m. The storeys keep the stack's own heights (6.2 m on tier 0, 8.8 m on the state floor,
   6.8 m on tier 2): the sheets give only the plan, clipped to each tier's wall (tier 0 is 169 m in half-width, the sheets
   assumed 200: its outermost band is cut off; the stairs keep their places so they line up tier to tier). The suite keeps its
   four big rooms (foyer, banquet hall, throne room, Hall of Judgment) with their galleries, decor and exits; everything else on
@@ -506,6 +509,18 @@ bridge's face:
   core to the canton door's passage on the ground storey, so the dock walks in. Rooms keep their sheet name and kind
   (`name`, `bpKind`; the city's kind by `blueprintKinds.kinds`); a room's decor level is its furnishing's wealth, and the bare
   and plain ones are dressed without the placer (`blueprintPlacer`). The log line: rooms, zones, doors, shafts, flights.
+* **The summit from sheet F8** (`40d-vc-blueprint.js` `VC.bpSummit`, `TUNE.interiors.summit`): the top deck's programme as
+  prims round the captured crown that stands there (a drum 100 m wide, a podium on it turned 45 degrees, the gilt dome,
+  four obelisks, a ring of gilt balls: F8 assumed a 70 m deck with a lantern at its middle). Each row stands where the sheet
+  drew it if that is clear of the crown (by each piece's own turned footprint), the stair house and the rows before it,
+  else at the nearest clear spot on a 3 m lattice, as drawn or turned a quarter, shrunk if it must be: the Dawn Pavilion
+  (gilt columns, a gilt dome, a gilt seat on a porphyry dais facing the sunrise), the Kiosk of the Evening (a hipped roof,
+  divans), the Solar Altar (three steps, a porphyry altar, a gilt sun, four braziers), the astronomers' instruments (a
+  gnomon, a gilt meridian line, a quadrant wall, sighting stones), the Pool of the Sky, the beacon (a tower and its fire
+  basin), the gardeners' store, the guard kiosk, the Grove of the Ancestors (cypresses in porphyry tubs) and the High
+  Garden (beds inside a gilt railing round the deck, open on the four axes). Not laid: the lantern (the crown's dome is
+  there) and the stairs' heads (the core's stair house is the summit's stair). The deck's walker is kept out of each
+  footprint (`P.summit.blocks`).
 * **The kitchens** (owner: "it's also not clear where the kitchens are"): the Palace's great kitchen opens off the banquet
   hall's north wall and onto the north hall, the ruler's own kitchen beside the chambers; the Temple's priests' kitchen and
   their refectory off its north hall, the sanctuary reached through the refectory (`greatkitchen`, `mess` in the census). The
@@ -534,7 +549,13 @@ The rooms are furnished by `kits/interiors` (`ROOM`, `furnishRoom`) from the cat
 * a sarcophagus;
 * ossuary shelves.
 
-A canton is drawn when it is first shown.
+A canton is drawn when it is first shown: its shell whole, its furniture **storey by storey** (2026-10-16: the Palace's
+2,046 rooms and 120,000 pieces took 7.5 s to furnish before its first view). The cutaway furnishes the storey it cuts and
+any storey with a room standing up into it at once, then the storeys under it a few ms a frame (`TUNE.interiors.lazyMs`);
+the walker its own storey, then the ones above and below (`VC.intWant`). A room's pieces depend on the room alone, so the
+placements are the same as furnishing the whole canton at once (checked: 120,555 pieces, identical, furnished in reverse
+storey order in 5 ms steps). The Palace's first cut now takes 1.0 s (its shell and the state floor's 6,300 pieces), the
+next storey 0.4 s.
 
 **Cutaway (x):**
 * it shows the canton under the camera (or the one the walker is in) cut at a storey, and every lot building in view

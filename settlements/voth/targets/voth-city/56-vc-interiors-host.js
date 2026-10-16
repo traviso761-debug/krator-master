@@ -71,69 +71,101 @@ VC.intPrograms = function () {
       daises, the basin, braziers, statues, grand stairs) kept clear; not in a suite's big rooms, which the dressing lays out;
    3. the dressing (VC.intDress: hangings and art on the walls, seats, cabinets, plants and statues along them, groups of
       seats, rows of benches, desks or work tables in the middle, by TUNE.interiors.dress.kinds), clear of everything before.
-   A large room is planned on a coarser grid (TUNE.interiors.cellBig) so the placer stays quick. */
-VC.intFurnish = function (cn) {
-  if (VC.INTD.furnished[cn]) return VC.INTD.furnished[cn];
-  var IX = VC.intPrograms(), P = VC.INT.cantons[cn], out = { placements: [], rooms: 0, missing: 0, ms: 0, dressed: 0, feast: 0 };
-  if (!IX || !P || typeof ROOM === 'undefined') return out;
-  var t0 = performance.now(), cat = VC.INTD.catalog || (VC.INTD.catalog = IX.catalogAdapter()), T = TUNE.interiors, wealth = T.wealth[cn] == null ? 0.5 : T.wealth[cn];
+   A large room is planned on a coarser grid (TUNE.interiors.cellBig) so the placer stays quick.
+   STOREY BY STOREY (the Palace's 2,100 rooms and 115,000 pieces took 10-20 s on its first view): VC.intFurnish(cn, si)
+   furnishes one storey's rooms (cached), VC.intFurnishStep a few of them within a time budget (the lazy queue's, below
+   VC.drawInterior), VC.intFurnish(cn) every storey, its placements in the rooms' order. A room's pieces depend on the room
+   alone (its seed is its corner and storey; the catalog's and the dressing's caches are keyed by piece), so a storey
+   furnished alone, in any order, gives what one pass over all the rooms gave. */
+VC.intFurnishNone = function () { return { placements: [], rooms: 0, missing: 0, ms: 0, dressed: 0, feast: 0 }; };
+VC.intStoreysOf = function (P) { var s = {}; P.rooms.forEach(function (r) { s[r.storey || 0] = 1; }); return Object.keys(s).map(Number).sort(function (a, b) { return a - b; }); };
+VC.intFurnish = function (cn, si) {
+  var IX = VC.intPrograms(), P = VC.INT.cantons[cn];
+  if (!IX || !P || typeof ROOM === 'undefined') return VC.intFurnishNone();
+  var C = VC.INTD.furnished[cn] || (VC.INTD.furnished[cn] = { st: {}, all: null });
+  if (si != null) { VC.intFurnishStep(cn, si, Infinity); return C.st[si].out; }
+  if (C.all) return C.all;
+  var by = {}, all = VC.intFurnishNone();
+  VC.intStoreysOf(P).forEach(function (s) {
+    var o = VC.intFurnish(cn, s);
+    ['rooms', 'missing', 'ms', 'dressed', 'feast'].forEach(function (k) { all[k] += o[k]; });
+    if (o.errors) { all.errors = (all.errors || 0) + o.errors; if (!all.firstError) all.firstError = o.firstError; }
+    o.placements.forEach(function (p) { (by[p.room] = by[p.room] || []).push(p); });
+  });
+  P.rooms.forEach(function (r) { (by[r.id] || []).forEach(function (p) { all.placements.push(p); }); });
+  return (C.all = all);
+};
+/* furnish storey si's rooms until `budget` ms are spent; true when the storey is done */
+VC.intFurnishStep = function (cn, si, budget) {
+  var C = VC.INTD.furnished[cn] || (VC.INTD.furnished[cn] = { st: {}, all: null }), P = VC.INT.cantons[cn];
+  var S = C.st[si] || (C.st[si] = { rooms: P.rooms.filter(function (r) { return (r.storey || 0) === +si; }), k: 0, out: VC.intFurnishNone(), done: false });
+  if (S.done) return true;
+  var X = C.ctx || (C.ctx = VC.intFurnishCtx(cn, P)), t0 = performance.now();
+  while (S.k < S.rooms.length) { VC.intFurnishRoom(X, S.rooms[S.k++], S.out); if (performance.now() - t0 > budget) break; }
+  S.out.ms += performance.now() - t0;
+  if (S.k >= S.rooms.length) { S.done = true; S.out.ms = Math.round(S.out.ms); }
+  return S.done;
+};
+/* what every room of a canton shares: the catalog, the canton's wealth, the suite's decor by room */
+VC.intFurnishCtx = function (cn, P) {
+  var IX = VC.intPrograms(), cat = VC.INTD.catalog || (VC.INTD.catalog = IX.catalogAdapter()), T = TUNE.interiors;
   var SU = P.suite, decorBy = {};
   if (SU) SU.decor.forEach(function (d) { (decorBy[d.room] = decorBy[d.room] || []).push(d); });
   var fx = function (id, x, z, ry, w, d) { return { id: id, kind: 'fixture', x: x, z: z, ry: ry || 0, w: Math.max(0.3, w), d: Math.max(0.3, d) }; };
-  var pieceFx = function (p, i) { var D = cat.dims(p.key, p.variant || 0) || { w: 1, d: 1 }; return fx('placed.' + i, p.x, p.z, p.ry || 0, D.w + 0.1, D.d + 0.1); };
-  P.rooms.forEach(function (r, i) {
-    var q = TUNE.interiors.wallT / 2 + 0.02;   /* 2 cm off the wall's face: a piece's back flush with it would fight it */
-    var poly = [[r.x0 + q, r.z0 + q], [r.x1 - q, r.z0 + q], [r.x1 - q, r.z1 - q], [r.x0 + q, r.z1 - q]];
-    var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + q, r.x1 - q), CANT.cl(r.door.z, r.z0 + q, r.z1 - q)], w: r.door.w, to: 'hall' }] : [];
-    /* a suite's room: its doors are the suite's doors on its walls; its fixtures the suite's decor in it */
-    var fixtures = [], specId = r.great && SU ? String(r.id).slice(cn.length + 1) : null;
-    /* a blueprint room (40d-vc-blueprint.js): its doors are the blueprint's on its walls, its wealth its decor level */
-    if (r.bp) (P.bpDoors || []).forEach(function (d) {
-      if (d.storey !== r.storey || (r.door && Math.abs(d.x - r.door.x) < 0.05 && Math.abs(d.z - r.door.z) < 0.05)) return;
+  return { cn: cn, P: P, cat: cat, T: T, wealth: T.wealth[cn] == null ? 0.5 : T.wealth[cn], SU: SU, decorBy: decorBy, fx: fx,
+           pieceFx: function (p, i) { var D = cat.dims(p.key, p.variant || 0) || { w: 1, d: 1 }; return fx('placed.' + i, p.x, p.z, p.ry || 0, D.w + 0.1, D.d + 0.1); } };
+};
+VC.intFurnishRoom = function (X, r, out) {
+  var cn = X.cn, P = X.P, cat = X.cat, T = X.T, wealth = X.wealth, SU = X.SU, decorBy = X.decorBy, fx = X.fx, pieceFx = X.pieceFx;
+  var q = TUNE.interiors.wallT / 2 + 0.02;   /* 2 cm off the wall's face: a piece's back flush with it would fight it */
+  var poly = [[r.x0 + q, r.z0 + q], [r.x1 - q, r.z0 + q], [r.x1 - q, r.z1 - q], [r.x0 + q, r.z1 - q]];
+  var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + q, r.x1 - q), CANT.cl(r.door.z, r.z0 + q, r.z1 - q)], w: r.door.w, to: 'hall' }] : [];
+  /* a suite's room: its doors are the suite's doors on its walls; its fixtures the suite's decor in it */
+  var fixtures = [], specId = r.great && SU ? String(r.id).slice(cn.length + 1) : null;
+  /* a blueprint room (40d-vc-blueprint.js): its doors are the blueprint's on its walls, its wealth its decor level */
+  if (r.bp) (P.bpDoors || []).forEach(function (d) {
+    if (d.storey !== r.storey || (r.door && Math.abs(d.x - r.door.x) < 0.05 && Math.abs(d.z - r.door.z) < 0.05)) return;
+    var onX = (Math.abs(d.x - r.x0) < 0.8 || Math.abs(d.x - r.x1) < 0.8) && d.z > r.z0 - 0.5 && d.z < r.z1 + 0.5, onZ = (Math.abs(d.z - r.z0) < 0.8 || Math.abs(d.z - r.z1) < 0.8) && d.x > r.x0 - 0.5 && d.x < r.x1 + 0.5;
+    if (onX || onZ) doors.push({ at: [CANT.cl(d.x, r.x0 + q, r.x1 - q), CANT.cl(d.z, r.z0 + q, r.z1 - q)], w: d.w, to: 'hall' });
+  });
+  var rw = r.decor != null ? T.blueprintWealth[r.decor] : wealth;
+  if (specId != null) {
+    (SU.doors || []).forEach(function (d) {
+      if (d.storey !== r.storey) return;
       var onX = (Math.abs(d.x - r.x0) < 0.8 || Math.abs(d.x - r.x1) < 0.8) && d.z > r.z0 - 0.5 && d.z < r.z1 + 0.5, onZ = (Math.abs(d.z - r.z0) < 0.8 || Math.abs(d.z - r.z1) < 0.8) && d.x > r.x0 - 0.5 && d.x < r.x1 + 0.5;
       if (onX || onZ) doors.push({ at: [CANT.cl(d.x, r.x0 + q, r.x1 - q), CANT.cl(d.z, r.z0 + q, r.z1 - q)], w: d.w, to: 'hall' });
     });
-    var rw = r.decor != null ? T.blueprintWealth[r.decor] : wealth;
-    if (specId != null) {
-      (SU.doors || []).forEach(function (d) {
-        if (d.storey !== r.storey) return;
-        var onX = (Math.abs(d.x - r.x0) < 0.8 || Math.abs(d.x - r.x1) < 0.8) && d.z > r.z0 - 0.5 && d.z < r.z1 + 0.5, onZ = (Math.abs(d.z - r.z0) < 0.8 || Math.abs(d.z - r.z1) < 0.8) && d.x > r.x0 - 0.5 && d.x < r.x1 + 0.5;
-        if (onX || onZ) doors.push({ at: [CANT.cl(d.x, r.x0 + q, r.x1 - q), CANT.cl(d.z, r.z0 + q, r.z1 - q)], w: d.w, to: 'hall' });
-      });
-      (decorBy[specId] || []).forEach(function (d, k) {
-        var id = 'decor.' + k;
-        if (d.kind === 'pillar') fixtures.push(fx(id, d.x, d.z, 0, d.w + 1.4, d.w + 1.4));
-        else if (d.kind === 'statue' || d.kind === 'brazier') fixtures.push(fx(id, d.x, d.z, 0, 2.2, 2.2));
-        else if (d.kind === 'dais') fixtures.push(fx(id, d.x, d.z, d.ry || 0, (d.r ? d.r * 2 : d.w) + 2, (d.r ? d.r * 2 : d.d) + 2));
-        else if (d.kind === 'basin') fixtures.push(fx(id, d.x, d.z, 0, d.r * 2 + 2, d.r * 2 + 2));
-        else if (d.kind === 'carpet') fixtures.push(fx(id, d.x, d.z, Math.atan2(-d.d[1], d.d[0]), d.len * 0.6, d.w * 0.6));   /* the runner's middle kept as an aisle */
-      });
-      P.flights.forEach(function (f, k) {
-        if ((f.kind !== 'grand' && f.kind !== 'inner') || f.storey !== r.storey) return;
-        var mx = (f.a[0] + f.b[0]) / 2, mz = (f.a[1] + f.b[1]) / 2, L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]);
-        if (mx > r.x0 && mx < r.x1 && mz > r.z0 && mz < r.z1) fixtures.push(fx('stair.' + k, mx, mz, Math.atan2(-(f.b[1] - f.a[1]), f.b[0] - f.a[0]), L + 2, f.w + 1));
-      });
+    (decorBy[specId] || []).forEach(function (d, k) {
+      var id = 'decor.' + k;
+      if (d.kind === 'pillar') fixtures.push(fx(id, d.x, d.z, 0, d.w + 1.4, d.w + 1.4));
+      else if (d.kind === 'statue' || d.kind === 'brazier') fixtures.push(fx(id, d.x, d.z, 0, 2.2, 2.2));
+      else if (d.kind === 'dais') fixtures.push(fx(id, d.x, d.z, d.ry || 0, (d.r ? d.r * 2 : d.w) + 2, (d.r ? d.r * 2 : d.d) + 2));
+      else if (d.kind === 'basin') fixtures.push(fx(id, d.x, d.z, 0, d.r * 2 + 2, d.r * 2 + 2));
+      else if (d.kind === 'carpet') fixtures.push(fx(id, d.x, d.z, Math.atan2(-d.d[1], d.d[0]), d.len * 0.6, d.w * 0.6));   /* the runner's middle kept as an aisle */
+    });
+    P.flights.forEach(function (f, k) {
+      if ((f.kind !== 'grand' && f.kind !== 'inner') || f.storey !== r.storey) return;
+      var mx = (f.a[0] + f.b[0]) / 2, mz = (f.a[1] + f.b[1]) / 2, L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]);
+      if (mx > r.x0 && mx < r.x1 && mz > r.z0 && mz < r.z1) fixtures.push(fx('stair.' + k, mx, mz, Math.atan2(-(f.b[1] - f.a[1]), f.b[0] - f.a[0]), L + 2, f.w + 1));
+    });
+  }
+  var area = (r.x1 - r.x0) * (r.z1 - r.z0), cell = area > (T.bigRoom || 400) ? (T.cellBig || 0.4) : T.cell, seed = KRAND.hash(7401, Math.round(r.x0 * 10), Math.round(r.z0 * 10), r.storey);
+  try {
+    /* 1. the set piece */
+    var placed = [];
+    if (r.kind === 'banquet') { var Fe = VC.suiteFeast(P, r, cat); Fe.forEach(function (p) { p.room = r.id; placed.push(p); }); out.feast += Fe.length; }
+    /* 2. the programme (not in a suite's state room: the placer's search takes seconds there and the dressing lays it out) */
+    var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: rw, id: r.id, seed: seed, fixtures: fixtures.concat(placed.map(pieceFx)) });
+    if (!r.great && !(r.bp && r.decor < T.blueprintPlacer)) {   /* a blueprint's bare and plain rooms: the dressing alone (the placer's search is the cost) */
+      var plan = furnishRoom(R, cat, { seed: 0, cell: cell, backtrack: 6, passes: 2 });
+      plan.placements.forEach(function (p) { p.room = r.id; placed.push(p); });
+      out.missing += (plan.report && plan.report.missing ? plan.report.missing.length : 0);
     }
-    var area = (r.x1 - r.x0) * (r.z1 - r.z0), cell = area > (T.bigRoom || 400) ? (T.cellBig || 0.4) : T.cell, seed = KRAND.hash(7401, Math.round(r.x0 * 10), Math.round(r.z0 * 10), r.storey);
-    try {
-      /* 1. the set piece */
-      var placed = [];
-      if (r.kind === 'banquet') { var Fe = VC.suiteFeast(P, r, cat); Fe.forEach(function (p) { p.room = r.id; placed.push(p); }); out.feast += Fe.length; }
-      /* 2. the programme (not in a suite's state room: the placer's search takes seconds there and the dressing lays it out) */
-      var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: rw, id: r.id, seed: seed, fixtures: fixtures.concat(placed.map(pieceFx)) });
-      if (!r.great && !(r.bp && r.decor < T.blueprintPlacer)) {   /* a blueprint's bare and plain rooms: the dressing alone (the placer's search is the cost) */
-        var plan = furnishRoom(R, cat, { seed: 0, cell: cell, backtrack: 6, passes: 2 });
-        plan.placements.forEach(function (p) { p.room = r.id; placed.push(p); });
-        out.missing += (plan.report && plan.report.missing ? plan.report.missing.length : 0);
-      }
-      /* 3. the dressing */
-      VC.intDress(R, r, placed, fixtures, cat, cn, rw, seed + 17).forEach(function (p) { p.room = r.id; placed.push(p); out.dressed++; });
-      placed.forEach(function (p) { out.placements.push(p); });
-      out.rooms++;
-    } catch (e) { out.errors = (out.errors || 0) + 1; if (!out.firstError) out.firstError = r.id + ': ' + e.message; }
-  });
-  out.ms = Math.round(performance.now() - t0);
-  return (VC.INTD.furnished[cn] = out);
+    /* 3. the dressing */
+    VC.intDress(R, r, placed, fixtures, cat, cn, rw, seed + 17).forEach(function (p) { p.room = r.id; placed.push(p); out.dressed++; });
+    placed.forEach(function (p) { out.placements.push(p); });
+    out.rooms++;
+  } catch (e) { out.errors = (out.errors || 0) + 1; if (!out.firstError) out.firstError = r.id + ': ' + e.message; }
 };
 /* the dressing of a room (owner, 2026-10-15: "waaaaaaay more furniture and decorative clutter ... make it ornate"): a fast
    pass of its own, not the placer (the placer's grid search takes seconds in a state room and finds little room in it).
@@ -854,31 +886,8 @@ VC.drawInterior = function (cn) {
     g.add(IM); (g.userData.storeys[e.si] = g.userData.storeys[e.si] || []).push(IM); nBox += e.L.length;
   });
   g.userData.lamps = lamps;
-  var m4 = new THREE.Matrix4();
-  /* the furniture: kits/interiors' placements, one InstancedMesh per piece (key and variant) and part */
-  var F = VC.intFurnish(cn), protos = {}, wealth = TUNE.interiors.wealth[cn] == null ? 0.5 : TUNE.interiors.wealth[cn];
-  F.placements.forEach(function (p) {
-    var pk = p.key + '|' + (p.variant || 0), Pr = protos[pk] || (protos[pk] = Object.assign({ items: [] }, VC.intProto(p.key, p.variant || 0, wealth)));
-    if (!Pr.bad) Pr.items.push(p);
-  });
-  var q = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1), pos = new THREE.Vector3(), storeyOf = {};
-  P.rooms.forEach(function (r) { storeyOf[r.id] = r.storey; });
-  var nFurn = 0;
-  Object.keys(protos).forEach(function (pk) {
-    var Pr = protos[pk]; if (Pr.bad || !Pr.items.length) return;
-    /* one InstancedMesh per part and storey, so a storey hides as a whole */
-    var bySt = {}; Pr.items.forEach(function (p) { var s = storeyOf[p.room] || 0; (bySt[s] = bySt[s] || []).push(p); });
-    Object.keys(bySt).forEach(function (si) {
-      var items = bySt[si];
-      Pr.parts.forEach(function (part) {
-        var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
-        items.forEach(function (p, i) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(i, m4); });
-        IM.castShadow = false; IM.receiveShadow = true; IM.frustumCulled = false; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true, items: items };   /* (the walls' reason, above) */   /* items[instanceId]: the inspector's piece */
-        g.add(IM); (g.userData.storeys[si] = g.userData.storeys[si] || []).push(IM);
-      });
-      nFurn += items.length;
-    });
-  });
+  /* the furniture: storey by storey, as the cutaway or the walker shows them (VC.intDrawStorey, VC.intWant) */
+  g.userData.furn = {}; g.userData.upTo = null;
   /* the beasts in the stables (owner, 2026-10-09: "populate it with tigers, beetles, and lizards"): kits/fauna's Voth
      animals (build.py fauna_fragment), one or two to a stable room, a KRAND hash of the room choosing which and where,
      each fitted to the room and facing its door, idling while the interior shows (VC.INTD.beasts) */
@@ -911,15 +920,69 @@ VC.drawInterior = function (cn) {
       });
     }
   }
-  g.userData.stats = { beasts: nBeast, boxes: nBox, lamps: lamps.length, furniture: nFurn, rooms: P.rooms.length, furnishMs: F.ms, missing: F.missing, errors: F.errors || 0, firstError: F.firstError || null };
+  g.userData.stats = { beasts: nBeast, boxes: nBox, lamps: lamps.length, furniture: 0, storeysFurnished: 0, rooms: P.rooms.length, furnishMs: 0, missing: 0, errors: 0, firstError: null };
   VC.INTD.groups[cn] = g;
   return g;
 };
+/* a storey's furniture, once: kits/interiors' placements (VC.intFurnish), one InstancedMesh per piece (key and variant) and
+   part, so the storey hides as a whole; shown as the group's cut shows it, clipped by the cutaway's planes */
+VC.intDrawStorey = function (cn, si) {
+  var g = VC.INTD.groups[cn], P = VC.INT.cantons[cn]; if (!g || !P || g.userData.furn[si]) return;
+  g.userData.furn[si] = true;
+  var F = VC.intFurnish(cn, si), protos = {}, wealth = TUNE.interiors.wealth[cn] == null ? 0.5 : TUNE.interiors.wealth[cn];
+  F.placements.forEach(function (p) {
+    var pk = p.key + '|' + (p.variant || 0), Pr = protos[pk] || (protos[pk] = Object.assign({ items: [] }, VC.intProto(p.key, p.variant || 0, wealth)));
+    if (!Pr.bad) Pr.items.push(p);
+  });
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1), pos = new THREE.Vector3();
+  var list = g.userData.storeys[si] = g.userData.storeys[si] || [], vis = g.userData.upTo == null || +si <= g.userData.upTo, planes = VC.INTD.planes, n = 0;
+  Object.keys(protos).forEach(function (pk) {
+    var Pr = protos[pk], items = Pr.items; if (Pr.bad || !items.length) return;
+    Pr.parts.forEach(function (part) {
+      var IM = new THREE.InstancedMesh(part.geo, part.mat, items.length);
+      items.forEach(function (p, i) { q.setFromAxisAngle(Y, p.ry || 0); pos.set(p.x, p.y, p.z); m4.compose(pos, q, one); IM.setMatrixAt(i, m4); });
+      IM.castShadow = false; IM.receiveShadow = true; IM.frustumCulled = false; IM.userData = { kind: 'furniture', canton: cn, storey: +si, probeSkip: true, items: items };   /* (the walls' reason, VC.drawInterior) */   /* items[instanceId]: the inspector's piece */
+      IM.visible = vis;
+      if (planes) [].concat(IM.material).forEach(function (m) { if (m.clippingPlanes !== planes) { m.clippingPlanes = planes; m.clipIntersection = true; m.clipShadows = true; m.needsUpdate = true; } });
+      g.add(IM); list.push(IM);
+    });
+    n += items.length;
+  });
+  var st = g.userData.stats; st.furniture += n; st.furnishMs += F.ms; st.missing += F.missing; st.errors += F.errors || 0; st.storeysFurnished++;
+  if (!st.firstError && F.firstError) st.firstError = F.firstError;
+};
+/* what a view of storey si wants furnished: si and every storey with a room standing up into it (a tall room, a court),
+   now; then, TUNE.interiors.lazyMs a frame, the storeys round it: in the cutaway those under it (seen down the voids and
+   galleries), for the walker the one above and the one below */
+VC.intWant = function (cn, si, cut) {
+  var g = VC.INTD.groups[cn], P = VC.INT.cantons[cn]; if (!g || !P) return;
+  var key = si + (cut ? 'c' : 'w'); if (g.userData.want === key) return; g.userData.want = key;
+  var S = P.storeys[si], y = S ? S.y : -Infinity, now = [si];
+  P.rooms.forEach(function (r) { var k = r.storey || 0; if (k < si && now.indexOf(k) < 0 && r.y + r.h > y + 0.5) now.push(k); });
+  now.forEach(function (k) { VC.intDrawStorey(cn, k); });
+  var later = [], k;
+  if (cut) for (k = si - 1; k >= 0; k--) later.push(k); else later.push(si + 1, si - 1);
+  VC.INTD.lazy = { cn: cn, list: later.filter(function (k) { return k >= 0 && k < P.storeys.length && !g.userData.furn[k]; }) };
+  if (!VC.INTD.lazyHook) {
+    VC.INTD.lazyHook = true;
+    (window._frameHooks = window._frameHooks || []).push(function () {
+      var L = VC.INTD.lazy; if (!L || !L.list.length) return;
+      var g2 = VC.INTD.groups[L.cn]; if (!g2 || !g2.visible) { L.list = []; return; }
+      var k2 = L.list[0];
+      if (g2.userData.furn[k2] || VC.intFurnishStep(L.cn, k2, TUNE.interiors.lazyMs)) { VC.intDrawStorey(L.cn, k2); L.list.shift(); }
+    });
+  }
+};
+/* the walker's storey in a canton: the highest whose floor is under its feet */
+VC.intStoreyAt = function (P, y) { var k = 0; P.storeys.forEach(function (S, i) { if (S.y - 0.6 <= y) k = i; }); return k; };
 /* show a canton's interior up to (and including) a storey (null: all of it), or hide it */
 VC.showInterior = function (cn, on, upTo) {
   var g = on ? VC.drawInterior(cn) : VC.INTD.groups[cn]; if (!g) return;
   g.visible = !!on;
-  if (on) Object.keys(g.userData.storeys).forEach(function (si) { g.userData.storeys[si].forEach(function (m) { m.visible = upTo == null || +si <= upTo; }); });
+  if (!on) { g.userData.want = null; return; }
+  g.userData.upTo = upTo == null ? null : upTo;
+  Object.keys(g.userData.storeys).forEach(function (si) { g.userData.storeys[si].forEach(function (m) { m.visible = upTo == null || +si <= upTo; }); });
+  if (upTo != null) VC.intWant(cn, upTo, true);
 };
 
 /* the interiors' light pool: TUNE.interiors.lamps.pool point lights, made once at the start (so every material compiles
@@ -1046,5 +1109,7 @@ VC.cutUI = function () {
       if (VC.INTD.walkIn && VC.INTD.walkIn !== VC.INTD.cut.canton) VC.showInterior(VC.INTD.walkIn, false);
       VC.INTD.walkIn = inside; if (inside) VC.showInterior(inside, true, null);
     }
+    /* the walker's storey furnished, and the ones above and below it after (VC.intWant) */
+    if (inside) VC.intWant(inside, VC.intStoreyAt(VC.INT.cantons[inside], A[2]), false);
   });
 };
