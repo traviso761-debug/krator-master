@@ -28,6 +28,7 @@ says which build holds what.
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
 | `painting-to-3d-world.skill` | a zip. Read `painting-to-3d-world/SKILL.md` inside it before starting a new build or a large expansion |
+| `.claude/skills/character-modeling/` | lessons from building the character kit: pipeline choice, the bug catalogue by area (`references/pitfalls.md`), tool setup. Read it before work on `kits/characters`. `character-modeling.skill` is the same, zipped for upload |
 
 ## Keep token use down
 
