@@ -460,8 +460,23 @@ seen when using walk mode ... add some multi-storey open space inside them in pl
   suites' exits; a walk to a canton room goes in by a door and up the stairs.
 * **The terrace stairs have landings** (`targets/voth-site/20-site-cantons.js` `CANT.flightRun`, `CANT.flightSegs`; owner,
   2026-10-15: "make sure all canton external stairs have landings"): every outside flight (terrace, dock, mole, summit) is
-  equal runs of at most `CANT.T.landEvery` (16) steps with a `landLen` (2 m) landing between; the drawing, the walker's strips
+  equal runs of at most `CANT.T.landEvery` (16) steps with a `landLen` (2 m) landing between, and one more at its head
+  (2026-10-16: "a landing at the very top as well"; the pedestrian layer crosses it as its own edge); the drawing, the walker's strips
   and the planners' run lengths all take the same profile (36 terrace flights, 95 landings; the tallest rises 50 m).
+* **Inside, the pin and the inspector** (`58-vc-tools.js` `VC.pickInterior`, `97-vc-host-take.js`; owner, 2026-10-16: "click eg
+  inside the throne room and be able to start walk mode there"; "the inspector ... not correctly displaying the name of each
+  room"): with a canton's interior shown (the cutaway, or walking in it) a double-click drops the pin on the floor under the
+  interior as drawn below the cut (core/host's new `take({pick})`), so F walks from there; a click (and the hover tip, I) names
+  the room under the cursor (a blueprint room by its sheet name, the suite's big rooms by theirs: "Throne Room: the Octagon of
+  the Sun"), its kind, decor, area, storey and who works or sleeps there, and the piece under the cursor first if there is one.
+* **The Palace's doors onto its terraces** (`40e-vc-palace-doors.js`; owner, 2026-10-16: "there doesn't seem to be any exterior
+  palace entrances aside from the dock level", "stairs may be blocking some of these entrances"): the sheets' garden doors and
+  tier 0's four gates are exits on the first storey of their tier, a tunnel out through the battered, plinthed stone to where
+  it ends (`VC.faceOut`: the stack's frustums and the captured pieces at the door's height, 6 m clear past the last, the door 3 m
+  on) and a porch there; one a flight crosses slides along the wall or is dropped. The suite's own exits were 20 to 60 m inside
+  the stone (their porches buried): they take the same face now, the Temple's too. Ten Palace exits: the bridge porch, four
+  garden doors on the state floor, the four gates onto the apron, one onto tier 1's roof garden.
+
 * **The stone courses** (a captured canton's cornice slabs, which ran through its storeys and showed as red floors) are cut
   where they cross the hollowed storeys and framed by four stone bands, with a thin slab over the interior at a level's top.
 

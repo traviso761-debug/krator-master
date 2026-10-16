@@ -35,7 +35,7 @@ CANT.T = {
   pierEvery: 105,        /* one pier per this much open water */
   rise: 0.32, tread: 0.62, /* a step */
   landing: 3.5,           /* the clear landing at a flight's head and foot (owner, 2026-10-09: "a clear landing that doesn't conflict with decorative geometry") */
-  landEvery: 16, landLen: 2.0, /* a flight is equal runs of at most landEvery steps with a landing landLen m deep between (owner, 2026-10-15: "make sure all canton external stairs have landings") */
+  landEvery: 16, landLen: 2.0, /* a flight is equal runs of at most landEvery steps with a landing landLen m deep between, and one at its head (owner, 2026-10-15: "make sure all canton external stairs have landings"; 2026-10-16: "a landing at the very top as well") */
   flightW: 7,            /* a terrace flight's width (less where its band is narrower) */
   dockW: 5,              /* a pier's or a mole's flight */
   apronSide: 0.7         /* how far a mole's or a pier's flight may run in under the apron's cornice before it must climb */
@@ -424,26 +424,27 @@ CANT.planCauseways = function (list) {
 /* ---------------------------------------------------------------- flights of steps
    {canton, kind: dock|mole|terrace|summit, a: bottom [x, z], b: top [x, z], y0, y1, w, base}: the steps rise from a to
    b, each T.rise high and T.tread deep, on solid masonry from `base` (a terrace's floor, a deck) */
-/* a rise's steps in equal runs of at most T.landEvery, a landing T.landLen deep between: {n: steps, runs, run: its length} */
+/* a rise's steps in equal runs of at most T.landEvery, a landing T.landLen deep after each (between the runs, and at the
+   head): {n: steps, runs, run: its length} */
 CANT.flightRun = function (rise) {
   var T = CANT.T, n0 = Math.max(2, Math.ceil(rise / T.rise)), runs = Math.max(1, Math.ceil(n0 / T.landEvery)), n = runs * Math.ceil(n0 / runs);
-  return { n: n, runs: runs, run: n * T.tread + (runs - 1) * T.landLen };
+  return { n: n, runs: runs, run: n * T.tread + runs * T.landLen };
 };
 CANT.addFlight = function (o) {
   var T = CANT.T, L = Math.hypot(o.b[0] - o.a[0], o.b[1] - o.a[1]), FR = CANT.flightRun(o.y1 - o.y0);
   o.id = 'flight_' + CANT.flights.length; o.steps = FR.n; o.runs = FR.runs; o.len = L; o.ry = Math.atan2(o.b[0] - o.a[0], o.b[1] - o.a[1]);
   /* the landings take their depth from what the run leaves (a short run keeps them, the steps a little shallower) */
-  o.landLen = o.runs > 1 ? Math.min(T.landLen, L * 0.3 / (o.runs - 1)) : 0;
+  o.landLen = Math.min(T.landLen, L * 0.3 / o.runs);
   if (o.base == null) o.base = o.y0;
   CANT.flights.push(o);
   return o;
 };
 /* a flight's profile from foot to head: [{d0, d1 (m along it), y0, y1, landing}] */
 CANT.flightSegs = function (f) {
-  var runs = f.runs || 1, per = f.steps / runs, tr = (f.len - (runs - 1) * (f.landLen || 0)) / f.steps, dy = (f.y1 - f.y0) / f.steps, out = [], d = 0, y = f.y0;
+  var runs = f.runs || 1, per = f.steps / runs, tr = (f.len - runs * (f.landLen || 0)) / f.steps, dy = (f.y1 - f.y0) / f.steps, out = [], d = 0, y = f.y0;
   for (var r = 0; r < runs; r++) {
     out.push({ d0: d, d1: d + per * tr, y0: y, y1: y + per * dy, landing: false }); d += per * tr; y += per * dy;
-    if (r < runs - 1) { out.push({ d0: d, d1: d + f.landLen, y0: y, y1: y, landing: true }); d += f.landLen; }
+    if (f.landLen) { out.push({ d0: d, d1: d + f.landLen, y0: y, y1: y, landing: true, head: r === runs - 1 }); d += f.landLen; }   /* the last: the head's */
   }
   return out;
 };

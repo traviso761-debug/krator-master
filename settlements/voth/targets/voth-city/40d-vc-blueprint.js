@@ -146,6 +146,8 @@ VC.bpFinish = function (P, M, allSt) {
     if (!o.bp || o.spine || o.storey !== g0 || o.kind === 'stairs') return true;
     return !way.some(function (k) { return VC.bpArea(VC.bpInter(o, k)) > 0.5 * VC.bpArea(o); });
   });
+  /* the doors onto the terraces (40e-vc-palace-doors.js), before the search below sees the tunnels */
+  var doorsTxt = VC.bpDoors ? VC.bpDoors(P, M, allSt) : '';
   /* 2. the doors, storey by storey: a search outward from the open floors the core stands in */
   var dropped = 0, doorsN = 0;
   P.storeys.forEach(function (S) {
@@ -208,7 +210,7 @@ VC.bpFinish = function (P, M, allSt) {
     flights += 2;
   });
   var nRooms = P.rooms.filter(function (r) { return r.bp; }).length;
-  P.bpLog.summary = nRooms + ' rooms (' + L.zones + ' zones cut into corridors and rooms, ' + dropped + ' unreached dropped, ' + L.clipped + ' outside the walls, ' + L.kept + ' under the suite), ' + L.halls + ' halls, ' + doorsN + ' doors, ' + L.stairs + ' stair shafts, ' + flights + ' flights, ' + L.tall + ' rooms through storeys, ' + L.filled + ' voids with nothing under them laid as floor, ' + L.landings + ' stair shafts the wall cuts laid as landings';
+  P.bpLog.summary = nRooms + ' rooms (' + L.zones + ' zones cut into corridors and rooms, ' + dropped + ' unreached dropped, ' + L.clipped + ' outside the walls, ' + L.kept + ' under the suite), ' + L.halls + ' halls, ' + doorsN + ' doors, ' + L.stairs + ' stair shafts, ' + flights + ' flights, ' + L.tall + ' rooms through storeys, ' + L.filled + ' voids with nothing under them laid as floor, ' + L.landings + ' stair shafts the wall cuts laid as landings' + (doorsTxt ? '; ' + doorsTxt : '');
 };
 /* ============================== 5h6. THE SUMMIT FROM SHEET F8 ============================== */
 /* The top deck from the sheet TUNE.interiors.blueprint[canton].summit names (F8: "the Dawn Pavilion and the High Garden"):

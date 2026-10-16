@@ -155,7 +155,11 @@ VC.pedNav = function () {
   };
   var flightFoot = {};
   (CANT.flights || []).forEach(function (f) {
-    var foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'); edge(foot, head, 'stairs', f.w); cant.flights++;
+    /* the steps to the head's landing, then across it (20-site-cantons.js CANT.flightSegs: a flight ends on a landing) */
+    var foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'), hl = f.landLen && f.len ? f.landLen / f.len : 0;
+    if (hl > 0) { var hs = node(f.b[0] - (f.b[0] - f.a[0]) * hl, f.b[1] - (f.b[1] - f.a[1]) * hl, f.y1, 'stairs'); edge(foot, hs, 'stairs', f.w); edge(hs, head, 'landing', f.w); }
+    else edge(foot, head, 'stairs', f.w);
+    cant.flights++;
     var top = cantonAt(f.canton, f.b[0], f.b[1], f.y1); if (top >= 0) edge(head, top, 'landing', f.w); else cant.unjoined.push(f.id + ' head');
     if (f.kind === 'terrace') { var bot = cantonAt(f.canton, f.a[0], f.a[1], f.y0); if (bot >= 0) edge(foot, bot, 'landing', f.w); else cant.unjoined.push(f.id + ' foot'); }
     flightFoot[f.id] = foot; levelNodes[f.canton].push(foot, head);

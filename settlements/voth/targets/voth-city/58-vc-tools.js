@@ -16,6 +16,102 @@ VC.ground = function (e) {
 };
 VC.typing = function (e) { var t = e.target; return t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable); };
 
+/* ---------------------------------------------------------------- inside a canton (owner, 2026-10-16: "click eg inside the
+   throne room and be able to start walk mode there ... it drops me in the sea or on the outside of the bldg"; "the
+   inspector ... not correctly displaying the name of each room"). With a canton's interior shown (the cutaway, or walking
+   in it), a click or a double-click is picked against the interior as drawn, under the cut: the walls, floors and pieces
+   of the storeys shown (56-vc-interiors-host.js marks them probeSkip, so the host's own pick passed through them to the
+   canton's shell or the sea). The pin lands on the walkable floor under the hit (core/walk KWALK); the inspector names
+   the room it is in (a blueprint room by its sheet name, 40d-vc-blueprint.js) and the piece under the cursor */
+VC.pickInterior = function (ray) {
+  var I = VC.INTD; if (!I || !I.groups) return null;
+  var C = I.cut, cutY = C.on && I.planes ? I.planes[0].constant : Infinity, meshes = [], at = null;
+  Object.keys(I.groups).forEach(function (cn) {
+    var g = I.groups[cn]; if (!g.visible) return;
+    g.traverse(function (o) { if ((o.isMesh || o.isInstancedMesh) && o.visible && o.userData && (o.userData.kind === 'interior' || o.userData.kind === 'furniture')) meshes.push(o); });
+  });
+  if (!meshes.length) return null;
+  var R = new THREE.Raycaster(ray.origin.clone(), ray.direction.clone().normalize(), 0, 20000);
+  var hits = R.intersectObjects(meshes, false);
+  for (var i = 0; i < hits.length; i++) {
+    var h = hits[i];
+    /* what the cut hides is not there (the raycast ignores the clipping planes): above the cut, or outside the cut's box */
+    if (h.point.y > cutY + 0.05) continue;
+    if (C.on && I.planes && (h.point.x < I.planes[1].constant - 0.05 || h.point.x > -I.planes[2].constant + 0.05 || h.point.z < I.planes[3].constant - 0.05 || h.point.z > -I.planes[4].constant + 0.05)) continue;
+    at = h; break;
+  }
+  if (!at) return null;
+  var ud = at.object.userData, cn = ud.canton, item = ud.items && at.instanceId != null ? ud.items[at.instanceId] : null;
+  return { point: at.point, canton: cn, storey: ud.storey, item: item, object: at.object };
+};
+/* the floor a person stands on under a point inside: the highest KWALK floor at or a little above the hit */
+VC.interiorStand = function (p) {
+  var W = typeof KWALK !== 'undefined' ? KWALK : null; if (!W) return [p.x, p.y, p.z];
+  var f = W.floorBelow(p.x, p.z, p.y, 0.6);   /* (its step: how far above the point a floor may stand) */
+  return [p.x, f ? f[0] : p.y, p.z];
+};
+/* the room, hall or passage a point is in: the smallest that holds it on the storey whose floor is under it */
+VC.interiorRoomAt = function (cn, x, y, z) {
+  var P = VC.INT && VC.INT.cantons[cn]; if (!P) return null;
+  var best = null, ba = Infinity, pad = 0.35;
+  var test = function (o, what) {
+    var oy = o.y != null ? o.y : (P.storeys[o.storey] || {}).y, oh = o.h != null ? o.h : (P.storeys[o.storey] || {}).h;
+    if (oy == null || y < oy - 0.6 || y > oy + (oh || 6) + 0.4) return;
+    if (x < o.x0 - pad || x > o.x1 + pad || z < o.z0 - pad || z > o.z1 + pad) return;
+    var a = (o.x1 - o.x0) * (o.z1 - o.z0); if (a < ba) { ba = a; best = { o: o, what: what }; }
+  };
+  P.rooms.forEach(function (r) { test(r, 'room'); });
+  if (!best) P.halls.concat(P.tunnels).forEach(function (o) { test(o, o.kind); });
+  return best;
+};
+VC.interiorKindName = function (k) { return String(k || '').replace(/_/g, ' '); };
+/* a suite's big room under the blueprint: its name on the sheet its storey takes (the rows of the same kind) */
+VC.interiorSheetName = function (P, o) {
+  var L = P && P.bpLog, sid = L && L.sheets && L.sheets[o.storey], sh = sid && typeof VC.PALACE_PLAN !== 'undefined' && VC.PALACE_PLAN.sheets[sid];
+  if (!sh || !(o.great || o.kind === 'suite')) return null;
+  var k = o.kind === 'suite' ? null : o.kind, row = sh.rooms.filter(function (r) { return r[2] === k; })[0];
+  return row ? row[1] : null;
+};
+VC.interiorHTML = function (hit) {
+  var P = VC.INT.cantons[hit.canton], p = hit.point, A = VC.interiorRoomAt(hit.canton, p.x, p.y, p.z), h = '';
+  var Sx = A && A.o.storey != null ? A.o.storey : hit.storey, S = P && P.storeys[Sx];
+  var where = hit.canton + ' canton' + (S ? ', storey ' + (S.i + 1) + ' of ' + P.storeys.length + (S.dungeon ? ' (the dungeon)' : '') : '');
+  if (hit.item) {
+    var FA = (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[hit.item.key]) || {};
+    h += '<b>' + (FA.name || hit.item.key) + '</b> <span class="k">' + hit.item.key + '</span><br>';
+    if (hit.item.room && P) { var rr = P.rooms.filter(function (q) { return q.id === hit.item.room; })[0]; if (rr) A = { o: rr, what: 'room' }; }
+  }
+  if (A) {
+    var o = A.o, nm = o.name || VC.interiorSheetName(P, o) || (A.what === 'room' ? VC.interiorKindName(o.kind) : A.what === 'tunnel' ? (o.exit ? 'way out onto the terrace' : 'tunnel in from the door') : VC.interiorKindName(o.suite || o.kind));
+    var D = ['bare', 'plain', 'fine', 'rich', 'sumptuous'], a = Math.round((o.x1 - o.x0) * (o.z1 - o.z0));
+    h += (hit.item ? 'in ' : '') + '<b>' + nm.charAt(0).toUpperCase() + nm.slice(1) + '</b><br>' + where;
+    var bits = [];
+    if (A.what === 'room') bits.push(VC.interiorKindName(o.bpKind && o.bpKind !== o.kind ? o.bpKind + ' (' + o.kind + ')' : o.kind));
+    else bits.push(A.what === 'suite' ? 'state room' : A.what);
+    if (o.decor != null) bits.push(D[o.decor]);
+    bits.push(a + ' m²');
+    if (o.tallTo != null && P) bits.push('through ' + (o.tallTo - o.storey + 1) + ' storeys');
+    h += '<br>' + bits.join(' &middot; ');
+    var cen = A.what === 'room' && TUNE.census && TUNE.census.rooms && TUNE.census.rooms[o.kind];
+    if (cen && (cen[0] || cen[1])) h += '<br><span class="k">' + (cen[0] ? cen[0] + ' at work (' + cen[2] + ')' : '') + (cen[0] && cen[1] ? ', ' : '') + (cen[1] ? cen[1] + ' sleep here' : '') + '</span>';
+  } else h += (hit.item ? '' : '<b>Inside</b><br>') + where;
+  return h + '<br><span class="k">' + p.x.toFixed(0) + ', ' + p.z.toFixed(0) + ' &middot; ' + p.y.toFixed(1) + ' m</span>';
+};
+VC.interiorText = function (hit) { return VC.interiorHTML(hit).replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&middot;/g, '·').replace(/&amp;/g, '&'); };
+/* the hover tip (I) names the room too, ahead of the lots and the ground (a citizen under the cursor still comes first) */
+(function () {
+  var describe = VC.describe;
+  VC.describe = function (r) {
+    var hit = null; try { hit = VC.pickInterior(r); } catch (e) { console.warn('pickInterior: ' + e.message); }
+    if (!hit) return describe(r);
+    var body = null; try { body = VC.pickBody && VC.pickBody(r); } catch (e) { }
+    if (body) return describe(r);
+    VC.DESC = { kind: 'room', at: [hit.point.x, hit.point.z] };
+    var tip = $('tip'); if (tip) tip.classList.remove('card');
+    return VC.interiorHTML(hit);
+  };
+})();
+
 /* ---------------------------------------------------------------- Paths: the city's populations */
 VC.PATHCOL = { highway: 0xffb21e, avenue: 0xff3df0, main: 0x36d1ff, side: 0x7dff5a, alley: 0xb38bff, lane: 0xc8a060, strider: 0xd9792b, ferry: 0x3a9ad9, painted: 0xffffff };
 VC.pathviz = function () {

@@ -23,6 +23,15 @@ VC.hostTake = function () {
       var d = hit.point.clone().sub(camera.position).normalize(), t = VC.describe(new THREE.Ray(camera.position.clone(), d));
       return String(t || '').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&middot;/g, '·').replace(/&amp;/g, '&');
     },
+    /* inside a canton (58-vc-tools.js VC.pickInterior): the pin on the floor under the interior hit, the click's words the
+       room's (the host's own pick and inspector skip the interior's meshes, probeSkip, and met the shell or the sea) */
+    pick: function (ray) { var h = VC.pickInterior(ray); return h ? VC.interiorStand(h.point) : null; },
+    click: function (cx, cy) {
+      var rc = renderer.domElement.getBoundingClientRect(), R = new THREE.Raycaster();
+      R.setFromCamera(new THREE.Vector2((cx - rc.left) / rc.width * 2 - 1, -((cy - rc.top) / rc.height) * 2 + 1), camera);
+      var h = VC.pickInterior(R.ray); if (!h) return false;
+      KHOST.inspector(VC.interiorText(h)); return true;
+    },
     exporters: { plan: function () { return SL.exportPlan(); } },
     api: { vc: function () { return window._vc; } }
   });

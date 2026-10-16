@@ -215,7 +215,10 @@ VC.suiteStorey = function (P, M, sp, S, s, si, allSt) {
 VC.suiteExit = function (P, M, sp, S, s, si, pt, rect, uEdge, v, w, outDir, isEntrance) {
   var T = TUNE.interiors, ax = sp.axis, tier = P.tiers.filter(function (t) { return t.k === S.tier; })[0], Rw = tier.R + T.wall + 0.6;
   /* along the axis out to the wall's outer face (the terrace) */
-  var out = outDir, uOut = out[0] * ax[0] + out[1] * ax[1] > 0 ? Rw : -Rw;
+  var out = outDir, sgn = out[0] * ax[0] + out[1] * ax[1] > 0 ? 1 : -1;
+  /* on through the tier's battered stone to its face, where the terrace is (40e-vc-palace-doors.js VC.faceOut; owner,
+     2026-10-16: "there doesn't seem to be any exterior palace entrances": the portals stood 20 m inside the stone) */
+  var rF = VC.faceOut ? VC.faceOut(M, function (r) { return pt(sgn * r, v); }, Rw, s.y, tier.k) : null, uOut = sgn * (rF != null ? rF : Rw);
   var a = pt(uEdge - (uOut > 0 ? 0.3 : -0.3), v), b = pt(uOut, v);
   var tun = Object.assign({ y: s.y, h: Math.min(s.h, T.tunnelH + 1.5), kind: 'tunnel', storey: si, tier: S.tier, door: 'exit_' + P.n + '_' + P.suite.exits.length, exit: true }, VC.intSeg(a, b, w / 2));
   P.tunnels.push(tun);
