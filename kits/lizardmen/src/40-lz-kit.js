@@ -106,9 +106,12 @@ function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth')
    for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+kk*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:kk>0});
    door(0,0,r0*.94,0,d.dw);});});}
 /* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
-function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot radius: the tube runs wall to wall, a little into each, never through a dome */
- const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1,ux=dx/L,uz=dz/L,a=[p[0]+ux*p[2]*.8,p[1]+uz*p[2]*.8],b=[q[0]-ux*q[2]*.8,q[1]-uz*q[2]*.8];
- if(Math.hypot(b[0]-a[0],b[1]-a[1])<.2)return;const y0=dh*.5;tube(mk,t=>[lerp(a[0],b[0],t),y0,lerp(a[1],b[1],t)],t=>[dw*.62,dh*.52],2,10,col,{});}
+function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot radius: a TRIANGULAR tunnel the section of the doors (dw at the
+ floor, dh at the apex), from between one dome's two shells to between the other's, so its slopes meet the doors' slanted edges */
+ const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1,ux=dx/L,uz=dz/L,a=[p[0]+ux*p[2]*.9,p[1]+uz*p[2]*.9],b=[q[0]-ux*q[2]*.9,q[1]-uz*q[2]*.9];
+ if(Math.hypot(b[0]-a[0],b[1]-a[1])<.2)return;const sx=-uz,sz=ux;   /* sideways */
+ for(const k of [-1,1]){const f=(u,v)=>{const x=lerp(a[0],b[0],u),z=lerp(a[1],b[1],u);return [x+k*sx*dw/2*(1-v),dh*v,z+k*sz*dw/2*(1-v)];};
+  psurf(mk,f,2,2,col,{});psurf(mk,f,2,2,col,{flip:true});}}
 /* ---------------------------------------------------------------- walls that lean wrong */
 /* one wall face from bottom edge B0->B1 ([x,z]) to top edge T0->T1 at height y0..y0+h (a battered face when T differs from B),
    facing out to the left of B0->B1 seen from above with +y up... (front: B0 west, B1 east). opens: [{s, w, h, door}] with s
@@ -238,7 +241,13 @@ function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{const lean=.35;
  for(const s of [-1,1])for(const k of [-1,1])ring('rope',s*(L/2-lean),h+.1+k*.06,0,.2,.03,P('reedD'),0,0,PI/2,10);
  for(const bx of lzSpan(-L/2+lean+.5,L/2-lean-.5,n)){const bh=.42+.1*Math.abs(bx)/L;beam('rope',[bx,h+.05,0],[bx,h-.2,0],.02,P('reedD'),true,5);
   lathe('bronzeC',bx,0,[[.02,h-.2],[.14,h-.26],[.19,h-.2-bh*.75],[.21,h-.2-bh],[.0,h-.2-bh]],12,P('bronze'),{});
-  ring('bronzeC',bx,h-.2-bh*.5,0,.2,.018,P('verd'),0,0,0,16);ring('bronzeC',bx,h-.2-bh*.82,0,.215,.015,P('verd'),0,0,0,16);}});}   /* two cast bands round each bell */
+  ring('bronzeC',bx,h-.2-bh*.5,0,.2,.018,P('verd'),0,0,0,16);ring('bronzeC',bx,h-.2-bh*.82,0,.215,.015,P('verd'),0,0,0,16);
+  /* between the bands: the leiwen sheet wrapped once round the bell, one row of four cells (uvf: u once round, v a quarter of the sheet) */
+  if(LZ_SHEET('leiwenS')){const y1=h-.2-bh*.8,y2=h-.2-bh*.52,tl=TILE.leiwenS||1.2;
+   const f=(u,v)=>{const a=u*TAU,y=lerp(y1,y2,v),r=lerp(.212,.198,v)+.006;return [bx+Math.cos(a)*r,y,Math.sin(a)*r];};
+   const pm=f(.5,.5),pa=f(.52,.5),pb=f(.5,.52),du=[pa[0]-pm[0],pa[1]-pm[1],pa[2]-pm[2]],dv=[pb[0]-pm[0],pb[1]-pm[1],pb[2]-pm[2]];
+   const nx=du[1]*dv[2]-du[2]*dv[1],nz=du[0]*dv[1]-du[1]*dv[0];const out=(pm[0]-bx)*nx+pm[2]*nz;
+   psurf('leiwenS',f,24,2,WHITE,{flip:out<0,uvf:(u,v)=>[u*tl,v*tl/4]});}}});}   /* two cast bands round each bell */
 /* the raised threshold and the stone footing every door has */
 function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
 /* a pool of dust: the ground round a monument, trodden */
