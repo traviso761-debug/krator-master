@@ -290,3 +290,11 @@ its pack moved beside it (`tools/textures/matlib_pack.py`); its card was regener
 Version 8 of Krator Biomes and Objects (2026-10-16): `worlds/hyperjungle.html` replaced (3.7 MB, from `main` at 952944c9:
 hero limbs and young trunks on their own species' bark, the plant-naming inspector, the brook as water). The live index
 (version 7) was kept unchanged. One publish call.
+
+Rebuilt 2026-10-16 from `main` at 9ee3373c (the isle demo merge): **Krator Biomes and Objects version 9** (one call):
+`worlds/ringisles.html` (the Ring Sea isles biome, `biomes/ringisles`) and its six packs added, the index regenerated with
+its card; no other page republished (the rest differ from the live copies only by the link bar). **Pending:** the world
+pages no longer fit two parts of 250 MB. `split_site.py --parts 3` puts five pages in a third part ("Krator Worlds III",
+16.6 MB), which needs a new artifact and a `--link` for it. The new and changed world and kit pages wait for that: the
+Islanders kit (34 trade buildings, mines), the Resources kit and the Isle Demo open world (all three listed in
+`ENTRIES`; the isle demo's site planner is `UNLISTED`).
