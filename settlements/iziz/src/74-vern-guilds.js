@@ -209,10 +209,10 @@ function buildVernCaravanserai(G,o){reseed(7721+(o.v|0));const wood=vC(vPick(VPA
  vnWin(0,6.5,gz-GD/2,Math.PI,1.3,1.4,'open','vWood',trim,true);
  // arcades: a room range on the back and front walls, open bays on the sides; posts on the court edge, corrugate shed roofs down to them
  const arcade=(xc,zc,L,ry,rooms,plc)=>{const zi=RD/2;   // local: -z is the outer wall, +z the court; L along local x
-  if(rooms){const p=loc(xc,zc,0,-.1,ry);vB('vStone',p[0],-.05,p[1],L,.45,RD-.2,ry,stD);vB('vPlaster',p[0],.4,p[1],L-.2,PH-.4,RD-.4,ry,plc);}
+  let B=null;if(rooms){const p=loc(xc,zc,0,-.1,ry);vB('vStone',p[0],-.05,p[1],L,.45,RD-.2,ry,stD);B=vnBody('vPlaster',p[0],.4,p[1],L-.2,PH-.4,RD-.4,ry,plc,{t:.2});}
   const n=Math.max(2,Math.round(L/3.0));for(let i=0;i<=n;i++){const p=loc(xc,zc,-L/2+L*i/n,zi,ry);vPst('vPost',p[0],0,p[1],.16,PH,wood);}
-  const b=loc(xc,zc,0,zi,ry);vB('vWood',b[0],PH-.15,b[1],L+.3,.3,.3,ry,wood);vnShedRoof(xc,PH+.15,zc,L,RD,1.3,ry,'vCorr',null,.5,.12);};
- arcade(0,-CD/2+T+RD/2,CW-2*T-.2,0,true,pl);                                                   // back: lodging rooms
+  const b=loc(xc,zc,0,zi,ry);vB('vWood',b[0],PH-.15,b[1],L+.3,.3,.3,ry,wood);vnShedRoof(xc,PH+.15,zc,L,RD,1.3,ry,'vCorr',null,.5,.12);return B;};
+ if(arcade(0,-CD/2+T+RD/2,CW-2*T-.2,0,true,pl))for(const x of[-9.6,-3.6,3.6,9.6])vB('vPlaster',x,.4,-CD/2+T+RD/2-.1,.2,PH-.4,RD-.8,0,pl);   // back: lodging rooms (hollow: one per door, party walls between)
  for(const s of[-1,1])arcade(s*(CW/2-T+GW/2+.5)/2,CD/2-T-RD/2,CW/2-T-GW/2-.9,Math.PI,true,pl2);   // front, either side of the gate: stores
  arcade(CW/2-T-RD/2,0,CD-2*T-2*RD-.4,-Math.PI/2,false);                                         // east: stables
  arcade(-CW/2+T+RD/2,0,CD-2*T-2*RD-.4,Math.PI/2,false);                                        // west: stalls
